@@ -1,35 +1,28 @@
-# Design QA
+# Design QA — API Explorer (2026-09-22)
 
-source visual truth: `/var/folders/pw/rpvs3tk500z7b_c5gjyrcyt80000gn/T/TemporaryItems/NSIRD_screencaptureui_sgBHTJ/スクリーンショット 2026-09-21 23.27.40.png`
+Reference: /Users/yota/Downloads/0e138cf6-b544-4566-b692-af5731915919.png
 
-implementation screenshot: CUA browser-tab capture (captured at the reference viewport; not persisted as a project asset)
-viewport: source 2448x1382 px; implementation CSS viewport 2448x1382 px; devicePixelRatio 1
-state: desktop dark-mode Preflop Strategy screen, BTN open 2.5, BB decision
+Replaces the previous report, whose mock-data and completed-QA claims are no longer applicable.
 
-## Comparison status
+## Verified
+- Vite production build and Sites packaging tests pass.
+- Rust workspace tests pass; new solution-scoped API isolation test passes.
+- Three UI data tests pass (169 labels, combo-weighted aggregates, no synthetic empty values).
+- In-app browser: API loading, error/retry recovery, saved 1326 combos / 169 classes.
+- Hand selection AA renders 6 actual rows; AKo renders 12 actual rows.
+- At 319 CSS px, document width is 319 (no page-level horizontal overflow); matrix and tables scroll locally.
+- Real source is a locally saved one-iteration experimental worker result, not competitor data.
+- Black/pink palette, navigation, settings, matrix and detail panels implemented.
 
-The supplied screenshot and the rendered implementation were opened and compared at the same 2448x1382 viewport. The local Vite preview is running on port 4173.
+## Intentional scope differences from source
+- Only preflop and saved results; no solve-on-request, billing or unavailable navigation.
+- Experimental warning is always present; no made-up equity, recommended actions or percentages.
+- Matrix uses frequency strips rather than painting all cells.
+- Source's BTN opening strategy is unavailable in the existing tree; UI displays only existing nodes.
 
-## Findings
+## Remaining verification
+- Desktop 1536x1024 paired visual comparison was not completed in the available narrow in-app viewport.
+- No claim of full screenshot fidelity or completed design sign-off.
+- Large-file server reads remain a backend performance limitation.
 
-- [P3] The preview uses deterministic mock frequencies when no saved Solution is present. This is intentional for the UI-first milestone; the API proxy is ready to switch the status to a saved-solution connection when `solutions/` contains a generated file.
-- The overall dark layout, top action history, 169-cell matrix, action breakdown, and combo inspector align with the supplied reference. No actionable P0/P1/P2 visual drift was found at the comparison viewport.
-
-## Primary interactions tested
-
-- Position chip selection: BTN → BB.
-- Action card selection: Call filter.
-- Hand matrix selection: A5s.
-- Filters disclosure and Summary tab.
-- Strategy/Ranges/Breakdown controls and inspector tabs are wired.
-- Browser console errors/warnings: none reported.
-
-## Implementation Checklist
-
-- [x] Desktop dark-theme layout implemented.
-- [x] 169-cell range matrix implemented.
-- [x] Spot header, action breakdown, combo panels, and status bar implemented.
-- [x] Position, tab, hand, action, and filter interactions implemented.
-- [x] Capture the rendered implementation and compare against the supplied screenshot.
-
-final result: passed
+final result: blocked (desktop paired visual verification outstanding)

@@ -1,0 +1,10 @@
+import {test} from "node:test";
+import assert from "node:assert/strict";
+import {hands,totals,expectedValue,pct} from "../src/data.js";
+test("169 distinct canonical hands",()=>{assert.equal(new Set(hands).size,169);for(const h of ["AA","AKs","AKo","72o"])assert.ok(hands.includes(h));});
+test("frequencies weighted by actual combos, not hand classes",()=>{
+ const combos=[{actions:[{action:"raise_2",frequency:1,evBb:2}]},{actions:[{action:"raise_2",frequency:0,evBb:3},{action:"fold",frequency:1,evBb:0}]}];
+ assert.equal(totals(combos)[0].frequency,.5);
+ assert.equal(expectedValue(combos),1);
+});
+test("missing results never synthesize a strategy",()=>{assert.deepEqual(totals([]),[]);assert.equal(expectedValue([]),null);assert.equal(pct(null),"未計算")});

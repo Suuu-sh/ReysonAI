@@ -1,6 +1,6 @@
 # SolveaGTO Preflop v0.1
 
-SolveaGTO は、SolveaGTO 自身が計算した Poker GTO の Solution を保存・配信するための独立した Solver Platform です。v0.1 の対象は **Cash / 6-max / 100BB / no ante の Preflop** に限定しています。
+SolveaGTO は、独自計算した戦略の保存・配信を目指す Solver Platform です。現行Solverは固定ヒューリスティックによる実験モデルであり、Poker CFR/DCFRやGTO精度は未実装・未検証です。v0.1 の対象は **Cash / 6-max / 100BB / no ante の Preflop** に限定しています。
 
 他社サービスの Range データは使用していません。Postflop Solver、Flop Solve、Trainer、Quiz、Potover 連携、認証、課金、Cloud/Kubernetes はこのリポジトリの対象外です。
 
@@ -10,7 +10,7 @@ SolveaGTO は、SolveaGTO 自身が計算した Poker GTO の Solution を保存
 configs/*.json
        │
        ▼
-preflop-worker ──► preflop-tree ──► solver-core (CFR/DCFR)
+preflop-worker ──► preflop-tree ──► solver-core (experimental)
        │                 │                    │
        │                 ▼                    ▼
        │          continuation trait     solution format
@@ -29,12 +29,12 @@ preflop-worker ──► preflop-tree ──► solver-core (CFR/DCFR)
 - `crates/poker-core`: Card、Deck、1326 Combo、169 Hand Class、Combo Range。
 - `crates/preflop-tree`: Config から生成する Preflop Game Tree と Action History 解決。
 - `crates/continuation`: `ContinuationEvaluator` の差し替え境界。v0.1 は単純な強さベースの placeholder。
-- `crates/solver-core`: SolverStrategy、CFR/DCFR regret matching、Toy Game、収束メトリクス。
+- `crates/solver-core`: SolverStrategy、実験的regret matching、Toy Game、変化量メトリクス。
 - `crates/solution`: Solver 結果、Combo/Hand Aggregate、永続化 Repository の抽象化。
-- `services/preflop-worker`: 計算処理を CLI から分離した Worker 実行エントリ。
+- `services/preflop-worker`: CLI Worker 実行エントリ（Job向けライブラリ分離は未実装）。
 - `services/api`: 保存済み Solution の read-only API。Solution 生成はしません。
 - `packages/solveagto-sdk-ts`: 外部アプリ向け TypeScript SDK。
-- `apps/preflop-ui`: GTOWizard 系の Preflop Strategy UI。169 Hand Matrix、Action Breakdown、Combo 詳細を確認できます。
+- `apps/preflop-ui`: 黒・ピンク基調の独自 Preflop Explorer。169 Hand Matrix、Action Breakdown、Combo 詳細を確認できます。
 
 ### Action History と Node ID
 
@@ -151,15 +151,30 @@ npm install
 npm run dev -- --host 0.0.0.0 --port 4173 --strictPort
 ```
 
-UI は API の `/v1/preflop/solutions` を同一オリジンの `/api` proxy 経由で確認します。保存済み Solution がまだない場合は、画面操作を確認できる Preview data に自動で切り替わります。
+UIはTypeScript SDKと同一オリジンの `/api` proxy経由で保存済みデータを取得します。
+仮データへのフォールバックはありません。空・読み込み中・失敗を区別し、失敗時は再試行できます。
 
-実装済みの主な操作:
+- Solution選択 → 保存済み局面選択 → 169ハンド選択
+- サイズ別アクション頻度、選択ハンドの戦略加重EV、実際のCombo別頻度/EV
+- 全Comboの頻度は等重み集計（到達レンジ加重ではない）
+- エクイティは未計算。現行Solverの結果には常時「実験モデル・GTO精度未検証」と表示
+- 終端ノードは戦略なしとして表示
+- 読み取り専用。ブラウザ操作でSolverを起動しない
 
-- 上部の Position chip を選択して BTN / SB / BB などの Spot を切り替え
-- 169 Hand Matrix のセル選択
-- Action card の Fold / Call / Raise / All-in フィルタ
-- Strategy / Ranges / Breakdown タブ
-- Hands / Filters の表示切り替え
+新しい取得ルート（Solution間で同一nodeIdが衝突しない）:
+```text
+GET /v1/preflop/solutions/{solutionId}/nodes
+GET /v1/preflop/solutions/{solutionId}/nodes/{nodeId}
+```
+
+一覧はComboを含まない軽量な応答。詳細は選択ノードだけを返します。
+現在のFileSolutionStoreはリクエスト毎にファイル全体を読み込むため、大規模運用前に索引・キャッシュが必要です。
+本番配信では `/api` をRust APIへ転送する設定が別途必要です（Vite proxyは開発専用）。
+
+UIの集計テスト:
+```bash
+node --test apps/preflop-ui/tests/data.test.mjs
+```
 
 ## Solution format
 
@@ -167,26 +182,13 @@ Solution metadata は `solutionId`、`solverVersion`、`continuationModelVersion
 
 JSON は API と v0.1 の file store の transport format です。Domain model は JSON API に直接依存していないため、将来 `MessagePack`、binary format、Object Storage に差し替えられます。
 
-## Solver note
+## Solver status — not GTO
 
-v0.1 の `CfrStrategy` は、Combo × decision node の regret matching を行う交換可能な SolverStrategy です。`CfrStrategy::cfr()` と `CfrStrategy::dcfr()` を選べます。Toy Matching Pennies を別テストし、既知の mixed equilibrium に近づくことを確認しています。
-
-Poker の完全な multi-player/postflop Nash solve はまだ実装していません。Continuation は trait のみを Solver に公開し、v0.1 の単純モデルを将来の flop subset、Postflop Solver、Neural Network に置き換えられる形にしています。
-
-## Phase status
-
-| Phase | 状態 | 内容 |
-| --- | --- | --- |
-| 1 | 完了 | Rust workspace / Monorepo / 責務境界 |
-| 2 | 完了 | Poker Core、52 Card、1326 Combo、169 Hand Class、Range |
-| 3 | 完了 | Config-driven 6-max Preflop Tree、Sizing、Node 解決 |
-| 4 | 完了 | Toy CFR、既知の mixed equilibrium テスト |
-| 5 | 完了 | Poker tree への CFR/DCFR 接続 |
-| 6 | 完了 | ContinuationEvaluator boundary と placeholder model |
-| 7 | 完了 | Solution 保存、Combo result、169 Hand Aggregate |
-| 8 | 完了 | Preflop Worker と進捗表示 |
-| 9 | 完了 | read-only Rust API と resolve |
-| 10 | 完了 | TypeScript SDK |
+`CfrStrategy` は局面・Comboごとの固定評価式にregret matchingを適用しています。
+相手の戦略、反実仮想到達確率、ゲーム木の再帰的評価が未実装のため、
+名前やバージョン文字列にCFR/DCFRがあっても本来のPoker CFR/DCFRではありません。
+Matching Penniesテストも均衡初期値から開始するため、十分な収束検証ではありません。
+当初のv0.1完成条件はまだ満たしていません。UI/APIの動作検証とSolver精度の検証を混同しないでください。
 
 ## Known v0.1 limitations
 
