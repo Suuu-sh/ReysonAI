@@ -1,6 +1,6 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
-import {hands,totals,expectedValue,pct} from "../src/data.js";
+import {hands,totals,expectedValue,pct,handAggregates} from "../src/data.js";
 test("169 distinct canonical hands",()=>{assert.equal(new Set(hands).size,169);for(const h of ["AA","AKs","AKo","72o"])assert.ok(hands.includes(h));});
 test("frequencies weighted by actual combos, not hand classes",()=>{
  const combos=[{actions:[{action:"raise_2",frequency:1,evBb:2}]},{actions:[{action:"raise_2",frequency:0,evBb:3},{action:"fold",frequency:1,evBb:0}]}];
@@ -8,6 +8,15 @@ test("frequencies weighted by actual combos, not hand classes",()=>{
  assert.equal(expectedValue(combos),1);
 });
 test("missing results never synthesize a strategy",()=>{assert.deepEqual(totals([]),[]);assert.equal(expectedValue([]),null);assert.equal(pct(null),"未計算")});
+test("hand aggregates keep combo-weighted action frequencies",()=>{
+ const aggregates=handAggregates([
+  {hand:"AA",actions:[{action:"raise_2",frequency:1}]},
+  {hand:"AA",actions:[{action:"raise_2",frequency:0},{action:"fold",frequency:1}]},
+ ]);
+ assert.equal(aggregates.get("AA").comboCount,2);
+ assert.equal(aggregates.get("AA").actions.raise_2,.5);
+ assert.equal(aggregates.get("AA").actions.fold,.5);
+});
 test("missing strategies and invalid frequencies are not displayed", async()=>{
  const {strategyCombos}=await import("../src/data.js");
  assert.deepEqual(strategyCombos(null),[]);
