@@ -111,6 +111,8 @@ fn router(state: AppState) -> Router {
         .route("/health", get(health))
         .route("/v1/preflop/solutions", get(list_solutions))
         .route("/v1/preflop/solutions/{solution_id}", get(get_solution))
+        .route("/v1/preflop/solutions/{solution_id}/nodes", get(list_nodes))
+        .route("/v1/preflop/solutions/{solution_id}/nodes/{node_id}", get(get_scoped_node))
         .route("/v1/preflop/nodes/{node_id}", get(get_node))
         .route("/v1/preflop/nodes/{node_id}/hands/{hand}", get(get_hand))
         .route("/v1/preflop/resolve", post(resolve))
@@ -221,4 +223,57 @@ fn to_history_action(request: &ResolveActionRequest) -> Result<HistoryAction, Ap
         _ => return Err(ApiError::bad_request(format!("invalid action: {}", request.action))),
     };
     Ok(HistoryAction { position, action })
+}
+
+// Solution-scoped routes prevent collisions between history-derived node IDs.
+async fn list_nodes(State(state): State<AppState>, Path(id): Path<String>) -> Result<Json<serde_json::Value>, ApiError> {
+    let solution = state.store.get(&id).map_err(ApiError::internal)?
+        .ok_or_else(|| ApiError::not_found("solution not found"))?;
+    Ok(Json(serde_json::Value::Array(solution.nodes.iter().map(|n| serde_json::json!({
+        "nodeId": n.node_id, "nodeType": n.node_type,
+        "actionHistory": n.action_history, "actingPosition": n.acting_position,
+        "potBb": n.pot_bb, "effectiveStackBb": n.effective_stack_bb,
+        "hasStrategy": !n.combos.is_empty()
+    })).collect())))
+}
+
+async fn get_scoped_node(State(state): State<AppState>, Path((id, node_id)): Path<(String, String)>) -> Result<Json<solution::SolutionNode>, ApiError> {
+    let solution = state.store.get(&id).map_err(ApiError::internal)?
+        .ok_or_else(|| ApiError::not_found("solution not found"))?;
+    solution.node(&node_id).cloned().map(Json).ok_or_else(|| ApiError::not_found("node not found in solution"))
+}
+
+#[cfg(test)]
+mod scoped_tests {
+    use super::*;
+    #[tokio::test]
+    async fn scoped_nodes_do_not_leak_between_solutions() {
+        let root = std::env::temp_dir().join(format!("solveagto-scoped-{}", std::process::id()));
+        let store = FileSolutionStore::new(&root);
+        for (id, pot) in [("a", 4.0), ("b", 9.0)] {
+            let saved: Solution = serde_json::from_value(serde_json::json!({
+                "solutionId": id, "solverVersion":"experimental",
+                "continuationModelVersion":"simple", "gameConfigHash":"test",
+                "createdAt":"0", "iterations":1,
+                "convergence":{"iterations":1,"average_strategy_delta":0.0},
+                "nodes":[{"nodeId":"shared","nodeType":"continuation","actionHistory":{"actions":[]},
+                "actingPosition":null,"potBb":pot,"effectiveStackBb":100.0,
+                "combos":[],"handAggregates":[]}]
+            })).unwrap();
+            store.save(&saved).unwrap();
+        }
+        let state = AppState { store: Arc::new(store) };
+        let a = get_scoped_node(State(state.clone()), Path(("a".into(),"shared".into()))).await.unwrap().0;
+        let b = get_scoped_node(State(state.clone()), Path(("b".into(),"shared".into()))).await.unwrap().0;
+        assert_eq!(a.pot_bb, 4.0);
+        assert_eq!(b.pot_bb, 9.0);
+        assert!(get_scoped_node(State(state.clone()), Path(("missing".into(),"shared".into()))).await.is_err());
+        assert!(get_scoped_node(State(state.clone()), Path(("a".into(),"missing".into()))).await.is_err());
+        let index = list_nodes(State(state), Path("a".into())).await.unwrap().0;
+        assert_eq!(index[0]["hasStrategy"], false);
+        assert!(index[0].get("combos").is_none());
+        std::fs::remove_file(root.join("a.json")).unwrap();
+        std::fs::remove_file(root.join("b.json")).unwrap();
+        std::fs::remove_dir(root).unwrap();
+    }
 }

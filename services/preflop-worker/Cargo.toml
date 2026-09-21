@@ -10,6 +10,8 @@ path = "src/main.rs"
 
 [dependencies]
 continuation = { path = "../../crates/continuation" }
+solveagto-job-queue = { path = "../../crates/job-queue" }
 preflop-tree = { path = "../../crates/preflop-tree" }
 solution = { path = "../../crates/solution" }
 solver-core = { path = "../../crates/solver-core" }
+serde_json.workspace = true

@@ -1,273 +1,107 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowsDownUp,
-  CaretDown,
-  CaretRight,
-  DotsThreeVertical,
-  Funnel,
-  GridFour,
-  MagnifyingGlass,
-  Rows,
-  SquaresFour,
-  Stack,
-} from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
+import { Spade, SquaresFour, ChartBar, Database, ArrowClockwise, CaretRight } from "@phosphor-icons/react";
+import { SolveaGTOClient, SolveaGTOApiError } from "../../../packages/solveagto-sdk-ts/src/index.ts";
+import { hands, pct, label, color, totals, expectedValue, strategyCombos } from "./data.js";
 
-const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
-const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
-const ACTIONS = [
-  { id: "allin", label: "All-in", amount: "100", tone: "allin" },
-  { id: "raise", label: "Raise", amount: "28.5", tone: "raise" },
-  { id: "call", label: "Call", amount: "2.5", tone: "call" },
-  { id: "fold", label: "Fold", amount: "0", tone: "fold" },
-];
+import { OPEN_SIZE_BB, positions, presets, responders, spotModes, spotRequest, spotTitle } from "./spot.js";
 
-const TOP_ACTIONS = {
-  UTG: { label: "Fold", stack: "100" },
-  HJ: { label: "Fold", stack: "100" },
-  CO: { label: "Fold", stack: "100" },
-  BTN: { label: "Raise 2.5", stack: "100" },
-  SB: { label: "Fold", stack: "99.5" },
-  BB: { label: "Raise 13.5", stack: "99" },
-};
-
-const HANDS = [["As", "5s"], ["Ah", "5h"], ["Ad", "5d"], ["Ac", "5c"]];
-
-function handLabel(row, col) {
-  if (row === col) return `${RANKS[row]}${RANKS[col]}`;
-  return row < col ? `${RANKS[row]}${RANKS[col]}s` : `${RANKS[col]}${RANKS[row]}o`;
+const api = new SolveaGTOClient({baseUrl:"/api"});
+function Bars({items}) {
+  return <div className="bars">{items.map((a,i)=><div className="bar-row" key={a.action}><span><i style={{background:color(a.action,i)}}/>{label(a.action)}</span><div className="track"><div style={{width:pct(a.frequency),background:color(a.action,i)}}/></div><b>{pct(a.frequency)}</b></div>)}</div>;
 }
+function App(){
+  const [solutions,setSolutions]=useState([]),[sid,setSid]=useState("");
+  const [spot,setSpot]=useState({mode:"open",opener:"BTN",actor:"BB"});
+  const [result,setResult]=useState(null);
+  const [selected,setSelected]=useState("AKs"),[filter,setFilter]=useState("all"),[tab,setTab]=useState("結果"),[section,setSection]=useState("プリフロップ");
+  const [error,setError]=useState(""),[loading,setLoading]=useState(""),[reload,setReload]=useState(0);
+  const [missing,setMissing]=useState(false),[retry,setRetry]=useState(0);
+  const queryKey=JSON.stringify([sid,spot]);
+  // Never render the previous matchup while a new request is pending.
+  const node=result?.key===queryKey?result.node:null;
+  let validation="";
+  try { spotRequest(sid,spot); } catch(e) { validation=e.message; }
 
-function handMix(row, col, position, selectedAction) {
-  const hand = handLabel(row, col);
-  const high = RANKS.indexOf(hand[0]);
-  const low = RANKS.indexOf(hand[1]);
-  const pair = row === col;
-  const suited = hand.endsWith("s");
-  const strength = pair
-    ? 0.42 + ((12 - high) / 12) * 0.52
-    : Math.max(0, 1 - (high / 12) * 0.86 - (low / 12) * 0.42);
-  const positionBonus = position === "BTN" ? 0.1 : position === "SB" ? -0.07 : 0;
-  const raise = Math.max(0, Math.min(0.94, strength * 0.38 + (pair ? 0.24 : 0) + positionBonus - (suited ? 0 : 0.04)));
-  const call = Math.max(0, Math.min(0.42, (1 - strength) * 0.28 + (suited ? 0.08 : 0)));
-  const allin = pair && high < 3 ? 0.12 : pair && high < 6 ? 0.04 : 0;
-  const fold = Math.max(0, 1 - raise - call - allin);
-  const frequencies = { allin, raise, call, fold };
-  if (selectedAction && selectedAction !== "all") return frequencies[selectedAction] ?? 0;
-  return frequencies;
-}
-
-function aggregateMix(position) {
-  const positionAdjustment = position === "SB" ? -0.02 : position === "BB" ? 0.02 : 0;
-  const raise = Math.max(0, 0.151 + positionAdjustment);
-  const call = Math.max(0, 0.142 + positionAdjustment * 0.35);
-  const fold = Math.max(0, 1 - raise - call);
-  return { allin: 0, raise, call, fold };
-}
-
-function liveMixForHand(solutionNode, hand, position, selectedAction) {
-  if (solutionNode && position === "BB") {
-    const aggregate = solutionNode.handAggregates?.find((entry) => entry.hand === hand);
-    if (aggregate) {
-      const frequencies = { allin: 0, raise: 0, call: aggregate.actions.call ?? 0, fold: aggregate.actions.fold ?? 0 };
-      for (const [action, frequency] of Object.entries(aggregate.actions)) {
-        if (action.startsWith("raise_")) frequencies.raise += frequency;
-        if (action === "all_in") frequencies.allin += frequency;
+  useEffect(()=>{
+    let live=true; setLoading("Solutionを取得中");setSolutions([]);setError("");setResult(null);setSid("");setMissing(false);
+    api.preflop.listSolutions().then(v=>{if(live){setSolutions(v);setSid(v[0]?.solutionId??"");setLoading("");}}).catch(e=>{if(live){setError(e.message);setLoading("");}});
+    return ()=>{live=false};
+  },[reload]);
+  useEffect(()=>{
+    setResult(null);setMissing(false);setError("");setFilter("all");
+    if(!sid||validation) { if(sid)setLoading(""); return; }
+    let live=true;
+    setLoading("指定局面を取得中");
+    const request=spotRequest(sid,spot);
+    api.preflop.resolve(request).then(v=>{
+      if(!live)return;
+      if(v.solutionId!==sid||v.node.actingPosition!==request.heroPosition) {
+        throw new Error("取得した局面が選択条件と一致しません。");
       }
-      return selectedAction === "all" ? frequencies : frequencies[selectedAction] ?? 0;
-    }
+      setResult({key:queryKey,node:v.node});
+      const available=strategyCombos(v.node);
+      setSelected(current=>available.some(c=>c.hand===current)?current:available[0]?.hand??"");
+      setMissing(!available.length);
+      setLoading("");
+    }).catch(e=>{
+      if(!live)return;
+      if(e instanceof SolveaGTOApiError && (e.status===400||e.status===404))setMissing(true);
+      else setError(e.message);
+      setLoading("");
+    });
+    return ()=>{live=false};
+  },[queryKey,retry,validation]);
+
+  function changeSpot(next) {
+    setSpot(next);
+    setResult(null);
+    setMissing(false);
   }
-  const row = RANKS.indexOf(hand[0]);
-  const col = RANKS.indexOf(hand[1]);
-  return handMix(row, col, position, selectedAction);
-}
-
-function percent(value) {
-  return `${(value * 100).toFixed(value * 100 < 10 ? 1 : 0)}%`;
-}
-
-function App() {
-  const [activePosition, setActivePosition] = useState("BTN");
-  const [activeTab, setActiveTab] = useState("Strategy");
-  const [selectedHand, setSelectedHand] = useState("A5s");
-  const [selectedAction, setSelectedAction] = useState("all");
-  const [rangeMode, setRangeMode] = useState("grid");
-  const [showFilters, setShowFilters] = useState(false);
-  const [inspectorTab, setInspectorTab] = useState("Overview");
-  const [handsTab, setHandsTab] = useState("Hands");
-  const [apiStatus, setApiStatus] = useState("mock");
-  const [solutionNode, setSolutionNode] = useState(null);
-
-  useEffect(() => {
-    let active = true;
-    fetch("/api/v1/preflop/solutions")
-      .then((response) => {
-        if (!response.ok) throw new Error("API unavailable");
-        return response.json();
-      })
-      .then(async (solutions) => {
-        if (!active || solutions.length === 0) return;
-        const solutionId = solutions[solutions.length - 1].solutionId;
-        const response = await fetch("/api/v1/preflop/resolve", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            solutionId,
-            heroPosition: "BB",
-            actions: [{ position: "BTN", action: "raise", sizeBb: 2.5 }],
-          }),
-        });
-        if (!response.ok) throw new Error("Unable to resolve saved spot");
-        const resolved = await response.json();
-        if (active) {
-          setSolutionNode(resolved.node);
-          setApiStatus("connected");
-        }
-      })
-      .catch(() => {
-        if (active) setApiStatus("mock");
-      });
-    return () => { active = false; };
-  }, []);
-
-  const selectedMix = useMemo(() => {
-    return liveMixForHand(solutionNode, selectedHand, activePosition, "all");
-  }, [activePosition, selectedHand, solutionNode]);
-  const spotMix = useMemo(() => aggregateMix(activePosition), [activePosition]);
-
-  const chooseAction = (action) => setSelectedAction((current) => (current === action ? "all" : action));
-
-  return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div className="utility-cluster">
-          <button className="icon-button" aria-label="Switch table view"><ArrowsDownUp size={20} weight="bold" /></button>
-          <button className="icon-button" aria-label="More options"><DotsThreeVertical size={22} weight="bold" /></button>
+  const solution=solutions.find(s=>s.solutionId===sid);
+  const combos=strategyCombos(node), chosen=combos.filter(c=>c.hand===selected), mix=totals(combos), chosenMix=totals(chosen), ev=expectedValue(chosen);
+  const aggregates=new Map([...new Set(combos.map(c=>c.hand))].map(hand=>{const entries=combos.filter(c=>c.hand===hand);return [hand,{hand,comboCount:entries.length,actions:Object.fromEntries(totals(entries).map(a=>[a.action,a.frequency]))}]}));
+  const actions=mix.map(a=>a.action);
+  return <div className="shell">
+    <aside className="sidebar"><div className="brand"><Spade size={39} weight="fill"/><div>Solvea<span>GTO</span><small>Play Closer to Perfect</small></div></div>
+      <nav>{[[SquaresFour,"プリフロップ"],[ChartBar,"ハンド詳細"],[Database,"計算情報"]].map(([Icon,name])=><button key={name} className={section===name?"active":""} onClick={()=>setSection(name)}><Icon size={21}/>{name}</button>)}</nav>
+      <div className="side-note"><Spade size={23}/><strong>Preflop Explorer</strong><p>保存済みの計算結果を、<br/>ハンドから読み解く。</p><small>READ-ONLY / v0.1</small></div>
+    </aside>
+    <main><header><div><h1>より良い判断が、より強いあなたをつくる。</h1><p>局面を選び、戦略の違いをひとつずつ。</p></div><span className="badge">Preflop / 日本語</span></header>
+    <div className="notice">実験モデル · GTO精度未検証 <span>表示値は保存済み計算結果です。現行Solverは本来のPoker CFR/DCFRではありません。</span></div>
+    <section className="settings panel matchup-settings">
+      <div><h3>保存済みSolution</h3><label>計算結果<select aria-label="Solution" value={sid} onChange={e=>{setResult(null);setSid(e.target.value)}} disabled={!solutions.length}>{!solutions.length&&<option>保存済み結果なし</option>}{solutions.map(s=><option key={s.solutionId}>{s.solutionId}</option>)}</select></label><small>APIから取得 · 閲覧時の計算なし</small></div>
+      <div className="spot-setting">
+        <div className="spot-heading"><h3>局面設定</h3><small>オープンサイズ：{OPEN_SIZE_BB} BB固定</small></div>
+        <div className="spot-fields">
+          <label>局面タイプ<select aria-label="局面タイプ" value={spot.mode} onChange={e=>changeSpot({...spot,mode:e.target.value})}>{spotModes.map(mode=><option key={mode.id} value={mode.id}>{mode.label}</option>)}</select></label>
+          <label>オープン位置<select aria-label="オープン位置" value={spot.opener} onChange={e=>{
+            const opener=e.target.value, allowed=responders(opener);
+            changeSpot({...spot,opener,actor:allowed.includes(spot.actor)?spot.actor:allowed[0]});
+          }}>{positions.slice(0,-1).map(p=><option key={p}>{p}</option>)}</select></label>
+          <label>{spot.mode === "open" ? "対応位置" : "3bettor位置"}<select aria-label="相手位置" value={spot.actor} onChange={e=>changeSpot({...spot,actor:e.target.value})}>{responders(spot.opener).map(p=><option key={p}>{p}</option>)}</select></label>
         </div>
-        <div className="game-pill"><span>Cash</span><strong>100bb</strong></div>
-        <div className="action-rail" aria-label="Action history">
-          {POSITIONS.map((position) => (
-            <button className={`history-chip ${activePosition === position ? "is-active" : ""}`} key={position} onClick={() => setActivePosition(position)}>
-              <span className="chip-position">{position}</span>
-              <span className="chip-stack">{TOP_ACTIONS[position].stack}</span>
-              <span className={`chip-action ${TOP_ACTIONS[position].label.includes("Raise") ? "is-raise" : ""}`}>{TOP_ACTIONS[position].label}</span>
-            </button>
-          ))}
-        </div>
-        <div className="hero-turn"><strong>{activePosition}</strong><span>{TOP_ACTIONS[activePosition].stack}</span><span>Take action</span></div>
-      </header>
-
-      <div className="workspace">
-        <section className="range-column">
-          <div className="content-tabs">
-            {["Strategy", "Ranges", "Breakdown"].map((tab) => (
-              <button className={activeTab === tab ? "is-selected" : ""} key={tab} onClick={() => setActiveTab(tab)}>
-                {tab}{tab === "Strategy" && <CaretDown size={14} weight="bold" />}
-              </button>
-            ))}
-            <button className="report-tab" onClick={() => setActiveTab("Reports")}>Reports: Flops <CaretDown size={14} weight="bold" /></button>
-            <span className="sample-count">3/100 <span aria-label="Information">?</span></span>
-            <div className="view-actions">
-              <button aria-label="Overview mode"><Stack size={16} weight="bold" /></button>
-              <button aria-label="Range mode"><SquaresFour size={16} weight="bold" /></button>
-              <button className={rangeMode === "grid" ? "is-active" : ""} aria-label="Grid mode" onClick={() => setRangeMode("grid")}><GridFour size={16} weight="bold" /></button>
-              <button className={rangeMode === "rows" ? "is-active" : ""} aria-label="List mode" onClick={() => setRangeMode("rows")}><Rows size={16} weight="bold" /></button>
-            </div>
-          </div>
-
-          {activeTab === "Strategy" && rangeMode === "grid" ? (
-            <div className="range-grid" role="grid" aria-label="169 hand range matrix">
-              {RANKS.map((_, row) => RANKS.map((__, col) => {
-                const hand = handLabel(row, col);
-                const mix = liveMixForHand(solutionNode, hand, activePosition, selectedAction);
-                const frequencies = liveMixForHand(solutionNode, hand, activePosition, "all");
-                const selected = selectedHand === hand;
-                return (
-                  <button
-                    className={`range-cell ${selected ? "is-picked" : ""} ${frequencies.raise > 0.55 ? "strong" : ""}`}
-                    key={hand}
-                    onClick={() => setSelectedHand(hand)}
-                    style={{
-                      "--fold-pct": `${frequencies.fold * 100}%`,
-                      "--call-pct": `${frequencies.call * 100}%`,
-                      "--raise-pct": `${frequencies.raise * 100}%`,
-                      "--allin-pct": `${frequencies.allin * 100}%`,
-                      "--action-focus": selectedAction === "all" ? "transparent" : `color-mix(in srgb, var(--${selectedAction}-color) 72%, transparent)`,
-                    }}
-                    role="gridcell"
-                  >
-                    <span>{hand}</span>{selectedAction !== "all" && <small>{percent(mix)}</small>}
-                  </button>
-                );
-              }))}
-            </div>
-          ) : (
-            <div className="alternate-view">
-              <div className="alternate-icon"><SquaresFour size={22} weight="duotone" /></div>
-              <strong>{activeTab} view</strong>
-              <p>Switch back to Strategy to inspect the combo-frequency matrix.</p>
-            </div>
-          )}
-        </section>
-
-        <aside className="inspector">
-          <div className="spot-header">
-            <div className="spot-tabs">{["Overview", "Table", "Equity chart"].map((tab) => <button className={inspectorTab === tab ? "is-selected" : ""} key={tab} onClick={() => setInspectorTab(tab)}>{tab}</button>)}</div>
-            <div className="seat-summary">
-              {POSITIONS.map((position) => <button className={position === activePosition ? "is-active" : ""} key={position} onClick={() => setActivePosition(position)}><strong>{position}</strong><span>{TOP_ACTIONS[position].stack}</span></button>)}
-              <div className="pot-summary"><strong>16.5 BB</strong><span>1.5 BB</span><small>Pot odds: 40%</small></div>
-            </div>
-          </div>
-
-          {inspectorTab === "Overview" ? <div className="action-section">
-            <div className="section-title"><span>Actions</span><CaretDown size={15} weight="bold" /></div>
-            <div className="action-grid">
-              {ACTIONS.map((action) => {
-                const row = RANKS.indexOf(selectedHand[0]);
-                const col = RANKS.indexOf(selectedHand[1]);
-                const frequency = spotMix[action.id];
-                const comboCount = selectedHand.length === 2 ? 6 : selectedHand.endsWith("s") ? 4 : 12;
-                const combos = (frequency * comboCount).toFixed(2);
-                return (
-                  <button className={`action-card ${action.tone} ${selectedAction === action.id ? "is-selected" : ""}`} key={action.id} onClick={() => chooseAction(action.id)}>
-                    <span className="action-label">{action.label} <strong>{action.amount}</strong></span>
-                    <span className="action-value">{percent(frequency)}</span>
-                    <span className="action-combos">{combos}<small> combos</small></span>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="action-bar" aria-label="Action mix">{ACTIONS.slice().reverse().map((action) => <span key={action.id} className={action.tone} style={{ flex: Math.max(0.02, spotMix[action.id]) }} />)}</div>
-          </div> : <div className="inspector-alternate"><div className="alternate-icon"><SquaresFour size={22} weight="duotone" /></div><strong>{inspectorTab}</strong><p>Select Overview to inspect action frequencies.</p></div>}
-
-          <div className="hands-section">
-            <div className="hands-header">
-              <div className="hands-tabs"><button className={handsTab === "Hands" ? "is-selected" : ""} onClick={() => setHandsTab("Hands")}>Hands</button><button className={handsTab === "Summary" ? "is-selected" : ""} onClick={() => setHandsTab("Summary")}>Summary</button></div>
-              <button className={showFilters ? "is-filter-active" : ""} onClick={() => setShowFilters((visible) => !visible)}><Funnel size={15} weight="bold" /> Filters</button>
-              <button><MagnifyingGlass size={15} weight="bold" /> Blockers</button>
-            </div>
-            {showFilters && <div className="filter-row"><span>Selected: {selectedHand}</span><button onClick={() => setSelectedAction("all")}>Clear action filter</button></div>}
-            {handsTab === "Hands" ? <div className="combo-grid">{HANDS.map(([first, second], index) => <ComboCard first={first} second={second} index={index} selectedAction={selectedAction} key={`${first}${second}`} />)}</div> : <div className="hands-summary"><strong>{selectedHand}</strong><span>4 combos in this suited class</span><div><b>Raise</b><span>{percent(selectedMix.raise)}</span></div><div><b>Call</b><span>{percent(selectedMix.call)}</span></div><div><b>Fold</b><span>{percent(selectedMix.fold)}</span></div></div>}
-          </div>
-        </aside>
+        <div className="spot-presets" aria-label="局面プリセット">{presets.map((p,index)=><button key={p.mode+p.opener+p.actor+index} aria-pressed={spot.mode===p.mode&&spot.opener===p.opener&&spot.actor===p.actor} onClick={()=>changeSpot({...spot,...p})}>{p.mode === "open" ? `${p.opener} vs ${p.actor}` : `${p.opener} → ${p.actor} ${p.mode === "three_bet" ? "3bet" : "4bet"}`}</button>)}</div>
       </div>
-
-      <footer className="statusbar">
-        <span><span className={`status-dot ${apiStatus === "connected" ? "connected" : ""}`} />{apiStatus === "connected" ? "Saved solution connected" : "Preview data · API ready"}</span>
-        <span>cash-6max-100bb-v1 <CaretRight size={13} weight="bold" /></span>
-      </footer>
-    </main>
-  );
+      <button className="primary" onClick={()=>sid?setRetry(v=>v+1):setReload(v=>v+1)} disabled={!!loading||!!validation}><ArrowClockwise size={17}/>局面を表示</button>
+    </section>
+    {validation&&<p role="alert" className="state error">{validation}</p>}
+    {loading&&<p role="status" className="state">{loading}…</p>}
+    {error&&<div role="alert" className="state error">取得できませんでした。APIの起動・保存先を確認してください。<details><summary>エラー詳細</summary>{error}</details><button onClick={()=>sid?setRetry(v=>v+1):setReload(v=>v+1)}>再試行</button></div>}
+    {!loading&&!error&&!validation&&(!solutions.length||missing)&&<div className="state" role="status"><h2>{spotTitle(spot)}</h2><p>{!solutions.length?"保存済みSolutionがありません。":"この条件に一致する保存済み戦略データがありません。"}局面設定はできますが、結果は表示しません。</p></div>}
+    {!loading&&!error&&!validation&&!missing&&node&&<>
+      <div className="tabs">{["結果","Combo別EV"].map(t=><button className={tab===t?"selected":""} key={t} onClick={()=>setTab(t)}>{t}</button>)}<span>{spotTitle(spot)} <CaretRight/> {node.actingPosition} の戦略</span></div>
+      {section==="計算情報"?<section className="panel metadata"><h2>計算情報</h2>{Object.entries(solution??{}).map(([k,v])=><p key={k}><span>{k}</span><code>{String(v)}</code></p>)}<p>精度・Exploitability：未検証。EVは実験モデルの推定値。</p></section>:
+      !combos.length?<div className="state" role="status">この局面には保存済みの戦略データがありません。</div>:<div className={"results "+(section==="ハンド詳細"?"detail-only ":"")+((tab==="Combo別EV"||section==="ハンド詳細")?"has-combos":"")}>
+        {section!=="ハンド詳細"&&<section className="panel matrix-panel"><div className="panel-heading"><h2>{node.actingPosition??"終端"} の戦略</h2><select aria-label="表示アクション" value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">すべてのアクション</option>{actions.map(a=><option key={a} value={a}>{label(a)}</option>)}</select></div>
+          <div className="matrix-scroll"><div className="matrix" aria-label="169ハンド">{hands.map(hand=>{const h=aggregates.get(hand);return !h?<div className="empty-hand" key={hand}/>:<button key={hand} aria-pressed={selected===hand} aria-label={hand} className={selected===hand?"picked":""} onClick={()=>setSelected(hand)} disabled={!h?.comboCount}><strong>{hand}</strong>{filter!=="all"&&<small>{h?.comboCount&&Number.isFinite(h.actions[filter])?pct(h.actions[filter]):""}</small>}<div className="cell-mix">{actions.map((a,i)=><span key={a} style={{width:pct(h?.actions[a]??0),background:color(a,i),opacity:filter==="all"||filter===a?1:.15}}/>)}</div></button>})}</div></div>
+          <div className="legend">{actions.map((a,i)=><span key={a}><i style={{background:color(a,i)}}/>{label(a)}</span>)}</div>
+        </section>}
+        <div className="summary-column"><section className="panel"><h2>アクション頻度（全Combo）</h2><Bars items={mix}/><small>保存されたComboを等重みで集計。到達レンジ加重ではありません。</small></section><section className="panel"><h2>レンジの概要</h2><dl><dt>保存Combo数</dt><dd>{combos.length} / 1326</dd><dt>ハンドクラス</dt><dd>{[...aggregates.values()].filter(h=>h.comboCount>0).length} / 169</dd><dt>Iterations</dt><dd>{solution?.iterations}</dd></dl></section></div>
+        {chosen.length>0&&<div className="detail-column"><section className="panel"><h2>選択ハンドの詳細</h2><div className="hand-title">{selected}<span>{chosen.length} Combos</span></div><dl>{ev!==null&&<><dt>戦略加重EV</dt><dd>{ev.toFixed(3)} BB</dd></>}<dt>評価モデル</dt><dd>実験モデル</dd></dl></section><section className="panel"><h2>このハンドのアクション内訳</h2><Bars items={chosenMix}/></section></div>}
+        {chosen.length>0&&(tab==="Combo別EV"||section==="ハンド詳細")&&<section className="panel combo-table"><h2>{selected} · Combo別の頻度とEV</h2><div className="table-scroll"><table><thead><tr><th>Combo</th>{chosen[0]?.actions.map(a=><th key={a.action}>{label(a.action)}<small>頻度 / EV (BB)</small></th>)}</tr></thead><tbody>{chosen.map(c=><tr key={c.combo}><th>{c.combo}</th>{c.actions.map(a=><td key={a.action}>{pct(a.frequency)}{Number.isFinite(a.evBb)&&<> / {a.evBb.toFixed(3)}</>}</td>)}</tr>)}</tbody></table></div></section>}
+      </div>}
+    </>}
+    <footer>SolveaGTO v0.1 <span>保存済みデータ専用 · 実験モデル</span></footer></main>
+  </div>;
 }
-
-function ComboCard({ first, second, index, selectedAction }) {
-  const values = [0, 0, 0, 1];
-  const actions = ["All-in 100", "Raise 28.5", "Call", "Fold"];
-  return (
-    <article className={`combo-card ${index === 0 ? "is-featured" : ""}`}>
-      <div className="combo-head"><span className="cards"><b className={index === 1 ? "red" : ""}>{first}</b><b className={index === 1 ? "red" : ""}>{second}</b><i>◆</i></span><span>%</span></div>
-      <div className="combo-body">{actions.map((label, actionIndex) => <div className={selectedAction !== "all" && selectedAction !== ["allin", "raise", "call", "fold"][actionIndex] ? "is-muted" : ""} key={label}><span>{label}</span><strong>{values[actionIndex]}</strong></div>)}</div>
-    </article>
-  );
-}
-
-export { App };
+export {App};

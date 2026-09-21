@@ -38,7 +38,7 @@ export type SolutionNode = {
   potBb: number;
   effectiveStackBb: number;
   combos: ComboSolution[];
-  hand_aggregates: HandAggregate[];
+  handAggregates: HandAggregate[];
 };
 
 export type SolutionSummary = {
@@ -53,7 +53,7 @@ export type SolutionSummary = {
 export type Solution = SolutionSummary & {
   convergence: {
     iterations: number;
-    averageStrategyDelta: number;
+    average_strategy_delta: number;
   };
   nodes: SolutionNode[];
 };
@@ -76,6 +76,8 @@ export class SolveaGTOClient {
   public readonly preflop: {
     listSolutions: () => Promise<SolutionSummary[]>;
     getSolution: (solutionId: string) => Promise<Solution>;
+    listNodes: (solutionId: string) => Promise<NodeSummary[]>;
+    getSolutionNode: (solutionId: string, nodeId: string) => Promise<SolutionNode>;
     getNode: (nodeId: string) => Promise<SolutionNode>;
     getHand: (nodeId: string, hand: string) => Promise<HandAggregate>;
     resolve: (input: ResolveInput) => Promise<ResolveResponse>;
@@ -83,8 +85,10 @@ export class SolveaGTOClient {
 
   constructor(options: SolveaGTOClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, "");
-    this.fetcher = options.fetch ?? fetch;
+    this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis);
     this.preflop = {
+      listNodes: (id) => this.request<NodeSummary[]>(`/v1/preflop/solutions/${encodeURIComponent(id)}/nodes`),
+      getSolutionNode: (id, node) => this.request<SolutionNode>(`/v1/preflop/solutions/${encodeURIComponent(id)}/nodes/${encodeURIComponent(node)}`),
       listSolutions: () => this.request<SolutionSummary[]>("/v1/preflop/solutions"),
       getSolution: (solutionId) =>
         this.request<Solution>(`/v1/preflop/solutions/${encodeURIComponent(solutionId)}`),
@@ -114,8 +118,17 @@ export class SolveaGTOClient {
     const response = await this.fetcher(`${this.baseUrl}${path}`, init);
     if (!response.ok) {
       const body = await response.text();
-      throw new Error(`SolveaGTO API ${response.status}: ${body}`);
+      throw new SolveaGTOApiError(response.status, body);
     }
     return (await response.json()) as T;
+  }
+}
+
+export type NodeSummary = Omit<SolutionNode, "combos" | "handAggregates"> & { hasStrategy: boolean };
+
+export class SolveaGTOApiError extends Error {
+  constructor(public readonly status: number, public readonly body: string) {
+    super(`SolveaGTO API ${status}: ${body}`);
+    this.name = "SolveaGTOApiError";
   }
 }

@@ -414,12 +414,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "solveagto-job-queue"
+version = "0.1.0"
+dependencies = [
+ "preflop-tree",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "solveagto-worker"
 version = "0.1.0"
 dependencies = [
  "continuation",
  "preflop-tree",
+ "serde_json",
  "solution",
+ "solveagto-job-queue",
  "solver-core",
 ]
 
