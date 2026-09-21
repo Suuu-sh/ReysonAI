@@ -13,3 +13,4 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Display only saved API results. Never substitute mock strategies on missing data or failure.
 - Keep the experimental, unverified-GTO warning visible until the solver has been replaced and validated.
 - No postflop, billing, or on-demand solve controls in this milestone.
+- Prefer a compact desktop layout fitting the default results view within one screen (verified at 1280×720); keep dense Combo tables internally scrollable and never hide the experimental warning.

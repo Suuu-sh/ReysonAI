@@ -49,7 +49,7 @@ function App(){
     {node&&<>
       <div className="tabs">{["結果","Combo別EV"].map(t=><button className={tab===t?"selected":""} key={t} onClick={()=>setTab(t)}>{t}</button>)}<span>{node.actingPosition??"終端局面"} <CaretRight/> {node.nodeType}</span></div>
       {section==="計算情報"?<section className="panel metadata"><h2>計算情報</h2>{Object.entries(solution??{}).map(([k,v])=><p key={k}><span>{k}</span><code>{String(v)}</code></p>)}<p>精度・Exploitability：未検証。EVは実験モデルの推定値。</p></section>:
-      <div className={"results "+(section==="ハンド詳細"?"detail-only":"")}>
+      <div className={"results "+(section==="ハンド詳細"?"detail-only ":"")+((tab==="Combo別EV"||section==="ハンド詳細")?"has-combos":"")}>
         {section!=="ハンド詳細"&&<section className="panel matrix-panel"><div className="panel-heading"><h2>{node.actingPosition??"終端"} の戦略</h2><select aria-label="表示アクション" value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">すべてのアクション</option>{actions.map(a=><option key={a} value={a}>{label(a)}</option>)}</select></div>
           <div className="matrix-scroll"><div className="matrix" aria-label="169ハンド">{hands.map(hand=>{const h=aggregates.get(hand);return <button key={hand} aria-pressed={selected===hand} aria-label={hand} className={selected===hand?"picked":""} onClick={()=>setSelected(hand)} disabled={!h?.comboCount}><strong>{hand}</strong>{filter!=="all"&&<small>{h?.comboCount?pct(h.actions[filter]??0):"—"}</small>}<div className="cell-mix">{actions.map((a,i)=><span key={a} style={{width:pct(h?.actions[a]??0),background:color(a,i),opacity:filter==="all"||filter===a?1:.15}}/>)}</div></button>})}</div></div>
           <div className="legend">{actions.map((a,i)=><span key={a}><i style={{background:color(a,i)}}/>{label(a)}</span>)}</div>

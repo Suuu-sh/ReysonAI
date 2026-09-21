@@ -26,3 +26,12 @@ Replaces the previous report, whose mock-data and completed-QA claims are no lon
 - Large-file server reads remain a backend performance limitation.
 
 final result: blocked (desktop paired visual verification outstanding)
+
+## Compact layout follow-up
+- Scope: density/one-screen adjustment, not a new full reference-image sign-off.
+- In-app browser verified at 1280×720 after reducing sidebar, header, settings, panel and row spacing.
+- DOM measurements: document 1280×720; results clientHeight/scrollHeight 415/415; matrix scroll region 327/327.
+- Screenshot inspected: all 13 matrix rows, both summary cards, both hand-detail cards, warning and footer visible simultaneously.
+- Combo EV tab: results remain 415/415; table clientHeight/scrollHeight 144/195, scroll confined to table.
+- Returned preview to Results tab.
+- Compact-layout acceptance: passed. Original exact-reference fidelity sign-off remains outside this follow-up.
