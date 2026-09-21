@@ -34,6 +34,7 @@ preflop-worker ──► preflop-tree ──► solver-core (CFR/DCFR)
 - `services/preflop-worker`: 計算処理を CLI から分離した Worker 実行エントリ。
 - `services/api`: 保存済み Solution の read-only API。Solution 生成はしません。
 - `packages/solveagto-sdk-ts`: 外部アプリ向け TypeScript SDK。
+- `apps/preflop-ui`: GTOWizard 系の Preflop Strategy UI。169 Hand Matrix、Action Breakdown、Combo 詳細を確認できます。
 
 ### Action History と Node ID
 
@@ -139,6 +140,26 @@ const spot = await solvea.preflop.resolve({
   ],
 });
 ```
+
+### 5. Preflop UI
+
+別ターミナルで API を起動した状態で、UI の開発サーバーを起動します。
+
+```bash
+cd apps/preflop-ui
+npm install
+npm run dev -- --host 0.0.0.0 --port 4173 --strictPort
+```
+
+UI は API の `/v1/preflop/solutions` を同一オリジンの `/api` proxy 経由で確認します。保存済み Solution がまだない場合は、画面操作を確認できる Preview data に自動で切り替わります。
+
+実装済みの主な操作:
+
+- 上部の Position chip を選択して BTN / SB / BB などの Spot を切り替え
+- 169 Hand Matrix のセル選択
+- Action card の Fold / Call / Raise / All-in フィルタ
+- Strategy / Ranges / Breakdown タブ
+- Hands / Filters の表示切り替え
 
 ## Solution format
 
