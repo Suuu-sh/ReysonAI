@@ -152,6 +152,31 @@ impl FileJobQueue {
         self.read_job(&path).map(Some)
     }
 
+    /// Returns the oldest pending or running job for a solution.
+    ///
+    /// The API uses this to make repeated solve requests idempotent while a
+    /// local worker is processing the same solution. Failed jobs are excluded
+    /// so a later request can create a retry with a fresh job id.
+    pub fn find_active_by_solution_id(
+        &self,
+        solution_id: &str,
+    ) -> Result<Option<SolveJob>, String> {
+        let mut matches = self
+            .list()?
+            .into_iter()
+            .filter(|job| {
+                job.solution_id == solution_id
+                    && matches!(job.status, JobStatus::Pending | JobStatus::Running)
+            })
+            .collect::<Vec<_>>();
+        matches.sort_by(|left, right| {
+            left.created_at
+                .cmp(&right.created_at)
+                .then_with(|| left.job_id.cmp(&right.job_id))
+        });
+        Ok(matches.into_iter().next())
+    }
+
     pub fn list(&self) -> Result<Vec<SolveJob>, String> {
         self.ensure_layout()?;
         let mut jobs = Vec::new();
@@ -357,6 +382,31 @@ mod tests {
         queue.claim_next("worker-test").unwrap();
         assert_eq!(queue.requeue_running().unwrap(), 1);
         assert_eq!(queue.get("job-recover").unwrap().unwrap().status, JobStatus::Pending);
+
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn active_jobs_can_be_found_by_solution_id_for_deduplication() {
+        let root = test_root("deduplication");
+        let queue = FileJobQueue::new(&root);
+        let job = SolveJob::new(
+            "job-deduplicate",
+            "cash-6max-100bb-v1",
+            PreflopConfig::default(),
+            "solutions",
+        );
+        queue.enqueue(&job).unwrap();
+
+        let found = queue
+            .find_active_by_solution_id("cash-6max-100bb-v1")
+            .unwrap()
+            .unwrap();
+        assert_eq!(found.job_id, "job-deduplicate");
+        assert!(queue
+            .find_active_by_solution_id("other-solution")
+            .unwrap()
+            .is_none());
 
         fs::remove_dir_all(root).unwrap();
     }

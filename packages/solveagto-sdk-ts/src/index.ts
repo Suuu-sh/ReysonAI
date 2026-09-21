@@ -64,6 +64,27 @@ export type ResolveResponse = {
   node: SolutionNode;
 };
 
+export type SolveJobStatus = "pending" | "running" | "succeeded" | "failed";
+
+export type CreateSolveJobInput = {
+  solutionId?: string;
+};
+
+export type SolveJobResponse = {
+  jobId: string | null;
+  solutionId: string;
+  status: SolveJobStatus;
+  created: boolean;
+  deduplicated: boolean;
+  solutionAvailable: boolean;
+  createdAt: number | null;
+  startedAt: number | null;
+  finishedAt: number | null;
+  workerId: string | null;
+  attempts: number;
+  error: string | null;
+};
+
 export type SolveaGTOClientOptions = {
   baseUrl: string;
   fetch?: typeof fetch;
@@ -81,6 +102,8 @@ export class SolveaGTOClient {
     getNode: (nodeId: string) => Promise<SolutionNode>;
     getHand: (nodeId: string, hand: string) => Promise<HandAggregate>;
     resolve: (input: ResolveInput) => Promise<ResolveResponse>;
+    createJob: (input?: CreateSolveJobInput) => Promise<SolveJobResponse>;
+    getJob: (jobId: string) => Promise<SolveJobResponse>;
   };
 
   constructor(options: SolveaGTOClientOptions) {
@@ -111,6 +134,18 @@ export class SolveaGTOClient {
             })),
           }),
         }),
+      createJob: (input = {}) =>
+        this.request<SolveJobResponse>("/v1/preflop/jobs", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            ...(input.solutionId === undefined ? {} : { solutionId: input.solutionId }),
+          }),
+        }),
+      getJob: (jobId) =>
+        this.request<SolveJobResponse>(
+          `/v1/preflop/jobs/${encodeURIComponent(jobId)}`,
+        ),
     };
   }
 
