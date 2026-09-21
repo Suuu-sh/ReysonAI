@@ -22,6 +22,17 @@ export function expectedValue(combos) {
   return combos.length && combos.every(c=>c.actions.every(a=>Number.isFinite(a.evBb))) ? combos.reduce((sum,c)=>sum+c.actions.reduce((v,a)=>v+a.frequency*a.evBb,0),0)/combos.length : null;
 }
 
+export function handAggregates(combos) {
+  return new Map([...new Set(combos.map(combo => combo.hand))].map(hand => {
+    const entries = combos.filter(combo => combo.hand === hand);
+    return [hand, {
+      hand,
+      comboCount: entries.length,
+      actions: Object.fromEntries(totals(entries).map(action => [action.action, action.frequency])),
+    }];
+  }));
+}
+
 // Only complete frequency records count as displayable strategy data.
 // EV may be absent: frequency remains usable, but no EV is synthesized.
 export function strategyCombos(node) {
