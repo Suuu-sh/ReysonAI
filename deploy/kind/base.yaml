@@ -10,6 +10,8 @@ metadata:
   namespace: solveagto
 data:
   SOLVEAGTO_API_BIND: 0.0.0.0:3000
+  SOLVEAGTO_CONFIG_PATH: /etc/solveagto/cash-6max-100bb.json
+  SOLVEAGTO_SOLUTION_ID: cash-6max-100bb-v1
   SOLVEAGTO_SOLUTION_DIR: /var/lib/solveagto/solutions
   SOLVEAGTO_QUEUE_DIR: /var/lib/solveagto/jobs
 ---
@@ -54,6 +56,9 @@ spec:
           volumeMounts:
             - name: solveagto-data
               mountPath: /var/lib/solveagto
+            - name: solveagto-config
+              mountPath: /etc/solveagto
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /health
@@ -71,6 +76,9 @@ spec:
           hostPath:
             path: /var/lib/solveagto
             type: Directory
+        - name: solveagto-config
+          configMap:
+            name: solveagto-game-config
 ---
 apiVersion: apps/v1
 kind: Deployment

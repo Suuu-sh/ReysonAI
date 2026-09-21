@@ -10,6 +10,7 @@ path = "src/main.rs"
 
 [dependencies]
 axum = "0.8"
+solveagto-job-queue = { path = "../../crates/job-queue" }
 poker-core = { path = "../../crates/poker-core" }
 preflop-tree = { path = "../../crates/preflop-tree" }
 solution = { path = "../../crates/solution" }

@@ -32,7 +32,7 @@ preflop-worker ──► preflop-tree ──► solver-core (experimental)
 - `crates/solver-core`: SolverStrategy、実験的regret matching、Toy Game、変化量メトリクス。
 - `crates/solution`: Solver 結果、Combo/Hand Aggregate、永続化 Repository の抽象化。
 - `services/preflop-worker`: CLI Worker 実行エントリ（Job向けライブラリ分離は未実装）。
-- `services/api`: 保存済み Solution の read-only API。Solution 生成はしません。
+- `services/api`: 保存済み Solution の read-only 配信と、キャッシュミス時の計算 Job 登録。Solution 生成処理そのものは実行しません。
 - `packages/solveagto-sdk-ts`: 外部アプリ向け TypeScript SDK。
 - `apps/preflop-ui`: 黒・ピンク基調の独自 Preflop Explorer。169 Hand Matrix、Action Breakdown、Combo 詳細を確認できます。
 
@@ -113,6 +113,20 @@ Worker起動時に前回の `running` Jobを `pending` へ復旧します。将�
 `crates/job-queue` です。
 
 計算は事前生成方式です。通常の API リクエストでは Solver は起動せず、保存済み Solution だけを読み取ります。
+
+保存済みSolutionがない場合は、APIからJobを登録してWorkerに計算させられます。既存Solutionの `gameConfigHash` が現在のConfigと一致する場合、または同じSolutionのpending / running Jobがある場合は重複作成しません。重複判定は、v0.1では単一APIプロセス内のロックとローカルQueueを前提にしています。
+
+```bash
+# SolutionがなければJobを登録（既定のcash-6max-100bb-v1を対象）
+curl -X POST http://127.0.0.1:3000/v1/preflop/jobs \
+  -H 'content-type: application/json' \
+  -d '{}'
+
+# Jobの状態を確認
+curl http://127.0.0.1:3000/v1/preflop/jobs/<job-id>
+```
+
+`POST /v1/preflop/jobs` は計算を同期実行しません。`pending` Jobを返し、常駐Workerが計算・保存します。保存完了後に同じリクエストを再実行すると `solutionAvailable: true` が返ります。`POST /v1/preflop/resolve` は引き続き保存済みSolutionのNode解決専用です。
 
 ### 3. API を起動
 
@@ -227,7 +241,7 @@ Matching Penniesテストも均衡初期値から開始するため、十分な�
 
 - Tree は v0.1 の single-open / response / 3-bet / 4-bet / all-in の事前生成に限定しています。
 - `SimpleContinuationModel` は postflop solve ではありません。
-- FileSolutionStore は開発用の単純な保存先です。水平 Worker、Job Queue、object storage、DB index は後続フェーズです。
+- FileSolutionStore と FileJobQueue は開発・kind用の単純な保存先です。複数APIレプリカでの重複排除、水平Worker、object storage、DB index は後続フェーズです。
 - `solutions/*.json` は 1326 Combo × Node を含むため大きくなります。圧縮・binary format は SolutionRepository の交換対象です。
 
 ### データがない場合の表示
