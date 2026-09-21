@@ -236,6 +236,48 @@ Matching Penniesテストも均衡初期値から開始するため、十分な�
 - ハンド詳細はAPIに実際のComboがある場合だけ表示します。欠損EVはゼロ補完せず非表示です。
 - 再取得開始時には以前の一覧と結果を消去し、失敗時に古い値を残しません。
 
+### 6. kind ローカル環境
+
+Kubernetesの学習とAPI・Worker・Jobの接続確認用に、kind構成を用意しています。kindはクラウドサービスではなく、DockerコンテナをNodeとしてローカルKubernetesを起動するツールです。
+
+前提:
+
+- Docker DesktopまたはDocker Engine
+- `kind`
+- `kubectl`
+
+起動すると、ローカルのkindクラスタへAPI、Worker、UIをデプロイします。初回だけ `solveagto-precompute` Jobが現在のConfigから実際のSolutionを計算し、`.kind/data/solutions`へ保存します。
+
+```bash
+bash scripts/kind-up.sh
+open http://127.0.0.1:30080/
+```
+
+構成:
+
+```text
+kind / Docker
+├── solveagto-ui       : NodePort 30080
+├── solveagto-api      : ClusterIP 3000
+├── solveagto-worker   : file-backed Job Queue worker
+└── solveagto-precompute: initial Solution Job
+```
+
+kindのNodeへ `.kind/data` をマウントする開発専用構成です。SolutionとJobのファイルはクラスタを削除しても `.kind/data` に残ります。クラスタだけを削除する場合は次を実行します。
+
+```bash
+bash scripts/kind-down.sh
+```
+
+Jobの進捗は次で確認できます。
+
+```bash
+bash scripts/kind-status.sh
+kubectl --context kind-solveagto --namespace solveagto logs job/solveagto-precompute -f
+```
+
+この構成は学習・ローカル検証用であり、本番のKubernetes運用、外部公開、複数Workerの安全な共有ストレージを扱うものではありません。
+
 
 ### 局面設定
 - 初期値はBTN vs BB / 2.5 BB。オープンサイズは初期UIでは2.5BB固定です。
