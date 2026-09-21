@@ -50,15 +50,6 @@ export function PageHeader() {
   );
 }
 
-export function ExperimentalNotice() {
-  return (
-    <div className="notice" role="note">
-      <strong>実験モデル · GTO精度未検証</strong>
-      <span>表示値は保存済み計算結果です。現行Solverは本来のPoker CFR/DCFRではありません。</span>
-    </div>
-  );
-}
-
 export function AppFooter() {
   return (
     <footer className="app-footer">
