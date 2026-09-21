@@ -118,10 +118,17 @@ export class SolveaGTOClient {
     const response = await this.fetcher(`${this.baseUrl}${path}`, init);
     if (!response.ok) {
       const body = await response.text();
-      throw new Error(`SolveaGTO API ${response.status}: ${body}`);
+      throw new SolveaGTOApiError(response.status, body);
     }
     return (await response.json()) as T;
   }
 }
 
 export type NodeSummary = Omit<SolutionNode, "combos" | "handAggregates"> & { hasStrategy: boolean };
+
+export class SolveaGTOApiError extends Error {
+  constructor(public readonly status: number, public readonly body: string) {
+    super(`SolveaGTO API ${status}: ${body}`);
+    this.name = "SolveaGTOApiError";
+  }
+}

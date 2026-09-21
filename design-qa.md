@@ -41,3 +41,10 @@ final result: blocked (desktop paired visual verification outstanding)
 - Live GET /api/v1/preflop/solutions returns [].
 - In-app browser verified empty-state message, disabled Solution/node selectors, and absence of strategy grid, frequency panels and EV table.
 - Eight frontend tests and production build pass, including invalid/missing strategy data and missing EV cases.
+
+## Matchup selector follow-up
+- Verified in-app: BTN vs BB default; CO vs BTN preset and 3 BB entry update the matchup; empty API never renders matrix.
+- 1 BB input rejected with disabled display button; restored BTN vs BB / 2.5 BB.
+- Screenshot inspected at narrow viewport: controls/presets wrap inside settings panel; no invented output.
+- Isolated verification API on port 3002 with archived experimental file: BTN→BB 2.5, CO→BTN 3, SB→BB 2 all return correct actor and 1326 combos; unavailable 2.25 size returns 400. Verification API stopped afterward.
+- Normal API on port 3000 remains empty. Twelve frontend tests and build pass.

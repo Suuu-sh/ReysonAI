@@ -237,3 +237,24 @@ footer{gap:10px}
  dt,dd{padding:7px 0}
  footer{padding:6px 0}
 }
+
+/* Matchup inputs remain usable even before a solution has been saved. */
+.settings.matchup-settings{grid-template-columns:minmax(170px,.85fr) minmax(420px,2fr) auto;gap:12px}
+.spot-heading{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.spot-fields{display:grid;grid-template-columns:1fr 1.35fr 1.15fr;gap:8px}
+.spot-fields input{width:100%;min-width:0;font:inherit;font-size:12px;color:inherit;background:#1c1f23;border:1px solid #303238;border-radius:7px;padding:6px 8px;margin:3px 0}
+.spot-fields input:focus-visible{outline:2px solid #ff7eaf;outline-offset:2px}
+.spot-presets{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.spot-presets button{font-size:10px;padding:4px 7px;line-height:1.2}
+.spot-presets button[aria-pressed=true]{color:#ff98c0;border-color:#b6577d;background:#2e1d27}
+@media(max-width:1049px){
+ .settings.matchup-settings{grid-template-columns:minmax(150px,.8fr) minmax(350px,2fr) auto}
+ .matchup-settings>div:nth-child(2){display:block}
+ .spot-heading small{display:none}
+}
+@media(max-width:760px){
+ .settings.matchup-settings{grid-template-columns:1fr}
+ .matchup-settings>div+div{padding-left:0;border-left:0}
+ .spot-fields{grid-template-columns:1fr 1fr}
+ .spot-fields label:last-child{grid-column:1/-1}
+}
