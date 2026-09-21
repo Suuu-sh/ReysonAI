@@ -1,9 +1,7 @@
-import { ChartBar, Database, SquaresFour, Spade } from "@phosphor-icons/react";
+import { SquaresFour, Spade } from "@phosphor-icons/react";
 
 const navigation = [
   [SquaresFour, "プリフロップ"],
-  [ChartBar, "ハンド詳細"],
-  [Database, "計算情報"],
 ];
 
 export function Sidebar({ activeSection, onSectionChange }) {
