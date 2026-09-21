@@ -218,7 +218,7 @@ fn solve_with_progress(request: SolveRequest) -> Result<solution::Solution, Stri
     solve(
         request,
         &mut |progress| {
-            if progress.iteration != last_reported {
+            if progress.iteration != last_reported || progress.exploitability > 0.0 {
                 println!(
                     "Iteration: {} (average strategy delta: {:.6}, exploitability: {:.6})",
                     progress.iteration,
