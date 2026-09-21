@@ -1,8 +1,9 @@
-import { label, pct } from "../data.js";
+import { label, pct, sortActions } from "../data.js";
 import { Panel } from "./primitives.jsx";
 
 export function ComboTable({ selected, combos, tab, section }) {
   if (!combos.length || (tab !== "Combo別EV" && section !== "ハンド詳細")) return null;
+  const columns = sortActions(combos[0]?.actions ?? []);
 
   return (
     <Panel className="combo-table">
@@ -12,14 +13,14 @@ export function ComboTable({ selected, combos, tab, section }) {
           <thead>
             <tr>
               <th>Combo</th>
-              {combos[0]?.actions.map(action => <th key={action.action}>{label(action.action)}<small>頻度 / EV (BB)</small></th>)}
+              {columns.map(action => <th key={action.action}>{label(action.action)}<small>頻度 / EV (BB)</small></th>)}
             </tr>
           </thead>
           <tbody>
             {combos.map(combo => (
               <tr key={combo.combo}>
                 <th>{combo.combo}</th>
-                {combo.actions.map(action => <td key={action.action}>{pct(action.frequency)}{Number.isFinite(action.evBb) && <> / {action.evBb.toFixed(3)}</>}</td>)}
+                {sortActions(combo.actions).map(action => <td key={action.action}>{pct(action.frequency)}{Number.isFinite(action.evBb) && <> / {action.evBb.toFixed(3)}</>}</td>)}
               </tr>
             ))}
           </tbody>

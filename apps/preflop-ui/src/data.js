@@ -7,6 +7,27 @@ export function label(a) {
 export function color(a, index=0) {
   return a==="fold" ? "#50565f" : a==="call" || a==="check" ? "#f4a2c3" : a==="all_in" ? "#a579ef" : ["#fa5b9b","#c74786","#ed86b0"][index%3];
 }
+function actionName(item) {
+  return typeof item === "string" ? item : item?.action ?? "";
+}
+function actionSortKey(action) {
+  if (action === "all_in") return [0, 0, action];
+  if (action.startsWith("raise_")) {
+    const size = Number(action.slice("raise_".length));
+    return [1, Number.isFinite(size) ? -size : 0, action];
+  }
+  if (action === "call") return [2, 0, action];
+  if (action === "check") return [3, 0, action];
+  if (action === "fold") return [4, 0, action];
+  return [5, 0, action];
+}
+export function sortActions(items) {
+  return [...items].sort((left, right) => {
+    const a = actionSortKey(actionName(left));
+    const b = actionSortKey(actionName(right));
+    return a[0] - b[0] || a[1] - b[1] || a[2].localeCompare(b[2]);
+  });
+}
 export function history(n) {
   return n.actionHistory.actions.map(h => {
     const a = h.action;
@@ -16,7 +37,7 @@ export function history(n) {
 export function totals(combos) {
   const values = {};
   for (const c of combos) for (const a of c.actions) values[a.action]=(values[a.action]??0)+a.frequency;
-  return Object.entries(values).map(([action,sum])=>({action,frequency:sum/combos.length, count:sum}));
+  return sortActions(Object.entries(values).map(([action,sum])=>({action,frequency:sum/combos.length, count:sum})));
 }
 export function expectedValue(combos) {
   return combos.length && combos.every(c=>c.actions.every(a=>Number.isFinite(a.evBb))) ? combos.reduce((sum,c)=>sum+c.actions.reduce((v,a)=>v+a.frequency*a.evBb,0),0)/combos.length : null;

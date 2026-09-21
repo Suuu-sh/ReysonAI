@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { SolveaGTOApiError, SolveaGTOClient } from "../../../packages/solveagto-sdk-ts/src/index.ts";
-import { handAggregates, strategyCombos } from "./data.js";
+import { handAggregates, sortActions, strategyCombos } from "./data.js";
 import { solutionForStack, solutionStackBb, spotRequest, spotTitle } from "./spot.js";
 import { AppFooter, PageHeader, Sidebar } from "./components/layout.jsx";
 import { ExplorerTabs } from "./components/ExplorerTabs.jsx";
@@ -126,7 +126,7 @@ export function App() {
   const solution = solutions.find(item => item.solutionId === solutionId);
   const combos = strategyCombos(node);
   const aggregates = useMemo(() => handAggregates(combos), [combos]);
-  const actions = useMemo(() => [...new Set(combos.flatMap(combo => combo.actions.map(action => action.action)))], [combos]);
+  const actions = useMemo(() => sortActions([...new Set(combos.flatMap(combo => combo.actions.map(action => action.action))) ]), [combos]);
 
   return (
     <div className="shell">
