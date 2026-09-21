@@ -81,6 +81,37 @@ Worker の責務は次の順序です。
 Config Load → Game Tree Build → Solver Start → Iterations → Solution Build → Solution Save
 ```
 
+### ローカル Job Queue
+
+`solveagto-worker` は、ローカルファイルを使ったJob Queueと常駐Workerにも対応しています。
+Jobは設定内容をJSONに埋め込んで保存するため、enqueue後に元のconfigを変更しても実行内容は変わりません。
+
+```bash
+# Jobを登録（既定: jobs/、結果: solutions/）
+cargo run --release -p solveagto-worker -- \
+  enqueue configs/cash-6max-100bb.json jobs solutions
+
+# Workerを起動して、pending Jobを順番に処理
+cargo run --release -p solveagto-worker -- \
+  worker jobs
+
+# 1件だけ処理（CIや動作確認向け）
+cargo run --release -p solveagto-worker -- \
+  worker jobs --once
+
+# Job一覧・詳細確認
+cargo run --release -p solveagto-worker -- list jobs
+cargo run --release -p solveagto-worker -- status <job-id> jobs
+
+# failed / interrupted Jobを再実行待ちへ戻す
+cargo run --release -p solveagto-worker -- retry <job-id> jobs
+```
+
+Queueは `jobs/{pending,running,succeeded,failed}` にJobを保存します。
+Jobの取得はファイル移動で原子的に行います。現段階ではローカルで1 Workerを動かす前提で、
+Worker起動時に前回の `running` Jobを `pending` へ復旧します。将来Redis・Queueサービス・Render Workflowsへ置き換える境界は
+`crates/job-queue` です。
+
 計算は事前生成方式です。通常の API リクエストでは Solver は起動せず、保存済み Solution だけを読み取ります。
 
 ### 3. API を起動
