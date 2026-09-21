@@ -246,7 +246,7 @@ Kubernetesの学習とAPI・Worker・Jobの接続確認用に、kind構成を用
 - `kind`
 - `kubectl`
 
-起動すると、ローカルのkindクラスタへAPI、Worker、UIをデプロイします。初回だけ `solveagto-precompute` Jobが現在のConfigから実際のSolutionを計算し、`.kind/data/solutions`へ保存します。
+起動すると、ローカルのkindクラスタへAPI、Worker、UIをデプロイします。`solveagto-precompute` JobはSolutionが存在しない場合だけ現在のConfigから実際のSolutionを計算し、`.kind/data/solutions`へ保存します。既存のSolutionがあれば計算をスキップします。
 
 ```bash
 bash scripts/kind-up.sh

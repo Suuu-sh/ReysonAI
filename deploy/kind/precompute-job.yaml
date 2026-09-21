@@ -15,11 +15,17 @@ spec:
         - name: precompute
           image: solveagto-worker:local
           imagePullPolicy: Never
-          command: ["/usr/local/bin/app"]
+          command: ["/bin/sh", "-c"]
           args:
-            - solve
-            - /etc/solveagto/cash-6max-100bb.json
-            - /var/lib/solveagto/solutions
+            - |
+              solution_path=/var/lib/solveagto/solutions/cash-6max-100bb-v1.json
+              if [ -s "$solution_path" ]; then
+                echo "Solution already exists; skip precompute: $solution_path"
+                exit 0
+              fi
+              exec /usr/local/bin/app solve \
+                /etc/solveagto/cash-6max-100bb.json \
+                /var/lib/solveagto/solutions
           volumeMounts:
             - name: solveagto-data
               mountPath: /var/lib/solveagto
