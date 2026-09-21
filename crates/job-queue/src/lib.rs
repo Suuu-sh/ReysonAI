@@ -410,4 +410,37 @@ mod tests {
 
         fs::remove_dir_all(root).unwrap();
     }
+
+    #[test]
+    fn failed_jobs_can_be_retried_without_losing_attempt_history() {
+        let root = test_root("failure-retry");
+        let queue = FileJobQueue::new(&root);
+        let job = SolveJob::new(
+            "job-failure-retry",
+            "solution-failure-retry",
+            PreflopConfig::default(),
+            "solutions",
+        );
+        queue.enqueue(&job).unwrap();
+        let claimed = queue.claim_next("worker-test").unwrap().unwrap();
+        assert_eq!(claimed.attempts, 1);
+
+        let failed = queue
+            .fail("job-failure-retry", "synthetic solver failure")
+            .unwrap();
+        assert_eq!(failed.status, JobStatus::Failed);
+        assert_eq!(failed.error.as_deref(), Some("synthetic solver failure"));
+        assert_eq!(failed.attempts, 1);
+
+        let retried = queue.retry("job-failure-retry").unwrap();
+        assert_eq!(retried.status, JobStatus::Pending);
+        assert_eq!(retried.attempts, 1);
+        assert!(retried.error.is_none());
+
+        let claimed_again = queue.claim_next("worker-test-2").unwrap().unwrap();
+        assert_eq!(claimed_again.status, JobStatus::Running);
+        assert_eq!(claimed_again.attempts, 2);
+
+        fs::remove_dir_all(root).unwrap();
+    }
 }

@@ -168,6 +168,12 @@ cd packages/solveagto-sdk-ts
 npm run build
 ```
 
+SDKのテストも実行できます。
+
+```bash
+npm test
+```
+
 利用例:
 
 ```ts
@@ -184,6 +190,20 @@ const spot = await solvea.preflop.resolve({
     { position: "BTN", action: "raise", sizeBb: 2.5 },
   ],
 });
+```
+
+保存済み Solution がない場合に Job を登録し、状態を確認する例です。
+SDKはSolverを実行せず、Rust APIのJob Queueを利用します。
+
+```ts
+const job = await solvea.preflop.createJob({
+  solutionId: "cash-6max-100bb-v1",
+});
+
+if (job.jobId) {
+  const status = await solvea.preflop.getJob(job.jobId);
+  console.log(status.status, status.solutionAvailable);
+}
 ```
 
 ### 5. Preflop UI
