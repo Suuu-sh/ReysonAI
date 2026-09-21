@@ -35,3 +35,9 @@ final result: blocked (desktop paired visual verification outstanding)
 - Combo EV tab: results remain 415/415; table clientHeight/scrollHeight 144/195, scroll confined to table.
 - Returned preview to Results tab.
 - Compact-layout acceptance: passed. Original exact-reference fidelity sign-off remains outside this follow-up.
+
+## Live-data-only follow-up
+- Test-only one-iteration file moved out of API's root into ignored experimental subdirectory; retained, not deleted.
+- Live GET /api/v1/preflop/solutions returns [].
+- In-app browser verified empty-state message, disabled Solution/node selectors, and absence of strategy grid, frequency panels and EV table.
+- Eight frontend tests and production build pass, including invalid/missing strategy data and missing EV cases.

@@ -196,3 +196,9 @@ Matching Penniesテストも均衡初期値から開始するため、十分な�
 - `SimpleContinuationModel` は postflop solve ではありません。
 - FileSolutionStore は開発用の単純な保存先です。水平 Worker、Job Queue、object storage、DB index は後続フェーズです。
 - `solutions/*.json` は 1326 Combo × Node を含むため大きくなります。圧縮・binary format は SolutionRepository の交換対象です。
+
+### データがない場合の表示
+- 動作確認用の1反復データはローカルの `solutions/experimental/` に退避済みです。APIの通常一覧は保存先直下のみを読み、これを配信しません。
+- 保存結果なし／局面の戦略なしではマトリクス・頻度・EVパネルを描画しません。
+- ハンド詳細はAPIに実際のComboがある場合だけ表示します。欠損EVはゼロ補完せず非表示です。
+- 再取得開始時には以前の一覧と結果を消去し、失敗時に古い値を残しません。

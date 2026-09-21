@@ -19,5 +19,16 @@ export function totals(combos) {
   return Object.entries(values).map(([action,sum])=>({action,frequency:sum/combos.length, count:sum}));
 }
 export function expectedValue(combos) {
-  return combos.length ? combos.reduce((sum,c)=>sum+c.actions.reduce((v,a)=>v+a.frequency*a.evBb,0),0)/combos.length : null;
+  return combos.length && combos.every(c=>c.actions.every(a=>Number.isFinite(a.evBb))) ? combos.reduce((sum,c)=>sum+c.actions.reduce((v,a)=>v+a.frequency*a.evBb,0),0)/combos.length : null;
+}
+
+// Only complete frequency records count as displayable strategy data.
+// EV may be absent: frequency remains usable, but no EV is synthesized.
+export function strategyCombos(node) {
+  return (Array.isArray(node?.combos) ? node.combos : []).filter(c =>
+    typeof c.combo === "string" && hands.includes(c.hand) &&
+    Array.isArray(c.actions) && c.actions.length > 0 &&
+    c.actions.every(a => typeof a.action === "string" &&
+      Number.isFinite(a.frequency) && a.frequency >= 0 && a.frequency <= 1)
+  );
 }

@@ -8,3 +8,12 @@ test("frequencies weighted by actual combos, not hand classes",()=>{
  assert.equal(expectedValue(combos),1);
 });
 test("missing results never synthesize a strategy",()=>{assert.deepEqual(totals([]),[]);assert.equal(expectedValue([]),null);assert.equal(pct(null),"未計算")});
+test("missing strategies and invalid frequencies are not displayed", async()=>{
+ const {strategyCombos}=await import("../src/data.js");
+ assert.deepEqual(strategyCombos(null),[]);
+ assert.deepEqual(strategyCombos({combos:[{combo:"AsAh",hand:"AA",actions:[]}]}),[]);
+ assert.deepEqual(strategyCombos({combos:[{combo:"AsAh",hand:"AA",actions:[{action:"fold",frequency:null}]}]}),[]);
+ const combo={combo:"AsAh",hand:"AA",actions:[{action:"fold",frequency:1}]};
+ assert.equal(strategyCombos({combos:[combo]}).length,1);
+ assert.equal(expectedValue([combo]),null);
+});
