@@ -12,10 +12,20 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+fn default_stack_bb() -> f64 {
+    100.0
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Solution {
     pub solution_id: String,
+    /// Starting effective stack for this preflop solution.
+    ///
+    /// The serde default keeps v0.1 files written before stack metadata was
+    /// added readable; those files were generated from the 100BB config.
+    #[serde(default = "default_stack_bb")]
+    pub stack_bb: f64,
     pub solver_version: String,
     pub continuation_model_version: String,
     pub game_config_hash: String,
@@ -72,6 +82,7 @@ pub struct HandAggregate {
 #[serde(rename_all = "camelCase")]
 pub struct SolutionSummary {
     pub solution_id: String,
+    pub stack_bb: f64,
     pub solver_version: String,
     pub continuation_model_version: String,
     pub game_config_hash: String,
@@ -129,6 +140,7 @@ impl Solution {
             .collect();
         Self {
             solution_id: solution_id.into(),
+            stack_bb: tree.config.stack_bb,
             solver_version: output.solver_version,
             continuation_model_version: output.continuation_model_version,
             game_config_hash: game_config_hash.into(),
@@ -142,6 +154,7 @@ impl Solution {
     pub fn summary(&self) -> SolutionSummary {
         SolutionSummary {
             solution_id: self.solution_id.clone(),
+            stack_bb: self.stack_bb,
             solver_version: self.solver_version.clone(),
             continuation_model_version: self.continuation_model_version.clone(),
             game_config_hash: self.game_config_hash.clone(),
@@ -372,6 +385,7 @@ mod tests {
         let mut progress = |_| {};
         let output = CfrStrategy::cfr().solve(&tree, &SimpleContinuationModel::default(), 1, &mut progress);
         let solution = Solution::from_solver_output("test-v1", "hash", "now", output, &tree);
+        assert_eq!(solution.stack_bb, 100.0);
         let decision = solution
             .nodes
             .iter()

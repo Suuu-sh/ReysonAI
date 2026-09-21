@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { SolveaGTOApiError, SolveaGTOClient } from "../../../packages/solveagto-sdk-ts/src/index.ts";
 import { handAggregates, strategyCombos } from "./data.js";
-import { spotRequest, spotTitle } from "./spot.js";
+import { solutionForStack, solutionStackBb, spotRequest, spotTitle } from "./spot.js";
 import { AppFooter, PageHeader, Sidebar } from "./components/layout.jsx";
 import { ExplorerTabs } from "./components/ExplorerTabs.jsx";
 import { MetadataPanel } from "./components/MetadataPanel.jsx";
@@ -14,6 +14,7 @@ const api = new SolveaGTOClient({ baseUrl: "/api" });
 export function App() {
   const [solutions, setSolutions] = useState([]);
   const [solutionId, setSolutionId] = useState("");
+  const [stackBb, setStackBb] = useState(100);
   const [spot, setSpot] = useState({ mode: "open", opener: "BTN", actor: "BB" });
   const [result, setResult] = useState(null);
   const [selected, setSelected] = useState("AKs");
@@ -48,7 +49,10 @@ export function App() {
       .then(values => {
         if (!live) return;
         setSolutions(values);
-        setSolutionId(values[0]?.solutionId ?? "");
+        const initialSolution = solutionForStack(values, 100) ?? values[0];
+        setStackBb(solutionStackBb(initialSolution) ?? 100);
+        setSolutionId(initialSolution?.solutionId ?? "");
+        setMissing(!initialSolution && values.length > 0);
         setLoading("");
       })
       .catch(exception => {
@@ -66,7 +70,8 @@ export function App() {
     setError("");
     setFilter("all");
     if (!solutionId || validation) {
-      if (solutionId) setLoading("");
+      setLoading("");
+      if (!solutionId) setMissing(solutions.length > 0);
       return;
     }
 
@@ -105,6 +110,17 @@ export function App() {
   function changeSolution(nextSolutionId) {
     setResult(null);
     setSolutionId(nextSolutionId);
+    const nextSolution = solutions.find(item => item.solutionId === nextSolutionId);
+    const nextStackBb = solutionStackBb(nextSolution);
+    if (nextStackBb !== null) setStackBb(nextStackBb);
+  }
+
+  function changeStack(nextStackBb) {
+    const nextSolution = solutionForStack(solutions, nextStackBb);
+    setStackBb(nextStackBb);
+    setSolutionId(nextSolution?.solutionId ?? "");
+    setResult(null);
+    setMissing(!nextSolution);
   }
 
   const solution = solutions.find(item => item.solutionId === solutionId);
@@ -121,9 +137,11 @@ export function App() {
           solutions={solutions}
           solutionId={solutionId}
           spot={spot}
+          stackBb={stackBb}
           loading={loading}
           validation={validation}
           onSolutionChange={changeSolution}
+          onStackChange={changeStack}
           onSpotChange={changeSpot}
           onDisplay={() => solutionId ? setRetry(value => value + 1) : setReload(value => value + 1)}
         />

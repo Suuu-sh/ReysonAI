@@ -1,14 +1,16 @@
 import { ArrowClockwise } from "@phosphor-icons/react";
-import { OPEN_SIZE_BB, positions, presets, responders, spotModes } from "../spot.js";
+import { OPEN_SIZE_BB, positions, presets, responders, solutionStackBb, STACK_OPTIONS, spotModes } from "../spot.js";
 import { Field, Panel } from "./primitives.jsx";
 
 export function SpotSettings({
   solutions,
   solutionId,
   spot,
+  stackBb,
   loading,
   validation,
   onSolutionChange,
+  onStackChange,
   onSpotChange,
   onDisplay,
 }) {
@@ -24,8 +26,17 @@ export function SpotSettings({
         <h3>保存済みSolution</h3>
         <Field label="計算結果">
           <select aria-label="Solution" value={solutionId} onChange={event => onSolutionChange(event.target.value)} disabled={!solutions.length}>
-            {!solutions.length && <option>保存済み結果なし</option>}
+            {!solutions.length && <option value="">保存済み結果なし</option>}
+            {!solutionId && solutions.length > 0 && <option value="">このスタックの保存済み結果なし</option>}
             {solutions.map(solution => <option key={solution.solutionId} value={solution.solutionId}>{solution.solutionId}</option>)}
+          </select>
+        </Field>
+        <Field label="所持スタック">
+          <select aria-label="所持スタック" value={stackBb} onChange={event => onStackChange(Number(event.target.value))}>
+            {STACK_OPTIONS.map(option => {
+              const available = solutions.some(solution => solutionStackBb(solution) === option);
+              return <option key={option} value={option}>{option} BB{available ? "" : "（未計算）"}</option>;
+            })}
           </select>
         </Field>
         <small>APIから取得 · 閲覧時の計算なし</small>

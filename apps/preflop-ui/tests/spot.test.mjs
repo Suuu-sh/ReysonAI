@@ -1,6 +1,6 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
-import {OPEN_SIZE_BB,spotRequest,responders,presets,spotTitle,threeBetSize,fourBetSize} from "../src/spot.js";
+import {OPEN_SIZE_BB,solutionForStack,solutionStackBb,spotRequest,responders,presets,spotTitle,threeBetSize,fourBetSize} from "../src/spot.js";
 
 test("BTN vs BB resolves BB after a fixed 2.5 BB open, without solving",()=>{
  assert.deepEqual(spotRequest("saved",{mode:"open",opener:"BTN",actor:"BB"}),{
@@ -35,6 +35,16 @@ test("configuration is independent of saved data",()=>{
  assert.equal(spotTitle({mode:"open",opener:"BTN",actor:"BB"}),"BTN vs BB · Open 2.5 BB");
  assert.equal(spotTitle({mode:"three_bet",opener:"BTN",actor:"BB"}),"BTN open → BB 3bet 10 BB");
  assert.equal(spotTitle({mode:"four_bet",opener:"BTN",actor:"BB"}),"BTN open → BB 3bet → BTN 4bet 22 BB");
+});
+test("stack selection resolves only to a solution with matching stack metadata",()=>{
+ const solutions=[
+  {solutionId:"cash-6max-100bb-v1",stackBb:100},
+  {solutionId:"cash-6max-50bb-v1",stackBb:50},
+ ];
+ assert.equal(solutionStackBb(solutions[0]),100);
+ assert.equal(solutionForStack(solutions,50).solutionId,"cash-6max-50bb-v1");
+ assert.equal(solutionForStack(solutions,75),undefined);
+ assert.equal(solutionStackBb({solutionId:"cash-6max-75bb-v1"}),75);
 });
 test("same seat, out-of-order response, and unknown mode are rejected",()=>{
  for(const actor of ["BTN","UTG"]) assert.throws(()=>spotRequest("s",{mode:"open",opener:"BTN",actor}));

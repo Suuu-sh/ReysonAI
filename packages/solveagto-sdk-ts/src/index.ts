@@ -46,6 +46,7 @@ export type SolutionNode = {
 
 export type SolutionSummary = {
   solutionId: string;
+  stackBb: number;
   solverVersion: string;
   continuationModelVersion: string;
   gameConfigHash: string;

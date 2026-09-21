@@ -1,5 +1,24 @@
 export const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 export const OPEN_SIZE_BB = 2.5;
+export const STACK_OPTIONS = [20, 40, 50, 75, 100, 150, 200];
+
+export function solutionStackBb(solution) {
+  const stackBb = Number(solution?.stackBb);
+  if (Number.isFinite(stackBb) && stackBb > 0) return stackBb;
+
+  // Keep the UI compatible with v0.1 API deployments that predate the
+  // explicit stackBb field in SolutionSummary.
+  const match = String(solution?.solutionId ?? "").match(/-(\d+(?:\.\d+)?)bb(?:-v\d+)?$/i);
+  return match ? Number(match[1]) : null;
+}
+
+export function solutionForStack(solutions, stackBb) {
+  const requested = Number(stackBb);
+  return solutions.find(solution => {
+    const available = solutionStackBb(solution);
+    return available !== null && Math.abs(available - requested) < 0.0001;
+  });
+}
 
 export const spotModes = [
   { id: "open", label: "Open対応", description: "オープンに対応する" },
