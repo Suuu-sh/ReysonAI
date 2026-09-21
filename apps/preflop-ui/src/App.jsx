@@ -64,6 +64,23 @@ function aggregateMix(position) {
   return { allin: 0, raise, call, fold };
 }
 
+function liveMixForHand(solutionNode, hand, position, selectedAction) {
+  if (solutionNode && position === "BB") {
+    const aggregate = solutionNode.handAggregates?.find((entry) => entry.hand === hand);
+    if (aggregate) {
+      const frequencies = { allin: 0, raise: 0, call: aggregate.actions.call ?? 0, fold: aggregate.actions.fold ?? 0 };
+      for (const [action, frequency] of Object.entries(aggregate.actions)) {
+        if (action.startsWith("raise_")) frequencies.raise += frequency;
+        if (action === "all_in") frequencies.allin += frequency;
+      }
+      return selectedAction === "all" ? frequencies : frequencies[selectedAction] ?? 0;
+    }
+  }
+  const row = RANKS.indexOf(hand[0]);
+  const col = RANKS.indexOf(hand[1]);
+  return handMix(row, col, position, selectedAction);
+}
+
 function percent(value) {
   return `${(value * 100).toFixed(value * 100 < 10 ? 1 : 0)}%`;
 }
@@ -78,6 +95,7 @@ function App() {
   const [inspectorTab, setInspectorTab] = useState("Overview");
   const [handsTab, setHandsTab] = useState("Hands");
   const [apiStatus, setApiStatus] = useState("mock");
+  const [solutionNode, setSolutionNode] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -86,8 +104,24 @@ function App() {
         if (!response.ok) throw new Error("API unavailable");
         return response.json();
       })
-      .then((solutions) => {
-        if (active && solutions.length > 0) setApiStatus("connected");
+      .then(async (solutions) => {
+        if (!active || solutions.length === 0) return;
+        const solutionId = solutions[solutions.length - 1].solutionId;
+        const response = await fetch("/api/v1/preflop/resolve", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            solutionId,
+            heroPosition: "BB",
+            actions: [{ position: "BTN", action: "raise", sizeBb: 2.5 }],
+          }),
+        });
+        if (!response.ok) throw new Error("Unable to resolve saved spot");
+        const resolved = await response.json();
+        if (active) {
+          setSolutionNode(resolved.node);
+          setApiStatus("connected");
+        }
       })
       .catch(() => {
         if (active) setApiStatus("mock");
@@ -96,10 +130,8 @@ function App() {
   }, []);
 
   const selectedMix = useMemo(() => {
-    const row = RANKS.indexOf(selectedHand[0]);
-    const col = RANKS.indexOf(selectedHand[1]);
-    return handMix(row, col, activePosition, "all");
-  }, [activePosition, selectedHand]);
+    return liveMixForHand(solutionNode, selectedHand, activePosition, "all");
+  }, [activePosition, selectedHand, solutionNode]);
   const spotMix = useMemo(() => aggregateMix(activePosition), [activePosition]);
 
   const chooseAction = (action) => setSelectedAction((current) => (current === action ? "all" : action));
@@ -146,8 +178,8 @@ function App() {
             <div className="range-grid" role="grid" aria-label="169 hand range matrix">
               {RANKS.map((_, row) => RANKS.map((__, col) => {
                 const hand = handLabel(row, col);
-                const mix = handMix(row, col, activePosition, selectedAction);
-                const frequencies = handMix(row, col, activePosition, "all");
+                const mix = liveMixForHand(solutionNode, hand, activePosition, selectedAction);
+                const frequencies = liveMixForHand(solutionNode, hand, activePosition, "all");
                 const selected = selectedHand === hand;
                 return (
                   <button
