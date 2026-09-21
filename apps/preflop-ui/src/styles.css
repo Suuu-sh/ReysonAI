@@ -63,6 +63,9 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
 .brand > svg { width: 28px; flex-shrink: 0; }
 .brand small { display: block; margin-top: 4px; font-size: 9px; font-weight: 400; color: var(--text-muted); }
 .sidebar-nav { display: grid; gap: 9px; }
+.sidebar-group { display: grid; gap: 4px; }
+.sidebar-group + .sidebar-group { margin-top: 5px; padding-top: 12px; border-top: 1px solid #24272c; }
+.sidebar-group-label { padding: 0 11px 3px; color: var(--text-subtle); font-size: 10px; letter-spacing: .08em; }
 .sidebar-nav button {
   display: flex;
   align-items: center;
@@ -75,6 +78,8 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
   color: #adb1bd;
   text-align: left;
 }
+.sidebar-nav button.future { opacity: .56; }
+.sidebar-nav button.future small { margin-left: auto; color: #777e8b; font-size: 9px; white-space: nowrap; }
 .sidebar-nav button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text); }
 .sidebar-nav button.active { border-left-color: var(--accent); background: var(--surface-accent); color: var(--accent-bright); }
 .side-note { margin-top: auto; padding: 12px; border: 1px solid #2a2029; border-radius: var(--radius); background: #19161c; color: var(--accent); }

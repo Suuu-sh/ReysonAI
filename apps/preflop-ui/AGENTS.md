@@ -14,4 +14,4 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Keep the experimental, unverified-GTO warning visible until the solver has been replaced and validated.
 - No postflop, billing, or on-demand solve controls in this milestone.
 - Prefer a compact desktop layout fitting the default results view within one screen (verified at 1280×720); keep dense Combo tables internally scrollable and never hide the experimental warning.
-- Keep the primary sidebar focused on `プリフロップ`; hand details and calculation metadata are not top-level navigation items.
+- Keep the primary sidebar centered on `プリフロップ`. Future product areas may appear as clearly disabled `準備中` placeholders, while hand details and calculation metadata remain out of the top-level navigation.
