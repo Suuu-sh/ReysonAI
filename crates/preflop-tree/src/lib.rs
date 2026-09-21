@@ -44,7 +44,7 @@ impl Default for PreflopConfig {
             ante_bb: 0.0,
             positions: Position::ALL.to_vec(),
             sizing: SizingConfig {
-                open_sizes_bb: vec![2.0, 2.5, 3.0],
+                open_sizes_bb: vec![2.5],
                 three_bet_ip_multiplier: 3.0,
                 three_bet_oop_multiplier: 4.0,
                 four_bet_multiplier: 2.2,

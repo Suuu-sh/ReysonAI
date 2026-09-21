@@ -3,8 +3,7 @@ import { Spade, SquaresFour, ChartBar, Database, ArrowClockwise, CaretRight } fr
 import { SolveaGTOClient, SolveaGTOApiError } from "../../../packages/solveagto-sdk-ts/src/index.ts";
 import { hands, pct, label, color, totals, expectedValue, strategyCombos } from "./data.js";
 
-import config from "../../../configs/cash-6max-100bb.json";
-import { positions, presets, responders, spotRequest, spotTitle } from "./spot.js";
+import { OPEN_SIZE_BB, positions, presets, responders, spotModes, spotRequest, spotTitle } from "./spot.js";
 
 const api = new SolveaGTOClient({baseUrl:"/api"});
 function Bars({items}) {
@@ -12,7 +11,7 @@ function Bars({items}) {
 }
 function App(){
   const [solutions,setSolutions]=useState([]),[sid,setSid]=useState("");
-  const [spot,setSpot]=useState({opener:"BTN",hero:"BB",size:String(config.sizing.open_sizes_bb[1]??config.sizing.open_sizes_bb[0])});
+  const [spot,setSpot]=useState({mode:"open",opener:"BTN",actor:"BB"});
   const [result,setResult]=useState(null);
   const [selected,setSelected]=useState("AKs"),[filter,setFilter]=useState("all"),[tab,setTab]=useState("結果"),[section,setSection]=useState("プリフロップ");
   const [error,setError]=useState(""),[loading,setLoading]=useState(""),[reload,setReload]=useState(0);
@@ -21,7 +20,7 @@ function App(){
   // Never render the previous matchup while a new request is pending.
   const node=result?.key===queryKey?result.node:null;
   let validation="";
-  try { spotRequest(sid,spot,config.stack_bb); } catch(e) { validation=e.message; }
+  try { spotRequest(sid,spot); } catch(e) { validation=e.message; }
 
   useEffect(()=>{
     let live=true; setLoading("Solutionを取得中");setSolutions([]);setError("");setResult(null);setSid("");setMissing(false);
@@ -33,10 +32,10 @@ function App(){
     if(!sid||validation) { if(sid)setLoading(""); return; }
     let live=true;
     setLoading("指定局面を取得中");
-    const request=spotRequest(sid,spot,config.stack_bb);
+    const request=spotRequest(sid,spot);
     api.preflop.resolve(request).then(v=>{
       if(!live)return;
-      if(v.solutionId!==sid||v.node.actingPosition!==spot.hero) {
+      if(v.solutionId!==sid||v.node.actingPosition!==request.heroPosition) {
         throw new Error("取得した局面が選択条件と一致しません。");
       }
       setResult({key:queryKey,node:v.node});
@@ -72,16 +71,16 @@ function App(){
     <section className="settings panel matchup-settings">
       <div><h3>保存済みSolution</h3><label>計算結果<select aria-label="Solution" value={sid} onChange={e=>{setResult(null);setSid(e.target.value)}} disabled={!solutions.length}>{!solutions.length&&<option>保存済み結果なし</option>}{solutions.map(s=><option key={s.solutionId}>{s.solutionId}</option>)}</select></label><small>APIから取得 · 閲覧時の計算なし</small></div>
       <div className="spot-setting">
-        <div className="spot-heading"><h3>局面設定</h3><small>オープンへの対応 · 他の席はフォールド</small></div>
+        <div className="spot-heading"><h3>局面設定</h3><small>オープンサイズ：{OPEN_SIZE_BB} BB固定</small></div>
         <div className="spot-fields">
+          <label>局面タイプ<select aria-label="局面タイプ" value={spot.mode} onChange={e=>changeSpot({...spot,mode:e.target.value})}>{spotModes.map(mode=><option key={mode.id} value={mode.id}>{mode.label}</option>)}</select></label>
           <label>オープン位置<select aria-label="オープン位置" value={spot.opener} onChange={e=>{
             const opener=e.target.value, allowed=responders(opener);
-            changeSpot({...spot,opener,hero:allowed.includes(spot.hero)?spot.hero:allowed[0]});
+            changeSpot({...spot,opener,actor:allowed.includes(spot.actor)?spot.actor:allowed[0]});
           }}>{positions.slice(0,-1).map(p=><option key={p}>{p}</option>)}</select></label>
-          <label>対応位置（表示する戦略）<select aria-label="対応位置" value={spot.hero} onChange={e=>changeSpot({...spot,hero:e.target.value})}>{responders(spot.opener).map(p=><option key={p}>{p}</option>)}</select></label>
-          <label>オープンサイズ（BB）<input aria-label="オープンサイズ" type="number" min="2" max={config.stack_bb-0.01} step="any" value={spot.size} onChange={e=>changeSpot({...spot,size:e.target.value})}/></label>
+          <label>{spot.mode === "open" ? "対応位置" : "3bettor位置"}<select aria-label="相手位置" value={spot.actor} onChange={e=>changeSpot({...spot,actor:e.target.value})}>{responders(spot.opener).map(p=><option key={p}>{p}</option>)}</select></label>
         </div>
-        <div className="spot-presets" aria-label="局面プリセット">{presets.map(p=><button key={p.opener+p.hero} aria-pressed={spot.opener===p.opener&&spot.hero===p.hero} onClick={()=>changeSpot({...spot,...p})}>{p.opener} vs {p.hero}</button>)}</div>
+        <div className="spot-presets" aria-label="局面プリセット">{presets.map((p,index)=><button key={p.mode+p.opener+p.actor+index} aria-pressed={spot.mode===p.mode&&spot.opener===p.opener&&spot.actor===p.actor} onClick={()=>changeSpot({...spot,...p})}>{p.mode === "open" ? `${p.opener} vs ${p.actor}` : `${p.opener} → ${p.actor} ${p.mode === "three_bet" ? "3bet" : "4bet"}`}</button>)}</div>
       </div>
       <button className="primary" onClick={()=>sid?setRetry(v=>v+1):setReload(v=>v+1)} disabled={!!loading||!!validation}><ArrowClockwise size={17}/>局面を表示</button>
     </section>
