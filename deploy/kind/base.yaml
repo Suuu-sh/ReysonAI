@@ -10,10 +10,81 @@ metadata:
   namespace: solveagto
 data:
   SOLVEAGTO_API_BIND: 0.0.0.0:3000
+  SOLVEAGTO_ENABLE_GENERATION: "true"
   SOLVEAGTO_CONFIG_PATH: /etc/solveagto/cash-6max-100bb.json
   SOLVEAGTO_SOLUTION_ID: cash-6max-100bb-v1
   SOLVEAGTO_SOLUTION_DIR: /var/lib/solveagto/solutions
   SOLVEAGTO_QUEUE_DIR: /var/lib/solveagto/jobs
+  SOLVEAGTO_QUEUE_BACKEND: redis
+  SOLVEAGTO_REDIS_URL: redis://solveagto-redis:6379/
+  SOLVEAGTO_REDIS_PREFIX: solveagto
+  SOLVEAGTO_REDIS_GROUP: solveagto-workers
+  SOLVEAGTO_REDIS_BLOCK_MS: "1000"
+  SOLVEAGTO_REDIS_LEASE_MS: "60000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: solveagto-redis
+  namespace: solveagto
+spec:
+  selector:
+    app: solveagto-redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solveagto-redis
+  namespace: solveagto
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: solveagto-redis
+  template:
+    metadata:
+      labels:
+        app: solveagto-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.4-alpine
+          imagePullPolicy: IfNotPresent
+          args: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+          ports:
+            - name: redis
+              containerPort: 6379
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 1
+            periodSeconds: 2
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-data
+          hostPath:
+            path: /var/lib/solveagto/redis
+            type: Directory
 ---
 apiVersion: v1
 kind: Service

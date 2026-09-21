@@ -31,8 +31,9 @@ preflop-worker ──► preflop-tree ──► solver-core (experimental)
 - `crates/continuation`: `ContinuationEvaluator` の差し替え境界。v0.1 は単純な強さベースの placeholder。
 - `crates/solver-core`: SolverStrategy、external-sampling CFR/DCFR、Combo単位のregret/reach/strategy sum、Toy Game、Exploitability推定。
 - `crates/solution`: Solver 結果、Combo/Hand Aggregate、永続化 Repository の抽象化。
+- `crates/job-queue`: `JobQueue`境界とFile / Redis Streams実装。Fileは単体実行、Redisはkind用。
 - `services/preflop-worker`: CLI Worker 実行エントリ（Job向けライブラリ分離は未実装）。
-- `services/api`: 保存済み Solution の read-only 配信と、キャッシュミス時の計算 Job 登録。Solution 生成処理そのものは実行しません。
+- `services/api`: 保存済み Solution のread-only配信。ローカル生成モードでのみRedis/File QueueへJobを登録し、Solution生成処理そのものは実行しません。
 - `packages/solveagto-sdk-ts`: 外部アプリ向け TypeScript SDK。
 - `apps/preflop-ui`: 黒・ピンク基調の独自 Preflop Explorer。169 Hand Matrix、Action Breakdown、Combo 詳細を確認できます。
 
@@ -81,9 +82,22 @@ Worker の責務は次の順序です。
 Config Load → Game Tree Build → Solver Start → Iterations → Solution Build → Solution Save
 ```
 
+生成結果を本番配布用Artifactへ昇格する前に、Config hash、反復数、1326 Combo、
+Action frequency、有限値を検証します。
+
+```bash
+cargo run --release --bin solveagto-promote -- \
+  configs/cash-6max-100bb.json \
+  solutions/cash-6max-100bb-v1.json \
+  release/solveagto
+```
+
+`release/solveagto/solutions/*.json` と `manifest.json` だけを本番の読み取り専用APIへ配布します。
+Solver、Worker、Redisは本番へ配置しません。
+
 ### ローカル Job Queue
 
-`solveagto-worker` は、ローカルファイルを使ったJob Queueと常駐Workerにも対応しています。
+`solveagto-worker` は、ローカルファイルまたはRedis Streamsを使ったJob Queueと常駐Workerにも対応しています。
 Jobは設定内容をJSONに埋め込んで保存するため、enqueue後に元のconfigを変更しても実行内容は変わりません。
 
 ```bash
@@ -109,12 +123,27 @@ cargo run --release -p solveagto-worker -- retry <job-id> jobs
 
 Queueは `jobs/{pending,running,succeeded,failed}` にJobを保存します。
 Jobの取得はファイル移動で原子的に行います。現段階ではローカルで1 Workerを動かす前提で、
-Worker起動時に前回の `running` Jobを `pending` へ復旧します。将来Redis・Queueサービス・Render Workflowsへ置き換える境界は
-`crates/job-queue` です。
+Worker起動時に前回の `running` Jobを `pending` へ復旧します。
+
+kindではRedis StreamsとConsumer Groupを使います。未ACKのJobはlease期限後に別Workerが再取得し、
+Solution単位のactive keyで複数APIプロセスからの重複登録を防ぎます。
+
+```bash
+SOLVEAGTO_QUEUE_BACKEND=redis \
+SOLVEAGTO_REDIS_URL=redis://127.0.0.1:6379/ \
+  cargo run --release -p solveagto-worker -- worker
+```
 
 計算は事前生成方式です。通常の API リクエストでは Solver は起動せず、保存済み Solution だけを読み取ります。
 
-保存済みSolutionがない場合は、APIからJobを登録してWorkerに計算させられます。既存Solutionの `gameConfigHash` が現在のConfigと一致する場合、または同じSolutionのpending / running Jobがある場合は重複作成しません。重複判定は、v0.1では単一APIプロセス内のロックとローカルQueueを前提にしています。
+保存済みSolutionがない場合は、生成モードを明示的に有効にしたローカルAPIからJobを登録してWorkerに計算させられます。既存Solutionの `gameConfigHash` が現在のConfigと一致する場合、または同じSolutionのpending / running Jobがある場合は重複作成しません。
+
+```bash
+SOLVEAGTO_ENABLE_GENERATION=true \
+SOLVEAGTO_QUEUE_BACKEND=file \
+SOLVEAGTO_SOLUTION_DIR=solutions \
+  cargo run --release -p solveagto-api
+```
 
 ```bash
 # SolutionがなければJobを登録（既定のcash-6max-100bb-v1を対象）
@@ -126,7 +155,7 @@ curl -X POST http://127.0.0.1:3000/v1/preflop/jobs \
 curl http://127.0.0.1:3000/v1/preflop/jobs/<job-id>
 ```
 
-`POST /v1/preflop/jobs` は計算を同期実行しません。`pending` Jobを返し、常駐Workerが計算・保存します。保存完了後に同じリクエストを再実行すると `solutionAvailable: true` が返ります。`POST /v1/preflop/resolve` は引き続き保存済みSolutionのNode解決専用です。
+`POST /v1/preflop/jobs` は計算を同期実行しません。`pending` Jobを返し、常駐Workerが計算・保存します。保存完了後に同じリクエストを再実行すると `solutionAvailable: true` が返ります。`POST /v1/preflop/resolve` は引き続き保存済みSolutionのNode解決専用です。`SOLVEAGTO_ENABLE_GENERATION` の既定値は `false` で、無効時はJob route自体を公開しません。
 
 ### 3. API を起動
 
@@ -136,6 +165,7 @@ SOLVEAGTO_SOLUTION_DIR=solutions \
 ```
 
 既定 URL は `http://127.0.0.1:3000` です。`SOLVEAGTO_API_BIND` で bind address を変更できます。
+本番APIはこの読み取り専用モードで起動し、Redis、Worker、Solverを配置しません。
 
 ```bash
 curl http://127.0.0.1:3000/health
@@ -272,7 +302,8 @@ Continuation Solver、厳密なExploitability計算は後続フェーズです�
 - Tree は v0.1 の single-open / response / 3-bet / 4-bet / all-in の事前生成に限定しています。
 - `SimpleContinuationModel` は postflop solve ではありません。
 - Exploitability はv0.2では決定論的サンプルによる推定値です。全1326×1326のChanceとBest Responseをまだ完全列挙していません。
-- FileSolutionStore と FileJobQueue は開発・kind用の単純な保存先です。複数APIレプリカでの重複排除、水平Worker、object storage、DB index は後続フェーズです。
+- FileSolutionStore は開発・kind用の単純な保存先です。本番配布前に生成済みSolutionを検証し、読み取り専用の配布先へ昇格します。
+- Redis Streams Queueはローカルkind専用です。本番APIはJob routeを公開せず、RedisとWorkerを必要としません。
 - `solutions/*.json` は 1326 Combo × Node を含むため大きくなります。圧縮・binary format は SolutionRepository の交換対象です。
 
 ### データがない場合の表示
@@ -291,7 +322,7 @@ Kubernetesの学習とAPI・Worker・Jobの接続確認用に、kind構成を用
 - `kind`
 - `kubectl`
 
-起動すると、ローカルのkindクラスタへAPI、Worker、UIをデプロイします。`solveagto-precompute` JobはSolutionが存在しない場合だけ現在のConfigから実際のSolutionを計算し、`.kind/data/solutions`へ保存します。既存のSolutionがあれば計算をスキップします。
+起動すると、ローカルのkindクラスタへRedis、API、Worker、UIをデプロイします。起動スクリプトがAPIへ生成Jobを登録し、WorkerがRedis Streamsから取得して `.kind/data/solutions` へ保存します。既存のSolutionが現在のConfigと一致する場合は再計算しません。
 
 ```bash
 bash scripts/kind-up.sh
@@ -302,13 +333,13 @@ open http://127.0.0.1:30080/
 
 ```text
 kind / Docker
-├── solveagto-ui       : NodePort 30080
-├── solveagto-api      : ClusterIP 3000
-├── solveagto-worker   : file-backed Job Queue worker
-└── solveagto-precompute: initial Solution Job
+├── solveagto-ui      : NodePort 30080
+├── solveagto-api     : RedisへJob登録／Solution配信
+├── solveagto-redis   : Redis Streams、Consumer Group、Job状態
+└── solveagto-worker  : Redisから取得してSolution生成
 ```
 
-kindのNodeへ `.kind/data` をマウントする開発専用構成です。SolutionとJobのファイルはクラスタを削除しても `.kind/data` に残ります。クラスタだけを削除する場合は次を実行します。
+kindのNodeへ `.kind/data` をマウントする開発専用構成です。SolutionとRedis AOFはクラスタを削除しても `.kind/data` に残ります。クラスタだけを削除する場合は次を実行します。
 
 ```bash
 bash scripts/kind-down.sh
@@ -318,10 +349,18 @@ Jobの進捗は次で確認できます。
 
 ```bash
 bash scripts/kind-status.sh
-kubectl --context kind-solveagto --namespace solveagto logs job/solveagto-precompute -f
+kubectl --context kind-solveagto --namespace solveagto logs deployment/solveagto-worker -f
 ```
 
-この構成は学習・ローカル検証用であり、本番のKubernetes運用、外部公開、複数Workerの安全な共有ストレージを扱うものではありません。
+Consumer Groupの分散処理を確認する場合はWorkerを増やせます。
+
+```bash
+kubectl --context kind-solveagto --namespace solveagto scale \
+  deployment/solveagto-worker --replicas=2
+```
+
+この構成は学習・ローカル検証用です。Redis Consumer Groupによる複数Workerは検証できますが、
+本番Kubernetes、外部公開、Redis HA、multi-node共有Solution Storageは扱いません。
 
 
 ### 局面設定

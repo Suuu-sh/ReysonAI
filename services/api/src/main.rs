@@ -5,23 +5,31 @@ use axum::routing::{get, post};
 use axum::{Json, Router};
 use poker_core::Position;
 use preflop_tree::{ActionKind, HistoryAction, PreflopConfig};
-use solveagto_job_queue::{next_job_id, FileJobQueue, JobStatus, SolveJob};
+use solveagto_job_queue::{
+    next_job_id, queue_from_environment, JobQueue, JobStatus, SolveJob,
+};
+#[cfg(test)]
+use solveagto_job_queue::FileJobQueue;
 use serde::{Deserialize, Serialize};
 use solution::{hash_game_config, FileSolutionStore, Solution, SolutionRepository, SolutionSummary};
 use std::env;
 use std::fs;
 use std::path::{Path as StdPath, PathBuf};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 #[derive(Clone)]
 struct AppState {
     store: Arc<FileSolutionStore>,
-    queue: FileJobQueue,
+    generation: Option<GenerationState>,
+}
+
+#[derive(Clone)]
+struct GenerationState {
+    queue: Arc<dyn JobQueue>,
     config: PreflopConfig,
     config_hash: String,
     solution_dir: PathBuf,
     solution_id: String,
-    enqueue_lock: Arc<Mutex<()>>,
 }
 
 #[derive(Debug)]
@@ -127,50 +135,66 @@ async fn run() -> Result<(), String> {
     let solution_dir = PathBuf::from(
         env::var("SOLVEAGTO_SOLUTION_DIR").unwrap_or_else(|_| "solutions".to_string()),
     );
-    let queue_dir = PathBuf::from(
-        env::var("SOLVEAGTO_QUEUE_DIR").unwrap_or_else(|_| "jobs".to_string()),
-    );
-    let config_path = env::var("SOLVEAGTO_CONFIG_PATH")
-        .unwrap_or_else(|_| "configs/cash-6max-100bb.json".to_string());
-    let config = load_config(StdPath::new(&config_path))?;
-    let solution_hash = hash_game_config(&config);
-    let solution_id = env::var("SOLVEAGTO_SOLUTION_ID")
-        .unwrap_or_else(|_| solution_id_from_config_path(StdPath::new(&config_path)));
+    let generation = if env_flag("SOLVEAGTO_ENABLE_GENERATION", false)? {
+        let queue_dir = PathBuf::from(
+            env::var("SOLVEAGTO_QUEUE_DIR").unwrap_or_else(|_| "jobs".to_string()),
+        );
+        let config_path = env::var("SOLVEAGTO_CONFIG_PATH")
+            .unwrap_or_else(|_| "configs/cash-6max-100bb.json".to_string());
+        let config = load_config(StdPath::new(&config_path))?;
+        let config_hash = hash_game_config(&config);
+        let solution_id = env::var("SOLVEAGTO_SOLUTION_ID")
+            .unwrap_or_else(|_| solution_id_from_config_path(StdPath::new(&config_path)));
+        Some(GenerationState {
+            queue: queue_from_environment(&queue_dir)?,
+            config,
+            config_hash,
+            solution_dir: solution_dir.clone(),
+            solution_id,
+        })
+    } else {
+        None
+    };
     let bind = env::var("SOLVEAGTO_API_BIND").unwrap_or_else(|_| "127.0.0.1:3000".to_string());
     let state = AppState {
         store: Arc::new(FileSolutionStore::new(&solution_dir)),
-        queue: FileJobQueue::new(&queue_dir),
-        config,
-        config_hash: solution_hash,
-        solution_dir,
-        solution_id,
-        enqueue_lock: Arc::new(Mutex::new(())),
+        generation,
     };
     let solution_dir_display = state.store.root().display().to_string();
-    let queue_dir_display = state.queue.root().display().to_string();
+    let generation_backend = state
+        .generation
+        .as_ref()
+        .map(|value| value.queue.backend_name())
+        .unwrap_or("disabled");
     let app = router(state);
     let listener = tokio::net::TcpListener::bind(&bind)
         .await
         .map_err(|error| error.to_string())?;
     println!("SolveaGTO API listening on http://{bind}");
     println!("Solution directory: {solution_dir_display}");
-    println!("Job queue: {queue_dir_display}");
+    println!("Solution generation: {generation_backend}");
     axum::serve(listener, app).await.map_err(|error| error.to_string())
 }
 
 fn router(state: AppState) -> Router {
-    Router::new()
+    let generation_enabled = state.generation.is_some();
+    let router = Router::new()
         .route("/health", get(health))
         .route("/v1/preflop/solutions", get(list_solutions))
         .route("/v1/preflop/solutions/{solution_id}", get(get_solution))
         .route("/v1/preflop/solutions/{solution_id}/nodes", get(list_nodes))
         .route("/v1/preflop/solutions/{solution_id}/nodes/{node_id}", get(get_scoped_node))
-        .route("/v1/preflop/jobs", post(create_job))
-        .route("/v1/preflop/jobs/{job_id}", get(get_job))
         .route("/v1/preflop/nodes/{node_id}", get(get_node))
         .route("/v1/preflop/nodes/{node_id}/hands/{hand}", get(get_hand))
-        .route("/v1/preflop/resolve", post(resolve))
-        .with_state(state)
+        .route("/v1/preflop/resolve", post(resolve));
+    let router = if generation_enabled {
+        router
+            .route("/v1/preflop/jobs", post(create_job))
+            .route("/v1/preflop/jobs/{job_id}", get(get_job))
+    } else {
+        router
+    };
+    router.with_state(state)
 }
 
 async fn health() -> Json<HealthResponse> {
@@ -265,55 +289,56 @@ async fn create_job(
     State(state): State<AppState>,
     Json(request): Json<CreateJobRequest>,
 ) -> Result<Json<JobResponse>, ApiError> {
+    let generation = state
+        .generation
+        .as_ref()
+        .ok_or_else(|| ApiError::not_found("solution generation is disabled"))?;
     let solution_id = request
         .solution_id
-        .unwrap_or_else(|| state.solution_id.clone());
-    if solution_id != state.solution_id {
+        .unwrap_or_else(|| generation.solution_id.clone());
+    if solution_id != generation.solution_id {
         return Err(ApiError::bad_request(format!(
             "unsupported solutionId: {solution_id}"
         )));
     }
-
-    // The file queue is intentionally local in v0.1. This lock makes the
-    // read-then-enqueue deduplication atomic within one API process.
-    let _guard = state
-        .enqueue_lock
-        .lock()
-        .map_err(|_| ApiError::internal("job enqueue lock poisoned"))?;
 
     if let Some(solution) = state
         .store
         .get(&solution_id)
         .map_err(ApiError::internal)?
     {
-        if solution.game_config_hash == state.config_hash {
+        if solution.game_config_hash == generation.config_hash {
             return Ok(Json(JobResponse::available(solution_id)));
         }
-    }
-
-    if let Some(job) = state
-        .queue
-        .find_active_by_solution_id(&solution_id)
-        .map_err(ApiError::internal)?
-    {
-        return Ok(Json(JobResponse::from_job(job, false, true, false)));
     }
 
     let job = SolveJob::new(
         next_job_id(),
         solution_id,
-        state.config.clone(),
-        state.solution_dir.clone(),
+        generation.config.clone(),
+        generation.solution_dir.clone(),
     );
-    state.queue.enqueue(&job).map_err(ApiError::internal)?;
-    Ok(Json(JobResponse::from_job(job, true, false, false)))
+    let outcome = generation
+        .queue
+        .enqueue_unique(&job)
+        .map_err(ApiError::internal)?;
+    Ok(Json(JobResponse::from_job(
+        outcome.job,
+        outcome.created,
+        !outcome.created,
+        false,
+    )))
 }
 
 async fn get_job(
     State(state): State<AppState>,
     Path(job_id): Path<String>,
 ) -> Result<Json<JobResponse>, ApiError> {
-    let job = state
+    let generation = state
+        .generation
+        .as_ref()
+        .ok_or_else(|| ApiError::not_found("solution generation is disabled"))?;
+    let job = generation
         .queue
         .get(&job_id)
         .map_err(ApiError::internal)?
@@ -362,6 +387,17 @@ fn solution_id_from_config_path(path: &StdPath) -> String {
         .and_then(|value| value.to_str())
         .map(|stem| format!("{stem}-v1"))
         .unwrap_or_else(|| "cash-6max-100bb-v1".to_string())
+}
+
+fn env_flag(name: &str, default: bool) -> Result<bool, String> {
+    let Ok(value) = env::var(name) else {
+        return Ok(default);
+    };
+    match value.to_ascii_lowercase().as_str() {
+        "1" | "true" | "yes" | "on" => Ok(true),
+        "0" | "false" | "no" | "off" => Ok(false),
+        _ => Err(format!("invalid boolean value for {name}: {value}")),
+    }
 }
 
 impl JobResponse {
@@ -426,6 +462,22 @@ async fn get_scoped_node(State(state): State<AppState>, Path((id, node_id)): Pat
 #[cfg(test)]
 mod scoped_tests {
     use super::*;
+
+    #[tokio::test]
+    async fn generation_requests_are_rejected_when_disabled() {
+        let state = AppState {
+            store: Arc::new(FileSolutionStore::new(std::env::temp_dir())),
+            generation: None,
+        };
+        let error = create_job(
+            State(state),
+            Json(CreateJobRequest { solution_id: None }),
+        )
+        .await
+        .unwrap_err();
+        assert_eq!(error.status, StatusCode::NOT_FOUND);
+    }
+
     #[tokio::test]
     async fn scoped_nodes_do_not_leak_between_solutions() {
         let root = std::env::temp_dir().join(format!("solveagto-scoped-{}", std::process::id()));
@@ -445,12 +497,13 @@ mod scoped_tests {
         }
         let state = AppState {
             store: Arc::new(store),
-            queue: FileJobQueue::new(&queue_root),
-            config: PreflopConfig::default(),
-            config_hash: hash_game_config(&PreflopConfig::default()),
-            solution_dir: root.clone(),
-            solution_id: "cash-6max-100bb-v1".to_string(),
-            enqueue_lock: Arc::new(Mutex::new(())),
+            generation: Some(GenerationState {
+                queue: Arc::new(FileJobQueue::new(&queue_root)),
+                config: PreflopConfig::default(),
+                config_hash: hash_game_config(&PreflopConfig::default()),
+                solution_dir: root.clone(),
+                solution_id: "cash-6max-100bb-v1".to_string(),
+            }),
         };
         let a = get_scoped_node(State(state.clone()), Path(("a".into(),"shared".into()))).await.unwrap().0;
         let b = get_scoped_node(State(state.clone()), Path(("b".into(),"shared".into()))).await.unwrap().0;
@@ -473,12 +526,13 @@ mod scoped_tests {
         let queue_root = std::env::temp_dir().join(format!("solveagto-api-job-queue-{}", std::process::id()));
         let state = AppState {
             store: Arc::new(FileSolutionStore::new(&root)),
-            queue: FileJobQueue::new(&queue_root),
-            config: PreflopConfig::default(),
-            config_hash: hash_game_config(&PreflopConfig::default()),
-            solution_dir: root.clone(),
-            solution_id: "cash-6max-100bb-v1".to_string(),
-            enqueue_lock: Arc::new(Mutex::new(())),
+            generation: Some(GenerationState {
+                queue: Arc::new(FileJobQueue::new(&queue_root)),
+                config: PreflopConfig::default(),
+                config_hash: hash_game_config(&PreflopConfig::default()),
+                solution_dir: root.clone(),
+                solution_id: "cash-6max-100bb-v1".to_string(),
+            }),
         };
 
         let first = create_job(
@@ -502,7 +556,17 @@ mod scoped_tests {
         assert!(!second.created);
         assert!(second.deduplicated);
         assert_eq!(second.job_id, first.job_id);
-        assert_eq!(state.queue.list().unwrap().len(), 1);
+        assert_eq!(
+            state
+                .generation
+                .as_ref()
+                .unwrap()
+                .queue
+                .list()
+                .unwrap()
+                .len(),
+            1
+        );
 
         let _ = std::fs::remove_dir_all(root);
         let _ = std::fs::remove_dir_all(queue_root);
@@ -535,12 +599,13 @@ mod scoped_tests {
         store.save(&saved).unwrap();
         let state = AppState {
             store: Arc::new(store),
-            queue: FileJobQueue::new(&queue_root),
-            config,
-            config_hash,
-            solution_dir: root.clone(),
-            solution_id: "cash-6max-100bb-v1".to_string(),
-            enqueue_lock: Arc::new(Mutex::new(())),
+            generation: Some(GenerationState {
+                queue: Arc::new(FileJobQueue::new(&queue_root)),
+                config,
+                config_hash,
+                solution_dir: root.clone(),
+                solution_id: "cash-6max-100bb-v1".to_string(),
+            }),
         };
 
         let response = create_job(
@@ -554,7 +619,17 @@ mod scoped_tests {
         assert_eq!(response.status, JobStatus::Succeeded);
         assert!(response.solution_available);
         assert!(response.job_id.is_none());
-        assert_eq!(state.queue.list().unwrap().len(), 0);
+        assert_eq!(
+            state
+                .generation
+                .as_ref()
+                .unwrap()
+                .queue
+                .list()
+                .unwrap()
+                .len(),
+            0
+        );
 
         let _ = std::fs::remove_dir_all(root);
         let _ = std::fs::remove_dir_all(queue_root);

@@ -8,6 +8,10 @@ license.workspace = true
 name = "solveagto-worker"
 path = "src/main.rs"
 
+[[bin]]
+name = "solveagto-promote"
+path = "src/bin/promote.rs"
+
 [dependencies]
 continuation = { path = "../../crates/continuation" }
 solveagto-job-queue = { path = "../../crates/job-queue" }
