@@ -1,0 +1,18 @@
+{
+  "game": "Cash",
+  "players": 6,
+  "stack_bb": 100.0,
+  "ante_bb": 0.0,
+  "positions": ["UTG", "HJ", "CO", "BTN", "SB", "BB"],
+  "sizing": {
+    "open_sizes_bb": [2.0, 2.5, 3.0],
+    "three_bet_ip_multiplier": 3.0,
+    "three_bet_oop_multiplier": 4.0,
+    "four_bet_multiplier": 2.2,
+    "five_bet_all_in": true
+  },
+  "solver": {
+    "iterations": 1000,
+    "strategy": "dcfr"
+  }
+}

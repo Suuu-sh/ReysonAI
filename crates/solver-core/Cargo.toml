@@ -1,0 +1,11 @@
+[package]
+name = "solver-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+continuation = { path = "../continuation" }
+poker-core = { path = "../poker-core" }
+preflop-tree = { path = "../preflop-tree" }
+serde.workspace = true

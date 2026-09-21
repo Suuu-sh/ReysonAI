@@ -1,0 +1,18 @@
+[package]
+name = "solveagto-api"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "solveagto-api"
+path = "src/main.rs"
+
+[dependencies]
+axum = "0.8"
+poker-core = { path = "../../crates/poker-core" }
+preflop-tree = { path = "../../crates/preflop-tree" }
+solution = { path = "../../crates/solution" }
+serde.workspace = true
+serde_json.workspace = true
+tokio = { version = "1.44", features = ["macros", "net", "rt-multi-thread"] }

@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/poker-core",
+    "crates/preflop-tree",
+    "crates/continuation",
+    "crates/solver-core",
+    "crates/solution",
+    "services/preflop-worker",
+    "services/api",
+]
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+version = "0.1.0"
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
