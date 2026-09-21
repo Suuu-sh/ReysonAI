@@ -1,6 +1,6 @@
 # SolveaGTO Preflop v0.1
 
-SolveaGTO は、独自計算した戦略の保存・配信を目指す Solver Platform です。現行Solverは固定ヒューリスティックによる実験モデルであり、Poker CFR/DCFRやGTO精度は未実装・未検証です。v0.1 の対象は **Cash / 6-max / 100BB / no ante の Preflop** に限定しています。
+SolveaGTO は、独自計算した戦略の保存・配信を目指す Solver Platform です。現行Solverは外部サンプリングCFR/DCFRの実験実装ですが、ContinuationとGTO精度は未検証です。v0.1 の対象は **Cash / 6-max / 100BB / no ante の Preflop** に限定しています。
 
 他社サービスの Range データは使用していません。Postflop Solver、Flop Solve、Trainer、Quiz、Potover 連携、認証、課金、Cloud/Kubernetes はこのリポジトリの対象外です。
 
@@ -29,7 +29,7 @@ preflop-worker ──► preflop-tree ──► solver-core (experimental)
 - `crates/poker-core`: Card、Deck、1326 Combo、169 Hand Class、Combo Range。
 - `crates/preflop-tree`: Config から生成する Preflop Game Tree と Action History 解決。
 - `crates/continuation`: `ContinuationEvaluator` の差し替え境界。v0.1 は単純な強さベースの placeholder。
-- `crates/solver-core`: SolverStrategy、実験的regret matching、Toy Game、変化量メトリクス。
+- `crates/solver-core`: SolverStrategy、external-sampling CFR/DCFR、Combo単位のregret/reach/strategy sum、Toy Game、Exploitability推定。
 - `crates/solution`: Solver 結果、Combo/Hand Aggregate、永続化 Repository の抽象化。
 - `services/preflop-worker`: CLI Worker 実行エントリ（Job向けライブラリ分離は未実装）。
 - `services/api`: 保存済み Solution の read-only 配信と、キャッシュミス時の計算 Job 登録。Solution 生成処理そのものは実行しません。
@@ -245,22 +245,33 @@ node --test apps/preflop-ui/tests/data.test.mjs
 
 ## Solution format
 
-Solution metadata は `solutionId`、`solverVersion`、`continuationModelVersion`、`gameConfigHash`、`createdAt`、`iterations`、`convergence` を持ちます。Decision node ごとに Combo 1326 件の frequency/EV を保存し、同時に 169 Hand Aggregate を保存します。
+Solution metadata は `solutionId`、`solverVersion`、`continuationModelVersion`、`gameConfigHash`、`createdAt`、`iterations`、`convergence` を持ちます。Decision node ごとに Combo 1326 件の frequency/EV に加えて、actionごとの `regret`、`strategySum`、`counterfactualReach` を保存し、同時に 169 Hand Aggregate を保存します。
 
 JSON は API と v0.1 の file store の transport format です。Domain model は JSON API に直接依存していないため、将来 `MessagePack`、binary format、Object Storage に差し替えられます。
 
-## Solver status — not GTO
+## Solver status — accuracy boundary
 
-`CfrStrategy` は局面・Comboごとの固定評価式にregret matchingを適用しています。
-相手の戦略、反実仮想到達確率、ゲーム木の再帰的評価が未実装のため、
-名前やバージョン文字列にCFR/DCFRがあっても本来のPoker CFR/DCFRではありません。
-Matching Penniesテストも均衡初期値から開始するため、十分な収束検証ではありません。
-当初のv0.1完成条件はまだ満たしていません。UI/APIの動作検証とSolver精度の検証を混同しないでください。
+`solver-core` は `cfr-v0.2-external-sampling` / `dcfr-v0.2-external-sampling` として、
+Preflop Treeのheads-up branchを対象に、次を実装しています。
+
+- private Comboのカード重複を除いたChance sampling
+- 相手ノードの現行Strategyによる外部サンプリング
+- Counterfactual Reach Probabilityを使ったRegret更新
+- 現行StrategyとStrategy Sumの分離
+- DCFRの正負Regret discount
+- Combo単位のRegret / Strategy Sum / Counterfactual Reach保存
+- 決定論的サンプルによるBest Response / Exploitability推定
+
+ただし、これはまだGTO Wizard相当の完成Solverではありません。6-max全員を同時に扱う
+Multi-player CFR、正確なPreflop Equity、dead cardを含む全Chanceの列挙、Postflopの
+Continuation Solver、厳密なExploitability計算は後続フェーズです。したがってUI上の結果は
+引き続き「実験モデル」として扱い、GTO戦略として断定しないでください。
 
 ## Known v0.1 limitations
 
 - Tree は v0.1 の single-open / response / 3-bet / 4-bet / all-in の事前生成に限定しています。
 - `SimpleContinuationModel` は postflop solve ではありません。
+- Exploitability はv0.2では決定論的サンプルによる推定値です。全1326×1326のChanceとBest Responseをまだ完全列挙していません。
 - FileSolutionStore と FileJobQueue は開発・kind用の単純な保存先です。複数APIレプリカでの重複排除、水平Worker、object storage、DB index は後続フェーズです。
 - `solutions/*.json` は 1326 Combo × Node を含むため大きくなります。圧縮・binary format は SolutionRepository の交換対象です。
 

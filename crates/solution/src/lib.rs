@@ -52,6 +52,12 @@ pub struct ComboActionSolution {
     pub action: String,
     pub frequency: f64,
     pub ev_bb: f64,
+    #[serde(default)]
+    pub regret: f64,
+    #[serde(default)]
+    pub strategy_sum: f64,
+    #[serde(default)]
+    pub counterfactual_reach: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -224,6 +230,9 @@ fn combo_action_solution(action: &ComboActionStrategy) -> ComboActionSolution {
         action: action.action.label(),
         frequency: action.frequency,
         ev_bb: action.ev_bb,
+        regret: action.regret,
+        strategy_sum: action.strategy_sum,
+        counterfactual_reach: action.counterfactual_reach,
     }
 }
 

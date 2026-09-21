@@ -16,6 +16,9 @@ export type ComboActionSolution = {
   action: string;
   frequency: number;
   evBb: number;
+  regret: number;
+  strategySum: number;
+  counterfactualReach: number;
 };
 
 export type ComboSolution = {
@@ -54,6 +57,7 @@ export type Solution = SolutionSummary & {
   convergence: {
     iterations: number;
     average_strategy_delta: number;
+    exploitability: number;
   };
   nodes: SolutionNode[];
 };
