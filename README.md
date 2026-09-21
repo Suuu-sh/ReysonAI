@@ -7,21 +7,17 @@ SolveaGTO は、独自計算した戦略の保存・配信を目指す Solver Pl
 ## Architecture
 
 ```text
-configs/*.json
-       │
-       ▼
-preflop-worker ──► preflop-tree ──► solver-core (experimental)
-       │                 │                    │
-       │                 ▼                    ▼
-       │          continuation trait     solution format
-       │                 │                    │
-       └──────────────► FileSolutionStore ◄────┘
-                                      │
-                                      ▼
-                                  Rust API
-                                      ▲
-                                      │ HTTP
-                              TypeScript SDK
+ローカルUI ──► ローカルRust API ──► Redis Streams ──► 常駐Local Solver Worker
+    │                 ▲                                      │
+    │                 │                                      ▼
+    │                 └─────── 保存済みSolution ◄──── Promote / 検証
+    │                                                        │
+    │                                                        ▼
+    │                                           Cloudflare R2へ成果物公開
+    │
+本番UI ──► Cloudflare Edge API Worker ──► Cloudflare R2
+                         │
+                         └── ローカル環境へは接続しない
 ```
 
 責務は次のように分離しています。
@@ -36,6 +32,7 @@ preflop-worker ──► preflop-tree ──► solver-core (experimental)
 - `services/api`: 保存済み Solution のread-only配信。ローカル生成モードでのみRedis/File QueueへJobを登録し、Solution生成処理そのものは実行しません。
 - `packages/solveagto-sdk-ts`: 外部アプリ向け TypeScript SDK。
 - `apps/preflop-ui`: 黒・ピンク基調の独自 Preflop Explorer。169 Hand Matrix、Action Breakdown、Combo 詳細を確認できます。
+- `apps/solveagto-edge-api`: 本番UI向けのCloudflare Worker。R2の検証済み成果物だけを読み取り、ローカルAPI・Redis・Solverへ接続しません。
 
 ### Action History と Node ID
 
@@ -94,6 +91,12 @@ cargo run --release --bin solveagto-promote -- \
 
 `release/solveagto/solutions/*.json` と `manifest.json` だけを本番の読み取り専用APIへ配布します。
 Solver、Worker、Redisは本番へ配置しません。
+
+Cloudflare R2へ公開する場合は、成果物を先に、`manifest.json`を最後にアップロードします。
+
+```bash
+bash scripts/publish-solution-r2.sh release/solveagto solveagto-solutions
+```
 
 ### ローカル Job Queue
 
@@ -246,7 +249,9 @@ npm install
 npm run dev -- --host 0.0.0.0 --port 4173 --strictPort
 ```
 
-UIはTypeScript SDKと同一オリジンの `/api` proxy経由で保存済みデータを取得します。
+UIは環境によって接続先を切り替えます。ローカルでは同一オリジンの `/api` proxy経由で
+ローカルRust APIへ接続し、本番では `VITE_SOLVEAGTO_API_BASE_URL` に指定した
+Cloudflare Edge API Workerへ接続します。どちらの場合もUIからSolverを直接起動しません。
 仮データへのフォールバックはありません。空・読み込み中・失敗を区別し、失敗時は再試行できます。
 
 - Solution選択 → 局面タイプ・オープン位置・対応位置で局面設定 → 169ハンド選択
@@ -266,7 +271,8 @@ GET /v1/preflop/solutions/{solutionId}/nodes/{nodeId}
 
 一覧はComboを含まない軽量な応答。詳細は選択ノードだけを返します。
 現在のFileSolutionStoreはリクエスト毎にファイル全体を読み込むため、大規模運用前に索引・キャッシュが必要です。
-本番配信では `/api` をRust APIへ転送する設定が別途必要です（Vite proxyは開発専用）。
+本番配信では `VITE_SOLVEAGTO_API_BASE_URL` をCloudflare Edge API WorkerのURLに設定します。
+ローカルのRust APIやRedisを本番UIから経由させません。
 
 UIの集計テスト:
 ```bash

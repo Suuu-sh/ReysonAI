@@ -9,7 +9,12 @@ import { ResultsView } from "./components/ResultsView.jsx";
 import { SpotSettings } from "./components/SpotSettings.jsx";
 import { StatusState } from "./components/primitives.jsx";
 
-const api = new SolveaGTOClient({ baseUrl: "/api" });
+// Local development keeps the same-origin proxy so the local UI talks to the
+// local Rust API and its local Worker. Production sets this at build time to
+// the read-only Cloudflare API Worker URL.
+const api = new SolveaGTOClient({
+  baseUrl: import.meta.env.VITE_SOLVEAGTO_API_BASE_URL || "/api",
+});
 
 export function App() {
   const [solutions, setSolutions] = useState([]);

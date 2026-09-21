@@ -42,6 +42,7 @@ fn run() -> Result<(), String> {
     fs::create_dir_all(&solutions_dir).map_err(|error| error.to_string())?;
     let artifact_path = solutions_dir.join(format!("{}.json", solution.solution_id));
     write_atomic(&artifact_path, solution_json.as_bytes())?;
+    let edge_paths = write_edge_artifacts(&solutions_dir, &solution)?;
 
     let promoted_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -49,6 +50,7 @@ fn run() -> Result<(), String> {
         .unwrap_or_default();
     let manifest = json!({
         "solutionId": solution.solution_id,
+        "stackBb": solution.stack_bb,
         "gameConfigHash": solution.game_config_hash,
         "solverVersion": solution.solver_version,
         "continuationModelVersion": solution.continuation_model_version,
@@ -57,6 +59,7 @@ fn run() -> Result<(), String> {
         "promotedAt": promoted_at,
         "artifactHash": fnv1a(solution_json.as_bytes()),
         "artifact": format!("solutions/{}.json", solution.solution_id),
+        "edge": edge_paths,
     });
     let manifest_json = serde_json::to_vec_pretty(&manifest).map_err(|error| error.to_string())?;
     write_atomic(&release_dir.join("manifest.json"), &manifest_json)?;
@@ -65,6 +68,59 @@ fn run() -> Result<(), String> {
     println!("Release artifact: {}", artifact_path.display());
     println!("Manifest: {}", release_dir.join("manifest.json").display());
     Ok(())
+}
+
+fn write_edge_artifacts(
+    solutions_dir: &Path,
+    solution: &Solution,
+) -> Result<serde_json::Value, String> {
+    let solution_dir = solutions_dir.join(&solution.solution_id);
+    let nodes_dir = solution_dir.join("nodes");
+    fs::create_dir_all(&nodes_dir).map_err(|error| error.to_string())?;
+
+    let summary_path = solution_dir.join("summary.json");
+    let summary_json =
+        serde_json::to_vec_pretty(&solution.summary()).map_err(|error| error.to_string())?;
+    write_atomic(&summary_path, &summary_json)?;
+
+    let node_index = solution
+        .nodes
+        .iter()
+        .map(|node| {
+            json!({
+                "nodeId": node.node_id,
+                "nodeType": node.node_type,
+                "actionHistory": node.action_history,
+                "actingPosition": node.acting_position,
+                "potBb": node.pot_bb,
+                "effectiveStackBb": node.effective_stack_bb,
+                "hasStrategy": !node.combos.is_empty(),
+            })
+        })
+        .collect::<Vec<_>>();
+    let nodes_index_path = nodes_dir.join("index.json");
+    let nodes_index_json =
+        serde_json::to_vec_pretty(&node_index).map_err(|error| error.to_string())?;
+    write_atomic(&nodes_index_path, &nodes_index_json)?;
+
+    for node in &solution.nodes {
+        if node.node_id.contains('/') || node.node_id.contains('\\') || node.node_id.contains("..")
+        {
+            return Err(format!(
+                "invalid node id for edge artifact: {}",
+                node.node_id
+            ));
+        }
+        let node_path = nodes_dir.join(format!("{}.json", node.node_id));
+        let node_json = serde_json::to_vec_pretty(node).map_err(|error| error.to_string())?;
+        write_atomic(&node_path, &node_json)?;
+    }
+
+    Ok(json!({
+        "summary": format!("solutions/{}/summary.json", solution.solution_id),
+        "nodesIndex": format!("solutions/{}/nodes/index.json", solution.solution_id),
+        "nodesPrefix": format!("solutions/{}/nodes/", solution.solution_id),
+    }))
 }
 
 fn validate(config: &PreflopConfig, solution: &Solution) -> Result<(), String> {

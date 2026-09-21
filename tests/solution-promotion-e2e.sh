@@ -28,7 +28,7 @@ cargo run --quiet --bin solveagto-promote -- \
   "$TMP_DIR/generated/cash-6max-100bb-v1.json" \
   "$TMP_DIR/release" >/dev/null
 
-python3 - "$TMP_DIR/release/manifest.json" "$TMP_DIR/release/solutions/cash-6max-100bb-v1.json" <<'PY'
+python3 - "$TMP_DIR/release/manifest.json" "$TMP_DIR/release/solutions/cash-6max-100bb-v1.json" "$TMP_DIR/release/solutions/cash-6max-100bb-v1/summary.json" "$TMP_DIR/release/solutions/cash-6max-100bb-v1/nodes/index.json" <<'PY'
 import json
 import os
 import sys
@@ -38,7 +38,13 @@ with open(sys.argv[1], encoding="utf-8") as source:
 assert manifest["solutionId"] == "cash-6max-100bb-v1"
 assert manifest["iterations"] == 1
 assert manifest["artifactHash"].startswith("fnv1a-")
+assert manifest["stackBb"] == 100.0
+assert manifest["edge"]["summary"] == "solutions/cash-6max-100bb-v1/summary.json"
+assert manifest["edge"]["nodesIndex"] == "solutions/cash-6max-100bb-v1/nodes/index.json"
 assert os.path.getsize(sys.argv[2]) > 0
+assert os.path.getsize(sys.argv[3]) > 0
+with open(sys.argv[4], encoding="utf-8") as source:
+    assert len(json.load(source)) > 0
 print("solution promotion passed")
 PY
 
