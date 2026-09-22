@@ -25,6 +25,7 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
   const aggregates = new Map(range.hands.map(item => [item.hand, {
     hand: item.hand,
     comboCount: HAND_COMBO_COUNTS.get(item.hand) ?? 0,
+    reason: item.reason,
     actions: Object.fromEntries(range.actions.map(action => [
       DISPLAY_ACTIONS[action], (item.frequencies[action] ?? 0) / 100,
     ])),
@@ -105,6 +106,14 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
               { label: "局面", value: range.spot.label },
               { label: "評価状態", value: "AI推定レンジ" },
             ]} />
+          </Panel>
+          <Panel className="ai-reason-panel">
+            <SectionHeading title="このハンドの理由" />
+            <div className="ai-reason-copy">
+              <strong>{selected}の考え方</strong>
+              <p>{chosen?.reason ?? "このハンドの理由データはありません。"}</p>
+              <small>AI知識ベースによる初心者向けの説明です。GTO証明ではありません。</small>
+            </div>
           </Panel>
           <Panel>
             <SectionHeading title="このハンドのアクション内訳" />

@@ -7,7 +7,10 @@ import {
   createDefaultAiPreflopRanges,
   validateAiRange,
 } from "../dist/preflop-ranges.js";
-import { BTN_OPEN_AI_RESPONSES } from "../dist/preflop-ai-responses.js";
+import {
+  BB_VS_BTN_OPEN_AI_RESPONSES,
+  BTN_OPEN_AI_RESPONSES,
+} from "../dist/preflop-ai-responses.js";
 
 function assertCompleteRange(range, actions) {
   assert.equal(range.hands.length, 169);
@@ -33,6 +36,7 @@ test("deterministic provider generates the BTN open range", () => {
   assert.deepEqual(range.hands.map(({ hand, frequencies }) => ({ hand, ...frequencies })),
     STARTING_HANDS.map(hand => ({ hand, ...BTN_OPEN_AI_RESPONSES[hand] })));
   assert.deepEqual(range.hands.find(({ hand }) => hand === "AKo").frequencies, { open: 100, fold: 0 });
+  assert.ok(range.hands.every(({ reason }) => typeof reason === "string" && reason.length > 0));
 });
 
 test("deterministic provider generates the BB response range", () => {
@@ -40,7 +44,9 @@ test("deterministic provider generates the BB response range", () => {
   assert.equal(range.spot.label, "BB vs BTN Open 2.5BB");
   assert.equal(range.spot.threeBetSizeBb, 10);
   assertCompleteRange(range, ["fold", "call", "three_bet"]);
-  assert.ok(range.hands.find(({ hand }) => hand === "AA").frequencies.three_bet > 0);
+  assert.deepEqual(new Set(Object.keys(BB_VS_BTN_OPEN_AI_RESPONSES)), new Set(STARTING_HANDS));
+  assert.deepEqual(range.hands.find(({ hand }) => hand === "AKo").frequencies, { fold: 0, call: 45, three_bet: 55 });
+  assert.ok(range.hands.every(({ reason }) => typeof reason === "string" && reason.length > 0));
 });
 
 test("default ranges are reproducible and cover both requested spots", () => {

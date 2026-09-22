@@ -10,7 +10,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ## Current visual and data source
 - Use the user's 2026-09-22 black/pink SolveaGTO image as visual direction, not the earlier GTOWizard screenshot.
-- The default AI Estimated view may use the deterministic provider output from the shared TypeScript range provider. The saved-Solution view must display only saved API results and never substitute mock strategies on missing data or failure.
+- The default AI Estimated view may use the deterministic provider output from the shared TypeScript range provider. BTN Open and BB response data are explicit structured per-hand answers for this milestone; show the selected hand's beginner-friendly reason in a separate block. The saved-Solution view must display only saved API results and never substitute mock strategies on missing data or failure.
 - Keep the AI Estimated / unverified-GTO warning visible for AI-generated ranges and provisional saved solutions.
 - No postflop, billing, or on-demand solve controls in this milestone.
 - Prefer a compact desktop layout fitting the default results view within one screen (verified at 1280×720); keep dense Combo tables internally scrollable and never hide the experimental warning.

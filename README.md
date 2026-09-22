@@ -260,8 +260,8 @@ Cloudflare Edge API Workerへ接続します。どちらの場合もUIからSolv
 `BTN Open` と `BB vs BTN Open` を、TypeScript SDKの
 `PreflopRangeProvider`から生成した169 Hand Matrixで切り替えられます。現在のproviderは
 明示的なAI知識ベース回答データ（`ai-knowledge-response`）を返し、BBの3betは10BB固定です。
-まずBTN Openの169パターンを個別のopen/fold値として保持し、後からLLMの構造化JSON回答に
-差し替えられるprovider境界にしています。
+BTN OpenとBB responseの169パターンを個別の頻度値として保持し、選択ハンドごとの理由も
+別データとして表示します。後からLLMの構造化JSON回答に差し替えられるprovider境界にしています。
 この表示は **AI推定レンジであり、GTO計算結果ではありません**。実際のSolver成果物は
 `保存済みSolution`へ切り替えた場合だけRust APIから読み取ります。
 
