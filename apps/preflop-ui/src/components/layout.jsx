@@ -50,7 +50,7 @@ export function Sidebar({ activeSection, onSectionChange }) {
       <div className="side-note">
         <Spade size={23} />
         <strong>Preflop Explorer</strong>
-        <p>AI推定レンジと保存済み結果を、<br />ハンドから読み解く。</p>
+        <p>推定レンジを、<br />ハンドから読み解く。</p>
         <small>READ-ONLY / v0.1</small>
       </div>
     </aside>
@@ -75,11 +75,11 @@ export function SolutionStatusNotice({ solution }) {
 
   return (
     <div className={`notice ${verified ? "notice-verified" : "notice-provisional"}`} role="note">
-      <strong>{verified ? "GTO検証済み" : "暫定戦略"}</strong>
+      <strong>{verified ? "GTO検証済み" : "暫定推定レンジ"}</strong>
       <span>
         {verified
           ? "形式・継続価値・Exploitabilityの検証を通過しています。"
-          : "postflop継続価値は暫定モデルです。完全なGTOとしては扱いません。"}
+          : "保存済み推定レンジです。postflop継続価値は暫定モデルで、完全なGTOとしては扱いません。"}
       </span>
     </div>
   );
@@ -88,8 +88,8 @@ export function SolutionStatusNotice({ solution }) {
 export function AiRangeStatusNotice() {
   return (
     <div className="notice notice-ai" role="note">
-      <strong>AI Estimated Strategy</strong>
-      <span>AI推定レンジ。GTO計算結果ではありません。</span>
+      <strong>Estimated Range</strong>
+      <span>推定レンジ。GTO計算結果ではありません。</span>
     </div>
   );
 }
@@ -98,7 +98,7 @@ export function AppFooter() {
   return (
     <footer className="app-footer">
       <span>SolveaGTO v0.1</span>
-      <span>AI推定 / 保存済みデータ · GTO未検証</span>
+      <span>推定レンジ · GTO未検証</span>
     </footer>
   );
 }

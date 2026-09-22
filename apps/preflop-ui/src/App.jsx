@@ -48,7 +48,7 @@ export function App() {
       return undefined;
     }
     let live = true;
-    setLoading("Solutionを取得中");
+    setLoading("保存済み推定レンジを取得中");
     setSolutions([]);
     setError("");
     setResult(null);
@@ -144,9 +144,9 @@ export function App() {
       <Sidebar activeSection={section} onSectionChange={setSection} />
       <main>
         <PageHeader />
-        <div className="view-mode-switch" role="group" aria-label="表示する戦略データ">
-          <button aria-pressed={viewMode === "ai"} onClick={() => setViewMode("ai")}>AI推定レンジ</button>
-          <button aria-pressed={viewMode === "solver"} onClick={() => setViewMode("solver")}>保存済みSolution</button>
+        <div className="view-mode-switch" role="group" aria-label="表示する推定レンジ">
+          <button aria-pressed={viewMode === "ai"} onClick={() => setViewMode("ai")}>推定レンジ</button>
+          <button aria-pressed={viewMode === "solver"} onClick={() => setViewMode("solver")}>保存済み推定レンジ</button>
         </div>
 
         {viewMode === "ai" ? (
@@ -179,7 +179,7 @@ export function App() {
 
             {!loading && !error && !validation && (!solutions.length || missing) && (
               <StatusState title={spotTitle(spot)}>
-                {!solutions.length ? "保存済みSolutionがありません。" : "この条件に一致する保存済み戦略データがありません。"}
+                {!solutions.length ? "保存済み推定レンジがありません。" : "この条件に一致する保存済み推定レンジがありません。"}
                 局面設定はできますが、結果は表示しません。
               </StatusState>
             )}

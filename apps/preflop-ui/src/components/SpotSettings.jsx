@@ -23,11 +23,11 @@ export function SpotSettings({
   return (
     <Panel className="settings matchup-settings">
       <div className="solution-setting">
-        <h3>保存済みSolution</h3>
-        <Field label="計算結果">
-          <select aria-label="Solution" value={solutionId} onChange={event => onSolutionChange(event.target.value)} disabled={!solutions.length}>
-            {!solutions.length && <option value="">保存済み結果なし</option>}
-            {!solutionId && solutions.length > 0 && <option value="">このスタックの保存済み結果なし</option>}
+        <h3>保存済み推定レンジ</h3>
+        <Field label="推定レンジ">
+          <select aria-label="推定レンジ" value={solutionId} onChange={event => onSolutionChange(event.target.value)} disabled={!solutions.length}>
+            {!solutions.length && <option value="">保存済み推定レンジなし</option>}
+            {!solutionId && solutions.length > 0 && <option value="">このスタックの保存済み推定レンジなし</option>}
             {solutions.map(solution => <option key={solution.solutionId} value={solution.solutionId}>{solution.solutionId}</option>)}
           </select>
         </Field>
@@ -39,7 +39,7 @@ export function SpotSettings({
             })}
           </select>
         </Field>
-        <small>APIから取得 · 閲覧時の計算なし</small>
+        <small>保存データから取得 · 閲覧時の計算なし</small>
       </div>
 
       <div className="spot-setting">
