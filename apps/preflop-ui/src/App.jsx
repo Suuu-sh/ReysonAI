@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SolveaGTOApiError, SolveaGTOClient } from "../../../packages/solveagto-sdk-ts/src/index.ts";
 import { handAggregates, sortActions, strategyCombos } from "./data.js";
 import { solutionForStack, solutionStackBb, spotRequest, spotTitle } from "./spot.js";
-import { AiRangeStatusNotice, AppFooter, Sidebar, SolutionStatusNotice } from "./components/layout.jsx";
+import { AppFooter, Sidebar, SolutionStatusNotice } from "./components/layout.jsx";
 import { AiRangeView } from "./components/AiRangeView.jsx";
 import { ResultsView } from "./components/ResultsView.jsx";
 import { SpotSettings } from "./components/SpotSettings.jsx";
@@ -150,7 +150,6 @@ export function App() {
 
         {viewMode === "ai" ? (
           <>
-            <AiRangeStatusNotice />
             <AiRangeView activeSpot={aiSpot} onSpotChange={setAiSpot} />
           </>
         ) : (

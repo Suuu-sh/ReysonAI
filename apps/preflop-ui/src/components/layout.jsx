@@ -73,15 +73,6 @@ export function SolutionStatusNotice({ solution }) {
   );
 }
 
-export function AiRangeStatusNotice() {
-  return (
-    <div className="notice notice-ai" role="note">
-      <strong>Estimated Range</strong>
-      <span>推定レンジ。GTO計算結果ではありません。</span>
-    </div>
-  );
-}
-
 export function AppFooter() {
   return (
     <footer className="app-footer">
