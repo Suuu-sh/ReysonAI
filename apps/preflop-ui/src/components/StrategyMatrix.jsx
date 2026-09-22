@@ -1,12 +1,12 @@
 import { hands, label, color, pct } from "../data.js";
 import { Panel, SectionHeading } from "./primitives.jsx";
 
-export function StrategyMatrix({ node, aggregates, selected, filter, actions, onSelect, onFilterChange }) {
+export function StrategyMatrix({ node, aggregates, selected, filter, actions, onSelect, onFilterChange, title, ariaLabel, footer }) {
   return (
-    <Panel className="matrix-panel">
+    <Panel className="matrix-panel" aria-label={ariaLabel}>
       <SectionHeading
-        title={`${node.actingPosition ?? "終端"} の戦略`}
-        action={<select aria-label="表示アクション" value={filter} onChange={event => onFilterChange(event.target.value)}>
+        title={title ?? `${node.actingPosition ?? "終端"} の戦略`}
+        action={<select aria-label={ariaLabel ? `${ariaLabel}の表示アクション` : "表示アクション"} value={filter} onChange={event => onFilterChange(event.target.value)}>
           <option value="all">すべてのアクション</option>
           {actions.map(action => <option key={action} value={action}>{label(action)}</option>)}
         </select>}
@@ -38,6 +38,7 @@ export function StrategyMatrix({ node, aggregates, selected, filter, actions, on
       <div className="legend">
         {actions.map(action => <span key={action}><i style={{ background: color(action) }} />{label(action)}</span>)}
       </div>
+      {footer}
     </Panel>
   );
 }

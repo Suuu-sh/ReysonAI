@@ -26,6 +26,14 @@ let openingDataset;
 let openingDataError;
 try { openingDataset = validateOpeningDataset(openingSource); } catch (error) { openingDataError = error.message; }
 
+function HandDetails({ isOpening, hero, hand, children }) {
+  if (isOpening) return children;
+  return <details className="comparison-details">
+    <summary>{hero} · {hand.hand}：3bet {hand.three_bet}% / コール {hand.call}% / フォールド {hand.fold}% · 詳細</summary>
+    {children}
+  </details>;
+}
+
 function EstimatedRanges() {
   const [rangeType, setRangeType] = useState("response");
   const isOpening = rangeType === "open";
@@ -35,7 +43,11 @@ function EstimatedRanges() {
   const openSizeBb = 2.5;
   const [selected, setSelected] = useState("AKo");
   const [filter, setFilter] = useState("all");
-  const currentError = isOpening ? openingDataError : dataError;
+  const [openerFilter, setOpenerFilter] = useState("all");
+  const currentError = isOpening ? openingDataError : dataError || openingDataError;
+  const openerSpot = openingDataset ? findOpeningSpot(openingDataset, opener) : null;
+  const openerModel = useMemo(() => openerSpot ? openingMatrixModel(openerSpot) : null, [openerSpot]);
+  const openerHand = openerSpot?.hands.find(row => row.hand === selected);
   const spot = isOpening
     ? openingDataset ? findOpeningSpot(openingDataset, opener) : null
     : dataset ? findSpot(dataset, opener, hero) : null;
@@ -49,6 +61,7 @@ function EstimatedRanges() {
     const nextHeroes = availableHeroes(value).filter(position => hasSpot(dataset, value, position));
     if (!nextHeroes.includes(hero)) setHero(nextHeroes[0] ?? "");
     setFilter("all");
+    setOpenerFilter("all");
   }
 
   return <div className="shell">
@@ -96,12 +109,20 @@ function EstimatedRanges() {
           <strong>{isOpening ? `${opener} Open · 2.5BB` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>
           <span>{isOpening ? "全5ポジション" : "全15局面"} / 各169ハンド · 推定データ・GTO計算なし</span>
         </div>
-        <div className="results estimate-results">
+        <div className={`results estimate-results${isOpening ? "" : " comparison-results"}`}>
+          {!isOpening && <StrategyMatrix node={{ actingPosition: opener }}
+            title={`${opener} · オープナーのオープンレンジ`} ariaLabel="オープナーのレンジ"
+            aggregates={openerModel.aggregates} actions={openerModel.actions}
+            selected={selected} filter={openerFilter} onSelect={setSelected} onFilterChange={setOpenerFilter}
+            footer={<small className="comparison-hand">{selected}：オープン {openerHand.open}% / フォールド {openerHand.fold}%</small>} />}
           <StrategyMatrix node={{ actingPosition: isOpening ? opener : hero }} aggregates={model.aggregates} actions={model.actions}
+            title={isOpening ? undefined : `${hero} · Heroの対応レンジ`} ariaLabel={isOpening ? undefined : "Heroのレンジ"}
+            footer={isOpening ? undefined : <small className="comparison-hand">{selected}：3bet {hand.three_bet}% / コール {hand.call}% / フォールド {hand.fold}%</small>}
             selected={selected} filter={filter} onSelect={setSelected} onFilterChange={setFilter} />
+          <HandDetails isOpening={isOpening} hero={hero} hand={hand}>
           <div className="detail-column">
             <Panel>
-              <SectionHeading title="選択ハンド" />
+              <SectionHeading title={isOpening ? "選択ハンド" : `${hero} · Heroの選択ハンド`} />
               <div className="hand-title"><strong>{selected}</strong><span>{model.aggregates.get(selected).comboCount} Combos</span></div>
               <ActionBars items={model.actions.map(action => ({ action, frequency: model.aggregates.get(selected).actions[action] }))} />
               <StatList items={[
@@ -119,6 +140,7 @@ function EstimatedRanges() {
               <details><summary>選択ハンドのJSON</summary><pre>{JSON.stringify(hand, null, 2)}</pre></details>
             </Panel>
           </div>
+          </HandDetails>
         </div>
       </>}
       <AppFooter />

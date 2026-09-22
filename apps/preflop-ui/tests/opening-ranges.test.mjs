@@ -6,6 +6,17 @@ import { rangeTypes } from "../src/estimated/ranges.js";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "../src/estimated/opening-ranges.js";
 
 const source = JSON.parse(readFileSync(new URL("../src/estimated/opening-ranges.json", import.meta.url), "utf8"));
+test("every response matchup has its own opener's complete comparison range", () => {
+  const responses = JSON.parse(readFileSync(new URL("../src/estimated/preflop-ranges.json", import.meta.url), "utf8"));
+  for (const response of responses.spots) {
+    const opening = findOpeningSpot(source, response.opener);
+    assert.equal(opening.hero, response.opener);
+    assert.notEqual(opening.hero, response.hero);
+    assert.equal(opening.open_size_bb, response.open_size_bb);
+    assert.equal(opening.effective_stack_bb, response.effective_stack_bb);
+    assert.deepEqual(opening.hands.map(row => row.hand), response.hands.map(row => row.hand));
+  }
+});
 test("five positions include all 845 canonical RFI records", () => {
   assert.equal(validateOpeningDataset(source), source);
   assert.equal(rangeTypes.find(type => type.value === "open").available, true);
