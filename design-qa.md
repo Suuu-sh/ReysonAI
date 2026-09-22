@@ -56,3 +56,8 @@ final result: blocked (desktop paired visual verification outstanding)
 - CO → BTN uses 7.5 BB for IP 3bet and 16.5 BB for 4bet in the UI request builder.
 - Normal API remains empty; no experimental data was returned to the user-facing API.
 - Thirteen frontend tests and the Rust workspace tests pass.
+
+## Estimated range selector-bar follow-up
+- The single estimated-range bar now exposes spot type, effective stack, open size, opener, and Hero selectors.
+- Persisted JSON availability controls the position options; unavailable positions and unsupported dataset dimensions remain visible but disabled.
+- Browser verification confirmed UTG is selectable as an opener, BB is disabled as an opener, and earlier positions are disabled as Hero for a BTN response spot.

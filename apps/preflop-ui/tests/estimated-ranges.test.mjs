@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { availableHeroes, findSpot, matrixModel, positions, validateDataset } from "../src/estimated/ranges.js";
+import { availableHeroes, availableOpeners, findSpot, hasSpot, matrixModel, positions, validateDataset } from "../src/estimated/ranges.js";
 
 const data = JSON.parse(readFileSync(new URL("../src/estimated/preflop-ranges.json", import.meta.url), "utf8"));
 test("all 15 persisted JSON spots retain all 2,535 answers in the matrix", () => {
@@ -24,6 +24,9 @@ test("legal position selectors cover exactly 15 ordered matchups", () => {
     count++;
   }
   assert.equal(count, 15);
+  assert.deepEqual(availableOpeners(data), ["UTG", "HJ", "CO", "BTN", "SB"]);
+  assert.equal(hasSpot(data, "UTG", "HJ"), true);
+  assert.equal(hasSpot(data, "UTG", "UTG"), false);
   assert.deepEqual(availableHeroes("SB"), ["BB"]);
   assert.deepEqual(availableHeroes("unknown"), []);
   assert.throws(() => findSpot(data, "BTN", "UTG"));

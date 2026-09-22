@@ -3,7 +3,18 @@ import { AppFooter, Sidebar } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { ActionBars, Field, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.jsx";
 import source from "./preflop-ranges.json";
-import { availableHeroes, findSpot, matrixModel, positions, validateDataset } from "./ranges.js";
+import {
+  availableHeroes,
+  availableOpeners,
+  findSpot,
+  hasSpot,
+  matrixModel,
+  openSizeOptions,
+  positions,
+  rangeTypes,
+  stackOptions,
+  validateDataset,
+} from "./ranges.js";
 import "./ranges.css";
 
 let dataset;
@@ -11,16 +22,23 @@ let dataError;
 try { dataset = validateDataset(source); } catch (error) { dataError = error.message; }
 
 function EstimatedRanges() {
+  const rangeType = "response";
   const [opener, setOpener] = useState("BTN");
   const [hero, setHero] = useState("BB");
+  const stackBb = 100;
+  const openSizeBb = 2.5;
   const [selected, setSelected] = useState("AKo");
   const [filter, setFilter] = useState("all");
   const spot = dataset ? findSpot(dataset, opener, hero) : null;
   const model = useMemo(() => spot ? matrixModel(spot) : null, [spot]);
   const hand = spot?.hands.find(row => row.hand === selected);
+  const availableOpenerPositions = availableOpeners(dataset);
+  const availableHeroPositions = availableHeroes(opener).filter(position => hasSpot(dataset, opener, position));
+
   function changeOpener(value) {
     setOpener(value);
-    if (!availableHeroes(value).includes(hero)) setHero(availableHeroes(value)[0]);
+    const nextHeroes = availableHeroes(value).filter(position => hasSpot(dataset, value, position));
+    if (!nextHeroes.includes(hero)) setHero(nextHeroes[0] ?? "");
     setFilter("all");
   }
 
@@ -30,11 +48,39 @@ function EstimatedRanges() {
       {dataError ? <StatusState tone="error">{dataError}</StatusState> : <>
         <Panel className="estimate-settings">
           <div><h2>推定レンジ</h2><small>6max Cash · 100BB · Open 2.5BB</small></div>
+          <Field label="局面">
+            <select aria-label="局面" defaultValue={rangeType}>
+              {rangeTypes.map(option => <option key={option.value} value={option.value} disabled={!option.available}>
+                {option.label}{option.available ? "" : "（データなし）"}
+              </option>)}
+            </select>
+          </Field>
+          <Field label="有効スタック">
+            <select aria-label="有効スタック" defaultValue={stackBb}>
+              {stackOptions.map(option => <option key={option.value} value={option.value} disabled={!option.available}>
+                {option.label}{option.available ? "" : "（データなし）"}
+              </option>)}
+            </select>
+          </Field>
+          <Field label="オープンサイズ">
+            <select aria-label="オープンサイズ" defaultValue={openSizeBb}>
+              {openSizeOptions.map(option => <option key={option.value} value={option.value} disabled={!option.available}>
+                {option.label}{option.available ? "" : "（データなし）"}
+              </option>)}
+            </select>
+          </Field>
           <Field label="オープナー"><select value={opener} onChange={e => changeOpener(e.target.value)}>
-            {positions.slice(0, -1).map(p => <option key={p}>{p}</option>)}
+            {positions.map(position => <option key={position} value={position} disabled={!availableOpenerPositions.includes(position)}>
+              {position}{availableOpenerPositions.includes(position) ? "" : "（データなし）"}
+            </option>)}
           </select></Field>
           <Field label="Hero"><select value={hero} onChange={e => { setHero(e.target.value); setFilter("all"); }}>
-            {availableHeroes(opener).map(p => <option key={p}>{p}</option>)}
+            {positions.map(position => {
+              const available = availableHeroPositions.includes(position);
+              const isAfterOpener = availableHeroes(opener).includes(position);
+              const suffix = available ? "" : isAfterOpener ? "（データなし）" : "（この局面では不可）";
+              return <option key={position} value={position} disabled={!available}>{position}{suffix}</option>;
+            })}
           </select></Field>
         </Panel>
         <div className="estimate-context">

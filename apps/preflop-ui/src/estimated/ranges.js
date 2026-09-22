@@ -2,6 +2,25 @@ import { hands } from "../data.js";
 
 export const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
+export const rangeTypes = [
+  { value: "response", label: "オープンへの応答", available: true },
+  { value: "open", label: "オープンレンジ", available: false },
+  { value: "three_bet", label: "3bet後の応答", available: false },
+  { value: "four_bet", label: "4bet後の応答", available: false },
+];
+
+export const stackOptions = [
+  { value: 50, label: "50BB", available: false },
+  { value: 100, label: "100BB", available: true },
+  { value: 200, label: "200BB", available: false },
+];
+
+export const openSizeOptions = [
+  { value: 2, label: "2BB", available: false },
+  { value: 2.5, label: "2.5BB", available: true },
+  { value: 3, label: "3BB", available: false },
+];
+
 export function validateDataset(data) {
   const expectedIds = positions.flatMap((opener, i) => positions.slice(i + 1).map(hero => `${hero}_vs_${opener}`));
   if (data?.metadata?.strategy_type !== "general_knowledge_estimate_not_gto" ||
@@ -35,6 +54,14 @@ export function validateDataset(data) {
 export function availableHeroes(opener) {
   const index = positions.indexOf(opener);
   return index < 0 ? [] : positions.slice(index + 1);
+}
+
+export function hasSpot(data, opener, hero) {
+  return Boolean(data?.spots?.some(spot => spot.opener === opener && spot.hero === hero));
+}
+
+export function availableOpeners(data) {
+  return positions.filter(opener => data?.spots?.some(spot => spot.opener === opener));
 }
 
 export function findSpot(data, opener, hero) {
