@@ -41,16 +41,6 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
     count: chosen?.actions[action] ?? 0,
     color: color(action, index),
   }));
-  const allMix = actions.map((action, index) => ({
-    action,
-    frequency: range.hands.reduce((sum, item) => {
-      const sourceAction = range.actions.find(key => DISPLAY_ACTIONS[key] === action);
-      const comboCount = HAND_COMBO_COUNTS.get(item.hand) ?? 0;
-      return sum + (item.frequencies[sourceAction] ?? 0) * comboCount;
-    }, 0) / (1326 * 100),
-    count: 0,
-    color: color(action, index),
-  }));
   const node = {
     actingPosition: activeSpot === "btn_open" ? "BTN" : "BB",
   };
@@ -83,11 +73,6 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
         />
 
         <div className="summary-column">
-          <Panel>
-            <SectionHeading title="アクション頻度（全ハンド）" />
-            <ActionBars items={allMix} />
-            <small>AI知識ベースの個別回答データを表示しています。</small>
-          </Panel>
           <Panel>
             <SectionHeading title="レンジの概要" />
             <StatList items={[
