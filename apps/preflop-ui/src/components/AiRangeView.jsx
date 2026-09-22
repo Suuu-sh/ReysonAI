@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createDefaultAiPreflopRanges } from "../../../../packages/solveagto-sdk-ts/src/preflop-ranges.ts";
-import { color, hands } from "../data.js";
+import { color, hands, sortActions } from "../data.js";
 import { ActionBars, Panel, SectionHeading, StatList } from "./primitives.jsx";
 import { StrategyMatrix } from "./StrategyMatrix.jsx";
 
@@ -21,7 +21,7 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
   const [filter, setFilter] = useState("all");
   const ranges = useMemo(() => createDefaultAiPreflopRanges(), []);
   const range = ranges[activeSpot];
-  const actions = range.actions.map(action => DISPLAY_ACTIONS[action]);
+  const actions = sortActions(range.actions.map(action => DISPLAY_ACTIONS[action]));
   const aggregates = new Map(range.hands.map(item => [item.hand, {
     hand: item.hand,
     comboCount: HAND_COMBO_COUNTS.get(item.hand) ?? 0,

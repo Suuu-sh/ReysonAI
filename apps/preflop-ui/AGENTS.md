@@ -19,3 +19,4 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 ## Durable UI feedback
 - Range-table action colors must keep `raise` and `call` visually distinct; avoid assigning both actions near-identical pink hues.
 - The AI Estimated view does not need an all-hand action-frequency panel; keep the selected-hand action breakdown instead.
+- Range-table action strips should be ordered left to right as all-in, raise, call, then fold.
