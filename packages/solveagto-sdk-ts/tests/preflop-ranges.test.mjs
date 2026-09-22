@@ -45,7 +45,9 @@ test("deterministic provider generates the BB response range", () => {
   assert.equal(range.spot.threeBetSizeBb, 10);
   assertCompleteRange(range, ["fold", "call", "three_bet"]);
   assert.deepEqual(new Set(Object.keys(BB_VS_BTN_OPEN_AI_RESPONSES)), new Set(STARTING_HANDS));
-  assert.deepEqual(range.hands.find(({ hand }) => hand === "AKo").frequencies, { fold: 0, call: 45, three_bet: 55 });
+  assert.deepEqual(range.hands.find(({ hand }) => hand === "AKo").frequencies, { fold: 0, call: 0, three_bet: 100 });
+  assert.deepEqual(range.hands.find(({ hand }) => hand === "42o").frequencies, { fold: 100, call: 0, three_bet: 0 });
+  assert.ok(range.hands.every(({ frequencies }) => Object.values(frequencies).filter(value => value > 0).length === 1));
   assert.ok(range.hands.every(({ reason }) => typeof reason === "string" && reason.length > 0));
 });
 
