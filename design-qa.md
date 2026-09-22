@@ -29,7 +29,7 @@ final result: blocked (desktop paired visual verification outstanding)
 
 ## Compact layout follow-up
 - Scope: density/one-screen adjustment, not a new full reference-image sign-off.
-- In-app browser verified at 1280×720 after reducing sidebar, header, settings, panel and row spacing.
+- In-app browser verified at 1280×720 after reducing header, settings, panel and row spacing.
 - DOM measurements: document 1280×720; results clientHeight/scrollHeight 415/415; matrix scroll region 327/327.
 - Screenshot inspected: all 13 matrix rows, hand-detail cards and footer visible simultaneously.
 - Combo EV tab: results remain 415/415; table clientHeight/scrollHeight 144/195, scroll confined to table.
@@ -61,3 +61,6 @@ final result: blocked (desktop paired visual verification outstanding)
 - The single estimated-range bar now exposes spot type, effective stack, open size, opener, and Hero selectors.
 - Persisted JSON availability controls the position options; unavailable positions and unsupported dataset dimensions remain visible but disabled.
 - Browser verification confirmed UTG is selectable as an opener, BB is disabled as an opener, and earlier positions are disabled as Hero for a BTN response spot.
+
+## Navigation header follow-up
+- Primary navigation moved from the left sidebar into the top header; disabled future areas remain visible as `準備中`.

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AppFooter, Sidebar } from "../components/layout.jsx";
+import { AppFooter, Header } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { ActionBars, Field, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.jsx";
 import source from "./preflop-ranges.json";
@@ -52,7 +52,7 @@ function EstimatedRanges() {
   }
 
   return <div className="shell">
-    <Sidebar activeSection="プリフロップ" onSectionChange={() => {}} />
+    <Header activeSection="プリフロップ" onSectionChange={() => {}} />
     <main>
       {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <Panel className="estimate-settings">

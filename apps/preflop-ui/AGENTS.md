@@ -14,7 +14,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Keep the estimated-range status visible in the page metadata, but do not add a separate warning banner above the range.
 - No postflop, billing, or on-demand solve controls in this milestone.
 - Prefer a compact desktop layout fitting the default results view within one screen (verified at 1280×720); keep dense Combo tables internally scrollable and never hide the experimental warning.
-- Keep the primary sidebar centered on `プリフロップ`. Future product areas may appear as clearly disabled `準備中` placeholders, while hand details and calculation metadata remain out of the top-level navigation.
+- Keep the primary navigation in the top header with `プリフロップ` centered as the active area. Future product areas may appear as clearly disabled `準備中` placeholders, while hand details and calculation metadata remain out of the top-level navigation.
 
 ## Durable UI feedback
 - Range-table action colors must keep `raise` and `call` visually distinct; avoid assigning both actions near-identical pink hues.

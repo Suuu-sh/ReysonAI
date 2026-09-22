@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SolveaGTOApiError, SolveaGTOClient } from "../../../packages/solveagto-sdk-ts/src/index.ts";
 import { handAggregates, sortActions, strategyCombos } from "./data.js";
 import { solutionForStack, solutionStackBb, spotRequest, spotTitle } from "./spot.js";
-import { AppFooter, Sidebar } from "./components/layout.jsx";
+import { AppFooter, Header } from "./components/layout.jsx";
 import { ResultsView } from "./components/ResultsView.jsx";
 import { SpotSettings } from "./components/SpotSettings.jsx";
 import { StatusState } from "./components/primitives.jsx";
@@ -124,7 +124,7 @@ export function App() {
 
   return (
     <div className="shell">
-      <Sidebar activeSection={section} onSectionChange={setSection} />
+      <Header activeSection={section} onSectionChange={setSection} />
       <main>
         <SpotSettings
           solutions={solutions}

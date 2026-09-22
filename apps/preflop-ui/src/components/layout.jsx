@@ -17,43 +17,43 @@ const navigationGroups = [
   },
 ];
 
-export function Sidebar({ activeSection, onSectionChange }) {
+export function Header({ activeSection, onSectionChange }) {
   return (
-    <aside className="sidebar">
+    <header className="app-header">
       <div className="brand">
-        <Spade size={39} weight="fill" />
+        <Spade size={30} weight="fill" />
         <div>
           Solvea<span>GTO</span>
           <small>Play Closer to Perfect</small>
         </div>
       </div>
-      <nav className="sidebar-nav" aria-label="メインナビゲーション">
+      <nav className="header-nav" aria-label="メインナビゲーション">
         {navigationGroups.map(group => (
-          <div className="sidebar-group" key={group.label}>
-            <span className="sidebar-group-label">{group.label}</span>
-            {group.items.map(({ Icon, name, status }) => (
-              <button
-                key={name}
-                className={`${activeSection === name ? "active" : ""} ${status ? "future" : ""}`.trim()}
-                onClick={() => onSectionChange(name)}
-                disabled={Boolean(status)}
-                title={status ? `${name}：${status}` : undefined}
-              >
-                <Icon size={21} />
-                <span>{name}</span>
-                {status && <small>{status}</small>}
-              </button>
-            ))}
+          <div className="header-nav-group" key={group.label}>
+            <span className="header-nav-group-label">{group.label}</span>
+            <div className="header-nav-items">
+              {group.items.map(({ Icon, name, status }) => (
+                <button
+                  key={name}
+                  className={`${activeSection === name ? "active" : ""} ${status ? "future" : ""}`.trim()}
+                  onClick={() => onSectionChange(name)}
+                  disabled={Boolean(status)}
+                  title={status ? `${name}：${status}` : undefined}
+                >
+                  <Icon size={18} />
+                  <span>{name}</span>
+                  {status && <small>{status}</small>}
+                </button>
+              ))}
+            </div>
           </div>
         ))}
       </nav>
-      <div className="side-note">
-        <Spade size={23} />
+      <div className="header-meta">
         <strong>Preflop Explorer</strong>
-        <p>推定レンジを、<br />ハンドから読み解く。</p>
         <small>READ-ONLY / v0.1</small>
       </div>
-    </aside>
+    </header>
   );
 }
 
