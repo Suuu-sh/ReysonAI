@@ -259,7 +259,9 @@ Cloudflare Edge API Workerへ接続します。どちらの場合もUIからSolv
 初期表示は `AI推定レンジ` です。6-max / effective stack 100BB / BTN open 2.5BB の
 `BTN Open` と `BB vs BTN Open` を、TypeScript SDKの
 `PreflopRangeProvider`から生成した169 Hand Matrixで切り替えられます。現在のproviderは
-`knowledge-base-seed` によるdeterministicな基準レンジで、BBの3betは10BB固定です。
+明示的なAI知識ベース回答データ（`ai-knowledge-response`）を返し、BBの3betは10BB固定です。
+まずBTN Openの169パターンを個別のopen/fold値として保持し、後からLLMの構造化JSON回答に
+差し替えられるprovider境界にしています。
 この表示は **AI推定レンジであり、GTO計算結果ではありません**。実際のSolver成果物は
 `保存済みSolution`へ切り替えた場合だけRust APIから読み取ります。
 

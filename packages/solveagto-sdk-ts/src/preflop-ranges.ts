@@ -1,3 +1,5 @@
+import { BTN_OPEN_AI_RESPONSES } from "./preflop-ai-responses.js";
+
 export const AI_RANGE_SPOTS = ["btn_open", "bb_vs_btn_open"] as const;
 export type AiRangeSpotId = (typeof AI_RANGE_SPOTS)[number];
 
@@ -19,8 +21,8 @@ export type AiRangeSpot = {
 
 export type AiRangeProviderMetadata = {
   kind: "deterministic_seed";
-  name: "knowledge-base-seed";
-  version: "v0.1";
+  name: "ai-knowledge-response";
+  version: "v0.2";
   seed: string;
 };
 
@@ -91,49 +93,6 @@ function seededFrequency(value: number, seed: string, hand: string) {
   if (value === 0 || value === 100) return value;
   const adjustment = [-5, 0, 5][hashSeed(seed, hand) % 3] ?? 0;
   return clamp(value + adjustment);
-}
-
-function suitedOpenFrequency(high: number, low: number) {
-  if (high === 14) return 100;
-  const bands: Record<number, number[]> = {
-    13: [100, 100, 100, 100, 100, 90, 85, 75, 65, 55, 45, 35],
-    12: [100, 100, 100, 100, 100, 95, 85, 75, 65, 50, 35, 25],
-    11: [100, 100, 100, 100, 95, 85, 75, 65, 50, 35, 25, 15],
-    10: [100, 100, 100, 95, 85, 75, 60, 45, 30, 20, 10, 5],
-    9: [100, 100, 95, 85, 75, 60, 45, 30, 20, 10, 5, 0],
-    8: [100, 95, 85, 75, 60, 45, 30, 20, 10, 5, 0, 0],
-    7: [95, 85, 75, 60, 45, 30, 20, 10, 5, 0, 0, 0],
-    6: [85, 75, 60, 45, 30, 20, 10, 5, 0, 0, 0, 0],
-    5: [75, 60, 45, 30, 20, 10, 5, 0, 0, 0, 0, 0],
-    4: [60, 45, 30, 20, 10, 5, 0, 0, 0, 0, 0, 0],
-    3: [45, 30, 20, 10, 5, 0, 0, 0, 0, 0, 0, 0],
-    2: [30, 20, 10, 5, 0, 0, 0, 0, 0, 0, 0, 0],
-  };
-  return bands[high]?.[high - 1 - low] ?? 0;
-}
-
-function offsuitOpenFrequency(high: number, low: number) {
-  if (high === 14) {
-    return [100, 100, 100, 95, 85, 70, 55, 40, 30, 25, 20, 15][13 - low] ?? 0;
-  }
-  const bands: Record<number, number[]> = {
-    13: [100, 100, 95, 85, 65, 45, 30, 20, 10, 5, 0, 0],
-    12: [95, 90, 75, 55, 35, 20, 10, 5, 0, 0, 0, 0],
-    11: [85, 70, 45, 25, 15, 5, 0, 0, 0, 0, 0, 0],
-    10: [65, 45, 25, 10, 0, 0, 0, 0, 0, 0, 0, 0],
-    9: [45, 25, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    8: [25, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    7: [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  };
-  return bands[high]?.[high - 1 - low] ?? 0;
-}
-
-function btnOpenFrequency(hand: string, seed: string) {
-  const { high, low, kind } = parseHand(hand);
-  const base = kind === "p" ? 100 : kind === "s"
-    ? suitedOpenFrequency(high, low)
-    : offsuitOpenFrequency(high, low);
-  return seededFrequency(base, seed, hand);
 }
 
 function pairThreeBetFrequency(rank: number) {
@@ -221,7 +180,7 @@ function makeRange(request: AiRangeRequest, seed: string): AiPreflopRange {
   const hands = STARTING_HANDS.map(hand => ({
     hand,
     frequencies: request.spot === "btn_open"
-      ? { open: btnOpenFrequency(hand, seed), fold: 100 - btnOpenFrequency(hand, seed) }
+      ? BTN_OPEN_AI_RESPONSES[hand]!
       : bbResponse(hand, seed),
   }));
   return {
@@ -236,8 +195,8 @@ function makeRange(request: AiRangeRequest, seed: string): AiPreflopRange {
     actions: request.spot === "btn_open" ? ["open", "fold"] : ["fold", "call", "three_bet"],
     provider: {
       kind: "deterministic_seed",
-      name: "knowledge-base-seed",
-      version: "v0.1",
+      name: "ai-knowledge-response",
+      version: "v0.2",
       seed,
     },
     hands,

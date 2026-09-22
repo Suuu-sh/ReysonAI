@@ -17,7 +17,7 @@ const api = new SolveaGTOClient({
 
 export function App() {
   const [viewMode, setViewMode] = useState("ai");
-  const [aiSpot, setAiSpot] = useState("bb_vs_btn_open");
+  const [aiSpot, setAiSpot] = useState("btn_open");
   const [solutions, setSolutions] = useState([]);
   const [solutionId, setSolutionId] = useState("");
   const [stackBb, setStackBb] = useState(100);

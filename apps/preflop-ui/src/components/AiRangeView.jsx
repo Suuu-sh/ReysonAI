@@ -65,7 +65,9 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
           <button aria-pressed={activeSpot === "btn_open"} onClick={() => changeSpot("btn_open")}>BTN Open</button>
           <button aria-pressed={activeSpot === "bb_vs_btn_open"} onClick={() => changeSpot("bb_vs_btn_open")}>BB vs BTN Open</button>
         </div>
-        <small className="ai-range-provider">Provider: knowledge-base-seed / 3bet: 10BB固定</small>
+        <small className="ai-range-provider">
+          Provider: {range.provider.name} / {activeSpot === "bb_vs_btn_open" ? `3bet: ${range.spot.threeBetSizeBb}BB固定` : "open: 2.5BB固定"}
+        </small>
       </Panel>
 
       <div className="results ai-range-results">
@@ -83,7 +85,7 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
           <Panel>
             <SectionHeading title="アクション頻度（全ハンド）" />
             <ActionBars items={allMix} />
-            <small>AIの基準知識から生成した推定頻度です。</small>
+            <small>AI知識ベースの個別回答データを表示しています。</small>
           </Panel>
           <Panel>
             <SectionHeading title="レンジの概要" />
