@@ -57,18 +57,6 @@ export function Sidebar({ activeSection, onSectionChange }) {
   );
 }
 
-export function PageHeader() {
-  return (
-    <header className="app-header">
-      <div>
-        <h1>より良い判断が、より強いあなたをつくる。</h1>
-        <p>局面を選び、戦略の違いをひとつずつ。</p>
-      </div>
-      <span className="badge">Preflop / 日本語</span>
-    </header>
-  );
-}
-
 export function SolutionStatusNotice({ solution }) {
   const verified = solution?.validation?.gtoVerified === true
     && solution.validation.status === "gto_verified";

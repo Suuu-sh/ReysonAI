@@ -42,8 +42,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   outline-offset: 3px;
 }
 button:hover:not(:disabled), select:hover:not(:disabled), input:hover:not(:disabled) { border-color: var(--accent); }
-h1, h2, h3, p { margin-top: 0; }
-h1 { font-size: 17px; margin-bottom: 4px; }
+h2, h3, p { margin-top: 0; }
 h2 { font-size: 14px; margin-bottom: 12px; }
 h3 { font-size: 12px; margin-bottom: 8px; }
 p { line-height: 1.7; }
@@ -88,9 +87,6 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
 .side-note small { font-size: 11px; }
 
 main { display: flex; flex-direction: column; min-width: 0; padding: 12px 14px; }
-.app-header { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin: 0 0 10px; }
-.app-header p { margin: 0; color: #aeb2c0; font-size: 12px; }
-.badge { color: #aeb2c0; font-size: 12px; white-space: nowrap; }
 .notice {
   display: flex;
   align-items: baseline;
@@ -213,13 +209,11 @@ th small { display: block; }
 @media (min-width: 1050px) {
   .shell { height: 100dvh; min-height: 0; }
   main { height: 100dvh; min-height: 0; padding: 9px 12px; }
-  main > .app-header, main > .notice, main > .settings, main > .tabs, main > .app-footer { flex-shrink: 0; }
+  main > .notice, main > .settings, main > .tabs, main > .app-footer { flex-shrink: 0; }
   .results { flex: 1; min-height: 0; overflow: auto; align-items: stretch; }
   .matrix-panel { min-height: 0; }
   .summary-column, .detail-column { overflow: auto; }
   .metadata, .state { overflow: auto; }
-  .app-header { margin-bottom: 7px; }
-  .app-header p { font-size: 11px; }
   .notice { margin-bottom: 6px; padding: 6px 9px; font-size: 11px; }
   .panel { padding: 9px; }
   .settings.matchup-settings { gap: 9px; }
@@ -286,9 +280,6 @@ th small { display: block; }
   .brand { font-size: 18px; }
   .sidebar-nav { width: 100%; margin: 0; }
   .sidebar-nav button { flex: 1; justify-content: center; }
-  .app-header { margin: 4px 0 8px; }
-  h1 { font-size: 15px; }
-  .badge, .app-header p { display: none; }
   .settings { grid-template-columns: 1fr; gap: 8px; }
   .settings > div + div { padding-left: 0; border-left: 0; }
   .settings h3 { margin-bottom: 4px; }
