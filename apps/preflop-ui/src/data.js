@@ -5,7 +5,7 @@ export function label(a) {
   return ({fold:"フォールド",call:"コール",check:"チェック",all_in:"オールイン"})[a] ?? a.replace("raise_","レイズ ").replaceAll("_",".")+" BB";
 }
 export function color(a, index=0) {
-  return a==="fold" ? "#50565f" : a==="call" || a==="check" ? "#f4a2c3" : a==="all_in" ? "#a579ef" : ["#fa5b9b","#c74786","#ed86b0"][index%3];
+  return a==="fold" ? "#50565f" : a==="call" ? "#55c6d8" : a==="check" ? "#8b9caf" : a==="all_in" ? "#a579ef" : ["#fa5b9b","#c74786","#ed86b0"][index%3];
 }
 function actionName(item) {
   return typeof item === "string" ? item : item?.action ?? "";
