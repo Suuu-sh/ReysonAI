@@ -8,7 +8,7 @@ const DISPLAY_ACTIONS = {
   open: "raise_2.5",
   fold: "fold",
   call: "call",
-  three_bet: "raise_10",
+  three_bet: "raise_ai",
 };
 
 const HAND_COMBO_COUNTS = new Map(hands.map(hand => [
@@ -26,6 +26,7 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
     hand: item.hand,
     comboCount: HAND_COMBO_COUNTS.get(item.hand) ?? 0,
     reason: item.reason,
+    raiseSizeBb: item.raiseSizeBb,
     actions: Object.fromEntries(range.actions.map(action => [
       DISPLAY_ACTIONS[action], (item.frequencies[action] ?? 0) / 100,
     ])),
@@ -35,11 +36,11 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
     setFilter("all");
     onSpotChange(nextSpot);
   };
-  const chosenMix = actions.map((action, index) => ({
+  const chosenMix = actions.map(action => ({
     action,
     frequency: chosen?.actions[action] ?? 0,
     count: chosen?.actions[action] ?? 0,
-    color: color(action, index),
+    color: color(action),
   }));
   const node = {
     actingPosition: activeSpot === "btn_open" ? "BTN" : "BB",
@@ -49,16 +50,13 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
     <>
       <Panel className="ai-range-settings">
         <div>
-          <SectionHeading title="AI推定レンジ" />
+          <SectionHeading title="推定レンジ" />
           <small>Cash · 6max · Effective Stack 100BB · BTN open 2.5BB</small>
         </div>
-        <div className="ai-range-toggle" role="group" aria-label="AI推定レンジの局面">
+        <div className="ai-range-toggle" role="group" aria-label="推定レンジの局面">
           <button aria-pressed={activeSpot === "btn_open"} onClick={() => changeSpot("btn_open")}>BTN Open</button>
           <button aria-pressed={activeSpot === "bb_vs_btn_open"} onClick={() => changeSpot("bb_vs_btn_open")}>BB vs BTN Open</button>
         </div>
-        <small className="ai-range-provider">
-          Provider: {range.provider.name} / {activeSpot === "bb_vs_btn_open" ? `3bet: ${range.spot.threeBetSizeBb}BB固定` : "open: 2.5BB固定"}
-        </small>
       </Panel>
 
       <div className="results ai-range-results">
@@ -78,7 +76,8 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
             <div className="hand-title"><strong>{selected}</strong><span>{HAND_COMBO_COUNTS.get(selected) ?? 0} Combos</span></div>
             <StatList items={[
               { label: "局面", value: range.spot.label },
-              { label: "評価状態", value: "AI推定レンジ" },
+              { label: "AI選択3betサイズ", value: chosen?.raiseSizeBb ? `${chosen.raiseSizeBb} BB` : "—" },
+              { label: "評価状態", value: "推定レンジ" },
             ]} />
           </Panel>
           <Panel className="ai-reason-panel">

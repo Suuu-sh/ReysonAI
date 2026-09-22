@@ -1,17 +1,27 @@
 export const ranks = [..."AKQJT98765432"];
 export const hands = ranks.flatMap((a,i) => ranks.map((b,j) => i===j ? a+b : i<j ? a+b+"s" : b+a+"o"));
 export const pct = n => Number.isFinite(n) ? (n*100).toFixed(1)+"%" : "未計算";
+const ACTION_COLORS = Object.freeze({
+  fold: "#50565f",
+  call: "#55c6d8",
+  check: "#8b9caf",
+  all_in: "#a579ef",
+  raise: "#fa5b9b",
+});
+
 export function label(a) {
+  if (a === "raise_ai") return "レイズ（AI選択サイズ）";
   return ({fold:"フォールド",call:"コール",check:"チェック",all_in:"オールイン"})[a] ?? a.replace("raise_","レイズ ").replaceAll("_",".")+" BB";
 }
-export function color(a, index=0) {
-  return a==="fold" ? "#50565f" : a==="call" ? "#55c6d8" : a==="check" ? "#8b9caf" : a==="all_in" ? "#a579ef" : ["#fa5b9b","#c74786","#ed86b0"][index%3];
+export function color(a) {
+  return a?.startsWith("raise_") ? ACTION_COLORS.raise : ACTION_COLORS[a] ?? ACTION_COLORS.raise;
 }
 function actionName(item) {
   return typeof item === "string" ? item : item?.action ?? "";
 }
 function actionSortKey(action) {
   if (action === "all_in") return [0, 0, action];
+  if (action === "raise_ai") return [1, 0, action];
   if (action.startsWith("raise_")) {
     const size = Number(action.slice("raise_".length));
     return [1, Number.isFinite(size) ? -size : 0, action];

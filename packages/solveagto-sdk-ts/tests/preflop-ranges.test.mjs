@@ -42,12 +42,16 @@ test("deterministic provider generates the BTN open range", () => {
 test("deterministic provider generates the BB response range", () => {
   const range = new DeterministicPreflopRangeProvider().generate({ spot: "bb_vs_btn_open" });
   assert.equal(range.spot.label, "BB vs BTN Open 2.5BB");
-  assert.equal(range.spot.threeBetSizeBb, 10);
+  assert.deepEqual(range.spot.raiseSizesBb, [9, 9.5, 10, 10.5, 11]);
   assertCompleteRange(range, ["fold", "call", "three_bet"]);
   assert.deepEqual(new Set(Object.keys(BB_VS_BTN_OPEN_AI_RESPONSES)), new Set(STARTING_HANDS));
-  assert.deepEqual(range.hands.find(({ hand }) => hand === "AKo").frequencies, { fold: 0, call: 0, three_bet: 100 });
+  assert.deepEqual(range.hands.find(({ hand }) => hand === "AKo").frequencies, { fold: 0, call: 25, three_bet: 75 });
+  assert.equal(range.hands.find(({ hand }) => hand === "AKo").raiseSizeBb, 10);
+  assert.match(range.hands.find(({ hand }) => hand === "AKo").reason, /75%.*10BB.*25%/);
   assert.deepEqual(range.hands.find(({ hand }) => hand === "42o").frequencies, { fold: 100, call: 0, three_bet: 0 });
-  assert.ok(range.hands.every(({ frequencies }) => Object.values(frequencies).filter(value => value > 0).length === 1));
+  assert.match(range.hands.find(({ hand }) => hand === "42o").reason, /フォールド100%/);
+  assert.ok(range.hands.every(({ frequencies }) => Object.values(frequencies).every(value => value % 25 === 0)));
+  assert.ok(range.hands.filter(({ frequencies }) => frequencies.three_bet > 0).every(({ raiseSizeBb }) => Number.isFinite(raiseSizeBb)));
   assert.ok(range.hands.every(({ reason }) => typeof reason === "string" && reason.length > 0));
 });
 

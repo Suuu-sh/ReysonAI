@@ -28,7 +28,7 @@ export function StrategyMatrix({ node, aggregates, selected, filter, actions, on
                 <strong>{hand}</strong>
                 {filter !== "all" && <small>{aggregate.comboCount && Number.isFinite(aggregate.actions[filter]) ? pct(aggregate.actions[filter]) : ""}</small>}
                 <div className="cell-mix" aria-hidden="true">
-                  {actions.map((action, index) => <span key={action} style={{ width: pct(aggregate.actions[action] ?? 0), background: color(action, index), opacity: filter === "all" || filter === action ? 1 : 0.15 }} />)}
+                  {actions.map(action => <span key={action} style={{ width: pct(aggregate.actions[action] ?? 0), background: color(action), opacity: filter === "all" || filter === action ? 1 : 0.15 }} />)}
                 </div>
               </button>
             );
@@ -36,7 +36,7 @@ export function StrategyMatrix({ node, aggregates, selected, filter, actions, on
         </div>
       </div>
       <div className="legend">
-        {actions.map((action, index) => <span key={action}><i style={{ background: color(action, index) }} />{label(action)}</span>)}
+        {actions.map(action => <span key={action}><i style={{ background: color(action) }} />{label(action)}</span>)}
       </div>
     </Panel>
   );

@@ -13,9 +13,11 @@ test("action order puts all-in and larger raises on the left and fold on the rig
  assert.deepEqual(totals([{actions:actions.map(action=>({action,frequency:1}))}]).map(item=>item.action),actions);
 });
 
-test("call and raise use distinct visual colors",()=>{
+test("range-table action colors are stable across action order and raise size",()=>{
+ assert.equal(color("call", 0),color("call", 2));
+ assert.equal(color("raise_2.5"),color("raise_10"));
+ assert.equal(color("raise_10"),color("raise_ai"));
  assert.notEqual(color("call"),color("raise_2.5"));
- assert.notEqual(color("call"),color("raise_10"));
 });
 test("missing results never synthesize a strategy",()=>{assert.deepEqual(totals([]),[]);assert.equal(expectedValue([]),null);assert.equal(pct(null),"未計算")});
 test("hand aggregates keep combo-weighted action frequencies",()=>{

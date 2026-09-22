@@ -256,15 +256,17 @@ UIは環境によって接続先を切り替えます。ローカルでは同一
 Cloudflare Edge API Workerへ接続します。どちらの場合もUIからSolverを直接起動しません。
 仮データへのフォールバックはありません。空・読み込み中・失敗を区別し、失敗時は再試行できます。
 
-初期表示は `AI推定レンジ` です。6-max / effective stack 100BB / BTN open 2.5BB の
+初期表示は `推定レンジ` です。6-max / effective stack 100BB / BTN open 2.5BB の
 `BTN Open` と `BB vs BTN Open` を、TypeScript SDKの
 `PreflopRangeProvider`から生成した169 Hand Matrixで切り替えられます。現在のproviderは
-明示的なAI知識ベース回答データ（`ai-knowledge-response`）を返し、BBの3betは10BB固定です。
-BTN OpenとBB responseの169パターンを個別の頻度値として保持し、BB responseは初期段階では
-3bet / call / foldのいずれかを明確に選ぶ単純化レンジにしています。選択ハンドごとの理由も
+明示的なAI知識ベース回答データ（`ai-knowledge-response`）を返します。BTNのopenは2.5BB固定、
+BBの3betサイズはハンドごとの回答データに含め、9 / 9.5 / 10 / 10.5 / 11BBからAI推定として
+選択します。BTN OpenとBB responseの169パターンを個別の頻度値として保持し、BB responseは
+境界ハンドだけ25%刻みでfold / callを混ぜる単純化レンジにしています。選択ハンドごとの理由も
 別データとして表示します。後からLLMの構造化JSON回答に差し替えられるprovider境界にしています。
-この表示は **AI推定レンジであり、GTO計算結果ではありません**。実際のSolver成果物は
-`保存済みSolution`へ切り替えた場合だけRust APIから読み取ります。
+現時点のデータは実際のLLM呼び出しやGTO計算ではなく、質問回答を構造化した決定的な推定データです。
+この表示は **推定レンジであり、GTO計算結果ではありません**。保存済みの推定レンジは
+`保存済み推定レンジ`へ切り替えた場合にRust APIから読み取ります。
 
 - Solution選択 → 局面タイプ・オープン位置・対応位置で局面設定 → 169ハンド選択
 - 初期Configではオープンを2.5BBだけ生成。2BB/3BBは計算量を抑えるため生成しない

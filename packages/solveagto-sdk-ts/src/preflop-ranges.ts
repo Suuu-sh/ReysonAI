@@ -9,6 +9,7 @@ export type AiRangeAction = "open" | "fold" | "call" | "three_bet";
 export type AiRangeHand = {
   hand: string;
   frequencies: Partial<Record<AiRangeAction, number>>;
+  raiseSizeBb?: number;
   reason?: string;
 };
 
@@ -18,13 +19,13 @@ export type AiRangeSpot = {
   opener: "BTN";
   defender?: "BB";
   openSizeBb: 2.5;
-  threeBetSizeBb?: 10;
+  raiseSizesBb?: number[];
 };
 
 export type AiRangeProviderMetadata = {
   kind: "deterministic_seed";
   name: "ai-knowledge-response";
-  version: "v0.2";
+  version: "v0.3";
   seed: string;
 };
 
@@ -73,6 +74,7 @@ function makeRange(request: AiRangeRequest, seed: string): AiPreflopRange {
         label: "BTN Open 2.5BB",
         opener: "BTN" as const,
         openSizeBb: 2.5 as const,
+        raiseSizesBb: [2.5],
       }
     : {
         id: "bb_vs_btn_open" as const,
@@ -80,16 +82,21 @@ function makeRange(request: AiRangeRequest, seed: string): AiPreflopRange {
         opener: "BTN" as const,
         defender: "BB" as const,
         openSizeBb: 2.5 as const,
-        threeBetSizeBb: 10 as const,
+        raiseSizesBb: [9, 9.5, 10, 10.5, 11],
       };
   const isBtnOpen = request.spot === "btn_open";
   const responses = isBtnOpen ? BTN_OPEN_AI_RESPONSES : BB_VS_BTN_OPEN_AI_RESPONSES;
   const reasons = isBtnOpen ? BTN_OPEN_AI_REASONS : BB_VS_BTN_OPEN_AI_REASONS;
-  const hands = STARTING_HANDS.map(hand => ({
-    hand,
-    frequencies: responses[hand]!,
-    reason: reasons[hand]!,
-  }));
+  const hands = STARTING_HANDS.map(hand => {
+    const response = responses[hand]!;
+    const { three_bet_size_bb: raiseSizeBb, ...frequencies } = response;
+    return {
+      hand,
+      frequencies,
+      ...(raiseSizeBb === undefined ? {} : { raiseSizeBb }),
+      reason: reasons[hand]!,
+    };
+  });
   return {
     schemaVersion: "solveagto.ai-preflop-range.v1",
     status: "ai_estimated",
@@ -103,7 +110,7 @@ function makeRange(request: AiRangeRequest, seed: string): AiPreflopRange {
     provider: {
       kind: "deterministic_seed",
       name: "ai-knowledge-response",
-      version: "v0.2",
+      version: "v0.3",
       seed,
     },
     hands,
@@ -128,6 +135,9 @@ export function validateAiRange(range: AiPreflopRange): AiRangeValidation {
     }
     const total = numericValues.reduce((sum, value) => sum + value, 0);
     if (Math.abs(total - 100) > 1e-6) errors.push(`${item.hand} frequencies sum to ${total}`);
+    if (item.frequencies.three_bet && (!Number.isFinite(item.raiseSizeBb) || (item.raiseSizeBb ?? 0) <= 0)) {
+      errors.push(`${item.hand} has 3bet frequency but no AI-selected raise size`);
+    }
   }
   return { valid: errors.length === 0, errors };
 }
@@ -139,7 +149,7 @@ export function assertValidAiRange(range: AiPreflopRange) {
 }
 
 export class DeterministicPreflopRangeProvider implements PreflopRangeProvider {
-  constructor(private readonly seed = "solveagto-ai-knowledge-response-v0.2") {}
+  constructor(private readonly seed = "solveagto-ai-knowledge-response-v0.3") {}
 
   generate(request: AiRangeRequest): AiPreflopRange {
     if (request.effectiveStackBb !== undefined && request.effectiveStackBb !== 100) {

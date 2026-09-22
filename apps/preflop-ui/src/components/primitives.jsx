@@ -18,11 +18,11 @@ export function ActionBars({ items }) {
 
   return (
     <div className="bars">
-      {items.map((item, index) => (
+      {items.map(item => (
         <div className="bar-row" key={item.action}>
-          <span><i style={{ background: color(item.action, index) }} />{label(item.action)}</span>
+          <span><i style={{ background: color(item.action) }} />{label(item.action)}</span>
           <div className="track" aria-hidden="true">
-            <div style={{ width: pct(item.frequency), background: color(item.action, index) }} />
+            <div style={{ width: pct(item.frequency), background: color(item.action) }} />
           </div>
           <b>{pct(item.frequency)}</b>
         </div>
