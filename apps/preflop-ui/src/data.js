@@ -10,7 +10,7 @@ const ACTION_COLORS = Object.freeze({
 });
 
 export function label(a) {
-  if (a === "raise_ai") return "レイズ（AI選択サイズ）";
+  if (a === "raise_ai") return "レイズ（推定サイズ）";
   return ({fold:"フォールド",call:"コール",check:"チェック",all_in:"オールイン"})[a] ?? a.replace("raise_","レイズ ").replaceAll("_",".")+" BB";
 }
 export function color(a) {

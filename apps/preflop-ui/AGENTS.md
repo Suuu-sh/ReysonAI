@@ -10,13 +10,13 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ## Current visual and data source
 - Use the user's 2026-09-22 black/pink SolveaGTO image as visual direction, not the earlier GTOWizard screenshot.
-- The default AI Estimated view may use the deterministic provider output from the shared TypeScript range provider. BTN Open and BB response data are explicit structured per-hand answers for this milestone; show the selected hand's beginner-friendly reason in a separate block. The saved-Solution view must display only saved API results and never substitute mock strategies on missing data or failure.
-- Keep the AI Estimated / unverified-GTO warning visible for AI-generated ranges and provisional saved solutions.
+- The single Estimated Range view must load only the persisted JSON dataset under `src/estimated/preflop-ranges.json`. Do not render a separate saved-range or API view, and never substitute client-generated provider output or mock strategies when the dataset is missing or invalid.
+- Keep the estimated-range status visible in the page metadata, but do not add a separate warning banner above the range.
 - No postflop, billing, or on-demand solve controls in this milestone.
 - Prefer a compact desktop layout fitting the default results view within one screen (verified at 1280×720); keep dense Combo tables internally scrollable and never hide the experimental warning.
 - Keep the primary sidebar centered on `プリフロップ`. Future product areas may appear as clearly disabled `準備中` placeholders, while hand details and calculation metadata remain out of the top-level navigation.
 
 ## Durable UI feedback
 - Range-table action colors must keep `raise` and `call` visually distinct; avoid assigning both actions near-identical pink hues.
-- The AI Estimated view does not need an all-hand action-frequency panel; keep the selected-hand action breakdown instead.
+- The Estimated Range view does not need an all-hand action-frequency panel; keep the selected-hand action breakdown instead.
 - Range-table action strips should be ordered left to right as all-in, raise, call, then fold.

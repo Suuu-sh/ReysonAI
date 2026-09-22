@@ -57,22 +57,6 @@ export function Sidebar({ activeSection, onSectionChange }) {
   );
 }
 
-export function SolutionStatusNotice({ solution }) {
-  const verified = solution?.validation?.gtoVerified === true
-    && solution.validation.status === "gto_verified";
-
-  return (
-    <div className={`notice ${verified ? "notice-verified" : "notice-provisional"}`} role="note">
-      <strong>{verified ? "GTO検証済み" : "暫定推定レンジ"}</strong>
-      <span>
-        {verified
-          ? "形式・継続価値・Exploitabilityの検証を通過しています。"
-          : "保存済み推定レンジです。postflop継続価値は暫定モデルで、完全なGTOとしては扱いません。"}
-      </span>
-    </div>
-  );
-}
-
 export function AppFooter() {
   return (
     <footer className="app-footer">

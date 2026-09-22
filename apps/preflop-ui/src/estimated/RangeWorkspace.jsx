@@ -1,10 +1,8 @@
 import { useMemo, useState } from "react";
-import { App } from "../App.jsx";
 import { AppFooter, Sidebar } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { ActionBars, Field, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.jsx";
 import source from "./preflop-ranges.json";
-import downloadUrl from "./preflop-ranges.json?url";
 import { availableHeroes, findSpot, matrixModel, positions, validateDataset } from "./ranges.js";
 import "./ranges.css";
 
@@ -38,11 +36,10 @@ function EstimatedRanges() {
           <Field label="Hero"><select value={hero} onChange={e => { setHero(e.target.value); setFilter("all"); }}>
             {availableHeroes(opener).map(p => <option key={p}>{p}</option>)}
           </select></Field>
-          <a href={downloadUrl} download="preflop-ranges.json">JSONを保存</a>
         </Panel>
         <div className="estimate-context">
           <strong>{hero} vs {opener} · {spot.hero_position_vs_opener}</strong>
-          <span>全15局面 / 各169ハンド · AI推定・GTO計算なし</span>
+          <span>全15局面 / 各169ハンド · 推定データ・GTO計算なし</span>
         </div>
         <div className="results estimate-results">
           <StrategyMatrix node={{ actingPosition: hero }} aggregates={model.aggregates} actions={model.actions}
@@ -73,12 +70,5 @@ function EstimatedRanges() {
 }
 
 export function RangeWorkspace() {
-  const [view, setView] = useState("estimate");
-  return <div className="range-workspace">
-    <nav className="range-source-switch" aria-label="レンジの表示元">
-      <button aria-pressed={view === "estimate"} onClick={() => setView("estimate")}>推定レンジ（JSON）</button>
-      <button aria-pressed={view === "api"} onClick={() => setView("api")}>既存のAPI表示</button>
-    </nav>
-    {view === "estimate" ? <EstimatedRanges /> : <App />}
-  </div>;
+  return <EstimatedRanges />;
 }

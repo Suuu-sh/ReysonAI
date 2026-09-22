@@ -4,12 +4,10 @@ import { Field, Panel } from "./primitives.jsx";
 
 export function SpotSettings({
   solutions,
-  solutionId,
   spot,
   stackBb,
   loading,
   validation,
-  onSolutionChange,
   onStackChange,
   onSpotChange,
   onDisplay,
@@ -22,24 +20,17 @@ export function SpotSettings({
 
   return (
     <Panel className="settings matchup-settings">
-      <div className="solution-setting">
-        <h3>保存済み推定レンジ</h3>
-        <Field label="推定レンジ">
-          <select aria-label="推定レンジ" value={solutionId} onChange={event => onSolutionChange(event.target.value)} disabled={!solutions.length}>
-            {!solutions.length && <option value="">保存済み推定レンジなし</option>}
-            {!solutionId && solutions.length > 0 && <option value="">このスタックの保存済み推定レンジなし</option>}
-            {solutions.map(solution => <option key={solution.solutionId} value={solution.solutionId}>{solution.solutionId}</option>)}
-          </select>
-        </Field>
-        <Field label="所持スタック">
-          <select aria-label="所持スタック" value={stackBb} onChange={event => onStackChange(Number(event.target.value))}>
+      <div className="range-setting">
+        <h3>推定レンジ</h3>
+        <Field label="有効スタック">
+          <select aria-label="有効スタック" value={stackBb} onChange={event => onStackChange(Number(event.target.value))}>
             {STACK_OPTIONS.map(option => {
               const available = solutions.some(solution => solutionStackBb(solution) === option);
-              return <option key={option} value={option}>{option} BB{available ? "" : "（未計算）"}</option>;
+              return <option key={option} value={option}>{option} BB{available ? "" : "（未提供）"}</option>;
             })}
           </select>
         </Field>
-        <small>保存データから取得 · 閲覧時の計算なし</small>
+        <small>提供済みの推定データから取得 · 閲覧時の計算なし</small>
       </div>
 
       <div className="spot-setting">

@@ -5,7 +5,6 @@ import { StrategyMatrix } from "./StrategyMatrix.jsx";
 
 export function ResultsView({ section, node, solution, combos, aggregates, selected, filter, actions, onSelect, onFilterChange }) {
   const chosen = combos.filter(combo => combo.hand === selected);
-  const mix = totals(combos);
   const chosenMix = totals(chosen);
   const ev = expectedValue(chosen);
   const validation = solution?.validation;
@@ -14,14 +13,6 @@ export function ResultsView({ section, node, solution, combos, aggregates, selec
   return (
     <div className={`results ${showMatrix ? "" : "detail-only"} ${!showMatrix ? "has-combos" : ""}`}>
       {showMatrix && <StrategyMatrix node={node} aggregates={aggregates} selected={selected} filter={filter} actions={actions} onSelect={onSelect} onFilterChange={onFilterChange} />}
-
-      <div className="summary-column">
-        <Panel>
-          <SectionHeading title="アクション頻度（全Combo）" />
-          <ActionBars items={mix} />
-          <small>保存されたComboを等重みで集計。到達レンジ加重ではありません。</small>
-        </Panel>
-      </div>
 
       {chosen.length > 0 && <div className="detail-column">
         <Panel>
