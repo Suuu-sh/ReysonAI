@@ -18,4 +18,3 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ## Durable UI feedback
 - Range-table action colors must keep `raise` and `call` visually distinct; avoid assigning both actions near-identical pink hues.
-- In the main results layout, keep all-hand action frequency/summary on the left, the range matrix in the center, and selected-hand details/action breakdown on the right.

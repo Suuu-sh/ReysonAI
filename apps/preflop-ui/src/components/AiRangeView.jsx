@@ -8,7 +8,7 @@ const DISPLAY_ACTIONS = {
   open: "raise_2.5",
   fold: "fold",
   call: "call",
-  three_bet: "raise_ai",
+  three_bet: "raise_10",
 };
 
 const HAND_COMBO_COUNTS = new Map(hands.map(hand => [
@@ -25,7 +25,6 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
   const aggregates = new Map(range.hands.map(item => [item.hand, {
     hand: item.hand,
     comboCount: HAND_COMBO_COUNTS.get(item.hand) ?? 0,
-    raiseSizeBb: item.raiseSizeBb,
     reason: item.reason,
     actions: Object.fromEntries(range.actions.map(action => [
       DISPLAY_ACTIONS[action], (item.frequencies[action] ?? 0) / 100,
@@ -68,13 +67,21 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
           <button aria-pressed={activeSpot === "bb_vs_btn_open"} onClick={() => changeSpot("bb_vs_btn_open")}>BB vs BTN Open</button>
         </div>
         <small className="ai-range-provider">
-          Provider: {range.provider.name} / {activeSpot === "bb_vs_btn_open"
-            ? `3bet: AI選択 (${range.spot.raiseSizesBb?.join(" / ")}BB)`
-            : "open: 2.5BB固定"}
+          Provider: {range.provider.name} / {activeSpot === "bb_vs_btn_open" ? `3bet: ${range.spot.threeBetSizeBb}BB固定` : "open: 2.5BB固定"}
         </small>
       </Panel>
 
       <div className="results ai-range-results">
+        <StrategyMatrix
+          node={node}
+          aggregates={aggregates}
+          selected={selected}
+          filter={filter}
+          actions={actions}
+          onSelect={setSelected}
+          onFilterChange={setFilter}
+        />
+
         <div className="summary-column">
           <Panel>
             <SectionHeading title="アクション頻度（全ハンド）" />
@@ -91,23 +98,12 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
           </Panel>
         </div>
 
-        <StrategyMatrix
-          node={node}
-          aggregates={aggregates}
-          selected={selected}
-          filter={filter}
-          actions={actions}
-          onSelect={setSelected}
-          onFilterChange={setFilter}
-        />
-
         <div className="detail-column">
           <Panel>
             <SectionHeading title="選択ハンドの詳細" />
             <div className="hand-title"><strong>{selected}</strong><span>{HAND_COMBO_COUNTS.get(selected) ?? 0} Combos</span></div>
             <StatList items={[
               { label: "局面", value: range.spot.label },
-              { label: "AI選択3betサイズ", value: chosen?.raiseSizeBb ? `${chosen.raiseSizeBb} BB` : "—" },
               { label: "評価状態", value: "AI推定レンジ" },
             ]} />
           </Panel>

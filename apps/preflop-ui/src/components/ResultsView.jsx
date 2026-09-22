@@ -14,6 +14,8 @@ export function ResultsView({ section, node, solution, combos, aggregates, selec
 
   return (
     <div className={`results ${showMatrix ? "" : "detail-only"} ${!showMatrix ? "has-combos" : ""}`}>
+      {showMatrix && <StrategyMatrix node={node} aggregates={aggregates} selected={selected} filter={filter} actions={actions} onSelect={onSelect} onFilterChange={onFilterChange} />}
+
       <div className="summary-column">
         <Panel>
           <SectionHeading title="アクション頻度（全Combo）" />
@@ -32,8 +34,6 @@ export function ResultsView({ section, node, solution, combos, aggregates, selec
           ]} />
         </Panel>
       </div>
-
-      {showMatrix && <StrategyMatrix node={node} aggregates={aggregates} selected={selected} filter={filter} actions={actions} onSelect={onSelect} onFilterChange={onFilterChange} />}
 
       {chosen.length > 0 && <div className="detail-column">
         <Panel>
