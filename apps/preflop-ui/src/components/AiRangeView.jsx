@@ -72,17 +72,6 @@ export function AiRangeView({ activeSpot, onSpotChange }) {
           onFilterChange={setFilter}
         />
 
-        <div className="summary-column">
-          <Panel>
-            <SectionHeading title="レンジの概要" />
-            <StatList items={[
-              { label: "ハンドクラス", value: "169 / 169" },
-              { label: "Provider", value: range.provider.name },
-              { label: "ステータス", value: "AI推定" },
-            ]} />
-          </Panel>
-        </div>
-
         <div className="detail-column">
           <Panel>
             <SectionHeading title="選択ハンドの詳細" />

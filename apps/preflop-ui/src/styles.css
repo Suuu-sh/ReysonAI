@@ -165,6 +165,7 @@ main { display: flex; flex-direction: column; min-width: 0; padding: 12px 14px; 
 .tabs > span svg { color: var(--accent); }
 
 .results { display: grid; grid-template-columns: minmax(350px, 1.65fr) minmax(210px, 1fr) minmax(210px, 1fr); gap: 8px; }
+.ai-range-results { grid-template-columns: minmax(350px, 1.65fr) minmax(210px, 1fr); }
 .summary-column, .detail-column { display: grid; align-content: start; gap: 8px; min-width: 0; }
 .matrix-panel { display: flex; flex-direction: column; min-height: 0; }
 .matrix-scroll { flex: 1; min-height: 0; overflow: auto; padding: 2px; }
@@ -249,6 +250,7 @@ th small { display: block; }
   .settings.matchup-settings { grid-template-columns: minmax(145px, 1fr) minmax(175px, 1.6fr) auto; gap: 8px; }
   .settings > div + div { padding-left: 8px; }
   .results { grid-template-columns: minmax(350px, 1.6fr) minmax(175px, 1fr) minmax(175px, 1fr); }
+  .ai-range-results { grid-template-columns: minmax(350px, 1.6fr) minmax(175px, 1fr); }
   .bar-row { grid-template-columns: minmax(65px, 1fr) minmax(25px, .65fr) 44px; gap: 5px; font-size: 11px; }
   .panel { padding: 10px; }
   .notice span { font-size: 11px; }
