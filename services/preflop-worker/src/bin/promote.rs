@@ -1,6 +1,6 @@
 use preflop_tree::PreflopConfig;
 use serde_json::json;
-use solution::{hash_game_config, Solution};
+use solution::{validate_solution, Solution};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -36,7 +36,10 @@ fn run() -> Result<(), String> {
     let solution: Solution = serde_json::from_str(&solution_json)
         .map_err(|error| format!("invalid solution JSON: {error}"))?;
 
-    validate(&config, &solution)?;
+    let validation = validate_solution(&config, &solution)?;
+    let solution = solution.with_validation(validation);
+    let solution_json =
+        serde_json::to_string_pretty(&solution).map_err(|error| error.to_string())?;
 
     let solutions_dir = release_dir.join("solutions");
     fs::create_dir_all(&solutions_dir).map_err(|error| error.to_string())?;
@@ -55,6 +58,8 @@ fn run() -> Result<(), String> {
         "solverVersion": solution.solver_version,
         "continuationModelVersion": solution.continuation_model_version,
         "iterations": solution.iterations,
+        "convergence": solution.convergence,
+        "validation": solution.validation,
         "createdAt": solution.created_at,
         "promotedAt": promoted_at,
         "artifactHash": fnv1a(solution_json.as_bytes()),
@@ -121,70 +126,6 @@ fn write_edge_artifacts(
         "nodesIndex": format!("solutions/{}/nodes/index.json", solution.solution_id),
         "nodesPrefix": format!("solutions/{}/nodes/", solution.solution_id),
     }))
-}
-
-fn validate(config: &PreflopConfig, solution: &Solution) -> Result<(), String> {
-    let expected_hash = hash_game_config(config);
-    if solution.game_config_hash != expected_hash {
-        return Err(format!(
-            "gameConfigHash mismatch: expected {expected_hash}, found {}",
-            solution.game_config_hash
-        ));
-    }
-    if solution.iterations != config.solver.iterations {
-        return Err(format!(
-            "iteration mismatch: expected {}, found {}",
-            config.solver.iterations, solution.iterations
-        ));
-    }
-    if solution.nodes.is_empty() {
-        return Err("solution has no nodes".to_string());
-    }
-
-    let strategy_nodes = solution
-        .nodes
-        .iter()
-        .filter(|node| !node.combos.is_empty())
-        .collect::<Vec<_>>();
-    if strategy_nodes.is_empty() {
-        return Err("solution has no strategy nodes".to_string());
-    }
-    for node in strategy_nodes {
-        if node.combos.len() != 1326 {
-            return Err(format!(
-                "node {} has {} combos; expected 1326",
-                node.node_id,
-                node.combos.len()
-            ));
-        }
-        for combo in &node.combos {
-            if combo.actions.is_empty() {
-                return Err(format!(
-                    "node {} combo {} has no actions",
-                    node.node_id, combo.combo
-                ));
-            }
-            let frequency_sum = combo.actions.iter().try_fold(0.0, |sum, action| {
-                if !action.frequency.is_finite()
-                    || !(0.0..=1.0).contains(&action.frequency)
-                    || !action.ev_bb.is_finite()
-                {
-                    return Err(format!(
-                        "node {} combo {} has invalid action values",
-                        node.node_id, combo.combo
-                    ));
-                }
-                Ok(sum + action.frequency)
-            })?;
-            if (frequency_sum - 1.0_f64).abs() > 1e-6 {
-                return Err(format!(
-                    "node {} combo {} frequencies sum to {frequency_sum}",
-                    node.node_id, combo.combo
-                ));
-            }
-        }
-    }
-    Ok(())
 }
 
 fn write_atomic(path: &Path, content: &[u8]) -> Result<(), String> {

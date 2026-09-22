@@ -69,11 +69,27 @@ export function PageHeader() {
   );
 }
 
+export function SolutionStatusNotice({ solution }) {
+  const verified = solution?.validation?.gtoVerified === true
+    && solution.validation.status === "gto_verified";
+
+  return (
+    <div className={`notice ${verified ? "notice-verified" : "notice-provisional"}`} role="note">
+      <strong>{verified ? "GTO検証済み" : "暫定戦略"}</strong>
+      <span>
+        {verified
+          ? "形式・継続価値・Exploitabilityの検証を通過しています。"
+          : "postflop継続価値は暫定モデルです。完全なGTOとしては扱いません。"}
+      </span>
+    </div>
+  );
+}
+
 export function AppFooter() {
   return (
     <footer className="app-footer">
       <span>SolveaGTO v0.1</span>
-      <span>保存済みデータ専用 · 実験モデル</span>
+      <span>保存済みデータ専用 · 暫定戦略</span>
     </footer>
   );
 }

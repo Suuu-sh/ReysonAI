@@ -200,6 +200,8 @@ function manifestSummary(manifest) {
     gameConfigHash: manifest.gameConfigHash,
     createdAt: manifest.createdAt,
     iterations: manifest.iterations,
+    convergence: manifest.convergence,
+    validation: manifest.validation,
   };
 }
 

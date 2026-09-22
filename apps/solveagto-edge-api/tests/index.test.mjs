@@ -12,6 +12,16 @@ const artifact = {
   createdAt: "2026-09-22T00:00:00Z",
   iterations: 1000,
   convergence: { iterations: 1000, averageStrategyDelta: 0.01, exploitability: 0.1 },
+  validation: {
+    status: "provisional",
+    formatValid: true,
+    fullComboCoverage: true,
+    frequencyIntegrity: true,
+    evIntegrity: true,
+    exploitabilityStatus: "sampled_estimate",
+    gtoVerified: false,
+    notes: [],
+  },
   nodes: [
     {
       nodeId: "root",
@@ -59,6 +69,8 @@ const manifest = {
   gameConfigHash: artifact.gameConfigHash,
   iterations: artifact.iterations,
   createdAt: artifact.createdAt,
+  convergence: artifact.convergence,
+  validation: artifact.validation,
   artifact: `solutions/${solutionId}.json`,
   edge: {
     summary: `solutions/${solutionId}/summary.json`,
@@ -118,6 +130,8 @@ test("lists and reads the published R2 solution", async () => {
     gameConfigHash: artifact.gameConfigHash,
     createdAt: artifact.createdAt,
     iterations: 1000,
+    convergence: artifact.convergence,
+    validation: artifact.validation,
   }]);
 
   const response = await request(`/v1/preflop/solutions/${solutionId}`);

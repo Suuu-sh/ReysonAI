@@ -105,6 +105,8 @@ main { display: flex; flex-direction: column; min-width: 0; padding: 12px 14px; 
 }
 .notice strong { font-weight: 650; white-space: nowrap; }
 .notice span { color: #beb3bc; }
+.notice-verified { border-color: #3f6e61; background: #17231f; color: #a8ebd1; }
+.notice-verified span { color: #b8d7cb; }
 
 .panel {
   min-width: 0;
@@ -166,6 +168,10 @@ main { display: flex; flex-direction: column; min-width: 0; padding: 12px 14px; 
 .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-size: 11px; }
 .legend span, .bar-row > span { display: flex; align-items: center; gap: 8px; }
 i { display: inline-block; width: 12px; height: 12px; flex-shrink: 0; border-radius: 3px; }
+.combo-disclosure { grid-column: 1 / -1; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.combo-disclosure > summary { padding: 10px 12px; cursor: pointer; color: var(--text-muted); font-size: 12px; }
+.combo-disclosure[open] > summary { border-bottom: 1px solid var(--line); color: var(--accent-bright); }
+.combo-disclosure .panel { border: 0; box-shadow: none; }
 
 .bars { display: grid; gap: 14px; margin: 12px 0; }
 .bar-row { display: grid; grid-template-columns: minmax(75px, 1fr) minmax(45px, 1fr) 48px; align-items: center; gap: 10px; font-size: 12px; }

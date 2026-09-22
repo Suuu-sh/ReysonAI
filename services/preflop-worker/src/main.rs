@@ -1,7 +1,5 @@
 use preflop_tree::PreflopConfig;
-use solveagto_job_queue::{
-    next_job_id, queue_from_environment, JobQueue, SolveJob,
-};
+use solveagto_job_queue::{next_job_id, queue_from_environment, JobQueue, SolveJob};
 use solveagto_worker::{save, solve, SolveRequest};
 use std::env;
 use std::fs;
@@ -46,7 +44,14 @@ fn run_single(args: &[String]) -> Result<(), String> {
     println!("Game: {} {}-max", config.game, config.players);
     println!("Stack: {}BB", config.stack_bb);
     println!();
-    let solution = solve_with_progress(SolveRequest { solution_id, config })?;
+    let solution = solve_with_progress(SolveRequest {
+        solution_id,
+        config,
+    })?;
+    println!(
+        "Validation: structural checks passed; status=provisional, gto_verified={}",
+        solution.validation.gto_verified
+    );
     println!();
     println!("Solution Save: {output_dir}/{}.json", solution.solution_id);
     save(&solution, &output_dir)?;
@@ -138,6 +143,10 @@ fn process_job(queue: &dyn JobQueue, job: SolveJob) -> Result<(), String> {
             queue.complete(&job.job_id)?;
             println!("Job succeeded: {}", job.job_id);
             println!(
+                "Validation: structural checks passed; status=provisional, gto_verified={}",
+                solution.validation.gto_verified
+            );
+            println!(
                 "Solution: {}/{}.json",
                 job.solution_dir.display(),
                 solution.solution_id
@@ -217,20 +226,15 @@ fn solve_with_progress(request: SolveRequest) -> Result<solution::Solution, Stri
     println!();
     println!("Solver Start ({})", request.config.solver.strategy);
     let mut last_reported = 0;
-    solve(
-        request,
-        &mut |progress| {
-            if progress.iteration != last_reported || progress.exploitability > 0.0 {
-                println!(
-                    "Iteration: {} (average strategy delta: {:.6}, exploitability: {:.6})",
-                    progress.iteration,
-                    progress.average_strategy_delta,
-                    progress.exploitability
-                );
-                last_reported = progress.iteration;
-            }
-        },
-    )
+    solve(request, &mut |progress| {
+        if progress.iteration != last_reported || progress.exploitability > 0.0 {
+            println!(
+                "Iteration: {} (average strategy delta: {:.6}, exploitability: {:.6})",
+                progress.iteration, progress.average_strategy_delta, progress.exploitability
+            );
+            last_reported = progress.iteration;
+        }
+    })
 }
 
 fn option_value<'a>(args: &'a [String], option: &str) -> Option<&'a str> {

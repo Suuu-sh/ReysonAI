@@ -2,9 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SolveaGTOApiError, SolveaGTOClient } from "../../../packages/solveagto-sdk-ts/src/index.ts";
 import { handAggregates, sortActions, strategyCombos } from "./data.js";
 import { solutionForStack, solutionStackBb, spotRequest, spotTitle } from "./spot.js";
-import { AppFooter, PageHeader, Sidebar } from "./components/layout.jsx";
-import { ExplorerTabs } from "./components/ExplorerTabs.jsx";
-import { MetadataPanel } from "./components/MetadataPanel.jsx";
+import { AppFooter, PageHeader, Sidebar, SolutionStatusNotice } from "./components/layout.jsx";
 import { ResultsView } from "./components/ResultsView.jsx";
 import { SpotSettings } from "./components/SpotSettings.jsx";
 import { StatusState } from "./components/primitives.jsx";
@@ -24,7 +22,6 @@ export function App() {
   const [result, setResult] = useState(null);
   const [selected, setSelected] = useState("AKs");
   const [filter, setFilter] = useState("all");
-  const [tab, setTab] = useState("結果");
   const [section, setSection] = useState("プリフロップ");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState("");
@@ -138,6 +135,7 @@ export function App() {
       <Sidebar activeSection={section} onSectionChange={setSection} />
       <main>
         <PageHeader />
+        <SolutionStatusNotice solution={solution} />
         <SpotSettings
           solutions={solutions}
           solutionId={solutionId}
@@ -167,24 +165,20 @@ export function App() {
 
         {!loading && !error && !validation && !missing && node && (
           <>
-            <ExplorerTabs activeTab={tab} spotLabel={spotTitle(spot)} actingPosition={node.actingPosition} onTabChange={setTab} />
-            {section === "計算情報"
-              ? <MetadataPanel solution={solution} />
-              : !combos.length
-                ? <StatusState>この局面には保存済みの戦略データがありません。</StatusState>
-                : <ResultsView
-                  section={section}
-                  tab={tab}
-                  node={node}
-                  solution={solution}
-                  combos={combos}
-                  aggregates={aggregates}
-                  selected={selected}
-                  filter={filter}
-                  actions={actions}
-                  onSelect={setSelected}
-                  onFilterChange={setFilter}
-                />}
+            {!combos.length
+              ? <StatusState>この局面には保存済みの戦略データがありません。</StatusState>
+              : <ResultsView
+                section={section}
+                node={node}
+                solution={solution}
+                combos={combos}
+                aggregates={aggregates}
+                selected={selected}
+                filter={filter}
+                actions={actions}
+                onSelect={setSelected}
+                onFilterChange={setFilter}
+              />}
           </>
         )}
         <AppFooter />

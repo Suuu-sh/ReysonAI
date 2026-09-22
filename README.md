@@ -76,11 +76,13 @@ cargo run --release -p solveagto-worker -- \
 Worker の責務は次の順序です。
 
 ```text
-Config Load → Game Tree Build → Solver Start → Iterations → Solution Build → Solution Save
+Config Load → Game Tree Build → Solver Start → Iterations → Solution Build → Structural Validation → Solution Save
 ```
 
-生成結果を本番配布用Artifactへ昇格する前に、Config hash、反復数、1326 Combo、
-Action frequency、有限値を検証します。
+Workerは保存前にConfig hash、反復数、1326 Combo、169 Hand、Action frequency、有限値を検証します。
+検証を通過した成果物にも `validation.status=provisional` と `gtoVerified=false` を付けます。
+これは表示可能な構造検証を通過した状態であり、postflop継続価値や厳密なGTO検証を通過した意味ではありません。
+本番配布用Artifactへ昇格する際にも同じ検証を再実行します。
 
 ```bash
 cargo run --release --bin solveagto-promote -- \
@@ -259,7 +261,7 @@ Cloudflare Edge API Workerへ接続します。どちらの場合もUIからSolv
 - Open対応、3bet pot（Open → 3bet後のOpen側）、4bet pot（Open → 3bet → 4bet後の3bet側）
 - サイズ別アクション頻度、選択ハンドの戦略加重EV、実際のCombo別頻度/EV
 - 全Comboの頻度は等重み集計（到達レンジ加重ではない）
-- エクイティは未計算。現行Solverの結果には常時「実験モデル・GTO精度未検証」と表示
+- エクイティは未計算。現行Solverの結果には常時「暫定戦略・完全なGTOではない」と表示
 - 終端ノードは戦略なしとして表示
 - 読み取り専用。ブラウザ操作でSolverを起動しない
 
@@ -281,7 +283,7 @@ node --test apps/preflop-ui/tests/data.test.mjs
 
 ## Solution format
 
-Solution metadata は `solutionId`、`solverVersion`、`continuationModelVersion`、`gameConfigHash`、`createdAt`、`iterations`、`convergence` を持ちます。Decision node ごとに Combo 1326 件の frequency/EV に加えて、actionごとの `regret`、`strategySum`、`counterfactualReach` を保存し、同時に 169 Hand Aggregate を保存します。
+Solution metadata は `solutionId`、`solverVersion`、`continuationModelVersion`、`gameConfigHash`、`createdAt`、`iterations`、`convergence`、`validation` を持ちます。`validation` は構造検証の結果と、現時点でGTO検証済みかどうかを明示します。現行Workerの `status` は `provisional`、`exploitabilityStatus` は `sampled_estimate`、`gtoVerified` は `false` です。Decision node ごとに Combo 1326 件の frequency/EV に加えて、actionごとの `regret`、`strategySum`、`counterfactualReach` を保存し、同時に 169 Hand Aggregate を保存します。
 
 JSON は API と v0.1 の file store の transport format です。Domain model は JSON API に直接依存していないため、将来 `MessagePack`、binary format、Object Storage に差し替えられます。
 

@@ -52,14 +52,28 @@ export type SolutionSummary = {
   gameConfigHash: string;
   createdAt: string;
   iterations: number;
+  convergence: ConvergenceMetrics;
+  validation: ValidationReport;
+};
+
+export type ConvergenceMetrics = {
+  iterations: number;
+  average_strategy_delta: number;
+  exploitability: number;
+};
+
+export type ValidationReport = {
+  status: "provisional" | "gto_verified";
+  formatValid: boolean;
+  fullComboCoverage: boolean;
+  frequencyIntegrity: boolean;
+  evIntegrity: boolean;
+  exploitabilityStatus: "sampled_estimate" | "exact";
+  gtoVerified: boolean;
+  notes: string[];
 };
 
 export type Solution = SolutionSummary & {
-  convergence: {
-    iterations: number;
-    average_strategy_delta: number;
-    exploitability: number;
-  };
   nodes: SolutionNode[];
 };
 
