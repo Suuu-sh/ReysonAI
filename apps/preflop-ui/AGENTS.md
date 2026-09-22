@@ -10,7 +10,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ## Current visual and data source
 - Use the user's 2026-09-22 black/pink SolveaGTO image as visual direction, not the earlier GTOWizard screenshot.
-- The single Estimated Range view must load only the persisted JSON datasets under `src/estimated/preflop-ranges.json` (responses) and `src/estimated/opening-ranges.json` (RFI). Switch spot type within this view. Do not render a separate saved-range or API view, and never substitute client-generated provider output or mock strategies when a dataset is missing or invalid.
+- The single Estimated Range view must load only the persisted JSON datasets under `src/estimated/preflop-ranges.json` (responses), `src/estimated/opening-ranges.json` (RFI) and `src/estimated/three-bet-responses.json` (original opener facing a 3bet). Switch spot type within this view. Do not render a separate saved-range or API view, and never substitute client-generated provider output or mock strategies when a dataset is missing or invalid.
 - Keep the estimated-range status visible in the page metadata, but do not add a separate warning banner above the range.
 - No postflop, billing, or on-demand solve controls in this milestone.
 - Prefer a compact desktop layout fitting the default results view within one screen (verified at 1280×720); keep dense Combo tables internally scrollable and never hide the experimental warning.

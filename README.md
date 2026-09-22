@@ -253,24 +253,34 @@ npm run dev -- --host 0.0.0.0 --port 4173 --strictPort
 
 UIは `推定レンジ` の単一画面です。正本は
 対オープンは `apps/preflop-ui/src/estimated/preflop-ranges.json`、オープンは
-`apps/preflop-ui/src/estimated/opening-ranges.json` で、表示時のAPI通信やSolver実行はありません。
+`apps/preflop-ui/src/estimated/opening-ranges.json`、3bet後の応答は
+`apps/preflop-ui/src/estimated/three-bet-responses.json` で、表示時のAPI通信やSolver実行はありません。
 データが不正な場合はエラーを表示し、モックや別の戦略で補完しません。
 
 - 6-max / effective stack 100BB / 全オープナー2.5BB
-- 「局面」でオープン／対オープンを選択 → ポジション選択 → 169ハンドから頻度・サイズ・理由を確認
+- 「局面」でオープン／対オープン／3bet後の応答を選択 → ポジション選択 → 169ハンドから頻度・サイズ・理由を確認
 - 対オープンはUTG / HJ / CO / BTN / SB / BBの順序に基づく15局面、2,535件
-- オープンは先行者全員フォールドのUTG / HJ / CO / BTN / SB、5局面・845件（合計3,380件）
+- オープンは先行者全員フォールドのUTG / HJ / CO / BTN / SB、5局面・845件
+- 3bet後の応答は15局面・2,535件（全データ合計5,915件）。Heroは元のオープナー、後続相手は3bettor
 - オープン時のHeroはオープナーと同じ。SBも2.5BBのraise-or-foldで、リンプは含めない
 - 対オープンは単独オープンへの初回応答。こちらではUTGはオープナーのみ
 - 対オープン画面は左にオープナーのRFI、右にHeroの対応レンジを表示。同じハンドの選択を同期し、フィルターは左右独立。Heroの詳細は表の下で展開できる（狭い画面では縦並び）
-- 3bet後・4bet後の応答、リンプ対応、スクイーズは対象外
+- 3bet後は他の全員がフォールドした場面のfold / call / four_bet。受ける3betサイズは既存対オープンJSONと一致させる
+- 4bet後の応答、コールド4bet、リンプ対応、スクイーズは対象外
 - 一般知識による推定値。GTO計算・EV計算・レーキ調整は未実施
-- 3betサイズは追加額ではなく合計投入額。3bet頻度0ではサイズなし
+- 3bet・4betサイズは追加額ではなく合計投入額。該当レイズ頻度0ではサイズなし
 - API画面への切替やJSONダウンロードボタンは表示しない
 
 オープンJSONは `python3 apps/preflop-ui/scripts/generate-opening-ranges.py` で再生成できます。
 手作業のヒューリスティックを展開するだけで、対オープンデータとの同時均衡計算は行いません。
 RFIの一般概念は [Upswing Poker](https://upswingpoker.com/preflop-open-strategy-rfi-explained/) を参考に確認し、チャートや頻度は転用していません。
+
+3bet後のJSONは `python3 apps/preflop-ui/scripts/generate-three-bet-responses.py` で再生成できます。
+依存順は既存対オープンJSON・オープンJSON → 3bet後のJSON生成 → 相互参照・頻度・サイズ検証 → UI表示です。
+既存RFIのopen=0のハンドはこの経路に到達しないため、169件形式上はfold=100とし、理由に対象外と明記します。
+それ以外の頻度は「既にオープンした条件下」の値であり、オープン頻度を再乗算しません。
+4betサイズはIP/OOP別の単一非オールインサイズを推定し、別のオールイン枝やサイズ間混合は収録していません。
+位置によるサイズの考え方は [Upswing Pokerのサイズ解説](https://upswingpoker.com/podcast/ep29-pfr-sizing/) を参考にし、頻度は独自の概算です。
 
 API/SDK自体は独立して利用できます。以下はUIではなくAPIの取得ルートです。
 
