@@ -1,0 +1,23 @@
+.range-source-switch { display: flex; gap: 8px; align-items: center; min-height: 44px; padding: 5px 14px; border-bottom: 1px solid var(--line); }
+.range-source-switch button { font-size: 12px; }
+.range-source-switch button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-bright); background: var(--surface-accent); }
+.estimate-settings { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 18px; align-items: center; flex-shrink: 0; }
+.estimate-settings h2 { margin-bottom: 4px; }
+.estimate-settings a { color: var(--accent-bright); font-size: 12px; }
+.estimate-context { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; padding: 10px 0; font-size: 12px; flex-shrink: 0; }
+.estimate-context span { color: var(--text-muted); }
+.results.estimate-results { grid-template-columns: minmax(350px, 1.8fr) minmax(275px, 1fr); }
+.estimate-results .detail-column { grid-column: 2; }
+.estimate-results .matrix-panel { grid-row: auto; }
+.estimate-notes details { margin-top: 10px; font-size: 12px; }
+.estimate-notes summary { cursor: pointer; color: var(--accent-soft); }
+.estimate-notes pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; }
+@media (min-width: 1050px) {
+  .range-workspace > .shell, .range-workspace > .shell > main { height: calc(100dvh - 44px); }
+}
+@media (max-width: 650px) {
+  .estimate-settings { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .estimate-settings > div { grid-column: 1 / -1; }
+  .results.estimate-results { grid-template-columns: minmax(0, 1fr); }
+  .estimate-results .detail-column { grid-column: 1; }
+}
