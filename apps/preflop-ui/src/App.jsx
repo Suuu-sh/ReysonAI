@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { SolveaGTOApiError, SolveaGTOClient } from "../../../packages/solveagto-sdk-ts/src/index.ts";
 import { handAggregates, sortActions, strategyCombos } from "./data.js";
 import { solutionForStack, solutionStackBb, spotRequest, spotTitle } from "./spot.js";
-import { AppFooter, PageHeader, Sidebar, SolutionStatusNotice } from "./components/layout.jsx";
+import { AiRangeStatusNotice, AppFooter, PageHeader, Sidebar, SolutionStatusNotice } from "./components/layout.jsx";
+import { AiRangeView } from "./components/AiRangeView.jsx";
 import { ResultsView } from "./components/ResultsView.jsx";
 import { SpotSettings } from "./components/SpotSettings.jsx";
 import { StatusState } from "./components/primitives.jsx";
@@ -15,6 +16,8 @@ const api = new SolveaGTOClient({
 });
 
 export function App() {
+  const [viewMode, setViewMode] = useState("ai");
+  const [aiSpot, setAiSpot] = useState("bb_vs_btn_open");
   const [solutions, setSolutions] = useState([]);
   const [solutionId, setSolutionId] = useState("");
   const [stackBb, setStackBb] = useState(100);
@@ -39,6 +42,11 @@ export function App() {
   }
 
   useEffect(() => {
+    if (viewMode !== "solver") {
+      setLoading("");
+      setError("");
+      return undefined;
+    }
     let live = true;
     setLoading("Solutionを取得中");
     setSolutions([]);
@@ -64,9 +72,10 @@ export function App() {
       });
 
     return () => { live = false; };
-  }, [reload]);
+  }, [reload, viewMode]);
 
   useEffect(() => {
+    if (viewMode !== "solver") return undefined;
     setResult(null);
     setMissing(false);
     setError("");
@@ -101,7 +110,7 @@ export function App() {
       });
 
     return () => { live = false; };
-  }, [queryKey, retry, validation]);
+  }, [queryKey, retry, validation, viewMode]);
 
   function changeSpot(nextSpot) {
     setSpot(nextSpot);
@@ -135,50 +144,62 @@ export function App() {
       <Sidebar activeSection={section} onSectionChange={setSection} />
       <main>
         <PageHeader />
-        <SolutionStatusNotice solution={solution} />
-        <SpotSettings
-          solutions={solutions}
-          solutionId={solutionId}
-          spot={spot}
-          stackBb={stackBb}
-          loading={loading}
-          validation={validation}
-          onSolutionChange={changeSolution}
-          onStackChange={changeStack}
-          onSpotChange={changeSpot}
-          onDisplay={() => solutionId ? setRetry(value => value + 1) : setReload(value => value + 1)}
-        />
+        <div className="view-mode-switch" role="group" aria-label="表示する戦略データ">
+          <button aria-pressed={viewMode === "ai"} onClick={() => setViewMode("ai")}>AI推定レンジ</button>
+          <button aria-pressed={viewMode === "solver"} onClick={() => setViewMode("solver")}>保存済みSolution</button>
+        </div>
 
-        {validation && <StatusState tone="error">{validation}</StatusState>}
-        {loading && <StatusState>{loading}…</StatusState>}
-        {error && <StatusState tone="error" action={<button onClick={() => solutionId ? setRetry(value => value + 1) : setReload(value => value + 1)}>再試行</button>}>
-          取得できませんでした。APIの起動・保存先を確認してください。
-          <details><summary>エラー詳細</summary>{error}</details>
-        </StatusState>}
-
-        {!loading && !error && !validation && (!solutions.length || missing) && (
-          <StatusState title={spotTitle(spot)}>
-            {!solutions.length ? "保存済みSolutionがありません。" : "この条件に一致する保存済み戦略データがありません。"}
-            局面設定はできますが、結果は表示しません。
-          </StatusState>
-        )}
-
-        {!loading && !error && !validation && !missing && node && (
+        {viewMode === "ai" ? (
           <>
-            {!combos.length
-              ? <StatusState>この局面には保存済みの戦略データがありません。</StatusState>
-              : <ResultsView
-                section={section}
-                node={node}
-                solution={solution}
-                combos={combos}
-                aggregates={aggregates}
-                selected={selected}
-                filter={filter}
-                actions={actions}
-                onSelect={setSelected}
-                onFilterChange={setFilter}
-              />}
+            <AiRangeStatusNotice />
+            <AiRangeView activeSpot={aiSpot} onSpotChange={setAiSpot} />
+          </>
+        ) : (
+          <>
+            <SolutionStatusNotice solution={solution} />
+            <SpotSettings
+              solutions={solutions}
+              solutionId={solutionId}
+              spot={spot}
+              stackBb={stackBb}
+              loading={loading}
+              validation={validation}
+              onSolutionChange={changeSolution}
+              onStackChange={changeStack}
+              onSpotChange={changeSpot}
+              onDisplay={() => solutionId ? setRetry(value => value + 1) : setReload(value => value + 1)}
+            />
+
+            {validation && <StatusState tone="error">{validation}</StatusState>}
+            {loading && <StatusState>{loading}…</StatusState>}
+            {error && <StatusState tone="error" action={<button onClick={() => solutionId ? setRetry(value => value + 1) : setReload(value => value + 1)}>再試行</button>}>
+              取得できませんでした。APIの起動・保存先を確認してください。
+              <details><summary>エラー詳細</summary>{error}</details>
+            </StatusState>}
+
+            {!loading && !error && !validation && (!solutions.length || missing) && (
+              <StatusState title={spotTitle(spot)}>
+                {!solutions.length ? "保存済みSolutionがありません。" : "この条件に一致する保存済み戦略データがありません。"}
+                局面設定はできますが、結果は表示しません。
+              </StatusState>
+            )}
+
+            {!loading && !error && !validation && !missing && node && (
+              !combos.length
+                ? <StatusState>この局面には保存済みの戦略データがありません。</StatusState>
+                : <ResultsView
+                  section={section}
+                  node={node}
+                  solution={solution}
+                  combos={combos}
+                  aggregates={aggregates}
+                  selected={selected}
+                  filter={filter}
+                  actions={actions}
+                  onSelect={setSelected}
+                  onFilterChange={setFilter}
+                />
+            )}
           </>
         )}
         <AppFooter />

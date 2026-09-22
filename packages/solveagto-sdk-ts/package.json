@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && node --test tests/index.test.mjs"
+    "test": "npm run build && node --test tests/index.test.mjs tests/preflop-ranges.test.mjs"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

@@ -105,8 +105,14 @@ main { display: flex; flex-direction: column; min-width: 0; padding: 12px 14px; 
 }
 .notice strong { font-weight: 650; white-space: nowrap; }
 .notice span { color: #beb3bc; }
+.notice-ai { border-color: #70435a; background: #2b1b27; color: var(--accent-bright); }
+.notice-ai span { color: #d2b6c4; }
 .notice-verified { border-color: #3f6e61; background: #17231f; color: #a8ebd1; }
 .notice-verified span { color: #b8d7cb; }
+
+.view-mode-switch { display: flex; gap: 6px; margin-bottom: 8px; }
+.view-mode-switch button, .ai-range-toggle button { padding: 6px 10px; border-color: var(--line-strong); background: var(--surface-raised); color: var(--text-muted); font-size: 11px; }
+.view-mode-switch button[aria-pressed="true"], .ai-range-toggle button[aria-pressed="true"] { border-color: var(--accent); background: var(--surface-accent); color: var(--accent-bright); }
 
 .panel {
   min-width: 0;
@@ -119,6 +125,11 @@ main { display: flex; flex-direction: column; min-width: 0; padding: 12px 14px; 
 .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 10px; }
 .panel-heading h2 { margin: 0; }
 .panel-heading select { width: 150px; margin: 0; padding: 7px; font-size: 11px; }
+
+.ai-range-settings { display: grid; grid-template-columns: minmax(220px, 1fr) auto auto; align-items: center; gap: 14px; margin-bottom: 8px; }
+.ai-range-settings .panel-heading { margin-bottom: 3px; }
+.ai-range-toggle { display: flex; gap: 5px; }
+.ai-range-provider { white-space: nowrap; }
 
 .settings { display: grid; align-items: center; }
 .settings.matchup-settings { grid-template-columns: minmax(170px, .85fr) minmax(420px, 2fr) auto; gap: 12px; }

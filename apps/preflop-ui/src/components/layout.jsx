@@ -50,7 +50,7 @@ export function Sidebar({ activeSection, onSectionChange }) {
       <div className="side-note">
         <Spade size={23} />
         <strong>Preflop Explorer</strong>
-        <p>保存済みの計算結果を、<br />ハンドから読み解く。</p>
+        <p>AI推定レンジと保存済み結果を、<br />ハンドから読み解く。</p>
         <small>READ-ONLY / v0.1</small>
       </div>
     </aside>
@@ -85,11 +85,20 @@ export function SolutionStatusNotice({ solution }) {
   );
 }
 
+export function AiRangeStatusNotice() {
+  return (
+    <div className="notice notice-ai" role="note">
+      <strong>AI Estimated Strategy</strong>
+      <span>AI推定レンジ。GTO計算結果ではありません。</span>
+    </div>
+  );
+}
+
 export function AppFooter() {
   return (
     <footer className="app-footer">
       <span>SolveaGTO v0.1</span>
-      <span>保存済みデータ専用 · 暫定戦略</span>
+      <span>AI推定 / 保存済みデータ · GTO未検証</span>
     </footer>
   );
 }

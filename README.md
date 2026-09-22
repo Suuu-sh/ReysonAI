@@ -256,6 +256,13 @@ UIは環境によって接続先を切り替えます。ローカルでは同一
 Cloudflare Edge API Workerへ接続します。どちらの場合もUIからSolverを直接起動しません。
 仮データへのフォールバックはありません。空・読み込み中・失敗を区別し、失敗時は再試行できます。
 
+初期表示は `AI推定レンジ` です。6-max / effective stack 100BB / BTN open 2.5BB の
+`BTN Open` と `BB vs BTN Open` を、TypeScript SDKの
+`PreflopRangeProvider`から生成した169 Hand Matrixで切り替えられます。現在のproviderは
+`knowledge-base-seed` によるdeterministicな基準レンジで、BBの3betは10BB固定です。
+この表示は **AI推定レンジであり、GTO計算結果ではありません**。実際のSolver成果物は
+`保存済みSolution`へ切り替えた場合だけRust APIから読み取ります。
+
 - Solution選択 → 局面タイプ・オープン位置・対応位置で局面設定 → 169ハンド選択
 - 初期Configではオープンを2.5BBだけ生成。2BB/3BBは計算量を抑えるため生成しない
 - Open対応、3bet pot（Open → 3bet後のOpen側）、4bet pot（Open → 3bet → 4bet後の3bet側）

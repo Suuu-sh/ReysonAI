@@ -1,5 +1,7 @@
 export type Position = "UTG" | "HJ" | "CO" | "BTN" | "SB" | "BB";
 
+export * from "./preflop-ranges.js";
+
 export type ResolveAction = {
   position: Position;
   action: "fold" | "call" | "check" | "raise" | "all_in";
