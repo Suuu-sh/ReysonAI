@@ -4,7 +4,7 @@ export const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
 export const rangeTypes = [
   { value: "response", label: "オープンへの応答", available: true },
-  { value: "open", label: "オープンレンジ", available: false },
+  { value: "open", label: "オープンレンジ", available: true },
   { value: "three_bet", label: "3bet後の応答", available: false },
   { value: "four_bet", label: "4bet後の応答", available: false },
 ];

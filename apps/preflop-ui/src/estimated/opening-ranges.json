@@ -1,0 +1,5991 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "strategy_type": "general_knowledge_estimate_not_gto",
+    "game": "6max Cash / No-Limit Texas Holdem",
+    "effective_stack_bb": 100,
+    "open_size_bb": 2.5,
+    "scope": "Heroまで全員フォールドした未オープンポットでのraise-first-in。",
+    "source_of_truth": "ユーザーが指定したUTG / HJ / CO / BTN / SBのオープンレンジ追加。既存の100BB・2.5BB条件を継承。",
+    "method": "ハンドクラスごとに手作業で設計した一般知識による概算。ソルバー・EV計算なし。",
+    "sb_policy": "SBも2.5BBのraise-or-foldに簡略化。リンプ頻度は収録せず、最適なSB戦略とは主張しません。",
+    "rake": {
+      "rate": null,
+      "cap_bb": null,
+      "calibrated": false
+    },
+    "ante_bb": null,
+    "ante_note": "未指定。アンティの効果はモデル化していません。",
+    "frequency_semantics": "当該ハンドを持った場合の条件付き割合(%)。open + fold = 100。",
+    "open_size_semantics": "そのストリートの合計投入額(raise-to)。open=0ならnull。",
+    "relationship_to_response_data": "対オープン推定と同じゲーム条件ですが、両者を同時に均衡計算したものではありません。",
+    "warning": "学習・試作向けの推定値。最適性や利益、境界ハンドの正確な頻度は未検証。",
+    "reference_note": "参考資料はRFIの一般概念の確認のみ。チャートや頻度は転用していません。",
+    "references": [
+      {
+        "title": "Upswing Poker: Preflop RFI Strategy",
+        "url": "https://upswingpoker.com/preflop-open-strategy-rfi-explained/"
+      }
+    ]
+  },
+  "spot_count": 5,
+  "hand_classes_per_spot": 169,
+  "entry_count": 845,
+  "spots": [
+    {
+      "id": "UTG_open",
+      "hero": "UTG",
+      "open_size_bb": 2.5,
+      "effective_stack_bb": 100,
+      "hands": [
+        {
+          "hand": "AA",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AKs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "ATs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A9s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "A8s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "A7s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "A6s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "A5s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A4s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A3s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "A2s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに5人いるため参加を厳選し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "AKo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KK",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K9s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K8s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K7s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K6s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "AQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QQ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q9s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "Q8s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q7s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q6s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "AJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJo",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "QJo",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "JJ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J9s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "J8s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J7s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J6s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "ATo",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに5人いるため参加を厳選し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "KTo",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "QTo",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "JTo",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "TT",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T8s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "T7s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T6s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A9o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K9o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q9o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J9o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T9o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "99",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "98s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "97s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "96s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "95s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "94s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "93s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "98o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "88",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "87s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "86s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "85s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "84s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "83s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "97o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "87o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "77",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "76s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "75s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "74s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "73s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "72s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "96o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "86o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "76o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "66",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "65s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "64s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "63s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "62s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "95o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "85o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "75o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "65o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "55",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "54s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに5人いるため参加を厳選し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "53s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "52s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "94o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "84o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "74o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "64o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "54o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "44",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "43s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "42s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "93o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "83o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "73o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "63o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "53o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "43o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "33",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "32s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "72o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "62o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "52o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "42o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "32o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "UTGでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "22",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに5人いるため参加を厳選し、オープン25%、フォールド75%と推定します。"
+        }
+      ]
+    },
+    {
+      "id": "HJ_open",
+      "hero": "HJ",
+      "open_size_bb": 2.5,
+      "effective_stack_bb": 100,
+      "hands": [
+        {
+          "hand": "AA",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AKs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "ATs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A7s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A6s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A5s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A4s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A3s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A2s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AKo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KK",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K8s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K7s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K6s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "K5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "AQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QQ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q8s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "Q7s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "Q6s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "AJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JJ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J8s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "J7s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J6s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "ATo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KTo",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "QTo",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "JTo",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。後ろに4人いることを考慮し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "TT",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T8s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "T7s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "T6s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A9o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。後ろに4人いることを考慮し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "K9o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q9o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J9o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T9o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "99",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "98s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "97s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "96s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "95s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "94s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "93s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "98o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "88",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "87s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "86s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "85s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "84s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "83s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "97o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "87o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "77",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "76s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "75s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "74s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "73s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "72s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "96o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "86o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "76o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "66",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "65s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "64s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "63s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "62s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "95o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "85o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "75o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "65o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "55",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "54s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。後ろに4人いることを考慮し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "53s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "52s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "94o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "84o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "74o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "64o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "54o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "44",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "43s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "42s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "93o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "83o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "73o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "63o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "53o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "43o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "33",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "32s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "72o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "62o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "52o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "42o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "32o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "HJでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "22",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。後ろに4人いることを考慮し、オープン75%、フォールド25%と推定します。"
+        }
+      ]
+    },
+    {
+      "id": "CO_open",
+      "hero": "CO",
+      "open_size_bb": 2.5,
+      "effective_stack_bb": 100,
+      "hands": [
+        {
+          "hand": "AA",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AKs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "ATs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A7s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A6s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A5s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A4s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A3s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A2s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AKo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KK",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K7s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K6s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K5s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K4s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K3s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K2s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "AQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QQ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q7s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "Q6s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "Q5s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "Q4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "AJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JJ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J7s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "J6s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "ATo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KTo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QTo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JTo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "TT",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T7s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "T6s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A9o",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K9o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "Q9o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "J9o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "T9o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。早い位置より広く参加し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "99",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "98s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "97s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "96s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "95s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "94s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "93s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A8o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T8o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "98o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "88",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "87s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "86s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "85s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "84s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "83s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A7o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。早い位置より広く参加し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "K7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "97o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "87o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "77",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "76s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "75s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "74s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "73s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "72s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "96o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "86o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "76o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "66",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "65s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "64s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "63s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "62s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A5o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。早い位置より広く参加し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "K5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "95o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "85o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "75o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "65o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "55",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "54s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "53s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。早い位置より広く参加し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "52s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "94o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "84o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "74o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "64o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "54o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "44",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "43s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "42s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "93o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "83o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "73o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "63o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "53o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "43o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "33",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "32s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "K2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "72o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "62o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "52o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "42o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "32o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "COでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "22",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。早い位置より広く参加し、2.5BBでオープンします。"
+        }
+      ]
+    },
+    {
+      "id": "BTN_open",
+      "hero": "BTN",
+      "open_size_bb": 2.5,
+      "effective_stack_bb": 100,
+      "hands": [
+        {
+          "hand": "AA",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AKs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "ATs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A7s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A6s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A5s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A4s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A3s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A2s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AKo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KK",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K7s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K6s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K5s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K4s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K3s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K2s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "AQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QQ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q7s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "Q6s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "Q5s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "Q4s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "Q3s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "Q2s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "AJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JJ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J7s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "J6s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "J5s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "J4s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "J3s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "J2s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "ATo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KTo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QTo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JTo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "TT",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T7s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "T6s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "T5s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "T4s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "T3s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "T2s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "A9o",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K9o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "Q9o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "J9o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "T9o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "99",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "98s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "97s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "96s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "95s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "94s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "93s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A8o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K8o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "Q8o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "J8o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "T8o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "98o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "88",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "87s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "86s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "85s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "84s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "83s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A7o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K7o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "Q7o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "J7o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "T7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "97o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "87o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "77",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "76s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "75s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "74s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "73s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "72s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A6o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "96o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "86o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "76o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "66",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "65s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "64s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "63s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "62s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A5o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "95o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "85o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "75o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "65o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "55",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "54s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "53s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "52s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "A4o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "94o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "84o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "74o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "64o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "54o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "44",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "43s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "42s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "A3o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "93o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "83o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "73o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "63o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "53o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "43o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "33",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "32s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。ポストフロップの位置の優位性を活用し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "A2o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。ポストフロップの位置の優位性を活用し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "72o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "62o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "52o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "42o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "32o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "BTNでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "22",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。ポストフロップの位置の優位性を活用し、2.5BBでオープンします。"
+        }
+      ]
+    },
+    {
+      "id": "SB_open",
+      "hero": "SB",
+      "open_size_bb": 2.5,
+      "effective_stack_bb": 100,
+      "hands": [
+        {
+          "hand": "AA",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AKs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "ATs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A7s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A6s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A5s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A4s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A3s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "A2s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "Aブロッカーとフラッシュの可能性を持つスーテッドA。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "AKo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KK",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K7s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "K6s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K5s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K4s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K3s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K2s",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "AQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KQo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QQ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QJs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "Q7s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "Q6s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "Q5s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "Q4s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "Q3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "AJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "QJo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JJ",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "JTs",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "J7s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "J6s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "J5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "ATo",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "KTo",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "QTo",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "JTo",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "ブロードウェイ。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "TT",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T9s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T8s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "T7s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "T6s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "T5s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T4s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T3s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T2s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A9o",
+          "open": 75,
+          "fold": 25,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン75%、フォールド25%と推定します。"
+        },
+        {
+          "hand": "K9o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "Q9o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "J9o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "T9o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "99",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "98s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "97s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "96s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "95s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "94s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "93s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A8o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K8o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "Q8o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "J8o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "T8o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "98o",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "88",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "87s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "86s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "85s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "84s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "83s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A7o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T7o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "97o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "87o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "77",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "76s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "75s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "74s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "73s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "72s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A6o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T6o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "96o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "86o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "76o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "66",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "65s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "64s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "63s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "62s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A5o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T5o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "95o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "85o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "75o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "65o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "55",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "54s",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "53s",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "52s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A4o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T4o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "94o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "84o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "74o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "64o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "54o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "44",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "43s",
+          "open": 25,
+          "fold": 75,
+          "open_size_bb": 2.5,
+          "reason": "フラッシュの可能性を持つスーテッドハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン25%、フォールド75%と推定します。"
+        },
+        {
+          "hand": "42s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A3o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T3o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "93o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "83o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "73o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "63o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "53o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "43o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "33",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        },
+        {
+          "hand": "32s",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "A2o",
+          "open": 50,
+          "fold": 50,
+          "open_size_bb": 2.5,
+          "reason": "オフスートハンド。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、オープン50%、フォールド50%と推定します。"
+        },
+        {
+          "hand": "K2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "Q2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "J2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "T2o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "92o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "82o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "72o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "62o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "52o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "42o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "32o",
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null,
+          "reason": "SBでは強さやプレイアビリティが十分でないと見積もり、フォールドします。"
+        },
+        {
+          "hand": "22",
+          "open": 100,
+          "fold": 0,
+          "open_size_bb": 2.5,
+          "reason": "ポケットペア。相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化し、2.5BBでオープンします。"
+        }
+      ]
+    }
+  ]
+}

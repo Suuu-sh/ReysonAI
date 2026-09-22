@@ -252,17 +252,24 @@ npm run dev -- --host 0.0.0.0 --port 4173 --strictPort
 ```
 
 UIは `推定レンジ` の単一画面です。正本は
-`apps/preflop-ui/src/estimated/preflop-ranges.json` で、表示時のAPI通信やSolver実行はありません。
+対オープンは `apps/preflop-ui/src/estimated/preflop-ranges.json`、オープンは
+`apps/preflop-ui/src/estimated/opening-ranges.json` で、表示時のAPI通信やSolver実行はありません。
 データが不正な場合はエラーを表示し、モックや別の戦略で補完しません。
 
 - 6-max / effective stack 100BB / 全オープナー2.5BB
-- オープナーとHeroを選択 → 169ハンドから選択 → 頻度・3betサイズ・理由を確認
-- UTG / HJ / CO / BTN / SB / BBの順序に基づく全15局面、合計2,535件
-- 対象は単独オープンへの初回応答。UTGはオープナーのみ
+- 「局面」でオープン／対オープンを選択 → ポジション選択 → 169ハンドから頻度・サイズ・理由を確認
+- 対オープンはUTG / HJ / CO / BTN / SB / BBの順序に基づく15局面、2,535件
+- オープンは先行者全員フォールドのUTG / HJ / CO / BTN / SB、5局面・845件（合計3,380件）
+- オープン時のHeroはオープナーと同じ。SBも2.5BBのraise-or-foldで、リンプは含めない
+- 対オープンは単独オープンへの初回応答。こちらではUTGはオープナーのみ
 - 3bet後・4bet後の応答、リンプ対応、スクイーズは対象外
 - 一般知識による推定値。GTO計算・EV計算・レーキ調整は未実施
 - 3betサイズは追加額ではなく合計投入額。3bet頻度0ではサイズなし
 - API画面への切替やJSONダウンロードボタンは表示しない
+
+オープンJSONは `python3 apps/preflop-ui/scripts/generate-opening-ranges.py` で再生成できます。
+手作業のヒューリスティックを展開するだけで、対オープンデータとの同時均衡計算は行いません。
+RFIの一般概念は [Upswing Poker](https://upswingpoker.com/preflop-open-strategy-rfi-explained/) を参考に確認し、チャートや頻度は転用していません。
 
 API/SDK自体は独立して利用できます。以下はUIではなくAPIの取得ルートです。
 
