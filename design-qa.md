@@ -70,3 +70,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Added an always-visible 「リセット」 control. Browser check returned the action path to BTN open / BB response, cleared later actions and detail focus, and left the selector expanded.
 - Expanded actions now flow inline within each seat block and wrap as needed; reduced block padding and control spacing. Visual check confirmed the path is noticeably shorter while preserving available controls.
 - UI tests: 45 passed; production build and Sites packaging passed. The existing Vite bundle-size warning remains. Local app remains open at `http://127.0.0.1:5173/`.
+
+## Inline unsupported-range status (2026-09-23)
+- Removed the full-width warning above the results. A missing 5bet response now occupies the opener's range panel, while the original 3bettor's saved 4bet response remains visible and is labeled as the 5bet decision.
+- Unsupported squeeze branches place pending states in each affected participant's range slot; no prior heads-up response is shown as a current response. Verified the all-in path in the local browser and added server-rendered coverage for both all-in and squeeze pending states.

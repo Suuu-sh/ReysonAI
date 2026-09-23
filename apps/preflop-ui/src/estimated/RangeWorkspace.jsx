@@ -322,19 +322,26 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   } else if (isComparison) {
     const activeSeats = positions.filter(position => multiwayParticipants.includes(position));
     for (const position of activeSeats) {
-      if (position === opener) addSaved(position, "opening", openerSpot, openerModel, `${position} · オープンレンジ`);
+      if (pendingRaise === "squeeze" && position !== hero) {
+        rangeEntries.push({ position, kind: "pending", title: `${position} · スクイーズへの応答`, statusTitle: "レンジ未収録", statusDescription: "スクイーズ後の応答データはまだ保存されていません。" });
+      } else if (position === opener) addSaved(position, "opening", openerSpot, openerModel, `${position} · オープンレンジ`);
       else if (!showPendingRanges && position === hero) addSaved(position, "response", responseSpot, responseModel, `${position} · オープンへの応答`);
       else {
         const localRange = localEstimate?.ranges.find(range => range.position === position);
-        rangeEntries.push(localRange ? { position, kind: "local", model: localMatrix(localRange), title: `${position} · ${position === hero ? "現在の応答" : "コール選択"}（AI推定・レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb } : { position, kind: "pending", title: `${position} · 推定レンジ準備中` });
+        rangeEntries.push(localRange ? { position, kind: "local", model: localMatrix(localRange), title: `${position} · ${pendingRaise === "squeeze" ? "スクイーズ選択" : position === hero ? "現在の応答" : "コール選択"}（AI推定・レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb } : { position, kind: "pending", title: `${position} · 推定レンジ準備中`, statusTitle: "レンジ未収録", statusDescription: pendingRaise === "squeeze" ? "この局面の推定レンジはまだ生成・保存されていません。" : "この履歴のレンジはまだ保存されていません。" });
       }
     }
   } else if (isThreeBet) {
     if (continuationAction !== "fold") addSaved(opener, "three_bet", spot, model, `${opener} · 3betへの応答`);
     addSaved(hero, "response", responseSpot, responseModel, `${hero} · オープンへの応答（3bet前）`);
   } else if (isFourBet) {
-    addSaved(opener, "three_bet", threeBetSpot, threeBetModel, `${opener} · 3betへの応答（4bet前）`);
-    if (continuationAction !== "fold") addSaved(hero, "four_bet", spot, model, `${hero} · 4betへの応答`);
+    if (pendingRaise === "all_in") {
+      rangeEntries.push({ position: opener, kind: "pending", title: `${opener} · 5betオールインへの応答`, statusTitle: "レンジ未収録", statusDescription: "5betオールイン後の応答データはまだ保存されていません。" });
+      addSaved(hero, "four_bet", spot, model, `${hero} · 4betへの応答（5bet選択）`);
+    } else {
+      addSaved(opener, "three_bet", threeBetSpot, threeBetModel, `${opener} · 3betへの応答（4bet前）`);
+      if (continuationAction !== "fold") addSaved(hero, "four_bet", spot, model, `${hero} · 4betへの応答`);
+    }
   }
   const focusedEntry = rangeEntries.find(entry => entry.position === focusedRange && entry.model);
   const displayedEntries = focusedEntry ? [focusedEntry] : rangeEntries;
@@ -351,11 +358,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           <strong>{isOpening ? `${opener} Open · 2.5BB` : isFourBet ? `${opener} Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener} 4bet ${spot.four_bet_size_bb}BB → ${hero}（元の3bettor / Hero）の応答 · ${spot.hero_position_vs_opener}` : isThreeBet ? `${opener}（Hero）Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener}の応答 · ${spot.hero_position_vs_three_bettor}` : showPendingRanges ? `${opener} Open 2.5BB${callers.map(position => ` → ${position} Call`).join("")}${foldedHero && !callers.includes(hero) ? ` → ${hero} Fold` : !callers.includes(hero) ? ` → ${hero} Action` : ""} · ${multiwayParticipants.length}人参加` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>
           <span>{isOpening ? "全5ポジション" : "全15局面"} / 各169ハンド · 推定データ・GTO計算なし</span>
         </div>
-        {pendingRaise && <StatusState title={pendingRaise === "all_in" ? "5betオールイン後の応答レンジは未収録" : "スクイーズ後の応答レンジは未収録"}>表示中の表は各参加者の直前までの推定レンジです。この分岐の新しい応答頻度はまだありません。</StatusState>}
         {showPendingRanges && !pendingRaise && <div className="local-estimate-control"><small>マルチウェイは未検証のAI推定です。既存データは変更しません。</small>{canGenerate && <button type="button" disabled={localStatus === "loading" || localStatus === "checking"} onClick={generateLocalEstimate}>{localStatus === "checking" ? "保存状態を確認中…" : localStatus === "loading" ? "Codexで生成中…" : localEstimate ? "保存済みレンジを表示中" : "Codexで推定レンジを生成"}</button>}</div>}
         {localError && showPendingRanges && !pendingRaise && <StatusState tone="error">{localError}</StatusState>}
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
-          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} /> : <Panel key={entry.position} className="multiway-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title="推定レンジは準備中">この履歴のレンジはまだ保存されていません。</StatusState></Panel>)}
+          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState></Panel>)}
           {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} onClose={() => setFocusedRange(null)} /> : <HandBreakdown title={`${focusedEntry.position} · ${selected}の詳細`} hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} spot={focusedEntry.spot} position={focusedEntry.position} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}

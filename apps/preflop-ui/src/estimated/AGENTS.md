@@ -23,6 +23,8 @@ At every stage, show range tables for all non-folded participating positions sid
 The user requested this focused interaction on 2026-09-23 after reviewing the two-range view: selecting a hand in the opener range should hide the other range and place its details alongside it, rather than below both ranges. Apply the same symmetric behavior to the response range.
 
 ## Four-bet responses (confirmed 2026-09-23)
+If a selected branch has no stored response range, render the unavailable status in that participant's range-table panel rather than adding a separate banner above the range results. Keep existing participant tables visible if they describe a relevant earlier decision; label their context clearly.
+
 `four-bet-responses.json` is the persisted source of truth for 15 spots / 2,535 rows. Path: opener raises to 2.5BB → later Hero 3bets → opener 4bets → original 3bettor Hero responds; everyone else folds. Validate both source IDs and exact 3bet/4bet raise-to sizes against the preceding JSON datasets. Never replace them with Solver multipliers.
 
 Legal actions are `fold`, `call`, `all_in`, matching `preflop-tree::ensure_four_bet_response`. All-in is the only 5bet, total 100BB; row `all_in_size_bb` is null when its frequency is zero. Non-all-in 5bets and responses to 5bets are excluded. All four datasets now explicitly use ante_bb=0 (user-approved metadata normalization, not a new solve).

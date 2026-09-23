@@ -26,6 +26,8 @@
 .action-path.expanded .action-seat { padding-top: 6px; padding-bottom: 6px; }
 .multiway-range-panel { min-height: 240px; }
 .multiway-range-panel .panel-heading { margin-bottom: 20px; }
+.missing-range-panel { display: flex; flex-direction: column; min-height: 390px; }
+.missing-range-panel > .state { display: flex; flex: 1; flex-direction: column; justify-content: center; margin: 0; }
 .estimate-settings h2 { margin-bottom: 4px; }
 .estimate-context { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; padding: 10px 0; font-size: 12px; flex-shrink: 0; }
 .estimate-context span { color: var(--text-muted); }

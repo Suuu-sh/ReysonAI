@@ -52,6 +52,33 @@ test("4bet view shows original 3bettor, saved sizes and 5bet all-in; old view ke
   assert.equal((old.match(/aria-pressed=/g) || []).length, 338);
 });
 
+test("unsupported branch notices occupy participant range slots instead of a separate banner", () => {
+  const originalWindow = globalThis.window;
+  const renderPath = ({ rangeType, opener, hero, callers = [], pendingRaise }) => {
+    const selection = { rangeType, opener, hero, callers, foldedHero: false, pendingRaise, continuationAction: null, pathExpanded: true, selected: "AA" };
+    globalThis.window = { matchMedia: () => ({ matches: false }), sessionStorage: { getItem: () => JSON.stringify(selection), setItem() {} } };
+    return renderToStaticMarkup(createElement(EstimatedRanges));
+  };
+  try {
+    const allIn = renderPath({ rangeType: "four_bet", opener: "UTG", hero: "HJ", pendingRaise: "all_in" });
+    assert.match(allIn, /aria-label="UTGのレンジ"/);
+    assert.match(allIn, /UTG · 5betオールインへの応答/);
+    assert.match(allIn, /レンジ未収録/);
+    assert.match(allIn, /5betオールイン後の応答データはまだ保存されていません。/);
+    assert.match(allIn, /HJ · 4betへの応答（5bet選択）/);
+    assert.doesNotMatch(allIn, /5betオールイン後の応答レンジは未収録/);
+
+    const squeeze = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"], pendingRaise: "squeeze" });
+    assert.match(squeeze, /BTN · スクイーズへの応答/);
+    assert.match(squeeze, /SB · スクイーズへの応答/);
+    assert.match(squeeze, /BB · 推定レンジ準備中/);
+    assert.doesNotMatch(squeeze, /スクイーズ後の応答レンジは未収録/);
+  } finally {
+    if (originalWindow === undefined) delete globalThis.window;
+    else globalThis.window = originalWindow;
+  }
+});
+
 test("estimated view starts with a compact six-seat action path", () => {
   const html = renderToStaticMarkup(createElement(EstimatedRanges));
   assert.match(html, /button[^>]*class="path-reset"[^>]*>リセット<\/button>/);
