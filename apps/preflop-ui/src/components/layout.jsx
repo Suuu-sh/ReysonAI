@@ -98,7 +98,7 @@ export function AppFooter() {
   return (
     <footer className="app-footer">
       <span>SolveaAI v0.1</span>
-      <span>推定レンジ · GTO未検証</span>
+      <span>AI生成ソリューション</span>
     </footer>
   );
 }

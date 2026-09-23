@@ -1,0 +1,1391 @@
+{
+  "spot_id": "CO_vs_BB_three_bet",
+  "type": "three_bet",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "勝率はショウダウンまでの値で、オールイン以外では実際に回収できる勝率はこれより低くなります。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_three_bet_pct",
+      "label": "勝率（対3betレンジ）",
+      "scope": "hand"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "equity_vs_continue_pct",
+      "label": "4bet後に続く相手への勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "three_bettor_fold_to_4bet_pct",
+      "label": "4betに相手が降りる率",
+      "scope": "spot"
+    }
+  ],
+  "spot_facts": {
+    "opener": "CO",
+    "three_bettor": "BB",
+    "position": "IP",
+    "three_bet_size_bb": 12,
+    "four_bet_size_bb": 26,
+    "call_break_even_equity_pct": 38.8,
+    "three_bettor_fold_to_4bet_pct": 62.2
+  },
+  "hands": {
+    "22": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BBの3betレンジへの勝率は39.0%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 39,
+        "equity_vs_continue_pct": 33.1,
+        "blocked_three_bet_pct": 0.7
+      }
+    },
+    "33": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BBの3betレンジへの勝率は40.6%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 40.6,
+        "equity_vs_continue_pct": 33.2,
+        "blocked_three_bet_pct": 1.1
+      }
+    },
+    "44": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BBの3betレンジへの勝率は42.2%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 42.2,
+        "equity_vs_continue_pct": 34,
+        "blocked_three_bet_pct": 1.4
+      }
+    },
+    "55": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は42.6%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 50%・フォールド 50%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 42.6,
+        "equity_vs_continue_pct": 34.5,
+        "blocked_three_bet_pct": 2.2
+      }
+    },
+    "66": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は43.5%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 50%・フォールド 50%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 43.5,
+        "equity_vs_continue_pct": 34.4,
+        "blocked_three_bet_pct": 1.3
+      }
+    },
+    "77": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は44.3%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 70%・フォールド 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 44.3,
+        "equity_vs_continue_pct": 35.2,
+        "blocked_three_bet_pct": 1.9
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は45.5%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 80%・フォールド 20%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 45.5,
+        "equity_vs_continue_pct": 34.6,
+        "blocked_three_bet_pct": 3.7
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は47.8%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 70%・フォールド 20%・4bet 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 47.8,
+        "equity_vs_continue_pct": 35,
+        "blocked_three_bet_pct": 5
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。BBの3betレンジへの勝率は82.9%。4bet（26BB）に続けてくる相手にも勝率83.4%を保てるので、4bet（26BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 95%・コール 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 82.9,
+        "equity_vs_continue_pct": 83.4,
+        "blocked_three_bet_pct": 23.8
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BBの3betレンジには勝率58.2%と優位で、続けてくる相手にも44.6%とほぼ互角です。相手が4bet（26BB）に62.2%降りる分を合わせると、コールより4bet（26BB）のほうが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 70%・コール 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 58.2,
+        "equity_vs_continue_pct": 44.6,
+        "blocked_three_bet_pct": 21
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は52.1%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 50%・4bet 45%・フォールド 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 52.1,
+        "equity_vs_continue_pct": 33.8,
+        "blocked_three_bet_pct": 19.3
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は47.6%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 80%・4bet 15%・フォールド 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 47.6,
+        "equity_vs_continue_pct": 31.4,
+        "blocked_three_bet_pct": 18.3
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は46.9%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 85%・4bet 10%・フォールド 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 46.9,
+        "equity_vs_continue_pct": 30.9,
+        "blocked_three_bet_pct": 17.1
+      }
+    },
+    "A9s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は43.9%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 43.9,
+        "equity_vs_continue_pct": 30.4,
+        "blocked_three_bet_pct": 15
+      }
+    },
+    "A8s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は43.3%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 43.3,
+        "equity_vs_continue_pct": 30,
+        "blocked_three_bet_pct": 14.2
+      }
+    },
+    "A7s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BBの3betレンジへの勝率は41.5%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 41.5,
+        "equity_vs_continue_pct": 30,
+        "blocked_three_bet_pct": 13.3
+      }
+    },
+    "A6s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BBの3betレンジへの勝率は41.7%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 41.7,
+        "equity_vs_continue_pct": 29.6,
+        "blocked_three_bet_pct": 12.9
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は41.9%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 40%・4bet 35%・フォールド 25%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 41.9,
+        "equity_vs_continue_pct": 31.1,
+        "blocked_three_bet_pct": 13
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BBの3betレンジへの勝率は41.9%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 40%・コール 35%・4bet 25%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 41.9,
+        "equity_vs_continue_pct": 30.8,
+        "blocked_three_bet_pct": 12.7
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BBの3betレンジへの勝率は40.8%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 55%・コール 30%・4bet 15%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 40.8,
+        "equity_vs_continue_pct": 30.2,
+        "blocked_three_bet_pct": 12.6
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BBの3betレンジへの勝率は40.4%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 55%・コール 30%・4bet 15%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 40.4,
+        "equity_vs_continue_pct": 30.6,
+        "blocked_three_bet_pct": 12.4
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。BBの3betレンジには勝率55.9%と優位で、続けてくる相手にも42.6%とほぼ互角です。相手が4bet（26BB）に62.2%降りる分を合わせると、コールより4bet（26BB）のほうが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 65%・コール 35%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 55.9,
+        "equity_vs_continue_pct": 42.6,
+        "blocked_three_bet_pct": 21.1
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。BBの3betレンジへの勝率は71.7%。4bet（26BB）に続けてくる相手にも勝率62.2%を保てるので、4bet（26BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 95%・コール 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 71.7,
+        "equity_vs_continue_pct": 62.2,
+        "blocked_three_bet_pct": 18.2
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は44.3%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 80%・4bet 15%・フォールド 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 44.3,
+        "equity_vs_continue_pct": 29.5,
+        "blocked_three_bet_pct": 16.9
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は42.0%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 85%・4bet 10%・フォールド 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 42,
+        "equity_vs_continue_pct": 29.2,
+        "blocked_three_bet_pct": 15.4
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は40.1%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 80%・フォールド 20%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 40.1,
+        "equity_vs_continue_pct": 28.9,
+        "blocked_three_bet_pct": 14.3
+      }
+    },
+    "K9s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は38.0%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 38,
+        "equity_vs_continue_pct": 26.3,
+        "blocked_three_bet_pct": 12.2
+      }
+    },
+    "K8s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は36.7%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 36.7,
+        "equity_vs_continue_pct": 26.2,
+        "blocked_three_bet_pct": 11.5
+      }
+    },
+    "K7s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は36.5%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 36.5,
+        "equity_vs_continue_pct": 26.6,
+        "blocked_three_bet_pct": 10.5
+      }
+    },
+    "K6s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は36.2%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 36.2,
+        "equity_vs_continue_pct": 26.5,
+        "blocked_three_bet_pct": 10.2
+      }
+    },
+    "K5s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は35.7%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.7,
+        "equity_vs_continue_pct": 26.8,
+        "blocked_three_bet_pct": 10.6
+      }
+    },
+    "K4s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は35.6%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.6,
+        "equity_vs_continue_pct": 26.1,
+        "blocked_three_bet_pct": 10.3
+      }
+    },
+    "K3s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は36.3%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 36.3,
+        "equity_vs_continue_pct": 26,
+        "blocked_three_bet_pct": 10.1
+      }
+    },
+    "K2s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は35.3%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.3,
+        "equity_vs_continue_pct": 25.1,
+        "blocked_three_bet_pct": 9.9
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は49.3%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 45%・4bet 35%・フォールド 20%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 49.3,
+        "equity_vs_continue_pct": 30.9,
+        "blocked_three_bet_pct": 19.8
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BBの3betレンジへの勝率は41.4%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 50%・コール 40%・4bet 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 41.4,
+        "equity_vs_continue_pct": 24.9,
+        "blocked_three_bet_pct": 17.1
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。BBの3betレンジには勝率64.0%と優位で、続けてくる相手にも47.2%とほぼ互角です。相手が4bet（26BB）に62.2%降りる分を合わせると、コールより4bet（26BB）のほうが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 64,
+        "equity_vs_continue_pct": 47.2,
+        "blocked_three_bet_pct": 14.6
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は40.1%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 90%・4bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 40.1,
+        "equity_vs_continue_pct": 29.7,
+        "blocked_three_bet_pct": 13.6
+      }
+    },
+    "QTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は39.3%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 80%・フォールド 20%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 39.3,
+        "equity_vs_continue_pct": 29.3,
+        "blocked_three_bet_pct": 12.6
+      }
+    },
+    "Q9s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は36.5%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 36.5,
+        "equity_vs_continue_pct": 28.7,
+        "blocked_three_bet_pct": 10.4
+      }
+    },
+    "Q8s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は34.6%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.6,
+        "equity_vs_continue_pct": 27.7,
+        "blocked_three_bet_pct": 9.7
+      }
+    },
+    "Q7s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は34.3%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.3,
+        "equity_vs_continue_pct": 26.6,
+        "blocked_three_bet_pct": 8.8
+      }
+    },
+    "Q6s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は35.0%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35,
+        "equity_vs_continue_pct": 27.2,
+        "blocked_three_bet_pct": 8.4
+      }
+    },
+    "Q5s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は33.7%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.7,
+        "equity_vs_continue_pct": 26.7,
+        "blocked_three_bet_pct": 8.9
+      }
+    },
+    "Q4s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q3s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q2s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。BBの3betレンジへの勝率は45.8%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 50%・コール 40%・4bet 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 45.8,
+        "equity_vs_continue_pct": 27.4,
+        "blocked_three_bet_pct": 18.3
+      }
+    },
+    "KJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BBの3betレンジへの勝率は39.7%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 70%・コール 20%・4bet 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 39.7,
+        "equity_vs_continue_pct": 24.3,
+        "blocked_three_bet_pct": 15.6
+      }
+    },
+    "QJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BBの3betレンジへの勝率は37.1%で、必要勝率38.8%に届きません。フォールドが中心です。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 70%・コール 20%・4bet 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 37.1,
+        "equity_vs_continue_pct": 25.4,
+        "blocked_three_bet_pct": 13.9
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は57.2%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。配分はコール 60%・4bet 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 57.2,
+        "equity_vs_continue_pct": 39.4,
+        "blocked_three_bet_pct": 11.5
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は38.0%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 90%・4bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 38,
+        "equity_vs_continue_pct": 29.8,
+        "blocked_three_bet_pct": 10.8
+      }
+    },
+    "J9s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は36.1%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 36.1,
+        "equity_vs_continue_pct": 28.4,
+        "blocked_three_bet_pct": 8.8
+      }
+    },
+    "J8s": {
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は33.9%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.9,
+        "equity_vs_continue_pct": 28,
+        "blocked_three_bet_pct": 8.1
+      }
+    },
+    "J7s": {
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。BBの3betレンジへの勝率は33.7%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.7,
+        "equity_vs_continue_pct": 27.1,
+        "blocked_three_bet_pct": 7.2
+      }
+    },
+    "J6s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J5s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J4s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J3s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J2s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。BBの3betレンジへの勝率は42.8%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 70%・コール 20%・4bet 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 42.8,
+        "equity_vs_continue_pct": 27.3,
+        "blocked_three_bet_pct": 17.2
+      }
+    },
+    "KTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BBの3betレンジへの勝率は37.8%で、必要勝率38.8%に届きません。フォールドします。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 90%・4bet 5%・コール 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 37.8,
+        "equity_vs_continue_pct": 24.8,
+        "blocked_three_bet_pct": 14.5
+      }
+    },
+    "QTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BBの3betレンジへの勝率は35.2%で、必要勝率38.8%に届きません。フォールドします。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 90%・4bet 5%・コール 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.2,
+        "equity_vs_continue_pct": 25.5,
+        "blocked_three_bet_pct": 12.7
+      }
+    },
+    "JTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BBの3betレンジへの勝率は34.6%で、必要勝率38.8%に届きません。フォールドします。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 90%・4bet 5%・コール 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.6,
+        "equity_vs_continue_pct": 26,
+        "blocked_three_bet_pct": 11.1
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は52.2%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 70%・4bet 20%・フォールド 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 52.2,
+        "equity_vs_continue_pct": 36.2,
+        "blocked_three_bet_pct": 9.3
+      }
+    },
+    "T9s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は35.2%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 80%・フォールド 20%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.2,
+        "equity_vs_continue_pct": 29.3,
+        "blocked_three_bet_pct": 7.5
+      }
+    },
+    "T8s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BBの3betレンジへの勝率は34.2%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.2,
+        "equity_vs_continue_pct": 28.7,
+        "blocked_three_bet_pct": 6.9
+      }
+    },
+    "T7s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BBの3betレンジへの勝率は33.4%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.4,
+        "equity_vs_continue_pct": 28.1,
+        "blocked_three_bet_pct": 6
+      }
+    },
+    "T6s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T5s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T4s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T3s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T2s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A9o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BBの3betレンジへの勝率は40.8%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手は4betに62.2%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 90%・4bet 5%・コール 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 40.8,
+        "equity_vs_continue_pct": 25.9,
+        "blocked_three_bet_pct": 15.1
+      }
+    },
+    "K9o": {
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。BBの3betレンジへの勝率は35.3%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.3,
+        "equity_vs_continue_pct": 22.7,
+        "blocked_three_bet_pct": 12.3
+      }
+    },
+    "Q9o": {
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。BBの3betレンジへの勝率は33.3%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.3,
+        "equity_vs_continue_pct": 24.4,
+        "blocked_three_bet_pct": 10.5
+      }
+    },
+    "J9o": {
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。BBの3betレンジへの勝率は32.5%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.5,
+        "equity_vs_continue_pct": 24.1,
+        "blocked_three_bet_pct": 9
+      }
+    },
+    "T9o": {
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。BBの3betレンジへの勝率は32.1%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.1,
+        "equity_vs_continue_pct": 25.3,
+        "blocked_three_bet_pct": 7.7
+      }
+    },
+    "98s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は34.8%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 80%・フォールド 20%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.8,
+        "equity_vs_continue_pct": 29.1,
+        "blocked_three_bet_pct": 4.5
+      }
+    },
+    "97s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BBの3betレンジへの勝率は33.5%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.5,
+        "equity_vs_continue_pct": 29.1,
+        "blocked_three_bet_pct": 3.7
+      }
+    },
+    "96s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BBの3betレンジへの勝率は33.8%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.8,
+        "equity_vs_continue_pct": 27.5,
+        "blocked_three_bet_pct": 3.3
+      }
+    },
+    "95s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "94s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "93s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "92s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A8o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BBの3betレンジへの勝率は39.8%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 39.8,
+        "equity_vs_continue_pct": 26.2,
+        "blocked_three_bet_pct": 14.3
+      }
+    },
+    "K8o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q8o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J8o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T8o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "98o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "87s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は34.6%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.6,
+        "equity_vs_continue_pct": 30.2,
+        "blocked_three_bet_pct": 2.9
+      }
+    },
+    "86s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BBの3betレンジへの勝率は34.2%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.2,
+        "equity_vs_continue_pct": 29.1,
+        "blocked_three_bet_pct": 2.5
+      }
+    },
+    "85s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BBの3betレンジへの勝率は32.5%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.5,
+        "equity_vs_continue_pct": 27.8,
+        "blocked_three_bet_pct": 3
+      }
+    },
+    "84s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "83s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "82s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A7o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BBの3betレンジへの勝率は39.3%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 39.3,
+        "equity_vs_continue_pct": 26.1,
+        "blocked_three_bet_pct": 13.4
+      }
+    },
+    "K7o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q7o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J7o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T7o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "97o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "87o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "76s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は34.3%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.3,
+        "equity_vs_continue_pct": 30,
+        "blocked_three_bet_pct": 1.5
+      }
+    },
+    "75s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BBの3betレンジへの勝率は33.3%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.3,
+        "equity_vs_continue_pct": 29.2,
+        "blocked_three_bet_pct": 2
+      }
+    },
+    "74s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BBの3betレンジへの勝率は31.7%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 31.7,
+        "equity_vs_continue_pct": 27.4,
+        "blocked_three_bet_pct": 1.7
+      }
+    },
+    "73s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "72s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A6o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K6o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q6o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J6o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T6o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "96o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "86o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "76o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "65s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は34.1%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.1,
+        "equity_vs_continue_pct": 30,
+        "blocked_three_bet_pct": 1.6
+      }
+    },
+    "64s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BBの3betレンジへの勝率は32.6%で、必要勝率38.8%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.6,
+        "equity_vs_continue_pct": 29.4,
+        "blocked_three_bet_pct": 1.3
+      }
+    },
+    "63s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "62s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A5o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BBの3betレンジへの勝率は39.0%で、数字上は必要勝率38.8%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 39,
+        "equity_vs_continue_pct": 27.4,
+        "blocked_three_bet_pct": 13.4
+      }
+    },
+    "K5o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q5o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J5o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T5o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "95o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "85o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "75o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "65o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "54s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。コールに必要な勝率38.8%に対し、BBの3betレンジへの勝率は33.8%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。境界に近いため、一部はフォールドします。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.8,
+        "equity_vs_continue_pct": 29.4,
+        "blocked_three_bet_pct": 1.7
+      }
+    },
+    "53s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BBの3betレンジへの勝率は31.8%で、必要勝率38.8%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 31.8,
+        "equity_vs_continue_pct": 29,
+        "blocked_three_bet_pct": 1.5
+      }
+    },
+    "52s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A4o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K4o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q4o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J4o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T4o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "94o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "84o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "74o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "64o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "54o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "43s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "42s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A3o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K3o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q3o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J3o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T3o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "93o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "83o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "73o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "63o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "53o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "43o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "32s": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A2o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K2o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q2o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J2o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T2o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "92o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "82o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "72o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "62o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "52o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "42o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "32o": {
+      "reason": "COの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    }
+  }
+}

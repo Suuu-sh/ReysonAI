@@ -1,7 +1,8 @@
 import { hands, label, color, pct } from "../data.js";
+import { dominantAction } from "../estimated/display-mode.js";
 import { Panel, SectionHeading } from "./primitives.jsx";
 
-export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, title, ariaLabel, footer }) {
+export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, title, ariaLabel, footer, actionLabels = {}, simplified = false }) {
   return (
     <Panel className="matrix-panel" aria-label={ariaLabel}>
       <SectionHeading title={title ?? `${node.actingPosition ?? "終端"} の戦略`} />
@@ -22,7 +23,9 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
               >
                 <strong>{hand}</strong>
                 {!aggregate.unreachable && <div className="cell-mix" aria-hidden="true">
-                  {actions.map(action => <span key={action} style={{ width: pct(aggregate.actions[action] ?? 0), background: color(action) }} />)}
+                  {simplified
+                    ? <span style={{ width: "100%", background: color(dominantAction(aggregate, actions)) }} />
+                    : actions.map(action => <span key={action} style={{ width: pct(aggregate.actions[action] ?? 0), background: color(action) }} />)}
                 </div>}
               </button>
             );
@@ -30,7 +33,7 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
         </div>
       </div>
       <div className="legend">
-        {actions.map(action => <span key={action}><i style={{ background: color(action) }} />{label(action)}</span>)}
+        {actions.map(action => <span key={action}><i style={{ background: color(action) }} />{actionLabels[action] ?? label(action)}</span>)}
       </div>
       {footer}
     </Panel>

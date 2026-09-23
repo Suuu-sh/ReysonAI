@@ -1,0 +1,40 @@
+import config from "../../../../configs/cash-6max-100bb.json" with { type: "json" };
+
+export const gameConfig = config;
+export const positions = config.positions;
+export const sizing = config.sizing;
+export const effectiveStackBb = config.stack_bb;
+export const openSizeBb = sizing.open_sizes_bb[0];
+export const postflopOrder = ["SB", "BB", "UTG", "HJ", "CO", "BTN"];
+
+export function isInPosition(position, opponent) {
+  return postflopOrder.indexOf(position) > postflopOrder.indexOf(opponent);
+}
+
+const fixed = sizing.fixed_raise_to_bb;
+
+function cappedRaiseTo(sizeBb) {
+  return Math.min(effectiveStackBb, sizeBb);
+}
+
+// Raise-to sizes are fixed BB amounts from the config, not multiples of the previous bet.
+export function threeBetToSize(opener, raiser, callerCount = 0) {
+  if (!positions.includes(opener) || !positions.includes(raiser) || raiser === opener || callerCount < 0) {
+    throw new Error("3bet／スクイーズの位置またはコーラー数が不正です。");
+  }
+  const side = isInPosition(raiser, opener) ? "ip" : "oop";
+  return cappedRaiseTo(callerCount > 0
+    ? fixed.squeeze[side] + (callerCount - 1) * fixed.squeeze.per_additional_caller
+    : fixed.three_bet[side]);
+}
+
+export function fourBetToSize(fourBettor, threeBettor) {
+  if (![threeBettor, fourBettor].every(position => positions.includes(position)) || fourBettor === threeBettor) {
+    throw new Error("4betの位置が不正です。");
+  }
+  return cappedRaiseTo(fixed.four_bet[isInPosition(fourBettor, threeBettor) ? "ip" : "oop"]);
+}
+
+export function fiveBetToSize() {
+  return sizing.five_bet_all_in ? effectiveStackBb : null;
+}

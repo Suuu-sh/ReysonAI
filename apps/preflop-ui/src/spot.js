@@ -1,5 +1,7 @@
+import { fourBetToSize, openSizeBb, threeBetToSize } from "./estimated/sizing.js";
+
 export const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
-export const OPEN_SIZE_BB = 2.5;
+export const OPEN_SIZE_BB = openSizeBb;
 export const STACK_OPTIONS = [20, 40, 50, 75, 100, 150, 200];
 
 export function solutionStackBb(solution) {
@@ -40,13 +42,11 @@ export function responders(opener) {
 }
 
 export function threeBetSize(opener, threeBettor) {
-  const inPosition = positions.indexOf(threeBettor) > positions.indexOf(opener)
-    && !["SB", "BB"].includes(threeBettor);
-  return OPEN_SIZE_BB * (inPosition ? 3 : 4);
+  return threeBetToSize(opener, threeBettor);
 }
 
 export function fourBetSize(opener, threeBettor) {
-  return threeBetSize(opener, threeBettor) * 2.2;
+  return fourBetToSize(opener, threeBettor);
 }
 
 // Omitted seats fold, matching the read-only resolve API contract.

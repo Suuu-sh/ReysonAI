@@ -1,8 +1,13 @@
 """Persist authored estimates for the opener facing a 3bet. No solving."""
 import json
+import os
+import sys
 from pathlib import Path
+from sizing_rules import four_bet_to
 
-ROOT = Path(__file__).resolve().parents[1] / 'src/estimated'
+# Writes only into the staging dir from `npm run build:estimates`, which audits before publishing.
+STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
+ROOT = STAGING
 RANKS = 'AKQJT98765432'
 HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
          for i, a in enumerate(RANKS) for j, b in enumerate(RANKS)]
@@ -277,7 +282,7 @@ def main():
     opening = json.loads((ROOT/'opening-ranges.json').read_text())
     opening_by_hero = {s['hero']: {h['hand']: h['open'] for h in s['hands']} for s in opening['spots']}
     result = {'metadata': {
-        'schema_version': '1.0', 'strategy_type': 'general_knowledge_estimate_not_gto',
+        'schema_version': '1.0', 'strategy_type': 'ai_estimate_not_gto',
         'game': '6max Cash / No-Limit Texas Holdem', 'effective_stack_bb': 100, 'open_size_bb': 2.5,
         'scope': 'Heroが2.5BBでオープン、後続1人が3bet。他の全員がフォールドし、Heroに戻った局面。',
         'source_of_truth': 'ユーザー確認済みの全15組み合わせと既存preflop-ranges.jsonの3betサイズ。Heroは元のオープナー。',
@@ -287,7 +292,7 @@ def main():
         'frequency_semantics': '当該ハンドで既にオープンした条件下の割合。fold+call+four_bet=100。オープン頻度は再乗算しない。',
         'unreachable_hands': '既存RFIでopen=0のクラスはこの経路に到達しない。169件形式のためfold=100とし、理由に対象外と明記。実際の局面での推奨ではない。',
         'sizing_semantics': '3bet・4betとも追加額ではなく合計投入額(raise-to)。four_bet=0ならfour_bet_size_bb=null。',
-        'sizing_policy': '単一の非オールイン4betサイズを局面ごとに選択。サイズに固定制約はないが、サイズ間の混合や別のオールイン枝は収録しない。',
+        'sizing_policy': '保存済みconfigの一律サイズルールを適用。3bet=オープン×IP3/OOP4.5、スクイーズはcaller1人でIP4.5/OOP5にcallerごとに+1、4bet=直前3bet×IP2.3/OOP2.6、スタック超過は100BBオールイン。',
         'warning': '推定値。EV・GTO均衡・相手のカード除去・レーキ調整は未計算。既存レンジとの同時均衡を保証しない。',
         'reference_note': '参考資料は位置別サイズの考え方の確認のみ。頻度チャートは転用していない。',
         'references': [{'title': 'Upswing Poker: Preflop Raise Sizes That Win', 'url': 'https://upswingpoker.com/podcast/ep29-pfr-sizing/'}],
@@ -296,8 +301,8 @@ def main():
         hero, bettor = before['opener'], before['hero']
         ip = before['hero_position_vs_opener'] == 'OOP'
         size = before['three_bet_size_bb']
-        four_size = round(size * (2.2 if ip else 2.75) * 2) / 2
-        assert 2*size-2.5 <= four_size <= 100
+        four_size = four_bet_to(hero, bettor)
+        assert size < four_size < 100
         rows = []
         for hand in HANDS:
             call, four = PROFILES[hero, bettor][hand]

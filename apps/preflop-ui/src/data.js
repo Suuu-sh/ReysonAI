@@ -2,11 +2,11 @@ export const ranks = [..."AKQJT98765432"];
 export const hands = ranks.flatMap((a,i) => ranks.map((b,j) => i===j ? a+b : i<j ? a+b+"s" : b+a+"o"));
 export const pct = n => Number.isFinite(n) ? (n*100).toFixed(1)+"%" : "未計算";
 const ACTION_COLORS = Object.freeze({
-  fold: "#50565f",
-  call: "#55c6d8",
-  check: "#8b9caf",
-  all_in: "#a579ef",
-  raise: "#fa5b9b",
+  fold: "#26262c",
+  call: "#3a9fb4",
+  check: "#6b7686",
+  all_in: "#8a5fd6",
+  raise: "#d9477f",
 });
 
 export function label(a) {

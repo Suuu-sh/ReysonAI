@@ -4,11 +4,15 @@ Run only at authoring time, after the opening and 3bet-response generators.
 The saved JSON, not this script, is the UI's source of truth.
 """
 import json
+import os
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / 'src/estimated'
+# Writes only into the staging dir from `npm run build:estimates`, which audits before publishing.
+STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
+DATA = STAGING
 RANKS = 'AKQJT98765432'
 HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
          for i, a in enumerate(RANKS) for j, b in enumerate(RANKS)]
@@ -136,16 +140,87 @@ BLINDS_IP = profile('''
 15 15: A5s
 10 10: A4s
 ''')
+# SB 3bets a wider, bluff-heavier range than BB, so it must defend more vs 4bets
+# or any-two 4bets profit (audit-estimates.mjs auto-profit check, 2026-09-23).
+SB_VS_HJ = profile('''
+5 95: AA
+10 90: KK
+35 55: QQ
+45 20: JJ
+40 5: TT
+25 0: 99
+25 75: AKs
+15 85: AKo
+45 15: AQs
+30 5: AQo
+35 5: AJs
+30 5: KQs
+10 0: ATs
+10 15: A5s
+5 10: A4s
+''')
+SB_VS_CO = profile('''
+5 95: AA
+5 95: KK
+25 70: QQ
+40 40: JJ
+45 15: TT
+35 5: 99
+15 0: 88
+20 80: AKs
+15 85: AKo
+45 35: AQs
+35 15: AQo
+45 15: AJs
+20 5: AJo
+35 5: ATs
+40 10: KQs
+25 0: KJs
+30 0: QJs JTs
+10 15: A5s
+10 10: A4s
+''')
+SB_VS_BTN = profile('''
+5 95: AA
+5 95: KK
+20 80: QQ
+35 55: JJ
+45 30: TT
+45 15: 99
+40 5: 88
+25 0: 77
+15 0: 66
+20 80: AKs
+15 85: AKo
+45 45: AQs
+35 30: AQo
+50 20: AJs
+30 10: AJo
+45 15: ATs
+20 5: A9s
+50 10: KQs
+25 5: KQo
+40 5: KJs
+25 0: KTs
+40 5: QJs
+25 0: QTs
+40 0: JTs
+25 0: T9s
+20 0: 98s
+15 25: A5s
+10 20: A4s
+5 10: A3s A2s
+''')
 # Every matchup is explicitly assigned. No unknown-position fallback.
 PROFILES = {
     ('UTG', 'HJ'): TIGHT_IP, ('UTG', 'CO'): TIGHT_IP,
     ('UTG', 'BTN'): TIGHT_IP, ('UTG', 'SB'): TIGHT_OOP,
     ('UTG', 'BB'): TIGHT_OOP,
     ('HJ', 'CO'): TIGHT_IP, ('HJ', 'BTN'): MID_IP,
-    ('HJ', 'SB'): TIGHT_OOP, ('HJ', 'BB'): MID_OOP,
-    ('CO', 'BTN'): MID_IP, ('CO', 'SB'): MID_OOP,
+    ('HJ', 'SB'): SB_VS_HJ, ('HJ', 'BB'): MID_OOP,
+    ('CO', 'BTN'): MID_IP, ('CO', 'SB'): SB_VS_CO,
     ('CO', 'BB'): MID_OOP,
-    ('BTN', 'SB'): LATE_OOP, ('BTN', 'BB'): LATE_OOP,
+    ('BTN', 'SB'): SB_VS_BTN, ('BTN', 'BB'): LATE_OOP,
     ('SB', 'BB'): BLINDS_IP,
 }
 
@@ -155,19 +230,19 @@ def build():
     previous = json.loads((DATA / 'three-bet-responses.json').read_text())
     result = {
         'metadata': {
-            'schema_version': '1.0', 'strategy_type': 'general_knowledge_estimate_not_gto',
+            'schema_version': '1.0', 'strategy_type': 'ai_estimate_not_gto',
             'game': '6max Cash / No-Limit Texas Holdem', 'effective_stack_bb': 100,
             'open_size_bb': 2.5, 'ante_bb': 0,
-            'scope': 'オープナー2.5BB → 後続Heroが3bet → オープナーが非オールイン4bet → 元の3bettorであるHeroの応答。他の全員はフォールド。',
-            'source_of_truth': '既存preflop-ranges.jsonの3betとthree-bet-responses.jsonの4betサイズを参照。ユーザー確認済みの5betはall_in（合計100BB）のみ。',
+            'scope': '単独オープン→3bet→4betに対する元3bettorの応答。全参加者と履歴はaction-tree.jsonで識別し、このファイルは該当15 heads-up spotの互換保存レンジ。',
+            'source_of_truth': 'configs/cash-6max-100bb.jsonのサイズルールと先行する保存済みAI推定JSONを参照。5betはall_in（合計100BB）のみ。',
             'legal_actions': ['fold', 'call', 'all_in'],
             'method': '独自に手作業で設計したハンド群別・位置別の5%刻みの概算。早いオープナーをタイトと仮定し、IPではコールを多めに配分。刻みは計算精度を意味しない。',
             'rake': {'rate': None, 'cap_bb': None, 'calibrated': False},
             'frequency_semantics': '当該ハンドで既に3betした条件下の割合。fold+call+all_in=100。元の3bet頻度を再乗算しない。',
             'unreachable_hands': '既存3bet頻度0%は対象外。169件形式上fold=100、all_in_size_bb=nullとして理由に明記。推奨ではなくUIでも頻度を非表示。',
             'sizing_semantics': '全サイズは追加額でなく合計投入額。callは4bet額まで。all_inは100BB、頻度0ならall_in_size_bb=null。',
-            'tree_policy': '応答アクションはpreflop-treeのensure_four_bet_responseと同じ。サイズは保存JSONを優先し、Solver設定の倍率には置き換えない。',
-            'excluded': ['非オールイン5bet', 'コールド4bet', 'スクイーズ・コーラーあり', '5bet後のオープナーの応答'],
+            'tree_policy': '応答アクションはfold / call / all_in。サイズは共通configから計算し、spot間の正確なraise-to額を後続履歴に引き継ぐ。',
+            'scope_note': 'スクイーズ、コールド4bet、複数人応答、5bet後の応答はaction-tree.jsonの別spotとして保存。',
             'warning': '推定値。GTO・EV・相手カード除去・局面到達確率・レーキ調整は未計算。前段データとの同時均衡を保証しない。',
             'reference_note': '競合サービスのチャート・頻度は転用していない。既存コードの合法アクションと保存サイズのみを参照。',
         },
@@ -214,7 +289,7 @@ if __name__ == '__main__':
     check = """
 import fs from 'node:fs';
 import {validateFourBetDataset} from './src/estimated/four-bet-responses.js';
-const read = n => JSON.parse(fs.readFileSync(`./src/estimated/${n}.json`, 'utf8'));
+const read = n => JSON.parse(fs.readFileSync(`${process.env.ESTIMATES_DIR}/${n}.json`, 'utf8'));
 validateFourBetDataset(JSON.parse(fs.readFileSync(0, 'utf8')), read('preflop-ranges'), read('three-bet-responses'), read('opening-ranges'));
 """
     serialized = json.dumps(data, ensure_ascii=False, indent=2)+'\n'

@@ -1,0 +1,1391 @@
+{
+  "spot_id": "UTG_vs_BTN_three_bet",
+  "type": "three_bet",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "勝率はショウダウンまでの値で、オールイン以外では実際に回収できる勝率はこれより低くなります。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_three_bet_pct",
+      "label": "勝率（対3betレンジ）",
+      "scope": "hand"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "equity_vs_continue_pct",
+      "label": "4bet後に続く相手への勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "three_bettor_fold_to_4bet_pct",
+      "label": "4betに相手が降りる率",
+      "scope": "spot"
+    }
+  ],
+  "spot_facts": {
+    "opener": "UTG",
+    "three_bettor": "BTN",
+    "position": "OOP",
+    "three_bet_size_bb": 8,
+    "four_bet_size_bb": 20,
+    "call_break_even_equity_pct": 31.4,
+    "three_bettor_fold_to_4bet_pct": 43.6
+  },
+  "hands": {
+    "22": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BTNの3betレンジへの勝率は36.6%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 36.6,
+        "equity_vs_continue_pct": 31.4,
+        "blocked_three_bet_pct": 0.5
+      }
+    },
+    "33": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BTNの3betレンジへの勝率は36.1%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 36.1,
+        "equity_vs_continue_pct": 32.3,
+        "blocked_three_bet_pct": 0.5
+      }
+    },
+    "44": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BTNの3betレンジへの勝率は37.2%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 37.2,
+        "equity_vs_continue_pct": 33.3,
+        "blocked_three_bet_pct": 1.1
+      }
+    },
+    "55": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BTNの3betレンジへの勝率は38.9%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 38.9,
+        "equity_vs_continue_pct": 33.4,
+        "blocked_three_bet_pct": 2.3
+      }
+    },
+    "66": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。BTNの3betレンジへの勝率は38.9%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 38.9,
+        "equity_vs_continue_pct": 34.1,
+        "blocked_three_bet_pct": 1
+      }
+    },
+    "77": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。BTNの3betレンジへの勝率は40.1%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 40.1,
+        "equity_vs_continue_pct": 33.9,
+        "blocked_three_bet_pct": 1.6
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。BTNの3betレンジへの勝率は40.4%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 40.4,
+        "equity_vs_continue_pct": 34.2,
+        "blocked_three_bet_pct": 1.9
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。コールに必要な勝率31.4%に対し、BTNの3betレンジへの勝率は42.0%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。境界に近いため、一部はフォールドします。配分はコール 55%・フォールド 45%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 42,
+        "equity_vs_continue_pct": 33.8,
+        "blocked_three_bet_pct": 2.6
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。BTNの3betレンジへの勝率は83.3%。4bet（20BB）に続けてくる相手にも勝率83.0%を保てるので、4bet（20BB）でバリューを取ります。配分は4bet 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 83.3,
+        "equity_vs_continue_pct": 83,
+        "blocked_three_bet_pct": 31.4
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BTNの3betレンジには勝率51.9%と優位で、続けてくる相手にも42.2%とほぼ互角です。相手が4bet（20BB）に43.6%降りる分を合わせると、コールより4bet（20BB）のほうが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 70%・コール 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 51.9,
+        "equity_vs_continue_pct": 42.2,
+        "blocked_three_bet_pct": 27.4
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。コールに必要な勝率31.4%に対し、BTNの3betレンジへの勝率は42.6%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 65%・4bet 20%・フォールド 15%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 42.6,
+        "equity_vs_continue_pct": 31.9,
+        "blocked_three_bet_pct": 23.6
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。コールに必要な勝率31.4%に対し、BTNの3betレンジへの勝率は38.8%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 55%・フォールド 40%・4bet 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 38.8,
+        "equity_vs_continue_pct": 29.1,
+        "blocked_three_bet_pct": 20.6
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BTNの3betレンジへの勝率は37.5%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 37.5,
+        "equity_vs_continue_pct": 29.4,
+        "blocked_three_bet_pct": 18.8
+      }
+    },
+    "A9s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNの3betレンジへの勝率は36.5%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 36.5,
+        "equity_vs_continue_pct": 28.5,
+        "blocked_three_bet_pct": 18.1
+      }
+    },
+    "A8s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNの3betレンジへの勝率は35.8%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.8,
+        "equity_vs_continue_pct": 28.9,
+        "blocked_three_bet_pct": 17.7
+      }
+    },
+    "A7s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNの3betレンジへの勝率は35.8%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.8,
+        "equity_vs_continue_pct": 29.7,
+        "blocked_three_bet_pct": 17.5
+      }
+    },
+    "A6s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNの3betレンジへの勝率は34.7%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.7,
+        "equity_vs_continue_pct": 29,
+        "blocked_three_bet_pct": 17.1
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNの3betレンジへの勝率は35.7%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに43.6%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 55%・4bet 30%・コール 15%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.7,
+        "equity_vs_continue_pct": 30.4,
+        "blocked_three_bet_pct": 17.1
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNの3betレンジへの勝率は34.4%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに43.6%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 80%・4bet 15%・コール 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.4,
+        "equity_vs_continue_pct": 30.8,
+        "blocked_three_bet_pct": 16.7
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNの3betレンジへの勝率は33.7%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手は4betに43.6%降りるので、一部はブラフの4betに回します。配分はフォールド 95%・4bet 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.7,
+        "equity_vs_continue_pct": 29.1,
+        "blocked_three_bet_pct": 16.6
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNの3betレンジへの勝率は33.4%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手は4betに43.6%降りるので、一部はブラフの4betに回します。配分はフォールド 95%・4bet 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.4,
+        "equity_vs_continue_pct": 28.6,
+        "blocked_three_bet_pct": 16.6
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。BTNの3betレンジへの勝率は49.5%で、続けてくる相手には39.0%と不利です。それでも相手は4bet（20BB）に43.6%降り、ブロッカーで相手レンジを27.9%減らせるため、ブラフの4bet（20BB）に使います。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 60%・コール 35%・フォールド 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 49.5,
+        "equity_vs_continue_pct": 39,
+        "blocked_three_bet_pct": 27.9
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。BTNの3betレンジへの勝率は66.5%。4bet（20BB）に続けてくる相手にも勝率56.9%を保てるので、4bet（20BB）でバリューを取ります。配分は4bet 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 66.5,
+        "equity_vs_continue_pct": 56.9,
+        "blocked_three_bet_pct": 23.4
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。コールに必要な勝率31.4%に対し、BTNの3betレンジへの勝率は35.5%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 55%・フォールド 40%・4bet 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.5,
+        "equity_vs_continue_pct": 26.6,
+        "blocked_three_bet_pct": 20.1
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの3betレンジへの勝率は34.3%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.3,
+        "equity_vs_continue_pct": 26.9,
+        "blocked_three_bet_pct": 16.6
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの3betレンジへの勝率は33.9%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.9,
+        "equity_vs_continue_pct": 25.8,
+        "blocked_three_bet_pct": 14.9
+      }
+    },
+    "K9s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BTNの3betレンジへの勝率は32.3%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.3,
+        "equity_vs_continue_pct": 24.9,
+        "blocked_three_bet_pct": 14.1
+      }
+    },
+    "K8s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K7s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K6s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K5s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K4s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K3s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K2s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。BTNの3betレンジへの勝率は40.0%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手は4betに43.6%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 65%・コール 20%・4bet 15%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 40,
+        "equity_vs_continue_pct": 26.7,
+        "blocked_three_bet_pct": 24
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNの3betレンジへの勝率は31.7%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手は4betに43.6%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 90%・4bet 5%・コール 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 31.7,
+        "equity_vs_continue_pct": 21.5,
+        "blocked_three_bet_pct": 20.3
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。コールに必要な勝率31.4%に対し、BTNの3betレンジへの勝率は53.8%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。配分はコール 65%・4bet 35%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 53.8,
+        "equity_vs_continue_pct": 41.6,
+        "blocked_three_bet_pct": 14.3
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの3betレンジへの勝率は34.6%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.6,
+        "equity_vs_continue_pct": 28,
+        "blocked_three_bet_pct": 11.9
+      }
+    },
+    "QTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの3betレンジへの勝率は33.8%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.8,
+        "equity_vs_continue_pct": 27.8,
+        "blocked_three_bet_pct": 10.1
+      }
+    },
+    "Q9s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BTNの3betレンジへの勝率は31.8%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 31.8,
+        "equity_vs_continue_pct": 27.9,
+        "blocked_three_bet_pct": 9.3
+      }
+    },
+    "Q8s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q7s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q6s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q5s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q4s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q3s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q2s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。BTNの3betレンジへの勝率は35.1%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手は4betに43.6%降りるので、一部はブラフの4betに回します。一部はコールで継続します。配分はフォールド 90%・4bet 5%・コール 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 35.1,
+        "equity_vs_continue_pct": 25.4,
+        "blocked_three_bet_pct": 20.7
+      }
+    },
+    "KJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNの3betレンジへの勝率は30.2%で、必要勝率31.4%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 30.2,
+        "equity_vs_continue_pct": 22.8,
+        "blocked_three_bet_pct": 16.8
+      }
+    },
+    "QJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNの3betレンジへの勝率は30.4%で、必要勝率31.4%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 30.4,
+        "equity_vs_continue_pct": 24,
+        "blocked_three_bet_pct": 12.1
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。コールに必要な勝率31.4%に対し、BTNの3betレンジへの勝率は48.3%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 80%・4bet 10%・フォールド 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 48.3,
+        "equity_vs_continue_pct": 35.8,
+        "blocked_three_bet_pct": 7.5
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの3betレンジへの勝率は34.1%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34.1,
+        "equity_vs_continue_pct": 29.7,
+        "blocked_three_bet_pct": 6.4
+      }
+    },
+    "J9s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの3betレンジへの勝率は33.3%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.3,
+        "equity_vs_continue_pct": 27.5,
+        "blocked_three_bet_pct": 5.6
+      }
+    },
+    "J8s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J7s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J6s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J5s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J4s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J3s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J2s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。BTNの3betレンジへの勝率は34.0%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 34,
+        "equity_vs_continue_pct": 25.4,
+        "blocked_three_bet_pct": 19
+      }
+    },
+    "KTo": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "QTo": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "JTo": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。コールに必要な勝率31.4%に対し、BTNの3betレンジへの勝率は45.5%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部は4betに回し、4betするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 70%・フォールド 25%・4bet 5%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 45.5,
+        "equity_vs_continue_pct": 35.2,
+        "blocked_three_bet_pct": 4.2
+      }
+    },
+    "T9s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの3betレンジへの勝率は33.6%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 33.6,
+        "equity_vs_continue_pct": 28.4,
+        "blocked_three_bet_pct": 3.7
+      }
+    },
+    "T8s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの3betレンジへの勝率は32.5%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.5,
+        "equity_vs_continue_pct": 27.4,
+        "blocked_three_bet_pct": 3.4
+      }
+    },
+    "T7s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T6s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T5s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T4s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T3s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T2s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A9o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K9o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q9o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J9o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T9o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "98s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの3betレンジへの勝率は32.7%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.7,
+        "equity_vs_continue_pct": 28.5,
+        "blocked_three_bet_pct": 2.5
+      }
+    },
+    "97s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの3betレンジへの勝率は31.5%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 31.5,
+        "equity_vs_continue_pct": 28.4,
+        "blocked_three_bet_pct": 2.3
+      }
+    },
+    "96s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "95s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "94s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "93s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "92s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A8o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K8o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q8o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J8o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T8o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "98o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "87s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの3betレンジへの勝率は32.6%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.6,
+        "equity_vs_continue_pct": 29.3,
+        "blocked_three_bet_pct": 1.9
+      }
+    },
+    "86s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "85s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "84s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "83s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "82s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A7o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K7o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q7o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J7o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T7o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "97o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "87o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "76s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの3betレンジへの勝率は32.9%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.9,
+        "equity_vs_continue_pct": 30.2,
+        "blocked_three_bet_pct": 1.4
+      }
+    },
+    "75s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "74s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "73s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "72s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A6o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K6o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q6o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J6o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T6o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "96o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "86o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "76o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "65s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの3betレンジへの勝率は32.5%で、数字上は必要勝率31.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 32.5,
+        "equity_vs_continue_pct": 29.1,
+        "blocked_three_bet_pct": 1.6
+      }
+    },
+    "64s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "63s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "62s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A5o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K5o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q5o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J5o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T5o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "95o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "85o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "75o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "65o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "54s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの3betレンジへの勝率は30.7%で、必要勝率31.4%に届きません。フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_three_bet_pct": 30.7,
+        "equity_vs_continue_pct": 28.8,
+        "blocked_three_bet_pct": 1.6
+      }
+    },
+    "53s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "52s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A4o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K4o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q4o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J4o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T4o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "94o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "84o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "74o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "64o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "54o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "43s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "42s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A3o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K3o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q3o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J3o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T3o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "93o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "83o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "73o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "63o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "53o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "43o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "32s": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "A2o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "K2o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "Q2o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "J2o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "T2o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "92o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "82o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "72o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "62o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "52o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "42o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    },
+    "32o": {
+      "reason": "UTGの既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。",
+      "facts": {
+        "equity_vs_three_bet_pct": null,
+        "equity_vs_continue_pct": null,
+        "blocked_three_bet_pct": null
+      }
+    }
+  }
+}

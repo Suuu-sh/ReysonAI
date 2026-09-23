@@ -1,0 +1,1392 @@
+{
+  "spot_id": "SB_vs_CO_four_bet",
+  "type": "four_bet",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "勝率はショウダウンまでの値で、オールイン以外では実際に回収できる勝率はこれより低くなります。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_four_bet_pct",
+      "label": "勝率（対4betレンジ）",
+      "scope": "hand"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "equity_vs_shove_call_pct",
+      "label": "オールインにコールする相手への勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "opener_fold_to_shove_pct",
+      "label": "オールインに相手が降りる率",
+      "scope": "spot"
+    }
+  ],
+  "spot_facts": {
+    "opener": "CO",
+    "hero": "SB",
+    "position": "OOP",
+    "three_bet_size_bb": 12,
+    "four_bet_size_bb": 26,
+    "call_break_even_equity_pct": 26.4,
+    "shove_called_break_even_pct": 43.8,
+    "opener_fold_to_shove_pct": 40.8
+  },
+  "hands": {
+    "22": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。COの4betレンジへの勝率は39.0%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 39,
+        "equity_vs_shove_call_pct": 30.9,
+        "blocked_four_bet_pct": 0.6
+      }
+    },
+    "33": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。COの4betレンジへの勝率は40.2%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 40.2,
+        "equity_vs_shove_call_pct": 31.7,
+        "blocked_four_bet_pct": 0.6
+      }
+    },
+    "44": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。COの4betレンジへの勝率は40.3%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 40.3,
+        "equity_vs_shove_call_pct": 32,
+        "blocked_four_bet_pct": 1
+      }
+    },
+    "55": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。COの4betレンジへの勝率は40.9%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 40.9,
+        "equity_vs_shove_call_pct": 31.8,
+        "blocked_four_bet_pct": 1.5
+      }
+    },
+    "66": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。COの4betレンジへの勝率は41.5%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 41.5,
+        "equity_vs_shove_call_pct": 32.3,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "77": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。COの4betレンジへの勝率は42.1%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 42.1,
+        "equity_vs_shove_call_pct": 32.6,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。COの4betレンジへの勝率は41.1%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 85%・コール 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 41.1,
+        "equity_vs_shove_call_pct": 32.1,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。COの4betレンジへの勝率は42.4%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに40.8%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 60%・コール 35%・オールイン 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 42.4,
+        "equity_vs_shove_call_pct": 32.6,
+        "blocked_four_bet_pct": 1.1
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。COの4betレンジへの勝率は84.4%。オールインしてコールされたときに必要な勝率43.8%に対し、コールしてくる相手にも勝率83.2%を保てるので、オールインでバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 95%・コール 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 84.4,
+        "equity_vs_shove_call_pct": 83.2,
+        "blocked_four_bet_pct": 34.1
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。COの4betレンジには勝率54.5%と優位ですが、コールしてくる相手には41.1%と不利です。それでも相手はオールインに40.8%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 80%・コール 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 54.5,
+        "equity_vs_shove_call_pct": 41.1,
+        "blocked_four_bet_pct": 30.1
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。コールに必要な勝率26.4%に対し、COの4betレンジへの勝率は45.6%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部はオールインに回し、オールインするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 45%・オールイン 35%・フォールド 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 45.6,
+        "equity_vs_shove_call_pct": 31.5,
+        "blocked_four_bet_pct": 25.3
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。コールに必要な勝率26.4%に対し、COの4betレンジへの勝率は41.1%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部はオールインに回し、オールインするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 45%・フォールド 40%・オールイン 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 41.1,
+        "equity_vs_shove_call_pct": 29.9,
+        "blocked_four_bet_pct": 22.8
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。COの4betレンジへの勝率は38.8%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに40.8%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 60%・コール 35%・オールイン 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 38.8,
+        "equity_vs_shove_call_pct": 29.7,
+        "blocked_four_bet_pct": 20.6
+      }
+    },
+    "A9s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。COの4betレンジへの勝率は37.3%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 37.3,
+        "equity_vs_shove_call_pct": 28.5,
+        "blocked_four_bet_pct": 18.7
+      }
+    },
+    "A8s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。COの4betレンジへの勝率は36.8%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 36.8,
+        "equity_vs_shove_call_pct": 27.7,
+        "blocked_four_bet_pct": 18
+      }
+    },
+    "A7s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。COの4betレンジへの勝率は36.2%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 36.2,
+        "equity_vs_shove_call_pct": 28.9,
+        "blocked_four_bet_pct": 18
+      }
+    },
+    "A6s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。COの4betレンジへの勝率は36.2%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 36.2,
+        "equity_vs_shove_call_pct": 28.6,
+        "blocked_four_bet_pct": 18
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COの4betレンジへの勝率は38.1%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに40.8%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 75%・オールイン 15%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 38.1,
+        "equity_vs_shove_call_pct": 30.1,
+        "blocked_four_bet_pct": 18
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COの4betレンジへの勝率は35.9%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに40.8%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 80%・オールイン 10%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 35.9,
+        "equity_vs_shove_call_pct": 29.7,
+        "blocked_four_bet_pct": 18
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COの4betレンジへの勝率は35.5%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 35.5,
+        "equity_vs_shove_call_pct": 29.1,
+        "blocked_four_bet_pct": 18
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COの4betレンジへの勝率は35.3%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 35.3,
+        "equity_vs_shove_call_pct": 29.3,
+        "blocked_four_bet_pct": 18
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。COの4betレンジには勝率53.6%と優位ですが、コールしてくる相手には37.5%と不利です。それでも相手はオールインに40.8%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 85%・コール 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 53.6,
+        "equity_vs_shove_call_pct": 37.5,
+        "blocked_four_bet_pct": 30.2
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。COの4betレンジへの勝率は66.1%。オールインしてコールされたときに必要な勝率43.8%に対し、コールしてくる相手にも勝率56.7%を保てるので、オールインでバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 95%・コール 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 66.1,
+        "equity_vs_shove_call_pct": 56.7,
+        "blocked_four_bet_pct": 25
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COの4betレンジへの勝率は36.3%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに40.8%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 50%・コール 40%・オールイン 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 36.3,
+        "equity_vs_shove_call_pct": 27.1,
+        "blocked_four_bet_pct": 21.3
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COの4betレンジへの勝率は34.2%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.2,
+        "equity_vs_shove_call_pct": 26.2,
+        "blocked_four_bet_pct": 18.4
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COの4betレンジへの勝率は33.2%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.2,
+        "equity_vs_shove_call_pct": 26,
+        "blocked_four_bet_pct": 16.3
+      }
+    },
+    "K9s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COの4betレンジへの勝率は32.1%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.1,
+        "equity_vs_shove_call_pct": 24.9,
+        "blocked_four_bet_pct": 14.1
+      }
+    },
+    "K8s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COの4betレンジへの勝率は31.6%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.6,
+        "equity_vs_shove_call_pct": 24.1,
+        "blocked_four_bet_pct": 13.5
+      }
+    },
+    "K7s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COの4betレンジへの勝率は31.4%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.4,
+        "equity_vs_shove_call_pct": 24.1,
+        "blocked_four_bet_pct": 13.5
+      }
+    },
+    "K6s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K5s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K4s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K3s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K2s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。COの4betレンジへの勝率は42.8%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに40.8%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 50%・コール 35%・オールイン 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 42.8,
+        "equity_vs_shove_call_pct": 27.3,
+        "blocked_four_bet_pct": 25.5
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COの4betレンジへの勝率は31.9%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.9,
+        "equity_vs_shove_call_pct": 22.9,
+        "blocked_four_bet_pct": 21.4
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。COの4betレンジには勝率52.7%と優位ですが、コールしてくる相手には42.1%と不利です。それでも相手はオールインに40.8%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 70%・コール 25%・フォールド 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 52.7,
+        "equity_vs_shove_call_pct": 42.1,
+        "blocked_four_bet_pct": 15
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COの4betレンジへの勝率は32.5%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.5,
+        "equity_vs_shove_call_pct": 28,
+        "blocked_four_bet_pct": 13.1
+      }
+    },
+    "QTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COの4betレンジへの勝率は32.4%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.4,
+        "equity_vs_shove_call_pct": 27.4,
+        "blocked_four_bet_pct": 10.9
+      }
+    },
+    "Q9s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。COの4betレンジへの勝率は30.4%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.4,
+        "equity_vs_shove_call_pct": 27.2,
+        "blocked_four_bet_pct": 8.7
+      }
+    },
+    "Q8s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q7s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q6s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q5s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q4s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q3s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q2s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。COの4betレンジへの勝率は37.6%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに40.8%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 75%・コール 20%・オールイン 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 37.6,
+        "equity_vs_shove_call_pct": 24.9,
+        "blocked_four_bet_pct": 22.9
+      }
+    },
+    "KJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COの4betレンジへの勝率は30.6%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.6,
+        "equity_vs_shove_call_pct": 22.5,
+        "blocked_four_bet_pct": 18.4
+      }
+    },
+    "QJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COの4betレンジへの勝率は28.8%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 28.8,
+        "equity_vs_shove_call_pct": 25.1,
+        "blocked_four_bet_pct": 13
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。COの4betレンジへの勝率は47.7%。コールされると不利ですが、相手はオールインに40.8%降りるうえ、ブロッカーで相手の強いハンドを9.4%減らせるため、ブラフのオールインに使います。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 40%・コール 40%・フォールド 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 47.7,
+        "equity_vs_shove_call_pct": 36.5,
+        "blocked_four_bet_pct": 9.4
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COの4betレンジへの勝率は31.5%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.5,
+        "equity_vs_shove_call_pct": 28.6,
+        "blocked_four_bet_pct": 7.8
+      }
+    },
+    "J9s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COの4betレンジへの勝率は31.4%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.4,
+        "equity_vs_shove_call_pct": 27.1,
+        "blocked_four_bet_pct": 5.7
+      }
+    },
+    "J8s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J7s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J6s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J5s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J4s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J3s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J2s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。COの4betレンジへの勝率は35.5%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 35.5,
+        "equity_vs_shove_call_pct": 25.8,
+        "blocked_four_bet_pct": 20.6
+      }
+    },
+    "KTo": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "QTo": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "JTo": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。コールに必要な勝率26.4%に対し、COの4betレンジへの勝率は44.4%です。フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部はオールインに回し、オールインするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 45%・フォールド 40%・オールイン 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 44.4,
+        "equity_vs_shove_call_pct": 33.7,
+        "blocked_four_bet_pct": 5.3
+      }
+    },
+    "T9s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COの4betレンジへの勝率は32.7%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.7,
+        "equity_vs_shove_call_pct": 28,
+        "blocked_four_bet_pct": 3.4
+      }
+    },
+    "T8s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COの4betレンジへの勝率は31.8%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.8,
+        "equity_vs_shove_call_pct": 27.1,
+        "blocked_four_bet_pct": 2.8
+      }
+    },
+    "T7s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T6s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T5s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T4s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T3s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T2s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A9o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K9o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q9o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J9o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T9o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "98s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COの4betレンジへの勝率は32.8%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.8,
+        "equity_vs_shove_call_pct": 28.3,
+        "blocked_four_bet_pct": 0.6
+      }
+    },
+    "97s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COの4betレンジへの勝率は32.0%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32,
+        "equity_vs_shove_call_pct": 27.7,
+        "blocked_four_bet_pct": 0.6
+      }
+    },
+    "96s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "95s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "94s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "93s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "92s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A8o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K8o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q8o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J8o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T8o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "98o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "87s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COの4betレンジへの勝率は32.8%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.8,
+        "equity_vs_shove_call_pct": 28.5,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "86s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COの4betレンジへの勝率は32.5%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.5,
+        "equity_vs_shove_call_pct": 27.9,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "85s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "84s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "83s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "82s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A7o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K7o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q7o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J7o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T7o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "97o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "87o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "76s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COの4betレンジへの勝率は33.6%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.6,
+        "equity_vs_shove_call_pct": 29.4,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "75s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COの4betレンジへの勝率は32.8%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.8,
+        "equity_vs_shove_call_pct": 27.7,
+        "blocked_four_bet_pct": 0.7
+      }
+    },
+    "74s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "73s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "72s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A6o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K6o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q6o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J6o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T6o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "96o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "86o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "76o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "65s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COの4betレンジへの勝率は33.8%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.8,
+        "equity_vs_shove_call_pct": 29.4,
+        "blocked_four_bet_pct": 0.7
+      }
+    },
+    "64s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "63s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "62s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A5o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K5o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q5o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J5o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T5o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "95o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "85o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "75o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "65o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "54s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COの4betレンジへの勝率は32.7%で、数字上は必要勝率26.4%を上回ります。しかしフロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.7,
+        "equity_vs_shove_call_pct": 28.9,
+        "blocked_four_bet_pct": 1.2
+      }
+    },
+    "53s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "52s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A4o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K4o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q4o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J4o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T4o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "94o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "84o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "74o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "64o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "54o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "43s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "42s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A3o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K3o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q3o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J3o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T3o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "93o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "83o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "73o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "63o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "53o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "43o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "32s": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A2o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K2o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q2o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J2o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T2o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "92o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "82o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "72o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "62o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "52o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "42o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "32o": {
+      "reason": "SBの対COの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    }
+  }
+}

@@ -64,7 +64,7 @@ test("matrix displays exactly persisted conditional frequencies, excluding unrea
     }
   }
   assert.ok(unreachable > 0 && reachableFold > 0);
-  assert.equal(findFourBetSpot(data, "BTN", "BB").four_bet_size_bb, 26.5);
+  assert.equal(findFourBetSpot(data, "BTN", "BB").four_bet_size_bb, 26);
 });
 
 test("every spot rejects malformed IDs, sizes, hand sets, frequencies, reasons and unreachable continuation", () => {

@@ -2,6 +2,7 @@ import { hands } from "../data.js";
 import { positions, validateDataset } from "./ranges.js";
 import { validateOpeningDataset } from "./opening-ranges.js";
 import { validateThreeBetDataset } from "./three-bet-responses.js";
+import { fourBetToSize, openSizeBb } from "./sizing.js";
 
 export function validateFourBetDataset(data, responses, previous, openings) {
   validateDataset(responses);
@@ -9,8 +10,8 @@ export function validateFourBetDataset(data, responses, previous, openings) {
   validateThreeBetDataset(previous, responses, openings);
   const expected = positions.flatMap((opener, i) => positions.slice(i + 1).map(hero => `${hero}_vs_${opener}_four_bet`));
   const fail = detail => { throw new Error(`4bet後の応答データが不正です: ${detail}`); };
-  if (data?.metadata?.strategy_type !== "general_knowledge_estimate_not_gto" ||
-      data.metadata.effective_stack_bb !== 100 || data.metadata.open_size_bb !== 2.5 ||
+  if (data?.metadata?.strategy_type !== "ai_estimate_not_gto" ||
+      data.metadata.effective_stack_bb !== 100 || data.metadata.open_size_bb !== openSizeBb ||
       data.metadata.ante_bb !== 0 || data.metadata.game !== "6max Cash / No-Limit Texas Holdem" ||
       JSON.stringify(data.metadata.legal_actions) !== JSON.stringify(["fold", "call", "all_in"]) ||
       data.spot_count !== 15 || data.entry_count !== 2535 || data.hand_classes_per_spot !== 169 ||
@@ -23,13 +24,13 @@ export function validateFourBetDataset(data, responses, previous, openings) {
         spot.id !== `${spot.hero}_vs_${spot.opener}_four_bet` ||
         spot.source_response_id !== source.id || spot.source_three_bet_response_id !== before.id ||
         spot.hero_position_vs_opener !== source.hero_position_vs_opener ||
-        spot.open_size_bb !== 2.5 || spot.effective_stack_bb !== 100 ||
+        spot.open_size_bb !== openSizeBb || spot.effective_stack_bb !== 100 ||
         spot.three_bet_size_bb !== source.three_bet_size_bb || spot.three_bet_size_bb !== before.three_bet_size_bb ||
         spot.four_bet_size_bb !== before.four_bet_size_bb ||
         !Number.isFinite(spot.three_bet_size_bb) || spot.three_bet_size_bb < 4 ||
-        !Number.isFinite(spot.four_bet_size_bb) || spot.four_bet_size_bb < 2 * spot.three_bet_size_bb - 2.5 ||
+        spot.four_bet_size_bb !== fourBetToSize(spot.opener, spot.hero) ||
+        !Number.isFinite(spot.four_bet_size_bb) || spot.four_bet_size_bb >= 100 ||
         spot.four_bet_size_bb >= 100 || spot.all_in_size_bb !== 100 ||
-        spot.all_in_size_bb < 2 * spot.four_bet_size_bb - spot.three_bet_size_bb ||
         !Array.isArray(spot.hands) || spot.hands.length !== 169 ||
         new Set(spot.hands.map(r => r?.hand)).size !== 169) fail(`対応関係・サイズ: ${spot.id}`);
     for (const row of spot.hands) {
@@ -59,6 +60,7 @@ export function findFourBetSpot(data, opener, hero) {
 export function fourBetMatrixModel(spot, source) {
   return {
     actions: ["all_in", "call", "fold"],
+    actionLabels: { all_in: "オールイン 100BB" },
     aggregates: new Map(spot.hands.map(row => {
       const entry = source.hands.find(r => r.hand === row.hand);
       if (!entry) throw new Error(`3bet到達データがありません: ${row.hand}`);

@@ -1,6 +1,11 @@
 """Expand authored RFI estimates into persisted JSON. Not a solver."""
 import json
+import os
+import sys
 from pathlib import Path
+
+# Writes only into the staging dir from `npm run build:estimates`, which audits before publishing.
+STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
 
 RANKS = 'AKQJT98765432'
 HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
@@ -55,8 +60,8 @@ P['CO'] = profile('''
 0: Q4s Q3s Q2s J6s T6s 95s 84s 63s 43s A6o A4o A3o A2o K8o
 ''', P['HJ'])
 P['BTN'] = profile('''
-100: AA-22 AKs-A2s AKo-A9o KQs-K7s KQo KJo KTo QJs-Q8s QJo QTo JTs-J8s JTo T9s T8s 98s 87s 76s 65s 54s
-75: A8o-A2o K9o Q9o J9o T9o K6s-K2s Q7s Q6s J7s T7s 97s 86s 75s 64s 53s
+100: AA-22 AKs-A2s AKo-A9o KQs-K7s KQo KJo KTo QJs-Q8s QJo QTo JTs-J8s JTo T9s T8s 98s 97s 87s 86s 76s 75s 65s 54s
+75: A8o-A2o K9o Q9o J9o T9o K6s-K2s Q7s Q6s J7s T7s 64s 53s
 50: K8o Q8o J8o T8o 98o Q5s Q4s J6s T6s 96s 85s 74s 63s 43s
 25: K7o Q7o J7o 97o 87o Q3s Q2s J5s-J2s T5s-T2s 95s 94s 84s 73s 52s 42s 32s
 ''')
@@ -86,7 +91,7 @@ def reason(hand, position, frequency):
 def main():
     data = {
         'metadata': {
-            'schema_version': '1.0', 'strategy_type': 'general_knowledge_estimate_not_gto',
+            'schema_version': '1.0', 'strategy_type': 'ai_estimate_not_gto',
             'game': '6max Cash / No-Limit Texas Holdem', 'effective_stack_bb': 100,
             'open_size_bb': 2.5, 'scope': 'Heroまで全員フォールドした未オープンポットでのraise-first-in。',
             'source_of_truth': 'ユーザーが指定したUTG / HJ / CO / BTN / SBのオープンレンジ追加。既存の100BB・2.5BB条件を継承。',
@@ -112,7 +117,7 @@ def main():
                               'effective_stack_bb': 100, 'hands': rows})
         weighted = sum((6 if len(h) == 2 else 4 if h.endswith('s') else 12)*frequencies[h] for h in HANDS)/1326
         print(f'{position}: {weighted:.2f}% nominal combo-weighted open')
-    output = Path(__file__).resolve().parents[1]/'src/estimated/opening-ranges.json'
+    output = STAGING/'opening-ranges.json'
     output.write_text(json.dumps(data, ensure_ascii=False, indent=2)+'\n')
 
 

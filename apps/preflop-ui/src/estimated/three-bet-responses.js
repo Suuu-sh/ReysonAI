@@ -1,10 +1,11 @@
 import { hands } from "../data.js";
 import { positions } from "./ranges.js";
+import { fourBetToSize, isInPosition, openSizeBb } from "./sizing.js";
 
 export function validateThreeBetDataset(data, responses, openings) {
   const expected = positions.flatMap((hero, i) => positions.slice(i + 1).map(bettor => `${hero}_vs_${bettor}_three_bet`));
-  if (data?.metadata?.ante_bb !== 0 || data?.metadata?.strategy_type !== "general_knowledge_estimate_not_gto" ||
-      data.metadata.effective_stack_bb !== 100 || data.metadata.open_size_bb !== 2.5 ||
+  if (data?.metadata?.ante_bb !== 0 || data?.metadata?.strategy_type !== "ai_estimate_not_gto" ||
+      data.metadata.effective_stack_bb !== 100 || data.metadata.open_size_bb !== openSizeBb ||
       data.spot_count !== 15 || data.entry_count !== 2535 || data.hand_classes_per_spot !== 169 ||
       !Array.isArray(data.spots) || data.spots.length !== 15 ||
       !expected.every(id => data.spots.some(s => s.id === id))) {
@@ -16,9 +17,10 @@ export function validateThreeBetDataset(data, responses, openings) {
     if (!previous || !opening || spot.opener !== spot.hero ||
         spot.id !== `${spot.hero}_vs_${spot.three_bettor}_three_bet` ||
         spot.source_response_id !== previous.id || spot.three_bet_size_bb !== previous.three_bet_size_bb ||
-        spot.open_size_bb !== 2.5 || spot.effective_stack_bb !== 100 ||
-        spot.hero_position_vs_three_bettor !== (previous.hero_position_vs_opener === "IP" ? "OOP" : "IP") ||
-        !Number.isFinite(spot.four_bet_size_bb) || spot.four_bet_size_bb < 2 * spot.three_bet_size_bb - 2.5 ||
+        spot.open_size_bb !== openSizeBb || spot.effective_stack_bb !== 100 ||
+        spot.hero_position_vs_three_bettor !== (isInPosition(spot.hero, spot.three_bettor) ? "IP" : "OOP") ||
+        spot.four_bet_size_bb !== fourBetToSize(spot.hero, spot.three_bettor) ||
+        !Number.isFinite(spot.four_bet_size_bb) || spot.four_bet_size_bb >= 100 ||
         spot.four_bet_size_bb > 100 || !Array.isArray(spot.hands) || spot.hands.length !== 169 ||
         new Set(spot.hands.map(h => h.hand)).size !== 169) {
       throw new Error(`3bet局面の対応関係・サイズが不正です: ${spot.id}`);
@@ -48,6 +50,7 @@ export function findThreeBetSpot(data, hero, threeBettor) {
 export function threeBetMatrixModel(spot) {
   return {
     actions: ["raise_four_bet", "call", "fold"],
+    actionLabels: { raise_four_bet: `レイズ ${spot.four_bet_size_bb}BB` },
     aggregates: new Map(spot.hands.map(row => [row.hand, {
       hand: row.hand,
       comboCount: row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12,

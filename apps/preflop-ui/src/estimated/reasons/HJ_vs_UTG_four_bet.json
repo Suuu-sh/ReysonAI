@@ -1,0 +1,1392 @@
+{
+  "spot_id": "HJ_vs_UTG_four_bet",
+  "type": "four_bet",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "勝率はショウダウンまでの値で、オールイン以外では実際に回収できる勝率はこれより低くなります。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_four_bet_pct",
+      "label": "勝率（対4betレンジ）",
+      "scope": "hand"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "equity_vs_shove_call_pct",
+      "label": "オールインにコールする相手への勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "opener_fold_to_shove_pct",
+      "label": "オールインに相手が降りる率",
+      "scope": "spot"
+    }
+  ],
+  "spot_facts": {
+    "opener": "UTG",
+    "hero": "HJ",
+    "position": "IP",
+    "three_bet_size_bb": 8,
+    "four_bet_size_bb": 20,
+    "call_break_even_equity_pct": 28.9,
+    "shove_called_break_even_pct": 45.7,
+    "opener_fold_to_shove_pct": 59.2
+  },
+  "hands": {
+    "22": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "33": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "44": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "55": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "66": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "77": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。UTGの4betレンジへの勝率は38.9%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 38.9,
+        "equity_vs_shove_call_pct": 20.7,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。UTGの4betレンジへの勝率は38.3%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 38.3,
+        "equity_vs_shove_call_pct": 20.9,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。UTGの4betレンジへの勝率は38.4%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 38.4,
+        "equity_vs_shove_call_pct": 21.2,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。UTGの4betレンジへの勝率は84.3%。オールインしてコールされたときに必要な勝率45.7%に対し、コールしてくる相手にも勝率77.9%を保てるので、オールインでバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 84.3,
+        "equity_vs_shove_call_pct": 77.9,
+        "blocked_four_bet_pct": 40.7
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。UTGの4betレンジへの勝率は46.8%。コールされると不利ですが、相手はオールインに59.2%降りるうえ、ブロッカーで相手の強いハンドを38.0%減らせるため、ブラフのオールインに使います。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 60%・コール 35%・フォールド 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 46.8,
+        "equity_vs_shove_call_pct": 25.2,
+        "blocked_four_bet_pct": 38
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。UTGの4betレンジへの勝率は34.4%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに59.2%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 55%・コール 40%・オールイン 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.4,
+        "equity_vs_shove_call_pct": 24.8,
+        "blocked_four_bet_pct": 27.4
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。UTGの4betレンジへの勝率は32.5%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.5,
+        "equity_vs_shove_call_pct": 25.7,
+        "blocked_four_bet_pct": 23.4
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。UTGの4betレンジへの勝率は31.7%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.7,
+        "equity_vs_shove_call_pct": 26.9,
+        "blocked_four_bet_pct": 22.4
+      }
+    },
+    "A9s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A8s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A7s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A6s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGの4betレンジへの勝率は31.4%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手はオールインに59.2%降りるので、一部はブラフのオールインに回します。配分はフォールド 95%・オールイン 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.4,
+        "equity_vs_shove_call_pct": 26.6,
+        "blocked_four_bet_pct": 21.9
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGの4betレンジへの勝率は31.0%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31,
+        "equity_vs_shove_call_pct": 26.5,
+        "blocked_four_bet_pct": 21.9
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGの4betレンジへの勝率は30.2%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.2,
+        "equity_vs_shove_call_pct": 25.9,
+        "blocked_four_bet_pct": 21.9
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGの4betレンジへの勝率は30.7%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.7,
+        "equity_vs_shove_call_pct": 25.4,
+        "blocked_four_bet_pct": 21.9
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。UTGの4betレンジへの勝率は44.3%。コールされると不利ですが、相手はオールインに59.2%降りるうえ、ブロッカーで相手の強いハンドを38.3%減らせるため、ブラフのオールインに使います。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 60%・コール 25%・フォールド 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 44.3,
+        "equity_vs_shove_call_pct": 19.8,
+        "blocked_four_bet_pct": 38.3
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。UTGの4betレンジには勝率56.2%と優位ですが、コールしてくる相手には24.6%と不利です。それでも相手はオールインに59.2%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 85%・コール 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 56.2,
+        "equity_vs_shove_call_pct": 24.6,
+        "blocked_four_bet_pct": 33.4
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGの4betレンジへの勝率は27.1%で、必要勝率28.9%に届きません。フォールドが中心です。一部はコールで継続します。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 27.1,
+        "equity_vs_shove_call_pct": 16.2,
+        "blocked_four_bet_pct": 24.3
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGの4betレンジへの勝率は27.7%で、必要勝率28.9%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 27.7,
+        "equity_vs_shove_call_pct": 17.5,
+        "blocked_four_bet_pct": 19.9
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGの4betレンジへの勝率は27.5%で、必要勝率28.9%に届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 27.5,
+        "equity_vs_shove_call_pct": 17.3,
+        "blocked_four_bet_pct": 18.8
+      }
+    },
+    "K9s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K8s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K7s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K6s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K5s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K4s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K3s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K2s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。UTGの4betレンジへの勝率は31.0%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31,
+        "equity_vs_shove_call_pct": 21.3,
+        "blocked_four_bet_pct": 27.6
+      }
+    },
+    "KQo": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。コールに必要な勝率28.9%に対し、UTGの4betレンジへの勝率は41.7%です。フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場なので、コールが中心になります。一部はオールインに回し、オールインするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 50%・オールイン 35%・フォールド 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 41.7,
+        "equity_vs_shove_call_pct": 20.1,
+        "blocked_four_bet_pct": 11.1
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGの4betレンジへの勝率は28.5%で、必要勝率28.9%に届きません。フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 28.5,
+        "equity_vs_shove_call_pct": 19.1,
+        "blocked_four_bet_pct": 7.7
+      }
+    },
+    "QTs": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q9s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q8s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q7s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q6s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q5s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q4s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q3s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q2s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "AJo": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "KJo": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "QJo": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。UTGの4betレンジへの勝率は39.2%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに59.2%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 55%・コール 40%・オールイン 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 39.2,
+        "equity_vs_shove_call_pct": 20.7,
+        "blocked_four_bet_pct": 2.9
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGの4betレンジへの勝率は30.8%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.8,
+        "equity_vs_shove_call_pct": 21.2,
+        "blocked_four_bet_pct": 2.1
+      }
+    },
+    "J9s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J8s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J7s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J6s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J5s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J4s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J3s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J2s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "ATo": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "KTo": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "QTo": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "JTo": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。UTGの4betレンジへの勝率は38.5%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 38.5,
+        "equity_vs_shove_call_pct": 20.9,
+        "blocked_four_bet_pct": 0.8
+      }
+    },
+    "T9s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGの4betレンジへの勝率は31.2%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.2,
+        "equity_vs_shove_call_pct": 23,
+        "blocked_four_bet_pct": 0.5
+      }
+    },
+    "T8s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T7s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T6s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T5s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T4s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T3s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T2s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A9o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K9o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q9o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J9o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T9o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "98s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGの4betレンジへの勝率は31.9%で、数字上は必要勝率28.9%を上回ります。しかしフロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.9,
+        "equity_vs_shove_call_pct": 23.1,
+        "blocked_four_bet_pct": 0
+      }
+    },
+    "97s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "96s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "95s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "94s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "93s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "92s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A8o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K8o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q8o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J8o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T8o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "98o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "87s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "86s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "85s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "84s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "83s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "82s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A7o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K7o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q7o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J7o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T7o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "97o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "87o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "76s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "75s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "74s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "73s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "72s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A6o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K6o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q6o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J6o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T6o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "96o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "86o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "76o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "65s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "64s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "63s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "62s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A5o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K5o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q5o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J5o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T5o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "95o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "85o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "75o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "65o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "54s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "53s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "52s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A4o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K4o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q4o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J4o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T4o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "94o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "84o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "74o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "64o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "54o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "43s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "42s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A3o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K3o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q3o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J3o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T3o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "93o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "83o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "73o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "63o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "53o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "43o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "32s": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A2o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "K2o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q2o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J2o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T2o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "92o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "82o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "72o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "62o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "52o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "42o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "32o": {
+      "reason": "HJの対UTGの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    }
+  }
+}

@@ -12,18 +12,19 @@ test("3bet and 4bet pots build the API action sequence",()=>{
  assert.deepEqual(spotRequest("saved",{mode:"three_bet",opener:"BTN",actor:"BB"}),{
   solutionId:"saved",heroPosition:"BTN",actions:[
    {position:"BTN",action:"raise",sizeBb:2.5},
-   {position:"BB",action:"raise",sizeBb:10},
+   {position:"BB",action:"raise",sizeBb:12},
   ]
  });
  assert.deepEqual(spotRequest("saved",{mode:"four_bet",opener:"BTN",actor:"BB"}),{
   solutionId:"saved",heroPosition:"BB",actions:[
    {position:"BTN",action:"raise",sizeBb:2.5},
-   {position:"BB",action:"raise",sizeBb:10},
-   {position:"BTN",action:"raise",sizeBb:22},
+   {position:"BB",action:"raise",sizeBb:12},
+   {position:"BTN",action:"raise",sizeBb:26},
   ]
  });
- assert.equal(threeBetSize("CO","BTN"),7.5);
- assert.equal(fourBetSize("CO","BTN"),16.5);
+ assert.equal(fourBetSize("BTN","BB"),26);
+ assert.equal(threeBetSize("CO","BTN"),8);
+ assert.equal(fourBetSize("CO","BTN"),20);
 });
 test("every preset has a valid response position",()=>{
  for(const p of presets) assert.doesNotThrow(()=>spotRequest("s",{...p,size:"3"},100));
@@ -33,8 +34,8 @@ test("every preset has a valid response position",()=>{
 test("configuration is independent of saved data",()=>{
  assert.equal(spotRequest("",{mode:"open",opener:"CO",actor:"BTN"}).solutionId,"");
  assert.equal(spotTitle({mode:"open",opener:"BTN",actor:"BB"}),"BTN vs BB · Open 2.5 BB");
- assert.equal(spotTitle({mode:"three_bet",opener:"BTN",actor:"BB"}),"BTN open → BB 3bet 10 BB");
- assert.equal(spotTitle({mode:"four_bet",opener:"BTN",actor:"BB"}),"BTN open → BB 3bet → BTN 4bet 22 BB");
+ assert.equal(spotTitle({mode:"three_bet",opener:"BTN",actor:"BB"}),"BTN open → BB 3bet 12 BB");
+ assert.equal(spotTitle({mode:"four_bet",opener:"BTN",actor:"BB"}),"BTN open → BB 3bet → BTN 4bet 26 BB");
 });
 test("stack selection resolves only to a solution with matching stack metadata",()=>{
  const solutions=[

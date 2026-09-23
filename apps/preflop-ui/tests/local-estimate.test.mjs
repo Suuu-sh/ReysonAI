@@ -16,11 +16,11 @@ test('AI estimate validates all 169 integer frequencies and identity', () => {
 });
 
 test('5bet all-in response is a separate, context-bound local estimate with call and fold only', () => {
-  const fiveBet = validateRequest({ scenario: 'five_bet_all_in_response', opener: 'UTG', hero: 'HJ', callers: [], three_bet_size_bb: 7.5, four_bet_size_bb: 19.5, all_in_size_bb: 100 });
-  assert.deepEqual(fiveBet, { scenario: 'five_bet_all_in_response', opener: 'UTG', hero: 'HJ', callers: [], three_bet_size_bb: 7.5, four_bet_size_bb: 19.5, all_in_size_bb: 100 });
+  const fiveBet = validateRequest({ scenario: 'five_bet_all_in_response', opener: 'UTG', hero: 'HJ', callers: [], three_bet_size_bb: 8, four_bet_size_bb: 20, all_in_size_bb: 100 });
+  assert.deepEqual(fiveBet, { scenario: 'five_bet_all_in_response', opener: 'UTG', hero: 'HJ', callers: [], three_bet_size_bb: 8, four_bet_size_bb: 20, all_in_size_bb: 100 });
   const data = {
     kind: 'ai_estimate_not_gto', scenario: fiveBet.scenario, effective_stack_bb: 100, open_size_bb: 2.5,
-    opener: fiveBet.opener, hero: fiveBet.hero, callers: [], three_bet_size_bb: 7.5, four_bet_size_bb: 19.5, all_in_size_bb: 100,
+    opener: fiveBet.opener, hero: fiveBet.hero, callers: [], three_bet_size_bb: 8, four_bet_size_bb: 20, all_in_size_bb: 100,
     ranges: [{ position: 'UTG', raise_to_bb: null, available_actions: ['call', 'fold'], rows: hands.map(hand => [hand, 80, 20, 0]) }],
   };
   assert.equal(validateEstimate(data, fiveBet), data);
@@ -31,14 +31,14 @@ test('5bet all-in response is a separate, context-bound local estimate with call
   invalidActions.ranges[0].available_actions = ['raise', 'call', 'fold'];
   assert.throws(() => validateEstimate(invalidActions, fiveBet));
   const invalidHistory = structuredClone(data);
-  invalidHistory.four_bet_size_bb = 20;
+  invalidHistory.four_bet_size_bb = 26;
   assert.throws(() => validateEstimate(invalidHistory, fiveBet));
 });
 
 test('5bet response request rejects impossible positions, callers and sizes', () => {
-  const base = { scenario: 'five_bet_all_in_response', opener: 'UTG', hero: 'HJ', callers: [], three_bet_size_bb: 7.5, four_bet_size_bb: 19.5, all_in_size_bb: 100 };
+  const base = { scenario: 'five_bet_all_in_response', opener: 'UTG', hero: 'HJ', callers: [], three_bet_size_bb: 8, four_bet_size_bb: 20, all_in_size_bb: 100 };
   assert.throws(() => validateRequest({ ...base, opener: 'BB' }));
   assert.throws(() => validateRequest({ ...base, callers: ['CO'] }));
-  assert.throws(() => validateRequest({ ...base, four_bet_size_bb: 7.5 }));
+  assert.throws(() => validateRequest({ ...base, four_bet_size_bb: 8 }));
   assert.throws(() => validateRequest({ ...base, all_in_size_bb: 99 }));
 });

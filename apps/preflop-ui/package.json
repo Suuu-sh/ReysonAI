@@ -8,6 +8,8 @@
     "dev:codex": "vite",
     "build": "vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
+    "audit:estimates": "node scripts/audit-estimates.mjs",
+    "build:estimates": "node scripts/build-estimates.mjs",
     "test:sites": "node --test tests/sites-worker.test.mjs"
   },
   "dependencies": {

@@ -1,0 +1,1392 @@
+{
+  "spot_id": "BB_vs_BTN_four_bet",
+  "type": "four_bet",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "勝率はショウダウンまでの値で、オールイン以外では実際に回収できる勝率はこれより低くなります。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_four_bet_pct",
+      "label": "勝率（対4betレンジ）",
+      "scope": "hand"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "equity_vs_shove_call_pct",
+      "label": "オールインにコールする相手への勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "opener_fold_to_shove_pct",
+      "label": "オールインに相手が降りる率",
+      "scope": "spot"
+    }
+  ],
+  "spot_facts": {
+    "opener": "BTN",
+    "hero": "BB",
+    "position": "OOP",
+    "three_bet_size_bb": 12,
+    "four_bet_size_bb": 26,
+    "call_break_even_equity_pct": 26.7,
+    "shove_called_break_even_pct": 43.9,
+    "opener_fold_to_shove_pct": 57.3
+  },
+  "hands": {
+    "22": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BTNの4betレンジへの勝率は40.3%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 40.3,
+        "equity_vs_shove_call_pct": 31.2,
+        "blocked_four_bet_pct": 0.7
+      }
+    },
+    "33": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BTNの4betレンジへの勝率は41.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 41.2,
+        "equity_vs_shove_call_pct": 32.4,
+        "blocked_four_bet_pct": 0.7
+      }
+    },
+    "44": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BTNの4betレンジへの勝率は42.4%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 42.4,
+        "equity_vs_shove_call_pct": 32,
+        "blocked_four_bet_pct": 1.1
+      }
+    },
+    "55": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。BTNの4betレンジへの勝率は42.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 42.6,
+        "equity_vs_shove_call_pct": 32.5,
+        "blocked_four_bet_pct": 1.9
+      }
+    },
+    "66": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。BTNの4betレンジへの勝率は43.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 43.7,
+        "equity_vs_shove_call_pct": 32.5,
+        "blocked_four_bet_pct": 0.6
+      }
+    },
+    "77": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。BTNの4betレンジへの勝率は43.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 43.7,
+        "equity_vs_shove_call_pct": 33.1,
+        "blocked_four_bet_pct": 0.6
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。BTNの4betレンジへの勝率は45.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 45.2,
+        "equity_vs_shove_call_pct": 32.7,
+        "blocked_four_bet_pct": 1.6
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。BTNの4betレンジへの勝率は46.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに57.3%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 65%・コール 30%・オールイン 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 46.5,
+        "equity_vs_shove_call_pct": 32.2,
+        "blocked_four_bet_pct": 4.1
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。BTNの4betレンジへの勝率は84.3%。オールインしてコールされたときに必要な勝率43.9%に対し、コールしてくる相手にも勝率83.7%を保てるので、オールインでバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 95%・コール 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 84.3,
+        "equity_vs_shove_call_pct": 83.7,
+        "blocked_four_bet_pct": 29.6
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BTNの4betレンジには勝率57.8%と優位ですが、コールしてくる相手には41.2%と不利です。それでも相手はオールインに57.3%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 80%・コール 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 57.8,
+        "equity_vs_shove_call_pct": 41.2,
+        "blocked_four_bet_pct": 25.1
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。コールに必要な勝率26.7%に対し、BTNの4betレンジへの勝率は51.3%です。BBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部はオールインに回し、オールインするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 45%・オールイン 35%・フォールド 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 51.3,
+        "equity_vs_shove_call_pct": 30.3,
+        "blocked_four_bet_pct": 22.9
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BTNの4betレンジへの勝率は47.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに57.3%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 45%・コール 40%・オールイン 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 47.7,
+        "equity_vs_shove_call_pct": 28.9,
+        "blocked_four_bet_pct": 20.9
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BTNの4betレンジへの勝率は43.8%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに57.3%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 55%・コール 35%・オールイン 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 43.8,
+        "equity_vs_shove_call_pct": 29.5,
+        "blocked_four_bet_pct": 19.2
+      }
+    },
+    "A9s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNの4betレンジへの勝率は41.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 41.6,
+        "equity_vs_shove_call_pct": 27.7,
+        "blocked_four_bet_pct": 17.6
+      }
+    },
+    "A8s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNの4betレンジへの勝率は41.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 41.7,
+        "equity_vs_shove_call_pct": 29.5,
+        "blocked_four_bet_pct": 16.2
+      }
+    },
+    "A7s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNの4betレンジへの勝率は40.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 40.2,
+        "equity_vs_shove_call_pct": 29,
+        "blocked_four_bet_pct": 15.7
+      }
+    },
+    "A6s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNの4betレンジへの勝率は40.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 40.6,
+        "equity_vs_shove_call_pct": 29.7,
+        "blocked_four_bet_pct": 15.7
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNの4betレンジへの勝率は39.8%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに57.3%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 80%・オールイン 10%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 39.8,
+        "equity_vs_shove_call_pct": 30.8,
+        "blocked_four_bet_pct": 15.7
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNの4betレンジへの勝率は39.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手はオールインに57.3%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 90%・オールイン 5%・コール 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 39.2,
+        "equity_vs_shove_call_pct": 30.1,
+        "blocked_four_bet_pct": 15.5
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNの4betレンジへの勝率は38.3%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 38.3,
+        "equity_vs_shove_call_pct": 29.1,
+        "blocked_four_bet_pct": 15.4
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNの4betレンジへの勝率は38.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 38.6,
+        "equity_vs_shove_call_pct": 29.9,
+        "blocked_four_bet_pct": 15.4
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。BTNの4betレンジには勝率55.8%と優位ですが、コールしてくる相手には38.6%と不利です。それでも相手はオールインに57.3%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 85%・コール 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 55.8,
+        "equity_vs_shove_call_pct": 38.6,
+        "blocked_four_bet_pct": 25.1
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。BTNの4betレンジへの勝率は69.8%。オールインしてコールされたときに必要な勝率43.9%に対し、コールしてくる相手にも勝率58.5%を保てるので、オールインでバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 95%・コール 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 69.8,
+        "equity_vs_shove_call_pct": 58.5,
+        "blocked_four_bet_pct": 20.1
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの4betレンジへの勝率は41.3%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに57.3%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 55%・コール 35%・オールイン 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 41.3,
+        "equity_vs_shove_call_pct": 27.5,
+        "blocked_four_bet_pct": 18.5
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの4betレンジへの勝率は39.1%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに57.3%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 70%・コール 25%・オールイン 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 39.1,
+        "equity_vs_shove_call_pct": 26.2,
+        "blocked_four_bet_pct": 16.3
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの4betレンジへの勝率は37.1%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 37.1,
+        "equity_vs_shove_call_pct": 27.2,
+        "blocked_four_bet_pct": 14.6
+      }
+    },
+    "K9s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は34.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.5,
+        "equity_vs_shove_call_pct": 25.5,
+        "blocked_four_bet_pct": 12.9
+      }
+    },
+    "K8s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は34.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.7,
+        "equity_vs_shove_call_pct": 24.5,
+        "blocked_four_bet_pct": 11.6
+      }
+    },
+    "K7s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は34.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.6,
+        "equity_vs_shove_call_pct": 24.6,
+        "blocked_four_bet_pct": 11
+      }
+    },
+    "K6s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は34.9%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.9,
+        "equity_vs_shove_call_pct": 25.1,
+        "blocked_four_bet_pct": 11
+      }
+    },
+    "K5s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は34.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.7,
+        "equity_vs_shove_call_pct": 25.1,
+        "blocked_four_bet_pct": 11.7
+      }
+    },
+    "K4s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は33.4%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.4,
+        "equity_vs_shove_call_pct": 24,
+        "blocked_four_bet_pct": 11.2
+      }
+    },
+    "K3s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は33.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.2,
+        "equity_vs_shove_call_pct": 23.7,
+        "blocked_four_bet_pct": 11
+      }
+    },
+    "K2s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は33.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.5,
+        "equity_vs_shove_call_pct": 23.1,
+        "blocked_four_bet_pct": 11
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。BTNの4betレンジへの勝率は48.1%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに57.3%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 70%・オールイン 15%・コール 15%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 48.1,
+        "equity_vs_shove_call_pct": 27.1,
+        "blocked_four_bet_pct": 23.1
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNの4betレンジへの勝率は37.9%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 37.9,
+        "equity_vs_shove_call_pct": 23.9,
+        "blocked_four_bet_pct": 18.6
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。BTNの4betレンジには勝率59.7%と優位ですが、コールしてくる相手には43.0%と不利です。それでも相手はオールインに57.3%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 70%・コール 25%・フォールド 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 59.7,
+        "equity_vs_shove_call_pct": 43,
+        "blocked_four_bet_pct": 15.3
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの4betレンジへの勝率は36.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 36.5,
+        "equity_vs_shove_call_pct": 28.3,
+        "blocked_four_bet_pct": 13.9
+      }
+    },
+    "QTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの4betレンジへの勝率は36.3%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 36.3,
+        "equity_vs_shove_call_pct": 28.6,
+        "blocked_four_bet_pct": 12.1
+      }
+    },
+    "Q9s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は33.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.6,
+        "equity_vs_shove_call_pct": 27,
+        "blocked_four_bet_pct": 10.4
+      }
+    },
+    "Q8s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は33.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.2,
+        "equity_vs_shove_call_pct": 26.4,
+        "blocked_four_bet_pct": 9.1
+      }
+    },
+    "Q7s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は32.9%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.9,
+        "equity_vs_shove_call_pct": 24.9,
+        "blocked_four_bet_pct": 8.5
+      }
+    },
+    "Q6s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は32.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.2,
+        "equity_vs_shove_call_pct": 25.9,
+        "blocked_four_bet_pct": 8.5
+      }
+    },
+    "Q5s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は31.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.7,
+        "equity_vs_shove_call_pct": 26.8,
+        "blocked_four_bet_pct": 9.2
+      }
+    },
+    "Q4s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は31.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.5,
+        "equity_vs_shove_call_pct": 25.7,
+        "blocked_four_bet_pct": 8.7
+      }
+    },
+    "Q3s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は31.8%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.8,
+        "equity_vs_shove_call_pct": 25.5,
+        "blocked_four_bet_pct": 8.5
+      }
+    },
+    "Q2s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は31.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.7,
+        "equity_vs_shove_call_pct": 25.3,
+        "blocked_four_bet_pct": 8.5
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。BTNの4betレンジへの勝率は43.4%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手はオールインに57.3%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 90%・オールイン 5%・コール 5%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 43.4,
+        "equity_vs_shove_call_pct": 26,
+        "blocked_four_bet_pct": 21
+      }
+    },
+    "KJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNの4betレンジへの勝率は35.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 35.7,
+        "equity_vs_shove_call_pct": 21.6,
+        "blocked_four_bet_pct": 16.3
+      }
+    },
+    "QJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNの4betレンジへの勝率は33.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.5,
+        "equity_vs_shove_call_pct": 24.8,
+        "blocked_four_bet_pct": 13.8
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。BTNの4betレンジには勝率52.9%と優位ですが、コールしてくる相手には35.6%と不利です。それでも相手はオールインに57.3%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 40%・コール 40%・フォールド 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 52.9,
+        "equity_vs_shove_call_pct": 35.6,
+        "blocked_four_bet_pct": 10.9
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNの4betレンジへの勝率は35.1%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。一部はコールで継続します。配分はフォールド 75%・コール 25%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 35.1,
+        "equity_vs_shove_call_pct": 28.9,
+        "blocked_four_bet_pct": 9.7
+      }
+    },
+    "J9s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの4betレンジへの勝率は34.0%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34,
+        "equity_vs_shove_call_pct": 27.6,
+        "blocked_four_bet_pct": 8
+      }
+    },
+    "J8s": {
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は32.9%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.9,
+        "equity_vs_shove_call_pct": 26.7,
+        "blocked_four_bet_pct": 6.7
+      }
+    },
+    "J7s": {
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は31.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.6,
+        "equity_vs_shove_call_pct": 25.8,
+        "blocked_four_bet_pct": 6.1
+      }
+    },
+    "J6s": {
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は31.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.5,
+        "equity_vs_shove_call_pct": 24.1,
+        "blocked_four_bet_pct": 6.1
+      }
+    },
+    "J5s": {
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。BTNの4betレンジへの勝率は30.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.7,
+        "equity_vs_shove_call_pct": 24.9,
+        "blocked_four_bet_pct": 6.8
+      }
+    },
+    "J4s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J3s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J2s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。BTNの4betレンジへの勝率は40.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 40.7,
+        "equity_vs_shove_call_pct": 26.1,
+        "blocked_four_bet_pct": 19.2
+      }
+    },
+    "KTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNの4betレンジへの勝率は33.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.7,
+        "equity_vs_shove_call_pct": 22.1,
+        "blocked_four_bet_pct": 14.6
+      }
+    },
+    "QTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNの4betレンジへの勝率は32.8%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.8,
+        "equity_vs_shove_call_pct": 24.6,
+        "blocked_four_bet_pct": 12.1
+      }
+    },
+    "JTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNの4betレンジへの勝率は32.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.5,
+        "equity_vs_shove_call_pct": 24.4,
+        "blocked_four_bet_pct": 9.7
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。コールに必要な勝率26.7%に対し、BTNの4betレンジへの勝率は48.9%です。BBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなりますが、それを差し引いてもコールが中心になります。一部はオールインに回し、オールインするレンジが強いハンドだけに偏らないようにします。境界に近いため、一部はフォールドします。配分はコール 40%・フォールド 40%・オールイン 20%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 48.9,
+        "equity_vs_shove_call_pct": 33,
+        "blocked_four_bet_pct": 7.5
+      }
+    },
+    "T9s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの4betレンジへの勝率は34.4%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.4,
+        "equity_vs_shove_call_pct": 28.2,
+        "blocked_four_bet_pct": 6.1
+      }
+    },
+    "T8s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの4betレンジへの勝率は33.4%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.4,
+        "equity_vs_shove_call_pct": 27.3,
+        "blocked_four_bet_pct": 4.9
+      }
+    },
+    "T7s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は32.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.7,
+        "equity_vs_shove_call_pct": 26.2,
+        "blocked_four_bet_pct": 4.3
+      }
+    },
+    "T6s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は31.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.7,
+        "equity_vs_shove_call_pct": 25.2,
+        "blocked_four_bet_pct": 4.3
+      }
+    },
+    "T5s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T4s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T3s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T2s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A9o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNの4betレンジへの勝率は38.3%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 38.3,
+        "equity_vs_shove_call_pct": 24.9,
+        "blocked_four_bet_pct": 17.5
+      }
+    },
+    "K9o": {
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。BTNの4betレンジへの勝率は31.9%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.9,
+        "equity_vs_shove_call_pct": 20.9,
+        "blocked_four_bet_pct": 12.9
+      }
+    },
+    "Q9o": {
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。BTNの4betレンジへの勝率は30.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.5,
+        "equity_vs_shove_call_pct": 23.7,
+        "blocked_four_bet_pct": 10.4
+      }
+    },
+    "J9o": {
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。BTNの4betレンジへの勝率は29.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 29.2,
+        "equity_vs_shove_call_pct": 23.4,
+        "blocked_four_bet_pct": 8
+      }
+    },
+    "T9o": {
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。BTNの4betレンジへの勝率は30.4%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.4,
+        "equity_vs_shove_call_pct": 24.6,
+        "blocked_four_bet_pct": 6.2
+      }
+    },
+    "98s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの4betレンジへの勝率は34.0%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34,
+        "equity_vs_shove_call_pct": 28.2,
+        "blocked_four_bet_pct": 3
+      }
+    },
+    "97s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの4betレンジへの勝率は33.4%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.4,
+        "equity_vs_shove_call_pct": 26.9,
+        "blocked_four_bet_pct": 2.5
+      }
+    },
+    "96s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は32.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.6,
+        "equity_vs_shove_call_pct": 26.6,
+        "blocked_four_bet_pct": 2.5
+      }
+    },
+    "95s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は30.3%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.3,
+        "equity_vs_shove_call_pct": 25.9,
+        "blocked_four_bet_pct": 3.2
+      }
+    },
+    "94s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "93s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "92s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A8o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNの4betレンジへの勝率は37.3%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 37.3,
+        "equity_vs_shove_call_pct": 24.5,
+        "blocked_four_bet_pct": 16.2
+      }
+    },
+    "K8o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q8o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J8o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T8o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "98o": {
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。BTNの4betレンジへの勝率は30.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.7,
+        "equity_vs_shove_call_pct": 24.9,
+        "blocked_four_bet_pct": 3
+      }
+    },
+    "87s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの4betレンジへの勝率は34.8%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.8,
+        "equity_vs_shove_call_pct": 28.3,
+        "blocked_four_bet_pct": 1.1
+      }
+    },
+    "86s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの4betレンジへの勝率は33.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.5,
+        "equity_vs_shove_call_pct": 27.9,
+        "blocked_four_bet_pct": 1.2
+      }
+    },
+    "85s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は31.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.5,
+        "equity_vs_shove_call_pct": 27.2,
+        "blocked_four_bet_pct": 1.8
+      }
+    },
+    "84s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は31.0%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31,
+        "equity_vs_shove_call_pct": 25.2,
+        "blocked_four_bet_pct": 1.4
+      }
+    },
+    "83s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "82s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A7o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNの4betレンジへの勝率は37.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 37.2,
+        "equity_vs_shove_call_pct": 25.4,
+        "blocked_four_bet_pct": 15.7
+      }
+    },
+    "K7o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q7o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J7o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T7o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "97o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "87o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "76s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの4betレンジへの勝率は34.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.5,
+        "equity_vs_shove_call_pct": 29.6,
+        "blocked_four_bet_pct": 0.5
+      }
+    },
+    "75s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの4betレンジへの勝率は33.1%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 33.1,
+        "equity_vs_shove_call_pct": 29.2,
+        "blocked_four_bet_pct": 1.3
+      }
+    },
+    "74s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は32.0%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32,
+        "equity_vs_shove_call_pct": 26.8,
+        "blocked_four_bet_pct": 0.8
+      }
+    },
+    "73s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は29.8%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 29.8,
+        "equity_vs_shove_call_pct": 25,
+        "blocked_four_bet_pct": 0.6
+      }
+    },
+    "72s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A6o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNの4betレンジへの勝率は36.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 36.6,
+        "equity_vs_shove_call_pct": 24.9,
+        "blocked_four_bet_pct": 15.7
+      }
+    },
+    "K6o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q6o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J6o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T6o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "96o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "86o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "76o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "65s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの4betレンジへの勝率は34.4%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.4,
+        "equity_vs_shove_call_pct": 29.5,
+        "blocked_four_bet_pct": 1.2
+      }
+    },
+    "64s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの4betレンジへの勝率は32.9%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.9,
+        "equity_vs_shove_call_pct": 27,
+        "blocked_four_bet_pct": 0.8
+      }
+    },
+    "63s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は32.0%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32,
+        "equity_vs_shove_call_pct": 26.2,
+        "blocked_four_bet_pct": 0.6
+      }
+    },
+    "62s": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "A5o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNの4betレンジへの勝率は37.2%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 37.2,
+        "equity_vs_shove_call_pct": 26.5,
+        "blocked_four_bet_pct": 16.3
+      }
+    },
+    "K5o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q5o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J5o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T5o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "95o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "85o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "75o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "65o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "54s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの4betレンジへの勝率は34.0%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34,
+        "equity_vs_shove_call_pct": 29,
+        "blocked_four_bet_pct": 1.4
+      }
+    },
+    "53s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの4betレンジへの勝率は32.8%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.8,
+        "equity_vs_shove_call_pct": 28.1,
+        "blocked_four_bet_pct": 1.3
+      }
+    },
+    "52s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。BTNの4betレンジへの勝率は31.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.5,
+        "equity_vs_shove_call_pct": 26.4,
+        "blocked_four_bet_pct": 1.3
+      }
+    },
+    "A4o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNの4betレンジへの勝率は35.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 35.6,
+        "equity_vs_shove_call_pct": 26.8,
+        "blocked_four_bet_pct": 16
+      }
+    },
+    "K4o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q4o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J4o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T4o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "94o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "84o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "74o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "64o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "54o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "43s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの4betレンジへの勝率は32.5%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 32.5,
+        "equity_vs_shove_call_pct": 27.7,
+        "blocked_four_bet_pct": 0.9
+      }
+    },
+    "42s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNの4betレンジへの勝率は31.1%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 31.1,
+        "equity_vs_shove_call_pct": 26.1,
+        "blocked_four_bet_pct": 0.9
+      }
+    },
+    "A3o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNの4betレンジへの勝率は34.6%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.6,
+        "equity_vs_shove_call_pct": 25.5,
+        "blocked_four_bet_pct": 15.8
+      }
+    },
+    "K3o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q3o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J3o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T3o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "93o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "83o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "73o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "63o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "53o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "43o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "32s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNの4betレンジへの勝率は30.7%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 30.7,
+        "equity_vs_shove_call_pct": 24.9,
+        "blocked_four_bet_pct": 0.7
+      }
+    },
+    "A2o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNの4betレンジへの勝率は34.8%で、数字上は必要勝率26.7%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_four_bet_pct": 34.8,
+        "equity_vs_shove_call_pct": 25.5,
+        "blocked_four_bet_pct": 15.8
+      }
+    },
+    "K2o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "Q2o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "J2o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "T2o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "92o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "82o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "72o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "62o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "52o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "42o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    },
+    "32o": {
+      "reason": "BBの対BTNの既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_four_bet_pct": null,
+        "equity_vs_shove_call_pct": null,
+        "blocked_four_bet_pct": null
+      }
+    }
+  }
+}

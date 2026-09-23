@@ -13,14 +13,14 @@ export function SectionHeading({ title, action, className = "" }) {
   );
 }
 
-export function ActionBars({ items }) {
+export function ActionBars({ items, labels = {} }) {
   if (!items.length) return null;
 
   return (
     <div className="bars">
       {items.map(item => (
         <div className="bar-row" key={item.action}>
-          <span><i style={{ background: color(item.action) }} />{label(item.action)}</span>
+          <span><i style={{ background: color(item.action) }} />{labels[item.action] ?? label(item.action)}</span>
           <div className="track" aria-hidden="true">
             <div style={{ width: pct(item.frequency), background: color(item.action) }} />
           </div>

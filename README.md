@@ -421,6 +421,6 @@ kubectl --context kind-solveaai --namespace solveaai scale \
 - 4bet potは、`BTN open → BB 3bet → BTN 4bet → BB` のように、4bet後の3bet側を表示します。
 - データがなくても局面タイプと位置を設定できます。該当する保存済みNodeがない場合は結果を表示しません。
 - その他の席はfoldとしてresolveします。multiway履歴入力はこのUIには含みません。
-- サイズ・スタック・3bet/4bet倍率の正本は `configs/cash-6max-100bb.json`。初期Configのopen_sizes_bbは `[2.5]` です。
+- サイズ・スタックの正本は `configs/cash-6max-100bb.json`。オープンは `open_sizes_bb`（2.5BB）、UIと推定データの3bet・スクイーズ・4betは `fixed_raise_to_bb` の固定BB値（3bet IP 8 / OOP 12、スクイーズ IP 12 / OOP 13（コーラー1人追加ごとに+2.5）、4bet IP 26 / OOP 20）。`*_multiplier` はRustソルバー用です。
 - SDKの `preflop.resolve` で取得し、400/404は該当データなし、通信・サーバーエラーは取得失敗として区別します。
 - 局面変更時に前の結果を非表示にし、古いレスポンスで上書きされないようにします。閲覧操作によるSolveは行いません。

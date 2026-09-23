@@ -1,0 +1,1394 @@
+{
+  "spot_id": "BB_vs_BTN",
+  "method": "ハンドごとの勝率（モンテカルロ）・ブロッカー・価格を計算し、その数値を根拠にAIが理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "勝率はショウダウンまでの値で、OOPで実際に回収できる勝率はこれより低くなります。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_open_pct",
+      "label": "勝率（対オープン）",
+      "scope": "hand"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "equity_vs_continue_pct",
+      "label": "3bet後に続く相手への勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "blocked_open_pct",
+      "label": "相手レンジのブロック",
+      "scope": "hand"
+    }
+  ],
+  "spot_facts": {
+    "opener": "BTN",
+    "hero": "BB",
+    "position": "OOP",
+    "open_size_bb": 2.5,
+    "three_bet_size_bb": 12,
+    "opener_range_pct": 42.4,
+    "pot_before_bb": 4,
+    "to_call_bb": 1.5,
+    "call_break_even_equity_pct": 27.3,
+    "opener_fold_to_3bet_pct": 49.6,
+    "average_blocked_pct": 7.6
+  },
+  "hands": {
+    "AA": {
+      "reason": "BTNのオープンレンジ（全ハンドの約42%）に対して勝率84.3%の最強ハンドです。コールでポットを小さく保つより、3betしてポットを大きくするのが最も稼げます。BTNは3betの約半分（49.6%）で降りますが、続けてくるレンジにも勝率83.3%を保つため、続けてくれるほど大きく勝てます。配分は3bet 100%。",
+      "facts": {
+        "equity_vs_open_pct": 84.3,
+        "equity_vs_continue_pct": 83.3,
+        "blocked_open_pct": 16.1
+      }
+    },
+    "AKs": {
+      "reason": "勝率65.4%に加え、AとKの両方でBTNのAA・KK・AKを減らせます（オープンの13.3%をブロック、平均は7.6%）。3betでポットを大きくし、4betされても続けられる最上位のハンドです。配分は3bet 100%。",
+      "facts": {
+        "equity_vs_open_pct": 65.4,
+        "equity_vs_continue_pct": 62.1,
+        "blocked_open_pct": 13.3
+      }
+    },
+    "AQs": {
+      "reason": "勝率63.9%。BTNの広いレンジに支配されることが少なく、Aのブロッカー効果（13.0%）もあるため3betします。スーテッドなので、コールされた後もナッツフラッシュを狙えます。配分は3bet 100%。",
+      "facts": {
+        "equity_vs_open_pct": 63.9,
+        "equity_vs_continue_pct": 59.3,
+        "blocked_open_pct": 13
+      }
+    },
+    "AJs": {
+      "reason": "勝率62.0%と強いハンドです。3betでバリューを取れますが、AQ・AKにはやや不利です。一部はコールしてBTNの弱いハンドを広く残し、フロップ以降で稼ぎます。配分はコール 55%・3bet 45%。",
+      "facts": {
+        "equity_vs_open_pct": 62,
+        "equity_vs_continue_pct": 56.5,
+        "blocked_open_pct": 12.9
+      }
+    },
+    "ATs": {
+      "reason": "勝率60.3%。AJsと同様に3betとコールの混合です。続けてくる相手には54.7%に下がるため、コールでポットを小さく保つ選択にも十分な価値があります。配分はコール 55%・3bet 45%。",
+      "facts": {
+        "equity_vs_open_pct": 60.3,
+        "equity_vs_continue_pct": 54.7,
+        "blocked_open_pct": 12.8
+      }
+    },
+    "A9s": {
+      "reason": "勝率57.7%でコールは明確に得です。3betして続けられると51.4%とほぼ互角になり、強いAに支配されることもあるため、基本はコールで3betは控えめにします。配分はコール 80%・3bet 20%。",
+      "facts": {
+        "equity_vs_open_pct": 57.7,
+        "equity_vs_continue_pct": 51.4,
+        "blocked_open_pct": 12.5
+      }
+    },
+    "A8s": {
+      "reason": "勝率56.2%。ナッツフラッシュの可能性があり、OOPでも勝率を回収しやすいハンドです。基本はコールで、Aのブロッカーを活かした3betを少し混ぜます。配分はコール 80%・3bet 20%。",
+      "facts": {
+        "equity_vs_open_pct": 56.2,
+        "equity_vs_continue_pct": 49.6,
+        "blocked_open_pct": 11.9
+      }
+    },
+    "A7s": {
+      "reason": "勝率53.8%。3betすると続けてくる相手に48.4%と不利になるため、ほぼコールです。フラッシュができればナッツ級になるのが強みです。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 53.8,
+        "equity_vs_continue_pct": 48.4,
+        "blocked_open_pct": 11.2
+      }
+    },
+    "A6s": {
+      "reason": "勝率52.1%。キッカーは弱めですが、スーテッドのAなのでコールで十分利益が出ます。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 52.1,
+        "equity_vs_continue_pct": 47.2,
+        "blocked_open_pct": 10.4
+      }
+    },
+    "A5s": {
+      "reason": "勝率51.7%と平均以上ですが、価値の中心はブロッカーです。AがBTNの強いA系を減らし（オープンの10.2%をブロック）、3betすればBTNは約半分（49.6%）降ります。コールされてもA〜5のストレート（ホイール）やナッツフラッシュを狙えるので、ブラフの3betに最適です。配分は3bet 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 51.7,
+        "equity_vs_continue_pct": 46.9,
+        "blocked_open_pct": 10.2
+      }
+    },
+    "A4s": {
+      "reason": "勝率50.7%。A5sと同じくホイール（A〜5のストレート）を狙え、Aのブロッカー（オープンの10.0%）もあるため、ブラフ3betの候補になります。配分は3bet 50%・コール 50%。",
+      "facts": {
+        "equity_vs_open_pct": 50.7,
+        "equity_vs_continue_pct": 46.1,
+        "blocked_open_pct": 10
+      }
+    },
+    "A3s": {
+      "reason": "勝率49.7%。ホイールとナッツフラッシュの可能性、Aのブロッカーを持つため、ブラフの3betに向いています。残りはコールで安くフロップを見ます。配分はコール 60%・3bet 40%。",
+      "facts": {
+        "equity_vs_open_pct": 49.7,
+        "equity_vs_continue_pct": 45.2,
+        "blocked_open_pct": 9.7
+      }
+    },
+    "A2s": {
+      "reason": "勝率49.2%。A3sと同じ理由で3betとコールの混合です。キッカーは最弱ですが、3betでBTNを約半分（49.6%）降ろせるのでブラフとして機能します。配分はコール 60%・3bet 40%。",
+      "facts": {
+        "equity_vs_open_pct": 49.2,
+        "equity_vs_continue_pct": 45.2,
+        "blocked_open_pct": 9.5
+      }
+    },
+    "AKo": {
+      "reason": "オープンレンジに対して勝率63.3%と非常に強く、Aを持つことでBTNのAA・AKの組み合わせも減らせます（オープンの13.3%をブロック、平均は7.6%）。基本は3betでバリューを取ります。一部のコールは、BBのコールレンジに強いハンドが残るようにするためのものです。配分は3bet 75%・コール 25%。",
+      "facts": {
+        "equity_vs_open_pct": 63.3,
+        "equity_vs_continue_pct": 60.1,
+        "blocked_open_pct": 13.3
+      }
+    },
+    "KK": {
+      "reason": "勝率78.4%で、AAに次ぐ強さです。BTNの広いオープンに対して3betでポットを大きくします。続けてくる相手にも勝率76.1%あり、4betされても喜んで続けられるハンドです。配分は3bet 100%。",
+      "facts": {
+        "equity_vs_open_pct": 78.4,
+        "equity_vs_continue_pct": 76.1,
+        "blocked_open_pct": 10.6
+      }
+    },
+    "KQs": {
+      "reason": "勝率56.0%。Kのブロッカーに加え、ストレートとフラッシュの両方を狙えるため、3betでバリューを取ります。続けてくる相手にも52.3%と互角以上です。配分は3bet 65%・コール 35%。",
+      "facts": {
+        "equity_vs_open_pct": 56,
+        "equity_vs_continue_pct": 52.3,
+        "blocked_open_pct": 10.3
+      }
+    },
+    "KJs": {
+      "reason": "勝率54.8%。KQsに近い強さで、3betが中心です。続けてくる相手に対しても50.0%と互角を保てます。配分は3bet 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 54.8,
+        "equity_vs_continue_pct": 50,
+        "blocked_open_pct": 10.1
+      }
+    },
+    "KTs": {
+      "reason": "勝率53.8%。3betして続けられると48.1%と少し不利になるため、コールを中心に3betを混ぜます。配分はコール 65%・3bet 35%。",
+      "facts": {
+        "equity_vs_open_pct": 53.8,
+        "equity_vs_continue_pct": 48.1,
+        "blocked_open_pct": 10
+      }
+    },
+    "K9s": {
+      "reason": "勝率51.1%。強いKに支配されやすい一方、スーテッドでフラッシュが狙えるため、コールで十分利益が出ます。配分はコール 75%・3bet 25%。",
+      "facts": {
+        "equity_vs_open_pct": 51.1,
+        "equity_vs_continue_pct": 45.4,
+        "blocked_open_pct": 9.7
+      }
+    },
+    "K8s": {
+      "reason": "勝率48.3%で、コールに必要な27.3%を大きく上回ります。Kハイのフラッシュが狙えるハンドです。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 48.3,
+        "equity_vs_continue_pct": 43.4,
+        "blocked_open_pct": 9.2
+      }
+    },
+    "K7s": {
+      "reason": "勝率47.5%。Kがヒットしてもキッカー負けに注意が必要ですが、スーテッドなので勝率を回収しやすいハンドです。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 47.5,
+        "equity_vs_continue_pct": 42.7,
+        "blocked_open_pct": 8.4
+      }
+    },
+    "K6s": {
+      "reason": "勝率46.7%。キッカーは弱いものの、Kハイのフラッシュになれば強く、BBの安い価格ならコールで利益が出ます。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 46.7,
+        "equity_vs_continue_pct": 42.1,
+        "blocked_open_pct": 7.7
+      }
+    },
+    "K5s": {
+      "reason": "勝率45.9%。Kのスーテッドなので、フラッシュができれば強いフラッシュになりやすいハンドです。キッカーは弱いのでKがヒットしても慎重さが必要ですが、必要勝率が27.3%と低いため、コールで十分利益が出ます。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 45.9,
+        "equity_vs_continue_pct": 41.4,
+        "blocked_open_pct": 7.5
+      }
+    },
+    "K4s": {
+      "reason": "勝率45.1%。K5sと同じ考え方で、フラッシュの可能性と安い価格を理由にコールします。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 45.1,
+        "equity_vs_continue_pct": 41.1,
+        "blocked_open_pct": 7.3
+      }
+    },
+    "K3s": {
+      "reason": "勝率44.2%。キッカーはほぼ役に立ちませんが、Kハイのフラッシュが狙えるのでコールが中心です。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 44.2,
+        "equity_vs_continue_pct": 40.3,
+        "blocked_open_pct": 7
+      }
+    },
+    "K2s": {
+      "reason": "勝率43.7%。Kxスーテッドの中では最弱ですが、必要勝率27.3%を大きく上回るため、コールします。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 43.7,
+        "equity_vs_continue_pct": 40,
+        "blocked_open_pct": 6.8
+      }
+    },
+    "AQo": {
+      "reason": "勝率61.0%と強く、Aのブロッカー効果（13.0%）もあるため3betが中心です。オフスートはフロップ以降の伸びしろが小さいので、プリフロップで主導権を取る価値が高いハンドです。配分は3bet 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 61,
+        "equity_vs_continue_pct": 57.3,
+        "blocked_open_pct": 13
+      }
+    },
+    "KQo": {
+      "reason": "勝率54.1%。BTNの広いレンジには強いですが、AK・AQに支配されることもあります。3betでバリューを取りつつ、多くはコールでポットを小さく保ちます。配分はコール 60%・3bet 40%。",
+      "facts": {
+        "equity_vs_open_pct": 54.1,
+        "equity_vs_continue_pct": 49.4,
+        "blocked_open_pct": 10.3
+      }
+    },
+    "QQ": {
+      "reason": "勝率74.4%で、BTNのオープンレンジの大半に勝っています。続けてくる相手に対しても71.9%と高く、AやKが落ちる前にポットを大きくしておくのが得策です。配分は3bet 100%。",
+      "facts": {
+        "equity_vs_open_pct": 74.4,
+        "equity_vs_continue_pct": 71.9,
+        "blocked_open_pct": 10
+      }
+    },
+    "QJs": {
+      "reason": "勝率51.8%。つながったスーテッドブロードウェイで、ストレートとフラッシュの両方を狙えます。3betで主導権を取るのが中心です。配分は3bet 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 51.8,
+        "equity_vs_continue_pct": 47.1,
+        "blocked_open_pct": 9.8
+      }
+    },
+    "QTs": {
+      "reason": "勝率50.7%。QJsより少し弱く、3betして続けられると45.5%に下がるため、コールを中心にします。配分はコール 65%・3bet 35%。",
+      "facts": {
+        "equity_vs_open_pct": 50.7,
+        "equity_vs_continue_pct": 45.5,
+        "blocked_open_pct": 9.7
+      }
+    },
+    "Q9s": {
+      "reason": "勝率47.4%。スーテッドなのでフラッシュとストレートの両方を狙え、OOPでも勝率を回収しやすいハンドです。基本はコールで、一部を3betに回します。コールするハンドばかりにならないよう、中程度のハンドにも3betを混ぜるのがポイントです。配分はコール 75%・3bet 25%。",
+      "facts": {
+        "equity_vs_open_pct": 47.4,
+        "equity_vs_continue_pct": 43,
+        "blocked_open_pct": 9.4
+      }
+    },
+    "Q8s": {
+      "reason": "勝率45.3%。ストレートとフラッシュの可能性があり、コールで十分な利益が出ます。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 45.3,
+        "equity_vs_continue_pct": 41.5,
+        "blocked_open_pct": 8.9
+      }
+    },
+    "Q7s": {
+      "reason": "勝率43.6%。キッカーは弱めですが、スーテッドなのでコールで勝率を回収できます。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 43.6,
+        "equity_vs_continue_pct": 39.9,
+        "blocked_open_pct": 8.1
+      }
+    },
+    "Q6s": {
+      "reason": "勝率43.6%。Q7sと同じ考え方で、フラッシュの可能性を理由にコールします。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 43.6,
+        "equity_vs_continue_pct": 39.4,
+        "blocked_open_pct": 7.3
+      }
+    },
+    "Q5s": {
+      "reason": "勝率42.6%。必要勝率27.3%を上回るのでコールが中心ですが、ストレートにはつながりにくいハンドです。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 42.6,
+        "equity_vs_continue_pct": 39.3,
+        "blocked_open_pct": 7.3
+      }
+    },
+    "Q4s": {
+      "reason": "勝率41.9%。Q5sと同じく、主な価値はフラッシュの可能性です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 41.9,
+        "equity_vs_continue_pct": 38.5,
+        "blocked_open_pct": 7
+      }
+    },
+    "Q3s": {
+      "reason": "勝率40.6%。フラッシュの可能性でコールできる下限に近いハンドです。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 40.6,
+        "equity_vs_continue_pct": 38,
+        "blocked_open_pct": 6.8
+      }
+    },
+    "Q2s": {
+      "reason": "勝率40.7%。Qxスーテッドの最弱ですが、スーテッドである分オフスートよりずっと勝率を回収しやすく、コールが中心です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 40.7,
+        "equity_vs_continue_pct": 37.5,
+        "blocked_open_pct": 6.5
+      }
+    },
+    "AJo": {
+      "reason": "勝率59.5%。BTNの広いレンジには十分強いですが、AQ・AKに支配されることもあるため、コールと3betに分けます。配分はコール 60%・3bet 40%。",
+      "facts": {
+        "equity_vs_open_pct": 59.5,
+        "equity_vs_continue_pct": 54.5,
+        "blocked_open_pct": 12.9
+      }
+    },
+    "KJo": {
+      "reason": "勝率52.0%で、コールに必要な27.3%を大きく上回ります。ただし3betして続けてくる相手には勝率が47.0%に下がり、AK・AJ・KQなどに支配されやすいオフスートです。基本はコールで安く見て、一部だけ3betに混ぜます。配分はコール 75%・3bet 25%。",
+      "facts": {
+        "equity_vs_open_pct": 52,
+        "equity_vs_continue_pct": 47,
+        "blocked_open_pct": 10.1
+      }
+    },
+    "QJo": {
+      "reason": "勝率49.1%。ストレートを作りやすいオフスートで、コールが中心です。3betして続けられると44.3%に下がるため、3betは一部にとどめます。配分はコール 75%・3bet 25%。",
+      "facts": {
+        "equity_vs_open_pct": 49.1,
+        "equity_vs_continue_pct": 44.3,
+        "blocked_open_pct": 9.8
+      }
+    },
+    "JJ": {
+      "reason": "勝率70.8%で、BTNの広いオープンレンジの大半に勝っています。3betしても続けてくる相手に対して勝率67.1%を保つので、迷わず3betします。コールするとQやKのオーバーカードが落ちたときに難しくなるため、プリフロップで主導権を取ります。配分は3bet 100%。",
+      "facts": {
+        "equity_vs_open_pct": 70.8,
+        "equity_vs_continue_pct": 67.1,
+        "blocked_open_pct": 9.7
+      }
+    },
+    "JTs": {
+      "reason": "勝率48.2%。ストレートを最も作りやすいハンドの一つで、フラッシュも狙えます。続けてくる相手にも43.9%と戦えるため、3betが中心です。配分は3bet 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 48.2,
+        "equity_vs_continue_pct": 43.9,
+        "blocked_open_pct": 9.6
+      }
+    },
+    "J9s": {
+      "reason": "勝率45.8%。つながったスーテッドで、フロップ以降に強い手へ伸びやすいハンドです。基本はコールです。配分はコール 75%・3bet 25%。",
+      "facts": {
+        "equity_vs_open_pct": 45.8,
+        "equity_vs_continue_pct": 42,
+        "blocked_open_pct": 9.3
+      }
+    },
+    "J8s": {
+      "reason": "勝率44.0%。ストレートとフラッシュの可能性があり、コールで十分利益が出ます。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 44,
+        "equity_vs_continue_pct": 40.3,
+        "blocked_open_pct": 8.7
+      }
+    },
+    "J7s": {
+      "reason": "勝率41.8%。つながりは弱くなりますが、スーテッドなのでコールが中心です。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 41.8,
+        "equity_vs_continue_pct": 38.6,
+        "blocked_open_pct": 8
+      }
+    },
+    "J6s": {
+      "reason": "勝率40.4%。主な価値はフラッシュの可能性です。必要勝率27.3%を上回るのでコールが中心です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 40.4,
+        "equity_vs_continue_pct": 37.4,
+        "blocked_open_pct": 7.3
+      }
+    },
+    "J5s": {
+      "reason": "勝率40.0%。J6sと同じ考え方でコールが中心です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 40,
+        "equity_vs_continue_pct": 37,
+        "blocked_open_pct": 7.2
+      }
+    },
+    "J4s": {
+      "reason": "勝率39.7%。スーテッドでも回収率が下がる境界ハンドで、一部はフォールドします。配分はコール 75%・フォールド 25%。",
+      "facts": {
+        "equity_vs_open_pct": 39.7,
+        "equity_vs_continue_pct": 36.6,
+        "blocked_open_pct": 6.9
+      }
+    },
+    "J3s": {
+      "reason": "勝率38.8%。J4sと同じく、コールとフォールドの境界です。配分はコール 75%・フォールド 25%。",
+      "facts": {
+        "equity_vs_open_pct": 38.8,
+        "equity_vs_continue_pct": 36.5,
+        "blocked_open_pct": 6.7
+      }
+    },
+    "J2s": {
+      "reason": "勝率38.2%。Jxスーテッドの最弱で、一部はフォールドします。配分はコール 75%・フォールド 25%。",
+      "facts": {
+        "equity_vs_open_pct": 38.2,
+        "equity_vs_continue_pct": 35.8,
+        "blocked_open_pct": 6.4
+      }
+    },
+    "ATo": {
+      "reason": "勝率57.8%。3betして続けられると52.2%とほぼ互角になるので、基本はコールです。Aのブロッカーを活かして一部を3betに混ぜます。配分はコール 75%・3bet 25%。",
+      "facts": {
+        "equity_vs_open_pct": 57.8,
+        "equity_vs_continue_pct": 52.2,
+        "blocked_open_pct": 12.8
+      }
+    },
+    "KTo": {
+      "reason": "勝率50.7%。3betに続けてくる相手には44.7%に下がるため、基本はコールです。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 50.7,
+        "equity_vs_continue_pct": 44.7,
+        "blocked_open_pct": 10
+      }
+    },
+    "QTo": {
+      "reason": "勝率47.7%。3betに続けてくる相手には42.6%に下がるため、基本はコールです。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 47.7,
+        "equity_vs_continue_pct": 42.6,
+        "blocked_open_pct": 9.7
+      }
+    },
+    "JTo": {
+      "reason": "勝率45.8%。オフスートでもストレートを作りやすく、コールが中心です。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 45.8,
+        "equity_vs_continue_pct": 40.7,
+        "blocked_open_pct": 9.6
+      }
+    },
+    "TT": {
+      "reason": "勝率68.0%で、BTNの広いレンジには大きく勝っています。続けてくる相手への勝率も62.7%と十分なので基本は3betです。少しだけコールを混ぜるのは、BBのコールレンジにも強いペアを残してフロップ以降を守りやすくするためです。配分は3bet 90%・コール 10%。",
+      "facts": {
+        "equity_vs_open_pct": 68,
+        "equity_vs_continue_pct": 62.7,
+        "blocked_open_pct": 9.4
+      }
+    },
+    "T9s": {
+      "reason": "勝率44.8%で、必要勝率27.3%を大きく上回ります。つながったスーテッドなのでストレートやフラッシュになりやすく、フロップで強い手に化けやすいのが強みです。基本はコールで、一部はブラフの3betとして使います。配分はコール 75%・3bet 25%。",
+      "facts": {
+        "equity_vs_open_pct": 44.8,
+        "equity_vs_continue_pct": 41.7,
+        "blocked_open_pct": 9.1
+      }
+    },
+    "T8s": {
+      "reason": "勝率42.5%。ストレートとフラッシュの両方を狙え、コールで十分利益が出ます。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 42.5,
+        "equity_vs_continue_pct": 40,
+        "blocked_open_pct": 8.6
+      }
+    },
+    "T7s": {
+      "reason": "勝率41.3%。つながりはやや弱いものの、スーテッドなのでコールが中心です。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 41.3,
+        "equity_vs_continue_pct": 38.3,
+        "blocked_open_pct": 7.9
+      }
+    },
+    "T6s": {
+      "reason": "勝率39.7%。主な価値はフラッシュと、まれなストレートです。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 39.7,
+        "equity_vs_continue_pct": 37.2,
+        "blocked_open_pct": 7.1
+      }
+    },
+    "T5s": {
+      "reason": "勝率38.6%。スーテッドでも回収率が下がる境界ハンドで、一部はフォールドします。配分はコール 75%・フォールド 25%。",
+      "facts": {
+        "equity_vs_open_pct": 38.6,
+        "equity_vs_continue_pct": 36.1,
+        "blocked_open_pct": 7
+      }
+    },
+    "T4s": {
+      "reason": "勝率37.8%。T5sと同じく、コールとフォールドの境界です。配分はコール 75%・フォールド 25%。",
+      "facts": {
+        "equity_vs_open_pct": 37.8,
+        "equity_vs_continue_pct": 35.7,
+        "blocked_open_pct": 6.8
+      }
+    },
+    "T3s": {
+      "reason": "勝率37.0%。スーテッドの価値だけでは足りない場面が多く、フォールドが増えます。配分はコール 55%・フォールド 45%。",
+      "facts": {
+        "equity_vs_open_pct": 37,
+        "equity_vs_continue_pct": 35.4,
+        "blocked_open_pct": 6.5
+      }
+    },
+    "T2s": {
+      "reason": "勝率36.7%。T3sと同じ理由で、コールとフォールドをほぼ半々にします。配分はコール 55%・フォールド 45%。",
+      "facts": {
+        "equity_vs_open_pct": 36.7,
+        "equity_vs_continue_pct": 34.2,
+        "blocked_open_pct": 6.3
+      }
+    },
+    "A9o": {
+      "reason": "勝率54.9%とコールには十分な強さです。一方で3betすると、続けてくるAJ・AQ・AKに支配されやすく、勝率が47.8%に下がります。ほぼコールで、ブロッカー目的の3betを少し混ぜます。配分はコール 85%・3bet 10%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 54.9,
+        "equity_vs_continue_pct": 47.8,
+        "blocked_open_pct": 12.5
+      }
+    },
+    "K9o": {
+      "reason": "勝率47.7%とまずまずですが、KTやKJ以上のKに支配されやすく、ヒットしても大きく勝ちにくいオフスートです。BBの安い価格（必要勝率27.3%）に支えられてコールが中心ですが、一部はフォールドします。配分はコール 75%・フォールド 20%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 47.7,
+        "equity_vs_continue_pct": 42.2,
+        "blocked_open_pct": 9.7
+      }
+    },
+    "Q9o": {
+      "reason": "勝率44.6%。オフスートで強いQに支配されやすいため、コールを中心に一部はフォールドします。配分はコール 75%・フォールド 20%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 44.6,
+        "equity_vs_continue_pct": 39.3,
+        "blocked_open_pct": 9.4
+      }
+    },
+    "J9o": {
+      "reason": "勝率42.2%。つながったオフスートでコールが中心ですが、強いJに支配されやすいため一部はフォールドします。配分はコール 75%・フォールド 20%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 42.2,
+        "equity_vs_continue_pct": 38.4,
+        "blocked_open_pct": 9.3
+      }
+    },
+    "T9o": {
+      "reason": "勝率41.6%。ストレートを作りやすいオフスートで、コールが中心です。配分はコール 75%・フォールド 20%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 41.6,
+        "equity_vs_continue_pct": 38,
+        "blocked_open_pct": 9.2
+      }
+    },
+    "99": {
+      "reason": "勝率64.1%で、BTNの平均的なハンドには有利です。3betでバリューを取りつつ、続けてくる相手には58.4%まで下がりオーバーカードにも弱いため、一部はコールに回してポットを管理します。配分は3bet 65%・コール 35%。",
+      "facts": {
+        "equity_vs_open_pct": 64.1,
+        "equity_vs_continue_pct": 58.4,
+        "blocked_open_pct": 8.8
+      }
+    },
+    "98s": {
+      "reason": "勝率42.5%。つながったスーテッドで、ストレートとフラッシュの両方を狙えます。基本はコールで、一部はブラフの3betに使います。配分はコール 75%・3bet 25%。",
+      "facts": {
+        "equity_vs_open_pct": 42.5,
+        "equity_vs_continue_pct": 40.4,
+        "blocked_open_pct": 8.3
+      }
+    },
+    "97s": {
+      "reason": "勝率40.8%。1つ飛びのスーテッドで、ストレートとフラッシュの可能性があるためコールが中心です。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 40.8,
+        "equity_vs_continue_pct": 38.8,
+        "blocked_open_pct": 7.5
+      }
+    },
+    "96s": {
+      "reason": "勝率39.7%。つながりは弱めですが、スーテッドなのでコールが中心です。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 39.7,
+        "equity_vs_continue_pct": 37.1,
+        "blocked_open_pct": 6.8
+      }
+    },
+    "95s": {
+      "reason": "勝率38.6%。主な価値はフラッシュの可能性です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 38.6,
+        "equity_vs_continue_pct": 35.8,
+        "blocked_open_pct": 6.7
+      }
+    },
+    "94s": {
+      "reason": "勝率36.5%。スーテッドでも回収率が下がる境界ハンドで、一部はフォールドします。配分はコール 75%・フォールド 25%。",
+      "facts": {
+        "equity_vs_open_pct": 36.5,
+        "equity_vs_continue_pct": 34.1,
+        "blocked_open_pct": 6.5
+      }
+    },
+    "93s": {
+      "reason": "勝率35.8%。フォールドが増える境界ハンドです。配分はコール 55%・フォールド 45%。",
+      "facts": {
+        "equity_vs_open_pct": 35.8,
+        "equity_vs_continue_pct": 34.2,
+        "blocked_open_pct": 6.3
+      }
+    },
+    "92s": {
+      "reason": "勝率35.0%。93sと同じ理由で、コールとフォールドをほぼ半々にします。配分はコール 55%・フォールド 45%。",
+      "facts": {
+        "equity_vs_open_pct": 35,
+        "equity_vs_continue_pct": 33.7,
+        "blocked_open_pct": 6
+      }
+    },
+    "A8o": {
+      "reason": "勝率53.3%でコールは十分得です。ただし3betに続けてくる相手には46.7%に下がり、強いAに支配されやすいため、コール中心で3betは控えめにします。配分はコール 85%・3bet 10%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 53.3,
+        "equity_vs_continue_pct": 46.7,
+        "blocked_open_pct": 12
+      }
+    },
+    "K8o": {
+      "reason": "勝率45.3%と数字上は十分ですが、オフスートでKがヒットしてもキッカー負けしやすく、OOPで勝率を回収しにくいハンドです。コールとフォールドの境界です。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 45.3,
+        "equity_vs_continue_pct": 40.1,
+        "blocked_open_pct": 9.3
+      }
+    },
+    "Q8o": {
+      "reason": "勝率42.3%。数字上は必要勝率27.3%を上回りますが、これはリバーまで降りずに見た場合の値です。BBはフロップ以降ずっと先に行動する（OOP）ため、弱いオフスートは勝率を回収しきれません。コールとフォールドの境界ハンドです。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 42.3,
+        "equity_vs_continue_pct": 38.3,
+        "blocked_open_pct": 8.9
+      }
+    },
+    "J8o": {
+      "reason": "勝率40.9%。オフスートでつながりも弱めのため、コールとフォールドに分けます。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 40.9,
+        "equity_vs_continue_pct": 37,
+        "blocked_open_pct": 8.8
+      }
+    },
+    "T8o": {
+      "reason": "勝率39.5%。オフスートでつながりもやや弱く、コールとフォールドに分けます。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 39.5,
+        "equity_vs_continue_pct": 37,
+        "blocked_open_pct": 8.7
+      }
+    },
+    "98o": {
+      "reason": "勝率39.5%。つながったオフスートでストレートを作りやすく、コールが中心です。配分はコール 75%・フォールド 20%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 39.5,
+        "equity_vs_continue_pct": 36.8,
+        "blocked_open_pct": 8.4
+      }
+    },
+    "88": {
+      "reason": "勝率60.3%で3betでバリューを取れる強さですが、続けてくる相手には55.1%まで下がり、フロップでオーバーカードが出やすいミドルペアです。3betとコールをほぼ半々に分けます。配分はコール 55%・3bet 45%。",
+      "facts": {
+        "equity_vs_open_pct": 60.3,
+        "equity_vs_continue_pct": 55.1,
+        "blocked_open_pct": 7.7
+      }
+    },
+    "87s": {
+      "reason": "勝率40.8%。つながったスーテッドで、フロップで強いドローや役に伸びやすいハンドです。基本はコールで、一部をブラフの3betに使います。配分はコール 80%・3bet 20%。",
+      "facts": {
+        "equity_vs_open_pct": 40.8,
+        "equity_vs_continue_pct": 38.9,
+        "blocked_open_pct": 7
+      }
+    },
+    "86s": {
+      "reason": "勝率39.7%。1つ飛びのスーテッドでコールが中心です。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 39.7,
+        "equity_vs_continue_pct": 37.3,
+        "blocked_open_pct": 6.2
+      }
+    },
+    "85s": {
+      "reason": "勝率38.0%。つながりは弱めですが、スーテッドなのでコールが中心です。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 38,
+        "equity_vs_continue_pct": 36.2,
+        "blocked_open_pct": 6.1
+      }
+    },
+    "84s": {
+      "reason": "勝率36.3%。主な価値はフラッシュの可能性です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 36.3,
+        "equity_vs_continue_pct": 34.8,
+        "blocked_open_pct": 6
+      }
+    },
+    "83s": {
+      "reason": "勝率35.0%。スーテッドでも回収率が下がる境界ハンドで、一部はフォールドします。配分はコール 75%・フォールド 25%。",
+      "facts": {
+        "equity_vs_open_pct": 35,
+        "equity_vs_continue_pct": 33.2,
+        "blocked_open_pct": 5.7
+      }
+    },
+    "82s": {
+      "reason": "勝率34.4%。フォールドが増える境界ハンドです。配分はコール 55%・フォールド 45%。",
+      "facts": {
+        "equity_vs_open_pct": 34.4,
+        "equity_vs_continue_pct": 33.2,
+        "blocked_open_pct": 5.5
+      }
+    },
+    "A7o": {
+      "reason": "勝率51.4%。オフスートでキッカーが弱く、Aがヒットしても強いAに負けやすいハンドです。コールを基本に、一部はフォールドしてOOPでの難しい局面を避けます。配分はコール 80%・フォールド 15%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 51.4,
+        "equity_vs_continue_pct": 45,
+        "blocked_open_pct": 11.2
+      }
+    },
+    "K7o": {
+      "reason": "勝率44.7%。K8oと同様、Kがヒットしてもキッカー負けしやすいため、コールとフォールドに分けます。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 44.7,
+        "equity_vs_continue_pct": 39.9,
+        "blocked_open_pct": 8.5
+      }
+    },
+    "Q7o": {
+      "reason": "勝率40.3%。Q8oよりさらにつながりが弱く、OOPで勝率を回収しにくいため、フォールドが多めです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 40.3,
+        "equity_vs_continue_pct": 36.6,
+        "blocked_open_pct": 8.2
+      }
+    },
+    "J7o": {
+      "reason": "勝率39.2%。OOPで勝率を回収しにくいオフスートのため、フォールドが多めです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 39.2,
+        "equity_vs_continue_pct": 35.2,
+        "blocked_open_pct": 8.1
+      }
+    },
+    "T7o": {
+      "reason": "勝率37.6%。OOPで勝率を回収しにくいため、フォールドが多めです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 37.6,
+        "equity_vs_continue_pct": 35.3,
+        "blocked_open_pct": 8
+      }
+    },
+    "97o": {
+      "reason": "勝率37.7%。オフスートでつながりもやや弱く、コールとフォールドに分けます。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 37.7,
+        "equity_vs_continue_pct": 34.8,
+        "blocked_open_pct": 7.7
+      }
+    },
+    "87o": {
+      "reason": "勝率37.9%。つながったオフスートでストレートを作れますが、勝率は低めのためコールとフォールドに分けます。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 37.9,
+        "equity_vs_continue_pct": 35.5,
+        "blocked_open_pct": 7.1
+      }
+    },
+    "77": {
+      "reason": "勝率57.5%で、コールは十分に得です（必要勝率27.3%）。3betして大きなポットで強いハンドとぶつかると不利になりやすいので、基本はコールでセット（約12%）を狙います。配分はコール 80%・3bet 20%。",
+      "facts": {
+        "equity_vs_open_pct": 57.5,
+        "equity_vs_continue_pct": 52.3,
+        "blocked_open_pct": 6.2
+      }
+    },
+    "76s": {
+      "reason": "勝率40.0%。つながったスーテッドで、BTNの高いカード中心のレンジに当たりにくいボードで強くなれます。基本はコールで、一部をブラフの3betに使います。配分はコール 80%・3bet 20%。",
+      "facts": {
+        "equity_vs_open_pct": 40,
+        "equity_vs_continue_pct": 37.9,
+        "blocked_open_pct": 5.4
+      }
+    },
+    "75s": {
+      "reason": "勝率38.4%。1つ飛びのスーテッドでコールが中心です。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 38.4,
+        "equity_vs_continue_pct": 36.3,
+        "blocked_open_pct": 5.3
+      }
+    },
+    "74s": {
+      "reason": "勝率37.5%。つながりは弱めですが、スーテッドなのでコールが中心です。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 37.5,
+        "equity_vs_continue_pct": 35.2,
+        "blocked_open_pct": 5.2
+      }
+    },
+    "73s": {
+      "reason": "勝率35.3%。主な価値はフラッシュの可能性です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 35.3,
+        "equity_vs_continue_pct": 33.5,
+        "blocked_open_pct": 4.9
+      }
+    },
+    "72s": {
+      "reason": "勝率33.5%。スーテッドの最弱クラスで、コールとフォールドをほぼ半々にします。配分はコール 55%・フォールド 45%。",
+      "facts": {
+        "equity_vs_open_pct": 33.5,
+        "equity_vs_continue_pct": 32.3,
+        "blocked_open_pct": 4.7
+      }
+    },
+    "A6o": {
+      "reason": "勝率49.6%。A7oと同様に、Aがヒットしたときにキッカー負けしやすい点が弱みです。配分はコール 80%・フォールド 15%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 49.6,
+        "equity_vs_continue_pct": 44,
+        "blocked_open_pct": 10.4
+      }
+    },
+    "K6o": {
+      "reason": "勝率43.3%。キッカーがさらに弱くなり、ストレートやフラッシュの伸びしろも小さいため、フォールドが多めになります。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 43.3,
+        "equity_vs_continue_pct": 39,
+        "blocked_open_pct": 7.8
+      }
+    },
+    "Q6o": {
+      "reason": "勝率40.6%。Q7oと同様、フォールド寄りの配分です。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 40.6,
+        "equity_vs_continue_pct": 35.9,
+        "blocked_open_pct": 7.5
+      }
+    },
+    "J6o": {
+      "reason": "勝率36.9%。ほとんどフォールドします。数字上の勝率は必要勝率27.3%を上回っても、OOPでは回収しきれません。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 36.9,
+        "equity_vs_continue_pct": 34.1,
+        "blocked_open_pct": 7.3
+      }
+    },
+    "T6o": {
+      "reason": "勝率36.8%。ほとんどフォールドします。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 36.8,
+        "equity_vs_continue_pct": 33.7,
+        "blocked_open_pct": 7.2
+      }
+    },
+    "96o": {
+      "reason": "勝率36.2%。OOPで勝率を回収しにくいため、フォールドが多めです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 36.2,
+        "equity_vs_continue_pct": 33.7,
+        "blocked_open_pct": 6.9
+      }
+    },
+    "86o": {
+      "reason": "勝率36.3%。OOPで勝率を回収しにくいため、フォールドが多めです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 36.3,
+        "equity_vs_continue_pct": 34.5,
+        "blocked_open_pct": 6.4
+      }
+    },
+    "76o": {
+      "reason": "勝率37.1%。つながったオフスートで、ストレートの可能性だけを頼りにコールとフォールドに分けます。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 37.1,
+        "equity_vs_continue_pct": 34.2,
+        "blocked_open_pct": 5.6
+      }
+    },
+    "66": {
+      "reason": "勝率55.3%。スモールペアはフロップでセットを作れるか（約12%）が勝負の中心なので、安く見られるコールが最適です。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 55.3,
+        "equity_vs_continue_pct": 50.5,
+        "blocked_open_pct": 4.6
+      }
+    },
+    "65s": {
+      "reason": "勝率39.3%。つながったスーテッドで、BTNのレンジに当たりにくい低いボードで強くなれます。基本はコールで、一部をブラフの3betに使います。配分はコール 80%・3bet 20%。",
+      "facts": {
+        "equity_vs_open_pct": 39.3,
+        "equity_vs_continue_pct": 37.1,
+        "blocked_open_pct": 4.5
+      }
+    },
+    "64s": {
+      "reason": "勝率37.6%。1つ飛びのスーテッドでコールが中心です。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 37.6,
+        "equity_vs_continue_pct": 35.4,
+        "blocked_open_pct": 4.3
+      }
+    },
+    "63s": {
+      "reason": "勝率36.3%。つながりは弱めですが、スーテッドなのでコールが中心です。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 36.3,
+        "equity_vs_continue_pct": 33.9,
+        "blocked_open_pct": 4.1
+      }
+    },
+    "62s": {
+      "reason": "勝率34.8%。スーテッドでも回収率が下がる境界ハンドで、一部はフォールドします。配分はコール 75%・フォールド 25%。",
+      "facts": {
+        "equity_vs_open_pct": 34.8,
+        "equity_vs_continue_pct": 32.6,
+        "blocked_open_pct": 3.9
+      }
+    },
+    "A5o": {
+      "reason": "勝率49.0%。オフスートですがホイールのストレートが狙え、Aのブロッカー（10.3%）もあるため、A6o・A7oよりフォールドを減らしています。配分はコール 85%・3bet 10%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 49,
+        "equity_vs_continue_pct": 43.9,
+        "blocked_open_pct": 10.3
+      }
+    },
+    "K5o": {
+      "reason": "勝率43.1%。数字上は必要勝率27.3%を上回りますが、OOPでは回収しきれない分を考えてフォールド寄りです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 43.1,
+        "equity_vs_continue_pct": 38.6,
+        "blocked_open_pct": 7.7
+      }
+    },
+    "Q5o": {
+      "reason": "勝率39.8%。ストレートもフラッシュも作りにくいオフスートで、ほとんどフォールドします。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 39.8,
+        "equity_vs_continue_pct": 35.4,
+        "blocked_open_pct": 7.3
+      }
+    },
+    "J5o": {
+      "reason": "勝率36.9%。ストレートもフラッシュも作りにくく、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 36.9,
+        "equity_vs_continue_pct": 34.1,
+        "blocked_open_pct": 7.2
+      }
+    },
+    "T5o": {
+      "reason": "勝率35.4%。つながりもスートもなく、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 35.4,
+        "equity_vs_continue_pct": 31.7,
+        "blocked_open_pct": 7.1
+      }
+    },
+    "95o": {
+      "reason": "勝率34.2%。ほとんどフォールドします。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 34.2,
+        "equity_vs_continue_pct": 32.5,
+        "blocked_open_pct": 6.8
+      }
+    },
+    "85o": {
+      "reason": "勝率35.0%。ほとんどフォールドします。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 35,
+        "equity_vs_continue_pct": 32.5,
+        "blocked_open_pct": 6.2
+      }
+    },
+    "75o": {
+      "reason": "勝率35.1%。フォールドが多めです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 35.1,
+        "equity_vs_continue_pct": 33.2,
+        "blocked_open_pct": 5.5
+      }
+    },
+    "65o": {
+      "reason": "勝率35.8%。つながったオフスートで、ストレートの可能性を頼りにコールとフォールドに分けます。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 35.8,
+        "equity_vs_continue_pct": 33.2,
+        "blocked_open_pct": 4.7
+      }
+    },
+    "55": {
+      "reason": "勝率52.9%でコールは明確に得です。ただし勝ち筋の多くはフロップでセット（約12%）を作れるかどうかに依存します。3betして大きなポットで強いハンドに当たると不利なので、ほぼコールです。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 52.9,
+        "equity_vs_continue_pct": 47.6,
+        "blocked_open_pct": 4.4
+      }
+    },
+    "54s": {
+      "reason": "勝率38.2%。つながったスーテッドで、低いボードでストレートを作れます。基本はコールで、一部をブラフの3betに使います。配分はコール 80%・3bet 20%。",
+      "facts": {
+        "equity_vs_open_pct": 38.2,
+        "equity_vs_continue_pct": 36.2,
+        "blocked_open_pct": 4.1
+      }
+    },
+    "53s": {
+      "reason": "勝率36.9%。ホイール（A〜5のストレート）も狙える1つ飛びのスーテッドで、コールが中心です。配分はコール 85%・3bet 15%。",
+      "facts": {
+        "equity_vs_open_pct": 36.9,
+        "equity_vs_continue_pct": 34.6,
+        "blocked_open_pct": 3.9
+      }
+    },
+    "52s": {
+      "reason": "勝率34.9%。主な価値はフラッシュと低いストレートの可能性です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 34.9,
+        "equity_vs_continue_pct": 33.4,
+        "blocked_open_pct": 3.7
+      }
+    },
+    "A4o": {
+      "reason": "勝率47.8%。ホイールの可能性はあるものの、オフスートで伸びしろは小さめです。配分はコール 80%・フォールド 15%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 47.8,
+        "equity_vs_continue_pct": 43.1,
+        "blocked_open_pct": 10.1
+      }
+    },
+    "K4o": {
+      "reason": "勝率41.4%。K5oと同じく、キッカーが弱いオフスートのためフォールド寄りの配分です。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 41.4,
+        "equity_vs_continue_pct": 37.6,
+        "blocked_open_pct": 7.4
+      }
+    },
+    "Q4o": {
+      "reason": "勝率38.7%。Q5oと同じ理由で、ほとんどフォールドします。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 38.7,
+        "equity_vs_continue_pct": 35.1,
+        "blocked_open_pct": 7.1
+      }
+    },
+    "J4o": {
+      "reason": "表面上の勝率は36.2%で、必要勝率27.3%を上回って見えます。しかしこれはショウダウンまで進んだ場合の値で、OOPの弱いオフスートはヒットしてもキッカー負けしやすく、ベットされて降りる場面も多いため、実際に回収できる勝率はかなり下がります。そのためフォールドです。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 36.2,
+        "equity_vs_continue_pct": 33.4,
+        "blocked_open_pct": 7
+      }
+    },
+    "T4o": {
+      "reason": "勝率34.7%。T5oと同じ理由でフォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 34.7,
+        "equity_vs_continue_pct": 32.4,
+        "blocked_open_pct": 6.9
+      }
+    },
+    "94o": {
+      "reason": "勝率33.1%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 33.1,
+        "equity_vs_continue_pct": 31,
+        "blocked_open_pct": 6.5
+      }
+    },
+    "84o": {
+      "reason": "勝率33.0%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 33,
+        "equity_vs_continue_pct": 31.2,
+        "blocked_open_pct": 6
+      }
+    },
+    "74o": {
+      "reason": "勝率33.8%。ほとんどフォールドします。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 33.8,
+        "equity_vs_continue_pct": 31.6,
+        "blocked_open_pct": 5.2
+      }
+    },
+    "64o": {
+      "reason": "勝率34.1%。フォールドが多めです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 34.1,
+        "equity_vs_continue_pct": 31.8,
+        "blocked_open_pct": 4.4
+      }
+    },
+    "54o": {
+      "reason": "勝率34.6%。つながったオフスートで、ストレートの可能性を頼りにコールとフォールドに分けます。配分はコール 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_open_pct": 34.6,
+        "equity_vs_continue_pct": 32.7,
+        "blocked_open_pct": 4.3
+      }
+    },
+    "44": {
+      "reason": "勝率50.6%で、コールに必要な27.3%を大きく上回ります。ただフロップの大半でオーバーカードが出るため、勝ち筋はセットを作ることです。安くフロップを見るコールが中心です。配分はコール 95%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 50.6,
+        "equity_vs_continue_pct": 45.9,
+        "blocked_open_pct": 3.9
+      }
+    },
+    "43s": {
+      "reason": "勝率36.5%。低いつながったスーテッドで、ホイールも狙えるためコールが中心です。配分はコール 90%・3bet 10%。",
+      "facts": {
+        "equity_vs_open_pct": 36.5,
+        "equity_vs_continue_pct": 34.1,
+        "blocked_open_pct": 3.7
+      }
+    },
+    "42s": {
+      "reason": "勝率34.7%。主な価値はフラッシュと低いストレートの可能性です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 34.7,
+        "equity_vs_continue_pct": 32.3,
+        "blocked_open_pct": 3.5
+      }
+    },
+    "A3o": {
+      "reason": "勝率46.6%。必要勝率27.3%は上回りますが、キッカーが弱くOOPでは勝率を回収しにくいため、一部はフォールドします。配分はコール 80%・フォールド 15%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 46.6,
+        "equity_vs_continue_pct": 42.4,
+        "blocked_open_pct": 9.8
+      }
+    },
+    "K3o": {
+      "reason": "勝率40.7%。Kの高さだけが頼りのハンドで、OOPでは勝率を回収しにくいためフォールド寄りです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 40.7,
+        "equity_vs_continue_pct": 37.3,
+        "blocked_open_pct": 7.2
+      }
+    },
+    "Q3o": {
+      "reason": "勝率37.7%。数字上は必要勝率27.3%を上回りますが、Qがヒットしてもキッカー負けしやすく、OOPで回収できる勝率はそれを下回ると見てフォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 37.7,
+        "equity_vs_continue_pct": 34,
+        "blocked_open_pct": 6.9
+      }
+    },
+    "J3o": {
+      "reason": "勝率35.3%。J4oと同じ理由でフォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 35.3,
+        "equity_vs_continue_pct": 32.8,
+        "blocked_open_pct": 6.7
+      }
+    },
+    "T3o": {
+      "reason": "勝率33.8%。T5oと同じ理由でフォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 33.8,
+        "equity_vs_continue_pct": 31.5,
+        "blocked_open_pct": 6.6
+      }
+    },
+    "93o": {
+      "reason": "勝率32.6%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 32.6,
+        "equity_vs_continue_pct": 30.5,
+        "blocked_open_pct": 6.3
+      }
+    },
+    "83o": {
+      "reason": "勝率31.4%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 31.4,
+        "equity_vs_continue_pct": 29.9,
+        "blocked_open_pct": 5.7
+      }
+    },
+    "73o": {
+      "reason": "勝率31.9%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 31.9,
+        "equity_vs_continue_pct": 29.6,
+        "blocked_open_pct": 5
+      }
+    },
+    "63o": {
+      "reason": "勝率32.2%。ほとんどフォールドします。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 32.2,
+        "equity_vs_continue_pct": 30.4,
+        "blocked_open_pct": 4.2
+      }
+    },
+    "53o": {
+      "reason": "勝率33.0%。ほとんどフォールドします。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 33,
+        "equity_vs_continue_pct": 31.5,
+        "blocked_open_pct": 4
+      }
+    },
+    "43o": {
+      "reason": "勝率32.1%。ほとんどフォールドします。配分はフォールド 80%・コール 20%。",
+      "facts": {
+        "equity_vs_open_pct": 32.1,
+        "equity_vs_continue_pct": 30.4,
+        "blocked_open_pct": 3.8
+      }
+    },
+    "33": {
+      "reason": "勝率48.0%。フロップではほとんどの場合オーバーカードが出るので、セットを作って大きく勝つのが主な狙いです。BBの安い価格を活かしてコールします。配分はコール 95%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 48,
+        "equity_vs_continue_pct": 44.5,
+        "blocked_open_pct": 3.4
+      }
+    },
+    "32s": {
+      "reason": "勝率33.5%。最弱クラスですが、スーテッドでホイール（A〜5のストレート）も狙えるため、必要勝率27.3%を上回ってコールが中心です。配分はコール 90%・3bet 5%・フォールド 5%。",
+      "facts": {
+        "equity_vs_open_pct": 33.5,
+        "equity_vs_continue_pct": 32.2,
+        "blocked_open_pct": 3.2
+      }
+    },
+    "A2o": {
+      "reason": "勝率46.1%で、数字上はコールできます。ただしオフスートでキッカーが最弱なので、Aがヒットしても強いAに負けやすく、OOPで勝率を回収しにくいハンドです。一部はフォールドして損失を抑えます。配分はコール 80%・フォールド 15%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 46.1,
+        "equity_vs_continue_pct": 41.5,
+        "blocked_open_pct": 9.5
+      }
+    },
+    "K2o": {
+      "reason": "勝率40.3%。Kxオフスートの最弱クラスです。Kがヒットしても勝てる相手が限られるため、フォールド寄りです。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_open_pct": 40.3,
+        "equity_vs_continue_pct": 36.2,
+        "blocked_open_pct": 6.9
+      }
+    },
+    "Q2o": {
+      "reason": "勝率37.3%。Q3oと同じ理由でフォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 37.3,
+        "equity_vs_continue_pct": 33.5,
+        "blocked_open_pct": 6.6
+      }
+    },
+    "J2o": {
+      "reason": "勝率34.8%。J4oと同じ理由でフォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 34.8,
+        "equity_vs_continue_pct": 32.1,
+        "blocked_open_pct": 6.5
+      }
+    },
+    "T2o": {
+      "reason": "勝率33.4%。T5oと同じ理由でフォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 33.4,
+        "equity_vs_continue_pct": 30.7,
+        "blocked_open_pct": 6.3
+      }
+    },
+    "92o": {
+      "reason": "勝率31.5%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 31.5,
+        "equity_vs_continue_pct": 29.9,
+        "blocked_open_pct": 6
+      }
+    },
+    "82o": {
+      "reason": "勝率31.2%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 31.2,
+        "equity_vs_continue_pct": 29.6,
+        "blocked_open_pct": 5.5
+      }
+    },
+    "72o": {
+      "reason": "勝率30.0%で、ストレートもフラッシュも作りにくい最弱クラスのハンドです。OOPで勝率を回収しにくいことを考えると、必要勝率27.3%をほとんど上回れません。フォールドです。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 30,
+        "equity_vs_continue_pct": 28.3,
+        "blocked_open_pct": 4.7
+      }
+    },
+    "62o": {
+      "reason": "勝率30.5%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 30.5,
+        "equity_vs_continue_pct": 29.2,
+        "blocked_open_pct": 3.9
+      }
+    },
+    "52o": {
+      "reason": "勝率31.7%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 31.7,
+        "equity_vs_continue_pct": 29.8,
+        "blocked_open_pct": 3.8
+      }
+    },
+    "42o": {
+      "reason": "勝率31.0%。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 31,
+        "equity_vs_continue_pct": 29.3,
+        "blocked_open_pct": 3.6
+      }
+    },
+    "32o": {
+      "reason": "勝率30.1%で、最弱のハンドの一つです。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_open_pct": 30.1,
+        "equity_vs_continue_pct": 28.7,
+        "blocked_open_pct": 3.3
+      }
+    },
+    "22": {
+      "reason": "最も弱いペアですが勝率45.6%あり、必要勝率27.3%を大きく上回ります。セットができればBTNの強いハンドから大きく勝てるため、ほぼコールです。配分はコール 95%・3bet 5%。",
+      "facts": {
+        "equity_vs_open_pct": 45.6,
+        "equity_vs_continue_pct": 43.1,
+        "blocked_open_pct": 2.8
+      }
+    }
+  }
+}

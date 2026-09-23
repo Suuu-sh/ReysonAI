@@ -59,10 +59,10 @@ test("matrix values and 4bet action labels match the persisted JSON without synt
   assert.equal(label("raise_four_bet"), "4bet（推定サイズ）");
   const btn = findThreeBetSpot(data, "BTN", "BB");
   assert.equal(btn.three_bet_size_bb, 12);
-  assert.equal(btn.four_bet_size_bb, 26.5);
+  assert.equal(btn.four_bet_size_bb, 26);
   assert.equal(btn.hero_position_vs_three_bettor, "IP");
   assert.deepEqual(btn.hands.find(h => h.hand === "AKo"), {
-    hand: "AKo", fold: 0, call: 25, four_bet: 75, four_bet_size_bb: 26.5,
+    hand: "AKo", fold: 0, call: 25, four_bet: 75, four_bet_size_bb: 26,
     reason: btn.hands.find(h => h.hand === "AKo").reason,
   });
 });
