@@ -10,6 +10,11 @@
 - Browser check at `http://localhost:5173/`: BTN open → SB call → BB acting showed the conditional BTN → SB response sequence. Each multiway seat remained explicitly pending. Selecting BB Call removed the follow-up node; restoring BB to Take action restored it.
 - UI tests: 44 passed. Production build and Sites tests passed (4 Sites tests). Existing large-bundle warning remains.
 
+## Compact conditional next-action node (2026-09-23)
+- Reduced the follow-up area from a tall, full-width stack to a short inline row. The branch condition and next-action title stay alongside compact actor chips; poker response order, available actions, and multiway pending states remain visible.
+- Browser check at `http://localhost:5173/`: BTN → SB follow-up after BB 3bet retained both pending seats while taking substantially less vertical space.
+- Verification: 45 UI tests, production build, and 4 Sites tests passed. Build reports the existing large-bundle warning.
+
 ## Unified selection panel update (2026-09-23)
 - Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable SolveaGTO panel rather than exact screenshot replication.
 - Merged spot/stack/size controls and six-seat action path into the same panel. The compact path remains visible; the top control expands seat choices. Removed the redundant Cash tile and used existing pink tokens for the active state.
