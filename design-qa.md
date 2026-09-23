@@ -11,6 +11,7 @@
 
 ## Remove unreachable-hand cell label (2026-09-23)
 - Removed the repeated “対象外” text from unreachable matrix cells while keeping their distinct visual treatment and an explanatory tooltip; the selected-hand detail still explains why no recommendation is shown.
+- Browser check: in the 4bet-response view, the K8o cell shows only the hand label; its accessible hint explains that no recommendation is available.
 - Verification: all 51 UI tests passed, the production build passed, and all 4 Sites tests passed. The build still reports the existing large-bundle warning.
 
 ## 5bet label wording (2026-09-23)
