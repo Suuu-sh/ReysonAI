@@ -7,13 +7,15 @@ export const formatOptions = {
   openSize: [{ value: 2, label: "2BB" }, { value: 2.5, label: "2.5BB" }, { value: 3, label: "3BB" }],
   ante: [{ value: false, label: "アンティなし" }, { value: true, label: "アンティあり" }],
 };
-export const formatFields = [
-  ["game", "ゲーム"], ["table", "テーブル"], ["stack", "スタック"], ["openSize", "オープンサイズ"], ["ante", "アンティ"],
+export const gameFormatFields = [
+  ["game", "ゲーム"], ["table", "テーブル"], ["stack", "スタック"], ["openSize", "オープンサイズ"],
 ];
+export const detailedFormatFields = [["ante", "アンティ"]];
+const allFormatFields = [...gameFormatFields, ...detailedFormatFields];
 export const BUILT = [{ game: "cash", table: "6max", stack: 100, openSize: 2.5, ante: false }];
 export const defaultFormat = BUILT[0];
 
-export const isBuilt = format => BUILT.some(built => formatFields.every(([key]) => built[key] === format[key]));
+export const isBuilt = format => BUILT.some(built => allFormatFields.every(([key]) => built[key] === format[key]));
 // An option is selectable when some built format uses it.
 export const optionAvailable = (key, value) => BUILT.some(built => built[key] === value);
 

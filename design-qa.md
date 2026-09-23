@@ -128,7 +128,18 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Removed the full spot-summary/count/status row between the action path and range tables. The action path remains the spot selector; range tables now start directly below it and take the recovered height.
 - Browser verification at `http://localhost:5173/` confirmed the context strip is absent and the range tables occupy the freed vertical space.
 - Verification: all 69 UI/data tests passed, `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite still reports its existing large-chunk warning.
+
 ## UTG response path through BB (2026-09-24)
 - After UTG raises, every later seat through BB remains selectable in the action path, including direct action selection at a later seat.
 - Browser verification at http://127.0.0.1:5173/: selected UTG Raise 2.5BB, confirmed HJ/CO/BTN/SB/BB were present, then selected BB Call 2.5BB; HJ, CO, BTN and SB changed to Fold and the path completed with two players seeing the flop.
+
+## Ante in detailed settings (2026-09-24)
+- Removed ante from the basic game-settings page and the action-path summary. Added a dedicated “より詳細な設定” subpage with a back action; ante remains “アンティなし” and “アンティあり” is locked because only no-ante ranges are currently authored.
+- Browser verification at `http://localhost:5173/`: opened the settings dialog and confirmed it contains no ante field; navigated to “より詳細な設定” and confirmed the no-ante option is selected while ante-enabled is disabled.
+- Verification: all 72 UI/data tests passed, `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite reports the existing large-chunk warning.
 - Verification: node --test tests/*.test.mjs passed (69 tests), npm run build passed, and npm run test:sites passed (4 tests). Vite still reports its existing large-chunk warning.
+
+## Action-block range focus (2026-09-24)
+- Selecting a position header focuses that decision's range matrix together with the immediately preceding block's matrix. Prior decisions are labeled historical; unsupported responses remain pending. Clicking the selected header again restores the full participant view. Choosing an action continues to update the path and returns to the full relevant participant ranges.
+- Browser verification at `http://127.0.0.1:5173/`: selected the BB position header and confirmed BB's open-response matrix plus SB's historical open-response matrix; the selected state is announced accessibly.
+- Verification: all 71 UI/data tests passed, `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite reports the existing large-chunk warning.

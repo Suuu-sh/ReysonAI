@@ -181,7 +181,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
         { action: "raise", label: "Raise 2.5", disabled: position === "BB" },
       ];
       if (index === openerIndex && !acting) contribution[position] = 2.5;
-      blocks.push({ key: position, position, stack, active: acting, chosen, options, kind: "seat" });
+      blocks.push({ key: position, position, stack, active: acting, chosen, options, kind: "seat", rangeRef: { kind: "opening", position } });
       continue;
     }
     const earlierCallers = callers.filter(caller => positions.indexOf(caller) < index);
@@ -190,24 +190,30 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
     const options = [{ action: "fold", label: "Fold" }, { action: "call", label: "Call 2.5" }, { action: "raise", label: raiseLabel }];
     if (index > heroIndex && (reraised || pendingRaise === "squeeze")) {
-      blocks.push({ key: position, position, stack, active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "forced" });
+      blocks.push({ key: position, position, stack, active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "forced", rangeRef: { kind: "pending", position, reason: reraised ? "3bet後の応答データはまだ保存されていません。" : "スクイーズ後の応答データはまだ保存されていません。" } });
       continue;
     }
     let chosen = null;
     if (callers.includes(position)) { chosen = "call"; contribution[position] = 2.5; }
     else if (index < heroIndex || foldedHero) chosen = "fold";
     else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = raiseToBb ?? threeBetSizeBb ?? 0; }
-    blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat" });
+    const hasEarlierCaller = callers.some(caller => positions.indexOf(caller) < index);
+    const rangeRef = pendingRaise === "squeeze" || hasEarlierCaller
+      ? { kind: "pending", position, reason: pendingRaise === "squeeze" ? "スクイーズ後の応答データはまだ保存されていません。" : "このマルチウェイ局面の応答データはまだ保存されていません。" }
+      : reraised && index > heroIndex
+        ? { kind: "pending", position, reason: "3bet後の応答データはまだ保存されていません。" }
+        : { kind: "response", position };
+    blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat", rangeRef });
   }
   if (reraised) {
     const fourBetSizeBb = spot?.four_bet_size_bb;
     const openerChosen = rangeType === "four_bet" ? "raise" : continuationAction;
-    blocks.push({ key: `continuation-${opener}`, position: opener, stack: stackOf(opener), kind: "continuation", active: rangeType === "three_bet" && !continuationAction, chosen: openerChosen, options: [
+    blocks.push({ key: `continuation-${opener}`, position: opener, stack: stackOf(opener), kind: "continuation", rangeRef: { kind: "three_bet", position: opener, opponent: hero }, active: rangeType === "three_bet" && !continuationAction, chosen: openerChosen, options: [
       { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(threeBetSizeBb)}` }, { action: "raise", label: `Raise ${formatBb(fourBetSizeBb)}` },
     ] });
     if (rangeType === "four_bet") {
       contribution[opener] = fourBetSizeBb ?? 0;
-      blocks.push({ key: `continuation-${hero}`, position: hero, stack: stackOf(hero), kind: "continuation", active: !continuationAction && !pendingRaise, chosen: pendingRaise === "all_in" ? "all_in" : continuationAction, options: [
+      blocks.push({ key: `continuation-${hero}`, position: hero, stack: stackOf(hero), kind: "continuation", rangeRef: { kind: "four_bet", position: hero, opponent: opener }, active: !continuationAction && !pendingRaise, chosen: pendingRaise === "all_in" ? "all_in" : continuationAction, options: [
         { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(fourBetSizeBb)}` }, { action: "all_in", label: "Allin 100" },
       ] });
       if (pendingRaise === "all_in") contribution[hero] = 100;
@@ -215,7 +221,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
   }
   // The opener's call/fold vs the 5bet all-in is a saved range, so it is a normal acting block.
   if (pendingRaise === "all_in") {
-    blocks.push({ key: `shove-response-${opener}`, position: opener, stack: stackOf(opener), kind: "shove-response", active: !shoveResponse, chosen: shoveResponse, options: [
+    blocks.push({ key: `shove-response-${opener}`, position: opener, stack: stackOf(opener), kind: "shove-response", rangeRef: { kind: "five_bet", position: opener, opponent: hero }, active: !shoveResponse, chosen: shoveResponse, options: [
       { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(100 - (contribution[opener] ?? 0))}` },
     ] });
     if (shoveResponse === "call") contribution[opener] = 100;
@@ -224,11 +230,17 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
   if (end) blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], ...end });
   const pendingActors = pendingRaise === "squeeze" ? nextActorsAfterRaise(hero, [opener, ...callers]) : [];
   for (const position of pendingActors) {
-    blocks.push({ key: `pending-${position}`, position, stack: stackOf(position), kind: "pending", active: true, chosen: null, options: [
+    blocks.push({ key: `pending-${position}`, position, stack: stackOf(position), kind: "pending", rangeRef: { kind: "pending", position, reason: "スクイーズ後の応答データはまだ保存されていません。" }, active: true, chosen: null, options: [
       { action: "fold", label: "Fold", disabled: true }, { action: "call", label: "Call", disabled: true },
     ] });
   }
   return blocks;
+}
+
+export function prioritizeParticipantRanges(rangeEntries, selectedActionEntries) {
+  if (!selectedActionEntries) return rangeEntries;
+  const prioritizedPositions = new Set(selectedActionEntries.map(entry => entry.position));
+  return [...selectedActionEntries, ...rangeEntries.filter(entry => !prioritizedPositions.has(entry.position))];
 }
 
 // The hand's outcome once the last decision closes the action, with the final pot.
@@ -258,8 +270,8 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
   return null;
 }
 
-export function ActionPath({ leading, expanded, onAct = () => {}, onContinuationAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
-  const blocks = buildActionBlocks(state);
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onAct = () => {}, onContinuationAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
+  const blocks = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef(null);
   useEffect(() => {
     const seats = seatsRef.current;
@@ -283,8 +295,8 @@ export function ActionPath({ leading, expanded, onAct = () => {}, onContinuation
           <p className="action-seat-result">{block.result}</p>
           <small>{block.pot}</small>
         </div>;
-        return <div className={`action-seat action-seat-${block.kind}${block.active ? " active" : ""}`} key={block.key}>
-          <div className="action-seat-heading"><strong>{block.position}</strong><span>{block.stack}</span></div>
+        return <div className={`action-seat action-seat-${block.kind}${block.active ? " active" : ""}${selectedRangeBlock === block.key ? " range-selected" : ""}`} key={block.key}>
+          <div className="action-seat-heading"><button type="button" className="action-seat-position" aria-pressed={selectedRangeBlock === block.key} aria-label={`${block.position}のアクション時点のレンジを表示`} title={selectedRangeBlock === block.key ? "選択を解除" : "この位置のレンジと前のポジションのレンジを表示"} onClick={() => onSelectRangeBlock(selectedRangeBlock === block.key ? null : block.key)}>{block.position}</button><span>{block.stack}</span></div>
           {expanded ? <div className="action-seat-options">
             {block.options.map(option => <button type="button" key={option.action} className={option.action === block.chosen ? "chosen" : ""} aria-pressed={option.action === block.chosen} disabled={option.disabled || block.kind === "forced" || block.kind === "pending"} onClick={() => select(block, option.action)}>{option.label}</button>)}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
@@ -305,6 +317,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [opener, setOpener] = useState(initialSelection.opener);
   const [hero, setHero] = useState(initialSelection.hero);
   const [focusedRange, setFocusedRange] = useState(null);
+  const [selectedRangeBlock, setSelectedRangeBlock] = useState(null);
   const [callers, setCallers] = useState(initialSelection.callers);
   const [foldedHero, setFoldedHero] = useState(initialSelection.foldedHero);
   const [pendingRaise, setPendingRaise] = useState(initialSelection.pendingRaise);
@@ -356,6 +369,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setPendingRaise(null);
     setContinuationAction(null); setShoveResponse(null);
     setFocusedRange(null);
+    setSelectedRangeBlock(null);
     setSelected("AKo");
     setLocalEstimate(null);
     setLocalEstimateRequestKey(null);
@@ -368,6 +382,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setPendingRaise(null);
     setContinuationAction(null); setShoveResponse(null);
     setFocusedRange(null);
+    setSelectedRangeBlock(null);
     setHero(positions[positions.indexOf(value) + 1] ?? "");
     setCallers([]);
     setFoldedHero(false);
@@ -381,12 +396,17 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setFocusedRange(null);
     if (index <= positions.indexOf(opener)) {
       if (action === "raise" && next) {
+        setSelectedRangeBlock(null);
         setOpener(position); setRangeType("response"); setHero(next); setCallers([]); setFoldedHero(false);
-      } else if (action === "fold" && position === opener && next && next !== "BB") changeOpener(next);
+      } else if (action === "fold" && position === opener && next && next !== "BB") {
+        changeOpener(next);
+      }
       return;
     }
     const transition = responseActionTransition({ opener, callers, position, action });
     if (!transition) return;
+    // Recompute the complete participant view after each action; block focus is explicit.
+    setSelectedRangeBlock(null);
     setRangeType(transition.rangeType);
     setHero(transition.hero);
     setCallers(transition.callers);
@@ -399,6 +419,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setPendingRaise(null);
     setContinuationAction(null); setShoveResponse(null);
     setFocusedRange(null);
+    setSelectedRangeBlock(null);
   }
 
   const multiwayParticipants = [opener, ...callers, ...(!foldedHero && !callers.includes(hero) ? [hero] : [])];
@@ -464,6 +485,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const candidate = dataset && positions.indexOf(position) > positions.indexOf(opener) ? findSpot(dataset, opener, position) : null;
     return candidate?.hands.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb ?? null;
   };
+  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, raiseSizeFor };
+  const actionBlocks = buildActionBlocks(actionState);
   const responseSpot = !isOpening && dataset ? findSpot(dataset, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
   const threeBetSpot = (isThreeBet || isFourBet) && threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null;
@@ -509,14 +532,85 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   // The last raiser's table goes on the left.
   const aggressor = isThreeBet || pendingRaise ? hero : opener;
   rangeEntries.sort((a, b) => (b.position === aggressor) - (a.position === aggressor));
-  const focusedEntry = rangeEntries.find(entry => entry.position === focusedRange && entry.model);
-  const displayedEntries = focusedEntry ? [focusedEntry] : rangeEntries;
+  const actionRangeEntry = (block, role) => {
+    const ref = block?.rangeRef;
+    if (!ref) return null;
+    const labelContext = role === "previous" ? "前のポジション・履歴" : "選択位置";
+    const withContext = entry => entry && ({ ...entry, title: `${entry.title}（${labelContext}）`, rangeBlockKey: block.key });
+    const missing = (title, description = ref.reason || "この履歴のレンジはまだ保存されていません。", statusTitle = "レンジ未収録") => ({
+      position: ref.position,
+      kind: "pending",
+      title: `${ref.position} · ${title}（${labelContext}）`,
+      statusTitle,
+      statusDescription: description,
+      rangeBlockKey: block.key,
+    });
+
+    if (ref.kind === "opening") {
+      const savedSpot = openingDataset ? findOpeningSpot(openingDataset, ref.position) : null;
+      return savedSpot ? withContext({ position: ref.position, kind: "opening", spot: savedSpot, model: openingMatrixModel(savedSpot), title: `${ref.position} · オープンレンジ` }) : missing("オープンレンジ");
+    }
+    if (ref.kind === "response") {
+      const savedSpot = dataset ? findSpot(dataset, opener, ref.position) : null;
+      return savedSpot ? withContext({ position: ref.position, kind: "response", spot: savedSpot, model: matrixModel(savedSpot), title: `${ref.position} · オープンへの応答` }) : missing("オープンへの応答");
+    }
+    if (ref.kind === "three_bet") {
+      const savedSpot = threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, ref.opponent) : null;
+      return savedSpot ? withContext({ position: ref.position, kind: "three_bet", spot: savedSpot, model: threeBetMatrixModel(savedSpot), title: `${ref.position} · 3betへの応答` }) : missing("3betへの応答");
+    }
+    if (ref.kind === "four_bet") {
+      const savedSpot = fourBet.data ? findFourBetSpot(fourBet.data, opener, ref.position) : null;
+      return savedSpot ? withContext({ position: ref.position, kind: "four_bet", spot: savedSpot, model: fourBetMatrixModel(savedSpot, dataset ? findSpot(dataset, opener, ref.position) : null), title: `${ref.position} · 4betへの応答` }) : missing("4betへの応答");
+    }
+    if (ref.kind === "five_bet") {
+      if (fiveBet.spot) return withContext({ position: ref.position, kind: "five_bet", spot: fiveBet.spot, model: fiveBetMatrixModel(fiveBet.spot), title: `${ref.position} · 5betオールインへの応答` });
+      if (fiveBet.loading) return missing("5betオールインへの応答", "保存済みレンジを読み込んでいます。", "読み込み中");
+      const allInRange = currentLocalEstimate?.scenario === "five_bet_all_in_response" && currentLocalEstimate.ranges?.find(range => range.position === ref.position);
+      return allInRange
+        ? withContext({ position: ref.position, kind: "local", model: localMatrix(allInRange), title: `${ref.position} · 5betオールインへの応答（AI推定）`, allInSizeBb: 100, fourBetSizeBb: spot?.four_bet_size_bb, threeBetSizeBb: spot?.three_bet_size_bb })
+        : missing("5betオールインへの応答", "5betオールイン後の応答データはまだ保存されていません。");
+    }
+    const localRange = currentLocalEstimate?.ranges.find(range => range.position === ref.position);
+    if (localRange) return withContext({ position: ref.position, kind: "local", model: localMatrix(localRange), title: `${ref.position} · AI推定レンジ（レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb });
+    return missing(ref.reason ? "推定レンジ準備中" : "この履歴のレンジ");
+  };
+  const selectedBlockIndex = actionBlocks.findIndex(block => block.key === selectedRangeBlock);
+  const selectedActionEntries = selectedBlockIndex < 0 ? null : [
+    actionRangeEntry(actionBlocks[selectedBlockIndex - 1], "previous"),
+    actionRangeEntry(actionBlocks[selectedBlockIndex], "selected"),
+  ].filter(Boolean);
+  // Keep the focused action pair first, but never hide other active participants' ranges.
+  const visibleRangeEntries = prioritizeParticipantRanges(rangeEntries, selectedActionEntries);
+  const focusedEntry = visibleRangeEntries.find(entry => entry.position === focusedRange && entry.model);
+  const displayedEntries = focusedEntry ? [focusedEntry] : visibleRangeEntries;
 
   return <div className="shell">
     <Sidebar activeSection="プリフロップ" onSectionChange={() => {}} profile={profile} onEditProfile={onEditProfile} />
     <main>
       <Panel className="estimate-settings">
-          <ActionPath leading={<div className="action-seat action-seat-info"><div className="action-seat-heading"><strong>推定レンジ</strong><div className="settings-actions"><button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を編集" title="ゲーム設定を編集" onClick={() => setFormatOpen(true)}><PencilSimple size={14} aria-hidden="true" /></button><button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button></div></div><ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)} · {formatLabel("ante", format.ante)}</li></ul><div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div></div>} expanded rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} raiseSizeFor={raiseSizeFor} pendingRaise={pendingRaise} continuationAction={continuationAction} shoveResponse={shoveResponse} onShoveResponse={action => { setFocusedRange(null); setShoveResponse(action); }} onAct={actAt} onFourBet={selectFourBet} onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setFocusedRange(null); setPendingRaise("all_in"); }} onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setContinuationAction(action); }} />
+        <ActionPath
+          leading={<div className="action-seat action-seat-info">
+            <div className="action-seat-heading">
+              <strong>推定レンジ</strong>
+              <div className="settings-actions">
+                <button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を編集" title="ゲーム設定を編集" onClick={() => setFormatOpen(true)}><PencilSimple size={14} aria-hidden="true" /></button>
+                <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
+              </div>
+            </div>
+            <ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)}</li></ul>
+            <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
+          </div>}
+          expanded
+          blocks={actionBlocks}
+          selectedRangeBlock={selectedRangeBlock}
+          {...actionState}
+          onSelectRangeBlock={key => { setFocusedRange(null); setSelectedRangeBlock(key); }}
+          onShoveResponse={action => { setFocusedRange(null); setSelectedRangeBlock(null); setShoveResponse(action); }}
+          onAct={actAt}
+          onFourBet={selectFourBet}
+          onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setFocusedRange(null); setSelectedRangeBlock(null); setPendingRaise("all_in"); }}
+          onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
+        />
         </Panel>
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
