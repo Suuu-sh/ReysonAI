@@ -1,5 +1,8 @@
 # Confirmed scope (2026-09-22)
 
+## Multiway UI placeholder (2026-09-23)
+The user will author multiway estimated ranges later. Allow call/fold seat selection and show all non-folded participants side by side, but display an explicit pending state for every participant whenever a caller creates a multiway path. Do not repurpose any of the heads-up persisted frequencies for that path. Folded seats disappear from the participant display; when a call is removed, the existing heads-up display can return.
+
 The user confirmed a single JSON estimated-range screen, with no API-view switch or JSON-download button. Use the persisted dataset directly, not an API-error fallback. Preserve the black/pink styling, selected-hand breakdown, and raise/call/fold order. Show non-GTO status and unspecified rake in metadata, not a separate warning banner.
 
 `preflop-ranges.json` is the persisted source of truth for all 15 response spots and 2,535 estimates. `opening-ranges.json` adds 5 RFI spots (UTG/HJ/CO/BTN/SB), 845 records, at 100BB and 2.5BB. Display persisted values and reasons exactly; do not generate frequencies at runtime or synthesize EV. UTG can be the opening Hero, but cannot respond to a prior opener. BB cannot open an unopened pot. SB RFI is simplified to raise-or-fold without limping. Keep historical SDK estimates separate from these datasets.

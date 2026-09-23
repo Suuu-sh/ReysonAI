@@ -75,14 +75,16 @@ function HandBreakdown({ title, hand, model, isOpening, isThreeBet, isFourBet, s
   </div>;
 }
 
-function ActionPath({ expanded, rangeType, opener, hero, spot, onOpenerChange, onHeroChange }) {
+function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHero, onOpenerChange, onHeroChange, onCall, onFold }) {
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
   const actionFor = (position, index) => {
     if (index < openerIndex) return "Fold";
     if (index === openerIndex) return rangeType === "four_bet" ? `Raise ${spot?.four_bet_size_bb ?? "—"}` : "Raise 2.5";
+    if (callers.includes(position)) return "Call";
     if (index < heroIndex) return "Fold";
+    if (index === heroIndex && foldedHero) return "Fold";
     if (index === heroIndex) return rangeType === "four_bet" ? `Raise ${spot?.three_bet_size_bb ?? "—"}` : rangeType === "three_bet" ? `Raise ${spot?.three_bet_size_bb ?? "—"}` : "Take action";
     return "—";
   };
@@ -92,14 +94,15 @@ function ActionPath({ expanded, rangeType, opener, hero, spot, onOpenerChange, o
       {positions.map((position, index) => {
         const canOpen = index < positions.length - 1;
         const canRespond = !opening && index > openerIndex;
-        const isActive = index === heroIndex;
+        const isActive = index === heroIndex && !foldedHero && !callers.includes(position);
         return <div className={`action-seat${isActive ? " active" : ""}`} key={position}>
           <div className="action-seat-heading"><strong>{position}</strong><span>{index === 4 ? "99.5" : index === 5 ? "99" : "100"}</span></div>
           {expanded ? <div className="action-seat-options">
             {index < openerIndex && <span className="action-seat-choice chosen">Fold</span>}
             {canOpen && <button type="button" className={index === openerIndex ? "chosen" : ""} onClick={() => onOpenerChange(position)}>Raise 2.5</button>}
-            {canRespond && index < heroIndex && <span className="action-seat-choice chosen">Fold</span>}
-            {canRespond && <button type="button" className={isActive ? "chosen" : ""} onClick={() => onHeroChange(position)}>{isActive ? actionFor(position, index) : "Take action"}</button>}
+            {canRespond && <button type="button" className={actionFor(position, index) === "Fold" ? "chosen" : ""} onClick={() => onFold(position)}>Fold</button>}
+            {canRespond && <button type="button" className={callers.includes(position) ? "chosen" : ""} onClick={() => onCall(position)}>Call</button>}
+            {canRespond && <button type="button" className={isActive && !foldedHero && !callers.includes(position) ? "chosen" : ""} onClick={() => onHeroChange(position)}>Take action</button>}
             {opening && index === openerIndex && <span className="action-seat-choice chosen">Hero</span>}
             {!canOpen && !canRespond && index > heroIndex && <span className="action-seat-choice muted">—</span>}
           </div> : <button type="button" className="action-seat-summary" disabled={index < openerIndex || index > heroIndex && !canRespond} onClick={() => index <= openerIndex ? onOpenerChange(position) : onHeroChange(position)}>{actionFor(position, index)}</button>}
@@ -119,6 +122,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [hero, setHero] = useState("BB");
   const [focusedRange, setFocusedRange] = useState(null);
   const [pathExpanded, setPathExpanded] = useState(false);
+  const [callers, setCallers] = useState([]);
+  const [foldedHero, setFoldedHero] = useState(false);
   // `hero` is the later seat selector: the 3-bettor when the opener acts again.
   const actingHero = isOpening || isThreeBet ? opener : hero;
   const stackBb = 100;
@@ -145,13 +150,32 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     if (!nextHeroes.includes(hero)) setHero(nextHeroes[0] ?? "");
     setFilter("all");
     setOpenerFilter("all");
+    setCallers([]);
+    setFoldedHero(false);
   }
 
   function changeHero(value) {
     setHero(value);
     setFilter("all");
     setFocusedRange(null);
+    setFoldedHero(false);
+    setCallers(previous => previous.filter(position => position !== value && positions.indexOf(position) > positions.indexOf(opener)));
   }
+
+  function callAt(position) {
+    setCallers(previous => [...new Set([...previous, position])]);
+    if (position === hero) setFoldedHero(true);
+    setFocusedRange(null);
+  }
+
+  function foldAt(position) {
+    setCallers(previous => previous.filter(item => item !== position));
+    if (position === hero) setFoldedHero(true);
+    setFocusedRange(null);
+  }
+
+  const multiwayParticipants = [opener, ...callers, ...(!foldedHero && !callers.includes(hero) ? [hero] : [])];
+  const showPendingRanges = isComparison && (callers.length > 0 || foldedHero);
 
   return <div className="shell">
     <Header activeSection="プリフロップ" onSectionChange={() => {}} />
@@ -159,7 +183,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       <Panel className="estimate-settings">
           <div className="estimate-settings-intro"><div><h2>推定レンジ</h2><small>6max Cash · 100BB · アンティなし</small></div><button type="button" className="path-toggle" aria-expanded={pathExpanded} aria-label={pathExpanded ? "アクション選択を閉じる" : "アクション選択を開く"} onClick={() => setPathExpanded(value => !value)}>{pathExpanded ? "選択を閉じる" : "アクションを選ぶ"}<span aria-hidden="true">{pathExpanded ? "−" : "+"}</span></button></div>
           <Field label="局面">
-            <select aria-label="局面" value={rangeType} onChange={e => { setRangeType(e.target.value); setFilter("all"); setFocusedRange(null); }}>
+            <select aria-label="局面" value={rangeType} onChange={e => { setRangeType(e.target.value); setFilter("all"); setFocusedRange(null); setCallers([]); setFoldedHero(false); }}>
               {rangeTypes.map(option => <option key={option.value} value={option.value} disabled={!option.available}>
                 {option.label}{option.available ? "" : "（データなし）"}
               </option>)}
@@ -179,14 +203,19 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
               </option>)}
             </select>
           </Field>
-          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} onOpenerChange={changeOpener} onHeroChange={changeHero} />
+          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} />
         </Panel>
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className="estimate-context">
-          <strong>{isOpening ? `${opener} Open · 2.5BB` : isFourBet ? `${opener} Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener} 4bet ${spot.four_bet_size_bb}BB → ${hero}（元の3bettor / Hero）の応答 · ${spot.hero_position_vs_opener}` : isThreeBet ? `${opener}（Hero）Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener}の応答 · ${spot.hero_position_vs_three_bettor}` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>
+          <strong>{isOpening ? `${opener} Open · 2.5BB` : isFourBet ? `${opener} Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener} 4bet ${spot.four_bet_size_bb}BB → ${hero}（元の3bettor / Hero）の応答 · ${spot.hero_position_vs_opener}` : isThreeBet ? `${opener}（Hero）Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener}の応答 · ${spot.hero_position_vs_three_bettor}` : showPendingRanges ? `${opener} Open 2.5BB${callers.map(position => ` → ${position} Call`).join("")}${foldedHero && !callers.includes(hero) ? ` → ${hero} Fold` : !callers.includes(hero) ? ` → ${hero} Action` : ""} · ${multiwayParticipants.length}人参加` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>
           <span>{isOpening ? "全5ポジション" : "全15局面"} / 各169ハンド · 推定データ・GTO計算なし</span>
         </div>
-        <div className={`results estimate-results${isComparison ? " comparison-results" : ""}${focusedRange ? " comparison-focused" : ""}`}>
+        {showPendingRanges ? <div className="multiway-ranges" aria-label="参加中のレンジ" style={{ "--participant-count": multiwayParticipants.length }}>
+          {positions.filter(position => multiwayParticipants.includes(position)).map(position => callers.length === 0 && position === opener ? <StrategyMatrix key={position} node={{ actingPosition: opener }} title={`${opener} · オープナーのオープンレンジ`} ariaLabel="オープナーのレンジ" aggregates={openerModel.aggregates} actions={openerModel.actions} selected={selected} filter={openerFilter} onSelect={setSelected} onFilterChange={setOpenerFilter} /> : <Panel key={position} className="multiway-range-panel" aria-label={`${position}のレンジ`}>
+            <SectionHeading title={`${position} · ${position === opener ? "オープナー" : position === hero && !foldedHero ? "アクション中" : "コール参加"}`} />
+            <StatusState title="推定レンジは準備中">この参加人数・アクション履歴に対応する保存済みレンジはまだありません。</StatusState>
+          </Panel>)}
+        </div> : <div className={`results estimate-results${isComparison ? " comparison-results" : ""}${focusedRange ? " comparison-focused" : ""}`}>
           {isComparison && focusedRange !== "hero" && <StrategyMatrix node={{ actingPosition: opener }}
             title={`${opener} · オープナーのオープンレンジ`} ariaLabel="オープナーのレンジ"
             aggregates={openerModel.aggregates} actions={openerModel.actions}
@@ -208,7 +237,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           {!isComparison && <HandBreakdown
             title={isOpening ? "選択ハンド" : `${actingHero} · Heroの選択ハンド`}
             hand={hand} model={model} isOpening={isOpening} isThreeBet={isThreeBet} isFourBet={isFourBet} spot={spot} position={actingHero} />}
-        </div>
+        </div>}
       </>}
       <AppFooter />
     </main>

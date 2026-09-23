@@ -1,5 +1,10 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Multiway-ready selection update (2026-09-23)
+- Added Call and Fold to response-seat choices. Browser check: BTN opener + SB call + BB acting displayed three participant columns; changing SB back to Fold removed SB and restored the two saved heads-up matrices.
+- Each participant in a multiway path displays a clear pending-data state. No existing heads-up frequencies are reused as multiway estimates; the user will supply those datasets later.
+- The non-GTO status remains visible. Final result: passed for the UI/placeholder scope; numeric multiway estimates remain intentionally pending.
+
 ## Unified selection panel update (2026-09-23)
 - Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable SolveaGTO panel rather than exact screenshot replication.
 - Merged spot/stack/size controls and six-seat action path into the same panel. The compact path remains visible; the top control expands seat choices. Removed the redundant Cash tile and used existing pink tokens for the active state.

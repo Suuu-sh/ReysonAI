@@ -17,6 +17,9 @@
 .action-seat-summary { margin-top: 2px; font-weight: 650; }
 .action-seat-summary:disabled { opacity: 1; color: var(--text-muted); }
 .action-path.expanded .action-seat { min-height: 116px; }
+.multiway-ranges { display: grid; grid-template-columns: repeat(var(--participant-count, 3), minmax(0, 1fr)); gap: 10px; min-width: 0; }
+.multiway-range-panel { min-height: 240px; }
+.multiway-range-panel .panel-heading { margin-bottom: 20px; }
 .estimate-settings h2 { margin-bottom: 4px; }
 .estimate-settings > .field { min-width: 0; }
 .estimate-context { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; padding: 10px 0; font-size: 12px; flex-shrink: 0; }
@@ -54,6 +57,7 @@
 @media (max-width: 900px) {
   .action-path { overflow-x: auto; }
   .action-path-seats { min-width: 780px; }
+  .multiway-ranges { grid-template-columns: 1fr; }
 }
 
 .matrix button.unreachable-hand { background: repeating-linear-gradient(135deg, transparent, transparent 4px, #ffffff08 4px, #ffffff08 6px); color: var(--text-muted); }
