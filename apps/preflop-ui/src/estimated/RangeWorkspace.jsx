@@ -162,8 +162,8 @@ export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, f
         {expanded ? <div className="action-seat-options">
           <button type="button" className={continuationAction === "fold" ? "chosen" : ""} onClick={() => onContinuationAction("fold")}>Fold</button>
           <button type="button" className={continuationAction === "call" ? "chosen" : ""} onClick={() => onContinuationAction("call")}>Call</button>
-          <button type="button" className={pendingRaise === "all_in" ? "chosen" : ""} onClick={onAllIn}>5bet All-in 100BB</button>
-        </div> : <span className="action-seat-summary">{pendingRaise === "all_in" ? "5bet All-in 100BB" : continuationAction ? continuationAction === "call" ? "Call" : "Fold" : "Take action"}</span>}
+          <button type="button" className={pendingRaise === "all_in" ? "chosen" : ""} onClick={onAllIn}>5bet 100BB</button>
+        </div> : <span className="action-seat-summary">{pendingRaise === "all_in" ? "5bet 100BB" : continuationAction ? continuationAction === "call" ? "Call" : "Fold" : "Take action"}</span>}
       </div>}
       {pendingActors.map(position => <div className="action-seat action-seat-continuation" key={`pending-${position}`}>
         <div className="action-seat-heading"><strong>{position}</strong><span>再応答</span></div>

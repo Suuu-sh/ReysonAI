@@ -1,5 +1,9 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## 5bet label wording (2026-09-23)
+- Changed the visible all-in choice and collapsed summary to `5bet 100BB`; the underlying choice remains the existing 100BB all-in branch.
+- Verification: all 50 UI tests passed, the production build passed, and all 4 Sites tests passed. The build still reports the existing large-bundle warning.
+
 ## Collapsible navigation sidebar (2026-09-23)
 - Replaced the top navigation header with a left sidebar containing the brand, grouped navigation, and explorer metadata. The desktop sidebar can collapse to an icon rail; the toggle and each icon-only destination have accessible labels.
 - On narrower screens the sidebar starts collapsed, and expansion overlays the workspace instead of squeezing it. Browser verification covers expanded/collapsed desktop states and the narrow layout.
