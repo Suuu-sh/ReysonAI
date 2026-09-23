@@ -5,6 +5,10 @@
 - Kept GTO terminology where it describes poker methodology or validation status. The project folder, Git remote and externally provisioned resources were not renamed or migrated.
 - Verification: 47 UI tests, production build, 4 Sites tests, 8 SDK tests, 5 Edge API tests, Rust workspace tests and API-job / solution-promotion E2E checks passed. The build still reports the existing large-bundle warning.
 
+## Remove redundant “Take action” control (2026-09-23)
+- Removed the generic action placeholder from the seat choices and pending summaries. The seat name remains the control for switching the response position; Fold, Call, and raise buttons remain the available actions.
+- Verification: all 51 UI tests passed, the production build passed, and all 4 Sites tests passed. The build still reports the existing large-bundle warning.
+
 ## 5bet label wording (2026-09-23)
 - Changed the visible all-in choice and collapsed summary to `5bet 100BB`; the underlying choice remains the existing 100BB all-in branch.
 - Verification: all 50 UI tests passed, the production build passed, and all 4 Sites tests passed. The build still reports the existing large-bundle warning.

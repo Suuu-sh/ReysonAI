@@ -27,7 +27,9 @@ test("expanded path keeps opening controls separate from post-open actions and s
   const props = { expanded: true, opener: "BTN", hero: "SB", callers: [], foldedHero: false, onOpenerChange() {}, onHeroChange() {}, onCall() {}, onFold() {} };
   const response = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "response" }));
   assert.equal((response.match(/>Raise 2\.5<\/button>/g) || []).length, 4); // UTG, HJ, CO, BTN only
-  assert.match(response, /SB[\s\S]*ここからオープン[\s\S]*Fold[\s\S]*Call[\s\S]*Take action/);
+  assert.match(response, /SB[\s\S]*ここからオープン[\s\S]*Fold[\s\S]*Call[\s\S]*3bet —BB/);
+  assert.doesNotMatch(response, /Take action/);
+  assert.match(response, /aria-label="BBを行動位置に選択" aria-pressed="false"/);
   assert.doesNotMatch(response, /SB[\s\S]*>Raise 2\.5<\/button>/);
   const sizedResponse = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "response", spot: { hands: [{ three_bet_size_bb: 11 }] } }));
   assert.match(sizedResponse, /3bet 11BB/);
@@ -45,6 +47,7 @@ test("expanded path keeps opening controls separate from post-open actions and s
   assert.doesNotMatch(allIn, /次のアクションノード/);
   const compactAllIn = renderToStaticMarkup(createElement(ActionPath, { ...props, expanded: false, rangeType: "four_bet", pendingRaise: "all_in", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.6 } }));
   assert.match(compactAllIn, /5bet 100BB/);
+  assert.doesNotMatch(compactAllIn, /Take action/);
   assert.doesNotMatch(compactAllIn, /5bet All-in 100BB/);
 });
 after(async () => { await server?.close(); });
@@ -141,7 +144,8 @@ test("estimated view starts with a compact six-seat action path", () => {
   assert.match(html, /button[^>]*class="path-reset"[^>]*>リセット<\/button>/);
   assert.match(html, /aria-label="アクション履歴"/);
   assert.match(html, /aria-label="アクション選択を開く"/);
-  assert.match(html, /BTN.*Raise 2\.5.*SB.*Fold.*BB.*Take action/s);
+  assert.match(html, /BTN.*Raise 2\.5.*SB.*Fold.*BB.*—/s);
+  assert.doesNotMatch(html, /Take action/);
   assert.doesNotMatch(html, /次のアクションノード|aria-label="局面"|aria-label="有効スタック"|aria-label="オープンサイズ"/);
   assert.match(html, /100BB · Open 2\.5BB/);
   assert.doesNotMatch(html, /表示アクション|すべてのアクション/);

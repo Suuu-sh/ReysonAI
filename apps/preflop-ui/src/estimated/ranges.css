@@ -14,6 +14,8 @@
 .action-seat.active { border-color: var(--accent); background: var(--surface-accent); box-shadow: inset 0 0 0 1px #fa65a130; }
 .action-seat.active .action-seat-heading { color: var(--accent-bright); }
 .action-seat-heading { display: flex; justify-content: space-between; gap: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.action-seat-heading .action-seat-position { padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; line-height: inherit; }
+.action-seat-heading .action-seat-position:hover:not(:disabled) { background: transparent; color: var(--accent-bright); }
 .action-seat-heading span { color: var(--text-subtle); font-weight: 500; }
 .action-seat-options { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; margin-top: 4px; }
 .action-seat-options button, .action-seat-choice, .action-seat-summary { display: block; width: 100%; padding: 3px 5px; border: 0; background: none; text-align: left; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

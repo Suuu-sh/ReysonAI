@@ -139,11 +139,11 @@ export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, f
   const actionFor = (position, index) => {
     if (index < openerIndex) return "Fold";
     if (index === openerIndex) return "Raise 2.5";
-    if (opening) return "Take action";
+    if (opening) return "—";
     if (callers.includes(position)) return "Call";
     if (index < heroIndex) return "Fold";
     if (index === heroIndex && foldedHero) return "Fold";
-    if (index === heroIndex) return rangeType === "four_bet" || rangeType === "three_bet" ? `3bet ${spot?.three_bet_size_bb ?? "—"}BB` : pendingRaise === "squeeze" ? `スクイーズ ${raiseToBb ?? "—"}BB` : "Take action";
+    if (index === heroIndex) return rangeType === "four_bet" || rangeType === "three_bet" ? `3bet ${spot?.three_bet_size_bb ?? "—"}BB` : pendingRaise === "squeeze" ? `スクイーズ ${raiseToBb ?? "—"}BB` : "—";
     return rangeType === "response" ? "—" : "Fold";
   };
 
@@ -152,9 +152,10 @@ export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, f
       {positions.map((position, index) => {
         const canOpen = index < positions.length - 1;
         const canRespond = index > openerIndex && (opening || rangeType === "response" || index === heroIndex);
+        const canSelectResponse = canRespond && (opening || rangeType === "response");
         const isActive = !pendingRaise && (opening ? index === openerIndex : rangeType === "response" && index === heroIndex) && !foldedHero && !callers.includes(position);
         return <div className={`action-seat${isActive ? " active" : ""}`} key={position}>
-          <div className="action-seat-heading"><strong>{position}</strong><span>{index === 4 ? "99.5" : index === 5 ? "99" : "100"}</span></div>
+          <div className="action-seat-heading">{canSelectResponse ? <button type="button" className="action-seat-position" aria-label={`${position}を行動位置に選択`} aria-pressed={index === heroIndex} onClick={() => onHeroChange(position)}>{position}</button> : <strong>{position}</strong>}<span>{index === 4 ? "99.5" : index === 5 ? "99" : "100"}</span></div>
           {expanded ? <div className="action-seat-options">
             {index < openerIndex && <span className="action-seat-choice chosen">Fold</span>}
             {canOpen && index <= openerIndex && <button type="button" className={index === openerIndex ? "chosen" : ""} onClick={() => onOpenerChange(position)}>Raise 2.5</button>}
@@ -162,12 +163,11 @@ export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, f
             {!opening && rangeType !== "response" && index > openerIndex && index !== heroIndex && <span className="action-seat-choice chosen">Fold</span>}
             {canRespond && rangeType === "response" && <button type="button" className={actionFor(position, index) === "Fold" ? "chosen" : ""} onClick={() => onFold(position)}>Fold</button>}
             {canRespond && rangeType === "response" && <button type="button" className={callers.includes(position) ? "chosen" : ""} onClick={() => onCall(position)}>Call</button>}
-            {canRespond && (opening || rangeType === "response") && <button type="button" className={isActive ? "chosen" : ""} onClick={() => onHeroChange(position)}>Take action</button>}
             {rangeType === "response" && index === heroIndex && !callers.includes(position) && !foldedHero && <button type="button" className={pendingRaise === "squeeze" ? "chosen" : ""} onClick={onThreeBet}>{callers.length ? `スクイーズ ${raiseToBb ?? "—"}BB` : `3bet ${threeBetSizeBb ?? "—"}BB`}</button>}
             {(rangeType === "three_bet" || rangeType === "four_bet") && index === heroIndex && <span className="action-seat-choice chosen">3bet {spot?.three_bet_size_bb ?? "—"}BB</span>}
             {opening && index === openerIndex && <span className="action-seat-choice chosen">Hero</span>}
             {!canOpen && !canRespond && index > heroIndex && <span className="action-seat-choice muted">—</span>}
-          </div> : <button type="button" className="action-seat-summary" disabled={index < openerIndex || index > heroIndex && !canRespond} onClick={() => index <= openerIndex ? onOpenerChange(position) : onHeroChange(position)}>{actionFor(position, index)}</button>}
+          </div> : <button type="button" className="action-seat-summary" aria-label={`${position}の行動位置を選択`} disabled={index < openerIndex || index > heroIndex && !canRespond} onClick={() => index <= openerIndex ? onOpenerChange(position) : onHeroChange(position)}>{actionFor(position, index)}</button>}
         </div>;
       })}
       {(rangeType === "three_bet" || rangeType === "four_bet") && <div className={`action-seat action-seat-continuation${rangeType === "three_bet" && !continuationAction ? " active" : ""}`}>
@@ -176,7 +176,7 @@ export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, f
           <button type="button" className={continuationAction === "fold" ? "chosen" : ""} onClick={() => onContinuationAction("fold")}>Fold</button>
           <button type="button" className={continuationAction === "call" ? "chosen" : ""} onClick={() => onContinuationAction("call")}>Call</button>
           <button type="button" onClick={onFourBet}>4bet {fourBetSizeBb ?? "—"}BB</button>
-        </div> : <span className="action-seat-summary">{rangeType === "four_bet" ? `4bet ${fourBetSizeBb ?? "—"}BB` : continuationAction ? continuationAction === "call" ? "Call" : "Fold" : "Take action"}</span>}
+        </div> : <span className="action-seat-summary">{rangeType === "four_bet" ? `4bet ${fourBetSizeBb ?? "—"}BB` : continuationAction ? continuationAction === "call" ? "Call" : "Fold" : "—"}</span>}
       </div>}
       {rangeType === "four_bet" && <div className={`action-seat action-seat-continuation${!continuationAction && !pendingRaise ? " active" : ""}`}>
         <div className="action-seat-heading"><strong>{hero}</strong><span>4betへの応答</span></div>
@@ -184,7 +184,7 @@ export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, f
           <button type="button" className={continuationAction === "fold" ? "chosen" : ""} onClick={() => onContinuationAction("fold")}>Fold</button>
           <button type="button" className={continuationAction === "call" ? "chosen" : ""} onClick={() => onContinuationAction("call")}>Call</button>
           <button type="button" className={pendingRaise === "all_in" ? "chosen" : ""} onClick={onAllIn}>5bet 100BB</button>
-        </div> : <span className="action-seat-summary">{pendingRaise === "all_in" ? "5bet 100BB" : continuationAction ? continuationAction === "call" ? "Call" : "Fold" : "Take action"}</span>}
+        </div> : <span className="action-seat-summary">{pendingRaise === "all_in" ? "5bet 100BB" : continuationAction ? continuationAction === "call" ? "Call" : "Fold" : "—"}</span>}
       </div>}
       {pendingActors.map(position => <div className="action-seat action-seat-continuation" key={`pending-${position}`}>
         <div className="action-seat-heading"><strong>{position}</strong><span>再応答</span></div>
