@@ -1,5 +1,4 @@
 import { spawn } from 'node:child_process';
-import { createServer } from 'node:http';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -113,18 +112,17 @@ export async function getEstimate(value, generate = false, generator = runCodex)
   return pending.get(key);
 }
 
-export function startServer(port = 4318) {
-  return createServer(async (req, res) => {
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    if (req.url !== '/local-estimates' || req.method !== 'POST') { res.writeHead(404).end('{}'); return; }
-    const origin = req.headers.origin;
-    if (!['127.0.0.1', 'localhost'].includes(req.headers.host?.split(':')[0]) ||
-        origin && !['http://127.0.0.1:5173', 'http://localhost:5173'].includes(origin)) { res.writeHead(403).end('{}'); return; }
-    try {
-      let body = ''; for await (const chunk of req) { body += chunk; if (body.length > 2048) throw new Error('リクエストが大きすぎます。'); }
-      const value = JSON.parse(body);
-      const result = await getEstimate(value, req.method === 'POST');
-      res.writeHead(200).end(JSON.stringify(result));
-    } catch (error) { res.writeHead(400).end(JSON.stringify({ error: error.message })); }
-  }).listen(port, '127.0.0.1');
+export async function localEstimateMiddleware(req, res, next) {
+  if (req.url !== '/local-estimates') { next(); return; }
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  if (req.method !== 'POST') { res.writeHead(405).end('{}'); return; }
+  const origin = req.headers.origin;
+  if (!['127.0.0.1', 'localhost'].includes(req.headers.host?.split(':')[0]) ||
+      origin && !['http://127.0.0.1:5173', 'http://localhost:5173'].includes(origin)) { res.writeHead(403).end('{}'); return; }
+  try {
+    let body = ''; for await (const chunk of req) { body += chunk; if (body.length > 2048) throw new Error('リクエストが大きすぎます。'); }
+    const value = JSON.parse(body);
+    const result = await getEstimate(value, true);
+    res.writeHead(200).end(JSON.stringify(result));
+  } catch (error) { res.writeHead(400).end(JSON.stringify({ error: error.message })); }
 }

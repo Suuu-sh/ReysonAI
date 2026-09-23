@@ -188,7 +188,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     try {
       const response = await fetch("/local-estimates", { method: "POST", headers: { "Content-Type": "application/json" }, body: requestKey });
       const result = await response.json();
-      if (!response.ok || !result.data) throw new Error(result.error || "ローカル生成サービスに接続できません。npm run dev:codex で起動してください。");
+      if (!response.ok || !result.data) throw new Error(result.error || "ローカル生成に接続できません。画面を再読み込みしてください。");
       setLocalEstimate(result.data); setLocalStatus(result.cached ? "cached" : "generated");
     } catch (error) { setLocalStatus("error"); setLocalError(error.message); }
   }
