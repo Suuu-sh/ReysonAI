@@ -142,4 +142,5 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 ## Action-block range focus (2026-09-24)
 - Selecting a position header focuses that decision's range matrix together with the immediately preceding block's matrix. Prior decisions are labeled historical; unsupported responses remain pending. Clicking the selected header again restores the full participant view. Choosing an action continues to update the path and returns to the full relevant participant ranges.
 - Browser verification at `http://127.0.0.1:5173/`: selected the BB position header and confirmed BB's open-response matrix plus SB's historical open-response matrix; the selected state is announced accessibly.
-- Verification: all 71 UI/data tests passed, `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite reports the existing large-chunk warning.
+- Regression verification at `http://localhost:5173/`: UTG Raise → HJ Call → CO Call → BTN Fold → SB Call with BB pending showed UTG, HJ, CO, SB and BB panels without a reload; the folded BTN panel stayed hidden. Selecting BB prioritizes SB and BB while the other current participants remain visible.
+- Verification: all 72 UI/data tests passed, `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite reports the existing large-chunk warning.
