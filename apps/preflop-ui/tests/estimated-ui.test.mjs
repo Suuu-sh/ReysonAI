@@ -33,6 +33,8 @@ test("estimated view starts with a compact six-seat action path", () => {
   assert.match(html, /aria-label="アクション履歴"/);
   assert.match(html, /aria-label="アクション選択を開く"/);
   assert.match(html, /BTN.*Raise 2\.5.*SB.*Fold.*BB.*Take action/s);
+  assert.match(html, /次のアクションノード.*BBが3betした場合/);
+  assert.match(html, /3bet後の応答.*BTN.*次に応答/s);
   assert.doesNotMatch(html, /label="オープナー"/);
 });
 

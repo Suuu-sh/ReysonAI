@@ -9,6 +9,7 @@ import { findFourBetSpot, fourBetMatrixModel, loadFourBetDataset } from "./four-
 import threeBetSource from "./three-bet-responses.json";
 import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "./three-bet-responses.js";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.js";
+import { buildNextActionNode } from "./action-path.js";
 import {
   availableHeroes,
   findSpot,
@@ -91,7 +92,7 @@ function HandBreakdown({ title, hand, model, isOpening, isThreeBet, isFourBet, s
   </div>;
 }
 
-function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHero, onOpenerChange, onHeroChange, onCall, onFold }) {
+function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHero, nextActionNode, onOpenerChange, onHeroChange, onCall, onFold }) {
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -125,6 +126,20 @@ function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHe
         </div>;
       })}
     </div>
+    {nextActionNode && <div className="action-path-next" aria-label="条件付きの次のアクション">
+      <div className="action-path-next-heading">
+        <small>次のアクションノード · {nextActionNode.branchLabel}</small>
+        <strong>{nextActionNode.title}</strong>
+      </div>
+      <div className="action-path-next-seats">
+        {nextActionNode.actors.map((position, index) => <div className={`action-path-next-seat${index === 0 ? " active" : ""}`} key={position}>
+          <strong>{position}</strong>
+          <span>{index === 0 ? "次に応答" : "続けて応答"}</span>
+          <small>{nextActionNode.actions.join(" · ")}</small>
+          {nextActionNode.multiway && <small className="action-path-pending">マルチウェイの推定レンジは準備中</small>}
+        </div>)}
+      </div>
+    </div>}
   </div>;
 }
 
@@ -163,6 +178,14 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     : dataset ? findSpot(dataset, opener, hero) : null;
   const model = useMemo(() => spot ? (isOpening ? openingMatrixModel(spot) : isFourBet ? fourBetMatrixModel(spot, findSpot(dataset, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot) : matrixModel(spot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
   const hand = spot?.hands.find(row => row.hand === selected);
+  const nextActionNode = buildNextActionNode({
+    rangeType,
+    opener,
+    hero,
+    callers,
+    currentHand: hand,
+    foldedHero,
+  });
 
   function changeOpener(value) {
     setOpener(value);
@@ -265,7 +288,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
               </option>)}
             </select>
           </Field>
-          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} />
+          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} nextActionNode={nextActionNode} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} />
         </Panel>
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className="estimate-context">

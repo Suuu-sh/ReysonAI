@@ -18,6 +18,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ## Durable UI feedback
 - On 2026-09-23 the user requested a future multiway-estimate path. The selector may record calls and render one column per active participant, removing folded seats. Multiway ranges will be authored later: until then show an explicit per-seat pending state, never reuse heads-up frequencies or synthesize values.
+- On 2026-09-23 the user requested that a BB action which reopens betting create the next action node. Show the next live actors in poker action order after a raise/3bet/4bet; make the branch conditional, and keep multiway follow-up ranges explicitly pending rather than borrowing heads-up frequencies.
 - On 2026-09-23 the user asked to combine the range settings and seat/action path into one selection surface. Keep it a compact, original SolveaGTO-style expandable panel rather than copying GTOWizard's separate cards verbatim.
 - The 2026-09-23 selection feedback uses a GTOWizard-like horizontal seat/action path: compact summary by default, expandable seat actions, and a highlighted acting seat. Preserve SolveaGTO's black/pink visual language and limit choices to persisted estimated-range spots; do not invent strategies.
 - Range-table action colors must keep `raise` and `call` visually distinct; avoid assigning both actions near-identical pink hues.

@@ -2,8 +2,13 @@
 
 ## Multiway-ready selection update (2026-09-23)
 - Added Call and Fold to response-seat choices. Browser check: BTN opener + SB call + BB acting displayed three participant columns; changing SB back to Fold removed SB and restored the two saved heads-up matrices.
-- Each participant in a multiway path displays a clear pending-data state. No existing heads-up frequencies are reused as multiway estimates; the user will supply those datasets later.
-- The non-GTO status remains visible. Final result: passed for the UI/placeholder scope; numeric multiway estimates remain intentionally pending.
+- Each participant starts with a clear pending-data state. On supported paths, a separate user-triggered local AI estimate may be cached outside the persisted datasets; it is unverified and is not a solver/GTO result. No heads-up frequencies are reused for multiway estimates.
+- The non-GTO status remains visible. Unsupported paths stay pending; generated local data never overwrites saved heads-up estimates.
+
+## Conditional next action after BB (2026-09-23)
+- A BB 3bet now creates a conditional next-action node. The node wraps action to the first live seat after BB (the opener), then shows prior callers in order; an opener 4bet similarly creates a response node for the original 3bettor.
+- Browser check at `http://localhost:5173/`: BTN open → SB call → BB acting showed the conditional BTN → SB response sequence. Each multiway seat remained explicitly pending. Selecting BB Call removed the follow-up node; restoring BB to Take action restored it.
+- UI tests: 44 passed. Production build and Sites tests passed (4 Sites tests). Existing large-bundle warning remains.
 
 ## Unified selection panel update (2026-09-23)
 - Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable SolveaGTO panel rather than exact screenshot replication.
