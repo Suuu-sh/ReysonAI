@@ -12,6 +12,10 @@ export default defineConfig({
       host: "0.0.0.0",
       allowedHosts: ["terminal.local"],
       proxy: {
+        "/local-estimates": {
+          target: "http://127.0.0.1:4318",
+          changeOrigin: true,
+        },
         "/api": {
           target: "http://127.0.0.1:3000",
           changeOrigin: true,

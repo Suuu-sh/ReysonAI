@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { AppFooter, Header } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { ActionBars, Field, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.jsx";
@@ -124,6 +124,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [pathExpanded, setPathExpanded] = useState(false);
   const [callers, setCallers] = useState([]);
   const [foldedHero, setFoldedHero] = useState(false);
+  const [localEstimate, setLocalEstimate] = useState(null);
+  const [localStatus, setLocalStatus] = useState("idle");
+  const [localError, setLocalError] = useState("");
+  const [localFilters, setLocalFilters] = useState({});
   // `hero` is the later seat selector: the 3-bettor when the opener acts again.
   const actingHero = isOpening || isThreeBet ? opener : hero;
   const stackBb = 100;
@@ -176,6 +180,22 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
 
   const multiwayParticipants = [opener, ...callers, ...(!foldedHero && !callers.includes(hero) ? [hero] : [])];
   const showPendingRanges = isComparison && (callers.length > 0 || foldedHero);
+  const canGenerate = isComparison && !foldedHero && callers.length > 0 && callers.every(position => positions.indexOf(position) < positions.indexOf(hero));
+  const requestKey = JSON.stringify({ opener, hero, callers: [...callers].sort((a, b) => positions.indexOf(a) - positions.indexOf(b)) });
+  useEffect(() => { setLocalEstimate(null); setLocalStatus("idle"); setLocalError(""); setLocalFilters({}); }, [requestKey, rangeType, foldedHero]);
+  async function generateLocalEstimate() {
+    setLocalStatus("loading"); setLocalError("");
+    try {
+      const response = await fetch("/local-estimates", { method: "POST", headers: { "Content-Type": "application/json" }, body: requestKey });
+      const result = await response.json();
+      if (!response.ok || !result.data) throw new Error(result.error || "ローカル生成サービスに接続できません。npm run dev:codex で起動してください。");
+      setLocalEstimate(result.data); setLocalStatus(result.cached ? "cached" : "generated");
+    } catch (error) { setLocalStatus("error"); setLocalError(error.message); }
+  }
+  const localMatrix = range => ({ actions: ["raise", "call", "fold"], aggregates: new Map(range.rows.map(([hand, fold, call, raise]) => [hand, {
+    hand, comboCount: hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12,
+    actions: { fold: fold / 100, call: call / 100, raise: raise / 100 },
+  }])) });
 
   return <div className="shell">
     <Header activeSection="プリフロップ" onSectionChange={() => {}} />
@@ -210,12 +230,16 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           <strong>{isOpening ? `${opener} Open · 2.5BB` : isFourBet ? `${opener} Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener} 4bet ${spot.four_bet_size_bb}BB → ${hero}（元の3bettor / Hero）の応答 · ${spot.hero_position_vs_opener}` : isThreeBet ? `${opener}（Hero）Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener}の応答 · ${spot.hero_position_vs_three_bettor}` : showPendingRanges ? `${opener} Open 2.5BB${callers.map(position => ` → ${position} Call`).join("")}${foldedHero && !callers.includes(hero) ? ` → ${hero} Fold` : !callers.includes(hero) ? ` → ${hero} Action` : ""} · ${multiwayParticipants.length}人参加` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>
           <span>{isOpening ? "全5ポジション" : "全15局面"} / 各169ハンド · 推定データ・GTO計算なし</span>
         </div>
-        {showPendingRanges ? <div className="multiway-ranges" aria-label="参加中のレンジ" style={{ "--participant-count": multiwayParticipants.length }}>
-          {positions.filter(position => multiwayParticipants.includes(position)).map(position => callers.length === 0 && position === opener ? <StrategyMatrix key={position} node={{ actingPosition: opener }} title={`${opener} · オープナーのオープンレンジ`} ariaLabel="オープナーのレンジ" aggregates={openerModel.aggregates} actions={openerModel.actions} selected={selected} filter={openerFilter} onSelect={setSelected} onFilterChange={setOpenerFilter} /> : <Panel key={position} className="multiway-range-panel" aria-label={`${position}のレンジ`}>
-            <SectionHeading title={`${position} · ${position === opener ? "オープナー" : position === hero && !foldedHero ? "アクション中" : "コール参加"}`} />
-            <StatusState title="推定レンジは準備中">この参加人数・アクション履歴に対応する保存済みレンジはまだありません。</StatusState>
+        {showPendingRanges ? <>
+          <div className="local-estimate-control"><small>マルチウェイは未検証のAI推定です。オープナーは既存RFI、コーラーは過去のコール選択頻度、Heroは現在の応答頻度を表示。既存データは変更しません。</small>{canGenerate && <button type="button" disabled={localStatus === "loading"} onClick={generateLocalEstimate}>{localStatus === "loading" ? "Codexで生成中…" : localEstimate ? "保存済みレンジを表示中" : "Codexで推定レンジを生成"}</button>}</div>
+          {localError && <StatusState tone="error">{localError}</StatusState>}
+          <div className="multiway-ranges" aria-label="参加中のレンジ" style={{ "--participant-count": multiwayParticipants.length }}>
+          {positions.filter(position => multiwayParticipants.includes(position)).map(position => position === opener ? <StrategyMatrix key={position} node={{ actingPosition: opener }} title={`${opener} · 既存オープンレンジ`} ariaLabel="オープナーのレンジ" aggregates={openerModel.aggregates} actions={openerModel.actions} selected={selected} filter={openerFilter} onSelect={setSelected} onFilterChange={setOpenerFilter} /> : localEstimate?.ranges.find(range => range.position === position) ? (() => { const range = localEstimate.ranges.find(item => item.position === position); const matrix = localMatrix(range); return <StrategyMatrix key={position} node={{ actingPosition: position }} title={`${position} · ${position === hero ? "現在の応答" : "コール選択"}（AI推定・レイズ先 ${range.raise_to_bb}BB）`} ariaLabel={`${position}のレンジ`} aggregates={matrix.aggregates} actions={matrix.actions} selected={selected} filter={localFilters[position] ?? (position === hero ? "all" : "call")} onSelect={setSelected} onFilterChange={value => setLocalFilters(previous => ({ ...previous, [position]: value }))} />; })() : <Panel key={position} className="multiway-range-panel" aria-label={`${position}のレンジ`}>
+            <SectionHeading title={`${position} · ${position === hero && !foldedHero ? "アクション中" : "コール参加"}`} />
+            <StatusState title="推定レンジは準備中">この履歴のレンジはまだ保存されていません。</StatusState>
           </Panel>)}
-        </div> : <div className={`results estimate-results${isComparison ? " comparison-results" : ""}${focusedRange ? " comparison-focused" : ""}`}>
+          </div>
+        </> : <div className={`results estimate-results${isComparison ? " comparison-results" : ""}${focusedRange ? " comparison-focused" : ""}`}>
           {isComparison && focusedRange !== "hero" && <StrategyMatrix node={{ actingPosition: opener }}
             title={`${opener} · オープナーのオープンレンジ`} ariaLabel="オープナーのレンジ"
             aggregates={openerModel.aggregates} actions={openerModel.actions}
