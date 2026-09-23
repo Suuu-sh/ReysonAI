@@ -9,6 +9,10 @@
 - Removed the generic action placeholder from the seat choices and pending summaries. The seat name remains the control for switching the response position; Fold, Call, and raise buttons remain the available actions.
 - Verification: all 51 UI tests passed, the production build passed, and all 4 Sites tests passed. The build still reports the existing large-bundle warning.
 
+## Remove unreachable-hand cell label (2026-09-23)
+- Removed the repeated “対象外” text from unreachable matrix cells while keeping their distinct visual treatment and an explanatory tooltip; the selected-hand detail still explains why no recommendation is shown.
+- Verification: all 51 UI tests passed, the production build passed, and all 4 Sites tests passed. The build still reports the existing large-bundle warning.
+
 ## 5bet label wording (2026-09-23)
 - Changed the visible all-in choice and collapsed summary to `5bet 100BB`; the underlying choice remains the existing 100BB all-in branch.
 - Verification: all 50 UI tests passed, the production build passed, and all 4 Sites tests passed. The build still reports the existing large-bundle warning.

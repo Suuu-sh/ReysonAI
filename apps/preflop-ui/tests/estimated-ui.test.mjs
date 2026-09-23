@@ -57,7 +57,10 @@ test("4bet view shows original 3bettor, saved sizes and 5bet all-in; old view ke
   assert.match(html, /BB（元の3bettor \/ Hero）の応答/);
   assert.match(html, /BB 3bet 12BB/);
   assert.match(html, /BTN 4bet 26.5BB/);
-  assert.match(html, /対象外/);
+  assert.doesNotMatch(html, /対象外/);
+  assert.match(html, /unreachable-hand/);
+  assert.match(html, /title="[^\"]*既存3bet頻度0%（推奨なし）"/);
+  assert.doesNotMatch(html, /<small>対象外<\/small>/);
   assert.match(html, /アンティなし/);
   assert.equal((html.match(/aria-pressed=/g) || []).length, 338);
   assert.match(html, /aria-label="参加中のレンジ"/);

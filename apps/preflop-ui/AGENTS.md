@@ -39,6 +39,6 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - All four estimated datasets use 6-max, 100BB, 2.5BB open and ante_bb=0. Existing frequencies are unchanged when normalizing ante metadata.
 - The saved JSON sizes take precedence over the different Solver sizing multipliers, as confirmed by the user. The only 5bet branch is existing `all_in`, total 100BB; do not invent a non-all-in 5bet size.
 - Keep that action's UI label concise as `5bet 100BB`; do not include “All-in” in the displayed wording.
-- Show the original 3bettor as Hero, distinguish it from the opener acting in the 3bet-response view, and keep unreachable 3bet=0 hands visibly non-recommendations.
+- Show the original 3bettor as Hero, distinguish it from the opener acting in the 3bet-response view, and keep unreachable 3bet=0 hands visibly non-recommendations without an “対象外” text label inside each matrix cell. Preserve the patterned cell style.
 - Missing or malformed four-bet JSON must render an error, not a mock or another strategy. Keep the spot selector usable to recover.
 - Run all UI tests (`node --test tests/*.test.mjs`), build and Sites tests; verify the browser and record results in the repository-root design-qa.md.

@@ -14,14 +14,13 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
               <button
                 key={hand}
                 aria-pressed={selected === hand}
-                aria-label={hand}
+                aria-label={aggregate.unreachable ? `${hand}、既存3bet頻度0%、推奨なし` : hand}
                 className={`${selected === hand ? "picked" : ""}${aggregate.unreachable ? " unreachable-hand" : ""}`}
-                title={aggregate.unreachable ? `${hand}：対象外（既存3bet頻度0%）` : undefined}
+                title={aggregate.unreachable ? `${hand}：既存3bet頻度0%（推奨なし）` : undefined}
                 onClick={() => onSelect(hand)}
                 disabled={!aggregate.comboCount}
               >
                 <strong>{hand}</strong>
-                {aggregate.unreachable && <small>対象外</small>}
                 {!aggregate.unreachable && <div className="cell-mix" aria-hidden="true">
                   {actions.map(action => <span key={action} style={{ width: pct(aggregate.actions[action] ?? 0), background: color(action) }} />)}
                 </div>}
