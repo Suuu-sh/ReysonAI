@@ -32,8 +32,7 @@ export function validateThreeBetDataset(data, responses, openings) {
           !values.every(n => Number.isFinite(n) && n >= 0 && n <= 100) ||
           Math.abs(values.reduce((a, b) => a + b, 0) - 100) > 1e-6 ||
           row.four_bet_size_bb !== (row.four_bet > 0 ? spot.four_bet_size_bb : null) ||
-          typeof row.reason !== "string" || !row.reason.trim() ||
-          (open.open === 0 && (row.fold !== 100 || !row.reason.includes("対象外")))) {
+          (open.open === 0 && row.fold !== 100)) {
         throw new Error(`3bet応答ハンドが不正です: ${spot.id} / ${row.hand}`);
       }
     }

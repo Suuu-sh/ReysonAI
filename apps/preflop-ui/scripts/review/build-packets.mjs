@@ -70,11 +70,13 @@ const wanted = new Set(process.argv.slice(2));
 let count = 0;
 for (const [type, { file, actions }] of Object.entries(TYPES)) {
   if (!existsSync(new URL(`src/estimated/${file}.json`, root))) continue;
-  for (const spot of load(file).spots) {
-    if (wanted.size && !wanted.has(spot.id)) continue;
-    const random = seededRandom(seedFor(`review:${spot.id}`));
-    const reasonsPath = new URL(`src/estimated/reasons/${spot.id}.json`, root);
+  for (const saved of load(file).spots) {
+    if (wanted.size && !wanted.has(saved.id)) continue;
+    const random = seededRandom(seedFor(`review:${saved.id}`));
+    const reasonsPath = new URL(`src/estimated/reasons/${saved.id}.json`, root);
     const detailed = existsSync(reasonsPath) ? JSON.parse(readFileSync(reasonsPath)) : null;
+    // Reasons live in reasons/<spot>.json; only the 5bet dataset still carries them inline.
+    const spot = { ...saved, hands: saved.hands.map(row => ({ ...row, reason: detailed?.hands[row.hand]?.reason ?? row.reason })) };
     const { hands, ...spotMeta } = spot;
     const context = { spot_id: spot.id, type, history: history(type, spot), legal_actions: actions, sizes: spotMeta,
       spot_facts: detailed?.spot_facts ?? null, rubric: RUBRIC,
@@ -90,7 +92,7 @@ for (const [type, { file, actions }] of Object.entries(TYPES)) {
     const rows = hands.map(row => {
       const canary = injected.find(item => item.hand === row.hand);
       return { hand: row.hand, mix: canary ? canary.injected : mixOf(row, actions), unreachable: isUnreachable(row),
-        reason: detailed?.hands[row.hand]?.reason ?? row.reason, facts: detailed?.hands[row.hand]?.facts ?? null };
+        reason: row.reason, facts: detailed?.hands[row.hand]?.facts ?? null };
     });
     writeFileSync(new URL(`${spot.id}.critique.json`, packetDir), JSON.stringify({
       ...context, mode: "critique",

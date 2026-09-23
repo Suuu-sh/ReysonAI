@@ -31,7 +31,6 @@ export function validateDataset(data) {
       const frequencies = [row.fold, row.call, row.three_bet];
       if (!hands.includes(row.hand) || !frequencies.every(n => Number.isFinite(n) && n >= 0 && n <= 100) ||
           Math.abs(frequencies.reduce((a, b) => a + b, 0) - 100) > 1e-6 ||
-          typeof row.reason !== "string" || !row.reason.trim() ||
           (row.three_bet === 0 ? row.three_bet_size_bb !== null :
             row.three_bet_size_bb !== spot.three_bet_size_bb)) {
         throw new Error(`ハンドデータが不正です: ${spot.id} / ${row.hand}`);

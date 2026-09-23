@@ -54,7 +54,6 @@ test("matrix displays exactly persisted conditional frequencies, excluding unrea
       if (a.unreachable) {
         unreachable++;
         assert.equal(r.fold, 100);
-        assert.match(r.reason, /対象外/);
         assert.deepEqual(a.actions, {});
       } else {
         assert.deepEqual(a.actions, { all_in: r.all_in / 100, call: r.call / 100, fold: r.fold / 100 });
@@ -67,7 +66,7 @@ test("matrix displays exactly persisted conditional frequencies, excluding unrea
   assert.equal(findFourBetSpot(data, "BTN", "BB").four_bet_size_bb, 26);
 });
 
-test("every spot rejects malformed IDs, sizes, hand sets, frequencies, reasons and unreachable continuation", () => {
+test("every spot rejects malformed IDs, sizes, hand sets, frequencies, extra keys and unreachable continuation", () => {
   const mutations = [
     s => { s.id += "bad"; }, s => { s.hero = s.opener; }, s => { s.three_bettor = s.opener; },
     s => { s.source_response_id = "bad"; }, s => { s.source_three_bet_response_id = "bad"; },

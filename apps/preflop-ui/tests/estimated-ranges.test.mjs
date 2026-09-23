@@ -31,10 +31,9 @@ test("legal position selectors cover exactly 15 ordered matchups", () => {
   assert.deepEqual(availableHeroes("unknown"), []);
   assert.throws(() => findSpot(data, "BTN", "UTG"));
 });
-test("AKo BB vs BTN uses the new frequency, unrestricted size and reason", () => {
+test("AKo BB vs BTN uses the new frequency and unrestricted size", () => {
   const row = findSpot(data, "BTN", "BB").hands.find(h => h.hand === "AKo");
   assert.deepEqual([row.fold, row.call, row.three_bet, row.three_bet_size_bb], [0, 25, 75, 12]);
-  assert.match(row.reason, /BTN/);
 });
 test("invalid JSON fails closed rather than substituting strategies", () => {
   for (const mutate of [
@@ -42,7 +41,6 @@ test("invalid JSON fails closed rather than substituting strategies", () => {
     d => d.spots[0].hands.pop(),
     d => { d.spots[0].hands[0].fold = 101; },
     d => { d.spots[0].hands[0].three_bet_size_bb = null; },
-    d => { d.spots[0].hands[0].reason = ""; },
     d => { d.spots[0].hands[1] = d.spots[0].hands[0]; },
   ]) {
     const invalid = structuredClone(data);

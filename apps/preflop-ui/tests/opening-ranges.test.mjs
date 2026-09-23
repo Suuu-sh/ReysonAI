@@ -25,12 +25,11 @@ test("five positions include all 845 canonical RFI records", () => {
     assert.equal(findOpeningSpot(source, spot.hero), spot);
     assert.deepEqual(new Set(spot.hands.map(row => row.hand)), new Set(hands));
     for (const row of spot.hands) {
-      assert.deepEqual(Object.keys(row), ["hand", "open", "fold", "open_size_bb", "reason"]);
+      assert.deepEqual(Object.keys(row), ["hand", "open", "fold", "open_size_bb"]);
       assert.equal(row.open + row.fold, 100);
       assert.ok(row.open >= 0 && row.open <= 100);
       assert.ok(row.fold >= 0 && row.fold <= 100);
       assert.equal(row.open_size_bb, row.open > 0 ? 2.5 : null);
-      assert.ok(row.reason.includes(spot.hero) || row.reason.length > 20);
     }
   }
   assert.throws(() => findOpeningSpot(source, "BB"));
@@ -67,7 +66,6 @@ test("opening dataset validation rejects malformed records and unsupported condi
     d => { d.spots[0].hands[0].fold = 1; },
     d => { d.spots[0].hands[0].open = NaN; },
     d => { d.spots[0].hands[0].open_size_bb = null; },
-    d => { d.spots[0].hands[0].reason = ""; },
     d => { d.spots[0].hands[1] = d.spots[0].hands[0]; },
     d => { d.spots[0].hands[0].hand = "KAo"; },
     d => { d.metadata.open_size_bb = 3; },

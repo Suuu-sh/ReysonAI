@@ -37,15 +37,13 @@ export function validateFourBetDataset(data, responses, previous, openings) {
       const entry = source.hands.find(r => r.hand === row?.hand);
       if (!row || !entry || !hands.includes(row.hand)) fail(`ハンド: ${spot.id}`);
       const frequencies = [row.fold, row.call, row.all_in];
-      const keys = ["hand", "fold", "call", "all_in", "all_in_size_bb", "reason"];
+      const keys = ["hand", "fold", "call", "all_in", "all_in_size_bb"];
       if (Object.keys(row).length !== keys.length || !keys.every(k => Object.hasOwn(row, k)) ||
           !frequencies.every(n => Number.isFinite(n) && n >= 0 && n <= 100) ||
           Math.abs(frequencies.reduce((a, b) => a + b, 0) - 100) > 1e-6 ||
           row.all_in_size_bb !== (row.all_in > 0 ? 100 : null) ||
           (entry.three_bet > 0 && entry.three_bet_size_bb !== spot.three_bet_size_bb) ||
-          typeof row.reason !== "string" || !row.reason.trim() ||
-          (entry.three_bet === 0 && (row.fold !== 100 || row.call !== 0 || row.all_in !== 0 || !row.reason.includes("対象外"))) ||
-          (entry.three_bet > 0 && row.reason.includes("対象外"))) fail(`${spot.id} / ${row.hand}`);
+          (entry.three_bet === 0 && (row.fold !== 100 || row.call !== 0 || row.all_in !== 0))) fail(`${spot.id} / ${row.hand}`);
     }
   }
   return data;

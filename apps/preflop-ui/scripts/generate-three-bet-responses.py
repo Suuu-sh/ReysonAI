@@ -308,21 +308,8 @@ def main():
             call, four = PROFILES[hero, bettor][hand]
             if opening_by_hero[hero][hand] == 0:
                 call, four = 0, 0
-                reason = f'{hero}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。'
-            else:
-                if four >= 50:
-                    explanation = '強さを活かして4betを中心に組み立てます'
-                elif call >= 50:
-                    explanation = '継続できる強さやプレイアビリティを評価し、コールを中心にします'
-                elif four > 0 and hand.startswith('A'):
-                    explanation = 'Aブロッカーを活かす4betを混ぜ、弱い部分ではフォールドします'
-                elif call+four == 0:
-                    explanation = '相手の強いレンジに対して継続が難しいと見積もり、フォールドします'
-                else:
-                    explanation = '境界的なハンドとして、限定的な継続とフォールドを配分します'
-                reason = f'{hero}からオープン後、{bettor}の{size}BB 3betに対する{"IP" if ip else "OOP"}の推定。{explanation}。'
             rows.append({'hand': hand, 'fold': 100-call-four, 'call': call, 'four_bet': four,
-                         'four_bet_size_bb': four_size if four else None, 'reason': reason})
+                         'four_bet_size_bb': four_size if four else None})
         result['spots'].append({'id': f'{hero}_vs_{bettor}_three_bet', 'hero': hero, 'opener': hero,
                                 'three_bettor': bettor, 'source_response_id': before['id'],
                                 'open_size_bb': 2.5, 'three_bet_size_bb': size, 'four_bet_size_bb': four_size,

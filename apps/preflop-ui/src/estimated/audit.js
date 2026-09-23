@@ -109,9 +109,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     const reachable = hand => openRows.get(hand).open > 0;
     const label = `${spot.opener} vs ${spot.three_bettor} 3bet`;
     for (const row of spot.hands) {
-      const unreachableReason = row.reason.includes("対象外");
-      if (!reachable(row.hand) && !unreachableReason) add("range-flow", "error", label, `${row.hand} はオープン0%なのに対象外になっていない`);
-      if (reachable(row.hand) && unreachableReason) add("range-flow", "error", label, `${row.hand} はオープン${openRows.get(row.hand).open}%なのに対象外扱い`);
+      if (!reachable(row.hand) && row.fold !== 100) add("range-flow", "error", label, `${row.hand} はオープン0%なのにフォールド100%になっていない`);
     }
     checkStrengthOrder(add, label, spot, reachable);
     const bT = blind[spot.three_bettor] ?? 0;
@@ -132,9 +130,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     const reachable = hand => source.get(hand).three_bet > 0;
     const label = `${spot.hero} vs ${spot.opener} 4bet`;
     for (const row of spot.hands) {
-      const unreachableReason = row.reason.includes("対象外");
-      if (!reachable(row.hand) && !unreachableReason) add("range-flow", "error", label, `${row.hand} は3bet 0%なのに対象外になっていない`);
-      if (reachable(row.hand) && unreachableReason) add("range-flow", "error", label, `${row.hand} は3bet ${source.get(row.hand).three_bet}%なのに対象外扱い`);
+      if (!reachable(row.hand) && row.fold !== 100) add("range-flow", "error", label, `${row.hand} は3bet 0%なのにフォールド100%になっていない`);
     }
     checkStrengthOrder(add, label, spot, reachable);
     const bT = blind[spot.hero] ?? 0;

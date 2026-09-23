@@ -74,20 +74,6 @@ P['SB'] = profile('''
 ''', P['BTN'])
 
 
-def reason(hand, position, frequency):
-    if frequency == 0:
-        return f'{position}では強さやプレイアビリティが十分でないと見積もり、フォールドします。'
-    kind = ('ポケットペア' if len(hand) == 2 else
-            'Aブロッカーとフラッシュの可能性を持つスーテッドA' if hand[0] == 'A' and hand[-1] == 's' else
-            'ブロードウェイ' if hand[1] in 'KQJT' else
-            'フラッシュの可能性を持つスーテッドハンド' if hand[-1] == 's' else 'オフスートハンド')
-    context = {'UTG': '後ろに5人いるため参加を厳選', 'HJ': '後ろに4人いることを考慮',
-               'CO': '早い位置より広く参加', 'BTN': 'ポストフロップの位置の優位性を活用',
-               'SB': '相手はBBだけですがOOPになるため、リンプを省いたraise-or-foldに簡略化'}[position]
-    action = '2.5BBでオープンします' if frequency == 100 else f'オープン{frequency}%、フォールド{100-frequency}%と推定します'
-    return f'{kind}。{context}し、{action}。'
-
-
 def main():
     data = {
         'metadata': {
@@ -111,8 +97,7 @@ def main():
     }
     for position, frequencies in P.items():
         rows = [{'hand': h, 'open': frequencies[h], 'fold': 100-frequencies[h],
-                 'open_size_bb': 2.5 if frequencies[h] else None,
-                 'reason': reason(h, position, frequencies[h])} for h in HANDS]
+                 'open_size_bb': 2.5 if frequencies[h] else None} for h in HANDS]
         data['spots'].append({'id': f'{position}_open', 'hero': position, 'open_size_bb': 2.5,
                               'effective_stack_bb': 100, 'hands': rows})
         weighted = sum((6 if len(h) == 2 else 4 if h.endswith('s') else 12)*frequencies[h] for h in HANDS)/1326

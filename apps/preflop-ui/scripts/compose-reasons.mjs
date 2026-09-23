@@ -14,6 +14,13 @@ const datasets = {
 };
 const f1 = value => Number(value).toFixed(1);
 
+// Unreachable rows are fold=100 placeholders; the wording matches the historical saved text.
+function unreachableReason(type, spot) {
+  if (type === "three_bet") return `${spot.opener}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。`;
+  if (type === "four_bet") return `${spot.hero}の対${spot.opener}の既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`;
+  throw new Error(`unreachable row in ${type}: ${spot.id}`);
+}
+
 const ACTIONS = {
   open: [["open", "オープン"], ["fold", "フォールド"]],
   response: [["three_bet", "3bet"], ["call", "コール"], ["fold", "フォールド"]],
@@ -170,7 +177,7 @@ for (const [type, dataset] of Object.entries(datasets)) {
       const unreachable = Object.entries(handFacts).every(([key, value]) => key === "hand" || value === null);
       const { hand, ...values } = handFacts;
       hands[row.hand] = unreachable
-        ? { reason: row.reason, facts: values }
+        ? { reason: unreachableReason(type, spot), facts: values }
         : { reason: compose(type, row, handFacts, facts.spot), facts: values };
     }
     writeFileSync(new URL(`../src/estimated/reasons/${spot.id}.json`, import.meta.url), JSON.stringify({

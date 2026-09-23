@@ -32,14 +32,13 @@ test("2,535 records normalize to 100 and all 4bet sizes are legal raise-to amoun
     assert.ok(spot.four_bet_size_bb >= 2 * spot.three_bet_size_bb - spot.open_size_bb);
     assert.ok(spot.four_bet_size_bb <= 100);
     for (const row of spot.hands) {
-      assert.deepEqual(Object.keys(row), ["hand", "fold", "call", "four_bet", "four_bet_size_bb", "reason"]);
+      assert.deepEqual(Object.keys(row), ["hand", "fold", "call", "four_bet", "four_bet_size_bb"]);
       assert.equal(row.fold + row.call + row.four_bet, 100);
       assert.ok([row.fold,row.call,row.four_bet].every(n => Number.isFinite(n) && n >= 0 && n <= 100));
       assert.equal(row.four_bet_size_bb, row.four_bet > 0 ? spot.four_bet_size_bb : null);
       const opened = openings.spots.find(s => s.hero === spot.hero).hands.find(h => h.hand === row.hand);
       if (opened.open === 0) {
         assert.equal(row.fold, 100);
-        assert.match(row.reason, /対象外/);
       }
     }
   }
@@ -63,7 +62,6 @@ test("matrix values and 4bet action labels match the persisted JSON without synt
   assert.equal(btn.hero_position_vs_three_bettor, "IP");
   assert.deepEqual(btn.hands.find(h => h.hand === "AKo"), {
     hand: "AKo", fold: 0, call: 25, four_bet: 75, four_bet_size_bb: 26,
-    reason: btn.hands.find(h => h.hand === "AKo").reason,
   });
 });
 
@@ -83,7 +81,6 @@ test("malformed output, mismatched references, and unreachable-hand continuation
     d => { d.spots[0].hands[0].call = NaN; },
     d => { d.spots[0].hands[0].fold = 1; },
     d => { d.spots[0].hands[0].four_bet_size_bb = null; },
-    d => { d.spots[0].hands[0].reason = ""; },
     d => { const row = d.spots[0].hands.find(h => h.hand === "72o"); row.fold = 95; row.call = 5; },
   ]) {
     const invalid = structuredClone(data);

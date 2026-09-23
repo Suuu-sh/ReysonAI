@@ -70,15 +70,15 @@ function HandHeader({ position, hand, comboCount, onClose }) {
 }
 
 function AiReason({ hand, spotId, inlineFacts }) {
-  const { data, loading } = useDetailedReasons(spotId);
+  const { data, loading, error } = useDetailedReasons(spotId);
   const detailed = data?.hands[hand.hand];
   const facts = detailed
     ? data.fact_labels.map(({ key, label, scope }) => ({ label, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
     : inlineFacts ?? [];
   const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined);
   return <div className="ai-reason">
-    <span>AIの考え方{loading && <small> · 詳しい理由を読み込み中…</small>}</span>
-    <p>{detailed?.reason ?? hand.reason}</p>
+    <span>AIの考え方</span>
+    <p>{detailed?.reason ?? (loading ? "読み込み中…" : error ? "理由を読み込めませんでした。" : hand.reason)}</p>
     {shown.length > 0 && <dl className="reason-facts">
       {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd>{Number(fact.value).toFixed(1)}%</dd></div>)}
     </dl>}

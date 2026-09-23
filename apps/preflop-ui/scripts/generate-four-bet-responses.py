@@ -257,21 +257,8 @@ def build():
             call, shove = PROFILES[opener, hero][hand]
             if not reachable[hand]:
                 call, shove = 0, 0
-                reason = f'{hero}の対{opener}の既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。'
-            else:
-                if shove >= 50:
-                    why = '強い部分として5betオールインを中心に配分します'
-                elif call >= 35:
-                    why = 'ハンドの強さと位置を考慮してコールを残します'
-                elif shove > 0 and hand.startswith('A'):
-                    why = 'Aブロッカーを持つ境界ハンドとして限定的な5betオールインを混ぜます'
-                elif call + shove == 0:
-                    why = '4betレンジに対して継続が難しいと見積もりフォールドします'
-                else:
-                    why = '境界的な強さとして限定的な継続とフォールドを配分します'
-                reason = f"{hero}が{source['three_bet_size_bb']}BBに3bet後、{opener}の{before['four_bet_size_bb']}BB 4betを受けた{source['hero_position_vs_opener']}の推定。{why}。相手のカード除去やEVは未計算です。"
             rows.append({'hand': hand, 'fold': 100-call-shove, 'call': call, 'all_in': shove,
-                         'all_in_size_bb': 100 if shove else None, 'reason': reason})
+                         'all_in_size_bb': 100 if shove else None})
         result['spots'].append({
             'id': f'{hero}_vs_{opener}_four_bet', 'opener': opener, 'hero': hero, 'three_bettor': hero,
             'source_response_id': source['id'], 'source_three_bet_response_id': before['id'],

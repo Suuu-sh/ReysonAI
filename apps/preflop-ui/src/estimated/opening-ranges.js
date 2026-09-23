@@ -19,8 +19,7 @@ export function validateOpeningDataset(data) {
     for (const row of spot.hands) {
       if (!hands.includes(row.hand) || ![row.open, row.fold].every(n => Number.isFinite(n) && n >= 0 && n <= 100) ||
           Math.abs(row.open + row.fold - 100) > 1e-6 ||
-          row.open_size_bb !== (row.open > 0 ? openSizeBb : null) ||
-          typeof row.reason !== "string" || !row.reason.trim()) {
+          row.open_size_bb !== (row.open > 0 ? openSizeBb : null)) {
         throw new Error(`オープンハンドデータが不正です: ${spot.id} / ${row.hand}`);
       }
     }
