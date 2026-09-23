@@ -121,6 +121,21 @@ test("local generation controls are embedded in the missing range slot", () => {
   }
 });
 
+test("saved action paths survive the SolveaAI storage-key migration", () => {
+  const originalWindow = globalThis.window;
+  const selection = { rangeType: "four_bet", opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: "all_in", continuationAction: null, pathExpanded: true, selected: "AA" };
+  globalThis.window = { matchMedia: () => ({ matches: false }), sessionStorage: { getItem: key => key.includes("solveagto") ? JSON.stringify(selection) : null, setItem() {} } };
+  try {
+    const html = renderToStaticMarkup(createElement(EstimatedRanges));
+    assert.match(html, /BTN Open 2\.5BB → BB 3bet 12BB → BTN 4bet 26\.5BB → BB/);
+    assert.match(html, /BTN · 5betオールインへの応答/);
+    assert.match(html, /CodexでAI推定レンジを生成|保存状態を確認中…/);
+  } finally {
+    if (originalWindow === undefined) delete globalThis.window;
+    else globalThis.window = originalWindow;
+  }
+});
+
 test("estimated view starts with a compact six-seat action path", () => {
   const html = renderToStaticMarkup(createElement(EstimatedRanges));
   assert.match(html, /button[^>]*class="path-reset"[^>]*>リセット<\/button>/);

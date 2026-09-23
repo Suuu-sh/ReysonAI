@@ -92,4 +92,5 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 ## In-panel local AI estimate button (2026-09-23)
 - Moved the multiway local-generation control into Hero's missing-range panel and added the same explicit-click control to the original opener's missing response panel after a 100BB 5bet all-in. The separate banner above the matrices is gone.
 - The all-in response uses only call/fold for the opener and carries the exact saved open/3bet/4bet sizes into its cache identity. Validated all 169 canonical rows, integer frequencies, legal action set, and scenario identity; generated estimates remain in ignored local cache and never update persisted range JSON.
-- Verification: 50 UI/data tests passed; production build passed; Sites tests passed (4). Browser preview remains available at `http://127.0.0.1:5173/`. No Codex estimate was initiated during verification. Existing Vite large-bundle warning remains.
+- Rebranded session-storage keys migrate from the previous SolveaGTO key, so an in-progress selection survives the app rename and reload.
+- Verification: 51 UI/data tests passed; production build passed; Sites tests passed (4). The local preview and read-only local estimate-status endpoint are reachable at `http://127.0.0.1:5173/`. No Codex estimate was initiated during verification. Existing Vite large-bundle warning remains.

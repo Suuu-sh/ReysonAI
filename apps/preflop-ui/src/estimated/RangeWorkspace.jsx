@@ -39,11 +39,13 @@ const fourBetFiles = import.meta.glob("./four-bet-responses.json", { eager: true
 const fourBetState = loadFourBetDataset(fourBetFiles["./four-bet-responses.json"], dataset, threeBetDataset, openingDataset);
 
 const selectionStorageKey = "solveaai:estimated-selection:v1";
+const legacySelectionStorageKey = "solveagto:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
   const fallback = { rangeType: initialRangeType, opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, pathExpanded: false, selected: "AKo" };
   if (typeof window === "undefined") return fallback;
   try {
-    const saved = JSON.parse(window.sessionStorage.getItem(selectionStorageKey));
+    const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
+    const saved = JSON.parse(stored);
     if (!saved || !rangeTypes.some(item => item.value === saved.rangeType && item.available) ||
         !positions.slice(0, -1).includes(saved.opener) || !positions.includes(saved.hero) ||
         positions.indexOf(saved.hero) <= positions.indexOf(saved.opener) ||
