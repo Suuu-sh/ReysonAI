@@ -64,3 +64,9 @@ final result: blocked (desktop paired visual verification outstanding)
 
 ## Navigation header follow-up
 - Primary navigation moved from the left sidebar into the top header; disabled future areas remain visible as `準備中`.
+
+## Focused hand detail follow-up (2026-09-23)
+- In the open-response comparison, selecting a hand in the opener's RFI matrix hides Hero's response matrix and shows that hand's RFI breakdown beside the remaining matrix.
+- Selecting a hand in Hero's response matrix does the symmetric behavior; `両方のレンジを表示` restores both matrices.
+- Verified both directions with UTG vs BB in the local browser preview.
+- Production build, Sites packaging tests, and all 30 UI tests pass. This interaction check does not constitute the outstanding desktop reference-image sign-off above.

@@ -9,16 +9,19 @@
 .estimate-notes details { margin-top: 10px; font-size: 12px; }
 .estimate-notes summary { cursor: pointer; color: var(--accent-soft); }
 .estimate-notes pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; }
-.results.comparison-results { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(390px, 1fr) auto; }
-.comparison-details { grid-column: 1 / -1; min-width: 0; }
-.comparison-details > summary { padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--accent-soft); cursor: pointer; font-size: 12px; }
-.comparison-details > .detail-column { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 8px; overflow: visible; }
+.results.comparison-results { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(390px, 1fr); }
+.results.comparison-results.comparison-focused { grid-template-columns: minmax(350px, 1.6fr) minmax(275px, 1fr); }
 .comparison-results .matrix-panel { grid-row: 1; }
+.comparison-results .detail-column { grid-column: 2; grid-row: 1; min-width: 0; overflow: auto; }
+.comparison-focus-details { align-content: start; }
+.comparison-focus-details .panel-heading { align-items: flex-start; }
+.comparison-focus-details .panel-heading button { flex-shrink: 0; padding: 5px 8px; font-size: 11px; }
 .comparison-hand { display: block; margin-top: 6px; flex-shrink: 0; }
 @media (max-width: 760px) {
-  .results.comparison-results { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
+  .results.comparison-results,
+  .results.comparison-results.comparison-focused { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
   .comparison-results .matrix-panel { grid-row: auto; }
-  .comparison-details > .detail-column { grid-template-columns: minmax(0, 1fr); }
+  .comparison-results .detail-column { grid-column: 1; grid-row: auto; }
 }
 @media (max-width: 900px) and (min-width: 651px) {
   .estimate-settings { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }

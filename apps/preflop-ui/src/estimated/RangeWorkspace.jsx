@@ -34,12 +34,35 @@ try {
   threeBetDataset = validateThreeBetDataset(threeBetSource, dataset, openingDataset);
 } catch (error) { threeBetDataError = error.message; }
 
-function HandDetails({ expandable, hero, hand, children }) {
-  if (!expandable) return children;
-  return <details className="comparison-details">
-    <summary>{hero} · {hand.hand}：3bet {hand.three_bet}% / コール {hand.call}% / フォールド {hand.fold}% · 詳細</summary>
-    {children}
-  </details>;
+function HandBreakdown({ title, hand, model, isOpening, isThreeBet, spot, position, onReturnToComparison }) {
+  const aggregate = model.aggregates.get(hand.hand);
+  const totalFrequency = isOpening
+    ? hand.open + hand.fold
+    : hand.fold + hand.call + (isThreeBet ? hand.four_bet : hand.three_bet);
+
+  return <div className={`detail-column${onReturnToComparison ? " comparison-focus-details" : ""}`}>
+    <Panel>
+      <SectionHeading title={title} action={onReturnToComparison && <button type="button" onClick={onReturnToComparison}>両方のレンジを表示</button>} />
+      <div className="hand-title"><strong>{hand.hand}</strong><span>{aggregate.comboCount} Combos</span></div>
+      <ActionBars items={model.actions.map(action => ({ action, frequency: aggregate.actions[action] }))} />
+      <StatList items={[
+        isOpening
+          ? { label: "オープンサイズ（合計）", value: hand.open_size_bb === null ? "—（オープンなし）" : `${hand.open_size_bb} BB` }
+          : isThreeBet ? { label: "4betサイズ（合計）", value: hand.four_bet_size_bb === null ? "—（4betなし）" : `${hand.four_bet_size_bb} BB` }
+          : { label: "3betサイズ（合計）", value: hand.three_bet_size_bb === null ? "—（3betなし）" : `${hand.three_bet_size_bb} BB` },
+        ...(isThreeBet ? [{ label: "受ける3bet（合計）", value: `${spot.three_bet_size_bb} BB` }] : []),
+        { label: "頻度合計", value: `${totalFrequency}%` },
+      ]} />
+    </Panel>
+    <Panel className="ai-reason-copy"><SectionHeading title="この配分の理由" /><p>{hand.reason}</p></Panel>
+    <Panel className="estimate-notes">
+      <SectionHeading title="データの条件" />
+      <small>{isOpening ? "Heroまで全員フォールドした未オープンポット。オープン／フォールドの推定です。" : isThreeBet ? "Heroがオープン後、1人の3betを受け、他の全員がフォールドした局面。既にオープンした条件下の頻度です。" : "Heroまで他のプレイヤーは全員フォールド。対オープンではUTGはオープナーのみ。"}レーキ未調整・アンティ未モデル化。頻度は概算です。</small>
+      {isThreeBet && <p><small>初回オープン0%のハンドは対象外（形式上フォールド100%）。コールド4bet・スクイーズ・4bet後の応答は含めません。</small></p>}
+      {!isThreeBet && position === "SB" && <p><small>{isOpening ? "SBは2.5BBのraise-or-foldに簡略化し、リンプは含めません。" : "SBは3bet-or-foldに簡略化しています。"}</small></p>}
+      <details><summary>選択ハンドのJSON</summary><pre>{JSON.stringify(hand, null, 2)}</pre></details>
+    </Panel>
+  </div>;
 }
 
 function EstimatedRanges() {
@@ -49,6 +72,7 @@ function EstimatedRanges() {
   const isComparison = rangeType === "response";
   const [opener, setOpener] = useState("BTN");
   const [hero, setHero] = useState("BB");
+  const [focusedRange, setFocusedRange] = useState(null);
   // `hero` is the later seat selector: the 3-bettor when the opener acts again.
   const actingHero = isOpening || isThreeBet ? opener : hero;
   const stackBb = 100;
@@ -71,6 +95,7 @@ function EstimatedRanges() {
 
   function changeOpener(value) {
     setOpener(value);
+    setFocusedRange(null);
     const nextHeroes = availableHeroes(value).filter(position => hasSpot(dataset, value, position));
     if (!nextHeroes.includes(hero)) setHero(nextHeroes[0] ?? "");
     setFilter("all");
@@ -84,7 +109,7 @@ function EstimatedRanges() {
         <Panel className="estimate-settings">
           <div><h2>推定レンジ</h2><small>6max Cash · 100BB · Open 2.5BB</small></div>
           <Field label="局面">
-            <select aria-label="局面" value={rangeType} onChange={e => { setRangeType(e.target.value); setFilter("all"); }}>
+            <select aria-label="局面" value={rangeType} onChange={e => { setRangeType(e.target.value); setFilter("all"); setFocusedRange(null); }}>
               {rangeTypes.map(option => <option key={option.value} value={option.value} disabled={!option.available}>
                 {option.label}{option.available ? "" : "（データなし）"}
               </option>)}
@@ -109,7 +134,7 @@ function EstimatedRanges() {
               {position}{availableOpenerPositions.includes(position) ? "" : "（データなし）"}
             </option>)}
           </select></Field>
-          <Field label={isOpening ? "Hero（オープナー）" : isThreeBet ? "3bettor" : "Hero"}><select disabled={isOpening} value={isOpening ? opener : hero} onChange={e => { setHero(e.target.value); setFilter("all"); }}>
+          <Field label={isOpening ? "Hero（オープナー）" : isThreeBet ? "3bettor" : "Hero"}><select disabled={isOpening} value={isOpening ? opener : hero} onChange={e => { setHero(e.target.value); setFilter("all"); setFocusedRange(null); }}>
             {(isOpening ? [opener] : positions).map(position => {
               const available = isOpening ? position === opener : availableHeroPositions.includes(position);
               const isAfterOpener = availableHeroes(opener).includes(position);
@@ -122,41 +147,28 @@ function EstimatedRanges() {
           <strong>{isOpening ? `${opener} Open · 2.5BB` : isThreeBet ? `${opener}（Hero）Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener}の応答 · ${spot.hero_position_vs_three_bettor}` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>
           <span>{isOpening ? "全5ポジション" : "全15局面"} / 各169ハンド · 推定データ・GTO計算なし</span>
         </div>
-        <div className={`results estimate-results${isComparison ? " comparison-results" : ""}`}>
-          {isComparison && <StrategyMatrix node={{ actingPosition: opener }}
+        <div className={`results estimate-results${isComparison ? " comparison-results" : ""}${focusedRange ? " comparison-focused" : ""}`}>
+          {isComparison && focusedRange !== "hero" && <StrategyMatrix node={{ actingPosition: opener }}
             title={`${opener} · オープナーのオープンレンジ`} ariaLabel="オープナーのレンジ"
             aggregates={openerModel.aggregates} actions={openerModel.actions}
-            selected={selected} filter={openerFilter} onSelect={setSelected} onFilterChange={setOpenerFilter}
+            selected={selected} filter={openerFilter} onSelect={hand => { setSelected(hand); setFocusedRange("opener"); }} onFilterChange={setOpenerFilter}
             footer={<small className="comparison-hand">{selected}：オープン {openerHand.open}% / フォールド {openerHand.fold}%</small>} />}
-          <StrategyMatrix node={{ actingPosition: actingHero }} aggregates={model.aggregates} actions={model.actions}
+          {(!isComparison || focusedRange !== "opener") && <StrategyMatrix node={{ actingPosition: actingHero }} aggregates={model.aggregates} actions={model.actions}
             title={isOpening ? undefined : `${actingHero} · Heroの${isThreeBet ? "3bet後の応答" : "対応レンジ"}`} ariaLabel={isOpening ? undefined : "Heroのレンジ"}
             footer={!isComparison ? undefined : <small className="comparison-hand">{selected}：3bet {hand.three_bet}% / コール {hand.call}% / フォールド {hand.fold}%</small>}
-            selected={selected} filter={filter} onSelect={setSelected} onFilterChange={setFilter} />
-          <HandDetails expandable={isComparison} hero={actingHero} hand={hand}>
-          <div className="detail-column">
-            <Panel>
-              <SectionHeading title={isOpening ? "選択ハンド" : `${actingHero} · Heroの選択ハンド`} />
-              <div className="hand-title"><strong>{selected}</strong><span>{model.aggregates.get(selected).comboCount} Combos</span></div>
-              <ActionBars items={model.actions.map(action => ({ action, frequency: model.aggregates.get(selected).actions[action] }))} />
-              <StatList items={[
-                isOpening
-                  ? { label: "オープンサイズ（合計）", value: hand.open_size_bb === null ? "—（オープンなし）" : `${hand.open_size_bb} BB` }
-                  : isThreeBet ? { label: "4betサイズ（合計）", value: hand.four_bet_size_bb === null ? "—（4betなし）" : `${hand.four_bet_size_bb} BB` }
-                  : { label: "3betサイズ（合計）", value: hand.three_bet_size_bb === null ? "—（3betなし）" : `${hand.three_bet_size_bb} BB` },
-                ...(isThreeBet ? [{ label: "受ける3bet（合計）", value: `${spot.three_bet_size_bb} BB` }] : []),
-                { label: "頻度合計", value: `${isOpening ? hand.open + hand.fold : hand.fold + hand.call + (isThreeBet ? hand.four_bet : hand.three_bet)}%` },
-              ]} />
-            </Panel>
-            <Panel className="ai-reason-copy"><SectionHeading title="この配分の理由" /><p>{hand.reason}</p></Panel>
-            <Panel className="estimate-notes">
-              <SectionHeading title="データの条件" />
-              <small>{isOpening ? "Heroまで全員フォールドした未オープンポット。オープン／フォールドの推定です。" : isThreeBet ? "Heroがオープン後、1人の3betを受け、他の全員がフォールドした局面。既にオープンした条件下の頻度です。" : "Heroまで他のプレイヤーは全員フォールド。対オープンではUTGはオープナーのみ。"}レーキ未調整・アンティ未モデル化。頻度は概算です。</small>
-              {isThreeBet && <p><small>初回オープン0%のハンドは対象外（形式上フォールド100%）。コールド4bet・スクイーズ・4bet後の応答は含めません。</small></p>}
-              {!isThreeBet && actingHero === "SB" && <p><small>{isOpening ? "SBは2.5BBのraise-or-foldに簡略化し、リンプは含めません。" : "SBは3bet-or-foldに簡略化しています。"}</small></p>}
-              <details><summary>選択ハンドのJSON</summary><pre>{JSON.stringify(hand, null, 2)}</pre></details>
-            </Panel>
-          </div>
-          </HandDetails>
+            selected={selected} filter={filter} onSelect={hand => { setSelected(hand); if (isComparison) setFocusedRange("hero"); }} onFilterChange={setFilter} />}
+          {isComparison && focusedRange && <HandBreakdown
+            title={`${focusedRange === "opener" ? opener : actingHero} · ${focusedRange === "opener" ? "オープナー" : "Hero"}の選択ハンド`}
+            hand={focusedRange === "opener" ? openerHand : hand}
+            model={focusedRange === "opener" ? openerModel : model}
+            isOpening={focusedRange === "opener"}
+            isThreeBet={false}
+            spot={spot}
+            position={focusedRange === "opener" ? opener : actingHero}
+            onReturnToComparison={() => setFocusedRange(null)} />}
+          {!isComparison && <HandBreakdown
+            title={isOpening ? "選択ハンド" : `${actingHero} · Heroの選択ハンド`}
+            hand={hand} model={model} isOpening={isOpening} isThreeBet={isThreeBet} spot={spot} position={actingHero} />}
         </div>
       </>}
       <AppFooter />
