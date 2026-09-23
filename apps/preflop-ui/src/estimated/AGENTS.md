@@ -1,5 +1,8 @@
 # Confirmed scope (2026-09-22)
 
+## Compact selector and reset (2026-09-23)
+The action-path selector includes an always-visible reset that restores BTN open / BB response and clears downstream choices without toggling the selector's disclosure state. Keep expanded seat blocks compact: controls flow horizontally and wrap only when needed.
+
 ## Multiway UI placeholder (2026-09-23)
 Reload behavior (2026-09-23): Preserve the selected situation in per-tab session storage. A read-only status lookup may reattach the UI to an existing local Codex generation after refresh, but refresh must never submit a new generation request. Only an explicit click may initiate one.
 Local trial exception (2026-09-23): On explicit user action for an absent open → caller(s) → later Hero response, the local-only Codex app-server middleware in the Vite development server may generate AI-estimated ranges. Validate all 169 integer rows and spot context, then cache under ignored `.local/estimated`. Existing persisted heads-up JSON and frequencies remain authoritative and must not be overwritten. The middleware is not a solver, API-key integration, or production backend; unsupported paths remain pending. This supersedes the earlier blanket prohibition on runtime generation only for this opt-in local experiment.

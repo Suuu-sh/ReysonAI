@@ -54,6 +54,7 @@ test("4bet view shows original 3bettor, saved sizes and 5bet all-in; old view ke
 
 test("estimated view starts with a compact six-seat action path", () => {
   const html = renderToStaticMarkup(createElement(EstimatedRanges));
+  assert.match(html, /button[^>]*class="path-reset"[^>]*>リセット<\/button>/);
   assert.match(html, /aria-label="アクション履歴"/);
   assert.match(html, /aria-label="アクション選択を開く"/);
   assert.match(html, /BTN.*Raise 2\.5.*SB.*Fold.*BB.*Take action/s);

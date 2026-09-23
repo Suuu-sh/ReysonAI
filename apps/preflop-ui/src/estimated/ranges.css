@@ -1,6 +1,9 @@
 .estimate-settings { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: center; flex-shrink: 0; }
 .estimate-settings-intro { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; min-width: 0; }
 .estimate-settings-intro small { white-space: normal; }
+.path-controls { display: flex; align-items: center; gap: 6px; }
+.path-reset { padding: 6px 9px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--text-muted); font-size: 11px; }
+.path-reset:hover { border-color: var(--accent-soft); color: var(--accent-soft); }
 .path-toggle { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-color: var(--line); background: var(--surface-raised); color: var(--accent-soft); font-size: 11px; font-weight: 650; }
 .path-toggle[aria-expanded="true"] { border-color: var(--accent); background: var(--surface-accent); }
 .path-toggle span { font-size: 16px; line-height: 10px; }
@@ -12,14 +15,15 @@
 .action-seat.active .action-seat-heading { color: var(--accent-bright); }
 .action-seat-heading { display: flex; justify-content: space-between; gap: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; }
 .action-seat-heading span { color: var(--text-subtle); font-weight: 500; }
-.action-seat-options { display: grid; gap: 3px; margin-top: 6px; }
-.action-seat-options button, .action-seat-choice, .action-seat-summary { display: block; width: 100%; padding: 4px 6px; border: 0; background: none; text-align: left; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.action-seat-options { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; margin-top: 4px; }
+.action-seat-options button, .action-seat-choice, .action-seat-summary { display: block; width: 100%; padding: 3px 5px; border: 0; background: none; text-align: left; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.action-seat-options button, .action-seat-options .action-seat-choice { width: auto; flex: 0 0 auto; }
 .action-seat-options button:hover:not(:disabled), .action-seat-summary:hover:not(:disabled), .action-seat .chosen { background: #fa65a120; border-radius: 5px; }
-.action-seat-options .action-seat-reset { margin-top: 5px; border-top: 1px solid var(--line); color: var(--text-subtle); font-size: 10px; }
+.action-seat-options .action-seat-reset { margin-top: 0; border-top: 0; color: var(--text-subtle); font-size: 10px; }
 .action-path-pending { color: var(--accent-soft); white-space: normal; }
 .action-seat-summary { margin-top: 2px; font-weight: 650; }
 .action-seat-summary:disabled { opacity: 1; color: var(--text-muted); }
-.action-path.expanded .action-seat { min-height: 116px; }
+.action-path.expanded .action-seat { padding-top: 6px; padding-bottom: 6px; }
 .multiway-range-panel { min-height: 240px; }
 .multiway-range-panel .panel-heading { margin-bottom: 20px; }
 .estimate-settings h2 { margin-bottom: 4px; }

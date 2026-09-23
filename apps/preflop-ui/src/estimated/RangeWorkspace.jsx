@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { hands } from "../data.js";
-import { AppFooter, Header } from "../components/layout.jsx";
+import { AppFooter, Sidebar } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { ActionBars, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.jsx";
 import source from "./preflop-ranges.json";
@@ -202,6 +202,20 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     : isThreeBet ? threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null
     : dataset ? findSpot(dataset, opener, hero) : null;
   const model = useMemo(() => spot ? (isOpening ? openingMatrixModel(spot) : isFourBet ? fourBetMatrixModel(spot, findSpot(dataset, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot) : matrixModel(spot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
+  function resetPath() {
+    setRangeType("response");
+    setOpener("BTN");
+    setHero("BB");
+    setCallers([]);
+    setFoldedHero(false);
+    setPendingRaise(null);
+    setContinuationAction(null);
+    setFocusedRange(null);
+    setSelected("AKo");
+    setLocalEstimate(null);
+    setLocalStatus("idle");
+    setLocalError("");
+  }
   function changeOpener(value) {
     setOpener(value);
     setRangeType("open");
@@ -326,10 +340,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const displayedEntries = focusedEntry ? [focusedEntry] : rangeEntries;
 
   return <div className="shell">
-    <Header activeSection="プリフロップ" onSectionChange={() => {}} />
+    <Sidebar activeSection="プリフロップ" onSectionChange={() => {}} />
     <main>
       <Panel className="estimate-settings">
-          <div className="estimate-settings-intro"><div><h2>推定レンジ</h2><small>6max Cash · 100BB · Open 2.5BB · アンティなし</small></div><button type="button" className="path-toggle" aria-expanded={pathExpanded} aria-label={pathExpanded ? "アクション選択を閉じる" : "アクション選択を開く"} onClick={() => setPathExpanded(value => !value)}>{pathExpanded ? "選択を閉じる" : "アクションを選ぶ"}<span aria-hidden="true">{pathExpanded ? "−" : "+"}</span></button></div>
+          <div className="estimate-settings-intro"><div><h2>推定レンジ</h2><small>6max Cash · 100BB · Open 2.5BB · アンティなし</small></div><div className="path-controls"><button type="button" className="path-reset" onClick={resetPath}>リセット</button><button type="button" className="path-toggle" aria-expanded={pathExpanded} aria-label={pathExpanded ? "アクション選択を閉じる" : "アクション選択を開く"} onClick={() => setPathExpanded(value => !value)}>{pathExpanded ? "選択を閉じる" : "アクションを選ぶ"}<span aria-hidden="true">{pathExpanded ? "−" : "+"}</span></button></div></div>
           <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={localEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} pendingRaise={pendingRaise} continuationAction={continuationAction} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} onThreeBet={selectThreeBet} onFourBet={selectFourBet} onAllIn={() => { setContinuationAction(null); setFocusedRange(null); setPendingRaise("all_in"); }} onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setContinuationAction(action); }} />
         </Panel>
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>

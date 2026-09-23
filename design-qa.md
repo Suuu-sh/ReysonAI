@@ -65,3 +65,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Opening shows the opener table; heads-up 3bet and 4bet stages now show both still-participating positions. Earlier-decision tables are explicitly labeled as historical, not as the current response. Folded positions are omitted. Multiway participants use saved local estimates when available and otherwise retain explicit pending cards.
 - Selecting AA in the BTN table of the four-bet stage focused that table and showed BTN's hand detail. Clicking 「詳細を閉じる」 restored the BTN and BB tables in the local browser at `http://127.0.0.1:5173/`.
 - All 45 UI tests pass, including updated two-table assertions for later stages. Production build and Sites packaging pass. Existing Vite bundle-size warning remains.
+
+## Compact action selector and reset (2026-09-23)
+- Added an always-visible 「リセット」 control. Browser check returned the action path to BTN open / BB response, cleared later actions and detail focus, and left the selector expanded.
+- Expanded actions now flow inline within each seat block and wrap as needed; reduced block padding and control spacing. Visual check confirmed the path is noticeably shorter while preserving available controls.
+- UI tests: 45 passed; production build and Sites packaging passed. The existing Vite bundle-size warning remains. Local app remains open at `http://127.0.0.1:5173/`.
