@@ -1,8 +1,8 @@
 // Computes per-hand facts (equity, pot odds, blockers, fold equity) that ground detailed reasons.
 // Usage: node scripts/reason-facts.mjs [spot_id ...]   (no ids = every spot)
 // Writes .local/reason-facts/<spot_id>.json; seeded, so reruns are reproducible.
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { blockedShare, comboCount, equityVsRange, equityVsRanges, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
 
 const SAMPLES = 12000;
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
@@ -13,6 +13,7 @@ const responses = load("preflop-ranges");
 const threeBets = load("three-bet-responses");
 const fourBets = load("four-bet-responses");
 const fiveBets = load("five-bet-responses");
+const multiway = existsSync(new URL("../src/estimated/multiway-responses.json", import.meta.url)) ? load("multiway-responses") : { spots: [] };
 const outDir = new URL("../.local/reason-facts/", import.meta.url);
 mkdirSync(outDir, { recursive: true });
 
@@ -118,11 +119,30 @@ function fourBetFacts(spot) {
   };
 }
 
+// BB facing an open plus one cold call: three-way equity against both ranges.
+function multiwayFacts(spot) {
+  const { opener, callers: [caller] } = spot;
+  const open = rangeFrom(opening.spots.find(s => s.hero === opener), row => row.open / 100);
+  const called = rangeFrom(responseOf(opener, caller), row => row.call / 100);
+  const random = seededRandom(seedFor(spot.id));
+  return {
+    type: "multiway",
+    spot: { opener, caller, hero: spot.hero, position: "OOP", squeeze_size_bb: spot.squeeze_size_bb,
+      call_break_even_equity_pct: round1(need(1.5, 6.5)), fair_share_pct: round1(1 / 3),
+      caller_range_combos: Math.round(totalWeight(called)) },
+    hands: spot.hands.map(row => ({ hand: row.hand,
+      equity_3way_pct: round1(equityVsRanges(row.hand, [open, called], SAMPLES, random)),
+      equity_vs_caller_pct: round1(equityVsRange(row.hand, called, SAMPLES, random)),
+      blocked_caller_pct: round1(blockedShare(row.hand, called)) })),
+  };
+}
+
 const builders = [
   ...opening.spots.map(spot => [spot.id, () => openingFacts(spot)]),
   ...responses.spots.map(spot => [spot.id, () => responseFacts(spot)]),
   ...threeBets.spots.map(spot => [spot.id, () => threeBetFacts(spot)]),
   ...fourBets.spots.map(spot => [spot.id, () => fourBetFacts(spot)]),
+  ...multiway.spots.map(spot => [spot.id, () => multiwayFacts(spot)]),
 ];
 const wanted = new Set(process.argv.slice(2));
 for (const [id, build] of builders) {

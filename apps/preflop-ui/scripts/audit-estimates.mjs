@@ -13,6 +13,7 @@ const report = auditEstimates({
   threeBets: load("three-bet-responses"),
   fourBets: load("four-bet-responses"),
   fiveBets: load("five-bet-responses"),
+  multiway: load("multiway-responses"),
 });
 const { findings, autoProfit, threeBetDefense, fourBetDefense, widths } = report;
 
@@ -22,7 +23,7 @@ if (process.argv.includes("--json")) {
   const count = (check, severity) => findings.filter(f => f.check === check && (!severity || f.severity === severity)).length;
   console.log("# 推定レンジ検証レポート\n");
   console.log("| チェック | 件数 |\n|---|---|");
-  for (const check of ["range-flow", "auto-profit", "strength-order", "suited-vs-offsuit", "position-nesting", "defense-nesting"]) console.log(`| ${check} | ${count(check)} |`);
+  for (const check of ["range-flow", "auto-profit", "strength-order", "suited-vs-offsuit", "position-nesting", "defense-nesting", "squeeze-width"]) console.log(`| ${check} | ${count(check)} |`);
   console.log("\n## オープン幅");
   for (const w of widths) console.log(`- ${w.spot}: ${pct(w.width)}`);
   console.log("\n## オープンへの全員フォールド率（損益分岐）");

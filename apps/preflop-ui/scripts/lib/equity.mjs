@@ -110,3 +110,45 @@ export function blockedShare(hand, range) {
   const kept = mine.reduce((acc, [a, b]) => acc + range.reduce((s, item) => s + (item.combo.includes(a) || item.combo.includes(b) ? 0 : item.weight), 0), 0) / mine.length;
   return 1 - kept / all;
 }
+
+// Hero's share of the pot against several opponents, each drawn from its own weighted range.
+export function equityVsRanges(hand, ranges, samples, random) {
+  if (ranges.some(range => !range.length)) return null;
+  const tables = ranges.map(range => {
+    const cumulative = [];
+    let sum = 0;
+    for (const item of range) { sum += item.weight; cumulative.push(sum); }
+    return { range, cumulative, sum };
+  });
+  const draw = ({ range, cumulative, sum }) => {
+    const x = random() * sum;
+    let lo = 0, hi = cumulative.length - 1;
+    while (lo < hi) { const mid = (lo + hi) >> 1; if (cumulative[mid] < x) lo = mid + 1; else hi = mid; }
+    return range[lo].combo;
+  };
+  const mine = combosOf(hand);
+  let share = 0, total = 0;
+  for (let i = 0; i < samples; i += 1) {
+    const [a, b] = mine[i % mine.length];
+    const used = new Set([a, b]);
+    const villains = [];
+    for (const table of tables) {
+      let combo;
+      for (let tries = 0; tries < 50 && !combo; tries += 1) {
+        const candidate = draw(table);
+        if (!used.has(candidate[0]) && !used.has(candidate[1])) combo = candidate;
+      }
+      if (!combo) break;
+      used.add(combo[0]); used.add(combo[1]);
+      villains.push(combo);
+    }
+    if (villains.length !== tables.length) continue;
+    const board = [];
+    while (board.length < 5) { const card = deck[(random() * 52) | 0]; if (!used.has(card)) { used.add(card); board.push(card); } }
+    const scores = [evaluate([a, b, ...board]), ...villains.map(v => evaluate([...v, ...board]))];
+    const best = Math.max(...scores);
+    if (scores[0] === best) share += 1 / scores.filter(score => score === best).length;
+    total += 1;
+  }
+  return total ? share / total : null;
+}

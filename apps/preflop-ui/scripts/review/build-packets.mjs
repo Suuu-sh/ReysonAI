@@ -15,6 +15,7 @@ const TYPES = {
   three_bet: { file: "three-bet-responses", actions: ["four_bet", "call", "fold"] },
   four_bet: { file: "four-bet-responses", actions: ["all_in", "call", "fold"] },
   five_bet: { file: "five-bet-responses", actions: ["call", "fold"] },
+  multiway: { file: "multiway-responses", actions: ["squeeze", "call", "fold"] },
 };
 const RUBRIC = [
   "合法性：頻度の合計100、合法なアクションのみ、到達不能ハンドの扱い",
@@ -32,6 +33,7 @@ function history(type, spot) {
     case "three_bet": return `${spot.opener}が2.5BBでオープン、${spot.three_bettor}が${spot.three_bet_size_bb}BBに3bet、他は全員フォールド。${spot.opener}が判断（4betは${spot.four_bet_size_bb}BB）。`;
     case "four_bet": return `${spot.opener}が2.5BBでオープン、${spot.hero}が${spot.three_bet_size_bb}BBに3bet、${spot.opener}が${spot.four_bet_size_bb}BBに4bet。${spot.hero}が判断（5betは100BBオールインのみ）。`;
     case "five_bet": return `${spot.opener}が2.5BBでオープン、${spot.five_bettor}が${spot.three_bet_size_bb}BBに3bet、${spot.opener}が${spot.four_bet_size_bb}BBに4bet、${spot.five_bettor}が100BBオールイン。${spot.opener}がコールかフォールドを判断。`;
+    case "multiway": return `${spot.opener}が2.5BBでオープン、${spot.callers.join("・")}がコール、他は全員フォールド。BBが判断（スクイーズは${spot.squeeze_size_bb}BB）。`;
     default: throw new Error(type);
   }
 }

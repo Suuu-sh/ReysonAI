@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "audit:estimates": "node scripts/audit-estimates.mjs",
     "build:estimates": "node scripts/build-estimates.mjs",
+    "test": "node --test --test-force-exit tests/*.test.mjs",
     "test:sites": "node --test tests/sites-worker.test.mjs"
   },
   "dependencies": {

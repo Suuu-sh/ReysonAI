@@ -57,7 +57,7 @@ function weightedFold(spot, weight = () => 1) {
   return total ? folded / total : 0;
 }
 
-export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets }) {
+export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway }) {
   const findings = [];
   const add = (check, severity, spot, detail) => findings.push({ check, severity, spot, detail });
   const openBy = new Map(opening.spots.map(spot => [spot.hero, rows(spot)]));
@@ -163,6 +163,18 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     const foldRate = weightedFold(spot, hand => openRows.get(hand).open / 100 * previous.get(hand).four_bet / 100);
     fiveBetDefense.push({ spot: label, foldRate, threshold });
     if (foldRate > threshold) add("auto-profit", "error", label, `オープナーのフォールド率 ${pct(foldRate)} > 損益分岐 ${pct(threshold)}（どの2枚でも5betオールインで得をする）`);
+  }
+
+  // 6. BB squeeze after an open and one call: preserve family order and keep
+  // the two-opponent squeeze narrower than BB's heads-up 3bet vs that opener.
+  for (const spot of multiway?.spots ?? []) {
+    checkStrengthOrder(add, spot.id, spot);
+    const headsUp = responseBy.get(`${spot.opener}>BB`);
+    const squeezeCombos = spot.hands.reduce((sum, row) => sum + combos(row.hand) * row.squeeze / 100, 0);
+    const threeBetCombos = headsUp.hands.reduce((sum, row) => sum + combos(row.hand) * row.three_bet / 100, 0);
+    if (squeezeCombos > threeBetCombos + 1e-9) {
+      add("squeeze-width", "warn", spot.id, `スクイーズ ${squeezeCombos.toFixed(1)}コンボ > BBヘッズアップ3bet ${threeBetCombos.toFixed(1)}コンボ`);
+    }
   }
 
   // Range widths for a sanity read.

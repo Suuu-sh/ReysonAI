@@ -9,13 +9,14 @@ import { auditEstimates } from "../src/estimated/audit.js";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const published = join(root, "src/estimated");
-const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses"];
+const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses"];
 // Order matters: each generator reads the previous stages from the staging dir.
 const generators = [
   ["python3", "generate-opening-ranges.py"],
   ["python3", "generate-three-bet-responses.py"],
   ["python3", "generate-four-bet-responses.py"],
   ["node", "generate-five-bet-responses.mjs"],
+  ["python3", "generate-multiway-responses.py"],
 ];
 const staging = mkdtempSync(join(tmpdir(), "solveaai-estimates-"));
 
@@ -25,7 +26,7 @@ try {
     execFileSync(runtime, [join(root, "scripts", script)], { cwd: root, stdio: "inherit", env: { ...process.env, ESTIMATES_DIR: staging } });
   }
   const load = name => JSON.parse(readFileSync(join(staging, `${name}.json`), "utf8"));
-  const { findings } = auditEstimates({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), fiveBets: load("five-bet-responses") });
+  const { findings } = auditEstimates({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), fiveBets: load("five-bet-responses"), multiway: load("multiway-responses") });
   if (findings.length) {
     for (const f of findings) console.error(`- [${f.severity}] ${f.check} · ${f.spot}: ${f.detail}`);
     console.error(`\n検証で${findings.length}件の違反。src/estimated は変更していません。`);
