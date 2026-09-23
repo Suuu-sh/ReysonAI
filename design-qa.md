@@ -128,3 +128,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Removed the full spot-summary/count/status row between the action path and range tables. The action path remains the spot selector; range tables now start directly below it and take the recovered height.
 - Browser verification at `http://localhost:5173/` confirmed the context strip is absent and the range tables occupy the freed vertical space.
 - Verification: all 69 UI/data tests passed, `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite still reports its existing large-chunk warning.
+## UTG response path through BB (2026-09-24)
+- After UTG raises, every later seat through BB remains selectable in the action path, including direct action selection at a later seat.
+- Browser verification at http://127.0.0.1:5173/: selected UTG Raise 2.5BB, confirmed HJ/CO/BTN/SB/BB were present, then selected BB Call 2.5BB; HJ, CO, BTN and SB changed to Fold and the path completed with two players seeing the flop.
+- Verification: node --test tests/*.test.mjs passed (69 tests), npm run build passed, and npm run test:sites passed (4 tests). Vite still reports its existing large-chunk warning.
