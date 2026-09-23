@@ -8,7 +8,7 @@ import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
 
 let server, EstimatedRanges, ActionPath, Sidebar;
 before(async () => {
-  server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null }, appType: "custom" });
+  server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ EstimatedRanges, ActionPath } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
 });
@@ -156,7 +156,7 @@ test("estimated view always shows the expanded six-seat action path", () => {
   assert.match(html, /BTN[\s\S]*aria-pressed="true"[^>]*>Raise 2\.5<[\s\S]*SB[\s\S]*aria-pressed="true"[^>]*>Fold<[\s\S]*action-seat-seat active[\s\S]*BB/);
   assert.doesNotMatch(html, /Take action/);
   assert.doesNotMatch(html, /次のアクションノード|aria-label="局面"|aria-label="有効スタック"|aria-label="オープンサイズ"/);
-  assert.match(html, /action-seat-info[\s\S]*6max Cash[\s\S]*Open 2\.5 · アンティなし[\s\S]*<strong>UTG<\/strong>/);
+  assert.match(html, /action-seat-info[\s\S]*aria-label="ゲーム設定を編集"[\s\S]*Cash · 6max · 100bb[\s\S]*Open 2\.5BB · アンティなし[\s\S]*<strong>UTG<\/strong>/);
   assert.doesNotMatch(html, /表示アクション|すべてのアクション/);
   assert.match(html, /レイズ 2\.5 BB.*フォールド/s);
   assert.doesNotMatch(html, /label="オープナー"/);

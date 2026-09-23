@@ -21,6 +21,9 @@ import {
   rangeTypes,
   validateDataset,
 } from "./ranges.js";
+import { PencilSimple } from "@phosphor-icons/react";
+import { GameFormatDialog } from "./GameFormatDialog.jsx";
+import { defaultFormat, formatLabel, isBuilt } from "./game-formats.js";
 import "./ranges.css";
 
 let dataset;
@@ -42,6 +45,7 @@ const fourBetState = loadFourBetDataset(fourBetFiles["./four-bet-responses.json"
 
 const selectionStorageKey = "solveaai:estimated-selection:v1";
 const displayModeStorageKey = displayModeKey;
+const formatStorageKey = "solveaai:game-format:v1";
 const legacySelectionStorageKey = "solveagto:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
   const fallback = { rangeType: initialRangeType, opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, selected: "AKo" };
@@ -306,6 +310,18 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [pendingRaise, setPendingRaise] = useState(initialSelection.pendingRaise);
   const [continuationAction, setContinuationAction] = useState(initialSelection.continuationAction);
   const [shoveResponse, setShoveResponse] = useState(initialSelection.shoveResponse);
+  const [format, setFormat] = useState(() => {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(formatStorageKey));
+      return saved && isBuilt(saved) ? saved : defaultFormat;
+    } catch { return defaultFormat; }
+  });
+  const [formatOpen, setFormatOpen] = useState(false);
+  function saveFormat(value) {
+    setFormat(value);
+    setFormatOpen(false);
+    try { window.localStorage.setItem(formatStorageKey, JSON.stringify(value)); } catch {}
+  }
   const [localEstimate, setLocalEstimate] = useState(null);
   const [localEstimateRequestKey, setLocalEstimateRequestKey] = useState(null);
   const [localStatus, setLocalStatus] = useState(
@@ -504,7 +520,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     <Sidebar activeSection="プリフロップ" onSectionChange={() => {}} profile={profile} onEditProfile={onEditProfile} />
     <main>
       <Panel className="estimate-settings">
-          <ActionPath leading={<div className="action-seat action-seat-info"><div className="action-seat-heading"><strong>推定レンジ</strong><span>100bb</span></div><ul><li>6max Cash</li><li>Open 2.5 · アンティなし</li></ul><div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div><div className="path-controls"><button type="button" className="path-reset" onClick={resetPath}>リセット</button></div></div>} expanded rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} raiseSizeFor={raiseSizeFor} pendingRaise={pendingRaise} continuationAction={continuationAction} shoveResponse={shoveResponse} onShoveResponse={action => { setFocusedRange(null); setShoveResponse(action); }} onAct={actAt} onFourBet={selectFourBet} onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setFocusedRange(null); setPendingRaise("all_in"); }} onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setContinuationAction(action); }} />
+          <ActionPath leading={<div className="action-seat action-seat-info"><div className="action-seat-heading"><strong>推定レンジ</strong><button type="button" className="format-edit" aria-label="ゲーム設定を編集" title="ゲーム設定を編集" onClick={() => setFormatOpen(true)}><PencilSimple size={13} /> 編集</button></div><ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)} · {formatLabel("ante", format.ante)}</li></ul><div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div><div className="path-controls"><button type="button" className="path-reset" onClick={resetPath}>リセット</button></div></div>} expanded rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} raiseSizeFor={raiseSizeFor} pendingRaise={pendingRaise} continuationAction={continuationAction} shoveResponse={shoveResponse} onShoveResponse={action => { setFocusedRange(null); setShoveResponse(action); }} onAct={actAt} onFourBet={selectFourBet} onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setFocusedRange(null); setPendingRaise("all_in"); }} onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setContinuationAction(action); }} />
         </Panel>
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className="estimate-context">
@@ -519,6 +535,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} spot={focusedEntry.spot} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
+      {formatOpen && <GameFormatDialog format={format} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
       <AppFooter />
     </main>
   </div>;

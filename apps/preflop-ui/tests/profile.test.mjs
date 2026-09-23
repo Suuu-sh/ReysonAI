@@ -6,7 +6,7 @@ import { createServer } from "vite";
 
 let server, profile, Onboarding;
 before(async () => {
-  server = await createServer({ server: { middlewareMode: true, watch: null }, appType: "custom", logLevel: "silent" });
+  server = await createServer({ server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom", logLevel: "silent" });
   profile = await server.ssrLoadModule("/src/profile.js");
   ({ Onboarding } = await server.ssrLoadModule("/src/components/Onboarding.jsx"));
 });
