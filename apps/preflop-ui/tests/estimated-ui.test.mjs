@@ -6,10 +6,20 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
 
-let server, EstimatedRanges, ActionPath;
+let server, EstimatedRanges, ActionPath, Sidebar;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null }, appType: "custom" });
   ({ EstimatedRanges, ActionPath } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
+  ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
+});
+
+test("primary navigation is accessible in a collapsible sidebar", () => {
+  const html = renderToStaticMarkup(createElement(Sidebar, { activeSection: "プリフロップ", onSectionChange() {} }));
+  assert.match(html, /<aside class="app-sidebar" aria-label="SolveaGTO サイドバー">/);
+  assert.match(html, /aria-label="サイドバーを折りたたむ" aria-expanded="true" aria-controls="main-navigation"/);
+  assert.match(html, /<nav id="main-navigation" class="header-nav" aria-label="メインナビゲーション">/);
+  assert.match(html, /aria-label="プリフロップ"/);
+  assert.match(html, /aria-label="ポストフロップ（準備中）"/);
 });
 
 test("expanded path keeps opening controls separate from post-open actions and shows saved raise-to sizes", () => {

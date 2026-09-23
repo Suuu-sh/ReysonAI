@@ -1,5 +1,10 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Collapsible navigation sidebar (2026-09-23)
+- Replaced the top navigation header with a left sidebar containing the brand, grouped navigation, and explorer metadata. The desktop sidebar can collapse to an icon rail; the toggle and each icon-only destination have accessible labels.
+- On narrower screens the sidebar starts collapsed, and expansion overlays the workspace instead of squeezing it. Browser verification covers expanded/collapsed desktop states and the narrow layout.
+- Verification: `node --test tests/*.test.mjs` passed all 47 tests; the production build and separate Sites run also passed (4 tests). Build reports the existing large-bundle warning.
+
 ## Multiway-ready selection update (2026-09-23)
 - Added Call and Fold to response-seat choices. Browser check: BTN opener + SB call + BB acting displayed three participant columns; changing SB back to Fold removed SB and restored the two saved heads-up matrices.
 - Each participant starts with a clear pending-data state. On supported paths, a separate user-triggered local AI estimate may be cached outside the persisted datasets; it is unverified and is not a solver/GTO result. No heads-up frequencies are reused for multiway estimates.
