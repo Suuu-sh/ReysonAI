@@ -18,10 +18,28 @@ const navigationGroups = [
   },
 ];
 
+const COLLAPSE_KEY = "solveaai.sidebar.collapsed";
+
+function readInitialCollapsed() {
+  if (typeof window === "undefined") return false;
+  if (window.matchMedia("(max-width: 650px)").matches) return true;
+  try {
+    const saved = window.localStorage.getItem(COLLAPSE_KEY);
+    if (saved !== null) return saved === "1";
+  } catch {}
+  return window.matchMedia("(max-width: 1049px)").matches;
+}
+
 export function Sidebar({ activeSection, onSectionChange }) {
-  const [collapsed, setCollapsed] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1049px)").matches);
+  const [collapsed, setCollapsed] = useState(readInitialCollapsed);
+  const toggle = next => {
+    setCollapsed(next);
+    try { window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0"); } catch {}
+  };
 
   return (
+    <>
+    {!collapsed && <div className="sidebar-backdrop" aria-hidden="true" onClick={() => toggle(true)} />}
     <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="SolveaAI サイドバー">
       <div className="sidebar-heading">
         <div className="brand">
@@ -38,7 +56,7 @@ export function Sidebar({ activeSection, onSectionChange }) {
           aria-expanded={!collapsed}
           aria-controls="main-navigation"
           title={collapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
-          onClick={() => setCollapsed(value => !value)}
+          onClick={() => toggle(!collapsed)}
         >
           {collapsed ? <CaretDoubleRight size={17} /> : <CaretDoubleLeft size={17} />}
         </button>
@@ -54,6 +72,7 @@ export function Sidebar({ activeSection, onSectionChange }) {
                   className={`${activeSection === name ? "active" : ""} ${status ? "future" : ""}`.trim()}
                   onClick={() => onSectionChange(name)}
                   disabled={Boolean(status)}
+                  aria-current={activeSection === name ? "page" : undefined}
                   aria-label={status ? `${name}（${status}）` : name}
                   title={status ? `${name}：${status}` : name}
                 >
@@ -71,6 +90,7 @@ export function Sidebar({ activeSection, onSectionChange }) {
         <small>READ-ONLY / v0.1</small>
       </div>
     </aside>
+    </>
   );
 }
 
