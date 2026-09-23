@@ -5,7 +5,6 @@ import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
-import { responseActionTransition } from "../src/estimated/action-path.js";
 
 let server, EstimatedRanges, ActionPath, Sidebar;
 before(async () => {
@@ -28,17 +27,10 @@ test("action blocks are generated in order from the chosen actions", () => {
   const props = { expanded: true, opener: "BTN", hero: "SB", callers: [], foldedHero: false, raiseSizeFor: position => ({ SB: 11, BB: 12 })[position] ?? null };
   const response = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "response" }));
   assert.match(response, /UTG[\s\S]*HJ[\s\S]*CO[\s\S]*BTN[\s\S]*class="chosen" aria-pressed="true"[^>]*>Raise 2\.5<[\s\S]*action-seat-seat active[\s\S]*SB<\/strong><span>99\.5[\s\S]*>Fold<[\s\S]*>Call 2\.5<[\s\S]*>Raise 11</);
-  assert.match(response, /SB<\/strong>[\s\S]*BB<\/strong><span>99[\s\S]*>Call 2\.5<[\s\S]*>Raise 12</); // later seats remain directly selectable
+  assert.doesNotMatch(response, /<strong>BB<\/strong>/); // later seats appear only after SB acts
 
   const bbToAct = renderToStaticMarkup(createElement(ActionPath, { ...props, hero: "BB", rangeType: "response" }));
   assert.match(bbToAct, /SB<\/strong>[\s\S]*aria-pressed="true"[^>]*>Fold<[\s\S]*BB<\/strong><span>99<[\s\S]*>Raise 12</);
-
-  const utgOpen = renderToStaticMarkup(createElement(ActionPath, { ...props, opener: "UTG", hero: "HJ", rangeType: "response", raiseSizeFor: () => 8 }));
-  assert.match(utgOpen, /UTG<\/strong>[\s\S]*HJ<\/strong>[\s\S]*CO<\/strong>[\s\S]*BTN<\/strong>[\s\S]*SB<\/strong>[\s\S]*BB<\/strong>[\s\S]*>Call 2\.5<[\s\S]*>Raise 8</);
-
-  const directBbCall = responseActionTransition({ opener: "UTG", callers: [], position: "BB", action: "call" });
-  const afterBbCall = renderToStaticMarkup(createElement(ActionPath, { ...props, ...directBbCall, opener: "UTG" }));
-  assert.match(afterBbCall, /UTG<\/strong>[\s\S]*HJ<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Fold<[\s\S]*CO<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Fold<[\s\S]*BTN<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Fold<[\s\S]*SB<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Fold<[\s\S]*BB<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Call 2\.5</);
 
   const threeBet = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "three_bet", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.5 } }));
   assert.match(threeBet, /SB<\/strong>[\s\S]*aria-pressed="true"[^>]*>Raise 11<[\s\S]*BB<\/strong>[\s\S]*action-seat-continuation active[\s\S]*BTN<\/strong><span>97\.5<[\s\S]*>Call 11<[\s\S]*>Raise 28\.5</);
@@ -57,9 +49,10 @@ after(async () => { await server?.close(); });
 
 test("4bet view shows original 3bettor, saved sizes and 5bet all-in; old view keeps opener Hero", () => {
   const html = renderToStaticMarkup(createElement(EstimatedRanges, { initialRangeType: "four_bet" }));
-  assert.match(html, /BB（元の3bettor \/ Hero）の応答/);
-  assert.match(html, /BB 3bet 12BB/);
-  assert.match(html, /BTN 4bet 26BB/);
+  assert.match(html, /BB · 4betへの応答/);
+  assert.match(html, /BTN · 3betへの応答/);
+  assert.match(html, /Raise 12/);
+  assert.match(html, /Raise 26/);
   assert.doesNotMatch(html, /対象外/);
   assert.match(html, /unreachable-hand/);
   assert.match(html, /title="[^\"]*既存3bet頻度0%（推奨なし）"/);
@@ -71,7 +64,6 @@ test("4bet view shows original 3bettor, saved sizes and 5bet all-in; old view ke
   assert.match(html, /BBのレンジ/);
   assert.doesNotMatch(html, /詳細を閉じる/);
   const old = renderToStaticMarkup(createElement(EstimatedRanges, { initialRangeType: "three_bet" }));
-  assert.match(old, /BTN（Hero）Open/);
   assert.match(old, /BTN · 3betへの応答/);
   assert.equal((old.match(/<button aria-pressed=/g) || []).length, 338); // 2 tables × 169 hands
 });
@@ -146,7 +138,8 @@ test("saved action paths survive the SolveaAI storage-key migration", () => {
   globalThis.window = { matchMedia: () => ({ matches: false }), sessionStorage: { getItem: key => key.includes("solveagto") ? JSON.stringify(selection) : null, setItem() {} } };
   try {
     const html = renderToStaticMarkup(createElement(EstimatedRanges));
-    assert.match(html, /BTN Open 2\.5BB → BB 3bet 12BB → BTN 4bet 26BB → BB/);
+    assert.match(html, /class="action-path expanded"/);
+    assert.match(html, /Raise 2\.5[\s\S]*Raise 12[\s\S]*Raise 26[\s\S]*Allin 100/);
     assert.match(html, /BTN · 5betオールインへの応答/);
     assert.match(html, /保存済みレンジを読み込んでいます。/);
   } finally {
@@ -157,6 +150,8 @@ test("saved action paths survive the SolveaAI storage-key migration", () => {
 
 test("estimated view always shows the expanded six-seat action path", () => {
   const html = renderToStaticMarkup(createElement(EstimatedRanges));
+  assert.doesNotMatch(html, /class="estimate-context"|全15局面|全5ポジション/);
+  assert.match(html, /class="results estimate-results participant-results/);
   assert.doesNotMatch(html, /<footer class="app-footer">|SolveaAI v0\.1/);
   assert.match(html, /<strong>推定レンジ<\/strong><div class="settings-actions"><button[^>]*aria-label="ゲーム設定を編集"[^>]*><svg[\s\S]*?<\/svg><\/button><button[^>]*aria-label="アクションをリセット"[^>]*><svg[\s\S]*?<\/svg><\/button><\/div>/);
   assert.doesNotMatch(html, /aria-label="ゲーム設定を編集"[^>]*>編集<\/button>|aria-label="アクションをリセット"[^>]*>リセット<\/button>/);

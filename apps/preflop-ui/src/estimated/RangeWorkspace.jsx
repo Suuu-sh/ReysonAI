@@ -9,7 +9,7 @@ import { findFourBetSpot, fourBetMatrixModel, loadFourBetDataset } from "./four-
 import threeBetSource from "./three-bet-responses.json";
 import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "./three-bet-responses.js";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.js";
-import { nextActorsAfterRaise, responseActionTransition } from "./action-path.js";
+import { nextActorsAfterRaise } from "./action-path.js";
 import { displayModes } from "./display-mode.js";
 import { displayModeKey } from "../profile.js";
 import { useDetailedReasons } from "./detailed-reasons.js";
@@ -169,7 +169,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
   const contribution = { ...startingContribution };
   const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
   const blocks = [];
-  const lastIndex = opening ? openerIndex : positions.length - 1;
+  const lastIndex = reraised || pendingRaise === "squeeze" || foldedHero ? positions.length - 1 : heroIndex;
   for (let index = 0; index <= lastIndex; index += 1) {
     const position = positions[index];
     const stack = stackOf(position);
@@ -189,7 +189,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       ? `Raise ${index === heroIndex && raiseToBb ? formatBb(raiseToBb) : ""}`.trim()
       : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
     const options = [{ action: "fold", label: "Fold" }, { action: "call", label: "Call 2.5" }, { action: "raise", label: raiseLabel }];
-    if (index > heroIndex && (reraised || pendingRaise === "squeeze")) {
+    if (index > heroIndex) {
       blocks.push({ key: position, position, stack, active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "forced" });
       continue;
     }
@@ -197,7 +197,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
     if (callers.includes(position)) { chosen = "call"; contribution[position] = 2.5; }
     else if (index < heroIndex || foldedHero) chosen = "fold";
     else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = raiseToBb ?? threeBetSizeBb ?? 0; }
-    blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat" });
+    blocks.push({ key: position, position, stack, active: chosen === null, chosen, options, kind: "seat" });
   }
   if (reraised) {
     const fourBetSizeBb = spot?.four_bet_size_bb;
@@ -385,13 +385,17 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       } else if (action === "fold" && position === opener && next && next !== "BB") changeOpener(next);
       return;
     }
-    const transition = responseActionTransition({ opener, callers, position, action });
-    if (!transition) return;
-    setRangeType(transition.rangeType);
-    setHero(transition.hero);
-    setCallers(transition.callers);
-    setFoldedHero(transition.foldedHero);
-    setPendingRaise(transition.pendingRaise);
+    const earlierCallers = callers.filter(caller => positions.indexOf(caller) < index);
+    setRangeType("response");
+    if (action === "raise") {
+      setHero(position); setCallers(earlierCallers); setFoldedHero(false);
+      if (earlierCallers.length) setPendingRaise("squeeze"); else setRangeType("three_bet");
+      return;
+    }
+    const nextCallers = action === "call" ? [...earlierCallers, position] : earlierCallers;
+    setCallers(nextCallers);
+    if (next) { setHero(next); setFoldedHero(false); }
+    else { setHero(position); setFoldedHero(true); }
   }
 
   function selectFourBet() {
@@ -519,10 +523,6 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           <ActionPath leading={<div className="action-seat action-seat-info"><div className="action-seat-heading"><strong>推定レンジ</strong><div className="settings-actions"><button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を編集" title="ゲーム設定を編集" onClick={() => setFormatOpen(true)}><PencilSimple size={14} aria-hidden="true" /></button><button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button></div></div><ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)} · {formatLabel("ante", format.ante)}</li></ul><div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div></div>} expanded rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} raiseSizeFor={raiseSizeFor} pendingRaise={pendingRaise} continuationAction={continuationAction} shoveResponse={shoveResponse} onShoveResponse={action => { setFocusedRange(null); setShoveResponse(action); }} onAct={actAt} onFourBet={selectFourBet} onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setFocusedRange(null); setPendingRaise("all_in"); }} onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setContinuationAction(action); }} />
         </Panel>
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
-        <div className="estimate-context">
-          <strong>{isOpening ? `${opener} Open · 2.5BB` : isFourBet ? `${opener} Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener} 4bet ${spot.four_bet_size_bb}BB → ${hero}（元の3bettor / Hero）の応答 · ${spot.hero_position_vs_opener}` : isThreeBet ? `${opener}（Hero）Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener}の応答 · ${spot.hero_position_vs_three_bettor}` : showPendingRanges ? `${opener} Open 2.5BB${callers.map(position => ` → ${position} Call`).join("")}${foldedHero && !callers.includes(hero) ? ` → ${hero} Fold` : !callers.includes(hero) ? ` → ${hero} Action` : ""} · ${multiwayParticipants.length}人参加` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>
-          <span>{isOpening ? "全5ポジション" : "全15局面"} / 各169ハンド · AI生成ソリューション</span>
-        </div>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイのAIソリューションをローカルで生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}

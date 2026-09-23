@@ -1,16 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildNextActionNode, nextActorsAfterRaise, responseActionTransition } from "../src/estimated/action-path.js";
-
-test("jumping directly to BB call folds every unselected seat before BB", () => {
-  assert.deepEqual(responseActionTransition({ opener: "UTG", callers: [], position: "BB", action: "call" }), {
-    rangeType: "response",
-    hero: "BB",
-    callers: ["BB"],
-    foldedHero: true,
-    pendingRaise: null,
-  });
-});
+import { buildNextActionNode, nextActorsAfterRaise } from "../src/estimated/action-path.js";
 
 test("a raise after BB wraps action back to the opener and prior callers in seat order", () => {
   assert.deepEqual(nextActorsAfterRaise("BB", ["BTN", "SB", "BB"]), ["BTN", "SB"]);
