@@ -21,7 +21,6 @@ export function App() {
   const [spot, setSpot] = useState({ mode: "open", opener: "BTN", actor: "BB" });
   const [result, setResult] = useState(null);
   const [selected, setSelected] = useState("AKs");
-  const [filter, setFilter] = useState("all");
   const [section, setSection] = useState("プリフロップ");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState("");
@@ -70,7 +69,6 @@ export function App() {
     setResult(null);
     setMissing(false);
     setError("");
-    setFilter("all");
     if (!solutionId || validation) {
       setLoading("");
       if (!solutionId) setMissing(solutions.length > 0);
@@ -161,10 +159,8 @@ export function App() {
               combos={combos}
               aggregates={aggregates}
               selected={selected}
-              filter={filter}
               actions={actions}
               onSelect={setSelected}
-              onFilterChange={setFilter}
             />
         )}
         <AppFooter />

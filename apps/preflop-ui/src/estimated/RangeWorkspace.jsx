@@ -159,14 +159,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [localEstimate, setLocalEstimate] = useState(null);
   const [localStatus, setLocalStatus] = useState(initialSelection.rangeType === "response" && initialSelection.callers.length > 0 && !initialSelection.foldedHero ? "checking" : "idle");
   const [localError, setLocalError] = useState("");
-  const [localFilters, setLocalFilters] = useState({});
   // `hero` is the later seat selector: the 3-bettor when the opener acts again.
   const actingHero = isOpening || isThreeBet ? opener : hero;
   const stackBb = 100;
   const openSizeBb = 2.5;
   const [selected, setSelected] = useState(initialSelection.selected);
-  const [filter, setFilter] = useState("all");
-  const [openerFilter, setOpenerFilter] = useState("all");
   const currentError = isFourBet ? fourBet.error : isOpening ? openingDataError : isThreeBet ? threeBetDataError : dataError || openingDataError;
   const openerSpot = openingDataset ? findOpeningSpot(openingDataset, opener) : null;
   const openerModel = useMemo(() => openerSpot ? openingMatrixModel(openerSpot) : null, [openerSpot]);
@@ -192,15 +189,12 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setFocusedRange(null);
     const nextHeroes = availableHeroes(value).filter(position => hasSpot(dataset, value, position));
     if (!nextHeroes.includes(hero)) setHero(nextHeroes[0] ?? "");
-    setFilter("all");
-    setOpenerFilter("all");
     setCallers([]);
     setFoldedHero(false);
   }
 
   function changeHero(value) {
     setHero(value);
-    setFilter("all");
     setFocusedRange(null);
     setFoldedHero(false);
     setCallers(previous => previous.filter(position => position !== value && positions.indexOf(position) > positions.indexOf(opener)));
@@ -227,7 +221,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   useEffect(() => {
     window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pathExpanded, selected }));
   }, [rangeType, opener, hero, callers, foldedHero, pathExpanded, selected]);
-  useEffect(() => { setLocalEstimate(null); setLocalStatus(canGenerate ? "checking" : "idle"); setLocalError(""); setLocalFilters({}); }, [requestKey, rangeType, foldedHero]);
+  useEffect(() => { setLocalEstimate(null); setLocalStatus(canGenerate ? "checking" : "idle"); setLocalError(""); }, [requestKey, rangeType, foldedHero]);
   useEffect(() => {
     if (!canGenerate) return;
     let cancelled = false;
@@ -268,7 +262,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       <Panel className="estimate-settings">
           <div className="estimate-settings-intro"><div><h2>推定レンジ</h2><small>6max Cash · 100BB · アンティなし</small></div><button type="button" className="path-toggle" aria-expanded={pathExpanded} aria-label={pathExpanded ? "アクション選択を閉じる" : "アクション選択を開く"} onClick={() => setPathExpanded(value => !value)}>{pathExpanded ? "選択を閉じる" : "アクションを選ぶ"}<span aria-hidden="true">{pathExpanded ? "−" : "+"}</span></button></div>
           <Field label="局面">
-            <select aria-label="局面" value={rangeType} onChange={e => { setRangeType(e.target.value); setFilter("all"); setFocusedRange(null); setCallers([]); setFoldedHero(false); }}>
+            <select aria-label="局面" value={rangeType} onChange={e => { setRangeType(e.target.value); setFocusedRange(null); setCallers([]); setFoldedHero(false); }}>
               {rangeTypes.map(option => <option key={option.value} value={option.value} disabled={!option.available}>
                 {option.label}{option.available ? "" : "（データなし）"}
               </option>)}
@@ -299,7 +293,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           <div className="local-estimate-control"><small>マルチウェイは未検証のAI推定です。オープナーは既存RFI、コーラーは過去のコール選択頻度、Heroは現在の応答頻度を表示。既存データは変更しません。</small>{canGenerate && <button type="button" disabled={localStatus === "loading" || localStatus === "checking"} onClick={generateLocalEstimate}>{localStatus === "checking" ? "保存状態を確認中…" : localStatus === "loading" ? "Codexで生成中…" : localEstimate ? "保存済みレンジを表示中" : "Codexで推定レンジを生成"}</button>}</div>
           {localError && <StatusState tone="error">{localError}</StatusState>}
           <div className="multiway-ranges" aria-label="参加中のレンジ" style={{ "--participant-count": multiwayParticipants.length }}>
-          {positions.filter(position => multiwayParticipants.includes(position)).map(position => position === opener ? <StrategyMatrix key={position} node={{ actingPosition: opener }} title={`${opener} · 既存オープンレンジ`} ariaLabel="オープナーのレンジ" aggregates={openerModel.aggregates} actions={openerModel.actions} selected={selected} filter={openerFilter} onSelect={setSelected} onFilterChange={setOpenerFilter} /> : localEstimate?.ranges.find(range => range.position === position) ? (() => { const range = localEstimate.ranges.find(item => item.position === position); const matrix = localMatrix(range); return <StrategyMatrix key={position} node={{ actingPosition: position }} title={`${position} · ${position === hero ? "現在の応答" : "コール選択"}（AI推定・レイズ先 ${range.raise_to_bb}BB）`} ariaLabel={`${position}のレンジ`} aggregates={matrix.aggregates} actions={matrix.actions} selected={selected} filter={localFilters[position] ?? (position === hero ? "all" : "call")} onSelect={setSelected} onFilterChange={value => setLocalFilters(previous => ({ ...previous, [position]: value }))} />; })() : <Panel key={position} className="multiway-range-panel" aria-label={`${position}のレンジ`}>
+          {positions.filter(position => multiwayParticipants.includes(position)).map(position => position === opener ? <StrategyMatrix key={position} node={{ actingPosition: opener }} title={`${opener} · 既存オープンレンジ`} ariaLabel="オープナーのレンジ" aggregates={openerModel.aggregates} actions={openerModel.actions} selected={selected} onSelect={setSelected} /> : localEstimate?.ranges.find(range => range.position === position) ? (() => { const range = localEstimate.ranges.find(item => item.position === position); const matrix = localMatrix(range); return <StrategyMatrix key={position} node={{ actingPosition: position }} title={`${position} · ${position === hero ? "現在の応答" : "コール選択"}（AI推定・レイズ先 ${range.raise_to_bb}BB）`} ariaLabel={`${position}のレンジ`} aggregates={matrix.aggregates} actions={matrix.actions} selected={selected} onSelect={setSelected} />; })() : <Panel key={position} className="multiway-range-panel" aria-label={`${position}のレンジ`}>
             <SectionHeading title={`${position} · ${position === hero && !foldedHero ? "アクション中" : "コール参加"}`} />
             <StatusState title="推定レンジは準備中">この履歴のレンジはまだ保存されていません。</StatusState>
           </Panel>)}
@@ -308,12 +302,12 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           {isComparison && focusedRange !== "hero" && <StrategyMatrix node={{ actingPosition: opener }}
             title={`${opener} · オープナーのオープンレンジ`} ariaLabel="オープナーのレンジ"
             aggregates={openerModel.aggregates} actions={openerModel.actions}
-            selected={selected} filter={openerFilter} onSelect={hand => { setSelected(hand); setFocusedRange("opener"); }} onFilterChange={setOpenerFilter}
+            selected={selected} onSelect={hand => { setSelected(hand); setFocusedRange("opener"); }}
             footer={<small className="comparison-hand">{selected}：オープン {openerHand.open}% / フォールド {openerHand.fold}%</small>} />}
           {(!isComparison || focusedRange !== "opener") && <StrategyMatrix node={{ actingPosition: actingHero }} aggregates={model.aggregates} actions={model.actions}
             title={isOpening ? undefined : `${actingHero} · Heroの${isFourBet ? "4bet後の応答（元の3bettor）" : isThreeBet ? "3bet後の応答" : "対応レンジ"}`} ariaLabel={isOpening ? undefined : "Heroのレンジ"}
             footer={!isComparison ? undefined : <small className="comparison-hand">{selected}：3bet {hand.three_bet}% / コール {hand.call}% / フォールド {hand.fold}%</small>}
-            selected={selected} filter={filter} onSelect={hand => { setSelected(hand); if (isComparison) setFocusedRange("hero"); }} onFilterChange={setFilter} />}
+            selected={selected} onSelect={hand => { setSelected(hand); if (isComparison) setFocusedRange("hero"); }} />}
           {isComparison && focusedRange && <HandBreakdown
             title={`${focusedRange === "opener" ? opener : actingHero} · ${focusedRange === "opener" ? "オープナー" : "Hero"}の選択ハンド`}
             hand={focusedRange === "opener" ? openerHand : hand}

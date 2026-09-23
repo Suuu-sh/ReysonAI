@@ -3,7 +3,7 @@ import { ActionBars, Panel, SectionHeading, StatList } from "./primitives.jsx";
 import { ComboTable } from "./ComboTable.jsx";
 import { StrategyMatrix } from "./StrategyMatrix.jsx";
 
-export function ResultsView({ section, node, solution, combos, aggregates, selected, filter, actions, onSelect, onFilterChange }) {
+export function ResultsView({ section, node, solution, combos, aggregates, selected, actions, onSelect }) {
   const chosen = combos.filter(combo => combo.hand === selected);
   const chosenMix = totals(chosen);
   const ev = expectedValue(chosen);
@@ -12,7 +12,7 @@ export function ResultsView({ section, node, solution, combos, aggregates, selec
 
   return (
     <div className={`results ${showMatrix ? "" : "detail-only"} ${!showMatrix ? "has-combos" : ""}`}>
-      {showMatrix && <StrategyMatrix node={node} aggregates={aggregates} selected={selected} filter={filter} actions={actions} onSelect={onSelect} onFilterChange={onFilterChange} />}
+      {showMatrix && <StrategyMatrix node={node} aggregates={aggregates} selected={selected} actions={actions} onSelect={onSelect} />}
 
       {chosen.length > 0 && <div className="detail-column">
         <Panel>
