@@ -19,12 +19,16 @@ test("expanded path keeps opening controls separate from post-open actions and s
   assert.match(response, /SB[\s\S]*ここからオープン[\s\S]*Fold[\s\S]*Call[\s\S]*Take action/);
   assert.doesNotMatch(response, /SB[\s\S]*>Raise 2\.5<\/button>/);
   const sizedResponse = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "response", spot: { hands: [{ three_bet_size_bb: 11 }] } }));
-  assert.match(sizedResponse, /3bet先：11BB/);
+  assert.match(sizedResponse, /3bet 11BB/);
 
   const fourBet = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "four_bet", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.6 } }));
   assert.match(fourBet, /3bet 11BB/);
-  assert.match(fourBet, /続く履歴：SB 3bet → 11BB → BTN 4bet → 28\.6BB/);
+  assert.match(fourBet, /4bet 28\.6BB/);
+  assert.match(fourBet, /5bet All-in 100BB/);
   assert.doesNotMatch(fourBet, /SB[\s\S]*>Raise 2\.5<\/button>/);
+  const allIn = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "four_bet", pendingRaise: "all_in", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.6 } }));
+  assert.match(allIn, /再応答 · 推定レンジ準備中/);
+  assert.doesNotMatch(allIn, /次のアクションノード/);
 });
 after(async () => { await server?.close(); });
 
@@ -48,8 +52,8 @@ test("estimated view starts with a compact six-seat action path", () => {
   assert.match(html, /aria-label="アクション履歴"/);
   assert.match(html, /aria-label="アクション選択を開く"/);
   assert.match(html, /BTN.*Raise 2\.5.*SB.*Fold.*BB.*Take action/s);
-  assert.match(html, /次のアクションノード.*BBが3betした場合/);
-  assert.match(html, /3bet後の応答.*BTN.*次に応答/s);
+  assert.doesNotMatch(html, /次のアクションノード|aria-label="局面"|aria-label="有効スタック"|aria-label="オープンサイズ"/);
+  assert.match(html, /100BB · Open 2\.5BB/);
   assert.doesNotMatch(html, /表示アクション|すべてのアクション/);
   assert.match(html, /レイズ 2\.5 BB.*フォールド/s);
   assert.doesNotMatch(html, /label="オープナー"/);
@@ -62,6 +66,6 @@ test("missing and invalid saved JSON render errors without matrix or substitute 
     assert.match(html, /role="alert"/);
     assert.doesNotMatch(html, /aria-label="169ハンド"/);
     assert.doesNotMatch(html, /class="bars"/);
-    assert.match(html, /aria-label="局面"/); // Can recover by switching to a valid dataset.
+    assert.match(html, /aria-label="アクション履歴"/); // Can recover by choosing another path.
   }
 });

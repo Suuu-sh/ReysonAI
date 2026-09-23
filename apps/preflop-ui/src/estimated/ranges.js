@@ -9,18 +9,6 @@ export const rangeTypes = [
   { value: "four_bet", label: "4bet後の応答", available: true },
 ];
 
-export const stackOptions = [
-  { value: 50, label: "50BB", available: false },
-  { value: 100, label: "100BB", available: true },
-  { value: 200, label: "200BB", available: false },
-];
-
-export const openSizeOptions = [
-  { value: 2, label: "2BB", available: false },
-  { value: 2.5, label: "2.5BB", available: true },
-  { value: 3, label: "3BB", available: false },
-];
-
 export function validateDataset(data) {
   const expectedIds = positions.flatMap((opener, i) => positions.slice(i + 1).map(hero => `${hero}_vs_${opener}`));
   if (data?.metadata?.ante_bb !== 0 || data?.metadata?.strategy_type !== "general_knowledge_estimate_not_gto" ||

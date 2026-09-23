@@ -5,25 +5,15 @@
 - Each participant starts with a clear pending-data state. On supported paths, a separate user-triggered local AI estimate may be cached outside the persisted datasets; it is unverified and is not a solver/GTO result. No heads-up frequencies are reused for multiway estimates.
 - The non-GTO status remains visible. Unsupported paths stay pending; generated local data never overwrites saved heads-up estimates.
 
-## Conditional next action after BB (2026-09-23)
-- A BB 3bet now creates a conditional next-action node. The node wraps action to the first live seat after BB (the opener), then shows prior callers in order; an opener 4bet similarly creates a response node for the original 3bettor.
-- Browser check at `http://localhost:5173/`: BTN open → SB call → BB acting showed the conditional BTN → SB response sequence. Each multiway seat remained explicitly pending. Selecting BB Call removed the follow-up node; restoring BB to Take action restored it.
-- UI tests: 44 passed. Production build and Sites tests passed (4 Sites tests). Existing large-bundle warning remains.
-
-## Compact conditional next-action node (2026-09-23)
-- Reduced the follow-up area from a tall, full-width stack to a short inline row. The branch condition and next-action title stay alongside compact actor chips; poker response order, available actions, and multiway pending states remain visible.
-- Browser check at `http://localhost:5173/`: BTN → SB follow-up after BB 3bet retained both pending seats while taking substantially less vertical space.
-- Verification: 45 UI tests, production build, and 4 Sites tests passed. Build reports the existing large-bundle warning.
-
 ## Unified selection panel update (2026-09-23)
 - Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable SolveaGTO panel rather than exact screenshot replication.
-- Merged spot/stack/size controls and six-seat action path into the same panel. The compact path remains visible; the top control expands seat choices. Removed the redundant Cash tile and used existing pink tokens for the active state.
+- The compact six-seat path remains visible; the top control expands seat choices. Fixed conditions are in metadata, without a duplicate dropdown row.
 - Inspected the rendered compact state in the local browser and corrected a narrow-screen toggle overflow. The responsive path remains horizontally scrollable.
 - Final result: passed for the requested unified selection surface.
 
 ## Seat/action selection update (2026-09-23)
 - Replaced the opener/Hero dropdowns with a six-seat action path. The compact path shows actions in one row; the expand control reveals seat choices and highlights the acting seat.
-- The remaining spot, stack and size selectors preserve the visible data boundaries. Seat changes select only persisted opener/response combinations; no strategy frequencies are generated.
+- Seat changes select persisted opener/response combinations; unsupported branches remain pending rather than generating substitute strategy frequencies.
 - Local browser verification: the initial BTN → BB path rendered, expansion worked, and selecting UTG raise changed the visible matchup and opener range to UTG vs BB. Narrow viewport keeps the action path horizontally scrollable.
 - All 38 UI tests, production build and Sites tests passed. Existing large-bundle warning remains.
 - Final result: passed for the supported estimated-range selection scope.
@@ -50,15 +40,19 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - BTN/BB shows 12BB 3bet → 26.5BB 4bet. AKo: all-in 85%, call 15%, fold 0%, total 100BB all-in.
 - UTG/HJ shows 8BB → 22BB, AA shows all-in 90%, call 10%.
 - Changing opener from UTG with Hero HJ to SB automatically selects the only legal Hero BB; BB opener and earlier Hero seats stay disabled.
-- 5bet action filter works. AA (6 combos) and AKo (12 combos) details reflect saved values.
+- AA (6 combos) and AKo (12 combos) details reflect saved values.
 - 72o shows 「対象外（到達不能）」 and its saved explanation; no recommendation bars or fold=100 frequency display. Matrix uses marked/striped cells without action strips.
 - Temporarily replaced the new JSON with malformed syntax: explicit error, zero matrices. Then temporarily removed it: explicit 「データなし」 error, zero matrices. The selector still switched to valid 3bet data. Restored the exact saved file and verified normal four-bet display again. No fixture remains in the application.
 - Existing opener-range focus and 「両方のレンジを表示」 comparison recovery verified; comparison returns to two matrices.
 - Internal screenshot inspected at 1280×720: matrix, selected-hand frequencies, raise-to sizes and non-GTO metadata visible. Longer conditions remain in the existing internally scrollable details column.
-- Narrow default in-app viewport inspected: selectors wrap, matrix and stacked detail layout remain usable. Temporary viewport override reset.
+- Narrow default in-app viewport inspected: the action path scrolls horizontally, while matrix and stacked detail layout remain usable. Temporary viewport override reset.
 - Local server remains running with the four-bet view open for user inspection.
 
 ## Boundaries
 - No claim of exact reference-image fidelity or GTO strategy quality.
 - Vite reports the existing large-bundle warning; build succeeds. All persisted data is bundled, without lazy-loading optimization in this change.
 - Non-all-in 5bet, cold 4bet, squeezes, callers, and the opener’s response to a 5bet are out of scope.
+## Seat-driven preflop path (2026-09-23)
+- Removed the spot, stack and open-size dropdown row; fixed 100BB/2.5BB conditions remain in metadata. The six seat blocks now carry saved 3bet, 4bet and 5bet all-in steps, replacing the separate conditional follow-up row.
+- Browser at `http://127.0.0.1:5173/`: BTN open → BB 3bet 12BB → BTN 4bet 26.5BB → BB 5bet all-in 100BB was navigable through the seat blocks. The unsupported post-all-in response displayed a pending state and no range matrix.
+- Tests: 45 passed; production build passed. The existing large-bundle warning remains.

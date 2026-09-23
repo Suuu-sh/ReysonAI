@@ -1,4 +1,4 @@
-.estimate-settings { display: grid; grid-template-columns: minmax(225px, 1.3fr) repeat(3, minmax(110px, 1fr)); gap: 12px; align-items: center; flex-shrink: 0; }
+.estimate-settings { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: center; flex-shrink: 0; }
 .estimate-settings-intro { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; min-width: 0; }
 .estimate-settings-intro small { white-space: normal; }
 .path-toggle { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-color: var(--line); background: var(--surface-raised); color: var(--accent-soft); font-size: 11px; font-weight: 650; }
@@ -15,27 +15,14 @@
 .action-seat-options button, .action-seat-choice, .action-seat-summary { display: block; width: 100%; padding: 4px 6px; border: 0; background: none; text-align: left; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .action-seat-options button:hover:not(:disabled), .action-seat-summary:hover:not(:disabled), .action-seat .chosen { background: #fa65a120; border-radius: 5px; }
 .action-seat-options .action-seat-reset { margin-top: 5px; border-top: 1px solid var(--line); color: var(--text-subtle); font-size: 10px; }
-.action-path-history { margin-top: 6px; color: var(--text-muted); font-size: 11px; }
+.action-path-pending { color: var(--accent-soft); white-space: normal; }
 .action-seat-summary { margin-top: 2px; font-weight: 650; }
 .action-seat-summary:disabled { opacity: 1; color: var(--text-muted); }
 .action-path.expanded .action-seat { min-height: 116px; }
-.action-path-next { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 5px 7px; min-width: 0; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); }
-.action-path-next-heading { display: flex; flex: 0 0 auto; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin-bottom: 0; }
-.action-path-next-heading small { color: var(--accent-soft); font-size: 10px; font-weight: 650; }
-.action-path-next-heading strong { color: var(--text); font-size: 11px; }
-.action-path-next-seats { display: flex; flex: 1 1 auto; gap: 5px; min-width: 0; overflow-x: auto; }
-.action-path-next-seat { display: grid; flex: 0 0 auto; grid-template-columns: auto auto auto; align-items: baseline; column-gap: 8px; row-gap: 2px; width: max-content; max-width: 250px; padding: 4px 7px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-raised); font-size: 10px; }
-.action-path-next-seat.active { border-color: var(--accent); background: var(--surface-accent); }
-.action-path-next-seat > strong { color: var(--accent-bright); font-size: 11px; }
-.action-path-next-seat > span { color: var(--text-muted); }
-.action-path-next-seat > small { color: var(--text-subtle); white-space: nowrap; }
-.action-path-next-seat > .action-path-pending { grid-column: 1 / -1; white-space: normal; }
-.action-path-next-seat > .action-path-pending { color: var(--accent-soft); }
 .multiway-ranges { display: grid; grid-template-columns: repeat(var(--participant-count, 3), minmax(0, 1fr)); gap: 10px; min-width: 0; }
 .multiway-range-panel { min-height: 240px; }
 .multiway-range-panel .panel-heading { margin-bottom: 20px; }
 .estimate-settings h2 { margin-bottom: 4px; }
-.estimate-settings > .field { min-width: 0; }
 .estimate-context { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; padding: 10px 0; font-size: 12px; flex-shrink: 0; }
 .estimate-context span { color: var(--text-muted); }
 .results.estimate-results { grid-template-columns: minmax(350px, 1.8fr) minmax(275px, 1fr); }
@@ -58,20 +45,13 @@
   .comparison-results .matrix-panel { grid-row: auto; }
   .comparison-results .detail-column { grid-column: 1; grid-row: auto; }
 }
-@media (max-width: 900px) and (min-width: 651px) {
-  .estimate-settings { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-  .estimate-settings > div:first-child { grid-column: 1 / -1; }
-}
 @media (max-width: 650px) {
-  .estimate-settings { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .estimate-settings > div { grid-column: 1 / -1; }
   .results.estimate-results { grid-template-columns: minmax(0, 1fr); }
   .estimate-results .detail-column { grid-column: 1; }
 }
 @media (max-width: 900px) {
   .action-path { overflow-x: auto; }
   .action-path-seats { min-width: 780px; }
-  .action-path-next { min-width: 780px; }
   .multiway-ranges { grid-template-columns: 1fr; }
 }
 
