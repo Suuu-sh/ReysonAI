@@ -108,3 +108,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Expanded position/action blocks now flow in a compact, vertically ordered responsive grid rather than one long horizontal strip. Seat order and acting-seat emphasis are preserved; action choices stay inline on desktop and wrap into two columns on narrow screens.
 - Browser check at `http://localhost:5173/` showed a balanced 3-by-2 seat layout at desktop width with the range table still visible below it; the selector remains short. The collapsed summary layout is unchanged.
 - Verification: all 51 UI/data tests and 4 Sites tests passed; production build passed. Vite still reports its existing large-bundle warning.
+
+## Range settings controls and hand details (2026-09-24)
+- The game-format editor and reset are now icon-only buttons immediately beside “推定レンジ”; both retain accessible labels and hover titles. The redundant “データの条件” hand-detail card remains removed.
+- Browser verification at `http://localhost:5173/`: both icons sit in the heading row; opening AKo details shows its AI reason and mix, with no “データの条件” card or hand-JSON link.
+- Verification: `node --test tests/*.test.mjs` passed (64 tests), `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite still reports a large-chunk warning.

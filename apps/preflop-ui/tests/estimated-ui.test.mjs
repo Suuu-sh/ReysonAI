@@ -149,14 +149,15 @@ test("saved action paths survive the SolveaAI storage-key migration", () => {
 
 test("estimated view always shows the expanded six-seat action path", () => {
   const html = renderToStaticMarkup(createElement(EstimatedRanges));
-  assert.match(html, /button[^>]*class="path-reset"[^>]*>リセット<\/button>/);
+  assert.match(html, /<strong>推定レンジ<\/strong><div class="settings-actions"><button[^>]*aria-label="ゲーム設定を編集"[^>]*><svg[\s\S]*?<\/svg><\/button><button[^>]*aria-label="アクションをリセット"[^>]*><svg[\s\S]*?<\/svg><\/button><\/div>/);
+  assert.doesNotMatch(html, /aria-label="ゲーム設定を編集"[^>]*>編集<\/button>|aria-label="アクションをリセット"[^>]*>リセット<\/button>/);
   assert.match(html, /aria-label="アクション履歴"/);
   assert.doesNotMatch(html, /path-toggle|アクション選択を(開|閉じ)る/);
   assert.match(html, /action-path expanded/);
   assert.match(html, /BTN[\s\S]*aria-pressed="true"[^>]*>Raise 2\.5<[\s\S]*SB[\s\S]*aria-pressed="true"[^>]*>Fold<[\s\S]*action-seat-seat active[\s\S]*BB/);
   assert.doesNotMatch(html, /Take action/);
   assert.doesNotMatch(html, /次のアクションノード|aria-label="局面"|aria-label="有効スタック"|aria-label="オープンサイズ"/);
-  assert.match(html, /action-seat-info[\s\S]*aria-label="ゲーム設定を編集"[\s\S]*Cash · 6max · 100bb[\s\S]*Open 2\.5BB · アンティなし[\s\S]*<strong>UTG<\/strong>/);
+  assert.match(html, /action-seat-info[\s\S]*aria-label="ゲーム設定を編集"[\s\S]*aria-label="アクションをリセット"[\s\S]*Cash · 6max · 100bb[\s\S]*Open 2\.5BB · アンティなし[\s\S]*<strong>UTG<\/strong>/);
   assert.doesNotMatch(html, /表示アクション|すべてのアクション/);
   assert.match(html, /レイズ 2\.5 BB.*フォールド/s);
   assert.doesNotMatch(html, /label="オープナー"/);
