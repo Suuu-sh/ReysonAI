@@ -144,3 +144,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Browser verification at `http://127.0.0.1:5173/`: selected the BB position header and confirmed BB's open-response matrix plus SB's historical open-response matrix; the selected state is announced accessibly.
 - Regression verification at `http://localhost:5173/`: UTG Raise → HJ Call → CO Call → BTN Fold → SB Call with BB pending showed UTG, HJ, CO, SB and BB panels without a reload; the folded BTN panel stayed hidden. Selecting BB prioritizes SB and BB while the other current participants remain visible.
 - Verification: all 72 UI/data tests passed, `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite reports the existing large-chunk warning.
+
+## Action-block rewind and range visibility (2026-09-24)
+- Clicking a decision block now rewinds the action path to that decision, clears later choices, preserves earlier callers, and presents the selected decision's related range table(s). Re-clicking only clears the range priority.
+- Browser verification at `http://localhost:5173/`: from UTG Raise → HJ Call → CO Call → BTN Fold → SB Call, five participants were shown immediately (UTG/HJ saved tables; CO/SB/BB pending) without reloading. Clicking CO returned the path to CO with HJ's prior call retained and displayed UTG's opening table, HJ's historical response table, and CO's pending range panel.
+- Verification: `npm test` passed (76 tests), `npm run build` passed, and `npm run test:sites` passed (4 tests). The existing Vite large-chunk warning remains.

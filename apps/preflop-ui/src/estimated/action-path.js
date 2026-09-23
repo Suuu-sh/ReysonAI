@@ -38,6 +38,85 @@ export function responseActionTransition({ opener, callers = [], position, actio
   };
 }
 
+// Clicking a seat in the action path returns the selector to that decision,
+// removing choices made at that seat and later in the hand.
+export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], block }) {
+  if (!block) return null;
+
+  if (block.kind === "seat") {
+    const positionIndex = positions.indexOf(block.position);
+    const openerIndex = positions.indexOf(opener);
+    if (positionIndex < 0 || openerIndex < 0) return null;
+
+    if (positionIndex <= openerIndex) {
+      return {
+        rangeType: "open",
+        opener: block.position,
+        hero: positions[positionIndex + 1] ?? block.position,
+        callers: [],
+        foldedHero: false,
+        pendingRaise: null,
+        continuationAction: null,
+        shoveResponse: null,
+      };
+    }
+
+    // Keep only calls made before this position; the clicked decision itself
+    // and every later choice are removed from the path.
+    return {
+      rangeType: "response",
+      opener,
+      hero: block.position,
+      callers: callers.filter(caller => positions.indexOf(caller) < positionIndex),
+      foldedHero: false,
+      pendingRaise: null,
+      continuationAction: null,
+      shoveResponse: null,
+    };
+  }
+
+  if (block.kind === "continuation" && block.position === opener) {
+    return {
+      rangeType: "three_bet",
+      opener,
+      hero,
+      callers,
+      foldedHero: false,
+      pendingRaise: null,
+      continuationAction: null,
+      shoveResponse: null,
+    };
+  }
+
+  if (block.kind === "continuation" && block.position === hero && rangeType === "four_bet") {
+    return {
+      rangeType: "four_bet",
+      opener,
+      hero,
+      callers,
+      foldedHero: false,
+      pendingRaise: null,
+      continuationAction: null,
+      shoveResponse: null,
+    };
+  }
+
+  if (block.kind === "shove-response" && rangeType === "four_bet") {
+    return {
+      rangeType: "four_bet",
+      opener,
+      hero,
+      callers,
+      foldedHero: false,
+      pendingRaise: "all_in",
+      continuationAction: null,
+      shoveResponse: null,
+    };
+  }
+
+  return null;
+}
+
 export function buildNextActionNode({ rangeType, opener, hero, callers = [], currentHand, foldedHero = false }) {
   if (foldedHero) return null;
 

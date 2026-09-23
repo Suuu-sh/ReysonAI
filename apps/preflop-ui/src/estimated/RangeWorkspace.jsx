@@ -9,7 +9,7 @@ import { findFourBetSpot, fourBetMatrixModel, loadFourBetDataset } from "./four-
 import threeBetSource from "./three-bet-responses.json";
 import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "./three-bet-responses.js";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.js";
-import { nextActorsAfterRaise, responseActionTransition } from "./action-path.js";
+import { nextActorsAfterRaise, responseActionTransition, rewindActionBlockTransition } from "./action-path.js";
 import { displayModes } from "./display-mode.js";
 import { displayModeKey } from "../profile.js";
 import { useDetailedReasons } from "./detailed-reasons.js";
@@ -270,7 +270,7 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
   return null;
 }
 
-export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onAct = () => {}, onContinuationAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onAct = () => {}, onContinuationAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
   const blocks = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef(null);
   useEffect(() => {
@@ -296,7 +296,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
           <small>{block.pot}</small>
         </div>;
         return <div className={`action-seat action-seat-${block.kind}${block.active ? " active" : ""}${selectedRangeBlock === block.key ? " range-selected" : ""}`} key={block.key}>
-          <div className="action-seat-heading"><button type="button" className="action-seat-position" aria-pressed={selectedRangeBlock === block.key} aria-label={`${block.position}のアクション時点のレンジを表示`} title={selectedRangeBlock === block.key ? "選択を解除" : "この位置のレンジと前のポジションのレンジを表示"} onClick={() => onSelectRangeBlock(selectedRangeBlock === block.key ? null : block.key)}>{block.position}</button><span>{block.stack}</span></div>
+          <div className="action-seat-heading"><button type="button" className="action-seat-position" aria-pressed={selectedRangeBlock === block.key} aria-label={`${block.position}のアクションに戻り、レンジ表を表示`} title="このアクションに戻り、関連するレンジ表を表示" onClick={() => onRewindActionBlock ? onRewindActionBlock(block) : onSelectRangeBlock(selectedRangeBlock === block.key ? null : block.key)}>{block.position}</button><span>{block.stack}</span></div>
           {expanded ? <div className="action-seat-options">
             {block.options.map(option => <button type="button" key={option.action} className={option.action === block.chosen ? "chosen" : ""} aria-pressed={option.action === block.chosen} disabled={option.disabled || block.kind === "forced" || block.kind === "pending"} onClick={() => select(block, option.action)}>{option.label}</button>)}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
@@ -412,6 +412,21 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setCallers(transition.callers);
     setFoldedHero(transition.foldedHero);
     setPendingRaise(transition.pendingRaise);
+  }
+
+  function rewindToActionBlock(block) {
+    const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, block });
+    setFocusedRange(null);
+    setSelectedRangeBlock(current => current === block.key ? null : block.key);
+    if (!transition) return;
+    setRangeType(transition.rangeType);
+    setOpener(transition.opener);
+    setHero(transition.hero);
+    setCallers(transition.callers);
+    setFoldedHero(transition.foldedHero);
+    setPendingRaise(transition.pendingRaise);
+    setContinuationAction(transition.continuationAction);
+    setShoveResponse(transition.shoveResponse);
   }
 
   function selectFourBet() {
@@ -576,7 +591,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   };
   const selectedBlockIndex = actionBlocks.findIndex(block => block.key === selectedRangeBlock);
   const selectedActionEntries = selectedBlockIndex < 0 ? null : [
-    actionRangeEntry(actionBlocks[selectedBlockIndex - 1], "previous"),
+    ...(isOpening ? [] : [actionRangeEntry(actionBlocks[selectedBlockIndex - 1], "previous")]),
     actionRangeEntry(actionBlocks[selectedBlockIndex], "selected"),
   ].filter(Boolean);
   // Keep the focused action pair first, but never hide other active participants' ranges.
@@ -604,7 +619,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           blocks={actionBlocks}
           selectedRangeBlock={selectedRangeBlock}
           {...actionState}
-          onSelectRangeBlock={key => { setFocusedRange(null); setSelectedRangeBlock(key); }}
+          onRewindActionBlock={rewindToActionBlock}
           onShoveResponse={action => { setFocusedRange(null); setSelectedRangeBlock(null); setShoveResponse(action); }}
           onAct={actAt}
           onFourBet={selectFourBet}

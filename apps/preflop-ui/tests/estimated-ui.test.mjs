@@ -5,7 +5,7 @@ import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
-import { responseActionTransition } from "../src/estimated/action-path.js";
+import { responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.js";
 
 let server, EstimatedRanges, ActionPath, Sidebar, buildActionBlocks, prioritizeParticipantRanges;
 before(async () => {
@@ -82,7 +82,48 @@ test("action block selection points to saved ranges and keeps unsupported contin
 
   const html = renderToStaticMarkup(createElement(ActionPath, { expanded: true, opener: "UTG", hero: "BB", rangeType: "response", selectedRangeBlock: "BB" }));
   assert.match(html, /action-seat-seat[^\"]*range-selected/);
-  assert.match(html, /aria-pressed="true" aria-label="BBのアクション時点のレンジを表示" title="選択を解除"/);
+  assert.match(html, /aria-pressed="true" aria-label="BBのアクションに戻り、レンジ表を表示" title="このアクションに戻り、関連するレンジ表を表示"/);
+});
+
+test("clicking an action block rewinds choices from that decision and retains earlier callers", () => {
+  const beforeCaller = rewindActionBlockTransition({
+    rangeType: "response", opener: "UTG", hero: "BB", callers: ["HJ", "CO", "SB"],
+    block: { kind: "seat", position: "BTN" },
+  });
+  assert.deepEqual(beforeCaller, {
+    rangeType: "response", opener: "UTG", hero: "BTN", callers: ["HJ", "CO"],
+    foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null,
+  });
+
+  const opener = rewindActionBlockTransition({
+    rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"],
+    block: { kind: "seat", position: "UTG" },
+  });
+  assert.deepEqual(opener, {
+    rangeType: "open", opener: "UTG", hero: "HJ", callers: [],
+    foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null,
+  });
+
+  const beforeFourBet = rewindActionBlockTransition({
+    rangeType: "four_bet", opener: "BTN", hero: "BB", callers: [],
+    block: { kind: "continuation", position: "BTN" },
+  });
+  assert.equal(beforeFourBet.rangeType, "three_bet");
+  assert.equal(beforeFourBet.pendingRaise, null);
+
+  const beforeFiveBet = rewindActionBlockTransition({
+    rangeType: "four_bet", opener: "BTN", hero: "BB", callers: [],
+    block: { kind: "continuation", position: "BB" },
+  });
+  assert.equal(beforeFiveBet.rangeType, "four_bet");
+  assert.equal(beforeFiveBet.pendingRaise, null);
+
+  const fiveBetResponse = rewindActionBlockTransition({
+    rangeType: "four_bet", opener: "BTN", hero: "BB", callers: [],
+    block: { kind: "shove-response", position: "BTN" },
+  });
+  assert.equal(fiveBetResponse.pendingRaise, "all_in");
+  assert.equal(fiveBetResponse.shoveResponse, null);
 });
 after(async () => { await server?.close(); });
 
@@ -204,7 +245,7 @@ test("estimated view always shows the expanded six-seat action path", () => {
   assert.match(html, /BTN[\s\S]*aria-pressed="true"[^>]*>Raise 2\.5<[\s\S]*SB[\s\S]*aria-pressed="true"[^>]*>Fold<[\s\S]*action-seat-seat active[\s\S]*BB/);
   assert.doesNotMatch(html, /Take action/);
   assert.doesNotMatch(html, /次のアクションノード|aria-label="局面"|aria-label="有効スタック"|aria-label="オープンサイズ"/);
-  assert.match(html, /action-seat-info[\s\S]*aria-label="ゲーム設定を編集"[\s\S]*aria-label="アクションをリセット"[\s\S]*Cash · 6max · 100bb[\s\S]*Open 2\.5BB[\s\S]*aria-label="UTGのアクション時点のレンジを表示"/);
+  assert.match(html, /action-seat-info[\s\S]*aria-label="ゲーム設定を編集"[\s\S]*aria-label="アクションをリセット"[\s\S]*Cash · 6max · 100bb[\s\S]*Open 2\.5BB[\s\S]*aria-label="UTGのアクションに戻り、レンジ表を表示"/);
   assert.doesNotMatch(html, /Open 2\.5BB · アンティなし/);
   assert.doesNotMatch(html, /表示アクション|すべてのアクション/);
   assert.match(html, /レイズ 2\.5 BB.*フォールド/s);
