@@ -11,6 +11,7 @@ import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.js";
 import { nextActorsAfterRaise } from "./action-path.js";
 import { displayModes } from "./display-mode.js";
+import { displayModeKey } from "../profile.js";
 import { useDetailedReasons } from "./detailed-reasons.js";
 import { fiveBetMatrixModel, useFiveBetSpot } from "./five-bet-responses.js";
 import {
@@ -40,7 +41,7 @@ const fourBetFiles = import.meta.glob("./four-bet-responses.json", { eager: true
 const fourBetState = loadFourBetDataset(fourBetFiles["./four-bet-responses.json"], dataset, threeBetDataset, openingDataset);
 
 const selectionStorageKey = "solveaai:estimated-selection:v1";
-const displayModeStorageKey = "solveaai:display-mode:v1";
+const displayModeStorageKey = displayModeKey;
 const legacySelectionStorageKey = "solveagto:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
   const fallback = { rangeType: initialRangeType, opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, selected: "AKo" };
@@ -290,7 +291,7 @@ export function ActionPath({ leading, expanded, onAct = () => {}, onContinuation
   </div>;
 }
 
-export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState }) {
+export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile }) {
   const [initialSelection] = useState(() => restoredSelection(initialRangeType));
   const [rangeType, setRangeType] = useState(initialSelection.rangeType);
   const isOpening = rangeType === "open";
@@ -391,8 +392,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const multiwayParticipants = [opener, ...callers, ...(!foldedHero && !callers.includes(hero) ? [hero] : [])];
   const showPendingRanges = isComparison && callers.some(position => position !== hero);
   const sortedCallers = [...callers].sort((a, b) => positions.indexOf(a) - positions.indexOf(b));
-  const multiwayRequest = isComparison && !foldedHero && callers.length > 0 && callers.every(position => positions.indexOf(position) < positions.indexOf(hero))
-    ? { opener, hero, callers: sortedCallers }
+  // Hero's own call/fold is the decision being estimated, so it never counts as a prior caller.
+  const priorCallers = sortedCallers.filter(position => positions.indexOf(position) < positions.indexOf(hero));
+  const multiwayRequest = isComparison && priorCallers.length > 0 && priorCallers.length === sortedCallers.filter(position => position !== hero).length
+    ? { opener, hero, callers: priorCallers }
     : null;
   const fiveBet = useFiveBetSpot(opener, hero, isFourBet && pendingRaise === "all_in");
   const fiveBetModel = useMemo(() => fiveBet.spot ? fiveBetMatrixModel(fiveBet.spot) : null, [fiveBet.spot]);
@@ -498,7 +501,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const displayedEntries = focusedEntry ? [focusedEntry] : rangeEntries;
 
   return <div className="shell">
-    <Sidebar activeSection="プリフロップ" onSectionChange={() => {}} />
+    <Sidebar activeSection="プリフロップ" onSectionChange={() => {}} profile={profile} onEditProfile={onEditProfile} />
     <main>
       <Panel className="estimate-settings">
           <ActionPath leading={<div className="action-seat action-seat-info"><div className="action-seat-heading"><strong>推定レンジ</strong><span>100bb</span></div><ul><li>6max Cash</li><li>Open 2.5 · アンティなし</li></ul><div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div><div className="path-controls"><button type="button" className="path-reset" onClick={resetPath}>リセット</button></div></div>} expanded rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} raiseSizeFor={raiseSizeFor} pendingRaise={pendingRaise} continuationAction={continuationAction} shoveResponse={shoveResponse} onShoveResponse={action => { setFocusedRange(null); setShoveResponse(action); }} onAct={actAt} onFourBet={selectFourBet} onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setFocusedRange(null); setPendingRaise("all_in"); }} onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setContinuationAction(action); }} />
@@ -510,7 +513,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         </div>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
-            {canGenerate && isComparison && entry.position === hero && <InlineGenerationControl description="マルチウェイのAIソリューションをローカルで生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
+            {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイのAIソリューションをローカルで生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
             {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のAIソリューションをローカルで生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}
           {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} spot={focusedEntry.spot} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
@@ -521,6 +524,6 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   </div>;
 }
 
-export function RangeWorkspace() {
-  return <EstimatedRanges />;
+export function RangeWorkspace({ profile, onEditProfile }) {
+  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} />;
 }

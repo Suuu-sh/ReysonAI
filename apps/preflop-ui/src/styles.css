@@ -285,3 +285,30 @@ th small { display: block; }
   .metadata code { display: block; margin-top: 4px; text-align: left; }
   .app-footer { gap: 10px; }
 }
+
+.profile-chip { width: 100%; cursor: pointer; border: 1px solid var(--line); background: transparent; color: var(--text); }
+.profile-chip:hover:not(:disabled) { border-color: var(--line-strong); background: var(--surface-hover); }
+.profile-chip small { color: var(--text-muted); }
+.onboarding { display: grid; place-items: center; min-height: 100dvh; padding: 24px 16px; background: var(--bg); }
+.onboarding-card { display: grid; gap: 16px; width: min(100%, 560px); padding: 28px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.onboarding-brand { display: flex; align-items: center; gap: 8px; color: var(--text); font-size: 17px; font-weight: 700; letter-spacing: -.02em; }
+.onboarding-brand svg, .onboarding-brand b { color: var(--accent); }
+.onboarding h1 { margin: 4px 0 0; font-size: 22px; font-weight: 650; letter-spacing: -.02em; line-height: 1.4; }
+.onboarding-lead { margin: 0; color: var(--text-muted); font-size: 13px; }
+.level-options { display: grid; gap: 8px; margin: 0; padding: 0; border: 0; }
+.level-options legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.level-option { position: relative; display: grid; grid-template-columns: 44px 1fr; gap: 2px 12px; padding: 14px 16px; border: 1px solid var(--line-strong); border-radius: 10px; cursor: pointer; }
+.level-option:hover { background: var(--surface-hover); }
+.level-option.selected { border-color: var(--accent); background: var(--surface-raised); }
+.level-option input { position: absolute; opacity: 0; pointer-events: none; }
+.level-option:has(input:focus-visible) { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+.level-name { grid-row: span 2; align-self: center; color: var(--accent-soft); font-size: 15px; font-weight: 700; }
+.level-option strong { font-size: 14px; font-weight: 600; }
+.level-option small { color: var(--text-muted); font-size: 12px; line-height: 1.6; }
+.nickname-field { display: grid; gap: 6px; font-size: 12px; color: var(--text-muted); }
+.nickname-field input { padding: 9px 11px; font-size: 14px; color: var(--text); }
+.onboarding-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.onboarding-actions .primary { padding: 10px 22px; font-size: 14px; }
+.onboarding-cancel { border: 0; background: transparent; color: var(--text-muted); }
+.onboarding-note { color: var(--text-subtle); font-size: 11px; }
+@media (max-width: 480px) { .onboarding-card { padding: 20px; } .level-option { grid-template-columns: 1fr; } .level-name { grid-row: auto; } }

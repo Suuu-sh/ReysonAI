@@ -1,5 +1,6 @@
 import { Brain, Cards, CaretDoubleLeft, CaretDoubleRight, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
 import { useState } from "react";
+import { levelLabel } from "../profile.js";
 
 const navigationGroups = [
   {
@@ -30,7 +31,7 @@ function readInitialCollapsed() {
   return window.matchMedia("(max-width: 1049px)").matches;
 }
 
-export function Sidebar({ activeSection, onSectionChange }) {
+export function Sidebar({ activeSection, onSectionChange, profile = null, onEditProfile }) {
   const [collapsed, setCollapsed] = useState(readInitialCollapsed);
   const toggle = next => {
     setCollapsed(next);
@@ -85,10 +86,17 @@ export function Sidebar({ activeSection, onSectionChange }) {
           </div>
         ))}
       </nav>
-      <div className="header-meta">
-        <strong>Preflop Explorer</strong>
-        <small>READ-ONLY / v0.1</small>
-      </div>
+      {profile ? (
+        <button type="button" className="header-meta profile-chip" onClick={onEditProfile} title="レベルを変更" aria-label={`プロフィール：${levelLabel(profile.level)}。レベルを変更`}>
+          <strong>{profile.nickname || "ゲスト"}</strong>
+          <small>{levelLabel(profile.level)} · レベルを変更</small>
+        </button>
+      ) : (
+        <div className="header-meta">
+          <strong>Preflop Explorer</strong>
+          <small>READ-ONLY / v0.1</small>
+        </div>
+      )}
     </aside>
     </>
   );
