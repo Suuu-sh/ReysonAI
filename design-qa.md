@@ -1,5 +1,11 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Unified selection panel update (2026-09-23)
+- Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable SolveaGTO panel rather than exact screenshot replication.
+- Merged spot/stack/size controls and six-seat action path into the same panel. The compact path remains visible; the top control expands seat choices. Removed the redundant Cash tile and used existing pink tokens for the active state.
+- Inspected the rendered compact state in the local browser and corrected a narrow-screen toggle overflow. The responsive path remains horizontally scrollable.
+- Final result: passed for the requested unified selection surface.
+
 ## Seat/action selection update (2026-09-23)
 - Replaced the opener/Hero dropdowns with a six-seat action path. The compact path shows actions in one row; the expand control reveals seat choices and highlights the acting seat.
 - The remaining spot, stack and size selectors preserve the visible data boundaries. Seat changes select only persisted opener/response combinations; no strategy frequencies are generated.

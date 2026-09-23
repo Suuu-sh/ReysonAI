@@ -75,7 +75,7 @@ function HandBreakdown({ title, hand, model, isOpening, isThreeBet, isFourBet, s
   </div>;
 }
 
-function ActionPath({ expanded, onToggle, rangeType, opener, hero, spot, onOpenerChange, onHeroChange }) {
+function ActionPath({ expanded, rangeType, opener, hero, spot, onOpenerChange, onHeroChange }) {
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -88,10 +88,6 @@ function ActionPath({ expanded, onToggle, rangeType, opener, hero, spot, onOpene
   };
 
   return <div className={`action-path ${expanded ? "expanded" : "collapsed"}`} aria-label="アクション履歴">
-    <div className="action-path-heading">
-      <strong>Cash <span>100bb</span></strong>
-      <button type="button" aria-expanded={expanded} aria-label={expanded ? "アクション選択を閉じる" : "アクション選択を開く"} onClick={onToggle}>{expanded ? "⌃" : "⌄"}</button>
-    </div>
     <div className="action-path-seats">
       {positions.map((position, index) => {
         const canOpen = index < positions.length - 1;
@@ -161,7 +157,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     <Header activeSection="プリフロップ" onSectionChange={() => {}} />
     <main>
       <Panel className="estimate-settings">
-          <div><h2>推定レンジ</h2><small>6max Cash · 100BB · Open 2.5BB · アンティなし</small></div>
+          <div className="estimate-settings-intro"><div><h2>推定レンジ</h2><small>6max Cash · 100BB · アンティなし</small></div><button type="button" className="path-toggle" aria-expanded={pathExpanded} aria-label={pathExpanded ? "アクション選択を閉じる" : "アクション選択を開く"} onClick={() => setPathExpanded(value => !value)}>{pathExpanded ? "選択を閉じる" : "アクションを選ぶ"}<span aria-hidden="true">{pathExpanded ? "−" : "+"}</span></button></div>
           <Field label="局面">
             <select aria-label="局面" value={rangeType} onChange={e => { setRangeType(e.target.value); setFilter("all"); setFocusedRange(null); }}>
               {rangeTypes.map(option => <option key={option.value} value={option.value} disabled={!option.available}>
@@ -183,8 +179,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
               </option>)}
             </select>
           </Field>
+          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} onOpenerChange={changeOpener} onHeroChange={changeHero} />
         </Panel>
-        <ActionPath expanded={pathExpanded} onToggle={() => setPathExpanded(value => !value)} rangeType={rangeType} opener={opener} hero={hero} spot={spot} onOpenerChange={changeOpener} onHeroChange={changeHero} />
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className="estimate-context">
           <strong>{isOpening ? `${opener} Open · 2.5BB` : isFourBet ? `${opener} Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener} 4bet ${spot.four_bet_size_bb}BB → ${hero}（元の3bettor / Hero）の応答 · ${spot.hero_position_vs_opener}` : isThreeBet ? `${opener}（Hero）Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener}の応答 · ${spot.hero_position_vs_three_bettor}` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>

@@ -17,6 +17,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Keep the primary navigation in the top header with `プリフロップ` centered as the active area. Future product areas may appear as clearly disabled `準備中` placeholders, while hand details and calculation metadata remain out of the top-level navigation.
 
 ## Durable UI feedback
+- On 2026-09-23 the user asked to combine the range settings and seat/action path into one selection surface. Keep it a compact, original SolveaGTO-style expandable panel rather than copying GTOWizard's separate cards verbatim.
 - The 2026-09-23 selection feedback uses a GTOWizard-like horizontal seat/action path: compact summary by default, expandable seat actions, and a highlighted acting seat. Preserve SolveaGTO's black/pink visual language and limit choices to persisted estimated-range spots; do not invent strategies.
 - Range-table action colors must keep `raise` and `call` visually distinct; avoid assigning both actions near-identical pink hues.
 - The Estimated Range view does not need an all-hand action-frequency panel; keep the selected-hand action breakdown instead.
