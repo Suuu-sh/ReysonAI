@@ -5,8 +5,9 @@
 .path-toggle[aria-expanded="true"] { border-color: var(--accent); background: var(--surface-accent); }
 .path-toggle span { font-size: 16px; line-height: 10px; }
 .action-path { grid-column: 1 / -1; margin-top: 2px; padding-top: 10px; min-width: 0; border-top: 1px solid var(--line); }
-.action-path-seats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; min-width: 0; width: 100%; }
-.action-seat { padding: 7px 9px; min-width: 0; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-raised); }
+.action-path-seats { display: flex; gap: 6px; min-width: 0; width: 100%; overflow-x: auto; scrollbar-width: thin; }
+.action-seat { flex: 0 0 max(120px, calc((100% - 30px) / 6)); padding: 7px 9px; min-width: 0; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-raised); }
+.action-seat-continuation { border-color: var(--accent-soft); }
 .action-seat.active { border-color: var(--accent); background: var(--surface-accent); box-shadow: inset 0 0 0 1px #fa65a130; }
 .action-seat.active .action-seat-heading { color: var(--accent-bright); }
 .action-seat-heading { display: flex; justify-content: space-between; gap: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; }
@@ -50,8 +51,6 @@
   .estimate-results .detail-column { grid-column: 1; }
 }
 @media (max-width: 900px) {
-  .action-path { overflow-x: auto; }
-  .action-path-seats { min-width: 780px; }
   .multiway-ranges { grid-template-columns: 1fr; }
 }
 

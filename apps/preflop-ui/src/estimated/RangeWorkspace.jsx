@@ -40,7 +40,7 @@ const fourBetState = loadFourBetDataset(fourBetFiles["./four-bet-responses.json"
 
 const selectionStorageKey = "solveagto:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
-  const fallback = { rangeType: initialRangeType, opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, pathExpanded: false, selected: "AKo" };
+  const fallback = { rangeType: initialRangeType, opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, pathExpanded: false, selected: "AKo" };
   if (typeof window === "undefined") return fallback;
   try {
     const saved = JSON.parse(window.sessionStorage.getItem(selectionStorageKey));
@@ -50,7 +50,8 @@ function restoredSelection(initialRangeType) {
         !Array.isArray(saved.callers) || saved.callers.some(position => !positions.includes(position) || positions.indexOf(position) <= positions.indexOf(saved.opener)) ||
         new Set(saved.callers).size !== saved.callers.length) return fallback;
     const pendingRaise = saved.pendingRaise === "all_in" && saved.rangeType === "four_bet" ? "all_in" : saved.pendingRaise === "squeeze" && saved.rangeType === "response" && saved.callers.length ? "squeeze" : null;
-    return { ...fallback, ...saved, pendingRaise, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
+    const continuationAction = (saved.rangeType === "three_bet" || saved.rangeType === "four_bet") && ["fold", "call"].includes(saved.continuationAction) ? saved.continuationAction : null;
+    return { ...fallback, ...saved, pendingRaise, continuationAction, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
   } catch { return fallback; }
 }
 
@@ -91,30 +92,35 @@ function HandBreakdown({ title, hand, model, isOpening, isThreeBet, isFourBet, s
   </div>;
 }
 
-export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHero, raiseToBb, pendingRaise, onOpenerChange, onHeroChange, onCall, onFold, onThreeBet, onFourBet, onAllIn }) {
+export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHero, raiseToBb, pendingRaise, continuationAction, onOpenerChange, onHeroChange, onCall, onFold, onThreeBet, onFourBet, onAllIn, onContinuationAction }) {
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
   const threeBetSizeBb = spot?.three_bet_size_bb ?? spot?.hands?.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb;
   const fourBetSizeBb = spot?.four_bet_size_bb;
   const pendingActors = pendingRaise === "squeeze" ? nextActorsAfterRaise(hero, [opener, ...callers]) : pendingRaise === "all_in" ? [opener] : [];
+  const seatsRef = useRef(null);
+  useEffect(() => {
+    const seats = seatsRef.current;
+    if (seats) seats.scrollTo({ left: rangeType === "three_bet" || rangeType === "four_bet" || pendingRaise ? seats.scrollWidth : 0, behavior: "smooth" });
+  }, [rangeType, pendingRaise]);
   const actionFor = (position, index) => {
     if (index < openerIndex) return "Fold";
-    if (index === openerIndex) return rangeType === "four_bet" ? `Raise 2.5 · 4bet ${fourBetSizeBb}BB` : "Raise 2.5";
+    if (index === openerIndex) return "Raise 2.5";
     if (opening) return "Take action";
     if (callers.includes(position)) return "Call";
     if (index < heroIndex) return "Fold";
     if (index === heroIndex && foldedHero) return "Fold";
-    if (index === heroIndex) return pendingRaise === "all_in" ? "3bet · 5bet All-in 100BB" : rangeType === "four_bet" || rangeType === "three_bet" ? `3bet ${spot?.three_bet_size_bb ?? "—"}BB` : pendingRaise === "squeeze" ? `スクイーズ ${raiseToBb ?? "—"}BB` : "Take action";
+    if (index === heroIndex) return rangeType === "four_bet" || rangeType === "three_bet" ? `3bet ${spot?.three_bet_size_bb ?? "—"}BB` : pendingRaise === "squeeze" ? `スクイーズ ${raiseToBb ?? "—"}BB` : "Take action";
     return rangeType === "response" ? "—" : "Fold";
   };
 
   return <div className={`action-path ${expanded ? "expanded" : "collapsed"}`} aria-label="アクション履歴">
-    <div className="action-path-seats">
+    <div className="action-path-seats" ref={seatsRef}>
       {positions.map((position, index) => {
         const canOpen = index < positions.length - 1;
         const canRespond = index > openerIndex && (opening || rangeType === "response" || index === heroIndex);
-        const isActive = !pendingRaise && (rangeType === "three_bet" ? index === openerIndex : index === heroIndex) && !foldedHero && !callers.includes(position);
+        const isActive = !pendingRaise && (opening ? index === openerIndex : rangeType === "response" && index === heroIndex) && !foldedHero && !callers.includes(position);
         return <div className={`action-seat${isActive ? " active" : ""}`} key={position}>
           <div className="action-seat-heading"><strong>{position}</strong><span>{index === 4 ? "99.5" : index === 5 ? "99" : "100"}</span></div>
           {expanded ? <div className="action-seat-options">
@@ -127,15 +133,31 @@ export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, f
             {canRespond && (opening || rangeType === "response") && <button type="button" className={isActive ? "chosen" : ""} onClick={() => onHeroChange(position)}>Take action</button>}
             {rangeType === "response" && index === heroIndex && !callers.includes(position) && !foldedHero && <button type="button" className={pendingRaise === "squeeze" ? "chosen" : ""} onClick={onThreeBet}>{callers.length ? `スクイーズ ${raiseToBb ?? "—"}BB` : `3bet ${threeBetSizeBb ?? "—"}BB`}</button>}
             {(rangeType === "three_bet" || rangeType === "four_bet") && index === heroIndex && <span className="action-seat-choice chosen">3bet {spot?.three_bet_size_bb ?? "—"}BB</span>}
-            {rangeType === "three_bet" && index === openerIndex && <><span className="action-seat-choice">Fold · Call</span><button type="button" onClick={onFourBet}>4bet {fourBetSizeBb ?? "—"}BB</button></>}
-            {rangeType === "four_bet" && index === openerIndex && <span className="action-seat-choice chosen">4bet {fourBetSizeBb ?? "—"}BB</span>}
-            {rangeType === "four_bet" && index === heroIndex && <><span className="action-seat-choice">Fold · Call</span><button type="button" className={pendingRaise === "all_in" ? "chosen" : ""} onClick={onAllIn}>5bet All-in 100BB</button></>}
-            {pendingActors.includes(position) && <span className="action-seat-choice action-path-pending">再応答 · 推定レンジ準備中</span>}
             {opening && index === openerIndex && <span className="action-seat-choice chosen">Hero</span>}
             {!canOpen && !canRespond && index > heroIndex && <span className="action-seat-choice muted">—</span>}
           </div> : <button type="button" className="action-seat-summary" disabled={index < openerIndex || index > heroIndex && !canRespond} onClick={() => index <= openerIndex ? onOpenerChange(position) : onHeroChange(position)}>{actionFor(position, index)}</button>}
         </div>;
       })}
+      {(rangeType === "three_bet" || rangeType === "four_bet") && <div className={`action-seat action-seat-continuation${rangeType === "three_bet" && !continuationAction ? " active" : ""}`}>
+        <div className="action-seat-heading"><strong>{opener}</strong><span>3betへの応答</span></div>
+        {expanded && rangeType === "three_bet" ? <div className="action-seat-options">
+          <button type="button" className={continuationAction === "fold" ? "chosen" : ""} onClick={() => onContinuationAction("fold")}>Fold</button>
+          <button type="button" className={continuationAction === "call" ? "chosen" : ""} onClick={() => onContinuationAction("call")}>Call</button>
+          <button type="button" onClick={onFourBet}>4bet {fourBetSizeBb ?? "—"}BB</button>
+        </div> : <span className="action-seat-summary">{rangeType === "four_bet" ? `4bet ${fourBetSizeBb ?? "—"}BB` : continuationAction ? continuationAction === "call" ? "Call" : "Fold" : "Take action"}</span>}
+      </div>}
+      {rangeType === "four_bet" && <div className={`action-seat action-seat-continuation${!continuationAction && !pendingRaise ? " active" : ""}`}>
+        <div className="action-seat-heading"><strong>{hero}</strong><span>4betへの応答</span></div>
+        {expanded ? <div className="action-seat-options">
+          <button type="button" className={continuationAction === "fold" ? "chosen" : ""} onClick={() => onContinuationAction("fold")}>Fold</button>
+          <button type="button" className={continuationAction === "call" ? "chosen" : ""} onClick={() => onContinuationAction("call")}>Call</button>
+          <button type="button" className={pendingRaise === "all_in" ? "chosen" : ""} onClick={onAllIn}>5bet All-in 100BB</button>
+        </div> : <span className="action-seat-summary">{pendingRaise === "all_in" ? "5bet All-in 100BB" : continuationAction ? continuationAction === "call" ? "Call" : "Fold" : "Take action"}</span>}
+      </div>}
+      {pendingActors.map(position => <div className="action-seat action-seat-continuation" key={`pending-${position}`}>
+        <div className="action-seat-heading"><strong>{position}</strong><span>再応答</span></div>
+        <span className="action-seat-summary action-path-pending">推定レンジ準備中</span>
+      </div>)}
     </div>
   </div>;
 }
@@ -154,6 +176,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [callers, setCallers] = useState(initialSelection.callers);
   const [foldedHero, setFoldedHero] = useState(initialSelection.foldedHero);
   const [pendingRaise, setPendingRaise] = useState(initialSelection.pendingRaise);
+  const [continuationAction, setContinuationAction] = useState(initialSelection.continuationAction);
   const [localEstimate, setLocalEstimate] = useState(null);
   const [localStatus, setLocalStatus] = useState(initialSelection.rangeType === "response" && initialSelection.callers.length > 0 && !initialSelection.foldedHero ? "checking" : "idle");
   const [localError, setLocalError] = useState("");
@@ -175,6 +198,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setOpener(value);
     setRangeType("open");
     setPendingRaise(null);
+    setContinuationAction(null);
     setFocusedRange(null);
     const nextHeroes = availableHeroes(value).filter(position => hasSpot(dataset, value, position));
     if (!nextHeroes.includes(hero)) setHero(nextHeroes[0] ?? "");
@@ -186,6 +210,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setHero(value);
     if (isOpening) setRangeType("response");
     setPendingRaise(null);
+    setContinuationAction(null);
     setFocusedRange(null);
     setFoldedHero(false);
     setCallers(previous => previous.filter(position => position !== value && positions.indexOf(position) > positions.indexOf(opener)));
@@ -193,6 +218,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
 
   function callAt(position) {
     setPendingRaise(null);
+    setContinuationAction(null);
     setCallers(previous => [...new Set([...previous, position])]);
     if (position === hero) setFoldedHero(true);
     setFocusedRange(null);
@@ -200,6 +226,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
 
   function foldAt(position) {
     setPendingRaise(null);
+    setContinuationAction(null);
     setCallers(previous => previous.filter(item => item !== position));
     if (position === hero) setFoldedHero(true);
     setFocusedRange(null);
@@ -208,12 +235,14 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   function selectThreeBet() {
     if (callers.length) setPendingRaise("squeeze");
     else { setRangeType("three_bet"); setPendingRaise(null); }
+    setContinuationAction(null);
     setFocusedRange(null);
   }
 
   function selectFourBet() {
     setRangeType("four_bet");
     setPendingRaise(null);
+    setContinuationAction(null);
     setFocusedRange(null);
   }
 
@@ -224,8 +253,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const currentRequestKey = useRef(requestKey);
   currentRequestKey.current = requestKey;
   useEffect(() => {
-    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, pathExpanded, selected }));
-  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, pathExpanded, selected]);
+    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, pathExpanded, selected }));
+  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, pathExpanded, selected]);
   useEffect(() => { setLocalEstimate(null); setLocalStatus(canGenerate ? "checking" : "idle"); setLocalError(""); }, [requestKey, rangeType, foldedHero]);
   useEffect(() => {
     if (!canGenerate) return;
@@ -266,7 +295,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     <main>
       <Panel className="estimate-settings">
           <div className="estimate-settings-intro"><div><h2>推定レンジ</h2><small>6max Cash · 100BB · Open 2.5BB · アンティなし</small></div><button type="button" className="path-toggle" aria-expanded={pathExpanded} aria-label={pathExpanded ? "アクション選択を閉じる" : "アクション選択を開く"} onClick={() => setPathExpanded(value => !value)}>{pathExpanded ? "選択を閉じる" : "アクションを選ぶ"}<span aria-hidden="true">{pathExpanded ? "−" : "+"}</span></button></div>
-          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={localEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} pendingRaise={pendingRaise} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} onThreeBet={selectThreeBet} onFourBet={selectFourBet} onAllIn={() => setPendingRaise("all_in")} />
+          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={localEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} pendingRaise={pendingRaise} continuationAction={continuationAction} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} onThreeBet={selectThreeBet} onFourBet={selectFourBet} onAllIn={() => { setContinuationAction(null); setPendingRaise("all_in"); }} onContinuationAction={action => { setPendingRaise(null); setContinuationAction(action); }} />
         </Panel>
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className="estimate-context">

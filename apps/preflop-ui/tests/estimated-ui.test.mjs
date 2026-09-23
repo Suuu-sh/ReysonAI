@@ -21,13 +21,15 @@ test("expanded path keeps opening controls separate from post-open actions and s
   const sizedResponse = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "response", spot: { hands: [{ three_bet_size_bb: 11 }] } }));
   assert.match(sizedResponse, /3bet 11BB/);
 
+  const threeBet = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "three_bet", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.6 } }));
+  assert.match(threeBet, /SB[\s\S]*3bet 11BB[\s\S]*BB[\s\S]*BTN[\s\S]*3betへの応答[\s\S]*>Call<\/button>[\s\S]*4bet 28\.6BB/);
+  assert.equal((threeBet.match(/>Call<\/button>/g) || []).length, 1);
+
   const fourBet = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "four_bet", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.6 } }));
-  assert.match(fourBet, /3bet 11BB/);
-  assert.match(fourBet, /4bet 28\.6BB/);
-  assert.match(fourBet, /5bet All-in 100BB/);
+  assert.match(fourBet, /SB[\s\S]*3bet 11BB[\s\S]*BB[\s\S]*BTN[\s\S]*4bet 28\.6BB[\s\S]*SB[\s\S]*4betへの応答[\s\S]*5bet All-in 100BB/);
   assert.doesNotMatch(fourBet, /SB[\s\S]*>Raise 2\.5<\/button>/);
   const allIn = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "four_bet", pendingRaise: "all_in", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.6 } }));
-  assert.match(allIn, /再応答 · 推定レンジ準備中/);
+  assert.match(allIn, /再応答<\/span>[\s\S]*推定レンジ準備中/);
   assert.doesNotMatch(allIn, /次のアクションノード/);
 });
 after(async () => { await server?.close(); });
