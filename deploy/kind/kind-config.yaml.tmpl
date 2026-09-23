@@ -1,6 +1,6 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
-name: solveagto
+name: solveaai
 nodes:
   - role: control-plane
     extraPortMappings:
@@ -8,5 +8,5 @@ nodes:
         hostPort: 30080
         protocol: TCP
     extraMounts:
-      - hostPath: __SOLVEAGTO_DATA_ROOT__
-        containerPath: /var/lib/solveagto
+      - hostPath: __SOLVEAAI_DATA_ROOT__
+        containerPath: /var/lib/solveaai

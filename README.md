@@ -1,6 +1,8 @@
-# SolveaGTO Preflop v0.1
+# SolveaAI Preflop v0.1
 
-SolveaGTO は、独自計算した戦略の保存・配信を目指す Solver Platform です。現行Solverは外部サンプリングCFR/DCFRの実験実装ですが、ContinuationとGTO精度は未検証です。v0.1 の対象は **Cash / 6-max / 100BB / no ante の Preflop** に限定しています。
+SolveaAI は、独自計算した戦略の保存・配信を目指す Solver Platform です。現行Solverは外部サンプリングCFR/DCFRの実験実装ですが、ContinuationとGTO精度は未検証です。v0.1 の対象は **Cash / 6-max / 100BB / no ante の Preflop** に限定しています。
+
+ブランド識別子（SDK／package 名、環境変数、キュー・デプロイ名、R2 bucket の既定値）は SolveaAI 名に統一されています。既存の起動設定や外部リソースは自動移行されないため、利用環境側も新しい識別子へ更新してください。
 
 他社サービスの Range データは使用していません。Postflop Solver、Flop Solve、Trainer、Quiz、Potover 連携、認証、課金、Cloud/Kubernetes はこのリポジトリの対象外です。
 
@@ -30,9 +32,9 @@ SolveaGTO は、独自計算した戦略の保存・配信を目指す Solver Pl
 - `crates/job-queue`: `JobQueue`境界とFile / Redis Streams実装。Fileは単体実行、Redisはkind用。
 - `services/preflop-worker`: CLI Worker 実行エントリ（Job向けライブラリ分離は未実装）。
 - `services/api`: 保存済み Solution のread-only配信。ローカル生成モードでのみRedis/File QueueへJobを登録し、Solution生成処理そのものは実行しません。
-- `packages/solveagto-sdk-ts`: 外部アプリ向け TypeScript SDK。
+- `packages/solveaai-sdk-ts`: 外部アプリ向け TypeScript SDK。
 - `apps/preflop-ui`: 黒・ピンク基調の独自 Preflop Explorer。169 Hand Matrix、Action Breakdown、Combo 詳細を確認できます。
-- `apps/solveagto-edge-api`: 本番UI向けのCloudflare Worker。R2の検証済み成果物だけを読み取り、ローカルAPI・Redis・Solverへ接続しません。
+- `apps/solveaai-edge-api`: 本番UI向けのCloudflare Worker。R2の検証済み成果物だけを読み取り、ローカルAPI・Redis・Solverへ接続しません。
 
 ### Action History と Node ID
 
@@ -62,15 +64,15 @@ cargo test --workspace
 ### 2. Solution を生成
 
 ```bash
-cargo run --release -p solveagto-worker -- \
+cargo run --release -p solveaai-worker -- \
   solve configs/cash-6max-100bb.json
 ```
 
-保存先は `solutions/` です。別の保存先は第 3 引数、または `SOLVEAGTO_SOLUTION_DIR` で指定できます。
+保存先は `solutions/` です。別の保存先は第 3 引数、または `SOLVEAAI_SOLUTION_DIR` で指定できます。
 
 ```bash
-cargo run --release -p solveagto-worker -- \
-  solve configs/cash-6max-100bb.json /tmp/solveagto-solutions
+cargo run --release -p solveaai-worker -- \
+  solve configs/cash-6max-100bb.json /tmp/solveaai-solutions
 ```
 
 Worker の責務は次の順序です。
@@ -85,45 +87,45 @@ Workerは保存前にConfig hash、反復数、1326 Combo、169 Hand、Action fr
 本番配布用Artifactへ昇格する際にも同じ検証を再実行します。
 
 ```bash
-cargo run --release --bin solveagto-promote -- \
+cargo run --release --bin solveaai-promote -- \
   configs/cash-6max-100bb.json \
   solutions/cash-6max-100bb-v1.json \
-  release/solveagto
+  release/solveaai
 ```
 
-`release/solveagto/solutions/*.json` と `manifest.json` だけを本番の読み取り専用APIへ配布します。
+`release/solveaai/solutions/*.json` と `manifest.json` だけを本番の読み取り専用APIへ配布します。
 Solver、Worker、Redisは本番へ配置しません。
 
 Cloudflare R2へ公開する場合は、成果物を先に、`manifest.json`を最後にアップロードします。
 
 ```bash
-bash scripts/publish-solution-r2.sh release/solveagto solveagto-solutions
+bash scripts/publish-solution-r2.sh release/solveaai solveaai-solutions
 ```
 
 ### ローカル Job Queue
 
-`solveagto-worker` は、ローカルファイルまたはRedis Streamsを使ったJob Queueと常駐Workerにも対応しています。
+`solveaai-worker` は、ローカルファイルまたはRedis Streamsを使ったJob Queueと常駐Workerにも対応しています。
 Jobは設定内容をJSONに埋め込んで保存するため、enqueue後に元のconfigを変更しても実行内容は変わりません。
 
 ```bash
 # Jobを登録（既定: jobs/、結果: solutions/）
-cargo run --release -p solveagto-worker -- \
+cargo run --release -p solveaai-worker -- \
   enqueue configs/cash-6max-100bb.json jobs solutions
 
 # Workerを起動して、pending Jobを順番に処理
-cargo run --release -p solveagto-worker -- \
+cargo run --release -p solveaai-worker -- \
   worker jobs
 
 # 1件だけ処理（CIや動作確認向け）
-cargo run --release -p solveagto-worker -- \
+cargo run --release -p solveaai-worker -- \
   worker jobs --once
 
 # Job一覧・詳細確認
-cargo run --release -p solveagto-worker -- list jobs
-cargo run --release -p solveagto-worker -- status <job-id> jobs
+cargo run --release -p solveaai-worker -- list jobs
+cargo run --release -p solveaai-worker -- status <job-id> jobs
 
 # failed / interrupted Jobを再実行待ちへ戻す
-cargo run --release -p solveagto-worker -- retry <job-id> jobs
+cargo run --release -p solveaai-worker -- retry <job-id> jobs
 ```
 
 Queueは `jobs/{pending,running,succeeded,failed}` にJobを保存します。
@@ -134,9 +136,9 @@ kindではRedis StreamsとConsumer Groupを使います。未ACKのJobはlease�
 Solution単位のactive keyで複数APIプロセスからの重複登録を防ぎます。
 
 ```bash
-SOLVEAGTO_QUEUE_BACKEND=redis \
-SOLVEAGTO_REDIS_URL=redis://127.0.0.1:6379/ \
-  cargo run --release -p solveagto-worker -- worker
+SOLVEAAI_QUEUE_BACKEND=redis \
+SOLVEAAI_REDIS_URL=redis://127.0.0.1:6379/ \
+  cargo run --release -p solveaai-worker -- worker
 ```
 
 計算は事前生成方式です。通常の API リクエストでは Solver は起動せず、保存済み Solution だけを読み取ります。
@@ -144,10 +146,10 @@ SOLVEAGTO_REDIS_URL=redis://127.0.0.1:6379/ \
 保存済みSolutionがない場合は、生成モードを明示的に有効にしたローカルAPIからJobを登録してWorkerに計算させられます。既存Solutionの `gameConfigHash` が現在のConfigと一致する場合、または同じSolutionのpending / running Jobがある場合は重複作成しません。
 
 ```bash
-SOLVEAGTO_ENABLE_GENERATION=true \
-SOLVEAGTO_QUEUE_BACKEND=file \
-SOLVEAGTO_SOLUTION_DIR=solutions \
-  cargo run --release -p solveagto-api
+SOLVEAAI_ENABLE_GENERATION=true \
+SOLVEAAI_QUEUE_BACKEND=file \
+SOLVEAAI_SOLUTION_DIR=solutions \
+  cargo run --release -p solveaai-api
 ```
 
 ```bash
@@ -160,16 +162,16 @@ curl -X POST http://127.0.0.1:3000/v1/preflop/jobs \
 curl http://127.0.0.1:3000/v1/preflop/jobs/<job-id>
 ```
 
-`POST /v1/preflop/jobs` は計算を同期実行しません。`pending` Jobを返し、常駐Workerが計算・保存します。保存完了後に同じリクエストを再実行すると `solutionAvailable: true` が返ります。`POST /v1/preflop/resolve` は引き続き保存済みSolutionのNode解決専用です。`SOLVEAGTO_ENABLE_GENERATION` の既定値は `false` で、無効時はJob route自体を公開しません。
+`POST /v1/preflop/jobs` は計算を同期実行しません。`pending` Jobを返し、常駐Workerが計算・保存します。保存完了後に同じリクエストを再実行すると `solutionAvailable: true` が返ります。`POST /v1/preflop/resolve` は引き続き保存済みSolutionのNode解決専用です。`SOLVEAAI_ENABLE_GENERATION` の既定値は `false` で、無効時はJob route自体を公開しません。
 
 ### 3. API を起動
 
 ```bash
-SOLVEAGTO_SOLUTION_DIR=solutions \
-  cargo run --release -p solveagto-api
+SOLVEAAI_SOLUTION_DIR=solutions \
+  cargo run --release -p solveaai-api
 ```
 
-既定 URL は `http://127.0.0.1:3000` です。`SOLVEAGTO_API_BIND` で bind address を変更できます。
+既定 URL は `http://127.0.0.1:3000` です。`SOLVEAAI_API_BIND` で bind address を変更できます。
 本番APIはこの読み取り専用モードで起動し、Redis、Worker、Solverを配置しません。
 
 ```bash
@@ -196,10 +198,10 @@ curl -X POST http://127.0.0.1:3000/v1/preflop/resolve \
 
 ### 4. TypeScript SDK
 
-`packages/solveagto-sdk-ts` は runtime dependency のない fetch ベース SDK です。
+`packages/solveaai-sdk-ts` は runtime dependency のない fetch ベース SDK です。
 
 ```bash
-cd packages/solveagto-sdk-ts
+cd packages/solveaai-sdk-ts
 npm run build
 ```
 
@@ -212,13 +214,13 @@ npm test
 利用例:
 
 ```ts
-import { SolveaGTOClient } from "@solveagto/sdk";
+import { SolveaAIClient } from "@solveaai/sdk";
 
-const solvea = new SolveaGTOClient({
+const solveaAI = new SolveaAIClient({
   baseUrl: "http://127.0.0.1:3000",
 });
 
-const spot = await solvea.preflop.resolve({
+const spot = await solveaAI.preflop.resolve({
   solutionId: "cash-6max-100bb-v1",
   heroPosition: "BB",
   actions: [
@@ -231,12 +233,12 @@ const spot = await solvea.preflop.resolve({
 SDKはSolverを実行せず、Rust APIのJob Queueを利用します。
 
 ```ts
-const job = await solvea.preflop.createJob({
+const job = await solveaAI.preflop.createJob({
   solutionId: "cash-6max-100bb-v1",
 });
 
 if (job.jobId) {
-  const status = await solvea.preflop.getJob(job.jobId);
+  const status = await solveaAI.preflop.getJob(job.jobId);
   console.log(status.status, status.solutionAvailable);
 }
 ```
@@ -314,7 +316,7 @@ GET /v1/preflop/solutions/{solutionId}/nodes/{nodeId}
 
 一覧はComboを含まない軽量な応答。詳細は選択ノードだけを返します。
 現在のFileSolutionStoreはリクエスト毎にファイル全体を読み込むため、大規模運用前に索引・キャッシュが必要です。
-本番配信では `VITE_SOLVEAGTO_API_BASE_URL` をCloudflare Edge API WorkerのURLに設定します。
+本番配信では `VITE_SOLVEAAI_API_BASE_URL` をCloudflare Edge API WorkerのURLに設定します。
 ローカルのRust APIやRedisを本番UIから経由させません。
 
 UIの集計テスト:
@@ -382,10 +384,10 @@ open http://127.0.0.1:30080/
 
 ```text
 kind / Docker
-├── solveagto-ui      : NodePort 30080
-├── solveagto-api     : RedisへJob登録／Solution配信
-├── solveagto-redis   : Redis Streams、Consumer Group、Job状態
-└── solveagto-worker  : Redisから取得してSolution生成
+├── solveaai-ui      : NodePort 30080
+├── solveaai-api     : RedisへJob登録／Solution配信
+├── solveaai-redis   : Redis Streams、Consumer Group、Job状態
+└── solveaai-worker  : Redisから取得してSolution生成
 ```
 
 kindのNodeへ `.kind/data` をマウントする開発専用構成です。SolutionとRedis AOFはクラスタを削除しても `.kind/data` に残ります。クラスタだけを削除する場合は次を実行します。
@@ -398,14 +400,14 @@ Jobの進捗は次で確認できます。
 
 ```bash
 bash scripts/kind-status.sh
-kubectl --context kind-solveagto --namespace solveagto logs deployment/solveagto-worker -f
+kubectl --context kind-solveaai --namespace solveaai logs deployment/solveaai-worker -f
 ```
 
 Consumer Groupの分散処理を確認する場合はWorkerを増やせます。
 
 ```bash
-kubectl --context kind-solveagto --namespace solveagto scale \
-  deployment/solveagto-worker --replicas=2
+kubectl --context kind-solveaai --namespace solveaai scale \
+  deployment/solveaai-worker --replicas=2
 ```
 
 この構成は学習・ローカル検証用です。Redis Consumer Groupによる複数Workerは検証できますが、

@@ -1,4 +1,4 @@
-# SolveaGTO Edge API
+# SolveaAI Edge API
 
 Cloudflare Worker上で動作する、本番用の読み取り専用APIです。
 
@@ -12,7 +12,7 @@ Cloudflare Worker上で動作する、本番用の読み取り専用APIです。
 ローカルUIは引き続き `/api` を使います。Viteの開発proxyまたはkindのNginxが
 ローカルRust APIへ転送し、ローカルRedisとローカルSolver Workerが処理します。
 
-本番UIでは `VITE_SOLVEAGTO_API_BASE_URL` をこのWorkerのURLに設定します。
+本番UIでは `VITE_SOLVEAAI_API_BASE_URL` をこのWorkerのURLに設定します。
 
 ## R2の成果物
 
@@ -26,10 +26,10 @@ solutions/<solutionId>/nodes/index.json
 solutions/<solutionId>/nodes/<nodeId>.json
 ```
 
-ローカルで `solveagto-promote` を実行した後、リリース成果物を公開します。
+ローカルで `solveaai-promote` を実行した後、リリース成果物を公開します。
 
 ```bash
-bash scripts/publish-solution-r2.sh release/solveagto solveagto-solutions
+bash scripts/publish-solution-r2.sh release/solveaai solveaai-solutions
 ```
 
 成果物を先に、`manifest.json`を最後にアップロードします。Workerが未配置の
@@ -47,7 +47,7 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
   "r2_buckets": [
     {
       "binding": "SOLUTIONS",
-      "bucket_name": "solveagto-solutions"
+      "bucket_name": "solveaai-solutions"
     }
   ],
   "vars": {

@@ -12,6 +12,17 @@ const positions = ['UTG', 'HJ', 'CO', 'BTN', 'SB', 'BB'];
 const pending = new Map();
 
 export function validateRequest(value) {
+  if (value?.scenario === 'five_bet_all_in_response') {
+    const { opener, hero, callers, three_bet_size_bb, four_bet_size_bb, all_in_size_bb } = value;
+    const oi = positions.indexOf(opener), hi = positions.indexOf(hero);
+    if (oi < 0 || oi >= 5 || hi <= oi || !Array.isArray(callers) || callers.length !== 0 ||
+        !Number.isFinite(three_bet_size_bb) || three_bet_size_bb <= 2.5 ||
+        !Number.isFinite(four_bet_size_bb) || four_bet_size_bb <= three_bet_size_bb || four_bet_size_bb >= 100 || all_in_size_bb !== 100) {
+      throw new Error('対応する局面は、オープン→3bet→4bet→100BB 5betオールイン後の応答のみです。');
+    }
+    return { scenario: 'five_bet_all_in_response', opener, hero, callers: [], three_bet_size_bb, four_bet_size_bb, all_in_size_bb };
+  }
+  if (value?.scenario !== undefined && value.scenario !== 'multiway_response') throw new Error('対応していない局面です。');
   const { opener, hero, callers } = value ?? {};
   const oi = positions.indexOf(opener), hi = positions.indexOf(hero);
   if (oi < 0 || oi >= 5 || hi <= oi || !Array.isArray(callers) || callers.length < 1 ||
@@ -22,6 +33,25 @@ export function validateRequest(value) {
 }
 
 export function validateEstimate(data, request) {
+  if (request.scenario === 'five_bet_all_in_response') {
+    if (data?.kind !== 'ai_estimate_not_gto' || data?.scenario !== request.scenario ||
+        data?.effective_stack_bb !== 100 || data?.open_size_bb !== 2.5 ||
+        data?.opener !== request.opener || data?.hero !== request.hero ||
+        JSON.stringify(data.callers) !== '[]' || data?.three_bet_size_bb !== request.three_bet_size_bb ||
+        data?.four_bet_size_bb !== request.four_bet_size_bb || data?.all_in_size_bb !== 100 ||
+        !Array.isArray(data.ranges) || data.ranges.length !== 1) throw new Error('生成データの局面・前提が一致しません。');
+    const range = data.ranges[0];
+    if (range.position !== request.opener || range.raise_to_bb !== null ||
+        JSON.stringify(range.available_actions) !== JSON.stringify(['call', 'fold']) ||
+        !Array.isArray(range.rows) || range.rows.length !== 169) throw new Error('オープナーの応答レンジまたは合法アクションが不正です。');
+    for (let i = 0; i < 169; i++) {
+      const row = range.rows[i];
+      if (!Array.isArray(row) || row.length !== 4 || row[0] !== hands[i] ||
+          !row.slice(1).every(n => Number.isInteger(n) && n >= 0 && n <= 100) ||
+          row[1] + row[2] !== 100 || row[3] !== 0) throw new Error(range.position + '/' + hands[i] + 'の頻度が不正です。');
+    }
+    return data;
+  }
   if (data?.kind !== 'ai_estimate_not_gto' || data?.effective_stack_bb !== 100 ||
       data?.open_size_bb !== 2.5 || data?.opener !== request.opener || data?.hero !== request.hero ||
       JSON.stringify(data.callers) !== JSON.stringify(request.callers) || !Array.isArray(data.ranges)) {
@@ -45,6 +75,14 @@ function squeezeSize(request, position) {
 }
 
 function promptFor(request) {
+  if (request.scenario === 'five_bet_all_in_response') {
+    return [
+      'Author one LOCAL EXPERIMENTAL AI-ESTIMATED 6-max preflop response range, not solver/GTO/equilibrium output. No tools, code, or file edits; return JSON only. Cash 100BB effective, no ante, unspecified rake, raise-to sizes are total BB.',
+      'History: all seats before ' + request.opener + ' fold → ' + request.opener + ' raises to 2.5BB → all seats between opener and ' + request.hero + ' fold → ' + request.hero + ' 3bets to ' + request.three_bet_size_bb + 'BB → ' + request.opener + ' 4bets to ' + request.four_bet_size_bb + 'BB → ' + request.hero + ' 5bets all-in to 100BB. The original opener now responds; every other player has folded.',
+      'Produce a conditional range for ' + request.opener + ' only, with legal actions call and fold (no raise option). For each of all 169 canonical hands output integer [fold,call,0] frequencies summing to 100; the final zero is a reserved raise column and must remain zero. Estimate hand strength under the prior 3bet and 4bet sizes and all-in pressure, with plausible calls and folds across the range.',
+      'Use exactly one raise_to_bb:null and available_actions:["call","fold"]. Rows must be in EXACT canonical order: ' + hands.join(',') + '. Output JSON with kind="ai_estimate_not_gto", scenario="' + request.scenario + '", effective_stack_bb=100, open_size_bb=2.5, opener="' + request.opener + '", hero="' + request.hero + '", callers=[], three_bet_size_bb=' + request.three_bet_size_bb + ', four_bet_size_bb=' + request.four_bet_size_bb + ', all_in_size_bb=100, ranges=[{position="' + request.opener + '",raise_to_bb:null,available_actions:["call","fold"],rows:[[hand,fold,call,0],...]}]. No EV or solver claim; do not include other participants.'
+    ].join(' ');
+  }
   const callerText = request.callers.map(p => `${p} call 2.5BB`).join(' → ');
   const ranges = [...request.callers, request.hero];
   const raiseTo = p => squeezeSize(request, p);
@@ -73,10 +111,12 @@ function runCodex(request) {
           threadId,
           input: [{ type: 'text', text: promptFor(request) }],
           outputSchema: { type: 'object', properties: {
-            kind: { type: 'string' }, effective_stack_bb: { type: 'number' }, open_size_bb: { type: 'number' },
+            kind: { type: 'string' }, scenario: { type: 'string' }, effective_stack_bb: { type: 'number' }, open_size_bb: { type: 'number' },
             opener: { type: 'string' }, hero: { type: 'string' }, callers: { type: 'array', items: { type: 'string' } },
+            three_bet_size_bb: { type: 'number' }, four_bet_size_bb: { type: 'number' }, all_in_size_bb: { type: 'number' },
             ranges: { type: 'array', items: { type: 'object', properties: {
-              position: { type: 'string' }, raise_to_bb: { type: 'number' },
+              position: { type: 'string' }, raise_to_bb: { anyOf: [{ type: 'number' }, { type: 'null' }] },
+              available_actions: { type: 'array', items: { type: 'string' } },
               rows: { type: 'array', items: { type: 'array', items: { anyOf: [{ type: 'string' }, { type: 'integer' }] } } },
             }, required: ['position', 'raise_to_bb', 'rows'], additionalProperties: false } },
           }, required: ['kind', 'effective_stack_bb', 'open_size_bb', 'opener', 'hero', 'callers', 'ranges'], additionalProperties: false },
@@ -87,7 +127,7 @@ function runCodex(request) {
       if (msg.method === 'turn/completed') { if (msg.params?.turn?.status !== 'completed') return fail(new Error(msg.params?.turn?.error?.message ?? 'Codexの生成に失敗しました。')); finish(); }
     } });
     child.stderr.on('data', () => {});
-    send({ id: 1, method: 'initialize', params: { clientInfo: { name: 'solveagto_local_estimates', title: 'SolveaGTO local estimates', version: '0.1.0' }, capabilities: {} } });
+    send({ id: 1, method: 'initialize', params: { clientInfo: { name: 'solveaai_local_estimates', title: 'SolveaAI local estimates', version: '0.1.0' }, capabilities: {} } });
   });
 }
 

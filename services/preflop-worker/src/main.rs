@@ -1,6 +1,6 @@
 use preflop_tree::PreflopConfig;
-use solveagto_job_queue::{next_job_id, queue_from_environment, JobQueue, SolveJob};
-use solveagto_worker::{save, solve, SolveRequest};
+use solveaai_job_queue::{next_job_id, queue_from_environment, JobQueue, SolveJob};
+use solveaai_worker::{save, solve, SolveRequest};
 use std::env;
 use std::fs;
 use std::path::Path;
@@ -9,7 +9,7 @@ use std::time::Duration;
 
 fn main() {
     if let Err(error) = run() {
-        eprintln!("solveagto-worker: {error}");
+        eprintln!("solveaai-worker: {error}");
         std::process::exit(1);
     }
 }
@@ -35,10 +35,10 @@ fn run_single(args: &[String]) -> Result<(), String> {
     let output_dir = args
         .get(3)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_SOLUTION_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_SOLUTION_DIR").ok())
         .unwrap_or_else(|| "solutions".to_string());
     let (config, solution_id) = load_config(config_path, None)?;
-    println!("SolveaGTO Preflop v0.1");
+    println!("SolveaAI Preflop v0.1");
     println!();
     println!("Config Load: {}", config_path.display());
     println!("Game: {} {}-max", config.game, config.players);
@@ -71,12 +71,12 @@ fn enqueue(args: &[String]) -> Result<(), String> {
     let queue_dir = args
         .get(3)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
     let solution_dir = args
         .get(4)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_SOLUTION_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_SOLUTION_DIR").ok())
         .unwrap_or_else(|| "solutions".to_string());
     let job_id = next_job_id();
     let (config, solution_id) = load_config(config_path, Some(&job_id))?;
@@ -93,7 +93,7 @@ fn run_worker(args: &[String]) -> Result<(), String> {
         .get(2)
         .filter(|value| !value.starts_with("--"))
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
     let once = args.iter().any(|value| value == "--once");
     let poll_ms = option_value(args, "--poll-ms")
@@ -166,7 +166,7 @@ fn show_status(args: &[String]) -> Result<(), String> {
     let queue_dir = args
         .get(3)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
     match queue_from_environment(&queue_dir)?.get(job_id)? {
         Some(job) => println!(
@@ -182,7 +182,7 @@ fn list_jobs(args: &[String]) -> Result<(), String> {
     let queue_dir = args
         .get(2)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
     let jobs = queue_from_environment(&queue_dir)?.list()?;
     for job in jobs {
@@ -196,7 +196,7 @@ fn retry_job(args: &[String]) -> Result<(), String> {
     let queue_dir = args
         .get(3)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
     let job = queue_from_environment(&queue_dir)?.retry(job_id)?;
     println!("Job requeued: {} ({:?})", job.job_id, job.status);
@@ -244,6 +244,6 @@ fn option_value<'a>(args: &'a [String], option: &str) -> Option<&'a str> {
 }
 
 fn usage() -> String {
-    "usage:\n  solveagto-worker solve <config.json> [output_dir]\n  solveagto-worker enqueue <config.json> [queue_dir] [output_dir]\n  solveagto-worker worker [queue_dir] [--once] [--poll-ms N] [--worker-id ID]\n  solveagto-worker status <job_id> [queue_dir]\n  solveagto-worker list [queue_dir]\n  solveagto-worker retry <job_id> [queue_dir]"
+    "usage:\n  solveaai-worker solve <config.json> [output_dir]\n  solveaai-worker enqueue <config.json> [queue_dir] [output_dir]\n  solveaai-worker worker [queue_dir] [--once] [--poll-ms N] [--worker-id ID]\n  solveaai-worker status <job_id> [queue_dir]\n  solveaai-worker list [queue_dir]\n  solveaai-worker retry <job_id> [queue_dir]"
         .to_string()
 }

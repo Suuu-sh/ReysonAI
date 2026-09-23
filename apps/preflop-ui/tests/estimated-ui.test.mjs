@@ -15,7 +15,8 @@ before(async () => {
 
 test("primary navigation is accessible in a collapsible sidebar", () => {
   const html = renderToStaticMarkup(createElement(Sidebar, { activeSection: "プリフロップ", onSectionChange() {} }));
-  assert.match(html, /<aside class="app-sidebar" aria-label="SolveaGTO サイドバー">/);
+  assert.match(html, /<aside class="app-sidebar" aria-label="SolveaAI サイドバー">/);
+  assert.match(html, /Solvea<span>AI<\/span>/);
   assert.match(html, /aria-label="サイドバーを折りたたむ" aria-expanded="true" aria-controls="main-navigation"/);
   assert.match(html, /<nav id="main-navigation" class="header-nav" aria-label="メインナビゲーション">/);
   assert.match(html, /aria-label="プリフロップ"/);
@@ -87,6 +88,33 @@ test("unsupported branch notices occupy participant range slots instead of a sep
     assert.match(squeeze, /SB · スクイーズへの応答/);
     assert.match(squeeze, /BB · 推定レンジ準備中/);
     assert.doesNotMatch(squeeze, /スクイーズ後の応答レンジは未収録/);
+  } finally {
+    if (originalWindow === undefined) delete globalThis.window;
+    else globalThis.window = originalWindow;
+  }
+});
+
+test("local generation controls are embedded in the missing range slot", () => {
+  const originalWindow = globalThis.window;
+  const renderPath = ({ rangeType, opener, hero, callers = [], pendingRaise }) => {
+    const selection = { rangeType, opener, hero, callers, foldedHero: false, pendingRaise, continuationAction: null, pathExpanded: true, selected: "AA" };
+    globalThis.window = { matchMedia: () => ({ matches: false }), sessionStorage: { getItem: () => JSON.stringify(selection), setItem() {} } };
+    return renderToStaticMarkup(createElement(EstimatedRanges));
+  };
+  try {
+    const allIn = renderPath({ rangeType: "four_bet", opener: "UTG", hero: "HJ", pendingRaise: "all_in" });
+    const openerPanel = allIn.match(/<section class="panel multiway-range-panel missing-range-panel" aria-label="UTGのレンジ">[\s\S]*?<\/section>/)?.[0];
+    assert.ok(openerPanel, "5bet response has an opener range slot");
+    assert.match(openerPanel, /CodexでAI推定レンジを生成|保存状態を確認中…/);
+    assert.match(openerPanel, /5betオールイン後の応答データはまだ保存されていません。/);
+    assert.doesNotMatch(allIn, /class="local-estimate-control"/);
+    assert.doesNotMatch(allIn, /5betオールイン後の応答レンジは未収録/);
+
+    const multiway = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"] });
+    const heroPanel = multiway.match(/<section class="panel multiway-range-panel missing-range-panel" aria-label="BBのレンジ">[\s\S]*?<\/section>/)?.[0];
+    assert.ok(heroPanel, "multiway Hero has a pending range slot");
+    assert.match(heroPanel, /CodexでAI推定レンジを生成|保存状態を確認中…/);
+    assert.doesNotMatch(multiway, /class="local-estimate-control"/);
   } finally {
     if (originalWindow === undefined) delete globalThis.window;
     else globalThis.window = originalWindow;

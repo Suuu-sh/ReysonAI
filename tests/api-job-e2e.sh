@@ -2,12 +2,12 @@
 set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/solveagto-api-job-e2e.XXXXXX")
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/solveaai-api-job-e2e.XXXXXX")
 QUEUE_DIR="$TMP_DIR/jobs"
 SOLUTION_DIR="$TMP_DIR/solutions"
 CONFIG_PATH="$TMP_DIR/cash-6max-100bb.json"
 API_LOG="$TMP_DIR/api.log"
-PORT="${SOLVEAGTO_E2E_PORT:-3311}"
+PORT="${SOLVEAAI_E2E_PORT:-3311}"
 BASE_URL="http://127.0.0.1:${PORT}"
 API_PID=""
 
@@ -42,15 +42,15 @@ cat > "$CONFIG_PATH" <<'JSON'
 }
 JSON
 
-cargo build --quiet -p solveagto-api -p solveagto-worker
+cargo build --quiet -p solveaai-api -p solveaai-worker
 
-SOLVEAGTO_SOLUTION_DIR="$SOLUTION_DIR" \
-SOLVEAGTO_QUEUE_DIR="$QUEUE_DIR" \
-SOLVEAGTO_ENABLE_GENERATION="true" \
-SOLVEAGTO_CONFIG_PATH="$CONFIG_PATH" \
-SOLVEAGTO_SOLUTION_ID="cash-6max-100bb-v1" \
-SOLVEAGTO_API_BIND="127.0.0.1:${PORT}" \
-  "$ROOT_DIR/target/debug/solveagto-api" >"$API_LOG" 2>&1 &
+SOLVEAAI_SOLUTION_DIR="$SOLUTION_DIR" \
+SOLVEAAI_QUEUE_DIR="$QUEUE_DIR" \
+SOLVEAAI_ENABLE_GENERATION="true" \
+SOLVEAAI_CONFIG_PATH="$CONFIG_PATH" \
+SOLVEAAI_SOLUTION_ID="cash-6max-100bb-v1" \
+SOLVEAAI_API_BIND="127.0.0.1:${PORT}" \
+  "$ROOT_DIR/target/debug/solveaai-api" >"$API_LOG" 2>&1 &
 API_PID=$!
 
 for _ in $(seq 1 50); do
@@ -86,8 +86,8 @@ print(f"deduplicated job: {first['jobId']}")
 PY
 
 JOB_ID=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["jobId"])' "$FIRST")
-SOLVEAGTO_QUEUE_DIR="$QUEUE_DIR" \
-  "$ROOT_DIR/target/debug/solveagto-worker" worker "$QUEUE_DIR" --once >/dev/null
+SOLVEAAI_QUEUE_DIR="$QUEUE_DIR" \
+  "$ROOT_DIR/target/debug/solveaai-worker" worker "$QUEUE_DIR" --once >/dev/null
 
 STATUS=$(curl -fsS "$BASE_URL/v1/preflop/jobs/$JOB_ID")
 python3 - "$STATUS" <<'PY'

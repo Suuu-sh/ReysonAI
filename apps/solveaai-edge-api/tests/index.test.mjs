@@ -116,7 +116,7 @@ async function request(path, init = {}, bindings = env()) {
 test("health is available without a solution request", async () => {
   const response = await request("/health");
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { status: "ok", service: "solveagto-edge-api" });
+  assert.deepEqual(await response.json(), { status: "ok", service: "solveaai-edge-api" });
 });
 
 test("lists and reads the published R2 solution", async () => {

@@ -1,5 +1,10 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## SolveaAI brand rename (2026-09-23)
+- Updated the UI wordmark/title, SDK exports and package paths, Rust crate/binary identifiers, environment-variable prefix, storage/queue keys, deployment resources, scripts, tests and documentation.
+- Kept GTO terminology where it describes poker methodology or validation status. The project folder, Git remote and externally provisioned resources were not renamed or migrated.
+- Verification: 47 UI tests, production build, 4 Sites tests, 8 SDK tests, 5 Edge API tests, Rust workspace tests and API-job / solution-promotion E2E checks passed. The build still reports the existing large-bundle warning.
+
 ## 5bet label wording (2026-09-23)
 - Changed the visible all-in choice and collapsed summary to `5bet 100BB`; the underlying choice remains the existing 100BB all-in branch.
 - Verification: all 50 UI tests passed, the production build passed, and all 4 Sites tests passed. The build still reports the existing large-bundle warning.
@@ -15,7 +20,7 @@
 - The non-GTO status remains visible. Unsupported paths stay pending; generated local data never overwrites saved heads-up estimates.
 
 ## Unified selection panel update (2026-09-23)
-- Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable SolveaGTO panel rather than exact screenshot replication.
+- Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable SolveaAI panel rather than exact screenshot replication.
 - The compact six-seat path remains visible; the top control expands seat choices. Fixed conditions are in metadata, without a duplicate dropdown row.
 - Inspected the rendered compact state in the local browser and corrected a narrow-screen toggle overflow. The responsive path remains horizontally scrollable.
 - Final result: passed for the requested unified selection surface.
@@ -83,3 +88,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 ## Inline unsupported-range status (2026-09-23)
 - Removed the full-width warning above the results. A missing 5bet response now occupies the opener's range panel, while the original 3bettor's saved 4bet response remains visible and is labeled as the 5bet decision.
 - Unsupported squeeze branches place pending states in each affected participant's range slot; no prior heads-up response is shown as a current response. Verified the all-in path in the local browser and added server-rendered coverage for both all-in and squeeze pending states.
+
+## In-panel local AI estimate button (2026-09-23)
+- Moved the multiway local-generation control into Hero's missing-range panel and added the same explicit-click control to the original opener's missing response panel after a 100BB 5bet all-in. The separate banner above the matrices is gone.
+- The all-in response uses only call/fold for the opener and carries the exact saved open/3bet/4bet sizes into its cache identity. Validated all 169 canonical rows, integer frequencies, legal action set, and scenario identity; generated estimates remain in ignored local cache and never update persisted range JSON.
+- Verification: 50 UI/data tests passed; production build passed; Sites tests passed (4). Browser preview remains available at `http://127.0.0.1:5173/`. No Codex estimate was initiated during verification. Existing Vite large-bundle warning remains.

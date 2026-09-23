@@ -38,7 +38,7 @@ try {
 const fourBetFiles = import.meta.glob("./four-bet-responses.json", { eager: true, query: "?raw", import: "default" });
 const fourBetState = loadFourBetDataset(fourBetFiles["./four-bet-responses.json"], dataset, threeBetDataset, openingDataset);
 
-const selectionStorageKey = "solveagto:estimated-selection:v1";
+const selectionStorageKey = "solveaai:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
   const fallback = { rangeType: initialRangeType, opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, pathExpanded: false, selected: "AKo" };
   if (typeof window === "undefined") return fallback;
@@ -98,9 +98,28 @@ function LocalHandBreakdown({ entry, selected, onClose }) {
     <SectionHeading title={`${entry.position} · ${selected}の詳細`} action={<button type="button" onClick={onClose}>詳細を閉じる</button>} />
     <div className="hand-title"><strong>{selected}</strong><span>{aggregate.comboCount} Combos</span></div>
     <ActionBars items={entry.model.actions.map(action => ({ action, frequency: aggregate.actions[action] }))} />
-    <StatList items={[{ label: "レイズ先（合計）", value: `${entry.raiseToBb} BB` }, { label: "頻度合計", value: "100%" }]} />
+    <StatList items={entry.allInSizeBb ? [
+      { label: "受ける5betオールイン（合計）", value: `${entry.allInSizeBb} BB` },
+      { label: "直前の4bet（合計）", value: `${entry.fourBetSizeBb} BB` },
+      { label: "直前の3bet（合計）", value: `${entry.threeBetSizeBb} BB` },
+      { label: "頻度合計", value: "100%" },
+    ] : [{ label: "レイズ先（合計）", value: `${entry.raiseToBb} BB` }, { label: "頻度合計", value: "100%" }]} />
     <small>ローカル保存済みのAI推定です。ソルバー計算・GTO検証ではありません。</small>
   </Panel></div>;
+}
+
+function InlineGenerationControl({ description, status, error, onGenerate }) {
+  const label = status === "checking" ? "保存状態を確認中…"
+    : status === "loading" ? "Codexで生成中…"
+    : status === "cached" ? "保存済みレンジを表示中"
+    : "CodexでAI推定レンジを生成";
+  return <>
+    <div className="inline-generation-control">
+      <small>{description}</small>
+      <button type="button" disabled={status === "loading" || status === "checking" || status === "cached"} onClick={onGenerate}>{label}</button>
+    </div>
+    {error && <p className="inline-generation-error" role="alert">{error}</p>}
+  </>;
 }
 
 export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHero, raiseToBb, pendingRaise, continuationAction, onOpenerChange, onHeroChange, onCall, onFold, onThreeBet, onFourBet, onAllIn, onContinuationAction }) {
@@ -189,7 +208,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [pendingRaise, setPendingRaise] = useState(initialSelection.pendingRaise);
   const [continuationAction, setContinuationAction] = useState(initialSelection.continuationAction);
   const [localEstimate, setLocalEstimate] = useState(null);
-  const [localStatus, setLocalStatus] = useState(initialSelection.rangeType === "response" && initialSelection.callers.length > 0 && !initialSelection.foldedHero ? "checking" : "idle");
+  const [localEstimateRequestKey, setLocalEstimateRequestKey] = useState(null);
+  const [localStatus, setLocalStatus] = useState(
+    initialSelection.rangeType === "response" && initialSelection.callers.length > 0 && !initialSelection.foldedHero ||
+    initialSelection.rangeType === "four_bet" && initialSelection.pendingRaise === "all_in" ? "checking" : "idle",
+  );
   const [localError, setLocalError] = useState("");
   // `hero` is the later seat selector: the 3-bettor when the opener acts again.
   const [selected, setSelected] = useState(initialSelection.selected);
@@ -213,6 +236,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setFocusedRange(null);
     setSelected("AKo");
     setLocalEstimate(null);
+    setLocalEstimateRequestKey(null);
     setLocalStatus("idle");
     setLocalError("");
   }
@@ -270,16 +294,25 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
 
   const multiwayParticipants = [opener, ...callers, ...(!foldedHero && !callers.includes(hero) ? [hero] : [])];
   const showPendingRanges = isComparison && callers.some(position => position !== hero);
-  const canGenerate = isComparison && !foldedHero && callers.length > 0 && callers.every(position => positions.indexOf(position) < positions.indexOf(hero));
-  const requestKey = JSON.stringify({ opener, hero, callers: [...callers].sort((a, b) => positions.indexOf(a) - positions.indexOf(b)) });
+  const sortedCallers = [...callers].sort((a, b) => positions.indexOf(a) - positions.indexOf(b));
+  const multiwayRequest = isComparison && !foldedHero && callers.length > 0 && callers.every(position => positions.indexOf(position) < positions.indexOf(hero))
+    ? { opener, hero, callers: sortedCallers }
+    : null;
+  const fiveBetRequest = isFourBet && pendingRaise === "all_in" && spot
+    ? { scenario: "five_bet_all_in_response", opener, hero, callers: [], three_bet_size_bb: spot.three_bet_size_bb, four_bet_size_bb: spot.four_bet_size_bb, all_in_size_bb: 100 }
+    : null;
+  const activeGenerationRequest = fiveBetRequest ?? multiwayRequest;
+  const canGenerate = Boolean(multiwayRequest);
+  const canGenerateFiveBet = Boolean(fiveBetRequest);
+  const requestKey = activeGenerationRequest ? JSON.stringify(activeGenerationRequest) : null;
   const currentRequestKey = useRef(requestKey);
   currentRequestKey.current = requestKey;
   useEffect(() => {
     window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, pathExpanded, selected }));
   }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, pathExpanded, selected]);
-  useEffect(() => { setLocalEstimate(null); setLocalStatus(canGenerate ? "checking" : "idle"); setLocalError(""); }, [requestKey, rangeType, foldedHero]);
+  useEffect(() => { setLocalEstimate(null); setLocalEstimateRequestKey(null); setLocalStatus(activeGenerationRequest ? "checking" : "idle"); setLocalError(""); }, [requestKey]);
   useEffect(() => {
-    if (!canGenerate) return;
+    if (!activeGenerationRequest || !requestKey) return;
     let cancelled = false;
     let timer;
     async function refresh() {
@@ -288,15 +321,16 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || "保存状態を確認できません。");
         if (cancelled) return;
-        if (result.data) { setLocalEstimate(result.data); setLocalStatus("cached"); return; }
+        if (result.data) { setLocalEstimate(result.data); setLocalEstimateRequestKey(requestKey); setLocalStatus("cached"); return; }
         if (result.pending) { setLocalStatus("loading"); timer = window.setTimeout(refresh, 1500); return; }
         setLocalStatus(current => current === "loading" ? current : "idle");
       } catch (error) { if (!cancelled) { setLocalStatus("error"); setLocalError(error.message); } }
     }
     refresh();
     return () => { cancelled = true; window.clearTimeout(timer); };
-  }, [requestKey, rangeType, foldedHero, canGenerate]);
+  }, [requestKey]);
   async function generateLocalEstimate() {
+    if (!activeGenerationRequest || !requestKey) return;
     const submittedKey = requestKey;
     setLocalStatus("loading"); setLocalError("");
     try {
@@ -304,13 +338,14 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       const result = await response.json();
       if (submittedKey !== currentRequestKey.current) return;
       if (!response.ok || !result.data) throw new Error(result.error || "ローカル生成に接続できません。画面を再読み込みしてください。");
-      setLocalEstimate(result.data); setLocalStatus(result.cached ? "cached" : "generated");
+      setLocalEstimate(result.data); setLocalEstimateRequestKey(submittedKey); setLocalStatus(result.cached ? "cached" : "generated");
     } catch (error) { if (submittedKey === currentRequestKey.current) { setLocalStatus("error"); setLocalError(error.message); } }
   }
-  const localMatrix = range => ({ actions: ["raise", "call", "fold"], aggregates: new Map(range.rows.map(([hand, fold, call, raise]) => [hand, {
+  const localMatrix = range => ({ actions: range.available_actions ?? ["raise", "call", "fold"], aggregates: new Map(range.rows.map(([hand, fold, call, raise]) => [hand, {
     hand, comboCount: hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12,
     actions: { fold: fold / 100, call: call / 100, raise: raise / 100 },
   }])) });
+  const currentLocalEstimate = localEstimateRequestKey === requestKey ? localEstimate : null;
   const responseSpot = !isOpening && dataset ? findSpot(dataset, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
   const threeBetSpot = (isThreeBet || isFourBet) && threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null;
@@ -327,7 +362,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       } else if (position === opener) addSaved(position, "opening", openerSpot, openerModel, `${position} · オープンレンジ`);
       else if (!showPendingRanges && position === hero) addSaved(position, "response", responseSpot, responseModel, `${position} · オープンへの応答`);
       else {
-        const localRange = localEstimate?.ranges.find(range => range.position === position);
+        const localRange = currentLocalEstimate?.ranges.find(range => range.position === position);
         rangeEntries.push(localRange ? { position, kind: "local", model: localMatrix(localRange), title: `${position} · ${pendingRaise === "squeeze" ? "スクイーズ選択" : position === hero ? "現在の応答" : "コール選択"}（AI推定・レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb } : { position, kind: "pending", title: `${position} · 推定レンジ準備中`, statusTitle: "レンジ未収録", statusDescription: pendingRaise === "squeeze" ? "この局面の推定レンジはまだ生成・保存されていません。" : "この履歴のレンジはまだ保存されていません。" });
       }
     }
@@ -336,7 +371,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     addSaved(hero, "response", responseSpot, responseModel, `${hero} · オープンへの応答（3bet前）`);
   } else if (isFourBet) {
     if (pendingRaise === "all_in") {
-      rangeEntries.push({ position: opener, kind: "pending", title: `${opener} · 5betオールインへの応答`, statusTitle: "レンジ未収録", statusDescription: "5betオールイン後の応答データはまだ保存されていません。" });
+      const allInRange = currentLocalEstimate?.scenario === "five_bet_all_in_response" && currentLocalEstimate.ranges?.find(range => range.position === opener);
+      rangeEntries.push(allInRange
+        ? { position: opener, kind: "local", model: localMatrix(allInRange), title: `${opener} · 5betオールインへの応答（AI推定）`, allInSizeBb: 100, fourBetSizeBb: spot.four_bet_size_bb, threeBetSizeBb: spot.three_bet_size_bb }
+        : { position: opener, kind: "pending", title: `${opener} · 5betオールインへの応答`, statusTitle: "レンジ未収録", statusDescription: "5betオールイン後の応答データはまだ保存されていません。" });
       addSaved(hero, "four_bet", spot, model, `${hero} · 4betへの応答（5bet選択）`);
     } else {
       addSaved(opener, "three_bet", threeBetSpot, threeBetModel, `${opener} · 3betへの応答（4bet前）`);
@@ -351,17 +389,18 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     <main>
       <Panel className="estimate-settings">
           <div className="estimate-settings-intro"><div><h2>推定レンジ</h2><small>6max Cash · 100BB · Open 2.5BB · アンティなし</small></div><div className="path-controls"><button type="button" className="path-reset" onClick={resetPath}>リセット</button><button type="button" className="path-toggle" aria-expanded={pathExpanded} aria-label={pathExpanded ? "アクション選択を閉じる" : "アクション選択を開く"} onClick={() => setPathExpanded(value => !value)}>{pathExpanded ? "選択を閉じる" : "アクションを選ぶ"}<span aria-hidden="true">{pathExpanded ? "−" : "+"}</span></button></div></div>
-          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={localEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} pendingRaise={pendingRaise} continuationAction={continuationAction} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} onThreeBet={selectThreeBet} onFourBet={selectFourBet} onAllIn={() => { setContinuationAction(null); setFocusedRange(null); setPendingRaise("all_in"); }} onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setContinuationAction(action); }} />
+          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} pendingRaise={pendingRaise} continuationAction={continuationAction} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} onThreeBet={selectThreeBet} onFourBet={selectFourBet} onAllIn={() => { setContinuationAction(null); setFocusedRange(null); setPendingRaise("all_in"); }} onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setContinuationAction(action); }} />
         </Panel>
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className="estimate-context">
           <strong>{isOpening ? `${opener} Open · 2.5BB` : isFourBet ? `${opener} Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener} 4bet ${spot.four_bet_size_bb}BB → ${hero}（元の3bettor / Hero）の応答 · ${spot.hero_position_vs_opener}` : isThreeBet ? `${opener}（Hero）Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener}の応答 · ${spot.hero_position_vs_three_bettor}` : showPendingRanges ? `${opener} Open 2.5BB${callers.map(position => ` → ${position} Call`).join("")}${foldedHero && !callers.includes(hero) ? ` → ${hero} Fold` : !callers.includes(hero) ? ` → ${hero} Action` : ""} · ${multiwayParticipants.length}人参加` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>
           <span>{isOpening ? "全5ポジション" : "全15局面"} / 各169ハンド · 推定データ・GTO計算なし</span>
         </div>
-        {showPendingRanges && !pendingRaise && <div className="local-estimate-control"><small>マルチウェイは未検証のAI推定です。既存データは変更しません。</small>{canGenerate && <button type="button" disabled={localStatus === "loading" || localStatus === "checking"} onClick={generateLocalEstimate}>{localStatus === "checking" ? "保存状態を確認中…" : localStatus === "loading" ? "Codexで生成中…" : localEstimate ? "保存済みレンジを表示中" : "Codexで推定レンジを生成"}</button>}</div>}
-        {localError && showPendingRanges && !pendingRaise && <StatusState tone="error">{localError}</StatusState>}
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
-          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState></Panel>)}
+          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
+            {canGenerate && isComparison && entry.position === hero && <InlineGenerationControl description="マルチウェイ用のローカルAI推定です。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
+            {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のローカルAI推定です。ソルバー計算ではありません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
+          </Panel>)}
           {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} onClose={() => setFocusedRange(null)} /> : <HandBreakdown title={`${focusedEntry.position} · ${selected}の詳細`} hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} spot={focusedEntry.spot} position={focusedEntry.position} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}

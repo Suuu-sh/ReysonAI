@@ -563,7 +563,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "solveagto-api"
+name = "solveaai-api"
 version = "0.1.0"
 dependencies = [
  "axum",
@@ -572,12 +572,12 @@ dependencies = [
  "serde",
  "serde_json",
  "solution",
- "solveagto-job-queue",
+ "solveaai-job-queue",
  "tokio",
 ]
 
 [[package]]
-name = "solveagto-job-queue"
+name = "solveaai-job-queue"
 version = "0.1.0"
 dependencies = [
  "preflop-tree",
@@ -587,14 +587,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "solveagto-worker"
+name = "solveaai-worker"
 version = "0.1.0"
 dependencies = [
  "continuation",
  "preflop-tree",
  "serde_json",
  "solution",
- "solveagto-job-queue",
+ "solveaai-job-queue",
  "solver-core",
 ]
 

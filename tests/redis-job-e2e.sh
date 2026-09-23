@@ -2,9 +2,9 @@
 set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-CONTAINER_NAME="solveagto-redis-e2e-$$"
-REDIS_PORT="${SOLVEAGTO_REDIS_E2E_PORT:-6391}"
-TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/solveagto-redis-job-e2e.XXXXXX")
+CONTAINER_NAME="solveaai-redis-e2e-$$"
+REDIS_PORT="${SOLVEAAI_REDIS_E2E_PORT:-6391}"
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/solveaai-redis-job-e2e.XXXXXX")
 
 cleanup() {
   docker stop "$CONTAINER_NAME" >/dev/null 2>&1 || true
@@ -25,14 +25,14 @@ for _ in $(seq 1 50); do
 done
 docker exec "$CONTAINER_NAME" redis-cli ping | grep -Fxq PONG
 
-export SOLVEAGTO_QUEUE_BACKEND=redis
-export SOLVEAGTO_REDIS_URL="redis://127.0.0.1:${REDIS_PORT}/"
-export SOLVEAGTO_REDIS_PREFIX="solveagto-e2e-$$"
-export SOLVEAGTO_REDIS_GROUP="solveagto-e2e-workers"
-export SOLVEAGTO_E2E_PORT=3312
+export SOLVEAAI_QUEUE_BACKEND=redis
+export SOLVEAAI_REDIS_URL="redis://127.0.0.1:${REDIS_PORT}/"
+export SOLVEAAI_REDIS_PREFIX="solveaai-e2e-$$"
+export SOLVEAAI_REDIS_GROUP="solveaai-e2e-workers"
+export SOLVEAAI_E2E_PORT=3312
 
-SOLVEAGTO_REDIS_TEST_URL="$SOLVEAGTO_REDIS_URL" \
-  cargo test -p solveagto-job-queue \
+SOLVEAAI_REDIS_TEST_URL="$SOLVEAAI_REDIS_URL" \
+  cargo test -p solveaai-job-queue \
   redis_queue_deduplicates_reclaims_retries_and_completes -- --ignored
 
 bash "$ROOT_DIR/tests/api-job-e2e.sh"
@@ -49,12 +49,12 @@ with open(sys.argv[2], "w", encoding="utf-8") as destination:
 PY
 
 touch "$TMP_DIR/not-a-directory"
-ENQUEUE_OUTPUT=$("$ROOT_DIR/target/debug/solveagto-worker" enqueue \
+ENQUEUE_OUTPUT=$("$ROOT_DIR/target/debug/solveaai-worker" enqueue \
   "$TMP_DIR/config.json" ignored "$TMP_DIR/not-a-directory/output")
 FAILED_JOB_ID=$(printf '%s\n' "$ENQUEUE_OUTPUT" | sed -n 's/^Job enqueued: //p')
-"$ROOT_DIR/target/debug/solveagto-worker" worker ignored --once >/dev/null
+"$ROOT_DIR/target/debug/solveaai-worker" worker ignored --once >/dev/null
 
-FAILED_STATUS=$("$ROOT_DIR/target/debug/solveagto-worker" status "$FAILED_JOB_ID" ignored)
+FAILED_STATUS=$("$ROOT_DIR/target/debug/solveaai-worker" status "$FAILED_JOB_ID" ignored)
 python3 - "$FAILED_STATUS" <<'PY'
 import json
 import sys
@@ -64,8 +64,8 @@ assert status["status"] == "failed"
 assert status["error"]
 PY
 
-"$ROOT_DIR/target/debug/solveagto-worker" retry "$FAILED_JOB_ID" ignored >/dev/null
-RETRIED_STATUS=$("$ROOT_DIR/target/debug/solveagto-worker" status "$FAILED_JOB_ID" ignored)
+"$ROOT_DIR/target/debug/solveaai-worker" retry "$FAILED_JOB_ID" ignored >/dev/null
+RETRIED_STATUS=$("$ROOT_DIR/target/debug/solveaai-worker" status "$FAILED_JOB_ID" ignored)
 python3 - "$RETRIED_STATUS" <<'PY'
 import json
 import sys

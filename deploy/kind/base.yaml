@@ -1,35 +1,35 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: solveagto
+  name: solveaai
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: solveagto-runtime
-  namespace: solveagto
+  name: solveaai-runtime
+  namespace: solveaai
 data:
-  SOLVEAGTO_API_BIND: 0.0.0.0:3000
-  SOLVEAGTO_ENABLE_GENERATION: "true"
-  SOLVEAGTO_CONFIG_PATH: /etc/solveagto/cash-6max-100bb.json
-  SOLVEAGTO_SOLUTION_ID: cash-6max-100bb-v1
-  SOLVEAGTO_SOLUTION_DIR: /var/lib/solveagto/solutions
-  SOLVEAGTO_QUEUE_DIR: /var/lib/solveagto/jobs
-  SOLVEAGTO_QUEUE_BACKEND: redis
-  SOLVEAGTO_REDIS_URL: redis://solveagto-redis:6379/
-  SOLVEAGTO_REDIS_PREFIX: solveagto
-  SOLVEAGTO_REDIS_GROUP: solveagto-workers
-  SOLVEAGTO_REDIS_BLOCK_MS: "1000"
-  SOLVEAGTO_REDIS_LEASE_MS: "60000"
+  SOLVEAAI_API_BIND: 0.0.0.0:3000
+  SOLVEAAI_ENABLE_GENERATION: "true"
+  SOLVEAAI_CONFIG_PATH: /etc/solveaai/cash-6max-100bb.json
+  SOLVEAAI_SOLUTION_ID: cash-6max-100bb-v1
+  SOLVEAAI_SOLUTION_DIR: /var/lib/solveaai/solutions
+  SOLVEAAI_QUEUE_DIR: /var/lib/solveaai/jobs
+  SOLVEAAI_QUEUE_BACKEND: redis
+  SOLVEAAI_REDIS_URL: redis://solveaai-redis:6379/
+  SOLVEAAI_REDIS_PREFIX: solveaai
+  SOLVEAAI_REDIS_GROUP: solveaai-workers
+  SOLVEAAI_REDIS_BLOCK_MS: "1000"
+  SOLVEAAI_REDIS_LEASE_MS: "60000"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: solveagto-redis
-  namespace: solveagto
+  name: solveaai-redis
+  namespace: solveaai
 spec:
   selector:
-    app: solveagto-redis
+    app: solveaai-redis
   ports:
     - name: redis
       port: 6379
@@ -38,19 +38,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: solveagto-redis
-  namespace: solveagto
+  name: solveaai-redis
+  namespace: solveaai
 spec:
   replicas: 1
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: solveagto-redis
+      app: solveaai-redis
   template:
     metadata:
       labels:
-        app: solveagto-redis
+        app: solveaai-redis
     spec:
       containers:
         - name: redis
@@ -83,17 +83,17 @@ spec:
       volumes:
         - name: redis-data
           hostPath:
-            path: /var/lib/solveagto/redis
+            path: /var/lib/solveaai/redis
             type: Directory
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: solveagto-api
-  namespace: solveagto
+  name: solveaai-api
+  namespace: solveaai
 spec:
   selector:
-    app: solveagto-api
+    app: solveaai-api
   ports:
     - name: http
       port: 3000
@@ -102,33 +102,33 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: solveagto-api
-  namespace: solveagto
+  name: solveaai-api
+  namespace: solveaai
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: solveagto-api
+      app: solveaai-api
   template:
     metadata:
       labels:
-        app: solveagto-api
+        app: solveaai-api
     spec:
       containers:
         - name: api
-          image: solveagto-api:local
+          image: solveaai-api:local
           imagePullPolicy: Never
           envFrom:
             - configMapRef:
-                name: solveagto-runtime
+                name: solveaai-runtime
           ports:
             - name: http
               containerPort: 3000
           volumeMounts:
-            - name: solveagto-data
-              mountPath: /var/lib/solveagto
-            - name: solveagto-config
-              mountPath: /etc/solveagto
+            - name: solveaai-data
+              mountPath: /var/lib/solveaai
+            - name: solveaai-config
+              mountPath: /etc/solveaai
               readOnly: true
           readinessProbe:
             httpGet:
@@ -143,41 +143,41 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
       volumes:
-        - name: solveagto-data
+        - name: solveaai-data
           hostPath:
-            path: /var/lib/solveagto
+            path: /var/lib/solveaai
             type: Directory
-        - name: solveagto-config
+        - name: solveaai-config
           configMap:
-            name: solveagto-game-config
+            name: solveaai-game-config
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: solveagto-worker
-  namespace: solveagto
+  name: solveaai-worker
+  namespace: solveaai
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: solveagto-worker
+      app: solveaai-worker
   template:
     metadata:
       labels:
-        app: solveagto-worker
+        app: solveaai-worker
     spec:
       containers:
         - name: worker
-          image: solveagto-worker:local
+          image: solveaai-worker:local
           imagePullPolicy: Never
           command: ["/usr/local/bin/app"]
-          args: ["worker", "/var/lib/solveagto/jobs", "--poll-ms", "1000"]
+          args: ["worker", "/var/lib/solveaai/jobs", "--poll-ms", "1000"]
           envFrom:
             - configMapRef:
-                name: solveagto-runtime
+                name: solveaai-runtime
           volumeMounts:
-            - name: solveagto-data
-              mountPath: /var/lib/solveagto
+            - name: solveaai-data
+              mountPath: /var/lib/solveaai
           resources:
             requests:
               cpu: "250m"
@@ -186,20 +186,20 @@ spec:
               cpu: "2"
               memory: "4Gi"
       volumes:
-        - name: solveagto-data
+        - name: solveaai-data
           hostPath:
-            path: /var/lib/solveagto
+            path: /var/lib/solveaai
             type: Directory
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: solveagto-ui
-  namespace: solveagto
+  name: solveaai-ui
+  namespace: solveaai
 spec:
   type: NodePort
   selector:
-    app: solveagto-ui
+    app: solveaai-ui
   ports:
     - name: http
       port: 80
@@ -209,21 +209,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: solveagto-ui
-  namespace: solveagto
+  name: solveaai-ui
+  namespace: solveaai
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: solveagto-ui
+      app: solveaai-ui
   template:
     metadata:
       labels:
-        app: solveagto-ui
+        app: solveaai-ui
     spec:
       containers:
         - name: ui
-          image: solveagto-ui:local
+          image: solveaai-ui:local
           imagePullPolicy: Never
           ports:
             - name: http

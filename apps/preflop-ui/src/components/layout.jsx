@@ -22,12 +22,12 @@ export function Sidebar({ activeSection, onSectionChange }) {
   const [collapsed, setCollapsed] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1049px)").matches);
 
   return (
-    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="SolveaGTO サイドバー">
+    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="SolveaAI サイドバー">
       <div className="sidebar-heading">
         <div className="brand">
           <Spade size={30} weight="fill" />
           <div className="brand-copy">
-            Solvea<span>GTO</span>
+            Solvea<span>AI</span>
             <small>Play Closer to Perfect</small>
           </div>
         </div>
@@ -77,7 +77,7 @@ export function Sidebar({ activeSection, onSectionChange }) {
 export function AppFooter() {
   return (
     <footer className="app-footer">
-      <span>SolveaGTO v0.1</span>
+      <span>SolveaAI v0.1</span>
       <span>推定レンジ · GTO未検証</span>
     </footer>
   );

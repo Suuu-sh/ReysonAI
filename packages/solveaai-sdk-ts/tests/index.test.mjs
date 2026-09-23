@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { SolveaGTOApiError, SolveaGTOClient } from "../dist/index.js";
+import { SolveaAIApiError, SolveaAIClient } from "../dist/index.js";
 
 function jsonResponse(payload, { ok = true, status = 200 } = {}) {
   return {
@@ -32,7 +32,7 @@ test("createJob sends an optional solutionId and returns the typed response", as
     attempts: 0,
     error: null,
   };
-  const client = new SolveaGTOClient({
+  const client = new SolveaAIClient({
     baseUrl: "http://localhost:3000/",
     fetch: async (url, init) => {
       calls.push({ url, init });
@@ -56,7 +56,7 @@ test("createJob sends an optional solutionId and returns the typed response", as
 
 test("createJob omits solutionId when using the configured default", async () => {
   let request;
-  const client = new SolveaGTOClient({
+  const client = new SolveaAIClient({
     baseUrl: "http://localhost:3000",
     fetch: async (url, init) => {
       request = { url, init };
@@ -72,7 +72,7 @@ test("createJob omits solutionId when using the configured default", async () =>
 
 test("getJob URL-encodes the job id", async () => {
   let requestedUrl;
-  const client = new SolveaGTOClient({
+  const client = new SolveaAIClient({
     baseUrl: "http://localhost:3000",
     fetch: async (url) => {
       requestedUrl = url;
@@ -89,7 +89,7 @@ test("getJob URL-encodes the job id", async () => {
 });
 
 test("API errors preserve the HTTP status and response body", async () => {
-  const client = new SolveaGTOClient({
+  const client = new SolveaAIClient({
     baseUrl: "http://localhost:3000",
     fetch: async () =>
       jsonResponse({ error: "job not found" }, { ok: false, status: 404 }),
@@ -98,7 +98,7 @@ test("API errors preserve the HTTP status and response body", async () => {
   await assert.rejects(
     client.preflop.getJob("missing"),
     (error) => {
-      assert.ok(error instanceof SolveaGTOApiError);
+      assert.ok(error instanceof SolveaAIApiError);
       assert.equal(error.status, 404);
       assert.equal(error.body, '{"error":"job not found"}');
       return true;

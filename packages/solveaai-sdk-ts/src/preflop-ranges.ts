@@ -30,7 +30,7 @@ export type AiRangeProviderMetadata = {
 };
 
 export type AiPreflopRange = {
-  schemaVersion: "solveagto.ai-preflop-range.v1";
+  schemaVersion: "solveaai.ai-preflop-range.v1";
   status: "ai_estimated";
   gtoVerified: false;
   disclaimer: "AI推定レンジ。GTO計算結果ではありません。";
@@ -98,7 +98,7 @@ function makeRange(request: AiRangeRequest, seed: string): AiPreflopRange {
     };
   });
   return {
-    schemaVersion: "solveagto.ai-preflop-range.v1",
+    schemaVersion: "solveaai.ai-preflop-range.v1",
     status: "ai_estimated",
     gtoVerified: false,
     disclaimer: "AI推定レンジ。GTO計算結果ではありません。",
@@ -149,7 +149,7 @@ export function assertValidAiRange(range: AiPreflopRange) {
 }
 
 export class DeterministicPreflopRangeProvider implements PreflopRangeProvider {
-  constructor(private readonly seed = "solveagto-ai-knowledge-response-v0.3") {}
+  constructor(private readonly seed = "solveaai-ai-knowledge-response-v0.3") {}
 
   generate(request: AiRangeRequest): AiPreflopRange {
     if (request.effectiveStackBb !== undefined && request.effectiveStackBb !== 100) {

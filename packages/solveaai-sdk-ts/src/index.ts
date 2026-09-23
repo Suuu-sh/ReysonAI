@@ -108,12 +108,12 @@ export type SolveJobResponse = {
   error: string | null;
 };
 
-export type SolveaGTOClientOptions = {
+export type SolveaAIClientOptions = {
   baseUrl: string;
   fetch?: typeof fetch;
 };
 
-export class SolveaGTOClient {
+export class SolveaAIClient {
   private readonly baseUrl: string;
   private readonly fetcher: typeof fetch;
 
@@ -129,7 +129,7 @@ export class SolveaGTOClient {
     getJob: (jobId: string) => Promise<SolveJobResponse>;
   };
 
-  constructor(options: SolveaGTOClientOptions) {
+  constructor(options: SolveaAIClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, "");
     this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis);
     this.preflop = {
@@ -176,7 +176,7 @@ export class SolveaGTOClient {
     const response = await this.fetcher(`${this.baseUrl}${path}`, init);
     if (!response.ok) {
       const body = await response.text();
-      throw new SolveaGTOApiError(response.status, body);
+      throw new SolveaAIApiError(response.status, body);
     }
     return (await response.json()) as T;
   }
@@ -184,9 +184,9 @@ export class SolveaGTOClient {
 
 export type NodeSummary = Omit<SolutionNode, "combos" | "handAggregates"> & { hasStrategy: boolean };
 
-export class SolveaGTOApiError extends Error {
+export class SolveaAIApiError extends Error {
   constructor(public readonly status: number, public readonly body: string) {
-    super(`SolveaGTO API ${status}: ${body}`);
-    this.name = "SolveaGTOApiError";
+    super(`SolveaAI API ${status}: ${body}`);
+    this.name = "SolveaAIApiError";
   }
 }

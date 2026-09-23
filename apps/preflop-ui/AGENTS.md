@@ -9,10 +9,10 @@ When implementing from a selected generated mock, treat that image as the source
 Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
 
 ## Current visual and data source
-- Use the user's 2026-09-22 black/pink SolveaGTO image as visual direction, not the earlier GTOWizard screenshot.
+- Use the current black/pink SolveaAI branding direction, not the earlier GTOWizard screenshot.
 - The single Estimated Range view must load only the persisted JSON datasets under `src/estimated/preflop-ranges.json` (responses), `src/estimated/opening-ranges.json` (RFI), `src/estimated/three-bet-responses.json` (original opener facing a 3bet), and `src/estimated/four-bet-responses.json` (original 3bettor facing the opener’s 4bet). Switch spot type within this view. Do not render a separate saved-range or API view, and never substitute client-generated provider output or mock strategies when a dataset is missing or invalid.
 - Keep the estimated-range status visible in the page metadata, but do not add a separate warning banner above the range.
-- No postflop, billing, or on-demand solve controls in this milestone.
+- No postflop, billing, or on-demand solver controls in this milestone. This does not prohibit the specifically user-approved local Codex AI-estimate buttons for missing multiway and post-5bet response ranges; those are experimental estimates, not solver jobs, and must remain explicit-click, local-only controls inside the missing participant range panel as defined in `src/estimated/AGENTS.md`.
 - Prefer a compact desktop layout fitting the default results view within one screen (verified at 1280×720); keep dense Combo tables internally scrollable and never hide the experimental warning.
 - Keep primary navigation in a collapsible left sidebar, with `プリフロップ` clearly marked as active. Future product areas may appear as clearly disabled `準備中` placeholders, while hand details and calculation metadata remain out of the top-level navigation.
 
@@ -27,8 +27,8 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - On 2026-09-23 the user chose to show all actions in every range matrix. Do not show a per-action display dropdown; keep all action colors and the legend visible together.
 - On 2026-09-23 the user requested a future multiway-estimate path. The selector may record calls and render one column per active participant, removing folded seats. Multiway ranges will be authored later: until then show an explicit per-seat pending state, never reuse heads-up frequencies or synthesize values.
 - Show reopened betting as additional position blocks after the six initial seats, in poker action order. Multiway follow-up ranges stay explicitly pending rather than borrowing heads-up frequencies; do not add a separate next-action row.
-- On 2026-09-23 the user asked to combine the range settings and seat/action path into one selection surface. Keep it a compact, original SolveaGTO-style expandable panel rather than copying GTOWizard's separate cards verbatim.
-- The 2026-09-23 selection feedback uses a GTOWizard-like horizontal seat/action path: compact summary by default, expandable seat actions, and a highlighted acting seat. Preserve SolveaGTO's black/pink visual language and limit choices to persisted estimated-range spots; do not invent strategies.
+- On 2026-09-23 the user asked to combine the range settings and seat/action path into one selection surface. Keep it a compact, original SolveaAI-style expandable panel rather than copying GTOWizard's separate cards verbatim.
+- The 2026-09-23 selection feedback uses a GTOWizard-like horizontal seat/action path: compact summary by default, expandable seat actions, and a highlighted acting seat. Preserve SolveaAI's black/pink visual language and limit choices to persisted estimated-range spots; do not invent strategies.
 - Range-table action colors must keep `raise` and `call` visually distinct; avoid assigning both actions near-identical pink hues.
 - The Estimated Range view does not need an all-hand action-frequency panel; keep the selected-hand action breakdown instead.
 - Range-table action strips should be ordered left to right as all-in, raise, call, then fold.

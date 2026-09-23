@@ -50,8 +50,8 @@ impl RedisJobQueueConfig {
     pub fn local(url: impl Into<String>) -> Self {
         Self {
             url: url.into(),
-            prefix: "solveagto".to_string(),
-            group: "solveagto-workers".to_string(),
+            prefix: "solveaai".to_string(),
+            group: "solveaai-workers".to_string(),
             block_ms: 1_000,
             lease_ms: 60_000,
         }
@@ -437,10 +437,10 @@ mod tests {
     use std::time::Duration;
 
     #[test]
-    #[ignore = "requires SOLVEAGTO_REDIS_TEST_URL"]
+    #[ignore = "requires SOLVEAAI_REDIS_TEST_URL"]
     fn redis_queue_deduplicates_reclaims_retries_and_completes() {
-        let url = std::env::var("SOLVEAGTO_REDIS_TEST_URL").unwrap();
-        let prefix = format!("solveagto-test-{}-{}", std::process::id(), unix_timestamp());
+        let url = std::env::var("SOLVEAAI_REDIS_TEST_URL").unwrap();
+        let prefix = format!("solveaai-test-{}-{}", std::process::id(), unix_timestamp());
         let mut config = RedisJobQueueConfig::local(url);
         config.prefix = prefix;
         config.group = "test-workers".to_string();

@@ -1,20 +1,20 @@
 [package]
-name = "solveagto-worker"
+name = "solveaai-worker"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [[bin]]
-name = "solveagto-worker"
+name = "solveaai-worker"
 path = "src/main.rs"
 
 [[bin]]
-name = "solveagto-promote"
+name = "solveaai-promote"
 path = "src/bin/promote.rs"
 
 [dependencies]
 continuation = { path = "../../crates/continuation" }
-solveagto-job-queue = { path = "../../crates/job-queue" }
+solveaai-job-queue = { path = "../../crates/job-queue" }
 preflop-tree = { path = "../../crates/preflop-tree" }
 solution = { path = "../../crates/solution" }
 solver-core = { path = "../../crates/solver-core" }

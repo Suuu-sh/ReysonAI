@@ -5,7 +5,7 @@ COPY apps/preflop-ui/package.json apps/preflop-ui/package-lock.json ./apps/prefl
 RUN cd apps/preflop-ui && npm ci
 
 COPY apps/preflop-ui ./apps/preflop-ui
-COPY packages/solveagto-sdk-ts ./packages/solveagto-sdk-ts
+COPY packages/solveaai-sdk-ts ./packages/solveaai-sdk-ts
 
 RUN cd apps/preflop-ui && npm run build
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { SolveaGTOApiError, SolveaGTOClient } from "../../../packages/solveagto-sdk-ts/src/index.ts";
+import { SolveaAIApiError, SolveaAIClient } from "../../../packages/solveaai-sdk-ts/src/index.ts";
 import { handAggregates, sortActions, strategyCombos } from "./data.js";
 import { solutionForStack, solutionStackBb, spotRequest, spotTitle } from "./spot.js";
 import { AppFooter, Sidebar } from "./components/layout.jsx";
@@ -10,8 +10,8 @@ import { StatusState } from "./components/primitives.jsx";
 // Local development keeps the same-origin proxy so the local UI talks to the
 // local Rust API and its local Worker. Production sets this at build time to
 // the read-only Cloudflare API Worker URL.
-const api = new SolveaGTOClient({
-  baseUrl: import.meta.env.VITE_SOLVEAGTO_API_BASE_URL || "/api",
+const api = new SolveaAIClient({
+  baseUrl: import.meta.env.VITE_SOLVEAAI_API_BASE_URL || "/api",
 });
 
 export function App() {
@@ -93,7 +93,7 @@ export function App() {
       })
       .catch(exception => {
         if (!live) return;
-        if (exception instanceof SolveaGTOApiError && (exception.status === 400 || exception.status === 404)) setMissing(true);
+        if (exception instanceof SolveaAIApiError && (exception.status === 400 || exception.status === 404)) setMissing(true);
         else setError(exception.message);
         setLoading("");
       });

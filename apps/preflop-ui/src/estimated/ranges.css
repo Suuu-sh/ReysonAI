@@ -54,3 +54,8 @@
 .local-estimate-control small { color:var(--text-muted); }
 .local-estimate-control button { border:1px solid #fa5b9b; border-radius:8px; background:#35212c; color:#ffb5d1; padding:9px 14px; cursor:pointer; }
 .local-estimate-control button:disabled { opacity:.65; cursor:wait; }
+.inline-generation-control { display:grid; justify-items:start; gap:10px; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }
+.inline-generation-control small { color:var(--text-muted); }
+.inline-generation-control button { border:1px solid #fa5b9b; border-radius:8px; background:#35212c; color:#ffb5d1; padding:9px 14px; cursor:pointer; }
+.inline-generation-control button:disabled { opacity:.65; cursor:wait; }
+.inline-generation-error { margin:8px 0 0; color:var(--danger, #ff7b7b); font-size:12px; }

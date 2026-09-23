@@ -5,11 +5,11 @@ use axum::routing::{get, post};
 use axum::{Json, Router};
 use poker_core::Position;
 use preflop_tree::{ActionKind, HistoryAction, PreflopConfig};
-use solveagto_job_queue::{
+use solveaai_job_queue::{
     next_job_id, queue_from_environment, JobQueue, JobStatus, SolveJob,
 };
 #[cfg(test)]
-use solveagto_job_queue::FileJobQueue;
+use solveaai_job_queue::FileJobQueue;
 use serde::{Deserialize, Serialize};
 use solution::{hash_game_config, FileSolutionStore, Solution, SolutionRepository, SolutionSummary};
 use std::env;
@@ -126,24 +126,24 @@ struct ResolveResponse {
 #[tokio::main]
 async fn main() {
     if let Err(error) = run().await {
-        eprintln!("solveagto-api: {error}");
+        eprintln!("solveaai-api: {error}");
         std::process::exit(1);
     }
 }
 
 async fn run() -> Result<(), String> {
     let solution_dir = PathBuf::from(
-        env::var("SOLVEAGTO_SOLUTION_DIR").unwrap_or_else(|_| "solutions".to_string()),
+        env::var("SOLVEAAI_SOLUTION_DIR").unwrap_or_else(|_| "solutions".to_string()),
     );
-    let generation = if env_flag("SOLVEAGTO_ENABLE_GENERATION", false)? {
+    let generation = if env_flag("SOLVEAAI_ENABLE_GENERATION", false)? {
         let queue_dir = PathBuf::from(
-            env::var("SOLVEAGTO_QUEUE_DIR").unwrap_or_else(|_| "jobs".to_string()),
+            env::var("SOLVEAAI_QUEUE_DIR").unwrap_or_else(|_| "jobs".to_string()),
         );
-        let config_path = env::var("SOLVEAGTO_CONFIG_PATH")
+        let config_path = env::var("SOLVEAAI_CONFIG_PATH")
             .unwrap_or_else(|_| "configs/cash-6max-100bb.json".to_string());
         let config = load_config(StdPath::new(&config_path))?;
         let config_hash = hash_game_config(&config);
-        let solution_id = env::var("SOLVEAGTO_SOLUTION_ID")
+        let solution_id = env::var("SOLVEAAI_SOLUTION_ID")
             .unwrap_or_else(|_| solution_id_from_config_path(StdPath::new(&config_path)));
         Some(GenerationState {
             queue: queue_from_environment(&queue_dir)?,
@@ -155,7 +155,7 @@ async fn run() -> Result<(), String> {
     } else {
         None
     };
-    let bind = env::var("SOLVEAGTO_API_BIND").unwrap_or_else(|_| "127.0.0.1:3000".to_string());
+    let bind = env::var("SOLVEAAI_API_BIND").unwrap_or_else(|_| "127.0.0.1:3000".to_string());
     let state = AppState {
         store: Arc::new(FileSolutionStore::new(&solution_dir)),
         generation,
@@ -170,7 +170,7 @@ async fn run() -> Result<(), String> {
     let listener = tokio::net::TcpListener::bind(&bind)
         .await
         .map_err(|error| error.to_string())?;
-    println!("SolveaGTO API listening on http://{bind}");
+    println!("SolveaAI API listening on http://{bind}");
     println!("Solution directory: {solution_dir_display}");
     println!("Solution generation: {generation_backend}");
     axum::serve(listener, app).await.map_err(|error| error.to_string())
@@ -200,7 +200,7 @@ fn router(state: AppState) -> Router {
 async fn health() -> Json<HealthResponse> {
     Json(HealthResponse {
         status: "ok",
-        service: "solveagto-api",
+        service: "solveaai-api",
     })
 }
 
@@ -377,7 +377,7 @@ fn to_history_action(request: &ResolveActionRequest) -> Result<HistoryAction, Ap
 
 fn load_config(path: &StdPath) -> Result<PreflopConfig, String> {
     let content = fs::read_to_string(path).map_err(|error| {
-        format!("failed to read SolveaGTO config {}: {error}", path.display())
+        format!("failed to read SolveaAI config {}: {error}", path.display())
     })?;
     PreflopConfig::from_json(&content)
 }
@@ -480,8 +480,8 @@ mod scoped_tests {
 
     #[tokio::test]
     async fn scoped_nodes_do_not_leak_between_solutions() {
-        let root = std::env::temp_dir().join(format!("solveagto-scoped-{}", std::process::id()));
-        let queue_root = std::env::temp_dir().join(format!("solveagto-api-queue-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("solveaai-scoped-{}", std::process::id()));
+        let queue_root = std::env::temp_dir().join(format!("solveaai-api-queue-{}", std::process::id()));
         let store = FileSolutionStore::new(&root);
         for (id, pot) in [("a", 4.0), ("b", 9.0)] {
             let saved: Solution = serde_json::from_value(serde_json::json!({
@@ -522,8 +522,8 @@ mod scoped_tests {
 
     #[tokio::test]
     async fn solve_job_requests_are_deduplicated_while_active() {
-        let root = std::env::temp_dir().join(format!("solveagto-api-jobs-{}", std::process::id()));
-        let queue_root = std::env::temp_dir().join(format!("solveagto-api-job-queue-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("solveaai-api-jobs-{}", std::process::id()));
+        let queue_root = std::env::temp_dir().join(format!("solveaai-api-job-queue-{}", std::process::id()));
         let state = AppState {
             store: Arc::new(FileSolutionStore::new(&root)),
             generation: Some(GenerationState {
@@ -575,11 +575,11 @@ mod scoped_tests {
     #[tokio::test]
     async fn solve_job_request_uses_matching_saved_solution_without_queueing() {
         let root = std::env::temp_dir().join(format!(
-            "solveagto-api-saved-solution-{}",
+            "solveaai-api-saved-solution-{}",
             std::process::id()
         ));
         let queue_root = std::env::temp_dir().join(format!(
-            "solveagto-api-saved-solution-queue-{}",
+            "solveaai-api-saved-solution-queue-{}",
             std::process::id()
         ));
         let config = PreflopConfig::default();
