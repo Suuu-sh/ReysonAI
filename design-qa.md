@@ -98,3 +98,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - The all-in response uses only call/fold for the opener and carries the exact saved open/3bet/4bet sizes into its cache identity. Validated all 169 canonical rows, integer frequencies, legal action set, and scenario identity; generated estimates remain in ignored local cache and never update persisted range JSON.
 - Rebranded session-storage keys migrate from the previous SolveaGTO key, so an in-progress selection survives the app rename and reload.
 - Verification: 51 UI/data tests passed; production build passed; Sites tests passed (4). The local preview and read-only local estimate-status endpoint are reachable at `http://127.0.0.1:5173/`. No Codex estimate was initiated during verification. Existing Vite large-bundle warning remains.
+
+## Vertically organized position/action selector (2026-09-23)
+- Expanded position/action blocks now flow in a compact, vertically ordered responsive grid rather than one long horizontal strip. Seat order and acting-seat emphasis are preserved; action choices stay inline on desktop and wrap into two columns on narrow screens.
+- Browser check at `http://localhost:5173/` showed a balanced 3-by-2 seat layout at desktop width with the range table still visible below it; the selector remains short. The collapsed summary layout is unchanged.
+- Verification: all 51 UI/data tests and 4 Sites tests passed; production build passed. Vite still reports its existing large-bundle warning.
