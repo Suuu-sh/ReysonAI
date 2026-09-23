@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { hands } from "../data.js";
 import { AppFooter, Header } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { ActionBars, Field, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.jsx";
@@ -37,6 +38,21 @@ try {
 // Raw glob keeps missing files and invalid JSON inside the explicit error boundary.
 const fourBetFiles = import.meta.glob("./four-bet-responses.json", { eager: true, query: "?raw", import: "default" });
 const fourBetState = loadFourBetDataset(fourBetFiles["./four-bet-responses.json"], dataset, threeBetDataset, openingDataset);
+
+const selectionStorageKey = "solveagto:estimated-selection:v1";
+function restoredSelection(initialRangeType) {
+  const fallback = { rangeType: initialRangeType, opener: "BTN", hero: "BB", callers: [], foldedHero: false, pathExpanded: false, selected: "AKo" };
+  if (typeof window === "undefined") return fallback;
+  try {
+    const saved = JSON.parse(window.sessionStorage.getItem(selectionStorageKey));
+    if (!saved || !rangeTypes.some(item => item.value === saved.rangeType && item.available) ||
+        !positions.slice(0, -1).includes(saved.opener) || !positions.includes(saved.hero) ||
+        positions.indexOf(saved.hero) <= positions.indexOf(saved.opener) ||
+        !Array.isArray(saved.callers) || saved.callers.some(position => !positions.includes(position) || positions.indexOf(position) <= positions.indexOf(saved.opener)) ||
+        new Set(saved.callers).size !== saved.callers.length) return fallback;
+    return { ...fallback, ...saved, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
+  } catch { return fallback; }
+}
 
 function HandBreakdown({ title, hand, model, isOpening, isThreeBet, isFourBet, spot, position, onReturnToComparison }) {
   const aggregate = model.aggregates.get(hand.hand);
@@ -113,26 +129,27 @@ function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHe
 }
 
 export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState }) {
-  const [rangeType, setRangeType] = useState(initialRangeType);
+  const [initialSelection] = useState(() => restoredSelection(initialRangeType));
+  const [rangeType, setRangeType] = useState(initialSelection.rangeType);
   const isOpening = rangeType === "open";
   const isThreeBet = rangeType === "three_bet";
   const isFourBet = rangeType === "four_bet";
   const isComparison = rangeType === "response";
-  const [opener, setOpener] = useState("BTN");
-  const [hero, setHero] = useState("BB");
+  const [opener, setOpener] = useState(initialSelection.opener);
+  const [hero, setHero] = useState(initialSelection.hero);
   const [focusedRange, setFocusedRange] = useState(null);
-  const [pathExpanded, setPathExpanded] = useState(false);
-  const [callers, setCallers] = useState([]);
-  const [foldedHero, setFoldedHero] = useState(false);
+  const [pathExpanded, setPathExpanded] = useState(initialSelection.pathExpanded);
+  const [callers, setCallers] = useState(initialSelection.callers);
+  const [foldedHero, setFoldedHero] = useState(initialSelection.foldedHero);
   const [localEstimate, setLocalEstimate] = useState(null);
-  const [localStatus, setLocalStatus] = useState("idle");
+  const [localStatus, setLocalStatus] = useState(initialSelection.rangeType === "response" && initialSelection.callers.length > 0 && !initialSelection.foldedHero ? "checking" : "idle");
   const [localError, setLocalError] = useState("");
   const [localFilters, setLocalFilters] = useState({});
   // `hero` is the later seat selector: the 3-bettor when the opener acts again.
   const actingHero = isOpening || isThreeBet ? opener : hero;
   const stackBb = 100;
   const openSizeBb = 2.5;
-  const [selected, setSelected] = useState("AKo");
+  const [selected, setSelected] = useState(initialSelection.selected);
   const [filter, setFilter] = useState("all");
   const [openerFilter, setOpenerFilter] = useState("all");
   const currentError = isFourBet ? fourBet.error : isOpening ? openingDataError : isThreeBet ? threeBetDataError : dataError || openingDataError;
@@ -182,15 +199,40 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const showPendingRanges = isComparison && (callers.length > 0 || foldedHero);
   const canGenerate = isComparison && !foldedHero && callers.length > 0 && callers.every(position => positions.indexOf(position) < positions.indexOf(hero));
   const requestKey = JSON.stringify({ opener, hero, callers: [...callers].sort((a, b) => positions.indexOf(a) - positions.indexOf(b)) });
-  useEffect(() => { setLocalEstimate(null); setLocalStatus("idle"); setLocalError(""); setLocalFilters({}); }, [requestKey, rangeType, foldedHero]);
+  const currentRequestKey = useRef(requestKey);
+  currentRequestKey.current = requestKey;
+  useEffect(() => {
+    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pathExpanded, selected }));
+  }, [rangeType, opener, hero, callers, foldedHero, pathExpanded, selected]);
+  useEffect(() => { setLocalEstimate(null); setLocalStatus(canGenerate ? "checking" : "idle"); setLocalError(""); setLocalFilters({}); }, [requestKey, rangeType, foldedHero]);
+  useEffect(() => {
+    if (!canGenerate) return;
+    let cancelled = false;
+    let timer;
+    async function refresh() {
+      try {
+        const response = await fetch(`/local-estimates?request=${encodeURIComponent(requestKey)}`);
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "保存状態を確認できません。");
+        if (cancelled) return;
+        if (result.data) { setLocalEstimate(result.data); setLocalStatus("cached"); return; }
+        if (result.pending) { setLocalStatus("loading"); timer = window.setTimeout(refresh, 1500); return; }
+        setLocalStatus(current => current === "loading" ? current : "idle");
+      } catch (error) { if (!cancelled) { setLocalStatus("error"); setLocalError(error.message); } }
+    }
+    refresh();
+    return () => { cancelled = true; window.clearTimeout(timer); };
+  }, [requestKey, rangeType, foldedHero, canGenerate]);
   async function generateLocalEstimate() {
+    const submittedKey = requestKey;
     setLocalStatus("loading"); setLocalError("");
     try {
       const response = await fetch("/local-estimates", { method: "POST", headers: { "Content-Type": "application/json" }, body: requestKey });
       const result = await response.json();
+      if (submittedKey !== currentRequestKey.current) return;
       if (!response.ok || !result.data) throw new Error(result.error || "ローカル生成に接続できません。画面を再読み込みしてください。");
       setLocalEstimate(result.data); setLocalStatus(result.cached ? "cached" : "generated");
-    } catch (error) { setLocalStatus("error"); setLocalError(error.message); }
+    } catch (error) { if (submittedKey === currentRequestKey.current) { setLocalStatus("error"); setLocalError(error.message); } }
   }
   const localMatrix = range => ({ actions: ["raise", "call", "fold"], aggregates: new Map(range.rows.map(([hand, fold, call, raise]) => [hand, {
     hand, comboCount: hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12,
@@ -231,7 +273,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           <span>{isOpening ? "全5ポジション" : "全15局面"} / 各169ハンド · 推定データ・GTO計算なし</span>
         </div>
         {showPendingRanges ? <>
-          <div className="local-estimate-control"><small>マルチウェイは未検証のAI推定です。オープナーは既存RFI、コーラーは過去のコール選択頻度、Heroは現在の応答頻度を表示。既存データは変更しません。</small>{canGenerate && <button type="button" disabled={localStatus === "loading"} onClick={generateLocalEstimate}>{localStatus === "loading" ? "Codexで生成中…" : localEstimate ? "保存済みレンジを表示中" : "Codexで推定レンジを生成"}</button>}</div>
+          <div className="local-estimate-control"><small>マルチウェイは未検証のAI推定です。オープナーは既存RFI、コーラーは過去のコール選択頻度、Heroは現在の応答頻度を表示。既存データは変更しません。</small>{canGenerate && <button type="button" disabled={localStatus === "loading" || localStatus === "checking"} onClick={generateLocalEstimate}>{localStatus === "checking" ? "保存状態を確認中…" : localStatus === "loading" ? "Codexで生成中…" : localEstimate ? "保存済みレンジを表示中" : "Codexで推定レンジを生成"}</button>}</div>
           {localError && <StatusState tone="error">{localError}</StatusState>}
           <div className="multiway-ranges" aria-label="参加中のレンジ" style={{ "--participant-count": multiwayParticipants.length }}>
           {positions.filter(position => multiwayParticipants.includes(position)).map(position => position === opener ? <StrategyMatrix key={position} node={{ actingPosition: opener }} title={`${opener} · 既存オープンレンジ`} ariaLabel="オープナーのレンジ" aggregates={openerModel.aggregates} actions={openerModel.actions} selected={selected} filter={openerFilter} onSelect={setSelected} onFilterChange={setOpenerFilter} /> : localEstimate?.ranges.find(range => range.position === position) ? (() => { const range = localEstimate.ranges.find(item => item.position === position); const matrix = localMatrix(range); return <StrategyMatrix key={position} node={{ actingPosition: position }} title={`${position} · ${position === hero ? "現在の応答" : "コール選択"}（AI推定・レイズ先 ${range.raise_to_bb}BB）`} ariaLabel={`${position}のレンジ`} aggregates={matrix.aggregates} actions={matrix.actions} selected={selected} filter={localFilters[position] ?? (position === hero ? "all" : "call")} onSelect={setSelected} onFilterChange={value => setLocalFilters(previous => ({ ...previous, [position]: value }))} />; })() : <Panel key={position} className="multiway-range-panel" aria-label={`${position}のレンジ`}>

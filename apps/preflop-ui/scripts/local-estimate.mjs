@@ -96,7 +96,7 @@ export async function getEstimate(value, generate = false, generator = runCodex)
   const key = createHash('sha256').update(JSON.stringify(request)).digest('hex');
   const path = join(cacheDir, `${key}.json`);
   try { return { data: validateEstimate(JSON.parse(await readFile(path, 'utf8')), request), cached: true }; } catch (error) { if (error.code !== 'ENOENT') throw error; }
-  if (!generate) return { data: null, cached: false };
+  if (!generate) return { data: null, cached: false, pending: pending.has(key) };
   if (!pending.has(key)) pending.set(key, (async () => {
     const data = validateEstimate(await generator(request), request);
     data.metadata = {
@@ -113,16 +113,25 @@ export async function getEstimate(value, generate = false, generator = runCodex)
 }
 
 export async function localEstimateMiddleware(req, res, next) {
-  if (req.url !== '/local-estimates') { next(); return; }
+  const url = new URL(req.url, 'http://localhost');
+  if (url.pathname !== '/local-estimates') { next(); return; }
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  if (req.method !== 'POST') { res.writeHead(405).end('{}'); return; }
+  res.setHeader('Cache-Control', 'no-store');
+  if (!['GET', 'POST'].includes(req.method)) { res.writeHead(405).end('{}'); return; }
   const origin = req.headers.origin;
   if (!['127.0.0.1', 'localhost'].includes(req.headers.host?.split(':')[0]) ||
       origin && !['http://127.0.0.1:5173', 'http://localhost:5173'].includes(origin)) { res.writeHead(403).end('{}'); return; }
   try {
-    let body = ''; for await (const chunk of req) { body += chunk; if (body.length > 2048) throw new Error('リクエストが大きすぎます。'); }
-    const value = JSON.parse(body);
-    const result = await getEstimate(value, true);
+    let value;
+    if (req.method === 'GET') {
+      const raw = url.searchParams.get('request');
+      if (!raw || raw.length > 2048) throw new Error('リクエストが不正です。');
+      value = JSON.parse(raw);
+    } else {
+      let body = ''; for await (const chunk of req) { body += chunk; if (body.length > 2048) throw new Error('リクエストが大きすぎます。'); }
+      value = JSON.parse(body);
+    }
+    const result = await getEstimate(value, req.method === 'POST');
     res.writeHead(200).end(JSON.stringify(result));
   } catch (error) { res.writeHead(400).end(JSON.stringify({ error: error.message })); }
 }

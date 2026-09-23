@@ -1,6 +1,7 @@
 # Confirmed scope (2026-09-22)
 
 ## Multiway UI placeholder (2026-09-23)
+Reload behavior (2026-09-23): Preserve the selected situation in per-tab session storage. A read-only status lookup may reattach the UI to an existing local Codex generation after refresh, but refresh must never submit a new generation request. Only an explicit click may initiate one.
 Local trial exception (2026-09-23): On explicit user action for an absent open → caller(s) → later Hero response, the local-only Codex app-server middleware in the Vite development server may generate AI-estimated ranges. Validate all 169 integer rows and spot context, then cache under ignored `.local/estimated`. Existing persisted heads-up JSON and frequencies remain authoritative and must not be overwritten. The middleware is not a solver, API-key integration, or production backend; unsupported paths remain pending. This supersedes the earlier blanket prohibition on runtime generation only for this opt-in local experiment.
 The user will author multiway estimated ranges later. Allow call/fold seat selection and show all non-folded participants side by side, but display an explicit pending state for every participant whenever a caller creates a multiway path. Do not repurpose any of the heads-up persisted frequencies for that path. Folded seats disappear from the participant display; when a call is removed, the existing heads-up display can return.
 
