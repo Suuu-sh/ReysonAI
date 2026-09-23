@@ -15,7 +15,7 @@ The user confirmed a single JSON estimated-range screen, with no API-view switch
 
 The position/action blocks are the only spot selector. They expose the saved action sequence and navigate available datasets; fixed effective stack and open size stay visible in metadata rather than redundant dropdowns. Unsupported branches must say pending, not substitute another range.
 
-For responses to an open, show the opener's persisted RFI range on the left and Hero's response range on the right. Synchronize selected hands for comparison and keep action filters independent. When a hand is selected in either matrix, focus that range: hide the other matrix and show the selected range's hand breakdown beside the remaining matrix on desktop. Provide a clear control to return to the two-range comparison. On narrow screens stack the focused matrix above its breakdown; the opening-only view remains a single matrix.
+At every stage, show range tables for all non-folded participating positions side by side, synchronized on the selected hand. Opening has one table; heads-up responses and later saved stages have two; multiway can have more. A historical earlier-decision table must be labeled as such and never treated as a current response. Missing current ranges remain explicitly pending. Selecting a hand in a matrix focuses that position's table and hand breakdown; closing details restores all participant tables. On narrow screens stack tables, or the focused table and its breakdown.
 
 The user requested this focused interaction on 2026-09-23 after reviewing the two-range view: selecting a hand in the opener range should hide the other range and place its details alongside it, rather than below both ranges. Apply the same symmetric behavior to the response range.
 

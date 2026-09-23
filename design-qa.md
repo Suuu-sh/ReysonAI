@@ -60,3 +60,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 ## Appended 3bet response block (2026-09-23)
 - Reopened betting now appends a new block after BB instead of rewriting the original opener card. On BTN open → BB 3bet 12BB, the seventh block is BTN's 3bet response with separate Fold, Call and 4bet 26.5BB controls.
 - Browser verification: selecting Call in that seventh block marks Call while preserving the original BTN raise and BB 3bet blocks. Later 4bet/all-in and unsupported continuation blocks remain in chronological order.
+
+## Participant range tables and closable detail (2026-09-23)
+- Opening shows the opener table; heads-up 3bet and 4bet stages now show both still-participating positions. Earlier-decision tables are explicitly labeled as historical, not as the current response. Folded positions are omitted. Multiway participants use saved local estimates when available and otherwise retain explicit pending cards.
+- Selecting AA in the BTN table of the four-bet stage focused that table and showed BTN's hand detail. Clicking 「詳細を閉じる」 restored the BTN and BB tables in the local browser at `http://127.0.0.1:5173/`.
+- All 45 UI tests pass, including updated two-table assertions for later stages. Production build and Sites packaging pass. Existing Vite bundle-size warning remains.

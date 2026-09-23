@@ -39,14 +39,17 @@ test("4bet view shows original 3bettor, saved sizes and 5bet all-in; old view ke
   assert.match(html, /BB（元の3bettor \/ Hero）の応答/);
   assert.match(html, /BB 3bet 12BB/);
   assert.match(html, /BTN 4bet 26.5BB/);
-  assert.match(html, /5betオールイン（合計）/);
-  assert.match(html, /100 BB/);
   assert.match(html, /対象外/);
   assert.match(html, /アンティなし/);
-  assert.equal((html.match(/aria-pressed=/g) || []).length, 169);
+  assert.equal((html.match(/aria-pressed=/g) || []).length, 338);
+  assert.match(html, /aria-label="参加中のレンジ"/);
+  assert.match(html, /BTNのレンジ/);
+  assert.match(html, /BBのレンジ/);
+  assert.doesNotMatch(html, /詳細を閉じる/);
   const old = renderToStaticMarkup(createElement(EstimatedRanges, { initialRangeType: "three_bet" }));
   assert.match(old, /BTN（Hero）Open/);
-  assert.match(old, /BTN · Heroの3bet後の応答/);
+  assert.match(old, /BTN · 3betへの応答/);
+  assert.equal((old.match(/aria-pressed=/g) || []).length, 338);
 });
 
 test("estimated view starts with a compact six-seat action path", () => {
