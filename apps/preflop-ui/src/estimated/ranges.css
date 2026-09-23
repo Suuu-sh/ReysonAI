@@ -14,6 +14,8 @@
 .action-seat-options { display: grid; gap: 3px; margin-top: 6px; }
 .action-seat-options button, .action-seat-choice, .action-seat-summary { display: block; width: 100%; padding: 4px 6px; border: 0; background: none; text-align: left; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .action-seat-options button:hover:not(:disabled), .action-seat-summary:hover:not(:disabled), .action-seat .chosen { background: #fa65a120; border-radius: 5px; }
+.action-seat-options .action-seat-reset { margin-top: 5px; border-top: 1px solid var(--line); color: var(--text-subtle); font-size: 10px; }
+.action-path-history { margin-top: 6px; color: var(--text-muted); font-size: 11px; }
 .action-seat-summary { margin-top: 2px; font-weight: 650; }
 .action-seat-summary:disabled { opacity: 1; color: var(--text-muted); }
 .action-path.expanded .action-seat { min-height: 116px; }

@@ -92,40 +92,48 @@ function HandBreakdown({ title, hand, model, isOpening, isThreeBet, isFourBet, s
   </div>;
 }
 
-function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHero, nextActionNode, onOpenerChange, onHeroChange, onCall, onFold }) {
+export function ActionPath({ expanded, rangeType, opener, hero, spot, callers, foldedHero, raiseToBb, nextActionNode, onOpenerChange, onHeroChange, onCall, onFold }) {
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
+  const threeBetSizeBb = spot?.three_bet_size_bb ?? spot?.hands?.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb;
   const actionFor = (position, index) => {
     if (index < openerIndex) return "Fold";
-    if (index === openerIndex) return rangeType === "four_bet" ? `Raise ${spot?.four_bet_size_bb ?? "—"}` : "Raise 2.5";
+    if (index === openerIndex) return "Raise 2.5";
     if (callers.includes(position)) return "Call";
     if (index < heroIndex) return "Fold";
     if (index === heroIndex && foldedHero) return "Fold";
-    if (index === heroIndex) return rangeType === "four_bet" ? `Raise ${spot?.three_bet_size_bb ?? "—"}` : rangeType === "three_bet" ? `Raise ${spot?.three_bet_size_bb ?? "—"}` : "Take action";
-    return "—";
+    if (index === heroIndex) return rangeType === "four_bet" || rangeType === "three_bet" ? `3bet ${spot?.three_bet_size_bb ?? "—"}BB` : "Take action";
+    return rangeType === "response" ? "—" : "Fold";
   };
 
   return <div className={`action-path ${expanded ? "expanded" : "collapsed"}`} aria-label="アクション履歴">
     <div className="action-path-seats">
       {positions.map((position, index) => {
         const canOpen = index < positions.length - 1;
-        const canRespond = !opening && index > openerIndex;
-        const isActive = index === heroIndex && !foldedHero && !callers.includes(position);
+        const canRespond = !opening && index > openerIndex && (rangeType === "response" || index === heroIndex);
+        const isActive = (rangeType === "three_bet" ? index === openerIndex : index === heroIndex) && !foldedHero && !callers.includes(position);
         return <div className={`action-seat${isActive ? " active" : ""}`} key={position}>
           <div className="action-seat-heading"><strong>{position}</strong><span>{index === 4 ? "99.5" : index === 5 ? "99" : "100"}</span></div>
           {expanded ? <div className="action-seat-options">
             {index < openerIndex && <span className="action-seat-choice chosen">Fold</span>}
-            {canOpen && <button type="button" className={index === openerIndex ? "chosen" : ""} onClick={() => onOpenerChange(position)}>Raise 2.5</button>}
-            {canRespond && <button type="button" className={actionFor(position, index) === "Fold" ? "chosen" : ""} onClick={() => onFold(position)}>Fold</button>}
-            {canRespond && <button type="button" className={callers.includes(position) ? "chosen" : ""} onClick={() => onCall(position)}>Call</button>}
-            {canRespond && <button type="button" className={isActive && !foldedHero && !callers.includes(position) ? "chosen" : ""} onClick={() => onHeroChange(position)}>Take action</button>}
+            {canOpen && index <= openerIndex && <button type="button" className={index === openerIndex ? "chosen" : ""} onClick={() => onOpenerChange(position)}>Raise 2.5</button>}
+            {canOpen && index > openerIndex && <button type="button" className="action-seat-reset" onClick={() => onOpenerChange(position)}>ここからオープン</button>}
+            {!opening && rangeType !== "response" && index > openerIndex && index !== heroIndex && <span className="action-seat-choice chosen">Fold</span>}
+            {canRespond && rangeType === "response" && <button type="button" className={actionFor(position, index) === "Fold" ? "chosen" : ""} onClick={() => onFold(position)}>Fold</button>}
+            {canRespond && rangeType === "response" && <button type="button" className={callers.includes(position) ? "chosen" : ""} onClick={() => onCall(position)}>Call</button>}
+            {canRespond && <button type="button" className={isActive ? "chosen" : ""} onClick={() => onHeroChange(position)}>{rangeType === "response" ? "Take action" : `3bet ${spot?.three_bet_size_bb ?? "—"}BB`}</button>}
+            {rangeType === "response" && index === heroIndex && !callers.includes(position) && !foldedHero && <span className="action-seat-choice muted">{callers.length ? `スクイーズ先：${raiseToBb === undefined ? "未保存" : `${raiseToBb}BB`}` : `3bet先：${threeBetSizeBb ?? "—"}BB`}</span>}
+            {rangeType === "three_bet" && index === openerIndex && <span className="action-seat-choice chosen">3betへの応答中</span>}
+            {rangeType === "four_bet" && index === heroIndex && <span className="action-seat-choice chosen">4betへの応答中</span>}
             {opening && index === openerIndex && <span className="action-seat-choice chosen">Hero</span>}
             {!canOpen && !canRespond && index > heroIndex && <span className="action-seat-choice muted">—</span>}
           </div> : <button type="button" className="action-seat-summary" disabled={index < openerIndex || index > heroIndex && !canRespond} onClick={() => index <= openerIndex ? onOpenerChange(position) : onHeroChange(position)}>{actionFor(position, index)}</button>}
         </div>;
       })}
     </div>
+    {rangeType === "three_bet" && <div className="action-path-history">続く履歴：{hero} 3bet → {spot?.three_bet_size_bb ?? "—"}BB（raise-to）→ {opener}が応答</div>}
+    {rangeType === "four_bet" && <div className="action-path-history">続く履歴：{hero} 3bet → {spot?.three_bet_size_bb ?? "—"}BB → {opener} 4bet → {spot?.four_bet_size_bb ?? "—"}BB（raise-to）→ {hero}が応答</div>}
     {nextActionNode && <div className="action-path-next" aria-label="条件付きの次のアクション">
       <div className="action-path-next-heading">
         <small>次のアクションノード · {nextActionNode.branchLabel}</small>
@@ -282,7 +290,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
               </option>)}
             </select>
           </Field>
-          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} nextActionNode={nextActionNode} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} />
+          <ActionPath expanded={pathExpanded} rangeType={rangeType} opener={opener} hero={hero} spot={spot} callers={callers} foldedHero={foldedHero} raiseToBb={localEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb} nextActionNode={nextActionNode} onOpenerChange={changeOpener} onHeroChange={changeHero} onCall={callAt} onFold={foldAt} />
         </Panel>
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className="estimate-context">

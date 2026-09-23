@@ -6,10 +6,25 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
 
-let server, EstimatedRanges;
+let server, EstimatedRanges, ActionPath;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null }, appType: "custom" });
-  ({ EstimatedRanges } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
+  ({ EstimatedRanges, ActionPath } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
+});
+
+test("expanded path keeps opening controls separate from post-open actions and shows saved raise-to sizes", () => {
+  const props = { expanded: true, opener: "BTN", hero: "SB", callers: [], foldedHero: false, onOpenerChange() {}, onHeroChange() {}, onCall() {}, onFold() {} };
+  const response = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "response" }));
+  assert.equal((response.match(/>Raise 2\.5<\/button>/g) || []).length, 4); // UTG, HJ, CO, BTN only
+  assert.match(response, /SB[\s\S]*ここからオープン[\s\S]*Fold[\s\S]*Call[\s\S]*Take action/);
+  assert.doesNotMatch(response, /SB[\s\S]*>Raise 2\.5<\/button>/);
+  const sizedResponse = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "response", spot: { hands: [{ three_bet_size_bb: 11 }] } }));
+  assert.match(sizedResponse, /3bet先：11BB/);
+
+  const fourBet = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "four_bet", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.6 } }));
+  assert.match(fourBet, /3bet 11BB/);
+  assert.match(fourBet, /続く履歴：SB 3bet → 11BB → BTN 4bet → 28\.6BB/);
+  assert.doesNotMatch(fourBet, /SB[\s\S]*>Raise 2\.5<\/button>/);
 });
 after(async () => { await server?.close(); });
 

@@ -17,6 +17,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Keep the primary navigation in the top header with `プリフロップ` centered as the active area. Future product areas may appear as clearly disabled `準備中` placeholders, while hand details and calculation metadata remain out of the top-level navigation.
 
 ## Durable UI feedback
+- On 2026-09-23 the user required action-path sizes and chronology to match the selected preflop history. After an open, never present another seat's 2.5BB raise as a current response; distinguish changing the opener from facing the open, and use persisted raise-to sizes for recorded 3bet/4bet history.
 - On 2026-09-23 the user chose to show all actions in every range matrix. Do not show a per-action display dropdown; keep all action colors and the legend visible together.
 - On 2026-09-23 the user requested a future multiway-estimate path. The selector may record calls and render one column per active participant, removing folded seats. Multiway ranges will be authored later: until then show an explicit per-seat pending state, never reuse heads-up frequencies or synthesize values.
 - On 2026-09-23 the user requested that a BB action which reopens betting create the next action node. Show the next live actors in poker action order after a raise/3bet/4bet; make the branch conditional, and keep multiway follow-up ranges explicitly pending rather than borrowing heads-up frequencies.
