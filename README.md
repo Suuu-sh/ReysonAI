@@ -243,7 +243,7 @@ if (job.jobId) {
 
 ### 5. Preflop UI
 
-別ターミナルで API を起動した状態で、UI の開発サーバーを起動します。
+UIの開発サーバーを起動します。推定レンジ画面は保存JSONのみを使うため、APIやSolverの起動は不要です。
 
 ```bash
 cd apps/preflop-ui
@@ -254,19 +254,21 @@ npm run dev -- --host 0.0.0.0 --port 4173 --strictPort
 UIは `推定レンジ` の単一画面です。正本は
 対オープンは `apps/preflop-ui/src/estimated/preflop-ranges.json`、オープンは
 `apps/preflop-ui/src/estimated/opening-ranges.json`、3bet後の応答は
-`apps/preflop-ui/src/estimated/three-bet-responses.json` で、表示時のAPI通信やSolver実行はありません。
+`apps/preflop-ui/src/estimated/three-bet-responses.json`、4bet後の応答は
+`apps/preflop-ui/src/estimated/four-bet-responses.json` で、表示時のAPI通信やSolver実行はありません。
 データが不正な場合はエラーを表示し、モックや別の戦略で補完しません。
 
-- 6-max / effective stack 100BB / 全オープナー2.5BB
-- 「局面」でオープン／対オープン／3bet後の応答を選択 → ポジション選択 → 169ハンドから頻度・サイズ・理由を確認
+- 6-max / effective stack 100BB / 全オープナー2.5BB / アンティなし（全JSONのante_bb=0に統一）
+- 「局面」でオープン／対オープン／3bet後の応答／4bet後の応答を選択 → ポジション選択 → 169ハンドから頻度・サイズ・理由を確認
 - 対オープンはUTG / HJ / CO / BTN / SB / BBの順序に基づく15局面、2,535件
 - オープンは先行者全員フォールドのUTG / HJ / CO / BTN / SB、5局面・845件
-- 3bet後の応答は15局面・2,535件（全データ合計5,915件）。Heroは元のオープナー、後続相手は3bettor
+- 3bet後の応答は15局面・2,535件。Heroは元のオープナー、後続相手は3bettor
 - オープン時のHeroはオープナーと同じ。SBも2.5BBのraise-or-foldで、リンプは含めない
 - 対オープンは単独オープンへの初回応答。こちらではUTGはオープナーのみ
 - 対オープン画面は左にオープナーのRFI、右にHeroの対応レンジを表示。同じハンドの選択を同期し、フィルターは左右独立。どちらかのハンドを選ぶと選択した側のレンジだけを残して詳細を横に表示し、「両方のレンジを表示」で比較に戻れる（狭い画面では縦並び）
 - 3bet後は他の全員がフォールドした場面のfold / call / four_bet。受ける3betサイズは既存対オープンJSONと一致させる
-- 4bet後の応答、コールド4bet、リンプ対応、スクイーズは対象外
+- 4bet後の応答は15局面・2,535件（全データ合計8,450件）。Heroは元の3bettorで、オープナーの4betに応答する
+- 4bet後はfold / call / all_in（5betオールイン、合計100BB）。非オールイン5bet、コールド4bet、リンプ対応、スクイーズは対象外
 - 一般知識による推定値。GTO計算・EV計算・レーキ調整は未実施
 - 3bet・4betサイズは追加額ではなく合計投入額。該当レイズ頻度0ではサイズなし
 - API画面への切替やJSONダウンロードボタンは表示しない
@@ -281,6 +283,26 @@ RFIの一般概念は [Upswing Poker](https://upswingpoker.com/preflop-open-stra
 それ以外の頻度は「既にオープンした条件下」の値であり、オープン頻度を再乗算しません。
 4betサイズはIP/OOP別の単一非オールインサイズを推定し、別のオールイン枝やサイズ間混合は収録していません。
 位置によるサイズの考え方は [Upswing Pokerのサイズ解説](https://upswingpoker.com/podcast/ep29-pfr-sizing/) を参考にし、頻度は独自の概算です。
+
+4bet後のJSONは `python3 apps/preflop-ui/scripts/generate-four-bet-responses.py` で再生成できます（Python 3とNode.jsが必要）。
+依存順は既存対オープンJSON・オープンJSON → 3bet後JSON → 4bet後JSONの作成・共通バリデーターによる検証 → 保存 → UI表示です。
+生成スクリプトは編集時専用で、ブラウザーでは実行しません。局面ごとの既存3bet／4betサイズをそのまま参照します。
+Solver設定のサイズ倍率とは異なることをユーザー確認済みで、保存JSONのサイズを優先します。
+合法応答は `crates/preflop-tree/src/lib.rs` の `ensure_four_bet_response` に合わせたfold / call / all_inのみです。
+callは4bet額まで、5betオールインは追加額ではなく合計100BBです。各行のall_in=0ではall_in_size_bb=nullにします。
+元の3bet頻度0%のハンドは既存規約どおりfold=100の形式的レコードとし、理由に「対象外」を明記します。
+画面ではこの値を推奨として描画せず、斜線セル・「対象外」と到達不能の説明を表示します。
+それ以外は既に3betした条件下の頻度で、元の頻度を再乗算しません。
+頻度は独自のハンド群別概算であり、前段レンジとの同時均衡・相手カード除去・EVは未計算です。競合チャートは転用していません。
+欠損ファイル・JSON構文エラー・不正データではエラーを表示し、戦略を補完せず、他の局面への切り替えは維持します。
+
+UI・データ検証（全15局面と異常系を含む）:
+```bash
+cd apps/preflop-ui
+npm run build
+npm run test:sites
+node --test tests/*.test.mjs
+```
 
 API/SDK自体は独立して利用できます。以下はUIではなくAPIの取得ルートです。
 

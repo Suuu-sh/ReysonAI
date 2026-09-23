@@ -11,7 +11,7 @@ const data = read("three-bet-responses"), responses = read("preflop-ranges"), op
 test("all 15 3bet response spots preserve the original opener as Hero and existing 3bet sizes", () => {
   assert.equal(validateThreeBetDataset(data, responses, openings), data);
   assert.equal(rangeTypes.find(x => x.value === "three_bet").available, true);
-  assert.equal(rangeTypes.find(x => x.value === "four_bet").available, false);
+  assert.equal(rangeTypes.find(x => x.value === "four_bet").available, true);
   assert.equal(data.spots.length, 15);
   assert.equal(data.spots.reduce((n, s) => n + s.hands.length, 0), 2535);
   for (const before of responses.spots) {

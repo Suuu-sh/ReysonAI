@@ -33,3 +33,6 @@
   .results.estimate-results { grid-template-columns: minmax(0, 1fr); }
   .estimate-results .detail-column { grid-column: 1; }
 }
+
+.matrix button.unreachable-hand { background: repeating-linear-gradient(135deg, transparent, transparent 4px, #ffffff08 4px, #ffffff08 6px); color: var(--text-muted); }
+.matrix button.unreachable-hand small { font-size: 9px; }

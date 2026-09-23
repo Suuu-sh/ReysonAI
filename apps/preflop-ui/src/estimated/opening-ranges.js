@@ -3,7 +3,7 @@ import { positions } from "./ranges.js";
 
 export function validateOpeningDataset(data) {
   const openingPositions = positions.slice(0, -1);
-  if (data?.metadata?.strategy_type !== "general_knowledge_estimate_not_gto" ||
+  if (data?.metadata?.ante_bb !== 0 || data?.metadata?.strategy_type !== "general_knowledge_estimate_not_gto" ||
       data.metadata.effective_stack_bb !== 100 || data.metadata.open_size_bb !== 2.5 ||
       data.entry_count !== 845 || data.spot_count !== 5 || data.hand_classes_per_spot !== 169 ||
       !Array.isArray(data.spots) || data.spots.length !== 5 ||

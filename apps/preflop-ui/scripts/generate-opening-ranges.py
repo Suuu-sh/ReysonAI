@@ -93,7 +93,7 @@ def main():
             'method': 'ハンドクラスごとに手作業で設計した一般知識による概算。ソルバー・EV計算なし。',
             'sb_policy': 'SBも2.5BBのraise-or-foldに簡略化。リンプ頻度は収録せず、最適なSB戦略とは主張しません。',
             'rake': {'rate': None, 'cap_bb': None, 'calibrated': False},
-            'ante_bb': None, 'ante_note': '未指定。アンティの効果はモデル化していません。',
+            'ante_bb': 0, 'ante_note': 'アンティなし（ユーザー確認済み）。',
             'frequency_semantics': '当該ハンドを持った場合の条件付き割合(%)。open + fold = 100。',
             'open_size_semantics': 'そのストリートの合計投入額(raise-to)。open=0ならnull。',
             'relationship_to_response_data': '対オープン推定と同じゲーム条件ですが、両者を同時に均衡計算したものではありません。',

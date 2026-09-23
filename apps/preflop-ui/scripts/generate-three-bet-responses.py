@@ -283,7 +283,7 @@ def main():
         'source_of_truth': 'ユーザー確認済みの全15組み合わせと既存preflop-ranges.jsonの3betサイズ。Heroは元のオープナー。',
         'excluded': ['コールド4bet', 'スクイーズ・コーラーあり', '4betを受けた後の応答', '4bet後の相手の行動'],
         'method': '手作業のハンド群別ヒューリスティック。位置と3betサイズに応じて配分。5%刻みは精度を意味しない。',
-        'rake': {'rate': None, 'cap_bb': None, 'calibrated': False}, 'ante_bb': None,
+        'rake': {'rate': None, 'cap_bb': None, 'calibrated': False}, 'ante_bb': 0,
         'frequency_semantics': '当該ハンドで既にオープンした条件下の割合。fold+call+four_bet=100。オープン頻度は再乗算しない。',
         'unreachable_hands': '既存RFIでopen=0のクラスはこの経路に到達しない。169件形式のためfold=100とし、理由に対象外と明記。実際の局面での推奨ではない。',
         'sizing_semantics': '3bet・4betとも追加額ではなく合計投入額(raise-to)。four_bet=0ならfour_bet_size_bb=null。',

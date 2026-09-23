@@ -6,7 +6,7 @@ export const rangeTypes = [
   { value: "response", label: "オープンへの応答", available: true },
   { value: "open", label: "オープンレンジ", available: true },
   { value: "three_bet", label: "3bet後の応答", available: true },
-  { value: "four_bet", label: "4bet後の応答", available: false },
+  { value: "four_bet", label: "4bet後の応答", available: true },
 ];
 
 export const stackOptions = [
@@ -23,7 +23,7 @@ export const openSizeOptions = [
 
 export function validateDataset(data) {
   const expectedIds = positions.flatMap((opener, i) => positions.slice(i + 1).map(hero => `${hero}_vs_${opener}`));
-  if (data?.metadata?.strategy_type !== "general_knowledge_estimate_not_gto" ||
+  if (data?.metadata?.ante_bb !== 0 || data?.metadata?.strategy_type !== "general_knowledge_estimate_not_gto" ||
       data?.metadata?.effective_stack_bb !== 100 || data?.metadata?.open_size_bb !== 2.5 ||
       data?.entry_count !== 2535 || !Array.isArray(data.spots) || data.spots.length !== 15 ||
       new Set(data.spots.map(spot => spot.id)).size !== 15 ||

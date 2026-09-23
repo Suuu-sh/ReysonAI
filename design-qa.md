@@ -1,72 +1,36 @@
-# Design QA — API Explorer (2026-09-22)
+# Design QA — Persisted Estimated Ranges (2026-09-23)
 
-Reference: /Users/yota/Downloads/0e138cf6-b544-4566-b692-af5731915919.png
+This report supersedes the historical API Explorer/mock-data checks. The current UI uses saved estimated JSON only; API, SDK and Solver remain separate systems.
 
-Replaces the previous report, whose mock-data and completed-QA claims are no longer applicable.
+## Current scope and sources
+- Black/pink single estimated-range view with opening, open-response, 3bet-response and 4bet-response selections.
+- Four persisted datasets: 5 opening spots plus 15 spots in each response dataset; 8,450 hand records total.
+- Four-bet path: opener 2.5BB → later Hero 3bet → opener 4bet → original 3bettor Hero responds. Three-bet response Hero remains the opener.
+- Existing JSON controls raise-to sizes, not the separate Solver multipliers. Five-bet is `all_in`, total 100BB only. Ante metadata normalized to zero with user approval.
+- Estimates only, with no GTO/EV claim, competitor chart reuse, runtime generation or API fallback.
 
-## Verified
-- Vite production build and Sites packaging tests pass.
-- Rust workspace tests pass; new solution-scoped API isolation test passes.
-- Three UI data tests pass (169 labels, combo-weighted aggregates, no synthetic empty values).
-- In-app browser: API loading, error/retry recovery, provided 1326 combos / 169 classes.
-- Hand selection AA renders 6 actual rows; AKo renders 12 actual rows.
-- At 319 CSS px, document width is 319 (no page-level horizontal overflow); matrix and tables scroll locally.
-- Real source is a locally saved one-iteration experimental worker result, not competitor data.
-- Black/pink palette, navigation, settings, matrix and detail panels implemented.
+## Automated verification
+- `npm run build` and `npm run test:sites` pass in `apps/preflop-ui`; Sites client/server/hosting outputs are present.
+- `node --test tests/*.test.mjs`: 37 tests pass (including Sites tests).
+- New data checks cover every one of the 15 spots, IDs, source sizes, 169 unique canonical hands, frequency totals, legal all-in size and zero-3bet reachability.
+- Every spot is mutation-tested for malformed sizes/IDs/hands/frequencies, invalid reasons and unreachable continuation. Missing JSON, malformed syntax and corrupted upstream data fail closed.
+- Server-rendered UI tests verify Hero roles, sizes, all-in labels and absence of matrix/bars on errors.
+- Rust workspace tests, TypeScript SDK tests (8) and Edge API tests (5) pass.
 
-## Intentional scope differences from source
-- Only preflop and persisted range data; no solve-on-request, billing or unavailable navigation.
-- No separate estimated-range warning banner; no made-up equity, recommended actions or percentages.
-- Matrix uses frequency strips rather than painting all cells.
-- Source's BTN opening strategy is unavailable in the existing tree; UI displays only existing nodes.
+## Browser verification — local app at port 4173
+- All 15 opener/Hero combinations selected and checked in the four-bet view; Hero remains the original 3bettor.
+- BTN/BB shows 12BB 3bet → 26.5BB 4bet. AKo: all-in 85%, call 15%, fold 0%, total 100BB all-in.
+- UTG/HJ shows 8BB → 22BB, AA shows all-in 90%, call 10%.
+- Changing opener from UTG with Hero HJ to SB automatically selects the only legal Hero BB; BB opener and earlier Hero seats stay disabled.
+- 5bet action filter works. AA (6 combos) and AKo (12 combos) details reflect saved values.
+- 72o shows 「対象外（到達不能）」 and its saved explanation; no recommendation bars or fold=100 frequency display. Matrix uses marked/striped cells without action strips.
+- Temporarily replaced the new JSON with malformed syntax: explicit error, zero matrices. Then temporarily removed it: explicit 「データなし」 error, zero matrices. The selector still switched to valid 3bet data. Restored the exact saved file and verified normal four-bet display again. No fixture remains in the application.
+- Existing opener-range focus and 「両方のレンジを表示」 comparison recovery verified; comparison returns to two matrices.
+- Internal screenshot inspected at 1280×720: matrix, selected-hand frequencies, raise-to sizes and non-GTO metadata visible. Longer conditions remain in the existing internally scrollable details column.
+- Narrow default in-app viewport inspected: selectors wrap, matrix and stacked detail layout remain usable. Temporary viewport override reset.
+- Local server remains running with the four-bet view open for user inspection.
 
-## Remaining verification
-- Desktop 1536x1024 paired visual comparison was not completed in the available narrow in-app viewport.
-- No claim of full screenshot fidelity or completed design sign-off.
-- Large-file server reads remain a backend performance limitation.
-
-final result: blocked (desktop paired visual verification outstanding)
-
-## Compact layout follow-up
-- Scope: density/one-screen adjustment, not a new full reference-image sign-off.
-- In-app browser verified at 1280×720 after reducing header, settings, panel and row spacing.
-- DOM measurements: document 1280×720; results clientHeight/scrollHeight 415/415; matrix scroll region 327/327.
-- Screenshot inspected: all 13 matrix rows, hand-detail cards and footer visible simultaneously.
-- Combo EV tab: results remain 415/415; table clientHeight/scrollHeight 144/195, scroll confined to table.
-- Returned preview to Results tab.
-- Compact-layout acceptance: passed. Original exact-reference fidelity sign-off remains outside this follow-up.
-
-## Live-data-only follow-up
-- Test-only one-iteration file moved out of API's root into ignored experimental subdirectory; retained, not deleted.
-- Live GET /api/v1/preflop/solutions returns [].
-- In-app browser verified empty-state message, disabled range/node selectors, and absence of strategy grid, frequency panels and EV table.
-- Eight frontend tests and production build pass, including invalid/missing strategy data and missing EV cases.
-
-## Matchup selector follow-up
-- Verified in-app: BTN vs BB default; CO vs BTN preset and 3 BB entry update the matchup; empty API never renders matrix.
-- 1 BB input rejected with disabled display button; restored BTN vs BB / 2.5 BB.
-- Screenshot inspected at narrow viewport: controls/presets wrap inside settings panel; no invented output.
-- Isolated verification API on port 3002 with archived experimental file: BTN→BB 2.5, CO→BTN 3, SB→BB 2 all return correct actor and 1326 combos; unavailable 2.25 size returns 400. Verification API stopped afterward.
-- Normal API on port 3000 remains empty. Twelve frontend tests and build pass.
-
-## 3bet / 4bet pot follow-up
-- UI mode selector now supports Open対応 / 3bet pot / 4bet pot.
-- Open size is fixed at 2.5 BB in the UI and default config; 2 BB / 3 BB branches are not generated by the default tree.
-- Verified with the archived experimental solution through an isolated API: `BTN open → BB 3bet 10 → BTN` resolves to BTN, and `→ BTN 4bet 22 → BB` resolves to BB, each with 1326 combos.
-- CO → BTN uses 7.5 BB for IP 3bet and 16.5 BB for 4bet in the UI request builder.
-- Normal API remains empty; no experimental data was returned to the user-facing API.
-- Thirteen frontend tests and the Rust workspace tests pass.
-
-## Estimated range selector-bar follow-up
-- The single estimated-range bar now exposes spot type, effective stack, open size, opener, and Hero selectors.
-- Persisted JSON availability controls the position options; unavailable positions and unsupported dataset dimensions remain visible but disabled.
-- Browser verification confirmed UTG is selectable as an opener, BB is disabled as an opener, and earlier positions are disabled as Hero for a BTN response spot.
-
-## Navigation header follow-up
-- Primary navigation moved from the left sidebar into the top header; disabled future areas remain visible as `準備中`.
-
-## Focused hand detail follow-up (2026-09-23)
-- In the open-response comparison, selecting a hand in the opener's RFI matrix hides Hero's response matrix and shows that hand's RFI breakdown beside the remaining matrix.
-- Selecting a hand in Hero's response matrix does the symmetric behavior; `両方のレンジを表示` restores both matrices.
-- Verified both directions with UTG vs BB in the local browser preview.
-- Production build, Sites packaging tests, and all 30 UI tests pass. This interaction check does not constitute the outstanding desktop reference-image sign-off above.
+## Boundaries
+- No claim of exact reference-image fidelity or GTO strategy quality.
+- Vite reports the existing large-bundle warning; build succeeds. All persisted data is bundled, without lazy-loading optimization in this change.
+- Non-all-in 5bet, cold 4bet, squeezes, callers, and the opener’s response to a 5bet are out of scope.

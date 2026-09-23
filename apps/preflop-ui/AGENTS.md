@@ -10,7 +10,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ## Current visual and data source
 - Use the user's 2026-09-22 black/pink SolveaGTO image as visual direction, not the earlier GTOWizard screenshot.
-- The single Estimated Range view must load only the persisted JSON datasets under `src/estimated/preflop-ranges.json` (responses), `src/estimated/opening-ranges.json` (RFI) and `src/estimated/three-bet-responses.json` (original opener facing a 3bet). Switch spot type within this view. Do not render a separate saved-range or API view, and never substitute client-generated provider output or mock strategies when a dataset is missing or invalid.
+- The single Estimated Range view must load only the persisted JSON datasets under `src/estimated/preflop-ranges.json` (responses), `src/estimated/opening-ranges.json` (RFI), `src/estimated/three-bet-responses.json` (original opener facing a 3bet), and `src/estimated/four-bet-responses.json` (original 3bettor facing the opener’s 4bet). Switch spot type within this view. Do not render a separate saved-range or API view, and never substitute client-generated provider output or mock strategies when a dataset is missing or invalid.
 - Keep the estimated-range status visible in the page metadata, but do not add a separate warning banner above the range.
 - No postflop, billing, or on-demand solve controls in this milestone.
 - Prefer a compact desktop layout fitting the default results view within one screen (verified at 1280×720); keep dense Combo tables internally scrollable and never hide the experimental warning.
@@ -20,3 +20,11 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Range-table action colors must keep `raise` and `call` visually distinct; avoid assigning both actions near-identical pink hues.
 - The Estimated Range view does not need an all-hand action-frequency panel; keep the selected-hand action breakdown instead.
 - Range-table action strips should be ordered left to right as all-in, raise, call, then fold.
+
+## Confirmed four-bet response scope (2026-09-23)
+- Work directly on `development`; preserve existing changes. The missing repository-root AGENTS.md is replaced by the user-provided session rules, as confirmed by the user.
+- All four estimated datasets use 6-max, 100BB, 2.5BB open and ante_bb=0. Existing frequencies are unchanged when normalizing ante metadata.
+- The saved JSON sizes take precedence over the different Solver sizing multipliers, as confirmed by the user. The only 5bet branch is existing `all_in`, total 100BB; do not invent a non-all-in 5bet size.
+- Show the original 3bettor as Hero, distinguish it from the opener acting in the 3bet-response view, and keep unreachable 3bet=0 hands visibly non-recommendations.
+- Missing or malformed four-bet JSON must render an error, not a mock or another strategy. Keep the spot selector usable to recover.
+- Run all UI tests (`node --test tests/*.test.mjs`), build and Sites tests; verify the browser and record results in the repository-root design-qa.md.

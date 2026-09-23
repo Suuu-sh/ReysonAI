@@ -21,15 +21,17 @@ export function StrategyMatrix({ node, aggregates, selected, filter, actions, on
                 key={hand}
                 aria-pressed={selected === hand}
                 aria-label={hand}
-                className={selected === hand ? "picked" : ""}
+                className={`${selected === hand ? "picked" : ""}${aggregate.unreachable ? " unreachable-hand" : ""}`}
+                title={aggregate.unreachable ? `${hand}：対象外（既存3bet頻度0%）` : undefined}
                 onClick={() => onSelect(hand)}
                 disabled={!aggregate.comboCount}
               >
                 <strong>{hand}</strong>
-                {filter !== "all" && <small>{aggregate.comboCount && Number.isFinite(aggregate.actions[filter]) ? pct(aggregate.actions[filter]) : ""}</small>}
-                <div className="cell-mix" aria-hidden="true">
+                {aggregate.unreachable && <small>対象外</small>}
+                {!aggregate.unreachable && filter !== "all" && <small>{aggregate.comboCount && Number.isFinite(aggregate.actions[filter]) ? pct(aggregate.actions[filter]) : ""}</small>}
+                {!aggregate.unreachable && <div className="cell-mix" aria-hidden="true">
                   {actions.map(action => <span key={action} style={{ width: pct(aggregate.actions[action] ?? 0), background: color(action), opacity: filter === "all" || filter === action ? 1 : 0.15 }} />)}
-                </div>
+                </div>}
               </button>
             );
           })}
