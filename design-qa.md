@@ -146,6 +146,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Verification: all 72 UI/data tests passed, `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite reports the existing large-chunk warning.
 
 ## Action-block rewind and range visibility (2026-09-24)
-- Clicking a decision block now rewinds the action path to that decision, clears later choices, preserves earlier callers, and presents the selected decision's related range table(s). Re-clicking only clears the range priority.
+- Clicking a decision block's position or its highlighted action now rewinds the action path to that decision, clears later choices, preserves earlier callers, and presents the selected decision's related range table(s). Re-clicking the position only clears the range priority.
 - Browser verification at `http://localhost:5173/`: from UTG Raise → HJ Call → CO Call → BTN Fold → SB Call, five participants were shown immediately (UTG/HJ saved tables; CO/SB/BB pending) without reloading. Clicking CO returned the path to CO with HJ's prior call retained and displayed UTG's opening table, HJ's historical response table, and CO's pending range panel.
+- Follow-up after the user reported the path still did not rewind: clicking the highlighted HJ Call action itself returned the actor to HJ before the call, cleared subsequent choices, and displayed the UTG and HJ tables.
 - Verification: `npm test` passed (76 tests), `npm run build` passed, and `npm run test:sites` passed (4 tests). The existing Vite large-chunk warning remains.

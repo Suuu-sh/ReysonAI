@@ -298,7 +298,11 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
         return <div className={`action-seat action-seat-${block.kind}${block.active ? " active" : ""}${selectedRangeBlock === block.key ? " range-selected" : ""}`} key={block.key}>
           <div className="action-seat-heading"><button type="button" className="action-seat-position" aria-pressed={selectedRangeBlock === block.key} aria-label={`${block.position}のアクションに戻り、レンジ表を表示`} title="このアクションに戻り、関連するレンジ表を表示" onClick={() => onRewindActionBlock ? onRewindActionBlock(block) : onSelectRangeBlock(selectedRangeBlock === block.key ? null : block.key)}>{block.position}</button><span>{block.stack}</span></div>
           {expanded ? <div className="action-seat-options">
-            {block.options.map(option => <button type="button" key={option.action} className={option.action === block.chosen ? "chosen" : ""} aria-pressed={option.action === block.chosen} disabled={option.disabled || block.kind === "forced" || block.kind === "pending"} onClick={() => select(block, option.action)}>{option.label}</button>)}
+            {block.options.map(option => {
+              const selected = option.action === block.chosen;
+              const disabled = option.disabled || block.kind === "forced" || block.kind === "pending";
+              return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={() => selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action)}>{option.label}</button>;
+            })}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
           </div> : <span className={`action-seat-summary${block.kind === "pending" ? " action-path-pending" : ""}`}>{chosenOption?.label ?? (block.kind === "pending" ? "推定レンジ準備中" : "—")}</span>}
         </div>;
