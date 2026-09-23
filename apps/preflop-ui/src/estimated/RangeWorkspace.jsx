@@ -10,7 +10,6 @@ import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.js";
 import {
   availableHeroes,
-  availableOpeners,
   findSpot,
   hasSpot,
   matrixModel,
@@ -76,6 +75,44 @@ function HandBreakdown({ title, hand, model, isOpening, isThreeBet, isFourBet, s
   </div>;
 }
 
+function ActionPath({ expanded, onToggle, rangeType, opener, hero, spot, onOpenerChange, onHeroChange }) {
+  const opening = rangeType === "open";
+  const openerIndex = positions.indexOf(opener);
+  const heroIndex = opening ? openerIndex : positions.indexOf(hero);
+  const actionFor = (position, index) => {
+    if (index < openerIndex) return "Fold";
+    if (index === openerIndex) return rangeType === "four_bet" ? `Raise ${spot?.four_bet_size_bb ?? "—"}` : "Raise 2.5";
+    if (index < heroIndex) return "Fold";
+    if (index === heroIndex) return rangeType === "four_bet" ? `Raise ${spot?.three_bet_size_bb ?? "—"}` : rangeType === "three_bet" ? `Raise ${spot?.three_bet_size_bb ?? "—"}` : "Take action";
+    return "—";
+  };
+
+  return <div className={`action-path ${expanded ? "expanded" : "collapsed"}`} aria-label="アクション履歴">
+    <div className="action-path-heading">
+      <strong>Cash <span>100bb</span></strong>
+      <button type="button" aria-expanded={expanded} aria-label={expanded ? "アクション選択を閉じる" : "アクション選択を開く"} onClick={onToggle}>{expanded ? "⌃" : "⌄"}</button>
+    </div>
+    <div className="action-path-seats">
+      {positions.map((position, index) => {
+        const canOpen = index < positions.length - 1;
+        const canRespond = !opening && index > openerIndex;
+        const isActive = index === heroIndex;
+        return <div className={`action-seat${isActive ? " active" : ""}`} key={position}>
+          <div className="action-seat-heading"><strong>{position}</strong><span>{index === 4 ? "99.5" : index === 5 ? "99" : "100"}</span></div>
+          {expanded ? <div className="action-seat-options">
+            {index < openerIndex && <span className="action-seat-choice chosen">Fold</span>}
+            {canOpen && <button type="button" className={index === openerIndex ? "chosen" : ""} onClick={() => onOpenerChange(position)}>Raise 2.5</button>}
+            {canRespond && index < heroIndex && <span className="action-seat-choice chosen">Fold</span>}
+            {canRespond && <button type="button" className={isActive ? "chosen" : ""} onClick={() => onHeroChange(position)}>{isActive ? actionFor(position, index) : "Take action"}</button>}
+            {opening && index === openerIndex && <span className="action-seat-choice chosen">Hero</span>}
+            {!canOpen && !canRespond && index > heroIndex && <span className="action-seat-choice muted">—</span>}
+          </div> : <button type="button" className="action-seat-summary" disabled={index < openerIndex || index > heroIndex && !canRespond} onClick={() => index <= openerIndex ? onOpenerChange(position) : onHeroChange(position)}>{actionFor(position, index)}</button>}
+        </div>;
+      })}
+    </div>
+  </div>;
+}
+
 export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState }) {
   const [rangeType, setRangeType] = useState(initialRangeType);
   const isOpening = rangeType === "open";
@@ -85,6 +122,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [opener, setOpener] = useState("BTN");
   const [hero, setHero] = useState("BB");
   const [focusedRange, setFocusedRange] = useState(null);
+  const [pathExpanded, setPathExpanded] = useState(false);
   // `hero` is the later seat selector: the 3-bettor when the opener acts again.
   const actingHero = isOpening || isThreeBet ? opener : hero;
   const stackBb = 100;
@@ -103,8 +141,6 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     : dataset ? findSpot(dataset, opener, hero) : null;
   const model = useMemo(() => spot ? (isOpening ? openingMatrixModel(spot) : isFourBet ? fourBetMatrixModel(spot, findSpot(dataset, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot) : matrixModel(spot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
   const hand = spot?.hands.find(row => row.hand === selected);
-  const availableOpenerPositions = isOpening ? openingDataset?.spots.map(item => item.hero) ?? [] : availableOpeners(dataset);
-  const availableHeroPositions = availableHeroes(opener).filter(position => hasSpot(dataset, opener, position));
 
   function changeOpener(value) {
     setOpener(value);
@@ -113,6 +149,12 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     if (!nextHeroes.includes(hero)) setHero(nextHeroes[0] ?? "");
     setFilter("all");
     setOpenerFilter("all");
+  }
+
+  function changeHero(value) {
+    setHero(value);
+    setFilter("all");
+    setFocusedRange(null);
   }
 
   return <div className="shell">
@@ -141,20 +183,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
               </option>)}
             </select>
           </Field>
-          <Field label={isThreeBet ? "オープナー（Hero）" : "オープナー"}><select value={opener} onChange={e => changeOpener(e.target.value)}>
-            {positions.map(position => <option key={position} value={position} disabled={!availableOpenerPositions.includes(position)}>
-              {position}{availableOpenerPositions.includes(position) ? "" : "（データなし）"}
-            </option>)}
-          </select></Field>
-          <Field label={isOpening ? "Hero（オープナー）" : isThreeBet ? "3bettor" : isFourBet ? "Hero（元の3bettor）" : "Hero"}><select disabled={isOpening} value={isOpening ? opener : hero} onChange={e => { setHero(e.target.value); setFilter("all"); setFocusedRange(null); }}>
-            {(isOpening ? [opener] : positions).map(position => {
-              const available = isOpening ? position === opener : availableHeroPositions.includes(position);
-              const isAfterOpener = availableHeroes(opener).includes(position);
-              const suffix = available ? "" : isAfterOpener ? "（データなし）" : "（この局面では不可）";
-              return <option key={position} value={position} disabled={!available}>{position}{suffix}</option>;
-            })}
-          </select></Field>
         </Panel>
+        <ActionPath expanded={pathExpanded} onToggle={() => setPathExpanded(value => !value)} rangeType={rangeType} opener={opener} hero={hero} spot={spot} onOpenerChange={changeOpener} onHeroChange={changeHero} />
         {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className="estimate-context">
           <strong>{isOpening ? `${opener} Open · 2.5BB` : isFourBet ? `${opener} Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener} 4bet ${spot.four_bet_size_bb}BB → ${hero}（元の3bettor / Hero）の応答 · ${spot.hero_position_vs_opener}` : isThreeBet ? `${opener}（Hero）Open 2.5BB → ${hero} 3bet ${spot.three_bet_size_bb}BB → ${opener}の応答 · ${spot.hero_position_vs_three_bettor}` : `${hero} vs ${opener} · ${spot.hero_position_vs_opener}`}</strong>

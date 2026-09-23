@@ -28,6 +28,14 @@ test("4bet view shows original 3bettor, saved sizes and 5bet all-in; old view ke
   assert.match(old, /BTN · Heroの3bet後の応答/);
 });
 
+test("estimated view starts with a compact six-seat action path", () => {
+  const html = renderToStaticMarkup(createElement(EstimatedRanges));
+  assert.match(html, /aria-label="アクション履歴"/);
+  assert.match(html, /aria-label="アクション選択を開く"/);
+  assert.match(html, /BTN.*Raise 2\.5.*SB.*Fold.*BB.*Take action/s);
+  assert.doesNotMatch(html, /label="オープナー"/);
+});
+
 test("missing and invalid saved JSON render errors without matrix or substitute frequencies", () => {
   for (const raw of [undefined, "{", "null"]) {
     const fourBet = loadFourBetDataset(raw);

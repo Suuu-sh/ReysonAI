@@ -1,5 +1,12 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Seat/action selection update (2026-09-23)
+- Replaced the opener/Hero dropdowns with a six-seat action path. The compact path shows actions in one row; the expand control reveals seat choices and highlights the acting seat.
+- The remaining spot, stack and size selectors preserve the visible data boundaries. Seat changes select only persisted opener/response combinations; no strategy frequencies are generated.
+- Local browser verification: the initial BTN → BB path rendered, expansion worked, and selecting UTG raise changed the visible matchup and opener range to UTG vs BB. Narrow viewport keeps the action path horizontally scrollable.
+- All 38 UI tests, production build and Sites tests passed. Existing large-bundle warning remains.
+- Final result: passed for the supported estimated-range selection scope.
+
 This report supersedes the historical API Explorer/mock-data checks. The current UI uses saved estimated JSON only; API, SDK and Solver remain separate systems.
 
 ## Current scope and sources
