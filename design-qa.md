@@ -118,3 +118,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Reduced action-path seat cards from 128px to 104px on desktop and from 112px to 92px on narrow screens, keeping all action controls readable and the full path horizontally scrollable.
 - Verified the live preview at `http://localhost:5173/` after the CSS update; the initial action cards are more compact and remain operable.
 - Verification: `node --test tests/*.test.mjs` passed (64 tests), `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite still reports a large-chunk warning.
+
+## Remove bottom footer labels (2026-09-24)
+- Removed the footer strip and its “SolveaAI v0.1” / “AI生成ソリューション” labels from both app shells; the estimate scope/status remains in the results metadata.
+- Browser verification at `http://localhost:5173/` shows the range tables ending without the footer labels.
+- Verification: `node --test tests/*.test.mjs` passed, `npm run build` passed, and `npm run test:sites` passed. Vite still reports its existing large-chunk warning.

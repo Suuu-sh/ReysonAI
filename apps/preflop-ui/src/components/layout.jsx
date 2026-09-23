@@ -101,12 +101,3 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
     </>
   );
 }
-
-export function AppFooter() {
-  return (
-    <footer className="app-footer">
-      <span>SolveaAI v0.1</span>
-      <span>AI生成ソリューション</span>
-    </footer>
-  );
-}

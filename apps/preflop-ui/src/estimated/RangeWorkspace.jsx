@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { hands } from "../data.js";
-import { AppFooter, Sidebar } from "../components/layout.jsx";
+import { Sidebar } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { ActionBars, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.jsx";
 import source from "./preflop-ranges.json";
@@ -536,7 +536,6 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
-      <AppFooter />
     </main>
   </div>;
 }

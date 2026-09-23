@@ -31,6 +31,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - On 2026-09-23 the user asked to combine the range settings and seat/action path into one selection surface. Keep it a compact, original SolveaAI-style expandable panel rather than copying GTOWizard's separate cards verbatim.
 - On 2026-09-24 the user asked to remove the separate “データの条件” card from hand details and keep the game-format editor and action reset as icon-only controls beside “推定レンジ”. Keep both controls accessible with labels/tooltips.
 - On 2026-09-24 the user asked to make the action-path seat cards narrower. Keep them compact (104px desktop / 92px narrow view) while preserving readable action labels and horizontal scrolling for longer paths.
+- On 2026-09-24 the user asked to remove the bottom footer labels (“SolveaAI v0.1” and “AI生成ソリューション”). Do not render the footer strip; keep the actual range status in the results metadata.
 - The 2026-09-23 selection feedback uses a GTOWizard-like horizontal seat/action path: compact summary by default, expandable seat actions, and a highlighted acting seat. Preserve SolveaAI's black/pink visual language and limit choices to persisted estimated-range spots; do not invent strategies.
 - Range-table action colors must keep `raise` and `call` visually distinct; avoid assigning both actions near-identical pink hues.
 - The Estimated Range view does not need an all-hand action-frequency panel; keep the selected-hand action breakdown instead.

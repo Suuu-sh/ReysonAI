@@ -207,12 +207,11 @@ th small { display: block; }
 .metadata p { display: flex; justify-content: space-between; gap: 20px; margin: 0; padding: 9px 0; border-bottom: 1px solid #272a2f; overflow-wrap: anywhere; }
 .metadata code { color: var(--accent-soft); word-break: break-all; text-align: right; }
 .detail-only { grid-template-columns: 1fr 1fr; }
-.app-footer { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; padding: 6px 0; color: var(--text-subtle); font-size: 11px; }
 
 @media (min-width: 1050px) {
   .shell { height: 100dvh; min-height: 0; }
   main { height: 100dvh; min-height: 0; padding: 9px 12px; }
-  main > .settings, main > .tabs, main > .app-footer { flex-shrink: 0; }
+  main > .settings, main > .tabs { flex-shrink: 0; }
   .results { flex: 1; min-height: 0; overflow: auto; align-items: stretch; }
   .matrix-panel { min-height: 0; }
   .detail-column { overflow: auto; }
@@ -283,7 +282,6 @@ th small { display: block; }
   .tabs > span { font-size: 9px; }
   .metadata p { display: block; }
   .metadata code { display: block; margin-top: 4px; text-align: left; }
-  .app-footer { gap: 10px; }
 }
 
 .profile-chip { width: 100%; cursor: pointer; border: 1px solid var(--line); background: transparent; color: var(--text); }

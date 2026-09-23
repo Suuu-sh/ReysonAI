@@ -149,6 +149,7 @@ test("saved action paths survive the SolveaAI storage-key migration", () => {
 
 test("estimated view always shows the expanded six-seat action path", () => {
   const html = renderToStaticMarkup(createElement(EstimatedRanges));
+  assert.doesNotMatch(html, /<footer class="app-footer">|SolveaAI v0\.1/);
   assert.match(html, /<strong>推定レンジ<\/strong><div class="settings-actions"><button[^>]*aria-label="ゲーム設定を編集"[^>]*><svg[\s\S]*?<\/svg><\/button><button[^>]*aria-label="アクションをリセット"[^>]*><svg[\s\S]*?<\/svg><\/button><\/div>/);
   assert.doesNotMatch(html, /aria-label="ゲーム設定を編集"[^>]*>編集<\/button>|aria-label="アクションをリセット"[^>]*>リセット<\/button>/);
   assert.match(html, /aria-label="アクション履歴"/);
