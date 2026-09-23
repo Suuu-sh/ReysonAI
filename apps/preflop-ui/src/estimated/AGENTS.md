@@ -3,6 +3,7 @@
 ## Compact selector and reset (2026-09-23)
 The action-path selector includes an always-visible reset that restores BTN open / BB response and clears downstream choices without toggling the selector's disclosure state. Keep expanded seat blocks compact: controls flow horizontally and wrap only when needed.
 Place the game-format editor and reset as icon-only, accessibly labeled controls alongside the “推定レンジ” heading. The user also removed the separate “データの条件” card from hand details; do not add it back.
+Keep action-path seat cards narrow and consistent so more decisions fit across the viewport; preserve label readability and horizontal scrolling for longer paths.
 
 Sequential action blocks (2026-09-23, supersedes the vertical grid): Seat blocks form one horizontal strip in acting order, each showing its stack before acting and its options as a vertical list (chosen action highlighted, acting seat outlined). Blocks are generated from prior choices: only seats up to the current actor render, and each raise appends the next responder with sizes from the saved datasets (e.g. BTN Raise 2.5 → BB Raise 12 → BTN Fold / Call 12 / Raise 26). Clicking an earlier block rewinds the path from that seat. Collapsed mode shows only the chosen action per block.
 

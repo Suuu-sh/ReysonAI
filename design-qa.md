@@ -113,3 +113,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - The game-format editor and reset are now icon-only buttons immediately beside “推定レンジ”; both retain accessible labels and hover titles. The redundant “データの条件” hand-detail card remains removed.
 - Browser verification at `http://localhost:5173/`: both icons sit in the heading row; opening AKo details shows its AI reason and mix, with no “データの条件” card or hand-JSON link.
 - Verification: `node --test tests/*.test.mjs` passed (64 tests), `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite still reports a large-chunk warning.
+
+## Narrower action-path seat cards (2026-09-24)
+- Reduced action-path seat cards from 128px to 104px on desktop and from 112px to 92px on narrow screens, keeping all action controls readable and the full path horizontally scrollable.
+- Verified the live preview at `http://localhost:5173/` after the CSS update; the initial action cards are more compact and remain operable.
+- Verification: `node --test tests/*.test.mjs` passed (64 tests), `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite still reports a large-chunk warning.
