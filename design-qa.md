@@ -123,3 +123,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Removed the footer strip and its “SolveaAI v0.1” / “AI生成ソリューション” labels from both app shells; the estimate scope/status remains in the results metadata.
 - Browser verification at `http://localhost:5173/` shows the range tables ending without the footer labels.
 - Verification: `node --test tests/*.test.mjs` passed, `npm run build` passed, and `npm run test:sites` passed. Vite still reports its existing large-chunk warning.
+## UTG response path through BB (2026-09-24)
+- After UTG raises, every later seat through BB remains selectable in the action path, including direct action selection at a later seat.
+- Browser verification at http://127.0.0.1:5173/: selected UTG Raise 2.5BB, confirmed HJ/CO/BTN/SB/BB were present, then selected BB Call 2.5BB; HJ, CO, BTN and SB changed to Fold and the path completed with two players seeing the flop.
+- Verification: node --test tests/*.test.mjs passed (69 tests), npm run build passed, and npm run test:sites passed (4 tests). Vite still reports its existing large-chunk warning.

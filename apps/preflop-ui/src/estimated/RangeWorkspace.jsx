@@ -9,7 +9,7 @@ import { findFourBetSpot, fourBetMatrixModel, loadFourBetDataset } from "./four-
 import threeBetSource from "./three-bet-responses.json";
 import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "./three-bet-responses.js";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.js";
-import { nextActorsAfterRaise } from "./action-path.js";
+import { nextActorsAfterRaise, responseActionTransition } from "./action-path.js";
 import { displayModes } from "./display-mode.js";
 import { displayModeKey } from "../profile.js";
 import { useDetailedReasons } from "./detailed-reasons.js";
@@ -169,7 +169,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
   const contribution = { ...startingContribution };
   const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
   const blocks = [];
-  const lastIndex = reraised || pendingRaise === "squeeze" || foldedHero ? positions.length - 1 : heroIndex;
+  const lastIndex = opening ? openerIndex : positions.length - 1;
   for (let index = 0; index <= lastIndex; index += 1) {
     const position = positions[index];
     const stack = stackOf(position);
@@ -189,7 +189,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       ? `Raise ${index === heroIndex && raiseToBb ? formatBb(raiseToBb) : ""}`.trim()
       : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
     const options = [{ action: "fold", label: "Fold" }, { action: "call", label: "Call 2.5" }, { action: "raise", label: raiseLabel }];
-    if (index > heroIndex) {
+    if (index > heroIndex && (reraised || pendingRaise === "squeeze")) {
       blocks.push({ key: position, position, stack, active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "forced" });
       continue;
     }
@@ -197,7 +197,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
     if (callers.includes(position)) { chosen = "call"; contribution[position] = 2.5; }
     else if (index < heroIndex || foldedHero) chosen = "fold";
     else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = raiseToBb ?? threeBetSizeBb ?? 0; }
-    blocks.push({ key: position, position, stack, active: chosen === null, chosen, options, kind: "seat" });
+    blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat" });
   }
   if (reraised) {
     const fourBetSizeBb = spot?.four_bet_size_bb;
@@ -385,17 +385,13 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       } else if (action === "fold" && position === opener && next && next !== "BB") changeOpener(next);
       return;
     }
-    const earlierCallers = callers.filter(caller => positions.indexOf(caller) < index);
-    setRangeType("response");
-    if (action === "raise") {
-      setHero(position); setCallers(earlierCallers); setFoldedHero(false);
-      if (earlierCallers.length) setPendingRaise("squeeze"); else setRangeType("three_bet");
-      return;
-    }
-    const nextCallers = action === "call" ? [...earlierCallers, position] : earlierCallers;
-    setCallers(nextCallers);
-    if (next) { setHero(next); setFoldedHero(false); }
-    else { setHero(position); setFoldedHero(true); }
+    const transition = responseActionTransition({ opener, callers, position, action });
+    if (!transition) return;
+    setRangeType(transition.rangeType);
+    setHero(transition.hero);
+    setCallers(transition.callers);
+    setFoldedHero(transition.foldedHero);
+    setPendingRaise(transition.pendingRaise);
   }
 
   function selectFourBet() {

@@ -5,6 +5,7 @@ import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
+import { responseActionTransition } from "../src/estimated/action-path.js";
 
 let server, EstimatedRanges, ActionPath, Sidebar;
 before(async () => {
@@ -27,10 +28,17 @@ test("action blocks are generated in order from the chosen actions", () => {
   const props = { expanded: true, opener: "BTN", hero: "SB", callers: [], foldedHero: false, raiseSizeFor: position => ({ SB: 11, BB: 12 })[position] ?? null };
   const response = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "response" }));
   assert.match(response, /UTG[\s\S]*HJ[\s\S]*CO[\s\S]*BTN[\s\S]*class="chosen" aria-pressed="true"[^>]*>Raise 2\.5<[\s\S]*action-seat-seat active[\s\S]*SB<\/strong><span>99\.5[\s\S]*>Fold<[\s\S]*>Call 2\.5<[\s\S]*>Raise 11</);
-  assert.doesNotMatch(response, /<strong>BB<\/strong>/); // later seats appear only after SB acts
+  assert.match(response, /SB<\/strong>[\s\S]*BB<\/strong><span>99[\s\S]*>Call 2\.5<[\s\S]*>Raise 12</); // later seats remain directly selectable
 
   const bbToAct = renderToStaticMarkup(createElement(ActionPath, { ...props, hero: "BB", rangeType: "response" }));
   assert.match(bbToAct, /SB<\/strong>[\s\S]*aria-pressed="true"[^>]*>Fold<[\s\S]*BB<\/strong><span>99<[\s\S]*>Raise 12</);
+
+  const utgOpen = renderToStaticMarkup(createElement(ActionPath, { ...props, opener: "UTG", hero: "HJ", rangeType: "response", raiseSizeFor: () => 8 }));
+  assert.match(utgOpen, /UTG<\/strong>[\s\S]*HJ<\/strong>[\s\S]*CO<\/strong>[\s\S]*BTN<\/strong>[\s\S]*SB<\/strong>[\s\S]*BB<\/strong>[\s\S]*>Call 2\.5<[\s\S]*>Raise 8</);
+
+  const directBbCall = responseActionTransition({ opener: "UTG", callers: [], position: "BB", action: "call" });
+  const afterBbCall = renderToStaticMarkup(createElement(ActionPath, { ...props, ...directBbCall, opener: "UTG" }));
+  assert.match(afterBbCall, /UTG<\/strong>[\s\S]*HJ<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Fold<[\s\S]*CO<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Fold<[\s\S]*BTN<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Fold<[\s\S]*SB<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Fold<[\s\S]*BB<\/strong>[\s\S]*class="chosen" aria-pressed="true"[^>]*>Call 2\.5</);
 
   const threeBet = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "three_bet", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.5 } }));
   assert.match(threeBet, /SB<\/strong>[\s\S]*aria-pressed="true"[^>]*>Raise 11<[\s\S]*BB<\/strong>[\s\S]*action-seat-continuation active[\s\S]*BTN<\/strong><span>97\.5<[\s\S]*>Call 11<[\s\S]*>Raise 28\.5</);
