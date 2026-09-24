@@ -1,5 +1,6 @@
 import { hands } from "../data.js";
 import { effectiveStackBb, openSizeBb, threeBetToSize } from "./sizing.js";
+import { hasConfiguredRake } from "./rake.js";
 
 export const multiwayMatchups = [
   ["UTG", "HJ"], ["UTG", "CO"], ["UTG", "BTN"],
@@ -13,6 +14,7 @@ export function validateMultiwayDataset(data) {
       data.metadata.game !== "6max Cash / No-Limit Texas Holdem" ||
       data.metadata.effective_stack_bb !== effectiveStackBb ||
       data.metadata.open_size_bb !== openSizeBb || data.metadata.ante_bb !== 0 ||
+      !hasConfiguredRake(data.metadata) ||
       JSON.stringify(data.metadata.legal_actions) !== JSON.stringify(["fold", "call", "squeeze"]) ||
       data.spot_count !== 6 || data.hand_classes_per_spot !== hands.length ||
       data.entry_count !== 6 * hands.length ||

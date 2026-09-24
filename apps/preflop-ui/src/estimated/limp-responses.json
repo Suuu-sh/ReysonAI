@@ -1,0 +1,2259 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "strategy_type": "ai_estimate_not_gto",
+    "game": "6max Cash / No-Limit Texas Holdem",
+    "effective_stack_bb": 100.0,
+    "open_size_bb": 2.5,
+    "ante_bb": 0.0,
+    "rake": {
+      "rate": 0.05,
+      "cap_bb": 3.0,
+      "no_flop_no_drop": true,
+      "calibrated": true
+    },
+    "legal_actions": {
+      "BB_vs_SB_limp": [
+        "check",
+        "raise"
+      ],
+      "SB_vs_BB_iso": [
+        "fold",
+        "call",
+        "raise"
+      ]
+    },
+    "scope": "SBが1BBにリンプした後のBB応答、およびBBが3.5BBにアイソレイズした後のSB応答。",
+    "method": "手作業のハンド群別ヒューリスティック。BBはキャップされたリンプレンジに対してバリュー中心にアイソレイズし、SBはリンプ頻度0%を到達不能として除外。",
+    "frequency_semantics": "BBはcheck+raise=100。SBはリンプ済み条件下でfold+call+raise=100。",
+    "sizing_semantics": "SB complete=1BB、BB iso raise-to=3.5BB、SB limp-reraise-to=10.5BB。",
+    "unreachable_hands": "SBのSB_open.limp=0%ハンドはfold=100の形式的プレースホルダーであり、推奨ではない。",
+    "warning": "AI推定。ソルバー・EV・均衡検証ではなく、指定レーキ環境を仮定した独立推定。"
+  },
+  "spot_count": 2,
+  "hand_classes_per_spot": 169,
+  "entry_count": 338,
+  "spots": [
+    {
+      "id": "BB_vs_SB_limp",
+      "hero": "BB",
+      "opponent": "SB",
+      "source_opening_id": "SB_open",
+      "open_size_bb": 1.0,
+      "effective_stack_bb": 100.0,
+      "raise_size_bb": 3.5,
+      "hands": [
+        {
+          "hand": "AA",
+          "check": 0,
+          "raise": 100,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "AKs",
+          "check": 50,
+          "raise": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "AQs",
+          "check": 50,
+          "raise": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "AJs",
+          "check": 75,
+          "raise": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "ATs",
+          "check": 95,
+          "raise": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A9s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A8s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A7s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A6s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A5s",
+          "check": 90,
+          "raise": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A4s",
+          "check": 90,
+          "raise": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A3s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A2s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "AKo",
+          "check": 50,
+          "raise": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KK",
+          "check": 0,
+          "raise": 100,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KQs",
+          "check": 75,
+          "raise": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KJs",
+          "check": 90,
+          "raise": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KTs",
+          "check": 95,
+          "raise": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K9s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K8s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K7s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K6s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K5s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K4s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K3s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K2s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "AQo",
+          "check": 50,
+          "raise": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KQo",
+          "check": 75,
+          "raise": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "QQ",
+          "check": 25,
+          "raise": 75,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "QJs",
+          "check": 90,
+          "raise": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "QTs",
+          "check": 95,
+          "raise": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q9s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q8s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q7s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q6s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q5s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q4s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q3s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q2s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "AJo",
+          "check": 90,
+          "raise": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KJo",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "QJo",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "JJ",
+          "check": 25,
+          "raise": 75,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "JTs",
+          "check": 95,
+          "raise": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J9s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J8s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J7s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J6s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J5s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J4s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J3s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J2s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "ATo",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "KTo",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "QTo",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "JTo",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "TT",
+          "check": 50,
+          "raise": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T9s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T8s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T7s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T6s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T5s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T4s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T3s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T2s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A9o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K9o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q9o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J9o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T9o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "99",
+          "check": 75,
+          "raise": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "98s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "97s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "96s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "95s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "94s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "93s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "92s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A8o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K8o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q8o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J8o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T8o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "98o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "88",
+          "check": 90,
+          "raise": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "87s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "86s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "85s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "84s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "83s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "82s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A7o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K7o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q7o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J7o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T7o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "97o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "87o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "77",
+          "check": 95,
+          "raise": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "76s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "75s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "74s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "73s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "72s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A6o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K6o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q6o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J6o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T6o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "96o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "86o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "76o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "66",
+          "check": 95,
+          "raise": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "65s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "64s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "63s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "62s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A5o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K5o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q5o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J5o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T5o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "95o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "85o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "75o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "65o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "55",
+          "check": 95,
+          "raise": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "54s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "53s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "52s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A4o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K4o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q4o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J4o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T4o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "94o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "84o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "74o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "64o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "54o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "44",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "43s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "42s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A3o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K3o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q3o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J3o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T3o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "93o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "83o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "73o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "63o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "53o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "43o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "33",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "32s",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A2o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K2o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q2o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J2o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T2o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "92o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "82o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "72o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "62o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "52o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "42o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "32o",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "22",
+          "check": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        }
+      ]
+    },
+    {
+      "id": "SB_vs_BB_iso",
+      "hero": "SB",
+      "opponent": "BB",
+      "source_opening_id": "SB_open",
+      "source_limp_response_id": "BB_vs_SB_limp",
+      "open_size_bb": 1.0,
+      "effective_stack_bb": 100.0,
+      "iso_size_bb": 3.5,
+      "raise_to_bb": 10.5,
+      "hands": [
+        {
+          "hand": "AA",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "AKs",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "AQs",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "AJs",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "ATs",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A9s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A8s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A7s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A6s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A5s",
+          "fold": 0,
+          "call": 75,
+          "raise": 25,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A4s",
+          "fold": 0,
+          "call": 75,
+          "raise": 25,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A3s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A2s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "AKo",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "KK",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "KQs",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "KJs",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "KTs",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K9s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K8s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K7s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K6s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K5s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K4s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K3s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K2s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "AQo",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "KQo",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "QQ",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "QJs",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "QTs",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q9s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q8s",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q7s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q6s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q5s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q4s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q3s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q2s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "AJo",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "KJo",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "QJo",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "JJ",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "JTs",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J9s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J8s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J7s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J6s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J5s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J4s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J3s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J2s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "ATo",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "KTo",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "QTo",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "JTo",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "TT",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T9s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T8s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T7s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T6s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T5s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T4s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T3s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T2s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A9o",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K9o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q9o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J9o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T9o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "99",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "98s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "97s",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "96s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "95s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "94s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "93s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "92s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A8o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K8o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q8o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J8o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T8o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "98o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "88",
+          "fold": 0,
+          "call": 75,
+          "raise": 25,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "87s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "86s",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "85s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "84s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "83s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "82s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A7o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K7o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q7o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J7o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T7o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "97o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "87o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "77",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "76s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "75s",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "74s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "73s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "72s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A6o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K6o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q6o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J6o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T6o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "96o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "86o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "76o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "66",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "65s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "64s",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "63s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "62s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A5o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K5o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q5o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J5o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T5o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "95o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "85o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "75o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "65o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "55",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "54s",
+          "fold": 25,
+          "call": 75,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "53s",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "52s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A4o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K4o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q4o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J4o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T4o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "94o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "84o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "74o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "64o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "54o",
+          "fold": 75,
+          "call": 25,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "44",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "43s",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "42s",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A3o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K3o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q3o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J3o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T3o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "93o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "83o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "73o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "63o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "53o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "43o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "33",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "32s",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "A2o",
+          "fold": 50,
+          "call": 50,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "K2o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "Q2o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "J2o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "T2o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "92o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "82o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "72o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "62o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "52o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "42o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "32o",
+          "fold": 100,
+          "call": 0,
+          "raise": 0,
+          "raise_size_bb": null
+        },
+        {
+          "hand": "22",
+          "fold": 0,
+          "call": 100,
+          "raise": 0,
+          "raise_size_bb": null
+        }
+      ]
+    }
+  ]
+}

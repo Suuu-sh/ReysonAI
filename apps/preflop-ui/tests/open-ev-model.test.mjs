@@ -31,25 +31,26 @@ test("each EV branch follows the specified net-chip formulas before adding the f
   // BB response: fold 20%, call 30%, 3bet 50%. dead(SB,BB)=0; SB is OOP.
   assert.equal(result.p_all_fold, 0.2);
   assert.equal(calls.probability, 0.3);
-  assert.equal(calls.net_ev_bb, 0.9); // .8 × .85 × (2.5 + 2.5) − 2.5
+  assert.equal(calls.net_ev_bb, 0.73); // .8 × .85 × (5 − 0.25 rake) − 2.5
+  assert.equal(calls.raked_pot_bb, 4.75);
   assert.equal(threeBet.probability, 0.5);
   assert.equal(threeBet.outcomes.fold.probability, 0.1);
   assert.equal(threeBet.outcomes.fold.net_ev_bb, -2.5);
   assert.equal(threeBet.outcomes.call.probability, 0.25);
-  assert.equal(threeBet.outcomes.call.net_ev_bb, 2.88); // .8 × .85 × (2 × 8) − 8
+  assert.equal(threeBet.outcomes.call.net_ev_bb, 2.336); // .8 × .85 × (16 − 0.8 rake) − 8
 
   assert.equal(fourBet.probability, 0.15); // 50% 3bet × 30% opener 4bet
   assert.equal(fourBet.outcomes.fold.probability, 0.0375);
   assert.equal(fourBet.outcomes.fold.net_ev_bb, 8); // 8 + 0
-  assert.equal(fourBet.outcomes.call.net_ev_bb, 7.2); // .8 × .85 × (2 × 20) − 20
+  assert.equal(fourBet.outcomes.call.net_ev_bb, 5.84); // .8 × .85 × (40 − 2 rake) − 20
   assert.equal(allIn.probability, 0.0375);
   assert.equal(allIn.outcomes.call.probability, 0.015);
-  assert.equal(allIn.outcomes.call.net_ev_bb, 60); // .8 × 200 − 100
+  assert.equal(allIn.outcomes.call.net_ev_bb, 57.6); // .8 × (200 − 3 cap) − 100
   assert.equal(allIn.outcomes.fold.probability, 0.0225);
   assert.equal(allIn.outcomes.fold.net_ev_bb, -20);
 
-  assert.equal(result.expected_net_ev_bb, 2.23);
-  assert.equal(result.delta_ev_bb, 2.73); // Add back SB's 0.5BB blind.
+  assert.equal(result.expected_net_ev_bb, 1.905);
+  assert.equal(result.delta_ev_bb, 2.405); // Add back SB's 0.5BB blind.
 });
 
 test("card removal changes fold probability when hero blocks a different action-weighted class", () => {

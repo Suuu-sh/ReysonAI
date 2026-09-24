@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { auditEstimates } from "../src/estimated/audit.js";
 
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
-const datasets = () => ({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), fiveBets: load("five-bet-responses"), multiway: load("multiway-responses") });
+const datasets = () => ({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), fiveBets: load("five-bet-responses"), multiway: load("multiway-responses"), limp: load("limp-responses") });
 
 test("persisted estimates pass the consistency audit", () => {
   assert.deepEqual(auditEstimates(datasets()).findings, []);
@@ -37,4 +37,18 @@ test("audit warns when a BB squeeze range exceeds its heads-up 3bet width", () =
   const spot = data.multiway.spots.find(s => s.opener === "UTG" && s.callers[0] === "HJ");
   for (const row of spot.hands) Object.assign(row, { fold: 0, call: 0, squeeze: 100 });
   assert.ok(auditEstimates(data).findings.some(f => f.check === "squeeze-width" && f.spot === spot.id && f.severity === "warn"));
+});
+
+test("audit rejects an incomplete SB raise/limp/fold split", () => {
+  const data = datasets();
+  data.opening.spots.find(s => s.hero === "SB").hands[0].limp = 1;
+  assert.ok(auditEstimates(data).findings.some(f => f.check === "range-flow" && f.spot === "SB open"));
+});
+
+test("audit enforces zero-limp unreachable placeholders in the SB iso response", () => {
+  const data = datasets();
+  const sb = data.opening.spots.find(s => s.hero === "SB");
+  const unreachable = data.limp.spots.find(s => s.id === "SB_vs_BB_iso").hands.find(row => sb.hands.find(r => r.hand === row.hand).limp === 0);
+  Object.assign(unreachable, { fold: 0, call: 100, raise: 0 });
+  assert.ok(auditEstimates(data).findings.some(f => f.check === "range-flow" && f.spot === "SB vs BB iso"));
 });

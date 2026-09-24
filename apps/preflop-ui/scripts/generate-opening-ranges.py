@@ -6,6 +6,9 @@ from pathlib import Path
 
 # Writes only into the staging dir from `npm run build:estimates`, which audits before publishing.
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from sizing_rules import CONFIG
 
 RANKS = 'AKQJT98765432'
 HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
@@ -65,13 +68,25 @@ P['BTN'] = profile('''
 50: K8o Q8o J8o T8o 98o Q5s Q4s J6s T6s 96s 85s 74s 63s 43s
 25: K7o Q7o J7o 97o 87o Q3s Q2s J5s-J2s T5s-T2s 95s 94s 84s 73s 52s 42s 32s
 ''')
-# Raise-or-fold approximation; do not interpret this as a solved SB limp strategy.
-P['SB'] = profile('''
-75: A9o KTo QTo JTo
-50: A8o-A2o K9o Q9o J9o T9o Q7s Q6s J7s T7s 97s 86s 75s 64s 53s
-25: K8o Q8o J8o T8o 98o Q5s Q4s J6s T6s 96s 85s 74s 63s 43s
-0: K7o Q7o J7o 97o 87o Q3s Q2s J5s-J2s T5s-T2s 95s 94s 84s 73s 52s 42s 32s
-''', P['BTN'])
+SB_RAISE = profile('''
+100: AA-99 AKs AKo AQs
+75: AQo
+50: AJs KQs
+25: ATs KJs A5s A4s
+''')
+
+# In this rake environment the SB's capped, playable middle range has a limp
+# outlet; raises stay concentrated around value and selected blocker hands.
+SB_LIMP = profile('''
+100: 88-22 A9s-A6s K9s-K2s Q9s-Q5s J9s-J6s T9s-T6s 98s 87s 76s 65s 54s 97s 86s 75s 64s 53s 43s 32s KTs QTs JTs QJs
+75: A5s A4s A3s A2s ATs KJs
+50: AJs
+50: KQs
+75: AJo KQo KJo QJo JTo ATo-A9o
+50: KTo QTo K9o-K8o Q9o J9o T9o 98o 87o 76o 65o 54o Q4s-Q2s J5s-J2s T5s-T2s 95s 96s 85s 74s 63s 52s 42s
+25: A8o-A2o K7o-K6o Q8o J8o T8o 97o 86o 75o 64o
+''')
+P['SB'] = (SB_RAISE, SB_LIMP)
 
 
 def main():
@@ -82,10 +97,10 @@ def main():
             'open_size_bb': 2.5, 'scope': 'Heroまで全員フォールドした未オープンポットでのraise-first-in。',
             'source_of_truth': 'ユーザーが指定したUTG / HJ / CO / BTN / SBのオープンレンジ追加。既存の100BB・2.5BB条件を継承。',
             'method': 'ハンドクラスごとに手作業で設計した一般知識による概算。ソルバー・EV計算なし。',
-            'sb_policy': 'SBも2.5BBのraise-or-foldに簡略化。リンプ頻度は収録せず、最適なSB戦略とは主張しません。',
-            'rake': {'rate': None, 'cap_bb': None, 'calibrated': False},
+            'sb_policy': 'SBはfold / 1BB limp / 2.5BB raise。低レートのレーキ下で、中程度から弱いプレイアブルハンドをリンプに配分した独立推定。',
+            'rake': {'rate': CONFIG['rake']['rate'], 'cap_bb': CONFIG['rake']['cap_bb'], 'no_flop_no_drop': CONFIG['rake']['no_flop_no_drop'], 'calibrated': True},
             'ante_bb': 0, 'ante_note': 'アンティなし（ユーザー確認済み）。',
-            'frequency_semantics': '当該ハンドを持った場合の条件付き割合(%)。open + fold = 100。',
+            'frequency_semantics': '当該ハンドを持った場合の条件付き割合(%)。SBはopen + limp + fold = 100、他ポジションはopen + fold = 100。',
             'open_size_semantics': 'そのストリートの合計投入額(raise-to)。open=0ならnull。',
             'relationship_to_response_data': '対オープン推定と同じゲーム条件ですが、両者を同時に均衡計算したものではありません。',
             'warning': '学習・試作向けの推定値。最適性や利益、境界ハンドの正確な頻度は未検証。',
@@ -96,12 +111,21 @@ def main():
         'spots': [],
     }
     for position, frequencies in P.items():
-        rows = [{'hand': h, 'open': frequencies[h], 'fold': 100-frequencies[h],
-                 'open_size_bb': 2.5 if frequencies[h] else None} for h in HANDS]
+        if position == 'SB':
+            raises, limps = frequencies
+            rows = [{'hand': h, 'open': raises[h], 'limp': limps[h],
+                     'fold': 100-raises[h]-limps[h],
+                     'open_size_bb': 2.5 if raises[h] else None,
+                     'limp_size_bb': CONFIG['sizing']['limp']['sb_complete_to_bb'] if limps[h] else None}
+                    for h in HANDS]
+        else:
+            rows = [{'hand': h, 'open': frequencies[h], 'fold': 100-frequencies[h],
+                     'open_size_bb': 2.5 if frequencies[h] else None} for h in HANDS]
         data['spots'].append({'id': f'{position}_open', 'hero': position, 'open_size_bb': 2.5,
                               'effective_stack_bb': 100, 'hands': rows})
-        weighted = sum((6 if len(h) == 2 else 4 if h.endswith('s') else 12)*frequencies[h] for h in HANDS)/1326
-        print(f'{position}: {weighted:.2f}% nominal combo-weighted open')
+        weighted_raise = sum((6 if len(h) == 2 else 4 if h.endswith('s') else 12)*row['open'] for h, row in zip(HANDS, rows))/1326
+        weighted_limp = sum((6 if len(h) == 2 else 4 if h.endswith('s') else 12)*row.get('limp', 0) for h, row in zip(HANDS, rows))/1326
+        print(f'{position}: {weighted_raise:.2f}% raise / {weighted_limp:.2f}% limp nominal combo-weighted')
     output = STAGING/'opening-ranges.json'
     output.write_text(json.dumps(data, ensure_ascii=False, indent=2)+'\n')
 

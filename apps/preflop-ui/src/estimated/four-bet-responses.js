@@ -3,6 +3,7 @@ import { positions, validateDataset } from "./ranges.js";
 import { validateOpeningDataset } from "./opening-ranges.js";
 import { validateThreeBetDataset } from "./three-bet-responses.js";
 import { fourBetToSize, openSizeBb } from "./sizing.js";
+import { hasConfiguredRake } from "./rake.js";
 
 export function validateFourBetDataset(data, responses, previous, openings) {
   validateDataset(responses);
@@ -13,6 +14,7 @@ export function validateFourBetDataset(data, responses, previous, openings) {
   if (data?.metadata?.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.effective_stack_bb !== 100 || data.metadata.open_size_bb !== openSizeBb ||
       data.metadata.ante_bb !== 0 || data.metadata.game !== "6max Cash / No-Limit Texas Holdem" ||
+      !hasConfiguredRake(data.metadata) ||
       JSON.stringify(data.metadata.legal_actions) !== JSON.stringify(["fold", "call", "all_in"]) ||
       data.spot_count !== 15 || data.entry_count !== 2535 || data.hand_classes_per_spot !== 169 ||
       !Array.isArray(data.spots) || data.spots.length !== 15 ||

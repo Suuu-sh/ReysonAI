@@ -6,7 +6,7 @@ import { hands } from "../src/data.js";
 const dir = new URL("../src/estimated/reasons/", import.meta.url);
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
 const sources = [
-  [load("opening-ranges"), [["open", "オープン"], ["fold", "フォールド"]]],
+  [load("opening-ranges"), [["open", "オープン"], ["limp", "リンプ"], ["fold", "フォールド"]]],
   [load("preflop-ranges"), [["three_bet", "3bet"], ["call", "コール"], ["fold", "フォールド"]]],
   [load("three-bet-responses"), [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]]],
   [load("four-bet-responses"), [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]]],

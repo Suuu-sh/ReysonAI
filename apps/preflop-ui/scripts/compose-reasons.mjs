@@ -22,7 +22,7 @@ function unreachableReason(type, spot) {
 }
 
 const ACTIONS = {
-  open: [["open", "オープン"], ["fold", "フォールド"]],
+  open: [["open", "オープン"], ["limp", "リンプ"], ["fold", "フォールド"]],
   response: [["three_bet", "3bet"], ["call", "コール"], ["fold", "フォールド"]],
   three_bet: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
   four_bet: [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]],
@@ -107,6 +107,7 @@ function compose(type, row, facts, spot) {
   if (type === "open") {
     const eq = f1(facts.equity_vs_defend_pct);
     const behind = spot.players_behind === 1 ? "残りはBBだけで" : `後ろに${spot.players_behind}人いますが`;
+    if (row.limp > 0) return `${lead}SBはBBより先に行動し、ポストフロップもOOPです。参加しやすい中程度のハンドは1BBのリンプを受け皿にし、必要に応じてオープンとフォールドも混ぜます。${mixText(type, row)}。`;
     if (row.open >= 90 && facts.equity_vs_defend_pct >= 50) return `${lead}${behind}、全員が降りる確率は${f1(spot.all_fold_pct)}%あり、BBに守られても守りレンジに対して勝率${eq}%と優位です。オープンして利益が出るハンドです。${mixText(type, row)}。`;
     const behindEven = spot.players_behind === 1 ? "残りはBBだけで" : `後ろに${spot.players_behind}人いても`;
     if (row.open >= 90) return `${lead}BBの守りレンジへの勝率は${eq}%と高くはありませんが、${behindEven}、全員が降りる確率は${f1(spot.all_fold_pct)}%あります。降ろせる分とハンドの伸びしろを合わせて、オープンで利益が見込めます。${mixText(type, row)}。`;

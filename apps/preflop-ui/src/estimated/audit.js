@@ -57,14 +57,22 @@ function weightedFold(spot, weight = () => 1) {
   return total ? folded / total : 0;
 }
 
-export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway }) {
+export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, limp }) {
   const findings = [];
   const add = (check, severity, spot, detail) => findings.push({ check, severity, spot, detail });
   const openBy = new Map(opening.spots.map(spot => [spot.hero, rows(spot)]));
   const responseBy = new Map(responses.spots.map(spot => [`${spot.opener}>${spot.hero}`, spot]));
 
   // 1. Opening ranges: strength order and position nesting.
-  for (const spot of opening.spots) checkStrengthOrder(add, `${spot.hero} open`, { hands: spot.hands.map(row => ({ ...row, fold: row.fold })) });
+  for (const spot of opening.spots) {
+    const hasLimp = spot.hero === "SB";
+    for (const row of spot.hands) {
+      if (hasLimp ? row.open + row.limp + row.fold !== 100 : row.open + row.fold !== 100 || Object.hasOwn(row, "limp")) {
+        add("range-flow", "error", `${spot.hero} open`, `${row.hand}: open/limp/foldの合計またはlimp位置が不正`);
+      }
+    }
+    checkStrengthOrder(add, `${spot.hero} open`, { hands: spot.hands.map(row => ({ ...row, fold: row.fold })) });
+  }
   const openOrder = ["UTG", "HJ", "CO", "BTN"];
   for (let i = 0; i < openOrder.length - 1; i += 1) {
     const early = openBy.get(openOrder[i]);
@@ -81,11 +89,37 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   for (const hero of positions) {
     const openers = positions.filter(opener => responseBy.has(`${opener}>${hero}`));
     for (let i = 0; i < openers.length - 1; i += 1) {
+      // SB's raise range is now a selected, narrow branch after its playable
+      // middle hands were assigned to limping, so monotonic nesting ends here.
+      if (hero === "BB" && openers[i + 1] === "SB") continue;
       const vsEarly = rows(responseBy.get(`${openers[i]}>${hero}`));
       const vsLate = rows(responseBy.get(`${openers[i + 1]}>${hero}`));
       for (const [hand, row] of vsEarly) {
         if (vsLate.get(hand).fold - row.fold > TOLERANCE) {
           add("defense-nesting", "warn", `${hero} vs ${openers[i]}/${openers[i + 1]}`, `${hand}: vs ${openers[i + 1]} のほうが${vsLate.get(hand).fold - row.fold}pt多くフォールド`);
+        }
+      }
+    }
+  }
+
+  // SB limp path: its action split is complete, and the iso response honors
+  // reachability while continuing more often with stronger hands.
+  if (limp) {
+    const openingSb = opening.spots.find(spot => spot.id === "SB_open" && spot.hero === "SB");
+    const bbLimp = limp.spots.find(spot => spot.id === "BB_vs_SB_limp");
+    const sbIso = limp.spots.find(spot => spot.id === "SB_vs_BB_iso");
+    if (!openingSb || !bbLimp || !sbIso) {
+      add("range-flow", "error", "SB limp", "必要なSB limp局面が不足");
+    } else {
+      const limpByHand = rows(openingSb);
+      checkStrengthOrder(add, "BB vs SB limp", {
+        hands: bbLimp.hands.map(row => ({ ...row, fold: 100 - row.raise })),
+      });
+      checkStrengthOrder(add, "SB vs BB iso", sbIso, hand => (limpByHand.get(hand)?.limp ?? 0) > 0);
+      for (const row of sbIso.hands) {
+        if ((limpByHand.get(row.hand)?.limp ?? 0) === 0 &&
+            (row.fold !== 100 || row.call !== 0 || row.raise !== 0)) {
+          add("range-flow", "error", "SB vs BB iso", `${row.hand}: SB limp 0%なのに到達不能プレースホルダーでない`);
         }
       }
     }

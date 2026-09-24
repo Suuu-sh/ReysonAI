@@ -15,16 +15,17 @@
     ],
     "method": "独自に手作業で設計したハンド群別・位置別の5%刻みの概算。早いオープナーをタイトと仮定し、IPではコールを多めに配分。刻みは計算精度を意味しない。",
     "rake": {
-      "rate": null,
-      "cap_bb": null,
-      "calibrated": false
+      "rate": 0.05,
+      "cap_bb": 3.0,
+      "no_flop_no_drop": true,
+      "calibrated": true
     },
     "frequency_semantics": "当該ハンドで既に3betした条件下の割合。fold+call+all_in=100。元の3bet頻度を再乗算しない。",
     "unreachable_hands": "既存3bet頻度0%は対象外。169件形式上fold=100、all_in_size_bb=nullとして理由に明記。推奨ではなくUIでも頻度を非表示。",
     "sizing_semantics": "全サイズは追加額でなく合計投入額。callは4bet額まで。all_inは100BB、頻度0ならall_in_size_bb=null。",
     "tree_policy": "応答アクションはfold / call / all_in。サイズは共通configから計算し、spot間の正確なraise-to額を後続履歴に引き継ぐ。",
     "scope_note": "スクイーズ、コールド4bet、複数人応答、5bet後の応答はaction-tree.jsonの別spotとして保存。",
-    "warning": "推定値。GTO・EV・相手カード除去・局面到達確率・レーキ調整は未計算。前段データとの同時均衡を保証しない。",
+    "warning": "推定値。レーキ環境を仮定した上流データを参照するが、GTO・EV・相手カード除去・前段との同時均衡は保証しない。",
     "reference_note": "競合サービスのチャート・頻度は転用していない。既存コードの合法アクションと保存サイズのみを参照。"
   },
   "spot_count": 15,

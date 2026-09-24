@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 # Writes only into the staging dir from `npm run build:estimates`, which audits before publishing.
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
 DATA = STAGING
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from sizing_rules import CONFIG
 RANKS = 'AKQJT98765432'
 HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
          for i, a in enumerate(RANKS) for j, b in enumerate(RANKS)]
@@ -237,13 +239,14 @@ def build():
             'source_of_truth': 'configs/cash-6max-100bb.jsonのサイズルールと先行する保存済みAI推定JSONを参照。5betはall_in（合計100BB）のみ。',
             'legal_actions': ['fold', 'call', 'all_in'],
             'method': '独自に手作業で設計したハンド群別・位置別の5%刻みの概算。早いオープナーをタイトと仮定し、IPではコールを多めに配分。刻みは計算精度を意味しない。',
-            'rake': {'rate': None, 'cap_bb': None, 'calibrated': False},
+            'rake': {'rate': CONFIG['rake']['rate'], 'cap_bb': CONFIG['rake']['cap_bb'],
+                     'no_flop_no_drop': CONFIG['rake']['no_flop_no_drop'], 'calibrated': True},
             'frequency_semantics': '当該ハンドで既に3betした条件下の割合。fold+call+all_in=100。元の3bet頻度を再乗算しない。',
             'unreachable_hands': '既存3bet頻度0%は対象外。169件形式上fold=100、all_in_size_bb=nullとして理由に明記。推奨ではなくUIでも頻度を非表示。',
             'sizing_semantics': '全サイズは追加額でなく合計投入額。callは4bet額まで。all_inは100BB、頻度0ならall_in_size_bb=null。',
             'tree_policy': '応答アクションはfold / call / all_in。サイズは共通configから計算し、spot間の正確なraise-to額を後続履歴に引き継ぐ。',
             'scope_note': 'スクイーズ、コールド4bet、複数人応答、5bet後の応答はaction-tree.jsonの別spotとして保存。',
-            'warning': '推定値。GTO・EV・相手カード除去・局面到達確率・レーキ調整は未計算。前段データとの同時均衡を保証しない。',
+            'warning': '推定値。レーキ環境を仮定した上流データを参照するが、GTO・EV・相手カード除去・前段との同時均衡は保証しない。',
             'reference_note': '競合サービスのチャート・頻度は転用していない。既存コードの合法アクションと保存サイズのみを参照。',
         },
         'spot_count': 15, 'hand_classes_per_spot': 169, 'entry_count': 2535, 'spots': [],

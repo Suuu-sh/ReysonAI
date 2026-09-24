@@ -12,8 +12,8 @@ export const PROFILE_MULTIPLIERS = Object.freeze({
 
 export const DEFAULT_PROFILE = Object.freeze({ call: "normal", three_bet: "normal" });
 
-const LABELS = { call: "コール頻度", three_bet: "3bet頻度" };
-const LEVEL_LABELS = { low: "少ない", normal: "標準", high: "多い" };
+export const PROFILE_LABELS = { call: "コール頻度", three_bet: "3bet頻度" };
+export const LEVEL_LABELS = { low: "少ない", normal: "標準", high: "多い" };
 
 export function normalizeProfile(profile = {}) {
   const result = { ...DEFAULT_PROFILE };
@@ -25,11 +25,16 @@ export function normalizeProfile(profile = {}) {
   return result;
 }
 
+export const profileKey = profile => {
+  const { call, three_bet } = normalizeProfile(profile);
+  return `call_${call}__three_bet_${three_bet}`;
+};
+
 export const isDefaultProfile = profile =>
   Object.keys(DEFAULT_PROFILE).every(key => normalizeProfile(profile)[key] === DEFAULT_PROFILE[key]);
 
 export const describeProfile = profile =>
-  Object.entries(normalizeProfile(profile)).map(([key, level]) => `${LABELS[key]}: ${LEVEL_LABELS[level]}`).join(" / ");
+  Object.entries(normalizeProfile(profile)).map(([key, level]) => `${PROFILE_LABELS[key]}: ${LEVEL_LABELS[level]}`).join(" / ");
 
 const round1 = value => Math.round(value * 10) / 10;
 
@@ -91,4 +96,56 @@ export function parseTableDescription(text = "") {
     matched.push({ key: rule.key, level: rule.level, text: hit[0] });
   }
   return { profile, matched };
+}
+
+// Applies precomputed open adjustments (table-profile-adjustments.json) to a
+// saved opening spot. Added hands open at 100%, dropped hands fold at 100%;
+// each changed row carries `adjusted` and `shift_bb` for the UI to explain.
+export function adjustOpeningSpot(spot, adjustments, profile) {
+  if (!spot || !adjustments || isDefaultProfile(profile)) return spot;
+  const byPosition = adjustments.profiles?.[profileKey(profile)]?.[spot.hero];
+  if (!byPosition) return spot;
+  const changes = new Map([
+    ...byPosition.add.map(([hand, shift]) => [hand, { adjusted: "add", shift_bb: shift }]),
+    ...byPosition.drop.map(([hand, shift]) => [hand, { adjusted: "drop", shift_bb: shift }]),
+  ]);
+  if (!changes.size) return { ...spot, table_profile: normalizeProfile(profile) };
+  return {
+    ...spot,
+    table_profile: normalizeProfile(profile),
+    hands: spot.hands.map(row => {
+      const change = changes.get(row.hand);
+      if (!change) return row;
+      const opens = change.adjusted === "add";
+      const next = { ...row, ...change, saved_open: row.open, open: opens ? 100 : 0, fold: opens ? 0 : 100, open_size_bb: opens ? spot.open_size_bb : null };
+      if (Object.hasOwn(row, "limp")) Object.assign(next, { limp: 0, limp_size_bb: null });
+      return next;
+    }),
+  };
+}
+
+// Why the profile changed this hand, in one sentence for the hand detail.
+export function adjustmentReason(row, profile) {
+  if (!row?.adjusted) return null;
+  const { call, three_bet } = normalizeProfile(profile);
+  const adds = row.adjusted === "add";
+  // Only the tendencies that push in this hand's direction explain it.
+  const causes = [
+    three_bet === "low" && adds && "3betで降ろされることが減る",
+    three_bet === "high" && !adds && "3betで降ろされることが増える",
+    call === "low" && adds && "ブラインドを取れることが増える",
+    call === "high" && !adds && "コールされて不利なポットになりやすい",
+  ].filter(Boolean);
+  if (!causes.length) causes.push("相手の応答が変わる");
+  const verb = adds ? "オープンに追加" : "オープンから除外";
+  const shift = `${row.shift_bb > 0 ? "+" : ""}${row.shift_bb.toFixed(2)}BB`;
+  return `この卓では${causes.join("・")}ため、期待値が ${shift} 変わると見積もり、${verb}しました（保存済みレンジでは ${row.saved_open}%）。`;
+}
+
+// Copies adjusted/shift_bb from spot rows onto a matrix model's aggregates.
+export function markAdjustedModel(model, spot) {
+  if (!model || !spot?.table_profile) return model;
+  const rows = new Map(spot.hands.filter(row => row.adjusted).map(row => [row.hand, row]));
+  if (!rows.size) return model;
+  return { ...model, aggregates: new Map([...model.aggregates].map(([hand, aggregate]) => [hand, rows.has(hand) ? { ...aggregate, adjusted: rows.get(hand).adjusted } : aggregate])) };
 }

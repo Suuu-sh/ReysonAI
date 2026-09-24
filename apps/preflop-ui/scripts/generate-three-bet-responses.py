@@ -3,7 +3,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from sizing_rules import four_bet_to
+from sizing_rules import CONFIG, four_bet_to
 
 # Writes only into the staging dir from `npm run build:estimates`, which audits before publishing.
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
@@ -288,12 +288,13 @@ def main():
         'source_of_truth': 'ユーザー確認済みの全15組み合わせと既存preflop-ranges.jsonの3betサイズ。Heroは元のオープナー。',
         'excluded': ['コールド4bet', 'スクイーズ・コーラーあり', '4betを受けた後の応答', '4bet後の相手の行動'],
         'method': '手作業のハンド群別ヒューリスティック。位置と3betサイズに応じて配分。5%刻みは精度を意味しない。',
-        'rake': {'rate': None, 'cap_bb': None, 'calibrated': False}, 'ante_bb': 0,
+        'rake': {'rate': CONFIG['rake']['rate'], 'cap_bb': CONFIG['rake']['cap_bb'],
+                 'no_flop_no_drop': CONFIG['rake']['no_flop_no_drop'], 'calibrated': True}, 'ante_bb': 0,
         'frequency_semantics': '当該ハンドで既にオープンした条件下の割合。fold+call+four_bet=100。オープン頻度は再乗算しない。',
         'unreachable_hands': '既存RFIでopen=0のクラスはこの経路に到達しない。169件形式のためfold=100とし、理由に対象外と明記。実際の局面での推奨ではない。',
         'sizing_semantics': '3bet・4betとも追加額ではなく合計投入額(raise-to)。four_bet=0ならfour_bet_size_bb=null。',
         'sizing_policy': '保存済みconfigの一律サイズルールを適用。3bet=オープン×IP3/OOP4.5、スクイーズはcaller1人でIP4.5/OOP5にcallerごとに+1、4bet=直前3bet×IP2.3/OOP2.6、スタック超過は100BBオールイン。',
-        'warning': '推定値。EV・GTO均衡・相手のカード除去・レーキ調整は未計算。既存レンジとの同時均衡を保証しない。',
+        'warning': '推定値。レーキ環境を仮定したヒューリスティックで、EV・GTO均衡・相手のカード除去の厳密計算や既存レンジとの同時均衡を保証しない。',
         'reference_note': '参考資料は位置別サイズの考え方の確認のみ。頻度チャートは転用していない。',
         'references': [{'title': 'Upswing Poker: Preflop Raise Sizes That Win', 'url': 'https://upswingpoker.com/podcast/ep29-pfr-sizing/'}],
     }, 'spot_count': 15, 'hand_classes_per_spot': 169, 'entry_count': 2535, 'spots': []}

@@ -1,4 +1,5 @@
 import { comboCount, combosOf, equityVsRange, seedFor, seededRandom, weightedRange } from "./equity.mjs";
+import { rake, rakeMetadata, raked } from "../../src/estimated/rake.js";
 
 export const SAMPLE_COUNT = 6000;
 export const OPEN_SIZE_BB = 2.5;
@@ -205,8 +206,10 @@ export function calculateOpenEvForHand({
         }
         const eq = callEquities.get(key);
         const r = realized.get(`open-call:${position}`);
-        const pot = OPEN_SIZE_BB + OPEN_SIZE_BB + dead;
-        addLeaf(leafMap, ["calls", position], openCallProbability, eq * r * pot - OPEN_SIZE_BB, { equity: round(eq), realization: r, pot_bb: pot });
+        const grossPot = OPEN_SIZE_BB + OPEN_SIZE_BB + dead;
+        const pot = raked(grossPot);
+        addLeaf(leafMap, ["calls", position], openCallProbability, eq * r * pot - OPEN_SIZE_BB,
+          { equity: round(eq), realization: r, pot_bb: grossPot, raked_pot_bb: round(pot), rake_bb: round(rake(grossPot)) });
       }
 
       const threeBetProbability = priorFolds * actionProbabilities.three_bet;
@@ -231,8 +234,10 @@ export function calculateOpenEvForHand({
               realized.set(`three-bet:${position}`, rPostflop);
             }
             const eq = threeBetEquities.get(position);
-            const pot = 2 * size + dead;
-            addLeaf(leafMap, ["three_bets", position, "call"], threeBetProbability * heroCall, eq * rPostflop * pot - size, { equity: round(eq), realization: rPostflop, pot_bb: pot, three_bet_size_bb: size });
+            const grossPot = 2 * size + dead;
+            const pot = raked(grossPot);
+            addLeaf(leafMap, ["three_bets", position, "call"], threeBetProbability * heroCall, eq * rPostflop * pot - size,
+              { equity: round(eq), realization: rPostflop, pot_bb: grossPot, raked_pot_bb: round(pot), rake_bb: round(rake(grossPot)), three_bet_size_bb: size });
           }
 
           if (heroFourBet > 0) {
@@ -252,8 +257,10 @@ export function calculateOpenEvForHand({
                 realized.set(`four-bet-call:${position}`, rPostflop);
               }
               const eq = fourBetCallEquities.get(position);
-              const pot = 2 * fourBetSize + dead;
-              addLeaf(leafMap, ["three_bets", position, "four_bet", "call"], fourBetProbability * opponentActions.call, eq * rPostflop * pot - fourBetSize, { equity: round(eq), realization: rPostflop, pot_bb: pot, three_bet_size_bb: size, four_bet_size_bb: fourBetSize });
+              const grossPot = 2 * fourBetSize + dead;
+              const pot = raked(grossPot);
+              addLeaf(leafMap, ["three_bets", position, "four_bet", "call"], fourBetProbability * opponentActions.call, eq * rPostflop * pot - fourBetSize,
+                { equity: round(eq), realization: rPostflop, pot_bb: grossPot, raked_pot_bb: round(pot), rake_bb: round(rake(grossPot)), three_bet_size_bb: size, four_bet_size_bb: fourBetSize });
             }
 
             if (opponentActions.all_in > 0) {
@@ -274,8 +281,11 @@ export function calculateOpenEvForHand({
               }
               const allInProbability = fourBetProbability * opponentActions.all_in;
               if (heroCallFiveBet > 0) {
-                const net = shoveEquity * (2 * EFFECTIVE_STACK_BB + dead) - EFFECTIVE_STACK_BB;
-                addLeaf(leafMap, ["three_bets", position, "four_bet", "all_in", "call"], allInProbability * heroCallFiveBet, net, { equity: round(shoveEquity), realization: 1, pot_bb: 2 * EFFECTIVE_STACK_BB + dead, all_in_size_bb: EFFECTIVE_STACK_BB });
+                const grossPot = 2 * EFFECTIVE_STACK_BB + dead;
+                const pot = raked(grossPot);
+                const net = shoveEquity * pot - EFFECTIVE_STACK_BB;
+                addLeaf(leafMap, ["three_bets", position, "four_bet", "all_in", "call"], allInProbability * heroCallFiveBet, net,
+                  { equity: round(shoveEquity), realization: 1, pot_bb: grossPot, raked_pot_bb: round(pot), rake_bb: round(rake(grossPot)), all_in_size_bb: EFFECTIVE_STACK_BB });
               }
               if (heroFoldFiveBet > 0) {
                 addLeaf(leafMap, ["three_bets", position, "four_bet", "all_in", "fold"], allInProbability * heroFoldFiveBet, -fourBetSize, { all_in_size_bb: EFFECTIVE_STACK_BB, four_bet_size_bb: fourBetSize });
@@ -314,12 +324,13 @@ export function calculateOpenEvForPosition({ hero, datasets, samples = SAMPLE_CO
     open_size_bb: opening.open_size_bb,
     effective_stack_bb: opening.effective_stack_bb,
     samples,
-    model: "Approximate EV vs fold using persisted response ranges; not a solver. First non-fold action only; later seats fold. No rake modeled.",
+    model: "Approximate EV vs fold using persisted response ranges; not a solver. First non-fold action only; later seats fold. Showdown branches use configured 5% rake capped at 3BB; all-fold branches are rake-free under no flop no drop.",
     assumptions: {
       open_size_bb: OPEN_SIZE_BB,
       realization_factors: options.realizationFactors ?? REALIZATION_FACTORS,
       effective_stack_bb: EFFECTIVE_STACK_BB,
       blinds: BLINDS,
+      rake: rakeMetadata,
     },
     hands: opening.hands.map(row => calculateOpenEvForHand({ hero, hand: row.hand, openFreq: row.open, datasets, samples, ...options })),
   };

@@ -14,6 +14,7 @@ const report = auditEstimates({
   fourBets: load("four-bet-responses"),
   fiveBets: load("five-bet-responses"),
   multiway: load("multiway-responses"),
+  limp: load("limp-responses"),
 });
 const { findings, autoProfit, threeBetDefense, fourBetDefense, widths } = report;
 

@@ -5,6 +5,9 @@ export const positions = config.positions;
 export const sizing = config.sizing;
 export const effectiveStackBb = config.stack_bb;
 export const openSizeBb = sizing.open_sizes_bb[0];
+export const sbCompleteToBb = sizing.limp.sb_complete_to_bb;
+export const isoVsLimpToBb = sizing.fixed_raise_to_bb.iso_vs_limp;
+export const limpReraiseToBb = sizing.fixed_raise_to_bb.limp_reraise;
 export const postflopOrder = ["SB", "BB", "UTG", "HJ", "CO", "BTN"];
 
 export function isInPosition(position, opponent) {

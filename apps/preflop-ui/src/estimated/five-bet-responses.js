@@ -1,20 +1,11 @@
 import { useEffect, useState } from "react";
-import { hands } from "../data.js";
+import { validateFiveBetDataset } from "./five-bet-dataset.js";
+
+export { validateFiveBetDataset };
 
 // Loaded only when a 5bet all-in is selected; the dataset is not needed for any other path.
 const loaders = import.meta.glob("./five-bet-responses.json", { import: "default" });
 let pending;
-
-export function validateFiveBetDataset(data) {
-  if (data?.metadata?.strategy_type !== "ai_estimate_not_gto" || !Array.isArray(data.spots)) throw new Error("5bet応答データの形式が不正です。");
-  for (const spot of data.spots) {
-    if (spot.all_in_size_bb !== 100 || spot.hero !== spot.opener || spot.hands?.length !== 169) throw new Error(`${spot.id}: 局面の前提が不正です。`);
-    spot.hands.forEach((row, index) => {
-      if (row.hand !== hands[index] || !Number.isInteger(row.fold) || !Number.isInteger(row.call) || row.fold + row.call !== 100) throw new Error(`${spot.id}/${row.hand}: 頻度が不正です。`);
-    });
-  }
-  return data;
-}
 
 export function loadFiveBetDataset() {
   const loader = loaders["./five-bet-responses.json"];

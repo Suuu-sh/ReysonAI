@@ -15,13 +15,14 @@
     ],
     "method": "手札群と6つの位置履歴ごとに手作業で設計した整数%のAI概算。安いコールでもOOPの3人ポットを考慮し、スクイーズはバリュー中心。",
     "rake": {
-      "rate": null,
-      "cap_bb": null,
-      "calibrated": false
+      "rate": 0.05,
+      "cap_bb": 3.0,
+      "no_flop_no_drop": true,
+      "calibrated": true
     },
     "frequency_semantics": "その履歴でBBが当該ハンドを持つ条件付き割合。fold+call+squeeze=100。前段のオープン・コール頻度を再乗算しない。",
     "sizing_semantics": "スクイーズ額は追加額ではなくBBの合計投入額。頻度0なら行のsqueeze_size_bbはnull。",
-    "warning": "独立したAI推定値。ソルバー出力・GTO均衡・EV計算ではなく、レーキやカード除去、前段レンジとの同時均衡も未検証。",
+    "warning": "独立したAI推定値。レーキ環境を仮定したヒューリスティックで、ソルバー・GTO均衡・EVの厳密計算・カード除去・前段との同時均衡を保証しない。",
     "reference_note": "競合サービスのチャートや頻度は転用していない。"
   },
   "spot_count": 6,

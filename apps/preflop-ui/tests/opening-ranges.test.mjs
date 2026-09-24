@@ -25,11 +25,15 @@ test("five positions include all 845 canonical RFI records", () => {
     assert.equal(findOpeningSpot(source, spot.hero), spot);
     assert.deepEqual(new Set(spot.hands.map(row => row.hand)), new Set(hands));
     for (const row of spot.hands) {
-      assert.deepEqual(Object.keys(row), ["hand", "open", "fold", "open_size_bb"]);
-      assert.equal(row.open + row.fold, 100);
+      const hasLimp = spot.hero === "SB";
+      assert.deepEqual(Object.keys(row), hasLimp
+        ? ["hand", "open", "limp", "fold", "open_size_bb", "limp_size_bb"]
+        : ["hand", "open", "fold", "open_size_bb"]);
+      assert.equal(row.open + (row.limp ?? 0) + row.fold, 100);
       assert.ok(row.open >= 0 && row.open <= 100);
       assert.ok(row.fold >= 0 && row.fold <= 100);
       assert.equal(row.open_size_bb, row.open > 0 ? 2.5 : null);
+      if (hasLimp) assert.equal(row.limp_size_bb, row.limp > 0 ? 1 : null);
     }
   }
   assert.throws(() => findOpeningSpot(source, "BB"));
@@ -37,12 +41,14 @@ test("five positions include all 845 canonical RFI records", () => {
 test("opening matrix preserves JSON percentages without call or 3bet", () => {
   for (const spot of source.spots) {
     const { actions, aggregates } = openingMatrixModel(spot);
-    assert.deepEqual(actions, ["raise_2.5", "fold"]);
+    assert.deepEqual(actions, ["raise_2.5", "limp", "fold"]);
     assert.equal(aggregates.size, 169);
     assert.equal([...aggregates.values()].reduce((sum, row) => sum + row.comboCount, 0), 1326);
     for (const row of spot.hands) {
-      assert.deepEqual(aggregates.get(row.hand).actions, { "raise_2.5": row.open / 100, fold: row.fold / 100 });
+      assert.deepEqual(aggregates.get(row.hand).actions,
+        { "raise_2.5": row.open / 100, limp: (row.limp ?? 0) / 100, fold: row.fold / 100 });
     }
+    assert.equal(modelActionLabel(spot), "リンプ");
   }
 });
 test("premium hands open, weak hands fold, and later seats have wider authored RFI ranges", () => {
@@ -55,6 +61,9 @@ test("premium hands open, weak hands fold, and later seats have wider authored R
   });
   assert.ok(weighted[0] < weighted[1] && weighted[1] < weighted[2] && weighted[2] < weighted[3]);
   assert.ok(source.metadata.sb_policy.includes('リンプ'));
+  const sb = findOpeningSpot(source, "SB");
+  const actionWeightedPct = action => sb.hands.reduce((sum, row) => sum + row[action] * (row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12), 0) / 1326;
+  assert.ok(actionWeightedPct("limp") > actionWeightedPct("open"));
 });
 test("opening dataset validation rejects malformed records and unsupported conditions", () => {
   for (const mutate of [
@@ -69,9 +78,17 @@ test("opening dataset validation rejects malformed records and unsupported condi
     d => { d.spots[0].hands[1] = d.spots[0].hands[0]; },
     d => { d.spots[0].hands[0].hand = "KAo"; },
     d => { d.metadata.open_size_bb = 3; },
+    d => { d.spots.find(s => s.hero === "SB").hands[0].limp = 101; },
+    d => { d.spots.find(s => s.hero === "SB").hands[0].limp_size_bb = 1; },
+    d => { d.spots.find(s => s.hero === "UTG").hands[0].limp = 0; },
+    d => { d.metadata.rake.cap_bb = null; },
   ]) {
     const invalid = structuredClone(source);
     mutate(invalid);
     assert.throws(() => validateOpeningDataset(invalid));
   }
 });
+
+function modelActionLabel(spot) {
+  return openingMatrixModel(spot).actionLabels.limp;
+}

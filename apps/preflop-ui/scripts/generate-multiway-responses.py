@@ -13,6 +13,8 @@ from sizing_rules import three_bet_to
 
 ROOT = Path(__file__).resolve().parents[1]
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from sizing_rules import CONFIG
 RANKS = 'AKQJT98765432'
 HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
          for i, a in enumerate(RANKS) for j, b in enumerate(RANKS)]
@@ -552,10 +554,11 @@ def build():
             'source_of_truth': '先行するopening-ranges.jsonとpreflop-ranges.jsonを参照。スクイーズ額はconfigs/cash-6max-100bb.jsonの固定サイズ。',
             'legal_actions': ['fold', 'call', 'squeeze'],
             'method': '手札群と6つの位置履歴ごとに手作業で設計した整数%のAI概算。安いコールでもOOPの3人ポットを考慮し、スクイーズはバリュー中心。',
-            'rake': {'rate': None, 'cap_bb': None, 'calibrated': False},
+            'rake': {'rate': CONFIG['rake']['rate'], 'cap_bb': CONFIG['rake']['cap_bb'],
+                     'no_flop_no_drop': CONFIG['rake']['no_flop_no_drop'], 'calibrated': True},
             'frequency_semantics': 'その履歴でBBが当該ハンドを持つ条件付き割合。fold+call+squeeze=100。前段のオープン・コール頻度を再乗算しない。',
             'sizing_semantics': 'スクイーズ額は追加額ではなくBBの合計投入額。頻度0なら行のsqueeze_size_bbはnull。',
-            'warning': '独立したAI推定値。ソルバー出力・GTO均衡・EV計算ではなく、レーキやカード除去、前段レンジとの同時均衡も未検証。',
+            'warning': '独立したAI推定値。レーキ環境を仮定したヒューリスティックで、ソルバー・GTO均衡・EVの厳密計算・カード除去・前段との同時均衡を保証しない。',
             'reference_note': '競合サービスのチャートや頻度は転用していない。',
         },
         'spot_count': 6, 'hand_classes_per_spot': 169,

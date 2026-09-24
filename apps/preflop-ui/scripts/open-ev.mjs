@@ -15,7 +15,7 @@ function formatList(rows) { return rows.length ? rows.map(formatEv).join("<br>")
 
 function printSummary(summaries, samples) {
   console.log(`\n## Open EV summary — ${samples.toLocaleString("en-US")} Monte Carlo samples`);
-  console.log("\nApproximation only (not a solver); first non-folding seat is modeled and all later seats are assumed to fold. No rake is modeled. +EV-only width opens each positive-EV hand class at 100%.\n");
+  console.log("\nApproximation only (not a solver); first non-folding seat is modeled and all later seats are assumed to fold. Showdown branches apply 5% rake capped at 3BB; all-fold branches are rake-free under no flop no drop. +EV-only width opens each positive-EV hand class at 100%.\n");
   console.log("| Position | Current open width (freq-weighted) | ΔEV > 0 only (100%) |");
   console.log("|:--|--:|--:|");
   for (const item of summaries) {

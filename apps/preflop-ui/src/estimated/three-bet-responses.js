@@ -1,4 +1,5 @@
 import { hands } from "../data.js";
+import { hasConfiguredRake } from "./rake.js";
 import { positions } from "./ranges.js";
 import { fourBetToSize, isInPosition, openSizeBb } from "./sizing.js";
 
@@ -6,6 +7,7 @@ export function validateThreeBetDataset(data, responses, openings) {
   const expected = positions.flatMap((hero, i) => positions.slice(i + 1).map(bettor => `${hero}_vs_${bettor}_three_bet`));
   if (data?.metadata?.ante_bb !== 0 || data?.metadata?.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.effective_stack_bb !== 100 || data.metadata.open_size_bb !== openSizeBb ||
+      !hasConfiguredRake(data.metadata) ||
       data.spot_count !== 15 || data.entry_count !== 2535 || data.hand_classes_per_spot !== 169 ||
       !Array.isArray(data.spots) || data.spots.length !== 15 ||
       !expected.every(id => data.spots.some(s => s.id === id))) {

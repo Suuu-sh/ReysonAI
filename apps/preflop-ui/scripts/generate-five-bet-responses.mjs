@@ -4,6 +4,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
+import { rakeMetadata, raked } from "../src/estimated/rake.js";
 
 const staging = process.env.ESTIMATES_DIR;
 if (!staging) {
@@ -44,7 +45,7 @@ const spots = threeBets.spots.map(before => {
   const shoveRange = weightedRange(fourBetSpot.hands.map(row => ({ hand: row.hand, weight: threeBetWeight.get(row.hand) * row.all_in / 100 })));
   const dead = 1.5 - (blind[opener] ?? 0) - (blind[fiveBettor] ?? 0);
   const fourBet = fourBetSpot.four_bet_size_bb;
-  const need = (100 - fourBet) / (200 + dead) * 100;
+  const need = (100 - fourBet) / raked(200 + dead) * 100;
   const random = seededRandom(seedFor(`${opener}>${fiveBettor}>five_bet`));
   const hands = before.hands.map(row => {
     const reachable = openRows.get(row.hand).open > 0 && row.four_bet > 0;
@@ -75,10 +76,11 @@ const data = {
     game: "6max Cash / No-Limit Texas Holdem", effective_stack_bb: 100, open_size_bb: 2.5, ante_bb: 0,
     scope: "オープナー2.5BB → 後続が3bet → オープナーが4bet → 3bettorが100BBオールイン → オープナーのコール／フォールド。他の全員はフォールド。",
     legal_actions: ["fold", "call"],
+    rake: rakeMetadata,
     method: `相手のオールインレンジ（保存済みの3bet頻度×5betオールイン頻度で重み付け）に対する勝率をモンテカルロ法（${SAMPLES}回・シード固定）で計算し、ポットオッズの必要勝率と比較。差が±${MIX_BAND_PCT}pt以内はコール頻度を線形に混合し5%刻みに丸める。`,
     frequency_semantics: "当該ハンドで既に4betした条件下の割合。fold+call=100。",
     unreachable_hands: "既存のオープンまたは4bet頻度が0%のハンドは対象外。形式上fold=100、equity_vs_shove_pct=null。",
-    warning: "AI推定。前段の保存レンジを前提にした計算で、前段との同時均衡やレーキは考慮しません。",
+    warning: "AI推定。低レートの5%・上限3BBレーキとNo flop no dropを適用したポットオッズで、前段との同時均衡は保証しません。",
   },
   spot_count: spots.length, hand_classes_per_spot: 169, entry_count: spots.length * 169, spots,
 };

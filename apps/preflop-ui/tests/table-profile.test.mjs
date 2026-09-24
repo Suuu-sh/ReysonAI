@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { adjustResponseRow, applyTableProfile, isDefaultProfile, normalizeProfile, parseTableDescription } from "../src/estimated/table-profile.js";
-import { compareOpenEv } from "../scripts/exploit-open.mjs";
+import { adjustOpeningSpot, adjustResponseRow, adjustmentReason, applyTableProfile, isDefaultProfile, markAdjustedModel, normalizeProfile, parseTableDescription, profileKey } from "../src/estimated/table-profile.js";
+import { compareOpenEv, limitToBudget } from "../scripts/exploit-open.mjs";
+import adjustments from "../src/estimated/table-profile-adjustments.json" with { type: "json" };
+import opening from "../src/estimated/opening-ranges.json" with { type: "json" };
+import { comboCount } from "../scripts/lib/equity.mjs";
 import { summarizeAgreement } from "../scripts/benchmark-record.mjs";
 
 const total = row => row.fold + row.call + row.three_bet;
@@ -65,4 +68,42 @@ test("benchmark summary keeps only aggregates", () => {
     tolerance_pt: 3, spots_compared: 2, actions_compared: 2, mean_abs_diff_pt: 15.5, max_abs_diff_pt: 29,
     outside_tolerance: 1, spots_outside_tolerance: ["SB_open"], spots_missing: ["BB_vs_BTN"],
   });
+});
+
+test("width budget keeps hands nearest the boundary", () => {
+  const base = { hands: [{ hand: "AA", open_freq: 100 }, { hand: "KK", open_freq: 100 }] }; // 12 open combos
+  const add = [{ hand: "72o", base_ev_bb: -0.5 }, { hand: "A5s", base_ev_bb: -0.01 }, { hand: "K9s", base_ev_bb: -0.1 }];
+  assert.deepEqual(limitToBudget({ add, drop: [] }, base, 0.5).add.map(r => r.hand), ["A5s"]);
+});
+
+test("adjusted opening spot opens added hands, folds dropped hands and explains them", () => {
+  const spot = { hero: "BTN", open_size_bb: 2.5, hands: [
+    { hand: "K5o", open: 0, fold: 100, open_size_bb: null },
+    { hand: "64s", open: 100, fold: 0, open_size_bb: 2.5 },
+    { hand: "AA", open: 100, fold: 0, open_size_bb: 2.5 },
+  ] };
+  const profile = { call: "high", three_bet: "normal" };
+  const table = { profiles: { [profileKey(profile)]: { BTN: { add: [["K5o", 0.08]], drop: [["64s", -0.2]] } } } };
+  const out = adjustOpeningSpot(spot, table, profile);
+  assert.deepEqual(out.hands.map(r => [r.hand, r.open, r.fold, r.adjusted ?? null]), [["K5o", 100, 0, "add"], ["64s", 0, 100, "drop"], ["AA", 100, 0, null]]);
+  assert.equal(adjustOpeningSpot(spot, table, {}), spot);
+  assert.match(adjustmentReason(out.hands[1], out.table_profile), /コールされて不利.*オープンから除外.*100%/);
+  const model = markAdjustedModel({ aggregates: new Map(spot.hands.map(r => [r.hand, { hand: r.hand }])) }, out);
+  assert.equal(model.aggregates.get("K5o").adjusted, "add");
+});
+
+test("saved adjustments cover every non-default profile and stay within the width budget", () => {
+  assert.equal(Object.keys(adjustments.profiles).length, 8);
+  for (const [key, positions] of Object.entries(adjustments.profiles)) for (const spot of opening.spots) {
+    const change = positions[spot.hero];
+    assert.ok(change, `${key} ${spot.hero}`);
+    const openCombos = spot.hands.reduce((sum, row) => sum + comboCount(row.hand) * row.open / 100, 0);
+    for (const side of ["add", "drop"]) {
+      const combos = change[side].reduce((sum, [hand]) => sum + comboCount(hand), 0);
+      assert.ok(combos <= openCombos * adjustments.metadata.width_budget + 1e-9, `${key} ${spot.hero} ${side}`);
+    }
+    const rows = new Map(spot.hands.map(row => [row.hand, row]));
+    for (const [hand] of change.add) assert.ok(rows.get(hand).open < 50, `${hand} already opens`);
+    for (const [hand] of change.drop) assert.ok(rows.get(hand).open >= 50, `${hand} already folds`);
+  }
 });
