@@ -178,3 +178,43 @@ test("rejects unpublished solutions and invalid resolve input", async () => {
   assert.equal(invalid.status, 400);
   assert.deepEqual(await invalid.json(), { error: "action history is empty" });
 });
+
+test("serves bundled estimated ranges without reading R2", async () => {
+  const noBucket = {};
+  const datasets = await request("/v1/estimated/datasets", {}, noBucket);
+  assert.equal(datasets.status, 200);
+  assert.deepEqual((await datasets.json()).map((item) => item.id), [
+    "opening", "open-responses", "three-bet-responses", "four-bet-responses", "five-bet-responses", "limp-responses",
+  ]);
+
+  const spots = await (await request("/v1/estimated/spots", {}, noBucket)).json();
+  const fourBet = spots.find((item) => item.spotId === "BTN_vs_CO_four_bet");
+  assert.deepEqual(fourBet.history, [
+    { position: "CO", action: "raise", sizeBb: 2.5 },
+    { position: "BTN", action: "raise", sizeBb: 8 },
+    { position: "CO", action: "raise", sizeBb: 20 },
+  ]);
+
+  const detail = await (await request("/v1/estimated/datasets/four-bet-responses/spots/BTN_vs_CO_four_bet", {}, noBucket)).json();
+  assert.equal(detail.hands.length, 169);
+  assert.equal(detail.strategyType, "ai_estimate_not_gto");
+  const aa = detail.hands.find((item) => item.hand === "AA");
+  assert.equal(aa.reachable, true);
+  assert.ok(Math.abs(Object.values(aa.frequencies).reduce((sum, value) => sum + value, 0) - 1) < 1e-9);
+  assert.equal(detail.hands.find((item) => item.hand === "95o").reachable, false);
+});
+
+test("every estimated spot is readable with normalized frequencies", async () => {
+  const spots = await (await request("/v1/estimated/spots", {}, {})).json();
+  assert.ok(spots.length > 60);
+  for (const spot of spots) {
+    const response = await request(`/v1/estimated/datasets/${spot.dataset}/spots/${spot.spotId}`, {}, {});
+    assert.equal(response.status, 200, spot.spotId);
+    const detail = await response.json();
+    for (const hand of detail.hands) {
+      const total = Object.values(hand.frequencies).reduce((sum, value) => sum + value, 0);
+      assert.ok(Math.abs(total - 1) < 0.011, `${spot.spotId} ${hand.hand} ${total}`);
+    }
+  }
+  assert.equal((await request("/v1/estimated/datasets/opening/spots/missing", {}, {})).status, 404);
+});

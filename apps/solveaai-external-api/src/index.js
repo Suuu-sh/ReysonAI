@@ -1,3 +1,5 @@
+import { findEstimatedSpot, listEstimatedDatasets, listEstimatedSpots } from "./estimated.js";
+
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
 const JSON_HEADERS = {
@@ -28,6 +30,10 @@ export default {
 async function route(request, env, url) {
   if (url.pathname === "/health" && request.method === "GET") {
     return json({ status: "ok", service: "solveaai-external-api" });
+  }
+
+  if (url.pathname.startsWith("/v1/estimated/")) {
+    return routeEstimated(request, url.pathname);
   }
 
   if (!url.pathname.startsWith("/v1/preflop/")) {
@@ -120,6 +126,20 @@ async function route(request, env, url) {
     });
   }
 
+  return errorResponse(404, "not found");
+}
+
+// 推定レンジはWorkerに同梱したJSONから返すため、R2のmanifestを読まない。
+function routeEstimated(request, path) {
+  if (request.method !== "GET") return errorResponse(404, "not found");
+  const cacheControl = "public, max-age=300, s-maxage=3600";
+  if (path === "/v1/estimated/datasets") return json(listEstimatedDatasets(), { cacheControl });
+  if (path === "/v1/estimated/spots") return json(listEstimatedSpots(), { cacheControl });
+  const spotMatch = path.match(/^\/v1\/estimated\/datasets\/([^/]+)\/spots\/([^/]+)$/);
+  if (spotMatch) {
+    const spot = findEstimatedSpot(decodePathSegment(spotMatch[1]), decodePathSegment(spotMatch[2]));
+    return spot ? json(spot, { cacheControl }) : errorResponse(404, "estimated spot not found");
+  }
   return errorResponse(404, "not found");
 }
 
