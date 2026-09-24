@@ -80,7 +80,12 @@ for (const [type, { file, actions }] of Object.entries(TYPES)) {
     // Reasons live in reasons/<spot>.json; only the 5bet dataset still carries them inline.
     const spot = { ...saved, hands: saved.hands.map(row => ({ ...row, reason: detailed?.hands[row.hand]?.reason ?? row.reason })) };
     const { hands, ...spotMeta } = spot;
+    const benchPath = new URL(`.local/benchmarks/${spot.id}.json`, root);
+    // Aggregate-only reference frequencies (never hand-level charts); reviewers treat ±3pt as the target band.
+    const reference = existsSync(benchPath) ? JSON.parse(readFileSync(benchPath)) : null;
     const context = { spot_id: spot.id, type, history: history(type, spot), legal_actions: actions, sizes: spotMeta,
+      reference_frequencies: reference && { frequencies: reference.frequencies, conditions: reference.conditions,
+        note: "外部ソルバーの合計頻度（参考）。ハンド単位の配分は写さず、合計が±3pt以内に収まるかの目安にする。条件が違う場合はその差を考慮する。" },
       spot_facts: detailed?.spot_facts ?? null, rubric: RUBRIC,
       conventions: "頻度は整数%で合計100。サイズは合計投入額(raise-to)。6max Cash 100BB、アンティなし。GTOソルバーの出力ではなくAI推定の審査である。" };
     const sample = stratifiedSample(spot, actions, random);

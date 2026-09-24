@@ -46,3 +46,10 @@ critique の資料には、わざと壊した行を2つ混ぜる（例：強い�
 - critique：`{ spot_id, reviewer_model, overall: { score, summary }, issues: [{ hand, severity, category, proposed_mix, rationale, cited_facts }] }`
 
 `proposed_mix` と `mix` のキーは、その局面の合法アクション（例：`three_bet` / `call` / `fold`）。
+
+## 外部参考値（合計頻度のみ）
+
+`.local/benchmarks/<spot_id>.json`（git管理外）に、外部ソルバーのその場面の**アクションごとの合計頻度**だけを記録する（ユーザー提供のスクリーンショットから手入力）。
+- `npm run benchmark` で保存データとの差を一覧にする。目安は ±3pt。
+- 審査資料には `reference_frequencies` として載る。レビュアーは「合計がずれている場合、どのハンド群で埋める／削るのが自前の勝率・監査と整合するか」を提案する。ハンド単位でチャートに寄せることはしない。
+- 条件（レーキ、サイズ）が保存データと違う場合は、その差を考慮して判断する。
