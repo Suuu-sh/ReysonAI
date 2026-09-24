@@ -30,12 +30,13 @@ export function replyShares(hand, openRows, replyRows) {
 }
 
 // geometry: { hero, opener, open, threeBet, fourBet, stack }; eq: { vsCall, vsFourBet } (0..1)
-export function raiseEv(hand, shares, fourBetRow, eq, g) {
+export function raiseEv(hand, shares, fourBetRow, eq, g, { eqrScale = 1 } = {}) {
+  if (!Number.isFinite(eqrScale) || eqrScale <= 0) throw new Error("EQR scale must be positive and finite");
   const heroBlind = blind[g.hero] ?? 0, openerBlind = blind[g.opener] ?? 0;
   const dead = 1.5 - heroBlind - openerBlind;
   const potBefore = g.open + 1.5 - openerBlind;
   const risk3 = g.threeBet - heroBlind;
-  const eqr = equityRealization(hand, g.hero, [g.opener]);
+  const eqr = equityRealization(hand, g.hero, [g.opener]) * eqrScale;
   const whenCalled = eq.vsCall * eqr * raked(2 * g.threeBet + dead) - risk3;
   const vsFour = fourBetRow ? (
     fourBetRow.fold / 100 * -risk3 +
