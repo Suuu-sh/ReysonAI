@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/solveaai-api-job-e2e.XXXXXX")
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/solveaai-internal-api-job-e2e.XXXXXX")
 QUEUE_DIR="$TMP_DIR/jobs"
 SOLUTION_DIR="$TMP_DIR/solutions"
 CONFIG_PATH="$TMP_DIR/cash-6max-100bb.json"
@@ -42,7 +42,7 @@ cat > "$CONFIG_PATH" <<'JSON'
 }
 JSON
 
-cargo build --quiet -p solveaai-api -p solveaai-worker
+cargo build --quiet -p solveaai-internal-api -p solveaai-worker
 
 SOLVEAAI_SOLUTION_DIR="$SOLUTION_DIR" \
 SOLVEAAI_QUEUE_DIR="$QUEUE_DIR" \
@@ -50,7 +50,7 @@ SOLVEAAI_ENABLE_GENERATION="true" \
 SOLVEAAI_CONFIG_PATH="$CONFIG_PATH" \
 SOLVEAAI_SOLUTION_ID="cash-6max-100bb-v1" \
 SOLVEAAI_API_BIND="127.0.0.1:${PORT}" \
-  "$ROOT_DIR/target/debug/solveaai-api" >"$API_LOG" 2>&1 &
+  "$ROOT_DIR/target/debug/solveaai-internal-api" >"$API_LOG" 2>&1 &
 API_PID=$!
 
 for _ in $(seq 1 50); do

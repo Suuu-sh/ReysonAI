@@ -1,4 +1,4 @@
-# SolveaAI Edge API
+# SolveaAI External API
 
 Cloudflare Worker上で動作する、本番用の読み取り専用APIです。
 

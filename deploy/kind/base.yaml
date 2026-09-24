@@ -89,11 +89,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: solveaai-api
+  name: solveaai-internal-api
   namespace: solveaai
 spec:
   selector:
-    app: solveaai-api
+    app: solveaai-internal-api
   ports:
     - name: http
       port: 3000
@@ -102,21 +102,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: solveaai-api
+  name: solveaai-internal-api
   namespace: solveaai
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: solveaai-api
+      app: solveaai-internal-api
   template:
     metadata:
       labels:
-        app: solveaai-api
+        app: solveaai-internal-api
     spec:
       containers:
         - name: api
-          image: solveaai-api:local
+          image: solveaai-internal-api:local
           imagePullPolicy: Never
           envFrom:
             - configMapRef:

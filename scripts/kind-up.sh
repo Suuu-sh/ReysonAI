@@ -31,8 +31,8 @@ else
 fi
 
 docker build \
-  --build-arg BINARY=solveaai-api \
-  --tag solveaai-api:local \
+  --build-arg BINARY=solveaai-internal-api \
+  --tag solveaai-internal-api:local \
   --file "${ROOT_DIR}/deploy/kind/Dockerfile.rust" \
   "${ROOT_DIR}"
 
@@ -49,7 +49,7 @@ docker build \
   --file "${ROOT_DIR}/deploy/kind/Dockerfile.ui" \
   "${ROOT_DIR}"
 
-kind load docker-image solveaai-api:local --name "${CLUSTER_NAME}"
+kind load docker-image solveaai-internal-api:local --name "${CLUSTER_NAME}"
 kind load docker-image solveaai-worker:local --name "${CLUSTER_NAME}"
 kind load docker-image solveaai-ui:local --name "${CLUSTER_NAME}"
 kind load docker-image redis:7.4-alpine --name "${CLUSTER_NAME}"
@@ -64,10 +64,10 @@ kubectl --context "${KUBE_CONTEXT}" --namespace solveaai delete job solveaai-pre
 # Local images reuse fixed tags, so applying the manifest alone does not
 # replace existing Pods. Restart them explicitly after loading fresh images.
 kubectl --context "${KUBE_CONTEXT}" --namespace solveaai rollout restart \
-  deployment/solveaai-api deployment/solveaai-worker deployment/solveaai-ui
+  deployment/solveaai-internal-api deployment/solveaai-worker deployment/solveaai-ui
 
 kubectl --context "${KUBE_CONTEXT}" --namespace solveaai rollout status deployment/solveaai-redis --timeout=180s
-kubectl --context "${KUBE_CONTEXT}" --namespace solveaai rollout status deployment/solveaai-api --timeout=180s
+kubectl --context "${KUBE_CONTEXT}" --namespace solveaai rollout status deployment/solveaai-internal-api --timeout=180s
 kubectl --context "${KUBE_CONTEXT}" --namespace solveaai rollout status deployment/solveaai-worker --timeout=180s
 kubectl --context "${KUBE_CONTEXT}" --namespace solveaai rollout status deployment/solveaai-ui --timeout=180s
 
@@ -81,7 +81,7 @@ cat <<EOF
 SolveaAI kind environment is ready.
 
 UI:  http://127.0.0.1:30080/
-API: kubectl --context ${KUBE_CONTEXT} --namespace solveaai port-forward service/solveaai-api 3000:3000
+API: kubectl --context ${KUBE_CONTEXT} --namespace solveaai port-forward service/solveaai-internal-api 3000:3000
 
 Generation request:
   ${JOB_RESPONSE}

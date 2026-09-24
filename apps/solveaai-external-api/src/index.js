@@ -27,7 +27,7 @@ export default {
 
 async function route(request, env, url) {
   if (url.pathname === "/health" && request.method === "GET") {
-    return json({ status: "ok", service: "solveaai-edge-api" });
+    return json({ status: "ok", service: "solveaai-external-api" });
   }
 
   if (!url.pathname.startsWith("/v1/preflop/")) {

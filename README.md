@@ -17,7 +17,7 @@ SolveaAI は、独自計算した戦略の保存・配信を目指す Solver Pla
     │                                                        ▼
     │                                           Cloudflare R2へ成果物公開
     │
-本番UI ──► Cloudflare Edge API Worker ──► Cloudflare R2
+本番UI ──► Cloudflare External API Worker ──► Cloudflare R2
                          │
                          └── ローカル環境へは接続しない
 ```
@@ -31,10 +31,10 @@ SolveaAI は、独自計算した戦略の保存・配信を目指す Solver Pla
 - `crates/solution`: Solver 結果、Combo/Hand Aggregate、永続化 Repository の抽象化。
 - `crates/job-queue`: `JobQueue`境界とFile / Redis Streams実装。Fileは単体実行、Redisはkind用。
 - `services/preflop-worker`: CLI Worker 実行エントリ（Job向けライブラリ分離は未実装）。
-- `services/api`: 保存済み Solution のread-only配信。ローカル生成モードでのみRedis/File QueueへJobを登録し、Solution生成処理そのものは実行しません。
+- `services/internal-api`（Internal API）: 保存済み Solution のread-only配信。ローカル生成モードでのみRedis/File QueueへJobを登録し、Solution生成処理そのものは実行しません。
 - `packages/solveaai-sdk-ts`: 外部アプリ向け TypeScript SDK。
 - `apps/preflop-ui`: 黒・ピンク基調の独自 Preflop Explorer。169 Hand Matrix、Action Breakdown、Combo 詳細を確認できます。
-- `apps/solveaai-edge-api`: 本番UI向けのCloudflare Worker。R2の検証済み成果物だけを読み取り、ローカルAPI・Redis・Solverへ接続しません。
+- `apps/solveaai-external-api`（External API）: 本番UI向けのCloudflare Worker。R2の検証済み成果物だけを読み取り、ローカルAPI・Redis・Solverへ接続しません。
 
 ### Action History と Node ID
 
@@ -149,7 +149,7 @@ SOLVEAAI_REDIS_URL=redis://127.0.0.1:6379/ \
 SOLVEAAI_ENABLE_GENERATION=true \
 SOLVEAAI_QUEUE_BACKEND=file \
 SOLVEAAI_SOLUTION_DIR=solutions \
-  cargo run --release -p solveaai-api
+  cargo run --release -p solveaai-internal-api
 ```
 
 ```bash
@@ -168,7 +168,7 @@ curl http://127.0.0.1:3000/v1/preflop/jobs/<job-id>
 
 ```bash
 SOLVEAAI_SOLUTION_DIR=solutions \
-  cargo run --release -p solveaai-api
+  cargo run --release -p solveaai-internal-api
 ```
 
 既定 URL は `http://127.0.0.1:3000` です。`SOLVEAAI_API_BIND` で bind address を変更できます。
@@ -316,7 +316,7 @@ GET /v1/preflop/solutions/{solutionId}/nodes/{nodeId}
 
 一覧はComboを含まない軽量な応答。詳細は選択ノードだけを返します。
 現在のFileSolutionStoreはリクエスト毎にファイル全体を読み込むため、大規模運用前に索引・キャッシュが必要です。
-本番配信では `VITE_SOLVEAAI_API_BASE_URL` をCloudflare Edge API WorkerのURLに設定します。
+本番配信では `VITE_SOLVEAAI_API_BASE_URL` をCloudflare External API WorkerのURLに設定します。
 ローカルのRust APIやRedisを本番UIから経由させません。
 
 UIの集計テスト:
@@ -385,7 +385,7 @@ open http://127.0.0.1:30080/
 ```text
 kind / Docker
 ├── solveaai-ui      : NodePort 30080
-├── solveaai-api     : RedisへJob登録／Solution配信
+├── solveaai-internal-api : RedisへJob登録／Solution配信
 ├── solveaai-redis   : Redis Streams、Consumer Group、Job状態
 └── solveaai-worker  : Redisから取得してSolution生成
 ```

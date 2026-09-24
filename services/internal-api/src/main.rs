@@ -126,7 +126,7 @@ struct ResolveResponse {
 #[tokio::main]
 async fn main() {
     if let Err(error) = run().await {
-        eprintln!("solveaai-api: {error}");
+        eprintln!("solveaai-internal-api: {error}");
         std::process::exit(1);
     }
 }
@@ -200,7 +200,7 @@ fn router(state: AppState) -> Router {
 async fn health() -> Json<HealthResponse> {
     Json(HealthResponse {
         status: "ok",
-        service: "solveaai-api",
+        service: "solveaai-internal-api",
     })
 }
 
@@ -481,7 +481,7 @@ mod scoped_tests {
     #[tokio::test]
     async fn scoped_nodes_do_not_leak_between_solutions() {
         let root = std::env::temp_dir().join(format!("solveaai-scoped-{}", std::process::id()));
-        let queue_root = std::env::temp_dir().join(format!("solveaai-api-queue-{}", std::process::id()));
+        let queue_root = std::env::temp_dir().join(format!("solveaai-internal-api-queue-{}", std::process::id()));
         let store = FileSolutionStore::new(&root);
         for (id, pot) in [("a", 4.0), ("b", 9.0)] {
             let saved: Solution = serde_json::from_value(serde_json::json!({
@@ -522,8 +522,8 @@ mod scoped_tests {
 
     #[tokio::test]
     async fn solve_job_requests_are_deduplicated_while_active() {
-        let root = std::env::temp_dir().join(format!("solveaai-api-jobs-{}", std::process::id()));
-        let queue_root = std::env::temp_dir().join(format!("solveaai-api-job-queue-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("solveaai-internal-api-jobs-{}", std::process::id()));
+        let queue_root = std::env::temp_dir().join(format!("solveaai-internal-api-job-queue-{}", std::process::id()));
         let state = AppState {
             store: Arc::new(FileSolutionStore::new(&root)),
             generation: Some(GenerationState {
@@ -575,11 +575,11 @@ mod scoped_tests {
     #[tokio::test]
     async fn solve_job_request_uses_matching_saved_solution_without_queueing() {
         let root = std::env::temp_dir().join(format!(
-            "solveaai-api-saved-solution-{}",
+            "solveaai-internal-api-saved-solution-{}",
             std::process::id()
         ));
         let queue_root = std::env::temp_dir().join(format!(
-            "solveaai-api-saved-solution-queue-{}",
+            "solveaai-internal-api-saved-solution-queue-{}",
             std::process::id()
         ));
         let config = PreflopConfig::default();
