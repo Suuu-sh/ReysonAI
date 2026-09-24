@@ -89,18 +89,23 @@ function HandHeader({ position, hand, comboCount, onClose }) {
   </div>;
 }
 
+// EV-style facts are in bb with a sign; everything else is a percentage.
+const formatFact = ({ value, unit }) => unit === "bb"
+  ? `${value > 0 ? "+" : ""}${Number(value).toFixed(2)}bb`
+  : `${Number(value).toFixed(1)}%`;
+
 function AiReason({ hand, spotId, inlineFacts }) {
   const { data, loading, error } = useDetailedReasons(spotId);
   const detailed = data?.hands[hand.hand];
   const facts = detailed
-    ? data.fact_labels.map(({ key, label, scope }) => ({ label, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
+    ? data.fact_labels.map(({ key, label, scope, unit }) => ({ label, unit, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
     : inlineFacts ?? [];
   const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined);
   return <div className="ai-reason">
     <span>AIの考え方</span>
     <p>{detailed?.reason ?? (loading ? "読み込み中…" : error ? "理由を読み込めませんでした。" : hand.reason)}</p>
     {shown.length > 0 && <dl className="reason-facts">
-      {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd>{Number(fact.value).toFixed(1)}%</dd></div>)}
+      {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd className={fact.unit === "bb" ? (fact.value >= 0 ? "fact-positive" : "fact-negative") : undefined}>{formatFact(fact)}</dd></div>)}
     </dl>}
     {detailed && <small className="reason-note">{data.equity_note}</small>}
   </div>;
