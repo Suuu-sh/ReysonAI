@@ -15,6 +15,12 @@ effort: high
 - 外部ソルバーの参考値はオープンのみ（.local/benchmarks、`npm run benchmark` で ±3pt）。他の局面はチャートを写さず自前の数値で判断する。
 - 理由と根拠の数値は reason-facts.mjs → compose-reasons.mjs で再生成する。
 - テストは `npm test`。Vite を使うテストは server に `{ middlewareMode: true, watch: null, hmr: false, ws: false }`。
+トークン節約（必須）:
+- src/estimated/*.json や scripts/data/response-mixes.json を Read/cat で丸ごと読まない。局面の確認は `npm run range -- list [filter]`（アクション構成）と `npm run range -- view <spot> [action]`（13×13 グリッド）を使う。
+- generator は編集する箇所だけ grep / 行範囲指定で読む。
+- 修正の確認は `npm run range -- check <spot ...>`（公開せずに生成・監査し、構成の変化・変わったハンド・監査・benchmark を数行で返す）を繰り返す。`build:estimates` の全ログは読まない。
+- check が通ったら最後に1回だけ `npm run pipeline -- --max-iterations 1` で公開する。
+
 UIファイル（src/estimated/RangeWorkspace.jsx, ranges.css, GameFormatDialog.jsx, game-formats.js, action-path.js, src/components/*, src/data.js, tests/estimated-ui.test.mjs）は触らない。
 
 完了時は、変更ファイル、各局面のアクション構成（コンボ加重）、監査・テスト・benchmark の結果、判断に迷った点を簡潔に返すこと。

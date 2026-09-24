@@ -1,5 +1,5 @@
 // Regenerates the authored estimate JSON in a staging dir and publishes it only if the audit passes.
-// Usage: npm run build:estimates
+// Usage: npm run build:estimates   (ESTIMATES_DRY_RUN=1: audit only, keep staging, publish nothing)
 import { execFileSync } from "node:child_process";
 import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
@@ -30,6 +30,7 @@ const generators = [
 mkdirSync(join(root, ".local"), { recursive: true });
 const equityCache = join(root, ".local/call-equities-cache.json");
 const staging = mkdtempSync(join(root, ".local/estimates-build-"));
+const dryRun = process.env.ESTIMATES_DRY_RUN === "1";
 
 try {
   for (const name of [...files, "call-equities"]) if (existsSync(join(published, `${name}.json`))) copyFileSync(join(published, `${name}.json`), join(staging, `${name}.json`));
@@ -60,6 +61,8 @@ try {
   if (blocking.length) {
     console.error(`\n検証で${blocking.length}件の違反。src/estimated は変更していません。`);
     process.exitCode = 1;
+  } else if (dryRun) {
+    console.log(`dry run: 検証通過（助言警告 ${findings.length}件）。公開していません。staging: ${staging}`);
   } else {
     // Compose against the audited staged strategy, never old .local facts.
     for (const script of ["reason-facts.mjs", "compose-reasons.mjs"]) {
@@ -75,6 +78,7 @@ try {
   process.exitCode = 1;
   throw error;
 } finally {
-  if (!process.exitCode) rmSync(staging, { recursive: true, force: true });
+  if (dryRun) console.log(`staging: ${staging}`);
+  else if (!process.exitCode) rmSync(staging, { recursive: true, force: true });
   else console.error(`診断用ステージ: ${staging}`);
 }
