@@ -1,13 +1,25 @@
 {
   "spot_id": "BB_vs_HJ_four_bet",
   "type": "four_bet",
+  "source_fingerprint": "b6f189cf92982935073cdb2af98d70c378c92fd0624eea0275fb8b0882dc3bdf",
   "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
-  "equity_note": "勝率はショウダウンまでの値で、オールイン以外では実際に回収できる勝率はこれより低くなります。",
+  "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
   "fact_labels": [
     {
       "key": "equity_vs_four_bet_pct",
       "label": "勝率（対4betレンジ）",
       "scope": "hand"
+    },
+    {
+      "key": "realized_equity_pct",
+      "label": "実現後の勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "call_ev_bb",
+      "label": "コールのEV",
+      "scope": "hand",
+      "unit": "bb"
     },
     {
       "key": "call_break_even_equity_pct",
@@ -33,7 +45,9 @@
     "four_bet_size_bb": 26,
     "call_break_even_equity_pct": 28.1,
     "shove_called_break_even_pct": 44.6,
-    "opener_fold_to_shove_pct": 52.1
+    "opener_fold_to_shove_pct": 52.1,
+    "cost_to_call_bb": 14,
+    "total_pot_after_call_bb": 52.5
   },
   "hands": {
     "22": {
@@ -41,7 +55,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "33": {
@@ -49,7 +66,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "44": {
@@ -57,7 +77,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "55": {
@@ -65,7 +88,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "66": {
@@ -73,87 +99,120 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "77": {
-      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。HJの4betレンジへの勝率は42.2%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。仮定のEQRを加味した実現後の勝率35.3%で、コールのEVは+3.63bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 42.2,
-        "equity_vs_shove_call_pct": 31.2,
-        "blocked_four_bet_pct": 0
+        "equity_vs_four_bet_pct": 41.6,
+        "equity_vs_shove_call_pct": 30.8,
+        "blocked_four_bet_pct": 0,
+        "eqr": 0.85,
+        "realized_equity_pct": 35.349375,
+        "call_ev_bb": 3.6305007812499994
       }
     },
     "88": {
-      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。HJの4betレンジへの勝率は42.5%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。仮定のEQRを加味した実現後の勝率35.4%で、コールのEVは+3.65bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 42.5,
-        "equity_vs_shove_call_pct": 31.3,
-        "blocked_four_bet_pct": 0
+        "equity_vs_four_bet_pct": 41.6,
+        "equity_vs_shove_call_pct": 31.2,
+        "blocked_four_bet_pct": 0,
+        "eqr": 0.85,
+        "realized_equity_pct": 35.388333333333335,
+        "call_ev_bb": 3.649931249999998
       }
     },
     "99": {
-      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。HJの4betレンジへの勝率は41.6%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。仮定のEQRを加味した実現後の勝率36.0%で、コールのEVは+3.95bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
       "facts": {
-        "equity_vs_four_bet_pct": 41.6,
-        "equity_vs_shove_call_pct": 30.9,
-        "blocked_four_bet_pct": 0.7
+        "equity_vs_four_bet_pct": 42.3,
+        "equity_vs_shove_call_pct": 30.2,
+        "blocked_four_bet_pct": 0.7,
+        "eqr": 0.85,
+        "realized_equity_pct": 35.986875000000005,
+        "call_ev_bb": 3.948453906250002
       }
     },
     "AA": {
-      "reason": "最上位クラスのポケットペアです。HJの4betレンジへの勝率は84.5%。オールインしてコールされたときに必要な勝率44.6%に対し、コールしてくる相手にも勝率82.1%を保てるので、オールインでバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 95%・コール 5%。",
+      "reason": "最上位クラスのポケットペアです。HJの4betレンジへの勝率は84.0%。オールインしてコールされたときに必要な勝率44.6%に対し、コールしてくる相手にも勝率81.8%を保てるので、オールインでバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 95%・コール 5%。",
       "facts": {
-        "equity_vs_four_bet_pct": 84.5,
-        "equity_vs_shove_call_pct": 82.1,
-        "blocked_four_bet_pct": 35.1
+        "equity_vs_four_bet_pct": 84,
+        "equity_vs_shove_call_pct": 81.8,
+        "blocked_four_bet_pct": 35.1,
+        "eqr": 0.85,
+        "realized_equity_pct": 71.43895833333332,
+        "call_ev_bb": 21.630180468749998
       }
     },
     "AKs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。HJの4betレンジには勝率54.3%と優位ですが、コールしてくる相手には37.7%と不利です。それでも相手はオールインに52.1%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 75%・コール 25%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。HJの4betレンジには勝率53.4%と優位ですが、コールしてくる相手には37.6%と不利です。それでも相手はオールインに52.1%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 75%・コール 25%。",
       "facts": {
-        "equity_vs_four_bet_pct": 54.3,
-        "equity_vs_shove_call_pct": 37.7,
-        "blocked_four_bet_pct": 31.6
+        "equity_vs_four_bet_pct": 53.4,
+        "equity_vs_shove_call_pct": 37.6,
+        "blocked_four_bet_pct": 31.6,
+        "eqr": 0.9,
+        "realized_equity_pct": 48.022499999999994,
+        "call_ev_bb": 9.951221874999998
       }
     },
     "AQs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。HJの4betレンジへの勝率は44.1%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 50%・コール 35%・オールイン 15%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。仮定のEQRを加味した実現後の勝率40.2%で、コールのEVは+6.06bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 50%・コール 35%・オールイン 15%。",
       "facts": {
-        "equity_vs_four_bet_pct": 44.1,
-        "equity_vs_shove_call_pct": 26.9,
-        "blocked_four_bet_pct": 25
+        "equity_vs_four_bet_pct": 44.7,
+        "equity_vs_shove_call_pct": 27.4,
+        "blocked_four_bet_pct": 25,
+        "eqr": 0.9,
+        "realized_equity_pct": 40.23,
+        "call_ev_bb": 6.064712499999999
       }
     },
     "AJs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。HJの4betレンジへの勝率は40.4%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 75%・コール 20%・オールイン 5%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。仮定のEQRを加味した実現後の勝率37.5%で、コールのEVは+4.70bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 75%・コール 20%・オールイン 5%。",
       "facts": {
-        "equity_vs_four_bet_pct": 40.4,
-        "equity_vs_shove_call_pct": 28.8,
-        "blocked_four_bet_pct": 23
+        "equity_vs_four_bet_pct": 41.7,
+        "equity_vs_shove_call_pct": 27.4,
+        "blocked_four_bet_pct": 23,
+        "eqr": 0.9,
+        "realized_equity_pct": 37.488749999999996,
+        "call_ev_bb": 4.697514062499998
       }
     },
     "ATs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。HJの4betレンジへの勝率は39.4%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。仮定のEQRを加味した実現後の勝率34.9%で、コールのEVは+3.40bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
       "facts": {
-        "equity_vs_four_bet_pct": 39.4,
-        "equity_vs_shove_call_pct": 29.2,
-        "blocked_four_bet_pct": 20.9
+        "equity_vs_four_bet_pct": 38.8,
+        "equity_vs_shove_call_pct": 28.5,
+        "blocked_four_bet_pct": 20.9,
+        "eqr": 0.9,
+        "realized_equity_pct": 34.886250000000004,
+        "call_ev_bb": 3.3995171875000025
       }
     },
     "A9s": {
-      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。HJの4betレンジへの勝率は37.5%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。仮定のEQRを加味した実現後の勝率31.5%で、コールのEVは+1.71bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 37.5,
-        "equity_vs_shove_call_pct": 27.3,
-        "blocked_four_bet_pct": 19
+        "equity_vs_four_bet_pct": 37.1,
+        "equity_vs_shove_call_pct": 27.4,
+        "blocked_four_bet_pct": 19,
+        "eqr": 0.85,
+        "realized_equity_pct": 31.506666666666668,
+        "call_ev_bb": 1.7139500000000005
       }
     },
     "A8s": {
-      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。HJの4betレンジへの勝率は37.4%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。仮定のEQRを加味した実現後の勝率31.8%で、コールのEVは+1.85bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_four_bet_pct": 37.4,
-        "equity_vs_shove_call_pct": 27.7,
-        "blocked_four_bet_pct": 18.6
+        "equity_vs_shove_call_pct": 27.6,
+        "blocked_four_bet_pct": 18.6,
+        "eqr": 0.85,
+        "realized_equity_pct": 31.782916666666665,
+        "call_ev_bb": 1.8517296875000007
       }
     },
     "A7s": {
@@ -161,7 +220,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A6s": {
@@ -169,103 +231,142 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A5s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。HJの4betレンジへの勝率は37.4%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 90%・オールイン 5%・コール 5%。",
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。仮定のEQRを加味した実現後の勝率31.1%で、コールのEVは+1.50bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 90%・オールイン 5%・コール 5%。",
       "facts": {
-        "equity_vs_four_bet_pct": 37.4,
-        "equity_vs_shove_call_pct": 29.1,
-        "blocked_four_bet_pct": 18.6
+        "equity_vs_four_bet_pct": 36.6,
+        "equity_vs_shove_call_pct": 29.6,
+        "blocked_four_bet_pct": 18.6,
+        "eqr": 0.85,
+        "realized_equity_pct": 31.085208333333338,
+        "call_ev_bb": 1.5037476562500007
       }
     },
     "A4s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。HJの4betレンジへの勝率は35.1%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。配分はフォールド 95%・オールイン 5%。",
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。仮定のEQRを加味した実現後の勝率30.0%で、コールのEVは+0.97bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。配分はフォールド 95%・オールイン 5%。",
       "facts": {
-        "equity_vs_four_bet_pct": 35.1,
-        "equity_vs_shove_call_pct": 28.5,
-        "blocked_four_bet_pct": 18.6
+        "equity_vs_four_bet_pct": 35.3,
+        "equity_vs_shove_call_pct": 28.7,
+        "blocked_four_bet_pct": 18.6,
+        "eqr": 0.85,
+        "realized_equity_pct": 30.008541666666666,
+        "call_ev_bb": 0.9667601562500003
       }
     },
     "A3s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。HJの4betレンジへの勝率は35.4%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。仮定のEQRを加味した実現後の勝率30.0%で、コールのEVは+0.95bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 35.4,
-        "equity_vs_shove_call_pct": 29.1,
-        "blocked_four_bet_pct": 18.6
+        "equity_vs_four_bet_pct": 35.3,
+        "equity_vs_shove_call_pct": 28.4,
+        "blocked_four_bet_pct": 18.6,
+        "eqr": 0.85,
+        "realized_equity_pct": 29.980208333333337,
+        "call_ev_bb": 0.952628906250002
       }
     },
     "A2s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。HJの4betレンジへの勝率は35.4%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。仮定のEQRを加味した実現後の勝率29.3%で、コールのEVは+0.62bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 35.4,
-        "equity_vs_shove_call_pct": 27.2,
-        "blocked_four_bet_pct": 18.6
+        "equity_vs_four_bet_pct": 34.5,
+        "equity_vs_shove_call_pct": 28.1,
+        "blocked_four_bet_pct": 18.6,
+        "eqr": 0.85,
+        "realized_equity_pct": 29.31083333333333,
+        "call_ev_bb": 0.6187781249999986
       }
     },
     "AKo": {
-      "reason": "Aのブロッカーも持つ上位のオフスートAです。HJの4betレンジには勝率52.1%と優位ですが、コールしてくる相手には33.6%と不利です。それでも相手はオールインに52.1%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 75%・コール 15%・フォールド 10%。",
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。HJの4betレンジには勝率51.5%と優位ですが、コールしてくる相手には33.7%と不利です。それでも相手はオールインに52.1%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 75%・コール 15%・フォールド 10%。",
       "facts": {
-        "equity_vs_four_bet_pct": 52.1,
-        "equity_vs_shove_call_pct": 33.6,
-        "blocked_four_bet_pct": 31.7
+        "equity_vs_four_bet_pct": 51.5,
+        "equity_vs_shove_call_pct": 33.7,
+        "blocked_four_bet_pct": 31.7,
+        "eqr": 0.8,
+        "realized_equity_pct": 41.216666666666676,
+        "call_ev_bb": 6.556812500000003
       }
     },
     "KK": {
-      "reason": "最上位クラスのポケットペアです。HJの4betレンジへの勝率は64.4%。オールインしてコールされたときに必要な勝率44.6%に対し、コールしてくる相手にも勝率48.4%を保てるので、オールインでバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 90%・コール 10%。",
+      "reason": "最上位クラスのポケットペアです。HJの4betレンジへの勝率は64.5%。オールインしてコールされたときに必要な勝率44.6%に対し、コールしてくる相手にも勝率48.0%を保てるので、オールインでバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 90%・コール 10%。",
       "facts": {
-        "equity_vs_four_bet_pct": 64.4,
-        "equity_vs_shove_call_pct": 48.4,
-        "blocked_four_bet_pct": 26.9
+        "equity_vs_four_bet_pct": 64.5,
+        "equity_vs_shove_call_pct": 48,
+        "blocked_four_bet_pct": 26.9,
+        "eqr": 0.85,
+        "realized_equity_pct": 54.856875,
+        "call_ev_bb": 13.359866406250003
       }
     },
     "KQs": {
-      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。HJの4betレンジへの勝率は35.5%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 75%・コール 20%・オールイン 5%。",
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率31.7%で、コールのEVは+1.82bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 75%・コール 20%・オールイン 5%。",
       "facts": {
-        "equity_vs_four_bet_pct": 35.5,
-        "equity_vs_shove_call_pct": 22.1,
-        "blocked_four_bet_pct": 21.2
+        "equity_vs_four_bet_pct": 35.2,
+        "equity_vs_shove_call_pct": 22,
+        "blocked_four_bet_pct": 21.2,
+        "eqr": 0.9,
+        "realized_equity_pct": 31.717499999999998,
+        "call_ev_bb": 1.8191031249999998
       }
     },
     "KJs": {
-      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。HJの4betレンジへの勝率は33.9%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率30.1%で、コールのEVは+1.00bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 33.9,
-        "equity_vs_shove_call_pct": 23.3,
-        "blocked_four_bet_pct": 19
+        "equity_vs_four_bet_pct": 33.4,
+        "equity_vs_shove_call_pct": 22.9,
+        "blocked_four_bet_pct": 19,
+        "eqr": 0.9,
+        "realized_equity_pct": 30.075000000000003,
+        "call_ev_bb": 0.9999062500000004
       }
     },
     "KTs": {
-      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。HJの4betレンジへの勝率は31.3%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率28.3%で、コールのEVは+0.11bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 31.3,
-        "equity_vs_shove_call_pct": 22.8,
-        "blocked_four_bet_pct": 17.1
+        "equity_vs_four_bet_pct": 31.4,
+        "equity_vs_shove_call_pct": 24.1,
+        "blocked_four_bet_pct": 17.1,
+        "eqr": 0.9,
+        "realized_equity_pct": 28.29375,
+        "call_ev_bb": 0.11150781250000108
       }
     },
     "K9s": {
-      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。HJの4betレンジへの勝率は31.1%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率23.9%で、コールのEVは−2.10bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 31.1,
-        "equity_vs_shove_call_pct": 22.7,
-        "blocked_four_bet_pct": 14.9
+        "equity_vs_four_bet_pct": 31.8,
+        "equity_vs_shove_call_pct": 22.1,
+        "blocked_four_bet_pct": 14.9,
+        "eqr": 0.75,
+        "realized_equity_pct": 23.862499999999997,
+        "call_ev_bb": -2.0985781250000013
       }
     },
     "K8s": {
-      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。HJの4betレンジへの勝率は30.8%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率22.9%で、コールのEVは−2.56bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 30.8,
-        "equity_vs_shove_call_pct": 22.2,
-        "blocked_four_bet_pct": 14.5
+        "equity_vs_four_bet_pct": 30.6,
+        "equity_vs_shove_call_pct": 21.7,
+        "blocked_four_bet_pct": 14.5,
+        "eqr": 0.75,
+        "realized_equity_pct": 22.934375000000003,
+        "call_ev_bb": -2.56148046875
       }
     },
     "K7s": {
-      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。HJの4betレンジへの勝率は30.9%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率22.9%で、コールのEVは−2.57bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 30.9,
-        "equity_vs_shove_call_pct": 22.1,
-        "blocked_four_bet_pct": 14.5
+        "equity_vs_four_bet_pct": 30.5,
+        "equity_vs_shove_call_pct": 22,
+        "blocked_four_bet_pct": 14.5,
+        "eqr": 0.75,
+        "realized_equity_pct": 22.909374999999997,
+        "call_ev_bb": -2.57394921875
       }
     },
     "K6s": {
@@ -273,7 +374,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K5s": {
@@ -281,7 +385,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K4s": {
@@ -289,7 +396,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K3s": {
@@ -297,7 +407,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K2s": {
@@ -305,63 +418,87 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "AQo": {
-      "reason": "Aのブロッカーも持つ上位のオフスートAです。HJの4betレンジへの勝率は41.0%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 90%・オールイン 5%・コール 5%。",
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。仮定のEQRを加味した実現後の勝率33.0%で、コールのEVは+2.48bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 90%・オールイン 5%・コール 5%。",
       "facts": {
-        "equity_vs_four_bet_pct": 41,
-        "equity_vs_shove_call_pct": 23.4,
-        "blocked_four_bet_pct": 25.2
+        "equity_vs_four_bet_pct": 41.3,
+        "equity_vs_shove_call_pct": 23.6,
+        "blocked_four_bet_pct": 25.2,
+        "eqr": 0.8,
+        "realized_equity_pct": 33.040000000000006,
+        "call_ev_bb": 2.4787
       }
     },
     "KQo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。HJの4betレンジへの勝率は31.6%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率25.2%で、コールのEVは−1.41bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_four_bet_pct": 31.6,
-        "equity_vs_shove_call_pct": 17.6,
-        "blocked_four_bet_pct": 21.4
+        "equity_vs_shove_call_pct": 18.1,
+        "blocked_four_bet_pct": 21.4,
+        "eqr": 0.8,
+        "realized_equity_pct": 25.246666666666666,
+        "call_ev_bb": -1.4082249999999998
       }
     },
     "QQ": {
-      "reason": "最上位クラスのポケットペアです。HJの4betレンジには勝率52.0%と優位ですが、コールしてくる相手には33.1%と不利です。それでも相手はオールインに52.1%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 55%・コール 30%・フォールド 15%。",
+      "reason": "最上位クラスのポケットペアです。HJの4betレンジには勝率52.2%と優位ですが、コールしてくる相手には32.9%と不利です。それでも相手はオールインに52.1%降りるので、降ろせる分を合わせてオールインが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分はオールイン 55%・コール 30%・フォールド 15%。",
       "facts": {
-        "equity_vs_four_bet_pct": 52,
-        "equity_vs_shove_call_pct": 33.1,
-        "blocked_four_bet_pct": 13.1
+        "equity_vs_four_bet_pct": 52.2,
+        "equity_vs_shove_call_pct": 32.9,
+        "blocked_four_bet_pct": 13.1,
+        "eqr": 0.85,
+        "realized_equity_pct": 44.34520833333333,
+        "call_ev_bb": 8.117172656249998
       }
     },
     "QJs": {
-      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。HJの4betレンジへの勝率は32.7%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率29.2%で、コールのEVは+0.58bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
       "facts": {
-        "equity_vs_four_bet_pct": 32.7,
-        "equity_vs_shove_call_pct": 25.2,
-        "blocked_four_bet_pct": 11.6
+        "equity_vs_four_bet_pct": 32.5,
+        "equity_vs_shove_call_pct": 25.4,
+        "blocked_four_bet_pct": 11.6,
+        "eqr": 0.9,
+        "realized_equity_pct": 29.2275,
+        "call_ev_bb": 0.5772156250000009
       }
     },
     "QTs": {
-      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。HJの4betレンジへの勝率は31.9%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率28.8%で、コールのEVは+0.36bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 31.9,
-        "equity_vs_shove_call_pct": 26,
-        "blocked_four_bet_pct": 9.6
+        "equity_vs_four_bet_pct": 32,
+        "equity_vs_shove_call_pct": 25.7,
+        "blocked_four_bet_pct": 9.6,
+        "eqr": 0.9,
+        "realized_equity_pct": 28.785000000000004,
+        "call_ev_bb": 0.3565187500000029
       }
     },
     "Q9s": {
-      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。HJの4betレンジへの勝率は30.8%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率23.1%で、コールのEVは−2.49bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_four_bet_pct": 30.8,
-        "equity_vs_shove_call_pct": 24.4,
-        "blocked_four_bet_pct": 7.5
+        "equity_vs_shove_call_pct": 24.9,
+        "blocked_four_bet_pct": 7.5,
+        "eqr": 0.75,
+        "realized_equity_pct": 23.0875,
+        "call_ev_bb": -2.4851093750000004
       }
     },
     "Q8s": {
-      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。HJの4betレンジへの勝率は30.3%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率22.2%で、コールのEVは−2.93bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 30.3,
-        "equity_vs_shove_call_pct": 24.2,
-        "blocked_four_bet_pct": 7.1
+        "equity_vs_four_bet_pct": 29.6,
+        "equity_vs_shove_call_pct": 24,
+        "blocked_four_bet_pct": 7.1,
+        "eqr": 0.75,
+        "realized_equity_pct": 22.199999999999996,
+        "call_ev_bb": -2.9277500000000014
       }
     },
     "Q7s": {
@@ -369,7 +506,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q6s": {
@@ -377,7 +517,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q5s": {
@@ -385,7 +528,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q4s": {
@@ -393,7 +539,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q3s": {
@@ -401,7 +550,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q2s": {
@@ -409,63 +561,87 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "AJo": {
-      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。HJの4betレンジへの勝率は37.9%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。仮定のEQRを加味した実現後の勝率30.8%で、コールのEVは+1.37bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 37.9,
-        "equity_vs_shove_call_pct": 24.6,
-        "blocked_four_bet_pct": 23.1
+        "equity_vs_four_bet_pct": 38.5,
+        "equity_vs_shove_call_pct": 23.7,
+        "blocked_four_bet_pct": 23.1,
+        "eqr": 0.8,
+        "realized_equity_pct": 30.826666666666668,
+        "call_ev_bb": 1.3748000000000005
       }
     },
     "KJo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。HJの4betレンジへの勝率は30.0%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率24.3%で、コールのEVは−1.89bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 30,
-        "equity_vs_shove_call_pct": 18.9,
-        "blocked_four_bet_pct": 19
+        "equity_vs_four_bet_pct": 30.4,
+        "equity_vs_shove_call_pct": 18.4,
+        "blocked_four_bet_pct": 19,
+        "eqr": 0.8,
+        "realized_equity_pct": 24.28,
+        "call_ev_bb": -1.8903499999999998
       }
     },
     "QJo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。HJの4betレンジへの勝率は29.1%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率23.4%で、コールのEVは−2.34bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 29.1,
+        "equity_vs_four_bet_pct": 29.2,
         "equity_vs_shove_call_pct": 21,
-        "blocked_four_bet_pct": 11.5
+        "blocked_four_bet_pct": 11.5,
+        "eqr": 0.8,
+        "realized_equity_pct": 23.383333333333333,
+        "call_ev_bb": -2.3375625000000007
       }
     },
     "JJ": {
-      "reason": "強いポケットペアです。HJの4betレンジへの勝率は46.6%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 45%・コール 35%・オールイン 20%。",
+      "reason": "強いポケットペアです。仮定のEQRを加味した実現後の勝率39.3%で、コールのEVは+5.60bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 45%・コール 35%・オールイン 20%。",
       "facts": {
-        "equity_vs_four_bet_pct": 46.6,
-        "equity_vs_shove_call_pct": 30.8,
-        "blocked_four_bet_pct": 8.8
+        "equity_vs_four_bet_pct": 46.2,
+        "equity_vs_shove_call_pct": 30.7,
+        "blocked_four_bet_pct": 8.8,
+        "eqr": 0.85,
+        "realized_equity_pct": 39.29125,
+        "call_ev_bb": 5.5965109375
       }
     },
     "JTs": {
-      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。HJの4betレンジへの勝率は32.4%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率29.5%で、コールのEVは+0.73bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。一部はコールで継続します。配分はフォールド 90%・コール 10%。",
       "facts": {
-        "equity_vs_four_bet_pct": 32.4,
+        "equity_vs_four_bet_pct": 32.8,
         "equity_vs_shove_call_pct": 26.6,
-        "blocked_four_bet_pct": 7.1
+        "blocked_four_bet_pct": 7.1,
+        "eqr": 0.9,
+        "realized_equity_pct": 29.535,
+        "call_ev_bb": 0.7305812500000002
       }
     },
     "J9s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJの4betレンジへの勝率は31.7%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率28.3%で、コールのEVは+0.09bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 31.7,
-        "equity_vs_shove_call_pct": 25.9,
-        "blocked_four_bet_pct": 5.1
+        "equity_vs_four_bet_pct": 31.4,
+        "equity_vs_shove_call_pct": 26.4,
+        "blocked_four_bet_pct": 5.1,
+        "eqr": 0.9,
+        "realized_equity_pct": 28.2525,
+        "call_ev_bb": 0.09093437500000157
       }
     },
     "J8s": {
-      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。HJの4betレンジへの勝率は31.7%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率23.0%で、コールのEVは−2.52bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 31.7,
-        "equity_vs_shove_call_pct": 24.8,
-        "blocked_four_bet_pct": 4.7
+        "equity_vs_four_bet_pct": 30.7,
+        "equity_vs_shove_call_pct": 25.1,
+        "blocked_four_bet_pct": 4.7,
+        "eqr": 0.75,
+        "realized_equity_pct": 23.012500000000003,
+        "call_ev_bb": -2.5225156249999987
       }
     },
     "J7s": {
@@ -473,7 +649,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J6s": {
@@ -481,7 +660,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J5s": {
@@ -489,7 +671,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J4s": {
@@ -497,7 +682,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J3s": {
@@ -505,7 +693,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J2s": {
@@ -513,63 +704,87 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "ATo": {
-      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。HJの4betレンジへの勝率は35.6%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。仮定のEQRを加味した実現後の勝率28.2%で、コールのEVは+0.07bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 35.6,
-        "equity_vs_shove_call_pct": 24.8,
-        "blocked_four_bet_pct": 20.9
+        "equity_vs_four_bet_pct": 35.3,
+        "equity_vs_shove_call_pct": 24.6,
+        "blocked_four_bet_pct": 20.9,
+        "eqr": 0.8,
+        "realized_equity_pct": 28.20333333333333,
+        "call_ev_bb": 0.06641249999999843
       }
     },
     "KTo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。HJの4betレンジへの勝率は28.3%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率23.4%で、コールのEVは−2.35bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 28.3,
-        "equity_vs_shove_call_pct": 18.9,
-        "blocked_four_bet_pct": 17
+        "equity_vs_four_bet_pct": 29.2,
+        "equity_vs_shove_call_pct": 19.1,
+        "blocked_four_bet_pct": 17,
+        "eqr": 0.8,
+        "realized_equity_pct": 23.36,
+        "call_ev_bb": -2.3491999999999997
       }
     },
     "QTo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。HJの4betレンジへの勝率は28.7%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率22.4%で、コールのEVは−2.82bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 28.7,
-        "equity_vs_shove_call_pct": 21.5,
-        "blocked_four_bet_pct": 9.5
+        "equity_vs_four_bet_pct": 28,
+        "equity_vs_shove_call_pct": 22.1,
+        "blocked_four_bet_pct": 9.5,
+        "eqr": 0.8,
+        "realized_equity_pct": 22.410000000000004,
+        "call_ev_bb": -2.823012499999999
       }
     },
     "JTo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。HJの4betレンジへの勝率は28.8%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率23.8%で、コールのEVは−2.15bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 28.8,
-        "equity_vs_shove_call_pct": 23.3,
-        "blocked_four_bet_pct": 7.2
+        "equity_vs_four_bet_pct": 29.7,
+        "equity_vs_shove_call_pct": 22.3,
+        "blocked_four_bet_pct": 7.2,
+        "eqr": 0.8,
+        "realized_equity_pct": 23.756666666666668,
+        "call_ev_bb": -2.1513624999999994
       }
     },
     "TT": {
-      "reason": "強いポケットペアです。HJの4betレンジへの勝率は44.3%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 70%・コール 25%・オールイン 5%。",
+      "reason": "強いポケットペアです。仮定のEQRを加味した実現後の勝率37.1%で、コールのEVは+4.51bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドが中心です。ただし相手はオールインに52.1%降りるので、一部はブラフのオールインに回します。一部はコールで継続します。配分はフォールド 70%・コール 25%・オールイン 5%。",
       "facts": {
-        "equity_vs_four_bet_pct": 44.3,
-        "equity_vs_shove_call_pct": 31.8,
-        "blocked_four_bet_pct": 4.7
+        "equity_vs_four_bet_pct": 43.7,
+        "equity_vs_shove_call_pct": 31.1,
+        "blocked_four_bet_pct": 4.7,
+        "eqr": 0.85,
+        "realized_equity_pct": 37.113125,
+        "call_ev_bb": 4.5101710937499995
       }
     },
     "T9s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。HJの4betレンジへの勝率は33.2%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率28.9%で、コールのEVは+0.41bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 33.2,
-        "equity_vs_shove_call_pct": 27.4,
-        "blocked_four_bet_pct": 3
+        "equity_vs_four_bet_pct": 32.1,
+        "equity_vs_shove_call_pct": 26.7,
+        "blocked_four_bet_pct": 3,
+        "eqr": 0.9,
+        "realized_equity_pct": 28.90125,
+        "call_ev_bb": 0.4144984375000007
       }
     },
     "T8s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJの4betレンジへの勝率は31.8%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率28.4%で、コールのEVは+0.16bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 31.8,
-        "equity_vs_shove_call_pct": 26.7,
-        "blocked_four_bet_pct": 2.5
+        "equity_vs_four_bet_pct": 31.6,
+        "equity_vs_shove_call_pct": 26.5,
+        "blocked_four_bet_pct": 2.5,
+        "eqr": 0.9,
+        "realized_equity_pct": 28.39875,
+        "call_ev_bb": 0.1638765625000005
       }
     },
     "T7s": {
@@ -577,7 +792,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T6s": {
@@ -585,7 +803,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T5s": {
@@ -593,7 +814,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T4s": {
@@ -601,7 +825,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T3s": {
@@ -609,7 +836,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T2s": {
@@ -617,7 +847,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A9o": {
@@ -625,7 +858,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K9o": {
@@ -633,7 +869,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q9o": {
@@ -641,7 +880,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J9o": {
@@ -649,7 +891,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T9o": {
@@ -657,23 +902,32 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "98s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。HJの4betレンジへの勝率は32.9%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率29.5%で、コールのEVは+0.73bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 32.9,
-        "equity_vs_shove_call_pct": 27.2,
-        "blocked_four_bet_pct": 0.4
+        "equity_vs_four_bet_pct": 32.8,
+        "equity_vs_shove_call_pct": 27.1,
+        "blocked_four_bet_pct": 0.4,
+        "eqr": 0.9,
+        "realized_equity_pct": 29.5425,
+        "call_ev_bb": 0.7343218749999991
       }
     },
     "97s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJの4betレンジへの勝率は32.3%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率29.6%で、コールのEVは+0.74bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 32.3,
-        "equity_vs_shove_call_pct": 26.6,
-        "blocked_four_bet_pct": 0.4
+        "equity_vs_four_bet_pct": 32.8,
+        "equity_vs_shove_call_pct": 27.1,
+        "blocked_four_bet_pct": 0.4,
+        "eqr": 0.9,
+        "realized_equity_pct": 29.557500000000005,
+        "call_ev_bb": 0.7418031250000023
       }
     },
     "96s": {
@@ -681,7 +935,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "95s": {
@@ -689,7 +946,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "94s": {
@@ -697,7 +957,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "93s": {
@@ -705,7 +968,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "92s": {
@@ -713,7 +979,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A8o": {
@@ -721,7 +990,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K8o": {
@@ -729,7 +1001,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q8o": {
@@ -737,7 +1012,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J8o": {
@@ -745,7 +1023,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T8o": {
@@ -753,7 +1034,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "98o": {
@@ -761,23 +1045,32 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "87s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。HJの4betレンジへの勝率は33.6%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率30.7%で、コールのEVは+1.32bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 33.6,
-        "equity_vs_shove_call_pct": 28.2,
-        "blocked_four_bet_pct": 0
+        "equity_vs_four_bet_pct": 34.1,
+        "equity_vs_shove_call_pct": 27.9,
+        "blocked_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 30.72375,
+        "call_ev_bb": 1.3234703124999996
       }
     },
     "86s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJの4betレンジへの勝率は32.5%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率29.6%で、コールのEVは+0.77bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 32.5,
-        "equity_vs_shove_call_pct": 27.8,
-        "blocked_four_bet_pct": 0
+        "equity_vs_four_bet_pct": 32.9,
+        "equity_vs_shove_call_pct": 27.7,
+        "blocked_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 29.617500000000003,
+        "call_ev_bb": 0.771728125000001
       }
     },
     "85s": {
@@ -785,7 +1078,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "84s": {
@@ -793,7 +1089,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "83s": {
@@ -801,7 +1100,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "82s": {
@@ -809,7 +1111,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A7o": {
@@ -817,7 +1122,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K7o": {
@@ -825,7 +1133,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q7o": {
@@ -833,7 +1144,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J7o": {
@@ -841,7 +1155,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T7o": {
@@ -849,7 +1166,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "97o": {
@@ -857,7 +1177,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "87o": {
@@ -865,23 +1188,32 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "76s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。HJの4betレンジへの勝率は33.2%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率29.5%で、コールのEVは+0.71bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 33.2,
-        "equity_vs_shove_call_pct": 28.7,
-        "blocked_four_bet_pct": 0
+        "equity_vs_four_bet_pct": 32.8,
+        "equity_vs_shove_call_pct": 28.2,
+        "blocked_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 29.486250000000002,
+        "call_ev_bb": 0.7062671875000017
       }
     },
     "75s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJの4betレンジへの勝率は31.9%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率29.1%で、コールのEVは+0.52bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 31.9,
-        "equity_vs_shove_call_pct": 27,
-        "blocked_four_bet_pct": 0.9
+        "equity_vs_four_bet_pct": 32.3,
+        "equity_vs_shove_call_pct": 27.1,
+        "blocked_four_bet_pct": 0.9,
+        "eqr": 0.9,
+        "realized_equity_pct": 29.1075,
+        "call_ev_bb": 0.5173656250000018
       }
     },
     "74s": {
@@ -889,7 +1221,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "73s": {
@@ -897,7 +1232,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "72s": {
@@ -905,7 +1243,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A6o": {
@@ -913,7 +1254,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K6o": {
@@ -921,7 +1265,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q6o": {
@@ -929,7 +1276,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J6o": {
@@ -937,7 +1287,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T6o": {
@@ -945,7 +1298,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "96o": {
@@ -953,7 +1309,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "86o": {
@@ -961,7 +1320,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "76o": {
@@ -969,7 +1331,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "65s": {
@@ -977,15 +1342,21 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "64s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJの4betレンジへの勝率は32.7%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率29.3%で、コールのEVは+0.64bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 32.7,
-        "equity_vs_shove_call_pct": 27.1,
-        "blocked_four_bet_pct": 0.6
+        "equity_vs_four_bet_pct": 32.6,
+        "equity_vs_shove_call_pct": 26.7,
+        "blocked_four_bet_pct": 0.6,
+        "eqr": 0.9,
+        "realized_equity_pct": 29.34375,
+        "call_ev_bb": 0.6351953125000005
       }
     },
     "63s": {
@@ -993,7 +1364,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "62s": {
@@ -1001,7 +1375,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A5o": {
@@ -1009,7 +1386,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K5o": {
@@ -1017,7 +1397,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q5o": {
@@ -1025,7 +1408,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J5o": {
@@ -1033,7 +1419,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T5o": {
@@ -1041,7 +1430,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "95o": {
@@ -1049,7 +1441,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "85o": {
@@ -1057,7 +1452,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "75o": {
@@ -1065,7 +1463,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "65o": {
@@ -1073,7 +1474,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "54s": {
@@ -1081,15 +1485,21 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "53s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJの4betレンジへの勝率は32.1%で、数字上は必要勝率28.1%を上回ります。しかしBBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります。実際に回収できる勝率はそれより低いと見て、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率29.2%で、コールのEVは+0.55bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_four_bet_pct": 32.1,
-        "equity_vs_shove_call_pct": 26.7,
-        "blocked_four_bet_pct": 1.2
+        "equity_vs_four_bet_pct": 32.4,
+        "equity_vs_shove_call_pct": 26.1,
+        "blocked_four_bet_pct": 1.2,
+        "eqr": 0.9,
+        "realized_equity_pct": 29.1825,
+        "call_ev_bb": 0.5547718750000001
       }
     },
     "52s": {
@@ -1097,7 +1507,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A4o": {
@@ -1105,7 +1518,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K4o": {
@@ -1113,7 +1529,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q4o": {
@@ -1121,7 +1540,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J4o": {
@@ -1129,7 +1551,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T4o": {
@@ -1137,7 +1562,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "94o": {
@@ -1145,7 +1573,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "84o": {
@@ -1153,7 +1584,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "74o": {
@@ -1161,7 +1595,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "64o": {
@@ -1169,7 +1606,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "54o": {
@@ -1177,7 +1617,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "43s": {
@@ -1185,7 +1628,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "42s": {
@@ -1193,7 +1639,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A3o": {
@@ -1201,7 +1650,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K3o": {
@@ -1209,7 +1661,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q3o": {
@@ -1217,7 +1672,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J3o": {
@@ -1225,7 +1683,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T3o": {
@@ -1233,7 +1694,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "93o": {
@@ -1241,7 +1705,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "83o": {
@@ -1249,7 +1716,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "73o": {
@@ -1257,7 +1727,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "63o": {
@@ -1265,7 +1738,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "53o": {
@@ -1273,7 +1749,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "43o": {
@@ -1281,7 +1760,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "32s": {
@@ -1289,7 +1771,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A2o": {
@@ -1297,7 +1782,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K2o": {
@@ -1305,7 +1793,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q2o": {
@@ -1313,7 +1804,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "J2o": {
@@ -1321,7 +1815,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T2o": {
@@ -1329,7 +1826,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "92o": {
@@ -1337,7 +1837,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "82o": {
@@ -1345,7 +1848,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "72o": {
@@ -1353,7 +1859,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "62o": {
@@ -1361,7 +1870,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "52o": {
@@ -1369,7 +1881,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "42o": {
@@ -1377,7 +1892,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "32o": {
@@ -1385,7 +1903,10 @@
       "facts": {
         "equity_vs_four_bet_pct": null,
         "equity_vs_shove_call_pct": null,
-        "blocked_four_bet_pct": null
+        "blocked_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     }
   }

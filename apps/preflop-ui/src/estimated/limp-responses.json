@@ -3,12 +3,12 @@
     "schema_version": "1.0",
     "strategy_type": "ai_estimate_not_gto",
     "game": "6max Cash / No-Limit Texas Holdem",
-    "effective_stack_bb": 100.0,
+    "effective_stack_bb": 100,
     "open_size_bb": 2.5,
-    "ante_bb": 0.0,
+    "ante_bb": 0,
     "rake": {
       "rate": 0.05,
-      "cap_bb": 3.0,
+      "cap_bb": 3,
       "no_flop_no_drop": true,
       "calibrated": true
     },
@@ -28,7 +28,8 @@
     "frequency_semantics": "BBはcheck+raise=100。SBはリンプ済み条件下でfold+call+raise=100。",
     "sizing_semantics": "SB complete=1BB、BB iso raise-to=3.5BB、SB limp-reraise-to=10.5BB。",
     "unreachable_hands": "SBのSB_open.limp=0%ハンドはfold=100の形式的プレースホルダーであり、推奨ではない。",
-    "warning": "AI推定。ソルバー・EV・均衡検証ではなく、指定レーキ環境を仮定した独立推定。"
+    "warning": "AI推定。ソルバー・EV・均衡検証ではなく、指定レーキ環境を仮定した独立推定。",
+    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
   },
   "spot_count": 2,
   "hand_classes_per_spot": 169,
@@ -39,8 +40,8 @@
       "hero": "BB",
       "opponent": "SB",
       "source_opening_id": "SB_open",
-      "open_size_bb": 1.0,
-      "effective_stack_bb": 100.0,
+      "open_size_bb": 1,
+      "effective_stack_bb": 100,
       "raise_size_bb": 3.5,
       "hands": [
         {
@@ -1065,8 +1066,8 @@
       "opponent": "BB",
       "source_opening_id": "SB_open",
       "source_limp_response_id": "BB_vs_SB_limp",
-      "open_size_bb": 1.0,
-      "effective_stack_bb": 100.0,
+      "open_size_bb": 1,
+      "effective_stack_bb": 100,
       "iso_size_bb": 3.5,
       "raise_to_bb": 10.5,
       "hands": [
@@ -1121,43 +1122,43 @@
         },
         {
           "hand": "A7s",
-          "fold": 15,
-          "call": 75,
+          "fold": 90,
+          "call": 0,
           "raise": 10,
           "raise_size_bb": 10.5
         },
         {
           "hand": "A6s",
-          "fold": 15,
-          "call": 75,
+          "fold": 90,
+          "call": 0,
           "raise": 10,
           "raise_size_bb": 10.5
         },
         {
           "hand": "A5s",
-          "fold": 0,
-          "call": 75,
+          "fold": 75,
+          "call": 0,
           "raise": 25,
           "raise_size_bb": 10.5
         },
         {
           "hand": "A4s",
-          "fold": 0,
-          "call": 75,
+          "fold": 75,
+          "call": 0,
           "raise": 25,
           "raise_size_bb": 10.5
         },
         {
           "hand": "A3s",
-          "fold": 20,
-          "call": 75,
+          "fold": 95,
+          "call": 0,
           "raise": 5,
           "raise_size_bb": 10.5
         },
         {
           "hand": "A2s",
-          "fold": 20,
-          "call": 75,
+          "fold": 95,
+          "call": 0,
           "raise": 5,
           "raise_size_bb": 10.5
         },
@@ -1191,64 +1192,64 @@
         },
         {
           "hand": "KTs",
-          "fold": 15,
-          "call": 75,
+          "fold": 40,
+          "call": 50,
           "raise": 10,
           "raise_size_bb": 10.5
         },
         {
           "hand": "K9s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "K8s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "K7s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "K6s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "K5s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "K4s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "K3s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "K2s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1261,8 +1262,8 @@
         },
         {
           "hand": "KQo",
-          "fold": 15,
-          "call": 75,
+          "fold": 90,
+          "call": 0,
           "raise": 10,
           "raise_size_bb": 10.5
         },
@@ -1275,71 +1276,71 @@
         },
         {
           "hand": "QJs",
-          "fold": 15,
-          "call": 75,
+          "fold": 40,
+          "call": 50,
           "raise": 10,
           "raise_size_bb": 10.5
         },
         {
           "hand": "QTs",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "Q9s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "Q8s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "Q7s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "Q6s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "Q5s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "Q4s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "Q3s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "Q2s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1352,15 +1353,15 @@
         },
         {
           "hand": "KJo",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "QJo",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1373,64 +1374,64 @@
         },
         {
           "hand": "JTs",
-          "fold": 15,
-          "call": 75,
+          "fold": 90,
+          "call": 0,
           "raise": 10,
           "raise_size_bb": 10.5
         },
         {
           "hand": "J9s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "J8s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "J7s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "J6s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "J5s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "J4s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "J3s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "J2s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1443,22 +1444,22 @@
         },
         {
           "hand": "KTo",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "QTo",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "JTo",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1471,71 +1472,71 @@
         },
         {
           "hand": "T9s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "T8s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "T7s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "T6s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "T5s",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "T4s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "T3s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "T2s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "A9o",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "K9o",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1569,15 +1570,15 @@
         },
         {
           "hand": "98s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "97s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1618,15 +1619,15 @@
         },
         {
           "hand": "A8o",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "K8o",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1667,15 +1668,15 @@
         },
         {
           "hand": "87s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "86s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1709,8 +1710,8 @@
         },
         {
           "hand": "A7o",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1765,15 +1766,15 @@
         },
         {
           "hand": "76s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "75s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1800,8 +1801,8 @@
         },
         {
           "hand": "A6o",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1863,15 +1864,15 @@
         },
         {
           "hand": "65s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "64s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1891,8 +1892,8 @@
         },
         {
           "hand": "A5o",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1961,15 +1962,15 @@
         },
         {
           "hand": "54s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "53s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1982,8 +1983,8 @@
         },
         {
           "hand": "A4o",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -2052,29 +2053,29 @@
         },
         {
           "hand": "44",
-          "fold": 25,
-          "call": 75,
+          "fold": 50,
+          "call": 50,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "43s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "42s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "A3o",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -2150,22 +2151,22 @@
         },
         {
           "hand": "33",
-          "fold": 25,
-          "call": 75,
+          "fold": 50,
+          "call": 50,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "32s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
         {
           "hand": "A2o",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -2248,8 +2249,8 @@
         },
         {
           "hand": "22",
-          "fold": 25,
-          "call": 75,
+          "fold": 100,
+          "call": 0,
           "raise": 0,
           "raise_size_bb": null
         }

@@ -1,5 +1,6 @@
 """Author BB/SB responses to the new SB limp branch; staging-only, not a solver."""
 import json
+from call_policy import apply_call_policy
 import os
 import sys
 from pathlib import Path
@@ -139,6 +140,10 @@ def main():
         ],
     }
     (STAGING / 'limp-responses.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
+    apply_call_policy('limp-responses')
+    # Log the final gated mix, not the pre-EV authoring proposal.
+    final = json.loads((STAGING / 'limp-responses.json').read_text())
+    sb_rows = next(s['hands'] for s in final['spots'] if s['id'] == 'SB_vs_BB_iso')
     bb_raise = sum(combo_count(row['hand']) * row['raise'] for row in bb_rows) / 1326
     limp_combos = sum(combo_count(hand) * sb_limp[hand] / 100 for hand in HANDS)
     sb_actions = {action: sum(combo_count(row['hand']) * sb_limp[row['hand']] / 100 * row[action] for row in sb_rows) / limp_combos

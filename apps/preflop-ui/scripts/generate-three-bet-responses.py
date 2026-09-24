@@ -1,5 +1,6 @@
 """Persist authored estimates for the opener facing a 3bet. No solving."""
 import json
+from call_policy import apply_call_policy
 import os
 import sys
 from pathlib import Path
@@ -316,6 +317,7 @@ def main():
                                 'open_size_bb': open_size_bb(hero), 'three_bet_size_bb': size, 'four_bet_size_bb': four_size,
                                 'effective_stack_bb': 100, 'hero_position_vs_three_bettor': 'IP' if ip else 'OOP', 'hands': rows})
     (ROOT/'three-bet-responses.json').write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n')
+    apply_call_policy('three-bet-responses')
     print(f"Generated {len(result['spots'])} spots / {sum(len(s['hands']) for s in result['spots'])} hands")
 
 

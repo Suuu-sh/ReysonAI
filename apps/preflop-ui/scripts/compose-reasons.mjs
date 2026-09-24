@@ -1,16 +1,25 @@
 // Composes detailed per-hand reasons from computed facts (.local/reason-facts) and saved frequencies.
 // Usage: node scripts/compose-reasons.mjs [spot_id ...]   (no ids = every spot with facts)
-// Spots listed in HANDWRITTEN keep their hand-authored reasons (scripts/reasons/*.py).
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+// All supported spots use the same EV-aware composer, including BB_vs_BTN.
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
-const HANDWRITTEN = new Set(["BB_vs_BTN"]);
+import { reasonSourceFingerprint } from "./lib/reason-context.mjs";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+const dataDir = process.env.ESTIMATES_DIR ? pathToFileURL(resolve(process.env.ESTIMATES_DIR) + "/") : new URL("../src/estimated/", import.meta.url);
+const reasonDir = new URL("reasons/", dataDir);
+mkdirSync(reasonDir, { recursive: true });
 const RANKS = "AKQJT98765432";
-const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
+const load = name => JSON.parse(readFileSync(new URL(`${name}.json`, dataDir)));
+const sourceFingerprint = reasonSourceFingerprint(load);
 const datasets = {
   open: load("opening-ranges"),
   response: load("preflop-ranges"),
   three_bet: load("three-bet-responses"),
   four_bet: load("four-bet-responses"),
+  multiway: load("multiway-responses"),
+  iso_response: { spots: load("limp-responses").spots.filter(s => s.id === "SB_vs_BB_iso") },
+  limp_response: { spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp") },
 };
 const f1 = value => Number(value).toFixed(1);
 
@@ -18,6 +27,7 @@ const f1 = value => Number(value).toFixed(1);
 function unreachableReason(type, spot) {
   if (type === "three_bet") return `${spot.opener}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。`;
   if (type === "four_bet") return `${spot.hero}の対${spot.opener}の既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`;
+  if (type === "iso_response") return "SBの既存リンプ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。";
   throw new Error(`unreachable row in ${type}: ${spot.id}`);
 }
 
@@ -26,8 +36,11 @@ const ACTIONS = {
   response: [["three_bet", "3bet"], ["call", "コール"], ["fold", "フォールド"]],
   three_bet: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
   four_bet: [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]],
+  multiway: [["squeeze", "スクイーズ"], ["call", "コール"], ["fold", "フォールド"]],
+  iso_response: [["raise", "リレイズ"], ["call", "コール"], ["fold", "フォールド"]],
+  limp_response: [["raise", "アイソレイズ"], ["check", "チェック"]],
 };
-const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in" };
+const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", iso_response: "raise", limp_response: "raise" };
 
 const FACT_LABELS = {
   open: [
@@ -54,6 +67,32 @@ const FACT_LABELS = {
     { key: "opener_fold_to_shove_pct", label: "オールインに相手が降りる率", scope: "spot" },
   ],
 };
+
+const CALL_FACT_LABELS = [
+  { key: "realized_equity_pct", label: "実現後の勝率", scope: "hand" },
+  { key: "call_ev_bb", label: "コールのEV", scope: "hand", unit: "bb" },
+];
+FACT_LABELS.multiway = [
+  { key: "equity_3way_pct", label: "勝率（3人ポット）", scope: "hand" },
+  { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+];
+FACT_LABELS.iso_response = [
+  { key: "equity_vs_bb_iso_pct", label: "勝率（対BBアイソ）", scope: "hand" },
+  { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+];
+FACT_LABELS.limp_response = [{ key: "equity_vs_sb_limp_pct", label: "勝率（対SBリンプ）", scope: "hand" }];
+for (const type of ["response", "three_bet", "four_bet", "multiway", "iso_response"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
+const evText = value => `${value < 0 ? "−" : "+"}${Math.abs(value).toFixed(2)}bb`;
+function callDecision(row, facts) {
+  const numbers = `仮定のEQRを加味した実現後の勝率${f1(facts.realized_equity_pct)}%で、コールのEVは${evText(facts.call_ev_bb)}。`;
+  if (row.call >= row.fold && row.call > 0) {
+    return numbers + (facts.call_ev_bb < 0.05 ? "損益分岐付近のため、コールは50%以下に抑えます。" : "このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。");
+  }
+  const verdict = row.fold >= 90 ? "フォールドします。" : "フォールドが中心です。";
+  if (facts.call_ev_bb < -0.05) return numbers + "コールでは投資を回収できない見積もりのため、" + verdict;
+  if (facts.call_ev_bb < 0.05) return numbers + "損益分岐付近のため、" + verdict;
+  return numbers + "コール自体はプラスの見積もりですが、既存配分の拡張は行わず、" + verdict;
+}
 
 function feature(hand) {
   const [a, b] = [RANKS.indexOf(hand[0]), RANKS.indexOf(hand[1])];
@@ -93,11 +132,6 @@ function primary(type, row) {
   return ACTIONS[type].map(([key]) => key).reduce((best, key) => row[key] > row[best] ? key : best);
 }
 
-function positionNote(position, behind, hero) {
-  if (hero === "BB") return "BBはフロップ以降ずっと先に行動する（OOP）ため、勝率を回収しにくくなります";
-  if (behind > 0) return `後ろにまだ${behind}人残っており、コールするとスクイーズされる危険もあります`;
-  return position === "OOP" ? "フロップ以降は先に行動する（OOP）ため、勝率を回収しにくくなります" : "フロップ以降は後から行動できる（IP）ので、勝率を回収しやすい立場です";
-}
 
 function compose(type, row, facts, spot) {
   const lead = `${feature(row.hand)}です。`;
@@ -121,11 +155,19 @@ function compose(type, row, facts, spot) {
     if (row.open > 0) return `${lead}BBの守りレンジへの勝率は${eq}%で、オープンの境界にあたります。${behind}、参加されると不利になりやすいため、オープンとフォールドを混ぜます。${mixText(type, row)}。`;
     return `${lead}BBの守りレンジへの勝率は${eq}%にとどまります。${behind}、誰かが参加してくると不利な戦いになりやすいため、フォールドします。${mixText(type, row)}。`;
   }
+  if (type === "limp_response") {
+    return `${lead}SBの保護されたリンプレンジへの勝率は${f1(facts.equity_vs_sb_limp_pct)}%です。${row.raise > 0 ? "バリューや限定的なブロッカーのアイソレイズを混ぜます。" : "追加投資なしでフロップへ進めるため、チェックします。"}${mixText(type, row)}。`;
+  }
+  if (type === "multiway" || type === "iso_response") {
+    const raiseName = type === "multiway" ? "スクイーズ" : "リレイズ";
+    const body = main === raiseKey
+      ? `実現後の勝率${f1(facts.realized_equity_pct)}%、コールのEVは${evText(facts.call_ev_bb)}です。既存の${raiseName}配分を維持し、強いハンドと一部のブロッカーをレイズへ配分します。`
+      : callDecision(row, facts);
+    return `${lead}${body}${row[raiseKey] > 0 && main !== raiseKey ? `一部は${raiseName}へ配分します。` : ""}${mixText(type, row)}。`;
+  }
   const eqKey = { response: "equity_vs_open_pct", three_bet: "equity_vs_three_bet_pct", four_bet: "equity_vs_four_bet_pct" }[type];
   const rangeName = { response: `${spot.opener}のオープンレンジ`, three_bet: `${spot.three_bettor}の3betレンジ`, four_bet: `${spot.opener}の4betレンジ` }[type];
   const eq = facts[eqKey];
-  const need = spot.call_break_even_equity_pct;
-  const note = positionNote(spot.position, spot.players_behind ?? 0, spot.hero ?? null);
   let body;
   if (main === raiseKey) {
     if (type === "four_bet") {
@@ -148,17 +190,11 @@ function compose(type, row, facts, spot) {
     }
     if (row.call > 0) body += "一部はコールに回し、コールするレンジにも強いハンドを残します。";
   } else if (main === "call") {
-    const easy = spot.position === "IP" && !(spot.players_behind > 0);
-    body = easy
-      ? `コールに必要な勝率${f1(need)}%に対し、${rangeName}への勝率は${f1(eq)}%です。${note}ので、コールが中心になります。`.replace("立場ですので", "立場なので")
-      : `コールに必要な勝率${f1(need)}%に対し、${rangeName}への勝率は${f1(eq)}%です。${note}が、それを差し引いてもコールが中心になります。`;
+    body = callDecision(row, facts);
     if (raised) body += `一部は${{ response: "3bet", three_bet: "4bet", four_bet: "オールイン" }[type]}に回し、${{ response: "3bet", three_bet: "4bet", four_bet: "オールイン" }[type]}するレンジが強いハンドだけに偏らないようにします。`;
-    if (row.fold > 0) body += "境界に近いため、一部はフォールドします。";
+    if (row.fold > 0) body += "既存の混合配分を維持し、一部はフォールドします。";
   } else {
-    const verdict = row.fold >= 90 ? "フォールドします" : "フォールドが中心です";
-    body = eq >= need
-      ? `${rangeName}への勝率は${f1(eq)}%で、数字上は必要勝率${f1(need)}%を上回ります。しかし${note}。実際に回収できる勝率はそれより低いと見て、${verdict}。`
-      : `${rangeName}への勝率は${f1(eq)}%で、必要勝率${f1(need)}%に届きません。${verdict}。`;
+    body = callDecision(row, facts);
     if (row[raiseKey] > 0) {
       const raiseName = { response: "3bet", three_bet: "4bet", four_bet: "オールイン" }[type];
       const foldRate = { response: spot.opener_fold_to_3bet_pct, three_bet: spot.three_bettor_fold_to_4bet_pct, four_bet: spot.opener_fold_to_shove_pct }[type];
@@ -169,15 +205,16 @@ function compose(type, row, facts, spot) {
   return `${lead}${body}${mixText(type, row)}。`;
 }
 
-const factDir = new URL("../.local/reason-facts/", import.meta.url);
+const factDir = process.env.REASON_FACTS_DIR ? pathToFileURL(resolve(process.env.REASON_FACTS_DIR) + "/") : new URL("../.local/reason-facts/", import.meta.url);
 const wanted = new Set(process.argv.slice(2));
 let written = 0;
 for (const [type, dataset] of Object.entries(datasets)) {
   for (const spot of dataset.spots) {
-    if (HANDWRITTEN.has(spot.id) || (wanted.size && !wanted.has(spot.id))) continue;
+    if (wanted.size && !wanted.has(spot.id)) continue;
     const factPath = new URL(`${spot.id}.json`, factDir);
-    if (!existsSync(factPath)) continue;
+    if (!existsSync(factPath)) throw new Error(`Missing facts: ${spot.id}`);
     const facts = JSON.parse(readFileSync(factPath));
+    if (facts.source_fingerprint !== sourceFingerprint || facts.spot_id !== spot.id) throw new Error(`Stale facts: ${spot.id}; rerun reason-facts.mjs`);
     const byHand = new Map(facts.hands.map(item => [item.hand, item]));
     const hands = {};
     for (const row of spot.hands) {
@@ -188,10 +225,10 @@ for (const [type, dataset] of Object.entries(datasets)) {
         ? { reason: unreachableReason(type, spot), facts: values }
         : { reason: compose(type, row, handFacts, facts.spot), facts: values };
     }
-    writeFileSync(new URL(`../src/estimated/reasons/${spot.id}.json`, import.meta.url), JSON.stringify({
-      spot_id: spot.id, type,
+    writeFileSync(new URL(`${spot.id}.json`, reasonDir), JSON.stringify({
+      spot_id: spot.id, type, source_fingerprint: sourceFingerprint,
       method: "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
-      equity_note: "勝率はショウダウンまでの値で、オールイン以外では実際に回収できる勝率はこれより低くなります。",
+      equity_note: "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
       fact_labels: FACT_LABELS[type], spot_facts: facts.spot, hands,
     }, null, 2) + "\n");
     written += 1;

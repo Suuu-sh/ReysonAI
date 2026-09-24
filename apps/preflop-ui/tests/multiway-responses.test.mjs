@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { hands } from "../src/data.js";
 import { multiwayMatchups, validateMultiwayDataset, findMultiwaySpot, multiwayMatrixModel } from "../src/estimated/multiway-responses.js";
+import { callContexts, callFacts, allowedCall } from "../src/estimated/call-ev.js";
 import { threeBetToSize } from "../src/estimated/sizing.js";
 
 const data = JSON.parse(readFileSync(new URL("../src/estimated/multiway-responses.json", import.meta.url), "utf8"));
@@ -48,18 +49,24 @@ test("matrix model uses stored squeeze, call and fold values without synthetic E
   }
 });
 
-test("reviewed BB multiway defense stays near heads-up width, mostly via calls", () => {
+test("EV-aware multiway defense is not forced to a heads-up width floor and keeps squeezes unchanged", () => {
+  const read = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
+  const equities = read("call-equities");
+  const contexts = callContexts({ opening: read("opening-ranges"), responses: headsUp, multiway: data });
+  const reductions = read("call-ev-report");
   const continuation = new Map();
   for (const spot of data.spots) {
     const source = headsUp.spots.find(row => row.opener === spot.opener && row.hero === "BB");
     const call = weightedCombos(spot.hands, "call");
     const squeeze = weightedCombos(spot.hands, "squeeze");
-    const huContinue = weightedCombos(source.hands, "call") + weightedCombos(source.hands, "three_bet");
-    assert.ok(call + squeeze >= huContinue * 0.8, spot.id);
-    // These are independently authored estimates; the rake pass narrowed the
-    // heads-up source, so allow up to 15% width drift rather than rewriting the
-    // out-of-scope multiway profiles.
-    assert.ok(call + squeeze <= huContinue * 1.15, spot.id);
+    // The old 80%-of-HU floor preceded current-range EQR/EV. It would restore
+    // losing calls; actual three-way EV, not a width target, now selects hands.
+    assert.ok((call + squeeze) / 1326 * 100 <= reductions.spots[spot.id].before_continuation_pct + 1e-9);
+    const context = contexts.find(c => c.spot.id === spot.id);
+    for (const row of spot.hands) {
+      const facts = callFacts(context, row.hand, equities.spots[spot.id].equities[row.hand]);
+      assert.equal(row.call, allowedCall(row.call, facts.call_ev_bb), `${spot.id}/${row.hand}`);
+    }
     assert.ok(squeeze < call, spot.id);
     assert.ok(squeeze <= weightedCombos(source.hands, "three_bet"), spot.id);
     continuation.set(spot.id, call + squeeze);

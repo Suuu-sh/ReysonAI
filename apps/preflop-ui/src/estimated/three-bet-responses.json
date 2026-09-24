@@ -16,7 +16,7 @@
     "method": "手作業のハンド群別ヒューリスティック。位置と3betサイズに応じて配分。5%刻みは精度を意味しない。",
     "rake": {
       "rate": 0.05,
-      "cap_bb": 3.0,
+      "cap_bb": 3,
       "no_flop_no_drop": true,
       "calibrated": true
     },
@@ -32,7 +32,8 @@
         "title": "Upswing Poker: Preflop Raise Sizes That Win",
         "url": "https://upswingpoker.com/podcast/ep29-pfr-sizing/"
       }
-    ]
+    ],
+    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
   },
   "spot_count": 15,
   "hand_classes_per_spot": 169,
@@ -45,8 +46,8 @@
       "three_bettor": "HJ",
       "source_response_id": "HJ_vs_UTG",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "OOP",
       "hands": [
@@ -55,47 +56,47 @@
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 30,
           "four_bet": 70,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AQs",
-          "fold": 15,
-          "call": 65,
+          "fold": 0,
+          "call": 80,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AJs",
-          "fold": 40,
-          "call": 55,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "ATs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A8s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -115,64 +116,64 @@
         },
         {
           "hand": "A5s",
-          "fold": 65,
-          "call": 10,
+          "fold": 75,
+          "call": 0,
           "four_bet": 25,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A4s",
-          "fold": 80,
-          "call": 5,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A3s",
           "fold": 95,
           "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A2s",
           "fold": 95,
           "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKo",
-          "fold": 5,
-          "call": 35,
+          "fold": 0,
+          "call": 40,
           "four_bet": 60,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQs",
-          "fold": 40,
-          "call": 55,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "KTs",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -234,36 +235,36 @@
         },
         {
           "hand": "AQo",
-          "fold": 65,
-          "call": 20,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 65,
           "four_bet": 35,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QJs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "QTs",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -325,10 +326,10 @@
         },
         {
           "hand": "AJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJo",
@@ -346,22 +347,22 @@
         },
         {
           "hand": "JJ",
-          "fold": 15,
-          "call": 75,
+          "fold": 0,
+          "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JTs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -444,15 +445,15 @@
         },
         {
           "hand": "TT",
-          "fold": 35,
-          "call": 60,
+          "fold": 0,
+          "call": 95,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "T9s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -542,15 +543,15 @@
         },
         {
           "hand": "99",
-          "fold": 55,
-          "call": 45,
+          "fold": 0,
+          "call": 100,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "98s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -640,15 +641,15 @@
         },
         {
           "hand": "88",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "87s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -738,15 +739,15 @@
         },
         {
           "hand": "77",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "76s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -836,15 +837,15 @@
         },
         {
           "hand": "66",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "65s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -934,15 +935,15 @@
         },
         {
           "hand": "55",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "54s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -1242,8 +1243,8 @@
       "three_bettor": "CO",
       "source_response_id": "CO_vs_UTG",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "OOP",
       "hands": [
@@ -1252,28 +1253,28 @@
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 30,
           "four_bet": 70,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AQs",
-          "fold": 15,
-          "call": 65,
+          "fold": 0,
+          "call": 80,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AJs",
-          "fold": 40,
-          "call": 55,
+          "fold": 45,
+          "call": 50,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "ATs",
@@ -1284,15 +1285,15 @@
         },
         {
           "hand": "A9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A8s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -1312,64 +1313,64 @@
         },
         {
           "hand": "A5s",
-          "fold": 60,
-          "call": 15,
+          "fold": 75,
+          "call": 0,
           "four_bet": 25,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A4s",
-          "fold": 80,
-          "call": 5,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A3s",
           "fold": 95,
           "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A2s",
           "fold": 95,
           "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKo",
-          "fold": 5,
-          "call": 35,
+          "fold": 0,
+          "call": 40,
           "four_bet": 60,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQs",
-          "fold": 40,
-          "call": 55,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "KTs",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -1431,36 +1432,36 @@
         },
         {
           "hand": "AQo",
-          "fold": 55,
-          "call": 25,
+          "fold": 80,
+          "call": 0,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 65,
           "four_bet": 35,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QJs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "QTs",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -1522,10 +1523,10 @@
         },
         {
           "hand": "AJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJo",
@@ -1543,22 +1544,22 @@
         },
         {
           "hand": "JJ",
-          "fold": 10,
-          "call": 80,
+          "fold": 0,
+          "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JTs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -1641,15 +1642,15 @@
         },
         {
           "hand": "TT",
-          "fold": 30,
-          "call": 65,
+          "fold": 0,
+          "call": 95,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "T9s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -1739,15 +1740,15 @@
         },
         {
           "hand": "99",
-          "fold": 50,
-          "call": 50,
+          "fold": 5,
+          "call": 95,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "98s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -1837,15 +1838,15 @@
         },
         {
           "hand": "88",
-          "fold": 70,
-          "call": 30,
+          "fold": 25,
+          "call": 75,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "87s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -1942,8 +1943,8 @@
         },
         {
           "hand": "76s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -2033,15 +2034,15 @@
         },
         {
           "hand": "66",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "65s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -2131,15 +2132,15 @@
         },
         {
           "hand": "55",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "54s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -2439,8 +2440,8 @@
       "three_bettor": "BTN",
       "source_response_id": "BTN_vs_UTG",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "OOP",
       "hands": [
@@ -2449,47 +2450,47 @@
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 30,
           "four_bet": 70,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AQs",
-          "fold": 15,
-          "call": 65,
+          "fold": 0,
+          "call": 80,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AJs",
-          "fold": 40,
-          "call": 55,
+          "fold": 25,
+          "call": 70,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "ATs",
-          "fold": 60,
-          "call": 40,
+          "fold": 45,
+          "call": 55,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A8s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -2509,64 +2510,64 @@
         },
         {
           "hand": "A5s",
-          "fold": 55,
-          "call": 15,
+          "fold": 70,
+          "call": 0,
           "four_bet": 30,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A4s",
-          "fold": 80,
-          "call": 5,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A3s",
           "fold": 95,
           "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A2s",
           "fold": 95,
           "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKo",
-          "fold": 5,
-          "call": 35,
+          "fold": 0,
+          "call": 40,
           "four_bet": 60,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQs",
-          "fold": 40,
-          "call": 55,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "KTs",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -2628,36 +2629,36 @@
         },
         {
           "hand": "AQo",
-          "fold": 65,
-          "call": 20,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 65,
           "four_bet": 35,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QJs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "QTs",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -2719,10 +2720,10 @@
         },
         {
           "hand": "AJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJo",
@@ -2740,22 +2741,22 @@
         },
         {
           "hand": "JJ",
-          "fold": 10,
-          "call": 80,
+          "fold": 0,
+          "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JTs",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -2838,15 +2839,15 @@
         },
         {
           "hand": "TT",
-          "fold": 25,
-          "call": 70,
+          "fold": 5,
+          "call": 90,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "T9s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -2936,15 +2937,15 @@
         },
         {
           "hand": "99",
-          "fold": 45,
-          "call": 55,
+          "fold": 30,
+          "call": 70,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "98s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -3034,15 +3035,15 @@
         },
         {
           "hand": "88",
-          "fold": 60,
-          "call": 40,
+          "fold": 45,
+          "call": 55,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "87s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -3132,15 +3133,15 @@
         },
         {
           "hand": "77",
-          "fold": 80,
-          "call": 20,
+          "fold": 65,
+          "call": 35,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "76s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -3237,8 +3238,8 @@
         },
         {
           "hand": "65s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -3335,8 +3336,8 @@
         },
         {
           "hand": "54s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -3636,8 +3637,8 @@
       "three_bettor": "SB",
       "source_response_id": "SB_vs_UTG",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "IP",
       "hands": [
@@ -3646,131 +3647,131 @@
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 40,
           "four_bet": 60,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AQs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AJs",
           "fold": 15,
           "call": 80,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "ATs",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A9s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A8s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A7s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A6s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A5s",
-          "fold": 45,
-          "call": 30,
+          "fold": 75,
+          "call": 0,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A4s",
-          "fold": 60,
-          "call": 25,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A3s",
-          "fold": 75,
-          "call": 20,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A2s",
-          "fold": 75,
-          "call": 20,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 45,
           "four_bet": 55,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQs",
-          "fold": 15,
-          "call": 80,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJs",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "KTs",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K9s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -3825,43 +3826,43 @@
         },
         {
           "hand": "AQo",
-          "fold": 45,
-          "call": 45,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQo",
-          "fold": 75,
-          "call": 20,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 75,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJs",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "QTs",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q9s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -3916,43 +3917,43 @@
         },
         {
           "hand": "AJo",
-          "fold": 75,
-          "call": 20,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JJ",
           "fold": 0,
           "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTs",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J9s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -4007,10 +4008,10 @@
         },
         {
           "hand": "ATo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTo",
@@ -4038,19 +4039,19 @@
           "fold": 10,
           "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T8s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -4140,15 +4141,15 @@
         },
         {
           "hand": "98s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "97s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -4231,15 +4232,15 @@
         },
         {
           "hand": "88",
-          "fold": 40,
-          "call": 60,
+          "fold": 50,
+          "call": 50,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "87s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -4329,15 +4330,15 @@
         },
         {
           "hand": "77",
-          "fold": 55,
-          "call": 45,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "76s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -4427,15 +4428,15 @@
         },
         {
           "hand": "66",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "65s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -4525,15 +4526,15 @@
         },
         {
           "hand": "55",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "54s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -4623,8 +4624,8 @@
         },
         {
           "hand": "44",
-          "fold": 85,
-          "call": 15,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -4721,8 +4722,8 @@
         },
         {
           "hand": "33",
-          "fold": 85,
-          "call": 15,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -4819,8 +4820,8 @@
         },
         {
           "hand": "22",
-          "fold": 85,
-          "call": 15,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         }
@@ -4833,8 +4834,8 @@
       "three_bettor": "BB",
       "source_response_id": "BB_vs_UTG",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "IP",
       "hands": [
@@ -4843,131 +4844,131 @@
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 40,
           "four_bet": 60,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AQs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AJs",
           "fold": 15,
           "call": 80,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "ATs",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A9s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A8s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A7s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A6s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A5s",
-          "fold": 45,
-          "call": 25,
+          "fold": 70,
+          "call": 0,
           "four_bet": 30,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A4s",
-          "fold": 60,
-          "call": 25,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A3s",
-          "fold": 75,
-          "call": 20,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A2s",
-          "fold": 75,
-          "call": 20,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 45,
           "four_bet": 55,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQs",
-          "fold": 15,
-          "call": 80,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJs",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "KTs",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K9s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5022,43 +5023,43 @@
         },
         {
           "hand": "AQo",
-          "fold": 45,
-          "call": 45,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQo",
-          "fold": 75,
-          "call": 20,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 75,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJs",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "QTs",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q9s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5113,43 +5114,43 @@
         },
         {
           "hand": "AJo",
-          "fold": 75,
-          "call": 20,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JJ",
           "fold": 0,
           "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTs",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J9s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5204,10 +5205,10 @@
         },
         {
           "hand": "ATo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTo",
@@ -5235,19 +5236,19 @@
           "fold": 15,
           "call": 80,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T8s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5330,22 +5331,22 @@
         },
         {
           "hand": "99",
-          "fold": 35,
-          "call": 65,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "98s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "97s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5428,15 +5429,15 @@
         },
         {
           "hand": "88",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "87s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5526,15 +5527,15 @@
         },
         {
           "hand": "77",
-          "fold": 55,
-          "call": 45,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "76s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5624,15 +5625,15 @@
         },
         {
           "hand": "66",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "65s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5722,15 +5723,15 @@
         },
         {
           "hand": "55",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "54s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5820,8 +5821,8 @@
         },
         {
           "hand": "44",
-          "fold": 85,
-          "call": 15,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -5918,8 +5919,8 @@
         },
         {
           "hand": "33",
-          "fold": 85,
-          "call": 15,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -6016,8 +6017,8 @@
         },
         {
           "hand": "22",
-          "fold": 85,
-          "call": 15,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         }
@@ -6030,8 +6031,8 @@
       "three_bettor": "CO",
       "source_response_id": "CO_vs_HJ",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "OOP",
       "hands": [
@@ -6040,131 +6041,131 @@
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 20,
           "four_bet": 80,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AQs",
-          "fold": 5,
-          "call": 60,
+          "fold": 0,
+          "call": 65,
           "four_bet": 35,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AJs",
-          "fold": 15,
-          "call": 70,
+          "fold": 0,
+          "call": 85,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "ATs",
-          "fold": 30,
-          "call": 60,
+          "fold": 0,
+          "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A9s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A8s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A7s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A6s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A5s",
-          "fold": 50,
-          "call": 15,
+          "fold": 65,
+          "call": 0,
           "four_bet": 35,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A4s",
-          "fold": 65,
-          "call": 10,
+          "fold": 75,
+          "call": 0,
           "four_bet": 25,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A3s",
-          "fold": 80,
-          "call": 5,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A2s",
-          "fold": 80,
-          "call": 5,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 25,
           "four_bet": 75,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQs",
-          "fold": 15,
-          "call": 70,
+          "fold": 0,
+          "call": 85,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJs",
-          "fold": 30,
-          "call": 60,
+          "fold": 40,
+          "call": 50,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KTs",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -6219,43 +6220,43 @@
         },
         {
           "hand": "AQo",
-          "fold": 40,
-          "call": 40,
+          "fold": 5,
+          "call": 75,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQo",
-          "fold": 75,
-          "call": 15,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 40,
           "four_bet": 60,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QJs",
-          "fold": 30,
-          "call": 65,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QTs",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -6310,43 +6311,43 @@
         },
         {
           "hand": "AJo",
-          "fold": 75,
-          "call": 15,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JJ",
-          "fold": 5,
-          "call": 65,
+          "fold": 0,
+          "call": 70,
           "four_bet": 30,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JTs",
-          "fold": 30,
-          "call": 65,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "J9s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -6401,10 +6402,10 @@
         },
         {
           "hand": "ATo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KTo",
@@ -6429,22 +6430,22 @@
         },
         {
           "hand": "TT",
-          "fold": 15,
-          "call": 70,
+          "fold": 0,
+          "call": 85,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "T9s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T8s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -6527,22 +6528,22 @@
         },
         {
           "hand": "99",
-          "fold": 30,
-          "call": 65,
+          "fold": 0,
+          "call": 95,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "98s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "97s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -6625,22 +6626,22 @@
         },
         {
           "hand": "88",
-          "fold": 50,
-          "call": 50,
+          "fold": 10,
+          "call": 90,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "87s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "86s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -6723,15 +6724,15 @@
         },
         {
           "hand": "77",
-          "fold": 60,
-          "call": 40,
+          "fold": 20,
+          "call": 80,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "76s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -6821,15 +6822,15 @@
         },
         {
           "hand": "66",
-          "fold": 75,
-          "call": 25,
+          "fold": 35,
+          "call": 65,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "65s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -6919,15 +6920,15 @@
         },
         {
           "hand": "55",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "54s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -7017,8 +7018,8 @@
         },
         {
           "hand": "44",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -7115,8 +7116,8 @@
         },
         {
           "hand": "33",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -7213,8 +7214,8 @@
         },
         {
           "hand": "22",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         }
@@ -7227,8 +7228,8 @@
       "three_bettor": "BTN",
       "source_response_id": "BTN_vs_HJ",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "OOP",
       "hands": [
@@ -7237,35 +7238,35 @@
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 20,
           "four_bet": 80,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AQs",
-          "fold": 5,
-          "call": 60,
+          "fold": 0,
+          "call": 65,
           "four_bet": 35,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AJs",
-          "fold": 15,
-          "call": 70,
+          "fold": 0,
+          "call": 85,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "ATs",
-          "fold": 30,
-          "call": 60,
+          "fold": 20,
+          "call": 70,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A9s",
@@ -7283,85 +7284,85 @@
         },
         {
           "hand": "A7s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A6s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A5s",
-          "fold": 40,
-          "call": 20,
+          "fold": 60,
+          "call": 0,
           "four_bet": 40,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A4s",
-          "fold": 65,
-          "call": 10,
+          "fold": 75,
+          "call": 0,
           "four_bet": 25,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A3s",
-          "fold": 80,
-          "call": 5,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A2s",
-          "fold": 80,
-          "call": 5,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 25,
           "four_bet": 75,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQs",
-          "fold": 15,
-          "call": 70,
+          "fold": 5,
+          "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJs",
-          "fold": 30,
-          "call": 60,
+          "fold": 20,
+          "call": 70,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KTs",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -7416,43 +7417,43 @@
         },
         {
           "hand": "AQo",
-          "fold": 40,
-          "call": 40,
+          "fold": 30,
+          "call": 50,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQo",
-          "fold": 75,
-          "call": 15,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 40,
           "four_bet": 60,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QJs",
-          "fold": 30,
-          "call": 65,
+          "fold": 45,
+          "call": 50,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QTs",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q9s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -7507,43 +7508,43 @@
         },
         {
           "hand": "AJo",
-          "fold": 75,
-          "call": 15,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QJo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JJ",
-          "fold": 5,
-          "call": 65,
+          "fold": 0,
+          "call": 70,
           "four_bet": 30,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JTs",
-          "fold": 30,
-          "call": 65,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "J9s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -7598,10 +7599,10 @@
         },
         {
           "hand": "ATo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KTo",
@@ -7626,22 +7627,22 @@
         },
         {
           "hand": "TT",
-          "fold": 10,
-          "call": 75,
+          "fold": 0,
+          "call": 85,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "T9s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T8s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -7724,22 +7725,22 @@
         },
         {
           "hand": "99",
-          "fold": 25,
-          "call": 70,
+          "fold": 10,
+          "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "98s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "97s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -7822,22 +7823,22 @@
         },
         {
           "hand": "88",
-          "fold": 40,
-          "call": 60,
+          "fold": 25,
+          "call": 75,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "87s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "86s",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -7920,15 +7921,15 @@
         },
         {
           "hand": "77",
-          "fold": 60,
-          "call": 40,
+          "fold": 50,
+          "call": 50,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "76s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -8018,15 +8019,15 @@
         },
         {
           "hand": "66",
-          "fold": 75,
-          "call": 25,
+          "fold": 65,
+          "call": 35,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "65s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -8116,15 +8117,15 @@
         },
         {
           "hand": "55",
-          "fold": 75,
-          "call": 25,
+          "fold": 65,
+          "call": 35,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "54s",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -8214,8 +8215,8 @@
         },
         {
           "hand": "44",
-          "fold": 90,
-          "call": 10,
+          "fold": 80,
+          "call": 20,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -8410,8 +8411,8 @@
         },
         {
           "hand": "22",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         }
@@ -8424,8 +8425,8 @@
       "three_bettor": "SB",
       "source_response_id": "SB_vs_HJ",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "IP",
       "hands": [
@@ -8434,138 +8435,138 @@
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 30,
           "four_bet": 70,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AQs",
           "fold": 0,
           "call": 70,
           "four_bet": 30,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AJs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "ATs",
           "fold": 5,
           "call": 85,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A9s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A8s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A7s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A6s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A5s",
-          "fold": 25,
-          "call": 40,
+          "fold": 65,
+          "call": 0,
           "four_bet": 35,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A4s",
-          "fold": 40,
-          "call": 35,
+          "fold": 75,
+          "call": 0,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A3s",
-          "fold": 55,
-          "call": 30,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A2s",
-          "fold": 55,
-          "call": 30,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 35,
           "four_bet": 65,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJs",
           "fold": 5,
           "call": 85,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTs",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K9s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -8616,47 +8617,47 @@
           "fold": 20,
           "call": 60,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQo",
-          "fold": 50,
-          "call": 40,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 55,
           "four_bet": 45,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJs",
-          "fold": 5,
-          "call": 90,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTs",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q9s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -8704,50 +8705,50 @@
         },
         {
           "hand": "AJo",
-          "fold": 50,
-          "call": 40,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JJ",
           "fold": 0,
           "call": 75,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTs",
-          "fold": 5,
-          "call": 90,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J9s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -8795,50 +8796,50 @@
         },
         {
           "hand": "ATo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "TT",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9s",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T8s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -8886,10 +8887,10 @@
         },
         {
           "hand": "A9o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K9o",
@@ -8924,19 +8925,19 @@
           "fold": 10,
           "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "98s",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "97s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9026,15 +9027,15 @@
         },
         {
           "hand": "87s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "86s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9124,15 +9125,15 @@
         },
         {
           "hand": "76s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "75s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9222,15 +9223,15 @@
         },
         {
           "hand": "65s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "64s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9320,8 +9321,8 @@
         },
         {
           "hand": "54s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9411,8 +9412,8 @@
         },
         {
           "hand": "44",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9509,8 +9510,8 @@
         },
         {
           "hand": "33",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9607,8 +9608,8 @@
         },
         {
           "hand": "22",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         }
@@ -9621,8 +9622,8 @@
       "three_bettor": "BB",
       "source_response_id": "BB_vs_HJ",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "IP",
       "hands": [
@@ -9631,138 +9632,138 @@
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 30,
           "four_bet": 70,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AQs",
           "fold": 0,
           "call": 70,
           "four_bet": 30,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AJs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "ATs",
           "fold": 5,
           "call": 85,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A9s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A8s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A7s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A6s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "A5s",
-          "fold": 25,
-          "call": 35,
+          "fold": 60,
+          "call": 0,
           "four_bet": 40,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A4s",
-          "fold": 40,
-          "call": 35,
+          "fold": 75,
+          "call": 0,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A3s",
-          "fold": 55,
-          "call": 30,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A2s",
-          "fold": 55,
-          "call": 30,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 35,
           "four_bet": 65,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJs",
           "fold": 5,
           "call": 85,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTs",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K9s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9813,47 +9814,47 @@
           "fold": 20,
           "call": 60,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQo",
-          "fold": 50,
-          "call": 40,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 55,
           "four_bet": 45,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJs",
-          "fold": 5,
-          "call": 90,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTs",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q9s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9901,50 +9902,50 @@
         },
         {
           "hand": "AJo",
-          "fold": 50,
-          "call": 40,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JJ",
           "fold": 0,
           "call": 75,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTs",
-          "fold": 5,
-          "call": 90,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J9s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -9992,50 +9993,50 @@
         },
         {
           "hand": "ATo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "TT",
           "fold": 10,
           "call": 75,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9s",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T8s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -10083,10 +10084,10 @@
         },
         {
           "hand": "A9o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K9o",
@@ -10121,19 +10122,19 @@
           "fold": 20,
           "call": 75,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "98s",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "97s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -10223,15 +10224,15 @@
         },
         {
           "hand": "87s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "86s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -10314,22 +10315,22 @@
         },
         {
           "hand": "77",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "76s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "75s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -10412,22 +10413,22 @@
         },
         {
           "hand": "66",
-          "fold": 50,
-          "call": 50,
+          "fold": 90,
+          "call": 10,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "65s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "64s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -10510,15 +10511,15 @@
         },
         {
           "hand": "55",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "54s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -10608,8 +10609,8 @@
         },
         {
           "hand": "44",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -10706,8 +10707,8 @@
         },
         {
           "hand": "33",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -10804,8 +10805,8 @@
         },
         {
           "hand": "22",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         }
@@ -10818,8 +10819,8 @@
       "three_bettor": "BTN",
       "source_response_id": "BTN_vs_CO",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "OOP",
       "hands": [
@@ -10828,49 +10829,49 @@
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 10,
           "four_bet": 90,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AQs",
           "fold": 0,
           "call": 45,
           "four_bet": 55,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AJs",
           "fold": 5,
           "call": 65,
           "four_bet": 30,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "ATs",
           "fold": 10,
           "call": 70,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A9s",
           "fold": 40,
           "call": 55,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A8s",
           "fold": 40,
           "call": 55,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A7s",
@@ -10891,75 +10892,75 @@
           "fold": 35,
           "call": 20,
           "four_bet": 45,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A4s",
           "fold": 50,
           "call": 15,
           "four_bet": 35,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A3s",
           "fold": 65,
           "call": 10,
           "four_bet": 25,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "A2s",
           "fold": 65,
           "call": 10,
           "four_bet": 25,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 15,
           "four_bet": 85,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQs",
           "fold": 5,
           "call": 65,
           "four_bet": 30,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJs",
           "fold": 10,
           "call": 70,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KTs",
           "fold": 20,
           "call": 75,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "K9s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K8s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -11010,47 +11011,47 @@
           "fold": 15,
           "call": 50,
           "four_bet": 35,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KQo",
           "fold": 40,
           "call": 40,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 20,
           "four_bet": 80,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QJs",
           "fold": 10,
           "call": 80,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QTs",
           "fold": 20,
           "call": 75,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "Q9s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q8s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -11101,47 +11102,47 @@
           "fold": 40,
           "call": 40,
           "four_bet": 20,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KJo",
-          "fold": 65,
-          "call": 20,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QJo",
-          "fold": 65,
-          "call": 20,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JJ",
           "fold": 5,
           "call": 45,
           "four_bet": 50,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JTs",
           "fold": 10,
           "call": 80,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "J9s",
-          "fold": 40,
-          "call": 55,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "J8s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -11192,47 +11193,47 @@
           "fold": 65,
           "call": 20,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "KTo",
-          "fold": 80,
-          "call": 10,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "QTo",
-          "fold": 80,
-          "call": 10,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "JTo",
-          "fold": 80,
-          "call": 10,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "TT",
           "fold": 10,
           "call": 60,
           "four_bet": 30,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "T9s",
           "fold": 20,
           "call": 75,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "T8s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -11280,10 +11281,10 @@
         },
         {
           "hand": "A9o",
-          "fold": 80,
-          "call": 10,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "K9o",
@@ -11318,19 +11319,19 @@
           "fold": 15,
           "call": 70,
           "four_bet": 15,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "98s",
-          "fold": 20,
-          "call": 75,
+          "fold": 45,
+          "call": 50,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "97s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -11416,19 +11417,19 @@
           "fold": 25,
           "call": 70,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "87s",
-          "fold": 40,
-          "call": 55,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "86s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -11518,15 +11519,15 @@
         },
         {
           "hand": "76s",
-          "fold": 40,
-          "call": 55,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "75s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -11616,15 +11617,15 @@
         },
         {
           "hand": "65s",
-          "fold": 40,
-          "call": 55,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "64s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -11714,10 +11715,10 @@
         },
         {
           "hand": "54s",
-          "fold": 40,
-          "call": 55,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 20.0
+          "four_bet_size_bb": 20
         },
         {
           "hand": "53s",
@@ -12015,8 +12016,8 @@
       "three_bettor": "SB",
       "source_response_id": "SB_vs_CO",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "IP",
       "hands": [
@@ -12025,35 +12026,35 @@
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 30,
           "four_bet": 70,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AQs",
           "fold": 0,
           "call": 60,
           "four_bet": 40,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AJs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "ATs",
           "fold": 5,
           "call": 85,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A9s",
@@ -12088,56 +12089,56 @@
           "fold": 25,
           "call": 40,
           "four_bet": 35,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A4s",
           "fold": 40,
           "call": 35,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A3s",
-          "fold": 55,
-          "call": 30,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A2s",
-          "fold": 55,
-          "call": 30,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 35,
           "four_bet": 65,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJs",
           "fold": 5,
           "call": 85,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTs",
@@ -12148,15 +12149,15 @@
         },
         {
           "hand": "K9s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -12207,28 +12208,28 @@
           "fold": 20,
           "call": 50,
           "four_bet": 30,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQo",
           "fold": 50,
           "call": 40,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 45,
           "four_bet": 55,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJs",
           "fold": 5,
           "call": 90,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTs",
@@ -12239,15 +12240,15 @@
         },
         {
           "hand": "Q9s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -12298,47 +12299,47 @@
           "fold": 50,
           "call": 40,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JJ",
           "fold": 0,
           "call": 65,
           "four_bet": 35,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTs",
           "fold": 5,
           "call": 90,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J9s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -12389,47 +12390,47 @@
           "fold": 70,
           "call": 20,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "TT",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9s",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T8s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -12477,10 +12478,10 @@
         },
         {
           "hand": "A9o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K9o",
@@ -12515,19 +12516,19 @@
           "fold": 10,
           "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "98s",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "97s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -12617,15 +12618,15 @@
         },
         {
           "hand": "87s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "86s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -12715,15 +12716,15 @@
         },
         {
           "hand": "76s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "75s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -12813,15 +12814,15 @@
         },
         {
           "hand": "65s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "64s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -12911,8 +12912,8 @@
         },
         {
           "hand": "54s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -13212,8 +13213,8 @@
       "three_bettor": "BB",
       "source_response_id": "BB_vs_CO",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "IP",
       "hands": [
@@ -13222,35 +13223,35 @@
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 30,
           "four_bet": 70,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AQs",
           "fold": 5,
           "call": 50,
           "four_bet": 45,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AJs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "ATs",
           "fold": 5,
           "call": 85,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A9s",
@@ -13285,56 +13286,56 @@
           "fold": 25,
           "call": 40,
           "four_bet": 35,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A4s",
           "fold": 40,
           "call": 35,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A3s",
           "fold": 55,
           "call": 30,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A2s",
-          "fold": 55,
-          "call": 30,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 35,
           "four_bet": 65,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJs",
           "fold": 5,
           "call": 85,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTs",
@@ -13345,15 +13346,15 @@
         },
         {
           "hand": "K9s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -13404,47 +13405,47 @@
           "fold": 20,
           "call": 45,
           "four_bet": 35,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQo",
-          "fold": 50,
-          "call": 40,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 40,
           "four_bet": 60,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJs",
           "fold": 5,
           "call": 90,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTs",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q9s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -13495,47 +13496,47 @@
           "fold": 50,
           "call": 40,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JJ",
           "fold": 0,
           "call": 60,
           "four_bet": 40,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTs",
-          "fold": 5,
-          "call": 90,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J9s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -13586,47 +13587,47 @@
           "fold": 70,
           "call": 20,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTo",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "TT",
           "fold": 10,
           "call": 70,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9s",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T8s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -13674,10 +13675,10 @@
         },
         {
           "hand": "A9o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K9o",
@@ -13712,19 +13713,19 @@
           "fold": 20,
           "call": 70,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "98s",
-          "fold": 20,
-          "call": 80,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "97s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -13814,15 +13815,15 @@
         },
         {
           "hand": "87s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "86s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -13912,15 +13913,15 @@
         },
         {
           "hand": "76s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "75s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -14010,15 +14011,15 @@
         },
         {
           "hand": "65s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "64s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -14108,8 +14109,8 @@
         },
         {
           "hand": "54s",
-          "fold": 40,
-          "call": 60,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -14395,8 +14396,8 @@
         },
         {
           "hand": "22",
-          "fold": 70,
-          "call": 30,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         }
@@ -14409,8 +14410,8 @@
       "three_bettor": "SB",
       "source_response_id": "SB_vs_BTN",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "IP",
       "hands": [
@@ -14419,49 +14420,49 @@
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 20,
           "four_bet": 80,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AQs",
           "fold": 0,
           "call": 55,
           "four_bet": 45,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AJs",
           "fold": 0,
           "call": 70,
           "four_bet": 30,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "ATs",
           "fold": 0,
           "call": 80,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A9s",
           "fold": 10,
           "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A8s",
           "fold": 10,
           "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A7s",
@@ -14482,89 +14483,89 @@
           "fold": 10,
           "call": 45,
           "four_bet": 45,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A4s",
           "fold": 20,
           "call": 45,
           "four_bet": 35,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A3s",
           "fold": 35,
           "call": 40,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A2s",
           "fold": 35,
           "call": 40,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 25,
           "four_bet": 75,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQs",
           "fold": 0,
           "call": 70,
           "four_bet": 30,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJs",
           "fold": 0,
           "call": 80,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTs",
           "fold": 0,
           "call": 95,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K9s",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K8s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K7s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K6s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -14601,54 +14602,54 @@
           "fold": 5,
           "call": 60,
           "four_bet": 35,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQo",
           "fold": 20,
           "call": 60,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 30,
           "four_bet": 70,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJs",
           "fold": 0,
           "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTs",
           "fold": 0,
           "call": 95,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "Q9s",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q8s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q7s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -14692,54 +14693,54 @@
           "fold": 20,
           "call": 60,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJo",
           "fold": 40,
           "call": 45,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJo",
-          "fold": 40,
-          "call": 45,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JJ",
           "fold": 0,
           "call": 55,
           "four_bet": 45,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTs",
           "fold": 0,
           "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J9s",
           "fold": 10,
           "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J8s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J7s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -14783,54 +14784,54 @@
           "fold": 40,
           "call": 45,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTo",
-          "fold": 60,
-          "call": 30,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTo",
-          "fold": 60,
-          "call": 30,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTo",
-          "fold": 60,
-          "call": 30,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "TT",
           "fold": 0,
           "call": 70,
           "four_bet": 30,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9s",
           "fold": 0,
           "call": 95,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T8s",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T7s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -14871,64 +14872,64 @@
         },
         {
           "hand": "A9o",
-          "fold": 60,
-          "call": 30,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K9o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "Q9o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J9o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "99",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "98s",
           "fold": 0,
           "call": 95,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "97s",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "96s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -14962,10 +14963,10 @@
         },
         {
           "hand": "A8o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K8o",
@@ -14997,36 +14998,36 @@
         },
         {
           "hand": "98o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "88",
           "fold": 5,
           "call": 90,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "87s",
-          "fold": 10,
-          "call": 85,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "86s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "85s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -15053,10 +15054,10 @@
         },
         {
           "hand": "A7o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K7o",
@@ -15109,22 +15110,22 @@
         },
         {
           "hand": "76s",
-          "fold": 10,
-          "call": 85,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "75s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "74s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -15144,10 +15145,10 @@
         },
         {
           "hand": "A6o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K6o",
@@ -15207,15 +15208,15 @@
         },
         {
           "hand": "65s",
-          "fold": 10,
-          "call": 85,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "64s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -15235,10 +15236,10 @@
         },
         {
           "hand": "A5o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K5o",
@@ -15305,15 +15306,15 @@
         },
         {
           "hand": "54s",
-          "fold": 10,
-          "call": 85,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "53s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -15606,8 +15607,8 @@
       "three_bettor": "BB",
       "source_response_id": "BB_vs_BTN",
       "open_size_bb": 2.5,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "IP",
       "hands": [
@@ -15616,49 +15617,49 @@
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 20,
           "four_bet": 80,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AQs",
           "fold": 0,
           "call": 45,
           "four_bet": 55,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AJs",
           "fold": 0,
           "call": 70,
           "four_bet": 30,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "ATs",
           "fold": 0,
           "call": 80,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A9s",
           "fold": 10,
           "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A8s",
           "fold": 10,
           "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A7s",
@@ -15679,89 +15680,89 @@
           "fold": 10,
           "call": 40,
           "four_bet": 50,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A4s",
           "fold": 20,
           "call": 45,
           "four_bet": 35,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A3s",
           "fold": 35,
           "call": 40,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "A2s",
           "fold": 35,
           "call": 40,
           "four_bet": 25,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 25,
           "four_bet": 75,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 5,
           "four_bet": 95,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQs",
           "fold": 0,
           "call": 70,
           "four_bet": 30,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJs",
           "fold": 0,
           "call": 80,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTs",
           "fold": 0,
           "call": 95,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K9s",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K8s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K7s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K6s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -15798,54 +15799,54 @@
           "fold": 5,
           "call": 55,
           "four_bet": 40,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KQo",
           "fold": 20,
           "call": 60,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 20,
           "four_bet": 80,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJs",
           "fold": 0,
           "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTs",
           "fold": 0,
           "call": 95,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "Q9s",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q8s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q7s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -15889,54 +15890,54 @@
           "fold": 20,
           "call": 60,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KJo",
           "fold": 40,
           "call": 45,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QJo",
-          "fold": 40,
-          "call": 45,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JJ",
           "fold": 0,
           "call": 45,
           "four_bet": 55,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTs",
           "fold": 0,
           "call": 90,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J9s",
-          "fold": 10,
-          "call": 85,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J8s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "J7s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -15980,54 +15981,54 @@
           "fold": 40,
           "call": 45,
           "four_bet": 15,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "KTo",
-          "fold": 60,
-          "call": 30,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "QTo",
-          "fold": 60,
-          "call": 30,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "JTo",
-          "fold": 60,
-          "call": 30,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "TT",
           "fold": 5,
           "call": 60,
           "four_bet": 35,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9s",
-          "fold": 0,
-          "call": 95,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T8s",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "T7s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -16068,64 +16069,64 @@
         },
         {
           "hand": "A9o",
-          "fold": 60,
-          "call": 30,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K9o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "Q9o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "J9o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "T9o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "99",
           "fold": 10,
           "call": 70,
           "four_bet": 20,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "98s",
-          "fold": 0,
-          "call": 95,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "97s",
-          "fold": 30,
-          "call": 70,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "96s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -16159,10 +16160,10 @@
         },
         {
           "hand": "A8o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K8o",
@@ -16194,36 +16195,36 @@
         },
         {
           "hand": "98o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "88",
           "fold": 10,
           "call": 80,
           "four_bet": 10,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "87s",
-          "fold": 10,
-          "call": 85,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "86s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "85s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -16250,10 +16251,10 @@
         },
         {
           "hand": "A7o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K7o",
@@ -16306,22 +16307,22 @@
         },
         {
           "hand": "76s",
-          "fold": 10,
-          "call": 85,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "75s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "74s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -16341,10 +16342,10 @@
         },
         {
           "hand": "A6o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K6o",
@@ -16404,15 +16405,15 @@
         },
         {
           "hand": "65s",
-          "fold": 10,
-          "call": 85,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "64s",
-          "fold": 45,
-          "call": 55,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -16432,10 +16433,10 @@
         },
         {
           "hand": "A5o",
-          "fold": 80,
-          "call": 15,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "K5o",
@@ -16502,15 +16503,15 @@
         },
         {
           "hand": "54s",
-          "fold": 10,
-          "call": 85,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 26.0
+          "four_bet_size_bb": 26
         },
         {
           "hand": "53s",
-          "fold": 65,
-          "call": 35,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -16804,7 +16805,7 @@
       "source_response_id": "BB_vs_SB",
       "open_size_bb": 3.5,
       "three_bet_size_bb": 10.5,
-      "four_bet_size_bb": 24.0,
+      "four_bet_size_bb": 24,
       "effective_stack_bb": 100,
       "hero_position_vs_three_bettor": "OOP",
       "hands": [
@@ -16813,49 +16814,49 @@
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "AKs",
           "fold": 0,
           "call": 10,
           "four_bet": 90,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "AQs",
           "fold": 0,
           "call": 45,
           "four_bet": 55,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "AJs",
           "fold": 5,
           "call": 70,
           "four_bet": 25,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "ATs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "A9s",
           "fold": 30,
           "call": 65,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "A8s",
           "fold": 30,
           "call": 65,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "A7s",
@@ -16876,75 +16877,75 @@
           "fold": 30,
           "call": 25,
           "four_bet": 45,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "A4s",
           "fold": 45,
           "call": 20,
           "four_bet": 35,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "A3s",
           "fold": 60,
           "call": 15,
           "four_bet": 25,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "A2s",
-          "fold": 60,
-          "call": 15,
+          "fold": 75,
+          "call": 0,
           "four_bet": 25,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "AKo",
           "fold": 0,
           "call": 15,
           "four_bet": 85,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "KK",
           "fold": 0,
           "call": 0,
           "four_bet": 100,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "KQs",
           "fold": 5,
           "call": 70,
           "four_bet": 25,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "KJs",
           "fold": 5,
           "call": 80,
           "four_bet": 15,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "KTs",
           "fold": 15,
           "call": 80,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "K9s",
-          "fold": 55,
-          "call": 45,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "K8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -16995,47 +16996,47 @@
           "fold": 15,
           "call": 55,
           "four_bet": 30,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "KQo",
           "fold": 30,
           "call": 50,
           "four_bet": 20,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "QQ",
           "fold": 0,
           "call": 20,
           "four_bet": 80,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "QJs",
           "fold": 5,
           "call": 90,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "QTs",
           "fold": 15,
           "call": 80,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "Q9s",
-          "fold": 55,
-          "call": 45,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
         {
           "hand": "Q8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -17086,47 +17087,47 @@
           "fold": 30,
           "call": 50,
           "four_bet": 20,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "KJo",
-          "fold": 50,
-          "call": 35,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "QJo",
-          "fold": 50,
-          "call": 35,
+          "fold": 85,
+          "call": 0,
           "four_bet": 15,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "JJ",
           "fold": 5,
           "call": 60,
           "four_bet": 35,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "JTs",
           "fold": 5,
           "call": 90,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "J9s",
-          "fold": 30,
-          "call": 65,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "J8s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -17177,47 +17178,47 @@
           "fold": 50,
           "call": 35,
           "four_bet": 15,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "KTo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "QTo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "JTo",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "TT",
           "fold": 5,
           "call": 75,
           "four_bet": 20,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "T9s",
-          "fold": 15,
-          "call": 80,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "T8s",
-          "fold": 55,
-          "call": 45,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -17265,57 +17266,57 @@
         },
         {
           "hand": "A9o",
-          "fold": 70,
-          "call": 20,
+          "fold": 90,
+          "call": 0,
           "four_bet": 10,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "K9o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "Q9o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "J9o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "T9o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "99",
           "fold": 10,
           "call": 80,
           "four_bet": 10,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "98s",
-          "fold": 15,
-          "call": 80,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "97s",
-          "fold": 55,
-          "call": 45,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -17356,10 +17357,10 @@
         },
         {
           "hand": "A8o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "K8o",
@@ -17401,19 +17402,19 @@
           "fold": 10,
           "call": 85,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "87s",
-          "fold": 30,
-          "call": 65,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "86s",
-          "fold": 55,
-          "call": 45,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -17447,10 +17448,10 @@
         },
         {
           "hand": "A7o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "K7o",
@@ -17503,15 +17504,15 @@
         },
         {
           "hand": "76s",
-          "fold": 30,
-          "call": 65,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "75s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -17538,10 +17539,10 @@
         },
         {
           "hand": "A6o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "K6o",
@@ -17601,15 +17602,15 @@
         },
         {
           "hand": "65s",
-          "fold": 30,
-          "call": 65,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "64s",
-          "fold": 75,
-          "call": 25,
+          "fold": 100,
+          "call": 0,
           "four_bet": 0,
           "four_bet_size_bb": null
         },
@@ -17629,10 +17630,10 @@
         },
         {
           "hand": "A5o",
-          "fold": 90,
-          "call": 5,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "K5o",
@@ -17699,10 +17700,10 @@
         },
         {
           "hand": "54s",
-          "fold": 30,
-          "call": 65,
+          "fold": 95,
+          "call": 0,
           "four_bet": 5,
-          "four_bet_size_bb": 24.0
+          "four_bet_size_bb": 24
         },
         {
           "hand": "53s",

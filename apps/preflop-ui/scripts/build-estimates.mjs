@@ -1,7 +1,7 @@
 // Regenerates the authored estimate JSON in a staging dir and publishes it only if the audit passes.
 // Usage: npm run build:estimates
 import { execFileSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.js";
@@ -28,12 +28,16 @@ const generators = [
 ];
 // Keep even transient generated data in this worktree.
 mkdirSync(join(root, ".local"), { recursive: true });
+const equityCache = join(root, ".local/call-equities-cache.json");
 const staging = mkdtempSync(join(root, ".local/estimates-build-"));
 
 try {
-  for (const name of files) if (existsSync(join(published, `${name}.json`))) copyFileSync(join(published, `${name}.json`), join(staging, `${name}.json`));
+  for (const name of [...files, "call-equities"]) if (existsSync(join(published, `${name}.json`))) copyFileSync(join(published, `${name}.json`), join(staging, `${name}.json`));
+  // Optional speed cache. Every entry is checked against exact current ranges,
+  // geometry, sample count and seed; an empty .local rebuild computes it afresh.
+  if (existsSync(equityCache)) copyFileSync(equityCache, join(staging, "call-equities.json"));
   for (const [runtime, script] of generators) {
-    execFileSync(runtime, [join(root, "scripts", script)], { cwd: root, stdio: "inherit", env: { ...process.env, ESTIMATES_DIR: staging } });
+    execFileSync(runtime, [join(root, "scripts", script)], { cwd: root, stdio: "inherit", env: { ...process.env, ESTIMATES_DIR: staging, CALL_EQUITIES_CACHE: equityCache } });
   }
   const load = name => JSON.parse(readFileSync(join(staging, `${name}.json`), "utf8"));
   const opening = load("opening-ranges");
@@ -50,16 +54,27 @@ try {
   validateFiveBetDataset(fiveBets);
   validateMultiwayDataset(multiway);
   validateLimpResponses(limp, opening);
-  const { findings } = auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, limp });
+  const { findings } = auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, limp, callEquities: load("call-equities") });
   for (const f of findings) console.error(`- [${f.severity}] ${f.check} · ${f.spot}: ${f.detail}`);
   const blocking = findings.filter(isBlockingAuditFinding);
   if (blocking.length) {
     console.error(`\n検証で${blocking.length}件の違反。src/estimated は変更していません。`);
     process.exitCode = 1;
   } else {
-    for (const name of files) copyFileSync(join(staging, `${name}.json`), join(published, `${name}.json`));
+    // Compose against the audited staged strategy, never old .local facts.
+    for (const script of ["reason-facts.mjs", "compose-reasons.mjs"]) {
+      execFileSync("node", [join(root, "scripts", script)], { cwd: root, stdio: "inherit",
+        env: { ...process.env, ESTIMATES_DIR: staging, REASON_FACTS_DIR: join(staging, "reason-facts") } });
+    }
+    cpSync(join(staging, "reason-facts"), join(root, ".local/reason-facts"), { recursive: true });
+    cpSync(join(staging, "reasons"), join(published, "reasons"), { recursive: true });
+    for (const name of [...files, "call-equities", "call-ev-report"]) copyFileSync(join(staging, `${name}.json`), join(published, `${name}.json`));
     console.log(`検証を通過したため src/estimated に保存しました。（助言警告 ${findings.length}件、公開を妨げません）`);
   }
+} catch (error) {
+  process.exitCode = 1;
+  throw error;
 } finally {
-  rmSync(staging, { recursive: true, force: true });
+  if (!process.exitCode) rmSync(staging, { recursive: true, force: true });
+  else console.error(`診断用ステージ: ${staging}`);
 }

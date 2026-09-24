@@ -8,6 +8,7 @@ const dirFlag = process.argv.indexOf("--dir");
 const dir = dirFlag > 0 ? resolve(process.argv[dirFlag + 1]) : new URL("../src/estimated/", import.meta.url).pathname;
 const load = name => JSON.parse(readFileSync(`${dir}/${name}.json`, "utf8"));
 const report = auditEstimates({
+  callEquities: load("call-equities"),
   opening: load("opening-ranges"),
   responses: load("preflop-ranges"),
   threeBets: load("three-bet-responses"),
@@ -24,7 +25,7 @@ if (process.argv.includes("--json")) {
   const count = (check, severity) => findings.filter(f => f.check === check && (!severity || f.severity === severity)).length;
   console.log("# 推定レンジ検証レポート\n");
   console.log("| チェック | 件数 |\n|---|---|");
-  for (const check of ["range-flow", "auto-profit", "strength-order", "suited-vs-offsuit", "position-nesting", "defense-nesting", "squeeze-width", "cross-strength-inversion", ...BALANCE_CHECKS]) console.log(`| ${check} | ${count(check)} |`);
+  for (const check of ["ev-capacity-conflict", "negative-ev-call", "boundary-ev-call", "call-equity-source", "range-flow", "auto-profit", "strength-order", "suited-vs-offsuit", "position-nesting", "defense-nesting", "squeeze-width", "cross-strength-inversion", ...BALANCE_CHECKS]) console.log(`| ${check} | ${count(check)} |`);
   console.log("\n## 系列をまたいだ強さの逆転（警告のみ）");
   console.log("同じ種類の非ペアを対ランダム勝率で比較。勝率差4pt以上かつ弱い手の継続率が20pt以上高い組を検出。弱い側のホイールA・コネクター・1つ飛び、および到達不能ハンドは除外。");
   const cross = report.crossStrengthSummary;

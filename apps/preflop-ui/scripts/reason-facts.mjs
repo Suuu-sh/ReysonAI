@@ -2,22 +2,32 @@
 // Usage: node scripts/reason-facts.mjs [spot_id ...]   (no ids = every spot)
 // Writes .local/reason-facts/<spot_id>.json; seeded, so reruns are reproducible.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { blockedShare, comboCount, equityVsRange, equityVsRanges, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
+import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
 import { raked } from "../src/estimated/rake.js";
+import { reasonSourceFingerprint } from "./lib/reason-context.mjs";
+import { callContexts, callFacts, validCallEquities } from "../src/estimated/call-ev.js";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { openSizeFor } from "../src/estimated/sizing.js";
 
 const SAMPLES = 12000;
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 const blind = { SB: 0.5, BB: 1 };
-const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
+const dataDir = process.env.ESTIMATES_DIR ? pathToFileURL(resolve(process.env.ESTIMATES_DIR) + "/") : new URL("../src/estimated/", import.meta.url);
+const load = name => JSON.parse(readFileSync(new URL(`${name}.json`, dataDir)));
 const opening = load("opening-ranges");
 const responses = load("preflop-ranges");
 const threeBets = load("three-bet-responses");
 const fourBets = load("four-bet-responses");
 const fiveBets = load("five-bet-responses");
-const limpResponses = existsSync(new URL("../src/estimated/limp-responses.json", import.meta.url)) ? load("limp-responses") : { spots: [] };
-const multiway = existsSync(new URL("../src/estimated/multiway-responses.json", import.meta.url)) ? load("multiway-responses") : { spots: [] };
-const outDir = new URL("../.local/reason-facts/", import.meta.url);
+const limpResponses = existsSync(new URL("limp-responses.json", dataDir)) ? load("limp-responses") : { spots: [] };
+const multiway = existsSync(new URL("multiway-responses.json", dataDir)) ? load("multiway-responses") : { spots: [] };
+const outDir = process.env.REASON_FACTS_DIR ? pathToFileURL(resolve(process.env.REASON_FACTS_DIR) + "/") : new URL("../.local/reason-facts/", import.meta.url);
+const sourceFingerprint = reasonSourceFingerprint(load);
+const callEquities = load("call-equities");
+const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses }).map(c => [c.spot.id, c]));
+for (const context of contexts.values()) if (!validCallEquities(callEquities, context)) throw new Error(`Stale call equity: ${context.spot.id}`);
+const primaryEquityKeys = new Set(["equity_vs_open_pct", "equity_vs_three_bet_pct", "equity_vs_four_bet_pct", "equity_vs_bb_iso_pct"]);
 mkdirSync(outDir, { recursive: true });
 
 const round1 = value => value === null ? null : Math.round(value * 1000) / 10;
@@ -38,7 +48,8 @@ function handFacts(spotId, spot, reachable, ranges) {
   return spot.hands.map(row => {
     const facts = { hand: row.hand };
     for (const [key, range] of Object.entries(ranges)) {
-      if (key.startsWith("blocked_")) facts[key] = reachable(row.hand) ? round1(blockedShare(row.hand, range)) : null;
+      if (primaryEquityKeys.has(key)) facts[key] = reachable(row.hand) ? round1(callEquities.spots[spotId].equities[row.hand]) : null;
+      else if (key.startsWith("blocked_")) facts[key] = reachable(row.hand) ? round1(blockedShare(row.hand, range)) : null;
       else facts[key] = reachable(row.hand) && range.length ? round1(equityVsRange(row.hand, range, SAMPLES, random)) : null;
     }
     return facts;
@@ -141,7 +152,7 @@ function multiwayFacts(spot) {
       call_break_even_equity_pct: round1(need(1.5, 8)), fair_share_pct: round1(1 / 3),
       caller_range_combos: Math.round(totalWeight(called)) },
     hands: spot.hands.map(row => ({ hand: row.hand,
-      equity_3way_pct: round1(equityVsRanges(row.hand, [open, called], SAMPLES, random)),
+      equity_3way_pct: round1(callEquities.spots[spot.id].equities[row.hand]),
       equity_vs_caller_pct: round1(equityVsRange(row.hand, called, SAMPLES, random)),
       blocked_caller_pct: round1(blockedShare(row.hand, called)) })),
   };
@@ -189,7 +200,18 @@ const wanted = new Set(process.argv.slice(2));
 for (const [id, build] of builders) {
   if (wanted.size && !wanted.has(id)) continue;
   const started = Date.now();
-  const facts = { spot_id: id, samples: SAMPLES, ...build() };
+  const facts = { spot_id: id, source_fingerprint: sourceFingerprint, samples: SAMPLES, ...build() };
+  const context = contexts.get(id);
+  if (context) {
+    facts.eqr_note = "EQRは仮定値。ソルバー実装後に置換。実現後の勝率はequity×EQRであり、実際のショウダウン確率ではありません。";
+    facts.spot.cost_to_call_bb = context.input.cost_to_call;
+    facts.spot.total_pot_after_call_bb = context.input.total_pot_after_call;
+    for (const row of facts.hands) {
+      Object.assign(row, context.reach(row.hand) > 0
+        ? callFacts(context, row.hand, callEquities.spots[id].equities[row.hand])
+        : { eqr: null, realized_equity_pct: null, call_ev_bb: null });
+    }
+  }
   writeFileSync(new URL(`${id}.json`, outDir), JSON.stringify(facts, null, 2) + "\n");
   console.log(`${id} ${((Date.now() - started) / 1000).toFixed(1)}s`);
 }

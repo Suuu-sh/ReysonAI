@@ -4,6 +4,7 @@ Run only at authoring time, after the opening and 3bet-response generators.
 The saved JSON, not this script, is the UI's source of truth.
 """
 import json
+from call_policy import apply_call_policy
 import os
 import subprocess
 import sys
@@ -285,4 +286,5 @@ validateFourBetDataset(JSON.parse(fs.readFileSync(0, 'utf8')), read('preflop-ran
     serialized = json.dumps(data, ensure_ascii=False, indent=2)+'\n'
     subprocess.run(['node', '--input-type=module', '-e', check], cwd=ROOT, input=serialized, text=True, check=True)
     (DATA / 'four-bet-responses.json').write_text(serialized)
+    apply_call_policy('four-bet-responses')
     print('Generated and validated 15 spots / 2,535 hands')

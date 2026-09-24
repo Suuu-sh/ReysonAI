@@ -1,6 +1,8 @@
 // Consistency audit for persisted estimated ranges. Shared by the CLI, tests and the build pipeline.
 import { openSizeFor } from "./sizing.js";
 import handStrength from "./hand-strength.json" with { type: "json" };
+import callEquitiesTable from "./call-equities.json" with { type: "json" };
+import { callContexts, callFacts, validCallEquities, callDefenseCapacity } from "./call-ev.js";
 const ranks = "AKQJT98765432";
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 const blind = { SB: 0.5, BB: 1 };
@@ -10,11 +12,11 @@ const rows = spot => new Map(spot.hands.map(row => [row.hand, row]));
 export const pct = value => `${(value * 100).toFixed(1)}%`;
 
 export const BALANCE_CHECKS = Object.freeze(["range-capped", "over-segregated"]);
-const ADVISORY_CHECKS = [...BALANCE_CHECKS, "cross-strength-inversion"];
+const ADVISORY_CHECKS = [...BALANCE_CHECKS, "cross-strength-inversion", "negative-ev-call", "ev-capacity-conflict"];
 const PASSIVE_ACTIONS = ["limp", "call", "check"];
 const AGGRESSIVE_ACTIONS = ["open", "three_bet", "four_bet", "squeeze", "raise", "all_in"];
 const ACTIONS = [...PASSIVE_ACTIONS, ...AGGRESSIVE_ACTIONS, "fold"];
-// Preserve the existing consistency gate, including its historical warn checks.
+// Preserve ordinary consistency failures; expose proven, fully defended EV-capacity conflicts separately.
 // Balance and cross-family strength warnings are advisory, not publication blockers.
 export const isBlockingAuditFinding = finding => finding.severity === "error" || !ADVISORY_CHECKS.includes(finding.check);
 
@@ -149,10 +151,22 @@ function weightedFold(spot, weight = () => 1) {
   return total ? folded / total : 0;
 }
 
-export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, limp }) {
+export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, limp, callEquities = callEquitiesTable }) {
   const findings = [];
   const add = (check, severity, spot, detail) => findings.push({ check, severity, spot, detail });
   const openBy = new Map(opening.spots.map(spot => [spot.hero, rows(spot)]));
+  const callModels = callContexts({ opening, responses, threeBets, fourBets, multiway, limp });
+  const capacityConflicts = [];
+  const reportOverfold = (context, label, foldRate, threshold, detail) => {
+    const capacity = context && validCallEquities(callEquities, context) ? callDefenseCapacity(context, callEquities) : null;
+    // Narrow, visible exception: impossible even at maximum legal call frequency,
+    // AND this strategy actually reaches that bound. Merely deleting calls, or
+    // presenting stale equities, can never turn an ordinary overfold into a warning.
+    if (capacity && capacity.minimumFoldRate > threshold + 1e-12 && foldRate <= capacity.minimumFoldRate + 1e-12) {
+      capacityConflicts.push({ spot: context.spot.id, ...capacity, requiredContinuationPct: (1 - threshold) * 100 });
+      add("ev-capacity-conflict", "warn", label, `${detail}。ただし指定EV制約・固定レイズ下の最大継続率は${capacity.maximumContinuationPct.toFixed(2)}%。全ての合法コールを埋めても両立不能（均衡未達）。`);
+    } else add("auto-profit", "error", label, detail);
+  };
   const responseBy = new Map(responses.spots.map(spot => [`${spot.opener}>${spot.hero}`, spot]));
 
   // 1. Opening ranges: strength order and position nesting.
@@ -247,7 +261,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     const threshold = risk / (risk + reward);
     const foldRate = weightedFold(spot, hand => openRows.get(hand).open / 100);
     threeBetDefense.push({ spot: label, size: spot.three_bet_size_bb, foldRate, threshold });
-    if (foldRate > threshold) add("auto-profit", "error", label, `オープナーのフォールド率 ${pct(foldRate)} > 損益分岐 ${pct(threshold)}（どの2枚でも3betで得をする）`);
+    if (foldRate > threshold) reportOverfold(callModels.find(c => c.spot === spot), label, foldRate, threshold, `オープナーのフォールド率 ${pct(foldRate)} > 損益分岐 ${pct(threshold)}（どの2枚でも3betで得をする）`);
   }
 
   // 4. 3bettor facing a 4bet: range flow and auto-profit for the 4bettor.
@@ -344,7 +358,26 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   const crossStrengthSummary = { count: inversions.reduce((sum, f) => sum + f.count, 0),
     warnings: inversions.length, spots: [...new Set(inversions.map(f => f.spot))].sort() };
 
+  // 8. Reproducible EV audit: checked-in seeded equities, never .local facts.
+  // Refuse stale/missing inputs rather than silently trusting a hand EV field.
+  for (const context of callModels) {
+    if (!validCallEquities(callEquities, context)) {
+      add("call-equity-source", "error", context.spot.id, "勝率表が未生成・不正、または相手レンジ／サイズが変更済み。build:estimatesで再計算が必要。");
+      continue;
+    }
+    for (const row of context.spot.hands) {
+      if (context.reach(row.hand) <= 0 || row.call <= 0) continue;
+      const { call_ev_bb: ev } = callFacts(context, row.hand, callEquities.spots[context.spot.id].equities[row.hand]);
+      if (ev < -0.05) {
+        add("negative-ev-call", row.call >= 10 && ev < -0.2 ? "error" : "warn", context.spot.id,
+          `${row.hand}: call ${row.call}% / コールEV ${ev.toFixed(4)}bb`);
+      } else if (ev < 0.05 && row.call > 50) {
+        add("boundary-ev-call", "error", context.spot.id, `${row.hand}: 境界EV ${ev.toFixed(4)}bbでcall ${row.call}% > 50%`);
+      }
+    }
+  }
+
   // Range widths for a sanity read.
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
-  return { findings, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
+  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
 }

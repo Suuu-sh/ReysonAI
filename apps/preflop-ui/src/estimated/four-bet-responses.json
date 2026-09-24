@@ -16,7 +16,7 @@
     "method": "独自に手作業で設計したハンド群別・位置別の5%刻みの概算。早いオープナーをタイトと仮定し、IPではコールを多めに配分。刻みは計算精度を意味しない。",
     "rake": {
       "rate": 0.05,
-      "cap_bb": 3.0,
+      "cap_bb": 3,
       "no_flop_no_drop": true,
       "calibrated": true
     },
@@ -26,7 +26,8 @@
     "tree_policy": "応答アクションはfold / call / all_in。サイズは共通configから計算し、spot間の正確なraise-to額を後続履歴に引き継ぐ。",
     "scope_note": "スクイーズ、コールド4bet、複数人応答、5bet後の応答はaction-tree.jsonの別spotとして保存。",
     "warning": "推定値。レーキ環境を仮定した上流データを参照するが、GTO・EV・相手カード除去・前段との同時均衡は保証しない。",
-    "reference_note": "競合サービスのチャート・頻度は転用していない。既存コードの合法アクションと保存サイズのみを参照。"
+    "reference_note": "競合サービスのチャート・頻度は転用していない。既存コードの合法アクションと保存サイズのみを参照。",
+    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
   },
   "spot_count": 15,
   "hand_classes_per_spot": 169,
@@ -42,8 +43,8 @@
       "hero_position_vs_opener": "IP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -153,8 +154,8 @@
         },
         {
           "hand": "KQs",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -251,8 +252,8 @@
         },
         {
           "hand": "QJs",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -1241,8 +1242,8 @@
       "hero_position_vs_opener": "IP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -1352,8 +1353,8 @@
         },
         {
           "hand": "KQs",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -1450,8 +1451,8 @@
         },
         {
           "hand": "QJs",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -2440,8 +2441,8 @@
       "hero_position_vs_opener": "IP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -2551,8 +2552,8 @@
         },
         {
           "hand": "KQs",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -3639,8 +3640,8 @@
       "hero_position_vs_opener": "OOP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -3750,8 +3751,8 @@
         },
         {
           "hand": "KQs",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -4838,8 +4839,8 @@
       "hero_position_vs_opener": "OOP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -4949,8 +4950,8 @@
         },
         {
           "hand": "KQs",
-          "fold": 90,
-          "call": 10,
+          "fold": 100,
+          "call": 0,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -6037,8 +6038,8 @@
       "hero_position_vs_opener": "IP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -7236,8 +7237,8 @@
       "hero_position_vs_opener": "IP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -8435,8 +8436,8 @@
       "hero_position_vs_opener": "OOP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -9634,8 +9635,8 @@
       "hero_position_vs_opener": "OOP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -10833,8 +10834,8 @@
       "hero_position_vs_opener": "IP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 8.0,
-      "four_bet_size_bb": 20.0,
+      "three_bet_size_bb": 8,
+      "four_bet_size_bb": 20,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -12032,8 +12033,8 @@
       "hero_position_vs_opener": "OOP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -13231,8 +13232,8 @@
       "hero_position_vs_opener": "OOP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -14430,8 +14431,8 @@
       "hero_position_vs_opener": "OOP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -15629,8 +15630,8 @@
       "hero_position_vs_opener": "OOP",
       "open_size_bb": 2.5,
       "effective_stack_bb": 100,
-      "three_bet_size_bb": 12.0,
-      "four_bet_size_bb": 26.0,
+      "three_bet_size_bb": 12,
+      "four_bet_size_bb": 26,
       "all_in_size_bb": 100,
       "hands": [
         {
@@ -16829,7 +16830,7 @@
       "open_size_bb": 3.5,
       "effective_stack_bb": 100,
       "three_bet_size_bb": 10.5,
-      "four_bet_size_bb": 24.0,
+      "four_bet_size_bb": 24,
       "all_in_size_bb": 100,
       "hands": [
         {

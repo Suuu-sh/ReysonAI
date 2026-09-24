@@ -4,6 +4,7 @@ This is an authoring-time, hand-group frequency table, not a solver result.
 Only the staging directory used by build-estimates.mjs may be written.
 """
 import json
+from call_policy import apply_call_policy
 import os
 import subprocess
 import sys
@@ -455,7 +456,8 @@ CO_BTN = profile('''
 def widen_calls(base, spec):
     """Cap fold frequency by moving only the released share into calls.
 
-    The review's 18.8% three-way price is a guide, not a solver threshold:
+    Historical authoring proposals only; apply_call_policy recomputes selection
+    using the current caller range, rake, EQR and exact EV, not a width target:
     suited hands/pairs realize better out of position than weak offsuit hands.
     Squeeze frequencies stay with the original value-heavy profiles.
     """
@@ -476,8 +478,8 @@ def widen_calls(base, spec):
 # often. These are fold ceilings, not exact frequency targets. In particular,
 # Kx/Ax/Qx suited hands and connected suited hands gain calls, while the small
 # pairs (22–44) retain their existing set-mining calls. The additional call
-# bands below also keep each spot near at least 80% of its heads-up defense
-# width; neither the opener nor the caller's frequencies are multiplied in.
+# bands below are authoring baselines, not minimum defense requirements after
+# EV selection; neither the opener nor the caller's frequencies are multiplied in.
 UTG_HJ = widen_calls(UTG_HJ, '''
 10: KJs KTs
 40: A7s A4s K9s K8s K7s K6s K5s Q9s T8s 54s
@@ -598,4 +600,5 @@ validateMultiwayDataset(JSON.parse(fs.readFileSync(0, 'utf8')));
     subprocess.run(['node', '--input-type=module', '-e', check], cwd=ROOT,
                    input=serialized, text=True, check=True)
     (STAGING / 'multiway-responses.json').write_text(serialized)
+    apply_call_policy('multiway-responses')
     print('Generated and validated 6 spots / 1,014 hands')
