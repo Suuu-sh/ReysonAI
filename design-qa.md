@@ -171,3 +171,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Desktop (1280px), tablet (768px), and mobile (390px) were visually checked in the local browser. The mobile document stays within its viewport; the matrix remains readable with horizontal overflow available where needed. Spot switching changed K7s to BB-vs-BTN Call 85%, the mobile menu navigated to Pricing, and the free CTA opened the existing onboarding at `/app` with Japanese document language.
 - Planned natural-language adjustments, advanced training, accounts, paid features, and provisional ¥680 pricing are explicitly identified as unavailable. The mixed-frequency comparison is labeled illustrative rather than competitor data.
 - Verification: `npm run lint`, `npm run typecheck`, `npm test` (142 passed), `npm run build`, and `npm run test:sites` (4 passed). Vite still warns about large existing product-app chunks; marketing and product routes are split.
+
+## Japanese service site (2026-09-25)
+- Added `/ja` with a language switch while keeping `/` English and `/app` Japanese. All marketing sections, saved-range preview explanations, provisional pricing, accessibility labels, document language, title and description are localized.
+- Browser verification at desktop/tablet and 390px mobile: Japanese hero and pricing remain within the viewport; the BB-vs-BTN preview shows K7s Call 85% in Japanese, mobile navigation reaches `/ja#pricing`, and the planned/billing caveats remain explicit.
+- English switching returns to `/` with English title and document language; `/app` still opens the original Japanese onboarding. Lint, TypeScript check, 143 tests (including locale-shape parity), build and 4 Sites tests pass. The pre-existing product-app bundle warning remains.

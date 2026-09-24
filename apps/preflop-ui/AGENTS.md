@@ -2,6 +2,7 @@
 
 ## Service site (2026-09-25)
 - The marketing site lives at `/`; the existing preflop workspace and its local onboarding remain at `/app`. Keep these routes separate so landing-page work does not replace or alter persisted strategy behavior.
+- The Japanese service-site edition lives at `/ja`, with an EN/日本語 switch in the header. Keep the English and Japanese pages structurally identical, localize every user-facing section and product-preview explanation, and set the document language and metadata by route.
 - Use the black/charcoal and restrained pink Solvea visual language. The hero must show an interactive 13×13 range plus a selected hand and explanation, using a compact projection of the persisted BTN-open and BB-vs-BTN data, not invented strategy rows.
 - Position Solvea as practical AI-estimated poker strategy for learning, not an inexpensive or more accurate GTO solver. Explicitly distinguish estimates from GTO output and mark unreleased adaptive chat, advanced learning, accounts, billing, and provisional Plus pricing as planned.
 - Keep marketing copy and pricing in `src/site/content.ts`; build the small landing-page range projection from its persisted JSON sources with `scripts/build-site-preview.mjs`. Preserve keyboard access, mobile matrix scrolling, and reduced-motion behavior.
