@@ -14,6 +14,13 @@ export const EQR = Object.freeze({
   offsuit_other: [0.92, 0.70],
 });
 export const MULTIWAY_EQR = 0.90;
+// SB calling an open plus a cold call still has BB left to act behind it.
+// Assumed discount, not solver output: BB squeezes roughly 3–5% there, which
+// forfeits SB's whole call (×~0.95), and BB overcalls roughly 15–20%, turning
+// SB's one-pair-type calls into four-way pots OOP to everyone (×~0.95). The
+// extra margin to 0.85 covers SB's narrow, capped-looking flat inviting more
+// BB squeezes than the BB-vs-open+1 data implies.
+export const BB_BEHIND_EQR = 0.85;
 const ranks = "23456789TJQKA";
 export function eqrCategory(hand) {
   if (!/^(?:([2-9TJQKA])\1|[2-9TJQKA]{2}[so])$/.test(hand)) throw new Error(`Invalid hand: ${hand}`);
@@ -30,13 +37,14 @@ export function eqrCategory(hand) {
   if (broadway) return "offsuit_broadway";
   return gap <= 1 ? "offsuit_connected" : "offsuit_other";
 }
-export function equityRealization(hand, hero, opponents, { allIn = false } = {}) {
+export function equityRealization(hand, hero, opponents, { allIn = false, bbBehind = false } = {}) {
   const category = eqrCategory(hand);
   if (!positions.includes(hero) || !Array.isArray(opponents) || ![1, 2].includes(opponents.length) ||
       new Set([hero, ...opponents]).size !== opponents.length + 1 || opponents.some(p => !positions.includes(p))) {
     throw new Error("EQR requires two or three distinct valid positions");
   }
+  if (bbBehind && (hero !== "SB" || opponents.includes("BB"))) throw new Error("BB behind applies only to SB before BB acts");
   if (allIn) return 1;
   const ip = opponents.every(opponent => isInPosition(hero, opponent));
-  return EQR[category][ip ? 0 : 1] * (opponents.length === 2 ? MULTIWAY_EQR : 1);
+  return EQR[category][ip ? 0 : 1] * (opponents.length === 2 ? MULTIWAY_EQR : 1) * (bbBehind ? BB_BEHIND_EQR : 1);
 }

@@ -28,7 +28,7 @@ test("CLI reports balance counts and spot lists but does not fail for their warn
     assert.equal(report.balanceSummary[check].count, matches.length);
     assert.deepEqual(report.balanceSummary[check].spots, [...new Set(matches.map(f => f.spot))].sort());
   }
-  assert.equal(report.rangeBalance.length, 73);
+  assert.equal(report.rangeBalance.length, 79); // +6 SB open-plus-caller spots
 });
 
 test("audit rejects an overfolding 4bet response", () => {
@@ -53,11 +53,14 @@ test("audit rejects a stronger hand folding more than a weaker one", () => {
   assert.ok(auditEstimates(data).findings.some(f => f.check === "strength-order" && f.detail.startsWith("KK")));
 });
 
-test("audit warns when a BB squeeze range exceeds its heads-up 3bet width", () => {
-  const data = datasets();
-  const spot = data.multiway.spots.find(s => s.opener === "UTG" && s.callers[0] === "HJ");
-  for (const row of spot.hands) Object.assign(row, { fold: 0, call: 0, squeeze: 100 });
-  assert.ok(auditEstimates(data).findings.some(f => f.check === "squeeze-width" && f.spot === spot.id && f.severity === "warn"));
+test("audit warns when a BB or SB squeeze range exceeds its own heads-up 3bet width", () => {
+  for (const hero of ["BB", "SB"]) {
+    const data = datasets();
+    const spot = data.multiway.spots.find(s => s.hero === hero && s.opener === "UTG" && s.callers[0] === "HJ");
+    assert.ok(!auditEstimates(data).findings.some(f => f.check === "squeeze-width"), hero);
+    for (const row of spot.hands) Object.assign(row, { fold: 0, call: 0, squeeze: 100 });
+    assert.ok(auditEstimates(data).findings.some(f => f.check === "squeeze-width" && f.spot === spot.id && f.severity === "warn" && f.detail.includes(`${hero}ヘッズアップ`)), hero);
+  }
 });
 
 test("audit rejects an incomplete SB raise/limp/fold split", () => {

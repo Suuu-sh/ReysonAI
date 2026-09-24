@@ -160,10 +160,12 @@ function compose(type, row, facts, spot) {
   }
   if (type === "multiway" || type === "iso_response") {
     const raiseName = type === "multiway" ? "スクイーズ" : "リレイズ";
+    // SB acts with BB still behind: its realization carries the extra BB-behind discount.
+    const behind = spot.bb_behind ? "後ろにBBが残り、スクイーズや4人のポットでコールの価値が下がるため、実現率を追加で割り引いています。" : "";
     const body = main === raiseKey
       ? `実現後の勝率${f1(facts.realized_equity_pct)}%、コールのEVは${evText(facts.call_ev_bb)}です。既存の${raiseName}配分を維持し、強いハンドと一部のブロッカーをレイズへ配分します。`
       : callDecision(row, facts);
-    return `${lead}${body}${row[raiseKey] > 0 && main !== raiseKey ? `一部は${raiseName}へ配分します。` : ""}${mixText(type, row)}。`;
+    return `${lead}${behind}${body}${row[raiseKey] > 0 && main !== raiseKey ? `一部は${raiseName}へ配分します。` : ""}${mixText(type, row)}。`;
   }
   const eqKey = { response: "equity_vs_open_pct", three_bet: "equity_vs_three_bet_pct", four_bet: "equity_vs_four_bet_pct" }[type];
   const rangeName = { response: `${spot.opener}のオープンレンジ`, three_bet: `${spot.three_bettor}の3betレンジ`, four_bet: `${spot.opener}の4betレンジ` }[type];

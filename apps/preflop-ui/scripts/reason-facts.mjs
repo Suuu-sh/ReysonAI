@@ -140,17 +140,22 @@ function fourBetFacts(spot) {
   };
 }
 
-// BB facing an open plus one cold call: three-way equity against both ranges.
+// BB or SB facing an open plus one cold call: three-way equity against both ranges.
+// SB pays 2BB into 8.5BB (BB's blind is dead money) and still has BB behind it.
 function multiwayFacts(spot) {
-  const { opener, callers: [caller] } = spot;
+  const { opener, callers: [caller], hero } = spot;
   const open = rangeFrom(opening.spots.find(s => s.hero === opener), row => row.open / 100);
   const called = rangeFrom(responseOf(opener, caller), row => row.call / 100);
   const random = seededRandom(seedFor(spot.id));
+  const participants = [hero, opener, caller];
+  const toCall = spot.open_size_bb - (blind[hero] ?? 0);
+  const totalPotAfterCall = participants.length * spot.open_size_bb + 1.5 - participants.reduce((n, p) => n + (blind[p] ?? 0), 0);
   return {
     type: "multiway",
-    spot: { opener, caller, hero: spot.hero, position: "OOP", squeeze_size_bb: spot.squeeze_size_bb,
-      call_break_even_equity_pct: round1(need(1.5, 8)), fair_share_pct: round1(1 / 3),
-      caller_range_combos: Math.round(totalWeight(called)) },
+    spot: { opener, caller, hero, position: "OOP", squeeze_size_bb: spot.squeeze_size_bb,
+      call_break_even_equity_pct: round1(need(toCall, totalPotAfterCall)), fair_share_pct: round1(1 / 3),
+      caller_range_combos: Math.round(totalWeight(called)),
+      ...(hero === "SB" ? { bb_behind: true } : {}) },
     hands: spot.hands.map(row => ({ hand: row.hand,
       equity_3way_pct: round1(callEquities.spots[spot.id].equities[row.hand]),
       equity_vs_caller_pct: round1(equityVsRange(row.hand, called, SAMPLES, random)),

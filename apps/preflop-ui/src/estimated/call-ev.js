@@ -14,10 +14,11 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
   const opens = new Map(opening.spots.map(s => [s.hero, s]));
   const response = (opener, hero) => responses.spots.find(s => s.opener === opener && s.hero === hero);
   const contexts = [];
-  function add(type, spot, opponents, cost, pot, ranges, reach = () => 1, toSize) {
+  function add(type, spot, opponents, cost, pot, ranges, reach = () => 1, toSize, { bbBehind = false } = {}) {
     const hero = spot.hero;
     const allIn = toSize >= spot.effective_stack_bb;
-    const input = { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn, ranges };
+    // bb_behind is recorded only when true, so BB-hero inputs keep their fingerprint.
+    const input = { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn, ...(bbBehind ? { bb_behind: true } : {}), ranges };
     contexts.push({ type, spot, input, reach });
   }
   for (const spot of responses?.spots ?? []) {
@@ -43,13 +44,15 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
       hand => source.get(hand).three_bet / 100, spot.four_bet_size_bb);
   }
   for (const spot of multiway?.spots ?? []) {
+    // BB (1BB) or SB (0.5BB) calls the 2.5BB open after one cold call: 1.5BB into 8BB,
+    // or 2BB into 8.5BB with BB's blind dead money and BB still to act behind SB.
     const size = spot.open_size_bb;
     const participants = [spot.hero, spot.opener, ...spot.callers];
     const dead = 1.5 - participants.reduce((n, p) => n + (blind[p] ?? 0), 0);
     add("multiway", spot, [spot.opener, ...spot.callers], size - (blind[spot.hero] ?? 0),
       participants.length * size + dead,
       [range(opens.get(spot.opener), row => row.open / 100), ...spot.callers.map(p => range(response(spot.opener, p), row => row.call / 100))],
-      undefined, size);
+      undefined, size, { bbBehind: spot.hero === "SB" && !participants.includes("BB") });
   }
   for (const spot of limp?.spots.filter(s => s.id === "SB_vs_BB_iso") ?? []) {
     const open = byHand(opens.get("SB"));
@@ -68,8 +71,8 @@ export function validCallEquities(table, context) {
 }
 export function callFacts(context, hand, equity) {
   if (!Number.isFinite(equity) || equity < 0 || equity > 1) throw new Error(`Invalid equity: ${hand}`);
-  const { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn } = context.input;
-  const eqr = equityRealization(hand, hero, opponents, { allIn });
+  const { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn, bb_behind: bbBehind = false } = context.input;
+  const eqr = equityRealization(hand, hero, opponents, { allIn, bbBehind });
   return { eqr, realized_equity_pct: equity * eqr * 100, call_ev_bb: equity * eqr * raked(pot) - cost };
 }
 export function allowedCall(call, ev) {

@@ -40,7 +40,7 @@ function history(type, spot) {
     case "three_bet": return `${spot.opener}が${open}BBでオープン、${spot.three_bettor}が${spot.three_bet_size_bb}BBに3bet、他は全員フォールド。${spot.opener}が判断（4betは${spot.four_bet_size_bb}BB）。`;
     case "four_bet": return `${spot.opener}が${open}BBでオープン、${spot.hero}が${spot.three_bet_size_bb}BBに3bet、${spot.opener}が${spot.four_bet_size_bb}BBに4bet。${spot.hero}が判断（5betは100BBオールインのみ）。`;
     case "five_bet": return `${spot.opener}が${open}BBでオープン、${spot.five_bettor}が${spot.three_bet_size_bb}BBに3bet、${spot.opener}が${spot.four_bet_size_bb}BBに4bet、${spot.five_bettor}が100BBオールイン。${spot.opener}がコールかフォールドを判断。`;
-    case "multiway": return `${spot.opener}が${open}BBでオープン、${spot.callers.join("・")}がコール、他は全員フォールド。BBが判断（スクイーズは${spot.squeeze_size_bb}BB）。`;
+    case "multiway": return `${spot.opener}が${open}BBでオープン、${spot.callers.join("・")}がコール、間の全員フォールド。${spot.hero}が判断（スクイーズは${spot.squeeze_size_bb}BB${spot.hero === "SB" ? "、後ろにBBが残る" : ""}）。`;
     default: throw new Error(type);
   }
 }

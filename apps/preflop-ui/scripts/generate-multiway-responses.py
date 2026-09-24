@@ -1,4 +1,4 @@
-"""Author BB estimates against a 2.5BB open and one 2.5BB cold caller.
+"""Author BB and SB estimates against a 2.5BB open and one 2.5BB cold caller.
 
 This is an authoring-time, hand-group frequency table, not a solver result.
 Only the staging directory used by build-estimates.mjs may be written.
@@ -541,6 +541,166 @@ PROFILES = {
 }
 
 
+# ---------------------------------------------------------------------------
+# SB facing an open plus one cold call (call%, squeeze%), BB still to act.
+# SB pays 2BB into 8.5BB, is OOP to everyone, and BB behind can squeeze or
+# overcall into a four-way pot. The shared EV gate applies BB_BEHIND_EQR on
+# top of the OOP and three-way EQR, so only hands with roughly 36%+ three-way
+# equity call profitably: 88+/AK/AQs (vs UTG) widening to 66+/ATs/KQs/KJs/AQo
+# (vs CO). Small pairs and suited connectors are negative-EV calls under this
+# model and fold. The strategy is squeeze-or-fold first: a value squeeze core
+# (QQ+/AK, then JJ/TT/AQs/AJs as the opener moves later) plus A5s–A2s and a
+# few Kxs/KQo blocker squeezes. AA/KK/QQ/AKs keep 15–35% calls so the flat is
+# never capped, and boundary hands are mixed rather than pure. Every SB
+# profile is narrower than the same history's BB profile, and its squeeze is
+# narrower than SB's heads-up 3bet versus the same opener.
+SB_UTG_HJ = profile('''
+20 80: AA KK
+30 70: QQ
+55 45: JJ
+70 25: TT
+60 5: 99
+40 0: 88
+30 70: AKs
+50 30: AQs
+30 10: AJs
+0 35: A5s
+0 25: A4s
+25 70: AKo
+0 10: AQo
+0 20: KQs
+0 5: KJs
+''')
+
+# The CO cold-caller is a little wider than HJ: AJs turns clearly +EV and
+# the squeeze adds a little more AQ/blocker weight.
+SB_UTG_CO = profile('''
+20 80: AA KK
+30 70: QQ
+55 45: JJ
+70 25: TT
+65 5: 99
+45 0: 88
+30 70: AKs
+50 35: AQs
+45 10: AJs
+0 40: A5s
+0 25: A4s
+25 70: AKo
+0 15: AQo
+0 20: KQs
+0 5: KJs
+''')
+
+# BTN's flat is the widest and weakest of the UTG histories.
+SB_UTG_BTN = profile('''
+20 80: AA KK
+30 70: QQ
+55 45: JJ
+70 25: TT
+70 5: 99
+45 0: 88
+30 70: AKs
+50 40: AQs
+50 15: AJs
+0 40: A5s
+0 30: A4s
+0 10: A3s
+25 75: AKo
+0 15: AQo
+0 25: KQs
+0 10: KJs
+''')
+
+# Versus HJ the squeeze widens to JJ/TT/AQ with more wheel-ace blockers; TT-77,
+# ATs, AQo and KQs become (at least borderline) calls.
+SB_HJ_CO = profile('''
+15 85: AA KK
+25 75: QQ
+45 55: JJ
+60 35: TT
+75 15: 99
+60 5: 88
+40 0: 77
+20 80: AKs
+45 50: AQs
+55 35: AJs
+45 10: ATs
+0 45: A5s
+0 35: A4s
+0 15: A3s
+0 5: A2s
+25 75: AKo
+35 25: AQo
+0 5: AJo
+40 30: KQs
+20 15: KJs
+0 10: KTs
+''')
+
+SB_HJ_BTN = profile('''
+15 85: AA KK
+25 75: QQ
+45 55: JJ
+60 35: TT
+75 15: 99
+65 5: 88
+45 0: 77
+20 80: AKs
+45 50: AQs
+55 35: AJs
+50 10: ATs
+0 45: A5s
+0 35: A4s
+0 15: A3s
+0 5: A2s
+25 75: AKo
+40 25: AQo
+0 10: AJo
+50 30: KQs
+20 15: KJs
+0 10: KTs
+''')
+
+# CO open + BTN call is the widest history: the squeeze keeps most of the
+# value range (TT+/AJs+/AQo+) with a larger blocker component, and the flat
+# widens to 66+, ATs, AJo and KQs–KTs (boundary hands capped at 50%).
+SB_CO_BTN = profile('''
+15 85: AA KK
+20 80: QQ
+35 65: JJ
+50 50: TT
+65 30: 99
+70 15: 88
+70 5: 77
+45 0: 66
+20 80: AKs
+35 65: AQs
+55 45: AJs
+60 25: ATs
+0 10: A9s
+0 55: A5s
+0 45: A4s
+0 30: A3s
+0 20: A2s
+15 85: AKo
+45 50: AQo
+35 20: AJo
+55 45: KQs
+55 30: KJs
+35 20: KTs
+0 5: K9s
+0 10: QJs
+0 15: KQo
+''')
+
+SB_PROFILES = {
+    ('UTG', 'HJ'): SB_UTG_HJ, ('UTG', 'CO'): SB_UTG_CO, ('UTG', 'BTN'): SB_UTG_BTN,
+    ('HJ', 'CO'): SB_HJ_CO, ('HJ', 'BTN'): SB_HJ_BTN, ('CO', 'BTN'): SB_CO_BTN,
+}
+HERO_PROFILES = {'BB': PROFILES, 'SB': SB_PROFILES}
+
+
 def build():
     # Read both persisted predecessors from staging. The caller's capped call
     # range and the opener's RFI range inform the estimates; neither frequency
@@ -552,35 +712,37 @@ def build():
             'schema_version': '1.0', 'strategy_type': 'ai_estimate_not_gto',
             'game': '6max Cash / No-Limit Texas Holdem', 'effective_stack_bb': 100,
             'open_size_bb': 2.5, 'ante_bb': 0,
-            'scope': 'オープナー2.5BB→1人が2.5BBコール→間は全員フォールド→BBの初回応答。指定6局面のみ。',
+            'scope': 'オープナー2.5BB→1人が2.5BBコール→間は全員フォールド→BBまたはSBの初回応答（SBの場合は後ろにBBが残る）。BB・SB各6局面のみ。',
             'source_of_truth': '先行するopening-ranges.jsonとpreflop-ranges.jsonを参照。スクイーズ額はconfigs/cash-6max-100bb.jsonの固定サイズ。',
             'legal_actions': ['fold', 'call', 'squeeze'],
-            'method': '手札群と6つの位置履歴ごとに手作業で設計した整数%のAI概算。安いコールでもOOPの3人ポットを考慮し、スクイーズはバリュー中心。',
+            'method': '手札群と位置履歴（BB・SB各6局面）ごとに手作業で設計した整数%のAI概算。安いコールでもOOPの3人ポットを考慮し、スクイーズはバリュー中心。SBは後ろにBBが残るためEQRを追加で割り引き、スクイーズかフォールドを中心にする。',
             'rake': {'rate': CONFIG['rake']['rate'], 'cap_bb': CONFIG['rake']['cap_bb'],
                      'no_flop_no_drop': CONFIG['rake']['no_flop_no_drop'], 'calibrated': True},
-            'frequency_semantics': 'その履歴でBBが当該ハンドを持つ条件付き割合。fold+call+squeeze=100。前段のオープン・コール頻度を再乗算しない。',
-            'sizing_semantics': 'スクイーズ額は追加額ではなくBBの合計投入額。頻度0なら行のsqueeze_size_bbはnull。',
+            'frequency_semantics': 'その履歴でHero（BBまたはSB）が当該ハンドを持つ条件付き割合。fold+call+squeeze=100。前段のオープン・コール頻度を再乗算しない。',
+            'sizing_semantics': 'スクイーズ額は追加額ではなくHeroの合計投入額。頻度0なら行のsqueeze_size_bbはnull。',
             'warning': '独立したAI推定値。レーキ環境を仮定したヒューリスティックで、ソルバー・GTO均衡・EVの厳密計算・カード除去・前段との同時均衡を保証しない。',
             'reference_note': '競合サービスのチャートや頻度は転用していない。',
         },
-        'spot_count': 6, 'hand_classes_per_spot': 169,
-        'entry_count': 1014, 'spots': [],
+        'spot_count': 12, 'hand_classes_per_spot': 169,
+        'entry_count': 12 * 169, 'spots': [],
     }
-    for (opener, caller), frequencies in PROFILES.items():
-        assert any(s['hero'] == opener for s in opening['spots'])
-        assert any(s['opener'] == opener and s['hero'] == caller for s in responses['spots'])
-        size = three_bet_to(opener, 'BB', caller_count=1)
-        rows = []
-        for hand in HANDS:
-            call, squeeze = frequencies[hand]
-            rows.append({'hand': hand, 'fold': 100-call-squeeze,
-                         'call': call, 'squeeze': squeeze,
-                         'squeeze_size_bb': size if squeeze else None})
-        result['spots'].append({
-            'id': f'BB_vs_{opener}_{caller}call', 'opener': opener,
-            'callers': [caller], 'hero': 'BB', 'open_size_bb': 2.5,
-            'squeeze_size_bb': size, 'effective_stack_bb': 100, 'hands': rows,
-        })
+    # Order: the six BB spots, then the six SB spots (validator checks it).
+    for hero, profiles in HERO_PROFILES.items():
+        for (opener, caller), frequencies in profiles.items():
+            assert any(s['hero'] == opener for s in opening['spots'])
+            assert any(s['opener'] == opener and s['hero'] == caller for s in responses['spots'])
+            size = three_bet_to(opener, hero, caller_count=1)
+            rows = []
+            for hand in HANDS:
+                call, squeeze = frequencies[hand]
+                rows.append({'hand': hand, 'fold': 100-call-squeeze,
+                             'call': call, 'squeeze': squeeze,
+                             'squeeze_size_bb': size if squeeze else None})
+            result['spots'].append({
+                'id': f'{hero}_vs_{opener}_{caller}call', 'opener': opener,
+                'callers': [caller], 'hero': hero, 'open_size_bb': 2.5,
+                'squeeze_size_bb': size, 'effective_stack_bb': 100, 'hands': rows,
+            })
     return result
 
 
@@ -601,4 +763,4 @@ validateMultiwayDataset(JSON.parse(fs.readFileSync(0, 'utf8')));
                    input=serialized, text=True, check=True)
     (STAGING / 'multiway-responses.json').write_text(serialized)
     apply_call_policy('multiway-responses')
-    print('Generated and validated 6 spots / 1,014 hands')
+    print(f"Generated and validated {data['spot_count']} spots / {data['entry_count']:,} hands")

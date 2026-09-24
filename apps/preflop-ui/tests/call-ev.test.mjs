@@ -4,7 +4,7 @@ import { readFileSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { EQR, eqrCategory, equityRealization } from "../src/estimated/eqr.js";
+import { EQR, BB_BEHIND_EQR, MULTIWAY_EQR, eqrCategory, equityRealization } from "../src/estimated/eqr.js";
 import { allowedCall, callContexts, callFacts, validCallEquities } from "../src/estimated/call-ev.js";
 import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.js";
 import { hands } from "../src/data.js";
@@ -27,6 +27,12 @@ test("EQR categories use ordered precedence and the specified assumed values", (
   assert.equal(equityRealization("JTs", "BTN", ["SB", "BB"]), EQR.suited_connected[0] * 0.9);
   assert.equal(equityRealization("JTs", "BB", ["SB", "BTN"]), EQR.suited_connected[1] * 0.9);
   assert.equal(equityRealization("72o", "SB", ["BB", "BTN"], { allIn: true }), 1);
+  // SB versus an open plus a cold call, BB still to act: OOP × three-way × BB-behind.
+  assert.equal(equityRealization("99", "SB", ["UTG", "HJ"], { bbBehind: true }), EQR.pair[1] * MULTIWAY_EQR * BB_BEHIND_EQR);
+  assert.equal(equityRealization("99", "SB", ["UTG", "HJ"], { bbBehind: true, allIn: true }), 1);
+  assert.ok(BB_BEHIND_EQR > 0 && BB_BEHIND_EQR < 1);
+  assert.throws(() => equityRealization("99", "BB", ["UTG", "HJ"], { bbBehind: true }));
+  assert.throws(() => equityRealization("99", "SB", ["BB", "HJ"], { bbBehind: true }));
   for (const hand of ["AXs", "AAo", "2As", "AK"]) assert.throws(() => eqrCategory(hand));
   assert.throws(() => equityRealization("AA", "XX", ["BB"]));
   assert.throws(() => equityRealization("AA", "BB", ["BB"]));
@@ -35,14 +41,18 @@ test("EQR categories use ordered precedence and the specified assumed values", (
 test("Python and JS EQR match for all 169 hands and every HU/three-way seat assignment", () => {
   const cases = [];
   for (const hand of hands) for (const hero of positions) for (const opponent of positions.filter(p => p !== hero)) {
-    cases.push([hand, hero, [opponent], false]);
+    cases.push([hand, hero, [opponent], false, false]);
     for (const second of positions.filter(p => p !== hero && positions.indexOf(p) > positions.indexOf(opponent))) {
-      cases.push([hand, hero, [opponent, second], false], [hand, hero, [opponent, second], true]);
+      cases.push([hand, hero, [opponent, second], false, false], [hand, hero, [opponent, second], true, false]);
+      if (hero === "SB" && ![opponent, second].includes("BB")) {
+        cases.push([hand, hero, [opponent, second], false, true], [hand, hero, [opponent, second], true, true]);
+      }
     }
   }
   const result = spawnSync("python3", ["-c", "import json,sys; sys.path.insert(0,'scripts'); from eqr import equity_realization; print(json.dumps([equity_realization(*c) for c in json.load(sys.stdin)]))"], { cwd: root, input: JSON.stringify(cases), encoding: "utf8", maxBuffer: 8e6 });
   assert.equal(result.status, 0, result.stderr);
-  assert.deepEqual(JSON.parse(result.stdout), cases.map(([hand, hero, opponents, allIn]) => equityRealization(hand, hero, opponents, { allIn })));
+  assert.ok(cases.some(c => c[4]));
+  assert.deepEqual(JSON.parse(result.stdout), cases.map(([hand, hero, opponents, allIn, bbBehind]) => equityRealization(hand, hero, opponents, { allIn, bbBehind })));
 });
 
 test("strict EV boundaries: below -0.05 zero, [-0.05, +0.05) capped, +0.05 preserved", () => {
@@ -58,13 +68,20 @@ test("strict EV boundaries: below -0.05 zero, [-0.05, +0.05) capped, +0.05 prese
 test("call contexts derive actual investments, dead blinds and prior weighted opponent ranges", () => {
   const data = datasets();
   const contexts = callContexts(data);
-  assert.equal(contexts.length, 52);
+  assert.equal(contexts.length, 58);
   const input = id => contexts.find(c => c.spot.id === id).input;
   assert.deepEqual([input("BB_vs_SB").cost_to_call, input("BB_vs_SB").total_pot_after_call], [2.5, 7]);
   assert.deepEqual([input("SB_vs_UTG").cost_to_call, input("SB_vs_UTG").total_pot_after_call], [2, 6]);
   assert.deepEqual([input("SB_vs_BB_three_bet").cost_to_call, input("SB_vs_BB_three_bet").total_pot_after_call], [7, 21]);
   assert.deepEqual([input("BB_vs_SB_four_bet").cost_to_call, input("BB_vs_SB_four_bet").total_pot_after_call], [13.5, 48]);
   assert.deepEqual([input("BB_vs_UTG_HJcall").cost_to_call, input("BB_vs_UTG_HJcall").total_pot_after_call], [1.5, 8]);
+  assert.equal(input("BB_vs_UTG_HJcall").bb_behind, undefined);
+  // SB completes 2BB of the 2.5BB open; BB's 1BB blind is dead money and BB still acts behind.
+  assert.deepEqual([input("SB_vs_CO_BTNcall").cost_to_call, input("SB_vs_CO_BTNcall").total_pot_after_call, input("SB_vs_CO_BTNcall").bb_behind], [2, 8.5, true]);
+  const sb = contexts.find(c => c.spot.id === "SB_vs_CO_BTNcall");
+  const sbFacts = callFacts(sb, "99", 0.4);
+  assert.equal(sbFacts.eqr, EQR.pair[1] * MULTIWAY_EQR * BB_BEHIND_EQR);
+  assert.ok(Math.abs(sbFacts.call_ev_bb - (0.4 * sbFacts.eqr * raked(8.5) - 2)) < 1e-12);
   assert.deepEqual([input("SB_vs_BB_iso").cost_to_call, input("SB_vs_BB_iso").total_pot_after_call], [2.5, 7]);
   const c = contexts.find(c => c.spot.id === "BB_vs_SB");
   const facts = callFacts(c, "J4o", 0.352);
