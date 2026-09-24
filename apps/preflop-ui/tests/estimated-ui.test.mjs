@@ -85,6 +85,7 @@ test("action block selection points to saved ranges and keeps unsupported contin
   assert.match(html, /aria-pressed="true" aria-label="BBのアクションに戻り、レンジ表を表示" title="このアクションに戻り、関連するレンジ表を表示"/);
 
   const chosenAction = renderToStaticMarkup(createElement(ActionPath, { expanded: true, opener: "UTG", hero: "BB", rangeType: "response", onRewindActionBlock() {} }));
+  assert.match(chosenAction, /class="action-seat action-seat-seat active action-seat-clickable"[^>]*title="ブロック全体をクリックしてこのアクションに戻る"/);
   assert.match(chosenAction, /class="chosen" aria-pressed="true" title="クリックしてこのアクション前に戻る">Fold</);
 });
 

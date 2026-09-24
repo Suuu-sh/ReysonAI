@@ -5,6 +5,7 @@
 .action-path-seats { display: flex; gap: 6px; min-width: 0; width: 100%; overflow-x: auto; scrollbar-width: none; }
 .action-path-seats::-webkit-scrollbar { display: none; }
 .action-seat { flex: 0 0 104px; padding: 8px 7px 6px; min-width: 0; border: 1px solid transparent; border-radius: 8px; background: var(--surface-raised); }
+.action-seat-clickable { cursor: pointer; }
 .action-seat.active { border-color: var(--accent); background: var(--surface-raised); }
 .action-seat.range-selected { border-color: var(--accent-soft); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-soft) 28%, transparent); }
 .action-seat.active.range-selected { border-color: var(--accent-bright); }
