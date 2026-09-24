@@ -14,7 +14,7 @@ export function ResultsView({ section, node, solution, combos, aggregates, selec
     <div className={`results ${showMatrix ? "" : "detail-only"} ${!showMatrix ? "has-combos" : ""}`}>
       {showMatrix && <StrategyMatrix node={node} aggregates={aggregates} selected={selected} actions={actions} onSelect={onSelect} />}
 
-      {chosen.length > 0 && <div className="detail-column">
+      {chosen.length > 0 && <div className="detail-column" key={selected}>
         <Panel>
           <SectionHeading title="選択ハンドの詳細" />
           <div className="hand-title"><strong>{selected}</strong><span>{chosen.length} Combos</span></div>

@@ -310,3 +310,68 @@ th small { display: block; }
 .onboarding-cancel { border: 0; background: transparent; color: var(--text-muted); }
 .onboarding-note { color: var(--text-subtle); font-size: 11px; }
 @media (max-width: 480px) { .onboarding-card { padding: 20px; } .level-option { grid-template-columns: 1fr; } .level-name { grid-row: auto; } }
+
+/* ---- Motion ---- */
+:root { --ease-out: cubic-bezier(.22, 1, .36, 1); --ease-spring: cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cell-in { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: none; } }
+@keyframes bar-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+button, select, input { transition: border-color .15s ease, background-color .15s ease, color .15s ease, transform .12s var(--ease-out), box-shadow .15s ease; }
+button:active:not(:disabled) { transform: scale(.97); }
+.primary:hover:not(:disabled) { box-shadow: 0 4px 18px rgb(240 96 158 / 32%); transform: translateY(-1px); }
+.primary:active:not(:disabled) { transform: translateY(0) scale(.97); }
+
+main > * { animation: fade-up .35s var(--ease-out) both; }
+main > *:nth-child(2) { animation-delay: .05s; }
+main > *:nth-child(3) { animation-delay: .1s; }
+main > *:nth-child(4) { animation-delay: .15s; }
+.panel { transition: border-color .2s ease; }
+.panel:hover { border-color: var(--line-strong); }
+
+.header-nav button > svg { transition: transform .2s var(--ease-spring), color .15s ease; }
+.header-nav button:hover:not(:disabled) > svg { transform: translateX(2px); }
+.header-nav button.active > svg { animation: pop .35s var(--ease-out); }
+.brand > svg { transition: transform .4s var(--ease-spring); }
+.brand:hover > svg { transform: rotate(-12deg) scale(1.08); }
+.sidebar-backdrop { animation: fade-in .2s ease both; }
+
+.tabs button { transition: color .15s ease, border-color .25s var(--ease-out); }
+.spot-presets button[aria-pressed="true"] { animation: pop .3s var(--ease-out); }
+
+.matrix button { animation: cell-in .38s var(--ease-out) both; animation-delay: calc(var(--wave, 0) * 14ms); transition: filter .12s ease, transform .15s var(--ease-out); }
+.matrix button:hover:not(:disabled) { transform: scale(1.06); z-index: 3; }
+.matrix button.picked { animation: pop .3s var(--ease-out); outline-color: #fff; }
+.cell-mix span { transition: width .35s var(--ease-out), background-color .25s ease; }
+
+.detail-column > * { animation: fade-up .3s var(--ease-out) both; }
+.detail-column > *:nth-child(2) { animation-delay: .06s; }
+.hand-title strong { display: inline-block; animation: pop .35s var(--ease-out); }
+.track > div { transform-origin: left center; animation: bar-grow .55s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 60ms + .08s); transition: width .35s var(--ease-out); }
+.bar-row { animation: fade-in .3s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
+
+.combo-disclosure > summary { transition: color .15s ease; }
+.combo-disclosure[open] > .panel { animation: fade-up .28s var(--ease-out) both; }
+tbody tr { transition: background-color .12s ease; }
+tbody tr:hover { background: var(--surface-hover); }
+.state { animation: fade-up .3s var(--ease-out) both; }
+.state-error { animation: fade-up .3s var(--ease-out) both; }
+
+.onboarding-card { animation: rise .5s var(--ease-out) both; }
+.onboarding-card > * { animation: fade-up .4s var(--ease-out) both; }
+.onboarding-card > *:nth-child(2) { animation-delay: .06s; }
+.onboarding-card > *:nth-child(3) { animation-delay: .12s; }
+.onboarding-card > *:nth-child(4) { animation-delay: .18s; }
+.onboarding-card > *:nth-child(5) { animation-delay: .24s; }
+.onboarding-card > *:nth-child(n+6) { animation-delay: .3s; }
+.level-option { transition: border-color .18s ease, background-color .18s ease, transform .18s var(--ease-out); }
+.level-option:hover { transform: translateX(3px); }
+.level-option.selected .level-name { animation: pop .3s var(--ease-out); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
+}
