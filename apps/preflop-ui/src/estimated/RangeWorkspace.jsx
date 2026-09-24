@@ -619,7 +619,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
               </div>
             </div>
-            <ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)}</li></ul>
+            <ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)} · レーキ {formatLabel("rake", format.rake)}</li></ul>
             <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
           </div>}
           expanded
