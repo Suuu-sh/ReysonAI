@@ -69,23 +69,27 @@ P['BTN'] = profile('''
 25: K7o Q7o J7o 97o 87o Q3s Q2s J5s-J2s T5s-T2s 95s 94s 84s 73s 52s 42s 32s
 ''')
 SB_RAISE = profile('''
-100: AA-66 AKs-A8s AKo-A8o KQs-KTs KQo-KTo QJs-QTs JTs A7s-A6s A7o-A6o
-75: K9s K9o-K8o QJo-QTo J9s T9s JTo
+80: AA KK AKs
+90: QQ-66 AQs-A6s AKo-A6o KQs-KTs KQo-KTo QJs-QTs JTs
+65: K9s K9o-K8o QJo-QTo J9s T9s JTo A5o-A3o
 50: A5s-A2s K8s Q9s Q9o-Q8o J9o-J8o T9o K7o-K6o
-75: A5o-A3o
+50: 55 K7s-K5s Q8s Q7s J8s J7s T8s T7s 98s 97s 87s 86s 76s 75s 65s 64s 54s
 25: K5o-K2o Q7o-Q2o T7o-T2o T8o A2o
 ''')
 
-# The raise range starts with hands whose current reason-facts show robust
-# equity against BB's continue range (about 55%+), then adds partial-frequency
-# blocker hands (notably wheel aces) and selected high-connected hands.
-# Frequencies are calibrated only to the aggregate user target, not copied from
-# a solver chart. The lower suited/connectivity tier is reserved for limps.
+# 2026-09-24: Protect limps with premium traps (AA/KK/AKs 20%, other value
+# hands 10%). Middle suited/connected hands split raise/limp rather than reveal
+# strength through their action; wheel aces retain blocker raises. Preserve
+# the prior participation/fold frequencies and calibrate aggregate widths only,
+# never copy a solver's hand-level chart. Weak suited hands mainly limp/fold.
 SB_LIMP = profile('''
-100: 55 K7s-K5s Q8s-Q5s J8s-J5s T8s-T5s 98s 97s 87s 86s 76s 75s 65s 64s 54s 53s 43s 42s 32s
+20: AA KK AKs
+10: QQ-66 AQs-A6s AKo-A6o KQs-KTs KQo-KTo QJs-QTs JTs K9o-K8o QJo-QTo JTo
+35: K9s J9s T9s A5o-A3o
+50: 55 K7s-K5s Q8s Q7s J8s J7s T8s T7s 98s 97s 87s 86s 76s 75s 65s 64s 54s
+100: Q6s Q5s J6s J5s T6s T5s 53s 43s 42s 32s
 75: 44-22 K4s-K2s Q4s-Q2s J4s-J2s T4s-T2s
 50: A5s-A2s A2o K8s Q9s
-25: K9s J9s T9s A5o-A3o
 ''')
 P['SB'] = (SB_RAISE, SB_LIMP)
 
@@ -98,7 +102,7 @@ def main():
             'open_size_bb': CONFIG['sizing']['open_sizes_bb'][0], 'scope': 'Heroまで全員フォールドした未オープンポットでのraise-first-in。',
             'source_of_truth': 'ユーザーが指定したUTG / HJ / CO / BTN / SBのオープンレンジ追加。SBだけconfigに指定した3.5BB、他は2.5BB。',
             'method': 'ハンドクラスごとに手作業で設計した一般知識による概算。ソルバー・EV計算なし。',
-            'sb_policy': 'SBはfold / 1BB limp / 3.5BB raise。勝率の高いバリューを軸にブロッカー付き一部を混ぜ、低～中程度のプレイアビリティを残すハンドをリンプへ配分した独立推定。',
+            'sb_policy': 'SBはfold / 1BB limp / 3.5BB raise。AA・KK・AKsなどの強い手もリンプへ混ぜてキャップを防ぎ、中位はレイズとリンプを混合。弱い手は主にリンプかフォールドとし、A5s等のブロッカー付きレイズも残す独立推定。',
             'rake': {'rate': CONFIG['rake']['rate'], 'cap_bb': CONFIG['rake']['cap_bb'], 'no_flop_no_drop': CONFIG['rake']['no_flop_no_drop'], 'calibrated': True},
             'ante_bb': 0, 'ante_note': 'アンティなし（ユーザー確認済み）。',
             'frequency_semantics': '当該ハンドを持った場合の条件付き割合(%)。SBはopen + limp + fold = 100、他ポジションはopen + fold = 100。',

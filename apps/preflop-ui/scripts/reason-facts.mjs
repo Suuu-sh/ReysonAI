@@ -161,6 +161,21 @@ function limpFacts(spot) {
   };
 }
 
+function isoFacts(spot) {
+  const sb = openOf("SB");
+  const bb = limpResponses.spots.find(s => s.id === spot.source_limp_response_id);
+  const isoRange = rangeFrom(bb, row => row.raise / 100);
+  return {
+    type: "iso_response",
+    spot: { hero: "SB", opponent: "BB", position: "OOP", iso_size_bb: spot.iso_size_bb,
+      raise_to_bb: spot.raise_to_bb, bb_iso_range_combos: Math.round(totalWeight(isoRange)),
+      call_break_even_equity_pct: round1(need(spot.iso_size_bb - spot.open_size_bb, 2 * spot.iso_size_bb)) },
+    hands: handFacts(spot.id, spot, hand => sb.get(hand).limp > 0, {
+      equity_vs_bb_iso_pct: isoRange, blocked_bb_iso_pct: isoRange,
+    }),
+  };
+}
+
 const builders = [
   ...opening.spots.map(spot => [spot.id, () => openingFacts(spot)]),
   ...responses.spots.map(spot => [spot.id, () => responseFacts(spot)]),
@@ -168,6 +183,7 @@ const builders = [
   ...fourBets.spots.map(spot => [spot.id, () => fourBetFacts(spot)]),
   ...multiway.spots.map(spot => [spot.id, () => multiwayFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp").map(spot => [spot.id, () => limpFacts(spot)]),
+  ...limpResponses.spots.filter(spot => spot.id === "SB_vs_BB_iso").map(spot => [spot.id, () => isoFacts(spot)]),
 ];
 const wanted = new Set(process.argv.slice(2));
 for (const [id, build] of builders) {

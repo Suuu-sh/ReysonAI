@@ -1,11 +1,10 @@
 // Regenerates the authored estimate JSON in a staging dir and publishes it only if the audit passes.
 // Usage: npm run build:estimates
 import { execFileSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { auditEstimates } from "../src/estimated/audit.js";
+import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.js";
 import { validateDataset } from "../src/estimated/ranges.js";
 import { validateOpeningDataset } from "../src/estimated/opening-ranges.js";
 import { validateThreeBetDataset } from "../src/estimated/three-bet-responses.js";
@@ -27,7 +26,9 @@ const generators = [
   ["python3", "generate-multiway-responses.py"],
   ["python3", "generate-limp-responses.py"],
 ];
-const staging = mkdtempSync(join(tmpdir(), "solveaai-estimates-"));
+// Keep even transient generated data in this worktree.
+mkdirSync(join(root, ".local"), { recursive: true });
+const staging = mkdtempSync(join(root, ".local/estimates-build-"));
 
 try {
   for (const name of files) if (existsSync(join(published, `${name}.json`))) copyFileSync(join(published, `${name}.json`), join(staging, `${name}.json`));
@@ -50,13 +51,14 @@ try {
   validateMultiwayDataset(multiway);
   validateLimpResponses(limp, opening);
   const { findings } = auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, limp });
-  if (findings.length) {
-    for (const f of findings) console.error(`- [${f.severity}] ${f.check} · ${f.spot}: ${f.detail}`);
-    console.error(`\n検証で${findings.length}件の違反。src/estimated は変更していません。`);
+  for (const f of findings) console.error(`- [${f.severity}] ${f.check} · ${f.spot}: ${f.detail}`);
+  const blocking = findings.filter(isBlockingAuditFinding);
+  if (blocking.length) {
+    console.error(`\n検証で${blocking.length}件の違反。src/estimated は変更していません。`);
     process.exitCode = 1;
   } else {
     for (const name of files) copyFileSync(join(staging, `${name}.json`), join(published, `${name}.json`));
-    console.log("検証を通過したため src/estimated に保存しました。");
+    console.log(`検証を通過したため src/estimated に保存しました。（バランス警告 ${findings.length}件、公開を妨げません）`);
   }
 } finally {
   rmSync(staging, { recursive: true, force: true });

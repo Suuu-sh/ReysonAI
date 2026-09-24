@@ -1,5 +1,6 @@
 // Consistency audit for persisted estimated ranges. Shared by the CLI, tests and the build pipeline.
 import { openSizeFor } from "./sizing.js";
+import handStrength from "./hand-strength.json" with { type: "json" };
 const ranks = "AKQJT98765432";
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 const blind = { SB: 0.5, BB: 1 };
@@ -7,6 +8,61 @@ const TOLERANCE = 10; // percentage points before an ordering break is reported
 const combos = hand => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
 const rows = spot => new Map(spot.hands.map(row => [row.hand, row]));
 export const pct = value => `${(value * 100).toFixed(1)}%`;
+
+export const BALANCE_CHECKS = Object.freeze(["range-capped", "over-segregated"]);
+const PASSIVE_ACTIONS = ["limp", "call", "check"];
+const AGGRESSIVE_ACTIONS = ["open", "three_bet", "four_bet", "squeeze", "raise", "all_in"];
+const ACTIONS = [...PASSIVE_ACTIONS, ...AGGRESSIVE_ACTIONS, "fold"];
+// Preserve the existing consistency gate, including its historical warn checks.
+// Only the new balance warnings are advisory; they must never block publishing.
+export const isBlockingAuditFinding = finding => finding.severity === "error" || !BALANCE_CHECKS.includes(finding.check);
+
+export function checkRangeBalance(spot, weight = () => 1, segregationExemption = null) {
+  const live = spot.hands.map(row => ({ row, weight: combos(row.hand) * weight(row.hand) }))
+    .filter(item => item.weight > 0);
+  const total = live.reduce((sum, item) => sum + item.weight, 0);
+  const actions = ACTIONS.filter(action => spot.hands.some(row => Object.hasOwn(row, action)));
+  const findings = [];
+  if (!total) return { spot: spot.id, reachableCombos: 0, findings };
+
+  // A checked-in random-opponent equity table is deliberately used for all
+  // nodes: cheap at build time, and never dependent on missing/stale local facts.
+  // Rank the incoming (reach-weighted) range, not the outgoing passive range.
+  const ranked = [...live].sort((a, b) => handStrength.equity[b.row.hand] - handStrength.equity[a.row.hand]);
+  const strongWeight = new Map();
+  let remaining = total * 0.1;
+  for (let start = 0; start < ranked.length && remaining > 0;) {
+    let end = start + 1;
+    while (end < ranked.length && handStrength.equity[ranked[end].row.hand] === handStrength.equity[ranked[start].row.hand]) end += 1;
+    const group = ranked.slice(start, end);
+    const groupWeight = group.reduce((sum, item) => sum + item.weight, 0);
+    const fraction = Math.min(1, remaining / groupWeight);
+    for (const item of group) strongWeight.set(item.row.hand, item.weight * fraction);
+    remaining -= groupWeight * fraction;
+    start = end;
+  }
+  const totals = Object.fromEntries(actions.map(action => [action,
+    live.reduce((sum, item) => sum + item.weight * (item.row[action] ?? 0) / 100, 0),
+  ]));
+  const actionFrequencies = Object.fromEntries(actions.map(action => [action, totals[action] / total]));
+  const passiveStrongShares = {};
+  for (const action of PASSIVE_ACTIONS.filter(action => actions.includes(action))) {
+    const strong = live.reduce((sum, { row }) => sum + (strongWeight.get(row.hand) ?? 0) * (row[action] ?? 0) / 100, 0);
+    const share = totals[action] ? strong / totals[action] : 0;
+    passiveStrongShares[action] = share;
+    if (actionFrequencies[action] >= 0.1 - 1e-12 && share < 0.02 - 1e-12) {
+      findings.push({ check: "range-capped", severity: "warn", spot: spot.id,
+        detail: `${spot.id} の ${action} に強いハンドがほぼ含まれない（頻度 ${pct(actionFrequencies[action])}、上位10%の占有率 ${pct(share)} < 2%）` });
+    }
+  }
+  const pureShare = live.reduce((sum, { row, weight }) => sum + (actions.some(action => row[action] === 100) ? weight : 0), 0) / total;
+  if (!segregationExemption && pureShare > 0.85 + 1e-12 && Object.values(actionFrequencies).filter(f => f >= 0.1 - 1e-12).length >= 2) {
+    findings.push({ check: "over-segregated", severity: "warn", spot: spot.id,
+      detail: `単一アクション100%のハンドが到達コンボの ${pct(pureShare)} > 85%（2つ以上のアクションを各10%以上使用）` });
+  }
+  return { spot: spot.id, reachableCombos: total, strengthSource: "hand-strength.json (random opponent)",
+    actionFrequencies, passiveStrongShares, pureShare, segregationExemption, findings };
+}
 
 // Hands that should never fold more than the hand after them.
 function strengthChains() {
@@ -90,8 +146,8 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   for (const hero of positions) {
     const openers = positions.filter(opener => responseBy.has(`${opener}>${hero}`));
     for (let i = 0; i < openers.length - 1; i += 1) {
-      // SB's raise range is now a selected, narrow branch after its playable
-      // middle hands were assigned to limping, so monotonic nesting ends here.
+      // SB splits participation between a 3.5BB raise and a protected limp;
+      // unlike BTN's 2.5BB RFI this is a selected branch, so nesting ends here.
       if (hero === "BB" && openers[i + 1] === "SB") continue;
       const vsEarly = rows(responseBy.get(`${openers[i]}>${hero}`));
       const vsLate = rows(responseBy.get(`${openers[i + 1]}>${hero}`));
@@ -213,7 +269,43 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     }
   }
 
+  // 7. Advisory balance checks on every dataset. Source action frequencies
+  // weight incoming combos; unreachable fold=100 placeholders count for neither
+  // the top-strength decile nor pure-action share.
+  const rangeBalance = [];
+  const balance = (spot, weight, exemption) => {
+    const result = checkRangeBalance(spot, weight, exemption);
+    findings.push(...result.findings);
+    const { findings: ignored, ...metrics } = result;
+    rangeBalance.push(metrics);
+  };
+  for (const spot of opening.spots) {
+    // Ordinary fold/open RFI is naturally close to pure; SB's limp is NOT exempt.
+    const binary = spot.hands.every(row => !Object.hasOwn(row, "limp"));
+    balance(spot, undefined, binary ? "fold/open RFI" : null);
+  }
+  for (const spot of responses.spots) balance(spot);
+  for (const spot of threeBets.spots) balance(spot, hand => openBy.get(spot.opener).get(hand).open / 100);
+  for (const spot of fourBets.spots) {
+    const source = rows(responseBy.get(`${spot.opener}>${spot.hero}`));
+    balance(spot, hand => source.get(hand).three_bet / 100);
+  }
+  for (const spot of fiveBets?.spots ?? []) {
+    const previous = rows(threeBets.spots.find(s => s.opener === spot.opener && s.three_bettor === spot.five_bettor));
+    // Facing a 5bet all-in, only equity and price decide call/fold: b is exempt,
+    // but a (passive-range cap detection) still runs.
+    balance(spot, hand => openBy.get(spot.opener).get(hand).open / 100 * previous.get(hand).four_bet / 100, "5bet all-in response");
+  }
+  for (const spot of multiway?.spots ?? []) balance(spot);
+  for (const spot of limp?.spots ?? []) {
+    balance(spot, spot.hero === "SB" ? hand => openBy.get("SB").get(hand).limp / 100 : undefined);
+  }
+  const balanceSummary = Object.fromEntries(BALANCE_CHECKS.map(check => {
+    const matches = findings.filter(f => f.check === check);
+    return [check, { count: matches.length, spots: [...new Set(matches.map(f => f.spot))].sort() }];
+  }));
+
   // Range widths for a sanity read.
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
-  return { findings, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, widths };
+  return { findings, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, widths, rangeBalance, balanceSummary };
 }

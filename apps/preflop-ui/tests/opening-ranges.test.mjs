@@ -56,7 +56,10 @@ test("opening matrix preserves JSON percentages without call or 3bet", () => {
 test("premium hands open, weak hands fold, and later seats have wider authored RFI ranges", () => {
   const weighted = source.spots.map(spot => {
     for (const hand of ["AA", "KK", "QQ", "AKs", "AKo"]) {
-      assert.equal(spot.hands.find(row => row.hand === hand).open, 100);
+      const row = spot.hands.find(row => row.hand === hand);
+      assert.equal(row.open + (row.limp ?? 0), 100);
+      if (spot.hero === "SB") assert.ok(row.open > 0 && row.limp >= 10, `${hand}: protect SB limps`);
+      else assert.equal(row.open, 100);
     }
     assert.equal(spot.hands.find(row => row.hand === "72o").open, 0);
     return spot.hands.reduce((sum, row) => sum + row.open * (row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12), 0);
@@ -66,6 +69,12 @@ test("premium hands open, weak hands fold, and later seats have wider authored R
   const sb = findOpeningSpot(source, "SB");
   const actionWeightedPct = action => sb.hands.reduce((sum, row) => sum + row[action] * (row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12), 0) / 1326;
   assert.ok(actionWeightedPct("open") > actionWeightedPct("limp"));
+  for (const hand of ["55", "K7s", "Q8s", "J8s", "T8s", "98s", "87s", "76s"]) {
+    const row = sb.hands.find(r => r.hand === hand);
+    assert.ok(row.open > 0 && row.limp > 0, `${hand}: middle hands mix raise/limp`);
+  }
+  const wheel = sb.hands.find(row => row.hand === "A5s");
+  assert.ok(wheel.open > 0 && wheel.limp > 0);
   const targets = { UTG: { open: 17.5 }, HJ: { open: 21.7 }, CO: { open: 27.9 }, BTN: { open: 40.6 }, SB: { open: 34.4, limp: 13.7, fold: 51.9 } };
   for (const spot of source.spots) {
     const stats = Object.fromEntries(["open", "limp", "fold"].map(action => [action,
@@ -87,7 +96,7 @@ test("opening dataset validation rejects malformed records and unsupported condi
     d => { d.spots[0].hands[0].hand = "KAo"; },
     d => { d.metadata.open_size_bb = 3; },
     d => { d.spots.find(s => s.hero === "SB").hands[0].limp = 101; },
-    d => { d.spots.find(s => s.hero === "SB").hands[0].limp_size_bb = 1; },
+    d => { d.spots.find(s => s.hero === "SB").hands[0].limp_size_bb = null; },
     d => { d.spots.find(s => s.hero === "UTG").hands[0].limp = 0; },
     d => { d.metadata.rake.cap_bb = null; },
   ]) {

@@ -49,30 +49,38 @@ def parse_profile(text, width):
     return values
 
 
-# BB check/iso-raise frequencies versus the current capped SB limp range. Fresh
-# seeded 12,000-sample reason-facts show 410 raw combos at >=55% equity (196 at
-# >=60%, 214 from 55-60%): iso the >=60% tier at 100% and the 55-60% tier at
-# 75%. Below 55%, retain playability-first checks and use Q5s/K5o plus their
-# adjacent near-threshold Q6s/K6o classes at 25% (the blocker candidates each
-# remove about 9% of SB's limp range). A8o (59.8%) is rounded into the 100% tier
-# to avoid a frequency reversal against A7o (60.7%) in sampled, rounded equities.
-# The equity threshold, not a chart lookup, defines the value-iso core.
+# Recalibrated against the protected 2026-09-24 SB limp mix using equity.mjs,
+# 12,000 samples, seededRandom(seedFor('BB_vs_SB_limp')), canonical hand order.
+# >=60% equity: iso 100%; 55-60%: iso 75%. K8s/Q9s/JTs and weak offsuit
+# broadways no longer clear that value threshold, so the iso range narrows.
+# Reduce the limited Q6s/Q5s/K6o/K5o blocker probes to 10%; do not widen
+# bluffs to compensate for the stronger limp range. This also stays within
+# the audit's 10pt family-order tolerance. This is an equity-grounded
+# authored heuristic, not a solved strategy or a claim of postflop EV.
 BB_PROFILE = parse_profile('''
-0 100: AA KK QQ JJ TT 99 88 77 66 55 AKs AQs AJs ATs-A5s AKo KQs KJs KTs K9s AQo AJo ATo A9o A8o A7o KQo
-25 75: A4s-A3s K8s-K5s QJs-Q7s KJo QJo JTs J9s KTo QTo JTo K9o Q9o K8o K7o A6o-A4o 44
-75 25: Q6s Q5s K6o K5o
+0 100: AA-55 AKs-A8s AKo-ATo
+25 75: A7s-A4s KQs-K9s QJs QTs KQo-KTo A9o-A5o 44
+90 10: Q6s Q5s K6o K5o
 ''', 2)
 
 # SB continuation versus BB's 3.5BB iso-raise. Each row is conditional on
 # the newly authored limp range; only reachable limp hands receive actions.
 SB_CALL = parse_profile('''
-100: 55 A5s-A2s
-75: 44-22 K9s-K5s Q9s-Q5s J9s-J5s T9s-T5s A5o-A4o
+25: AA KK QQ AKs AKo
+50: JJ AQs AQo
+65: TT AJs AJo KQs
+75: 99-22 ATs-A2s KJs-K5s QJs-Q5s JTs-J5s T9s-T5s ATo-A4o KQo-KTo QJo QTo JTo
 50: K4s-K2s Q4s-Q2s J4s-J2s T4s-T2s 98s 97s 87s 86s 76s 75s 65s 64s 54s 53s
+40: K9o K8o
 25: 43s 42s 32s A3o-A2o
 ''', 1)
 SB_RAISE = parse_profile('''
-25: 55 A5s A4s
+75: AA KK QQ AKs AKo
+50: JJ AQs AQo
+35: TT AJs AJo KQs
+25: 99-55 ATs KJs A5s A4s
+10: A9s-A6s KTs QJs JTs ATo KQo
+5: A3s A2s
 ''', 1)
 
 
@@ -113,7 +121,7 @@ def main():
                      'no_flop_no_drop': rake['no_flop_no_drop'], 'calibrated': True},
             'legal_actions': {'BB_vs_SB_limp': ['check', 'raise'], 'SB_vs_BB_iso': ['fold', 'call', 'raise']},
             'scope': 'SBが1BBにリンプした後のBB応答、およびBBが3.5BBにアイソレイズした後のSB応答。',
-            'method': 'BBはreason-facts相当のSBリンプレンジ対勝率が概ね55%以上の手をバリュー・アイソレイズの中心にし、ブロッカー付き一部をブラフ、プレイアビリティを保てる残りはチェック。SBは新しいリンプレンジと3.5BBアイソサイズに整合し、リンプ頻度0%を到達不能として除外。',
+            'method': 'BBはAA等も含む保護されたSBリンプレンジに対する固定シード12,000回の勝率を基に、概ね60%以上を100%、55〜60%を75%のバリュー・アイソへ配分し、従来より幅を縮小。限定的なブロッカーのレイズは10%へ抑え、残りはチェック。SBは強いリンプをリレイズ／コールへ混ぜ、中位は主にコール、弱い手は価格とプレイアビリティで継続。リンプ頻度0%は到達不能として除外。',
             'frequency_semantics': 'BBはcheck+raise=100。SBはリンプ済み条件下でfold+call+raise=100。',
             'sizing_semantics': 'SB complete=1BB、BB iso raise-to=3.5BB、SB limp-reraise-to=10.5BB。',
             'unreachable_hands': 'SBのSB_open.limp=0%ハンドはfold=100の形式的プレースホルダーであり、推奨ではない。',
@@ -132,7 +140,8 @@ def main():
     }
     (STAGING / 'limp-responses.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
     bb_raise = sum(combo_count(row['hand']) * row['raise'] for row in bb_rows) / 1326
-    sb_actions = {action: sum(combo_count(row['hand']) * row[action] for row in sb_rows) / 1326
+    limp_combos = sum(combo_count(hand) * sb_limp[hand] / 100 for hand in HANDS)
+    sb_actions = {action: sum(combo_count(row['hand']) * sb_limp[row['hand']] / 100 * row[action] for row in sb_rows) / limp_combos
                   for action in ('raise', 'call', 'fold')}
     print(f'Generated limp responses: BB iso {bb_raise:.2f}% combos; SB vs iso {sb_actions}')
 

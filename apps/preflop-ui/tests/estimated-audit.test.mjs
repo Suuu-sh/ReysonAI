@@ -1,13 +1,34 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { auditEstimates } from "../src/estimated/audit.js";
+import { spawnSync } from "node:child_process";
+import { auditEstimates, BALANCE_CHECKS, checkRangeBalance, isBlockingAuditFinding } from "../src/estimated/audit.js";
+import handStrength from "../src/estimated/hand-strength.json" with { type: "json" };
+import { hands } from "../src/data.js";
 
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
 const datasets = () => ({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), fiveBets: load("five-bet-responses"), multiway: load("multiway-responses"), limp: load("limp-responses") });
 
 test("persisted estimates pass the consistency audit", () => {
-  assert.deepEqual(auditEstimates(datasets()).findings, []);
+  const report = auditEstimates(datasets());
+  assert.deepEqual(report.findings.filter(isBlockingAuditFinding), []);
+  assert.equal(report.rangeBalance.length, Object.values(datasets()).reduce((sum, data) => sum + data.spots.length, 0));
+  assert.deepEqual(report.findings.filter(f => f.spot === "SB_open"), []);
+  for (const finding of report.findings) assert.equal(finding.severity, "warn");
+});
+
+test("CLI reports balance counts and spot lists but does not fail for their warnings", () => {
+  const result = spawnSync(process.execPath, ["scripts/audit-estimates.mjs", "--json"], {
+    cwd: new URL("..", import.meta.url), encoding: "utf8",
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const report = JSON.parse(result.stdout);
+  for (const check of BALANCE_CHECKS) {
+    const matches = report.findings.filter(f => f.check === check);
+    assert.equal(report.balanceSummary[check].count, matches.length);
+    assert.deepEqual(report.balanceSummary[check].spots, [...new Set(matches.map(f => f.spot))].sort());
+  }
+  assert.equal(report.rangeBalance.length, 73);
 });
 
 test("audit rejects an overfolding 4bet response", () => {
@@ -41,8 +62,123 @@ test("audit warns when a BB squeeze range exceeds its heads-up 3bet width", () =
 
 test("audit rejects an incomplete SB raise/limp/fold split", () => {
   const data = datasets();
-  data.opening.spots.find(s => s.hero === "SB").hands[0].limp = 1;
+  data.opening.spots.find(s => s.hero === "SB").hands[0].limp += 1;
   assert.ok(auditEstimates(data).findings.some(f => f.check === "range-flow" && f.spot === "SB open"));
+});
+
+test("fixed-seed hand strength covers 169 hands without reason-facts", () => {
+  assert.deepEqual(Object.keys(handStrength.equity).sort(), [...hands].sort());
+  assert.equal(handStrength.samples_per_hand, 30000);
+  assert.match(handStrength.seed, /seedFor/);
+  for (const value of Object.values(handStrength.equity)) assert.ok(value > 0 && value < 1);
+  assert.ok(handStrength.equity.AA > handStrength.equity.KK);
+  assert.ok(handStrength.equity.AKs > handStrength.equity["72o"]);
+});
+
+test("deliberately capped SB limps warn without blocking publication", () => {
+  const data = datasets();
+  const sb = data.opening.spots.find(s => s.id === "SB_open");
+  for (const row of sb.hands) Object.assign(row,
+    handStrength.equity[row.hand] > 0.6 ? { open: 100, limp: 0, fold: 0 } : { open: 0, limp: 100, fold: 0 });
+  const report = auditEstimates(data);
+  const findings = report.findings.filter(f => f.spot === "SB_open");
+  assert.deepEqual(findings.map(f => f.check), BALANCE_CHECKS);
+  for (const finding of findings) {
+    assert.equal(finding.severity, "warn");
+    assert.equal(isBlockingAuditFinding(finding), false);
+  }
+  assert.ok(report.balanceSummary["range-capped"].spots.includes("SB_open"));
+  assert.ok(report.balanceSummary["over-segregated"].spots.includes("SB_open"));
+  assert.equal(isBlockingAuditFinding({ check: "auto-profit", severity: "error" }), true);
+  assert.equal(isBlockingAuditFinding({ check: "strength-order", severity: "warn" }), true);
+});
+
+test("cap checks include limp/call/check independently and use a fractional top decile", () => {
+  for (const passive of ["limp", "call", "check"]) {
+    const spot = { id: "boundary", hands: [
+      { hand: "AA", open: 100, [passive]: 0 },
+      { hand: "KK", open: 100, [passive]: 0 },
+      { hand: "72o", open: 80, [passive]: 20 },
+    ] };
+    assert.ok(checkRangeBalance(spot).findings.some(f => f.check === "range-capped")); // exactly 10%
+    Object.assign(spot.hands[2], { open: 81, [passive]: 19 });
+    assert.ok(!checkRangeBalance(spot).findings.some(f => f.check === "range-capped"));
+    // Top 10% = 2.4 of AA's six combos. 2.4 * 10% / 12 = exactly 2%.
+    Object.assign(spot.hands[0], { open: 90, [passive]: 10 });
+    Object.assign(spot.hands[2], { open: 5, [passive]: 95 });
+    const boundary = checkRangeBalance(spot);
+    assert.ok(Math.abs(boundary.passiveStrongShares[passive] - 0.02) < 1e-12);
+    assert.ok(!boundary.findings.some(f => f.check === "range-capped"));
+    Object.assign(spot.hands[2], { open: 4, [passive]: 96 });
+    assert.ok(checkRangeBalance(spot).findings.some(f => f.check === "range-capped"));
+  }
+});
+
+test("segregation requires strictly over 85% pure combos and two actions at least 10%", () => {
+  const spot = { id: "mixed", hands: [
+    { hand: "AA", raise: 100, fold: 0 },
+    { hand: "KK", raise: 0, fold: 100 },
+    { hand: "72o", raise: 50, fold: 50 },
+  ] };
+  const report = share => checkRangeBalance(spot, hand => hand === "72o" ? (1 - share) / 2 : share / 2);
+  assert.ok(!report(0.85).findings.some(f => f.check === "over-segregated"));
+  assert.ok(report(0.86).findings.some(f => f.check === "over-segregated"));
+  Object.assign(spot.hands[1], { raise: 100, fold: 0 });
+  assert.ok(!report(0.86).findings.some(f => f.check === "over-segregated"));
+});
+
+test("the two segregation exemptions do not suppress passive cap warnings", () => {
+  const spot = { id: "all-in", hands: [
+    { hand: "AA", call: 0, fold: 100 },
+    { hand: "72o", call: 100, fold: 0 },
+  ] };
+  assert.deepEqual(checkRangeBalance(spot).findings.map(f => f.check), BALANCE_CHECKS);
+  assert.deepEqual(checkRangeBalance(spot, undefined, "5bet all-in response").findings.map(f => f.check), ["range-capped"]);
+  assert.deepEqual(checkRangeBalance(spot, undefined, "fold/open RFI").findings.map(f => f.check), ["range-capped"]);
+});
+
+test("incoming reach weights exclude placeholders and weight rare premiums, not hand-class counts", () => {
+  const spot = { id: "reach", hands: [
+    { hand: "AA", call: 100, raise: 0, fold: 0 },
+    { hand: "KK", call: 0, raise: 0, fold: 100 },
+    { hand: "QQ", call: 0, raise: 100, fold: 0 },
+    { hand: "72o", call: 100, raise: 0, fold: 0 },
+  ] };
+  const report = checkRangeBalance(spot, hand => ({ AA: 0.01, KK: 0, QQ: 1, "72o": 1 })[hand]);
+  assert.equal(report.reachableCombos, 18.06);
+  assert.ok(report.findings.some(f => f.check === "range-capped"));
+  assert.deepEqual(checkRangeBalance(spot, () => 0).findings, []);
+});
+
+test("all downstream datasets use the proper incoming source, and only the two exceptions skip b", () => {
+  const data = datasets();
+  const report = auditEstimates(data);
+  const metric = id => report.rangeBalance.find(s => s.spot === id);
+  const combos = hand => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
+  const source = (dataset, id, hand) => dataset.spots.find(s => s.id === id).hands.find(r => r.hand === hand);
+  for (const spot of data.threeBets.spots) {
+    const expected = spot.hands.reduce((sum, r) => sum + combos(r.hand) * source(data.opening, `${spot.opener}_open`, r.hand).open / 100, 0);
+    assert.ok(Math.abs(metric(spot.id).reachableCombos - expected) < 1e-10, spot.id);
+  }
+  for (const spot of data.fourBets.spots) {
+    const expected = spot.hands.reduce((sum, r) => sum + combos(r.hand) * source(data.responses, `${spot.hero}_vs_${spot.opener}`, r.hand).three_bet / 100, 0);
+    assert.ok(Math.abs(metric(spot.id).reachableCombos - expected) < 1e-10, spot.id);
+  }
+  for (const spot of data.fiveBets.spots) {
+    const expected = spot.hands.reduce((sum, r) => sum + combos(r.hand) * (source(data.opening, `${spot.opener}_open`, r.hand).open / 100 * source(data.threeBets, `${spot.opener}_vs_${spot.five_bettor}_three_bet`, r.hand).four_bet / 100), 0);
+    assert.ok(Math.abs(metric(spot.id).reachableCombos - expected) < 1e-10, spot.id);
+  }
+  assert.ok(Math.abs(metric("SB_vs_BB_iso").reachableCombos - data.opening.spots.find(s => s.hero === "SB").hands.reduce((n, r) => n + combos(r.hand) * r.limp / 100, 0)) < 1e-10);
+  for (const spot of report.rangeBalance) {
+    const exempt = /^(UTG|HJ|CO|BTN)_open$/.test(spot.spot) || spot.spot.endsWith("_five_bet");
+    assert.equal(Boolean(spot.segregationExemption), exempt, spot.spot);
+  }
+  // Even a pure two-action RFI is exempt, unlike SB or ordinary call/fold nodes.
+  for (const row of data.opening.spots.find(s => s.hero === "UTG").hands) {
+    row.open = row.open > 0 ? 100 : 0;
+    row.fold = 100 - row.open;
+  }
+  assert.ok(!auditEstimates(data).findings.some(f => f.spot === "UTG_open" && f.check === "over-segregated"));
 });
 
 test("audit enforces zero-limp unreachable placeholders in the SB iso response", () => {

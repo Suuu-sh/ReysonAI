@@ -107,7 +107,14 @@ function compose(type, row, facts, spot) {
   if (type === "open") {
     const eq = f1(facts.equity_vs_defend_pct);
     const behind = spot.players_behind === 1 ? "残りはBBだけで" : `後ろに${spot.players_behind}人いますが`;
-    if (row.limp > 0) return `${lead}SBはBBより先に行動し、ポストフロップもOOPです。参加しやすい中程度のハンドは1BBのリンプを受け皿にし、必要に応じてオープンとフォールドも混ぜます。${mixText(type, row)}。`;
+    if (row.limp > 0) {
+      const role = facts.equity_vs_defend_pct >= 60
+        ? "強いハンドも1BBのリンプへ一部残し、BBのアイソレイズに対してリンプレンジが弱い手だけにならないようにします。"
+        : row.open > 0
+          ? "リンプとレイズの両方へ配分し、行動だけでハンドの強さが読まれにくい構成にします。"
+          : "参加するときは主に1BBのリンプでポットを抑えます。リンプレンジ全体にはAA・KKなどの強いハンドも含めています。";
+      return `${lead}SBはBBより先に行動し、ポストフロップもOOPです。${role}${mixText(type, row)}。`;
+    }
     if (row.open >= 90 && facts.equity_vs_defend_pct >= 50) return `${lead}${behind}、全員が降りる確率は${f1(spot.all_fold_pct)}%あり、BBに守られても守りレンジに対して勝率${eq}%と優位です。オープンして利益が出るハンドです。${mixText(type, row)}。`;
     const behindEven = spot.players_behind === 1 ? "残りはBBだけで" : `後ろに${spot.players_behind}人いても`;
     if (row.open >= 90) return `${lead}BBの守りレンジへの勝率は${eq}%と高くはありませんが、${behindEven}、全員が降りる確率は${f1(spot.all_fold_pct)}%あります。降ろせる分とハンドの伸びしろを合わせて、オープンで利益が見込めます。${mixText(type, row)}。`;
