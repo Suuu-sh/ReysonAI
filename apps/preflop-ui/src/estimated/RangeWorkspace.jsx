@@ -166,7 +166,7 @@ const startingContribution = { SB: 0.5, BB: 1 };
 const formatBb = value => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
 
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, raiseSizeFor = () => null }) {
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, raiseSizeFor = () => null }) {
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -195,6 +195,17 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       ? `Raise ${index === heroIndex && raiseToBb ? formatBb(raiseToBb) : ""}`.trim()
       : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
     const options = [{ action: "fold", label: "Fold" }, { action: "call", label: "Call 2.5" }, { action: "raise", label: raiseLabel }];
+    // Seats behind the 3-bettor still act before the opener: fold, cold call or cold 4bet.
+    // Only fold is covered by saved ranges; the other choices end the path as "no data".
+    if (rangeType === "three_bet" && index > heroIndex) {
+      const coldIndex = coldAction ? positions.indexOf(coldAction.position) : -1;
+      if (coldAction && index > coldIndex) continue;
+      const chosen = coldAction?.position === position ? coldAction.action : coldAction || continuationAction ? "fold" : null;
+      blocks.push({ key: position, position, stack, active: false, chosen, kind: "cold", rangeRef: { kind: "pending", position, reason: "3bet後のコールドコール・コールド4betのデータはまだありません。" }, options: [
+        { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(threeBetSizeBb)}` }, { action: "raise", label: `Raise ${formatBb(spot?.four_bet_size_bb)}` },
+      ] });
+      continue;
+    }
     if (index > heroIndex && (reraised || pendingRaise === "squeeze")) {
       blocks.push({ key: position, position, stack, active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "forced", rangeRef: { kind: "pending", position, reason: reraised ? "3bet後の応答データはまだ保存されていません。" : "スクイーズ後の応答データはまだ保存されていません。" } });
       continue;
@@ -210,6 +221,10 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
         ? { kind: "pending", position, reason: "3bet後の応答データはまだ保存されていません。" }
         : { kind: "response", position };
     blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat", rangeRef });
+  }
+  if (coldAction) {
+    blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${coldAction.position}の${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}以降の推定レンジはまだありません。` });
+    return blocks;
   }
   if (reraised) {
     const fourBetSizeBb = spot?.four_bet_size_bb;
@@ -276,7 +291,7 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
   return null;
 }
 
-export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onAct = () => {}, onContinuationAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
   const blocks = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef(null);
   useEffect(() => {
@@ -285,6 +300,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
   }, [blocks.length]);
   const select = (block, action) => {
     if (block.kind === "seat") onAct(block.position, action);
+    else if (block.kind === "cold") onColdAction(action === "fold" ? null : { position: block.position, action });
     else if (block.kind === "shove-response") onShoveResponse(action);
     else if (block.kind === "continuation" && block.position === state.opener && state.rangeType === "three_bet") action === "raise" ? onFourBet() : onContinuationAction(action);
     else if (block.kind === "continuation" && block.position === state.opener && action !== "raise") { onAct(state.hero, "raise"); onContinuationAction(action); }
@@ -336,6 +352,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [pendingRaise, setPendingRaise] = useState(initialSelection.pendingRaise);
   const [continuationAction, setContinuationAction] = useState(initialSelection.continuationAction);
   const [shoveResponse, setShoveResponse] = useState(initialSelection.shoveResponse);
+  const [coldAction, setColdAction] = useState(null);
   const [format, setFormat] = useState(() => {
     try {
       const saved = JSON.parse(window.localStorage.getItem(formatStorageKey));
@@ -389,7 +406,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setCallers([]);
     setFoldedHero(false);
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
     setSelected("AKo");
@@ -402,7 +419,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setOpener(value);
     setRangeType("open");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
     setHero(positions[positions.indexOf(value) + 1] ?? "");
@@ -414,7 +431,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const index = positions.indexOf(position);
     const next = positions[index + 1];
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null);
     setFocusedRange(null);
     if (index <= positions.indexOf(opener)) {
       if (action === "raise" && next) {
@@ -439,6 +456,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   function rewindToActionBlock(block) {
     const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, block });
     setFocusedRange(null);
+    setColdAction(null);
     setSelectedRangeBlock(current => current === block.key ? null : block.key);
     if (!transition) return;
     setRangeType(transition.rangeType);
@@ -454,7 +472,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   function selectFourBet() {
     setRangeType("four_bet");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
   }
@@ -522,7 +540,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const candidate = dataset && positions.indexOf(position) > positions.indexOf(opener) ? findSpot(dataset, opener, position) : null;
     return candidate?.hands.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb ?? null;
   };
-  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, raiseSizeFor };
+  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, raiseSizeFor };
   const actionBlocks = buildActionBlocks(actionState);
   const responseSpot = !isOpening && dataset ? findSpot(dataset, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
@@ -550,7 +568,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       }
     }
   } else if (isThreeBet) {
-    if (continuationAction !== "fold") addSaved(opener, "three_bet", spot, model, `${opener} · 3betへの応答`);
+    if (coldAction) rangeEntries.push({ position: coldAction.position, kind: "pending", title: `${coldAction.position} · ${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}`, statusTitle: "データなし", statusDescription: "3bet後のコールドコール・コールド4betの推定レンジはまだありません。" });
+    else if (continuationAction !== "fold") addSaved(opener, "three_bet", spot, model, `${opener} · 3betへの応答`);
     addSaved(hero, "response", responseSpot, responseModel, `${hero} · オープンへの応答（3bet前）`);
   } else if (isFourBet) {
     if (pendingRaise === "all_in") {
@@ -645,7 +664,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onShoveResponse={action => { setFocusedRange(null); setSelectedRangeBlock(null); setShoveResponse(action); }}
           onAct={actAt}
           onFourBet={selectFourBet}
-          onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setFocusedRange(null); setSelectedRangeBlock(null); setPendingRaise("all_in"); }}
+          onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setColdAction(null); setFocusedRange(null); setSelectedRangeBlock(null); setPendingRaise("all_in"); }}
+          onColdAction={action => { setFocusedRange(null); setSelectedRangeBlock(null); setContinuationAction(null); setColdAction(action); }}
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
