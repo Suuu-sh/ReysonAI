@@ -27,7 +27,7 @@
     "scope_note": "スクイーズ、コールド4bet、複数人応答、5bet後の応答はaction-tree.jsonの別spotとして保存。",
     "warning": "推定値。レーキ環境を仮定した上流データを参照するが、GTO・EV・相手カード除去・前段との同時均衡は保証しない。",
     "reference_note": "競合サービスのチャート・頻度は転用していない。既存コードの合法アクションと保存サイズのみを参照。",
-    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
+    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
   },
   "spot_count": 15,
   "hand_classes_per_spot": 169,
@@ -252,8 +252,8 @@
         },
         {
           "hand": "QJs",
-          "fold": 100,
-          "call": 0,
+          "fold": 90,
+          "call": 10,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -1451,8 +1451,8 @@
         },
         {
           "hand": "QJs",
-          "fold": 100,
-          "call": 0,
+          "fold": 90,
+          "call": 10,
           "all_in": 0,
           "all_in_size_bb": null
         },

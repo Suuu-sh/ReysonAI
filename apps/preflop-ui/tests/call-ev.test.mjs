@@ -22,10 +22,10 @@ test("EQR categories use ordered precedence and the specified assumed values", (
     assert.equal(equityRealization(hand, "BB", ["SB"]), EQR[category][0]);
     assert.equal(equityRealization(hand, "SB", ["BB"]), EQR[category][1]);
   }
-  assert.equal(equityRealization("J4o", "BB", ["SB"]), 0.75);
-  assert.equal(equityRealization("J4o", "BB", ["BTN"]), 0.60);
-  assert.equal(equityRealization("JTs", "BTN", ["SB", "BB"]), 1.05 * 0.9);
-  assert.equal(equityRealization("JTs", "BB", ["SB", "BTN"]), 0.9 * 0.9);
+  assert.equal(equityRealization("J4o", "BB", ["SB"]), EQR.offsuit_other[0]);
+  assert.equal(equityRealization("J4o", "BB", ["BTN"]), EQR.offsuit_other[1]);
+  assert.equal(equityRealization("JTs", "BTN", ["SB", "BB"]), EQR.suited_connected[0] * 0.9);
+  assert.equal(equityRealization("JTs", "BB", ["SB", "BTN"]), EQR.suited_connected[1] * 0.9);
   assert.equal(equityRealization("72o", "SB", ["BB", "BTN"], { allIn: true }), 1);
   for (const hand of ["AXs", "AAo", "2As", "AK"]) assert.throws(() => eqrCategory(hand));
   assert.throws(() => equityRealization("AA", "XX", ["BB"]));
@@ -68,9 +68,9 @@ test("call contexts derive actual investments, dead blinds and prior weighted op
   assert.deepEqual([input("SB_vs_BB_iso").cost_to_call, input("SB_vs_BB_iso").total_pot_after_call], [2.5, 7]);
   const c = contexts.find(c => c.spot.id === "BB_vs_SB");
   const facts = callFacts(c, "J4o", 0.352);
-  assert.equal(facts.eqr, 0.75);
-  assert.equal(facts.realized_equity_pct, 26.400000000000002);
-  assert.ok(Math.abs(facts.call_ev_bb - (0.352 * 0.75 * raked(7) - 2.5)) < 1e-12);
+  assert.equal(facts.eqr, EQR.offsuit_other[0]);
+  assert.ok(Math.abs(facts.realized_equity_pct - 0.352 * EQR.offsuit_other[0] * 100) < 1e-9);
+  assert.ok(Math.abs(facts.call_ev_bb - (0.352 * EQR.offsuit_other[0] * raked(7) - 2.5)) < 1e-12);
   const allIn = structuredClone(c.input);
   allIn.all_in = true; allIn.total_pot_after_call = 200; allIn.cost_to_call = 76;
   assert.equal(callFacts({ input: allIn }, "J4o", 0.5).call_ev_bb, 22.5);
@@ -105,7 +105,7 @@ test("negative-ev-call warn/error boundaries and publication behavior", () => {
     const row = c.spot.hands.find(r => r.hand === "J4o");
     row.call = call; row.fold = 100 - call - row.three_bet;
     // Move infinitesimally inside the equality boundaries to avoid arithmetic ulps.
-    equities.spots[c.spot.id].equities.J4o = (ev + (ev === -0.05 || ev === -0.2 ? 1e-12 : 0) + 2.5) / (0.75 * raked(7));
+    equities.spots[c.spot.id].equities.J4o = (ev + (ev === -0.05 || ev === -0.2 ? 1e-12 : 0) + 2.5) / (EQR.offsuit_other[0] * raked(7));
     const finding = auditEstimates({ ...data, callEquities: equities }).findings.find(f => f.check === "negative-ev-call" && f.spot === c.spot.id && f.detail.startsWith("J4o:"));
     assert.equal(finding?.severity ?? null, severity, `call ${call}, EV ${ev}`);
     if (finding) assert.equal(isBlockingAuditFinding(finding), severity === "error");
@@ -139,14 +139,13 @@ test("generator is idempotent, preserves raises, and uses checked equities rathe
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("an intrinsic EV-capacity conflict is visible, but leaving profitable defense unused still blocks", () => {
+test("EV-capacity conflicts stay advisory, but leaving profitable defense unused blocks", () => {
   const data = datasets();
   const report = auditEstimates(data);
-  const conflict = report.capacityConflicts.find(f => f.spot === "UTG_vs_HJ_three_bet");
-  assert.ok(conflict);
-  assert.ok(conflict.maximumContinuationPct < conflict.requiredContinuationPct);
-  assert.ok(report.findings.some(f => f.check === "ev-capacity-conflict" && f.severity === "warn"));
-  const row = data.threeBets.spots.find(s => s.id === conflict.spot).hands.find(r => r.hand === "TT");
+  // After EQR calibration (2026-09-24) UTG defends HJ 3bets inside the break-even band.
+  for (const conflict of report.capacityConflicts) assert.ok(conflict.maximumContinuationPct < conflict.requiredContinuationPct);
+  assert.ok(report.findings.filter(f => f.check === "ev-capacity-conflict").every(f => f.severity === "warn"));
+  const row = data.threeBets.spots.find(s => s.id === "UTG_vs_HJ_three_bet").hands.find(r => r.hand === "TT");
   row.call -= 5; row.fold += 5;
   assert.ok(auditEstimates(data).findings.some(f => f.check === "auto-profit" && f.spot === "UTG vs HJ 3bet" && isBlockingAuditFinding(f)));
 });
@@ -193,4 +192,14 @@ test("reason composer refuses stale local facts instead of silently reintroducin
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /Stale facts: BB_vs_SB/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("generation fills clearly positive-EV calls without touching raises", async () => {
+  const { targetCall } = await import("../src/estimated/call-ev.js");
+  assert.equal(targetCall(35, 0.12, 100), 100);
+  assert.equal(targetCall(20, 0.07, 90), 45);
+  assert.equal(targetCall(60, 0.07, 90), 60);
+  assert.equal(targetCall(40, 0.0, 95), 40);
+  assert.equal(targetCall(40, -0.2, 95), 0);
+  assert.throws(() => targetCall(50, 0.2, 40));
 });

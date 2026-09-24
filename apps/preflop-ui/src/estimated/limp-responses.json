@@ -29,7 +29,7 @@
     "sizing_semantics": "SB complete=1BB、BB iso raise-to=3.5BB、SB limp-reraise-to=10.5BB。",
     "unreachable_hands": "SBのSB_open.limp=0%ハンドはfold=100の形式的プレースホルダーであり、推奨ではない。",
     "warning": "AI推定。ソルバー・EV・均衡検証ではなく、指定レーキ環境を仮定した独立推定。",
-    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
+    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
   },
   "spot_count": 2,
   "hand_classes_per_spot": 169,
@@ -1122,8 +1122,8 @@
         },
         {
           "hand": "A7s",
-          "fold": 90,
-          "call": 0,
+          "fold": 40,
+          "call": 50,
           "raise": 10,
           "raise_size_bb": 10.5
         },
@@ -1283,8 +1283,8 @@
         },
         {
           "hand": "QTs",
-          "fold": 100,
-          "call": 0,
+          "fold": 50,
+          "call": 50,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -1374,8 +1374,8 @@
         },
         {
           "hand": "JTs",
-          "fold": 90,
-          "call": 0,
+          "fold": 40,
+          "call": 50,
           "raise": 10,
           "raise_size_bb": 10.5
         },
@@ -2053,8 +2053,8 @@
         },
         {
           "hand": "44",
-          "fold": 50,
-          "call": 50,
+          "fold": 25,
+          "call": 75,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -2151,8 +2151,8 @@
         },
         {
           "hand": "33",
-          "fold": 50,
-          "call": 50,
+          "fold": 25,
+          "call": 75,
           "raise": 0,
           "raise_size_bb": null
         },
@@ -2249,8 +2249,8 @@
         },
         {
           "hand": "22",
-          "fold": 100,
-          "call": 0,
+          "fold": 50,
+          "call": 50,
           "raise": 0,
           "raise_size_bb": null
         }

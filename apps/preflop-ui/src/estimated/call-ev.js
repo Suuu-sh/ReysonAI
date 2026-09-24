@@ -77,6 +77,15 @@ export function allowedCall(call, ev) {
   return ev < -0.05 ? 0 : ev < 0.05 ? Math.min(call, 50) : call;
 }
 
+// Generation-time target: besides removing -EV calls, fill clearly +EV hands.
+// `available` is the non-raise share (call + fold); raise frequencies never change.
+export function targetCall(call, ev, available) {
+  if (!Number.isFinite(available) || available < call) throw new Error("Invalid available call share");
+  if (ev >= 0.10) return available;
+  if (ev >= 0.05) return Math.max(call, Math.round(available / 2 / 5) * 5);
+  return allowedCall(call, ev);
+}
+
 // Optimistic upper bound with every legal call filled, keeping all raises fixed.
 // An auto-profit warning is unavoidable if even this bound cannot defend enough.
 export function callDefenseCapacity(context, table) {

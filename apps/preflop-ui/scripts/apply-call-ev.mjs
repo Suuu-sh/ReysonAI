@@ -1,7 +1,7 @@
 // Generation-time selection, never a runtime strategy fallback. Only stages writes.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { callContexts, callFacts, allowedCall, validCallEquities, CALL_EQUITY_VERSION, CALL_EQUITY_SAMPLES, CALL_EQUITY_SEED } from "../src/estimated/call-ev.js";
+import { callContexts, callFacts, allowedCall, targetCall, validCallEquities, CALL_EQUITY_VERSION, CALL_EQUITY_SAMPLES, CALL_EQUITY_SEED } from "../src/estimated/call-ev.js";
 import { reconcileCalls } from "./lib/call-consistency.mjs";
 import { comboCount, equityVsRange, equityVsRanges, weightedRange, seededRandom, seedFor } from "./lib/equity.mjs";
 
@@ -41,7 +41,11 @@ for (const context of contexts) {
     beforeContinue += weight * (100 - row.fold) / 100;
     const facts = callFacts(context, row.hand, table.spots[spot.id].equities[row.hand]);
     const before = row.call;
-    row.call = allowedCall(before, facts.call_ev_bb);
+    // Unreachable rows keep their fold=100 placeholder.
+    // +EV fill only for open responses by non-SB seats. SB stays 3bet-or-fold, and 3bet/4bet
+    // pots are not filled because the EQR table does not model their lower OOP realization.
+    const fill = weight > 0 && context.type === "response" && spot.hero !== "SB";
+    row.call = fill ? targetCall(before, facts.call_ev_bb, before + row.fold) : allowedCall(before, facts.call_ev_bb);
     row.fold += before - row.call;
     afterContinue += weight * (100 - row.fold) / 100;
     if (before > row.call) {
@@ -67,7 +71,7 @@ for (const c of contexts) {
   })).filter(row => row.call_ev_bb >= 0.3);
 }
 const dataset = data[Object.keys(files).find(key => files[key] === target)];
-dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV.";
+dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV.";
 writeFileSync(`${dir}/${target}.json`, JSON.stringify(dataset, null, 2) + "\n");
 writeFileSync(`${dir}/call-equities.json`, JSON.stringify(table, null, 2) + "\n");
 writeFileSync(`${dir}/call-ev-report.json`, JSON.stringify(report, null, 2) + "\n");

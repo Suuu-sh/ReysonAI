@@ -6,14 +6,14 @@ The first matching category wins, so suited broadways precede suited aces.
 from sizing_rules import CONFIG, in_position
 
 EQR = {
-    'pair': (1.00, 0.85),
-    'suited_connected': (1.05, 0.90),
-    'suited_broadway': (1.05, 0.90),
-    'suited_ace': (1.00, 0.85),
-    'suited_other': (0.90, 0.75),
-    'offsuit_broadway': (0.95, 0.80),
-    'offsuit_connected': (0.85, 0.70),
-    'offsuit_other': (0.75, 0.60),
+    'pair': (1.05, 0.90),
+    'suited_connected': (1.10, 0.92),
+    'suited_broadway': (1.08, 0.92),
+    'suited_ace': (1.05, 0.88),
+    'suited_other': (1.00, 0.80),
+    'offsuit_broadway': (1.05, 0.85),
+    'offsuit_connected': (0.95, 0.75),
+    'offsuit_other': (0.92, 0.70),
 }
 MULTIWAY_EQR = 0.90
 RANKS = '23456789TJQKA'
