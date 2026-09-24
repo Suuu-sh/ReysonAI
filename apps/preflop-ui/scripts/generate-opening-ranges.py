@@ -71,11 +71,11 @@ P['BTN'] = profile('''
 SB_RAISE = profile('''
 80: AA KK AKs
 90: QQ-66 AQs-A6s AKo-A6o KQs-KTs KQo-KTo QJs-QTs JTs
-65: K9s K9o-K8o QJo-QTo J9s T9s JTo A5o-A3o
-50: A5s-A2s K8s Q9s Q9o-Q8o J9o-J8o T9o K7o-K6o
+65: K9s K9o-K8o QJo-QTo J9s T9s JTo A5o-A3o Q9o-Q8o J9o-J8o
+50: A5s-A2s K8s Q9s T9o K7o-K6o
 50: 55 K7s-K5s Q8s Q7s J8s J7s T8s T7s 98s 97s 87s 86s 76s 75s 65s 64s 54s
-50: K5o-K2o
-25: Q7o-Q5o J7o-J5o T8o A2o
+50: K5o
+25: K4o-K2o Q7o-Q5o J7o T8o A2o
 ''')
 
 # 2026-09-24: Protect limps with premium traps (AA/KK/AKs 20%, other value
