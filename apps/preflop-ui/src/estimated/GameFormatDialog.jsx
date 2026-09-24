@@ -1,6 +1,7 @@
 import { ArrowLeft, CaretRight, LockSimple, X } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { detailedFormatFields, formatOptions, gameFormatFields, isBuilt, optionAvailable } from "./game-formats.js";
+import { DEFAULT_PROFILE, LEVEL_LABELS, PROFILE_LABELS, PROFILE_LEVELS, parseTableDescription } from "./table-profile.js";
 
 function FormatFields({ fields, draft, onChange }) {
   return fields.map(([key, label]) => <fieldset className="format-field" key={key}>
@@ -18,6 +19,33 @@ function FormatFields({ fields, draft, onChange }) {
   </fieldset>);
 }
 
+// Tendencies of the players behind the opener. Free text fills the levels,
+// which stay editable so the reading is always visible and correctable.
+function TableProfileFields({ profile, onChange }) {
+  const [description, setDescription] = useState("");
+  const [matched, setMatched] = useState(null);
+  function describe(text) {
+    setDescription(text);
+    if (!text.trim()) { setMatched(null); return; }
+    const parsed = parseTableDescription(text);
+    setMatched(parsed.matched);
+    onChange(parsed.profile);
+  }
+  return <section className="table-profile-fields" aria-labelledby="table-profile-title">
+    <h3 id="table-profile-title" className="format-section-title">卓の傾向</h3>
+    <textarea className="table-profile-description" aria-label="卓の様子" placeholder="例: この卓めっちゃコールされる、3betはほぼしてこない" value={description} onChange={event => describe(event.target.value)} />
+    {matched && <p className="table-profile-matched" aria-live="polite">{matched.length ? `読み取り: ${matched.map(item => `「${item.text}」→ ${PROFILE_LABELS[item.key]}${LEVEL_LABELS[item.level]}`).join("、")}` : "読み取れる傾向がありませんでした。下で直接選べます。"}</p>}
+    {Object.keys(DEFAULT_PROFILE).map(key => <fieldset className="format-field" key={key}>
+      <legend>{PROFILE_LABELS[key]}</legend>
+      <div className="format-options">
+        {PROFILE_LEVELS.map(level => <button type="button" key={level} className={`format-option${profile[key] === level ? " selected" : ""}`} aria-pressed={profile[key] === level}
+          onClick={() => onChange({ ...profile, [key]: level })}>{LEVEL_LABELS[level]}</button>)}
+      </div>
+    </fieldset>)}
+    <p className="modal-note">オープンレンジだけを調整します（実験的な近似計算）。変更したハンドは表の枠で示します。</p>
+  </section>;
+}
+
 export function AdvancedSettingsPage({ format, onChange }) {
   return <div className="advanced-settings-page" aria-label="より詳細な設定">
     <p className="modal-description">対戦環境の詳細を設定します。現在選べるレンジはアンティなしのみです。</p>
@@ -26,8 +54,9 @@ export function AdvancedSettingsPage({ format, onChange }) {
   </div>;
 }
 
-export function GameFormatDialog({ format, onSave, onClose }) {
+export function GameFormatDialog({ format, tableProfile = DEFAULT_PROFILE, onSave, onClose }) {
   const [draft, setDraft] = useState(format);
+  const [profileDraft, setProfileDraft] = useState(tableProfile);
   const [page, setPage] = useState("game");
   const dialogRef = useRef(null);
   useEffect(() => {
@@ -51,10 +80,11 @@ export function GameFormatDialog({ format, onSave, onClose }) {
           <span>より詳細な設定</span><CaretRight size={15} aria-hidden="true" />
         </button>
         <p className="modal-note"><LockSimple size={12} weight="bold" aria-hidden="true" /> はレンジ表を準備中の設定です。</p>
+        <TableProfileFields profile={profileDraft} onChange={setProfileDraft} />
       </> : <AdvancedSettingsPage format={draft} onChange={setDraft} />}
       <div className="modal-actions">
         <button type="button" className="onboarding-cancel" onClick={onClose}>キャンセル</button>
-        <button type="button" className="primary" disabled={!isBuilt(draft)} onClick={() => onSave(draft)}>適用する</button>
+        <button type="button" className="primary" disabled={!isBuilt(draft)} onClick={() => onSave(draft, profileDraft)}>適用する</button>
       </div>
     </div>
   </div>;

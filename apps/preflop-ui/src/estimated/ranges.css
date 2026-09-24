@@ -106,3 +106,15 @@
 .modal-note { display: flex; align-items: center; gap: 5px; margin: 0; color: var(--text-subtle); font-size: 11px; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Table-profile adjustments: added opens get a solid marker, removed opens a dashed one. */
+.matrix button.adjusted-add::after, .matrix button.adjusted-drop::after { content: ""; position: absolute; inset: 1px; border-radius: inherit; pointer-events: none; z-index: 1; }
+.matrix button.adjusted-add::after { border: 2px solid var(--accent-bright); }
+.matrix button.adjusted-drop::after { border: 2px dashed var(--text-muted); }
+.table-profile-note { display: flex; gap: 6px; align-items: baseline; margin: 0; font-size: 12px; color: var(--text-subtle); }
+.table-profile-note b { color: var(--text); font-weight: 600; }
+.table-profile-description { width: 100%; box-sizing: border-box; min-height: 56px; resize: vertical; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--surface-raised); color: inherit; font: inherit; font-size: 13px; }
+.table-profile-matched { margin: 4px 0 0; font-size: 12px; color: var(--text-subtle); }
+.adjustment-reason { margin: 0 0 8px; padding: 8px 10px; border-left: 3px solid var(--accent-bright); background: var(--surface-accent); font-size: 13px; line-height: 1.5; }
+.table-profile-fields { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.format-section-title { margin: 0; font-size: 13px; font-weight: 600; color: var(--text); }
+.table-profile-summary { color: var(--accent-soft); }

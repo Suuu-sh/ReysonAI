@@ -24,6 +24,8 @@ import {
 import { ArrowCounterClockwise, PencilSimple } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.jsx";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.js";
+import tableAdjustments from "./table-profile-adjustments.json";
+import { DEFAULT_PROFILE, adjustOpeningSpot, adjustmentReason, describeProfile, isDefaultProfile, markAdjustedModel, normalizeProfile } from "./table-profile.js";
 import "./ranges.css";
 
 let dataset;
@@ -46,6 +48,8 @@ const fourBetState = loadFourBetDataset(fourBetFiles["./four-bet-responses.json"
 const selectionStorageKey = "solveaai:estimated-selection:v1";
 const displayModeStorageKey = displayModeKey;
 const formatStorageKey = "solveaai:game-format:v1";
+const tableProfileStorageKey = "solveaai:table-profile:v1";
+const openingModelFor = spot => markAdjustedModel(openingMatrixModel(spot), spot);
 const legacySelectionStorageKey = "solveagto:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
   const fallback = { rangeType: initialRangeType, opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, selected: "AKo" };
@@ -91,6 +95,7 @@ function AiReason({ hand, spotId, inlineFacts }) {
 }
 
 function HandBreakdown({ hand, model, isOpening, isThreeBet, isFourBet, isFiveBet, spot, position, onReturnToComparison, displayMode }) {
+  const tableReason = adjustmentReason(hand, spot?.table_profile);
   const aggregate = model.aggregates.get(hand.hand);
   const totalFrequency = isOpening
     ? hand.open + hand.fold
@@ -104,7 +109,8 @@ function HandBreakdown({ hand, model, isOpening, isThreeBet, isFourBet, isFiveBe
     <Panel>
       <HandHeader position={position} hand={hand.hand} comboCount={aggregate.comboCount} onClose={onReturnToComparison} />
       {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。</StatusState> : <>
-      <AiReason hand={hand} spotId={spot?.id} inlineFacts={inlineFacts} />
+      {tableReason && <p className="adjustment-reason">{tableReason}</p>}
+      {!tableReason && <AiReason hand={hand} spotId={spot?.id} inlineFacts={inlineFacts} />}
       {displayMode === "standard" && <>
       {isFourBet && <small>オールイン = 5bet（合計100BB）</small>}
       <ActionBars items={model.actions.map(action => ({ action, frequency: aggregate.actions[action] }))} labels={model.actionLabels} />
@@ -336,12 +342,21 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       return saved && isBuilt(saved) ? saved : defaultFormat;
     } catch { return defaultFormat; }
   });
+  const [tableProfile, setTableProfile] = useState(() => {
+    try { return normalizeProfile(JSON.parse(window.localStorage.getItem(tableProfileStorageKey)) ?? DEFAULT_PROFILE); } catch { return DEFAULT_PROFILE; }
+  });
   const [formatOpen, setFormatOpen] = useState(false);
-  function saveFormat(value) {
+  function saveFormat(value, profileValue = tableProfile) {
     setFormat(value);
+    setTableProfile(profileValue);
     setFormatOpen(false);
-    try { window.localStorage.setItem(formatStorageKey, JSON.stringify(value)); } catch {}
+    try {
+      window.localStorage.setItem(formatStorageKey, JSON.stringify(value));
+      window.localStorage.setItem(tableProfileStorageKey, JSON.stringify(profileValue));
+    } catch {}
   }
+  const openingSpotFor = position => openingDataset ? adjustOpeningSpot(findOpeningSpot(openingDataset, position), tableAdjustments, tableProfile) : null;
+  const openingTitle = position => `${position} · オープンレンジ${isDefaultProfile(tableProfile) ? "" : "（卓に合わせて調整）"}`;
   const [localEstimate, setLocalEstimate] = useState(null);
   const [localEstimateRequestKey, setLocalEstimateRequestKey] = useState(null);
   const [localStatus, setLocalStatus] = useState(
@@ -359,14 +374,14 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     try { window.localStorage.setItem(displayModeStorageKey, value); } catch {}
   }
   const currentError = isFourBet ? fourBet.error : isOpening ? openingDataError : isThreeBet ? threeBetDataError : dataError || openingDataError;
-  const openerSpot = openingDataset ? findOpeningSpot(openingDataset, opener) : null;
-  const openerModel = useMemo(() => openerSpot ? openingMatrixModel(openerSpot) : null, [openerSpot]);
+  const openerSpot = useMemo(() => openingSpotFor(opener), [opener, tableProfile]);
+  const openerModel = useMemo(() => openerSpot ? openingModelFor(openerSpot) : null, [openerSpot]);
   const spot = isOpening
-    ? openingDataset ? findOpeningSpot(openingDataset, opener) : null
+    ? openerSpot
     : isFourBet ? fourBet.data ? findFourBetSpot(fourBet.data, opener, hero) : null
     : isThreeBet ? threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null
     : dataset ? findSpot(dataset, opener, hero) : null;
-  const model = useMemo(() => spot ? (isOpening ? openingMatrixModel(spot) : isFourBet ? fourBetMatrixModel(spot, findSpot(dataset, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot) : matrixModel(spot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
+  const model = useMemo(() => spot ? (isOpening ? openingModelFor(spot) : isFourBet ? fourBetMatrixModel(spot, findSpot(dataset, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot) : matrixModel(spot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
   function resetPath() {
     setRangeType("response");
     setOpener("BTN");
@@ -516,14 +531,14 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const rangeEntries = [];
   const addSaved = (position, kind, savedSpot, savedModel, title) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, hand: savedSpot?.hands.find(row => row.hand === selected) });
   if (isOpening) {
-    addSaved(opener, "opening", openerSpot, openerModel, `${opener} · オープンレンジ`);
+    addSaved(opener, "opening", openerSpot, openerModel, openingTitle(opener));
   } else if (isComparison) {
     const activeSeats = positions.filter(position => multiwayParticipants.includes(position));
     const firstCaller = positions.find(position => callers.includes(position));
     for (const position of activeSeats) {
       if (pendingRaise === "squeeze" && position !== hero) {
         rangeEntries.push({ position, kind: "pending", title: `${position} · スクイーズへの応答`, statusTitle: "レンジ未収録", statusDescription: "スクイーズ後の応答データはまだ保存されていません。" });
-      } else if (position === opener) addSaved(position, "opening", openerSpot, openerModel, `${position} · オープンレンジ`);
+      } else if (position === opener) addSaved(position, "opening", openerSpot, openerModel, openingTitle(position));
       else if (showPendingRanges && position === firstCaller) {
         const firstCallerSpot = dataset?.spots.find(candidate => candidate.opener === opener && candidate.hero === position);
         if (firstCallerSpot) addSaved(position, "response", firstCallerSpot, matrixModel(firstCallerSpot), `${position} · オープンへの応答`);
@@ -569,8 +584,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     });
 
     if (ref.kind === "opening") {
-      const savedSpot = openingDataset ? findOpeningSpot(openingDataset, ref.position) : null;
-      return savedSpot ? withContext({ position: ref.position, kind: "opening", spot: savedSpot, model: openingMatrixModel(savedSpot), title: `${ref.position} · オープンレンジ` }) : missing("オープンレンジ");
+      const savedSpot = openingSpotFor(ref.position);
+      return savedSpot ? withContext({ position: ref.position, kind: "opening", spot: savedSpot, model: openingModelFor(savedSpot), title: openingTitle(ref.position) }) : missing("オープンレンジ");
     }
     if (ref.kind === "response") {
       const savedSpot = dataset ? findSpot(dataset, opener, ref.position) : null;
@@ -619,7 +634,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
               </div>
             </div>
-            <ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)} · レーキ {formatLabel("rake", format.rake)}</li></ul>
+            <ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)} · レーキ {formatLabel("rake", format.rake)}</li>{!isDefaultProfile(tableProfile) && <li className="table-profile-summary">卓: {describeProfile(tableProfile)}</li>}</ul>
             <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
           </div>}
           expanded
@@ -643,7 +658,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} spot={focusedEntry.spot} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
-      {formatOpen && <GameFormatDialog format={format} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
+      {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
     </main>
   </div>;
 }
