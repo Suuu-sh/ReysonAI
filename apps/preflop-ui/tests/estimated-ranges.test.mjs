@@ -35,6 +35,12 @@ test("AKo BB vs BTN uses the new frequency and unrestricted size", () => {
   const row = findSpot(data, "BTN", "BB").hands.find(h => h.hand === "AKo");
   assert.deepEqual([row.fold, row.call, row.three_bet, row.three_bet_size_bb], [0, 25, 75, 12]);
 });
+test("SB open response uses the dedicated 3.5BB open and 10.5BB BB 3bet sizes", () => {
+  const sb = findSpot(data, "SB", "BB");
+  assert.equal(sb.open_size_bb, 3.5);
+  assert.equal(sb.three_bet_size_bb, 10.5);
+  assert.ok(sb.hands.every(row => row.three_bet_size_bb === (row.three_bet ? 10.5 : null)));
+});
 test("invalid JSON fails closed rather than substituting strategies", () => {
   for (const mutate of [
     d => d.spots.pop(),

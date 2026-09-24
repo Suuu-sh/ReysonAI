@@ -11,7 +11,7 @@ from pathlib import Path
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit(
     'Run `npm run build:estimates`; generators never write src/estimated directly.'))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from sizing_rules import CONFIG
+from sizing_rules import CONFIG, open_size_bb, three_bet_to
 
 RANKS = 'AKQJT98765432'
 ADJUSTMENT_VERSION = '2026-09-24-rake-v1'
@@ -29,7 +29,7 @@ CALL_RETENTION = {
 }
 
 # SB remains 3bet-or-fold; rake moves its marginal bluffs out of the 3bet
-# branch rather than creating a call branch.
+# branch rather than creating a call branch. Its raise size is opener-specific.
 SB_THREE_BET_RETENTION = {
     'UTG': {'pair': .92, 'suited_strong': .90, 'suited_weak': .65, 'offsuit_strong': .80, 'offsuit_weak': .38},
     'HJ':  {'pair': .94, 'suited_strong': .93, 'suited_weak': .72, 'offsuit_strong': .84, 'offsuit_weak': .45},
@@ -37,7 +37,7 @@ SB_THREE_BET_RETENTION = {
     'BTN': {'pair': .98, 'suited_strong': .98, 'suited_weak': .90, 'offsuit_strong': .96, 'offsuit_weak': .72},
 }
 
-# BB vs the newly narrower SB raise branch gets an additional range-selection
+# BB vs the dedicated 3.5BB SB raise branch gets an additional range-selection
 # adjustment to both calls and 3bets; responses to all other openers keep their
 # original 3bet mix while marginal calls move to fold.
 BB_VS_SB_THREE_BET_RETENTION = {
@@ -95,6 +95,17 @@ def main():
         'rate': rake['rate'], 'cap_bb': rake['cap_bb'],
         'no_flop_no_drop': rake['no_flop_no_drop'], 'calibrated': True,
     }
+    for spot in data['spots']:
+        opener = spot['opener']
+        size = three_bet_to(opener, spot['hero'])
+        spot['open_size_bb'] = open_size_bb(opener)
+        spot['three_bet_size_bb'] = size
+        for row in spot['hands']:
+            row['three_bet_size_bb'] = size if row['three_bet'] else None
+    data['metadata']['sizing_policy'] = (
+        'SB openは3.5BB、他ポジションのopenは2.5BB。SBへの3betは10.5BB、'
+        '他はfixed_raise_to_bb.three_betのIP/OOP固定額（IP 8BB / OOP 12BB）。'
+    )
     if apply_adjustment:
         data['metadata']['scope'] += ' BB/SB defense is additionally adjusted for the configured 5% rake, 3BB cap and SB limp strategy.'
         data['metadata']['method'] += ' The 2026-09-24 rake pass reduces marginal calls (especially weak offsuit BB hands) and tightens SB 3bet-or-fold frequencies; this is an explicit heuristic, not equilibrium recalculation.'

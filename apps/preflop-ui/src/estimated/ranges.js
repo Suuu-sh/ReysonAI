@@ -1,5 +1,5 @@
 import { hands } from "../data.js";
-import { positions, openSizeBb, threeBetToSize } from "./sizing.js";
+import { positions, openSizeBb, openSizeFor, threeBetToSize } from "./sizing.js";
 import { hasConfiguredRake } from "./rake.js";
 
 export { positions };
@@ -23,7 +23,7 @@ export function validateDataset(data) {
   }
   for (const spot of data.spots) {
     if (spot.id !== `${spot.hero}_vs_${spot.opener}` ||
-        spot.open_size_bb !== openSizeBb || spot.effective_stack_bb !== 100 ||
+        spot.open_size_bb !== openSizeFor(spot.opener) || spot.effective_stack_bb !== 100 ||
         spot.three_bet_size_bb !== threeBetToSize(spot.opener, spot.hero, 0) ||
         !Array.isArray(spot.hands) || spot.hands.length !== 169 ||
         new Set(spot.hands.map(row => row.hand)).size !== 169) {

@@ -2,7 +2,7 @@ import { hands } from "../data.js";
 import { positions, validateDataset } from "./ranges.js";
 import { validateOpeningDataset } from "./opening-ranges.js";
 import { validateThreeBetDataset } from "./three-bet-responses.js";
-import { fourBetToSize, openSizeBb } from "./sizing.js";
+import { fourBetToSize, openSizeBb, openSizeFor } from "./sizing.js";
 import { hasConfiguredRake } from "./rake.js";
 
 export function validateFourBetDataset(data, responses, previous, openings) {
@@ -26,7 +26,7 @@ export function validateFourBetDataset(data, responses, previous, openings) {
         spot.id !== `${spot.hero}_vs_${spot.opener}_four_bet` ||
         spot.source_response_id !== source.id || spot.source_three_bet_response_id !== before.id ||
         spot.hero_position_vs_opener !== source.hero_position_vs_opener ||
-        spot.open_size_bb !== openSizeBb || spot.effective_stack_bb !== 100 ||
+        spot.open_size_bb !== openSizeFor(spot.opener) || spot.effective_stack_bb !== 100 ||
         spot.three_bet_size_bb !== source.three_bet_size_bb || spot.three_bet_size_bb !== before.three_bet_size_bb ||
         spot.four_bet_size_bb !== before.four_bet_size_bb ||
         !Number.isFinite(spot.three_bet_size_bb) || spot.three_bet_size_bb < 4 ||

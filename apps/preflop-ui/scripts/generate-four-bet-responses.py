@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
 DATA = STAGING
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from sizing_rules import CONFIG
+from sizing_rules import CONFIG, open_size_bb
 RANKS = 'AKQJT98765432'
 HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
          for i, a in enumerate(RANKS) for j, b in enumerate(RANKS)]
@@ -266,7 +266,7 @@ def build():
             'id': f'{hero}_vs_{opener}_four_bet', 'opener': opener, 'hero': hero, 'three_bettor': hero,
             'source_response_id': source['id'], 'source_three_bet_response_id': before['id'],
             'hero_position_vs_opener': source['hero_position_vs_opener'],
-            'open_size_bb': 2.5, 'effective_stack_bb': 100,
+            'open_size_bb': open_size_bb(opener), 'effective_stack_bb': 100,
             'three_bet_size_bb': source['three_bet_size_bb'], 'four_bet_size_bb': before['four_bet_size_bb'],
             'all_in_size_bb': 100, 'hands': rows,
         })

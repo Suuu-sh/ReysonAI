@@ -3,7 +3,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from sizing_rules import CONFIG, four_bet_to
+from sizing_rules import CONFIG, four_bet_to, open_size_bb
 
 # Writes only into the staging dir from `npm run build:estimates`, which audits before publishing.
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
@@ -284,7 +284,7 @@ def main():
     result = {'metadata': {
         'schema_version': '1.0', 'strategy_type': 'ai_estimate_not_gto',
         'game': '6max Cash / No-Limit Texas Holdem', 'effective_stack_bb': 100, 'open_size_bb': 2.5,
-        'scope': 'Heroが2.5BBでオープン、後続1人が3bet。他の全員がフォールドし、Heroに戻った局面。',
+        'scope': 'オープナー別のサイズで単独オープン（通常2.5BB、SBは3.5BB）、後続1人が3bet。他の全員がフォールドし、Heroに戻った局面。',
         'source_of_truth': 'ユーザー確認済みの全15組み合わせと既存preflop-ranges.jsonの3betサイズ。Heroは元のオープナー。',
         'excluded': ['コールド4bet', 'スクイーズ・コーラーあり', '4betを受けた後の応答', '4bet後の相手の行動'],
         'method': '手作業のハンド群別ヒューリスティック。位置と3betサイズに応じて配分。5%刻みは精度を意味しない。',
@@ -293,7 +293,7 @@ def main():
         'frequency_semantics': '当該ハンドで既にオープンした条件下の割合。fold+call+four_bet=100。オープン頻度は再乗算しない。',
         'unreachable_hands': '既存RFIでopen=0のクラスはこの経路に到達しない。169件形式のためfold=100とし、理由に対象外と明記。実際の局面での推奨ではない。',
         'sizing_semantics': '3bet・4betとも追加額ではなく合計投入額(raise-to)。four_bet=0ならfour_bet_size_bb=null。',
-        'sizing_policy': '保存済みconfigの一律サイズルールを適用。3bet=オープン×IP3/OOP4.5、スクイーズはcaller1人でIP4.5/OOP5にcallerごとに+1、4bet=直前3bet×IP2.3/OOP2.6、スタック超過は100BBオールイン。',
+        'sizing_policy': '保存済みconfigのサイズルールを適用。SB openへの3betは10.5BB（SB openは3.5BB）、他の3betはIP 8BB / OOP 12BB、スクイーズはcaller1人でIP4.5/OOP5にcallerごとに+1、4betはSBがBBの3betに返す場合24BB、他はconfigのIP/OOP固定額。',
         'warning': '推定値。レーキ環境を仮定したヒューリスティックで、EV・GTO均衡・相手のカード除去の厳密計算や既存レンジとの同時均衡を保証しない。',
         'reference_note': '参考資料は位置別サイズの考え方の確認のみ。頻度チャートは転用していない。',
         'references': [{'title': 'Upswing Poker: Preflop Raise Sizes That Win', 'url': 'https://upswingpoker.com/podcast/ep29-pfr-sizing/'}],
@@ -313,7 +313,7 @@ def main():
                          'four_bet_size_bb': four_size if four else None})
         result['spots'].append({'id': f'{hero}_vs_{bettor}_three_bet', 'hero': hero, 'opener': hero,
                                 'three_bettor': bettor, 'source_response_id': before['id'],
-                                'open_size_bb': 2.5, 'three_bet_size_bb': size, 'four_bet_size_bb': four_size,
+                                'open_size_bb': open_size_bb(hero), 'three_bet_size_bb': size, 'four_bet_size_bb': four_size,
                                 'effective_stack_bb': 100, 'hero_position_vs_three_bettor': 'IP' if ip else 'OOP', 'hands': rows})
     (ROOT/'three-bet-responses.json').write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n')
     print(f"Generated {len(result['spots'])} spots / {sum(len(s['hands']) for s in result['spots'])} hands")

@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
 import { hands } from '../src/data.js';
+import { fourBetToSize, openSizeFor, threeBetToSize } from '../src/estimated/sizing.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const cacheDir = join(root, '.local', 'estimated');
@@ -16,8 +17,8 @@ export function validateRequest(value) {
     const { opener, hero, callers, three_bet_size_bb, four_bet_size_bb, all_in_size_bb } = value;
     const oi = positions.indexOf(opener), hi = positions.indexOf(hero);
     if (oi < 0 || oi >= 5 || hi <= oi || !Array.isArray(callers) || callers.length !== 0 ||
-        !Number.isFinite(three_bet_size_bb) || three_bet_size_bb <= 2.5 ||
-        !Number.isFinite(four_bet_size_bb) || four_bet_size_bb <= three_bet_size_bb || four_bet_size_bb >= 100 || all_in_size_bb !== 100) {
+        !Number.isFinite(three_bet_size_bb) || three_bet_size_bb !== threeBetToSize(opener, hero) ||
+        !Number.isFinite(four_bet_size_bb) || four_bet_size_bb !== fourBetToSize(opener, hero) || all_in_size_bb !== 100) {
       throw new Error('対応する局面は、オープン→3bet→4bet→100BB 5betオールイン後の応答のみです。');
     }
     return { scenario: 'five_bet_all_in_response', opener, hero, callers: [], three_bet_size_bb, four_bet_size_bb, all_in_size_bb };
@@ -35,7 +36,7 @@ export function validateRequest(value) {
 export function validateEstimate(data, request) {
   if (request.scenario === 'five_bet_all_in_response') {
     if (data?.kind !== 'ai_estimate_not_gto' || data?.scenario !== request.scenario ||
-        data?.effective_stack_bb !== 100 || data?.open_size_bb !== 2.5 ||
+        data?.effective_stack_bb !== 100 || data?.open_size_bb !== openSizeFor(request.opener) ||
         data?.opener !== request.opener || data?.hero !== request.hero ||
         JSON.stringify(data.callers) !== '[]' || data?.three_bet_size_bb !== request.three_bet_size_bb ||
         data?.four_bet_size_bb !== request.four_bet_size_bb || data?.all_in_size_bb !== 100 ||
@@ -53,7 +54,7 @@ export function validateEstimate(data, request) {
     return data;
   }
   if (data?.kind !== 'ai_estimate_not_gto' || data?.effective_stack_bb !== 100 ||
-      data?.open_size_bb !== 2.5 || data?.opener !== request.opener || data?.hero !== request.hero ||
+      data?.open_size_bb !== openSizeFor(request.opener) || data?.opener !== request.opener || data?.hero !== request.hero ||
       JSON.stringify(data.callers) !== JSON.stringify(request.callers) || !Array.isArray(data.ranges)) {
     throw new Error('生成データの局面・前提が一致しません。');
   }
@@ -71,22 +72,24 @@ export function validateEstimate(data, request) {
 
 function squeezeSize(request, position) {
   const ip = !['SB', 'BB'].includes(position) || (position === 'BB' && request.opener === 'SB');
-  return Math.min(100, 2.5 * ((ip ? 4.5 : 5) + request.callers.length - 1));
+  return Math.min(100, openSizeFor(request.opener) * ((ip ? 4.5 : 5) + request.callers.length - 1));
 }
 
 function promptFor(request) {
   if (request.scenario === 'five_bet_all_in_response') {
+    const openSize = openSizeFor(request.opener);
     return [
       'Author one LOCAL EXPERIMENTAL AI-ESTIMATED 6-max preflop response range, not solver/GTO/equilibrium output. No tools, code, or file edits; return JSON only. Cash 100BB effective, no ante, unspecified rake, raise-to sizes are total BB.',
-      'History: all seats before ' + request.opener + ' fold → ' + request.opener + ' raises to 2.5BB → all seats between opener and ' + request.hero + ' fold → ' + request.hero + ' 3bets to ' + request.three_bet_size_bb + 'BB → ' + request.opener + ' 4bets to ' + request.four_bet_size_bb + 'BB → ' + request.hero + ' 5bets all-in to 100BB. The original opener now responds; every other player has folded.',
+      'History: all seats before ' + request.opener + ' fold → ' + request.opener + ' raises to ' + openSize + 'BB → all seats between opener and ' + request.hero + ' fold → ' + request.hero + ' 3bets to ' + request.three_bet_size_bb + 'BB → ' + request.opener + ' 4bets to ' + request.four_bet_size_bb + 'BB → ' + request.hero + ' 5bets all-in to 100BB. The original opener now responds; every other player has folded.',
       'Produce a conditional range for ' + request.opener + ' only, with legal actions call and fold (no raise option). For each of all 169 canonical hands output integer [fold,call,0] frequencies summing to 100; the final zero is a reserved raise column and must remain zero. Estimate hand strength under the prior 3bet and 4bet sizes and all-in pressure, with plausible calls and folds across the range.',
-      'Use exactly one raise_to_bb:null and available_actions:["call","fold"]. Rows must be in EXACT canonical order: ' + hands.join(',') + '. Output JSON with kind="ai_estimate_not_gto", scenario="' + request.scenario + '", effective_stack_bb=100, open_size_bb=2.5, opener="' + request.opener + '", hero="' + request.hero + '", callers=[], three_bet_size_bb=' + request.three_bet_size_bb + ', four_bet_size_bb=' + request.four_bet_size_bb + ', all_in_size_bb=100, ranges=[{position="' + request.opener + '",raise_to_bb:null,available_actions:["call","fold"],rows:[[hand,fold,call,0],...]}]. No EV or solver claim; do not include other participants.'
+      'Use exactly one raise_to_bb:null and available_actions:["call","fold"]. Rows must be in EXACT canonical order: ' + hands.join(',') + '. Output JSON with kind="ai_estimate_not_gto", scenario="' + request.scenario + '", effective_stack_bb=100, open_size_bb=' + openSize + ', opener="' + request.opener + '", hero="' + request.hero + '", callers=[], three_bet_size_bb=' + request.three_bet_size_bb + ', four_bet_size_bb=' + request.four_bet_size_bb + ', all_in_size_bb=100, ranges=[{position="' + request.opener + '",raise_to_bb:null,available_actions:["call","fold"],rows:[[hand,fold,call,0],...]}]. No EV or solver claim; do not include other participants.'
     ].join(' ');
   }
-  const callerText = request.callers.map(p => `${p} call 2.5BB`).join(' → ');
+  const openSize = openSizeFor(request.opener);
+  const callerText = request.callers.map(p => `${p} call ${openSize}BB`).join(' → ');
   const ranges = [...request.callers, request.hero];
   const raiseTo = p => squeezeSize(request, p);
-  return `You are authoring LOCAL EXPERIMENTAL AI-ESTIMATED 6-max preflop frequencies, not solver/GTO/equilibrium output. No tools, no code, no file edits; return JSON only. Cash 100BB effective, no ante, unspecified rake, raise-to sizes in total BB. History: all seats before ${request.opener} fold → ${request.opener} raises to 2.5BB → ${callerText} → ${request.hero} faces 2.5BB. Seats between named actions fold. Produce independent estimated decision ranges for ${ranges.join(', ')}: each caller's earlier fold/call/squeeze decision conditional on preceding history, then Hero's current fold/call/squeeze decision. For each position use one raise_to_bb: ${ranges.map(p => `${p}=${raiseTo(p)}`).join(', ')}. actions row order [hand,fold,call,raise], integer percentages sum exactly 100. 169 rows each in EXACT canonical order: ${hands.join(',')}. Distinct position/history-sensitive estimates, not a copied table. Do not assign any positive call/raise to obviously impossible or nonsensical hands without reason. Output kind="ai_estimate_not_gto", effective_stack_bb=100, open_size_bb=2.5, opener="${request.opener}", hero="${request.hero}", callers=${JSON.stringify(request.callers)}, ranges=[{position,raise_to_bb,rows}]. No EV/solver claim.`;
+  return `You are authoring LOCAL EXPERIMENTAL AI-ESTIMATED 6-max preflop frequencies, not solver/GTO/equilibrium output. No tools, no code, no file edits; return JSON only. Cash 100BB effective, no ante, unspecified rake, raise-to sizes in total BB. History: all seats before ${request.opener} fold → ${request.opener} raises to ${openSize}BB → ${callerText} → ${request.hero} faces ${openSize}BB. Seats between named actions fold. Produce independent estimated decision ranges for ${ranges.join(', ')}: each caller's earlier fold/call/squeeze decision conditional on preceding history, then Hero's current fold/call/squeeze decision. For each position use one raise_to_bb: ${ranges.map(p => `${p}=${raiseTo(p)}`).join(', ')}. actions row order [hand,fold,call,raise], integer percentages sum exactly 100. 169 rows each in EXACT canonical order: ${hands.join(',')}. Distinct position/history-sensitive estimates, not a copied table. Do not assign any positive call/raise to obviously impossible or nonsensical hands without reason. Output kind="ai_estimate_not_gto", effective_stack_bb=100, open_size_bb=${openSize}, opener="${request.opener}", hero="${request.hero}", callers=${JSON.stringify(request.callers)}, ranges=[{position,raise_to_bb,rows}]. No EV/solver claim.`;
 }
 
 function runCodex(request) {

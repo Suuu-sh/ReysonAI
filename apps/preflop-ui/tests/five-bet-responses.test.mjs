@@ -21,6 +21,8 @@ test("5bet responses call exactly when equity vs the shove range clears pot odds
   const btnVsBb = data.spots.find(s => s.id === "BTN_vs_BB_five_bet");
   assert.equal(btnVsBb.hands.find(r => r.hand === "AA").call, 100);
   assert.equal(btnVsBb.hands.find(r => r.hand === "72o").equity_vs_shove_pct, null); // never 4bet
+  const sbVsBb = data.spots.find(s => s.id === "SB_vs_BB_five_bet");
+  assert.deepEqual([sbVsBb.open_size_bb, sbVsBb.three_bet_size_bb, sbVsBb.four_bet_size_bb], [3.5, 10.5, 24]);
 });
 
 test("5bet model hides unreachable placeholders and validates frequencies", async () => {

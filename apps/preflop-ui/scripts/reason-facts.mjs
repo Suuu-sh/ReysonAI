@@ -4,6 +4,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { blockedShare, comboCount, equityVsRange, equityVsRanges, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
 import { raked } from "../src/estimated/rake.js";
+import { openSizeFor } from "../src/estimated/sizing.js";
 
 const SAMPLES = 12000;
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
@@ -14,6 +15,7 @@ const responses = load("preflop-ranges");
 const threeBets = load("three-bet-responses");
 const fourBets = load("four-bet-responses");
 const fiveBets = load("five-bet-responses");
+const limpResponses = existsSync(new URL("../src/estimated/limp-responses.json", import.meta.url)) ? load("limp-responses") : { spots: [] };
 const multiway = existsSync(new URL("../src/estimated/multiway-responses.json", import.meta.url)) ? load("multiway-responses") : { spots: [] };
 const outDir = new URL("../.local/reason-facts/", import.meta.url);
 mkdirSync(outDir, { recursive: true });
@@ -50,7 +52,8 @@ function openingFacts(spot) {
   const defend = rangeFrom(bbResponse, row => (row.call + row.three_bet) / 100);
   const threeBetsBehind = behind.flatMap(p => rangeFrom(responseOf(hero, p), row => row.three_bet / 100));
   const allFold = behind.reduce((acc, p) => acc * weightedFold(responseOf(hero, p), () => 1), 1);
-  const risk = 2.5 - (blind[hero] ?? 0);
+  const openSize = spot.open_size_bb ?? openSizeFor(hero);
+  const risk = openSize - (blind[hero] ?? 0);
   const reward = 1.5 - (blind[hero] ?? 0);
   const comboWeightedPct = action => round1(spot.hands.reduce((sum, row) => sum + comboCount(row.hand) * (row[action] ?? 0) / 100, 0) / 1326);
   return {
@@ -68,8 +71,10 @@ function responseFacts(spot) {
   const threeBetSpot = threeBets.spots.find(s => s.opener === opener && s.three_bettor === hero);
   const openRows = openOf(opener);
   const continueRange = rangeFrom(threeBetSpot, row => (row.call + row.four_bet) / 100 * openRows.get(row.hand).open / 100);
-  const toCall = 2.5 - (blind[hero] ?? 0);
-  const totalPotAfterCall = 4 + toCall;
+  const openSize = spot.open_size_bb ?? openSizeFor(opener);
+  const toCall = openSize - (blind[hero] ?? 0);
+  const dead = 1.5 - (blind[opener] ?? 0) - (blind[hero] ?? 0);
+  const totalPotAfterCall = 2 * openSize + dead;
   const behind = positions.slice(positions.indexOf(hero) + 1);
   return {
     type: "response",
@@ -89,11 +94,12 @@ function threeBetFacts(spot) {
   const continueRange = rangeFrom(fourBetSpot, row => threeBetWeight.get(row.hand).three_bet / 100 * (row.call + row.all_in) / 100);
   const openRows = openOf(opener);
   const dead = 1.5 - (blind[opener] ?? 0) - (blind[bettor] ?? 0);
+  const openSize = spot.open_size_bb ?? openSizeFor(opener);
   const totalPotAfterCall = 2 * spot.three_bet_size_bb + dead;
   return {
     type: "three_bet",
     spot: { opener, three_bettor: bettor, position: spot.hero_position_vs_three_bettor, three_bet_size_bb: spot.three_bet_size_bb, four_bet_size_bb: spot.four_bet_size_bb,
-      call_break_even_equity_pct: round1(need(spot.three_bet_size_bb - 2.5, totalPotAfterCall)),
+      call_break_even_equity_pct: round1(need(spot.three_bet_size_bb - openSize, totalPotAfterCall)),
       three_bettor_fold_to_4bet_pct: round1(weightedFold(fourBetSpot, row => threeBetWeight.get(row.hand).three_bet / 100)) },
     hands: handFacts(spot.id, spot, hand => openRows.get(hand).open > 0,
       { equity_vs_three_bet_pct: threeBetRange, equity_vs_continue_pct: continueRange, blocked_three_bet_pct: threeBetRange }),
@@ -141,12 +147,27 @@ function multiwayFacts(spot) {
   };
 }
 
+function limpFacts(spot) {
+  const sbOpening = opening.spots.find(s => s.hero === "SB");
+  const limpRange = rangeFrom(sbOpening, row => row.limp / 100);
+  return {
+    type: "limp_response",
+    spot: { opener: "SB", hero: "BB", open_size_bb: spot.open_size_bb,
+      iso_size_bb: spot.raise_size_bb, sb_limp_range_combos: Math.round(totalWeight(limpRange)) },
+    hands: handFacts(spot.id, spot, () => true, {
+      equity_vs_sb_limp_pct: limpRange,
+      blocked_sb_limp_pct: limpRange,
+    }),
+  };
+}
+
 const builders = [
   ...opening.spots.map(spot => [spot.id, () => openingFacts(spot)]),
   ...responses.spots.map(spot => [spot.id, () => responseFacts(spot)]),
   ...threeBets.spots.map(spot => [spot.id, () => threeBetFacts(spot)]),
   ...fourBets.spots.map(spot => [spot.id, () => fourBetFacts(spot)]),
   ...multiway.spots.map(spot => [spot.id, () => multiwayFacts(spot)]),
+  ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp").map(spot => [spot.id, () => limpFacts(spot)]),
 ];
 const wanted = new Set(process.argv.slice(2));
 for (const [id, build] of builders) {

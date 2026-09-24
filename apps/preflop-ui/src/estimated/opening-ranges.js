@@ -1,5 +1,5 @@
 import { hands } from "../data.js";
-import { openSizeBb, positions, sbCompleteToBb } from "./sizing.js";
+import { openSizeBb, openSizeFor, positions, sbCompleteToBb } from "./sizing.js";
 import { hasConfiguredRake } from "./rake.js";
 
 export function validateOpeningDataset(data) {
@@ -13,7 +13,8 @@ export function validateOpeningDataset(data) {
     throw new Error("オープンレンジの条件または局面数が一致しません。");
   }
   for (const spot of data.spots) {
-    if (spot.open_size_bb !== openSizeBb || spot.effective_stack_bb !== 100 ||
+    const size = openSizeFor(spot.hero);
+    if (spot.open_size_bb !== size || spot.effective_stack_bb !== 100 ||
         !Array.isArray(spot.hands) || spot.hands.length !== 169 ||
         new Set(spot.hands.map(row => row.hand)).size !== 169) {
       throw new Error(`オープン局面データが不正です: ${spot.id}`);
@@ -24,7 +25,7 @@ export function validateOpeningDataset(data) {
       if (!hands.includes(row.hand) || ![row.open, row.fold].every(n => Number.isFinite(n) && n >= 0 && n <= 100) ||
           !Number.isFinite(limp) || limp < 0 || limp > 100 ||
           Math.abs(row.open + limp + row.fold - 100) > 1e-6 ||
-          row.open_size_bb !== (row.open > 0 ? openSizeBb : null) ||
+          row.open_size_bb !== (row.open > 0 ? size : null) ||
           (hasLimp
             ? row.limp_size_bb !== (row.limp > 0 ? sbCompleteToBb : null)
             : Object.hasOwn(row, "limp") || Object.hasOwn(row, "limp_size_bb"))) {
@@ -42,13 +43,14 @@ export function findOpeningSpot(data, hero) {
 }
 
 export function openingMatrixModel(spot) {
+  const raiseAction = `raise_${spot.open_size_bb}`;
   return {
-    actions: [`raise_${openSizeBb}`, "limp", "fold"],
+    actions: [raiseAction, "limp", "fold"],
     actionLabels: { limp: "リンプ" },
     aggregates: new Map(spot.hands.map(row => [row.hand, {
       hand: row.hand,
       comboCount: row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12,
-      actions: { [`raise_${openSizeBb}`]: row.open / 100, limp: (row.limp ?? 0) / 100, fold: row.fold / 100 },
+      actions: { [raiseAction]: row.open / 100, limp: (row.limp ?? 0) / 100, fold: row.fold / 100 },
     }])),
   };
 }

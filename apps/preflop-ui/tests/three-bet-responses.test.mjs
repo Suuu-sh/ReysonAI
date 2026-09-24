@@ -63,6 +63,8 @@ test("matrix values and 4bet action labels match the persisted JSON without synt
   assert.deepEqual(btn.hands.find(h => h.hand === "AKo"), {
     hand: "AKo", fold: 0, call: 25, four_bet: 75, four_bet_size_bb: 26,
   });
+  const sb = findThreeBetSpot(data, "SB", "BB");
+  assert.deepEqual([sb.open_size_bb, sb.three_bet_size_bb, sb.four_bet_size_bb], [3.5, 10.5, 24]);
 });
 
 test("malformed output, mismatched references, and unreachable-hand continuations fail closed", () => {

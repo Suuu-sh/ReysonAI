@@ -49,27 +49,30 @@ def parse_profile(text, width):
     return values
 
 
-# BB check/iso-raise frequencies versus a capped SB limp range. Strong value
-# hands lead, with a small suited-ace blocker bluff component.
+# BB check/iso-raise frequencies versus the current capped SB limp range. Fresh
+# seeded 12,000-sample reason-facts show 410 raw combos at >=55% equity (196 at
+# >=60%, 214 from 55-60%): iso the >=60% tier at 100% and the 55-60% tier at
+# 75%. Below 55%, retain playability-first checks and use Q5s/K5o plus their
+# adjacent near-threshold Q6s/K6o classes at 25% (the blocker candidates each
+# remove about 9% of SB's limp range). A8o (59.8%) is rounded into the 100% tier
+# to avoid a frequency reversal against A7o (60.7%) in sampled, rounded equities.
+# The equity threshold, not a chart lookup, defines the value-iso core.
 BB_PROFILE = parse_profile('''
-0 100: AA KK
-25 75: QQ JJ
-50 50: TT AKs AKo AQs AQo
-75 25: 99 AJs KQs KQo
-90 10: 88 AJo KJs QJs A5s A4s
-95 5: 77 66 55 ATs KTs QTs JTs
+0 100: AA KK QQ JJ TT 99 88 77 66 55 AKs AQs AJs ATs-A5s AKo KQs KJs KTs K9s AQo AJo ATo A9o A8o A7o KQo
+25 75: A4s-A3s K8s-K5s QJs-Q7s KJo QJo JTs J9s KTo QTo JTo K9o Q9o K8o K7o A6o-A4o 44
+75 25: Q6s Q5s K6o K5o
 ''', 2)
 
 # SB continuation versus BB's 3.5BB iso-raise. Each row is conditional on
-# having limped; the value/blocker limp-reraise is deliberately narrow.
+# the newly authored limp range; only reachable limp hands receive actions.
 SB_CALL = parse_profile('''
-100: 88-22 A9s-A2s K9s-K2s Q9s-Q8s AJs KQs KJs QJs ATs KTs QTs JTs AJo KQo
-75: KJo QJo JTo ATo-A9o Q7s-Q5s J9s-J6s T9s-T6s 98s 87s 76s 65s 54s
-50: A8o-A2o KTo QTo K9o-K8o Q9o J9o T9o 97s 86s 75s 64s 53s 43s 32s
-25: K7o-K6o Q8o J8o T8o 98o 87o 76o 65o 54o
+100: 55 A5s-A2s
+75: 44-22 K9s-K5s Q9s-Q5s J9s-J5s T9s-T5s A5o-A4o
+50: K4s-K2s Q4s-Q2s J4s-J2s T4s-T2s 98s 97s 87s 86s 76s 75s 65s 64s 54s 53s
+25: 43s 42s 32s A3o-A2o
 ''', 1)
 SB_RAISE = parse_profile('''
-25: 88 A5s A4s
+25: 55 A5s A4s
 ''', 1)
 
 
@@ -110,7 +113,7 @@ def main():
                      'no_flop_no_drop': rake['no_flop_no_drop'], 'calibrated': True},
             'legal_actions': {'BB_vs_SB_limp': ['check', 'raise'], 'SB_vs_BB_iso': ['fold', 'call', 'raise']},
             'scope': 'SBが1BBにリンプした後のBB応答、およびBBが3.5BBにアイソレイズした後のSB応答。',
-            'method': '手作業のハンド群別ヒューリスティック。BBはキャップされたリンプレンジに対してバリュー中心にアイソレイズし、SBはリンプ頻度0%を到達不能として除外。',
+            'method': 'BBはreason-facts相当のSBリンプレンジ対勝率が概ね55%以上の手をバリュー・アイソレイズの中心にし、ブロッカー付き一部をブラフ、プレイアビリティを保てる残りはチェック。SBは新しいリンプレンジと3.5BBアイソサイズに整合し、リンプ頻度0%を到達不能として除外。',
             'frequency_semantics': 'BBはcheck+raise=100。SBはリンプ済み条件下でfold+call+raise=100。',
             'sizing_semantics': 'SB complete=1BB、BB iso raise-to=3.5BB、SB limp-reraise-to=10.5BB。',
             'unreachable_hands': 'SBのSB_open.limp=0%ハンドはfold=100の形式的プレースホルダーであり、推奨ではない。',

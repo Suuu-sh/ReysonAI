@@ -29,7 +29,7 @@ test("15 four-bet spots preserve original 3bettor Hero and both persisted raise-
     for (const r of s.hands) {
       assert.equal(r.fold + r.call + r.all_in, 100);
       assert.equal(r.all_in_size_bb, r.all_in > 0 ? 100 : null);
-      assert.ok(s.four_bet_size_bb >= 2 * s.three_bet_size_bb - 2.5);
+      assert.ok(s.four_bet_size_bb >= 2 * s.three_bet_size_bb - s.open_size_bb);
       assert.ok(s.all_in_size_bb >= 2 * s.four_bet_size_bb - s.three_bet_size_bb);
     }
   }
@@ -64,6 +64,8 @@ test("matrix displays exactly persisted conditional frequencies, excluding unrea
   }
   assert.ok(unreachable > 0 && reachableFold > 0);
   assert.equal(findFourBetSpot(data, "BTN", "BB").four_bet_size_bb, 26);
+  const sb = findFourBetSpot(data, "SB", "BB");
+  assert.deepEqual([sb.open_size_bb, sb.three_bet_size_bb, sb.four_bet_size_bb], [3.5, 10.5, 24]);
 });
 
 test("every spot rejects malformed IDs, sizes, hand sets, frequencies, extra keys and unreachable continuation", () => {

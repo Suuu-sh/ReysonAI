@@ -6,9 +6,9 @@
     "effective_stack_bb": 100,
     "open_size_bb": 2.5,
     "scope": "Heroまで全員フォールドした未オープンポットでのraise-first-in。",
-    "source_of_truth": "ユーザーが指定したUTG / HJ / CO / BTN / SBのオープンレンジ追加。既存の100BB・2.5BB条件を継承。",
+    "source_of_truth": "ユーザーが指定したUTG / HJ / CO / BTN / SBのオープンレンジ追加。SBだけconfigに指定した3.5BB、他は2.5BB。",
     "method": "ハンドクラスごとに手作業で設計した一般知識による概算。ソルバー・EV計算なし。",
-    "sb_policy": "SBはfold / 1BB limp / 2.5BB raise。低レートのレーキ下で、中程度から弱いプレイアブルハンドをリンプに配分した独立推定。",
+    "sb_policy": "SBはfold / 1BB limp / 3.5BB raise。勝率の高いバリューを軸にブロッカー付き一部を混ぜ、低～中程度のプレイアビリティを残すハンドをリンプへ配分した独立推定。",
     "rake": {
       "rate": 0.05,
       "cap_bb": 3.0,
@@ -2211,32 +2211,32 @@
         },
         {
           "hand": "K6s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
           "hand": "K5s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
           "hand": "K4s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
           "hand": "K3s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
           "hand": "K2s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
@@ -2283,8 +2283,8 @@
         },
         {
           "hand": "Q7s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
@@ -2361,8 +2361,8 @@
         },
         {
           "hand": "J7s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
@@ -2439,8 +2439,8 @@
         },
         {
           "hand": "T7s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
@@ -2499,9 +2499,9 @@
         },
         {
           "hand": "T9o",
-          "open": 25,
-          "fold": 75,
-          "open_size_bb": 2.5
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null
         },
         {
           "hand": "99",
@@ -2523,8 +2523,8 @@
         },
         {
           "hand": "96s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
@@ -2553,8 +2553,8 @@
         },
         {
           "hand": "A8o",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
@@ -2631,9 +2631,9 @@
         },
         {
           "hand": "A7o",
-          "open": 25,
-          "fold": 75,
-          "open_size_bb": 2.5
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null
         },
         {
           "hand": "K7o",
@@ -2769,8 +2769,8 @@
         },
         {
           "hand": "64s",
-          "open": 50,
-          "fold": 50,
+          "open": 25,
+          "fold": 75,
           "open_size_bb": 2.5
         },
         {
@@ -2787,9 +2787,9 @@
         },
         {
           "hand": "A5o",
-          "open": 25,
-          "fold": 75,
-          "open_size_bb": 2.5
+          "open": 0,
+          "fold": 100,
+          "open_size_bb": null
         },
         {
           "hand": "K5o",
@@ -4124,7 +4124,7 @@
     {
       "id": "SB_open",
       "hero": "SB",
-      "open_size_bb": 2.5,
+      "open_size_bb": 3.5,
       "effective_stack_bb": 100,
       "hands": [
         {
@@ -4132,7 +4132,7 @@
           "open": 100,
           "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -4140,7 +4140,7 @@
           "open": 100,
           "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -4148,87 +4148,87 @@
           "open": 100,
           "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
           "hand": "AJs",
-          "open": 50,
-          "limp": 50,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "ATs",
-          "open": 25,
-          "limp": 75,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "A9s",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "A8s",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "A7s",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "A6s",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "A5s",
-          "open": 25,
-          "limp": 75,
+          "open": 50,
+          "limp": 50,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
           "hand": "A4s",
-          "open": 25,
-          "limp": 75,
+          "open": 50,
+          "limp": 50,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
           "hand": "A3s",
-          "open": 0,
-          "limp": 75,
-          "fold": 25,
-          "open_size_bb": null,
+          "open": 50,
+          "limp": 50,
+          "fold": 0,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
           "hand": "A2s",
-          "open": 0,
-          "limp": 75,
-          "fold": 25,
-          "open_size_bb": null,
+          "open": 50,
+          "limp": 50,
+          "fold": 0,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
@@ -4236,7 +4236,7 @@
           "open": 100,
           "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -4244,47 +4244,47 @@
           "open": 100,
           "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
           "hand": "KQs",
-          "open": 50,
-          "limp": 50,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "KJs",
-          "open": 25,
-          "limp": 75,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "KTs",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "K9s",
-          "open": 0,
-          "limp": 100,
+          "open": 75,
+          "limp": 25,
           "fold": 0,
-          "open_size_bb": null,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
           "hand": "K8s",
-          "open": 0,
-          "limp": 100,
+          "open": 50,
+          "limp": 50,
           "fold": 0,
-          "open_size_bb": null,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
@@ -4314,37 +4314,13 @@
         {
           "hand": "K4s",
           "open": 0,
-          "limp": 100,
-          "fold": 0,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "K3s",
-          "open": 0,
-          "limp": 100,
-          "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
-        },
-        {
-          "hand": "K2s",
-          "open": 0,
-          "limp": 100,
-          "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
-        },
-        {
-          "hand": "AQo",
-          "open": 75,
-          "limp": 0,
-          "fold": 25,
-          "open_size_bb": 2.5,
-          "limp_size_bb": null
-        },
-        {
-          "hand": "KQo",
           "open": 0,
           "limp": 75,
           "fold": 25,
@@ -4352,35 +4328,59 @@
           "limp_size_bb": 1.0
         },
         {
+          "hand": "K2s",
+          "open": 0,
+          "limp": 75,
+          "fold": 25,
+          "open_size_bb": null,
+          "limp_size_bb": 1.0
+        },
+        {
+          "hand": "AQo",
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
+        },
+        {
+          "hand": "KQo",
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
+        },
+        {
           "hand": "QQ",
           "open": 100,
           "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
           "hand": "QJs",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "QTs",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "Q9s",
-          "open": 0,
-          "limp": 100,
+          "open": 50,
+          "limp": 50,
           "fold": 0,
-          "open_size_bb": null,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
@@ -4418,73 +4418,73 @@
         {
           "hand": "Q4s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "Q3s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "Q2s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "AJo",
-          "open": 0,
-          "limp": 75,
-          "fold": 25,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "KJo",
-          "open": 0,
-          "limp": 75,
-          "fold": 25,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "QJo",
-          "open": 0,
-          "limp": 75,
+          "open": 75,
+          "limp": 0,
           "fold": 25,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "JJ",
           "open": 100,
           "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
           "hand": "JTs",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "J9s",
-          "open": 0,
-          "limp": 100,
+          "open": 75,
+          "limp": 25,
           "fold": 0,
-          "open_size_bb": null,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
@@ -4514,81 +4514,81 @@
         {
           "hand": "J5s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 100,
+          "fold": 0,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "J4s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "J3s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "J2s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "ATo",
-          "open": 0,
-          "limp": 75,
-          "fold": 25,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "KTo",
-          "open": 0,
-          "limp": 50,
-          "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "QTo",
-          "open": 0,
-          "limp": 50,
-          "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 75,
+          "limp": 0,
+          "fold": 25,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "JTo",
-          "open": 0,
-          "limp": 75,
+          "open": 75,
+          "limp": 0,
           "fold": 25,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "TT",
           "open": 100,
           "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
           "hand": "T9s",
-          "open": 0,
-          "limp": 100,
+          "open": 75,
+          "limp": 25,
           "fold": 0,
-          "open_size_bb": null,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
@@ -4618,37 +4618,13 @@
         {
           "hand": "T5s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 100,
+          "fold": 0,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "T4s",
-          "open": 0,
-          "limp": 50,
-          "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
-        },
-        {
-          "hand": "T3s",
-          "open": 0,
-          "limp": 50,
-          "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
-        },
-        {
-          "hand": "T2s",
-          "open": 0,
-          "limp": 50,
-          "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
-        },
-        {
-          "hand": "A9o",
           "open": 0,
           "limp": 75,
           "fold": 25,
@@ -4656,43 +4632,67 @@
           "limp_size_bb": 1.0
         },
         {
-          "hand": "K9o",
+          "hand": "T3s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
+        },
+        {
+          "hand": "T2s",
+          "open": 0,
+          "limp": 75,
+          "fold": 25,
+          "open_size_bb": null,
+          "limp_size_bb": 1.0
+        },
+        {
+          "hand": "A9o",
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
+        },
+        {
+          "hand": "K9o",
+          "open": 75,
+          "limp": 0,
+          "fold": 25,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "Q9o",
-          "open": 0,
-          "limp": 50,
+          "open": 50,
+          "limp": 0,
           "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "J9o",
-          "open": 0,
-          "limp": 50,
+          "open": 50,
+          "limp": 0,
           "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "T9o",
-          "open": 0,
-          "limp": 50,
+          "open": 50,
+          "limp": 0,
           "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "99",
           "open": 100,
           "limp": 0,
           "fold": 0,
-          "open_size_bb": 2.5,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -4714,18 +4714,18 @@
         {
           "hand": "96s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "95s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "94s",
@@ -4753,59 +4753,59 @@
         },
         {
           "hand": "A8o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "K8o",
-          "open": 0,
-          "limp": 50,
-          "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 75,
+          "limp": 0,
+          "fold": 25,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "Q8o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 50,
+          "limp": 0,
+          "fold": 50,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "J8o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 50,
+          "limp": 0,
+          "fold": 50,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "T8o",
-          "open": 0,
-          "limp": 25,
+          "open": 25,
+          "limp": 0,
           "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "98o",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "88",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "87s",
@@ -4826,10 +4826,10 @@
         {
           "hand": "85s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "84s",
@@ -4857,26 +4857,26 @@
         },
         {
           "hand": "A7o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "K7o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 50,
+          "limp": 0,
+          "fold": 50,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "Q7o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -4889,6 +4889,14 @@
         },
         {
           "hand": "T7o",
+          "open": 25,
+          "limp": 0,
+          "fold": 75,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
+        },
+        {
+          "hand": "97o",
           "open": 0,
           "limp": 0,
           "fold": 100,
@@ -4896,28 +4904,20 @@
           "limp_size_bb": null
         },
         {
-          "hand": "97o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
-        },
-        {
           "hand": "87o",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "77",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "76s",
@@ -4938,10 +4938,10 @@
         {
           "hand": "74s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "73s",
@@ -4961,26 +4961,26 @@
         },
         {
           "hand": "A6o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 100,
+          "limp": 0,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "K6o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open": 50,
+          "limp": 0,
+          "fold": 50,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "Q6o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -4993,10 +4993,10 @@
         },
         {
           "hand": "T6o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -5010,26 +5010,26 @@
         {
           "hand": "86o",
           "open": 0,
-          "limp": 25,
-          "fold": 75,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "76o",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "66",
-          "open": 0,
-          "limp": 100,
+          "open": 100,
+          "limp": 0,
           "fold": 0,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
         },
         {
           "hand": "65s",
@@ -5050,10 +5050,10 @@
         {
           "hand": "63s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "62s",
@@ -5065,26 +5065,26 @@
         },
         {
           "hand": "A5o",
-          "open": 0,
+          "open": 75,
           "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
+          "fold": 0,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
           "hand": "K5o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
           "hand": "Q5o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -5097,10 +5097,10 @@
         },
         {
           "hand": "T5o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -5122,18 +5122,18 @@
         {
           "hand": "75o",
           "open": 0,
-          "limp": 25,
-          "fold": 75,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "65o",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "55",
@@ -5162,33 +5162,33 @@
         {
           "hand": "52s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
-        },
-        {
-          "hand": "A4o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
-          "limp_size_bb": 1.0
-        },
-        {
-          "hand": "K4o",
-          "open": 0,
           "limp": 0,
           "fold": 100,
           "open_size_bb": null,
           "limp_size_bb": null
         },
         {
-          "hand": "Q4o",
-          "open": 0,
+          "hand": "A4o",
+          "open": 75,
+          "limp": 25,
+          "fold": 0,
+          "open_size_bb": 3.5,
+          "limp_size_bb": 1.0
+        },
+        {
+          "hand": "K4o",
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
+          "limp_size_bb": null
+        },
+        {
+          "hand": "Q4o",
+          "open": 25,
+          "limp": 0,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -5201,10 +5201,10 @@
         },
         {
           "hand": "T4o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -5234,24 +5234,24 @@
         {
           "hand": "64o",
           "open": 0,
-          "limp": 25,
-          "fold": 75,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "54o",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 0,
+          "fold": 100,
           "open_size_bb": null,
-          "limp_size_bb": 1.0
+          "limp_size_bb": null
         },
         {
           "hand": "44",
           "open": 0,
-          "limp": 100,
-          "fold": 0,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
@@ -5266,33 +5266,33 @@
         {
           "hand": "42s",
           "open": 0,
-          "limp": 50,
-          "fold": 50,
+          "limp": 100,
+          "fold": 0,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
         {
           "hand": "A3o",
-          "open": 0,
+          "open": 75,
           "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
+          "fold": 0,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
           "hand": "K3o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
           "hand": "Q3o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -5305,10 +5305,10 @@
         },
         {
           "hand": "T3o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -5362,8 +5362,8 @@
         {
           "hand": "33",
           "open": 0,
-          "limp": 100,
-          "fold": 0,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         },
@@ -5377,26 +5377,26 @@
         },
         {
           "hand": "A2o",
-          "open": 0,
-          "limp": 25,
-          "fold": 75,
-          "open_size_bb": null,
+          "open": 25,
+          "limp": 50,
+          "fold": 25,
+          "open_size_bb": 3.5,
           "limp_size_bb": 1.0
         },
         {
           "hand": "K2o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
           "hand": "Q2o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -5409,10 +5409,10 @@
         },
         {
           "hand": "T2o",
-          "open": 0,
+          "open": 25,
           "limp": 0,
-          "fold": 100,
-          "open_size_bb": null,
+          "fold": 75,
+          "open_size_bb": 3.5,
           "limp_size_bb": null
         },
         {
@@ -5474,8 +5474,8 @@
         {
           "hand": "22",
           "open": 0,
-          "limp": 100,
-          "fold": 0,
+          "limp": 75,
+          "fold": 25,
           "open_size_bb": null,
           "limp_size_bb": 1.0
         }

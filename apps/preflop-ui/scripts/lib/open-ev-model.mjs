@@ -1,5 +1,6 @@
 import { comboCount, combosOf, equityVsRange, seedFor, seededRandom, weightedRange } from "./equity.mjs";
 import { rake, rakeMetadata, raked } from "../../src/estimated/rake.js";
+import { openSizeFor } from "../../src/estimated/sizing.js";
 
 export const SAMPLE_COUNT = 6000;
 export const OPEN_SIZE_BB = 2.5;
@@ -167,6 +168,7 @@ export function calculateOpenEvForHand({
     throw new Error("The opening, preflop, three-bet, four-bet and five-bet saved datasets are required");
   }
   const openingSpot = requireSpot(datasets.opening.spots, spot => spot.hero === hero, `${hero}_open`);
+  const openSize = openingSpot.open_size_bb ?? openSizeFor(hero);
   if (!rowFor(openingSpot, hand)) throw new Error(`Missing ${hero} opening hand ${hand} in ${openingSpot.id}`);
   const seats = behindPositions(hero);
   const handCombos = combosOf(hand);
@@ -206,9 +208,9 @@ export function calculateOpenEvForHand({
         }
         const eq = callEquities.get(key);
         const r = realized.get(`open-call:${position}`);
-        const grossPot = OPEN_SIZE_BB + OPEN_SIZE_BB + dead;
+        const grossPot = openSize + openSize + dead;
         const pot = raked(grossPot);
-        addLeaf(leafMap, ["calls", position], openCallProbability, eq * r * pot - OPEN_SIZE_BB,
+        addLeaf(leafMap, ["calls", position], openCallProbability, eq * r * pot - openSize,
           { equity: round(eq), realization: r, pot_bb: grossPot, raked_pot_bb: round(pot), rake_bb: round(rake(grossPot)) });
       }
 
@@ -216,7 +218,7 @@ export function calculateOpenEvForHand({
       if (threeBetProbability > 0) {
         const unreachable = rowFor(openingSpot, hand).open === 0;
         if (unreachable) {
-          addLeaf(leafMap, ["three_bets", position, "fold"], threeBetProbability, -OPEN_SIZE_BB, { unreachable: true });
+          addLeaf(leafMap, ["three_bets", position, "fold"], threeBetProbability, -openSize, { unreachable: true });
         } else {
           const heroDecision = rowFor(threeBet, hand);
           if (!heroDecision) throw new Error(`Missing ${hero} response hand ${hand} in ${threeBet.id}`);
@@ -226,7 +228,7 @@ export function calculateOpenEvForHand({
           const heroCall = pct(heroDecision.call);
           const heroFourBet = pct(heroDecision.four_bet);
 
-          addLeaf(leafMap, ["three_bets", position, "fold"], threeBetProbability * heroFold, -OPEN_SIZE_BB);
+          addLeaf(leafMap, ["three_bets", position, "fold"], threeBetProbability * heroFold, -openSize);
 
           if (heroCall > 0) {
             if (!threeBetEquities.has(position)) {
@@ -326,7 +328,7 @@ export function calculateOpenEvForPosition({ hero, datasets, samples = SAMPLE_CO
     samples,
     model: "Approximate EV vs fold using persisted response ranges; not a solver. First non-fold action only; later seats fold. Showdown branches use configured 5% rake capped at 3BB; all-fold branches are rake-free under no flop no drop.",
     assumptions: {
-      open_size_bb: OPEN_SIZE_BB,
+      open_size_bb: opening.open_size_bb,
       realization_factors: options.realizationFactors ?? REALIZATION_FACTORS,
       effective_stack_bb: EFFECTIVE_STACK_BB,
       blinds: BLINDS,

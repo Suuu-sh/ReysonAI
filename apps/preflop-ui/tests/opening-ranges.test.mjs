@@ -4,6 +4,7 @@ import test from "node:test";
 import { hands } from "../src/data.js";
 import { rangeTypes } from "../src/estimated/ranges.js";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "../src/estimated/opening-ranges.js";
+import { openSizeFor } from "../src/estimated/sizing.js";
 
 const source = JSON.parse(readFileSync(new URL("../src/estimated/opening-ranges.json", import.meta.url), "utf8"));
 test("every response matchup has its own opener's complete comparison range", () => {
@@ -32,7 +33,7 @@ test("five positions include all 845 canonical RFI records", () => {
       assert.equal(row.open + (row.limp ?? 0) + row.fold, 100);
       assert.ok(row.open >= 0 && row.open <= 100);
       assert.ok(row.fold >= 0 && row.fold <= 100);
-      assert.equal(row.open_size_bb, row.open > 0 ? 2.5 : null);
+      assert.equal(row.open_size_bb, row.open > 0 ? openSizeFor(spot.hero) : null);
       if (hasLimp) assert.equal(row.limp_size_bb, row.limp > 0 ? 1 : null);
     }
   }
@@ -41,12 +42,13 @@ test("five positions include all 845 canonical RFI records", () => {
 test("opening matrix preserves JSON percentages without call or 3bet", () => {
   for (const spot of source.spots) {
     const { actions, aggregates } = openingMatrixModel(spot);
-    assert.deepEqual(actions, ["raise_2.5", "limp", "fold"]);
+    const raiseAction = `raise_${spot.open_size_bb}`;
+    assert.deepEqual(actions, [raiseAction, "limp", "fold"]);
     assert.equal(aggregates.size, 169);
     assert.equal([...aggregates.values()].reduce((sum, row) => sum + row.comboCount, 0), 1326);
     for (const row of spot.hands) {
       assert.deepEqual(aggregates.get(row.hand).actions,
-        { "raise_2.5": row.open / 100, limp: (row.limp ?? 0) / 100, fold: row.fold / 100 });
+        { [raiseAction]: row.open / 100, limp: (row.limp ?? 0) / 100, fold: row.fold / 100 });
     }
     assert.equal(modelActionLabel(spot), "リンプ");
   }
@@ -63,7 +65,13 @@ test("premium hands open, weak hands fold, and later seats have wider authored R
   assert.ok(source.metadata.sb_policy.includes('リンプ'));
   const sb = findOpeningSpot(source, "SB");
   const actionWeightedPct = action => sb.hands.reduce((sum, row) => sum + row[action] * (row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12), 0) / 1326;
-  assert.ok(actionWeightedPct("limp") > actionWeightedPct("open"));
+  assert.ok(actionWeightedPct("open") > actionWeightedPct("limp"));
+  const targets = { UTG: { open: 17.5 }, HJ: { open: 21.7 }, CO: { open: 27.9 }, BTN: { open: 40.6 }, SB: { open: 34.4, limp: 13.7, fold: 51.9 } };
+  for (const spot of source.spots) {
+    const stats = Object.fromEntries(["open", "limp", "fold"].map(action => [action,
+      spot.hands.reduce((sum, row) => sum + (row[action] ?? 0) * (row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12), 0) / 1326]));
+    for (const [action, target] of Object.entries(targets[spot.hero])) assert.ok(Math.abs(stats[action] - target) <= 3, `${spot.hero} ${action}: ${stats[action]} vs ${target}`);
+  }
 });
 test("opening dataset validation rejects malformed records and unsupported conditions", () => {
   for (const mutate of [

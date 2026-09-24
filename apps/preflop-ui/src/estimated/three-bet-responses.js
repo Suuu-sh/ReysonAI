@@ -1,7 +1,7 @@
 import { hands } from "../data.js";
 import { hasConfiguredRake } from "./rake.js";
 import { positions } from "./ranges.js";
-import { fourBetToSize, isInPosition, openSizeBb } from "./sizing.js";
+import { fourBetToSize, isInPosition, openSizeBb, openSizeFor } from "./sizing.js";
 
 export function validateThreeBetDataset(data, responses, openings) {
   const expected = positions.flatMap((hero, i) => positions.slice(i + 1).map(bettor => `${hero}_vs_${bettor}_three_bet`));
@@ -19,7 +19,7 @@ export function validateThreeBetDataset(data, responses, openings) {
     if (!previous || !opening || spot.opener !== spot.hero ||
         spot.id !== `${spot.hero}_vs_${spot.three_bettor}_three_bet` ||
         spot.source_response_id !== previous.id || spot.three_bet_size_bb !== previous.three_bet_size_bb ||
-        spot.open_size_bb !== openSizeBb || spot.effective_stack_bb !== 100 ||
+        spot.open_size_bb !== openSizeFor(spot.opener) || spot.effective_stack_bb !== 100 ||
         spot.hero_position_vs_three_bettor !== (isInPosition(spot.hero, spot.three_bettor) ? "IP" : "OOP") ||
         spot.four_bet_size_bb !== fourBetToSize(spot.hero, spot.three_bettor) ||
         !Number.isFinite(spot.four_bet_size_bb) || spot.four_bet_size_bb >= 100 ||

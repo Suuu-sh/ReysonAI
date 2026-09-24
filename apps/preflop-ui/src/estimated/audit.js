@@ -1,4 +1,5 @@
 // Consistency audit for persisted estimated ranges. Shared by the CLI, tests and the build pipeline.
+import { openSizeFor } from "./sizing.js";
 const ranks = "AKQJT98765432";
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 const blind = { SB: 0.5, BB: 1 };
@@ -127,12 +128,13 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
 
   const autoProfit = [];
   for (const opener of positions.slice(0, 5)) {
-    const risk = 2.5 - (blind[opener] ?? 0);
+    const openSize = openSizeFor(opener);
+    const risk = openSize - (blind[opener] ?? 0);
     const reward = 1.5 - (blind[opener] ?? 0);
     const threshold = risk / (risk + reward);
     const later = positions.slice(positions.indexOf(opener) + 1);
     const allFold = later.reduce((product, hero) => product * weightedFold(responseBy.get(`${opener}>${hero}`)), 1);
-    autoProfit.push({ spot: `${opener} open 2.5`, foldRate: allFold, threshold });
+    autoProfit.push({ spot: `${opener} open ${openSize}`, foldRate: allFold, threshold });
     if (allFold > threshold) add("auto-profit", "error", `${opener} open`, `後ろ全員のフォールド率 ${pct(allFold)} > 損益分岐 ${pct(threshold)}（どの2枚でもオープンで得をする）`);
   }
 
@@ -150,7 +152,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     const bO = blind[spot.opener] ?? 0;
     const dead = 1.5 - bT - bO;
     const risk = spot.three_bet_size_bb - bT;
-    const reward = 2.5 + dead;
+    const reward = openSizeFor(spot.opener) + dead;
     const threshold = risk / (risk + reward);
     const foldRate = weightedFold(spot, hand => openRows.get(hand).open / 100);
     threeBetDefense.push({ spot: label, size: spot.three_bet_size_bb, foldRate, threshold });
@@ -170,7 +172,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     const bT = blind[spot.hero] ?? 0;
     const bO = blind[spot.opener] ?? 0;
     const dead = 1.5 - bT - bO;
-    const risk = spot.four_bet_size_bb - 2.5;
+    const risk = spot.four_bet_size_bb - openSizeFor(spot.opener);
     const reward = spot.three_bet_size_bb + dead;
     const threshold = risk / (risk + reward);
     const foldRate = weightedFold(spot, hand => source.get(hand).three_bet / 100);

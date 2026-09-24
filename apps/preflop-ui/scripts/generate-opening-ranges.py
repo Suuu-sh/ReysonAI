@@ -8,7 +8,7 @@ from pathlib import Path
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from sizing_rules import CONFIG
+from sizing_rules import CONFIG, open_size_bb
 
 RANKS = 'AKQJT98765432'
 HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
@@ -58,8 +58,8 @@ P['HJ'] = profile('''
 ''', P['UTG'])
 P['CO'] = profile('''
 100: 33 22 T8s 97s 54s K8s K7s Q8s J8s 86s 75s KTo QTo JTo A9o
-50: K6s-K2s Q7s J7s T7s 96s 64s A8o K9o Q9o J9o
-25: Q6s Q5s 85s 74s 53s A7o A5o T9o
+50: K9o Q9o J9o
+25: K6s-K2s Q7s J7s T7s 96s 64s A8o Q6s Q5s 85s 74s 53s
 0: Q4s Q3s Q2s J6s T6s 95s 84s 63s 43s A6o A4o A3o A2o K8o
 ''', P['HJ'])
 P['BTN'] = profile('''
@@ -69,22 +69,23 @@ P['BTN'] = profile('''
 25: K7o Q7o J7o 97o 87o Q3s Q2s J5s-J2s T5s-T2s 95s 94s 84s 73s 52s 42s 32s
 ''')
 SB_RAISE = profile('''
-100: AA-99 AKs AKo AQs
-75: AQo
-50: AJs KQs
-25: ATs KJs A5s A4s
+100: AA-66 AKs-A8s AKo-A8o KQs-KTs KQo-KTo QJs-QTs JTs A7s-A6s A7o-A6o
+75: K9s K9o-K8o QJo-QTo J9s T9s JTo
+50: A5s-A2s K8s Q9s Q9o-Q8o J9o-J8o T9o K7o-K6o
+75: A5o-A3o
+25: K5o-K2o Q7o-Q2o T7o-T2o T8o A2o
 ''')
 
-# In this rake environment the SB's capped, playable middle range has a limp
-# outlet; raises stay concentrated around value and selected blocker hands.
+# The raise range starts with hands whose current reason-facts show robust
+# equity against BB's continue range (about 55%+), then adds partial-frequency
+# blocker hands (notably wheel aces) and selected high-connected hands.
+# Frequencies are calibrated only to the aggregate user target, not copied from
+# a solver chart. The lower suited/connectivity tier is reserved for limps.
 SB_LIMP = profile('''
-100: 88-22 A9s-A6s K9s-K2s Q9s-Q5s J9s-J6s T9s-T6s 98s 87s 76s 65s 54s 97s 86s 75s 64s 53s 43s 32s KTs QTs JTs QJs
-75: A5s A4s A3s A2s ATs KJs
-50: AJs
-50: KQs
-75: AJo KQo KJo QJo JTo ATo-A9o
-50: KTo QTo K9o-K8o Q9o J9o T9o 98o 87o 76o 65o 54o Q4s-Q2s J5s-J2s T5s-T2s 95s 96s 85s 74s 63s 52s 42s
-25: A8o-A2o K7o-K6o Q8o J8o T8o 97o 86o 75o 64o
+100: 55 K7s-K5s Q8s-Q5s J8s-J5s T8s-T5s 98s 97s 87s 86s 76s 75s 65s 64s 54s 53s 43s 42s 32s
+75: 44-22 K4s-K2s Q4s-Q2s J4s-J2s T4s-T2s
+50: A5s-A2s A2o K8s Q9s
+25: K9s J9s T9s A5o-A3o
 ''')
 P['SB'] = (SB_RAISE, SB_LIMP)
 
@@ -94,10 +95,10 @@ def main():
         'metadata': {
             'schema_version': '1.0', 'strategy_type': 'ai_estimate_not_gto',
             'game': '6max Cash / No-Limit Texas Holdem', 'effective_stack_bb': 100,
-            'open_size_bb': 2.5, 'scope': 'Heroまで全員フォールドした未オープンポットでのraise-first-in。',
-            'source_of_truth': 'ユーザーが指定したUTG / HJ / CO / BTN / SBのオープンレンジ追加。既存の100BB・2.5BB条件を継承。',
+            'open_size_bb': CONFIG['sizing']['open_sizes_bb'][0], 'scope': 'Heroまで全員フォールドした未オープンポットでのraise-first-in。',
+            'source_of_truth': 'ユーザーが指定したUTG / HJ / CO / BTN / SBのオープンレンジ追加。SBだけconfigに指定した3.5BB、他は2.5BB。',
             'method': 'ハンドクラスごとに手作業で設計した一般知識による概算。ソルバー・EV計算なし。',
-            'sb_policy': 'SBはfold / 1BB limp / 2.5BB raise。低レートのレーキ下で、中程度から弱いプレイアブルハンドをリンプに配分した独立推定。',
+            'sb_policy': 'SBはfold / 1BB limp / 3.5BB raise。勝率の高いバリューを軸にブロッカー付き一部を混ぜ、低～中程度のプレイアビリティを残すハンドをリンプへ配分した独立推定。',
             'rake': {'rate': CONFIG['rake']['rate'], 'cap_bb': CONFIG['rake']['cap_bb'], 'no_flop_no_drop': CONFIG['rake']['no_flop_no_drop'], 'calibrated': True},
             'ante_bb': 0, 'ante_note': 'アンティなし（ユーザー確認済み）。',
             'frequency_semantics': '当該ハンドを持った場合の条件付き割合(%)。SBはopen + limp + fold = 100、他ポジションはopen + fold = 100。',
@@ -111,17 +112,20 @@ def main():
         'spots': [],
     }
     for position, frequencies in P.items():
+        size = open_size_bb(position)
         if position == 'SB':
             raises, limps = frequencies
             rows = [{'hand': h, 'open': raises[h], 'limp': limps[h],
                      'fold': 100-raises[h]-limps[h],
-                     'open_size_bb': 2.5 if raises[h] else None,
+                     'open_size_bb': size if raises[h] else None,
                      'limp_size_bb': CONFIG['sizing']['limp']['sb_complete_to_bb'] if limps[h] else None}
                     for h in HANDS]
         else:
             rows = [{'hand': h, 'open': frequencies[h], 'fold': 100-frequencies[h],
-                     'open_size_bb': 2.5 if frequencies[h] else None} for h in HANDS]
-        data['spots'].append({'id': f'{position}_open', 'hero': position, 'open_size_bb': 2.5,
+                     'open_size_bb': size if frequencies[h] else None} for h in HANDS]
+        if position == 'SB':
+            assert all(row['open'] + row['limp'] <= 100 for row in rows)
+        data['spots'].append({'id': f'{position}_open', 'hero': position, 'open_size_bb': size,
                               'effective_stack_bb': 100, 'hands': rows})
         weighted_raise = sum((6 if len(h) == 2 else 4 if h.endswith('s') else 12)*row['open'] for h, row in zip(HANDS, rows))/1326
         weighted_limp = sum((6 if len(h) == 2 else 4 if h.endswith('s') else 12)*row.get('limp', 0) for h, row in zip(HANDS, rows))/1326

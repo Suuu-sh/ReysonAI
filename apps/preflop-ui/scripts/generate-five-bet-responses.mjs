@@ -5,6 +5,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
 import { rakeMetadata, raked } from "../src/estimated/rake.js";
+import { openSizeFor } from "../src/estimated/sizing.js";
 
 const staging = process.env.ESTIMATES_DIR;
 if (!staging) {
@@ -45,6 +46,7 @@ const spots = threeBets.spots.map(before => {
   const shoveRange = weightedRange(fourBetSpot.hands.map(row => ({ hand: row.hand, weight: threeBetWeight.get(row.hand) * row.all_in / 100 })));
   const dead = 1.5 - (blind[opener] ?? 0) - (blind[fiveBettor] ?? 0);
   const fourBet = fourBetSpot.four_bet_size_bb;
+  const openSize = openSizeFor(opener);
   const need = (100 - fourBet) / raked(200 + dead) * 100;
   const random = seededRandom(seedFor(`${opener}>${fiveBettor}>five_bet`));
   const hands = before.hands.map(row => {
@@ -62,7 +64,7 @@ const spots = threeBets.spots.map(before => {
   });
   return {
     id: `${opener}_vs_${fiveBettor}_five_bet`, opener, hero: opener, five_bettor: fiveBettor,
-    source_four_bet_response_id: fourBetSpot.id, open_size_bb: 2.5, effective_stack_bb: 100,
+    source_four_bet_response_id: fourBetSpot.id, open_size_bb: openSize, effective_stack_bb: 100,
     three_bet_size_bb: fourBetSpot.three_bet_size_bb, four_bet_size_bb: fourBet, all_in_size_bb: 100,
     call_break_even_equity_pct: round1(need),
     shove_range_combos: round1(shoveRange.reduce((acc, item) => acc + item.weight, 0)),
@@ -74,7 +76,7 @@ const data = {
   metadata: {
     schema_version: "1.0", strategy_type: "ai_estimate_not_gto",
     game: "6max Cash / No-Limit Texas Holdem", effective_stack_bb: 100, open_size_bb: 2.5, ante_bb: 0,
-    scope: "オープナー2.5BB → 後続が3bet → オープナーが4bet → 3bettorが100BBオールイン → オープナーのコール／フォールド。他の全員はフォールド。",
+    scope: "オープナー別のサイズ（通常2.5BB、SBは3.5BB）→ 後続が3bet → オープナーが4bet → 3bettorが100BBオールイン → オープナーのコール／フォールド。他の全員はフォールド。",
     legal_actions: ["fold", "call"],
     rake: rakeMetadata,
     method: `相手のオールインレンジ（保存済みの3bet頻度×5betオールイン頻度で重み付け）に対する勝率をモンテカルロ法（${SAMPLES}回・シード固定）で計算し、ポットオッズの必要勝率と比較。差が±${MIX_BAND_PCT}pt以内はコール頻度を線形に混合し5%刻みに丸める。`,
