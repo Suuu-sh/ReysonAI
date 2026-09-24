@@ -112,7 +112,7 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
   const totalFrequency = isOpening
     ? hand.open + (hand.limp ?? 0) + hand.fold
     : isLimpResponse
-      ? [...aggregate.actions.values()].reduce((sum, frequency) => sum + frequency, 0) * 100
+      ? Object.values(aggregate.actions).reduce((sum, frequency) => sum + frequency, 0) * 100
       : hand.fold + hand.call + (isFiveBet ? 0 : isFourBet ? hand.all_in : isThreeBet ? hand.four_bet : hand.three_bet);
   const inlineFacts = isFiveBet ? [
     { label: "勝率（対オールインレンジ）", value: hand.equity_vs_shove_pct },
