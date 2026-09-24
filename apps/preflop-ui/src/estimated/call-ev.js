@@ -86,6 +86,16 @@ export function targetCall(call, ev, available) {
   return allowedCall(call, ev);
 }
 
+// 3bet pots (opener facing a 3bet): the EQR table may still overstate OOP
+// realization there, so only clearly profitable calls are filled. At +0.50bb
+// or better the whole non-4bet share calls (no fold left); below that the
+// authored call stands, subject to the usual EV gate. 4bets never change.
+export const THREE_BET_FILL_EV = 0.5;
+export function threeBetTargetCall(call, ev, available) {
+  if (!Number.isFinite(available) || available < call) throw new Error("Invalid available call share");
+  return ev >= THREE_BET_FILL_EV ? available : allowedCall(call, ev);
+}
+
 // Optimistic upper bound with every legal call filled, keeping all raises fixed.
 // An auto-profit warning is unavoidable if even this bound cannot defend enough.
 export function callDefenseCapacity(context, table) {

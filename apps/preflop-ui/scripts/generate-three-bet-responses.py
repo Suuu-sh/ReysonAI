@@ -278,6 +278,29 @@ PROFILES = {
 }
 
 
+# 2026-09-25 review fix: a pocket pair must not fold more often than a reachable
+# broadway hand (both ranks T+) that calls and has lower equity AND lower call
+# EV versus the same 3bet range (call-equities.json, assumed EQR). The shared EV
+# step (apply-call-ev.mjs) already fills every call of +0.50bb or better in 3bet
+# pots, so only pairs between +0.05 and +0.50bb are listed here. Pairs below
+# +0.05bb are never raised (no new negative or boundary calls), 4bet
+# frequencies are unchanged, and a stronger pair keeps at least a weaker pair's
+# continuation (HJ vs BB: 77 matches the filled 66). UTG vs HJ/CO keep TT fold
+# <=10, 99 <=30, 88 <=45, 77 <=55. Values are (call, four_bet); fold is the rest.
+PAIR_REVISIONS = {
+    ('UTG', 'HJ'): {'77': (60, 0), '66': (60, 0), '55': (60, 0), '44': (40, 0)},
+    ('UTG', 'CO'): {'66': (55, 0), '55': (55, 0), '44': (55, 0)},
+    ('UTG', 'BTN'): {'66': (60, 0)},
+    ('UTG', 'SB'): {'66': (55, 0)},
+    ('UTG', 'BB'): {'99': (70, 0)},
+    ('HJ', 'CO'): {'55': (85, 0), '44': (70, 0)},
+    ('HJ', 'BTN'): {'44': (70, 0), '33': (70, 0)},
+    ('HJ', 'SB'): {'44': (95, 0), '33': (95, 0)},
+    ('HJ', 'BB'): {'77': (100, 0), '55': (55, 0)},
+    ('CO', 'BB'): {'33': (80, 0), '22': (55, 0)},
+}
+
+
 def main():
     previous = json.loads((ROOT/'preflop-ranges.json').read_text())
     opening = json.loads((ROOT/'opening-ranges.json').read_text())
@@ -307,7 +330,7 @@ def main():
         assert size < four_size < 100
         rows = []
         for hand in HANDS:
-            call, four = PROFILES[hero, bettor][hand]
+            call, four = PAIR_REVISIONS.get((hero, bettor), {}).get(hand, PROFILES[hero, bettor][hand])
             if opening_by_hero[hero][hand] == 0:
                 call, four = 0, 0
             rows.append({'hand': hand, 'fold': 100-call-four, 'call': call, 'four_bet': four,

@@ -145,8 +145,9 @@ test("EV-capacity conflicts stay advisory, but leaving profitable defense unused
   // After EQR calibration (2026-09-24) UTG defends HJ 3bets inside the break-even band.
   for (const conflict of report.capacityConflicts) assert.ok(conflict.maximumContinuationPct < conflict.requiredContinuationPct);
   assert.ok(report.findings.filter(f => f.check === "ev-capacity-conflict").every(f => f.severity === "warn"));
-  const row = data.threeBets.spots.find(s => s.id === "UTG_vs_HJ_three_bet").hands.find(r => r.hand === "TT");
-  row.call -= 5; row.fold += 5;
+  // UTG now defends HJ 3bets with a margin (pairs keep their calls), so drop every
+  // call: profitable defense exists, so the overfold must block, not be excused.
+  for (const row of data.threeBets.spots.find(s => s.id === "UTG_vs_HJ_three_bet").hands) { row.fold += row.call; row.call = 0; }
   assert.ok(auditEstimates(data).findings.some(f => f.check === "auto-profit" && f.spot === "UTG vs HJ 3bet" && isBlockingAuditFinding(f)));
 });
 
@@ -202,4 +203,20 @@ test("generation fills clearly positive-EV calls without touching raises", async
   assert.equal(targetCall(40, 0.0, 95), 40);
   assert.equal(targetCall(40, -0.2, 95), 0);
   assert.throws(() => targetCall(50, 0.2, 40));
+});
+
+test("3bet pots fill only calls of +0.50bb or better, never touching 4bets", async () => {
+  const { threeBetTargetCall, THREE_BET_FILL_EV } = await import("../src/estimated/call-ev.js");
+  assert.equal(THREE_BET_FILL_EV, 0.5);
+  assert.equal(threeBetTargetCall(60, 0.5, 95), 95);
+  assert.equal(threeBetTargetCall(60, 0.49, 95), 60);
+  assert.equal(threeBetTargetCall(60, 0.0, 95), 50);
+  assert.equal(threeBetTargetCall(60, -0.2, 95), 0);
+  assert.throws(() => threeBetTargetCall(50, 0.6, 40));
+  const data = datasets(), equities = table();
+  for (const c of callContexts(data).filter(c => c.type === "three_bet")) for (const row of c.spot.hands) {
+    if (c.reach(row.hand) <= 0) continue;
+    const ev = callFacts(c, row.hand, equities.spots[c.spot.id].equities[row.hand]).call_ev_bb;
+    if (ev >= THREE_BET_FILL_EV) assert.equal(row.fold, 0, `${c.spot.id}/${row.hand}: ${ev}`);
+  }
 });

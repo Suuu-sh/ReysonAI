@@ -24,7 +24,7 @@
     "sizing_semantics": "スクイーズ額は追加額ではなくBBの合計投入額。頻度0なら行のsqueeze_size_bbはnull。",
     "warning": "独立したAI推定値。レーキ環境を仮定したヒューリスティックで、ソルバー・GTO均衡・EVの厳密計算・カード除去・前段との同時均衡を保証しない。",
     "reference_note": "競合サービスのチャートや頻度は転用していない。",
-    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
+    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls (open responses by non-SB seats). Opener facing a 3bet: only calls ≥+0.50bb fill the whole non-4bet share (margin for OOP realization the assumed EQR may overstate in 3bet pots); 4bet pots are never filled. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
   },
   "spot_count": 6,
   "hand_classes_per_spot": 169,
@@ -267,8 +267,8 @@
         },
         {
           "hand": "Q8s",
-          "fold": 100,
-          "call": 0,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -330,8 +330,8 @@
         },
         {
           "hand": "QJo",
-          "fold": 50,
-          "call": 50,
+          "fold": 40,
+          "call": 60,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -1372,22 +1372,22 @@
         },
         {
           "hand": "K8s",
-          "fold": 100,
-          "call": 0,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
         {
           "hand": "K7s",
-          "fold": 90,
-          "call": 10,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
         {
           "hand": "K6s",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -1624,8 +1624,8 @@
         },
         {
           "hand": "JTo",
-          "fold": 40,
-          "call": 60,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -1652,8 +1652,8 @@
         },
         {
           "hand": "T7s",
-          "fold": 100,
-          "call": 0,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },

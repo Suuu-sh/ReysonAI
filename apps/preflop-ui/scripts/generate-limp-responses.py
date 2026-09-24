@@ -52,25 +52,42 @@ def parse_profile(text, width):
 
 # Recalibrated against the protected 2026-09-24 SB limp mix using equity.mjs,
 # 12,000 samples, seededRandom(seedFor('BB_vs_SB_limp')), canonical hand order.
-# >=60% equity: iso 100%; 55-60%: iso 75%. K8s/Q9s/JTs and weak offsuit
-# broadways no longer clear that value threshold, so the iso range narrows.
-# Reduce the limited Q6s/Q5s/K6o/K5o blocker probes to 10%; do not widen
-# bluffs to compensate for the stronger limp range. This also stays within
-# the audit's 10pt family-order tolerance. This is an equity-grounded
-# authored heuristic, not a solved strategy or a claim of postflop EV.
+# Value iso still starts around 55% equity versus SB's limp range; K8s/Q9s/JTs,
+# K9o and QJo stay pure checks (below that threshold, and their families cap
+# the bluffs below them at 10%).
+# 2026-09-25 balance revision (audit range-capped / over-segregated):
+# - BB is in position after checking, so every value iso hand keeps a 30-35%
+#   check: AA/KK/QQ/AKs/AKo 30%, JJ-66/AQs-A8s/KQs/KJs/AQo-ATo 35%. This
+#   protects the ~84% check range (top-decile share about 4% instead of 0.2%).
+# - The former 75% iso tier becomes a 70% iso; A3s/A2s/33 (60% iso), A4o (50%),
+#   A3o (40%), A2o/22 (30%) become mixed isos: ace blockers and pairs versus a
+#   limp range that folds most of the time to the iso.
+# - Q6s/Q5s/K6o/K5o keep their 10% blocker probes. Total iso about 16%.
+# This is an equity-grounded authored heuristic, not a solved strategy or a
+# claim of postflop EV.
 BB_PROFILE = parse_profile('''
-0 100: AA-55 AKs-A8s AKo-ATo
-25 75: A7s-A4s KQs-K9s QJs QTs KQo-KTo A9o-A5o 44
+30 70: AA KK QQ AKs AKo 55 44 A7s-A4s KTs K9s QJs QTs A9o-A5o KQo-KTo
+35 65: JJ-66 AQs-A8s KQs KJs AQo-ATo
+40 60: A3s A2s 33
+50 50: A4o
+60 40: A3o
+70 30: A2o 22
 90 10: Q6s Q5s K6o K5o
 ''', 2)
 
 # SB continuation versus BB's 3.5BB iso-raise. Each row is conditional on
 # the newly authored limp range; only reachable limp hands receive actions.
+# 2026-09-25: the BB iso now carries trap checks with its premiums and more
+# A-x/small-pair isos, so SB's call EV rose (A9s +0.60bb, 44 +0.36bb). A
+# call entry of 100 means "call the whole non-raise share"; the shared EV gate
+# then removes -EV calls. Thin +0.05~0.15bb calls (22, KTs, QJs, A6s) stay at
+# 75% because SB is out of position and the EQR is an assumption.
 SB_CALL = parse_profile('''
 25: AA KK QQ AKs AKo
 50: JJ AQs AQo
 65: TT AJs AJo KQs
-75: 99-22 ATs-A2s KJs-K5s QJs-Q5s JTs-J5s T9s-T5s ATo-A4o KQo-KTo QJo QTo JTo
+100: 99-33 ATs-A7s A5s-A2s KJs K9s-K5s QTs-Q5s JTs-J5s T9s-T5s ATo-A4o KQo-KTo QJo QTo JTo
+75: 22 A6s KTs QJs
 50: K4s-K2s Q4s-Q2s J4s-J2s T4s-T2s 98s 97s 87s 86s 76s 75s 65s 64s 54s 53s
 40: K9o K8o
 25: 43s 42s 32s A3o-A2o
@@ -122,7 +139,7 @@ def main():
                      'no_flop_no_drop': rake['no_flop_no_drop'], 'calibrated': True},
             'legal_actions': {'BB_vs_SB_limp': ['check', 'raise'], 'SB_vs_BB_iso': ['fold', 'call', 'raise']},
             'scope': 'SBが1BBにリンプした後のBB応答、およびBBが3.5BBにアイソレイズした後のSB応答。',
-            'method': 'BBはAA等も含む保護されたSBリンプレンジに対する固定シード12,000回の勝率を基に、概ね60%以上を100%、55〜60%を75%のバリュー・アイソへ配分し、従来より幅を縮小。限定的なブロッカーのレイズは10%へ抑え、残りはチェック。SBは強いリンプをリレイズ／コールへ混ぜ、中位は主にコール、弱い手は価格とプレイアビリティで継続。リンプ頻度0%は到達不能として除外。',
+            'method': 'BBはAA等も含む保護されたSBリンプレンジに対する固定シード12,000回の勝率を基に、概ね55%以上をバリュー・アイソ（65〜70%）とし、ポジションがあるため各バリューハンドに30〜35%のチェックを残してチェックレンジを守る。A3s/A2s/A4o-A2o/33/22はブロッカーとペアの混合アイソ、Q6s/Q5s/K6o/K5oは10%のブロッカー・プローブ、残りはチェック。SBは強いリンプをリレイズ／コールへ混ぜ、中位はレイズ以外をコールしてEVマイナスのコールだけを外し、+0.15bb未満の薄いコールは75%に抑える。リンプ頻度0%は到達不能として除外。',
             'frequency_semantics': 'BBはcheck+raise=100。SBはリンプ済み条件下でfold+call+raise=100。',
             'sizing_semantics': 'SB complete=1BB、BB iso raise-to=3.5BB、SB limp-reraise-to=10.5BB。',
             'unreachable_hands': 'SBのSB_open.limp=0%ハンドはfold=100の形式的プレースホルダーであり、推奨ではない。',
