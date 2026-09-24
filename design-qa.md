@@ -176,3 +176,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Added `/ja` with a language switch while keeping `/` English and `/app` Japanese. All marketing sections, saved-range preview explanations, provisional pricing, accessibility labels, document language, title and description are localized.
 - Browser verification at desktop/tablet and 390px mobile: Japanese hero and pricing remain within the viewport; the BB-vs-BTN preview shows K7s Call 85% in Japanese, mobile navigation reaches `/ja#pricing`, and the planned/billing caveats remain explicit.
 - English switching returns to `/` with English title and document language; `/app` still opens the original Japanese onboarding. Lint, TypeScript check, 143 tests (including locale-shape parity), build and 4 Sites tests pass. The pre-existing product-app bundle warning remains.
+
+## Clean hero range matrix (2026-09-25)
+- Replaced the hero preview's narrow, full-height mixed-frequency stripes with one solid color per hand's dominant action. Saved frequencies are unchanged; every cell's Japanese/English accessible label and hover title still list its nonzero action breakdown, while the selected-hand panel shows the dominant frequency.
+- Browser verification on `/ja`: both BTN-open and BB-vs-BTN retain 169 interactive hands, show only three solid action colors and no gradient backgrounds; the BB-vs-BTN Q5s label reports Raise 5% / Call 95%. The 390px mobile matrix remains legible and within the viewport.
+- `npm run lint`, `npm run typecheck`, `npm test` (143 passed), `npm run build`, and `npm run test:sites` (4 passed). The existing large-chunk build warning remains.

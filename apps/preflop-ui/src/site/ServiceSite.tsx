@@ -17,7 +17,6 @@ const hands = ranks.flatMap((first, row) => ranks.map((second, column) =>
 ));
 const opening = new Map<string, RangeRow>(Object.entries(previewRanges.opening).map(([hand, row]) => [hand, { hand, ...row }]));
 const response = new Map<string, RangeRow>(Object.entries(previewRanges.response).map(([hand, row]) => [hand, { hand, ...row }]));
-const actionColors: Record<Action, string> = { raise: "#eb6ba2", call: "#5da5b0", fold: "#30333a" };
 
 function frequencies(mode: RangeMode, hand: string): Record<Action, number> {
   const row = (mode === "opening" ? opening : response).get(hand);
@@ -26,12 +25,6 @@ function frequencies(mode: RangeMode, hand: string): Record<Action, number> {
 
 function dominantAction(values: Record<Action, number>): Action {
   return (Object.keys(values) as Action[]).reduce((best, action) => values[action] > values[best] ? action : best, "fold");
-}
-
-function cellBackground(values: Record<Action, number>) {
-  const first = values.raise;
-  const second = first + values.call;
-  return `linear-gradient(90deg, ${actionColors.raise} 0 ${first}%, ${actionColors.call} ${first}% ${second}%, ${actionColors.fold} ${second}% 100%)`;
 }
 
 function Brand({ inverted = false }: { inverted?: boolean }) {
@@ -61,15 +54,18 @@ function RangeMatrix({ mode, selected, onSelect, compact = false }: { mode: Rang
       {hands.map(hand => {
         const values = frequencies(mode, hand);
         const action = dominantAction(values);
+        const breakdown = (Object.keys(values) as Action[])
+          .filter(option => values[option] > 0)
+          .map(option => `${copy.common[option]} ${values[option]}%`)
+          .join(" / ");
         return <button
           type="button"
           key={hand}
-          className={`site-matrix-cell${selected === hand ? " is-selected" : ""}${values.raise > 0 && values.raise < 100 || values.call > 0 && values.call < 100 ? " is-mixed" : ""}`}
-          style={{ background: cellBackground(values) }}
-          aria-label={`${hand}: ${copy.common[action]} ${values[action]}%`}
+          className={`site-matrix-cell is-${action}${selected === hand ? " is-selected" : ""}`}
+          aria-label={`${hand}: ${breakdown}`}
           aria-pressed={selected === hand}
           onClick={() => onSelect(hand)}
-          title={`${hand} · ${copy.common[action]} ${values[action]}%`}
+          title={`${hand} · ${breakdown}`}
         >{hand}</button>;
       })}
     </fieldset>
