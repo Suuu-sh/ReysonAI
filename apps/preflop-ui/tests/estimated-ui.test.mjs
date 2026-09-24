@@ -62,6 +62,7 @@ test("action block selection points to saved ranges and keeps unsupported contin
   const multiway = buildActionBlocks({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"], foldedHero: false });
   assert.equal(multiway.find(block => block.position === "SB").rangeRef.kind, "response");
   assert.equal(multiway.find(block => block.position === "BB").rangeRef.kind, "pending");
+  assert.match(multiway.find(block => block.position === "BB").options.at(-1).label, /^Raise \d/); // squeeze size is fixed, so it is always shown
 
   const threeBet = buildActionBlocks({ rangeType: "three_bet", opener: "UTG", hero: "HJ", spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 } });
   assert.deepEqual(threeBet.find(block => block.key === "continuation-UTG").rangeRef, { kind: "three_bet", position: "UTG", opponent: "HJ" });

@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from "react";
+import { threeBetToSize } from "./sizing.js";
 import { hands } from "../data.js";
 import { Sidebar } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
@@ -191,8 +192,9 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       continue;
     }
     const earlierCallers = callers.filter(caller => positions.indexOf(caller) < index);
+    // Squeeze sizes are fixed by the sizing rules (base + per additional caller).
     const raiseLabel = earlierCallers.length
-      ? `Raise ${index === heroIndex && raiseToBb ? formatBb(raiseToBb) : ""}`.trim()
+      ? `Raise ${formatBb(threeBetToSize(opener, position, earlierCallers.length))}`
       : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
     const options = [{ action: "fold", label: "Fold" }, { action: "call", label: "Call 2.5" }, { action: "raise", label: raiseLabel }];
     // Seats behind the 3-bettor still act before the opener: fold, cold call or cold 4bet.
@@ -213,7 +215,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
     let chosen = null;
     if (callers.includes(position)) { chosen = "call"; contribution[position] = 2.5; }
     else if (index < heroIndex || foldedHero) chosen = "fold";
-    else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = raiseToBb ?? threeBetSizeBb ?? 0; }
+    else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = earlierCallers.length ? threeBetToSize(opener, position, earlierCallers.length) : raiseToBb ?? threeBetSizeBb ?? 0; }
     const hasEarlierCaller = callers.some(caller => positions.indexOf(caller) < index);
     const rangeRef = pendingRaise === "squeeze" || hasEarlierCaller
       ? { kind: "pending", position, reason: pendingRaise === "squeeze" ? "スクイーズ後の応答データはまだ保存されていません。" : "このマルチウェイ局面の応答データはまだ保存されていません。" }
