@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from "react";
-import { threeBetToSize } from "./sizing.js";
+import { openSizeFor, threeBetToSize } from "./sizing.js";
 import { hands } from "../data.js";
 import { Sidebar } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
@@ -185,9 +185,9 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       const chosen = acting ? null : index === openerIndex ? "raise" : "fold";
       const options = [
         { action: "fold", label: "Fold", disabled: positions[index + 1] === "BB" },
-        { action: "raise", label: "Raise 2.5", disabled: position === "BB" },
+        { action: "raise", label: `Raise ${formatBb(openSizeFor(position))}`, disabled: position === "BB" },
       ];
-      if (index === openerIndex && !acting) contribution[position] = 2.5;
+      if (index === openerIndex && !acting) contribution[position] = openSizeFor(position);
       blocks.push({ key: position, position, stack, active: acting, chosen, options, kind: "seat", rangeRef: { kind: "opening", position } });
       continue;
     }
@@ -196,7 +196,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
     const raiseLabel = earlierCallers.length
       ? `Raise ${formatBb(threeBetToSize(opener, position, earlierCallers.length))}`
       : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
-    const options = [{ action: "fold", label: "Fold" }, { action: "call", label: "Call 2.5" }, { action: "raise", label: raiseLabel }];
+    const options = [{ action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(openSizeFor(opener))}` }, { action: "raise", label: raiseLabel }];
     // Seats behind the 3-bettor still act before the opener: fold, cold call or cold 4bet.
     // Only fold is covered by saved ranges; the other choices end the path as "no data".
     if (rangeType === "three_bet" && index > heroIndex) {
@@ -213,7 +213,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       continue;
     }
     let chosen = null;
-    if (callers.includes(position)) { chosen = "call"; contribution[position] = 2.5; }
+    if (callers.includes(position)) { chosen = "call"; contribution[position] = openSizeFor(opener); }
     else if (index < heroIndex || foldedHero) chosen = "fold";
     else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = earlierCallers.length ? threeBetToSize(opener, position, earlierCallers.length) : raiseToBb ?? threeBetSizeBb ?? 0; }
     const hasEarlierCaller = callers.some(caller => positions.indexOf(caller) < index);
