@@ -57,3 +57,6 @@ There is no auth backend yet, so first launch shows a local onboarding (`compone
 
 ## Reasons live only in reasons/ (2026-09-24)
 Opening, response, 3bet and 4bet datasets no longer carry a per-hand `reason`; hand details read `reasons/<spot>.json` (lazy chunk) and show 「読み込み中…」 until it loads. Unreachable rows are detected from the source frequency (open 0% / 3bet 0%) plus fold=100, not from reason text. Only `five-bet-responses.json` keeps inline `reason` because it has no detailed reasons file.
+
+## Reference benchmarks per new spot (2026-09-24)
+Every time a range spot is created or regenerated, ask the user for a screenshot of that node's aggregate action frequencies from GTO Wizard (same conditions: cash 6max 100bb, 2.5BB open, no ante, rake noted). Claude reads the numbers into `.local/benchmarks/<spot_id>.json` (git-ignored; never commit or publish external numbers) and runs `npm run benchmark`. Aggregate frequencies should land within ±3pt; which hands fill the range is still decided by our own equity facts, audit and review, never by copying a chart. Claude never scrapes or logs into GTO Wizard itself.

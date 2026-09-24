@@ -8,6 +8,7 @@
     "dev:codex": "vite",
     "build": "vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
+    "benchmark": "node scripts/benchmark-compare.mjs",
     "open-ev": "node scripts/open-ev.mjs",
     "audit:estimates": "node scripts/audit-estimates.mjs",
     "build:estimates": "node scripts/build-estimates.mjs",
