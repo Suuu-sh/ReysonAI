@@ -38,10 +38,35 @@ export function responseActionTransition({ opener, callers = [], position, actio
   };
 }
 
+export function limpActionTransition({ rangeType, opener, hero, limpAction = null, limpResponseAction = null, position, action }) {
+  if (rangeType === "open" && opener === "SB" && position === "SB" && action === "call") {
+    return { rangeType: "limp", opener: "SB", hero: "BB", limpAction: null, limpResponseAction: null };
+  }
+
+  if (rangeType !== "limp" || opener !== "SB") return null;
+  if (position === "BB" && [null, "check", "raise"].includes(limpAction) && ["check", "raise"].includes(action)) {
+    return { rangeType: "limp", opener: "SB", hero: action === "raise" ? "SB" : "BB", limpAction: action, limpResponseAction: null };
+  }
+  if (position === "SB" && limpAction === "raise" && ["fold", "call", "raise"].includes(action)) {
+    return { rangeType: "limp", opener: "SB", hero: action === "raise" ? "BB" : "SB", limpAction, limpResponseAction: action };
+  }
+  return null;
+}
+
 // Clicking a seat in the action path returns the selector to that decision,
 // removing choices made at that seat and later in the hand.
 export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], block }) {
   if (!block) return null;
+
+  if (block.stage === "limp-opening") {
+    return { rangeType: "open", opener: "SB", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null };
+  }
+  if (block.stage === "limp-bb") {
+    return { rangeType: "limp", opener: "SB", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null };
+  }
+  if (block.stage === "limp-sb-response" || block.stage === "limp-pending-bb") {
+    return { rangeType: "limp", opener: "SB", hero: "SB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: "raise", limpResponseAction: null };
+  }
 
   if (block.kind === "seat") {
     const positionIndex = positions.indexOf(block.position);

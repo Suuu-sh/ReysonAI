@@ -1,16 +1,18 @@
 import { useMemo, useState, useEffect, useRef } from "react";
-import { openSizeFor, threeBetToSize } from "./sizing.js";
+import { isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.js";
 import { hands } from "../data.js";
 import { Sidebar } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { ActionBars, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.jsx";
 import source from "./preflop-ranges.json";
 import openingSource from "./opening-ranges.json";
+import limpSource from "./limp-responses.json";
 import { findFourBetSpot, fourBetMatrixModel, loadFourBetDataset } from "./four-bet-responses.js";
 import threeBetSource from "./three-bet-responses.json";
 import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "./three-bet-responses.js";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.js";
-import { nextActorsAfterRaise, responseActionTransition, rewindActionBlockTransition } from "./action-path.js";
+import { findLimpResponseSpot, limpResponsesMatrixModel, validateLimpResponses } from "./limp-responses.js";
+import { limpActionTransition, nextActorsAfterRaise, responseActionTransition, rewindActionBlockTransition } from "./action-path.js";
 import { displayModes } from "./display-mode.js";
 import { displayModeKey } from "../profile.js";
 import { useDetailedReasons } from "./detailed-reasons.js";
@@ -35,6 +37,12 @@ try { dataset = validateDataset(source); } catch (error) { dataError = error.mes
 let openingDataset;
 let openingDataError;
 try { openingDataset = validateOpeningDataset(openingSource); } catch (error) { openingDataError = error.message; }
+let limpDataset;
+let limpDataError;
+try {
+  if (openingDataError) throw new Error(openingDataError);
+  limpDataset = validateLimpResponses(limpSource, openingDataset);
+} catch (error) { limpDataError = error.message; }
 let threeBetDataset;
 let threeBetDataError;
 try {
@@ -53,20 +61,23 @@ const tableProfileStorageKey = "solveaai:table-profile:v1";
 const openingModelFor = spot => markAdjustedModel(openingMatrixModel(spot), spot);
 const legacySelectionStorageKey = "solveagto:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
-  const fallback = { rangeType: initialRangeType, opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, selected: "AKo" };
+  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, selected: "AKo" };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
     const saved = JSON.parse(stored);
+    const limpSelection = saved?.rangeType === "limp";
     if (!saved || !rangeTypes.some(item => item.value === saved.rangeType && item.available) ||
         !positions.slice(0, -1).includes(saved.opener) || !positions.includes(saved.hero) ||
-        positions.indexOf(saved.hero) <= positions.indexOf(saved.opener) ||
+        (limpSelection ? saved.opener !== "SB" || !["BB", "SB"].includes(saved.hero) : positions.indexOf(saved.hero) <= positions.indexOf(saved.opener)) ||
         !Array.isArray(saved.callers) || saved.callers.some(position => !positions.includes(position) || positions.indexOf(position) <= positions.indexOf(saved.opener)) ||
         new Set(saved.callers).size !== saved.callers.length) return fallback;
     const pendingRaise = saved.pendingRaise === "all_in" && saved.rangeType === "four_bet" ? "all_in" : saved.pendingRaise === "squeeze" && saved.rangeType === "response" && saved.callers.length ? "squeeze" : null;
     const continuationAction = (saved.rangeType === "three_bet" || saved.rangeType === "four_bet") && ["fold", "call"].includes(saved.continuationAction) ? saved.continuationAction : null;
     const shoveResponse = pendingRaise === "all_in" && ["fold", "call"].includes(saved.shoveResponse) ? saved.shoveResponse : null;
-    return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
+    const limpAction = limpSelection && ["check", "raise"].includes(saved.limpAction) ? saved.limpAction : null;
+    const limpResponseAction = limpSelection && limpAction === "raise" && ["fold", "call", "raise"].includes(saved.limpResponseAction) ? saved.limpResponseAction : null;
+    return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
   } catch { return fallback; }
 }
 
@@ -95,12 +106,14 @@ function AiReason({ hand, spotId, inlineFacts }) {
   </div>;
 }
 
-function HandBreakdown({ hand, model, isOpening, isThreeBet, isFourBet, isFiveBet, spot, position, onReturnToComparison, displayMode }) {
+function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, spot, position, onReturnToComparison, displayMode }) {
   const tableReason = adjustmentReason(hand, spot?.table_profile);
   const aggregate = model.aggregates.get(hand.hand);
   const totalFrequency = isOpening
-    ? hand.open + hand.fold
-    : hand.fold + hand.call + (isFiveBet ? 0 : isFourBet ? hand.all_in : isThreeBet ? hand.four_bet : hand.three_bet);
+    ? hand.open + (hand.limp ?? 0) + hand.fold
+    : isLimpResponse
+      ? [...aggregate.actions.values()].reduce((sum, frequency) => sum + frequency, 0) * 100
+      : hand.fold + hand.call + (isFiveBet ? 0 : isFourBet ? hand.all_in : isThreeBet ? hand.four_bet : hand.three_bet);
   const inlineFacts = isFiveBet ? [
     { label: "勝率（対オールインレンジ）", value: hand.equity_vs_shove_pct },
     { label: "コールに必要な勝率", value: spot.call_break_even_equity_pct },
@@ -109,13 +122,14 @@ function HandBreakdown({ hand, model, isOpening, isThreeBet, isFourBet, isFiveBe
   return <div className={`detail-column${onReturnToComparison ? " comparison-focus-details" : ""}`}>
     <Panel>
       <HandHeader position={position} hand={hand.hand} comboCount={aggregate.comboCount} onClose={onReturnToComparison} />
-      {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。</StatusState> : <>
+      {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{isLimpResponse ? "SBのリンプ頻度が0%のため、この応答経路の推奨頻度はありません。保存上のfold=100は形式上の値です。" : `${isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。`}</StatusState> : <>
       {tableReason && <p className="adjustment-reason">{tableReason}</p>}
-      {!tableReason && <AiReason hand={hand} spotId={spot?.id} inlineFacts={inlineFacts} />}
+      {!tableReason && !isLimpResponse && <AiReason hand={hand} spotId={spot?.id} inlineFacts={inlineFacts} />}
+      {isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
       {displayMode === "standard" && <>
       {isFourBet && <small>オールイン = 5bet（合計100BB）</small>}
       <ActionBars items={model.actions.map(action => ({ action, frequency: aggregate.actions[action] }))} labels={model.actionLabels} />
-      <StatList items={[
+      <StatList items={isLimpResponse ? [{ label: "頻度合計", value: `${totalFrequency}%` }] : [
         isFiveBet ? { label: "受けるオールイン（合計）", value: "100 BB" }
           : isOpening
           ? { label: "オープンサイズ（合計）", value: hand.open_size_bb === null ? "—（オープンなし）" : `${hand.open_size_bb} BB` }
@@ -129,7 +143,7 @@ function HandBreakdown({ hand, model, isOpening, isThreeBet, isFourBet, isFiveBe
       ]} />
       </>}
       </>}
-      {aggregate.unreachable && <AiReason hand={hand} spotId={spot?.id} inlineFacts={inlineFacts} />}
+      {aggregate.unreachable && !isLimpResponse && <AiReason hand={hand} spotId={spot?.id} inlineFacts={inlineFacts} />}
     </Panel>
   </div>;
 }
@@ -166,8 +180,58 @@ function InlineGenerationControl({ description, status, error, onGenerate }) {
 const startingContribution = { SB: 0.5, BB: 1 };
 const formatBb = value => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
 
+function buildLimpActionBlocks({ limpAction, limpResponseAction }) {
+  const contribution = { ...startingContribution };
+  const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
+  const blocks = [];
+  for (const position of positions.slice(0, positions.indexOf("SB"))) {
+    blocks.push({ key: position, position, stack: stackOf(position), active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "seat", rangeRef: { kind: "opening", position } });
+  }
+  contribution.SB = sbCompleteToBb;
+  blocks.push({ key: "SB", position: "SB", stack: stackOf("SB"), active: false, chosen: "call", stage: "limp-opening", options: [{ action: "call", label: `Call ${formatBb(sbCompleteToBb)}` }], kind: "seat", rangeRef: { kind: "opening", position: "SB" } });
+
+  const pot = () => {
+    const values = Object.values(contribution).sort((a, b) => b - a);
+    const counted = values.length > 1 ? [Math.min(values[0], values[1]), ...values.slice(1)] : values;
+    return `ポット ${formatBb(counted.reduce((sum, value) => sum + value, 0))}bb`;
+  };
+  const end = (result) => blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result, pot: pot() });
+
+  if (!limpAction) {
+    blocks.push({ key: "limp-BB", position: "BB", stack: stackOf("BB"), active: true, chosen: null, stage: "limp-bb", options: [
+      { action: "check", label: "Check" }, { action: "raise", label: `Raise ${formatBb(isoVsLimpToBb)}` },
+    ], kind: "seat", rangeRef: { kind: "limp_bb", position: "BB" } });
+    return blocks;
+  }
+
+  if (limpAction === "check") {
+    blocks.push({ key: "limp-BB", position: "BB", stack: stackOf("BB"), active: false, chosen: "check", stage: "limp-bb", options: [
+      { action: "check", label: "Check" }, { action: "raise", label: `Raise ${formatBb(isoVsLimpToBb)}` },
+    ], kind: "seat", rangeRef: { kind: "limp_bb", position: "BB" } });
+    end("2人でフロップへ");
+    return blocks;
+  }
+
+  contribution.BB = isoVsLimpToBb;
+  blocks.push({ key: "limp-BB", position: "BB", stack: stackOf("BB"), active: false, chosen: "raise", stage: "limp-bb", options: [
+    { action: "check", label: "Check" }, { action: "raise", label: `Raise ${formatBb(isoVsLimpToBb)}` },
+  ], kind: "seat", rangeRef: { kind: "limp_bb", position: "BB" } });
+  contribution.SB = limpResponseAction === "call" ? isoVsLimpToBb : limpResponseAction === "raise" ? limpReraiseToBb : sbCompleteToBb;
+  blocks.push({ key: "limp-SB-response", position: "SB", stack: stackOf("SB"), active: limpResponseAction === null, chosen: limpResponseAction, stage: "limp-sb-response", options: [
+    { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(isoVsLimpToBb)}` }, { action: "raise", label: `Raise ${formatBb(limpReraiseToBb)}` },
+  ], kind: "seat", rangeRef: { kind: "limp_sb", position: "SB" } });
+
+  if (limpResponseAction === "fold") end("BBの勝ち");
+  else if (limpResponseAction === "call") end("2人でフロップへ");
+  else if (limpResponseAction === "raise") blocks.push({ key: "limp-BB-reraise-response", position: "BB", stack: stackOf("BB"), active: false, chosen: null, stage: "limp-pending-bb", options: [
+    { action: "fold", label: "Fold", disabled: true }, { action: "call", label: `Call ${formatBb(limpReraiseToBb - isoVsLimpToBb)}`, disabled: true },
+  ], kind: "pending", rangeRef: { kind: "pending", position: "BB", reason: "SBのリンプレイズ後のBB応答レンジはまだ保存されていません。" } });
+  return blocks;
+}
+
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, raiseSizeFor = () => null }) {
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, raiseSizeFor = () => null }) {
+  if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction });
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -185,6 +249,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       const chosen = acting ? null : index === openerIndex ? "raise" : "fold";
       const options = [
         { action: "fold", label: "Fold", disabled: positions[index + 1] === "BB" },
+        ...(acting && position === "SB" ? [{ action: "call", label: `Call ${formatBb(sbCompleteToBb)}` }] : []),
         { action: "raise", label: `Raise ${formatBb(openSizeFor(position))}`, disabled: position === "BB" },
       ];
       if (index === openerIndex && !acting) contribution[position] = openSizeFor(position);
@@ -301,7 +366,8 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
     if (seats) seats.scrollTo({ left: seats.scrollWidth, behavior: "smooth" });
   }, [blocks.length]);
   const select = (block, action) => {
-    if (block.kind === "seat") onAct(block.position, action);
+    if (block.stage === "limp-bb" || block.stage === "limp-sb-response") onAct(block.position, action);
+    else if (block.kind === "seat") onAct(block.position, action);
     else if (block.kind === "cold") onColdAction(action === "fold" ? null : { position: block.position, action });
     else if (block.kind === "shove-response") onShoveResponse(action);
     else if (block.kind === "continuation" && block.position === state.opener && state.rangeType === "three_bet") action === "raise" ? onFourBet() : onContinuationAction(action);
@@ -342,6 +408,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [initialSelection] = useState(() => restoredSelection(initialRangeType));
   const [rangeType, setRangeType] = useState(initialSelection.rangeType);
   const isOpening = rangeType === "open";
+  const isLimp = rangeType === "limp";
   const isThreeBet = rangeType === "three_bet";
   const isFourBet = rangeType === "four_bet";
   const isComparison = rangeType === "response";
@@ -354,6 +421,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [pendingRaise, setPendingRaise] = useState(initialSelection.pendingRaise);
   const [continuationAction, setContinuationAction] = useState(initialSelection.continuationAction);
   const [shoveResponse, setShoveResponse] = useState(initialSelection.shoveResponse);
+  const [limpAction, setLimpAction] = useState(initialSelection.limpAction);
+  const [limpResponseAction, setLimpResponseAction] = useState(initialSelection.limpResponseAction);
   const [coldAction, setColdAction] = useState(null);
   const [format, setFormat] = useState(() => {
     try {
@@ -392,11 +461,12 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setDisplayMode(value);
     try { window.localStorage.setItem(displayModeStorageKey, value); } catch {}
   }
-  const currentError = isFourBet ? fourBet.error : isOpening ? openingDataError : isThreeBet ? threeBetDataError : dataError || openingDataError;
+  const currentError = isFourBet ? fourBet.error : isOpening ? openingDataError : isLimp ? limpDataError : isThreeBet ? threeBetDataError : dataError || openingDataError;
   const openerSpot = useMemo(() => openingSpotFor(opener), [opener, tableProfile]);
   const openerModel = useMemo(() => openerSpot ? openingModelFor(openerSpot) : null, [openerSpot]);
   const spot = isOpening
     ? openerSpot
+    : isLimp ? null
     : isFourBet ? fourBet.data ? findFourBetSpot(fourBet.data, opener, hero) : null
     : isThreeBet ? threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null
     : dataset ? findSpot(dataset, opener, hero) : null;
@@ -409,6 +479,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setFoldedHero(false);
     setPendingRaise(null);
     setContinuationAction(null); setShoveResponse(null); setColdAction(null);
+    setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
     setSelected("AKo");
@@ -422,6 +493,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setRangeType("open");
     setPendingRaise(null);
     setContinuationAction(null); setShoveResponse(null); setColdAction(null);
+    setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
     setHero(positions[positions.indexOf(value) + 1] ?? "");
@@ -435,9 +507,23 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setPendingRaise(null);
     setContinuationAction(null); setShoveResponse(null); setColdAction(null);
     setFocusedRange(null);
+    const limpTransition = limpActionTransition({ rangeType, opener, hero, limpAction, limpResponseAction, position, action });
+    if (limpTransition) {
+      setSelectedRangeBlock(null);
+      setRangeType(limpTransition.rangeType);
+      setOpener(limpTransition.opener);
+      setHero(limpTransition.hero);
+      setCallers([]);
+      setFoldedHero(false);
+      setLimpAction(limpTransition.limpAction);
+      setLimpResponseAction(limpTransition.limpResponseAction);
+      return;
+    }
+    if (isLimp) return;
     if (index <= positions.indexOf(opener)) {
       if (action === "raise" && next) {
         setSelectedRangeBlock(null);
+        setLimpAction(null); setLimpResponseAction(null);
         setOpener(position); setRangeType("response"); setHero(next); setCallers([]); setFoldedHero(false);
       } else if (action === "fold" && position === opener && next && next !== "BB") {
         changeOpener(next);
@@ -456,7 +542,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }
 
   function rewindToActionBlock(block) {
-    const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, block });
+    const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, limpAction, limpResponseAction, block });
     setFocusedRange(null);
     setColdAction(null);
     setSelectedRangeBlock(current => current === block.key ? null : block.key);
@@ -469,12 +555,15 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setPendingRaise(transition.pendingRaise);
     setContinuationAction(transition.continuationAction);
     setShoveResponse(transition.shoveResponse);
+    setLimpAction(transition.limpAction ?? null);
+    setLimpResponseAction(transition.limpResponseAction ?? null);
   }
 
   function selectFourBet() {
     setRangeType("four_bet");
     setPendingRaise(null);
     setContinuationAction(null); setShoveResponse(null); setColdAction(null);
+    setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
   }
@@ -500,8 +589,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const currentRequestKey = useRef(requestKey);
   currentRequestKey.current = requestKey;
   useEffect(() => {
-    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, selected }));
-  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, selected]);
+    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, selected }));
+  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, selected]);
   useEffect(() => { setLocalEstimate(null); setLocalEstimateRequestKey(null); setLocalStatus(activeGenerationRequest ? "checking" : "idle"); setLocalError(""); }, [requestKey]);
   useEffect(() => {
     if (!activeGenerationRequest || !requestKey) return;
@@ -542,9 +631,9 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const candidate = dataset && positions.indexOf(position) > positions.indexOf(opener) ? findSpot(dataset, opener, position) : null;
     return candidate?.hands.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb ?? null;
   };
-  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, raiseSizeFor };
+  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, raiseSizeFor };
   const actionBlocks = buildActionBlocks(actionState);
-  const responseSpot = !isOpening && dataset ? findSpot(dataset, opener, hero) : null;
+  const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
   const threeBetSpot = (isThreeBet || isFourBet) && threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null;
   const threeBetModel = threeBetSpot ? threeBetMatrixModel(threeBetSpot) : null;
@@ -552,6 +641,18 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const addSaved = (position, kind, savedSpot, savedModel, title) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, hand: savedSpot?.hands.find(row => row.hand === selected) });
   if (isOpening) {
     addSaved(opener, "opening", openerSpot, openerModel, openingTitle(opener));
+  } else if (isLimp) {
+    const bbLimpSpot = limpDataset ? findLimpResponseSpot(limpDataset, "BB_vs_SB_limp") : null;
+    const bbLimpModel = bbLimpSpot ? limpResponsesMatrixModel(bbLimpSpot, openingDataset) : null;
+    if (limpAction === "raise") {
+      const sbIsoSpot = limpDataset ? findLimpResponseSpot(limpDataset, "SB_vs_BB_iso") : null;
+      const sbIsoModel = sbIsoSpot ? limpResponsesMatrixModel(sbIsoSpot, openingDataset) : null;
+      addSaved("BB", "limp_response", bbLimpSpot, bbLimpModel, "BB · SBリンプへの応答（履歴）");
+      addSaved("SB", "limp_response", sbIsoSpot, sbIsoModel, "SB · アイソレイズへの応答");
+    } else {
+      addSaved("SB", "opening", openerSpot, openerModel, "SB · オープンレンジ（リンプ選択）");
+      addSaved("BB", "limp_response", bbLimpSpot, bbLimpModel, "BB · SBリンプへの応答");
+    }
   } else if (isComparison) {
     const activeSeats = positions.filter(position => multiwayParticipants.includes(position));
     const firstCaller = positions.find(position => callers.includes(position));
@@ -588,7 +689,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     }
   }
   // The last raiser's table goes on the left.
-  const aggressor = isThreeBet || pendingRaise ? hero : opener;
+  const aggressor = isLimp && limpAction === "raise" ? "BB" : isThreeBet || pendingRaise ? hero : opener;
   rangeEntries.sort((a, b) => (b.position === aggressor) - (a.position === aggressor));
   const actionRangeEntry = (block, role) => {
     const ref = block?.rangeRef;
@@ -607,6 +708,13 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     if (ref.kind === "opening") {
       const savedSpot = openingSpotFor(ref.position);
       return savedSpot ? withContext({ position: ref.position, kind: "opening", spot: savedSpot, model: openingModelFor(savedSpot), title: openingTitle(ref.position) }) : missing("オープンレンジ");
+    }
+    if (ref.kind === "limp_bb" || ref.kind === "limp_sb") {
+      const id = ref.kind === "limp_bb" ? "BB_vs_SB_limp" : "SB_vs_BB_iso";
+      const savedSpot = limpDataset ? findLimpResponseSpot(limpDataset, id) : null;
+      const savedModel = savedSpot ? limpResponsesMatrixModel(savedSpot, openingDataset) : null;
+      const title = ref.kind === "limp_bb" ? "BB · SBリンプへの応答" : "SB · アイソレイズへの応答";
+      return savedSpot ? withContext({ position: ref.position, kind: "limp_response", spot: savedSpot, model: savedModel, title }) : missing(title);
     }
     if (ref.kind === "response") {
       const savedSpot = dataset ? findSpot(dataset, opener, ref.position) : null;
@@ -677,7 +785,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイのAIソリューションをローカルで生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
             {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のAIソリューションをローカルで生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}
-          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} spot={focusedEntry.spot} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
+          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} spot={focusedEntry.spot} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}

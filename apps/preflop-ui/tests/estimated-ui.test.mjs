@@ -5,7 +5,7 @@ import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
-import { responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.js";
+import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.js";
 
 let server, EstimatedRanges, ActionPath, Sidebar, buildActionBlocks, prioritizeParticipantRanges;
 before(async () => {
@@ -52,6 +52,47 @@ test("action blocks are generated in order from the chosen actions", () => {
   assert.match(folded, /終了[\s\S]*SBの勝ち[\s\S]*ポット 58bb/); // 28.5 + 28.5 + BB 1; the uncalled 71.5 returns
   const compactAllIn = renderToStaticMarkup(createElement(ActionPath, { ...props, expanded: false, rangeType: "four_bet", pendingRaise: "all_in", spot: { three_bet_size_bb: 11, four_bet_size_bb: 28.5 } }));
   assert.match(compactAllIn, /Allin 100/);
+});
+
+test("SB can limp and BB can check or iso-raise from the saved limp response", () => {
+  const open = buildActionBlocks({ rangeType: "open", opener: "SB", hero: "BB" });
+  const sbOpen = open.find(block => block.position === "SB");
+  assert.deepEqual(sbOpen.options.map(({ action, label }) => [action, label]), [
+    ["fold", "Fold"], ["call", "Call 1"], ["raise", "Raise 3.5"],
+  ]);
+
+  const startLimp = limpActionTransition({ rangeType: "open", opener: "SB", hero: "BB", position: "SB", action: "call" });
+  assert.deepEqual(startLimp, { rangeType: "limp", opener: "SB", hero: "BB", limpAction: null, limpResponseAction: null });
+  const bbDecision = buildActionBlocks(startLimp).find(block => block.position === "BB");
+  assert.equal(bbDecision.active, true);
+  assert.deepEqual(bbDecision.options.map(({ action, label }) => [action, label]), [["check", "Check"], ["raise", "Raise 3.5"]]);
+
+  const checked = limpActionTransition({ ...startLimp, position: "BB", action: "check" });
+  const checkPath = buildActionBlocks(checked);
+  assert.equal(checkPath.find(block => block.position === "BB").chosen, "check");
+  assert.deepEqual(checkPath.at(-1), { key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "2人でフロップへ", pot: "ポット 2bb" });
+
+  const iso = limpActionTransition({ ...startLimp, position: "BB", action: "raise" });
+  const isoPath = buildActionBlocks(iso);
+  assert.deepEqual(isoPath.find(block => block.position === "SB" && block.stage === "limp-sb-response").options.map(({ action, label }) => [action, label]), [
+    ["fold", "Fold"], ["call", "Call 3.5"], ["raise", "Raise 10.5"],
+  ]);
+  const called = limpActionTransition({ ...iso, position: "SB", action: "call" });
+  assert.equal(buildActionBlocks(called).at(-1).pot, "ポット 7bb");
+  const reraised = limpActionTransition({ ...iso, position: "SB", action: "raise" });
+  assert.equal(buildActionBlocks(reraised).at(-1).kind, "pending");
+  assert.match(buildActionBlocks(reraised).at(-1).rangeRef.reason, /BB応答レンジはまだ保存されていません/);
+
+  const rewound = rewindActionBlockTransition({ ...iso, block: { stage: "limp-bb" } });
+  assert.deepEqual([rewound.rangeType, rewound.limpAction, rewound.limpResponseAction], ["limp", null, null]);
+});
+
+test("SB limp action path loads both persisted participant ranges", () => {
+  const html = renderToStaticMarkup(createElement(EstimatedRanges, { initialRangeType: "limp" }));
+  assert.match(html, /SB · オープンレンジ（リンプ選択）/);
+  assert.match(html, /BB · SBリンプへの応答/);
+  assert.match(html, />Check</);
+  assert.match(html, />Raise 3\.5</);
 });
 
 test("action block selection points to saved ranges and keeps unsupported continuations pending", () => {
