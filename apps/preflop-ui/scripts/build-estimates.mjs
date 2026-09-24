@@ -58,7 +58,7 @@ try {
     process.exitCode = 1;
   } else {
     for (const name of files) copyFileSync(join(staging, `${name}.json`), join(published, `${name}.json`));
-    console.log(`検証を通過したため src/estimated に保存しました。（バランス警告 ${findings.length}件、公開を妨げません）`);
+    console.log(`検証を通過したため src/estimated に保存しました。（助言警告 ${findings.length}件、公開を妨げません）`);
   }
 } finally {
   rmSync(staging, { recursive: true, force: true });

@@ -58,15 +58,15 @@ P['HJ'] = profile('''
 ''', P['UTG'])
 P['CO'] = profile('''
 100: 33 22 T8s 97s 54s K8s K7s Q8s J8s 86s 75s KTo QTo JTo A9o
-50: K9o Q9o J9o
-25: K6s-K2s Q7s J7s T7s 96s 64s A8o Q6s Q5s 85s 74s 53s
+50: K9o Q9o J9o A8o
+25: K6s-K2s Q7s J7s T7s 96s 64s Q6s Q5s 85s 74s 53s
 0: Q4s Q3s Q2s J6s T6s 95s 84s 63s 43s A6o A4o A3o A2o K8o
 ''', P['HJ'])
 P['BTN'] = profile('''
 100: AA-22 AKs-A2s AKo-A9o KQs-K7s KQo KJo KTo QJs-Q8s QJo QTo JTs-J8s JTo T9s T8s 98s 97s 87s 86s 76s 75s 65s 54s
 75: A8o-A2o K9o Q9o J9o T9o K6s-K2s Q7s Q6s J7s T7s 64s 53s
 50: K8o Q8o J8o T8o 98o Q5s Q4s J6s T6s 96s 85s 74s 63s 43s
-25: K7o Q7o J7o 97o 87o Q3s Q2s J5s-J2s T5s-T2s 95s 94s 84s 73s 52s 42s 32s
+25: K7o-K5o Q7o J7o 97o 87o Q3s Q2s J5s-J2s T5s-T2s 95s 94s 84s 73s 52s 42s 32s
 ''')
 SB_RAISE = profile('''
 80: AA KK AKs
@@ -74,7 +74,8 @@ SB_RAISE = profile('''
 65: K9s K9o-K8o QJo-QTo J9s T9s JTo A5o-A3o
 50: A5s-A2s K8s Q9s Q9o-Q8o J9o-J8o T9o K7o-K6o
 50: 55 K7s-K5s Q8s Q7s J8s J7s T8s T7s 98s 97s 87s 86s 76s 75s 65s 64s 54s
-25: K5o-K2o Q7o-Q2o T7o-T2o T8o A2o
+50: K5o-K2o
+25: Q7o-Q5o J7o-J5o T8o A2o
 ''')
 
 # 2026-09-24: Protect limps with premium traps (AA/KK/AKs 20%, other value

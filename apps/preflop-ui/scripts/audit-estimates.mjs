@@ -1,4 +1,4 @@
-// Audits persisted estimates. Balance warnings are advisory, not an exit-1 gate.
+// Audits persisted estimates. Balance/cross-strength warnings are advisory, not an exit-1 gate.
 // Usage: node scripts/audit-estimates.mjs [--dir <estimates dir>] [--json]
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -24,7 +24,11 @@ if (process.argv.includes("--json")) {
   const count = (check, severity) => findings.filter(f => f.check === check && (!severity || f.severity === severity)).length;
   console.log("# 推定レンジ検証レポート\n");
   console.log("| チェック | 件数 |\n|---|---|");
-  for (const check of ["range-flow", "auto-profit", "strength-order", "suited-vs-offsuit", "position-nesting", "defense-nesting", "squeeze-width", ...BALANCE_CHECKS]) console.log(`| ${check} | ${count(check)} |`);
+  for (const check of ["range-flow", "auto-profit", "strength-order", "suited-vs-offsuit", "position-nesting", "defense-nesting", "squeeze-width", "cross-strength-inversion", ...BALANCE_CHECKS]) console.log(`| ${check} | ${count(check)} |`);
+  console.log("\n## 系列をまたいだ強さの逆転（警告のみ）");
+  console.log("同じ種類の非ペアを対ランダム勝率で比較。勝率差4pt以上かつ弱い手の継続率が20pt以上高い組を検出。弱い側のホイールA・コネクター・1つ飛び、および到達不能ハンドは除外。");
+  const cross = report.crossStrengthSummary;
+  console.log(`- cross-strength-inversion: ${cross.count}組 / ${cross.warnings}件の集約警告 / ${cross.spots.length}局面 — ${cross.spots.join(", ") || "なし"}`);
   console.log(`\n## レンジのバランス（全${report.rangeBalance.length}局面・警告のみ）`);
   console.log("強さ順: hand-strength.json の固定シード対ランダム勝率。到達頻度×コンボで加重し、上位10%境界は按分。局面別の相手レンジ対勝率ではないため、最終判断はレビューで行います。");
   for (const check of BALANCE_CHECKS) {

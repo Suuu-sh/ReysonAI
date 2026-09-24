@@ -10,12 +10,47 @@ const rows = spot => new Map(spot.hands.map(row => [row.hand, row]));
 export const pct = value => `${(value * 100).toFixed(1)}%`;
 
 export const BALANCE_CHECKS = Object.freeze(["range-capped", "over-segregated"]);
+const ADVISORY_CHECKS = [...BALANCE_CHECKS, "cross-strength-inversion"];
 const PASSIVE_ACTIONS = ["limp", "call", "check"];
 const AGGRESSIVE_ACTIONS = ["open", "three_bet", "four_bet", "squeeze", "raise", "all_in"];
 const ACTIONS = [...PASSIVE_ACTIONS, ...AGGRESSIVE_ACTIONS, "fold"];
 // Preserve the existing consistency gate, including its historical warn checks.
-// Only the new balance warnings are advisory; they must never block publishing.
-export const isBlockingAuditFinding = finding => finding.severity === "error" || !BALANCE_CHECKS.includes(finding.check);
+// Balance and cross-family strength warnings are advisory, not publication blockers.
+export const isBlockingAuditFinding = finding => finding.severity === "error" || !ADVISORY_CHECKS.includes(finding.check);
+
+export function checkCrossStrengthInversion(spot, weight = () => 1) {
+  const live = spot.hands.filter(row => row.hand.length === 3 && weight(row.hand) > 0)
+    .map(row => ({ hand: row.hand, equity: handStrength.equity[row.hand],
+      continuation: ACTIONS.filter(action => action !== "fold").reduce((sum, action) => sum + (row[action] ?? 0), 0) }));
+  const playable = hand => /^A[5432][so]$/.test(hand) || Math.abs(ranks.indexOf(hand[0]) - ranks.indexOf(hand[1])) <= 2;
+  const findings = [];
+  // Offsuit only: suited connectors/gappers legitimately outplay weak suited Kx/Qx through
+  // straight+flush playability that raw equity vs a random hand does not capture.
+  for (const kind of ["o"]) {
+    const candidates = live.filter(row => row.hand.endsWith(kind));
+    const inversions = [];
+    for (const stronger of candidates) {
+      for (const weaker of candidates) {
+        // Only B's playability is an exception. Frequencies are conditional on
+        // reaching this node; positive source weights must not dilute them.
+        if (playable(weaker.hand) || stronger.equity - weaker.equity < 0.04 - 1e-12 ||
+            weaker.continuation - stronger.continuation < 20) continue;
+        inversions.push({ stronger, weaker });
+      }
+    }
+    if (!inversions.length) continue;
+    inversions.sort((a, b) => (b.stronger.equity - b.weaker.equity) - (a.stronger.equity - a.weaker.equity) ||
+      (b.weaker.continuation - b.stronger.continuation) - (a.weaker.continuation - a.stronger.continuation) ||
+      a.stronger.hand.localeCompare(b.stronger.hand) || a.weaker.hand.localeCompare(b.weaker.hand));
+    const examples = inversions.slice(0, 3);
+    const detail = examples.map(({ stronger: a, weaker: b }) =>
+      `${a.hand}（勝率${pct(a.equity)}・継続${a.continuation}%） > ${b.hand}（勝率${pct(b.equity)}・継続${b.continuation}%）`).join(" / ");
+    findings.push({ check: "cross-strength-inversion", severity: "warn", spot: spot.id,
+      kind, count: inversions.length, examples,
+      detail: `${kind === "s" ? "スーテッド" : "オフスート"}の強さと継続率が逆転: ${inversions.length}組（勝率差4pt以上・継続率差20pt以上）。代表例: ${detail}` });
+  }
+  return findings;
+}
 
 export function checkRangeBalance(spot, weight = () => 1, segregationExemption = null) {
   const live = spot.hands.map(row => ({ row, weight: combos(row.hand) * weight(row.hand) }))
@@ -269,11 +304,12 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     }
   }
 
-  // 7. Advisory balance checks on every dataset. Source action frequencies
+  // 7. Advisory balance and cross-strength checks on every dataset. Source action frequencies
   // weight incoming combos; unreachable fold=100 placeholders count for neither
   // the top-strength decile nor pure-action share.
   const rangeBalance = [];
-  const balance = (spot, weight, exemption) => {
+  const inspectRange = (spot, weight, exemption) => {
+    findings.push(...checkCrossStrengthInversion(spot, weight));
     const result = checkRangeBalance(spot, weight, exemption);
     findings.push(...result.findings);
     const { findings: ignored, ...metrics } = result;
@@ -282,30 +318,33 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   for (const spot of opening.spots) {
     // Ordinary fold/open RFI is naturally close to pure; SB's limp is NOT exempt.
     const binary = spot.hands.every(row => !Object.hasOwn(row, "limp"));
-    balance(spot, undefined, binary ? "fold/open RFI" : null);
+    inspectRange(spot, undefined, binary ? "fold/open RFI" : null);
   }
-  for (const spot of responses.spots) balance(spot);
-  for (const spot of threeBets.spots) balance(spot, hand => openBy.get(spot.opener).get(hand).open / 100);
+  for (const spot of responses.spots) inspectRange(spot);
+  for (const spot of threeBets.spots) inspectRange(spot, hand => openBy.get(spot.opener).get(hand).open / 100);
   for (const spot of fourBets.spots) {
     const source = rows(responseBy.get(`${spot.opener}>${spot.hero}`));
-    balance(spot, hand => source.get(hand).three_bet / 100);
+    inspectRange(spot, hand => source.get(hand).three_bet / 100);
   }
   for (const spot of fiveBets?.spots ?? []) {
     const previous = rows(threeBets.spots.find(s => s.opener === spot.opener && s.three_bettor === spot.five_bettor));
     // Facing a 5bet all-in, only equity and price decide call/fold: b is exempt,
     // but a (passive-range cap detection) still runs.
-    balance(spot, hand => openBy.get(spot.opener).get(hand).open / 100 * previous.get(hand).four_bet / 100, "5bet all-in response");
+    inspectRange(spot, hand => openBy.get(spot.opener).get(hand).open / 100 * previous.get(hand).four_bet / 100, "5bet all-in response");
   }
-  for (const spot of multiway?.spots ?? []) balance(spot);
+  for (const spot of multiway?.spots ?? []) inspectRange(spot);
   for (const spot of limp?.spots ?? []) {
-    balance(spot, spot.hero === "SB" ? hand => openBy.get("SB").get(hand).limp / 100 : undefined);
+    inspectRange(spot, spot.hero === "SB" ? hand => openBy.get("SB").get(hand).limp / 100 : undefined);
   }
   const balanceSummary = Object.fromEntries(BALANCE_CHECKS.map(check => {
     const matches = findings.filter(f => f.check === check);
     return [check, { count: matches.length, spots: [...new Set(matches.map(f => f.spot))].sort() }];
   }));
+  const inversions = findings.filter(f => f.check === "cross-strength-inversion");
+  const crossStrengthSummary = { count: inversions.reduce((sum, f) => sum + f.count, 0),
+    warnings: inversions.length, spots: [...new Set(inversions.map(f => f.spot))].sort() };
 
   // Range widths for a sanity read.
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
-  return { findings, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, widths, rangeBalance, balanceSummary };
+  return { findings, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
 }
