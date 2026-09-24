@@ -13,6 +13,9 @@ export function SectionHeading({ title, action, className = "" }) {
   );
 }
 
+// Matrix cells keep fold near the background on purpose; bars sit on a dark track, so fold needs contrast there.
+const barColor = action => action === "fold" ? "#6e6e78" : color(action);
+
 export function ActionBars({ items, labels = {} }) {
   if (!items.length) return null;
 
@@ -20,9 +23,9 @@ export function ActionBars({ items, labels = {} }) {
     <div className="bars">
       {items.map((item, index) => (
         <div className="bar-row" key={item.action} style={{ "--i": index }}>
-          <span><i style={{ background: color(item.action) }} />{labels[item.action] ?? label(item.action)}</span>
+          <span><i style={{ background: barColor(item.action) }} />{labels[item.action] ?? label(item.action)}</span>
           <div className="track" aria-hidden="true">
-            <div style={{ width: pct(item.frequency), background: color(item.action) }} />
+            <div style={{ width: pct(item.frequency), background: barColor(item.action) }} />
           </div>
           <b>{pct(item.frequency)}</b>
         </div>
