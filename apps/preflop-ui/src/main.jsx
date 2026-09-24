@@ -1,21 +1,18 @@
-import React, { useState } from "react";
+import React, { Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
-import { Onboarding } from "./components/Onboarding.jsx";
-import { RangeWorkspace } from "./estimated/RangeWorkspace.jsx";
-import { loadProfile, saveProfile } from "./profile.js";
+import { ServiceSite } from "./site/ServiceSite.tsx";
 import "./styles.css";
+import "./site/site.css";
 
-function Root() {
-  const [profile, setProfile] = useState(loadProfile);
-  const [editing, setEditing] = useState(false);
-  if (!profile || editing) {
-    return <Onboarding initial={editing ? profile : null} onCancel={() => setEditing(false)} onComplete={values => { setProfile(saveProfile(values)); setEditing(false); }} />;
-  }
-  return <RangeWorkspace profile={profile} onEditProfile={() => setEditing(true)} />;
-}
+const ProductApp = lazy(() => import("./ProductApp.jsx"));
+const isProductRoute = window.location.pathname === "/app" || window.location.pathname.startsWith("/app/");
+document.documentElement.lang = isProductRoute ? "ja" : "en";
+document.title = isProductRoute ? "SolveaAI · Preflop Strategy" : "Solvea — Poker strategy, made playable";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Root />
+    {isProductRoute
+      ? <Suspense fallback={<div className="site-loading">Opening Solvea…</div>}><ProductApp /></Suspense>
+      : <ServiceSite />}
   </React.StrictMode>,
 );
