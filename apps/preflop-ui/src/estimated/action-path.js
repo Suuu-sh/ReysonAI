@@ -44,6 +44,10 @@ export function limpActionTransition({ rangeType, opener, hero, limpAction = nul
   }
 
   if (rangeType !== "limp" || opener !== "SB") return null;
+  // Checked first: BB facing SB's limp-reraise (saved BB_vs_SB_limp_reraise).
+  if (position === "BB" && limpAction === "raise" && limpResponseAction === "raise" && ["fold", "call", "raise"].includes(action)) {
+    return { rangeType: "limp", opener: "SB", hero: "BB", limpAction, limpResponseAction, limpReraiseAction: action };
+  }
   if (position === "BB" && [null, "check", "raise"].includes(limpAction) && ["check", "raise"].includes(action)) {
     return { rangeType: "limp", opener: "SB", hero: action === "raise" ? "SB" : "BB", limpAction: action, limpResponseAction: null };
   }
@@ -55,7 +59,7 @@ export function limpActionTransition({ rangeType, opener, hero, limpAction = nul
 
 // Clicking a seat in the action path returns the selector to that decision,
 // removing choices made at that seat and later in the hand.
-export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], block }) {
+export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], squeezeResponse = [], block }) {
   if (!block) return null;
 
   if (block.stage === "limp-opening") {
@@ -64,8 +68,16 @@ export function rewindActionBlockTransition({ rangeType, opener, hero, callers =
   if (block.stage === "limp-bb") {
     return { rangeType: "limp", opener: "SB", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null };
   }
-  if (block.stage === "limp-sb-response" || block.stage === "limp-pending-bb") {
+  if (block.stage === "limp-sb-response") {
     return { rangeType: "limp", opener: "SB", hero: "SB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: "raise", limpResponseAction: null };
+  }
+  if (block.stage === "limp-bb-reraise") {
+    return { rangeType: "limp", opener: "SB", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: "raise", limpResponseAction: "raise", limpReraiseAction: null };
+  }
+  // Responses to a saved squeeze: the opener's block clears both responses,
+  // the caller's block keeps the opener's choice.
+  if (block.kind === "squeeze-response") {
+    return { rangeType: "response", opener, hero, callers, foldedHero: false, pendingRaise: "squeeze", continuationAction: null, shoveResponse: null, squeezeResponse: block.role === "caller" ? squeezeResponse.slice(0, 1) : [] };
   }
 
   if (block.kind === "seat") {

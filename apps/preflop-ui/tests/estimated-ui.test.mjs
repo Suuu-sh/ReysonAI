@@ -104,8 +104,16 @@ test("SB can limp and BB can check or iso-raise from the saved limp response", (
   const called = limpActionTransition({ ...iso, position: "SB", action: "call" });
   assert.equal(buildActionBlocks(called).at(-1).pot, "ポット 7bb");
   const reraised = limpActionTransition({ ...iso, position: "SB", action: "raise" });
-  assert.equal(buildActionBlocks(reraised).at(-1).kind, "pending");
-  assert.match(buildActionBlocks(reraised).at(-1).rangeRef.reason, /BB応答レンジはまだ保存されていません/);
+  const reraiseBlock = buildActionBlocks(reraised).at(-1);
+  assert.equal(reraiseBlock.stage, "limp-bb-reraise"); // BB's saved response to the 10.5BB limp-reraise
+  assert.deepEqual(reraiseBlock.rangeRef, { kind: "limp_reraise", position: "BB" });
+  assert.deepEqual(reraiseBlock.options.map(option => option.label), ["Fold", "Call 10.5", "Raise 26"]);
+  const bbCalled = limpActionTransition({ ...reraised, position: "BB", action: "call" });
+  assert.equal(bbCalled.limpReraiseAction, "call");
+  assert.deepEqual([buildActionBlocks(bbCalled).at(-1).result, buildActionBlocks(bbCalled).at(-1).pot], ["2人でフロップへ", "ポット 21bb"]);
+  assert.equal(buildActionBlocks(limpActionTransition({ ...reraised, position: "BB", action: "raise" })).at(-1).result, "データなし");
+  const backToBb = rewindActionBlockTransition({ ...bbCalled, block: reraiseBlock });
+  assert.deepEqual([backToBb.limpResponseAction, backToBb.limpReraiseAction], ["raise", null]);
 
   const rewound = rewindActionBlockTransition({ ...iso, block: { stage: "limp-bb" } });
   assert.deepEqual([rewound.rangeType, rewound.limpAction, rewound.limpResponseAction], ["limp", null, null]);
@@ -129,12 +137,37 @@ test("action block selection points to saved ranges and keeps unsupported contin
   assert.equal(multiway.find(block => block.position === "BB").rangeRef.kind, "pending");
   assert.match(multiway.find(block => block.position === "BB").options.at(-1).label, /^Raise \d/); // squeeze size is fixed, so it is always shown
 
+  const savedMultiway = buildActionBlocks({ rangeType: "response", opener: "UTG", hero: "BB", callers: ["HJ"], foldedHero: false });
+  assert.deepEqual(savedMultiway.find(block => block.position === "SB").rangeRef, { kind: "multiway", position: "SB", caller: "HJ" });
+  assert.deepEqual(savedMultiway.find(block => block.position === "BB").rangeRef, { kind: "multiway", position: "BB", caller: "HJ" });
+  const twoCallers = buildActionBlocks({ rangeType: "response", opener: "UTG", hero: "BB", callers: ["HJ", "CO"], foldedHero: false });
+  assert.equal(twoCallers.find(block => block.position === "BB").rangeRef.kind, "pending"); // only one caller is saved
+
+  const squeezed = { rangeType: "response", opener: "UTG", hero: "SB", callers: ["HJ"], foldedHero: false, pendingRaise: "squeeze" };
+  const squeezePath = buildActionBlocks(squeezed);
+  assert.deepEqual(squeezePath.find(block => block.position === "SB").rangeRef, { kind: "multiway", position: "SB", caller: "HJ" });
+  assert.equal(squeezePath.find(block => block.position === "BB").kind, "forced");
+  const openerBlock = squeezePath.at(-1);
+  assert.deepEqual([openerBlock.kind, openerBlock.role, openerBlock.position, openerBlock.active], ["squeeze-response", "opener", "UTG", true]);
+  assert.deepEqual(openerBlock.options.map(option => option.label), ["Fold", "Call 13", "Raise 26"]);
+  assert.deepEqual(openerBlock.rangeRef, { kind: "squeeze", position: "UTG", caller: "HJ", squeezer: "SB", priorAction: null });
+  const afterFold = buildActionBlocks({ ...squeezed, squeezeResponse: ["fold"] }).at(-1);
+  assert.deepEqual([afterFold.position, afterFold.role, afterFold.rangeRef.priorAction], ["HJ", "caller", "fold"]);
+  const threeWay = buildActionBlocks({ ...squeezed, squeezeResponse: ["call", "call"] }).at(-1);
+  assert.deepEqual([threeWay.result, threeWay.pot], ["3人でフロップへ", "ポット 40bb"]);
+  assert.equal(buildActionBlocks({ ...squeezed, squeezeResponse: ["fold", "fold"] }).at(-1).result, "SBの勝ち");
+  assert.equal(buildActionBlocks({ ...squeezed, squeezeResponse: ["raise"] }).at(-1).result, "データなし");
+  const backToCaller = rewindActionBlockTransition({ ...squeezed, squeezeResponse: ["call", "fold"], block: { kind: "squeeze-response", role: "caller", position: "HJ" } });
+  assert.deepEqual([backToCaller.pendingRaise, backToCaller.squeezeResponse], ["squeeze", ["call"]]);
+  const unsupportedSqueeze = buildActionBlocks({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"], foldedHero: false, pendingRaise: "squeeze" });
+  assert.ok(unsupportedSqueeze.some(block => block.kind === "pending")); // SB as caller is not in the saved pairs
+
   const threeBet = buildActionBlocks({ rangeType: "three_bet", opener: "UTG", hero: "HJ", spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 } });
   assert.deepEqual(threeBet.find(block => block.key === "continuation-UTG").rangeRef, { kind: "three_bet", position: "UTG", opponent: "HJ" });
-  assert.equal(threeBet.find(block => block.position === "BB").rangeRef.kind, "pending");
+  assert.deepEqual(threeBet.find(block => block.position === "BB").rangeRef, { kind: "cold", position: "BB", threeBettor: "HJ" });
   const coldSeat = threeBet.find(block => block.position === "CO");
   assert.equal(coldSeat.kind, "cold"); // seats behind the 3-bettor keep fold / cold call / cold 4bet
-  assert.deepEqual(coldSeat.options.map(option => option.label), ["Fold", "Call 8", "Raise 22"]);
+  assert.deepEqual(coldSeat.options.map(option => option.label), ["Fold", "Call 8", "Raise 26"]); // cold 4bet: fourBetToSize(CO, HJ)
   const coldCall = buildActionBlocks({ rangeType: "three_bet", opener: "UTG", hero: "HJ", spot: { three_bet_size_bb: 8, four_bet_size_bb: 22 }, coldAction: { position: "BTN", action: "call" } });
   assert.deepEqual(coldCall.map(block => block.key), ["UTG", "HJ", "CO", "BTN", "end"]);
   assert.equal(coldCall.find(block => block.position === "CO").chosen, "fold");

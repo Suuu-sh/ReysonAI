@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from "react";
-import { isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.js";
+import { fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.js";
 import { hands } from "../data.js";
 import { Sidebar } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
@@ -11,7 +11,8 @@ import { findFourBetSpot, fourBetMatrixModel, loadFourBetDataset } from "./four-
 import threeBetSource from "./three-bet-responses.json";
 import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "./three-bet-responses.js";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.js";
-import { findLimpResponseSpot, limpResponsesMatrixModel, validateLimpResponses } from "./limp-responses.js";
+import { LIMP_RERAISE_RESPONSE_ID, findLimpResponseSpot, limpResponsesMatrixModel, validateLimpResponses } from "./limp-responses.js";
+import { extendedBreakdown, extendedModel, extendedUnreachableReason, findExtendedSpot, multiwayContext, useExtendedDatasets } from "./extended-ranges.js";
 import { limpActionTransition, nextActorsAfterRaise, responseActionTransition, rewindActionBlockTransition } from "./action-path.js";
 import { displayModes } from "./display-mode.js";
 import { displayModeKey } from "../profile.js";
@@ -63,7 +64,7 @@ const tableProfileStorageKey = "solveaai:table-profile:v1";
 const openingModelFor = spot => markAdjustedModel(openingMatrixModel(spot), spot);
 const legacySelectionStorageKey = "solveagto:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
-  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, selected: "AKo" };
+  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, squeezeResponse: [], selected: "AKo" };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
@@ -79,7 +80,11 @@ function restoredSelection(initialRangeType) {
     const shoveResponse = pendingRaise === "all_in" && ["fold", "call"].includes(saved.shoveResponse) ? saved.shoveResponse : null;
     const limpAction = limpSelection && ["check", "raise"].includes(saved.limpAction) ? saved.limpAction : null;
     const limpResponseAction = limpSelection && limpAction === "raise" && ["fold", "call", "raise"].includes(saved.limpResponseAction) ? saved.limpResponseAction : null;
-    return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
+    const limpReraiseAction = limpResponseAction === "raise" && ["fold", "call", "raise"].includes(saved.limpReraiseAction) ? saved.limpReraiseAction : null;
+    const squeezeActions = ["fold", "call", "raise"];
+    const squeezeResponse = pendingRaise === "squeeze" && Array.isArray(saved.squeezeResponse) && saved.squeezeResponse.length <= 2 &&
+      saved.squeezeResponse.every(action => squeezeActions.includes(action)) && !(saved.squeezeResponse[0] === "raise" && saved.squeezeResponse.length > 1) ? saved.squeezeResponse : [];
+    return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, squeezeResponse, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
   } catch { return fallback; }
 }
 
@@ -113,10 +118,12 @@ function AiReason({ hand, spotId, inlineFacts }) {
   </div>;
 }
 
-function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, spot, position, onReturnToComparison, displayMode }) {
+function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, extra = null, spot, position, onReturnToComparison, displayMode }) {
   const tableReason = adjustmentReason(hand, spot?.table_profile);
   const aggregate = model.aggregates.get(hand.hand);
-  const totalFrequency = isOpening
+  const totalFrequency = extra
+    ? Math.round(Object.values(aggregate.actions).reduce((sum, frequency) => sum + frequency, 0) * 100)
+    : isOpening
     ? hand.open + (hand.limp ?? 0) + hand.fold
     : isLimpResponse
       ? Object.values(aggregate.actions).reduce((sum, frequency) => sum + frequency, 0) * 100
@@ -129,14 +136,14 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
   return <div className={`detail-column${onReturnToComparison ? " comparison-focus-details" : ""}`}>
     <Panel>
       <HandHeader position={position} hand={hand.hand} comboCount={aggregate.comboCount} onClose={onReturnToComparison} />
-      {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{isLimpResponse ? "SBのリンプ頻度が0%のため、この応答経路の推奨頻度はありません。保存上のfold=100は形式上の値です。" : `${isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。`}</StatusState> : <>
+      {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{extra?.unreachableText ?? (isLimpResponse ? "SBのリンプ頻度が0%のため、この応答経路の推奨頻度はありません。保存上のfold=100は形式上の値です。" : `${isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。`)}</StatusState> : <>
       {tableReason && <p className="adjustment-reason">{tableReason}</p>}
       {!tableReason && !isLimpResponse && <AiReason hand={hand} spotId={spot?.id} inlineFacts={inlineFacts} />}
       {isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
       {displayMode === "standard" && <>
       {isFourBet && <small>オールイン = 5bet（合計100BB）</small>}
       <ActionBars items={model.actions.map(action => ({ action, frequency: aggregate.actions[action] }))} labels={model.actionLabels} />
-      <StatList items={isLimpResponse ? [{ label: "頻度合計", value: `${totalFrequency}%` }] : [
+      <StatList items={extra ? [extra.sizeItem, ...extra.received, { label: "頻度合計", value: `${totalFrequency}%` }] : isLimpResponse ? [{ label: "頻度合計", value: `${totalFrequency}%` }] : [
         isFiveBet ? { label: "受けるオールイン（合計）", value: "100 BB" }
           : isOpening
           ? { label: "オープンサイズ（合計）", value: hand.open_size_bb === null ? "—（オープンなし）" : `${hand.open_size_bb} BB` }
@@ -186,8 +193,14 @@ function InlineGenerationControl({ description, status, error, onGenerate }) {
 
 const startingContribution = { SB: 0.5, BB: 1 };
 const formatBb = value => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
+// An uncalled bet is returned, so the largest contribution only counts up to the next largest.
+const potLabel = contribution => {
+  const values = Object.values(contribution).sort((a, b) => b - a);
+  const counted = values.length > 1 ? [Math.min(values[0], values[1]), ...values.slice(1)] : values;
+  return `ポット ${formatBb(counted.reduce((sum, value) => sum + value, 0))}bb`;
+};
 
-function buildLimpActionBlocks({ limpAction, limpResponseAction }) {
+function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction = null }) {
   const contribution = { ...startingContribution };
   const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
   const blocks = [];
@@ -230,15 +243,21 @@ function buildLimpActionBlocks({ limpAction, limpResponseAction }) {
 
   if (limpResponseAction === "fold") end("BBの勝ち");
   else if (limpResponseAction === "call") end("2人でフロップへ");
-  else if (limpResponseAction === "raise") blocks.push({ key: "limp-BB-reraise-response", position: "BB", stack: stackOf("BB"), active: false, chosen: null, stage: "limp-pending-bb", options: [
-    { action: "fold", label: "Fold", disabled: true }, { action: "call", label: `Call ${formatBb(limpReraiseToBb - isoVsLimpToBb)}`, disabled: true },
-  ], kind: "pending", rangeRef: { kind: "pending", position: "BB", reason: "SBのリンプレイズ後のBB応答レンジはまだ保存されていません。" } });
+  else if (limpResponseAction === "raise") {
+    const fourBetSizeBb = fourBetToSize("BB", "SB");
+    blocks.push({ key: "limp-BB-reraise-response", position: "BB", stack: stackOf("BB"), active: !limpReraiseAction, chosen: limpReraiseAction, stage: "limp-bb-reraise", options: [
+      { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(limpReraiseToBb)}` }, { action: "raise", label: `Raise ${formatBb(fourBetSizeBb)}` },
+    ], kind: "seat", rangeRef: { kind: "limp_reraise", position: "BB" } });
+    if (limpReraiseAction === "fold") end("SBの勝ち");
+    else if (limpReraiseAction === "call") { contribution.BB = limpReraiseToBb; end("2人でフロップへ"); }
+    else if (limpReraiseAction === "raise") blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: "BBの4bet後のSBの応答レンジはまだありません。" });
+  }
   return blocks;
 }
 
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, raiseSizeFor = () => null }) {
-  if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction });
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, squeezeResponse = [], raiseSizeFor = () => null }) {
+  if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction });
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -269,14 +288,14 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       ? `Raise ${formatBb(threeBetToSize(opener, position, earlierCallers.length))}`
       : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
     const options = [{ action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(openSizeFor(opener))}` }, { action: "raise", label: raiseLabel }];
-    // Seats behind the 3-bettor still act before the opener: fold, cold call or cold 4bet.
-    // Only fold is covered by saved ranges; the other choices end the path as "no data".
+    // Seats behind the 3-bettor still act before the opener: fold, cold call or cold 4bet
+    // (saved cold-three-bet ranges). What follows a cold call / cold 4bet has no data yet.
     if (rangeType === "three_bet" && index > heroIndex) {
       const coldIndex = coldAction ? positions.indexOf(coldAction.position) : -1;
       if (coldAction && index > coldIndex) continue;
       const chosen = coldAction?.position === position ? coldAction.action : coldAction || continuationAction ? "fold" : null;
-      blocks.push({ key: position, position, stack, active: false, chosen, kind: "cold", rangeRef: { kind: "pending", position, reason: "3bet後のコールドコール・コールド4betのデータはまだありません。" }, options: [
-        { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(threeBetSizeBb)}` }, { action: "raise", label: `Raise ${formatBb(spot?.four_bet_size_bb)}` },
+      blocks.push({ key: position, position, stack, active: false, chosen, kind: "cold", rangeRef: { kind: "cold", position, threeBettor: hero }, options: [
+        { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(threeBetSizeBb)}` }, { action: "raise", label: `Raise ${formatBb(fourBetToSize(position, hero))}` },
       ] });
       continue;
     }
@@ -289,7 +308,10 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
     else if (index < heroIndex || foldedHero) chosen = "fold";
     else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = earlierCallers.length ? threeBetToSize(opener, position, earlierCallers.length) : raiseToBb ?? threeBetSizeBb ?? 0; }
     const hasEarlierCaller = callers.some(caller => positions.indexOf(caller) < index);
-    const rangeRef = pendingRaise === "squeeze" || hasEarlierCaller
+    const multiway = hasEarlierCaller ? multiwayContext(opener, callers, position) : null;
+    const rangeRef = multiway
+      ? { kind: "multiway", position, caller: multiway.caller }
+      : hasEarlierCaller || (pendingRaise === "squeeze" && index === heroIndex)
       ? { kind: "pending", position, reason: pendingRaise === "squeeze" ? "スクイーズ後の応答データはまだ保存されていません。" : "このマルチウェイ局面の応答データはまだ保存されていません。" }
       : reraised && index > heroIndex
         ? { kind: "pending", position, reason: "3bet後の応答データはまだ保存されていません。" }
@@ -323,12 +345,40 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
   }
   const end = handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, contribution, threeBetSizeBb, spot });
   if (end) blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], ...end });
+  const squeeze = pendingRaise === "squeeze" && callers.length === 1 ? multiwayContext(opener, callers, hero) : null;
+  if (squeeze) return appendSqueezeResponses(blocks, { opener, caller: squeeze.caller, squeezer: hero, squeezeResponse, contribution, stackOf });
   const pendingActors = pendingRaise === "squeeze" ? nextActorsAfterRaise(hero, [opener, ...callers]) : [];
   for (const position of pendingActors) {
     blocks.push({ key: `pending-${position}`, position, stack: stackOf(position), kind: "pending", rangeRef: { kind: "pending", position, reason: "スクイーズ後の応答データはまだ保存されていません。" }, active: true, chosen: null, options: [
       { action: "fold", label: "Fold", disabled: true }, { action: "call", label: "Call", disabled: true },
     ] });
   }
+  return blocks;
+}
+
+// After SB/BB squeezes an open plus one caller: the opener responds (caller still
+// behind), then the caller responds to the opener's fold or call. A 4bet ends the
+// saved data.
+function appendSqueezeResponses(blocks, { opener, caller, squeezer, squeezeResponse, contribution, stackOf }) {
+  const size = threeBetToSize(opener, squeezer, 1);
+  const [openerAction = null, callerAction = null] = squeezeResponse;
+  const options = position => [
+    { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(size)}` }, { action: "raise", label: `Raise ${formatBb(fourBetToSize(position, squeezer))}` },
+  ];
+  const noData = position => blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${position}の4bet後の応答レンジはまだありません。` });
+  blocks.push({ key: `squeeze-${opener}`, position: opener, stack: stackOf(opener), kind: "squeeze-response", role: "opener", active: !openerAction, chosen: openerAction,
+    rangeRef: { kind: "squeeze", position: opener, caller, squeezer, priorAction: null }, options: options(opener) });
+  if (!openerAction) return blocks;
+  if (openerAction === "raise") { noData(opener); return blocks; }
+  if (openerAction === "call") contribution[opener] = size;
+  blocks.push({ key: `squeeze-${caller}`, position: caller, stack: stackOf(caller), kind: "squeeze-response", role: "caller", active: !callerAction, chosen: callerAction,
+    rangeRef: { kind: "squeeze", position: caller, caller, squeezer, priorAction: openerAction }, options: options(caller) });
+  if (!callerAction) return blocks;
+  if (callerAction === "raise") { noData(caller); return blocks; }
+  if (callerAction === "call") contribution[caller] = size;
+  const players = [squeezer, ...(openerAction === "call" ? [opener] : []), ...(callerAction === "call" ? [caller] : [])];
+  blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [],
+    result: players.length > 1 ? `${players.length}人でフロップへ` : `${squeezer}の勝ち`, pot: potLabel(contribution) });
   return blocks;
 }
 
@@ -365,7 +415,7 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
   return null;
 }
 
-export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, postflopExpanded = false, onFlopAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, postflopExpanded = false, onFlopAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onSqueezeResponse = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
   const blocks = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef(null);
   useEffect(() => {
@@ -374,7 +424,8 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
   }, [blocks.length]);
   const select = (block, action) => {
     if (block.kind === "flop") onFlopAction(block, action);
-    else if (block.stage === "limp-bb" || block.stage === "limp-sb-response") onAct(block.position, action);
+    else if (block.stage === "limp-bb" || block.stage === "limp-sb-response" || block.stage === "limp-bb-reraise") onAct(block.position, action);
+    else if (block.kind === "squeeze-response") onSqueezeResponse(block.role, action);
     else if (block.kind === "seat") onAct(block.position, action);
     else if (block.kind === "cold") onColdAction(action === "fold" ? null : { position: block.position, action });
     else if (block.kind === "shove-response") onShoveResponse(action);
@@ -436,6 +487,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [limpAction, setLimpAction] = useState(initialSelection.limpAction);
   const [limpResponseAction, setLimpResponseAction] = useState(initialSelection.limpResponseAction);
   const [coldAction, setColdAction] = useState(null);
+  const [limpReraiseAction, setLimpReraiseAction] = useState(initialSelection.limpReraiseAction);
+  const [squeezeResponse, setSqueezeResponse] = useState(initialSelection.squeezeResponse);
   const [format, setFormat] = useState(() => {
     try {
       const saved = JSON.parse(window.localStorage.getItem(formatStorageKey));
@@ -492,7 +545,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setCallers([]);
     setFoldedHero(false);
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -507,7 +560,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setOpener(value);
     setRangeType("open");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -521,7 +574,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const index = positions.indexOf(position);
     const next = positions[index + 1];
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null);
     setFocusedRange(null);
     const limpTransition = limpActionTransition({ rangeType, opener, hero, limpAction, limpResponseAction, position, action });
     if (limpTransition) {
@@ -533,6 +586,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       setFoldedHero(false);
       setLimpAction(limpTransition.limpAction);
       setLimpResponseAction(limpTransition.limpResponseAction);
+      setLimpReraiseAction(limpTransition.limpReraiseAction ?? null);
       return;
     }
     if (isLimp) return;
@@ -564,7 +618,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       return;
     }
     setShowFlop(false); setFlopActions([]);
-    const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, limpAction, limpResponseAction, block });
+    const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, limpAction, limpResponseAction, squeezeResponse, block });
     setFocusedRange(null);
     setColdAction(null);
     setSelectedRangeBlock(current => current === block.key ? null : block.key);
@@ -579,13 +633,15 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setShoveResponse(transition.shoveResponse);
     setLimpAction(transition.limpAction ?? null);
     setLimpResponseAction(transition.limpResponseAction ?? null);
+    setLimpReraiseAction(transition.limpReraiseAction ?? null);
+    setSqueezeResponse(transition.squeezeResponse ?? []);
   }
 
   function selectFourBet() {
     setShowFlop(false); setFlopActions([]);
     setRangeType("four_bet");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -596,7 +652,9 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const sortedCallers = [...callers].sort((a, b) => positions.indexOf(a) - positions.indexOf(b));
   // Hero's own call/fold is the decision being estimated, so it never counts as a prior caller.
   const priorCallers = sortedCallers.filter(position => positions.indexOf(position) < positions.indexOf(hero));
-  const multiwayRequest = isComparison && priorCallers.length > 0 && priorCallers.length === sortedCallers.filter(position => position !== hero).length
+  // Saved multiway / squeeze ranges replace the local-generation fallback for SB/BB after one caller.
+  const savedMultiway = isComparison && multiwayContext(opener, callers, hero) && (pendingRaise !== "squeeze" || callers.length === 1);
+  const multiwayRequest = isComparison && !savedMultiway && priorCallers.length > 0 && priorCallers.length === sortedCallers.filter(position => position !== hero).length
     ? { opener, hero, callers: priorCallers }
     : null;
   const fiveBet = useFiveBetSpot(opener, hero, isFourBet && pendingRaise === "all_in");
@@ -612,8 +670,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const currentRequestKey = useRef(requestKey);
   currentRequestKey.current = requestKey;
   useEffect(() => {
-    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, selected }));
-  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, selected]);
+    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, squeezeResponse, selected }));
+  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, squeezeResponse, selected]);
   useEffect(() => { setLocalEstimate(null); setLocalEstimateRequestKey(null); setLocalStatus(activeGenerationRequest ? "checking" : "idle"); setLocalError(""); }, [requestKey]);
   useEffect(() => {
     if (!activeGenerationRequest || !requestKey) return;
@@ -654,7 +712,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const candidate = dataset && positions.indexOf(position) > positions.indexOf(opener) ? findSpot(dataset, opener, position) : null;
     return candidate?.hands.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb ?? null;
   };
-  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, raiseSizeFor };
+  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, squeezeResponse, raiseSizeFor };
   const actionBlocks = buildActionBlocks(actionState);
   const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
     callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format) }) : null;
@@ -666,6 +724,20 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
   const threeBetSpot = (isThreeBet || isFourBet) && threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null;
   const threeBetModel = threeBetSpot ? threeBetMatrixModel(threeBetSpot) : null;
+  const extended = useExtendedDatasets(isThreeBet || (isComparison && callers.length > 0), dataset, openingDataset);
+  // Multiway / squeeze-response / cold-3bet tables come from the lazily loaded datasets.
+  const extendedEntry = (ref, title) => {
+    const missing = (statusTitle, statusDescription) => ({ position: ref.position, kind: "pending", title, statusTitle, statusDescription });
+    if (extended.error) return missing("レンジを読み込めません", extended.error.message);
+    if (!extended.data) return missing("読み込み中", "保存済みレンジを読み込んでいます。");
+    const savedSpot = findExtendedSpot(extended.data, ref, opener);
+    if (!savedSpot) return missing("レンジ未収録", "この履歴のレンジはまだ保存されていません。");
+    return { position: ref.position, kind: ref.kind, spot: savedSpot, model: extendedModel(ref.kind, savedSpot, dataset, openingDataset), title,
+      hand: savedSpot.hands.find(row => row.hand === selected), unreachableReason: extendedUnreachableReason(ref.kind, savedSpot) };
+  };
+  const extendedTitle = ref => ref.kind === "multiway" ? `${ref.position} · オープン＋コールへの応答`
+    : ref.kind === "cold" ? `${ref.position} · ${ref.threeBettor}の3betへのコールド応答`
+    : ref.priorAction ? `${ref.position} · スクイーズへの応答（${opener}${ref.priorAction === "fold" ? "フォールド" : "コール"}後）` : `${ref.position} · スクイーズへの応答`;
   const rangeEntries = [];
   const addSaved = (position, kind, savedSpot, savedModel, title) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, hand: savedSpot?.hands.find(row => row.hand === selected) });
   if (isOpening) {
@@ -673,7 +745,12 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   } else if (isLimp) {
     const bbLimpSpot = limpDataset ? findLimpResponseSpot(limpDataset, "BB_vs_SB_limp") : null;
     const bbLimpModel = bbLimpSpot ? limpResponsesMatrixModel(bbLimpSpot, openingDataset) : null;
-    if (limpAction === "raise") {
+    if (limpAction === "raise" && limpResponseAction === "raise") {
+      const sbIsoSpot = limpDataset ? findLimpResponseSpot(limpDataset, "SB_vs_BB_iso") : null;
+      const reraiseSpot = limpDataset ? findLimpResponseSpot(limpDataset, LIMP_RERAISE_RESPONSE_ID) : null;
+      addSaved("SB", "limp_response", sbIsoSpot, sbIsoSpot ? limpResponsesMatrixModel(sbIsoSpot, openingDataset) : null, "SB · アイソレイズへの応答（履歴）");
+      addSaved("BB", "limp_reraise", reraiseSpot, reraiseSpot ? limpResponsesMatrixModel(reraiseSpot, openingDataset, limpDataset) : null, "BB · リンプ・リレイズへの応答");
+    } else if (limpAction === "raise") {
       const sbIsoSpot = limpDataset ? findLimpResponseSpot(limpDataset, "SB_vs_BB_iso") : null;
       const sbIsoModel = sbIsoSpot ? limpResponsesMatrixModel(sbIsoSpot, openingDataset) : null;
       addSaved("BB", "limp_response", bbLimpSpot, bbLimpModel, "BB · SBリンプへの応答（履歴）");
@@ -681,6 +758,19 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     } else {
       addSaved("SB", "opening", openerSpot, openerModel, "SB · オープンレンジ（リンプ選択）");
       addSaved("BB", "limp_response", bbLimpSpot, bbLimpModel, "BB · SBリンプへの応答");
+    }
+  } else if (isComparison && pendingRaise === "squeeze" && savedMultiway) {
+    const [caller] = callers;
+    const [openerAction = null, callerAction = null] = squeezeResponse;
+    const squeezeRef = { caller, squeezer: hero };
+    rangeEntries.push(extendedEntry({ kind: "multiway", position: hero, caller }, `${hero} · オープン＋コールへの応答（スクイーズ選択）`));
+    if (openerAction !== "fold") rangeEntries.push(extendedEntry({ kind: "squeeze", position: opener, ...squeezeRef, priorAction: null }, `${opener} · スクイーズへの応答${openerAction ? "（履歴）" : ""}`));
+    if (callerAction !== "fold") {
+      if (!openerAction) {
+        const callerSpot = dataset ? findSpot(dataset, opener, caller) : null;
+        addSaved(caller, "response", callerSpot, callerSpot ? matrixModel(callerSpot) : null, `${caller} · オープンへの応答（履歴）`);
+      } else if (openerAction === "raise") rangeEntries.push({ position: caller, kind: "pending", title: `${caller} · 4betへの応答`, statusTitle: "レンジ未収録", statusDescription: "スクイーズ後の4betへの応答データはまだ保存されていません。" });
+      else rangeEntries.push(extendedEntry({ kind: "squeeze", position: caller, ...squeezeRef, priorAction: openerAction }, extendedTitle({ kind: "squeeze", position: caller, priorAction: openerAction })));
     }
   } else if (isComparison) {
     const activeSeats = positions.filter(position => multiwayParticipants.includes(position));
@@ -694,13 +784,16 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         if (firstCallerSpot) addSaved(position, "response", firstCallerSpot, matrixModel(firstCallerSpot), `${position} · オープンへの応答`);
         else rangeEntries.push({ position, kind: "pending", title: `${position} · 推定レンジ準備中`, statusTitle: "レンジ未収録", statusDescription: "この履歴のレンジはまだ保存されていません。" });
       } else if (!showPendingRanges && position === hero) addSaved(position, "response", responseSpot, responseModel, `${position} · オープンへの応答`);
-      else {
+      else if (pendingRaise !== "squeeze" && multiwayContext(opener, callers, position)) {
+        const { caller } = multiwayContext(opener, callers, position);
+        rangeEntries.push(extendedEntry({ kind: "multiway", position, caller }, extendedTitle({ kind: "multiway", position })));
+      } else {
         const localRange = currentLocalEstimate?.ranges.find(range => range.position === position);
         rangeEntries.push(localRange ? { position, kind: "local", model: localMatrix(localRange), title: `${position} · ${pendingRaise === "squeeze" ? "スクイーズ選択" : position === hero ? "現在の応答" : "コール選択"}（AI推定・レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb } : { position, kind: "pending", title: `${position} · 推定レンジ準備中`, statusTitle: "レンジ未収録", statusDescription: pendingRaise === "squeeze" ? "この局面の推定レンジはまだ生成・保存されていません。" : "この履歴のレンジはまだ保存されていません。" });
       }
     }
   } else if (isThreeBet) {
-    if (coldAction) rangeEntries.push({ position: coldAction.position, kind: "pending", title: `${coldAction.position} · ${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}`, statusTitle: "データなし", statusDescription: "3bet後のコールドコール・コールド4betの推定レンジはまだありません。" });
+    if (coldAction) rangeEntries.push(extendedEntry({ kind: "cold", position: coldAction.position, threeBettor: hero }, `${coldAction.position} · ${hero}の3betへの${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}選択`));
     else if (continuationAction !== "fold") addSaved(opener, "three_bet", spot, model, `${opener} · 3betへの応答`);
     addSaved(hero, "response", responseSpot, responseModel, `${hero} · オープンへの応答（3bet前）`);
   } else if (isFourBet) {
@@ -737,6 +830,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     if (ref.kind === "opening") {
       const savedSpot = openingSpotFor(ref.position);
       return savedSpot ? withContext({ position: ref.position, kind: "opening", spot: savedSpot, model: openingModelFor(savedSpot), title: openingTitle(ref.position) }) : missing("オープンレンジ");
+    }
+    if (ref.kind === "multiway" || ref.kind === "squeeze" || ref.kind === "cold") return withContext(extendedEntry(ref, extendedTitle(ref)));
+    if (ref.kind === "limp_reraise") {
+      const savedSpot = limpDataset ? findLimpResponseSpot(limpDataset, LIMP_RERAISE_RESPONSE_ID) : null;
+      return savedSpot ? withContext({ position: ref.position, kind: "limp_reraise", spot: savedSpot, model: limpResponsesMatrixModel(savedSpot, openingDataset, limpDataset), title: "BB · リンプ・リレイズへの応答" }) : missing("リンプ・リレイズへの応答");
     }
     if (ref.kind === "limp_bb" || ref.kind === "limp_sb") {
       const id = ref.kind === "limp_bb" ? "BB_vs_SB_limp" : "SB_vs_BB_iso";
@@ -809,6 +907,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onAct={actAt}
           onFourBet={selectFourBet}
           onAllIn={() => { setContinuationAction(null); setShoveResponse(null); setColdAction(null); setFocusedRange(null); setSelectedRangeBlock(null); setPendingRaise("all_in"); }}
+          onSqueezeResponse={(role, action) => { setFocusedRange(null); setSelectedRangeBlock(null); setSqueezeResponse(current => role === "opener" ? [action] : [current[0], action]); }}
           onColdAction={action => { setFocusedRange(null); setSelectedRangeBlock(null); setContinuationAction(null); setColdAction(action); }}
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
@@ -816,11 +915,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         </Panel>
         {flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
-          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
+          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイのAIソリューションをローカルで生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
             {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のAIソリューションをローカルで生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}
-          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} spot={focusedEntry.spot} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
+          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} extra={extendedBreakdown(focusedEntry.kind, focusedEntry.spot, focusedEntry.hand)} spot={focusedEntry.spot} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}

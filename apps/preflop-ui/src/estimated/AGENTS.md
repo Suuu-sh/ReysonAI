@@ -90,3 +90,11 @@ For ordinary future spots, use the user's approved external benchmark workflow o
 
 ## Reference scope and authoring roles (2026-09-24 user decision)
 External (GTO Wizard) aggregate frequencies are used only for the five open ranges (±3pt via `npm run benchmark`); this supersedes any earlier per-spot screenshot rule. All other spots are built only by our own method: authored generator profiles, seeded equity, EQR/EV call selection, the audit gate and cross-model review. Range authoring is done by Claude Opus 5.5 at high effort (project subagent `range-author`, .claude/agents/range-author.md); review is done by a different vendor (Codex gpt-6-astra).
+
+## Extended preflop branches in the action path (2026-09-26)
+The action path now reads the saved multiway, squeeze-response, cold-3bet and limp-reraise ranges; this supersedes the "pending" rules above for exactly these branches. `extended-ranges.js` lazy-loads `multiway-responses.json`, `squeeze-responses.json` and `cold-three-bet-responses.json` together (separate chunks) once a path has callers or a 3bet, validates them against the saved opens/responses, and shows 「読み込み中」 until then.
+- SB/BB facing an open plus exactly one earlier caller in the saved (opener, caller) pairs (`multiwayContext`) show `SB/BB_vs_{O}_{C}call`; two or more callers, or SB as the caller, stay pending with the local-generation fallback.
+- After such a SB/BB squeeze (13BB) the path appends the opener's Fold / Call 13 / Raise 26 block (`kind: "squeeze-response"`, role opener), then the caller's block for the opener's fold or call. Endings: squeezer wins, 2人 / 3人でフロップへ, or 「データなし」 after any 4bet. Tables: squeezer (history), opener, and the caller (open response as history until the opener acts). Squeeze-response rows with a 0% open / 0% call are unreachable placeholders.
+- Seats behind a 3bettor show `{Y}_vs_{X}_3bet_{O}open`; their cold 4bet label is `fourBetToSize(Y, X)`. A cold call / cold 4bet still ends the path as 「データなし」.
+- After SB's limp-reraise, BB's block is a saved decision (Fold / Call 10.5 / Raise 26); a BB 4bet ends as 「データなし」.
+- Selection storage keeps `squeezeResponse` and `limpReraiseAction`.
