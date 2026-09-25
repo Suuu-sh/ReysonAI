@@ -9,7 +9,10 @@ const useSite = () => useContext(SiteContext);
 
 type Action = "raise" | "call" | "fold";
 type RangeMode = "opening" | "response";
+type DisplayMode = "simple" | "standard";
 type RangeRow = { hand: string; open?: number; three_bet?: number; call?: number; fold: number };
+const previewDisplayModeKey = "solvea:site-preview-display-mode:v1";
+const actions: Action[] = ["raise", "call", "fold"];
 
 const ranks = [..."AKQJT98765432"];
 const hands = ranks.flatMap((first, row) => ranks.map((second, column) =>
@@ -47,14 +50,15 @@ function SectionHeading({ eyebrow, title, description, light = false }: { eyebro
   </div>;
 }
 
-function RangeMatrix({ mode, selected, onSelect, compact = false }: { mode: RangeMode; selected: string; onSelect: (hand: string) => void; compact?: boolean }) {
+function RangeMatrix({ mode, displayMode, selected, onSelect, compact = false }: { mode: RangeMode; displayMode: DisplayMode; selected: string; onSelect: (hand: string) => void; compact?: boolean }) {
   const { copy } = useSite();
   return <section className={`site-matrix-scroll${compact ? " is-compact" : ""}`} aria-label={`${mode === "opening" ? copy.preview.spotOpening : copy.preview.spotResponse} ${copy.preview.scrollLabel}`}>
     <fieldset className="site-matrix"><legend className="site-visually-hidden">{copy.preview.matrixLabel}</legend>
       {hands.map(hand => {
         const values = frequencies(mode, hand);
         const action = dominantAction(values);
-        const breakdown = (Object.keys(values) as Action[])
+        const isMixed = actions.filter(option => values[option] > 0).length > 1;
+        const breakdown = actions
           .filter(option => values[option] > 0)
           .map(option => `${copy.common[option]} ${values[option]}%`)
           .join(" / ");
@@ -66,7 +70,7 @@ function RangeMatrix({ mode, selected, onSelect, compact = false }: { mode: Rang
           aria-pressed={selected === hand}
           onClick={() => onSelect(hand)}
           title={`${hand} · ${breakdown}`}
-        >{hand}</button>;
+        >{hand}{displayMode === "standard" && isMixed && <span className="site-matrix-mix" aria-hidden="true">{actions.filter(option => values[option] > 0).map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%` }} />)}</span>}</button>;
       })}
     </fieldset>
   </section>;
@@ -76,6 +80,9 @@ function RangePreview({ compact = false }: { compact?: boolean }) {
   const { copy: c } = useSite();
   const [mode, setMode] = useState<RangeMode>("opening");
   const [selected, setSelected] = useState("K7s");
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(() => {
+    try { return window.localStorage.getItem(previewDisplayModeKey) === "standard" ? "standard" : "simple"; } catch { return "simple"; }
+  });
   const values = frequencies(mode, selected);
   const action = dominantAction(values);
   const isK7sOpening = mode === "opening" && selected === "K7s";
@@ -85,29 +92,46 @@ function RangePreview({ compact = false }: { compact?: boolean }) {
     setSelected("K7s");
   }
 
+  function chooseDisplayMode(next: DisplayMode) {
+    setDisplayMode(next);
+    try { window.localStorage.setItem(previewDisplayModeKey, next); } catch {}
+  }
+
   return <div className={`site-product-frame${compact ? " site-product-frame-compact" : ""}`}>
     <div className="site-frame-top"><span className="site-frame-brand"><span className="site-frame-logo">✦</span> SOLVEA <span>{c.preview.explorer}</span></span><span className="site-frame-status"><span /> AI SOLUTION</span></div>
     <div className="site-frame-toolbar">
       <div><span className="site-frame-overline">{c.preview.currentSpot}</span><strong>{c.preview.cash} <span>/</span> 100BB <span>/</span> {mode === "opening" ? c.preview.open : c.preview.response}</strong></div>
       <span className="site-frame-pill">{c.preview.preflop} <ArrowDown size={12} weight="bold" aria-hidden="true" /></span>
     </div>
-    <fieldset className="site-range-switch"><legend className="site-visually-hidden">{c.preview.spotLabel}</legend>
-      <button type="button" aria-pressed={mode === "opening"} onClick={() => chooseMode("opening")}>{c.preview.open}</button>
-      <button type="button" aria-pressed={mode === "response"} onClick={() => chooseMode("response")}>{c.preview.response}</button>
-    </fieldset>
+    <div className="site-preview-controls">
+      <fieldset className="site-range-switch"><legend className="site-visually-hidden">{c.preview.spotLabel}</legend>
+        <button type="button" aria-pressed={mode === "opening"} onClick={() => chooseMode("opening")}>{c.preview.open}</button>
+        <button type="button" aria-pressed={mode === "response"} onClick={() => chooseMode("response")}>{c.preview.response}</button>
+      </fieldset>
+      <fieldset className="site-display-switch"><legend className="site-visually-hidden">{c.preview.displayLabel}</legend>
+        <button type="button" aria-pressed={displayMode === "simple"} onClick={() => chooseDisplayMode("simple")}>{c.preview.simpleMode}</button>
+        <button type="button" aria-pressed={displayMode === "standard"} onClick={() => chooseDisplayMode("standard")}>{c.preview.standardMode}</button>
+      </fieldset>
+    </div>
     <div className="site-preview-body">
       <div className="site-matrix-column">
         <div className="site-matrix-label"><span>{c.preview.handRange}</span><span>13 × 13</span></div>
-        <RangeMatrix mode={mode} selected={selected} onSelect={setSelected} compact={compact} />
+        <RangeMatrix mode={mode} displayMode={displayMode} selected={selected} onSelect={setSelected} compact={compact} />
         <div className="site-legend"><span><i className="site-legend-raise" /> {c.common.raise}</span>{mode === "response" && <span><i className="site-legend-call" /> {c.common.call}</span>}<span><i className="site-legend-fold" /> {c.common.fold}</span></div>
       </div>
       <div className="site-hand-panel" aria-live="polite">
         <div className="site-panel-top"><span>{c.preview.selectedHand}</span><span className="site-panel-sparkle"><Sparkle size={17} weight="fill" aria-hidden="true" /></span></div>
         <div className="site-hand-name">{selected}<span>{selected.endsWith("s") ? c.preview.suited : selected.endsWith("o") ? c.preview.offsuit : c.preview.pair}</span></div>
-        <div className="site-action"><span className={`site-action-dot is-${action}`} />{c.common[action]}<small>{values[action]}%</small></div>
+        <div className={`site-action${displayMode === "standard" ? " has-frequency-detail" : ""}`}><span className={`site-action-dot is-${action}`} />{c.common[action]}{displayMode === "standard" && <small>{values[action]}%</small>}</div>
+        {displayMode === "standard" && <fieldset className="site-frequency-detail"><legend className="site-visually-hidden">{c.preview.frequencyLabel}</legend>
+          <div className="site-frequency-track" aria-hidden="true">{actions.filter(option => values[option] > 0).map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%` }} />)}</div>
+          <div className="site-frequency-values">{actions.filter(option => values[option] > 0).map(option => <span key={option}><i className={`is-${option}`} />{c.common[option]} <b>{values[option]}%</b></span>)}</div>
+        </fieldset>}
         <div className="site-why"><span className="site-why-label"><Sparkle size={15} weight="fill" aria-hidden="true" /> {c.preview.why}</span><p>{isK7sOpening
           ? c.preview.k7s
-          : c.preview.other(mode === "opening" ? c.preview.spotOpening : c.preview.spotResponse, selected, c.preview.actionPast[action], values[action])}</p></div>
+          : displayMode === "simple"
+            ? c.preview.simpleOther(mode === "opening" ? c.preview.spotOpening : c.preview.spotResponse, selected, c.common[action])
+            : c.preview.other(mode === "opening" ? c.preview.spotOpening : c.preview.spotResponse, selected, c.preview.actionPast[action], values[action])}</p></div>
         <a className="site-panel-link" href="/app">{c.preview.explore} <ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
       </div>
     </div>
