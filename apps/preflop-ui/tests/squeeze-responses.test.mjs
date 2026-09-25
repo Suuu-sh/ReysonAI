@@ -112,10 +112,16 @@ test("shape: QQ+/AK 4bet core, calls stay protected, three-way is tighter, and t
     }
     for (const r of spot.hands) if (reach.get(r.hand) === 0) assert.equal(r.fold, 100);
   }
-  // A wider squeezer (SB over BB in the same history) never makes a hand continue much less.
-  for (const bb of data.spots.filter(s => s.squeezer === "BB")) {
-    const sb = data.spots.find(s => s.squeezer === "SB" && s.opener === bb.opener && s.caller === bb.caller && s.prior_action === bb.prior_action);
-    for (const r of bb.hands) assert.ok(cont(r) - cont(sb.hands.find(x => x.hand === r.hand)) <= 10, `${bb.id}/${r.hand}`);
+  // Same squeezer and caller: facing the squeeze of a later (wider) opener, no hand continues much less.
+  const tier = ["UTG", "HJ", "CO"];
+  for (const early of data.spots.filter(s => s.prior_action !== null)) for (const late of data.spots) {
+    if (late.prior_action !== early.prior_action || late.squeezer !== early.squeezer || late.caller !== early.caller ||
+        tier.indexOf(late.opener) <= tier.indexOf(early.opener)) continue;
+    const reachEarly = reachOf(early), reachLate = reachOf(late);
+    for (const r of early.hands) {
+      if (!reachEarly.get(r.hand) || !reachLate.get(r.hand)) continue;
+      assert.ok(cont(r) - cont(late.hands.find(x => x.hand === r.hand)) <= 10, `${early.id} vs ${late.id}/${r.hand}`);
+    }
   }
 });
 

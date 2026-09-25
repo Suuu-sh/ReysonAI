@@ -38,8 +38,8 @@ def profile(spec, base=None):
 
 # call%, squeeze%. BB closes action at a good price, but realizes equity OOP
 # against two ranges: pairs, suited aces and connected suited hands call more
-# often than weak offsuit hands. Squeezes are intentionally value-heavy, with
-# only a small wheel-ace blocker component. Frequencies are our rough estimates.
+# often than weak offsuit hands. Squeezes are value-led; versus UTG/HJ opens the
+# add_squeeze_bluffs overlays below add blocker bluffs. Frequencies are our rough estimates.
 UTG_HJ = profile('''
 0 100: AA
 10 90: KK
@@ -534,6 +534,60 @@ CO_BTN = widen_calls(CO_BTN, '''
 20: K9s K8s K7s K6s K5s K4s K3s K2s Q9s Q8s Q7s Q6s Q5s Q4s Q3s Q2s J9s J8s J7s J6s J5s J4s T8s T7s T6s T5s T4s 98s 97s 87s 86s 76s 75s 65s 64s 54s 53s
 40: J3s T3s 96s 95s 85s 84s 74s 73s 63s 52s A9o A8o A7o KTo QTo JTo K9o Q9o T9o
 ''')
+
+def add_squeeze_bluffs(base, spec):
+    """Blocker squeeze bluffs: raise each named hand's squeeze by the given points,
+    taken from fold first and only then from the authored call. The EV gate
+    still removes negative-EV calls afterwards, so for K6s-K2s the squeeze
+    replaces what would otherwise be a fold."""
+    result = dict(base)
+    seen = set()
+    for line in spec.strip().splitlines():
+        points, names = line.split(':')
+        points = int(points)
+        for hand in names.split():
+            assert hand in HANDS and hand not in seen, hand
+            seen.add(hand)
+            call, squeeze = result[hand]
+            from_fold = min(points, 100 - call - squeeze)
+            call -= points - from_fold
+            assert call >= 0, hand
+            result[hand] = call, squeeze + points
+    return result
+
+
+# 2026-09-25 review: BB's squeezes of UTG/HJ opens were ~95% value (a third of
+# the UTG squeeze was AA/KK), so the opener and caller correctly folded ~70%
+# and the squeeze auto-profited. Add blocker bluffs, mostly from hands whose
+# flat is thin or negative EV (K8s-K2s, Q9s) plus wheel aces and a few suited
+# connectors, still inside BB's heads-up 3bet width. The amounts were tuned so the
+# added bluffs are close to break-even against the saved squeeze responses (an
+# advisory squeeze-EV estimate: 2:1 value:bluff made them lose ~1-3.6bb because the
+# opener and caller then defend much wider; value-only let the squeeze auto-profit).
+UTG_BLUFFS = '''
+15: A5s A4s K7s K3s
+10: A3s A2s K8s
+30: K6s
+25: K5s
+20: K4s
+'''
+HJ_BLUFFS = '''
+20: A5s
+15: A4s A3s A2s K5s K6s
+10: K7s Q9s K8s JTs J9s T9s
+5: 98s
+20: K4s
+25: K3s K2s
+'''
+UTG_HJ = add_squeeze_bluffs(UTG_HJ, UTG_BLUFFS)
+UTG_CO = add_squeeze_bluffs(UTG_CO, UTG_BLUFFS)
+UTG_BTN = add_squeeze_bluffs(UTG_BTN, UTG_BLUFFS)
+HJ_CO = add_squeeze_bluffs(HJ_CO, HJ_BLUFFS)
+HJ_BTN = add_squeeze_bluffs(HJ_BTN, HJ_BLUFFS)
+# CO opens: BB's squeeze was already a little wider, but once the UTG/HJ squeezes
+# carry bluffs it would be the most value-heavy per combo and responses would
+# continue less against a later opener. Give it at least the HJ bluff set.
+CO_BTN = add_squeeze_bluffs(CO_BTN, HJ_BLUFFS)
 
 PROFILES = {
     ('UTG', 'HJ'): UTG_HJ, ('UTG', 'CO'): UTG_CO, ('UTG', 'BTN'): UTG_BTN,

@@ -47,9 +47,11 @@ def profile(spec, base=None):
 # How the tables are authored
 # ---------------------------
 # Three base tiers by opener seat: the squeeze of a UTG open is the tightest
-# (BB squeezes ~33 combos, a third of them AA/KK), a CO open the widest (~60).
-# SQUEEZER_SB overlays widen each tier slightly because SB's squeeze carries
-# more suited-wheel-ace bluffs and JJ/TT. 4bet frequencies are authored here;
+# (BB ~40 combos incl. blocker bluffs), a CO open the widest (~60).
+# SQUEEZER_SB overlays add a few call candidates because SB's squeeze carries
+# relatively more JJ/TT and wheel-ace bluffs; which squeezer is wider depends on
+# the history (BB's UTG/HJ squeezes include K-x/A-x blocker bluffs), so the EV
+# gate, not the overlay, decides the final flats. 4bet frequencies are authored here;
 # the listed call cells are the hands we intend to flat when the price is
 # right. apply_call_policy then applies the shared EV rule to the calls only:
 # below -0.05bb no call, [-0.05, +0.05) at most 50%, >= +0.50bb the whole
@@ -117,16 +119,14 @@ CALLER_FOLD_UTG = profile('''
 90 10: TT
 100 0: 99 88 77 66 55 44
 90 10: AQs
-95 5: AJs KQs AQo ATs KJs KTs AJo
-0 5: A9s A8s A7s A6s
+95 5: AJs KQs AQo ATs KJs KTs AJo A9s A8s A7s A6s
 0 20: A5s
 0 15: A4s
 0 10: A3s A2s
 ''')
 CALLER_FOLD_HJ = profile('''
 100 0: 33 22
-90 10: AJs KQs AQo ATs KJs KTs AJo
-0 10: A9s A8s A7s A6s
+90 10: AJs KQs AQo ATs KJs KTs AJo A9s A8s A7s A6s
 ''', CALLER_FOLD_UTG)
 CALLER_FOLD_CO = profile('''
 85 15: TT
