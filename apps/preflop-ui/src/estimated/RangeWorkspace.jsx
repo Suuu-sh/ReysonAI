@@ -26,8 +26,8 @@ import {
 } from "./ranges.js";
 import { ArrowCounterClockwise, PencilSimple } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.jsx";
-import { PostflopTrial } from "./PostflopTrial.jsx";
-import { completedFlopContext } from "./postflop-trial.js";
+import { FlopCardPicker, PostflopTrial } from "./PostflopTrial.jsx";
+import { buildFlopActionBlocks, completedFlopContext, recognizedFlop } from "./postflop-trial.js";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.js";
 import tableAdjustments from "./table-profile-adjustments.json";
 import { DEFAULT_PROFILE, adjustOpeningSpot, adjustmentReason, describeProfile, isDefaultProfile, markAdjustedModel, normalizeProfile } from "./table-profile.js";
@@ -365,7 +365,7 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
   return null;
 }
 
-export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, postflopExpanded = false, onFlopAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
   const blocks = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef(null);
   useEffect(() => {
@@ -373,7 +373,8 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
     if (seats) seats.scrollTo({ left: seats.scrollWidth, behavior: "smooth" });
   }, [blocks.length]);
   const select = (block, action) => {
-    if (block.stage === "limp-bb" || block.stage === "limp-sb-response") onAct(block.position, action);
+    if (block.kind === "flop") onFlopAction(block, action);
+    else if (block.stage === "limp-bb" || block.stage === "limp-sb-response") onAct(block.position, action);
     else if (block.kind === "seat") onAct(block.position, action);
     else if (block.kind === "cold") onColdAction(action === "fold" ? null : { position: block.position, action });
     else if (block.kind === "shove-response") onShoveResponse(action);
@@ -391,7 +392,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
           <div className="action-seat-heading"><strong>終了</strong></div>
           <p className="action-seat-result">{block.result}</p>
           <small>{block.pot}</small>
-          {/^\d+人でフロップへ$/.test(block.result) && onEnterPostflop && <button type="button" className="enter-postflop" onClick={onEnterPostflop}>フロップへ進む →</button>}
+          {/^\d+人でフロップへ$/.test(block.result) && onEnterPostflop && <button type="button" className="enter-postflop" onClick={onEnterPostflop}>{postflopExpanded ? "フロップ選択中" : "フロップへ進む →"}</button>}
         </div>;
         const activateBlock = () => onRewindActionBlock
           ? onRewindActionBlock(block)
@@ -413,7 +414,9 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
 }
 
 export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile }) {
-  const [street, setStreet] = useState("preflop");
+  const [showFlop, setShowFlop] = useState(false);
+  const [flopCards, setFlopCards] = useState(["", "", ""]);
+  const [flopActions, setFlopActions] = useState([]);
   const [initialSelection] = useState(() => restoredSelection(initialRangeType));
   const [rangeType, setRangeType] = useState(initialSelection.rangeType);
   const isOpening = rangeType === "open";
@@ -444,6 +447,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   });
   const [formatOpen, setFormatOpen] = useState(false);
   function saveFormat(value, profileValue = tableProfile) {
+    setShowFlop(false); setFlopActions([]);
     setFormat(value);
     setTableProfile(profileValue);
     setFormatOpen(false);
@@ -481,7 +485,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     : dataset ? findSpot(dataset, opener, hero) : null;
   const model = useMemo(() => spot ? (isOpening ? openingModelFor(spot) : isFourBet ? fourBetMatrixModel(spot, findSpot(dataset, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot) : matrixModel(spot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
   function resetPath() {
-    setStreet("preflop");
+    setShowFlop(false); setFlopCards(["", "", ""]); setFlopActions([]);
     setRangeType("response");
     setOpener("BTN");
     setHero("BB");
@@ -499,6 +503,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setLocalError("");
   }
   function changeOpener(value) {
+    setShowFlop(false); setFlopActions([]);
     setOpener(value);
     setRangeType("open");
     setPendingRaise(null);
@@ -512,6 +517,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }
 
   function actAt(position, action) {
+    setShowFlop(false); setFlopActions([]);
     const index = positions.indexOf(position);
     const next = positions[index + 1];
     setPendingRaise(null);
@@ -552,6 +558,12 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }
 
   function rewindToActionBlock(block) {
+    if (block.kind === "flop" || block.kind === "flop-forced") {
+      setFlopActions(current => current.slice(0, block.flopIndex ?? 0));
+      setSelectedRangeBlock(block.key);
+      return;
+    }
+    setShowFlop(false); setFlopActions([]);
     const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, limpAction, limpResponseAction, block });
     setFocusedRange(null);
     setColdAction(null);
@@ -570,6 +582,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }
 
   function selectFourBet() {
+    setShowFlop(false); setFlopActions([]);
     setRangeType("four_bet");
     setPendingRaise(null);
     setContinuationAction(null); setShoveResponse(null); setColdAction(null);
@@ -645,6 +658,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const actionBlocks = buildActionBlocks(actionState);
   const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
     callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format) }) : null;
+  const flopActive = showFlop && Boolean(flopContext);
+  const flopBoard = recognizedFlop(flopCards);
+  const combinedBlocks = flopActive && flopContext.pilotAvailable && flopBoard
+    ? [...actionBlocks, ...buildFlopActionBlocks(flopActions)] : actionBlocks;
   const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
   const threeBetSpot = (isThreeBet || isFourBet) && threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null;
@@ -763,11 +780,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const displayedEntries = focusedEntry ? [focusedEntry] : visibleRangeEntries;
 
   return <div className="shell">
-    <Sidebar activeSection={street === "postflop" ? "ポストフロップ" : "プリフロップ"}
-      postflopEnabled={Boolean(flopContext)}
-      onSectionChange={section => { if (section === "プリフロップ") setStreet("preflop"); else if (section === "ポストフロップ" && flopContext) setStreet("postflop"); }}
+    <Sidebar activeSection="プリフロップ"
+      onSectionChange={() => {}}
       profile={profile} onEditProfile={onEditProfile} />
-    {street === "postflop" && flopContext ? <PostflopTrial context={flopContext} displayMode={displayMode} onBack={() => setStreet("preflop")} /> : <main>
+    <main>
       <Panel className="estimate-settings">
         <ActionPath
           leading={<div className="action-seat action-seat-info">
@@ -782,11 +798,13 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
             <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
           </div>}
           expanded
-          blocks={actionBlocks}
+          blocks={combinedBlocks}
           selectedRangeBlock={selectedRangeBlock}
           {...actionState}
           onRewindActionBlock={rewindToActionBlock}
-          onEnterPostflop={flopContext ? () => setStreet("postflop") : null}
+          onEnterPostflop={flopContext ? () => { setShowFlop(true); setSelectedRangeBlock(null); } : null}
+          postflopExpanded={flopActive}
+          onFlopAction={(block, action) => { setFlopActions(current => [...current.slice(0, block.flopIndex), action]); setSelectedRangeBlock(null); }}
           onShoveResponse={action => { setFocusedRange(null); setSelectedRangeBlock(null); setShoveResponse(action); }}
           onAct={actAt}
           onFourBet={selectFourBet}
@@ -794,8 +812,9 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onColdAction={action => { setFocusedRange(null); setSelectedRangeBlock(null); setContinuationAction(null); setColdAction(action); }}
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
+        {flopActive && <FlopCardPicker cards={flopCards} onCardsChange={cards => { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); }} />}
         </Panel>
-        {currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        {flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイのAIソリューションをローカルで生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
@@ -805,7 +824,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
-    </main>}
+    </main>
   </div>;
 }
 

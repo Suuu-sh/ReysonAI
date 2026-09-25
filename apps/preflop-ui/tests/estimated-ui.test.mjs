@@ -45,7 +45,7 @@ test("primary navigation is accessible in a collapsible sidebar", () => {
   assert.match(html, /aria-label="サイドバーを折りたたむ" aria-expanded="true" aria-controls="main-navigation"/);
   assert.match(html, /<nav id="main-navigation" class="header-nav" aria-label="メインナビゲーション">/);
   assert.match(html, /aria-label="プリフロップ"/);
-  assert.match(html, /aria-label="ポストフロップ（準備中）"/);
+  assert.doesNotMatch(html, /aria-label="ポストフロップ/);
 });
 
 test("action blocks are generated in order from the chosen actions", () => {

@@ -1,6 +1,13 @@
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 
 export const representativeFlops = pilot.boards.map(board => board.cards);
+export const deck = "23456789TJQKA".split("").flatMap(rank => "shdc".split("").map(suit => `${rank}${suit}`));
+const boardKey = cards => [...cards].sort().join("");
+const representativeByCards = new Map(representativeFlops.map(board => [boardKey(board.match(/../g)), board]));
+export function recognizedFlop(cards) {
+  if (!Array.isArray(cards) || cards.length !== 3 || cards.some(card => !deck.includes(card)) || new Set(cards).size !== 3) return null;
+  return representativeByCards.get(boardKey(cards)) ?? null;
+}
 const round = value => Math.round(value * 100) / 100;
 
 export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable }) {
@@ -34,4 +41,28 @@ export function flopDecision(actions = []) {
   if (third === "fold" && actions.length === 3) return { result: "BTNがフォールド。BBの勝ちです。", potBb: round(5.5 + 2 * bet), history: [...raisedHistory, "BTN Fold"] };
   if (third === "call" && actions.length === 3) return { result: "BTNがコール。フロップの判断は終了です。", potBb: round(5.5 + 6 * bet), history: [...raisedHistory, "BTN Call"] };
   throw new Error("Illegal post-raise flop action");
+}
+
+const flopChoices = {
+  btn_first: [{ action: "check", label: "Check" }, { action: "bet33", label: "Bet 33%" }, { action: "bet75", label: "Bet 75%" }],
+  bb_vs_33: [{ action: "fold", label: "Fold" }, { action: "call", label: "Call" }, { action: "raise", label: "Raise 3×" }],
+  bb_vs_75: [{ action: "fold", label: "Fold" }, { action: "call", label: "Call" }, { action: "raise", label: "Raise 3×" }],
+  btn_vs_raise: [{ action: "fold", label: "Fold" }, { action: "call", label: "Call" }],
+};
+
+export function buildFlopActionBlocks(actions = []) {
+  const blocks = [{ key: "flop-bb-check", kind: "flop-forced", position: "BB", stack: "97.5", chosen: "check", options: [{ action: "check", label: "Check" }], active: false }];
+  for (let index = 0; index <= actions.length; index++) {
+    const decision = flopDecision(actions.slice(0, index));
+    if (!decision.node) {
+      blocks.push({ key: "flop-end", kind: "end", result: decision.result, pot: `ポット ${decision.potBb}bb`, options: [] });
+      break;
+    }
+    const firstBet = actions[0] === "bet33" ? round(5.5 * pilot.flop_bet_fractions[0])
+      : actions[0] === "bet75" ? round(5.5 * pilot.flop_bet_fractions[1]) : 0;
+    blocks.push({ key: `flop-${index}`, kind: "flop", flopIndex: index, position: decision.actor,
+      stack: `${round(97.5 - (decision.actor === "BTN" && index > 0 ? firstBet : 0))}`,
+      chosen: actions[index] ?? null, options: flopChoices[decision.node], active: index === actions.length });
+  }
+  return blocks;
 }

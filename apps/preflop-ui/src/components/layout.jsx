@@ -1,4 +1,4 @@
-import { Brain, Cards, CaretDoubleLeft, CaretDoubleRight, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
+import { Brain, CaretDoubleLeft, CaretDoubleRight, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
 import { useState } from "react";
 import { levelLabel } from "../profile.js";
 
@@ -7,7 +7,6 @@ const navigationGroups = [
     label: "解析",
     items: [
       { Icon: SquaresFour, name: "プリフロップ" },
-      { Icon: Cards, name: "ポストフロップ", status: "準備中" },
     ],
   },
   {
@@ -31,7 +30,7 @@ function readInitialCollapsed() {
   return window.matchMedia("(max-width: 1049px)").matches;
 }
 
-export function Sidebar({ activeSection, onSectionChange, profile = null, onEditProfile, postflopEnabled = false }) {
+export function Sidebar({ activeSection, onSectionChange, profile = null, onEditProfile }) {
   const [collapsed, setCollapsed] = useState(readInitialCollapsed);
   const toggle = next => {
     setCollapsed(next);
@@ -68,7 +67,7 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
             <span className="header-nav-group-label">{group.label}</span>
             <div className="header-nav-items">
               {group.items.map(({ Icon, name, status: pendingStatus }) => {
-                const status = name === "ポストフロップ" && postflopEnabled ? null : pendingStatus;
+                const status = pendingStatus;
                 return (
                 <button
                   key={name}
