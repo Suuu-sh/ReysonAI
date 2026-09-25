@@ -98,3 +98,6 @@ The action path now reads the saved multiway, squeeze-response, cold-3bet and li
 - Seats behind a 3bettor show `{Y}_vs_{X}_3bet_{O}open`; their cold 4bet label is `fourBetToSize(Y, X)`. A cold call / cold 4bet still ends the path as 「データなし」.
 - After SB's limp-reraise, BB's block is a saved decision (Fold / Call 10.5 / Raise 26); a BB 4bet ends as 「データなし」.
 - Selection storage keeps `squeezeResponse` and `limpReraiseAction`.
+
+## Flop pilot: per-hand action EV and EQR (2026-09-26)
+`npm run postflop-ai:hand-ev` (scripts/postflop-ai/hand-ev.mjs) estimates, for each of the 12 representative flops, the five flop decisions (BTN first, BB vs 33% / 75%, BTN vs a check-raise after either) and each hand class, the equity versus the opponent's reach there, the EV of every legal action and of the policy mix, and EQR = mix EV ÷ (equity × raked pot) — the same definition as preflop. Both players follow the saved AI candidate on the flop and the fixed turn/river model (AI policy self-play, 2,000 common-random-number deals per hand and action); it is not GTO or solver EV. The result stays in `.local/postflop-ai/` and is keyed to the candidate's source/policy hashes. `GET /local-postflop-hand-ev` serves it read-only, and `PostflopHandEv.jsx` shows EQR, equity, mix EV and per-action EV (best action marked) in the flop hand detail.
