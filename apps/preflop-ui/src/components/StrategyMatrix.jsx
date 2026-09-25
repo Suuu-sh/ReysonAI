@@ -21,6 +21,8 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
           {hands.map((hand, index) => {
             const aggregate = aggregates.get(hand);
             if (!aggregate) return <div className="empty-hand" key={hand} />;
+            const primaryAction = aggregate.unreachable ? null : dominantAction(aggregate, actions);
+            const mixedActions = actions.filter(action => (aggregate.actions[action] ?? 0) > 0);
             return (
               <button
                 key={hand}
@@ -28,16 +30,14 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
                 aria-label={aggregate.unreachable ? `${hand}、既存3bet頻度0%、推奨なし` : aggregate.adjusted ? `${hand}、${adjustedLabel[aggregate.adjusted]}` : hand}
                 className={`${selected === hand ? "picked" : ""}${aggregate.unreachable ? " unreachable-hand" : ""}${aggregate.adjusted ? ` adjusted-${aggregate.adjusted}` : ""}`}
                 title={aggregate.unreachable ? `${hand}：既存3bet頻度0%（推奨なし）` : aggregate.adjusted ? `${hand}：${adjustedLabel[aggregate.adjusted]}` : undefined}
-                style={{ "--wave": (index % 13) + Math.floor(index / 13) }}
+                style={{ "--wave": (index % 13) + Math.floor(index / 13), ...(primaryAction ? { background: color(primaryAction) } : {}) }}
                 onClick={() => onSelect(hand)}
                 disabled={!aggregate.comboCount}
               >
                 <strong>{hand}</strong>
-                {!aggregate.unreachable && <div className="cell-mix" aria-hidden="true">
-                  {simplified
-                    ? <span style={{ width: "100%", background: color(dominantAction(aggregate, actions)) }} />
-                    : actions.map(action => <span key={action} style={{ width: pct(aggregate.actions[action] ?? 0), background: color(action) }} />)}
-                </div>}
+                {!aggregate.unreachable && !simplified && mixedActions.length > 1 && <span className="cell-mix" aria-hidden="true">
+                  {mixedActions.map(action => <span key={action} style={{ width: pct(aggregate.actions[action]), background: color(action) }} />)}
+                </span>}
               </button>
             );
           })}

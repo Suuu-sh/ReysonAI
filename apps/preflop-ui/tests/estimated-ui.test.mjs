@@ -7,11 +7,35 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.js";
 
-let server, EstimatedRanges, ActionPath, Sidebar, buildActionBlocks, prioritizeParticipantRanges;
+let server, EstimatedRanges, ActionPath, Sidebar, StrategyMatrix, buildActionBlocks, prioritizeParticipantRanges;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ EstimatedRanges, ActionPath, buildActionBlocks, prioritizeParticipantRanges } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
+  ({ StrategyMatrix } = await server.ssrLoadModule("/src/components/StrategyMatrix.jsx"));
+});
+
+test("standard matrix keeps a dominant solid cell and puts only mixed frequencies in a bottom strip", () => {
+  const aggregates = new Map([
+    ["AA", { actions: { raise: 1, fold: 0 }, comboCount: 6 }],
+    ["K6s", { actions: { raise: 0.75, fold: 0.25 }, comboCount: 4 }],
+    ["K5s", { actions: { raise: 0.4, fold: 0.6 }, comboCount: 4, unreachable: true }],
+  ]);
+  const props = { node: { actingPosition: "BTN" }, aggregates, actions: ["raise", "fold"], onSelect() {} };
+  const cell = (html, hand) => html.match(new RegExp(`<button[^>]*><strong>${hand}</strong>[\\s\\S]*?</button>`))?.[0] ?? "";
+  const standard = renderToStaticMarkup(createElement(StrategyMatrix, props));
+  const mixed = cell(standard, "K6s");
+  assert.match(mixed, /background:#d9477f/);
+  assert.match(mixed, /class="cell-mix"/);
+  assert.match(mixed, /width:75\.0%;background:#d9477f/);
+  assert.match(mixed, /width:25\.0%;background:#26262c/);
+  assert.doesNotMatch(cell(standard, "AA"), /cell-mix/);
+  assert.match(cell(standard, "K5s"), /unreachable-hand/);
+  assert.doesNotMatch(cell(standard, "K5s"), /cell-mix/);
+
+  const simple = renderToStaticMarkup(createElement(StrategyMatrix, { ...props, simplified: true }));
+  assert.match(cell(simple, "K6s"), /background:#d9477f/);
+  assert.doesNotMatch(cell(simple, "K6s"), /cell-mix/);
 });
 
 test("primary navigation is accessible in a collapsible sidebar", () => {
