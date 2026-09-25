@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "spot": "BTN_open_BB_call",
+  "seed": "solveaai-postflop-ai-v1",
+  "samples_per_board_profile_seat": 10000,
+  "flop_bet_fractions": [0.33, 0.75],
+  "flop_check_raise_multiplier": 3,
+  "continuation_bet_fraction": 0.5,
+  "boards": [
+    { "cards": "As7d2c", "split": "design" },
+    { "cards": "QsJd5c", "split": "design" },
+    { "cards": "Js8s5d", "split": "design" },
+    { "cards": "Th9h8c", "split": "design" },
+    { "cards": "8s7d6c", "split": "design" },
+    { "cards": "6h5h2d", "split": "design" },
+    { "cards": "AhKh4h", "split": "design" },
+    { "cards": "KcKd4h", "split": "design" },
+    { "cards": "Ks8d3c", "split": "holdout" },
+    { "cards": "9s7s3s", "split": "holdout" },
+    { "cards": "8c8d2h", "split": "holdout" },
+    { "cards": "5s5d4c", "split": "holdout" }
+  ]
+}
