@@ -3,7 +3,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { comboCount } from "./equity.mjs";
 
-export const DATASET_NAMES = Object.freeze(["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses"]);
+export const DATASET_NAMES = Object.freeze(["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "cold-three-bet-responses"]);
 const ACTIONS = ["open", "limp", "three_bet", "four_bet", "all_in", "squeeze", "call", "fold"];
 
 export function loadSpots(root) {

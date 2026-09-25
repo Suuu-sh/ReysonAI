@@ -26,6 +26,13 @@ export const BB_BEHIND_EQR = 0.85;
 // three-way pot (the opener's one-pair calls lose value there) and, rarely,
 // back-raise (cold 4bet), which forfeits the whole call.
 export const CALLER_BEHIND_EQR = 0.90;
+// A cold call of a 3bet (the original opener and any later seats still to act).
+// Assumed discount, not solver output: the opener's range is uncapped — it can
+// 4bet, which forfeits the whole cold call (×~0.93 at a few % squeeze-style
+// back-raises), or overcall into a three-way pot where one-pair and dominated
+// calls realize less (×~0.95). The extra margin to 0.85 covers seats behind the
+// cold caller that can still wake up, and the cold caller's capped-looking flat.
+export const OPENER_BEHIND_EQR = 0.85;
 const ranks = "23456789TJQKA";
 export function eqrCategory(hand) {
   if (!/^(?:([2-9TJQKA])\1|[2-9TJQKA]{2}[so])$/.test(hand)) throw new Error(`Invalid hand: ${hand}`);
@@ -42,7 +49,7 @@ export function eqrCategory(hand) {
   if (broadway) return "offsuit_broadway";
   return gap <= 1 ? "offsuit_connected" : "offsuit_other";
 }
-export function equityRealization(hand, hero, opponents, { allIn = false, bbBehind = false, callerBehind = false } = {}) {
+export function equityRealization(hand, hero, opponents, { allIn = false, bbBehind = false, callerBehind = false, openerBehind = false } = {}) {
   const category = eqrCategory(hand);
   if (!positions.includes(hero) || !Array.isArray(opponents) || ![1, 2].includes(opponents.length) ||
       new Set([hero, ...opponents]).size !== opponents.length + 1 || opponents.some(p => !positions.includes(p))) {
@@ -50,8 +57,9 @@ export function equityRealization(hand, hero, opponents, { allIn = false, bbBehi
   }
   if (bbBehind && (hero !== "SB" || opponents.includes("BB"))) throw new Error("BB behind applies only to SB before BB acts");
   if (callerBehind && (bbBehind || opponents.length !== 1)) throw new Error("Caller behind applies only to a heads-up squeeze response");
+  if (openerBehind && (bbBehind || callerBehind || opponents.length !== 1)) throw new Error("Opener behind applies only to a heads-up cold call of a 3bet");
   if (allIn) return 1;
   const ip = opponents.every(opponent => isInPosition(hero, opponent));
   return EQR[category][ip ? 0 : 1] * (opponents.length === 2 ? MULTIWAY_EQR : 1) * (bbBehind ? BB_BEHIND_EQR : 1) *
-    (callerBehind ? CALLER_BEHIND_EQR : 1);
+    (callerBehind ? CALLER_BEHIND_EQR : 1) * (openerBehind ? OPENER_BEHIND_EQR : 1);
 }

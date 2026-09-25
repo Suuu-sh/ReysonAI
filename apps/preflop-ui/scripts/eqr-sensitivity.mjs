@@ -19,7 +19,8 @@ if (args.length > 1 || args.some(arg => arg.startsWith("-"))) {
   const data = { opening: load("opening-ranges"), responses: load("preflop-ranges"),
     threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"),
     multiway: load("multiway-responses"), limp: load("limp-responses"),
-    ...(existsSync(path("squeeze-responses")) ? { squeezes: load("squeeze-responses") } : {}) };
+    ...(existsSync(path("squeeze-responses")) ? { squeezes: load("squeeze-responses") } : {}),
+    ...(existsSync(path("cold-three-bet-responses")) ? { coldThreeBets: load("cold-three-bet-responses") } : {}) };
   const equities = load("call-equities");
   const contexts = callContexts(data).filter(ctx => !only || ctx.spot.id === only);
   if (only && !contexts.length) throw new Error(`Unknown call spot: ${only}`);

@@ -7,7 +7,7 @@ import { comboCount, equityVsRange, equityVsRanges, weightedRange, seededRandom,
 
 const dir = process.env.ESTIMATES_DIR;
 if (!dir || resolve(dir) === resolve("src/estimated")) throw new Error("Run npm run build:estimates; staging required");
-const files = { opening: "opening-ranges", responses: "preflop-ranges", threeBets: "three-bet-responses", fourBets: "four-bet-responses", multiway: "multiway-responses", squeezes: "squeeze-responses", limp: "limp-responses" };
+const files = { opening: "opening-ranges", responses: "preflop-ranges", threeBets: "three-bet-responses", fourBets: "four-bet-responses", multiway: "multiway-responses", squeezes: "squeeze-responses", limp: "limp-responses", coldThreeBets: "cold-three-bet-responses" };
 const target = process.argv[2];
 const load = name => JSON.parse(readFileSync(`${dir}/${name}.json`, "utf8"));
 const data = Object.fromEntries(Object.entries(files).filter(([, file]) => existsSync(`${dir}/${file}.json`)).map(([key, file]) => [key, load(file)]));
@@ -52,8 +52,8 @@ for (const context of contexts) {
     // realization there, so the margin keeps thin spots authored. 4bet pots are not filled.
     const fill = weight > 0 && context.type === "response" && spot.hero !== "SB";
     // Facing a squeeze uses the same +0.50bb margin as 3bet pots.
-    // BB facing SB's limp-reraise is a 3bet-sized pot too: same margin.
-    const fillThreeBet = weight > 0 && ["three_bet", "squeeze", "limp_reraise"].includes(context.type);
+    // BB facing SB's limp-reraise is a 3bet-sized pot too: same margin, as is a cold call of a 3bet.
+    const fillThreeBet = weight > 0 && ["three_bet", "squeeze", "limp_reraise", "cold_three_bet"].includes(context.type);
     row.call = fill ? targetCall(before, facts.call_ev_bb, before + row.fold)
       : fillThreeBet ? threeBetTargetCall(before, facts.call_ev_bb, before + row.fold)
       : allowedCall(before, facts.call_ev_bb);
@@ -86,6 +86,7 @@ const dataset = data[Object.keys(files).find(key => files[key] === target)];
 dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls (open responses by non-SB seats). Opener facing a 3bet: only calls ≥+0.50bb fill the whole non-4bet share (margin for OOP realization the assumed EQR may overstate in 3bet pots); 4bet pots are never filled. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV.";
 if (target === "limp-responses") dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. SB vs BB iso: EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; otherwise the authored call stands. BB vs SB limp-reraise (IP, 7BB into 21BB, versus SB's limp × reraise range): the same gate, and ≥+0.50bb fills the whole non-4bet share (same margin as 3bet pots). Raise/4bet frequencies unchanged; strength ceilings trim calls, and only positive-EV calls may be minimally added to keep BB's fold rate at or below SB's limp-reraise break-even. Not solver EV.";
 if (target === "squeeze-responses") dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost, versus the squeezer's saved squeeze range (plus the opener's squeeze-call range when the opener called). EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; ≥+0.50bb: the whole non-4bet share calls (same margin as 3bet pots). The opener facing a squeeze with the caller still behind also applies CALLER_BEHIND_EQR. 4bet frequencies unchanged; strength ceilings trim calls, and only positive-EV calls may be minimally added to keep the opener×caller fold rate at or below the squeezer's break-even. Not solver EV.";
+if (target === "cold-three-bet-responses") dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × OPENER_BEHIND_EQR × raked(pot after call) − call cost, versus the 3bettor's saved 3bet range (call = 3bet − hero's blind; pot = both 3bets + the open + other dead blinds). EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; ≥+0.50bb: the whole non-4bet share calls (same margin as 3bet pots). 4bet frequencies unchanged; strength ceilings trim calls. Not solver EV.";
 writeFileSync(`${dir}/${target}.json`, JSON.stringify(dataset, null, 2) + "\n");
 writeFileSync(`${dir}/call-equities.json`, JSON.stringify(table, null, 2) + "\n");
 writeFileSync(`${dir}/call-ev-report.json`, JSON.stringify(report, null, 2) + "\n");

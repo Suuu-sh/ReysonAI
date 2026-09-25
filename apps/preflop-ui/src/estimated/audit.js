@@ -151,11 +151,11 @@ function weightedFold(spot, weight = () => 1) {
   return total ? folded / total : 0;
 }
 
-export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, callEquities = callEquitiesTable }) {
+export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, coldThreeBets, callEquities = callEquitiesTable }) {
   const findings = [];
   const add = (check, severity, spot, detail) => findings.push({ check, severity, spot, detail });
   const openBy = new Map(opening.spots.map(spot => [spot.hero, rows(spot)]));
-  const callModels = callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes });
+  const callModels = callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets });
   const capacityConflicts = [];
   const reportOverfold = (context, label, foldRate, threshold, detail) => {
     const capacity = context && validCallEquities(callEquities, context) ? callDefenseCapacity(context, callEquities) : null;
@@ -376,6 +376,31 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     } else add("auto-profit", "error", first.source_squeeze_id, detail);
   }
 
+  // 6c. Cold response to a 3bet (Y has not acted: every hand reaches). Family
+  // order, and the cold continuation must stay narrower than Y's heads-up
+  // continuation (call + 3bet) versus the same 3bettor's open. Auto-profit of
+  // X's 3bet also depends on the opener's response, so only the combined
+  // opener × hero fold rate is reported (not a finding).
+  const coldThreeBetDefense = [];
+  for (const spot of coldThreeBets?.spots ?? []) {
+    for (const row of spot.hands) {
+      if (row.fold + row.call + row.four_bet !== 100) add("range-flow", "error", spot.id, `${row.hand}: fold/call/4betの合計が100でない`);
+    }
+    checkStrengthOrder(add, spot.id, spot);
+    const source = responseBy.get(`${spot.opener}>${spot.three_bettor}`);
+    const threeBet = threeBets.spots.find(s => s.opener === spot.opener && s.three_bettor === spot.three_bettor);
+    if (!source || !threeBet) { add("range-flow", "error", spot.id, "3bet元または3betへのオープナー応答の局面がない"); continue; }
+    const headsUp = responseBy.get(`${spot.three_bettor}>${spot.hero}`);
+    const continued = s => s.hands.reduce((sum, row) => sum + combos(row.hand) * (100 - row.fold) / 100, 0);
+    if (headsUp && continued(spot) > continued(headsUp) + 1e-9) {
+      add("cold-width", "warn", spot.id, `コールド継続 ${continued(spot).toFixed(1)}コンボ > ${spot.hero}の対${spot.three_bettor}ヘッズアップ継続 ${continued(headsUp).toFixed(1)}コンボ`);
+    }
+    const openRows = openBy.get(spot.opener);
+    const openerFold = weightedFold(threeBet, hand => openRows.get(hand).open / 100);
+    const heroFold = weightedFold(spot);
+    coldThreeBetDefense.push({ spot: spot.id, heroFold, openerFold, foldRate: heroFold * openerFold });
+  }
+
   // 7. Advisory balance and cross-strength checks on every dataset. Source action frequencies
   // weight incoming combos; unreachable fold=100 placeholders count for neither
   // the top-strength decile nor pure-action share.
@@ -406,6 +431,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   }
   for (const spot of multiway?.spots ?? []) inspectRange(spot);
   for (const spot of squeezes?.spots ?? []) inspectRange(spot, squeezeReach(spot));
+  for (const spot of coldThreeBets?.spots ?? []) inspectRange(spot);
   for (const spot of limp?.spots ?? []) {
     const iso = spot.source_iso_response_id ? rows(limp.spots.find(s => s.id === spot.source_limp_response_id)) : null;
     inspectRange(spot, spot.hero === "SB" ? hand => openBy.get("SB").get(hand).limp / 100
@@ -440,5 +466,5 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
 
   // Range widths for a sanity read.
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
-  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, limpReraiseDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
+  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, limpReraiseDefense, coldThreeBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
 }

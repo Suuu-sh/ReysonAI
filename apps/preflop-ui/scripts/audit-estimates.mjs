@@ -16,6 +16,7 @@ const report = auditEstimates({
   fiveBets: load("five-bet-responses"),
   multiway: load("multiway-responses"),
   squeezes: load("squeeze-responses"),
+  coldThreeBets: load("cold-three-bet-responses"),
   limp: load("limp-responses"),
 });
 const { findings, autoProfit, threeBetDefense, fourBetDefense, widths } = report;
@@ -26,7 +27,7 @@ if (process.argv.includes("--json")) {
   const count = (check, severity) => findings.filter(f => f.check === check && (!severity || f.severity === severity)).length;
   console.log("# 推定レンジ検証レポート\n");
   console.log("| チェック | 件数 |\n|---|---|");
-  for (const check of ["ev-capacity-conflict", "negative-ev-call", "boundary-ev-call", "call-equity-source", "range-flow", "auto-profit", "strength-order", "suited-vs-offsuit", "position-nesting", "defense-nesting", "squeeze-width", "cross-strength-inversion", ...BALANCE_CHECKS]) console.log(`| ${check} | ${count(check)} |`);
+  for (const check of ["ev-capacity-conflict", "negative-ev-call", "boundary-ev-call", "call-equity-source", "range-flow", "auto-profit", "strength-order", "suited-vs-offsuit", "position-nesting", "defense-nesting", "squeeze-width", "cold-width", "cross-strength-inversion", ...BALANCE_CHECKS]) console.log(`| ${check} | ${count(check)} |`);
   console.log("\n## 系列をまたいだ強さの逆転（警告のみ）");
   console.log("同じ種類の非ペアを対ランダム勝率で比較。勝率差4pt以上かつ弱い手の継続率が20pt以上高い組を検出。弱い側のホイールA・コネクター・1つ飛び、および到達不能ハンドは除外。");
   const cross = report.crossStrengthSummary;
@@ -49,6 +50,8 @@ if (process.argv.includes("--json")) {
   for (const d of report.squeezeDefense) console.log(`- ${d.spot}: ${pct(d.openerFold)} × ${pct(d.callerFold)} = ${pct(d.foldRate)}（分岐 ${pct(d.threshold)}）${d.foldRate > d.threshold ? " ⚠" : ""}`);
   console.log("\n## リンプ・リレイズへのBBのフォールド率");
   for (const d of report.limpReraiseDefense) console.log(`- ${d.spot}: ${pct(d.foldRate)}（分岐 ${pct(d.threshold)}）${d.foldRate > d.threshold ? " ⚠" : ""}`);
+  console.log("\n## 3betへのコールド応答（Hero×オープナーのフォールド率、参考値）");
+  for (const d of report.coldThreeBetDefense) console.log(`- ${d.spot}: ${pct(d.heroFold)} × ${pct(d.openerFold)} = ${pct(d.foldRate)}`);
   console.log("\n## 指摘一覧");
   for (const f of findings) console.log(`- [${f.severity}] ${f.check} · ${f.spot}: ${f.detail}`);
 }

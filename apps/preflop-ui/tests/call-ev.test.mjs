@@ -4,7 +4,7 @@ import { readFileSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { EQR, BB_BEHIND_EQR, CALLER_BEHIND_EQR, MULTIWAY_EQR, eqrCategory, equityRealization } from "../src/estimated/eqr.js";
+import { EQR, BB_BEHIND_EQR, CALLER_BEHIND_EQR, MULTIWAY_EQR, OPENER_BEHIND_EQR, eqrCategory, equityRealization } from "../src/estimated/eqr.js";
 import { allowedCall, callContexts, callFacts, limpReraiseFoldThreshold, validCallEquities } from "../src/estimated/call-ev.js";
 import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.js";
 import { hands } from "../src/data.js";
@@ -13,7 +13,7 @@ import { raked } from "../src/estimated/rake.js";
 
 const root = new URL("..", import.meta.url);
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
-const datasets = () => ({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), multiway: load("multiway-responses"), squeezes: load("squeeze-responses"), limp: load("limp-responses"), fiveBets: load("five-bet-responses") });
+const datasets = () => ({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), multiway: load("multiway-responses"), squeezes: load("squeeze-responses"), limp: load("limp-responses"), fiveBets: load("five-bet-responses"), coldThreeBets: load("cold-three-bet-responses") });
 const table = () => load("call-equities");
 
 test("EQR categories use ordered precedence and the specified assumed values", () => {
@@ -39,6 +39,14 @@ test("EQR categories use ordered precedence and the specified assumed values", (
   assert.equal(equityRealization("QQ", "UTG", ["BB"], { callerBehind: true, allIn: true }), 1);
   assert.throws(() => equityRealization("QQ", "UTG", ["BB", "HJ"], { callerBehind: true }));
   assert.throws(() => equityRealization("QQ", "SB", ["UTG"], { callerBehind: true, bbBehind: true }));
+  // Cold call of a 3bet with the opener still behind: HU EQR × OPENER_BEHIND_EQR.
+  assert.equal(OPENER_BEHIND_EQR, 0.85);
+  assert.equal(equityRealization("JJ", "BTN", ["CO"], { openerBehind: true }), EQR.pair[0] * OPENER_BEHIND_EQR);
+  assert.equal(equityRealization("AKo", "BB", ["BTN"], { openerBehind: true }), EQR.offsuit_broadway[1] * OPENER_BEHIND_EQR);
+  assert.equal(equityRealization("JJ", "BTN", ["CO"], { openerBehind: true, allIn: true }), 1);
+  assert.throws(() => equityRealization("JJ", "BTN", ["CO", "HJ"], { openerBehind: true }));
+  assert.throws(() => equityRealization("JJ", "BTN", ["CO"], { openerBehind: true, callerBehind: true }));
+  assert.throws(() => equityRealization("JJ", "SB", ["CO"], { openerBehind: true, bbBehind: true }));
   for (const hand of ["AXs", "AAo", "2As", "AK"]) assert.throws(() => eqrCategory(hand));
   assert.throws(() => equityRealization("AA", "XX", ["BB"]));
   assert.throws(() => equityRealization("AA", "BB", ["BB"]));
@@ -47,18 +55,19 @@ test("EQR categories use ordered precedence and the specified assumed values", (
 test("Python and JS EQR match for all 169 hands and every HU/three-way seat assignment", () => {
   const cases = [];
   for (const hand of hands) for (const hero of positions) for (const opponent of positions.filter(p => p !== hero)) {
-    cases.push([hand, hero, [opponent], false, false, false], [hand, hero, [opponent], false, false, true]);
+    cases.push([hand, hero, [opponent], false, false, false, false], [hand, hero, [opponent], false, false, true, false],
+      [hand, hero, [opponent], false, false, false, true], [hand, hero, [opponent], true, false, false, true]);
     for (const second of positions.filter(p => p !== hero && positions.indexOf(p) > positions.indexOf(opponent))) {
-      cases.push([hand, hero, [opponent, second], false, false, false], [hand, hero, [opponent, second], true, false, false]);
+      cases.push([hand, hero, [opponent, second], false, false, false, false], [hand, hero, [opponent, second], true, false, false, false]);
       if (hero === "SB" && ![opponent, second].includes("BB")) {
-        cases.push([hand, hero, [opponent, second], false, true, false], [hand, hero, [opponent, second], true, true, false]);
+        cases.push([hand, hero, [opponent, second], false, true, false, false], [hand, hero, [opponent, second], true, true, false, false]);
       }
     }
   }
   const result = spawnSync("python3", ["-c", "import json,sys; sys.path.insert(0,'scripts'); from eqr import equity_realization; print(json.dumps([equity_realization(*c) for c in json.load(sys.stdin)]))"], { cwd: root, input: JSON.stringify(cases), encoding: "utf8", maxBuffer: 8e6 });
   assert.equal(result.status, 0, result.stderr);
-  assert.ok(cases.some(c => c[4]) && cases.some(c => c[5]));
-  assert.deepEqual(JSON.parse(result.stdout), cases.map(([hand, hero, opponents, allIn, bbBehind, callerBehind]) => equityRealization(hand, hero, opponents, { allIn, bbBehind, callerBehind })));
+  assert.ok(cases.some(c => c[4]) && cases.some(c => c[5]) && cases.some(c => c[6]));
+  assert.deepEqual(JSON.parse(result.stdout), cases.map(([hand, hero, opponents, allIn, bbBehind, callerBehind, openerBehind]) => equityRealization(hand, hero, opponents, { allIn, bbBehind, callerBehind, openerBehind })));
 });
 
 test("strict EV boundaries: below -0.05 zero, [-0.05, +0.05) capped, +0.05 preserved", () => {
@@ -74,7 +83,7 @@ test("strict EV boundaries: below -0.05 zero, [-0.05, +0.05) capped, +0.05 prese
 test("call contexts derive actual investments, dead blinds and prior weighted opponent ranges", () => {
   const data = datasets();
   const contexts = callContexts(data);
-  assert.equal(contexts.length, 95); // + 36 squeeze responses + BB vs SB limp-reraise
+  assert.equal(contexts.length, 115); // + 36 squeeze responses + BB vs SB limp-reraise + 20 cold 3bet responses
   const input = id => contexts.find(c => c.spot.id === id).input;
   assert.deepEqual([input("BB_vs_SB").cost_to_call, input("BB_vs_SB").total_pot_after_call], [2.5, 7]);
   assert.deepEqual([input("SB_vs_UTG").cost_to_call, input("SB_vs_UTG").total_pot_after_call], [2, 6]);
@@ -115,6 +124,20 @@ test("call contexts derive actual investments, dead blinds and prior weighted op
   const utg = new Map(data.opening.spots.find(s => s.hero === "UTG").hands.map(r => [r.hand, r.open]));
   assert.deepEqual(input("HJ_vs_BB_squeeze_UTGcall").ranges[1],
     first.hands.map(r => [r.hand, utg.get(r.hand) / 100 * r.call / 100]).filter(([, w]) => w > 0));
+  // Cold call of a 3bet: 3bet minus the hero's blind, into both 3bets + the open + other dead blinds.
+  const cold = id => { const i = input(id); return [i.cost_to_call, i.total_pot_after_call, i.opponents, i.opener_behind, i.all_in]; };
+  assert.deepEqual(cold("CO_vs_HJ_3bet_UTGopen"), [8, 20, ["HJ"], true, false]);
+  assert.deepEqual(cold("SB_vs_BTN_3bet_COopen"), [7.5, 19.5, ["BTN"], true, false]);
+  assert.deepEqual(cold("BB_vs_BTN_3bet_COopen"), [7, 19, ["BTN"], true, false]);
+  assert.deepEqual(cold("BB_vs_SB_3bet_BTNopen"), [11, 26.5, ["SB"], true, false]);
+  const coldContext = id => contexts.find(c => c.spot.id === id);
+  assert.equal(coldContext("CO_vs_HJ_3bet_UTGopen").type, "cold_three_bet");
+  assert.equal(callFacts(coldContext("CO_vs_HJ_3bet_UTGopen"), "JJ", 0.5).eqr, EQR.pair[0] * OPENER_BEHIND_EQR);
+  assert.equal(callFacts(coldContext("BB_vs_BTN_3bet_COopen"), "JJ", 0.5).eqr, EQR.pair[1] * OPENER_BEHIND_EQR);
+  assert.equal(callFacts(coldContext("BB_vs_SB_3bet_BTNopen"), "JJ", 0.5).eqr, EQR.pair[0] * OPENER_BEHIND_EQR);
+  assert.deepEqual(input("CO_vs_HJ_3bet_UTGopen").ranges[0], data.responses.spots.find(s => s.id === "HJ_vs_UTG").hands
+    .map(r => [r.hand, r.three_bet / 100]).filter(([, w]) => w > 0));
+  for (const hand of ["AA", "72o"]) assert.equal(coldContext("CO_vs_HJ_3bet_UTGopen").reach(hand), 1);
   const c = contexts.find(c => c.spot.id === "BB_vs_SB");
   const facts = callFacts(c, "J4o", 0.352);
   assert.equal(facts.eqr, EQR.offsuit_other[0]);
@@ -254,7 +277,7 @@ test("generation fills clearly positive-EV calls without touching raises", async
   assert.throws(() => targetCall(50, 0.2, 40));
 });
 
-test("3bet and squeeze pots fill only calls of +0.50bb or better, never touching 4bets", async () => {
+test("3bet, squeeze and cold-3bet pots fill only calls of +0.50bb or better, never touching 4bets", async () => {
   const { threeBetTargetCall, THREE_BET_FILL_EV } = await import("../src/estimated/call-ev.js");
   assert.equal(THREE_BET_FILL_EV, 0.5);
   assert.equal(threeBetTargetCall(60, 0.5, 95), 95);
@@ -263,7 +286,7 @@ test("3bet and squeeze pots fill only calls of +0.50bb or better, never touching
   assert.equal(threeBetTargetCall(60, -0.2, 95), 0);
   assert.throws(() => threeBetTargetCall(50, 0.6, 40));
   const data = datasets(), equities = table();
-  for (const c of callContexts(data).filter(c => ["three_bet", "squeeze"].includes(c.type))) for (const row of c.spot.hands) {
+  for (const c of callContexts(data).filter(c => ["three_bet", "squeeze", "cold_three_bet"].includes(c.type))) for (const row of c.spot.hands) {
     if (c.reach(row.hand) <= 0) continue;
     const ev = callFacts(c, row.hand, equities.spots[c.spot.id].equities[row.hand]).call_ev_bb;
     if (ev >= THREE_BET_FILL_EV) assert.equal(row.fold, 0, `${c.spot.id}/${row.hand}: ${ev}`);

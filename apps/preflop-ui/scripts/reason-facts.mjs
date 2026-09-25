@@ -8,7 +8,7 @@ import { reasonSourceFingerprint } from "./lib/reason-context.mjs";
 import { callContexts, callFacts, limpReraiseFoldThreshold, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.js";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { openSizeFor } from "../src/estimated/sizing.js";
+import { isInPosition, openSizeFor } from "../src/estimated/sizing.js";
 
 const SAMPLES = 12000;
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
@@ -23,10 +23,11 @@ const fiveBets = load("five-bet-responses");
 const limpResponses = existsSync(new URL("limp-responses.json", dataDir)) ? load("limp-responses") : { spots: [] };
 const multiway = existsSync(new URL("multiway-responses.json", dataDir)) ? load("multiway-responses") : { spots: [] };
 const squeezes = existsSync(new URL("squeeze-responses.json", dataDir)) ? load("squeeze-responses") : { spots: [] };
+const coldThreeBets = existsSync(new URL("cold-three-bet-responses.json", dataDir)) ? load("cold-three-bet-responses") : { spots: [] };
 const outDir = process.env.REASON_FACTS_DIR ? pathToFileURL(resolve(process.env.REASON_FACTS_DIR) + "/") : new URL("../.local/reason-facts/", import.meta.url);
 const sourceFingerprint = reasonSourceFingerprint(load);
 const callEquities = load("call-equities");
-const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses, squeezes }).map(c => [c.spot.id, c]));
+const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses, squeezes, coldThreeBets }).map(c => [c.spot.id, c]));
 for (const context of contexts.values()) if (!validCallEquities(callEquities, context)) throw new Error(`Stale call equity: ${context.spot.id}`);
 const primaryEquityKeys = new Set(["equity_vs_open_pct", "equity_vs_three_bet_pct", "equity_vs_four_bet_pct", "equity_vs_bb_iso_pct", "equity_vs_limp_reraise_pct"]);
 mkdirSync(outDir, { recursive: true });
@@ -192,6 +193,30 @@ function squeezeFacts(spot) {
   };
 }
 
+// A later seat (not yet acted) facing a 3bet: equity versus the 3bettor's saved
+// 3bet range; the opener and any later seats are still to act (OPENER_BEHIND_EQR).
+// The 3bet's immediate win needs both the hero and the opener to fold; their
+// combined fold rate is a reference number only (other seats behind are ignored).
+function coldThreeBetFacts(spot) {
+  const { opener, three_bettor: bettor, hero } = spot;
+  const context = contexts.get(spot.id);
+  const threeBetRange = rangeFrom(responseOf(opener, bettor), row => row.three_bet / 100);
+  const openRows = openOf(opener);
+  const openerResponse = threeBets.spots.find(s => s.opener === opener && s.three_bettor === bettor);
+  const openerFold = weightedFold(openerResponse, row => openRows.get(row.hand).open / 100);
+  const heroFold = weightedFold(spot, () => 1);
+  return {
+    type: "cold_three_bet",
+    spot: { opener, three_bettor: bettor, hero, position: isInPosition(hero, bettor) ? "IP" : "OOP",
+      open_size_bb: spot.open_size_bb, three_bet_size_bb: spot.three_bet_size_bb, four_bet_size_bb: spot.four_bet_size_bb,
+      call_break_even_equity_pct: round1(need(context.input.cost_to_call, context.input.total_pot_after_call)),
+      three_bet_range_combos: Math.round(totalWeight(threeBetRange)), opener_behind: true,
+      hero_fold_pct: round1(heroFold), opener_fold_to_3bet_pct: round1(openerFold),
+      hero_and_opener_fold_pct: round1(heroFold * openerFold) },
+    hands: handFacts(spot.id, spot, () => true, { equity_vs_three_bet_pct: threeBetRange, blocked_three_bet_pct: threeBetRange }),
+  };
+}
+
 function limpFacts(spot) {
   const sbOpening = opening.spots.find(s => s.hero === "SB");
   const limpRange = rangeFrom(sbOpening, row => row.limp / 100);
@@ -250,6 +275,7 @@ const builders = [
   ...fourBets.spots.map(spot => [spot.id, () => fourBetFacts(spot)]),
   ...multiway.spots.map(spot => [spot.id, () => multiwayFacts(spot)]),
   ...squeezes.spots.map(spot => [spot.id, () => squeezeFacts(spot)]),
+  ...coldThreeBets.spots.map(spot => [spot.id, () => coldThreeBetFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp").map(spot => [spot.id, () => limpFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "SB_vs_BB_iso").map(spot => [spot.id, () => isoFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp_reraise").map(spot => [spot.id, () => limpReraiseFacts(spot)]),

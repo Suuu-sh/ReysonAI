@@ -19,6 +19,7 @@ const datasets = {
   four_bet: load("four-bet-responses"),
   multiway: load("multiway-responses"),
   squeeze: load("squeeze-responses"),
+  cold_three_bet: load("cold-three-bet-responses"),
   iso_response: { spots: load("limp-responses").spots.filter(s => s.id === "SB_vs_BB_iso") },
   limp_response: { spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp") },
   limp_reraise: { spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp_reraise") },
@@ -44,11 +45,12 @@ const ACTIONS = {
   four_bet: [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]],
   multiway: [["squeeze", "スクイーズ"], ["call", "コール"], ["fold", "フォールド"]],
   squeeze: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
+  cold_three_bet: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
   iso_response: [["raise", "リレイズ"], ["call", "コール"], ["fold", "フォールド"]],
   limp_response: [["raise", "アイソレイズ"], ["check", "チェック"]],
   limp_reraise: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
 };
-const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", squeeze: "four_bet", iso_response: "raise", limp_response: "raise", limp_reraise: "four_bet" };
+const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", squeeze: "four_bet", cold_three_bet: "four_bet", iso_response: "raise", limp_response: "raise", limp_reraise: "four_bet" };
 
 const FACT_LABELS = {
   open: [
@@ -102,8 +104,15 @@ FACT_LABELS.limp_reraise = [
   { key: "limp_reraise_break_even_pct", label: "SBのリンプ・リレイズの損益分岐", scope: "spot" },
   { key: "blocked_limp_reraise_pct", label: "リンプ・リレイズレンジのブロック", scope: "hand" },
 ];
+// Cold response to a 3bet: the opener (and any later seats) are still to act.
+FACT_LABELS.cold_three_bet = [
+  { key: "equity_vs_three_bet_pct", label: "勝率（対3betレンジ）", scope: "hand" },
+  { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+  { key: "hero_and_opener_fold_pct", label: "3betに自分とオープナーの両方が降りる率", scope: "spot" },
+  { key: "blocked_three_bet_pct", label: "3betレンジのブロック", scope: "hand" },
+];
 FACT_LABELS.limp_response = [{ key: "equity_vs_sb_limp_pct", label: "勝率（対SBリンプ）", scope: "hand" }];
-for (const type of ["response", "three_bet", "four_bet", "multiway", "iso_response", "limp_reraise"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
+for (const type of ["response", "three_bet", "four_bet", "multiway", "iso_response", "limp_reraise", "cold_three_bet"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
 function factLabels(type, spot) {
   if (type !== "squeeze") return FACT_LABELS[type];
   const equity = spot.prior_action === "call"
@@ -246,6 +255,35 @@ function compose(type, row, facts, spot) {
       body = callDecision(row, facts);
       if (row.four_bet > 0) body += facts.blocked_squeeze_pct >= 15
         ? `ただし相手の強いハンドを${f1(facts.blocked_squeeze_pct)}%ブロックできるため、一部はブラフの${size}に回します。`
+        : `ただし一部は${size}に回し、4betするレンジが最上位のハンドだけにならないようにします。`;
+      if (row.call > 0) body += "一部はコールで継続します。";
+    }
+    return `${lead}${situation}${body}${mixText(type, row)}。`;
+  }
+  if (type === "cold_three_bet") {
+    const size = `4bet（${spot.four_bet_size_bb}BB）`;
+    const eq = facts.equity_vs_three_bet_pct;
+    const rangeName = `${spot.three_bettor}の3betレンジ`;
+    const seats = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
+    const later = seats.slice(seats.indexOf(spot.hero) + 1);
+    const behind = `後ろにはオープナーの${spot.opener}${later.length ? `と${later.join("・")}` : ""}が残り、4betや3人のポットになることもあるため、コールの実現率を追加で割り引いています。`;
+    const situation = `${spot.opener}のオープンに${spot.three_bettor}が${spot.three_bet_size_bb}BBへ3betしており、まだ参加していない状態で判断します（${spot.three_bettor}に対して${spot.position}）。${behind}`;
+    let body;
+    if (main === "four_bet") {
+      body = eq >= 50
+        ? `${rangeName}に対して勝率${f1(eq)}%と優位なので、${size}でバリューを取ります。`
+        : eq >= 40
+          ? `${rangeName}に対して勝率${f1(eq)}%とほぼ互角です。相手の強いハンドを${f1(facts.blocked_three_bet_pct)}%ブロックできるため、${size}を中心にします。`
+          : `${rangeName}に対して勝率${f1(eq)}%と不利ですが、ブロッカーで相手の強いハンドを${f1(facts.blocked_three_bet_pct)}%減らせるため、ブラフの${size}に使います。`;
+      if (row.call > 0) body += "一部はコールに回し、コールするレンジにも強いハンドを残します。";
+    } else if (main === "call") {
+      body = callDecision(row, facts);
+      if (row.four_bet > 0) body += `一部は${size}に回し、4betするレンジが強いハンドだけに偏らないようにします。`;
+      if (row.fold > 0) body += "一部はフォールドします。";
+    } else {
+      body = callDecision(row, facts);
+      if (row.four_bet > 0) body += facts.blocked_three_bet_pct >= 15
+        ? `ただし相手の強いハンドを${f1(facts.blocked_three_bet_pct)}%ブロックできるため、一部はブラフの${size}に回します。`
         : `ただし一部は${size}に回し、4betするレンジが最上位のハンドだけにならないようにします。`;
       if (row.call > 0) body += "一部はコールで継続します。";
     }
