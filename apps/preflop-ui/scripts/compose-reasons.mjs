@@ -18,6 +18,7 @@ const datasets = {
   three_bet: load("three-bet-responses"),
   four_bet: load("four-bet-responses"),
   multiway: load("multiway-responses"),
+  squeeze: load("squeeze-responses"),
   iso_response: { spots: load("limp-responses").spots.filter(s => s.id === "SB_vs_BB_iso") },
   limp_response: { spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp") },
 };
@@ -28,6 +29,9 @@ function unreachableReason(type, spot) {
   if (type === "three_bet") return `${spot.opener}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。`;
   if (type === "four_bet") return `${spot.hero}の対${spot.opener}の既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`;
   if (type === "iso_response") return "SBの既存リンプ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。";
+  if (type === "squeeze") return spot.prior_action === null
+    ? `${spot.opener}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`
+    : `${spot.caller}の対${spot.opener}の既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`;
   throw new Error(`unreachable row in ${type}: ${spot.id}`);
 }
 
@@ -37,10 +41,11 @@ const ACTIONS = {
   three_bet: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
   four_bet: [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]],
   multiway: [["squeeze", "スクイーズ"], ["call", "コール"], ["fold", "フォールド"]],
+  squeeze: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
   iso_response: [["raise", "リレイズ"], ["call", "コール"], ["fold", "フォールド"]],
   limp_response: [["raise", "アイソレイズ"], ["check", "チェック"]],
 };
-const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", iso_response: "raise", limp_response: "raise" };
+const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", squeeze: "four_bet", iso_response: "raise", limp_response: "raise" };
 
 const FACT_LABELS = {
   open: [
@@ -80,8 +85,22 @@ FACT_LABELS.iso_response = [
   { key: "equity_vs_bb_iso_pct", label: "勝率（対BBアイソ）", scope: "hand" },
   { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
 ];
+// Facing a squeeze: the primary equity is heads-up versus the squeeze range, or
+// three-way when the opener called. Labels are chosen per spot (factLabels).
+const SQUEEZE_SPOT_LABELS = [
+  { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+  { key: "fold_to_squeeze_pct", label: "スクイーズに2人とも降りる率", scope: "spot" },
+  { key: "blocked_squeeze_pct", label: "スクイーズレンジのブロック", scope: "hand" },
+];
 FACT_LABELS.limp_response = [{ key: "equity_vs_sb_limp_pct", label: "勝率（対SBリンプ）", scope: "hand" }];
 for (const type of ["response", "three_bet", "four_bet", "multiway", "iso_response"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
+function factLabels(type, spot) {
+  if (type !== "squeeze") return FACT_LABELS[type];
+  const equity = spot.prior_action === "call"
+    ? { key: "equity_3way_pct", label: "勝率（3人ポット）", scope: "hand" }
+    : { key: "equity_vs_squeeze_pct", label: `勝率（対${spot.squeezer}のスクイーズ）`, scope: "hand" };
+  return [equity, ...CALL_FACT_LABELS, ...SQUEEZE_SPOT_LABELS];
+}
 const evText = value => `${value < 0 ? "−" : "+"}${Math.abs(value).toFixed(2)}bb`;
 function callDecision(row, facts) {
   const numbers = `仮定のEQRを加味した実現後の勝率${f1(facts.realized_equity_pct)}%で、コールのEVは${evText(facts.call_ev_bb)}。`;
@@ -167,6 +186,37 @@ function compose(type, row, facts, spot) {
       : callDecision(row, facts);
     return `${lead}${behind}${body}${row[raiseKey] > 0 && main !== raiseKey ? `一部は${raiseName}へ配分します。` : ""}${mixText(type, row)}。`;
   }
+  if (type === "squeeze") {
+    const size = `4bet（${spot.four_bet_size_bb}BB）`;
+    const threeWay = spot.prior_action === "call";
+    const eq = threeWay ? facts.equity_3way_pct : facts.equity_vs_squeeze_pct;
+    const rangeName = threeWay ? `${spot.squeezer}のスクイーズと${spot.opener}のコールの両方` : `${spot.squeezer}のスクイーズレンジ`;
+    const situation = spot.prior_action === null
+      ? `後ろに${spot.caller}が残り、コールすると3人のポットになることもあるため、コールの実現率を追加で割り引いています。`
+      : threeWay
+        ? `${spot.opener}もコールした3人のポットで、${spot.squeezer}と${spot.opener}に挟まれています。`
+        : `${spot.opener}が降りたため、その${spot.open_size_bb ?? 2.5}BBがデッドマネーとしてポットに残っています。`;
+    let body;
+    if (main === "four_bet") {
+      body = eq >= (threeWay ? 40 : 50)
+        ? `${rangeName}に対して勝率${f1(eq)}%と優位なので、${size}でバリューを取ります。`
+        : eq >= (threeWay ? 30 : 40)
+          ? `${rangeName}に対して勝率${f1(eq)}%とほぼ互角です。相手の強いハンドを${f1(facts.blocked_squeeze_pct)}%ブロックできるため、${size}を中心にします。`
+          : `${rangeName}に対して勝率${f1(eq)}%と不利ですが、ブロッカーで相手の強いハンドを${f1(facts.blocked_squeeze_pct)}%減らせるため、ブラフの${size}に使います。`;
+      if (row.call > 0) body += "一部はコールに回し、コールするレンジにも強いハンドを残します。";
+    } else if (main === "call") {
+      body = callDecision(row, facts);
+      if (row.four_bet > 0) body += `一部は${size}に回し、4betするレンジが強いハンドだけに偏らないようにします。`;
+      if (row.fold > 0) body += "一部はフォールドします。";
+    } else {
+      body = callDecision(row, facts);
+      if (row.four_bet > 0) body += facts.blocked_squeeze_pct >= 15
+        ? `ただし相手の強いハンドを${f1(facts.blocked_squeeze_pct)}%ブロックできるため、一部はブラフの${size}に回します。`
+        : `ただし一部は${size}に回し、4betするレンジが最上位のハンドだけにならないようにします。`;
+      if (row.call > 0) body += "一部はコールで継続します。";
+    }
+    return `${lead}${situation}${body}${mixText(type, row)}。`;
+  }
   const eqKey = { response: "equity_vs_open_pct", three_bet: "equity_vs_three_bet_pct", four_bet: "equity_vs_four_bet_pct" }[type];
   const rangeName = { response: `${spot.opener}のオープンレンジ`, three_bet: `${spot.three_bettor}の3betレンジ`, four_bet: `${spot.opener}の4betレンジ` }[type];
   const eq = facts[eqKey];
@@ -231,7 +281,7 @@ for (const [type, dataset] of Object.entries(datasets)) {
       spot_id: spot.id, type, source_fingerprint: sourceFingerprint,
       method: "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
       equity_note: "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
-      fact_labels: FACT_LABELS[type], spot_facts: facts.spot, hands,
+      fact_labels: factLabels(type, spot), spot_facts: facts.spot, hands,
     }, null, 2) + "\n");
     written += 1;
   }

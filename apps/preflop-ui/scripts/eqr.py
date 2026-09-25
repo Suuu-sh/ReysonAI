@@ -19,6 +19,9 @@ MULTIWAY_EQR = 0.90
 # SB calling an open plus a cold call with BB still to act (see eqr.js for the
 # rationale): BB squeeze risk ×~0.95, four-way overcalls ×~0.95, plus margin.
 BB_BEHIND_EQR = 0.85
+# Opener facing a squeeze with the original cold caller still to act (see
+# eqr.js): overcalls make a three-way pot, rare back-raises forfeit the call.
+CALLER_BEHIND_EQR = 0.90
 RANKS = '23456789TJQKA'
 
 
@@ -44,14 +47,17 @@ def eqr_category(hand):
     return 'offsuit_connected' if gap <= 1 else 'offsuit_other'
 
 
-def equity_realization(hand, hero, opponents, all_in=False, bb_behind=False):
+def equity_realization(hand, hero, opponents, all_in=False, bb_behind=False, caller_behind=False):
     category = eqr_category(hand)
     seats = [hero, *opponents]
     if len(opponents) not in (1, 2) or len(set(seats)) != len(seats) or any(p not in CONFIG['positions'] for p in seats):
         raise ValueError('EQR requires two or three distinct valid positions')
     if bb_behind and (hero != 'SB' or 'BB' in opponents):
         raise ValueError('BB behind applies only to SB before BB acts')
+    if caller_behind and (bb_behind or len(opponents) != 1):
+        raise ValueError('Caller behind applies only to a heads-up squeeze response')
     if all_in:
         return 1
     ip = all(in_position(hero, opponent) for opponent in opponents)
-    return EQR[category][0 if ip else 1] * (MULTIWAY_EQR if len(opponents) == 2 else 1) * (BB_BEHIND_EQR if bb_behind else 1)
+    return (EQR[category][0 if ip else 1] * (MULTIWAY_EQR if len(opponents) == 2 else 1)
+            * (BB_BEHIND_EQR if bb_behind else 1) * (CALLER_BEHIND_EQR if caller_behind else 1))

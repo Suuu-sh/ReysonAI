@@ -10,6 +10,7 @@ const sources = [
   [load("preflop-ranges"), [["three_bet", "3bet"], ["call", "コール"], ["fold", "フォールド"]]],
   [load("three-bet-responses"), [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]]],
   [load("multiway-responses"), [["squeeze", "スクイーズ"], ["call", "コール"], ["fold", "フォールド"]]],
+  [load("squeeze-responses"), [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]]],
   [{ spots: load("limp-responses").spots.filter(s => s.id === "SB_vs_BB_iso") }, [["raise", "リレイズ"], ["call", "コール"], ["fold", "フォールド"]]],
   [{ spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp") }, [["raise", "アイソレイズ"], ["check", "チェック"]]],
   [load("four-bet-responses"), [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]]],

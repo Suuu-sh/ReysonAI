@@ -10,15 +10,23 @@ const blind = { SB: 0.5, BB: 1 };
 const byHand = spot => new Map(spot.hands.map(row => [row.hand, row]));
 const range = (spot, weight) => spot.hands.map(row => [row.hand, weight(row)]).filter(([, w]) => w > 0);
 
-export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp }) {
+// Squeezer's auto-profit break-even: its additional investment over that plus
+// the whole pot before the squeeze (open + cold call + both blinds).
+export function squeezeFoldThreshold(spot) {
+  const risk = spot.squeeze_size_bb - (blind[spot.squeezer] ?? 0);
+  return risk / (risk + 2 * spot.open_size_bb + 1.5);
+}
+
+export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes }) {
   const opens = new Map(opening.spots.map(s => [s.hero, s]));
   const response = (opener, hero) => responses.spots.find(s => s.opener === opener && s.hero === hero);
   const contexts = [];
-  function add(type, spot, opponents, cost, pot, ranges, reach = () => 1, toSize, { bbBehind = false } = {}) {
+  function add(type, spot, opponents, cost, pot, ranges, reach = () => 1, toSize, { bbBehind = false, callerBehind = false } = {}) {
     const hero = spot.hero;
     const allIn = toSize >= spot.effective_stack_bb;
-    // bb_behind is recorded only when true, so BB-hero inputs keep their fingerprint.
-    const input = { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn, ...(bbBehind ? { bb_behind: true } : {}), ranges };
+    // bb_behind / caller_behind are recorded only when true, so older inputs keep their fingerprint.
+    const input = { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn,
+      ...(bbBehind ? { bb_behind: true } : {}), ...(callerBehind ? { caller_behind: true } : {}), ranges };
     contexts.push({ type, spot, input, reach });
   }
   for (const spot of responses?.spots ?? []) {
@@ -60,6 +68,34 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
     add("iso_response", spot, [spot.opponent], spot.iso_size_bb - spot.open_size_bb, 2 * spot.iso_size_bb,
       [range(iso, row => row.raise / 100)], hand => open.get(hand).limp / 100, spot.iso_size_bb);
   }
+  // Facing a squeeze (S = BB or SB; with SB squeezing, BB has folded). Opponent
+  // range: S's saved squeeze frequencies. The other blind is dead money.
+  //   prior null:   opener, caller still behind (its 2.5BB is in the pot; CALLER_BEHIND_EQR)
+  //   prior "fold": caller after the opener folded (opener's 2.5BB dead)
+  //   prior "call": caller after the opener called — three-way vs S and the opener's calls
+  for (const spot of squeezes?.spots ?? []) {
+    const source = multiway.spots.find(s => s.id === spot.source_squeeze_id);
+    const squeezeRange = range(source, row => row.squeeze / 100);
+    const size = spot.squeeze_size_bb, open = spot.open_size_bb;
+    const deadBlind = 1.5 - (blind[spot.squeezer] ?? 0);
+    const cost = size - open;
+    if (spot.prior_action === null) {
+      const openRows = byHand(opens.get(spot.opener));
+      add("squeeze", spot, [spot.squeezer], cost, 2 * size + open + deadBlind, [squeezeRange],
+        hand => openRows.get(hand).open / 100, size, { callerBehind: true });
+      continue;
+    }
+    const callRows = byHand(response(spot.opener, spot.caller));
+    const reach = hand => callRows.get(hand).call / 100;
+    if (spot.prior_action === "fold") {
+      add("squeeze", spot, [spot.squeezer], cost, 2 * size + open + deadBlind, [squeezeRange], reach, size);
+    } else {
+      const first = squeezes.spots.find(s => s.source_squeeze_id === spot.source_squeeze_id && s.prior_action === null);
+      const openRows = byHand(opens.get(spot.opener));
+      add("squeeze", spot, [spot.squeezer, spot.opener], cost, 3 * size + deadBlind,
+        [squeezeRange, range(first, row => openRows.get(row.hand).open / 100 * row.call / 100)], reach, size);
+    }
+  }
   return contexts;
 }
 
@@ -71,8 +107,8 @@ export function validCallEquities(table, context) {
 }
 export function callFacts(context, hand, equity) {
   if (!Number.isFinite(equity) || equity < 0 || equity > 1) throw new Error(`Invalid equity: ${hand}`);
-  const { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn, bb_behind: bbBehind = false } = context.input;
-  const eqr = equityRealization(hand, hero, opponents, { allIn, bbBehind });
+  const { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn, bb_behind: bbBehind = false, caller_behind: callerBehind = false } = context.input;
+  const eqr = equityRealization(hand, hero, opponents, { allIn, bbBehind, callerBehind });
   return { eqr, realized_equity_pct: equity * eqr * 100, call_ev_bb: equity * eqr * raked(pot) - cost };
 }
 export function allowedCall(call, ev) {
@@ -99,18 +135,55 @@ export function threeBetTargetCall(call, ev, available) {
   return ev >= THREE_BET_FILL_EV ? available : allowedCall(call, ev);
 }
 
+// Pairs of reachable hands [stronger, weaker] whose continuation the audit's
+// strength-order / suited-vs-offsuit checks keep within 10pt (A6x→A5x exempt).
+const RANKS = "AKQJT98765432";
+const ORDER_CHAINS = [[...RANKS].map(r => r + r), ...[...RANKS].slice(0, -1).flatMap((high, i) =>
+  ["s", "o"].map(suit => [...RANKS.slice(i + 1)].map(kicker => high + kicker + suit)))];
+function orderEdges(reachable) {
+  const edges = [];
+  for (const chain of ORDER_CHAINS) {
+    const live = chain.filter(reachable);
+    for (let i = 1; i < live.length; i += 1) {
+      if (!(/^A6/.test(live[i - 1]) && /^A5/.test(live[i]))) edges.push([live[i - 1], live[i]]);
+    }
+  }
+  for (let i = 0; i < RANKS.length; i += 1) for (let j = i + 1; j < RANKS.length; j += 1) {
+    const suited = RANKS[i] + RANKS[j] + "s", offsuit = RANKS[i] + RANKS[j] + "o";
+    if (reachable(suited) && reachable(offsuit)) edges.push([suited, offsuit]);
+  }
+  return edges;
+}
+
 // Optimistic upper bound with every legal call filled, keeping all raises fixed.
 // An auto-profit warning is unavoidable if even this bound cannot defend enough.
-export function callDefenseCapacity(context, table) {
-  let total = 0, folds = 0;
+// `ordered` also caps each weaker hand at its stronger neighbour + 10pt, the
+// most a strategy can continue without breaking the blocking strength-order checks
+// (used for squeeze responses, where equal-EV pairs differ only by sampling noise).
+export function callDefenseCapacity(context, table, { ordered = false } = {}) {
+  const maxContinue = new Map(), weights = new Map();
   for (const row of context.spot.hands) {
     const combos = row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12;
-    const weight = combos * context.reach(row.hand);
     const ev = callFacts(context, row.hand, table.spots[context.spot.id].equities[row.hand]).call_ev_bb;
     const aggressive = 100 - row.fold - row.call;
-    const maxCall = allowedCall(100 - aggressive, ev);
+    weights.set(row.hand, combos * context.reach(row.hand));
+    maxContinue.set(row.hand, aggressive + allowedCall(100 - aggressive, ev));
+  }
+  if (ordered) {
+    const edges = orderEdges(hand => weights.get(hand) > 0);
+    for (let changed = true; changed;) {
+      changed = false;
+      for (const [strong, weak] of edges) {
+        const row = context.spot.hands.find(r => r.hand === weak);
+        const cap = Math.max(100 - row.fold - row.call, maxContinue.get(strong) + 10);
+        if (maxContinue.get(weak) > cap) { maxContinue.set(weak, cap); changed = true; }
+      }
+    }
+  }
+  let total = 0, folds = 0;
+  for (const [hand, weight] of weights) {
     total += weight;
-    folds += weight * (100 - aggressive - maxCall) / 100;
+    folds += weight * (100 - maxContinue.get(hand)) / 100;
   }
   return total ? { minimumFoldRate: folds / total, maximumContinuationPct: (1 - folds / total) * 100 } : null;
 }

@@ -2,7 +2,7 @@
 import { openSizeFor } from "./sizing.js";
 import handStrength from "./hand-strength.json" with { type: "json" };
 import callEquitiesTable from "./call-equities.json" with { type: "json" };
-import { callContexts, callFacts, validCallEquities, callDefenseCapacity } from "./call-ev.js";
+import { callContexts, callFacts, validCallEquities, callDefenseCapacity, squeezeFoldThreshold } from "./call-ev.js";
 const ranks = "AKQJT98765432";
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 const blind = { SB: 0.5, BB: 1 };
@@ -151,11 +151,11 @@ function weightedFold(spot, weight = () => 1) {
   return total ? folded / total : 0;
 }
 
-export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, limp, callEquities = callEquitiesTable }) {
+export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, callEquities = callEquitiesTable }) {
   const findings = [];
   const add = (check, severity, spot, detail) => findings.push({ check, severity, spot, detail });
   const openBy = new Map(opening.spots.map(spot => [spot.hero, rows(spot)]));
-  const callModels = callContexts({ opening, responses, threeBets, fourBets, multiway, limp });
+  const callModels = callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes });
   const capacityConflicts = [];
   const reportOverfold = (context, label, foldRate, threshold, detail) => {
     const capacity = context && validCallEquities(callEquities, context) ? callDefenseCapacity(context, callEquities) : null;
@@ -318,6 +318,44 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     }
   }
 
+  // 6b. Facing a squeeze. Reach: the opener's RFI, or the caller's cold call.
+  // The squeezer's bluffs auto-profit when opener fold × caller fold (after the
+  // opener folded) exceeds its break-even.
+  const squeezeReach = spot => {
+    const source = spot.prior_action === null ? openBy.get(spot.opener) : rows(responseBy.get(`${spot.opener}>${spot.caller}`));
+    return hand => (spot.prior_action === null ? source.get(hand).open : source.get(hand).call) / 100;
+  };
+  const squeezeDefense = [];
+  for (const spot of squeezes?.spots ?? []) {
+    const reach = squeezeReach(spot);
+    for (const row of spot.hands) {
+      if (!reach(row.hand) && row.fold !== 100) add("range-flow", "error", spot.id, `${row.hand} は前段0%なのにフォールド100%になっていない`);
+    }
+    checkStrengthOrder(add, spot.id, spot, hand => reach(hand) > 0);
+  }
+  for (const first of (squeezes?.spots ?? []).filter(s => s.prior_action === null)) {
+    const second = squeezes.spots.find(s => s.prior_action === "fold" && s.source_squeeze_id === first.source_squeeze_id);
+    if (!second) { add("range-flow", "error", first.id, "オープナーがフォールドした後のコーラーの局面がない"); continue; }
+    const threshold = squeezeFoldThreshold(first);
+    const openerFold = weightedFold(first, squeezeReach(first));
+    const callerFold = weightedFold(second, squeezeReach(second));
+    const foldRate = openerFold * callerFold;
+    squeezeDefense.push({ spot: first.source_squeeze_id, openerFold, callerFold, foldRate, threshold });
+    if (foldRate <= threshold + 1e-12) continue;
+    const detail = `オープナーのフォールド率 ${pct(openerFold)} × コーラーのフォールド率 ${pct(callerFold)} = ${pct(foldRate)} > 損益分岐 ${pct(threshold)}（どの2枚でもスクイーズで得をする）`;
+    const models = [first, second].map(spot => callModels.find(c => c.spot === spot));
+    const capacities = models.map(c => c && validCallEquities(callEquities, c) ? callDefenseCapacity(c, callEquities, { ordered: true }) : null);
+    const minimum = capacities.every(Boolean) ? capacities[0].minimumFoldRate * capacities[1].minimumFoldRate : null;
+    // Same narrow exception as reportOverfold: both spots already call every legal hand
+    // and even that maximum cannot reach the break-even.
+    if (minimum !== null && minimum > threshold + 1e-12 && openerFold <= capacities[0].minimumFoldRate + 1e-12 &&
+        callerFold <= capacities[1].minimumFoldRate + 1e-12) {
+      capacityConflicts.push({ spot: first.source_squeeze_id, minimumFoldRate: minimum, maximumContinuationPct: (1 - minimum) * 100,
+        requiredContinuationPct: (1 - threshold) * 100 });
+      add("ev-capacity-conflict", "warn", first.source_squeeze_id, `${detail}。ただし指定EV制約・固定4bet下の最小フォールド率は${pct(minimum)}。全ての合法コールを埋めても両立不能（均衡未達）。`);
+    } else add("auto-profit", "error", first.source_squeeze_id, detail);
+  }
+
   // 7. Advisory balance and cross-strength checks on every dataset. Source action frequencies
   // weight incoming combos; unreachable fold=100 placeholders count for neither
   // the top-strength decile nor pure-action share.
@@ -347,6 +385,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     inspectRange(spot, hand => openBy.get(spot.opener).get(hand).open / 100 * previous.get(hand).four_bet / 100, "5bet all-in response");
   }
   for (const spot of multiway?.spots ?? []) inspectRange(spot);
+  for (const spot of squeezes?.spots ?? []) inspectRange(spot, squeezeReach(spot));
   for (const spot of limp?.spots ?? []) {
     inspectRange(spot, spot.hero === "SB" ? hand => openBy.get("SB").get(hand).limp / 100 : undefined);
   }
@@ -379,5 +418,5 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
 
   // Range widths for a sanity read.
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
-  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
+  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
 }

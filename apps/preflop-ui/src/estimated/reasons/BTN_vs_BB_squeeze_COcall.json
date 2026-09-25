@@ -1,0 +1,1751 @@
+{
+  "spot_id": "BTN_vs_BB_squeeze_COcall",
+  "type": "squeeze",
+  "source_fingerprint": "467f7bcd27b527b6aa8d1d710f4123ea01c501314014d2d1d825adc13caebddb",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
+  "fact_labels": [
+    {
+      "key": "equity_3way_pct",
+      "label": "勝率（3人ポット）",
+      "scope": "hand"
+    },
+    {
+      "key": "realized_equity_pct",
+      "label": "実現後の勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "call_ev_bb",
+      "label": "コールのEV",
+      "scope": "hand",
+      "unit": "bb"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "fold_to_squeeze_pct",
+      "label": "スクイーズに2人とも降りる率",
+      "scope": "spot"
+    },
+    {
+      "key": "blocked_squeeze_pct",
+      "label": "スクイーズレンジのブロック",
+      "scope": "hand"
+    }
+  ],
+  "spot_facts": {
+    "opener": "CO",
+    "caller": "BTN",
+    "squeezer": "BB",
+    "hero": "BTN",
+    "prior_action": "call",
+    "position": "IP",
+    "squeeze_size_bb": 13,
+    "four_bet_size_bb": 26,
+    "call_break_even_equity_pct": 28,
+    "squeeze_range_combos": 60,
+    "opener_fold_pct": 80.1,
+    "caller_fold_after_opener_fold_pct": 79,
+    "fold_to_squeeze_pct": 63.3,
+    "squeeze_break_even_pct": 64.9,
+    "opener_call_range_combos": 49,
+    "cost_to_call_bb": 10.5,
+    "total_pot_after_call_bb": 39.5
+  },
+  "hands": {
+    "22": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率21.6%で、コールのEVは−2.39bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 22.9,
+        "blocked_squeeze_pct": 0.3,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 21.60243750000001,
+        "call_ev_bb": -2.393685328124997
+      }
+    },
+    "33": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率22.1%で、コールのEVは−2.22bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.3,
+        "blocked_squeeze_pct": 0.3,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 22.059187500000014,
+        "call_ev_bb": -2.222289890624994
+      }
+    },
+    "44": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率22.5%で、コールのEVは−2.05bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.8,
+        "blocked_squeeze_pct": 0.5,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 22.509375000000016,
+        "call_ev_bb": -2.0533570312499947
+      }
+    },
+    "55": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.4%で、コールのEVは−1.72bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.8,
+        "blocked_squeeze_pct": 0.7,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 23.404500000000013,
+        "call_ev_bb": -1.7174613749999956
+      }
+    },
+    "66": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.9%で、コールのEVは−1.54bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 25.3,
+        "blocked_squeeze_pct": 0,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 23.88225000000002,
+        "call_ev_bb": -1.5381856874999933
+      }
+    },
+    "77": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.6%で、コールのEVは−1.66bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.9,
+        "blocked_squeeze_pct": 0,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 23.569875000000007,
+        "call_ev_bb": -1.655404406249998
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.9%で、コールのEVは−1.17bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 26.3,
+        "blocked_squeeze_pct": 0.4,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 24.87581250000001,
+        "call_ev_bb": -1.1653513593749967
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率27.8%で、コールのEVは−0.06bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 29.4,
+        "blocked_squeeze_pct": 1.6,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 27.818437500000016,
+        "call_ev_bb": -0.06113132812499522
+      }
+    },
+    "AA": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "AKs": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "AQs": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.0%で、コールのEVは−1.50bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.7,
+        "blocked_squeeze_pct": 22.6,
+        "eqr": 0.9720000000000001,
+        "realized_equity_pct": 23.994900000000023,
+        "call_ev_bb": -1.495913774999993
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率22.3%で、コールのEVは−2.12bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23,
+        "blocked_squeeze_pct": 19.9,
+        "eqr": 0.9720000000000001,
+        "realized_equity_pct": 22.319550000000024,
+        "call_ev_bb": -2.1245888624999907
+      }
+    },
+    "A9s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率20.2%で、コールのEVは−2.94bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 21.3,
+        "blocked_squeeze_pct": 18.4,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 20.157375000000002,
+        "call_ev_bb": -2.9359450312499993
+      }
+    },
+    "A8s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.4%で、コールのEVは−3.22bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.5,
+        "blocked_squeeze_pct": 17.9,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 19.406625000000016,
+        "call_ev_bb": -3.217663968749994
+      }
+    },
+    "A7s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.1%で、コールのEVは−3.32bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.3,
+        "blocked_squeeze_pct": 17.6,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 19.138874999999988,
+        "call_ev_bb": -3.318137156250004
+      }
+    },
+    "A6s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.5%で、コールのEVは−3.18bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.6,
+        "blocked_squeeze_pct": 17.6,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 19.511624999999988,
+        "call_ev_bb": -3.1782627187500045
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.8%で、コールのEVは−3.08bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.9,
+        "blocked_squeeze_pct": 17.6,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 19.7859375,
+        "call_ev_bb": -3.0753269531250016
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率20.8%で、コールのEVは−2.71bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 22,
+        "blocked_squeeze_pct": 17.6,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 20.76243750000002,
+        "call_ev_bb": -2.708895328124993
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.7%で、コールのEVは−3.10bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.9,
+        "blocked_squeeze_pct": 17.6,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 19.7098125,
+        "call_ev_bb": -3.1038928593749997
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.4%で、コールのEVは−3.23bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.5,
+        "blocked_squeeze_pct": 17.6,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 19.3685625,
+        "call_ev_bb": -3.231946921875
+      }
+    },
+    "AKo": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "KK": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.1%で、コールのEVは−1.47bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.3,
+        "blocked_squeeze_pct": 21.8,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 24.059750000000005,
+        "call_ev_bb": -1.471578812499999
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.8%で、コールのEVは−1.21bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 25,
+        "blocked_squeeze_pct": 17.9,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 24.752750000000002,
+        "call_ev_bb": -1.2115305624999984
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.2%で、コールのEVは−1.41bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.9,
+        "blocked_squeeze_pct": 15.1,
+        "eqr": 0.9720000000000001,
+        "realized_equity_pct": 24.225750000000023,
+        "call_ev_bb": -1.4092873124999912
+      }
+    },
+    "K9s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率21.2%で、コールのEVは−2.54bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.6,
+        "blocked_squeeze_pct": 13.6,
+        "eqr": 0.9,
+        "realized_equity_pct": 21.205000000000005,
+        "call_ev_bb": -2.5428237499999975
+      }
+    },
+    "K8s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.6%で、コールのEVは−3.13bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 21.8,
+        "blocked_squeeze_pct": 13,
+        "eqr": 0.9,
+        "realized_equity_pct": 19.647499999999994,
+        "call_ev_bb": -3.127275625000002
+      }
+    },
+    "K7s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.8%で、コールのEVは−3.07bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 22,
+        "blocked_squeeze_pct": 12.7,
+        "eqr": 0.9,
+        "realized_equity_pct": 19.801250000000014,
+        "call_ev_bb": -3.069580937499995
+      }
+    },
+    "K6s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率20.5%で、コールのEVは−2.80bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 22.8,
+        "blocked_squeeze_pct": 12.7,
+        "eqr": 0.9,
+        "realized_equity_pct": 20.50875000000001,
+        "call_ev_bb": -2.8040915624999974
+      }
+    },
+    "K5s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.9%で、コールのEVは−3.05bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 22.1,
+        "blocked_squeeze_pct": 13,
+        "eqr": 0.9,
+        "realized_equity_pct": 19.862500000000008,
+        "call_ev_bb": -3.046596874999997
+      }
+    },
+    "K4s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.7%で、コールのEVは−3.09bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 21.9,
+        "blocked_squeeze_pct": 13,
+        "eqr": 0.9,
+        "realized_equity_pct": 19.742499999999993,
+        "call_ev_bb": -3.091626875000003
+      }
+    },
+    "K3s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率18.8%で、コールのEVは−3.46bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.8,
+        "blocked_squeeze_pct": 12.9,
+        "eqr": 0.9,
+        "realized_equity_pct": 18.75625,
+        "call_ev_bb": -3.4617171874999997
+      }
+    },
+    "K2s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率18.1%で、コールのEVは−3.71bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.1,
+        "blocked_squeeze_pct": 12.9,
+        "eqr": 0.9,
+        "realized_equity_pct": 18.091250000000002,
+        "call_ev_bb": -3.711258437499999
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率21.5%で、コールのEVは−2.44bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 22.7,
+        "blocked_squeeze_pct": 26.2,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 21.476437500000014,
+        "call_ev_bb": -2.4409668281249957
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.3%で、コールのEVは−3.27bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.4,
+        "blocked_squeeze_pct": 22,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 19.256999999999998,
+        "call_ev_bb": -3.273810750000001
+      }
+    },
+    "QQ": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.9%で、コールのEVは−1.55bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.1,
+        "blocked_squeeze_pct": 14.8,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.860374999999998,
+        "call_ev_bb": -1.5463942812500004
+      }
+    },
+    "QTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.4%で、コールのEVは−1.72bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.6,
+        "blocked_squeeze_pct": 12,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.39975000000001,
+        "call_ev_bb": -1.7192438124999967
+      }
+    },
+    "Q9s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.1%で、コールのEVは−3.34bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 21.2,
+        "blocked_squeeze_pct": 10.5,
+        "eqr": 0.9,
+        "realized_equity_pct": 19.088749999999997,
+        "call_ev_bb": -3.3369465625000005
+      }
+    },
+    "Q8s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率18.4%で、コールのEVは−3.60bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.4,
+        "blocked_squeeze_pct": 9.8,
+        "eqr": 0.9,
+        "realized_equity_pct": 18.386250000000004,
+        "call_ev_bb": -3.6005596874999988
+      }
+    },
+    "Q7s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率18.1%で、コールのEVは−3.71bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.1,
+        "blocked_squeeze_pct": 9.6,
+        "eqr": 0.9,
+        "realized_equity_pct": 18.107499999999998,
+        "call_ev_bb": -3.7051606250000004
+      }
+    },
+    "Q6s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率17.6%で、コールのEVは−3.88bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 19.6,
+        "blocked_squeeze_pct": 9.6,
+        "eqr": 0.9,
+        "realized_equity_pct": 17.65,
+        "call_ev_bb": -3.8768375000000006
+      }
+    },
+    "Q5s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率17.8%で、コールのEVは−3.80bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 19.8,
+        "blocked_squeeze_pct": 9.9,
+        "eqr": 0.9,
+        "realized_equity_pct": 17.849999999999998,
+        "call_ev_bb": -3.8017875000000005
+      }
+    },
+    "Q4s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q3s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q2s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率18.5%で、コールのEVは−3.58bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 19.5,
+        "blocked_squeeze_pct": 22.7,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 18.45243749999999,
+        "call_ev_bb": -3.575722828125004
+      }
+    },
+    "KJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率20.3%で、コールのEVは−2.87bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 21.5,
+        "blocked_squeeze_pct": 18.1,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 20.33062500000001,
+        "call_ev_bb": -2.8709329687499974
+      }
+    },
+    "QJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率18.7%で、コールのEVは−3.47bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 19.8,
+        "blocked_squeeze_pct": 15,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 18.743812499999997,
+        "call_ev_bb": -3.4663843593750006
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率35.1%で、コールのEVは+2.69bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は4bet（26BB）に回し、4betするレンジが強いハンドだけに偏らないようにします。配分はコール 80%・4bet 20%。",
+      "facts": {
+        "equity_3way_pct": 37.2,
+        "blocked_squeeze_pct": 10.1,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 35.13956250000001,
+        "call_ev_bb": 2.686120828125004
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.4%で、コールのEVは−1.33bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.7,
+        "blocked_squeeze_pct": 7.9,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 24.440625000000015,
+        "call_ev_bb": -1.3286554687499947
+      }
+    },
+    "J9s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.5%で、コールのEVは−1.67bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.8,
+        "blocked_squeeze_pct": 6.4,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.522125000000013,
+        "call_ev_bb": -1.6733225937499956
+      }
+    },
+    "J8s": {
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率20.9%で、コールのEVは−2.65bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.3,
+        "blocked_squeeze_pct": 5.7,
+        "eqr": 0.9,
+        "realized_equity_pct": 20.930000000000007,
+        "call_ev_bb": -2.6460174999999975
+      }
+    },
+    "J7s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J6s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J5s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J4s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J3s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J2s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率18.3%で、コールのEVは−3.62bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 19.4,
+        "blocked_squeeze_pct": 20.1,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 18.330375,
+        "call_ev_bb": -3.621526781250001
+      }
+    },
+    "KTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率20.4%で、コールのEVは−2.86bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 21.5,
+        "blocked_squeeze_pct": 15.3,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 20.35425,
+        "call_ev_bb": -2.8620676874999997
+      }
+    },
+    "QTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率19.1%で、コールのEVは−3.32bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 20.2,
+        "blocked_squeeze_pct": 12.1,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 19.129687499999996,
+        "call_ev_bb": -3.321584765625002
+      }
+    },
+    "JTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率20.7%で、コールのEVは−2.73bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 21.9,
+        "blocked_squeeze_pct": 8.1,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 20.696812500000007,
+        "call_ev_bb": -2.7335211093749967
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率31.4%で、コールのEVは+1.26bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は4bet（26BB）に回し、4betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・4bet 10%。",
+      "facts": {
+        "equity_3way_pct": 33.2,
+        "blocked_squeeze_pct": 4.7,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 31.35168750000002,
+        "call_ev_bb": 1.2647207343750075
+      }
+    },
+    "T9s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.3%で、コールのEVは−1.38bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.6,
+        "blocked_squeeze_pct": 3.4,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 24.31275,
+        "call_ev_bb": -1.3766405625000004
+      }
+    },
+    "T8s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.4%で、コールのEVは−1.71bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.7,
+        "blocked_squeeze_pct": 2.8,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.431375000000006,
+        "call_ev_bb": -1.7073765312499969
+      }
+    },
+    "T7s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T6s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T5s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T4s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T3s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T2s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A9o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率14.0%で、コールのEVは−5.25bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 16.9,
+        "blocked_squeeze_pct": 18.5,
+        "eqr": 0.8280000000000001,
+        "realized_equity_pct": 13.988599999999979,
+        "call_ev_bb": -5.250777850000008
+      }
+    },
+    "K9o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q9o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J9o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T9o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "98s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.3%で、コールのEVは−1.37bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.6,
+        "blocked_squeeze_pct": 1.2,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 24.334750000000007,
+        "call_ev_bb": -1.368385062499998
+      }
+    },
+    "97s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.4%で、コールのEVは−1.72bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.6,
+        "blocked_squeeze_pct": 0.9,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.398375000000016,
+        "call_ev_bb": -1.7197597812499943
+      }
+    },
+    "96s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "95s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "94s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "93s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "92s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A8o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率12.9%で、コールのEVは−5.67bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 15.6,
+        "blocked_squeeze_pct": 17.9,
+        "eqr": 0.8280000000000001,
+        "realized_equity_pct": 12.88114999999999,
+        "call_ev_bb": -5.666348462500005
+      }
+    },
+    "K8o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q8o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J8o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T8o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "98o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "87s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.3%で、コールのEVは−1.76bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.5,
+        "blocked_squeeze_pct": 0.2,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.278750000000013,
+        "call_ev_bb": -1.7646490624999966
+      }
+    },
+    "86s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.1%で、コールのEVは−1.83bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.3,
+        "blocked_squeeze_pct": 0.2,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.10962500000001,
+        "call_ev_bb": -1.8281132187499978
+      }
+    },
+    "85s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "84s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "83s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "82s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A7o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率13.4%で、コールのEVは−5.48bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 16.1,
+        "blocked_squeeze_pct": 17.6,
+        "eqr": 0.8280000000000001,
+        "realized_equity_pct": 13.366449999999974,
+        "call_ev_bb": -5.48423963750001
+      }
+    },
+    "K7o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q7o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J7o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T7o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "97o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "87o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "76s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.8%で、コールのEVは−1.57bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24,
+        "blocked_squeeze_pct": 0,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.808125000000004,
+        "call_ev_bb": -1.566001093749998
+      }
+    },
+    "75s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.5%で、コールのEVは−1.69bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.7,
+        "blocked_squeeze_pct": 0.3,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.48912500000001,
+        "call_ev_bb": -1.6857058437499965
+      }
+    },
+    "74s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "73s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "72s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A6o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率13.5%で、コールのEVは−5.42bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 16.4,
+        "blocked_squeeze_pct": 17.6,
+        "eqr": 0.8280000000000001,
+        "realized_equity_pct": 13.545849999999982,
+        "call_ev_bb": -5.4169197875000075
+      }
+    },
+    "K6o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q6o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J6o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T6o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "96o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "86o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "76o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "65s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.6%で、コールのEVは−1.27bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.9,
+        "blocked_squeeze_pct": 0.3,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 24.608375000000006,
+        "call_ev_bb": -1.2657072812499983
+      }
+    },
+    "64s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率23.5%で、コールのEVは−1.69bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 23.7,
+        "blocked_squeeze_pct": 0.2,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 23.48775000000001,
+        "call_ev_bb": -1.686221812499996
+      }
+    },
+    "63s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "62s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A5o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率14.7%で、コールのEVは−4.97bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 17.8,
+        "blocked_squeeze_pct": 17.9,
+        "eqr": 0.8280000000000001,
+        "realized_equity_pct": 14.72919999999999,
+        "call_ev_bb": -4.9728677000000046
+      }
+    },
+    "K5o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q5o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J5o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T5o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "95o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "85o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "75o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "65o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "54s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。COもコールした3人のポットで、BBとCOに挟まれています。仮定のEQRを加味した実現後の勝率24.4%で、コールのEVは−1.36bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_3way_pct": 24.6,
+        "blocked_squeeze_pct": 0.6,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 24.35537500000001,
+        "call_ev_bb": -1.3606455312499968
+      }
+    },
+    "53s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "52s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A4o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K4o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q4o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J4o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T4o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "94o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "84o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "74o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "64o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "54o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "43s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "42s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A3o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K3o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q3o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J3o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T3o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "93o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "83o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "73o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "63o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "53o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "43o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "32s": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A2o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K2o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q2o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J2o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T2o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "92o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "82o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "72o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "62o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "52o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "42o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "32o": {
+      "reason": "BTNの対COの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    }
+  }
+}

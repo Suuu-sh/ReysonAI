@@ -1,6 +1,6 @@
 // Constrained call-only reconciliation after the EV gate. Never changes raises,
 // admits a negative-EV call, or weakens the existing consistency audit.
-import { allowedCall, callFacts } from "../../src/estimated/call-ev.js";
+import { allowedCall, callFacts, squeezeFoldThreshold } from "../../src/estimated/call-ev.js";
 import { comboCount } from "./equity.mjs";
 import { openSizeFor } from "../../src/estimated/sizing.js";
 const ranks = "AKQJT98765432", blind = { SB: 0.5, BB: 1 };
@@ -101,6 +101,12 @@ export function reconcileCalls(contexts, table) {
     const risk = c.type === "three_bet" ? s.three_bet_size_bb - (blind[bettor] ?? 0) : s.four_bet_size_bb - openSizeFor(s.opener);
     const reward = (c.type === "three_bet" ? openSizeFor(s.opener) : s.three_bet_size_bb) + dead;
     defend([c], risk / (risk + reward), s.id);
+  }
+  // Facing a squeeze: the squeezer auto-profits when opener fold × caller fold
+  // (after the opener folds) exceeds its break-even.
+  for (const c of contexts.filter(c => c.type === "squeeze" && c.spot.prior_action === null)) {
+    const partner = contexts.find(d => d.type === "squeeze" && d.spot.prior_action === "fold" && d.spot.source_squeeze_id === c.spot.source_squeeze_id);
+    if (partner) defend([c, partner], squeezeFoldThreshold(c.spot), `${c.spot.source_squeeze_id} squeeze`);
   }
   return changes;
 }

@@ -7,7 +7,7 @@ import { comboCount, equityVsRange, equityVsRanges, weightedRange, seededRandom,
 
 const dir = process.env.ESTIMATES_DIR;
 if (!dir || resolve(dir) === resolve("src/estimated")) throw new Error("Run npm run build:estimates; staging required");
-const files = { opening: "opening-ranges", responses: "preflop-ranges", threeBets: "three-bet-responses", fourBets: "four-bet-responses", multiway: "multiway-responses", limp: "limp-responses" };
+const files = { opening: "opening-ranges", responses: "preflop-ranges", threeBets: "three-bet-responses", fourBets: "four-bet-responses", multiway: "multiway-responses", squeezes: "squeeze-responses", limp: "limp-responses" };
 const target = process.argv[2];
 const load = name => JSON.parse(readFileSync(`${dir}/${name}.json`, "utf8"));
 const data = Object.fromEntries(Object.entries(files).filter(([, file]) => existsSync(`${dir}/${file}.json`)).map(([key, file]) => [key, load(file)]));
@@ -17,7 +17,12 @@ Object.assign(table, { version: CALL_EQUITY_VERSION, samples: CALL_EQUITY_SAMPLE
 const report = existsSync(`${dir}/call-ev-report.json`) ? load("call-ev-report") : { method: "Assumed EQR; fixed-seed Monte Carlo, not solver EV. Combo % is reach-weighted removed call combos / incoming combos × 100.", spots: {} };
 const targetSpots = data[Object.keys(files).find(key => files[key] === target)]?.spots;
 if (!targetSpots) throw new Error(`Unknown target ${target}`);
-const contexts = callContexts(data).filter(c => targetSpots.includes(c.spot));
+// Callers facing a squeeze after the opener called see the opener's *final*
+// squeeze-response calls, so that stage is selected after the opener's stage.
+const stages = target === "squeeze-responses"
+  ? [c => c.spot.prior_action !== "call", c => c.spot.prior_action === "call"] : [() => true];
+for (const stage of stages) {
+const contexts = callContexts(data).filter(c => targetSpots.includes(c.spot) && stage(c));
 for (const context of contexts) {
   const { spot } = context;
   if (!validCallEquities(table, context)) {
@@ -46,7 +51,8 @@ for (const context of contexts) {
     // high-threshold fill (>= +0.50bb): the EQR table may not fully capture the lower OOP
     // realization there, so the margin keeps thin spots authored. 4bet pots are not filled.
     const fill = weight > 0 && context.type === "response" && spot.hero !== "SB";
-    const fillThreeBet = weight > 0 && context.type === "three_bet";
+    // Facing a squeeze uses the same +0.50bb margin as 3bet pots.
+    const fillThreeBet = weight > 0 && ["three_bet", "squeeze"].includes(context.type);
     row.call = fill ? targetCall(before, facts.call_ev_bb, before + row.fold)
       : fillThreeBet ? threeBetTargetCall(before, facts.call_ev_bb, before + row.fold)
       : allowedCall(before, facts.call_ev_bb);
@@ -74,8 +80,10 @@ for (const c of contexts) {
     hand: row.hand, fold: row.fold, call_ev_bb: callFacts(c, row.hand, table.spots[c.spot.id].equities[row.hand]).call_ev_bb,
   })).filter(row => row.call_ev_bb >= 0.3);
 }
+}
 const dataset = data[Object.keys(files).find(key => files[key] === target)];
 dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls (open responses by non-SB seats). Opener facing a 3bet: only calls ≥+0.50bb fill the whole non-4bet share (margin for OOP realization the assumed EQR may overstate in 3bet pots); 4bet pots are never filled. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV.";
+if (target === "squeeze-responses") dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost, versus the squeezer's saved squeeze range (plus the opener's squeeze-call range when the opener called). EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; ≥+0.50bb: the whole non-4bet share calls (same margin as 3bet pots). The opener facing a squeeze with the caller still behind also applies CALLER_BEHIND_EQR. 4bet frequencies unchanged; strength ceilings trim calls, and only positive-EV calls may be minimally added to keep the opener×caller fold rate at or below the squeezer's break-even. Not solver EV.";
 writeFileSync(`${dir}/${target}.json`, JSON.stringify(dataset, null, 2) + "\n");
 writeFileSync(`${dir}/call-equities.json`, JSON.stringify(table, null, 2) + "\n");
 writeFileSync(`${dir}/call-ev-report.json`, JSON.stringify(report, null, 2) + "\n");

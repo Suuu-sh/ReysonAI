@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
 import { raked } from "../src/estimated/rake.js";
 import { reasonSourceFingerprint } from "./lib/reason-context.mjs";
-import { callContexts, callFacts, validCallEquities } from "../src/estimated/call-ev.js";
+import { callContexts, callFacts, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.js";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { openSizeFor } from "../src/estimated/sizing.js";
@@ -22,10 +22,11 @@ const fourBets = load("four-bet-responses");
 const fiveBets = load("five-bet-responses");
 const limpResponses = existsSync(new URL("limp-responses.json", dataDir)) ? load("limp-responses") : { spots: [] };
 const multiway = existsSync(new URL("multiway-responses.json", dataDir)) ? load("multiway-responses") : { spots: [] };
+const squeezes = existsSync(new URL("squeeze-responses.json", dataDir)) ? load("squeeze-responses") : { spots: [] };
 const outDir = process.env.REASON_FACTS_DIR ? pathToFileURL(resolve(process.env.REASON_FACTS_DIR) + "/") : new URL("../.local/reason-facts/", import.meta.url);
 const sourceFingerprint = reasonSourceFingerprint(load);
 const callEquities = load("call-equities");
-const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses }).map(c => [c.spot.id, c]));
+const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses, squeezes }).map(c => [c.spot.id, c]));
 for (const context of contexts.values()) if (!validCallEquities(callEquities, context)) throw new Error(`Stale call equity: ${context.spot.id}`);
 const primaryEquityKeys = new Set(["equity_vs_open_pct", "equity_vs_three_bet_pct", "equity_vs_four_bet_pct", "equity_vs_bb_iso_pct"]);
 mkdirSync(outDir, { recursive: true });
@@ -163,6 +164,34 @@ function multiwayFacts(spot) {
   };
 }
 
+// Opener or caller facing a squeeze (S = BB or SB). Equity is against S's saved
+// squeeze range, or three-way against S and the opener's squeeze-call range.
+function squeezeFacts(spot) {
+  const { opener, caller, squeezer, hero, prior_action: prior } = spot;
+  const context = contexts.get(spot.id);
+  const source = multiway.spots.find(s => s.id === spot.source_squeeze_id);
+  const squeezeRange = rangeFrom(source, row => row.squeeze / 100);
+  const branch = action => squeezes.spots.find(s => s.source_squeeze_id === spot.source_squeeze_id && s.prior_action === action);
+  const foldOf = action => { const c = contexts.get(branch(action).id); return weightedFold(c.spot, row => c.reach(row.hand)); };
+  const equityKey = prior === "call" ? "equity_3way_pct" : "equity_vs_squeeze_pct";
+  const reachable = hand => context.reach(hand) > 0;
+  const openerCall = prior === "call" ? context.input.ranges[1].reduce((n, [hand, w]) => n + comboCount(hand) * w, 0) : null;
+  return {
+    type: "squeeze",
+    spot: { opener, caller, squeezer, hero, prior_action: prior, position: "IP",
+      squeeze_size_bb: spot.squeeze_size_bb, four_bet_size_bb: spot.four_bet_size_bb,
+      call_break_even_equity_pct: round1(need(context.input.cost_to_call, context.input.total_pot_after_call)),
+      squeeze_range_combos: Math.round(totalWeight(squeezeRange)),
+      opener_fold_pct: round1(foldOf(null)), caller_fold_after_opener_fold_pct: round1(foldOf("fold")),
+      fold_to_squeeze_pct: round1(foldOf(null) * foldOf("fold")), squeeze_break_even_pct: round1(squeezeFoldThreshold(spot)),
+      ...(prior === null ? { caller_behind: true } : {}),
+      ...(openerCall !== null ? { opener_call_range_combos: Math.round(openerCall) } : {}) },
+    hands: spot.hands.map(row => ({ hand: row.hand,
+      [equityKey]: reachable(row.hand) ? round1(callEquities.spots[spot.id].equities[row.hand]) : null,
+      blocked_squeeze_pct: reachable(row.hand) ? round1(blockedShare(row.hand, squeezeRange)) : null })),
+  };
+}
+
 function limpFacts(spot) {
   const sbOpening = opening.spots.find(s => s.hero === "SB");
   const limpRange = rangeFrom(sbOpening, row => row.limp / 100);
@@ -198,6 +227,7 @@ const builders = [
   ...threeBets.spots.map(spot => [spot.id, () => threeBetFacts(spot)]),
   ...fourBets.spots.map(spot => [spot.id, () => fourBetFacts(spot)]),
   ...multiway.spots.map(spot => [spot.id, () => multiwayFacts(spot)]),
+  ...squeezes.spots.map(spot => [spot.id, () => squeezeFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp").map(spot => [spot.id, () => limpFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "SB_vs_BB_iso").map(spot => [spot.id, () => isoFacts(spot)]),
 ];

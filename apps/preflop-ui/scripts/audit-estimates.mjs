@@ -15,6 +15,7 @@ const report = auditEstimates({
   fourBets: load("four-bet-responses"),
   fiveBets: load("five-bet-responses"),
   multiway: load("multiway-responses"),
+  squeezes: load("squeeze-responses"),
   limp: load("limp-responses"),
 });
 const { findings, autoProfit, threeBetDefense, fourBetDefense, widths } = report;
@@ -44,6 +45,8 @@ if (process.argv.includes("--json")) {
   for (const d of threeBetDefense) console.log(`- ${d.spot} ${d.size}BB: ${pct(d.foldRate)}（分岐 ${pct(d.threshold)}）${d.foldRate > d.threshold ? " ⚠" : ""}`);
   console.log("\n## 4betへの3bettorのフォールド率");
   for (const d of fourBetDefense) console.log(`- ${d.spot} ${d.size}BB: ${pct(d.foldRate)}（分岐 ${pct(d.threshold)}）${d.foldRate > d.threshold ? " ⚠" : ""}`);
+  console.log("\n## スクイーズへのオープナー×コーラー（オープナーが降りた後）のフォールド率");
+  for (const d of report.squeezeDefense) console.log(`- ${d.spot}: ${pct(d.openerFold)} × ${pct(d.callerFold)} = ${pct(d.foldRate)}（分岐 ${pct(d.threshold)}）${d.foldRate > d.threshold ? " ⚠" : ""}`);
   console.log("\n## 指摘一覧");
   for (const f of findings) console.log(`- [${f.severity}] ${f.check} · ${f.spot}: ${f.detail}`);
 }

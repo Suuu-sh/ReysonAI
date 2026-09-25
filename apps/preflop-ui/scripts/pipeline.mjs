@@ -3,19 +3,23 @@
 // Runs build-estimates until published data stops changing (fixed point) or the audit blocks.
 // Full logs and per-spot diffs go to .local/pipeline/<timestamp>/; stdout stays ~30 lines.
 import { spawnSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isBlockingAuditFinding } from "../src/estimated/audit.js";
 import { diffDatasets, isUnchanged, parseFindings, summarizeFindings } from "./lib/estimate-diff.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "limp-responses"];
+const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses"];
 const arg = process.argv.indexOf("--max-iterations");
 const maxIterations = arg > 0 ? Number(process.argv[arg + 1]) : 3;
 if (!Number.isInteger(maxIterations) || maxIterations < 1) throw new Error("--max-iterations must be a positive integer");
 
-const snapshot = () => Object.fromEntries(files.map(name => [name, JSON.parse(readFileSync(join(root, "src/estimated", `${name}.json`), "utf8"))]));
+// A dataset added in this run has no published file yet; treat it as empty.
+const snapshot = () => Object.fromEntries(files.map(name => {
+  const path = join(root, "src/estimated", `${name}.json`);
+  return [name, existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : { spots: [] }];
+}));
 const diffAll = (a, b) => Object.fromEntries(files.map(name => [name, diffDatasets(a[name], b[name])]));
 const changed = diffs => Object.values(diffs).some(d => !isUnchanged(d));
 
