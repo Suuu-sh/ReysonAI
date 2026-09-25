@@ -31,7 +31,7 @@ function readInitialCollapsed() {
   return window.matchMedia("(max-width: 1049px)").matches;
 }
 
-export function Sidebar({ activeSection, onSectionChange, profile = null, onEditProfile }) {
+export function Sidebar({ activeSection, onSectionChange, profile = null, onEditProfile, postflopEnabled = false }) {
   const [collapsed, setCollapsed] = useState(readInitialCollapsed);
   const toggle = next => {
     setCollapsed(next);
@@ -67,7 +67,9 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
           <div className="header-nav-group" key={group.label}>
             <span className="header-nav-group-label">{group.label}</span>
             <div className="header-nav-items">
-              {group.items.map(({ Icon, name, status }) => (
+              {group.items.map(({ Icon, name, status: pendingStatus }) => {
+                const status = name === "ポストフロップ" && postflopEnabled ? null : pendingStatus;
+                return (
                 <button
                   key={name}
                   className={`${activeSection === name ? "active" : ""} ${status ? "future" : ""}`.trim()}
@@ -81,7 +83,7 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
                   <span>{name}</span>
                   {status && <small>{status}</small>}
                 </button>
-              ))}
+              );})}
             </div>
           </div>
         ))}

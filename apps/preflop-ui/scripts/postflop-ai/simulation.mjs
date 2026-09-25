@@ -9,6 +9,7 @@ const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("
 const round = value => Math.round(value * 100) / 100;
 const other = seat => seat === "BTN" ? "BB" : "BTN";
 export const PROFILES = ["standard", "passive", "aggressive"];
+export const SIMULATION_VERSION = 2;
 
 function rake(pot) { return Math.min(pot * gameConfig.rake.rate, gameConfig.rake.cap_bb); }
 
@@ -102,6 +103,17 @@ export function playHand({ hands, flop, runout, hero, policy, profile, randoms }
     const btn = evaluate([...hands.BTN, ...board]), bb = evaluate([...hands.BB, ...board]);
     winner = btn === bb ? "tie" : btn > bb ? "BTN" : "BB";
   }
+  // The part of a bet that was never called is returned before the pot is
+  // raked or awarded. This applies to folds on every street, including a
+  // check-raise that BTN folds to.
+  if (winner !== "tie") {
+    const excess = round(invested[winner] - invested[other(winner)]);
+    if (excess > 0) {
+      invested[winner] = round(invested[winner] - excess);
+      stacks[winner] = round(stacks[winner] + excess);
+      pot = round(pot - excess);
+    }
+  }
   const fee = rake(pot), paid = round(pot - fee);
   const returns = {
     BTN: round((winner === "BTN" ? paid : winner === "tie" ? paid / 2 : 0) - invested.BTN),
@@ -141,6 +153,7 @@ export function simulate(inputs, candidate, samples = config.samples_per_board_p
       baseline_ev_bb: stats(baselineEvs), delta_bb: stats(differences) });
     }
   }
-  return { kind: "ai_estimate_not_gto", version: 1, spot: config.spot, source_hash: inputs.fingerprint,
+  return { kind: "ai_estimate_not_gto", version: 1, simulation_version: SIMULATION_VERSION,
+    spot: config.spot, source_hash: inputs.fingerprint,
     policy_hash: sha(candidate), samples_per_board_profile_seat: samples, seed: config.seed, results };
 }

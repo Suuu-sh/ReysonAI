@@ -6,6 +6,8 @@ const ACTION_COLORS = Object.freeze({
   call: "#3a9fb4",
   limp: "#4fa865",
   check: "#6b7686",
+  bet33: "#d9477f",
+  bet75: "#a85cde",
   all_in: "#8a5fd6",
   raise: "#d9477f",
 });

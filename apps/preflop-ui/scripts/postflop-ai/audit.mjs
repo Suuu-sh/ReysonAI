@@ -1,6 +1,6 @@
 import { comboRange, boards, config } from "./inputs.mjs";
 import { NODES, policyMix, referencePolicy, validatePolicy } from "./policy.mjs";
-import { PROFILES, simulate } from "./simulation.mjs";
+import { PROFILES, SIMULATION_VERSION, simulate } from "./simulation.mjs";
 import { sha } from "./generate.mjs";
 
 export function auditExperiment(inputs, candidate, report) {
@@ -9,7 +9,8 @@ export function auditExperiment(inputs, candidate, report) {
       candidate.metadata.source_hash !== inputs.fingerprint || candidate.metadata.config_version !== config.version ||
       candidate.metadata.policy_hash !== sha(policy) ||
       report.source_hash !== inputs.fingerprint || report.policy_hash !== sha(policy) ||
-      report.kind !== "ai_estimate_not_gto" || report.version !== 1 || report.spot !== config.spot ||
+      report.kind !== "ai_estimate_not_gto" || report.version !== 1 ||
+      report.simulation_version !== SIMULATION_VERSION || report.spot !== config.spot ||
       report.samples_per_board_profile_seat !== config.samples_per_board_profile_seat || report.seed !== config.seed) {
     throw new Error("Candidate or simulation report is stale/incomplete");
   }

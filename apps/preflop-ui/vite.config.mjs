@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { localEstimateMiddleware } from "./scripts/local-estimate.mjs";
+import { localPostflopMiddleware } from "./scripts/postflop-ai/local-view.mjs";
 
 export default defineConfig({
   build: {
@@ -23,5 +24,8 @@ export default defineConfig({
       clientFiles: ["./src/main.jsx"],
     },
   },
-  plugins: [react(), { name: "local-codex-estimates", configureServer(server) { server.middlewares.use(localEstimateMiddleware); } }],
+  plugins: [react(), { name: "local-codex-estimates", configureServer(server) {
+    server.middlewares.use(localEstimateMiddleware);
+    server.middlewares.use(localPostflopMiddleware);
+  } }],
 });

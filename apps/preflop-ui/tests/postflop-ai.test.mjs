@@ -86,9 +86,9 @@ test("flop fold, call and check-raise terminals conserve chips after capped rake
   const fold = playHand({ hands, flop, runout, hero: "BTN", profile: "standard",
     policy: forced({ btn_first: "bet33" }), randoms: randoms(0.5, 0.5) });
   assert.equal(fold.winner, "BTN");
-  assert.deepEqual(fold.invested, { BTN: 1.82, BB: 0 });
-  assert.equal(fold.pot, 7.32);
-  assert.ok(Math.abs(fold.fee - 0.366) < 1e-10);
+  assert.deepEqual(fold.invested, { BTN: 0, BB: 0 });
+  assert.equal(fold.pot, 5.5);
+  assert.ok(Math.abs(fold.fee - 0.275) < 1e-10);
   const called = playHand({ hands, flop, runout, hero: "BTN", profile: "standard",
     policy: forced({ btn_first: "bet75" }), randoms: randoms(0.5, 0.95) });
   assert.equal(called.invested.BTN, called.invested.BB);
@@ -96,7 +96,8 @@ test("flop fold, call and check-raise terminals conserve chips after capped rake
   const raiseFold = playHand({ hands: setHands, flop, runout, hero: "BTN", profile: "standard",
     policy: forced({ btn_first: "bet33", btn_vs_raise: "fold" }), randoms: randoms(0.5, 0.99) });
   assert.equal(raiseFold.winner, "BB");
-  assert.deepEqual(raiseFold.invested, { BTN: 1.82, BB: 5.46 });
+  assert.deepEqual(raiseFold.invested, { BTN: 1.82, BB: 1.82 });
+  assert.equal(raiseFold.pot, 9.14);
   const raiseCall = playHand({ hands: setHands, flop, runout, hero: "BTN", profile: "standard",
     policy: forced({ btn_first: "bet33", btn_vs_raise: "call" }), randoms: randoms(0.5, 0.99) });
   assert.deepEqual(raiseCall.invested, { BTN: 5.46, BB: 5.46 });
@@ -109,7 +110,12 @@ test("flop fold, call and check-raise terminals conserve chips after capped rake
     runout: parseCards("JsTs", 2), hero: "BTN", profile: "standard",
     policy: forced({ btn_first: "check" }), randoms: randoms(0.01, 0.01, 0.01) });
   assert.equal(tie.winner, "tie");
-  for (const result of [fold, called, raiseFold, raiseCall, capped, tie]) {
+  const turnFold = playHand({ hands: { BTN: hand("QsJc"), BB: hand("7c7h") }, flop, runout,
+    hero: "BTN", profile: "standard", policy: forced({ btn_first: "check" }),
+    randoms: [0.5, 0.99, 0.5, ...Array(9).fill(0.01)] });
+  assert.equal(turnFold.winner, "BB");
+  assert.equal(turnFold.pot, 5.5); // BB's uncalled turn bet is returned.
+  for (const result of [fold, called, raiseFold, raiseCall, capped, tie, turnFold]) {
     assert.ok(Math.abs(result.returns.BTN + result.returns.BB - (5.5 - result.fee)) <= 0.02);
     assert.ok(Math.abs(result.fee - Math.min(result.pot * 0.05, 3)) < 1e-10);
   }

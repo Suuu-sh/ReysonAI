@@ -12,7 +12,7 @@ const keyFor = node => {
 
 const adjustedLabel = { add: "卓に合わせてオープンに追加", drop: "卓に合わせてオープンから除外" };
 
-export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, title, ariaLabel, footer, actionLabels = {}, simplified = false }) {
+export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, title, ariaLabel, footer, actionLabels = {}, simplified = false, unreachableReason = "既存3bet頻度0%、推奨なし" }) {
   return (
     <Panel className="matrix-panel" aria-label={ariaLabel}>
       <SectionHeading title={title ?? `${node.actingPosition ?? "終端"} の戦略`} />
@@ -27,9 +27,9 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
               <button
                 key={hand}
                 aria-pressed={selected === hand}
-                aria-label={aggregate.unreachable ? `${hand}、既存3bet頻度0%、推奨なし` : aggregate.adjusted ? `${hand}、${adjustedLabel[aggregate.adjusted]}` : hand}
+                aria-label={aggregate.unreachable ? `${hand}、${unreachableReason}` : aggregate.adjusted ? `${hand}、${adjustedLabel[aggregate.adjusted]}` : hand}
                 className={`${selected === hand ? "picked" : ""}${aggregate.unreachable ? " unreachable-hand" : ""}${aggregate.adjusted ? ` adjusted-${aggregate.adjusted}` : ""}`}
-                title={aggregate.unreachable ? `${hand}：既存3bet頻度0%（推奨なし）` : aggregate.adjusted ? `${hand}：${adjustedLabel[aggregate.adjusted]}` : undefined}
+                title={aggregate.unreachable ? `${hand}：${unreachableReason}` : aggregate.adjusted ? `${hand}：${adjustedLabel[aggregate.adjusted]}` : undefined}
                 style={{ "--wave": (index % 13) + Math.floor(index / 13), ...(primaryAction ? { background: color(primaryAction) } : {}) }}
                 onClick={() => onSelect(hand)}
                 disabled={!aggregate.comboCount}

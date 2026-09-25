@@ -26,6 +26,8 @@ import {
 } from "./ranges.js";
 import { ArrowCounterClockwise, PencilSimple } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.jsx";
+import { PostflopTrial } from "./PostflopTrial.jsx";
+import { completedFlopContext } from "./postflop-trial.js";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.js";
 import tableAdjustments from "./table-profile-adjustments.json";
 import { DEFAULT_PROFILE, adjustOpeningSpot, adjustmentReason, describeProfile, isDefaultProfile, markAdjustedModel, normalizeProfile } from "./table-profile.js";
@@ -363,7 +365,7 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
   return null;
 }
 
-export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
   const blocks = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef(null);
   useEffect(() => {
@@ -389,6 +391,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
           <div className="action-seat-heading"><strong>終了</strong></div>
           <p className="action-seat-result">{block.result}</p>
           <small>{block.pot}</small>
+          {/^\d+人でフロップへ$/.test(block.result) && onEnterPostflop && <button type="button" className="enter-postflop" onClick={onEnterPostflop}>フロップへ進む →</button>}
         </div>;
         const activateBlock = () => onRewindActionBlock
           ? onRewindActionBlock(block)
@@ -410,6 +413,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
 }
 
 export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile }) {
+  const [street, setStreet] = useState("preflop");
   const [initialSelection] = useState(() => restoredSelection(initialRangeType));
   const [rangeType, setRangeType] = useState(initialSelection.rangeType);
   const isOpening = rangeType === "open";
@@ -477,6 +481,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     : dataset ? findSpot(dataset, opener, hero) : null;
   const model = useMemo(() => spot ? (isOpening ? openingModelFor(spot) : isFourBet ? fourBetMatrixModel(spot, findSpot(dataset, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot) : matrixModel(spot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
   function resetPath() {
+    setStreet("preflop");
     setRangeType("response");
     setOpener("BTN");
     setHero("BB");
@@ -638,6 +643,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   };
   const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, raiseSizeFor };
   const actionBlocks = buildActionBlocks(actionState);
+  const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
+    callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format) }) : null;
   const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
   const threeBetSpot = (isThreeBet || isFourBet) && threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null;
@@ -756,8 +763,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const displayedEntries = focusedEntry ? [focusedEntry] : visibleRangeEntries;
 
   return <div className="shell">
-    <Sidebar activeSection="プリフロップ" onSectionChange={() => {}} profile={profile} onEditProfile={onEditProfile} />
-    <main>
+    <Sidebar activeSection={street === "postflop" ? "ポストフロップ" : "プリフロップ"}
+      postflopEnabled={Boolean(flopContext)}
+      onSectionChange={section => { if (section === "プリフロップ") setStreet("preflop"); else if (section === "ポストフロップ" && flopContext) setStreet("postflop"); }}
+      profile={profile} onEditProfile={onEditProfile} />
+    {street === "postflop" && flopContext ? <PostflopTrial context={flopContext} displayMode={displayMode} onBack={() => setStreet("preflop")} /> : <main>
       <Panel className="estimate-settings">
         <ActionPath
           leading={<div className="action-seat action-seat-info">
@@ -776,6 +786,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           selectedRangeBlock={selectedRangeBlock}
           {...actionState}
           onRewindActionBlock={rewindToActionBlock}
+          onEnterPostflop={flopContext ? () => setStreet("postflop") : null}
           onShoveResponse={action => { setFocusedRange(null); setSelectedRangeBlock(null); setShoveResponse(action); }}
           onAct={actAt}
           onFourBet={selectFourBet}
@@ -794,7 +805,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
-    </main>
+    </main>}
   </div>;
 }
 
