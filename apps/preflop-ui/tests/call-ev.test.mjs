@@ -5,7 +5,7 @@ import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { EQR, BB_BEHIND_EQR, CALLER_BEHIND_EQR, MULTIWAY_EQR, eqrCategory, equityRealization } from "../src/estimated/eqr.js";
-import { allowedCall, callContexts, callFacts, validCallEquities } from "../src/estimated/call-ev.js";
+import { allowedCall, callContexts, callFacts, limpReraiseFoldThreshold, validCallEquities } from "../src/estimated/call-ev.js";
 import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.js";
 import { hands } from "../src/data.js";
 import { positions } from "../src/estimated/sizing.js";
@@ -74,7 +74,7 @@ test("strict EV boundaries: below -0.05 zero, [-0.05, +0.05) capped, +0.05 prese
 test("call contexts derive actual investments, dead blinds and prior weighted opponent ranges", () => {
   const data = datasets();
   const contexts = callContexts(data);
-  assert.equal(contexts.length, 94); // + 36 squeeze responses
+  assert.equal(contexts.length, 95); // + 36 squeeze responses + BB vs SB limp-reraise
   const input = id => contexts.find(c => c.spot.id === id).input;
   assert.deepEqual([input("BB_vs_SB").cost_to_call, input("BB_vs_SB").total_pot_after_call], [2.5, 7]);
   assert.deepEqual([input("SB_vs_UTG").cost_to_call, input("SB_vs_UTG").total_pot_after_call], [2, 6]);
@@ -89,6 +89,16 @@ test("call contexts derive actual investments, dead blinds and prior weighted op
   assert.equal(sbFacts.eqr, EQR.pair[1] * MULTIWAY_EQR * BB_BEHIND_EQR);
   assert.ok(Math.abs(sbFacts.call_ev_bb - (0.4 * sbFacts.eqr * raked(8.5) - 2)) < 1e-12);
   assert.deepEqual([input("SB_vs_BB_iso").cost_to_call, input("SB_vs_BB_iso").total_pot_after_call], [2.5, 7]);
+  // BB facing SB's 10.5BB limp-reraise after its 3.5BB iso: 7BB more into 21BB, in position.
+  const reraise = contexts.find(c => c.spot.id === "BB_vs_SB_limp_reraise");
+  assert.deepEqual([reraise.type, reraise.input.cost_to_call, reraise.input.total_pot_after_call, reraise.input.opponents, reraise.input.all_in], ["limp_reraise", 7, 21, ["SB"], false]);
+  assert.equal(callFacts(reraise, "99", 0.45).eqr, EQR.pair[0]);
+  assert.equal(limpReraiseFoldThreshold(reraise.spot), 9.5 / 14);
+  const sbOpen = new Map(data.opening.spots.find(s => s.hero === "SB").hands.map(r => [r.hand, r.limp]));
+  assert.deepEqual(reraise.input.ranges[0], data.limp.spots.find(s => s.id === "SB_vs_BB_iso").hands
+    .map(r => [r.hand, sbOpen.get(r.hand) / 100 * r.raise / 100]).filter(([, w]) => w > 0));
+  const iso = new Map(data.limp.spots.find(s => s.id === "BB_vs_SB_limp").hands.map(r => [r.hand, r.raise]));
+  for (const hand of ["AA", "K8s", "72o"]) assert.equal(reraise.reach(hand), iso.get(hand) / 100);
   // Facing a 13BB squeeze: 10.5BB more. BB squeezing leaves SB's 0.5 dead; SB squeezing, BB's 1.
   const squeeze = id => { const i = input(id); return [i.cost_to_call, i.total_pot_after_call, i.opponents, i.caller_behind ?? false]; };
   assert.deepEqual(squeeze("UTG_vs_BB_squeeze_HJcall"), [10.5, 29, ["BB"], true]);

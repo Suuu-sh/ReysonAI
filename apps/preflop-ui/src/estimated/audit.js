@@ -2,7 +2,7 @@
 import { openSizeFor } from "./sizing.js";
 import handStrength from "./hand-strength.json" with { type: "json" };
 import callEquitiesTable from "./call-equities.json" with { type: "json" };
-import { callContexts, callFacts, validCallEquities, callDefenseCapacity, squeezeFoldThreshold } from "./call-ev.js";
+import { callContexts, callFacts, validCallEquities, callDefenseCapacity, limpReraiseFoldThreshold, squeezeFoldThreshold } from "./call-ev.js";
 const ranks = "AKQJT98765432";
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 const blind = { SB: 0.5, BB: 1 };
@@ -210,6 +210,7 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
 
   // SB limp path: its action split is complete, and the iso response honors
   // reachability while continuing more often with stronger hands.
+  const limpReraiseDefense = [];
   if (limp) {
     const openingSb = opening.spots.find(spot => spot.id === "SB_open" && spot.hero === "SB");
     const bbLimp = limp.spots.find(spot => spot.id === "BB_vs_SB_limp");
@@ -227,6 +228,25 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
             (row.fold !== 100 || row.call !== 0 || row.raise !== 0)) {
           add("range-flow", "error", "SB vs BB iso", `${row.hand}: SB limp 0%なのに到達不能プレースホルダーでない`);
         }
+      }
+      // BB facing SB's limp-reraise. Reach: BB's iso-raise frequency. SB's reraise
+      // bluffs auto-profit when BB's reach-weighted fold rate exceeds the break-even.
+      const bbReraise = limp.spots.find(spot => spot.id === "BB_vs_SB_limp_reraise");
+      if (!bbReraise) add("range-flow", "error", "BB vs SB limp-reraise", "リンプ・リレイズへのBB応答の局面がない");
+      else {
+        const isoByHand = rows(bbLimp);
+        const reach = hand => (isoByHand.get(hand)?.raise ?? 0) / 100;
+        const label = "BB vs SB limp-reraise";
+        for (const row of bbReraise.hands) {
+          if (!reach(row.hand) && (row.fold !== 100 || row.call !== 0 || row.four_bet !== 0)) {
+            add("range-flow", "error", label, `${row.hand}: BBのアイソ0%なのに到達不能プレースホルダーでない`);
+          }
+        }
+        checkStrengthOrder(add, label, bbReraise, hand => reach(hand) > 0);
+        const threshold = limpReraiseFoldThreshold(bbReraise);
+        const foldRate = weightedFold(bbReraise, reach);
+        limpReraiseDefense.push({ spot: label, foldRate, threshold });
+        if (foldRate > threshold) reportOverfold(callModels.find(c => c.spot === bbReraise), label, foldRate, threshold, `BBのフォールド率 ${pct(foldRate)} > 損益分岐 ${pct(threshold)}（SBがどの2枚でもリンプ・リレイズで得をする）`);
       }
     }
   }
@@ -387,7 +407,9 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   for (const spot of multiway?.spots ?? []) inspectRange(spot);
   for (const spot of squeezes?.spots ?? []) inspectRange(spot, squeezeReach(spot));
   for (const spot of limp?.spots ?? []) {
-    inspectRange(spot, spot.hero === "SB" ? hand => openBy.get("SB").get(hand).limp / 100 : undefined);
+    const iso = spot.source_iso_response_id ? rows(limp.spots.find(s => s.id === spot.source_limp_response_id)) : null;
+    inspectRange(spot, spot.hero === "SB" ? hand => openBy.get("SB").get(hand).limp / 100
+      : iso ? hand => iso.get(hand).raise / 100 : undefined);
   }
   const balanceSummary = Object.fromEntries(BALANCE_CHECKS.map(check => {
     const matches = findings.filter(f => f.check === check);
@@ -418,5 +440,5 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
 
   // Range widths for a sanity read.
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
-  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
+  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, limpReraiseDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
 }

@@ -21,6 +21,7 @@ const datasets = {
   squeeze: load("squeeze-responses"),
   iso_response: { spots: load("limp-responses").spots.filter(s => s.id === "SB_vs_BB_iso") },
   limp_response: { spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp") },
+  limp_reraise: { spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp_reraise") },
 };
 const f1 = value => Number(value).toFixed(1);
 
@@ -29,6 +30,7 @@ function unreachableReason(type, spot) {
   if (type === "three_bet") return `${spot.opener}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。`;
   if (type === "four_bet") return `${spot.hero}の対${spot.opener}の既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`;
   if (type === "iso_response") return "SBの既存リンプ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。";
+  if (type === "limp_reraise") return "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。";
   if (type === "squeeze") return spot.prior_action === null
     ? `${spot.opener}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`
     : `${spot.caller}の対${spot.opener}の既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`;
@@ -44,8 +46,9 @@ const ACTIONS = {
   squeeze: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
   iso_response: [["raise", "リレイズ"], ["call", "コール"], ["fold", "フォールド"]],
   limp_response: [["raise", "アイソレイズ"], ["check", "チェック"]],
+  limp_reraise: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
 };
-const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", squeeze: "four_bet", iso_response: "raise", limp_response: "raise" };
+const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", squeeze: "four_bet", iso_response: "raise", limp_response: "raise", limp_reraise: "four_bet" };
 
 const FACT_LABELS = {
   open: [
@@ -92,8 +95,15 @@ const SQUEEZE_SPOT_LABELS = [
   { key: "fold_to_squeeze_pct", label: "スクイーズに2人とも降りる率", scope: "spot" },
   { key: "blocked_squeeze_pct", label: "スクイーズレンジのブロック", scope: "hand" },
 ];
+FACT_LABELS.limp_reraise = [
+  { key: "equity_vs_limp_reraise_pct", label: "勝率（対SBのリンプ・リレイズ）", scope: "hand" },
+  { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+  { key: "bb_fold_pct", label: "BBが降りる率（アイソで加重）", scope: "spot" },
+  { key: "limp_reraise_break_even_pct", label: "SBのリンプ・リレイズの損益分岐", scope: "spot" },
+  { key: "blocked_limp_reraise_pct", label: "リンプ・リレイズレンジのブロック", scope: "hand" },
+];
 FACT_LABELS.limp_response = [{ key: "equity_vs_sb_limp_pct", label: "勝率（対SBリンプ）", scope: "hand" }];
-for (const type of ["response", "three_bet", "four_bet", "multiway", "iso_response"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
+for (const type of ["response", "three_bet", "four_bet", "multiway", "iso_response", "limp_reraise"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
 function factLabels(type, spot) {
   if (type !== "squeeze") return FACT_LABELS[type];
   const equity = spot.prior_action === "call"
@@ -185,6 +195,30 @@ function compose(type, row, facts, spot) {
       ? `実現後の勝率${f1(facts.realized_equity_pct)}%、コールのEVは${evText(facts.call_ev_bb)}です。既存の${raiseName}配分を維持し、強いハンドと一部のブロッカーをレイズへ配分します。`
       : callDecision(row, facts);
     return `${lead}${behind}${body}${row[raiseKey] > 0 && main !== raiseKey ? `一部は${raiseName}へ配分します。` : ""}${mixText(type, row)}。`;
+  }
+  if (type === "limp_reraise") {
+    const size = `4bet（${spot.four_bet_size_bb}BB）`;
+    const eq = facts.equity_vs_limp_reraise_pct;
+    const rangeName = "SBのリンプ・リレイズレンジ";
+    const situation = `SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは${spot.cost_to_call_bb}BBを払って${spot.total_pot_after_call_bb}BBのポットに参加します。`;
+    let body;
+    if (main === "four_bet") {
+      body = eq >= 50
+        ? `${rangeName}に対して勝率${f1(eq)}%と優位なので、${size}でバリューを取ります。`
+        : `${rangeName}に対して勝率${f1(eq)}%と不利ですが、Aのブロッカーで相手の強いハンドを${f1(facts.blocked_limp_reraise_pct)}%減らせるため、少量のブラフの${size}に使います。`;
+      if (row.call > 0) body += "一部はコールに回し、コールするレンジにも強いハンドを残します。";
+    } else if (main === "call") {
+      body = callDecision(row, facts);
+      if (row.four_bet > 0) body += eq >= 50
+        ? `一部は${size}に回し、4betするレンジにも強いハンドを入れます。`
+        : `一部は相手の強いハンドを${f1(facts.blocked_limp_reraise_pct)}%ブロックできることを使って、ブラフの${size}に回します。`;
+      if (row.fold > 0) body += facts.call_ev_bb >= 0.05 ? "プラスが小さく仮定のEQRに左右されやすいため、一部はフォールドします。" : "一部はフォールドします。";
+    } else {
+      body = callDecision(row, facts);
+      if (row.four_bet > 0) body += `ただし一部は${size}に回します。`;
+      if (row.call > 0) body += "一部はコールで継続します。";
+    }
+    return `${lead}${situation}${body}${mixText(type, row)}。`;
   }
   if (type === "squeeze") {
     const size = `4bet（${spot.four_bet_size_bb}BB）`;

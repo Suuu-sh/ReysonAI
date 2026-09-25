@@ -28,7 +28,7 @@ test("CLI reports balance counts and spot lists but does not fail for their warn
     assert.equal(report.balanceSummary[check].count, matches.length);
     assert.deepEqual(report.balanceSummary[check].spots, [...new Set(matches.map(f => f.spot))].sort());
   }
-  assert.equal(report.rangeBalance.length, 115); // +36 squeeze-response spots
+  assert.equal(report.rangeBalance.length, 116); // +36 squeeze-response spots, +1 BB vs SB limp-reraise
 });
 
 test("audit rejects an overfolding 4bet response", () => {
@@ -190,4 +190,29 @@ test("audit enforces zero-limp unreachable placeholders in the SB iso response",
   const unreachable = data.limp.spots.find(s => s.id === "SB_vs_BB_iso").hands.find(row => sb.hands.find(r => r.hand === row.hand).limp === 0);
   Object.assign(unreachable, { fold: 0, call: 100, raise: 0 });
   assert.ok(auditEstimates(data).findings.some(f => f.check === "range-flow" && f.spot === "SB vs BB iso"));
+});
+
+test("audit covers BB facing SB's limp-reraise: placeholders, reach weighting and SB's auto-profit", () => {
+  const data = datasets();
+  const report = auditEstimates(data);
+  const combos = hand => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
+  const iso = new Map(data.limp.spots.find(s => s.id === "BB_vs_SB_limp").hands.map(r => [r.hand, r.raise]));
+  const metric = report.rangeBalance.find(m => m.spot === "BB_vs_SB_limp_reraise");
+  assert.ok(Math.abs(metric.reachableCombos - [...iso].reduce((n, [hand, raise]) => n + combos(hand) * raise / 100, 0)) < 1e-10);
+  const [defense] = report.limpReraiseDefense;
+  assert.ok(Math.abs(defense.threshold - 9.5 / 14) < 1e-12);
+  assert.ok(defense.foldRate <= defense.threshold, `BB fold ${defense.foldRate}`);
+  assert.ok(!report.findings.some(f => f.spot === "BB vs SB limp-reraise" || f.spot === "BB_vs_SB_limp_reraise"));
+
+  const placeholder = structuredClone(data);
+  const spot = placeholder.limp.spots.find(s => s.id === "BB_vs_SB_limp_reraise");
+  Object.assign(spot.hands.find(row => iso.get(row.hand) === 0), { fold: 0, call: 100, four_bet: 0 });
+  assert.ok(auditEstimates(placeholder).findings.some(f => f.check === "range-flow" && f.spot === "BB vs SB limp-reraise"));
+
+  // Folding every reachable hand lets SB's limp-reraise auto-profit: a blocking error, not a capacity warning.
+  const overfold = structuredClone(data);
+  for (const row of overfold.limp.spots.find(s => s.id === "BB_vs_SB_limp_reraise").hands) Object.assign(row, { fold: 100, call: 0, four_bet: 0, four_bet_size_bb: null });
+  const found = auditEstimates(overfold).findings.filter(f => f.spot === "BB vs SB limp-reraise" && f.check === "auto-profit");
+  assert.equal(found.length, 1);
+  assert.ok(found.every(isBlockingAuditFinding));
 });

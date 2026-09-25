@@ -7,12 +7,13 @@ const root = new URL("..", import.meta.url);
 const read = path => JSON.parse(readFileSync(new URL(path, root)));
 
 test("SB review packets include all legal actions, balance rubric and limp-path reachability", () => {
-  const ids = ["SB_open", "BB_vs_SB_limp", "SB_vs_BB_iso"];
+  const ids = ["SB_open", "BB_vs_SB_limp", "SB_vs_BB_iso", "BB_vs_SB_limp_reraise"];
   const result = spawnSync(process.execPath, ["scripts/review/build-packets.mjs", ...ids], { cwd: root, encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const sb = read("src/estimated/opening-ranges.json").spots.find(s => s.hero === "SB");
   const limps = new Map(sb.hands.map(row => [row.hand, row.limp]));
-  const actions = [["open", "limp", "fold"], ["raise", "check"], ["raise", "call", "fold"]];
+  const isos = new Map(read("src/estimated/limp-responses.json").spots.find(s => s.id === "BB_vs_SB_limp").hands.map(row => [row.hand, row.raise]));
+  const actions = [["open", "limp", "fold"], ["raise", "check"], ["raise", "call", "fold"], ["four_bet", "call", "fold"]];
   for (const [index, id] of ids.entries()) {
     for (const mode of ["blind", "critique"]) {
       const packet = read(`.local/review/packets/${id}.${mode}.json`);
@@ -22,12 +23,14 @@ test("SB review packets include all legal actions, balance rubric and limp-path 
         assert.equal(packet.hands.length, 30);
         assert.ok(packet.hands.every(row => !Object.hasOwn(row, "mix")));
         if (id === "SB_vs_BB_iso") assert.ok(packet.hands.every(row => limps.get(row.hand) > 0));
+        if (id === "BB_vs_SB_limp_reraise") assert.ok(packet.hands.every(row => isos.get(row.hand) > 0));
       } else {
         assert.equal(packet.hands.length, 169);
         for (const row of packet.hands) {
           assert.deepEqual(Object.keys(row.mix), actions[index]);
           assert.equal(Object.values(row.mix).reduce((a, b) => a + b, 0), 100);
           if (id === "SB_vs_BB_iso") assert.equal(row.unreachable, limps.get(row.hand) === 0);
+          if (id === "BB_vs_SB_limp_reraise") assert.equal(row.unreachable, isos.get(row.hand) === 0);
         }
       }
     }

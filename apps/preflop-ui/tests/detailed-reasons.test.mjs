@@ -13,6 +13,7 @@ const sources = [
   [load("squeeze-responses"), [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]]],
   [{ spots: load("limp-responses").spots.filter(s => s.id === "SB_vs_BB_iso") }, [["raise", "リレイズ"], ["call", "コール"], ["fold", "フォールド"]]],
   [{ spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp") }, [["raise", "アイソレイズ"], ["check", "チェック"]]],
+  [{ spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp_reraise") }, [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]]],
   [load("four-bet-responses"), [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]]],
 ];
 

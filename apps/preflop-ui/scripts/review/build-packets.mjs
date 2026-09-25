@@ -9,6 +9,8 @@ const out = sub => { const dir = new URL(`.local/review/${sub}/`, root); mkdirSy
 const packetDir = out("packets");
 const keyDir = out("answer-key");
 const sbLimpByHand = new Map(load("opening-ranges").spots.find(s => s.hero === "SB").hands.map(row => [row.hand, row.limp]));
+const bbIsoByHand = existsSync(new URL("src/estimated/limp-responses.json", root))
+  ? new Map(load("limp-responses").spots.find(s => s.id === "BB_vs_SB_limp").hands.map(row => [row.hand, row.raise])) : new Map();
 
 const TYPES = {
   open: { file: "opening-ranges", actions: ["open", "fold"] },
@@ -33,7 +35,9 @@ function history(type, spot) {
   const open = spot.open_size_bb ?? 2.5;
   switch (type) {
     case "open": return `${spot.hero}まで全員フォールド。${spot.hero}がオープン（${open}BB）するかを判断。${spot.hero === "SB" ? "1BBへのリンプも選択可能。" : ""}`;
-    case "limp": return spot.hero === "BB"
+    case "limp": return spot.id === "BB_vs_SB_limp_reraise"
+      ? `SBが1BBにリンプ、BBが${spot.iso_size_bb}BBへアイソレイズ、SBが${spot.limp_reraise_size_bb}BBへリンプ・リレイズ。BBがフォールド／コール／${spot.four_bet_size_bb}BBへの4betを判断（BBはIP）。`
+      : spot.hero === "BB"
       ? `SBが1BBにリンプ。BBがチェックか${spot.raise_size_bb}BBへのアイソレイズを判断。`
       : `SBが1BBにリンプ、BBが${spot.iso_size_bb}BBへアイソレイズ。SBがフォールド／コール／${spot.raise_to_bb}BBへのリンプ・リレイズを判断。`;
     case "response": return `${spot.opener}が${open}BBでオープン、間の全員フォールド。${spot.hero}が判断（3betは${spot.three_bet_size_bb}BB）。`;
@@ -82,7 +86,7 @@ for (const [type, { file, actions: defaultActions }] of Object.entries(TYPES)) {
   for (const saved of load(file).spots) {
     if (wanted.size && !wanted.has(saved.id)) continue;
     const actions = type === "open" && saved.hero === "SB" ? ["open", "limp", "fold"]
-      : type === "limp" ? (saved.hero === "BB" ? ["raise", "check"] : ["raise", "call", "fold"])
+      : type === "limp" ? (saved.id === "BB_vs_SB_limp_reraise" ? ["four_bet", "call", "fold"] : saved.hero === "BB" ? ["raise", "check"] : ["raise", "call", "fold"])
         : defaultActions;
     const random = seededRandom(seedFor(`review:${saved.id}`));
     const reasonsPath = new URL(`src/estimated/reasons/${saved.id}.json`, root);
@@ -93,7 +97,8 @@ for (const [type, { file, actions: defaultActions }] of Object.entries(TYPES)) {
     const factsFor = hand => detailed?.hands[hand]?.facts ?? factsByHand.get(hand) ?? null;
     // Reasons live in reasons/<spot>.json; only the 5bet dataset still carries them inline.
     const spot = { ...saved, hands: saved.hands.map(row => ({ ...row,
-      unreachable: type === "limp" && saved.hero === "SB" && sbLimpByHand.get(row.hand) === 0,
+      unreachable: type === "limp" && (saved.hero === "SB" ? sbLimpByHand.get(row.hand) === 0
+        : saved.id === "BB_vs_SB_limp_reraise" && bbIsoByHand.get(row.hand) === 0),
       reason: detailed?.hands[row.hand]?.reason ?? row.reason })) };
     const { hands, ...spotMeta } = spot;
     const benchPath = new URL(`.local/benchmarks/${spot.id}.json`, root);

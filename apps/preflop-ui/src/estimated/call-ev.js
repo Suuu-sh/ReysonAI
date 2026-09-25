@@ -17,6 +17,13 @@ export function squeezeFoldThreshold(spot) {
   return risk / (risk + 2 * spot.open_size_bb + 1.5);
 }
 
+// SB limp-reraise break-even. SB's limp-reraise bluff risks everything beyond its 1BB limp (10.5 − 1 = 9.5)
+// to win the pot before the reraise (limp 1 + iso 3.5 = 4.5): 9.5 ÷ 14 = 67.9%.
+export function limpReraiseFoldThreshold(spot) {
+  const risk = spot.limp_reraise_size_bb - spot.open_size_bb;
+  return risk / (risk + spot.open_size_bb + spot.iso_size_bb);
+}
+
 export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes }) {
   const opens = new Map(opening.spots.map(s => [s.hero, s]));
   const response = (opener, hero) => responses.spots.find(s => s.opener === opener && s.hero === hero);
@@ -67,6 +74,15 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
     const iso = limp.spots.find(s => s.id === spot.source_limp_response_id);
     add("iso_response", spot, [spot.opponent], spot.iso_size_bb - spot.open_size_bb, 2 * spot.iso_size_bb,
       [range(iso, row => row.raise / 100)], hand => open.get(hand).limp / 100, spot.iso_size_bb);
+  }
+  // BB facing SB's limp-reraise after its own iso: 7BB more into a 21BB pot, IP.
+  // Opponent range: SB's limp × limp-reraise; reach: BB's iso-raise frequency.
+  for (const spot of limp?.spots.filter(s => s.id === "BB_vs_SB_limp_reraise") ?? []) {
+    const open = byHand(opens.get("SB"));
+    const iso = byHand(limp.spots.find(s => s.id === spot.source_limp_response_id));
+    const sbIso = limp.spots.find(s => s.id === spot.source_iso_response_id);
+    add("limp_reraise", spot, [spot.opponent], spot.limp_reraise_size_bb - spot.iso_size_bb, 2 * spot.limp_reraise_size_bb,
+      [range(sbIso, row => open.get(row.hand).limp / 100 * row.raise / 100)], hand => iso.get(hand).raise / 100, spot.limp_reraise_size_bb);
   }
   // Facing a squeeze (S = BB or SB; with SB squeezing, BB has folded). Opponent
   // range: S's saved squeeze frequencies. The other blind is dead money.

@@ -8,7 +8,7 @@ from pathlib import Path
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit(
     'Run `npm run build:estimates`; generators never write src/estimated directly.'))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from sizing_rules import CONFIG
+from sizing_rules import CONFIG, four_bet_to
 
 RANKS = 'AKQJT98765432'
 HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
@@ -34,8 +34,9 @@ def expand(token):
     return result
 
 
-def parse_profile(text, width):
-    default = (100, 0) if width == 2 else tuple(0 for _ in range(width))
+def parse_profile(text, width, default=None):
+    if default is None:
+        default = (100, 0) if width == 2 else tuple(0 for _ in range(width))
     values = {hand: default for hand in HANDS}
     seen = set()
     for line in text.strip().splitlines():
@@ -102,14 +103,47 @@ SB_RAISE = parse_profile('''
 ''', 1)
 
 
+# BB facing SB's limp-reraise to 10.5BB after its own 3.5BB iso (call%, 4bet%).
+# Unlisted hands fold. Rows are conditional on BB having iso-raised; hands the
+# iso never raises are fold=100 placeholders. BB is in position (IP EQR); a call
+# costs 7BB into a 21BB pot. SB's reraise range (limp x reraise) is strong and
+# narrow, so the 4bet to four_bet_to('BB', 'SB') is mostly value with a few
+# wheel-ace blockers; AA/KK/AKs keep calls so the call range is not capped.
+# The listed calls are candidates: apply_call_policy removes < -0.05bb calls,
+# caps [-0.05, +0.05) at 50% and fills >= +0.50bb (no fold left, same margin as
+# 3bet pots).
+# 2026-09-26 calibration (call-equities, 12,000 samples; SB's reraise range is
+# about 9 combos: QQ+/AK plus JJ-55, AQ/AJ, KQs and A5s/A4s): pairs (22 +0.49bb
+# up to JJ +4.1bb), A6s+ suited aces, AQo-ATo and KQs-KTs/QJs/QTs clear the fill
+# line. A5s (+0.49) and A4s (+0.31) call the rest of their blocker 4bets. KQo is
+# only +0.17bb (dominated by AK/AQ/KQs), so it calls 50% as a model-uncertainty
+# margin; A3s (+0.02) is a boundary 50%. Offsuit A9o-A2o (non-broadway EQR
+# 0.92), KJo/KTo, K9s and the 10% probes are -EV and fold. Value 4bets: AA 50%,
+# KK 45%, AKs 40%, QQ/AKo 20%; BB's reach-weighted fold is ~40%, below SB's
+# limp-reraise break-even.
+BB_VS_RERAISE = parse_profile('''
+50 50: AA
+55 45: KK
+80 20: QQ
+60 40: AKs
+80 20: AKo
+85 15: A5s
+90 10: A4s
+100 0: JJ-22 AQs-A6s A3s A2s KQs KJs KTs K9s QJs QTs Q6s Q5s AQo-A2o KJo KTo K6o K5o
+50 0: KQo
+''', 2, default=(0, 0))
+
+
 def main():
     opening = json.loads((STAGING / 'opening-ranges.json').read_text())
     sb = next(spot for spot in opening['spots'] if spot['hero'] == 'SB')
     sb_limp = {row['hand']: row['limp'] for row in sb['hands']}
     iso_size = CONFIG['sizing']['fixed_raise_to_bb']['iso_vs_limp']
     reraise_size = CONFIG['sizing']['fixed_raise_to_bb']['limp_reraise']
+    four_bet_size = four_bet_to('BB', 'SB')
     bb_rows = []
     sb_rows = []
+    reraise_rows = []
     for hand in HANDS:
         check, raise_frequency = BB_PROFILE[hand]
         assert check + raise_frequency == 100
@@ -129,6 +163,12 @@ def main():
                         'raise': raise_frequency,
                         'raise_size_bb': reraise_size if raise_frequency else None})
 
+        call, four_bet = BB_VS_RERAISE[hand] if BB_PROFILE[hand][1] > 0 else (0, 0)
+        assert call + four_bet <= 100
+        reraise_rows.append({'hand': hand, 'fold': 100 - call - four_bet, 'call': call,
+                             'four_bet': four_bet,
+                             'four_bet_size_bb': four_bet_size if four_bet else None})
+
     rake = CONFIG['rake']
     data = {
         'metadata': {
@@ -137,15 +177,16 @@ def main():
             'open_size_bb': CONFIG['sizing']['open_sizes_bb'][0], 'ante_bb': CONFIG['ante_bb'],
             'rake': {'rate': rake['rate'], 'cap_bb': rake['cap_bb'],
                      'no_flop_no_drop': rake['no_flop_no_drop'], 'calibrated': True},
-            'legal_actions': {'BB_vs_SB_limp': ['check', 'raise'], 'SB_vs_BB_iso': ['fold', 'call', 'raise']},
-            'scope': 'SBが1BBにリンプした後のBB応答、およびBBが3.5BBにアイソレイズした後のSB応答。',
-            'method': 'BBはAA等も含む保護されたSBリンプレンジに対する固定シード12,000回の勝率を基に、概ね55%以上をバリュー・アイソ（65〜70%）とし、ポジションがあるため各バリューハンドに30〜35%のチェックを残してチェックレンジを守る。A3s/A2s/A4o-A2o/33/22はブロッカーとペアの混合アイソ、Q6s/Q5s/K6o/K5oは10%のブロッカー・プローブ、残りはチェック。SBは強いリンプをリレイズ／コールへ混ぜ、中位はレイズ以外をコールしてEVマイナスのコールだけを外し、+0.15bb未満の薄いコールは75%に抑える。リンプ頻度0%は到達不能として除外。',
-            'frequency_semantics': 'BBはcheck+raise=100。SBはリンプ済み条件下でfold+call+raise=100。',
-            'sizing_semantics': 'SB complete=1BB、BB iso raise-to=3.5BB、SB limp-reraise-to=10.5BB。',
-            'unreachable_hands': 'SBのSB_open.limp=0%ハンドはfold=100の形式的プレースホルダーであり、推奨ではない。',
+            'legal_actions': {'BB_vs_SB_limp': ['check', 'raise'], 'SB_vs_BB_iso': ['fold', 'call', 'raise'],
+                              'BB_vs_SB_limp_reraise': ['fold', 'call', 'four_bet']},
+            'scope': 'SBが1BBにリンプした後のBB応答、BBが3.5BBにアイソレイズした後のSB応答、およびSBが10.5BBにリンプ・リレイズした後のBB応答。',
+            'method': 'BBはAA等も含む保護されたSBリンプレンジに対する固定シード12,000回の勝率を基に、概ね55%以上をバリュー・アイソ（65〜70%）とし、ポジションがあるため各バリューハンドに30〜35%のチェックを残してチェックレンジを守る。A3s/A2s/A4o-A2o/33/22はブロッカーとペアの混合アイソ、Q6s/Q5s/K6o/K5oは10%のブロッカー・プローブ、残りはチェック。SBは強いリンプをリレイズ／コールへ混ぜ、中位はレイズ以外をコールしてEVマイナスのコールだけを外し、+0.15bb未満の薄いコールは75%に抑える。リンプ頻度0%は到達不能として除外。BBはリンプ・リレイズ（SBのリンプ×リレイズ頻度）に対しIPで7BBを払って21BBのポットに参加するコールをEV（勝率×IPのEQR×raked(pot)−7）で選び、+0.50bb以上はフォールドを残さない。4betはAA・KK・AKs等の一部と少数のホイールAのブロッカーで、AA・KKにもコールを残す。アイソ頻度0%は到達不能として除外。',
+            'frequency_semantics': 'BBはcheck+raise=100。SBはリンプ済み条件下でfold+call+raise=100。リンプ・リレイズへのBB応答はアイソ済み条件下でfold+call+four_bet=100（アイソ頻度を再乗算しない）。',
+            'sizing_semantics': f'SB complete=1BB、BB iso raise-to=3.5BB、SB limp-reraise-to=10.5BB、BB 4bet-to={four_bet_size:g}BB（頻度0なら行のfour_bet_size_bbはnull）。',
+            'unreachable_hands': 'SBのSB_open.limp=0%ハンド、およびBB_vs_SB_limp.raise=0%ハンドのリンプ・リレイズ応答はfold=100の形式的プレースホルダーであり、推奨ではない。',
             'warning': 'AI推定。ソルバー・EV・均衡検証ではなく、指定レーキ環境を仮定した独立推定。',
         },
-        'spot_count': 2, 'hand_classes_per_spot': 169, 'entry_count': 338,
+        'spot_count': 3, 'hand_classes_per_spot': 169, 'entry_count': 507,
         'spots': [
             {'id': 'BB_vs_SB_limp', 'hero': 'BB', 'opponent': 'SB',
              'source_opening_id': 'SB_open', 'open_size_bb': 1.0,
@@ -154,6 +195,12 @@ def main():
              'source_opening_id': 'SB_open', 'source_limp_response_id': 'BB_vs_SB_limp',
              'open_size_bb': 1.0, 'effective_stack_bb': CONFIG['stack_bb'],
              'iso_size_bb': iso_size, 'raise_to_bb': reraise_size, 'hands': sb_rows},
+            {'id': 'BB_vs_SB_limp_reraise', 'hero': 'BB', 'opponent': 'SB',
+             'source_opening_id': 'SB_open', 'source_limp_response_id': 'BB_vs_SB_limp',
+             'source_iso_response_id': 'SB_vs_BB_iso', 'open_size_bb': 1.0,
+             'effective_stack_bb': CONFIG['stack_bb'], 'iso_size_bb': iso_size,
+             'limp_reraise_size_bb': reraise_size, 'four_bet_size_bb': four_bet_size,
+             'hands': reraise_rows},
         ],
     }
     (STAGING / 'limp-responses.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
@@ -165,7 +212,11 @@ def main():
     limp_combos = sum(combo_count(hand) * sb_limp[hand] / 100 for hand in HANDS)
     sb_actions = {action: sum(combo_count(row['hand']) * sb_limp[row['hand']] / 100 * row[action] for row in sb_rows) / limp_combos
                   for action in ('raise', 'call', 'fold')}
-    print(f'Generated limp responses: BB iso {bb_raise:.2f}% combos; SB vs iso {sb_actions}')
+    reraise = next(s['hands'] for s in final['spots'] if s['id'] == 'BB_vs_SB_limp_reraise')
+    iso_combos = sum(combo_count(row['hand']) * row['raise'] / 100 for row in bb_rows)
+    bb_actions = {action: sum(combo_count(row['hand']) * BB_PROFILE[row['hand']][1] / 100 * row[action] for row in reraise) / iso_combos
+                  for action in ('four_bet', 'call', 'fold')}
+    print(f'Generated limp responses: BB iso {bb_raise:.2f}% combos; SB vs iso {sb_actions}; BB vs limp-reraise {bb_actions}')
 
 
 if __name__ == '__main__':

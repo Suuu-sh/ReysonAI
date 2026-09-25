@@ -1,6 +1,6 @@
 // Constrained call-only reconciliation after the EV gate. Never changes raises,
 // admits a negative-EV call, or weakens the existing consistency audit.
-import { allowedCall, callFacts, squeezeFoldThreshold } from "../../src/estimated/call-ev.js";
+import { allowedCall, callFacts, limpReraiseFoldThreshold, squeezeFoldThreshold } from "../../src/estimated/call-ev.js";
 import { comboCount } from "./equity.mjs";
 import { openSizeFor } from "../../src/estimated/sizing.js";
 const ranks = "AKQJT98765432", blind = { SB: 0.5, BB: 1 };
@@ -108,5 +108,7 @@ export function reconcileCalls(contexts, table) {
     const partner = contexts.find(d => d.type === "squeeze" && d.spot.prior_action === "fold" && d.spot.source_squeeze_id === c.spot.source_squeeze_id);
     if (partner) defend([c, partner], squeezeFoldThreshold(c.spot), `${c.spot.source_squeeze_id} squeeze`);
   }
+  // BB facing SB's limp-reraise: SB's reraise auto-profits when BB folds more than its break-even.
+  for (const c of contexts.filter(c => c.type === "limp_reraise")) defend([c], limpReraiseFoldThreshold(c.spot), c.spot.id);
   return changes;
 }

@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
 import { raked } from "../src/estimated/rake.js";
 import { reasonSourceFingerprint } from "./lib/reason-context.mjs";
-import { callContexts, callFacts, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.js";
+import { callContexts, callFacts, limpReraiseFoldThreshold, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.js";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { openSizeFor } from "../src/estimated/sizing.js";
@@ -28,7 +28,7 @@ const sourceFingerprint = reasonSourceFingerprint(load);
 const callEquities = load("call-equities");
 const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses, squeezes }).map(c => [c.spot.id, c]));
 for (const context of contexts.values()) if (!validCallEquities(callEquities, context)) throw new Error(`Stale call equity: ${context.spot.id}`);
-const primaryEquityKeys = new Set(["equity_vs_open_pct", "equity_vs_three_bet_pct", "equity_vs_four_bet_pct", "equity_vs_bb_iso_pct"]);
+const primaryEquityKeys = new Set(["equity_vs_open_pct", "equity_vs_three_bet_pct", "equity_vs_four_bet_pct", "equity_vs_bb_iso_pct", "equity_vs_limp_reraise_pct"]);
 mkdirSync(outDir, { recursive: true });
 
 const round1 = value => value === null ? null : Math.round(value * 1000) / 10;
@@ -221,6 +221,28 @@ function isoFacts(spot) {
   };
 }
 
+// BB facing SB's limp-reraise after its own iso, in position. Equity is against
+// SB's limp × limp-reraise range; reach is BB's iso-raise frequency.
+function limpReraiseFacts(spot) {
+  const context = contexts.get(spot.id);
+  const sb = openOf("SB");
+  const sbIso = limpResponses.spots.find(s => s.id === spot.source_iso_response_id);
+  const reraiseRange = rangeFrom(sbIso, row => sb.get(row.hand).limp / 100 * row.raise / 100);
+  const reachable = hand => context.reach(hand) > 0;
+  return {
+    type: "limp_reraise",
+    spot: { hero: "BB", opponent: "SB", position: "IP", iso_size_bb: spot.iso_size_bb,
+      limp_reraise_size_bb: spot.limp_reraise_size_bb, four_bet_size_bb: spot.four_bet_size_bb,
+      call_break_even_equity_pct: round1(need(context.input.cost_to_call, context.input.total_pot_after_call)),
+      sb_reraise_range_combos: Math.round(totalWeight(reraiseRange) * 10) / 10,
+      bb_fold_pct: round1(weightedFold(spot, row => context.reach(row.hand))),
+      limp_reraise_break_even_pct: round1(limpReraiseFoldThreshold(spot)) },
+    hands: handFacts(spot.id, spot, reachable, {
+      equity_vs_limp_reraise_pct: reraiseRange, blocked_limp_reraise_pct: reraiseRange,
+    }),
+  };
+}
+
 const builders = [
   ...opening.spots.map(spot => [spot.id, () => openingFacts(spot)]),
   ...responses.spots.map(spot => [spot.id, () => responseFacts(spot)]),
@@ -230,6 +252,7 @@ const builders = [
   ...squeezes.spots.map(spot => [spot.id, () => squeezeFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp").map(spot => [spot.id, () => limpFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "SB_vs_BB_iso").map(spot => [spot.id, () => isoFacts(spot)]),
+  ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp_reraise").map(spot => [spot.id, () => limpReraiseFacts(spot)]),
 ];
 const wanted = new Set(process.argv.slice(2));
 for (const [id, build] of builders) {
