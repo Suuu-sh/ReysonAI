@@ -17,7 +17,6 @@ const pct = value => `${Math.round((value ?? 0) * 100)}%`;
 const RESULT_ICONS = { best: CheckCircle, mixed: WarningCircle, miss: XCircle };
 const actionColor = key => barColor(key === "open" || key === "three_bet" ? "raise" : key);
 const shortLabel = action => action.label.split(" ")[0];
-const PANEL_TAB_KEY = "solveaai.trainer.panel-tab";
 
 // Four-colour deck (♠ graphite, ♥ red, ♦ blue, ♣ green) so the suit reads at a glance.
 function PlayingCard({ card, size = "" }) {
@@ -288,8 +287,6 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup
   const [answer, setAnswer] = useState(null);
   const [session, setSession] = useState({ answered: 0, score: 0, streak: 0, bestStreak: 0, results: [], log: [] });
   const [selectedHand, setSelectedHand] = useState(null);
-  const [tab, setTab] = useState(() => { try { return window.localStorage.getItem(PANEL_TAB_KEY) ?? "notes"; } catch { return "notes"; } });
-  const chooseTab = value => { setTab(value); try { window.localStorage.setItem(PANEL_TAB_KEY, value); } catch {} };
   const limit = reviewOnly ? Math.min(settings.count || review.length, review.length || 1) : settings.count;
   const lastQuestion = limit > 0 && session.answered >= limit;
 
@@ -385,12 +382,15 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup
 
       <aside className="trainer-panel">
         {answer ? <>
-          <div className="panel-tabs" role="tablist">
-            {[["notes", "解説"], ["range", "レンジ表"]].map(([value, label]) =>
-              <button type="button" role="tab" key={value} aria-selected={tab === value} className={tab === value ? "on" : ""} onClick={() => chooseTab(value)}>{label}</button>)}
-          </div>
           <div className="panel-body">
-            {tab === "notes" ? <div className="trainer-explain">
+            <div className="trainer-range">
+              <StrategyMatrix node={matrixNode} title={`${spotTitle(spot)} · レンジ`} ariaLabel={`${spotTitle(spot)}のレンジ`}
+                aggregates={aggregates} actions={spot.actions.map(action => action.key)} actionLabels={actionLabels}
+                selected={shownHand} onSelect={setSelectedHand} />
+              {shownMix && <p className="trainer-peek"><strong>{shownHand}</strong>
+                {spot.actions.map(action => `${shortLabel(action)} ${pct(shownMix[action.key])}`).join(" · ")}</p>}
+            </div>
+            <div className="trainer-explain">
               <p className="explain-lead">
                 <b className="explain-hand">{cards.map(card => <PlayingCard key={card} card={card} size="mini" />)}</b>
                 {answer.result === "best" ? "この局面でいちばん多い選択です。" : answer.result === "mixed"
@@ -403,13 +403,7 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup
                 </li>)}
               </ul>}
               <Comparison spot={spot} hand={hand} />
-            </div> : <div className="trainer-range">
-              <StrategyMatrix node={matrixNode} title={`${spotTitle(spot)} · レンジ`} ariaLabel={`${spotTitle(spot)}のレンジ`}
-                aggregates={aggregates} actions={spot.actions.map(action => action.key)} actionLabels={actionLabels}
-                selected={shownHand} onSelect={setSelectedHand} />
-              {shownMix && <p className="trainer-peek"><strong>{shownHand}</strong>
-                {spot.actions.map(action => `${shortLabel(action)} ${pct(shownMix[action.key])}`).join(" · ")}</p>}
-            </div>}
+            </div>
           </div>
         </> : <div className="panel-body"><SessionPanel session={session} history={history} /></div>}
       </aside>

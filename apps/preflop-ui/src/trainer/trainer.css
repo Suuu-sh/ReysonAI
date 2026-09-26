@@ -126,9 +126,6 @@
 
 /* Right panel */
 .trainer-panel { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-.panel-tabs { display: flex; gap: 2px; margin: 8px 8px 0; padding: 3px; border-radius: 9px; background: var(--bg); }
-.panel-tabs button { flex: 1; padding: 4px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; }
-.panel-tabs button.on { background: var(--surface-raised); color: var(--text); box-shadow: 0 1px 0 rgb(255 255 255 / 5%); }
 .panel-body { flex: 1; min-height: 0; padding: 11px; overflow: auto; }
 
 .trainer-explain { display: grid; gap: 12px; animation: fade-up .3s var(--ease-out) both; }
@@ -439,3 +436,7 @@
 .drill-card-stats { flex-wrap: wrap; }
 .drill-card-stats dt, .drill-card-stats dd, .drill-start, .library-totals dt { white-space: nowrap; }
 .drill-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+/* Answered panel: range first, explanation underneath in one scroll. */
+.trainer-panel .panel-body > .trainer-range + .trainer-explain { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.trainer-range .section-heading, .trainer-range h2 { font-size: 12px; }
