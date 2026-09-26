@@ -10,6 +10,7 @@ import {
 import { clearHistory, loadHistory, saveHistory, summarize } from "./trainer-store.js";
 import { drillStats, loadDrills, newDrillId, recordSession, saveDrills, upsertDrill } from "./drill-store.js";
 import { DrillLibrary, HistoryChart } from "./DrillLibrary.jsx";
+import { PlayerAnalysis } from "./PlayerAnalysis.jsx";
 import "./trainer.css";
 
 const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
@@ -487,6 +488,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onStart={() => { setPhase("library"); onSectionChange("トレーナー"); }}
             onStartReview={() => start(reviewDrill, true)}
             onClear={() => { if (window.confirm("回答履歴をすべて消しますか？")) { clearHistory(); setHistory([]); } }} />
+        : section === "プレー分析" ? <PlayerAnalysis history={history} onStart={() => { setPhase("library"); onSectionChange("トレーナー"); }} />
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
             onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("library")}
             onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("library"); }} />

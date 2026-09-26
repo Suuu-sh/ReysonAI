@@ -1,5 +1,9 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Practice player analysis (2026-09-27)
+- Added a separate プレー分析 destination alongside トレーナー and 弱点. It compares each chosen action with the saved AI estimate for the exact sampled spot/hand, deduplicates review repeats, and waits for diverse evidence before showing tentative NIT/TAG/LAG-style labels.
+- Verified the empty state and its drill-library link in the running app. The page explicitly limits claims to practice choices rather than real-play VPIP/PFR or GTO; all answer history stays local to the browser.
+
 ## Unified range-navigation label (2026-09-27)
 - Renamed the shared preflop/postflop workspace destination to `レンジ分析`, and changed its browser title to the street-neutral `Range Analysis`. The route and action-path flow are unchanged.
 - Expanded sidebar checked in the running app: `レンジ分析` is visible and active. Verification passed: 191 app tests, typecheck, production build, and 4 Sites tests; the existing large-bundle warning remains.

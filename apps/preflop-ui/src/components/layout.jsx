@@ -15,6 +15,7 @@ const navigationGroups = [
     label: "学習",
     items: [
       { Icon: GraduationCap, name: "トレーナー" },
+      { Icon: ChartBar, name: "プレー分析" },
       { Icon: ChartBar, name: "弱点" },
     ],
   },

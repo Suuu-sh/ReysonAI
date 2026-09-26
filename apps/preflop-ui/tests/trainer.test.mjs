@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { SPOTS, compareAcross, filterSpots, grade, handCategory, pickQuestion, randomSuits, spotById, studyNote } from "../src/trainer/trainer-data.js";
 import { summarize } from "../src/trainer/trainer-store.js";
+import { analyzePlayer } from "../src/trainer/player-analysis.js";
 
 const seeded = seed => () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
 
@@ -112,4 +113,46 @@ test("drills keep named settings and per-drill accuracy records", async () => {
   const custom = { id: "drill-x", name: "BTN", settings: drills[1].settings, sessions: [] };
   assert.equal(upsertDrill(next, custom).length, drills.length + 1);
   assert.equal(upsertDrill(upsertDrill(next, custom), { ...custom, name: "BTN 2" }).find(drill => drill.id === "drill-x").name, "BTN 2");
+});
+
+test("player analysis compares choices to the exact sampled hand and spot", () => {
+  const spot = spotById.get("UTG_open");
+  const expected = spot.byHand.get("AA");
+  const stats = analyzePlayer([{ spotId: spot.id, hand: "AA", action: "fold" }]);
+  assert.equal(stats.samples, 1);
+  assert.equal(stats.metrics.fold.actual, 1);
+  assert.equal(stats.metrics.fold.expected, expected.fold);
+  assert.equal(stats.metrics.open.expected, expected.open);
+  assert.equal(stats.style.key, "pending");
+});
+
+test("player analysis de-duplicates review questions and ignores invalid actions", () => {
+  const history = [
+    { spotId: "UTG_open", hand: "AA", action: "fold" },
+    { spotId: "UTG_open", hand: "AA", action: "open" },
+    { spotId: "UTG_open", hand: "AA", action: "three_bet" },
+    { spotId: "missing", hand: "AA", action: "fold" },
+  ];
+  const stats = analyzePlayer(history);
+  assert.equal(stats.answered, 4);
+  assert.equal(stats.samples, 1);
+  assert.equal(stats.metrics.open.actual, 1);
+  assert.equal(stats.metrics.fold.actual, 0);
+});
+
+test("SB open analysis conditions on the drill's available fold/open choices", () => {
+  const stats = analyzePlayer([{ spotId: "SB_open", hand: "AA", action: "open" }]);
+  assert.equal(stats.metrics.open.expected, 1);
+  assert.equal(stats.metrics.fold.expected, 0);
+});
+
+test("NIT-like label needs broad enough evidence and excess folds", () => {
+  const picks = SPOTS.flatMap(spot => [...spot.byHand].filter(([, mix]) => mix.fold <= 0.65)
+    .slice(0, spot.kind === "open" ? 6 : 4).map(([hand]) => ({ spotId: spot.id, hand, action: "fold" })));
+  const ready = analyzePlayer(picks);
+  assert.ok(ready.openSamples >= 10 && ready.responseSamples >= 10 && ready.distinctSpots >= 3);
+  assert.equal(ready.style.key, "nit");
+  assert.ok(ready.metrics.fold.delta >= 0.15);
+  assert.equal(analyzePlayer(picks.filter(item => item.spotId.endsWith("_open"))).style.key, "pending");
+  assert.equal(analyzePlayer(picks.slice(0, 29)).style.key, "pending");
 });
