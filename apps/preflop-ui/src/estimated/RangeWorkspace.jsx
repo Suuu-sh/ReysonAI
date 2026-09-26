@@ -28,6 +28,7 @@ import {
 import { ArrowCounterClockwise, PencilSimple } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.jsx";
 import { FlopCardDialog, PostflopTrial, suitLabels } from "./PostflopTrial.jsx";
+import { PreflopCallEvBars } from "./PreflopCallEvBars.jsx";
 import { buildFlopActionBlocks, completedFlopContext, recognizedFlop } from "./postflop-trial.js";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.js";
 import tableAdjustments from "./table-profile-adjustments.json";
@@ -101,13 +102,13 @@ const formatFact = ({ value, unit }) => unit === "bb"
   ? `${value > 0 ? "+" : ""}${Number(value).toFixed(2)}bb`
   : `${Number(value).toFixed(1)}%`;
 
-function AiReason({ hand, spotId, inlineFacts }) {
-  const { data, loading, error } = useDetailedReasons(spotId);
+function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }) {
+  const { data, loading, error } = reasonState;
   const detailed = data?.hands[hand.hand];
   const facts = detailed
-    ? data.fact_labels.map(({ key, label, scope, unit }) => ({ label, unit, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
+    ? data.fact_labels.map(({ key, label, scope, unit }) => ({ key, label, unit, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
     : inlineFacts ?? [];
-  const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined);
+  const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined && !(hideCallEv && fact.key === "call_ev_bb"));
   return <div className="ai-reason">
     <span>AIの考え方</span>
     <p>{detailed?.reason ?? (loading ? "読み込み中…" : error ? "理由を読み込めませんでした。" : hand.reason)}</p>
@@ -119,8 +120,14 @@ function AiReason({ hand, spotId, inlineFacts }) {
 }
 
 function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, extra = null, spot, position, onReturnToComparison, displayMode }) {
+  const reasonState = useDetailedReasons(spot?.id);
+  const equityFact = reasonState.data?.fact_labels.find(fact => fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
+  const savedFacts = reasonState.data?.hands[hand.hand]?.facts;
+  const callEvFacts = savedFacts && equityFact ? { eqr: savedFacts.eqr, equityPct: savedFacts[equityFact.key], callEvBb: savedFacts.call_ev_bb } : null;
+  const hasCallEv = callEvFacts && Object.values(callEvFacts).every(Number.isFinite);
   const tableReason = adjustmentReason(hand, spot?.table_profile);
   const aggregate = model.aggregates.get(hand.hand);
+  const actionItems = model.actions.map(action => ({ action, frequency: aggregate.actions[action] }));
   const totalFrequency = extra
     ? Math.round(Object.values(aggregate.actions).reduce((sum, frequency) => sum + frequency, 0) * 100)
     : isOpening
@@ -138,11 +145,15 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
       <HandHeader position={position} hand={hand.hand} comboCount={aggregate.comboCount} onClose={onReturnToComparison} />
       {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{extra?.unreachableText ?? (isLimpResponse ? "SBのリンプ頻度が0%のため、この応答経路の推奨頻度はありません。保存上のfold=100は形式上の値です。" : `${isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。`)}</StatusState> : <>
       {tableReason && <p className="adjustment-reason">{tableReason}</p>}
-      {!tableReason && !isLimpResponse && <AiReason hand={hand} spotId={spot?.id} inlineFacts={inlineFacts} />}
-      {isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
+      {displayMode !== "standard" && !tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} />}
+      {displayMode !== "standard" && isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
       {displayMode === "standard" && <>
       {isFourBet && <small>オールイン = 5bet（合計100BB）</small>}
-      <ActionBars items={model.actions.map(action => ({ action, frequency: aggregate.actions[action] }))} labels={model.actionLabels} />
+      {hasCallEv && !tableReason
+        ? <PreflopCallEvBars items={actionItems} labels={model.actionLabels} facts={callEvFacts} equityLabel={equityFact.label} />
+        : <ActionBars items={actionItems} labels={model.actionLabels} />}
+      {!tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} hideCallEv={hasCallEv} />}
+      {isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
       <StatList items={extra ? [extra.sizeItem, ...extra.received, { label: "頻度合計", value: `${totalFrequency}%` }] : isLimpResponse ? [{ label: "頻度合計", value: `${totalFrequency}%` }] : [
         isFiveBet ? { label: "受けるオールイン（合計）", value: "100 BB" }
           : isOpening
@@ -157,7 +168,7 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
       ]} />
       </>}
       </>}
-      {aggregate.unreachable && !isLimpResponse && <AiReason hand={hand} spotId={spot?.id} inlineFacts={inlineFacts} />}
+      {aggregate.unreachable && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} />}
     </Panel>
   </div>;
 }

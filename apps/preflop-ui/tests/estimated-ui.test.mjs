@@ -7,12 +7,33 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.js";
 
-let server, EstimatedRanges, ActionPath, Sidebar, StrategyMatrix, buildActionBlocks, prioritizeParticipantRanges;
+let server, EstimatedRanges, ActionPath, Sidebar, StrategyMatrix, PreflopCallEvBars, buildActionBlocks, prioritizeParticipantRanges;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ EstimatedRanges, ActionPath, buildActionBlocks, prioritizeParticipantRanges } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
   ({ StrategyMatrix } = await server.ssrLoadModule("/src/components/StrategyMatrix.jsx"));
+  ({ PreflopCallEvBars } = await server.ssrLoadModule("/src/estimated/PreflopCallEvBars.jsx"));
+});
+
+test("preflop call EV uses the flop-style right column without inventing other action EVs", () => {
+  const items = [
+    { action: "raise", frequency: 0.1 },
+    { action: "call", frequency: 0.8 },
+    { action: "fold", frequency: 0.1 },
+  ];
+  const render = callEvBb => renderToStaticMarkup(createElement(PreflopCallEvBars, {
+    items, facts: { eqr: 0.9, equityPct: 45.5, callEvBb }, equityLabel: "勝率（対オープン）",
+  }));
+  const positive = render(0.64);
+  assert.match(positive, /EQR（仮定）<\/dt><dd>0\.90/);
+  assert.match(positive, /勝率（対オープン）<\/dt><dd>45\.5%/);
+  assert.match(positive, /コールEV（推定）<\/dt><dd class="ev-positive">\+0\.64bb/);
+  assert.match(positive, /コール[\s\S]*80\.0%<\/b><em class="ev-positive">\+0\.64bb/);
+  assert.match(positive, /レイズ[\s\S]*10\.0%<\/b><em class="ev-unavailable">—/);
+  assert.doesNotMatch(positive, /<dt>平均EV|best-ev|▲/);
+  assert.match(render(-0.25), /<em class="ev-negative">-0\.25bb/);
+  assert.equal(renderToStaticMarkup(createElement(PreflopCallEvBars, { items, facts: { eqr: 0.9, equityPct: 45.5 } })), "");
 });
 
 test("standard matrix keeps a dominant solid cell and puts only mixed frequencies in a bottom strip", () => {

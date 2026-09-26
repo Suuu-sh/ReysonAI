@@ -11,6 +11,7 @@
 .bar-row.best-ev em::before { content: "▲ "; font-size: 8px; vertical-align: 2px; }
 .hand-ev-breakdown .ev-positive { color: #6fd08c; }
 .hand-ev-breakdown .ev-negative { color: #ff8a9a; }
+.hand-ev-breakdown .ev-unavailable { color: var(--text-subtle); }
 .hand-ev-status, .hand-ev-note { margin: 0; font-size: 10px; line-height: 1.5; color: var(--text-subtle); }
 .hand-ev-status { font-size: 11px; color: var(--text-muted); }
 @media (max-width: 720px) { .bar-row.with-ev { grid-template-columns: minmax(65px, 1fr) minmax(25px, .65fr) 44px 58px; } }

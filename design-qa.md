@@ -1,5 +1,10 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Preflop EV notation aligned with the flop detail (2026-09-26)
+- BB vs BTN AKo was checked in the running `/app` view. Its saved assumed EQR, raw win rate, and model call EV now appear in a compact summary; the call row shows the signed EV at the right, while raise/fold show `—` because their EVs were not computed.
+- The AI reason remains visible below the action bars without repeating the call-EV fact. RFI and missing-EV paths retain frequency-only bars; no policy-average or best-action claim was added.
+- Verification: 177 UI/data tests, typecheck, production build, and 4 Sites tests passed. The existing large-chunk build warning remains.
+
 ## SolveaAI brand rename (2026-09-23)
 - Updated the UI wordmark/title, SDK exports and package paths, Rust crate/binary identifiers, environment-variable prefix, storage/queue keys, deployment resources, scripts, tests and documentation.
 - Kept GTO terminology where it describes poker methodology or validation status. The project folder, Git remote and externally provisioned resources were not renamed or migrated.
