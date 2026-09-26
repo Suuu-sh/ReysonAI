@@ -49,3 +49,13 @@ export function summarize(history) {
       .sort((a, b) => b.misses - a.misses || b.answered - a.answered),
   };
 }
+
+const SETTINGS_KEY = "solveaai.trainer.settings.v1";
+
+export function loadSettings() {
+  try { return JSON.parse(window.localStorage.getItem(SETTINGS_KEY) ?? "null"); } catch { return null; }
+}
+
+export function saveSettings(settings) {
+  try { window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch {}
+}

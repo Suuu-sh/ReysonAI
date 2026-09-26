@@ -70,7 +70,8 @@ function primary(mix) {
 }
 
 // Borderline and mixed hands teach the most; obvious folds are rarely asked.
-function handWeight(spot, hand) {
+// easy also asks clear-cut hands, hard asks only mixed-frequency hands.
+function handWeight(spot, hand, difficulty = "standard") {
   const mix = spot.byHand.get(hand);
   if (!mix) return 0;
   const top = Math.max(...Object.values(mix));
@@ -83,6 +84,8 @@ function handWeight(spot, hand) {
     const other = spot.byHand.get(hands[r * 13 + c]);
     return other && primary(other) !== main;
   });
+  if (difficulty === "hard") return top < 0.95 ? 1 : 0;
+  if (difficulty === "easy") return top < 0.95 ? 1 : edge ? 1.5 : main === "fold" ? 0.6 : 1.5;
   if (top < 0.95) return 4;
   if (edge) return 3;
   return main === "fold" ? 0.15 : 0.6;
@@ -92,14 +95,50 @@ export function filterSpots({ kind = "all", position = "all" } = {}) {
   return SPOTS.filter(spot => (kind === "all" || spot.kind === kind) && (position === "all" || spot.hero === position));
 }
 
-export function pickQuestion(spots, random = Math.random, review = [], reviewShare = 0.25) {
+// --- Session settings (chosen before a drill starts) ---
+export const DEFAULT_SETTINGS = Object.freeze({
+  kinds: ["open", "response"], positions: [...POSITIONS], count: 20,
+  difficulty: "standard", strictness: "standard", review: true,
+});
+export const COUNT_OPTIONS = [10, 20, 50, 0]; // 0 = no limit
+export const DIFFICULTY_OPTIONS = [
+  { value: "easy", label: "やさしい", hint: "はっきり決まるハンドも出題" },
+  { value: "standard", label: "標準", hint: "境界と混合のハンドが中心" },
+  { value: "hard", label: "むずかしい", hint: "混合頻度のハンドだけ" },
+];
+export const STRICTNESS_OPTIONS = [
+  { value: "lenient", label: "ゆるめ", hint: "15%以上の選択は混合で可", mixed: 0.15 },
+  { value: "standard", label: "標準", hint: "20%以上の選択は混合で可", mixed: 0.2 },
+  { value: "strict", label: "厳しめ", hint: "いちばん多い選択だけ正解", mixed: Infinity },
+];
+
+export function normalizeSettings(raw = {}, level = null) {
+  const pick = (value, allowed, fallback) => allowed.includes(value) ? value : fallback;
+  const kinds = Array.isArray(raw.kinds) ? raw.kinds.filter(kind => ["open", "response"].includes(kind)) : [];
+  const positions = Array.isArray(raw.positions) ? raw.positions.filter(position => POSITIONS.includes(position)) : [];
+  return {
+    kinds: kinds.length ? kinds : [...DEFAULT_SETTINGS.kinds],
+    positions: positions.length ? positions : [...DEFAULT_SETTINGS.positions],
+    count: pick(raw.count, COUNT_OPTIONS, DEFAULT_SETTINGS.count),
+    difficulty: pick(raw.difficulty, DIFFICULTY_OPTIONS.map(item => item.value), DEFAULT_SETTINGS.difficulty),
+    strictness: pick(raw.strictness, STRICTNESS_OPTIONS.map(item => item.value), level === "beginner" ? "lenient" : DEFAULT_SETTINGS.strictness),
+    review: typeof raw.review === "boolean" ? raw.review : DEFAULT_SETTINGS.review,
+  };
+}
+
+export function spotsForSettings(settings) {
+  return SPOTS.filter(spot => settings.kinds.includes(spot.kind) && settings.positions.includes(spot.hero));
+}
+
+export function pickQuestion(spots, random = Math.random, review = [], reviewShare = 0.25, difficulty = "standard") {
   const allowed = new Set(spots.map(spot => spot.id));
   const queued = review.filter(item => allowed.has(item.spotId));
   if (queued.length && random() < reviewShare) {
     const item = queued[Math.floor(random() * queued.length)];
     return { spot: spotById.get(item.spotId), hand: item.hand, review: true };
   }
-  const pool = spots.flatMap(spot => hands.map(hand => ({ spot, hand, weight: handWeight(spot, hand) }))).filter(item => item.weight > 0);
+  let pool = spots.flatMap(spot => hands.map(hand => ({ spot, hand, weight: handWeight(spot, hand, difficulty) }))).filter(item => item.weight > 0);
+  if (!pool.length) pool = spots.flatMap(spot => hands.map(hand => ({ spot, hand, weight: handWeight(spot, hand) }))).filter(item => item.weight > 0);
   let target = random() * pool.reduce((sum, item) => sum + item.weight, 0);
   for (const item of pool) { target -= item.weight; if (target <= 0) return { spot: item.spot, hand: item.hand, review: false }; }
   const last = pool.at(-1);
@@ -107,12 +146,13 @@ export function pickQuestion(spots, random = Math.random, review = [], reviewSha
 }
 
 // --- Grading ---
-// best: the most frequent action (or within 5pt of it); mixed: played at least 20% of the time.
-export function grade(spot, hand, action, { lenient = false } = {}) {
+// best: the most frequent action (or within 5pt of it); mixed: played at least the strictness threshold.
+export function grade(spot, hand, action, { lenient = false, strictness = lenient ? "lenient" : "standard" } = {}) {
+  const mixedFrom = STRICTNESS_OPTIONS.find(item => item.value === strictness)?.mixed ?? 0.2;
   const mix = spot.byHand.get(hand);
   const top = Math.max(...Object.values(mix));
   const frequency = mix[action] ?? 0;
-  const result = frequency >= top - 0.05 ? "best" : frequency >= (lenient ? 0.15 : 0.2) ? "mixed" : "miss";
+  const result = frequency >= top - 0.05 ? "best" : frequency >= mixedFrom ? "mixed" : "miss";
   return { result, frequency, best: primary(mix), mix, score: result === "best" ? 1 : result === "mixed" ? 0.5 : 0 };
 }
 

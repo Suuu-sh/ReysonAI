@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowClockwise, ArrowRight, CheckCircle, Fire, Trash, WarningCircle, XCircle } from "@phosphor-icons/react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ArrowClockwise, ArrowRight, CheckCircle, Fire, GearSix, Trash, WarningCircle, XCircle } from "@phosphor-icons/react";
 import { Sidebar } from "../components/layout.jsx";
 import { Panel, SectionHeading, barColor } from "../components/primitives.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import {
-  POSITIONS, RESULT_LABELS, aggregatesFor, compareAcross, filterSpots, grade, pickQuestion,
-  randomSuits, spotPrompt, spotTitle, studyNote,
+  COUNT_OPTIONS, DIFFICULTY_OPTIONS, POSITIONS, RESULT_LABELS, SPOTS, STRICTNESS_OPTIONS, aggregatesFor, compareAcross,
+  filterSpots, grade, normalizeSettings, pickQuestion, randomSuits, spotById, spotPrompt, spotTitle, spotsForSettings, studyNote,
 } from "./trainer-data.js";
-import { clearHistory, loadHistory, saveHistory, summarize } from "./trainer-store.js";
+import { clearHistory, loadHistory, loadSettings, saveHistory, saveSettings, summarize } from "./trainer-store.js";
 import "./trainer.css";
 
 const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const pct = value => `${Math.round((value ?? 0) * 100)}%`;
-const KIND_FILTERS = [{ value: "all", label: "すべて" }, { value: "open", label: "オープン" }, { value: "response", label: "vs オープン" }];
 const RESULT_ICONS = { best: CheckCircle, mixed: WarningCircle, miss: XCircle };
 const actionColor = key => barColor(key === "open" || key === "three_bet" ? "raise" : key);
 const shortLabel = action => action.label.split(" ")[0];
@@ -50,17 +49,17 @@ function ActionStrip({ spot, answer, actionLabels }) {
   </ol>;
 }
 
-function Verdict({ answer, bestLabel, onNext }) {
+function Verdict({ answer, bestLabel, onNext, nextLabel }) {
   const Icon = RESULT_ICONS[answer.result];
   return <div className={`poker-verdict result-${answer.result}`} role="status">
     <Icon size={34} weight="fill" />
     <strong>{RESULT_LABELS[answer.result]}</strong>
     <small>{answer.result === "best" ? `頻度 ${pct(answer.frequency)}` : `頻度 ${pct(answer.frequency)} · 最多は${bestLabel}`}</small>
-    <button type="button" className="poker-next" onClick={onNext}>次の問題<ArrowRight size={15} weight="bold" /><kbd>Enter</kbd></button>
+    <button type="button" className="poker-next" onClick={onNext}>{nextLabel}<ArrowRight size={15} weight="bold" /><kbd>Enter</kbd></button>
   </div>;
 }
 
-function PokerTable({ spot, cards, hand, review, answer, bestLabel, onNext }) {
+function PokerTable({ spot, cards, hand, review, answer, bestLabel, onNext, nextLabel = "次の問題" }) {
   const seats = seatStates(spot);
   const heroIndex = POSITIONS.indexOf(spot.hero);
   const pot = seats.reduce((sum, seat) => sum + seat.bet, 0);
@@ -68,7 +67,7 @@ function PokerTable({ spot, cards, hand, review, answer, bestLabel, onNext }) {
   return <div className={`poker-table${answer ? " answered" : ""}`} aria-label={`テーブル。${spotPrompt(spot)}`}>
     <div className="poker-felt">
       <div className="poker-center">
-        {answer ? <Verdict answer={answer} bestLabel={bestLabel} onNext={onNext} /> : <>
+        {answer ? <Verdict answer={answer} bestLabel={bestLabel} onNext={onNext} nextLabel={nextLabel} /> : <>
           <span className="poker-spot">{spotTitle(spot)}{review && <em>復習</em>}</span>
           <strong className="poker-pot">{+pot.toFixed(1)}<small>bb</small></strong>
           <span className="poker-stakes">Cash · 6max · 100bb</span>
@@ -135,10 +134,123 @@ function SessionPanel({ session, history }) {
   </div>;
 }
 
-function Drill({ profile, history, onAnswer, reviewOnly, onExitReview }) {
-  const [kind, setKind] = useState("all");
-  const [position, setPosition] = useState("all");
-  const spots = useMemo(() => filterSpots({ kind, position }), [kind, position]);
+const KIND_OPTIONS = [{ value: "open", label: "オープン", hint: "前の人が全員フォールド" }, { value: "response", label: "vs オープン", hint: "誰かのオープンに応答" }];
+const countLabel = count => count ? `${count}問` : "無制限";
+
+function Segmented({ options, value, onChange, label }) {
+  return <div className="setup-segmented" role="radiogroup" aria-label={label}>
+    {options.map(option => <button type="button" role="radio" key={option.value} aria-checked={value === option.value}
+      className={value === option.value ? "on" : ""} onClick={() => onChange(option.value)}>
+      <strong>{option.label}</strong>{option.hint && <small>{option.hint}</small>}
+    </button>)}
+  </div>;
+}
+
+function TrainerSetup({ settings, onChange, onStart, reviewCount, onStartReview }) {
+  const spots = spotsForSettings(settings);
+  const toggle = (key, value) => {
+    const current = settings[key];
+    const nextValues = current.includes(value) ? current.filter(item => item !== value) : [...current, value];
+    if (nextValues.length) onChange({ ...settings, [key]: nextValues });
+  };
+  // Positions with no spot for the chosen kinds (e.g. BB never opens, UTG never faces an open).
+  const positionAvailable = position => SPOTS.some(spot => settings.kinds.includes(spot.kind) && spot.hero === position);
+  return <div className="trainer-setup">
+    <div className="setup-head">
+      <h1>トレーニング設定</h1>
+      <p>出題する局面と難しさを選んで始めます。設定はこのブラウザに保存されます。</p>
+    </div>
+    <div className="setup-grid">
+      <section className="setup-block">
+        <h2>出題範囲</h2>
+        <div className="setup-toggles">
+          {KIND_OPTIONS.map(option => <button type="button" key={option.value} aria-pressed={settings.kinds.includes(option.value)}
+            className={settings.kinds.includes(option.value) ? "on" : ""} onClick={() => toggle("kinds", option.value)}>
+            <strong>{option.label}</strong><small>{option.hint}</small>
+          </button>)}
+        </div>
+      </section>
+      <section className="setup-block">
+        <h2>自分の席<button type="button" className="setup-link" onClick={() => onChange({ ...settings, positions: [...POSITIONS] })}>すべて選択</button></h2>
+        <div className="setup-seats">
+          {POSITIONS.map(position => <button type="button" key={position} aria-pressed={settings.positions.includes(position)}
+            className={`${settings.positions.includes(position) ? "on" : ""}${positionAvailable(position) ? "" : " empty"}`}
+            onClick={() => toggle("positions", position)} title={positionAvailable(position) ? position : `${position}：この出題範囲では局面がありません`}>{position}</button>)}
+        </div>
+      </section>
+      <section className="setup-block">
+        <h2>問題数</h2>
+        <Segmented label="問題数" value={settings.count} onChange={count => onChange({ ...settings, count })}
+          options={COUNT_OPTIONS.map(count => ({ value: count, label: countLabel(count) }))} />
+      </section>
+      <section className="setup-block">
+        <h2>難易度</h2>
+        <Segmented label="難易度" value={settings.difficulty} onChange={difficulty => onChange({ ...settings, difficulty })} options={DIFFICULTY_OPTIONS} />
+      </section>
+      <section className="setup-block">
+        <h2>判定の厳しさ</h2>
+        <Segmented label="判定の厳しさ" value={settings.strictness} onChange={strictness => onChange({ ...settings, strictness })} options={STRICTNESS_OPTIONS} />
+      </section>
+      <section className="setup-block">
+        <h2>復習</h2>
+        <label className="setup-switch">
+          <input type="checkbox" checked={settings.review} onChange={event => onChange({ ...settings, review: event.target.checked })} />
+          <span aria-hidden="true" />
+          <div><strong>間違えたハンドを混ぜる</strong><small>4問に1問ほど、以前ミスしたハンドを再出題（復習待ち {reviewCount}）</small></div>
+        </label>
+      </section>
+    </div>
+    <div className="setup-footer">
+      <span className={`setup-summary${spots.length ? "" : " invalid"}`}>
+        {spots.length ? <>対象 <b>{spots.length}</b> 局面 · {countLabel(settings.count)} · {DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label}</> : "この組み合わせでは出題できる局面がありません"}
+      </span>
+      {reviewCount > 0 && <button type="button" className="setup-secondary" onClick={onStartReview}><ArrowClockwise size={15} />復習だけ解く</button>}
+      <button type="button" className="setup-start" onClick={onStart} disabled={!spots.length}>トレーニング開始<ArrowRight size={17} weight="bold" /></button>
+    </div>
+  </div>;
+}
+
+function SessionResult({ log, settings, onRestart, onSetup }) {
+  const answered = log.length;
+  const score = log.reduce((sum, item) => sum + item.score, 0);
+  const counts = { best: 0, mixed: 0, miss: 0 };
+  for (const item of log) counts[item.result]++;
+  const misses = log.filter(item => item.result === "miss");
+  return <div className="trainer-result">
+    <div className="result-hero">
+      <div className="session-ring large" style={{ "--rate": answered ? score / answered : 0 }}><strong>{answered ? pct(score / answered) : "—"}</strong><small>正答率</small></div>
+      <div>
+        <h1>{answered ? score / answered >= 0.8 ? "よくできました" : score / answered >= 0.6 ? "もう一歩" : "復習しましょう" : "おつかれさまでした"}</h1>
+        <p>{answered}問 · {DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label} · 判定{STRICTNESS_OPTIONS.find(item => item.value === settings.strictness).label}</p>
+        <ul className="result-counts">
+          <li className="result-best"><CheckCircle size={16} weight="fill" />正解 {counts.best}</li>
+          <li className="result-mixed"><WarningCircle size={16} weight="fill" />混合で可 {counts.mixed}</li>
+          <li className="result-miss"><XCircle size={16} weight="fill" />ミス {counts.miss}</li>
+        </ul>
+      </div>
+    </div>
+    {misses.length > 0 && <section className="result-misses">
+      <h2>ミスしたハンド</h2>
+      <ul>{misses.map((item, index) => {
+        const spot = spotById.get(item.spotId);
+        const best = spot.actions.find(action => action.key === item.best);
+        const chosen = spot.actions.find(action => action.key === item.action);
+        return <li key={index}>
+          <span className="result-cards">{item.cards.map(card => <PlayingCard key={card} card={card} size="mini" />)}</span>
+          <span className="result-spot">{spotTitle(spot)}</span>
+          <span className="result-choice">あなた <b className="bad">{shortLabel(chosen)}</b> → 最多 <b className="good">{shortLabel(best)} {pct(item.mix[item.best])}</b></span>
+        </li>;
+      })}</ul>
+    </section>}
+    <div className="setup-footer">
+      <button type="button" className="setup-secondary" onClick={onSetup}>設定を変える</button>
+      <button type="button" className="setup-start" onClick={onRestart}>同じ設定でもう一度<ArrowClockwise size={17} weight="bold" /></button>
+    </div>
+  </div>;
+}
+
+function Drill({ history, onAnswer, settings, reviewOnly, onOpenSetup, onFinish }) {
+  const spots = useMemo(() => spotsForSettings(settings), [settings]);
   // Keep just-answered hands out of the review queue so a miss is not re-asked immediately.
   const review = useMemo(() => {
     const recent = new Set(history.slice(-6).map(item => `${item.spotId}|${item.hand}`));
@@ -149,32 +261,36 @@ function Drill({ profile, history, onAnswer, reviewOnly, onExitReview }) {
   const next = useCallback(() => {
     const question = reviewOnly && review.length
       ? pickQuestion(filterSpots(), () => 0, [...review].sort(() => Math.random() - 0.5))
-      : pickQuestion(spots.length ? spots : filterSpots(), Math.random, review);
+      : pickQuestion(spots.length ? spots : filterSpots(), Math.random, settings.review ? review : [], 0.25, settings.difficulty);
     return { ...question, cards: randomSuits(question.hand) };
-  }, [spots, review, reviewOnly]);
+  }, [spots, review, reviewOnly, settings]);
   const [question, setQuestion] = useState(() => next());
   const [answer, setAnswer] = useState(null);
-  const [session, setSession] = useState({ answered: 0, score: 0, streak: 0, bestStreak: 0, results: [] });
+  const [session, setSession] = useState({ answered: 0, score: 0, streak: 0, bestStreak: 0, results: [], log: [] });
   const [selectedHand, setSelectedHand] = useState(null);
   const [tab, setTab] = useState(() => { try { return window.localStorage.getItem(PANEL_TAB_KEY) ?? "notes"; } catch { return "notes"; } });
   const chooseTab = value => { setTab(value); try { window.localStorage.setItem(PANEL_TAB_KEY, value); } catch {} };
-
-  useEffect(() => { setQuestion(next()); setAnswer(null); }, [kind, position, reviewOnly]); // eslint-disable-line react-hooks/exhaustive-deps
+  const limit = reviewOnly ? Math.min(settings.count || review.length, review.length || 1) : settings.count;
+  const lastQuestion = limit > 0 && session.answered >= limit;
 
   const choose = useCallback(action => {
     if (answer) return;
-    const graded = grade(question.spot, question.hand, action, { lenient: profile?.level === "beginner" });
+    const graded = grade(question.spot, question.hand, action, { strictness: settings.strictness });
     setAnswer({ action, ...graded });
     setSelectedHand(question.hand);
     setSession(current => {
       const streak = graded.result === "miss" ? 0 : current.streak + 1;
       return { answered: current.answered + 1, score: current.score + graded.score, streak,
-        bestStreak: Math.max(current.bestStreak, streak), results: [...current.results, graded.result].slice(-10) };
+        bestStreak: Math.max(current.bestStreak, streak), results: [...current.results, graded.result].slice(-10),
+        log: [...current.log, { spotId: question.spot.id, hand: question.hand, cards: question.cards, action, result: graded.result, score: graded.score, best: graded.best, mix: graded.mix }] };
     });
     onAnswer({ spotId: question.spot.id, hand: question.hand, action, result: graded.result, score: graded.score, at: Date.now() });
-  }, [answer, question, profile, onAnswer]);
+  }, [answer, question, settings, onAnswer]);
 
-  const advance = useCallback(() => { setQuestion(next()); setAnswer(null); }, [next]);
+  const advance = useCallback(() => {
+    if (lastQuestion) { onFinish(session.log); return; }
+    setQuestion(next()); setAnswer(null);
+  }, [next, lastQuestion, onFinish, session.log]);
 
   useEffect(() => {
     const onKey = event => {
@@ -195,21 +311,23 @@ function Drill({ profile, history, onAnswer, reviewOnly, onExitReview }) {
   const shownHand = selectedHand && answer ? selectedHand : hand;
   const shownMix = spot.byHand.get(shownHand);
   const notes = answer ? spot.actions.filter(action => answer.mix[action.key] >= 0.05 && studyNote(action.key, hand, spot)) : [];
+  const progress = limit > 0 ? Math.min(1, session.answered / limit) : 0;
 
   return <div className="trainer-layout">
     <header className="trainer-topbar">
-      {reviewOnly ? <div className="trainer-review-banner">
-          <strong>復習モード</strong><span>間違えたハンドを出題中 · 残り {review.length}</span>
-          <button type="button" onClick={onExitReview}>通常に戻る</button>
-        </div>
-        : <div className="trainer-filters">
-          <div className="trainer-chips" role="group" aria-label="出題範囲">
-            {KIND_FILTERS.map(item => <button type="button" key={item.value} aria-pressed={kind === item.value} className={kind === item.value ? "on" : ""} onClick={() => setKind(item.value)}>{item.label}</button>)}
-          </div>
-          <div className="trainer-chips" role="group" aria-label="自分の席">
-            {["all", ...POSITIONS].map(item => <button type="button" key={item} aria-pressed={position === item} className={position === item ? "on" : ""} onClick={() => setPosition(item)}>{item === "all" ? "全席" : item}</button>)}
-          </div>
-        </div>}
+      <div className="trainer-config">
+        {reviewOnly ? <span className="config-chip review">復習モード</span> : <>
+          <span className="config-chip">{settings.kinds.length === 2 ? "オープン＋vs オープン" : KIND_OPTIONS.find(item => item.value === settings.kinds[0]).label}</span>
+          <span className="config-chip">{settings.positions.length === POSITIONS.length ? "全席" : settings.positions.join("・")}</span>
+          <span className="config-chip">{DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label}</span>
+        </>}
+        <button type="button" className="config-edit" onClick={onOpenSetup}><GearSix size={14} />設定</button>
+        {session.answered > 0 && <button type="button" className="config-edit" onClick={() => onFinish(session.log)}>終了して結果へ</button>}
+      </div>
+      {limit > 0 && <div className="trainer-progress" aria-label={`${session.answered} / ${limit} 問`}>
+        <span><b>{Math.min(session.answered + (answer ? 0 : 1), limit)}</b> / {limit}</span>
+        <i style={{ "--progress": progress }} />
+      </div>}
       <div className="trainer-hud" aria-label="このセッションの成績">
         <ol className="hud-dots" aria-label="直近10問の結果">
           {Array.from({ length: 10 }, (_, index) => session.results[index] ?? null).map((result, index) =>
@@ -225,7 +343,7 @@ function Drill({ profile, history, onAnswer, reviewOnly, onExitReview }) {
         <ActionStrip spot={spot} answer={answer} actionLabels={actionLabels} />
         <div className="stage-table">
           <PokerTable spot={spot} cards={cards} hand={hand} review={question.review} answer={answer}
-            bestLabel={answer && shortLabel(spot.actions.find(action => action.key === answer.best))} onNext={advance} />
+            bestLabel={answer && shortLabel(spot.actions.find(action => action.key === answer.best))} onNext={advance} nextLabel={lastQuestion ? "結果を見る" : "次の問題"} />
         </div>
         <div className="trainer-actions">
           {spot.actions.map((action, index) => {
@@ -312,17 +430,29 @@ function Weakness({ history, onStartReview, onStart, onClear }) {
 
 export function TrainerPage({ profile, onEditProfile, onSectionChange, section = "トレーナー" }) {
   const [history, setHistory] = useState(loadHistory);
+  const [settings, setSettings] = useState(() => normalizeSettings(loadSettings() ?? {}, profile?.level));
+  const [phase, setPhase] = useState("setup");
   const [reviewOnly, setReviewOnly] = useState(false);
+  const [run, setRun] = useState(0);
+  const [lastLog, setLastLog] = useState([]);
+  const reviewCount = useMemo(() => summarize(history).review.length, [history]);
   const onAnswer = useCallback(entry => setHistory(current => { const updated = [...current, entry]; saveHistory(updated); return updated; }), []);
+  const updateSettings = next => { setSettings(next); saveSettings(next); };
+  const start = (review = false) => { setReviewOnly(review); setRun(value => value + 1); setPhase("drill"); onSectionChange("トレーナー"); };
+  const onFinish = useCallback(log => { setLastLog(log); setPhase("result"); }, []);
+  const mainRef = useRef(null);
+  useEffect(() => { mainRef.current?.scrollTo?.(0, 0); window.scrollTo?.(0, 0); }, [phase, section]);
   return <div className="shell">
     <Sidebar activeSection={section} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} />
-    <main className="trainer-page">
+    <main className="trainer-page" ref={mainRef}>
       {section === "弱点"
         ? <Weakness history={history}
-            onStart={() => { setReviewOnly(false); onSectionChange("トレーナー"); }}
-            onStartReview={() => { setReviewOnly(true); onSectionChange("トレーナー"); }}
+            onStart={() => { setPhase("setup"); onSectionChange("トレーナー"); }}
+            onStartReview={() => start(true)}
             onClear={() => { if (window.confirm("回答履歴をすべて消しますか？")) { clearHistory(); setHistory([]); } }} />
-        : <Drill profile={profile} history={history} onAnswer={onAnswer} reviewOnly={reviewOnly} onExitReview={() => setReviewOnly(false)} />}
+        : phase === "setup" ? <TrainerSetup settings={settings} onChange={updateSettings} onStart={() => start(false)} reviewCount={reviewCount} onStartReview={() => start(true)} />
+        : phase === "result" ? <SessionResult log={lastLog} settings={settings} onRestart={() => start(reviewOnly)} onSetup={() => setPhase("setup")} />
+        : <Drill key={run} history={history} onAnswer={onAnswer} settings={settings} reviewOnly={reviewOnly} onOpenSetup={() => setPhase("setup")} onFinish={onFinish} />}
     </main>
   </div>;
 }

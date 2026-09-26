@@ -73,3 +73,24 @@ test("study notes name the hero's actual seat", () => {
   assert.doesNotMatch(studyNote("fold", "A4s", spotById.get("BTN_open")), /前のポジション/);
   assert.match(studyNote("fold", "A4s", spotById.get("UTG_open")), /前のポジション/);
 });
+
+test("settings are normalised and drive spot choice, difficulty and strictness", async () => {
+  const { normalizeSettings, spotsForSettings } = await import("../src/trainer/trainer-data.js");
+  const fallback = normalizeSettings({ kinds: [], positions: ["XX"], count: 7, difficulty: "?", review: "yes" });
+  assert.deepEqual([fallback.kinds, fallback.positions.length, fallback.count, fallback.difficulty, fallback.review], [["open", "response"], 6, 20, "standard", true]);
+  assert.equal(normalizeSettings({}, "beginner").strictness, "lenient");
+  assert.deepEqual(spotsForSettings(normalizeSettings({ kinds: ["open"], positions: ["BTN", "BB"] })).map(spot => spot.id), ["BTN_open"]);
+  assert.equal(spotsForSettings(normalizeSettings({ kinds: ["response"], positions: ["UTG"] })).length, 0);
+
+  const random = seeded(11);
+  const spots = filterSpots({ kind: "open" });
+  for (let i = 0; i < 100; i++) {
+    const { spot, hand } = pickQuestion(spots, random, [], 0, "hard");
+    assert.ok(Math.max(...Object.values(spot.byHand.get(hand))) < 0.95, `${spot.id} ${hand} is not mixed`);
+  }
+  const utg = spotById.get("UTG_open");
+  const [hand, mix] = [...utg.byHand].find(([, item]) => item.open >= 0.2 && item.open <= 0.4);
+  const minority = mix.open < mix.fold ? "open" : "fold";
+  assert.equal(grade(utg, hand, minority, { strictness: "strict" }).result, "miss");
+  assert.equal(grade(utg, hand, minority, { strictness: "lenient" }).result, "mixed");
+});
