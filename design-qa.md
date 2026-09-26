@@ -197,3 +197,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Flop Check / Bet / Fold / Call / Raise choices append to the same horizontal action-block history, and the current decision's 169-hand matrix uses the existing result area. The separate postflop sidebar page was removed.
 - Browser verification at `http://127.0.0.1:5173/app`: selected `As 7d 2c`, saw the BTN flop matrix, chose Bet 33%, saw the BB response block, and rewound with the BTN position. The app returned HTTP 200 after the change.
 - Focused postflop tests passed (7/7); typecheck, production build and Sites tests passed. Full `npm test` passed 159/160; the remaining pre-existing 4bet UI expectation for the exact “既存3bet頻度0%” title no longer matches the separately updated saved range data. No postflop test failed. Vite still reports its large-chunk warning.
+
+## Flop card selection modal (2026-09-26)
+- The full-width inline card selector was removed. A modal now offers the 12 audited boards; the chosen three cards appear in one clickable block between the preflop result and flop decisions. Clicking the block reopens the modal.
+- Browser verification at `http://127.0.0.1:5173/app`: the completed BTN→BB path opened the modal, `As 7d 2c` appeared in the compact row block, and the BTN flop range remained visible. The obstructing inline selection panel was absent.
+- Focused postflop tests passed (9/9) and typecheck passed. The earlier full run passed 165/166; its sole failure was the existing 4bet UI title assertion after separate saved-data changes. Vite still reports its large-chunk warning.

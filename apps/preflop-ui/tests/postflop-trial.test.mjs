@@ -82,13 +82,13 @@ test("read-only board projection expands saved source combos without revealing a
   assert.throws(() => buildLocalBoard("As7d2c", inputs, candidate), /ハッシュ/);
 });
 
-let server, ActionPath, Sidebar, PostflopTrial, FlopCardPicker, buildActionBlocks;
+let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, buildActionBlocks;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)),
     server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ ActionPath, buildActionBlocks } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
-  ({ PostflopTrial, FlopCardPicker } = await server.ssrLoadModule("/src/estimated/PostflopTrial.jsx"));
+  ({ PostflopTrial, FlopCardDialog } = await server.ssrLoadModule("/src/estimated/PostflopTrial.jsx"));
 });
 after(async () => { await server?.close(); });
 
@@ -98,20 +98,50 @@ test("completed preflop end block extends the same action path", () => {
   assert.match(html, /フロップへ進む →/);
   const unfinished = renderToStaticMarkup(createElement(ActionPath, { blocks: buildActionBlocks({ rangeType: "response", opener: "BTN", hero: "BB", callers: [], foldedHero: false }), expanded: true, onEnterPostflop() {} }));
   assert.doesNotMatch(unfinished, /フロップへ進む/);
-  const combined = renderToStaticMarkup(createElement(ActionPath, { blocks: [...blocks, ...buildFlopActionBlocks()], expanded: true, onFlopAction() {}, onEnterPostflop() {} }));
-  assert.match(combined, /フロップへ進む[\s\S]*action-seat-flop-forced[\s\S]*action-seat-flop active/);
+  const combined = renderToStaticMarkup(createElement(ActionPath, { blocks: [...blocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: ["As", "7d", "2c"] }, ...buildFlopActionBlocks()], expanded: true, onOpenFlopCards() {}, onFlopAction() {}, onEnterPostflop() {} }));
+  assert.match(combined, /aria-label="フロップカードを変更"[\s\S]*A<span class="suit">♠<\/span>[\s\S]*7<span class="suit">♦<\/span>[\s\S]*2<span class="suit">♣<\/span>[\s\S]*action-seat-flop-forced[\s\S]*action-seat-flop active/);
+  assert.doesNotMatch(combined, /終了|フロップへ進む →/);
   const navigation = renderToStaticMarkup(createElement(Sidebar, { activeSection: "プリフロップ", onSectionChange() {} }));
   assert.doesNotMatch(navigation, /aria-label="ポストフロップ/);
 });
 
-test("three card selectors and unsupported spots stay truthful", () => {
-  const picker = renderToStaticMarkup(createElement(FlopCardPicker, { cards: ["As", "", ""], onCardsChange() {} }));
-  assert.equal((picker.match(/<select/g) ?? []).length, 3);
-  assert.match(picker, /<option value="As" disabled=""/);
+test("representative flops are picked from a modal, while unsupported spots stay truthful", () => {
+  const dialog = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["As", "", ""], onApply() {}, onClose() {} }));
+  assert.match(dialog, /role="dialog" aria-modal="true"/);
+  assert.equal((dialog.match(/<select/g) ?? []).length, 0);
+  assert.equal((dialog.match(/aria-label="フロップ /g) ?? []).length, 12);
+  const complete = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["2c", "As", "7d"], onApply() {}, onClose() {} }));
+  assert.match(complete, /class="selected" aria-pressed="true" aria-label="フロップ A♠ 7♦ 2♣"/);
   const html = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["SB", "BB"], potBb: 2, pilotAvailable: false }, cards: ["", "", ""] }));
-  assert.match(html, /SB · BBがフロップへ進みました/);
   assert.match(html, /この局面のポストフロップ方針は未収録/);
   assert.doesNotMatch(html, /AI推定レンジ/);
   const missing = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["BTN", "BB"], potBb: 5.5, pilotAvailable: true }, cards: ["As", "7d", "3c"] }));
   assert.match(missing, /このフロップの方針は未収録/);
+});
+
+test("every flop node, action and hand tier has a plain-language reason", async () => {
+  const { actionReason, dominantTier } = await import("../src/estimated/postflop-reasons.js");
+  const nodes = { btn_first: ["check", "bet33", "bet75"], bb_vs_33: ["fold", "call", "raise"], bb_vs_75: ["fold", "call", "raise"], btn_vs_raise: ["fold", "call"] };
+  for (const [node, actions] of Object.entries(nodes)) for (const action of actions)
+    for (const tier of ["monster", "strong", "draw", "medium", "air"]) assert.ok(actionReason(node, action, tier), `${node}/${action}/${tier}`);
+  assert.equal(dominantTier({ monster: 0.2, strong: 0, draw: 0.5, medium: 0.3, air: 0 }), "draw");
+});
+
+test("combo explanation splits the opponent range into value, fold-out and continue groups", async () => {
+  const { explainCombo, handClass } = await import("../scripts/postflop-ai/explain.mjs");
+  const { loadInputs } = await import("../scripts/postflop-ai/inputs.mjs");
+  const { parseCards } = await import("../scripts/postflop-ai/model.mjs");
+  const { referencePolicy } = await import("../scripts/postflop-ai/policy.mjs");
+  assert.equal(handClass(parseCards("KcAs", 2)), "AKo");
+  const inputs = loadInputs();
+  const boardCards = parseCards("Js8s5d", 3);
+  const bet = explainCombo({ boardCards, node: "btn_first", cards: "AsKc", inputs, policy: referencePolicy });
+  assert.deepEqual(Object.keys(bet.actions).sort(), ["bet33", "bet75", "check"]);
+  assert.deepEqual(bet.actions.bet33.groups.map(group => group.key), ["value", "foldBetter", "continueBetter"]);
+  const [value, foldBetter, continueBetter] = bet.actions.bet33.groups;
+  const shares = value.share + continueBetter.share + bet.actions.bet33.foldShare;
+  assert.ok(shares > 0.99 && shares <= 1.0001, `shares ${shares}`);
+  const call = explainCombo({ boardCards, node: "bb_vs_33", cards: "Th9d", inputs, policy: referencePolicy });
+  assert.ok(Math.abs(call.actions.call.required - 1.815 / (5.5 + 1.815 * 2)) < 0.001);
+  assert.throws(() => explainCombo({ boardCards, node: "btn_first", cards: "JsKc", inputs, policy: referencePolicy }), /ボード/);
 });

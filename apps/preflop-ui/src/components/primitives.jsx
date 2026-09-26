@@ -14,7 +14,7 @@ export function SectionHeading({ title, action, className = "" }) {
 }
 
 // Matrix cells keep fold near the background on purpose; bars sit on a dark track, so fold needs contrast there.
-const barColor = action => action === "fold" ? "#6e6e78" : color(action);
+export const barColor = action => action === "fold" ? "#6e6e78" : color(action);
 
 export function ActionBars({ items, labels = {} }) {
   if (!items.length) return null;
