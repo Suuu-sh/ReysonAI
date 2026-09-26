@@ -11,7 +11,7 @@ const isProductRoute = window.location.pathname === "/app" || window.location.pa
 const locale = window.location.pathname === "/ja" || window.location.pathname.startsWith("/ja/") ? "ja" : "en";
 const copy = locale === "ja" ? ja : en;
 document.documentElement.lang = isProductRoute ? "ja" : locale;
-document.title = isProductRoute ? "SolveaAI · Preflop Strategy" : copy.title;
+document.title = isProductRoute ? "SolveaAI · Range Analysis" : copy.title;
 if (!isProductRoute) document.querySelector('meta[name="description"]')?.setAttribute("content", copy.description);
 
 createRoot(document.getElementById("root")).render(

@@ -2,11 +2,13 @@ import { CaretDoubleLeft, ChartBar, CaretDoubleRight, GraduationCap, SquaresFour
 import { useState } from "react";
 import { levelLabel } from "../profile.js";
 
+export const RANGE_SECTION = "レンジ分析";
+
 const navigationGroups = [
   {
     label: "解析",
     items: [
-      { Icon: SquaresFour, name: "プリフロップ" },
+      { Icon: SquaresFour, name: RANGE_SECTION },
     ],
   },
   {
@@ -94,7 +96,7 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
         </button>
       ) : (
         <div className="header-meta">
-          <strong>Preflop Explorer</strong>
+          <strong>Range Explorer</strong>
           <small>READ-ONLY / v0.1</small>
         </div>
       )}

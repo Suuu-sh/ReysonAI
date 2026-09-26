@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SolveaAIApiError, SolveaAIClient } from "../../../packages/solveaai-sdk-ts/src/index.ts";
 import { handAggregates, sortActions, strategyCombos } from "./data.js";
 import { solutionForStack, solutionStackBb, spotRequest, spotTitle } from "./spot.js";
-import { Sidebar } from "./components/layout.jsx";
+import { RANGE_SECTION, Sidebar } from "./components/layout.jsx";
 import { ResultsView } from "./components/ResultsView.jsx";
 import { SpotSettings } from "./components/SpotSettings.jsx";
 import { StatusState } from "./components/primitives.jsx";
@@ -21,7 +21,7 @@ export function App() {
   const [spot, setSpot] = useState({ mode: "open", opener: "BTN", actor: "BB" });
   const [result, setResult] = useState(null);
   const [selected, setSelected] = useState("AKs");
-  const [section, setSection] = useState("プリフロップ");
+  const [section, setSection] = useState(RANGE_SECTION);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState("");
   const [reload, setReload] = useState(0);

@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.js";
 import { hands } from "../data.js";
-import { Sidebar } from "../components/layout.jsx";
+import { RANGE_SECTION, Sidebar } from "../components/layout.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { ActionBars, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.jsx";
 import source from "./preflop-ranges.json";
@@ -896,7 +896,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const displayedEntries = focusedEntry ? [focusedEntry] : visibleRangeEntries;
 
   return <div className="shell">
-    <Sidebar activeSection="プリフロップ"
+    <Sidebar activeSection={RANGE_SECTION}
       onSectionChange={onSectionChange ?? (() => {})}
       profile={profile} onEditProfile={onEditProfile} />
     <main>

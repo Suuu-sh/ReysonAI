@@ -1,5 +1,9 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Unified range-navigation label (2026-09-27)
+- Renamed the shared preflop/postflop workspace destination to `レンジ分析`, and changed its browser title to the street-neutral `Range Analysis`. The route and action-path flow are unchanged.
+- Expanded sidebar checked in the running app: `レンジ分析` is visible and active. Verification passed: 191 app tests, typecheck, production build, and 4 Sites tests; the existing large-bundle warning remains.
+
 ## Short postflop EV status (2026-09-26)
 - Removed the long EV/EQR/self-play explanation beneath the postflop action bars. The calculation and values are unchanged; a short visible `AI推定・未検証` label preserves the experimental status.
 - Browser check: expanded AKo on a representative flop shows the short label and no old paragraph. All 177 UI/data tests, typecheck, build, and 4 Sites tests passed; the existing bundle-size warning remains.

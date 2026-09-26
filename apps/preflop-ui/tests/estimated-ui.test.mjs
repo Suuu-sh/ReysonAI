@@ -60,12 +60,12 @@ test("standard matrix keeps a dominant solid cell and puts only mixed frequencie
 });
 
 test("primary navigation is accessible in a collapsible sidebar", () => {
-  const html = renderToStaticMarkup(createElement(Sidebar, { activeSection: "プリフロップ", onSectionChange() {} }));
+  const html = renderToStaticMarkup(createElement(Sidebar, { activeSection: "レンジ分析", onSectionChange() {} }));
   assert.match(html, /<aside class="app-sidebar" aria-label="SolveaAI サイドバー">/);
   assert.match(html, /Solvea<span>AI<\/span>/);
   assert.match(html, /aria-label="サイドバーを折りたたむ" aria-expanded="true" aria-controls="main-navigation"/);
   assert.match(html, /<nav id="main-navigation" class="header-nav" aria-label="メインナビゲーション">/);
-  assert.match(html, /aria-label="プリフロップ"/);
+  assert.match(html, /aria-current="page" aria-label="レンジ分析"/);
   assert.doesNotMatch(html, /aria-label="ポストフロップ/);
 });
 
