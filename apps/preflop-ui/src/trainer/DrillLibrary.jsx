@@ -43,10 +43,10 @@ export function HistoryChart({ values, highlightLast = true }) {
   </svg>;
 }
 
-function DrillCard({ drill, onStart, onEdit, onDelete }) {
+function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
   const stats = drillStats(drill);
   const spots = spotsForSettings(drill.settings).length;
-  return <article className="drill-card">
+  return <article className={`drill-card${draft ? " in-progress" : ""}`}>
     <header>
       <div>
         <h3>{drill.name}</h3>
@@ -67,13 +67,15 @@ function DrillCard({ drill, onStart, onEdit, onDelete }) {
       <Sparkline values={stats.trend} />
     </div>
     <footer>
-      <small>{relativeDay(stats.lastAt)} · {spots}局面</small>
-      <button type="button" className="drill-start" onClick={onStart} disabled={!spots}><Play size={14} weight="fill" />開始</button>
+      <small>{draft ? `途中保存 · ${draft.session.answered}問` : `${relativeDay(stats.lastAt)} · ${spots}局面`}</small>
+      <button type="button" className={`drill-start${draft ? " resume" : ""}`} onClick={onStart} disabled={!spots}>
+        {draft ? <ArrowClockwise size={14} weight="bold" /> : <Play size={14} weight="fill" />}{draft ? "続きから" : "開始"}
+      </button>
     </footer>
   </article>;
 }
 
-export function DrillLibrary({ drills, reviewCount, onStart, onEdit, onDelete, onCreate, onStartReview }) {
+export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit, onDelete, onCreate, onStartReview }) {
   const totals = drills.map(drillStats);
   const attempts = totals.reduce((sum, item) => sum + item.attempts, 0);
   const answered = totals.reduce((sum, item) => sum + item.answered, 0);
@@ -91,13 +93,15 @@ export function DrillLibrary({ drills, reviewCount, onStart, onEdit, onDelete, o
       </dl>
     </div>
     <div className="drill-grid">
-      {reviewCount > 0 && <article className="drill-card review">
+      {(reviewCount > 0 || drafts.review) && <article className={`drill-card review${drafts.review ? " in-progress" : ""}`}>
         <header><div><h3>復習ドリル</h3><ul className="drill-tags"><li>以前ミスしたハンドだけ</li></ul></div></header>
-        <p className="review-count"><strong>{reviewCount}</strong>ハンドが復習待ち</p>
-        <footer><small>正解すると復習待ちから外れます</small>
-          <button type="button" className="drill-start" onClick={onStartReview}><ArrowClockwise size={14} weight="bold" />復習する</button></footer>
+        <p className="review-count"><strong>{drafts.review?.session.answered ?? reviewCount}</strong>{drafts.review ? "問を回答済み" : "ハンドが復習待ち"}</p>
+        <footer><small>{drafts.review ? "途中保存されています" : "正解すると復習待ちから外れます"}</small>
+          <button type="button" className={`drill-start${drafts.review ? " resume" : ""}`} onClick={onStartReview}>
+            <ArrowClockwise size={14} weight="bold" />{drafts.review ? "続きから" : "復習する"}
+          </button></footer>
       </article>}
-      {drills.map(drill => <DrillCard key={drill.id} drill={drill} onStart={() => onStart(drill)} onEdit={() => onEdit(drill)} onDelete={() => onDelete(drill)} />)}
+      {drills.map(drill => <DrillCard key={drill.id} drill={drill} draft={drafts[drill.id]} onStart={() => onStart(drill)} onEdit={() => onEdit(drill)} onDelete={() => onDelete(drill)} />)}
       <button type="button" className="drill-card create" onClick={onCreate}><Plus size={22} weight="bold" /><strong>新しいドリルを作る</strong><small>出題範囲・席・問題数・難易度を選んで保存</small></button>
     </div>
   </div>;

@@ -9,6 +9,7 @@ import {
 } from "./trainer-data.js";
 import { clearHistory, loadHistory, saveHistory, summarize } from "./trainer-store.js";
 import { drillStats, loadDrills, newDrillId, recordSession, saveDrills, upsertDrill } from "./drill-store.js";
+import { loadDrillDrafts, removeDrillDraft, restoreDrillDraft, saveDrillDraft } from "./drill-session-store.js";
 import { DrillLibrary, HistoryChart } from "./DrillLibrary.jsx";
 import { PlayerAnalysis } from "./PlayerAnalysis.jsx";
 import "./trainer.css";
@@ -268,8 +269,7 @@ function SessionResult({ log, settings, drill, record, onRestart, onLibrary }) {
   </div>;
 }
 
-function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup, onFinish }) {
-  const [startedAt] = useState(() => Date.now());
+function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, initialDraft, onProgress, onOpenSetup, onFinish }) {
   const spots = useMemo(() => spotsForSettings(settings), [settings]);
   // Keep just-answered hands out of the review queue so a miss is not re-asked immediately.
   const review = useMemo(() => {
@@ -284,9 +284,11 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup
       : pickQuestion(spots.length ? spots : filterSpots(), Math.random, settings.review ? review : [], 0.25, settings.difficulty);
     return { ...question, cards: randomSuits(question.hand) };
   }, [spots, review, reviewOnly, settings]);
-  const [question, setQuestion] = useState(() => next());
-  const [answer, setAnswer] = useState(null);
-  const [session, setSession] = useState({ answered: 0, score: 0, streak: 0, bestStreak: 0, results: [], log: [] });
+  const [restored] = useState(() => restoreDrillDraft(initialDraft));
+  const [startedAt] = useState(() => Date.now() - (restored?.elapsedMs ?? 0));
+  const [question, setQuestion] = useState(() => restored?.question ?? next());
+  const [answer, setAnswer] = useState(() => restored?.answer ?? null);
+  const [session, setSession] = useState(() => restored?.session ?? { answered: 0, score: 0, streak: 0, bestStreak: 0, results: [], log: [] });
   const [selectedHand, setSelectedHand] = useState(null);
   const limit = reviewOnly ? Math.min(settings.count || review.length, review.length || 1) : settings.count;
   const lastQuestion = limit > 0 && session.answered >= limit;
@@ -330,6 +332,11 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup
   const shownMix = spot.byHand.get(shownHand);
   const notes = answer ? spot.actions.filter(action => answer.mix[action.key] >= 0.05 && studyNote(action.key, hand, spot)) : [];
   const progress = limit > 0 ? Math.min(1, session.answered / limit) : 0;
+
+  useEffect(() => {
+    onProgress({ key: draftKey, drillId: draftKey, drillName, settings, reviewOnly, savedAt: Date.now(), elapsedMs: Date.now() - startedAt,
+      question: { spotId: spot.id, hand, cards, review: question.review }, answerAction: answer?.action ?? null, session });
+  }, [draftKey, drillName, settings, reviewOnly, startedAt, spot.id, hand, cards, question.review, answer, session, onProgress]);
 
   return <div className="trainer-layout">
     <header className="trainer-topbar">
@@ -452,6 +459,7 @@ function Weakness({ history, onStartReview, onStart, onClear }) {
 export function TrainerPage({ profile, onEditProfile, onSectionChange, section = "トレーナー" }) {
   const [history, setHistory] = useState(loadHistory);
   const [drills, setDrills] = useState(() => loadDrills(profile?.level));
+  const [drafts, setDrafts] = useState(loadDrillDrafts);
   const [phase, setPhase] = useState("library");
   const [active, setActive] = useState(null); // { drill, review }
   const [editing, setEditing] = useState(null); // { drill, isNew }
@@ -460,11 +468,18 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   const reviewCount = useMemo(() => summarize(history).review.length, [history]);
   const onAnswer = useCallback(entry => setHistory(current => { const updated = [...current, entry]; saveHistory(updated); return updated; }), []);
   const commitDrills = next => { setDrills(next); saveDrills(next); };
-  const start = (drill, review = false) => { setActive({ drill, review }); setRun(value => value + 1); setPhase("drill"); onSectionChange("トレーナー"); };
+  const onProgress = useCallback(draft => setDrafts(current => saveDrillDraft(current, draft)), []);
+  const discardProgress = useCallback(key => setDrafts(current => removeDrillDraft(current, key)), []);
+  const start = (drill, review = false) => {
+    const saved = drafts[review ? "review" : drill.id];
+    setActive({ drill, review, name: saved?.drillName ?? drill.name, settings: saved?.settings ?? drill.settings });
+    setRun(value => value + 1); setPhase("drill"); onSectionChange("トレーナー");
+  };
   const reviewDrill = useMemo(() => ({ id: "review", name: "復習ドリル", settings: normalizeSettings({ count: Math.min(20, Math.max(reviewCount, 1)) }, profile?.level) }), [reviewCount, profile]);
   const onFinish = useCallback((log, durationMs) => {
     const counts = { best: 0, mixed: 0, miss: 0 };
     for (const item of log) counts[item.result]++;
+    discardProgress(active.review ? "review" : active.drill.id);
     let record = null;
     if (!active.review && log.length) {
       const before = drillStats(drills.find(drill => drill.id === active.drill.id));
@@ -476,10 +491,13 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
     }
     setResult({ log, record });
     setPhase("result");
-  }, [active, drills]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [active, drills, discardProgress]); // eslint-disable-line react-hooks/exhaustive-deps
   const mainRef = useRef(null);
   useEffect(() => { mainRef.current?.scrollTo?.(0, 0); window.scrollTo?.(0, 0); }, [phase, section]);
-  const current = active && (active.review ? reviewDrill : drills.find(drill => drill.id === active.drill.id) ?? active.drill);
+  const activeDraftKey = active && (active.review ? "review" : active.drill.id);
+  const activeDraft = activeDraftKey ? drafts[activeDraftKey] : null;
+  const baseCurrent = active && (active.review ? reviewDrill : drills.find(drill => drill.id === active.drill.id) ?? active.drill);
+  const current = baseCurrent && active ? { ...baseCurrent, name: active.name ?? baseCurrent.name, settings: active.settings ?? baseCurrent.settings } : baseCurrent;
   return <div className="shell">
     <Sidebar activeSection={section} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} />
     <main className="trainer-page" ref={mainRef}>
@@ -495,12 +513,13 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
         : phase === "result" && result ? <SessionResult log={result.log} record={result.record} settings={current.settings} drill={active.review ? null : current}
             onRestart={() => start(current, active.review)} onLibrary={() => setPhase("library")} />
         : phase === "drill" && current ? <Drill key={run} history={history} onAnswer={onAnswer} settings={current.settings} drillName={current.name} reviewOnly={active.review}
+            draftKey={activeDraftKey} initialDraft={activeDraft} onProgress={onProgress}
             onOpenSetup={() => setPhase("library")} onFinish={onFinish} />
-        : <DrillLibrary drills={drills} reviewCount={reviewCount}
+        : <DrillLibrary drills={drills} reviewCount={reviewCount} drafts={drafts}
             onStart={drill => start(drill)} onStartReview={() => start(reviewDrill, true)}
             onCreate={() => { setEditing({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true }); setPhase("edit"); }}
             onEdit={drill => { setEditing({ drill, isNew: false }); setPhase("edit"); }}
-            onDelete={drill => { if (window.confirm(`「${drill.name}」と記録を削除しますか？`)) commitDrills(drills.filter(item => item.id !== drill.id)); }} />}
+            onDelete={drill => { if (window.confirm(`「${drill.name}」と記録を削除しますか？`)) { commitDrills(drills.filter(item => item.id !== drill.id)); discardProgress(drill.id); } }} />}
     </main>
   </div>;
 }

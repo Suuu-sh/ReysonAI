@@ -224,6 +224,11 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Browser verification at `http://127.0.0.1:5173/app`: the completed BTN→BB path opened the modal, `As 7d 2c` appeared in the compact row block, and the BTN flop range remained visible. The obstructing inline selection panel was absent.
 - Focused postflop tests passed (9/9); typecheck, production build and Sites tests passed. The full run passed 171/172; its sole failure was the existing 4bet UI title assertion after separate saved-data changes. Vite still reports its large-chunk warning.
 
+## Resume interrupted trainer drills (2026-09-27)
+- The trainer now autosaves the current question, selected answer, score, streak and elapsed practice time in browser storage. Leaving the table or reloading the app keeps the draft; the drill library marks it `途中保存` and offers `続きから`. Completing or explicitly ending a drill removes the draft; review drills remain outside per-drill accuracy records.
+- Browser verification at `http://127.0.0.1:5174/app`: answered a question, returned to the library, and resumed the same hand with its answer/verdict intact. Reloading the app retained the draft and `続きから` entry.
+- `npm test` passed (202/202), `npm run build` passed, and `npm run test:sites` passed (4/4). The existing Vite large-bundle warning remains.
+
 ## Player-analysis summary card removal (2026-09-27)
 - Removed the redundant large tendency/count summary; the four-quadrant map now follows the page heading directly. Action comparisons and guidance remain.
 - Browser verification at `http://127.0.0.1:5173/app`: the map and comparison sections were visible, while the summary card and its three counts were absent.
