@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { SPOTS, compareAcross, filterSpots, grade, handCategory, pickQuestion, randomSuits, spotById, studyNote } from "../src/trainer/trainer-data.js";
 import { summarize } from "../src/trainer/trainer-store.js";
-import { analyzePlayer } from "../src/trainer/player-analysis.js";
+import { analyzePlayer, plotPosition } from "../src/trainer/player-analysis.js";
 
 const seeded = seed => () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
 
@@ -153,6 +153,15 @@ test("NIT-like label needs broad enough evidence and excess folds", () => {
   assert.ok(ready.openSamples >= 10 && ready.responseSamples >= 10 && ready.distinctSpots >= 3);
   assert.equal(ready.style.key, "nit");
   assert.ok(ready.metrics.fold.delta >= 0.15);
+  assert.ok(ready.plot.x < 50 && ready.plot.y > 50, "extra folds and fewer 3bets plot toward the tight/passive corner");
   assert.equal(analyzePlayer(picks.filter(item => item.spotId.endsWith("_open"))).style.key, "pending");
   assert.equal(analyzePlayer(picks.slice(0, 29)).style.key, "pending");
+});
+
+test("style-map coordinates keep the policy at centre and clamp extreme deviations", () => {
+  assert.deepEqual(plotPosition(0, 0), { x: 50, y: 50 });
+  assert.deepEqual(plotPosition(0.30, 0.30), { x: 12, y: 12 });
+  assert.deepEqual(plotPosition(-1, -1), { x: 88, y: 88 });
+  assert.equal(plotPosition(NaN, 0), null);
+  assert.equal(analyzePlayer([{ spotId: "BB_vs_BTN", hand: "AA", action: "three_bet" }]).plot, null);
 });

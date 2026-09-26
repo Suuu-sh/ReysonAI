@@ -30,6 +30,31 @@ function Guidance({ analysis }) {
   </section>;
 }
 
+function StyleMap({ analysis }) {
+  const { plot, metrics, ready } = analysis;
+  return <section className="analysis-card analysis-map" aria-labelledby="analysis-map-title">
+    <div className="analysis-section-heading"><div><h2 id="analysis-map-title">プレイスタイルマップ</h2>
+      <p>同じ問題のAI推定方針を中心に、あなたの選び方がどちらへ寄るかを示します。</p></div></div>
+    <figure className="analysis-map-figure">
+      <div className="analysis-map-y-top">3betが多い · アグレッシブ</div>
+      <div className="analysis-map-grid">
+        <div className="analysis-quadrant"><b>TAG</b><small>タイト × アグレッシブ</small></div>
+        <div className="analysis-quadrant"><b>LAG</b><small>ルース × アグレッシブ</small></div>
+        <div className="analysis-quadrant"><b>タイト・パッシブ</b><small>参加を絞り、コール中心</small></div>
+        <div className="analysis-quadrant"><b>ルース・パッシブ</b><small>コール過多はこの方向</small></div>
+        <span className="analysis-map-center" aria-hidden="true" title="AI推定方針の中心" />
+        {plot ? <span className={`analysis-map-marker${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%` }}
+          role="img" aria-label={`あなたの練習位置。参加頻度は推定方針から${points(-metrics.fold.delta)}、3betは${points(metrics.threeBet.delta)}。${ready ? "" : "暫定表示。"}`}>
+          <i /><b>あなた{ready ? "" : " · 暫定"}</b>
+        </span> : <span className="analysis-map-wait">回答が増えると、ここに点を表示します</span>}
+      </div>
+      <div className="analysis-map-y-bottom">3betが少ない · パッシブ</div>
+      <figcaption className="analysis-map-x"><span>← タイト · 参加が少ない</span><span>ルース · 参加が多い →</span></figcaption>
+    </figure>
+    <p className="analysis-map-note">横軸はフォールドの差、縦軸は対オープンでの3betの差です。NITは主にタイト側に付く追加ラベルです。中心は「今回出た問題に対するAI推定方針」で、実戦の絶対的なプレイスタイルではありません。{!plot && "点は重複を除いた10問以上（オープン3問・対オープン5問以上）で表示します。"}</p>
+  </section>;
+}
+
 export function PlayerAnalysis({ history, onStart }) {
   const analysis = useMemo(() => analyzePlayer(history), [history]);
   const { metrics } = analysis;
@@ -46,6 +71,8 @@ export function PlayerAnalysis({ history, onStart }) {
         <div><dt>重複を除いた問題</dt><dd>{analysis.samples}<small>問</small></dd></div>
         <div><dt>分析した局面</dt><dd>{analysis.distinctSpots}<small>局面</small></dd></div></dl>
     </section>
+
+    <StyleMap analysis={analysis} />
 
     {!analysis.ready && <p className="analysis-notice" role="status">傾向判定には、重複を除いて30問以上（オープン・対オープン各10問以上、計3局面以上）が必要です。現在はオープン {analysis.openSamples}問・対オープン {analysis.responseSamples}問です。</p>}
 

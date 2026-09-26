@@ -4,6 +4,20 @@ import { spotById, spotTitle } from "./trainer-data.js";
 
 const MIN_SAMPLES = 30;
 const MIN_PER_KIND = 10;
+const PLOT_MIN_SAMPLES = 10;
+const PLOT_MIN_OPENS = 3;
+const PLOT_MIN_RESPONSES = 5;
+const PLOT_FULL_SCALE = 0.30; // A 30-point deviation reaches the visible edge.
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+export function plotPosition(foldDelta, threeBetDelta) {
+  if (!Number.isFinite(foldDelta) || !Number.isFinite(threeBetDelta)) return null;
+  return {
+    x: 50 - clamp(foldDelta / PLOT_FULL_SCALE, -1, 1) * 38,
+    y: 50 - clamp(threeBetDelta / PLOT_FULL_SCALE, -1, 1) * 38,
+  };
+}
 
 function validSample(entry) {
   const spot = spotById.get(entry?.spotId);
@@ -46,6 +60,8 @@ export function analyzePlayer(history) {
     call: cohort(responses, item => +(item.action === "call"), item => item.mix.call),
     threeBet: cohort(responses, item => +(item.action === "three_bet"), item => item.mix.three_bet),
   };
+  const plotReady = samples.length >= PLOT_MIN_SAMPLES && opens.length >= PLOT_MIN_OPENS && responses.length >= PLOT_MIN_RESPONSES;
+  const plot = plotReady ? plotPosition(metrics.fold.delta, metrics.threeBet.delta) : null;
 
   let style = { label: "分析中", key: "pending", explanation: "オープンと対オープンの両方を、複数の局面で練習すると傾向を表示します。" };
   if (ready) {
@@ -66,5 +82,5 @@ export function analyzePlayer(history) {
   }).filter(item => item.count >= 5).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta) || b.count - a.count);
 
   return { answered: Array.isArray(history) ? history.length : 0, samples: samples.length, openSamples: opens.length,
-    responseSamples: responses.length, distinctSpots, ready, style, metrics, bySpot };
+    responseSamples: responses.length, distinctSpots, ready, style, metrics, bySpot, plot };
 }

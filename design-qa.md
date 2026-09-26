@@ -1,5 +1,9 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Practice style map (2026-09-27)
+- Added the requested 2×2 TAG/LAG/tight-passive/loose-passive map to プレー分析. A pink point marks the user's saved practice-answer deviations from the same-question AI estimate; a data-waiting state avoids inventing a position before enough answers exist.
+- Checked the running app with 30 distinct answered questions: the point appears near the baseline centre, matching the current 「基準に近い」 label. The chart states that these are preflop practice tendencies rather than real-play VPIP/PFR.
+
 ## Practice player analysis (2026-09-27)
 - Added a separate プレー分析 destination alongside トレーナー and 弱点. It compares each chosen action with the saved AI estimate for the exact sampled spot/hand, deduplicates review repeats, and waits for diverse evidence before showing tentative NIT/TAG/LAG-style labels.
 - Verified the empty state and its drill-library link in the running app. The page explicitly limits claims to practice choices rather than real-play VPIP/PFR or GTO; all answer history stays local to the browser.

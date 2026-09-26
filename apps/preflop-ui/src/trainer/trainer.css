@@ -465,6 +465,30 @@
 .analysis-welcome { display: grid; justify-items: start; gap: 9px; padding: 32px; }
 .analysis-welcome-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; background: var(--surface-accent-strong); color: var(--accent-bright); }
 .analysis-welcome p { max-width: 540px; margin: 0 0 4px; color: var(--text-muted); font-size: 13px; }
+.analysis-map .analysis-section-heading { margin-bottom: 8px; }
+.analysis-map-figure { width: min(100%, 760px); margin: 0 auto; }
+.analysis-map-y-top, .analysis-map-y-bottom { padding: 5px 0; color: #bcc2ce; font-size: 11px; font-weight: 700; text-align: center; }
+.analysis-map-y-top { color: #e7abc7; }
+.analysis-map-y-bottom { color: #a7b1c6; }
+.analysis-map-grid { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); height: clamp(240px, 31vw, 335px); overflow: hidden; border: 1px solid #3a343d; border-radius: 10px; }
+.analysis-map-grid::before, .analysis-map-grid::after { position: absolute; z-index: 1; background: #665865; content: ""; opacity: .7; pointer-events: none; }
+.analysis-map-grid::before { top: 0; bottom: 0; left: 50%; width: 1px; }
+.analysis-map-grid::after { top: 50%; right: 0; left: 0; height: 1px; }
+.analysis-quadrant { display: grid; align-content: start; gap: 3px; padding: 18px 20px; }
+.analysis-quadrant:nth-child(1) { background: linear-gradient(135deg, #192321, #15191b); }
+.analysis-quadrant:nth-child(2) { background: linear-gradient(225deg, #261a28, #1c1821); }
+.analysis-quadrant:nth-child(3) { align-content: end; background: linear-gradient(45deg, #171b23, #15171d); }
+.analysis-quadrant:nth-child(4) { align-content: end; background: linear-gradient(315deg, #281d20, #1d191c); }
+.analysis-quadrant b { font-size: 14px; font-weight: 800; }
+.analysis-quadrant small { color: #9a929d; font-size: 11px; }
+.analysis-map-center { position: absolute; z-index: 2; top: 50%; left: 50%; width: 8px; height: 8px; border: 1px solid #bbb2c1; border-radius: 50%; background: #202027; transform: translate(-50%, -50%); }
+.analysis-map-marker { position: absolute; z-index: 3; display: grid; place-items: center; width: 20px; height: 20px; transform: translate(-50%, -50%); }
+.analysis-map-marker i { display: block; width: 16px; height: 16px; border: 3px solid #fff; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px rgb(240 96 158 / 22%), 0 3px 10px #000; }
+.analysis-map-marker b { position: absolute; top: 20px; left: 50%; padding: 3px 8px; border: 1px solid #e57eaa; border-radius: 999px; background: #2a1620; color: #fff; font-size: 11px; white-space: nowrap; transform: translateX(-50%); }
+.analysis-map-marker.label-above b { top: auto; bottom: 20px; }
+.analysis-map-wait { position: absolute; z-index: 2; top: 50%; left: 50%; width: max-content; max-width: 75%; padding: 6px 11px; border: 1px solid var(--line-strong); border-radius: 999px; background: #141418; color: #b7afba; font-size: 11px; text-align: center; transform: translate(-50%, -50%); }
+.analysis-map-x { display: flex; justify-content: space-between; gap: 8px; padding-top: 7px; color: #bcc2ce; font-size: 11px; font-weight: 700; }
+.analysis-map-note { margin: 12px 0 0; color: var(--text-muted); font-size: 11px; }
 .analysis-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
 .analysis-section-heading > span { color: var(--text-subtle); font-size: 11px; white-space: nowrap; }
 .analysis-comparisons { display: grid; gap: 1px; }
@@ -508,6 +532,11 @@
   .analysis-hero dl { flex-wrap: wrap; gap: 10px 20px; }
   .analysis-hero dd { font-size: 19px; }
   .analysis-card { padding: 15px; }
+  .analysis-map-grid { height: 255px; }
+  .analysis-quadrant { padding: 12px; }
+  .analysis-quadrant b { font-size: 11px; }
+  .analysis-quadrant small { font-size: 10px; }
+  .analysis-map-x { font-size: 10px; }
   .analysis-section-heading { align-items: start; flex-direction: column; }
   .analysis-comparison-row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
   .analysis-comparison-bars { grid-column: 1 / -1; grid-row: 2; }
