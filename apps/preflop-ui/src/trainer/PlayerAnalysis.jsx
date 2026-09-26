@@ -1,6 +1,7 @@
 import { ArrowRight, ChartBar, Target } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { analyzePlayer } from "./player-analysis.js";
+import { practiceHighlights, summarize } from "./trainer-store.js";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
 const points = value => value == null ? "—" : `${value >= 0 ? "+" : ""}${Math.round(value * 100)}pt`;
@@ -55,8 +56,24 @@ function StyleMap({ analysis }) {
   </section>;
 }
 
-export function PlayerAnalysis({ history, onStart }) {
+function HighlightCard({ title, items, empty, tone, review, reviewCount, onOpenWeakness }) {
+  return <section className={`analysis-card analysis-highlight-card ${tone}`} aria-label={title}>
+    <h2>{title}</h2>
+    {items.length ? <ul>{items.map(item => <li key={`${item.kind}-${item.key}`}>
+      <span><small>{item.kind} · {item.answered}問{item.provisional ? " · 暫定" : ""}</small><strong>{item.label}</strong></span>
+      <b>{pct(item.rate)}</b>
+    </li>)}</ul> : <p className="analysis-empty">{empty}</p>}
+    {tone === "weakness" && reviewCount > 0 && <div className="analysis-review">
+      <strong>復習待ち {reviewCount}ハンド</strong>
+      <p>{review.map(item => item.label).join("、")}{reviewCount > review.length ? " など" : ""}</p>
+    </div>}
+    {tone === "weakness" && onOpenWeakness && <button type="button" className="analysis-detail-link" onClick={onOpenWeakness}>弱点の詳細を見る<ArrowRight size={14} /></button>}
+  </section>;
+}
+
+export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
   const analysis = useMemo(() => analyzePlayer(history), [history]);
+  const highlights = useMemo(() => practiceHighlights(summarize(history)), [history]);
   const { metrics } = analysis;
   return <div className="player-analysis">
     <header className="analysis-heading">
@@ -84,6 +101,13 @@ export function PlayerAnalysis({ history, onStart }) {
         <ComparisonRow title="3bet" detail="相手のオープンに対して" metric={metrics.threeBet} />
       </div>
     </section>
+
+    <div className="analysis-highlights" aria-label="練習結果の強みと弱点">
+      <HighlightCard title="強み" tone="strength" items={highlights.strengths} empty="正答率80%以上の局面・ハンド種類は、まだありません。" />
+      <HighlightCard title="弱点" tone="weakness" items={highlights.weaknesses} empty="まだ判定できる弱点データがありません。"
+        review={highlights.review} reviewCount={highlights.reviewCount} onOpenWeakness={onOpenWeakness} />
+    </div>
+    <p className="analysis-highlight-note">強みは5問以上で正答率80%以上、弱点は5問以上で60%以下を目安に表示します。3～4問の弱点候補は「暫定」とし、実戦の実力評価ではありません。</p>
 
     <div className="analysis-bottom">
       <section className="analysis-card analysis-spots"><h2>差が大きい局面</h2><p>各局面で5種類以上のハンドを解いた場合のみ表示します。</p>

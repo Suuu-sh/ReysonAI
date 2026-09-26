@@ -21,3 +21,16 @@ test("player analysis opens with the style map, without the redundant summary ca
   assert.match(html, /まずは練習から/);
   assert.doesNotMatch(html, /analysis-hero|現在の練習傾向|回答履歴|重複を除いた問題|分析した局面/);
 });
+
+test("player analysis includes graded strengths, weaknesses and a link to detailed review", () => {
+  const history = [
+    ...Array.from({ length: 5 }, () => ({ spotId: "UTG_open", hand: "AA", action: "open", result: "best", score: 1 })),
+    ...Array.from({ length: 5 }, () => ({ spotId: "BB_vs_BTN", hand: "AA", action: "fold", result: "miss", score: 0 })),
+  ];
+  const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history, onStart() {}, onOpenWeakness() {} }));
+  assert.match(html, /aria-label="練習結果の強みと弱点"/);
+  assert.match(html, /aria-label="強み"[\s\S]*UTG オープン[\s\S]*100%/);
+  assert.match(html, /aria-label="弱点"[\s\S]*BB vs BTN オープン[\s\S]*復習待ち 1ハンド/);
+  assert.match(html, /弱点の詳細を見る/);
+  assert.doesNotMatch(html, /analysis-hero/);
+});

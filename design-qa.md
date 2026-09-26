@@ -233,3 +233,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Removed the redundant large tendency/count summary; the four-quadrant map now follows the page heading directly. Action comparisons and guidance remain.
 - Browser verification at `http://127.0.0.1:5173/app`: the map and comparison sections were visible, while the summary card and its three counts were absent.
 - Typecheck, build, all 202 UI tests and all 4 Sites tests passed. The pre-existing large-bundle warning remains.
+
+## Player-analysis strengths and weaknesses (2026-09-27)
+- Added compact strength/weakness cards beneath the action comparison, using the same graded browser-local answer history as the detailed 弱点 page. Established highlights require five answers; weak groups with three or four answers are explicitly provisional. The weakness card also lists pending review hands and links to the detailed page.
+- Browser verification at `http://127.0.0.1:5173/app`: the existing 31-answer history showed strong groups, provisional weak groups, two review hands, and a working link to 弱点. The removed large summary card stayed absent.
+- Typecheck, all 205 tests, build and all 4 Sites tests passed. The existing large-bundle warning remains.

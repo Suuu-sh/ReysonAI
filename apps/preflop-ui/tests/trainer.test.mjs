@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { SPOTS, compareAcross, filterSpots, grade, handCategory, pickQuestion, randomSuits, spotById, studyNote } from "../src/trainer/trainer-data.js";
-import { summarize } from "../src/trainer/trainer-store.js";
+import { practiceHighlights, summarize } from "../src/trainer/trainer-store.js";
 import { analyzePlayer, plotPosition } from "../src/trainer/player-analysis.js";
 
 const seeded = seed => () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
@@ -66,6 +66,20 @@ test("weakness summary ranks low scores first and keeps unresolved misses for re
   assert.equal(stats.rate, 1.5 / 4);
   assert.equal(stats.bySpot[0].key, "BB_vs_BTN");
   assert.deepEqual(stats.review.map(item => item.hand), ["K9o"]);
+});
+
+test("practice highlights reuse graded weakness history and require five answers per group", () => {
+  const history = [
+    ...Array.from({ length: 5 }, () => ({ spotId: "UTG_open", hand: "AA", action: "open", result: "best", score: 1 })),
+    ...Array.from({ length: 5 }, () => ({ spotId: "BB_vs_BTN", hand: "AA", action: "fold", result: "miss", score: 0 })),
+  ];
+  const highlights = practiceHighlights(summarize(history));
+  assert.deepEqual(highlights.strengths.map(item => [item.kind, item.key, item.rate]), [["局面", "UTG_open", 1]]);
+  assert.deepEqual(highlights.weaknesses.map(item => [item.kind, item.key, item.rate]), [["局面", "BB_vs_BTN", 0], ["ハンド種類", "pair_high", 0.5]]);
+  assert.deepEqual([highlights.reviewCount, highlights.review[0].hand], [1, "AA"]);
+  assert.deepEqual(practiceHighlights(summarize(history.slice(0, 4))).strengths, []);
+  const provisional = practiceHighlights(summarize(history.slice(0, 5).concat(history.slice(5, 9))));
+  assert.deepEqual([provisional.weaknesses[0].key, provisional.weaknesses[0].provisional], ["BB_vs_BTN", true]);
 });
 
 test("study notes name the hero's actual seat", () => {

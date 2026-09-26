@@ -506,7 +506,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onStart={() => { setPhase("library"); onSectionChange("トレーナー"); }}
             onStartReview={() => start(reviewDrill, true)}
             onClear={() => { if (window.confirm("回答履歴をすべて消しますか？")) { clearHistory(); setHistory([]); } }} />
-        : section === "プレー分析" ? <PlayerAnalysis history={history} onStart={() => { setPhase("library"); onSectionChange("トレーナー"); }} />
+        : section === "プレー分析" ? <PlayerAnalysis history={history} onStart={() => { setPhase("library"); onSectionChange("トレーナー"); }} onOpenWeakness={() => onSectionChange("弱点")} />
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
             onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("library")}
             onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("library"); }} />

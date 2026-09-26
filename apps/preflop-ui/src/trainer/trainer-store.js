@@ -50,3 +50,26 @@ export function summarize(history) {
   };
 }
 
+// Keep practice accuracy separate from the style map's action-frequency deltas.
+// Both strength and weakness cards use the same graded history as the 弱点 page.
+export function practiceHighlights(stats, minAnswers = 5) {
+  const eligible = items => items.filter(item => item.answered >= minAnswers);
+  const strongest = items => eligible(items).filter(item => item.rate >= 0.8)
+    .sort((a, b) => b.rate - a.rate || b.answered - a.answered)[0];
+  const weakest = items => eligible(items).filter(item => item.rate <= 0.6)
+    .sort((a, b) => a.rate - b.rate || b.answered - a.answered)[0]
+    ?? items.filter(item => item.answered >= 3 && item.answered < minAnswers && item.rate <= 0.6)
+      .sort((a, b) => a.rate - b.rate || b.answered - a.answered)
+      .map(item => ({ ...item, provisional: true }))[0];
+  const pick = select => {
+    const spot = select(stats.bySpot);
+    const category = select(stats.byCategory);
+    return [spot && { ...spot, kind: "局面" }, category && { ...category, kind: "ハンド種類" }].filter(Boolean);
+  };
+  return {
+    strengths: pick(strongest),
+    weaknesses: pick(weakest),
+    review: stats.review.slice(0, 3),
+    reviewCount: stats.review.length,
+  };
+}
