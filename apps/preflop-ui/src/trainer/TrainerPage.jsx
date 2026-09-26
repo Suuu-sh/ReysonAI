@@ -19,17 +19,57 @@ function PlayingCard({ card }) {
   return <span className={`trainer-card suit-${card[1]}`}><b>{card[0]}</b><i>{SUITS[card[1]]}</i></span>;
 }
 
-// Who acted before the hero, shown as a compact table strip.
-function TableStrip({ spot }) {
+// Seats clockwise from the hero, who always sits at the bottom centre (x%, y% of the felt).
+const SEAT_SLOTS = [[50, 100], [5, 76], [13, 12], [50, -2], [87, 12], [95, 76]];
+const BLINDS = { SB: 0.5, BB: 1 };
+
+function seatStates(spot) {
   const heroIndex = POSITIONS.indexOf(spot.hero);
-  return <ol className="trainer-table" aria-label="テーブルの状況">
-    {POSITIONS.map((position, index) => {
-      const state = position === spot.hero ? "hero" : position === spot.opener ? "raise"
-        : index < heroIndex ? "fold" : "wait";
-      const text = { hero: "あなた", raise: "2.5BB", fold: "Fold", wait: "" }[state];
-      return <li key={position} className={`seat-${state}`}><strong>{position}</strong><span>{text}</span></li>;
-    })}
+  return POSITIONS.map((position, index) => {
+    const bet = position === spot.opener ? spot.openSize : BLINDS[position] ?? 0;
+    const acted = index < heroIndex || (spot.opener && position === spot.opener);
+    const state = position === spot.hero ? "hero" : position === spot.opener ? "raise" : index < heroIndex ? "fold" : "wait";
+    return { position, bet, stack: +(100 - bet).toFixed(1), state, acted };
+  });
+}
+
+// GTO-Wizard-like history strip: every action before the hero, then the hero's pending decision.
+function ActionStrip({ spot, answer, actionLabels }) {
+  const seats = seatStates(spot).filter(seat => seat.acted || seat.state === "hero");
+  return <ol className="trainer-strip" aria-label="ここまでのアクション">
+    {seats.map(seat => <li key={seat.position} className={`strip-${seat.state}`}>
+      <span>{seat.position}</span><small>{seat.stack}</small>
+      <b>{seat.state === "fold" ? "Fold" : seat.state === "raise" ? `Raise ${spot.openSize}` : answer ? actionLabels[answer.action] : "?"}</b>
+    </li>)}
   </ol>;
+}
+
+function PokerTable({ spot, cards, hand, review }) {
+  const seats = seatStates(spot);
+  const heroIndex = POSITIONS.indexOf(spot.hero);
+  const pot = seats.reduce((sum, seat) => sum + seat.bet, 0);
+  return <div className="poker-table" aria-label={`テーブル。${spotPrompt(spot)}`}>
+    <div className="poker-felt">
+      <div className="poker-center">
+        <span className="poker-spot">{spotTitle(spot)} · 100bb{review && <em>復習</em>}</span>
+        <strong className="poker-pot">{+pot.toFixed(1)} bb</strong>
+      </div>
+    </div>
+    {seats.map((seat, index) => {
+      if (!(seat.bet > 0) || seat.state === "fold") return null;
+      const [x, y] = SEAT_SLOTS[(index - heroIndex + 6) % 6];
+      return <span key={`chip-${seat.position}`} className={`poker-chip${seat.state === "raise" ? " raise" : ""}`}
+        style={{ left: `${x + (50 - x) * 0.34}%`, top: `${y + (50 - y) * 0.42}%` }}><i />{seat.bet}</span>;
+    })}
+    {seats.map((seat, index) => {
+      const slot = SEAT_SLOTS[(index - heroIndex + 6) % 6];
+      return <div key={seat.position} className={`poker-seat seat-${seat.state}`} style={{ "--x": `${slot[0]}%`, "--y": `${slot[1]}%` }}>
+        <span className="poker-seat-disc"><b>{seat.position}</b><small>{seat.state === "fold" ? "Fold" : seat.stack}</small></span>
+        {seat.position === "BTN" && <span className="poker-dealer">D</span>}
+        {seat.state === "hero" && <span className="poker-hole" aria-label={`あなたのハンド ${hand}`}>{cards.map(card => <PlayingCard key={card} card={card} />)}</span>}
+      </div>;
+    })}
+  </div>;
 }
 
 function MixBar({ spot, mix }) {
@@ -131,15 +171,8 @@ function Drill({ profile, history, onAnswer, reviewOnly, onExitReview }) {
 
     <div className="trainer-main">
       <Panel className={`trainer-question${answer ? ` answered result-${answer.result}` : ""}`}>
-        <div className="trainer-question-head">
-          <span className="trainer-spot">{spotTitle(spot)}{question.review && <em>復習</em>}</span>
-          <TableStrip spot={spot} />
-        </div>
-        <p className="trainer-prompt">{spotPrompt(spot)}</p>
-        <div className="trainer-hand" aria-label={`あなたのハンド ${hand}`}>
-          {cards.map(card => <PlayingCard key={card} card={card} />)}
-          <span className="trainer-hand-name">{hand}</span>
-        </div>
+        <ActionStrip spot={spot} answer={answer} actionLabels={actionLabels} />
+        <PokerTable spot={spot} cards={cards} hand={hand} review={question.review} />
         <div className="trainer-actions">
           {spot.actions.map((action, index) => {
             const state = !answer ? "" : action.key === answer.action ? ` chosen ${answer.result}` : action.key === answer.best ? " best" : "";

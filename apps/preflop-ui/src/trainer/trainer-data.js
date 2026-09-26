@@ -8,7 +8,7 @@ export const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 // Normalise both datasets into { id, kind, hero, opener, actions, byHand: Map(hand -> {action: 0..1}) }.
 function openSpot(spot) {
   return {
-    id: spot.id, kind: "open", hero: spot.hero, opener: null,
+    id: spot.id, kind: "open", hero: spot.hero, opener: null, openSize: spot.open_size_bb,
     actions: [{ key: "fold", label: "フォールド" }, { key: "open", label: `レイズ ${spot.open_size_bb}BB` }],
     byHand: new Map(spot.hands.map(row => [row.hand, { fold: row.fold / 100, open: row.open / 100 }])),
   };
@@ -16,7 +16,7 @@ function openSpot(spot) {
 
 function responseSpot(spot) {
   return {
-    id: spot.id, kind: "response", hero: spot.hero, opener: spot.opener,
+    id: spot.id, kind: "response", hero: spot.hero, opener: spot.opener, openSize: spot.open_size_bb,
     actions: [{ key: "fold", label: "フォールド" }, { key: "call", label: `コール ${spot.open_size_bb}BB` },
       { key: "three_bet", label: `3bet ${spot.three_bet_size_bb}BB` }],
     byHand: new Map(spot.hands.map(row => [row.hand, { fold: row.fold / 100, call: row.call / 100, three_bet: row.three_bet / 100 }])),
