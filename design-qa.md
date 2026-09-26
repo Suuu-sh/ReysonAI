@@ -1,5 +1,9 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Solvea AI Score trend (2026-09-27)
+- Added a compact policy-alignment card below the existing four-quadrant map. Each practice answer is compared with the saved AI estimate for the same preflop spot/hand; a 10-answer rolling mean makes progress visible without calling it a GTO score or EV loss.
+- Checked the running `/app` at the current narrow viewport with 31 locally saved answers: the card showed 91%, its trend line and explanatory limits without horizontal overflow. Targeted and full UI tests, typecheck, production build, and Sites tests passed. The existing large-chunk warning remains.
+
 ## Practice style map (2026-09-27)
 - Added the requested 2×2 TAG/LAG/tight-passive/loose-passive map to プレー分析. A pink point marks the user's saved practice-answer deviations from the same-question AI estimate; a data-waiting state avoids inventing a position before enough answers exist.
 - Checked the running app with 30 distinct answered questions: the point appears near the baseline centre, matching the current 「基準に近い」 label. The chart states that these are preflop practice tendencies rather than real-play VPIP/PFR.

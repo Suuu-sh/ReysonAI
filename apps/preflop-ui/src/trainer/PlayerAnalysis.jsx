@@ -1,6 +1,6 @@
 import { ArrowRight, ChartBar, Target } from "@phosphor-icons/react";
 import { useMemo } from "react";
-import { analyzePlayer } from "./player-analysis.js";
+import { analyzePlayer, scoreProgress } from "./player-analysis.js";
 import { practiceHighlights, summarize } from "./trainer-store.js";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
@@ -56,6 +56,34 @@ function StyleMap({ analysis }) {
   </section>;
 }
 
+function ScoreProgress({ progress }) {
+  if (!progress.answered) return null;
+  const left = 32, right = 700, top = 12, bottom = 138;
+  const x = index => left + (progress.series.length === 1 ? (right - left) / 2 : index * (right - left) / (progress.series.length - 1));
+  const y = value => bottom - value * (bottom - top);
+  const points = progress.series.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
+  const lastX = x(progress.series.length - 1), lastY = y(progress.current);
+  return <section className="analysis-card analysis-score" aria-labelledby="analysis-score-title">
+    <div className="analysis-score-heading">
+      <div><span className="analysis-eyebrow">POLICY ALIGNMENT</span><h2 id="analysis-score-title">Solvea AI Score</h2>
+        <p>保存済みAI推定方針との一致度の推移</p></div>
+      <div className="analysis-score-value"><strong>{Math.round(progress.current * 100)}<small>%</small></strong><span>直近{progress.recentCount}回答の平均{progress.recentCount < progress.windowSize ? " · 暫定" : ""}</span></div>
+    </div>
+    <figure className="analysis-score-figure">
+      <svg viewBox="0 0 720 168" role="img" aria-label={`Solvea AI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${Math.round(progress.current * 100)}%。`} preserveAspectRatio="none">
+        <line className="analysis-score-grid" x1={left} x2={right} y1={top} y2={top} />
+        <line className="analysis-score-grid" x1={left} x2={right} y1={y(0.5)} y2={y(0.5)} />
+        <line className="analysis-score-grid" x1={left} x2={right} y1={bottom} y2={bottom} />
+        <text x="0" y={top + 4}>100</text><text x="5" y={y(0.5) + 4}>50</text><text x="11" y={bottom + 4}>0</text>
+        {progress.series.length > 1 && <polyline className="analysis-score-line" points={points} />}
+        <circle className="analysis-score-point" cx={lastX} cy={lastY} r="5" />
+      </svg>
+      <figcaption><span>1回答目</span><span>{progress.answered}回答目</span></figcaption>
+    </figure>
+    <p className="analysis-score-note">各回答を同じ局面・ハンドの推定頻度と比較し、選んだ行動の頻度 ÷ 最頻行動の頻度で採点。線は直近10回答の移動平均です（復習の再回答も含む）。現在保存されている推定方針で再計算されます。GTOスコア・EV損失・勝率ではありません。</p>
+  </section>;
+}
+
 function HighlightCard({ title, items, empty, tone, review, reviewCount, onOpenWeakness }) {
   return <section className={`analysis-card analysis-highlight-card ${tone}`} aria-label={title}>
     <h2>{title}</h2>
@@ -73,6 +101,7 @@ function HighlightCard({ title, items, empty, tone, review, reviewCount, onOpenW
 
 export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
   const analysis = useMemo(() => analyzePlayer(history), [history]);
+  const progress = useMemo(() => scoreProgress(history), [history]);
   const highlights = useMemo(() => practiceHighlights(summarize(history)), [history]);
   const { metrics } = analysis;
   return <div className="player-analysis">
@@ -83,6 +112,8 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
     </header>
 
     <StyleMap analysis={analysis} />
+
+    <ScoreProgress progress={progress} />
 
     {!analysis.ready && <p className="analysis-notice" role="status">傾向判定には、重複を除いて30問以上（オープン・対オープン各10問以上、計3局面以上）が必要です。現在はオープン {analysis.openSamples}問・対オープン {analysis.responseSamples}問です。</p>}
 

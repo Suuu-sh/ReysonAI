@@ -31,6 +31,25 @@ function validSample(entry) {
   return { spot, hand: entry.hand, action: entry.action, mix };
 }
 
+// A drill answer gets full alignment for a top-frequency offered action and
+// partial alignment for a mixed action. This is policy agreement, not EV/GTO.
+export function scoreProgress(history, windowSize = 10) {
+  const width = Number.isInteger(windowSize) && windowSize > 0 ? windowSize : 10;
+  const scores = (Array.isArray(history) ? history : []).map(validSample).filter(Boolean).map(sample => {
+    const top = Math.max(...sample.spot.actions.map(action => sample.mix[action.key]));
+    return sample.mix[sample.action] / top;
+  });
+  const series = [];
+  let windowSum = 0;
+  for (let i = 0; i < scores.length; i++) {
+    windowSum += scores[i];
+    if (i >= width) windowSum -= scores[i - width];
+    series.push(windowSum / Math.min(i + 1, width));
+  }
+  return { answered: scores.length, windowSize: width, recentCount: Math.min(scores.length, width),
+    current: series.at(-1) ?? null, series };
+}
+
 function cohort(samples, actual, expected) {
   const count = samples.length;
   if (!count) return { count: 0, actual: null, expected: null, delta: null };

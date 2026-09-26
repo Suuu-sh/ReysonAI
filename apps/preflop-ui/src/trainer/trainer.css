@@ -479,6 +479,21 @@
 .analysis-map-wait { position: absolute; z-index: 2; top: 50%; left: 50%; width: max-content; max-width: 75%; padding: 6px 11px; border: 1px solid var(--line-strong); border-radius: 999px; background: #141418; color: #b7afba; font-size: 11px; text-align: center; transform: translate(-50%, -50%); }
 .analysis-map-x { display: flex; justify-content: space-between; gap: 8px; padding-top: 7px; color: #bcc2ce; font-size: 11px; font-weight: 700; }
 .analysis-map-note { margin: 12px 0 0; color: var(--text-muted); font-size: 11px; }
+.analysis-score { display: grid; gap: 10px; }
+.analysis-score-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
+.analysis-score-heading h2 { margin: 3px 0 1px; font-size: 19px; }
+.analysis-score-heading p, .analysis-score-note { margin: 0; color: var(--text-muted); font-size: 11px; }
+.analysis-score-value { display: grid; justify-items: end; flex: 0 0 auto; }
+.analysis-score-value strong { color: var(--accent-bright); font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.analysis-score-value strong small { margin-left: 2px; font-size: 18px; }
+.analysis-score-value span { color: var(--text-muted); font-size: 11px; }
+.analysis-score-figure { margin: 0; padding: 8px 10px 5px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-raised); }
+.analysis-score-figure svg { display: block; width: 100%; height: 168px; overflow: visible; }
+.analysis-score-figure svg text { fill: #86818e; font-size: 10px; }
+.analysis-score-grid { stroke: #413b45; stroke-width: 1; stroke-dasharray: 3 5; }
+.analysis-score-line { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.analysis-score-point { fill: var(--accent-bright); stroke: var(--surface-raised); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.analysis-score-figure figcaption { display: flex; justify-content: space-between; padding: 0 6px 0 32px; color: var(--text-subtle); font-size: 10px; }
 .analysis-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
 .analysis-section-heading > span { color: var(--text-subtle); font-size: 11px; white-space: nowrap; }
 .analysis-comparisons { display: grid; gap: 1px; }
@@ -544,6 +559,9 @@
   .analysis-quadrant b { font-size: 11px; }
   .analysis-quadrant small { font-size: 10px; }
   .analysis-map-x { font-size: 10px; }
+  .analysis-score-heading { align-items: start; }
+  .analysis-score-value strong { font-size: 27px; }
+  .analysis-score-figure svg { height: 130px; }
   .analysis-section-heading { align-items: start; flex-direction: column; }
   .analysis-comparison-row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
   .analysis-comparison-bars { grid-column: 1 / -1; grid-row: 2; }

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { SPOTS, compareAcross, filterSpots, grade, handCategory, pickQuestion, randomSuits, spotById, studyNote } from "../src/trainer/trainer-data.js";
 import { practiceHighlights, summarize } from "../src/trainer/trainer-store.js";
-import { analyzePlayer, plotPosition } from "../src/trainer/player-analysis.js";
+import { analyzePlayer, plotPosition, scoreProgress } from "../src/trainer/player-analysis.js";
 
 const seeded = seed => () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
 
@@ -158,6 +158,36 @@ test("SB open analysis conditions on the drill's available fold/open choices", (
   const stats = analyzePlayer([{ spotId: "SB_open", hand: "AA", action: "open" }]);
   assert.equal(stats.metrics.open.expected, 1);
   assert.equal(stats.metrics.fold.expected, 0);
+});
+
+test("Solvea AI Score follows each valid answer, including repeated review, independent of grades", () => {
+  const spot = spotById.get("UTG_open");
+  const [hand, mix] = [...spot.byHand].find(([, item]) => item.open > 0.2 && item.open < 0.4);
+  const minority = mix.open < mix.fold ? "open" : "fold";
+  const expected = mix[minority] / Math.max(mix.open, mix.fold);
+  const history = [
+    { spotId: spot.id, hand, action: minority, score: 1 },
+    { spotId: spot.id, hand, action: mix.open > mix.fold ? "open" : "fold", score: 0 },
+    { spotId: spot.id, hand, action: "three_bet" },
+    { spotId: "missing", hand, action: "fold" },
+  ];
+  const progress = scoreProgress(history, 2);
+  assert.equal(progress.answered, 2);
+  assert.ok(Math.abs(progress.series[0] - expected) < 1e-10);
+  assert.ok(Math.abs(progress.current - (expected + 1) / 2) < 1e-10);
+  assert.deepEqual(scoreProgress([]), { answered: 0, windowSize: 10, recentCount: 0, current: null, series: [] });
+});
+
+test("Solvea AI Score uses a bounded rolling window and normalizes SB offered actions", () => {
+  const history = [
+    { spotId: "UTG_open", hand: "AA", action: "fold" },
+    { spotId: "UTG_open", hand: "AA", action: "open" },
+    { spotId: "SB_open", hand: "AA", action: "open" },
+  ];
+  const progress = scoreProgress(history, 2);
+  assert.deepEqual(progress.series, [0, 0.5, 1]);
+  assert.equal(progress.recentCount, 2);
+  assert.deepEqual(scoreProgress(history, 0).series, [0, 0.5, 2 / 3]);
 });
 
 test("NIT-like label needs broad enough evidence and excess folds", () => {
