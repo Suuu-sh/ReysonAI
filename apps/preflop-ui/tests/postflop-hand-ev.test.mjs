@@ -58,14 +58,23 @@ before(async () => {
 });
 after(async () => { await server?.close(); });
 
-test("hand EV view shows EQR, per-action EV with the best action, and the non-GTO note", () => {
-  const data = { pot_bb: 7.32, samples: 2000, row: { equity_pct: 42.25, eqr: 0.05, mix_ev_bb: 0.16,
-    ev_bb: { fold: 0, call: 1.07, raise: 1.89 }, mix: { fold: 85, call: 15, raise: 0 } } };
-  const html = renderToStaticMarkup(createElement(view.HandEvView, { data }));
+test("the expanded breakdown puts each action's EV beside its frequency bar, with EQR above", () => {
+  const row = { equity_pct: 42.25, eqr: 0.05, mix_ev_bb: 0.16, ev_bb: { fold: 0, call: 1.07, raise: 1.89 }, mix: { fold: 85, call: 15, raise: 0 } };
+  const ev = { data: { pot_bb: 7.32, samples: 2000, row }, error: null, loading: false };
+  const items = [{ action: "fold", frequency: 0.85 }, { action: "call", frequency: 0.15 }, { action: "raise", frequency: 0 }];
+  const render = props => renderToStaticMarkup(createElement(view.HandEvBars, { items, labels: { raise: "3倍チェックレイズ" }, ...props }));
+  const html = render({ ev });
   assert.match(html, /EQR<\/dt><dd>0\.05</);
-  assert.match(html, /<tr class="best">[\s\S]*?Raise 3×<small>最大<\/small>[\s\S]*?\+1\.89bb/);
-  assert.match(html, /85%/);
+  assert.equal((html.match(/class="bar-row with-ev/g) || []).length, 3);
+  // The highest-EV action (the check-raise here) is marked; every row shows its EV after the frequency.
+  assert.match(html, /bar-row with-ev best-ev"[^>]*><span>[^<]*<i[^>]*><\/i>3倍チェックレイズ<\/span>[\s\S]*?<b>0\.0%<\/b><em class="ev-positive"[^>]*>\+1\.89bb<\/em>/);
+  assert.match(html, /<b>85\.0%<\/b><em class="ev-positive">0\.00bb<\/em>/);
   assert.match(html, /GTO・ソルバーのEVではありません/);
-  assert.match(renderToStaticMarkup(createElement(view.HandEvView, { data: { ...data, row: null } })), /この場面に来ません/);
+  // A single combo shows its own frequencies without the class-average EV.
+  const combo = render({ ev, comboSelected: true });
+  assert.doesNotMatch(combo, /with-ev|EQR<\/dt>/);
+  assert.match(combo, /EVはハンド平均で表示します/);
+  assert.match(render({ ev: { data: { ...ev.data, row: null }, error: null, loading: false } }), /この場面に来ません/);
+  assert.match(render({ ev: { data: null, error: null, loading: true } }), /EVを読み込み中/);
   assert.equal(view.handEvQuery("As7d2c", ["bet33", "raise"], "AKo"), "/local-postflop-hand-ev?board=As7d2c&history=bet33%2Craise&hand=AKo");
 });
