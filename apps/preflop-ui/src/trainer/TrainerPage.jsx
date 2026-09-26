@@ -51,17 +51,15 @@ function ActionStrip({ spot, answer, actionLabels }) {
   </ol>;
 }
 
-function Verdict({ answer, bestLabel, onNext, nextLabel }) {
+function Verdict({ answer, bestLabel }) {
   const Icon = RESULT_ICONS[answer.result];
   return <div className={`poker-verdict result-${answer.result}`} role="status">
-    <Icon size={34} weight="fill" />
-    <strong>{RESULT_LABELS[answer.result]}</strong>
+    <strong><Icon size={18} weight="fill" />{RESULT_LABELS[answer.result]}</strong>
     <small>{answer.result === "best" ? `頻度 ${pct(answer.frequency)}` : `頻度 ${pct(answer.frequency)} · 最多は${bestLabel}`}</small>
-    <button type="button" className="poker-next" onClick={onNext}>{nextLabel}<ArrowRight size={15} weight="bold" /><kbd>Enter</kbd></button>
   </div>;
 }
 
-function PokerTable({ spot, cards, hand, review, answer, bestLabel, onNext, nextLabel = "次の問題" }) {
+function PokerTable({ spot, cards, hand, review, answer, bestLabel }) {
   const seats = seatStates(spot);
   const heroIndex = POSITIONS.indexOf(spot.hero);
   const pot = seats.reduce((sum, seat) => sum + seat.bet, 0);
@@ -69,7 +67,7 @@ function PokerTable({ spot, cards, hand, review, answer, bestLabel, onNext, next
   return <div className={`poker-table${answer ? " answered" : ""}`} aria-label={`テーブル。${spotPrompt(spot)}`}>
     <div className="poker-felt">
       <div className="poker-center">
-        {answer ? <Verdict answer={answer} bestLabel={bestLabel} onNext={onNext} nextLabel={nextLabel} /> : <>
+        {answer ? <Verdict answer={answer} bestLabel={bestLabel} /> : <>
           <span className="poker-spot">{spotTitle(spot)}{review && <em>復習</em>}</span>
           <strong className="poker-pot">{+pot.toFixed(1)}<small>bb</small></strong>
           <span className="poker-stakes">Cash · 6max · 100bb</span>
@@ -320,7 +318,7 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup
       if (!answer) {
         const action = question.spot.actions[Number(event.key) - 1];
         if (action) choose(action.key);
-      } else if (event.key === "Enter" || event.key === " ") { event.preventDefault(); advance(); }
+      } else if ((event.key === "Enter" || event.key === " ") && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); advance(); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -366,8 +364,9 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup
         <ActionStrip spot={spot} answer={answer} actionLabels={actionLabels} />
         <div className="stage-table">
           <PokerTable spot={spot} cards={cards} hand={hand} review={question.review} answer={answer}
-            bestLabel={answer && shortLabel(spot.actions.find(action => action.key === answer.best))} onNext={advance} nextLabel={lastQuestion ? "結果を見る" : "次の問題"} />
+            bestLabel={answer && shortLabel(spot.actions.find(action => action.key === answer.best))} />
         </div>
+        <div className="stage-footer">
         <div className="trainer-actions">
           {spot.actions.map((action, index) => {
             const state = !answer ? "" : action.key === answer.action ? ` chosen ${answer.result}` : action.key === answer.best ? " best" : "";
@@ -377,6 +376,10 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup
               {answer && <b>{pct(answer.mix[action.key])}</b>}
             </button>;
           })}
+        </div>
+        <button type="button" className={`trainer-next-btn${answer ? " ready" : ""}`} onClick={advance} disabled={!answer}>
+          {lastQuestion ? "結果へ" : "次へ"}<ArrowRight size={14} weight="bold" /><kbd>Enter</kbd>
+        </button>
         </div>
       </section>
 

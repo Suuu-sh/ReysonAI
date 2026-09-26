@@ -17,7 +17,7 @@ function relativeDay(at) {
 }
 
 // Tiny accuracy trend: last attempts left to right, 0–100%.
-export function Sparkline({ values, width = 120, height = 32 }) {
+export function Sparkline({ values, width = 88, height = 28 }) {
   if (values.length < 2) return <svg className="drill-spark empty" width={width} height={height} aria-hidden="true"><line x1="0" x2={width} y1={height - 2} y2={height - 2} /></svg>;
   const step = width / (values.length - 1);
   const points = values.map((value, index) => `${(index * step).toFixed(1)},${(height - 3 - value * (height - 6)).toFixed(1)}`);
