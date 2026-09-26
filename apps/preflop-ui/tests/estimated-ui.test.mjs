@@ -245,7 +245,7 @@ test("4bet view shows original 3bettor, saved sizes and 5bet all-in; old view ke
   assert.match(html, /Raise 26/);
   assert.doesNotMatch(html, /対象外/);
   assert.match(html, /unreachable-hand/);
-  assert.match(html, /title="[^\"]*既存3bet頻度0%（推奨なし）"/);
+  assert.match(html, /title="[^\"]*既存3bet頻度0%、推奨なし"/);
   assert.doesNotMatch(html, /<small>対象外<\/small>/);
   assert.doesNotMatch(html, /アンティ/);
   assert.equal((html.match(/<button aria-pressed=/g) || []).length, 338); // 2 tables × 169 hands
