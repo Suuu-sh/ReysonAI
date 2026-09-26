@@ -7,13 +7,21 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.js";
 
-let server, EstimatedRanges, ActionPath, Sidebar, StrategyMatrix, PreflopCallEvBars, buildActionBlocks, prioritizeParticipantRanges;
+let server, EstimatedRanges, ActionPath, Sidebar, StrategyMatrix, PreflopCallEvBars, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
-  ({ EstimatedRanges, ActionPath, buildActionBlocks, prioritizeParticipantRanges } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
+  ({ EstimatedRanges, ActionPath, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
   ({ StrategyMatrix } = await server.ssrLoadModule("/src/components/StrategyMatrix.jsx"));
   ({ PreflopCallEvBars } = await server.ssrLoadModule("/src/estimated/PreflopCallEvBars.jsx"));
+});
+
+test("a rewound action block resolves the selected hand before opening its details", () => {
+  const hands = [{ hand: "AKo" }, { hand: "J9s" }];
+  const entry = { spot: { hands }, model: { aggregates: new Map() } };
+  assert.equal(selectedHandForRangeEntry(entry, "J9s"), hands[1]);
+  assert.equal(selectedHandForRangeEntry(entry, "AKo"), hands[0]);
+  assert.equal(selectedHandForRangeEntry({ hand: hands[0] }, "J9s"), hands[0]);
 });
 
 test("preflop call EV uses the flop-style right column without inventing other action EVs", () => {

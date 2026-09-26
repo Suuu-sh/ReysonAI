@@ -63,6 +63,9 @@ const displayModeStorageKey = displayModeKey;
 const formatStorageKey = "solveaai:game-format:v1";
 const tableProfileStorageKey = "solveaai:table-profile:v1";
 const openingModelFor = spot => markAdjustedModel(openingMatrixModel(spot), spot);
+export function selectedHandForRangeEntry(entry, selected) {
+  return entry.spot?.hands.find(row => row.hand === selected) ?? entry.hand;
+}
 const legacySelectionStorageKey = "solveagto:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
   const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, squeezeResponse: [], selected: "AKo" };
@@ -835,7 +838,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const ref = block?.rangeRef;
     if (!ref) return null;
     const labelContext = role === "previous" ? "前のポジション・履歴" : "選択位置";
-    const withContext = entry => entry && ({ ...entry, title: `${entry.title}（${labelContext}）`, rangeBlockKey: block.key });
+    const withContext = entry => entry && ({ ...entry, hand: selectedHandForRangeEntry(entry, selected), title: `${entry.title}（${labelContext}）`, rangeBlockKey: block.key });
     const missing = (title, description = ref.reason || "この履歴のレンジはまだ保存されていません。", statusTitle = "レンジ未収録") => ({
       position: ref.position,
       kind: "pending",
