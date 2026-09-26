@@ -1,5 +1,9 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Short postflop EV status (2026-09-26)
+- Removed the long EV/EQR/self-play explanation beneath the postflop action bars. The calculation and values are unchanged; a short visible `AI推定・未検証` label preserves the experimental status.
+- Browser check: expanded AKo on a representative flop shows the short label and no old paragraph. All 177 UI/data tests, typecheck, build, and 4 Sites tests passed; the existing bundle-size warning remains.
+
 ## Preflop EV notation aligned with the flop detail (2026-09-26)
 - BB vs BTN AKo was checked in the running `/app` view. Its saved assumed EQR, raw win rate, and model call EV now appear in a compact summary; the call row shows the signed EV at the right, while raise/fold show `—` because their EVs were not computed.
 - The AI reason remains visible below the action bars without repeating the call-EV fact. RFI and missing-EV paths retain frequency-only bars; no policy-average or best-action claim was added.

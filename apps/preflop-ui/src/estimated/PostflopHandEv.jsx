@@ -39,6 +39,7 @@ export function HandEvBars({ items, labels = {}, ev, comboSelected = false }) {
   const status = comboSelected ? "EVはハンド平均で表示します（「平均」を選ぶと出ます）。"
     : ev?.error ?? (ev?.loading ? "EVを読み込み中…" : ev?.data && !ev.data.row ? "このハンドはこの場面に来ません（前の行動の頻度が0%）。" : null);
   return <div className="hand-ev-breakdown">
+    {row && <small className="hand-ev-badge">AI推定・未検証</small>}
     {row && <dl className="hand-ev-summary">
       <div><dt>EQR</dt><dd>{row.eqr === null ? "—" : row.eqr.toFixed(2)}</dd></div>
       <div><dt>勝率</dt><dd>{row.equity_pct.toFixed(1)}%</dd></div>
@@ -56,9 +57,5 @@ export function HandEvBars({ items, labels = {}, ev, comboSelected = false }) {
       })}
     </div>
     {status && <p className="hand-ev-status">{status}</p>}
-    {row && <small className="hand-ev-note">
-      右端はEV（この判断から先に得るチップ。それまでに入れた分は含めない）。EQR = 平均EV ÷（勝率 × ポット {ev.data.pot_bb}bb からレーキを引いた額）。
-      AI方針どうしの自己対戦で、1アクションあたり{ev.data.samples.toLocaleString()}回のシミュレーションから見積もった値です。GTO・ソルバーのEVではありません。
-    </small>}
   </div>;
 }

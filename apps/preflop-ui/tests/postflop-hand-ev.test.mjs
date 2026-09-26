@@ -69,7 +69,8 @@ test("the expanded breakdown puts each action's EV beside its frequency bar, wit
   // The highest-EV action (the check-raise here) is marked; every row shows its EV after the frequency.
   assert.match(html, /bar-row with-ev best-ev"[^>]*><span>[^<]*<i[^>]*><\/i>3倍チェックレイズ<\/span>[\s\S]*?<b>0\.0%<\/b><em class="ev-positive"[^>]*>\+1\.89bb<\/em>/);
   assert.match(html, /<b>85\.0%<\/b><em class="ev-positive">0\.00bb<\/em>/);
-  assert.match(html, /GTO・ソルバーのEVではありません/);
+  assert.match(html, /AI推定・未検証/);
+  assert.doesNotMatch(html, /右端はEV|AI方針どうしの自己対戦|GTO・ソルバーのEVではありません/);
   // A single combo shows its own frequencies without the class-average EV.
   const combo = render({ ev, comboSelected: true });
   assert.doesNotMatch(combo, /with-ev|EQR<\/dt>/);
