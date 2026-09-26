@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowClockwise, ArrowRight, CheckCircle, Fire, GearSix, Trash, WarningCircle, XCircle } from "@phosphor-icons/react";
+import { ArrowClockwise, ArrowLeft, ArrowRight, CheckCircle, Fire, Trash, Trophy, WarningCircle, XCircle } from "@phosphor-icons/react";
 import { Sidebar } from "../components/layout.jsx";
 import { Panel, SectionHeading, barColor } from "../components/primitives.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
@@ -7,7 +7,9 @@ import {
   COUNT_OPTIONS, DIFFICULTY_OPTIONS, POSITIONS, RESULT_LABELS, SPOTS, STRICTNESS_OPTIONS, aggregatesFor, compareAcross,
   filterSpots, grade, normalizeSettings, pickQuestion, randomSuits, spotById, spotPrompt, spotTitle, spotsForSettings, studyNote,
 } from "./trainer-data.js";
-import { clearHistory, loadHistory, loadSettings, saveHistory, saveSettings, summarize } from "./trainer-store.js";
+import { clearHistory, loadHistory, saveHistory, summarize } from "./trainer-store.js";
+import { drillStats, loadDrills, newDrillId, recordSession, saveDrills, upsertDrill } from "./drill-store.js";
+import { DrillLibrary, HistoryChart } from "./DrillLibrary.jsx";
 import "./trainer.css";
 
 const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
@@ -146,19 +148,25 @@ function Segmented({ options, value, onChange, label }) {
   </div>;
 }
 
-function TrainerSetup({ settings, onChange, onStart, reviewCount, onStartReview }) {
+function DrillEditor({ drill, isNew, onChange, onSave, onCancel, reviewCount }) {
+  const settings = drill.settings;
+  const setSettings = next => onChange({ ...drill, settings: next });
   const spots = spotsForSettings(settings);
   const toggle = (key, value) => {
     const current = settings[key];
     const nextValues = current.includes(value) ? current.filter(item => item !== value) : [...current, value];
-    if (nextValues.length) onChange({ ...settings, [key]: nextValues });
+    if (nextValues.length) setSettings({ ...settings, [key]: nextValues });
   };
   // Positions with no spot for the chosen kinds (e.g. BB never opens, UTG never faces an open).
   const positionAvailable = position => SPOTS.some(spot => settings.kinds.includes(spot.kind) && spot.hero === position);
   return <div className="trainer-setup">
     <div className="setup-head">
-      <h1>トレーニング設定</h1>
-      <p>出題する局面と難しさを選んで始めます。設定はこのブラウザに保存されます。</p>
+      <button type="button" className="setup-back" onClick={onCancel}><ArrowLeft size={15} />ドリル一覧</button>
+      <h1>{isNew ? "新しいドリル" : "ドリルを編集"}</h1>
+      <label className="setup-name">
+        <span>ドリル名</span>
+        <input value={drill.name} maxLength={40} placeholder="例：BTNのオープン" onChange={event => onChange({ ...drill, name: event.target.value })} />
+      </label>
     </div>
     <div className="setup-grid">
       <section className="setup-block">
@@ -171,7 +179,7 @@ function TrainerSetup({ settings, onChange, onStart, reviewCount, onStartReview 
         </div>
       </section>
       <section className="setup-block">
-        <h2>自分の席<button type="button" className="setup-link" onClick={() => onChange({ ...settings, positions: [...POSITIONS] })}>すべて選択</button></h2>
+        <h2>自分の席<button type="button" className="setup-link" onClick={() => setSettings({ ...settings, positions: [...POSITIONS] })}>すべて選択</button></h2>
         <div className="setup-seats">
           {POSITIONS.map(position => <button type="button" key={position} aria-pressed={settings.positions.includes(position)}
             className={`${settings.positions.includes(position) ? "on" : ""}${positionAvailable(position) ? "" : " empty"}`}
@@ -180,21 +188,21 @@ function TrainerSetup({ settings, onChange, onStart, reviewCount, onStartReview 
       </section>
       <section className="setup-block">
         <h2>問題数</h2>
-        <Segmented label="問題数" value={settings.count} onChange={count => onChange({ ...settings, count })}
+        <Segmented label="問題数" value={settings.count} onChange={count => setSettings({ ...settings, count })}
           options={COUNT_OPTIONS.map(count => ({ value: count, label: countLabel(count) }))} />
       </section>
       <section className="setup-block">
         <h2>難易度</h2>
-        <Segmented label="難易度" value={settings.difficulty} onChange={difficulty => onChange({ ...settings, difficulty })} options={DIFFICULTY_OPTIONS} />
+        <Segmented label="難易度" value={settings.difficulty} onChange={difficulty => setSettings({ ...settings, difficulty })} options={DIFFICULTY_OPTIONS} />
       </section>
       <section className="setup-block">
         <h2>判定の厳しさ</h2>
-        <Segmented label="判定の厳しさ" value={settings.strictness} onChange={strictness => onChange({ ...settings, strictness })} options={STRICTNESS_OPTIONS} />
+        <Segmented label="判定の厳しさ" value={settings.strictness} onChange={strictness => setSettings({ ...settings, strictness })} options={STRICTNESS_OPTIONS} />
       </section>
       <section className="setup-block">
         <h2>復習</h2>
         <label className="setup-switch">
-          <input type="checkbox" checked={settings.review} onChange={event => onChange({ ...settings, review: event.target.checked })} />
+          <input type="checkbox" checked={settings.review} onChange={event => setSettings({ ...settings, review: event.target.checked })} />
           <span aria-hidden="true" />
           <div><strong>間違えたハンドを混ぜる</strong><small>4問に1問ほど、以前ミスしたハンドを再出題（復習待ち {reviewCount}）</small></div>
         </label>
@@ -204,13 +212,13 @@ function TrainerSetup({ settings, onChange, onStart, reviewCount, onStartReview 
       <span className={`setup-summary${spots.length ? "" : " invalid"}`}>
         {spots.length ? <>対象 <b>{spots.length}</b> 局面 · {countLabel(settings.count)} · {DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label}</> : "この組み合わせでは出題できる局面がありません"}
       </span>
-      {reviewCount > 0 && <button type="button" className="setup-secondary" onClick={onStartReview}><ArrowClockwise size={15} />復習だけ解く</button>}
-      <button type="button" className="setup-start" onClick={onStart} disabled={!spots.length}>トレーニング開始<ArrowRight size={17} weight="bold" /></button>
+      <button type="button" className="setup-secondary" onClick={() => onSave(false)} disabled={!spots.length || !drill.name.trim()}>保存</button>
+      <button type="button" className="setup-start" onClick={() => onSave(true)} disabled={!spots.length || !drill.name.trim()}>保存して開始<ArrowRight size={17} weight="bold" /></button>
     </div>
   </div>;
 }
 
-function SessionResult({ log, settings, onRestart, onSetup }) {
+function SessionResult({ log, settings, drill, record, onRestart, onLibrary }) {
   const answered = log.length;
   const score = log.reduce((sum, item) => sum + item.score, 0);
   const counts = { best: 0, mixed: 0, miss: 0 };
@@ -221,7 +229,7 @@ function SessionResult({ log, settings, onRestart, onSetup }) {
       <div className="session-ring large" style={{ "--rate": answered ? score / answered : 0 }}><strong>{answered ? pct(score / answered) : "—"}</strong><small>正答率</small></div>
       <div>
         <h1>{answered ? score / answered >= 0.8 ? "よくできました" : score / answered >= 0.6 ? "もう一歩" : "復習しましょう" : "おつかれさまでした"}</h1>
-        <p>{answered}問 · {DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label} · 判定{STRICTNESS_OPTIONS.find(item => item.value === settings.strictness).label}</p>
+        <p>{drill ? <b className="result-drill">{drill.name}</b> : "復習ドリル"} · {answered}問 · {DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label} · 判定{STRICTNESS_OPTIONS.find(item => item.value === settings.strictness).label}</p>
         <ul className="result-counts">
           <li className="result-best"><CheckCircle size={16} weight="fill" />正解 {counts.best}</li>
           <li className="result-mixed"><WarningCircle size={16} weight="fill" />混合で可 {counts.mixed}</li>
@@ -229,6 +237,19 @@ function SessionResult({ log, settings, onRestart, onSetup }) {
         </ul>
       </div>
     </div>
+    {record && <section className="result-record">
+      <div className="record-compare">
+        {record.isBest && <span className="record-badge"><Trophy size={14} weight="fill" />自己ベスト更新</span>}
+        <dl>
+          <div><dt>今回</dt><dd>{pct(record.stats.last)}</dd></div>
+          <div><dt>前回</dt><dd>{record.stats.previous == null ? "—" : pct(record.stats.previous)}{record.stats.previous != null && <small className={record.stats.last >= record.stats.previous ? "up" : "down"}>{record.stats.last >= record.stats.previous ? "▲" : "▼"}{Math.abs(Math.round((record.stats.last - record.stats.previous) * 100))}</small>}</dd></div>
+          <div><dt>ベスト</dt><dd>{pct(record.stats.best)}</dd></div>
+          <div><dt>平均</dt><dd>{pct(record.stats.average)}</dd></div>
+          <div><dt>挑戦</dt><dd>{record.stats.attempts}回</dd></div>
+        </dl>
+      </div>
+      <div className="record-chart"><h2>このドリルの正答率の推移</h2><HistoryChart values={record.stats.trend} /></div>
+    </section>}
     {misses.length > 0 && <section className="result-misses">
       <h2>ミスしたハンド</h2>
       <ul>{misses.map((item, index) => {
@@ -243,13 +264,14 @@ function SessionResult({ log, settings, onRestart, onSetup }) {
       })}</ul>
     </section>}
     <div className="setup-footer">
-      <button type="button" className="setup-secondary" onClick={onSetup}>設定を変える</button>
-      <button type="button" className="setup-start" onClick={onRestart}>同じ設定でもう一度<ArrowClockwise size={17} weight="bold" /></button>
+      <button type="button" className="setup-secondary" onClick={onLibrary}>ドリル一覧へ</button>
+      <button type="button" className="setup-start" onClick={onRestart}>もう一度挑戦<ArrowClockwise size={17} weight="bold" /></button>
     </div>
   </div>;
 }
 
-function Drill({ history, onAnswer, settings, reviewOnly, onOpenSetup, onFinish }) {
+function Drill({ history, onAnswer, settings, drillName, reviewOnly, onOpenSetup, onFinish }) {
+  const [startedAt] = useState(() => Date.now());
   const spots = useMemo(() => spotsForSettings(settings), [settings]);
   // Keep just-answered hands out of the review queue so a miss is not re-asked immediately.
   const review = useMemo(() => {
@@ -288,7 +310,7 @@ function Drill({ history, onAnswer, settings, reviewOnly, onOpenSetup, onFinish 
   }, [answer, question, settings, onAnswer]);
 
   const advance = useCallback(() => {
-    if (lastQuestion) { onFinish(session.log); return; }
+    if (lastQuestion) { onFinish(session.log, Date.now() - startedAt); return; }
     setQuestion(next()); setAnswer(null);
   }, [next, lastQuestion, onFinish, session.log]);
 
@@ -316,13 +338,14 @@ function Drill({ history, onAnswer, settings, reviewOnly, onOpenSetup, onFinish 
   return <div className="trainer-layout">
     <header className="trainer-topbar">
       <div className="trainer-config">
-        {reviewOnly ? <span className="config-chip review">復習モード</span> : <>
+        <strong className="config-name">{reviewOnly ? "復習ドリル" : drillName}</strong>
+        {reviewOnly ? null : <>
           <span className="config-chip">{settings.kinds.length === 2 ? "オープン＋vs オープン" : KIND_OPTIONS.find(item => item.value === settings.kinds[0]).label}</span>
           <span className="config-chip">{settings.positions.length === POSITIONS.length ? "全席" : settings.positions.join("・")}</span>
           <span className="config-chip">{DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label}</span>
         </>}
-        <button type="button" className="config-edit" onClick={onOpenSetup}><GearSix size={14} />設定</button>
-        {session.answered > 0 && <button type="button" className="config-edit" onClick={() => onFinish(session.log)}>終了して結果へ</button>}
+        <button type="button" className="config-edit" onClick={onOpenSetup}><ArrowLeft size={14} />一覧</button>
+        {session.answered > 0 && <button type="button" className="config-edit" onClick={() => onFinish(session.log, Date.now() - startedAt)}>終了して結果へ</button>}
       </div>
       {limit > 0 && <div className="trainer-progress" aria-label={`${session.answered} / ${limit} 問`}>
         <span><b>{Math.min(session.answered + (answer ? 0 : 1), limit)}</b> / {limit}</span>
@@ -430,29 +453,55 @@ function Weakness({ history, onStartReview, onStart, onClear }) {
 
 export function TrainerPage({ profile, onEditProfile, onSectionChange, section = "トレーナー" }) {
   const [history, setHistory] = useState(loadHistory);
-  const [settings, setSettings] = useState(() => normalizeSettings(loadSettings() ?? {}, profile?.level));
-  const [phase, setPhase] = useState("setup");
-  const [reviewOnly, setReviewOnly] = useState(false);
+  const [drills, setDrills] = useState(() => loadDrills(profile?.level));
+  const [phase, setPhase] = useState("library");
+  const [active, setActive] = useState(null); // { drill, review }
+  const [editing, setEditing] = useState(null); // { drill, isNew }
   const [run, setRun] = useState(0);
-  const [lastLog, setLastLog] = useState([]);
+  const [result, setResult] = useState(null);
   const reviewCount = useMemo(() => summarize(history).review.length, [history]);
   const onAnswer = useCallback(entry => setHistory(current => { const updated = [...current, entry]; saveHistory(updated); return updated; }), []);
-  const updateSettings = next => { setSettings(next); saveSettings(next); };
-  const start = (review = false) => { setReviewOnly(review); setRun(value => value + 1); setPhase("drill"); onSectionChange("トレーナー"); };
-  const onFinish = useCallback(log => { setLastLog(log); setPhase("result"); }, []);
+  const commitDrills = next => { setDrills(next); saveDrills(next); };
+  const start = (drill, review = false) => { setActive({ drill, review }); setRun(value => value + 1); setPhase("drill"); onSectionChange("トレーナー"); };
+  const reviewDrill = useMemo(() => ({ id: "review", name: "復習ドリル", settings: normalizeSettings({ count: Math.min(20, Math.max(reviewCount, 1)) }, profile?.level) }), [reviewCount, profile]);
+  const onFinish = useCallback((log, durationMs) => {
+    const counts = { best: 0, mixed: 0, miss: 0 };
+    for (const item of log) counts[item.result]++;
+    let record = null;
+    if (!active.review && log.length) {
+      const before = drillStats(drills.find(drill => drill.id === active.drill.id));
+      const session = { at: Date.now(), answered: log.length, score: log.reduce((sum, item) => sum + item.score, 0), ...counts, durationMs };
+      const next = recordSession(drills, active.drill.id, session);
+      commitDrills(next);
+      const stats = drillStats(next.find(drill => drill.id === active.drill.id));
+      record = { stats, isBest: before.best == null ? false : stats.last > before.best };
+    }
+    setResult({ log, record });
+    setPhase("result");
+  }, [active, drills]); // eslint-disable-line react-hooks/exhaustive-deps
   const mainRef = useRef(null);
   useEffect(() => { mainRef.current?.scrollTo?.(0, 0); window.scrollTo?.(0, 0); }, [phase, section]);
+  const current = active && (active.review ? reviewDrill : drills.find(drill => drill.id === active.drill.id) ?? active.drill);
   return <div className="shell">
     <Sidebar activeSection={section} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} />
     <main className="trainer-page" ref={mainRef}>
       {section === "弱点"
         ? <Weakness history={history}
-            onStart={() => { setPhase("setup"); onSectionChange("トレーナー"); }}
-            onStartReview={() => start(true)}
+            onStart={() => { setPhase("library"); onSectionChange("トレーナー"); }}
+            onStartReview={() => start(reviewDrill, true)}
             onClear={() => { if (window.confirm("回答履歴をすべて消しますか？")) { clearHistory(); setHistory([]); } }} />
-        : phase === "setup" ? <TrainerSetup settings={settings} onChange={updateSettings} onStart={() => start(false)} reviewCount={reviewCount} onStartReview={() => start(true)} />
-        : phase === "result" ? <SessionResult log={lastLog} settings={settings} onRestart={() => start(reviewOnly)} onSetup={() => setPhase("setup")} />
-        : <Drill key={run} history={history} onAnswer={onAnswer} settings={settings} reviewOnly={reviewOnly} onOpenSetup={() => setPhase("setup")} onFinish={onFinish} />}
+        : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
+            onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("library")}
+            onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("library"); }} />
+        : phase === "result" && result ? <SessionResult log={result.log} record={result.record} settings={current.settings} drill={active.review ? null : current}
+            onRestart={() => start(current, active.review)} onLibrary={() => setPhase("library")} />
+        : phase === "drill" && current ? <Drill key={run} history={history} onAnswer={onAnswer} settings={current.settings} drillName={current.name} reviewOnly={active.review}
+            onOpenSetup={() => setPhase("library")} onFinish={onFinish} />
+        : <DrillLibrary drills={drills} reviewCount={reviewCount}
+            onStart={drill => start(drill)} onStartReview={() => start(reviewDrill, true)}
+            onCreate={() => { setEditing({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true }); setPhase("edit"); }}
+            onEdit={drill => { setEditing({ drill, isNew: false }); setPhase("edit"); }}
+            onDelete={drill => { if (window.confirm(`「${drill.name}」と記録を削除しますか？`)) commitDrills(drills.filter(item => item.id !== drill.id)); }} />}
     </main>
   </div>;
 }

@@ -341,3 +341,89 @@
   .result-choice { grid-column: 1 / -1; }
   .trainer-progress { order: 3; max-width: none; flex-basis: 100%; }
 }
+
+/* --- Drill library --- */
+.drill-library { display: grid; gap: 18px; width: 100%; max-width: 1180px; margin: 0 auto; padding: 8px 4px 20px; animation: fade-up .3s var(--ease-out) both; }
+.library-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+.library-head h1 { margin: 0; font-size: 24px; letter-spacing: -.01em; }
+.library-head p { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; }
+.library-totals { display: flex; gap: 22px; margin: 0; }
+.library-totals div { display: grid; gap: 2px; }
+.library-totals dt { display: inline-flex; align-items: center; gap: 4px; color: var(--text-subtle); font-size: 11px; }
+.library-totals dt svg { color: #f3c95f; }
+.library-totals dd { display: flex; align-items: baseline; gap: 4px; margin: 0; font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.library-totals small { color: var(--text-muted); font-size: 11px; font-weight: 500; }
+.drill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+
+.drill-card { display: flex; flex-direction: column; gap: 14px; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); transition: border-color .15s ease, transform .15s var(--ease-out); }
+.drill-card:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+.drill-card header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.drill-card h3 { margin: 0 0 7px; font-size: 16px; }
+.drill-tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.drill-tags li { padding: 2px 8px; border-radius: 999px; background: var(--surface-raised); color: var(--text-muted); font-size: 11px; }
+.drill-card-tools { display: flex; gap: 2px; }
+.drill-card-tools button { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 7px; background: transparent; color: var(--text-subtle); cursor: pointer; }
+.drill-card-tools button:hover { background: var(--surface-hover); color: var(--text); }
+.drill-card-tools button:last-child:hover { color: var(--danger); }
+.drill-card-stats { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.drill-card-stats dl { display: grid; grid-template-columns: repeat(4, auto); gap: 4px 16px; margin: 0; }
+.drill-card-stats dt { color: var(--text-subtle); font-size: 10px; }
+.drill-card-stats dd { margin: 0; font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.drill-card-stats dd.best { color: var(--accent-bright); }
+.drill-card-stats dd small { margin-left: 1px; color: var(--text-muted); font-size: 10px; font-weight: 500; }
+.drill-spark { flex: 0 0 auto; overflow: visible; }
+.drill-spark polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.drill-spark polyline.area { fill: color-mix(in srgb, var(--accent) 14%, transparent); stroke: none; }
+.drill-spark circle { fill: var(--accent-bright); }
+.drill-spark.empty line { stroke: var(--line-strong); stroke-dasharray: 3 4; }
+.drill-card footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; }
+.drill-card footer small { color: var(--text-subtle); font-size: 11px; }
+.drill-start { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 0; border-radius: 9px; background: var(--accent); color: #1a0b12; font-size: 13px; font-weight: 800; cursor: pointer; }
+.drill-start:hover:not(:disabled) { filter: brightness(1.1); }
+.drill-start:disabled { opacity: .35; cursor: default; }
+.drill-card.review { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: radial-gradient(120% 120% at 100% 0%, var(--surface-accent) 0%, var(--surface) 60%); }
+.review-count { margin: 0; color: var(--text-muted); font-size: 13px; }
+.review-count strong { margin-right: 4px; color: var(--accent-bright); font-size: 28px; font-variant-numeric: tabular-nums; }
+.drill-card.create { align-items: center; justify-content: center; gap: 6px; min-height: 170px; border-style: dashed; background: transparent; color: var(--text-muted); text-align: center; cursor: pointer; }
+.drill-card.create:hover { border-color: var(--accent-soft); color: var(--accent-bright); }
+.drill-card.create strong { color: var(--text); font-size: 14px; }
+.drill-card.create small { font-size: 11px; }
+
+/* Editor extras */
+.setup-head { display: grid; gap: 10px; }
+.setup-back { justify-self: start; display: inline-flex; align-items: center; gap: 5px; padding: 4px 0; border: 0; background: none; color: var(--text-muted); font-size: 12px; cursor: pointer; }
+.setup-back:hover { color: var(--text); }
+.setup-name { display: grid; gap: 5px; max-width: 420px; }
+.setup-name span { color: var(--text-muted); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.setup-name input { padding: 11px 13px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface); color: var(--text); font: inherit; font-size: 15px; font-weight: 600; }
+.setup-name input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.setup-secondary:disabled { opacity: .4; cursor: default; }
+
+/* Drill top bar name */
+.config-name { margin-right: 4px; font-size: 14px; }
+
+/* Result: drill record */
+.result-drill { color: var(--text); }
+.result-record { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 12px; }
+.record-compare, .record-chart { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.record-compare { display: grid; align-content: center; gap: 12px; }
+.record-badge { justify-self: start; display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 999px; background: color-mix(in srgb, #f3c95f 18%, transparent); color: #f3c95f; font-size: 12px; font-weight: 800; animation: verdict-in .4s var(--ease-spring) both; }
+.record-compare dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 10px; margin: 0; }
+.record-compare dt { color: var(--text-subtle); font-size: 11px; }
+.record-compare dd { display: flex; align-items: baseline; gap: 4px; margin: 0; font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.record-compare dd small { font-size: 11px; font-weight: 700; }
+.record-compare .up { color: #7fdca4; } .record-compare .down { color: #ff7aa8; }
+.record-chart h2 { margin: 0 0 8px; color: var(--text-muted); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.drill-history { width: 100%; height: auto; overflow: visible; }
+.drill-history .grid { stroke: var(--line); }
+.drill-history .goal { stroke: #5fc98c; stroke-dasharray: 4 5; opacity: .6; }
+.drill-history text { fill: var(--text-subtle); font-size: 10px; }
+.drill-history polyline { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; }
+.drill-history circle { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+.drill-history circle.last { fill: var(--accent-bright); stroke: #fff; }
+
+@media (max-width: 720px) {
+  .result-record { grid-template-columns: minmax(0, 1fr); }
+  .library-totals { gap: 16px; }
+  .drill-grid { grid-template-columns: minmax(0, 1fr); }
+}

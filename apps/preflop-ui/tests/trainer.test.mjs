@@ -94,3 +94,22 @@ test("settings are normalised and drive spot choice, difficulty and strictness",
   assert.equal(grade(utg, hand, minority, { strictness: "strict" }).result, "miss");
   assert.equal(grade(utg, hand, minority, { strictness: "lenient" }).result, "mixed");
 });
+
+test("drills keep named settings and per-drill accuracy records", async () => {
+  const { PRESET_DRILLS, drillStats, loadDrills, recordSession, upsertDrill } = await import("../src/trainer/drill-store.js");
+  const drills = loadDrills(); // no storage in node: presets
+  assert.equal(drills.length, PRESET_DRILLS.length);
+  assert.ok(drills.every(drill => drill.preset && drill.sessions.length === 0));
+  assert.deepEqual(drills.find(drill => drill.id === "preset-bb-defense").settings.positions, ["BB"]);
+
+  let next = recordSession(drills, "preset-open", { at: 1, answered: 10, score: 6, best: 5, mixed: 2, miss: 3, durationMs: 1 });
+  next = recordSession(next, "preset-open", { at: 2, answered: 10, score: 8.5, best: 8, mixed: 1, miss: 1, durationMs: 1 });
+  const stats = drillStats(next.find(drill => drill.id === "preset-open"));
+  assert.deepEqual([stats.attempts, stats.best, stats.last, stats.previous, stats.answered], [2, 0.85, 0.85, 0.6, 20]);
+  assert.ok(Math.abs(stats.average - 0.725) < 1e-9);
+  assert.equal(drillStats(next.find(drill => drill.id === "preset-mixed")).best, null);
+
+  const custom = { id: "drill-x", name: "BTN", settings: drills[1].settings, sessions: [] };
+  assert.equal(upsertDrill(next, custom).length, drills.length + 1);
+  assert.equal(upsertDrill(upsertDrill(next, custom), { ...custom, name: "BTN 2" }).find(drill => drill.id === "drill-x").name, "BTN 2");
+});
