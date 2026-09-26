@@ -3,18 +3,25 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-import { boards, comboRange, config, root } from "./inputs.mjs";
+import { dirname } from "node:path";
+import { artifactPaths, boards, config, root, seatRange } from "./inputs.mjs";
 import { boardTexture, handTier, TIERS } from "./model.mjs";
 import { NODES, validatePolicy } from "./policy.mjs";
 
-export const candidatePath = join(root, ".local/postflop-ai/btn-bb-srp-v1-policy.json");
-export const reportPath = join(root, ".local/postflop-ai/btn-bb-srp-v1-report.json");
+// Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
+// Existing candidates are reused as saved (the first BTN/BB pilot was made with gpt-6-sol).
+export const DEFAULT_MODEL = "gpt-6-luna";
+export const resolveModel = cliModel => cliModel || process.env.POSTFLOP_AI_MODEL || DEFAULT_MODEL;
+// Reasoning effort passed as -c model_reasoning_effort: --effort, else POSTFLOP_AI_EFFORT, else the maximum
+// the API accepts (none/minimal/low/medium/high/xhigh/max; verified for gpt-6-luna and gpt-6-sol on 2026-09-26).
+export const DEFAULT_EFFORT = "max";
+export const resolveEffort = cliEffort => cliEffort || process.env.POSTFLOP_AI_EFFORT || DEFAULT_EFFORT;
 export const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
 export function loadCandidate(inputs) {
-  const candidate = JSON.parse(readFileSync(candidatePath, "utf8"));
-  if (candidate?.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.config_version !== config.version) {
+  const candidate = JSON.parse(readFileSync(artifactPaths(inputs.spot).candidate, "utf8"));
+  if (candidate?.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.config_version !== config.version ||
+      (candidate.metadata.spot ?? inputs.spot.id) !== inputs.spot.id) {
     throw new Error("AI policy source is stale; archive it and explicitly generate a new candidate");
   }
   validatePolicy(candidate.policy);
@@ -23,31 +30,35 @@ export function loadCandidate(inputs) {
 }
 
 export function promptFor(inputs) {
-  const distribution = (rows, action, board) => {
+  const { spot } = inputs;
+  const distribution = (seat, board) => {
     const weighted = Object.fromEntries(TIERS.map(tier => [tier, 0]));
-    for (const { combo, weight } of comboRange(rows, action, board)) weighted[handTier(combo, board)] += weight;
+    for (const { combo, weight } of seatRange(inputs, seat, board)) weighted[handTier(combo, board)] += weight;
     const total = Object.values(weighted).reduce((sum, value) => sum + value, 0);
     return TIERS.map(tier => `${tier}:${Math.round(weighted[tier] / total * 100)}`).join("/");
   };
   const design = boards().filter(board => board.split === "design").map(board =>
-    `${board.id}(${boardTexture(board.cards)};BTN ${distribution(inputs.opening.hands, "open", board.cards)};BB ${distribution(inputs.response.hands, "call", board.cards)})`);
+    `${board.id}(${boardTexture(board.cards)};${spot.ip} ${distribution(spot.ip, board.cards)};${spot.oop} ${distribution(spot.oop, board.cards)})`);
+  const raiser = seat => seat === spot.opener ? "preflop raiser" : "preflop caller";
   return [
     "Create compact flop-only AI-estimated poker policy rules, not GTO, solver, equilibrium, or external chart output. Return one JSON object only. Do not call tools or write files.",
-    "Cash 6-max 100BB no ante, BTN opens 2.5BB, BB calls, SB folds; flop pot 5.5BB, stacks 97.5BB, rake 5% capped at 3BB.",
+    `Cash 6-max 100BB no ante, ${spot.opener} opens ${spot.openBb}BB, ${spot.caller} calls, every other seat folds; heads-up flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB.`,
+    `${spot.ip} (${raiser(spot.ip)}) is in position; ${spot.oop} (${raiser(spot.oop)}) is out of position. Node names are fixed: btn_* nodes are ${spot.ip}'s (IP) decisions and bb_* nodes are ${spot.oop}'s (OOP) decisions.`,
     "Input summaries below are weighted real two-card combo distributions after excluding flop blockers. Tier values are rounded percentages, in monster/strong/draw/medium/air order. Never infer the opponent's hidden cards during a decision.",
     `Example design flops (no other boards supplied): ${design.join(", ")}. Rules must generalize to unseen textures.`,
-    "BB checks first. BTN chooses check/bet33/bet75. BB facing bet33 or bet75 chooses fold/call/raise to 3x original bet. BTN facing check-raise chooses fold/call. No further flop raises. Turn/river are evaluated by a separate fixed model; do not author them.",
+    `${spot.oop} checks first. ${spot.ip} chooses check/bet33/bet75. ${spot.oop} facing bet33 or bet75 chooses fold/call/raise to 3x original bet. ${spot.ip} facing check-raise chooses fold/call. No further flop raises. Turn/river are evaluated by a separate fixed model; do not author them.`,
     "Use tier order monster(two pair+), strong(top pair/overpair), draw(flush/straight draw), medium(other pair), air. Texture is dry/wet/monotone/paired. Rules may override a texture, but every node and tier MUST have one texture=any fallback.",
     `Nodes/actions: ${JSON.stringify(NODES)}. Tiers: ${TIERS.join(", ")}.`,
     "Output exactly {version:1,kind:'ai_estimate_not_gto',rules:[{node,texture,tier,mix},...]}. Mix keys must be exactly the legal actions for that node, integer 0..100, summing to 100. Include the 20 mandatory fallback rules and no more than 80 overrides; no rationale, code, private opponent cards, or other properties.",
   ].join("\n");
 }
 
-export function runCodex(prompt, timeoutMs = 300000) {
+export function runCodex(prompt, { model = resolveModel(), effort = resolveEffort(), timeoutMs = 1800000, onThread = () => {} } = {}) {
+  if (!/^[a-z0-9.-]+$/.test(model) || !/^[a-z]+$/.test(effort)) throw new Error("Invalid Codex model or reasoning effort");
   return new Promise((resolve, reject) => {
     const env = { ...process.env }; delete env.OPENAI_API_KEY; delete env.CODEX_API_KEY;
     const bundled = "/Applications/ChatGPT.app/Contents/Resources/codex";
-    const child = spawn(existsSync(bundled) ? bundled : "codex", ["app-server", "-c", "mcp_servers={}"],
+    const child = spawn(existsSync(bundled) ? bundled : "codex", ["app-server", "-c", "mcp_servers={}", "-c", `model_reasoning_effort="${effort}"`],
       { cwd: root, env, stdio: ["pipe", "pipe", "pipe"] });
     let buffer = "", final = "", threadId, done = false, stderr = "";
     const timer = setTimeout(() => fail(new Error("Codex policy generation timed out")), timeoutMs);
@@ -56,7 +67,9 @@ export function runCodex(prompt, timeoutMs = 300000) {
     function finish() {
       if (done) return;
       done = true; clearTimeout(timer); child.kill();
-      try { resolve(JSON.parse(final)); } catch { reject(new Error(`Codex returned invalid JSON: ${stderr.slice(-240)}`)); }
+      // Tolerate a fenced reply: the policy is the outermost JSON object.
+      const json = final.slice(final.indexOf("{"), final.lastIndexOf("}") + 1);
+      try { resolve(JSON.parse(json)); } catch { reject(new Error(`Codex returned invalid JSON: ${stderr.slice(-240)}`)); }
     }
     child.on("error", fail);
     child.on("exit", code => { if (!done) fail(new Error(`Codex app-server exited (${code}): ${stderr.slice(-240)}`)); });
@@ -70,11 +83,12 @@ export function runCodex(prompt, timeoutMs = 300000) {
         if (msg.error) { fail(new Error(msg.error.message ?? "Codex app-server error")); return; }
         if (msg.id === 1) {
           send({ method: "initialized", params: {} });
-          send({ id: 2, method: "thread/start", params: { cwd: root, approvalPolicy: "never", sandbox: "read-only", ephemeral: true, model: "gpt-6-sol" } });
+          send({ id: 2, method: "thread/start", params: { cwd: root, approvalPolicy: "never", sandbox: "read-only", ephemeral: true, model } });
         }
         if (msg.id === 2) {
           threadId = msg.result?.thread?.id;
           if (!threadId) { fail(new Error("Codex thread failed to start")); return; }
+          onThread(msg.result);
           send({ id: 3, method: "turn/start", params: { threadId,
             input: [{ type: "text", text: prompt }] } });
         }
@@ -90,14 +104,19 @@ export function runCodex(prompt, timeoutMs = 300000) {
   });
 }
 
-export async function generate(inputs, generator = runCodex) {
-  if (existsSync(candidatePath)) return { candidate: loadCandidate(inputs), reused: true };
+export async function generate(inputs, { model = resolveModel(), effort = resolveEffort(), generator = runCodex } = {}) {
+  const path = artifactPaths(inputs.spot).candidate;
+  if (existsSync(path)) return { candidate: loadCandidate(inputs), reused: true };
   const prompt = promptFor(inputs);
-  const policy = validatePolicy(await generator(prompt));
+  let started = {};
+  const policy = validatePolicy(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }));
+  // Record what the app-server reports it used, when it says so; otherwise what was requested.
+  if (started.model && started.model !== model) throw new Error(`Codex used ${started.model} instead of ${model}`);
+  const usedEffort = started.reasoningEffort ?? effort;
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "12 representative flops; flop only; not published",
-    source_hash: inputs.fingerprint, policy_hash: sha(policy), config_version: config.version,
-    model: "gpt-6-sol", prompt_hash: sha(prompt) }, policy };
-  mkdirSync(join(root, ".local/postflop-ai"), { recursive: true });
-  writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`, { flag: "wx" });
+    spot: inputs.spot.id, source_hash: inputs.fingerprint, policy_hash: sha(policy), config_version: config.version,
+    model, reasoning_effort: usedEffort, prompt_hash: sha(prompt) }, policy };
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: "wx" });
   return { candidate, reused: false };
 }

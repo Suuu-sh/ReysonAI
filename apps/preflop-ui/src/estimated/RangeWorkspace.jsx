@@ -736,7 +736,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const flopBoard = recognizedFlop(flopCards);
   const combinedBlocks = flopActive
     ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards },
-      ...(flopContext.pilotAvailable && flopBoard ? buildFlopActionBlocks(flopActions) : [])]
+      ...(flopContext.pilotAvailable && flopBoard ? buildFlopActionBlocks(flopActions, flopContext) : [])]
     : actionBlocks;
   const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;

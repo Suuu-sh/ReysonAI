@@ -4,8 +4,12 @@ import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
-import { sha } from "../scripts/postflop-ai/generate.mjs";
+import { existsSync } from "node:fs";
+import { artifactPaths, loadInputs } from "../scripts/postflop-ai/inputs.mjs";
+import { loadCandidate, sha } from "../scripts/postflop-ai/generate.mjs";
+import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById, spotFor } from "../scripts/postflop-ai/spots.mjs";
+import { simulate } from "../scripts/postflop-ai/simulation.mjs";
+import preflopRanges from "../src/estimated/preflop-ranges.json" with { type: "json" };
 import { buildLocalBoard } from "../scripts/postflop-ai/local-view.mjs";
 import { referencePolicy } from "../scripts/postflop-ai/policy.mjs";
 import { buildFlopActionBlocks, completedFlopContext, flopDecision, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.js";
@@ -15,7 +19,8 @@ const end = (result, pot) => [{ kind: "end", result, pot: `ポット ${pot}bb` }
 test("only complete paths can enter the next street, with unsupported paths marked pending", () => {
   const eligible = completedFlopContext({ actionBlocks: end("2人でフロップへ", 5.5), rangeType: "response",
     opener: "BTN", hero: "BB", callers: ["BB"], foldedHero: true, isDefaultTable: true });
-  assert.deepEqual(eligible, { players: ["BTN", "BB"], potBb: 5.5, pilotAvailable: true });
+  assert.deepEqual(eligible, { players: ["BTN", "BB"], potBb: 5.5, pilotAvailable: true,
+    spotId: "BTN_open_BB_call", ip: "BTN", oop: "BB", stackBb: 97.5 });
   assert.equal(completedFlopContext({ actionBlocks: [], rangeType: "response", opener: "BTN", hero: "BB",
     callers: ["BB"], foldedHero: true, isDefaultTable: true }), null);
   assert.equal(completedFlopContext({ actionBlocks: end("BTNの勝ち", 3), rangeType: "response", opener: "BTN", hero: "BB",
@@ -24,6 +29,78 @@ test("only complete paths can enter the next street, with unsupported paths mark
     callers: ["BB"], foldedHero: true, isDefaultTable: false }).pilotAvailable, false);
   assert.deepEqual(completedFlopContext({ actionBlocks: end("2人でフロップへ", 2), rangeType: "limp",
     opener: "SB", hero: "BB", callers: [], foldedHero: false, isDefaultTable: true }).players, ["SB", "BB"]);
+});
+
+test("every saved open response becomes a heads-up single-raised-pot flop spot", () => {
+  assert.equal(POSTFLOP_SPOTS.length, 15);
+  assert.deepEqual(POSTFLOP_SPOTS.map(spot => spot.responseId).sort(), preflopRanges.spots.map(spot => spot.id).sort());
+  const table = Object.fromEntries(POSTFLOP_SPOTS.map(spot => [spot.id, [spot.ip, spot.oop, spot.potBb, spot.stackBb]]));
+  assert.deepEqual(table, {
+    UTG_open_HJ_call: ["HJ", "UTG", 6.5, 97.5], UTG_open_CO_call: ["CO", "UTG", 6.5, 97.5], UTG_open_BTN_call: ["BTN", "UTG", 6.5, 97.5],
+    UTG_open_SB_call: ["UTG", "SB", 6, 97.5], UTG_open_BB_call: ["UTG", "BB", 5.5, 97.5],
+    HJ_open_CO_call: ["CO", "HJ", 6.5, 97.5], HJ_open_BTN_call: ["BTN", "HJ", 6.5, 97.5], HJ_open_SB_call: ["HJ", "SB", 6, 97.5], HJ_open_BB_call: ["HJ", "BB", 5.5, 97.5],
+    CO_open_BTN_call: ["BTN", "CO", 6.5, 97.5], CO_open_SB_call: ["CO", "SB", 6, 97.5], CO_open_BB_call: ["CO", "BB", 5.5, 97.5],
+    BTN_open_SB_call: ["BTN", "SB", 6, 97.5], BTN_open_BB_call: ["BTN", "BB", 5.5, 97.5], SB_open_BB_call: ["BB", "SB", 7, 96.5],
+  });
+  assert.equal(spotById().id, DEFAULT_SPOT_ID);
+  assert.equal(spotById("BTN_open_BB_call").slug, "btn-bb-srp-v1");
+  assert.equal(spotById("SB_open_BB_call").slug, "sb-bb-srp-v1");
+  assert.match(artifactPaths(spotById()).candidate, /\.local\/postflop-ai\/btn-bb-srp-v1-policy\.json$/);
+  assert.match(artifactPaths(spotById("CO_open_BTN_call")).handEv, /co-btn-srp-v1-hand-ev\.json$/);
+  assert.equal(spotFor("BB", "SB"), null);
+  assert.throws(() => spotById("BB_open_SB_call"), /Unknown postflop spot/);
+  // SB is saved as 3bet-or-fold, so the four SB-call spots are listed but unreachable.
+  assert.deepEqual(POSTFLOP_SPOTS.filter(spot => !spot.reachable).map(spot => spot.id),
+    ["UTG_open_SB_call", "HJ_open_SB_call", "CO_open_SB_call", "BTN_open_SB_call"]);
+  for (const spot of POSTFLOP_SPOTS) {
+    if (!spot.reachable) { assert.throws(() => loadInputs(spot.id), /unreachable/); continue; }
+    const inputs = loadInputs(spot.id);
+    assert.equal(inputs.opening.id, `${spot.opener}_open`);
+    assert.equal(inputs.response.id, `${spot.caller}_vs_${spot.opener}`);
+  }
+  assert.notEqual(loadInputs("SB_open_BB_call").fingerprint, loadInputs().fingerprint);
+});
+
+test("SB vs BB and CO vs BTN use their own seats, pot and stacks", () => {
+  const sb = completedFlopContext({ actionBlocks: end("2人でフロップへ", 7), rangeType: "response",
+    opener: "SB", hero: "BB", callers: ["BB"], foldedHero: true, isDefaultTable: true });
+  assert.deepEqual(sb, { players: ["SB", "BB"], potBb: 7, pilotAvailable: true, spotId: "SB_open_BB_call", ip: "BB", oop: "SB", stackBb: 96.5 });
+  const co = completedFlopContext({ actionBlocks: end("2人でフロップへ", 6.5), rangeType: "response",
+    opener: "CO", hero: "BB", callers: ["BTN"], foldedHero: true, isDefaultTable: true });
+  assert.deepEqual([co.spotId, co.ip, co.oop, co.potBb, co.stackBb], ["CO_open_BTN_call", "BTN", "CO", 6.5, 97.5]);
+  // A pot that does not match the heads-up single-raised geometry, or a multiway pot, stays unrecorded.
+  assert.equal(completedFlopContext({ actionBlocks: end("2人でフロップへ", 8), rangeType: "response",
+    opener: "CO", hero: "BB", callers: ["BTN"], foldedHero: true, isDefaultTable: true }).pilotAvailable, false);
+  assert.equal(completedFlopContext({ actionBlocks: end("2人でフロップへ", 6), rangeType: "response",
+    opener: "BTN", hero: "BB", callers: ["SB"], foldedHero: true, isDefaultTable: true }).pilotAvailable, false);
+  const multiway = completedFlopContext({ actionBlocks: end("3人でフロップへ", 8.5), rangeType: "response",
+    opener: "CO", hero: "BB", callers: ["BTN", "BB"], foldedHero: true, isDefaultTable: true });
+  assert.deepEqual([multiway.pilotAvailable, multiway.spotId], [false, null]);
+
+  assert.deepEqual(flopDecision([], sb), { node: "btn_first", actor: "BB", potBb: 7, history: ["SB Check"] });
+  assert.deepEqual(flopDecision(["bet33"], sb).history, ["SB Check", "BB Bet 33% (2.31BB)"]);
+  assert.equal(flopDecision(["bet33"], sb).actor, "SB");
+  assert.equal(flopDecision(["bet33", "raise"], sb).history.at(-1), "SB Check-raise 6.93BB");
+  assert.equal(flopDecision(["bet33", "fold"], sb).result, "SBがフォールド。BBの勝ちです。");
+  assert.equal(flopDecision(["bet75", "raise", "call"], sb).potBb, 38.5);
+  const sbBlocks = buildFlopActionBlocks(["bet75", "raise"], sb);
+  assert.deepEqual(sbBlocks.map(block => [block.position, block.stack]), [["SB", "96.5"], ["BB", "96.5"], ["SB", "96.5"], ["BB", "91.25"]]);
+
+  const coBlocks = buildFlopActionBlocks(["bet33"], co);
+  assert.deepEqual(coBlocks.map(block => block.position), ["CO", "BTN", "CO"]);
+  assert.equal(flopDecision(["bet33"], co).history[1], "BTN Bet 33% (2.15BB)");
+  assert.equal(flopDecision(["check"], co).result, "BTNもチェック。フロップの判断は終了です。");
+});
+
+test("the first BTN/BB pilot keeps its files, hashes and report identity", () => {
+  const inputs = loadInputs();
+  assert.equal(inputs.spot.id, "BTN_open_BB_call");
+  assert.deepEqual([inputs.spot.ip, inputs.spot.oop, inputs.spot.potBb, inputs.spot.stackBb], ["BTN", "BB", 5.5, 97.5]);
+  const report = simulate(inputs, referencePolicy, 2);
+  assert.equal(report.spot, "BTN_open_BB_call");
+  assert.deepEqual([...new Set(report.results.map(row => row.hero))], ["BTN", "BB"]);
+  // When the local candidate exists (it is git-ignored), it must still load against the unchanged fingerprint.
+  if (existsSync(artifactPaths(inputs.spot).candidate)) assert.equal(loadCandidate(inputs).metadata.source_hash, inputs.fingerprint);
 });
 
 test("flop navigation has legal actions, consistent pots, refunds, and a step back", () => {
@@ -77,6 +154,10 @@ test("read-only board projection expands saved source combos without revealing a
       assert.ok(!("opponentHand" in row) && !("combo" in row));
     }
   }
+  const coInputs = loadInputs("CO_open_BTN_call");
+  const co = buildLocalBoard("As7d2c", coInputs, { metadata: { source_hash: coInputs.fingerprint, policy_hash: sha(referencePolicy) }, policy: referencePolicy });
+  assert.deepEqual([co.spot, co.ip, co.oop, co.pot_bb, co.nodes.btn_first.seat, co.nodes.bb_vs_33.seat], ["CO_open_BTN_call", "BTN", "CO", 6.5, "BTN", "CO"]);
+  assert.throws(() => buildLocalBoard("As7d2c", coInputs, candidate), /ハッシュ/);
   assert.throws(() => buildLocalBoard("AsAsAs", inputs, candidate), /代表フロップ/);
   candidate.metadata.policy_hash = "wrong";
   assert.throws(() => buildLocalBoard("As7d2c", inputs, candidate), /ハッシュ/);
@@ -115,8 +196,15 @@ test("representative flops are picked from a modal, while unsupported spots stay
   const html = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["SB", "BB"], potBb: 2, pilotAvailable: false }, cards: ["", "", ""] }));
   assert.match(html, /この局面のポストフロップ方針は未収録/);
   assert.doesNotMatch(html, /AI推定レンジ/);
-  const missing = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["BTN", "BB"], potBb: 5.5, pilotAvailable: true }, cards: ["As", "7d", "3c"] }));
+  const missing = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["BTN", "BB"], potBb: 5.5, pilotAvailable: true, spotId: "BTN_open_BB_call", ip: "BTN", oop: "BB", stackBb: 97.5 }, cards: ["As", "7d", "3c"] }));
   assert.match(missing, /このフロップの方針は未収録/);
+  // A completed CO open → BTN call path ends in a 6.5BB heads-up pot that the pilot covers.
+  const coBlocks = buildActionBlocks({ rangeType: "response", opener: "CO", hero: "BB", callers: ["BTN"], foldedHero: true });
+  const coContext = completedFlopContext({ actionBlocks: coBlocks, rangeType: "response", opener: "CO", hero: "BB", callers: ["BTN"], foldedHero: true, isDefaultTable: true });
+  assert.deepEqual([coContext.spotId, coContext.potBb], ["CO_open_BTN_call", 6.5]);
+  const sbBlocks = buildActionBlocks({ rangeType: "response", opener: "SB", hero: "BB", callers: ["BB"], foldedHero: true });
+  const sbContext = completedFlopContext({ actionBlocks: sbBlocks, rangeType: "response", opener: "SB", hero: "BB", callers: ["BB"], foldedHero: true, isDefaultTable: true });
+  assert.deepEqual([sbContext.spotId, sbContext.potBb, sbContext.ip], ["SB_open_BB_call", 7, "BB"]);
 });
 
 test("every flop node, action and hand tier has a plain-language reason", async () => {
@@ -144,4 +232,6 @@ test("combo explanation splits the opponent range into value, fold-out and conti
   const call = explainCombo({ boardCards, node: "bb_vs_33", cards: "Th9d", inputs, policy: referencePolicy });
   assert.ok(Math.abs(call.actions.call.required - 1.815 / (5.5 + 1.815 * 2)) < 0.001);
   assert.throws(() => explainCombo({ boardCards, node: "btn_first", cards: "JsKc", inputs, policy: referencePolicy }), /ボード/);
+  const sbCall = explainCombo({ boardCards, node: "bb_vs_33", cards: "Th9d", inputs: loadInputs("SB_open_BB_call"), policy: referencePolicy });
+  assert.ok(Math.abs(sbCall.actions.call.required - 2.31 / (7 + 2.31 * 2)) < 0.001);
 });

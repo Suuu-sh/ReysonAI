@@ -1,5 +1,8 @@
 import { boardTexture, handTier, TEXTURES, TIERS } from "./model.mjs";
 
+// Node names come from the first BTN-open / BB-call pilot and are kept for compatibility:
+// "btn_*" nodes belong to the in-position player and "bb_*" nodes to the out-of-position
+// player of any heads-up single-raised pot (see spots.mjs). The OOP player checks first.
 export const NODES = Object.freeze({
   btn_first: ["check", "bet33", "bet75"],
   bb_vs_33: ["fold", "call", "raise"],

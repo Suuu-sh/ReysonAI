@@ -9,6 +9,7 @@ import { boards, loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { parseCards } from "../scripts/postflop-ai/model.mjs";
 import { referencePolicy } from "../scripts/postflop-ai/policy.mjs";
 import { HISTORIES, handEvForBoard, playFromNode } from "../scripts/postflop-ai/hand-ev.mjs";
+import { spotById } from "../scripts/postflop-ai/spots.mjs";
 
 const flop = parseCards("As7d2c", 3);
 const hands = { BTN: parseCards("AhKd", 2), BB: parseCards("7h7c", 2) };
@@ -29,6 +30,19 @@ test("chips already put in before the decision are sunk, not counted in its EV",
   assert.ok(callRaise >= -97.5);
   // BB's set wins; facing the 33% bet its call is worth more than the sunk-free fold.
   assert.ok(play(["bet33"], "call") > 0);
+});
+
+test("SB vs BB plays with BB in position, a 7BB pot and 96.5BB stacks", () => {
+  const spot = spotById("SB_open_BB_call");
+  const sbHands = { BB: parseCards("AhKd", 2), SB: parseCards("7h7c", 2) };
+  const sbPlay = (history, forced) => playFromNode({ hands: sbHands, flop, runout, history, forced, policy: referencePolicy, random: seededRandom(1), spot });
+  assert.equal(sbPlay(["bet33"], "fold"), 0);
+  assert.ok(sbPlay(["bet33"], "call") > 0);
+  assert.ok(sbPlay(["bet33", "raise"], "call") < 0 && sbPlay(["bet33", "raise"], "call") >= -96.5);
+  const result = handEvForBoard(boards().find(item => item.id === "As7d2c"), loadInputs(spot.id), referencePolicy, 10);
+  assert.deepEqual([result[""].actor, result[""].pot_bb], ["BB", 7]);
+  assert.deepEqual([result.bet33.actor, result.bet33.pot_bb], ["SB", 9.31]);
+  assert.deepEqual([result["bet75,raise"].actor, result["bet75,raise"].pot_bb], ["BB", 28]);
 });
 
 test("per-hand rows carry equity, EQR, per-action EV and the class mix for every decision", () => {
@@ -78,4 +92,5 @@ test("the expanded breakdown puts each action's EV beside its frequency bar, wit
   assert.match(render({ ev: { data: { ...ev.data, row: null }, error: null, loading: false } }), /この場面に来ません/);
   assert.match(render({ ev: { data: null, error: null, loading: true } }), /EVを読み込み中/);
   assert.equal(view.handEvQuery("As7d2c", ["bet33", "raise"], "AKo"), "/local-postflop-hand-ev?board=As7d2c&history=bet33%2Craise&hand=AKo");
+  assert.equal(view.handEvQuery("As7d2c", ["bet33"], "AKo", "SB_open_BB_call"), "/local-postflop-hand-ev?spot=SB_open_BB_call&board=As7d2c&history=bet33&hand=AKo");
 });

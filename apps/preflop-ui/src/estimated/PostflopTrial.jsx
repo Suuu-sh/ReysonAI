@@ -7,10 +7,11 @@ import { actionReason, dominantTier, textureLabels, tierLabels } from "./postflo
 import { flopDecision, recognizedFlop, representativeFlops } from "./postflop-trial.js";
 
 const labels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
-const nodeTitles = {
-  btn_first: "BTN · BBのチェックへの応答", bb_vs_33: "BB · 33%ベットへの応答",
-  bb_vs_75: "BB · 75%ベットへの応答", btn_vs_raise: "BTN · チェックレイズへの応答",
-};
+// btn_* nodes are the in-position player's decisions, bb_* the out-of-position player's.
+const nodeTitle = (node, { ip, oop }) => ({
+  btn_first: `${ip} · ${oop}のチェックへの応答`, bb_vs_33: `${oop} · 33%ベットへの応答`,
+  bb_vs_75: `${oop} · 75%ベットへの応答`, btn_vs_raise: `${ip} · チェックレイズへの応答`,
+})[node];
 export const suitLabels = { s: "♠", h: "♥", d: "♦", c: "♣" };
 
 function rangeTotals(node) {
@@ -176,26 +177,27 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
   const [data, setData] = useState(null);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
-  const decision = flopDecision(actions);
+  const decision = flopDecision(actions, context);
+  const spotId = context.spotId;
 
   useEffect(() => {
     setData(null); setError("");
-    if (!context.pilotAvailable || !board) { setStatus("idle"); return; }
+    if (!context.pilotAvailable || !spotId || !board) { setStatus("idle"); return; }
     const controller = new AbortController();
     setStatus("loading");
-    fetch(`/local-postflop?board=${encodeURIComponent(board)}`, { signal: controller.signal })
+    fetch(`/local-postflop?${new URLSearchParams({ spot: spotId, board })}`, { signal: controller.signal })
       .then(async response => {
         const body = await response.json();
         if (!response.ok) throw new Error(body.error || "ポストフロップ候補を読み込めませんでした。");
-        if (body.kind !== "ai_estimate_not_gto" || body.board !== board || !body.nodes) throw new Error("候補の盤面または形式が一致しません。");
+        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.board !== board || !body.nodes) throw new Error("候補の局面・盤面または形式が一致しません。");
         return body;
       })
       .then(body => { setData(body); setStatus("ready"); })
       .catch(reason => { if (reason.name !== "AbortError") { setError(reason.message); setStatus("error"); } });
     return () => controller.abort();
-  }, [board, context.pilotAvailable]);
+  }, [board, context.pilotAvailable, spotId]);
 
-  const current = decision.node && data?.board === board && data.nodes[decision.node];
+  const current = decision.node && data?.board === board && data.spot === spotId && data.nodes[decision.node];
   const aggregates = useMemo(() => current ? matrixFor(current) : null, [current]);
   const totals = useMemo(() => current ? rangeTotals(current) : null, [current]);
   const matrixNode = useMemo(() => current ? { actingPosition: current.seat } : null, [current]);
@@ -209,17 +211,17 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
     setExplain(null);
     if (!combo || !board || !decision.node) return;
     const controller = new AbortController();
-    const params = new URLSearchParams({ board, node: decision.node, cards: combo.cards, prev: prevBet });
+    const params = new URLSearchParams({ spot: spotId, board, node: decision.node, cards: combo.cards, prev: prevBet });
     fetch(`/local-postflop-explain?${params}`, { signal: controller.signal })
       .then(response => response.ok ? response.json() : null)
-      .then(body => { if (body?.cards === combo.cards && body.node === decision.node) setExplain(body); })
+      .then(body => { if (body?.spot === spotId && body.cards === combo.cards && body.node === decision.node) setExplain(body); })
       .catch(() => {});
     return () => controller.abort();
-  }, [combo?.cards, board, decision.node, prevBet]);
+  }, [combo?.cards, board, decision.node, prevBet, spotId]);
   const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
-  const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand);
+  const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId);
   return <div className="postflop-trial" aria-label="ポストフロップ試作">
-    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定のBTN 2.5BBオープン→BBコールだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
+    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定で1人がオープンし1人だけがコールした2人のポット（シングルレイズポット）だけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title="フロップを選択してください">上のアクション列にあるフロップカードを押して、3枚を選んでください。</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title="このフロップの方針は未収録">選んだ3枚は代表12ボードに含まれません。未監査のレンジは表示しません。</StatusState></Panel>
       : <>
@@ -227,7 +229,7 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
         {status === "error" && <Panel><StatusState title="ローカル候補を表示できません" tone="error">{error}</StatusState></Panel>}
         {!decision.node && <Panel><StatusState title="フロップの判断終了">{decision.result} ターン・リバーの公開用方針はまだありません。</StatusState></Panel>}
         {current && aggregates && <div className="postflop-range-layout">
-          <StrategyMatrix node={matrixNode} title={`${nodeTitles[decision.node]} · AI推定レンジ`} ariaLabel={`${current.seat}のフロップAI推定レンジ`}
+          <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · AI推定レンジ`} ariaLabel={`${current.seat}のフロップAI推定レンジ`}
             aggregates={aggregates} actions={current.actions} actionLabels={labels} simplified={displayMode === "simple"}
             selected={selectedHand} onSelect={setSelectedHand} unreachableReason="元のプリフロップ頻度0%またはボードで到達不能、推奨なし" />
           <div className="postflop-side">

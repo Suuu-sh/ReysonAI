@@ -1,13 +1,12 @@
 // Explains one private combo's flop options against the opponent's AI-estimated range.
 // Read-only: it reuses the audited candidate policy and never changes it.
 import { evaluate, seededRandom, seedFor } from "../lib/equity.mjs";
-import { comboRange } from "./inputs.mjs";
+import { seatRange } from "./inputs.mjs";
 import { handTier, parseCards } from "./model.mjs";
 import { NODES, policyMix } from "./policy.mjs";
 
 const RANKS = "23456789TJQKA";
 const RUNOUTS = 120;
-const START_POT = 5.5;
 
 export function handClass([a, b]) {
   const [high, low] = (a >> 2) >= (b >> 2) ? [a, b] : [b, a];
@@ -39,26 +38,28 @@ function equityAgainst(hero, villain, flop, boards) {
   return played ? won / played : 0.5;
 }
 
-// Which opponent combos reach this node, with how much weight.
+// Which opponent combos reach this node, with how much weight. btn_* nodes are the
+// in-position player's decisions (opponent = OOP) and bb_* nodes the OOP player's.
 function opponentRange(node, inputs, policy, flop, hero, prev) {
+  const { spot } = inputs;
   const dead = new Set(hero);
   const alive = items => items.filter(item => !item.combo.some(card => dead.has(card)));
-  if (node === "btn_first") return alive(comboRange(inputs.response.hands, "call", flop));
+  if (node === "btn_first") return alive(seatRange(inputs, spot.oop, flop));
   if (node === "bb_vs_33" || node === "bb_vs_75") {
     const bet = node === "bb_vs_33" ? "bet33" : "bet75";
-    return alive(comboRange(inputs.opening.hands, "open", flop))
+    return alive(seatRange(inputs, spot.ip, flop))
       .map(item => ({ ...item, weight: item.weight * policyMix(policy, "btn_first", item.combo, flop)[bet] / 100 }));
   }
   const facing = prev === "bet75" ? "bb_vs_75" : "bb_vs_33";
-  return alive(comboRange(inputs.response.hands, "call", flop))
+  return alive(seatRange(inputs, spot.oop, flop))
     .map(item => ({ ...item, weight: item.weight * policyMix(policy, facing, item.combo, flop).raise / 100 }));
 }
 
-function betSize(node, prev, config) {
+function betSize(node, prev, config, startPot) {
   const fraction = key => config.flop_bet_fractions[key === "bet75" ? 1 : 0] ?? (key === "bet75" ? 0.75 : 0.33);
   if (node === "btn_first") return null;
-  if (node === "btn_vs_raise") return fraction(prev) * START_POT;
-  return fraction(node === "bb_vs_75" ? "bet75" : "bet33") * START_POT;
+  if (node === "btn_vs_raise") return fraction(prev) * startPot;
+  return fraction(node === "bb_vs_75" ? "bet75" : "bet33") * startPot;
 }
 
 function summarize(items) {
@@ -118,10 +119,11 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
     vsResponse("bb_vs_75", "bet75");
     actions.check = { groups: [group("ahead", ahead, total), group("behind", behind, total)] };
   } else {
-    const bet = betSize(node, prev, inputs.config);
+    const startPot = inputs.spot.potBb;
+    const bet = betSize(node, prev, inputs.config, startPot);
     const multiplier = inputs.config.flop_check_raise_multiplier ?? 3;
     const toCall = node === "btn_vs_raise" ? bet * (multiplier - 1) : bet;
-    const potBefore = node === "btn_vs_raise" ? START_POT + bet * (1 + multiplier) : START_POT + bet;
+    const potBefore = node === "btn_vs_raise" ? startPot + bet * (1 + multiplier) : startPot + bet;
     const required = toCall / (potBefore + toCall);
     const caught = { groups: [group("ahead", ahead, total), group("behind", behind, total)], required };
     actions.call = caught;

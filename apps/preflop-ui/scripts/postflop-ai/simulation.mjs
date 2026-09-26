@@ -3,11 +3,11 @@ import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
 import { gameConfig } from "../../src/estimated/sizing.js";
 import { handTier } from "./model.mjs";
 import { NODES, choose, opponentMix, policyMix, referencePolicy } from "./policy.mjs";
-import { boards, comboRange, config, makeSampler, samplePair } from "./inputs.mjs";
+import { boards, config, makeSampler, samplePair, seatRange } from "./inputs.mjs";
+import { spotById } from "./spots.mjs";
 
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const round = value => Math.round(value * 100) / 100;
-const other = seat => seat === "BTN" ? "BB" : "BTN";
 export const PROFILES = ["standard", "passive", "aggressive"];
 export const SIMULATION_VERSION = 2;
 
@@ -37,20 +37,24 @@ function takeRandom(deck, used, random) {
 }
 
 export function dealRunout(hands, flop, random) {
-  const used = new Set([...hands.BTN, ...hands.BB, ...flop]);
+  const used = new Set([...Object.values(hands).flat(), ...flop]);
   if (used.size !== 7) throw new Error("Duplicate deal cards");
   const deck = Array.from({ length: 52 }, (_, i) => i);
   return [takeRandom(deck, used, random), takeRandom(deck, used, random)];
 }
 
-export function playHand({ hands, flop, runout, hero, policy, profile, randoms }) {
-  if (!["BTN", "BB"].includes(hero) || !PROFILES.includes(profile) ||
+// One flop-to-river hand of a heads-up single-raised pot. The out-of-position player
+// (spot.oop) checks the flop and plays the "bb_*" nodes; the in-position player plays "btn_*".
+export function playHand({ hands, flop, runout, hero, policy, profile, randoms, spot = spotById() }) {
+  const { ip: IP, oop: OOP } = spot;
+  const other = seat => seat === IP ? OOP : IP;
+  if (![IP, OOP].includes(hero) || !PROFILES.includes(profile) || !hands?.[IP] || !hands?.[OOP] ||
       !Array.isArray(randoms) || randoms.length < 7 || randoms.some(value => !Number.isFinite(value) || value < 0 || value >= 1) ||
-      flop.length !== 3 || runout.length !== 2 || new Set([...hands.BTN, ...hands.BB, ...flop, ...runout]).size !== 9) {
+      flop.length !== 3 || runout.length !== 2 || new Set([...hands[IP], ...hands[OOP], ...flop, ...runout]).size !== 9) {
     throw new Error("Invalid simulated hand");
   }
-  const stacks = { BTN: 97.5, BB: 97.5 }, invested = { BTN: 0, BB: 0 };
-  let pot = 5.5, winner = null;
+  const stacks = { [IP]: spot.stackBb, [OOP]: spot.stackBb }, invested = { [IP]: 0, [OOP]: 0 };
+  let pot = spot.potBb, winner = null;
   let randomIndex = 0;
   const random = () => {
     if (randomIndex >= randoms.length) throw new Error("Simulation random stream exhausted");
@@ -68,44 +72,43 @@ export function playHand({ hands, flop, runout, hero, policy, profile, randoms }
     const mix = seat === hero ? policyMix(policy, node, hands[seat], flop) : opponentMix(node, hands[seat], flop, profile);
     return choose(mix, random(), NODES[node]);
   };
-  const first = flopChoice("BTN", "btn_first"); // BB checks in this v1 tree.
+  const first = flopChoice(IP, "btn_first"); // OOP checks in this v1 tree.
   if (first !== "check") {
-    const bet = put("BTN", pot * (first === "bet33" ? config.flop_bet_fractions[0] : config.flop_bet_fractions[1]));
-    const response = flopChoice("BB", first === "bet33" ? "bb_vs_33" : "bb_vs_75");
-    if (response === "fold") winner = "BTN";
-    else if (response === "call") put("BB", bet);
+    const bet = put(IP, pot * (first === "bet33" ? config.flop_bet_fractions[0] : config.flop_bet_fractions[1]));
+    const response = flopChoice(OOP, first === "bet33" ? "bb_vs_33" : "bb_vs_75");
+    if (response === "fold") winner = IP;
+    else if (response === "call") put(OOP, bet);
     else {
-      const raiseTo = Math.min(stacks.BB + invested.BB, round(bet * config.flop_check_raise_multiplier));
-      put("BB", raiseTo - invested.BB);
-      const back = flopChoice("BTN", "btn_vs_raise");
-      if (back === "fold") winner = "BB";
-      else put("BTN", invested.BB - invested.BTN);
+      const raiseTo = Math.min(stacks[OOP] + invested[OOP], round(bet * config.flop_check_raise_multiplier));
+      put(OOP, raiseTo - invested[OOP]);
+      const back = flopChoice(IP, "btn_vs_raise");
+      if (back === "fold") winner = OOP;
+      else put(IP, invested[OOP] - invested[IP]);
     }
   }
   for (let street = 0; street < 2 && !winner; street++) {
-    if (!stacks.BTN || !stacks.BB) break;
+    if (!stacks[IP] || !stacks[OOP]) break;
     const board = [...flop, ...runout.slice(0, street + 1)];
     const contProfile = seat => seat === hero ? "standard" : profile;
     const chooseCont = (seat, facing) => choose(continuationMix(hands[seat], board, contProfile(seat), facing), random());
-    const oop = chooseCont("BB", false);
-    if (oop === "bet") {
-      const amount = put("BB", Math.min(pot * config.continuation_bet_fraction, stacks.BTN));
-      if (chooseCont("BTN", true) === "fold") winner = "BB";
-      else put("BTN", amount);
-    } else if (chooseCont("BTN", false) === "bet") {
-      const amount = put("BTN", Math.min(pot * config.continuation_bet_fraction, stacks.BB));
-      if (chooseCont("BB", true) === "fold") winner = "BTN";
-      else put("BB", amount);
+    if (chooseCont(OOP, false) === "bet") {
+      const amount = put(OOP, Math.min(pot * config.continuation_bet_fraction, stacks[IP]));
+      if (chooseCont(IP, true) === "fold") winner = OOP;
+      else put(IP, amount);
+    } else if (chooseCont(IP, false) === "bet") {
+      const amount = put(IP, Math.min(pot * config.continuation_bet_fraction, stacks[OOP]));
+      if (chooseCont(OOP, true) === "fold") winner = IP;
+      else put(OOP, amount);
     }
   }
   if (!winner) {
     const board = [...flop, ...runout];
-    const btn = evaluate([...hands.BTN, ...board]), bb = evaluate([...hands.BB, ...board]);
-    winner = btn === bb ? "tie" : btn > bb ? "BTN" : "BB";
+    const ipValue = evaluate([...hands[IP], ...board]), oopValue = evaluate([...hands[OOP], ...board]);
+    winner = ipValue === oopValue ? "tie" : ipValue > oopValue ? IP : OOP;
   }
   // The part of a bet that was never called is returned before the pot is
   // raked or awarded. This applies to folds on every street, including a
-  // check-raise that BTN folds to.
+  // check-raise that the IP player folds to.
   if (winner !== "tie") {
     const excess = round(invested[winner] - invested[other(winner)]);
     if (excess > 0) {
@@ -116,10 +119,10 @@ export function playHand({ hands, flop, runout, hero, policy, profile, randoms }
   }
   const fee = rake(pot), paid = round(pot - fee);
   const returns = {
-    BTN: round((winner === "BTN" ? paid : winner === "tie" ? paid / 2 : 0) - invested.BTN),
-    BB: round((winner === "BB" ? paid : winner === "tie" ? paid / 2 : 0) - invested.BB),
+    [IP]: round((winner === IP ? paid : winner === "tie" ? paid / 2 : 0) - invested[IP]),
+    [OOP]: round((winner === OOP ? paid : winner === "tie" ? paid / 2 : 0) - invested[OOP]),
   };
-  if (Math.abs(returns.BTN + returns.BB - (5.5 - fee)) > 0.02) throw new Error("Chip conservation failed");
+  if (Math.abs(returns[IP] + returns[OOP] - (spot.potBb - fee)) > 0.02) throw new Error("Chip conservation failed");
   return { winner, pot, fee, invested, returns };
 }
 
@@ -133,19 +136,20 @@ function stats(values) {
 
 export function simulate(inputs, candidate, samples = config.samples_per_board_profile_seat) {
   if (!Number.isInteger(samples) || samples < 1) throw new Error("Invalid simulation sample count");
+  const { spot } = inputs;
   const results = [];
   for (const board of boards()) {
-    const btn = makeSampler(comboRange(inputs.opening.hands, "open", board.cards));
-    const bb = makeSampler(comboRange(inputs.response.hands, "call", board.cards));
-    for (const profile of PROFILES) for (const hero of ["BTN", "BB"]) {
+    const ip = makeSampler(seatRange(inputs, spot.ip, board.cards));
+    const oop = makeSampler(seatRange(inputs, spot.oop, board.cards));
+    for (const profile of PROFILES) for (const hero of [spot.ip, spot.oop]) {
       const random = seededRandom(seedFor(`${config.seed}|${board.id}|${profile}|${hero}`));
       const candidateEvs = [], baselineEvs = [], differences = [];
       for (let i = 0; i < samples; i++) {
-        const hands = samplePair(btn, bb, random);
+        const hands = samplePair(ip, oop, random, spot);
         const runout = dealRunout(hands, board.cards, random);
         const randoms = Array.from({ length: 12 }, () => random());
-        const base = playHand({ hands, flop: board.cards, runout, hero, policy: referencePolicy, profile, randoms });
-        const trial = playHand({ hands, flop: board.cards, runout, hero, policy: candidate, profile, randoms });
+        const base = playHand({ hands, flop: board.cards, runout, hero, policy: referencePolicy, profile, randoms, spot });
+        const trial = playHand({ hands, flop: board.cards, runout, hero, policy: candidate, profile, randoms, spot });
         candidateEvs.push(trial.returns[hero]); baselineEvs.push(base.returns[hero]);
         differences.push(trial.returns[hero] - base.returns[hero]);
       }
@@ -154,6 +158,6 @@ export function simulate(inputs, candidate, samples = config.samples_per_board_p
     }
   }
   return { kind: "ai_estimate_not_gto", version: 1, simulation_version: SIMULATION_VERSION,
-    spot: config.spot, source_hash: inputs.fingerprint,
+    spot: spot.id, source_hash: inputs.fingerprint,
     policy_hash: sha(candidate), samples_per_board_profile_seat: samples, seed: config.seed, results };
 }

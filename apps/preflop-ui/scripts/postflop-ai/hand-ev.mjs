@@ -1,37 +1,38 @@
-// Per-hand action EV and equity realization (EQR) for the local BTN-open / BB-call
-// flop pilot. Both players follow the saved AI candidate on the flop and the shared
+// Per-hand action EV and equity realization (EQR) for the local heads-up single-raised-pot
+// flop pilot (any spot in spots.mjs). Both players follow the saved AI candidate on the flop and the shared
 // fixed turn/river model, so these are values of the AI policy against itself —
 // not GTO, not solver EV. Local-only output under .local/postflop-ai/.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
 import { gameConfig } from "../../src/estimated/sizing.js";
-import { boards, comboRange, config, loadInputs, root } from "./inputs.mjs";
+import { artifactPaths, boards, config, loadInputs, seatRange } from "./inputs.mjs";
 import { loadCandidate } from "./generate.mjs";
 import { NODES, choose, policyMix } from "./policy.mjs";
 import { continuationMix } from "./simulation.mjs";
+import { DEFAULT_SPOT_ID, spotById } from "./spots.mjs";
 
 export const HAND_EV_VERSION = 1;
-export const handEvPath = join(root, ".local/postflop-ai/btn-bb-srp-v1-hand-ev.json");
 export const DEFAULT_SAMPLES = 2000;
 const round = value => Math.round(value * 100) / 100;
 const rake = pot => Math.min(pot * gameConfig.rake.rate, gameConfig.rake.cap_bb);
-const other = seat => seat === "BTN" ? "BB" : "BTN";
 
 // The flop decision points of the pilot tree, keyed by the actions before them.
+// `role` is the in-position ("ip") or out-of-position ("oop") player of the spot.
 export const HISTORIES = Object.freeze({
-  "": { node: "btn_first", actor: "BTN" },
-  bet33: { node: "bb_vs_33", actor: "BB" },
-  bet75: { node: "bb_vs_75", actor: "BB" },
-  "bet33,raise": { node: "btn_vs_raise", actor: "BTN" },
-  "bet75,raise": { node: "btn_vs_raise", actor: "BTN" },
+  "": { node: "btn_first", role: "ip" },
+  bet33: { node: "bb_vs_33", role: "oop" },
+  bet75: { node: "bb_vs_75", role: "oop" },
+  "bet33,raise": { node: "btn_vs_raise", role: "ip" },
+  "bet75,raise": { node: "btn_vs_raise", role: "ip" },
 });
 
 // Plays the rest of the hand from `history` with the actor forced to `forced`.
 // Returns the actor's chips won from this decision on (earlier flop chips are sunk).
-export function playFromNode({ hands, flop, runout, history, forced, policy, random }) {
-  const stacks = { BTN: 97.5, BB: 97.5 }, invested = { BTN: 0, BB: 0 };
-  let pot = 5.5, winner = null;
+export function playFromNode({ hands, flop, runout, history, forced, policy, random, spot = spotById() }) {
+  const { ip: IP, oop: OOP } = spot;
+  const other = seat => seat === IP ? OOP : IP;
+  const stacks = { [IP]: spot.stackBb, [OOP]: spot.stackBb }, invested = { [IP]: 0, [OOP]: 0 };
+  let pot = spot.potBb, winner = null;
   const put = (seat, amount) => {
     const value = round(Math.min(stacks[seat], amount));
     stacks[seat] = round(stacks[seat] - value);
@@ -39,41 +40,42 @@ export function playFromNode({ hands, flop, runout, history, forced, policy, ran
     pot = round(pot + value);
     return value;
   };
-  const { node: startNode, actor } = HISTORIES[history.join(",")];
+  const { node: startNode, role } = HISTORIES[history.join(",")];
+  const actor = spot[role];
   let atNode = null;
   const decide = (seat, node, step) => {
     if (step < history.length) return history[step];
     if (node === startNode) { atNode = { ...invested }; return forced; }
     return choose(policyMix(policy, node, hands[seat], flop), random(), NODES[node]);
   };
-  const first = decide("BTN", "btn_first", 0);
+  const first = decide(IP, "btn_first", 0);
   if (first !== "check") {
-    const bet = put("BTN", pot * (first === "bet33" ? config.flop_bet_fractions[0] : config.flop_bet_fractions[1]));
-    const response = decide("BB", first === "bet33" ? "bb_vs_33" : "bb_vs_75", 1);
-    if (response === "fold") winner = "BTN";
-    else if (response === "call") put("BB", bet);
+    const bet = put(IP, pot * (first === "bet33" ? config.flop_bet_fractions[0] : config.flop_bet_fractions[1]));
+    const response = decide(OOP, first === "bet33" ? "bb_vs_33" : "bb_vs_75", 1);
+    if (response === "fold") winner = IP;
+    else if (response === "call") put(OOP, bet);
     else {
-      put("BB", Math.min(stacks.BB + invested.BB, round(bet * config.flop_check_raise_multiplier)) - invested.BB);
-      if (decide("BTN", "btn_vs_raise", 2) === "fold") winner = "BB";
-      else put("BTN", invested.BB - invested.BTN);
+      put(OOP, Math.min(stacks[OOP] + invested[OOP], round(bet * config.flop_check_raise_multiplier)) - invested[OOP]);
+      if (decide(IP, "btn_vs_raise", 2) === "fold") winner = OOP;
+      else put(IP, invested[OOP] - invested[IP]);
     }
   }
   for (let street = 0; street < 2 && !winner; street++) {
-    if (!stacks.BTN || !stacks.BB) break;
+    if (!stacks[IP] || !stacks[OOP]) break;
     const board = [...flop, ...runout.slice(0, street + 1)];
     const cont = (seat, facing) => choose(continuationMix(hands[seat], board, "standard", facing), random());
-    if (cont("BB", false) === "bet") {
-      const amount = put("BB", Math.min(pot * config.continuation_bet_fraction, stacks.BTN));
-      if (cont("BTN", true) === "fold") winner = "BB"; else put("BTN", amount);
-    } else if (cont("BTN", false) === "bet") {
-      const amount = put("BTN", Math.min(pot * config.continuation_bet_fraction, stacks.BB));
-      if (cont("BB", true) === "fold") winner = "BTN"; else put("BB", amount);
+    if (cont(OOP, false) === "bet") {
+      const amount = put(OOP, Math.min(pot * config.continuation_bet_fraction, stacks[IP]));
+      if (cont(IP, true) === "fold") winner = OOP; else put(IP, amount);
+    } else if (cont(IP, false) === "bet") {
+      const amount = put(IP, Math.min(pot * config.continuation_bet_fraction, stacks[OOP]));
+      if (cont(OOP, true) === "fold") winner = IP; else put(OOP, amount);
     }
   }
   if (!winner) {
     const board = [...flop, ...runout];
-    const btn = evaluate([...hands.BTN, ...board]), bb = evaluate([...hands.BB, ...board]);
-    winner = btn === bb ? "tie" : btn > bb ? "BTN" : "BB";
+    const ipValue = evaluate([...hands[IP], ...board]), oopValue = evaluate([...hands[OOP], ...board]);
+    winner = ipValue === oopValue ? "tie" : ipValue > oopValue ? IP : OOP;
   }
   if (winner !== "tie") {
     const excess = round(invested[winner] - invested[other(winner)]);
@@ -87,15 +89,16 @@ export function playFromNode({ hands, flop, runout, history, forced, policy, ran
 // Pot at a decision and each player's reach there (saved preflop frequency × the
 // candidate's earlier flop actions for that exact combo).
 function nodeSetup(history, inputs, policy, flop) {
-  const btn = comboRange(inputs.opening.hands, "open", flop);
-  const bb = comboRange(inputs.response.hands, "call", flop);
+  const { spot } = inputs, start = spot.potBb;
+  const ip = seatRange(inputs, spot.ip, flop);
+  const oop = seatRange(inputs, spot.oop, flop);
   const scale = (range, node, action) => range.map(item => ({ ...item, weight: item.weight * policyMix(policy, node, item.combo, flop)[action] / 100 }));
   const [first, second] = history;
-  const bet = first ? round(5.5 * (first === "bet33" ? config.flop_bet_fractions[0] : config.flop_bet_fractions[1])) : 0;
-  if (!first) return { pot: 5.5, hero: btn, villain: bb };
-  const btnBet = scale(btn, "btn_first", first);
-  if (!second) return { pot: round(5.5 + bet), hero: bb, villain: btnBet };
-  return { pot: round(5.5 + bet + round(bet * config.flop_check_raise_multiplier)), hero: btnBet, villain: scale(bb, first === "bet33" ? "bb_vs_33" : "bb_vs_75", "raise") };
+  const bet = first ? round(start * (first === "bet33" ? config.flop_bet_fractions[0] : config.flop_bet_fractions[1])) : 0;
+  if (!first) return { pot: start, hero: ip, villain: oop };
+  const ipBet = scale(ip, "btn_first", first);
+  if (!second) return { pot: round(start + bet), hero: oop, villain: ipBet };
+  return { pot: round(start + bet + round(bet * config.flop_check_raise_multiplier)), hero: ipBet, villain: scale(oop, first === "bet33" ? "bb_vs_33" : "bb_vs_75", "raise") };
 }
 
 const handClass = ([a, b]) => {
@@ -117,8 +120,10 @@ function sampler(items) {
 }
 
 export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES) {
+  const { spot } = inputs;
   const out = {};
-  for (const [key, { node, actor }] of Object.entries(HISTORIES)) {
+  for (const [key, { node, role }] of Object.entries(HISTORIES)) {
+    const actor = spot[role];
     const history = key ? key.split(",") : [];
     const { pot, hero, villain } = nodeSetup(history, inputs, policy, board.cards);
     const actions = NODES[node];
@@ -142,7 +147,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES)
         const used = new Set([...heroCombo, ...villainCombo, ...board.cards]);
         const runout = [];
         while (runout.length < 2) { const card = Math.floor(random() * 52); if (!used.has(card)) { used.add(card); runout.push(card); } }
-        const hands = actor === "BTN" ? { BTN: heroCombo, BB: villainCombo } : { BTN: villainCombo, BB: heroCombo };
+        const hands = { [actor]: heroCombo, [actor === spot.ip ? spot.oop : spot.ip]: villainCombo };
         const final = [...board.cards, ...runout];
         const h = evaluate([...heroCombo, ...final]), v = evaluate([...villainCombo, ...final]);
         wins += h > v ? 1 : h === v ? 0.5 : 0;
@@ -150,7 +155,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES)
         const streamSeed = Math.floor(random() * 2 ** 32);
         const mix = policyMix(policy, node, heroCombo, board.cards);
         for (const action of actions) {
-          const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action, policy, random: seededRandom(streamSeed) });
+          const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action, policy, random: seededRandom(streamSeed), spot });
           sums[action] += value;
           mixEv += mix[action] / 100 * value;
         }
@@ -171,26 +176,28 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES)
   return out;
 }
 
-export function generateHandEv({ samples = DEFAULT_SAMPLES, onBoard = () => {} } = {}) {
-  const inputs = loadInputs();
+export function generateHandEv({ spotId = DEFAULT_SPOT_ID, samples = DEFAULT_SAMPLES, onBoard = () => {} } = {}) {
+  const inputs = loadInputs(spotId);
   const candidate = loadCandidate(inputs);
   const result = { kind: "ai_estimate_not_gto", version: HAND_EV_VERSION, source_hash: inputs.fingerprint,
     policy_hash: candidate.metadata.policy_hash, samples_per_hand_action: samples, seed: config.seed,
     note: "AI方針どうしの自己対戦（ターン・リバーは固定モデル）で見積もった値。GTO・ソルバーのEVではない。", boards: {} };
   for (const board of boards()) { result.boards[board.id] = handEvForBoard(board, inputs, candidate.policy, samples); onBoard(board.id); }
-  writeFileSync(handEvPath, `${JSON.stringify(result)}\n`);
+  writeFileSync(artifactPaths(inputs.spot).handEv, `${JSON.stringify(result)}\n`);
   return result;
 }
 
 // Read-only lookup for the local view; null when missing or stale for the candidate.
 export function loadHandEv(inputs, candidate) {
-  if (!existsSync(handEvPath)) return null;
-  const data = JSON.parse(readFileSync(handEvPath, "utf8"));
+  const path = artifactPaths(inputs.spot).handEv;
+  if (!existsSync(path)) return null;
+  const data = JSON.parse(readFileSync(path, "utf8"));
   return data.version === HAND_EV_VERSION && data.source_hash === inputs.fingerprint && data.policy_hash === candidate.metadata.policy_hash ? data : null;
 }
 
-// GET /local-postflop-hand-ev?board=As7d2c&history=bet33,raise&hand=AKo — read-only, local-only.
-let cache = null;
+// GET /local-postflop-hand-ev?spot=BTN_open_BB_call&board=As7d2c&history=bet33,raise&hand=AKo
+// — read-only, local-only. `spot` defaults to BTN_open_BB_call.
+const cache = new Map();
 export function handEvMiddleware(req, res, next) {
   const url = new URL(req.url, "http://localhost");
   if (url.pathname !== "/local-postflop-hand-ev") { next(); return; }
@@ -201,18 +208,22 @@ export function handEvMiddleware(req, res, next) {
     res.writeHead(req.method !== "GET" ? 405 : 403).end(JSON.stringify({ error: "ローカルの読み取り専用です。" })); return;
   }
   try {
-    const inputs = loadInputs();
+    const inputs = loadInputs(url.searchParams.get("spot") || DEFAULT_SPOT_ID);
     const candidate = loadCandidate(inputs);
-    if (!cache || cache.policy_hash !== candidate.metadata.policy_hash || cache.source_hash !== inputs.fingerprint) cache = loadHandEv(inputs, candidate);
-    if (!cache) {
-      res.writeHead(404).end(JSON.stringify({ error: "ハンド別EVが未計算か、方針と一致しません。npm run postflop-ai:hand-ev で計算してください。" })); return;
+    let data = cache.get(inputs.spot.id);
+    if (!data || data.policy_hash !== candidate.metadata.policy_hash || data.source_hash !== inputs.fingerprint) {
+      data = loadHandEv(inputs, candidate);
+      if (data) cache.set(inputs.spot.id, data); else cache.delete(inputs.spot.id);
+    }
+    if (!data) {
+      res.writeHead(404).end(JSON.stringify({ error: `ハンド別EVが未計算か、方針と一致しません。npm run postflop-ai:hand-ev -- --spot ${inputs.spot.id} で計算してください。` })); return;
     }
     const history = url.searchParams.get("history") ?? "";
-    const spot = cache.boards[url.searchParams.get("board")]?.[history];
-    if (!spot) { res.writeHead(404).end(JSON.stringify({ error: "この場面のEVはありません。" })); return; }
+    const node = data.boards[url.searchParams.get("board")]?.[history];
+    if (!node) { res.writeHead(404).end(JSON.stringify({ error: "この場面のEVはありません。" })); return; }
     const hand = url.searchParams.get("hand");
-    res.writeHead(200).end(JSON.stringify({ node: spot.node, actor: spot.actor, pot_bb: spot.pot_bb, hand,
-      row: spot.rows[hand] ?? null, samples: cache.samples_per_hand_action, note: cache.note }));
+    res.writeHead(200).end(JSON.stringify({ spot: inputs.spot.id, node: node.node, actor: node.actor, pot_bb: node.pot_bb, hand,
+      row: node.rows[hand] ?? null, samples: data.samples_per_hand_action, note: data.note }));
   } catch (error) {
     res.writeHead(error.code === "ENOENT" ? 404 : 409).end(JSON.stringify({ error: error.message }));
   }

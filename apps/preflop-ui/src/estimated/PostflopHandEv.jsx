@@ -6,13 +6,14 @@ import "./postflop-hand-ev.css";
 const signed = value => `${value > 0 ? "+" : ""}${value.toFixed(2)}bb`;
 
 // Local-only per-hand action EV and EQR for the flop pilot (AI policy self-play).
-// `history` is the flop actions before the decision shown, e.g. ["bet33", "raise"].
-export function handEvQuery(board, history, hand) {
-  return `/local-postflop-hand-ev?${new URLSearchParams({ board, history: history.join(","), hand })}`;
+// `history` is the flop actions before the decision shown, e.g. ["bet33", "raise"];
+// `spot` is the heads-up single-raised-pot id (the server defaults to BTN_open_BB_call).
+export function handEvQuery(board, history, hand, spot) {
+  return `/local-postflop-hand-ev?${new URLSearchParams({ ...(spot ? { spot } : {}), board, history: history.join(","), hand })}`;
 }
 
-export function useHandEv(board, history = [], hand) {
-  const url = board && hand ? handEvQuery(board, history, hand) : null;
+export function useHandEv(board, history = [], hand, spot) {
+  const url = board && hand ? handEvQuery(board, history, hand, spot) : null;
   const [state, setState] = useState({ url: null, data: null, error: null });
   useEffect(() => {
     if (!url) return undefined;
