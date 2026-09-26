@@ -309,6 +309,12 @@ th small { display: block; }
 .onboarding-actions .primary { padding: 10px 22px; font-size: 14px; }
 .onboarding-cancel { border: 0; background: transparent; color: var(--text-muted); }
 .onboarding-note { color: var(--text-subtle); font-size: 11px; }
+@media (max-width: 480px) {
+  /* Fit the 13x13 grid to the phone width instead of scrolling sideways. */
+  .matrix { min-width: 0; gap: 1px; }
+  .matrix button { padding: 0; border-radius: 2px; font-size: 8.5px; letter-spacing: -.02em; }
+  .matrix small { display: none; }
+}
 @media (max-width: 480px) { .onboarding-card { padding: 20px; } .level-option { grid-template-columns: 1fr; } .level-name { grid-row: auto; } }
 
 /* ---- Motion ---- */
