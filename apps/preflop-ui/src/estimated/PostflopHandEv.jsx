@@ -31,7 +31,7 @@ export function HandEvView({ data }) {
       </tr>)}</tbody>
     </table>
     <small className="postflop-hand-ev-note">
-      EVはこの判断から先に得るチップ（それまでに入れた分は含めない）。EQR = 平均EV ÷（勝率 × レーキ後ポット {pot}bb）。
+      EVはこの判断から先に得るチップ（それまでに入れた分は含めない）。EQR = 平均EV ÷（勝率 × ポット {pot}bb からレーキを引いた額）。
       AI方針どうしの自己対戦で、1アクションあたり{data.samples.toLocaleString()}回のシミュレーションから見積もった値です。GTO・ソルバーのEVではありません。
     </small>
   </>;
