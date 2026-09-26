@@ -1,4 +1,4 @@
-import { Brain, CaretDoubleLeft, CaretDoubleRight, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
+import { CaretDoubleLeft, ChartBar, CaretDoubleRight, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
 import { useState } from "react";
 import { levelLabel } from "../profile.js";
 
@@ -12,8 +12,8 @@ const navigationGroups = [
   {
     label: "学習",
     items: [
-      { Icon: GraduationCap, name: "トレーナー", status: "準備中" },
-      { Icon: Brain, name: "クイズ", status: "準備中" },
+      { Icon: GraduationCap, name: "トレーナー" },
+      { Icon: ChartBar, name: "弱点" },
     ],
   },
 ];
@@ -72,7 +72,7 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
                 <button
                   key={name}
                   className={`${activeSection === name ? "active" : ""} ${status ? "future" : ""}`.trim()}
-                  onClick={() => onSectionChange(name)}
+                  onClick={() => { onSectionChange(name); if (window.matchMedia("(max-width: 650px)").matches) toggle(true); }}
                   disabled={Boolean(status)}
                   aria-current={activeSection === name ? "page" : undefined}
                   aria-label={status ? `${name}（${status}）` : name}

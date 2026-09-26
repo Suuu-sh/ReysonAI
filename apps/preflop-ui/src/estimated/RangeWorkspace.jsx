@@ -479,7 +479,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
   </div>;
 }
 
-export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile }) {
+export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }) {
   const [showFlop, setShowFlop] = useState(false);
   const [flopDialogOpen, setFlopDialogOpen] = useState(false);
   const [flopCards, setFlopCards] = useState(["", "", ""]);
@@ -897,7 +897,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
 
   return <div className="shell">
     <Sidebar activeSection="プリフロップ"
-      onSectionChange={() => {}}
+      onSectionChange={onSectionChange ?? (() => {})}
       profile={profile} onEditProfile={onEditProfile} />
     <main>
       <Panel className="estimate-settings">
@@ -945,6 +945,6 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   </div>;
 }
 
-export function RangeWorkspace({ profile, onEditProfile }) {
-  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} />;
+export function RangeWorkspace({ profile, onEditProfile, onSectionChange }) {
+  return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} />;
 }
