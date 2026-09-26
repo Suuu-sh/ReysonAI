@@ -1,5 +1,10 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Practice sessions and hand history (2026-09-27)
+- Added a セッション destination with a dated practice list, status filtering, and a detail view of the exact saved answer log. In-progress sessions can be resumed; completed named drills and review attempts keep their hand logs locally. Existing summary-only attempts explicitly say their per-hand history was not recorded.
+- Browser verification at `http://127.0.0.1:5174/app`: opened an interrupted one-answer session, saw its saved Q5o hand and verdict, resumed it, finished it, and confirmed the completed hand history remained after reloading. The narrow viewport stayed readable with horizontal scrolling for the table.
+- All UI tests, typecheck, production build, Sites tests, and lint passed. The existing Vite large-chunk warning remains.
+
 ## Solvea AI Score trend (2026-09-27)
 - Added a compact policy-alignment card below the existing four-quadrant map. Each practice answer is compared with the saved AI estimate for the same preflop spot/hand; a 10-answer rolling mean makes progress visible without calling it a GTO score or EV loss.
 - Checked the running `/app` at the current narrow viewport with 31 locally saved answers: the card showed 91%, its trend line and explanatory limits without horizontal overflow. Targeted and full UI tests, typecheck, production build, and Sites tests passed. The existing large-chunk warning remains.

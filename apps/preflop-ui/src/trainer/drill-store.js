@@ -1,5 +1,6 @@
 // Saved drills (named settings) and their session records, kept in this browser only.
 import { POSITIONS, normalizeSettings } from "./trainer-data.js";
+import { validSession } from "./practice-sessions.js";
 
 const KEY = "solveaai.trainer.drills.v1";
 const SESSION_LIMIT = 50;
@@ -18,8 +19,7 @@ function presetDrills(level) {
 
 function validDrill(drill, level) {
   if (!drill || typeof drill.id !== "string" || typeof drill.name !== "string") return null;
-  const sessions = Array.isArray(drill.sessions) ? drill.sessions.filter(item =>
-    Number.isFinite(item?.at) && Number.isFinite(item?.answered) && item.answered > 0 && Number.isFinite(item?.score)) : [];
+  const sessions = Array.isArray(drill.sessions) ? drill.sessions.map(validSession).filter(Boolean) : [];
   return { id: drill.id, name: drill.name.slice(0, 40) || "無題のドリル", settings: normalizeSettings(drill.settings, level),
     preset: Boolean(drill.preset), createdAt: Number(drill.createdAt) || 0, sessions: sessions.slice(-SESSION_LIMIT) };
 }
@@ -48,7 +48,7 @@ export function recordSession(drills, drillId, session) {
   return drills.map(drill => drill.id === drillId ? { ...drill, sessions: [...drill.sessions, session].slice(-SESSION_LIMIT) } : drill);
 }
 
-// session: { at, answered, score, best, mixed, miss, durationMs }
+// session: { at, answered, score, best, mixed, miss, durationMs, hands? }
 export function drillStats(drill) {
   const sessions = drill?.sessions ?? [];
   const rates = sessions.map(item => item.score / item.answered);

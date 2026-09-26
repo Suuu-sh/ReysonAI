@@ -15,6 +15,6 @@ export default function ProductApp() {
   }
 
   const shared = { profile, onEditProfile: () => setEditing(true), onSectionChange: setSection };
-  if (section === "トレーナー" || section === "プレー分析" || section === "弱点") return <TrainerPage {...shared} section={section} />;
+  if (section === "トレーナー" || section === "セッション" || section === "プレー分析" || section === "弱点") return <TrainerPage {...shared} section={section} />;
   return <RangeWorkspace {...shared} />;
 }

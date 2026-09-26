@@ -12,6 +12,8 @@ import { drillStats, loadDrills, newDrillId, recordSession, saveDrills, upsertDr
 import { loadDrillDrafts, removeDrillDraft, restoreDrillDraft, saveDrillDraft } from "./drill-session-store.js";
 import { DrillLibrary, HistoryChart } from "./DrillLibrary.jsx";
 import { PlayerAnalysis } from "./PlayerAnalysis.jsx";
+import { SessionPage } from "./SessionPage.jsx";
+import { loadReviewSessions, newSessionRecord, recordReviewSession } from "./practice-sessions.js";
 import "./trainer.css";
 
 const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
@@ -460,6 +462,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   const [history, setHistory] = useState(loadHistory);
   const [drills, setDrills] = useState(() => loadDrills(profile?.level));
   const [drafts, setDrafts] = useState(loadDrillDrafts);
+  const [reviewSessions, setReviewSessions] = useState(loadReviewSessions);
   const [phase, setPhase] = useState("library");
   const [active, setActive] = useState(null); // { drill, review }
   const [editing, setEditing] = useState(null); // { drill, isNew }
@@ -477,17 +480,18 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   };
   const reviewDrill = useMemo(() => ({ id: "review", name: "復習ドリル", settings: normalizeSettings({ count: Math.min(20, Math.max(reviewCount, 1)) }, profile?.level) }), [reviewCount, profile]);
   const onFinish = useCallback((log, durationMs) => {
-    const counts = { best: 0, mixed: 0, miss: 0 };
-    for (const item of log) counts[item.result]++;
     discardProgress(active.review ? "review" : active.drill.id);
     let record = null;
-    if (!active.review && log.length) {
-      const before = drillStats(drills.find(drill => drill.id === active.drill.id));
-      const session = { at: Date.now(), answered: log.length, score: log.reduce((sum, item) => sum + item.score, 0), ...counts, durationMs };
-      const next = recordSession(drills, active.drill.id, session);
-      commitDrills(next);
-      const stats = drillStats(next.find(drill => drill.id === active.drill.id));
-      record = { stats, isBest: before.best == null ? false : stats.last > before.best };
+    if (log.length) {
+      const session = newSessionRecord(log, durationMs);
+      if (active.review) setReviewSessions(current => recordReviewSession(current, session));
+      else {
+        const before = drillStats(drills.find(drill => drill.id === active.drill.id));
+        const next = recordSession(drills, active.drill.id, session);
+        commitDrills(next);
+        const stats = drillStats(next.find(drill => drill.id === active.drill.id));
+        record = { stats, isBest: before.best == null ? false : stats.last > before.best };
+      }
     }
     setResult({ log, record });
     setPhase("result");
@@ -507,6 +511,8 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onStartReview={() => start(reviewDrill, true)}
             onClear={() => { if (window.confirm("回答履歴をすべて消しますか？")) { clearHistory(); setHistory([]); } }} />
         : section === "プレー分析" ? <PlayerAnalysis history={history} onStart={() => { setPhase("library"); onSectionChange("トレーナー"); }} onOpenWeakness={() => onSectionChange("弱点")} />
+        : section === "セッション" ? <SessionPage drills={drills} reviews={reviewSessions} drafts={drafts}
+            onResume={session => start(session.kind === "review" ? reviewDrill : drills.find(drill => drill.id === session.drillId), session.kind === "review")} />
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
             onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("library")}
             onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("library"); }} />

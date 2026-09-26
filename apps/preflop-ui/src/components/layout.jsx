@@ -1,4 +1,4 @@
-import { CaretDoubleLeft, ChartBar, CaretDoubleRight, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
+import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
 import { useState } from "react";
 import { levelLabel } from "../profile.js";
 
@@ -15,6 +15,7 @@ const navigationGroups = [
     label: "学習",
     items: [
       { Icon: GraduationCap, name: "トレーナー" },
+      { Icon: ClockCounterClockwise, name: "セッション" },
       { Icon: ChartBar, name: "プレー分析" },
       { Icon: ChartBar, name: "弱点" },
     ],
