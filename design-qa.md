@@ -223,3 +223,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - The full-width inline card selector was removed. A modal now offers the 12 audited boards; the chosen three cards appear in one clickable block after the preflop actions and before the flop decisions. The redundant preflop-only "終了" block is omitted after entering the flop. Clicking the card block reopens the modal.
 - Browser verification at `http://127.0.0.1:5173/app`: the completed BTN→BB path opened the modal, `As 7d 2c` appeared in the compact row block, and the BTN flop range remained visible. The obstructing inline selection panel was absent.
 - Focused postflop tests passed (9/9); typecheck, production build and Sites tests passed. The full run passed 171/172; its sole failure was the existing 4bet UI title assertion after separate saved-data changes. Vite still reports its large-chunk warning.
+
+## Player-analysis summary card removal (2026-09-27)
+- Removed the redundant large tendency/count summary; the four-quadrant map now follows the page heading directly. Action comparisons and guidance remain.
+- Browser verification at `http://127.0.0.1:5173/app`: the map and comparison sections were visible, while the summary card and its three counts were absent.
+- Typecheck, build, all 202 UI tests and all 4 Sites tests passed. The pre-existing large-bundle warning remains.

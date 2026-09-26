@@ -65,13 +65,6 @@ export function PlayerAnalysis({ history, onStart }) {
       <button type="button" className="analysis-start" onClick={onStart}>練習する<ArrowRight size={16} /></button>
     </header>
 
-    <section className={`analysis-hero style-${analysis.style.key}`} aria-label="練習中のプレースタイル">
-      <div><span className="analysis-kicker">現在の練習傾向</span><strong>{analysis.style.label}</strong><p>{analysis.style.explanation}</p></div>
-      <dl><div><dt>回答履歴</dt><dd>{analysis.answered}<small>問</small></dd></div>
-        <div><dt>重複を除いた問題</dt><dd>{analysis.samples}<small>問</small></dd></div>
-        <div><dt>分析した局面</dt><dd>{analysis.distinctSpots}<small>局面</small></dd></div></dl>
-    </section>
-
     <StyleMap analysis={analysis} />
 
     {!analysis.ready && <p className="analysis-notice" role="status">傾向判定には、重複を除いて30問以上（オープン・対オープン各10問以上、計3局面以上）が必要です。現在はオープン {analysis.openSamples}問・対オープン {analysis.responseSamples}問です。</p>}
