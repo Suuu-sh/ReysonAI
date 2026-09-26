@@ -104,6 +104,11 @@ export function dominantTier(tiers = {}) {
   return Object.entries(tiers).reduce((best, entry) => entry[1] > best[1] ? entry : best, ["air", -1])[0];
 }
 
+// Nodes of the tree where the OOP preflop raiser leads reuse the matching reasons; there a
+// raise against a lead is a plain raise, not a check-raise.
+const aliases = { oop_first: "btn_first", ip_vs_33: "bb_vs_33", ip_vs_75: "bb_vs_75", oop_vs_raise: "btn_vs_raise" };
+
 export function actionReason(node, action, tier) {
+  if (aliases[node]) return (reasons[aliases[node]]?.[action]?.[tier] ?? "").replaceAll("チェックレイズ", "レイズ");
   return reasons[node]?.[action]?.[tier] ?? "";
 }

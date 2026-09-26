@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { artifactPaths, boards, comboRange, loadInputs } from "./inputs.mjs";
 import { loadCandidate, sha } from "./generate.mjs";
-import { NODES, policyMix, validatePolicy } from "./policy.mjs";
+import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
 import { boardTexture, handTier, TIERS } from "./model.mjs";
 import { explainCombo } from "./explain.mjs";
@@ -13,17 +13,16 @@ const cardText = card => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
 export function buildLocalBoard(boardId, inputs, candidate) {
   const board = boards().find(item => item.id === boardId);
   if (!board) throw new Error("対象の代表フロップがありません。");
-  const policy = validatePolicy(candidate.policy);
+  const policy = validatePolicy(candidate.policy, inputs.spot.tree);
   if (candidate.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.policy_hash !== sha(policy)) {
     throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
   }
   const { spot } = inputs;
-  const nodes = Object.fromEntries(Object.entries(NODES).map(([node, actions]) => {
-    const seat = node.startsWith("btn") ? spot.ip : spot.oop; // btn_* = IP, bb_* = OOP
-    const source = seat === spot.opener ? inputs.opening.hands : inputs.response.hands;
-    const sourceAction = seat === spot.opener ? "open" : "call";
-    const rows = source.map(row => {
-      const combos = comboRange([row], sourceAction, board.cards);
+  const nodes = Object.fromEntries(treeNodes(spot.tree).map(node => {
+    const actions = NODES[node];
+    const seat = spot[nodeRole(node)]; // btn_* / ip_* = IP, bb_* / oop_* = OOP
+    const rows = inputs.seatRows[seat].map(row => {
+      const combos = comboRange([row], "freq", board.cards);
       const total = combos.reduce((sum, item) => sum + item.weight, 0);
       const mix = Object.fromEntries(actions.map(action => [action, total
         ? combos.reduce((sum, item) => sum + item.weight * policyMix(policy, node, item.combo, board.cards)[action], 0) / total / 100
@@ -40,7 +39,7 @@ export function buildLocalBoard(boardId, inputs, candidate) {
     });
     return [node, { seat, actions, rows }];
   }));
-  return { kind: "ai_estimate_not_gto", spot: spot.id, ip: spot.ip, oop: spot.oop, pot_bb: spot.potBb, stack_bb: spot.stackBb, board: board.id, split: board.split, texture: boardTexture(board.cards),
+  return { kind: "ai_estimate_not_gto", spot: spot.id, tree: spot.tree, ip: spot.ip, oop: spot.oop, pot_bb: spot.potBb, stack_bb: spot.stackBb, board: board.id, split: board.split, texture: boardTexture(board.cards),
     source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash, nodes };
 }
 
@@ -51,7 +50,7 @@ export function explainLocalCombo(params, inputs, candidate) {
   if (!/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
   const prev = params.get("prev") === "bet75" ? "bet75" : "bet33";
   return { spot: inputs.spot.id, board: board.id, ...explainCombo({ boardCards: board.cards, node: params.get("node"), cards, prev,
-    inputs, policy: validatePolicy(candidate.policy) }) };
+    inputs, policy: validatePolicy(candidate.policy, inputs.spot.tree) }) };
 }
 
 export function localPostflopMiddleware(req, res, next) {

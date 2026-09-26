@@ -1,23 +1,22 @@
 import { boardTexture, handTier, TEXTURES, TIERS } from "./model.mjs";
 
-// Node names come from the first BTN-open / BB-call pilot and are kept for compatibility:
-// "btn_*" nodes belong to the in-position player and "bb_*" nodes to the out-of-position
-// player of any heads-up single-raised pot (see spots.mjs). The OOP player checks first.
-export const NODES = Object.freeze({
-  btn_first: ["check", "bet33", "bet75"],
-  bb_vs_33: ["fold", "call", "raise"],
-  bb_vs_75: ["fold", "call", "raise"],
-  btn_vs_raise: ["fold", "call"],
-});
+import { DEFAULT_TREE, NODES, TREES, nodeRole, treeNodes } from "./tree.mjs";
 
-export function validatePolicy(policy) {
+// Node names and trees live in tree.mjs: "btn_*" / "ip_*" nodes belong to the in-position
+// player and "bb_*" / "oop_*" nodes to the out-of-position player of a heads-up pot.
+export { NODES, TREES, nodeRole, treeNodes };
+
+// A policy is valid for one tree: only that tree's nodes, and a texture=any fallback for
+// every node and tier (20 rules for "oop_checks", 40 for "oop_leads").
+export function validatePolicy(policy, tree = DEFAULT_TREE) {
+  const nodes = treeNodes(tree);
   if (!policy || policy.version !== 1 || policy.kind !== "ai_estimate_not_gto" ||
-      !Array.isArray(policy.rules) || policy.rules.length < 20 || policy.rules.length > 100 ||
+      !Array.isArray(policy.rules) || policy.rules.length < nodes.length * 5 || policy.rules.length > nodes.length * 25 ||
       Object.keys(policy).some(key => !["version", "kind", "rules"].includes(key))) throw new Error("Invalid postflop policy envelope");
   const seen = new Set();
   for (const rule of policy.rules) {
     if (!rule || Object.keys(rule).sort().join(",") !== "mix,node,texture,tier" ||
-        !NODES[rule.node] || !["any", ...TEXTURES].includes(rule.texture) || !TIERS.includes(rule.tier)) {
+        !nodes.includes(rule.node) || !["any", ...TEXTURES].includes(rule.texture) || !TIERS.includes(rule.tier)) {
       throw new Error("Invalid postflop policy rule");
     }
     const key = `${rule.node}|${rule.texture}|${rule.tier}`;
@@ -30,7 +29,7 @@ export function validatePolicy(policy) {
       throw new Error(`Invalid action mix: ${key}`);
     }
   }
-  for (const node of Object.keys(NODES)) for (const tier of TIERS) {
+  for (const node of nodes) for (const tier of TIERS) {
     if (!seen.has(`${node}|any|${tier}`)) throw new Error(`Missing fallback rule: ${node}/${tier}`);
   }
   return policy;
@@ -69,13 +68,36 @@ const standard = {
     monster: [0, 100], strong: [25, 75], draw: [45, 55],
     medium: [75, 25], air: [95, 5],
   },
+  // The OOP preflop raiser leading (oop_leads tree): a little less betting than IP after a check.
+  oop_first: {
+    monster: [30, 40, 30], strong: [45, 45, 10], draw: [55, 35, 10],
+    medium: [80, 20, 0], air: [80, 20, 0],
+  },
+  ip_vs_33: {
+    monster: [0, 45, 55], strong: [5, 80, 15], draw: [20, 70, 10],
+    medium: [35, 65, 0], air: [90, 10, 0],
+  },
+  ip_vs_75: {
+    monster: [0, 55, 45], strong: [20, 70, 10], draw: [45, 50, 5],
+    medium: [70, 30, 0], air: [95, 5, 0],
+  },
+  oop_vs_raise: {
+    monster: [0, 100], strong: [25, 75], draw: [45, 55],
+    medium: [75, 25], air: [95, 5],
+  },
 };
 
-export const referencePolicy = validatePolicy({ version: 1, kind: "ai_estimate_not_gto",
-  rules: Object.entries(standard).flatMap(([node, tiers]) => Object.entries(tiers).map(([tier, values]) => ({
-    node, tier, texture: "any", mix: Object.fromEntries(NODES[node].map((action, i) => [action, values[i]])),
-  }))),
-});
+// The fixed reference policy of one tree (only that tree's nodes, in the original rule order).
+export function referencePolicyFor(tree = DEFAULT_TREE) {
+  const nodes = treeNodes(tree);
+  return validatePolicy({ version: 1, kind: "ai_estimate_not_gto",
+    rules: Object.entries(standard).filter(([node]) => nodes.includes(node)).flatMap(([node, tiers]) => Object.entries(tiers).map(([tier, values]) => ({
+      node, tier, texture: "any", mix: Object.fromEntries(NODES[node].map((action, i) => [action, values[i]])),
+    }))),
+  }, tree);
+}
+export const referencePolicy = referencePolicyFor(DEFAULT_TREE);
+const referenceAll = referencePolicyFor("oop_leads");
 
 function roundMix(mix, actions) {
   const entries = actions.map(action => [action, mix[action]]);
@@ -88,20 +110,27 @@ function roundMix(mix, actions) {
 
 export function opponentMix(node, hole, flop, profile) {
   if (!["standard", "passive", "aggressive"].includes(profile)) throw new Error("Unknown opponent profile");
-  const base = policyMix(referencePolicy, node, hole, flop);
+  const base = policyMix(referenceAll, node, hole, flop);
   if (profile === "standard") return base;
   const factor = profile === "passive" ? 0.5 : 1.5;
   const actions = NODES[node];
-  if (node === "btn_first") {
+  if (node === "btn_first" || node === "oop_first") {
     const betTotal = Math.min(100, (base.bet33 + base.bet75) * factor);
     const fraction33 = base.bet33 / (base.bet33 + base.bet75 || 1);
     return roundMix({ check: 100 - betTotal, bet33: betTotal * fraction33, bet75: betTotal * (1 - fraction33) }, actions);
   }
-  if (node === "btn_vs_raise") {
+  if (node === "btn_vs_raise" || node === "oop_vs_raise") {
     const call = Math.min(100, Math.max(0, base.call + (profile === "passive" ? 10 : -10)));
     return { fold: 100 - call, call };
   }
   const raise = Math.min(100 - base.fold, Math.round(base.raise * factor));
   const call = 100 - base.fold - raise;
   return { fold: base.fold, call, raise };
+}
+
+// Weights each combo of `role`'s range by the policy frequency of that player's own
+// earlier flop actions in `steps` (from tree.flopState), i.e. its reach at a later decision.
+export function scaleByPath(items, role, steps, policy, flop) {
+  return steps.filter(step => step.role === role).reduce((range, step) =>
+    range.map(item => ({ ...item, weight: item.weight * policyMix(policy, step.node, item.combo, flop)[step.action] / 100 })), items);
 }

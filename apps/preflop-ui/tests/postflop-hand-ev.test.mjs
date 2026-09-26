@@ -7,8 +7,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { seededRandom } from "../scripts/lib/equity.mjs";
 import { boards, loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { parseCards } from "../scripts/postflop-ai/model.mjs";
-import { referencePolicy } from "../scripts/postflop-ai/policy.mjs";
-import { HISTORIES, handEvForBoard, playFromNode } from "../scripts/postflop-ai/hand-ev.mjs";
+import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
+import { HISTORIES, handEvForBoard, historiesFor, playFromNode } from "../scripts/postflop-ai/hand-ev.mjs";
 import { spotById } from "../scripts/postflop-ai/spots.mjs";
 
 const flop = parseCards("As7d2c", 3);
@@ -32,17 +32,29 @@ test("chips already put in before the decision are sunk, not counted in its EV",
   assert.ok(play(["bet33"], "call") > 0);
 });
 
-test("SB vs BB plays with BB in position, a 7BB pot and 96.5BB stacks", () => {
+test("SB vs BB: SB leads out of position into BB, with a 7BB pot and 96.5BB stacks", () => {
   const spot = spotById("SB_open_BB_call");
+  const leads = referencePolicyFor("oop_leads");
   const sbHands = { BB: parseCards("AhKd", 2), SB: parseCards("7h7c", 2) };
-  const sbPlay = (history, forced) => playFromNode({ hands: sbHands, flop, runout, history, forced, policy: referencePolicy, random: seededRandom(1), spot });
+  const sbPlay = (history, forced) => playFromNode({ hands: sbHands, flop, runout, history, forced, policy: leads, random: seededRandom(1), spot });
+  // BB (AK) facing SB's 33% lead: folding is worth 0, calling a set loses chips from here on.
   assert.equal(sbPlay(["bet33"], "fold"), 0);
-  assert.ok(sbPlay(["bet33"], "call") > 0);
-  assert.ok(sbPlay(["bet33", "raise"], "call") < 0 && sbPlay(["bet33", "raise"], "call") >= -96.5);
-  const result = handEvForBoard(boards().find(item => item.id === "As7d2c"), loadInputs(spot.id), referencePolicy, 10);
-  assert.deepEqual([result[""].actor, result[""].pot_bb], ["BB", 7]);
-  assert.deepEqual([result.bet33.actor, result.bet33.pot_bb], ["SB", 9.31]);
-  assert.deepEqual([result["bet75,raise"].actor, result["bet75,raise"].pot_bb], ["BB", 28]);
+  assert.ok(sbPlay(["bet33"], "call") < 0);
+  // After SB checks and check-raises with the set, BB's call of the raise loses (at most its stack).
+  assert.ok(sbPlay(["check", "bet33", "raise"], "call") < 0 && sbPlay(["check", "bet33", "raise"], "call") >= -96.5);
+  assert.ok(sbPlay([], "bet75") > 0);
+  const result = handEvForBoard(boards().find(item => item.id === "As7d2c"), loadInputs(spot.id), leads, 10);
+  assert.deepEqual(Object.keys(result), Object.keys(historiesFor("oop_leads")));
+  assert.deepEqual([result[""].node, result[""].actor, result[""].pot_bb], ["oop_first", "SB", 7]);
+  assert.deepEqual([result.bet33.node, result.bet33.actor, result.bet33.pot_bb], ["ip_vs_33", "BB", 9.31]);
+  assert.deepEqual([result["check,bet75,raise"].node, result["check,bet75,raise"].actor, result["check,bet75,raise"].pot_bb], ["btn_vs_raise", "BB", 28]);
+  assert.ok(Object.values(result["bet33,raise"].rows).every(row => Object.keys(row.ev_bb).join() === "fold,call"));
+});
+
+test("a 3bet pot where the IP 3bettor faces a check uses the first pilot's decision keys", () => {
+  const result = handEvForBoard(boards().find(item => item.id === "KcKd4h"), loadInputs("UTG_open_HJ_3bet_call"), referencePolicy, 5);
+  assert.deepEqual(Object.keys(result), Object.keys(HISTORIES));
+  assert.deepEqual([result[""].actor, result[""].pot_bb, result.bet75.actor, result.bet75.pot_bb], ["HJ", 17.5, "UTG", 30.63]);
 });
 
 test("per-hand rows carry equity, EQR, per-action EV and the class mix for every decision", () => {

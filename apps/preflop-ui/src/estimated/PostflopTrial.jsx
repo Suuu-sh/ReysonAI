@@ -6,11 +6,15 @@ import { HandEvBars, useHandEv } from "./PostflopHandEv.jsx";
 import { actionReason, dominantTier, textureLabels, tierLabels } from "./postflop-reasons.js";
 import { flopDecision, recognizedFlop, representativeFlops } from "./postflop-trial.js";
 
-const labels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
+const baseLabels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
+// Raising a lead (ip_vs_*) is a plain raise, not a check-raise.
+const labelsFor = node => node?.startsWith("ip_") ? { ...baseLabels, raise: "3倍レイズ" } : baseLabels;
 // btn_* nodes are the in-position player's decisions, bb_* the out-of-position player's.
 const nodeTitle = (node, { ip, oop }) => ({
   btn_first: `${ip} · ${oop}のチェックへの応答`, bb_vs_33: `${oop} · 33%ベットへの応答`,
   bb_vs_75: `${oop} · 75%ベットへの応答`, btn_vs_raise: `${ip} · チェックレイズへの応答`,
+  oop_first: `${oop} · 最初の判断（先にベットできる）`, ip_vs_33: `${ip} · 33%ベットへの応答`,
+  ip_vs_75: `${ip} · 75%ベットへの応答`, oop_vs_raise: `${oop} · レイズへの応答`,
 })[node];
 export const suitLabels = { s: "♠", h: "♥", d: "♦", c: "♣" };
 
@@ -65,7 +69,7 @@ function ActionDetail({ action, explain }) {
   </details>;
 }
 
-function HandReasons({ node, hand, actions, texture, explain }) {
+function HandReasons({ node, hand, actions, texture, explain, labels }) {
   if (!hand.tiers) return null;
   const tier = dominantTier(hand.tiers);
   const shares = Object.entries(hand.tiers).filter(([, share]) => share >= 0.005).sort((a, b) => b[1] - a[1]);
@@ -94,7 +98,7 @@ function mixGradient(mix, actions) {
   return stops.length ? `linear-gradient(90deg, ${stops.join(", ")})` : undefined;
 }
 
-function ComboPicker({ hand, combos, actions, selected, onSelect }) {
+function ComboPicker({ hand, combos, actions, selected, onSelect, labels }) {
   if (!combos?.length) return null;
   const pair = hand[0] === hand[1];
   const byCell = new Map(combos.map(combo => {
@@ -178,6 +182,7 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
   const decision = flopDecision(actions, context);
+  const labels = labelsFor(decision.node);
   const spotId = context.spotId;
 
   useEffect(() => {
@@ -189,7 +194,7 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
       .then(async response => {
         const body = await response.json();
         if (!response.ok) throw new Error(body.error || "ポストフロップ候補を読み込めませんでした。");
-        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.board !== board || !body.nodes) throw new Error("候補の局面・盤面または形式が一致しません。");
+        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.board !== board || !body.nodes || (context.tree && body.tree !== context.tree)) throw new Error("候補の局面・盤面または形式が一致しません。");
         return body;
       })
       .then(body => { setData(body); setStatus("ready"); })
@@ -221,7 +226,7 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
   const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId);
   return <div className="postflop-trial" aria-label="ポストフロップ試作">
-    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定で1人がオープンし1人だけがコールした2人のポット（シングルレイズポット）だけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
+    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、1人がオープンし1人だけがコールしたシングルレイズポットと、オープン→3bet→コールの3betポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title="フロップを選択してください">上のアクション列にあるフロップカードを押して、3枚を選んでください。</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title="このフロップの方針は未収録">選んだ3枚は代表12ボードに含まれません。未監査のレンジは表示しません。</StatusState></Panel>
       : <>
@@ -253,8 +258,8 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
                     </summary>
                     <HandEvBars items={current.actions.map(action => ({ action, frequency: view.actions[action] }))} labels={labels} ev={handEv} comboSelected={Boolean(view.combo)} />
                   </details>
-                <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions} selected={selectedCombo} onSelect={setSelectedCombo} />
-                <HandReasons node={decision.node} hand={view} actions={current.actions} texture={data.texture} explain={view.combo ? explain : null} />
+                <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
+                <HandReasons node={decision.node} hand={view} actions={current.actions} texture={data.texture} explain={view.combo ? explain : null} labels={labels} />
               </>}
           </Panel>
           </div>

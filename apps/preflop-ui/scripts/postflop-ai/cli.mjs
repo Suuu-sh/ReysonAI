@@ -1,6 +1,6 @@
 // npm run postflop-ai:<generate|simulate|audit|hand-ev|spots> -- [--spot <id> | --all] [--samples N] [--model M] [--effort E]
-// Without --spot, the first pilot spot (BTN_open_BB_call) is used. --all runs every heads-up
-// single-raised-pot spot in order; a failing spot is logged and skipped, then listed at the end.
+// Without --spot, the first pilot spot (BTN_open_BB_call) is used. --all runs every reachable
+// heads-up spot (single-raised and 3bet pots) in order; a failing spot is logged and skipped, then listed at the end.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { auditExperiment } from "./audit.mjs";
@@ -39,7 +39,7 @@ async function runSpot(spotId) {
     const model = resolveModel(options.model), effort = resolveEffort(options.effort);
     const { candidate, reused } = await generate(inputs, { model, effort });
     const meta = candidate.metadata;
-    return `${reused ? "Reused" : "Saved"} local AI candidate ${meta.source_hash.slice(0, 12)} (${meta.model}${meta.reasoning_effort ? `, effort ${meta.reasoning_effort}` : ""}; not GTO; not published)`;
+    return `${reused ? "Reused" : "Saved"} local AI candidate (${inputs.spot.tree}) ${meta.source_hash.slice(0, 12)} (${meta.model}${meta.reasoning_effort ? `, effort ${meta.reasoning_effort}` : ""}; not GTO; not published)`;
   }
   if (command === "simulate") {
     const samples = samplesOption(config.samples_per_board_profile_seat);
@@ -67,10 +67,10 @@ async function runSpot(spotId) {
 
 if (command === "spots") {
   const mark = path => existsSync(path) ? "yes" : "-";
-  console.log(["id", "IP", "OOP", "pot", "stack", "reachable", "policy", "report", "hand-ev"].join("\t"));
+  console.log(["id", "IP", "OOP", "pot", "stack", "tree", "reachable", "policy", "report", "hand-ev"].join("\t"));
   for (const spot of POSTFLOP_SPOTS) {
     const paths = artifactPaths(spot);
-    console.log([spot.id, spot.ip, spot.oop, `${spot.potBb}BB`, `${spot.stackBb}BB`, spot.reachable ? "yes" : "no (caller never calls)", mark(paths.candidate), mark(paths.report), mark(paths.handEv)].join("\t"));
+    console.log([spot.id, spot.ip, spot.oop, `${spot.potBb}BB`, `${spot.stackBb}BB`, spot.tree, spot.reachable ? "yes" : "no (caller never calls)", mark(paths.candidate), mark(paths.report), mark(paths.handEv)].join("\t"));
   }
   console.log("AI estimate pilot (not GTO). Artifacts stay in .local/postflop-ai/.");
 } else if (!options.all) {

@@ -6,7 +6,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { artifactPaths, boards, config, root, seatRange } from "./inputs.mjs";
 import { boardTexture, handTier, TIERS } from "./model.mjs";
-import { NODES, validatePolicy } from "./policy.mjs";
+import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
 
 // Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
 // Existing candidates are reused as saved (the first BTN/BB pilot was made with gpt-6-sol).
@@ -21,10 +21,11 @@ export const sha = value => createHash("sha256").update(JSON.stringify(value)).d
 export function loadCandidate(inputs) {
   const candidate = JSON.parse(readFileSync(artifactPaths(inputs.spot).candidate, "utf8"));
   if (candidate?.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.config_version !== config.version ||
-      (candidate.metadata.spot ?? inputs.spot.id) !== inputs.spot.id) {
+      (candidate.metadata.spot ?? inputs.spot.id) !== inputs.spot.id ||
+      (candidate.metadata.tree ?? "oop_checks") !== inputs.spot.tree) {
     throw new Error("AI policy source is stale; archive it and explicitly generate a new candidate");
   }
-  validatePolicy(candidate.policy);
+  validatePolicy(candidate.policy, inputs.spot.tree);
   if (candidate.metadata.policy_hash !== sha(candidate.policy)) throw new Error("Saved AI policy hash does not match its content");
   return candidate;
 }
@@ -39,17 +40,27 @@ export function promptFor(inputs) {
   };
   const design = boards().filter(board => board.split === "design").map(board =>
     `${board.id}(${boardTexture(board.cards)};${spot.ip} ${distribution(spot.ip, board.cards)};${spot.oop} ${distribution(spot.oop, board.cards)})`);
-  const raiser = seat => seat === spot.opener ? "preflop raiser" : "preflop caller";
+  const raiser = seat => seat === spot.aggressor ? (spot.kind === "3bp" ? "preflop 3bettor" : "preflop raiser") : "preflop caller";
+  const nodes = treeNodes(spot.tree);
+  const preflop = spot.kind === "3bp"
+    ? `${spot.opener} opens ${spot.openBb}BB, ${spot.threeBettor} 3bets to ${spot.threeBetBb}BB, ${spot.opener} calls, every other seat folds; heads-up 3bet pot,`
+    : `${spot.opener} opens ${spot.openBb}BB, ${spot.caller} calls, every other seat folds; heads-up`;
+  const tree = spot.tree === "oop_leads"
+    ? `${spot.oop} acts first and chooses check/bet33/bet75 (oop_first). Facing that bet33 or bet75, ${spot.ip} chooses fold/call/raise to 3x the bet (ip_vs_33 / ip_vs_75); facing the raise ${spot.oop} chooses fold/call (oop_vs_raise). After ${spot.oop} checks, ${spot.ip} chooses check/bet33/bet75 (btn_first); ${spot.oop} facing bet33 or bet75 chooses fold/call/raise to 3x the bet (bb_vs_33 / bb_vs_75); ${spot.ip} facing that check-raise chooses fold/call (btn_vs_raise). No further flop raises; bets and raises are capped by the ${spot.stackBb}BB stacks (all-in). Turn/river are evaluated by a separate fixed model; do not author them.`
+    : `${spot.oop} checks first. ${spot.ip} chooses check/bet33/bet75. ${spot.oop} facing bet33 or bet75 chooses fold/call/raise to 3x original bet. ${spot.ip} facing check-raise chooses fold/call. No further flop raises.${spot.kind === "3bp" ? ` Bets and raises are capped by the ${spot.stackBb}BB stacks (all-in).` : ""} Turn/river are evaluated by a separate fixed model; do not author them.`;
+  const nodeNames = spot.tree === "oop_leads"
+    ? `Node names are fixed: btn_* and ip_* nodes are ${spot.ip}'s (IP) decisions and bb_* and oop_* nodes are ${spot.oop}'s (OOP) decisions.`
+    : `Node names are fixed: btn_* nodes are ${spot.ip}'s (IP) decisions and bb_* nodes are ${spot.oop}'s (OOP) decisions.`;
   return [
     "Create compact flop-only AI-estimated poker policy rules, not GTO, solver, equilibrium, or external chart output. Return one JSON object only. Do not call tools or write files.",
-    `Cash 6-max 100BB no ante, ${spot.opener} opens ${spot.openBb}BB, ${spot.caller} calls, every other seat folds; heads-up flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB.`,
-    `${spot.ip} (${raiser(spot.ip)}) is in position; ${spot.oop} (${raiser(spot.oop)}) is out of position. Node names are fixed: btn_* nodes are ${spot.ip}'s (IP) decisions and bb_* nodes are ${spot.oop}'s (OOP) decisions.`,
+    `Cash 6-max 100BB no ante, ${preflop} flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB.`,
+    `${spot.ip} (${raiser(spot.ip)}) is in position; ${spot.oop} (${raiser(spot.oop)}) is out of position. ${nodeNames}`,
     "Input summaries below are weighted real two-card combo distributions after excluding flop blockers. Tier values are rounded percentages, in monster/strong/draw/medium/air order. Never infer the opponent's hidden cards during a decision.",
     `Example design flops (no other boards supplied): ${design.join(", ")}. Rules must generalize to unseen textures.`,
-    `${spot.oop} checks first. ${spot.ip} chooses check/bet33/bet75. ${spot.oop} facing bet33 or bet75 chooses fold/call/raise to 3x original bet. ${spot.ip} facing check-raise chooses fold/call. No further flop raises. Turn/river are evaluated by a separate fixed model; do not author them.`,
+    tree,
     "Use tier order monster(two pair+), strong(top pair/overpair), draw(flush/straight draw), medium(other pair), air. Texture is dry/wet/monotone/paired. Rules may override a texture, but every node and tier MUST have one texture=any fallback.",
-    `Nodes/actions: ${JSON.stringify(NODES)}. Tiers: ${TIERS.join(", ")}.`,
-    "Output exactly {version:1,kind:'ai_estimate_not_gto',rules:[{node,texture,tier,mix},...]}. Mix keys must be exactly the legal actions for that node, integer 0..100, summing to 100. Include the 20 mandatory fallback rules and no more than 80 overrides; no rationale, code, private opponent cards, or other properties.",
+    `Nodes/actions: ${JSON.stringify(Object.fromEntries(nodes.map(node => [node, NODES[node]])))}. Tiers: ${TIERS.join(", ")}.`,
+    `Output exactly {version:1,kind:'ai_estimate_not_gto',rules:[{node,texture,tier,mix},...]}. Mix keys must be exactly the legal actions for that node, integer 0..100, summing to 100. Include the ${nodes.length * 5} mandatory fallback rules and no more than ${nodes.length * 20} overrides; no rationale, code, private opponent cards, or other properties.`,
   ].join("\n");
 }
 
@@ -109,12 +120,12 @@ export async function generate(inputs, { model = resolveModel(), effort = resolv
   if (existsSync(path)) return { candidate: loadCandidate(inputs), reused: true };
   const prompt = promptFor(inputs);
   let started = {};
-  const policy = validatePolicy(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }));
+  const policy = validatePolicy(await generator(prompt, { model, effort, onThread: result => { started = result ?? {}; } }), inputs.spot.tree);
   // Record what the app-server reports it used, when it says so; otherwise what was requested.
   if (started.model && started.model !== model) throw new Error(`Codex used ${started.model} instead of ${model}`);
   const usedEffort = started.reasoningEffort ?? effort;
   const candidate = { metadata: { kind: "ai_estimate_not_gto", scope: "12 representative flops; flop only; not published",
-    spot: inputs.spot.id, source_hash: inputs.fingerprint, policy_hash: sha(policy), config_version: config.version,
+    spot: inputs.spot.id, tree: inputs.spot.tree, source_hash: inputs.fingerprint, policy_hash: sha(policy), config_version: config.version,
     model, reasoning_effort: usedEffort, prompt_hash: sha(prompt) }, policy };
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(candidate, null, 2)}\n`, { flag: "wx" });

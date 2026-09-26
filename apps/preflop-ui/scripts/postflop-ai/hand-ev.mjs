@@ -1,104 +1,61 @@
-// Per-hand action EV and equity realization (EQR) for the local heads-up single-raised-pot
-// flop pilot (any spot in spots.mjs). Both players follow the saved AI candidate on the flop and the shared
-// fixed turn/river model, so these are values of the AI policy against itself —
+// Per-hand action EV and equity realization (EQR) for the local heads-up flop pilot (any
+// spot in spots.mjs, on its tree). Both players follow the saved AI candidate on the flop and
+// the shared fixed turn/river model, so these are values of the AI policy against itself —
 // not GTO, not solver EV. Local-only output under .local/postflop-ai/.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
-import { gameConfig } from "../../src/estimated/sizing.js";
 import { artifactPaths, boards, config, loadInputs, seatRange } from "./inputs.mjs";
 import { loadCandidate } from "./generate.mjs";
-import { NODES, choose, policyMix } from "./policy.mjs";
+import { NODES, choose, policyMix, scaleByPath } from "./policy.mjs";
 import { continuationMix } from "./simulation.mjs";
+import { createTable, playFlop, playLaterStreets, rake, settle } from "./engine.mjs";
 import { DEFAULT_SPOT_ID, spotById } from "./spots.mjs";
+import { flopState, treeHistories } from "./tree.mjs";
 
 export const HAND_EV_VERSION = 1;
 export const DEFAULT_SAMPLES = 2000;
 const round = value => Math.round(value * 100) / 100;
-const rake = pot => Math.min(pot * gameConfig.rake.rate, gameConfig.rake.cap_bb);
 
-// The flop decision points of the pilot tree, keyed by the actions before them.
-// `role` is the in-position ("ip") or out-of-position ("oop") player of the spot.
-export const HISTORIES = Object.freeze({
-  "": { node: "btn_first", role: "ip" },
-  bet33: { node: "bb_vs_33", role: "oop" },
-  bet75: { node: "bb_vs_75", role: "oop" },
-  "bet33,raise": { node: "btn_vs_raise", role: "ip" },
-  "bet75,raise": { node: "btn_vs_raise", role: "ip" },
-});
+// The flop decision points of a tree, keyed by the actions before them ("oop_checks" by
+// default). `role` is the in-position ("ip") or out-of-position ("oop") player of the spot.
+export const historiesFor = tree => treeHistories(tree);
+export const HISTORIES = Object.freeze(treeHistories("oop_checks"));
 
 // Plays the rest of the hand from `history` with the actor forced to `forced`.
 // Returns the actor's chips won from this decision on (earlier flop chips are sunk).
-export function playFromNode({ hands, flop, runout, history, forced, policy, random, spot = spotById() }) {
-  const { ip: IP, oop: OOP } = spot;
-  const other = seat => seat === IP ? OOP : IP;
-  const stacks = { [IP]: spot.stackBb, [OOP]: spot.stackBb }, invested = { [IP]: 0, [OOP]: 0 };
-  let pot = spot.potBb, winner = null;
-  const put = (seat, amount) => {
-    const value = round(Math.min(stacks[seat], amount));
-    stacks[seat] = round(stacks[seat] - value);
-    invested[seat] = round(invested[seat] + value);
-    pot = round(pot + value);
-    return value;
-  };
-  const { node: startNode, role } = HISTORIES[history.join(",")];
-  const actor = spot[role];
+export function playFromNode({ hands, flop, runout, history, forced, policy, random, spot = spotById(), tree = spot.tree ?? "oop_checks" }) {
+  const start = flopState(tree, history);
+  if (start.end) throw new Error("No decision after this flop history");
+  const actor = spot[start.role];
+  const table = createTable(spot);
   let atNode = null;
   const decide = (seat, node, step) => {
     if (step < history.length) return history[step];
-    if (node === startNode) { atNode = { ...invested }; return forced; }
+    if (step === history.length) { atNode = { ...table.invested }; return forced; }
     return choose(policyMix(policy, node, hands[seat], flop), random(), NODES[node]);
   };
-  const first = decide(IP, "btn_first", 0);
-  if (first !== "check") {
-    const bet = put(IP, pot * (first === "bet33" ? config.flop_bet_fractions[0] : config.flop_bet_fractions[1]));
-    const response = decide(OOP, first === "bet33" ? "bb_vs_33" : "bb_vs_75", 1);
-    if (response === "fold") winner = IP;
-    else if (response === "call") put(OOP, bet);
-    else {
-      put(OOP, Math.min(stacks[OOP] + invested[OOP], round(bet * config.flop_check_raise_multiplier)) - invested[OOP]);
-      if (decide(IP, "btn_vs_raise", 2) === "fold") winner = OOP;
-      else put(IP, invested[OOP] - invested[IP]);
-    }
-  }
-  for (let street = 0; street < 2 && !winner; street++) {
-    if (!stacks[IP] || !stacks[OOP]) break;
-    const board = [...flop, ...runout.slice(0, street + 1)];
-    const cont = (seat, facing) => choose(continuationMix(hands[seat], board, "standard", facing), random());
-    if (cont(OOP, false) === "bet") {
-      const amount = put(OOP, Math.min(pot * config.continuation_bet_fraction, stacks[IP]));
-      if (cont(IP, true) === "fold") winner = OOP; else put(IP, amount);
-    } else if (cont(IP, false) === "bet") {
-      const amount = put(IP, Math.min(pot * config.continuation_bet_fraction, stacks[OOP]));
-      if (cont(OOP, true) === "fold") winner = IP; else put(OOP, amount);
-    }
-  }
-  if (!winner) {
-    const board = [...flop, ...runout];
-    const ipValue = evaluate([...hands[IP], ...board]), oopValue = evaluate([...hands[OOP], ...board]);
-    winner = ipValue === oopValue ? "tie" : ipValue > oopValue ? IP : OOP;
-  }
-  if (winner !== "tie") {
-    const excess = round(invested[winner] - invested[other(winner)]);
-    if (excess > 0) { invested[winner] = round(invested[winner] - excess); pot = round(pot - excess); }
-  }
-  const paid = pot - rake(pot);
+  playFlop(table, tree, decide, config);
+  playLaterStreets(table, flop, runout, (seat, board, facing) => choose(continuationMix(hands[seat], board, "standard", facing), random()), config);
+  const winner = settle(table, hands, [...flop, ...runout]);
+  const paid = table.pot - rake(table.pot);
   const share = winner === actor ? paid : winner === "tie" ? paid / 2 : 0;
-  return share - invested[actor] + atNode[actor];
+  return share - table.invested[actor] + atNode[actor];
 }
 
 // Pot at a decision and each player's reach there (saved preflop frequency × the
 // candidate's earlier flop actions for that exact combo).
-function nodeSetup(history, inputs, policy, flop) {
-  const { spot } = inputs, start = spot.potBb;
-  const ip = seatRange(inputs, spot.ip, flop);
-  const oop = seatRange(inputs, spot.oop, flop);
-  const scale = (range, node, action) => range.map(item => ({ ...item, weight: item.weight * policyMix(policy, node, item.combo, flop)[action] / 100 }));
-  const [first, second] = history;
-  const bet = first ? round(start * (first === "bet33" ? config.flop_bet_fractions[0] : config.flop_bet_fractions[1])) : 0;
-  if (!first) return { pot: start, hero: ip, villain: oop };
-  const ipBet = scale(ip, "btn_first", first);
-  if (!second) return { pot: round(start + bet), hero: oop, villain: ipBet };
-  return { pot: round(start + bet + round(bet * config.flop_check_raise_multiplier)), hero: ipBet, villain: scale(oop, first === "bet33" ? "bb_vs_33" : "bb_vs_75", "raise") };
+function nodeSetup(history, inputs, policy, flop, tree) {
+  const { spot } = inputs;
+  const state = flopState(tree, history);
+  // Replays the chips of the history (the same rounding and stack caps as the hand itself).
+  const table = createTable(spot);
+  const stop = new Error("stop at the decision");
+  try {
+    playFlop(table, tree, (seat, node, index) => { if (index < history.length) return history[index]; throw stop; }, config);
+  } catch (error) { if (error !== stop) throw error; }
+  const range = role => scaleByPath(seatRange(inputs, spot[role], flop), role, state.steps, policy, flop);
+  const heroRole = state.role, villainRole = heroRole === "ip" ? "oop" : "ip";
+  return { pot: table.pot, hero: range(heroRole), villain: range(villainRole) };
 }
 
 const handClass = ([a, b]) => {
@@ -122,10 +79,10 @@ function sampler(items) {
 export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES) {
   const { spot } = inputs;
   const out = {};
-  for (const [key, { node, role }] of Object.entries(HISTORIES)) {
+  for (const [key, { node, role }] of Object.entries(treeHistories(spot.tree))) {
     const actor = spot[role];
     const history = key ? key.split(",") : [];
-    const { pot, hero, villain } = nodeSetup(history, inputs, policy, board.cards);
+    const { pot, hero, villain } = nodeSetup(history, inputs, policy, board.cards, spot.tree);
     const actions = NODES[node];
     const pickVillain = sampler(villain.filter(item => item.weight > 0));
     const byClass = new Map();
@@ -155,7 +112,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES)
         const streamSeed = Math.floor(random() * 2 ** 32);
         const mix = policyMix(policy, node, heroCombo, board.cards);
         for (const action of actions) {
-          const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action, policy, random: seededRandom(streamSeed), spot });
+          const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action, policy, random: seededRandom(streamSeed), spot, tree: spot.tree });
           sums[action] += value;
           mixEv += mix[action] / 100 * value;
         }

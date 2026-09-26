@@ -22,16 +22,36 @@ export function loadInputs(spotId = DEFAULT_SPOT_ID) {
   const spot = spotById(spotId);
   if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
   const opening = read("opening-ranges").spots.find(item => item.id === spot.openingId);
-  const response = read("preflop-ranges").spots.find(item => item.id === spot.responseId);
-  if (!opening || !response || opening.hero !== spot.opener || response.opener !== spot.opener || response.hero !== spot.caller ||
-      opening.open_size_bb !== spot.openBb || response.open_size_bb !== spot.openBb ||
-      opening.effective_stack_bb !== 100 || response.effective_stack_bb !== 100 ||
-      gameConfig.stack_bb !== 100 || gameConfig.ante_bb !== 0 ||
-      gameConfig.rake.rate !== 0.05 || gameConfig.rake.cap_bb !== 3) throw new Error(`${spot.id} source geometry changed`);
-  // Same fingerprint shape as the first BTN/BB pilot; the opening and response spots identify the spot.
-  const fingerprint = sha({ opening, response, gameConfig, config });
-  return { spot, opening, response, config, fingerprint };
+  const baseOk = opening && opening.hero === spot.opener && opening.open_size_bb === spot.openBb && opening.effective_stack_bb === 100 &&
+    gameConfig.stack_bb === 100 && gameConfig.ante_bb === 0 && gameConfig.rake.rate === 0.05 && gameConfig.rake.cap_bb === 3;
+  if (spot.kind === "srp") {
+    const response = read("preflop-ranges").spots.find(item => item.id === spot.responseId);
+    if (!baseOk || !response || response.opener !== spot.opener || response.hero !== spot.caller ||
+        response.open_size_bb !== spot.openBb || response.effective_stack_bb !== 100) throw new Error(`${spot.id} source geometry changed`);
+    // The single-raised pots with the first pilot's tree keep its fingerprint shape; the
+    // opening and response spots identify the spot. Other spots also hash the spot itself.
+    const fingerprint = spot.tree === "oop_checks" ? sha({ opening, response, gameConfig, config }) : sha({ spot, opening, response, gameConfig, config });
+    const seatRows = { [spot.opener]: freqRows(opening.hands, "open"), [spot.caller]: freqRows(response.hands, "call") };
+    return { spot, opening, response, config, fingerprint, seatRows };
+  }
+  const response = read("three-bet-responses").spots.find(item => item.id === spot.responseId);
+  const threeBet = read("preflop-ranges").spots.find(item => item.id === spot.threeBetId);
+  if (!baseOk || !response || !threeBet || response.opener !== spot.opener || response.three_bettor !== spot.threeBettor ||
+      response.three_bet_size_bb !== spot.threeBetBb || response.effective_stack_bb !== 100 ||
+      threeBet.opener !== spot.opener || threeBet.hero !== spot.threeBettor ||
+      threeBet.hands.some(row => row.three_bet > 0 && row.three_bet_size_bb !== spot.threeBetBb)) throw new Error(`${spot.id} source geometry changed`);
+  const fingerprint = sha({ spot, opening, response, threeBet, gameConfig, config });
+  // The opener reaches the flop with its open frequency × its call frequency versus the 3bet.
+  const calls = new Map(response.hands.map(row => [row.hand, row.call]));
+  if (calls.size !== opening.hands.length || opening.hands.some(row => !calls.has(row.hand))) throw new Error(`${spot.id} hand rows differ`);
+  const seatRows = {
+    [spot.opener]: opening.hands.map(row => ({ hand: row.hand, freq: row.open * calls.get(row.hand) / 100 })),
+    [spot.threeBettor]: freqRows(threeBet.hands, "three_bet"),
+  };
+  return { spot, opening, response, threeBet, config, fingerprint, seatRows };
 }
+
+const freqRows = (rows, action) => rows.map(row => ({ hand: row.hand, freq: row[action] }));
 
 export function comboRange(rows, action, board) {
   const blocked = new Set(board);
@@ -42,11 +62,11 @@ export function comboRange(rows, action, board) {
   });
 }
 
-// A seat's flop range: the opener's saved open frequency or the caller's saved call frequency.
+// A seat's flop range (weights = the saved preflop frequencies that reach the flop).
 export function seatRange(inputs, seat, board) {
-  if (seat === inputs.spot.opener) return comboRange(inputs.opening.hands, "open", board);
-  if (seat === inputs.spot.caller) return comboRange(inputs.response.hands, "call", board);
-  throw new Error(`${seat} is not in ${inputs.spot.id}`);
+  const rows = inputs.seatRows[seat];
+  if (!rows) throw new Error(`${seat} is not in ${inputs.spot.id}`);
+  return comboRange(rows, "freq", board);
 }
 
 export function boards() {

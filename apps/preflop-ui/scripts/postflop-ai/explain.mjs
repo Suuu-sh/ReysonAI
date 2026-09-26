@@ -3,7 +3,8 @@
 import { evaluate, seededRandom, seedFor } from "../lib/equity.mjs";
 import { seatRange } from "./inputs.mjs";
 import { handTier, parseCards } from "./model.mjs";
-import { NODES, policyMix } from "./policy.mjs";
+import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.mjs";
+import { flopState, historyFor, nodeRole, otherRole } from "./tree.mjs";
 
 const RANKS = "23456789TJQKA";
 const RUNOUTS = 120;
@@ -38,28 +39,25 @@ function equityAgainst(hero, villain, flop, boards) {
   return played ? won / played : 0.5;
 }
 
-// Which opponent combos reach this node, with how much weight. btn_* nodes are the
-// in-position player's decisions (opponent = OOP) and bb_* nodes the OOP player's.
+// Which opponent combos reach this node, with how much weight: the opponent's saved range
+// scaled by its own earlier flop actions on the canonical path to the node (tree.historyFor).
 function opponentRange(node, inputs, policy, flop, hero, prev) {
   const { spot } = inputs;
   const dead = new Set(hero);
-  const alive = items => items.filter(item => !item.combo.some(card => dead.has(card)));
-  if (node === "btn_first") return alive(seatRange(inputs, spot.oop, flop));
-  if (node === "bb_vs_33" || node === "bb_vs_75") {
-    const bet = node === "bb_vs_33" ? "bet33" : "bet75";
-    return alive(seatRange(inputs, spot.ip, flop))
-      .map(item => ({ ...item, weight: item.weight * policyMix(policy, "btn_first", item.combo, flop)[bet] / 100 }));
-  }
-  const facing = prev === "bet75" ? "bb_vs_75" : "bb_vs_33";
-  return alive(seatRange(inputs, spot.oop, flop))
-    .map(item => ({ ...item, weight: item.weight * policyMix(policy, facing, item.combo, flop).raise / 100 }));
+  const role = otherRole(nodeRole(node));
+  const { steps } = flopState(spot.tree, historyFor(spot.tree, node, prev));
+  return scaleByPath(seatRange(inputs, spot[role], flop).filter(item => !item.combo.some(card => dead.has(card))), role, steps, policy, flop);
 }
+
+const FIRST_NODES = { btn_first: ["bb_vs_33", "bb_vs_75"], oop_first: ["ip_vs_33", "ip_vs_75"] };
+const RAISE_NODES = { btn_vs_raise: true, oop_vs_raise: true };
+const RAISE_AFTER = { bb_vs_33: "btn_vs_raise", bb_vs_75: "btn_vs_raise", ip_vs_33: "oop_vs_raise", ip_vs_75: "oop_vs_raise" };
 
 function betSize(node, prev, config, startPot) {
   const fraction = key => config.flop_bet_fractions[key === "bet75" ? 1 : 0] ?? (key === "bet75" ? 0.75 : 0.33);
-  if (node === "btn_first") return null;
-  if (node === "btn_vs_raise") return fraction(prev) * startPot;
-  return fraction(node === "bb_vs_75" ? "bet75" : "bet33") * startPot;
+  if (FIRST_NODES[node]) return null;
+  if (RAISE_NODES[node]) return fraction(prev) * startPot;
+  return fraction(node.endsWith("_75") ? "bet75" : "bet33") * startPot;
 }
 
 function summarize(items) {
@@ -83,7 +81,7 @@ function group(key, items, all) {
 }
 
 export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, policy }) {
-  if (!NODES[node]) throw new Error("未対応の判断です。");
+  if (!NODES[node] || !treeNodes(inputs.spot.tree).includes(node)) throw new Error("未対応の判断です。");
   const flop = boardCards;
   const hero = parseCards(cards, 2);
   if (hero.some(card => flop.includes(card))) throw new Error("ボードと重なるカードです。");
@@ -114,21 +112,23 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
     };
   };
 
-  if (node === "btn_first") {
-    vsResponse("bb_vs_33", "bet33");
-    vsResponse("bb_vs_75", "bet75");
+  if (FIRST_NODES[node]) {
+    vsResponse(FIRST_NODES[node][0], "bet33");
+    vsResponse(FIRST_NODES[node][1], "bet75");
     actions.check = { groups: [group("ahead", ahead, total), group("behind", behind, total)] };
   } else {
     const startPot = inputs.spot.potBb;
     const bet = betSize(node, prev, inputs.config, startPot);
     const multiplier = inputs.config.flop_check_raise_multiplier ?? 3;
-    const toCall = node === "btn_vs_raise" ? bet * (multiplier - 1) : bet;
-    const potBefore = node === "btn_vs_raise" ? startPot + bet * (1 + multiplier) : startPot + bet;
+    // A raise is capped by the stack (all-in).
+    const raiseTo = Math.min(bet * multiplier, inputs.spot.stackBb);
+    const toCall = RAISE_NODES[node] ? raiseTo - bet : bet;
+    const potBefore = RAISE_NODES[node] ? startPot + bet + raiseTo : startPot + bet;
     const required = toCall / (potBefore + toCall);
     const caught = { groups: [group("ahead", ahead, total), group("behind", behind, total)], required };
     actions.call = caught;
     actions.fold = caught;
-    if (node !== "btn_vs_raise") vsResponse("btn_vs_raise", "raise");
+    if (RAISE_AFTER[node]) vsResponse(RAISE_AFTER[node], "raise");
   }
   return { kind: "ai_estimate_not_gto", cards, node, equity, combos: villains.length, actions };
 }

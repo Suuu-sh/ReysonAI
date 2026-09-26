@@ -1,5 +1,6 @@
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
-import { DEFAULT_SPOT_ID, spotById, spotFor } from "../../scripts/postflop-ai/spots.mjs";
+import { DEFAULT_SPOT_ID, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
+import { NODES, flopState } from "../../scripts/postflop-ai/tree.mjs";
 
 export const representativeFlops = pilot.boards.map(board => board.cards);
 export const deck = "23456789TJQKA".split("").flatMap(rank => "shdc".split("").map(suit => `${rank}${suit}`));
@@ -11,8 +12,9 @@ export function recognizedFlop(cards) {
 }
 const round = value => Math.round(value * 100) / 100;
 
-// Heads-up single-raised pots: O opens, exactly one later seat C calls, everyone else folds.
-// The saved candidate for that spot (scripts/postflop-ai/spots.mjs) is shown read-only.
+// Heads-up pots with a saved candidate (scripts/postflop-ai/spots.mjs), shown read-only:
+// single-raised pots (O opens, exactly one later seat C calls) and 3bet pots (O opens, a later
+// seat X 3bets, O calls); everyone else folds.
 export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable }) {
   const end = actionBlocks.find(block => block.kind === "end");
   if (!end || !/^\d+人でフロップへ$/.test(end.result)) return null;
@@ -20,63 +22,85 @@ export function completedFlopContext({ actionBlocks, rangeType, opener, hero, ca
   if (!Number.isFinite(potBb)) return null;
   const players = rangeType === "limp" ? ["SB", "BB"]
     : rangeType === "response" ? [opener, ...callers] : [opener, hero];
-  const spot = rangeType === "response" && foldedHero && callers.length === 1 ? spotFor(opener, callers[0]) : null;
+  const spot = rangeType === "response" && foldedHero && callers.length === 1 ? spotFor(opener, callers[0])
+    : rangeType === "three_bet" && callers.length === 0 ? threeBetSpotFor(opener, hero) : null;
   const pilotAvailable = Boolean(spot?.reachable) && potBb === spot.potBb && Boolean(isDefaultTable);
   return {
     players, potBb, pilotAvailable,
     spotId: pilotAvailable ? spot.id : null, ip: pilotAvailable ? spot.ip : null, oop: pilotAvailable ? spot.oop : null,
-    stackBb: pilotAvailable ? spot.stackBb : null,
+    stackBb: pilotAvailable ? spot.stackBb : null, tree: pilotAvailable ? spot.tree : null,
   };
 }
 
-// Seat names, starting pot and stacks of the flop tree; the first pilot spot when none is given.
+// Seat names, starting pot, stacks and tree of the flop; the first pilot spot when none is given.
 function geometry(spot) {
-  if (spot?.ip && spot?.oop && Number.isFinite(spot.potBb) && Number.isFinite(spot.stackBb)) return spot;
-  return spotById(DEFAULT_SPOT_ID);
+  const base = spot?.ip && spot?.oop && Number.isFinite(spot.potBb) && Number.isFinite(spot.stackBb) ? spot : spotById(DEFAULT_SPOT_ID);
+  return { ...base, tree: base.tree ?? "oop_checks" };
 }
 const betFraction = action => action === "bet33" ? pilot.flop_bet_fractions[0] : pilot.flop_bet_fractions[1];
+const betLabel = action => action === "bet33" ? "33%" : "75%";
 
-// The OOP player checks; "btn_*" nodes are the IP player's decisions and "bb_*" the OOP player's.
-export function flopDecision(actions = [], spot) {
-  if (!Array.isArray(actions)) throw new Error("Invalid flop action path");
-  const { ip, oop, potBb: start } = geometry(spot);
-  if (actions.length === 0) return { node: "btn_first", actor: ip, potBb: start, history: [`${oop} Check`] };
-  const [first, second, third] = actions;
-  if (first === "check" && actions.length === 1) return { result: `${ip}もチェック。フロップの判断は終了です。`, potBb: start, history: [`${oop} Check`, `${ip} Check`] };
-  if (!["bet33", "bet75"].includes(first)) throw new Error("Illegal IP flop action");
-  const bet = round(start * betFraction(first));
-  const history = [`${oop} Check`, `${ip} Bet ${first === "bet33" ? "33%" : "75%"} (${bet}BB)`];
-  if (actions.length === 1) return { node: first === "bet33" ? "bb_vs_33" : "bb_vs_75", actor: oop, potBb: round(start + bet), history };
-  if (second === "fold" && actions.length === 2) return { result: `${oop}がフォールド。${ip}の勝ちです。`, potBb: start, history: [...history, `${oop} Fold`] };
-  if (second === "call" && actions.length === 2) return { result: `${oop}がコール。フロップの判断は終了です。`, potBb: round(start + 2 * bet), history: [...history, `${oop} Call`] };
-  if (second !== "raise") throw new Error("Illegal OOP flop action");
-  const raisedHistory = [...history, `${oop} Check-raise ${round(3 * bet)}BB`];
-  if (actions.length === 2) return { node: "btn_vs_raise", actor: ip, potBb: round(start + 4 * bet), history: raisedHistory };
-  if (third === "fold" && actions.length === 3) return { result: `${ip}がフォールド。${oop}の勝ちです。`, potBb: round(start + 2 * bet), history: [...raisedHistory, `${ip} Fold`] };
-  if (third === "call" && actions.length === 3) return { result: `${ip}がコール。フロップの判断は終了です。`, potBb: round(start + 6 * bet), history: [...raisedHistory, `${ip} Call`] };
-  throw new Error("Illegal post-raise flop action");
+// Replays the flop actions with the same chip rules as the scripts (engine.mjs): bets are a
+// fraction of the pot, raises 3× the bet, both capped by the stack; an uncalled amount is returned.
+// "oop_checks": the OOP player checks, then btn_* (IP) / bb_* (OOP) nodes.
+// "oop_leads": the OOP preflop raiser acts first (oop_first → ip_vs_* → oop_vs_raise).
+function replay(actions, spot) {
+  const g = geometry(spot);
+  const state = flopState(g.tree, actions);
+  const invested = { ip: 0, oop: 0 };
+  let pot = g.potBb, bet = 0;
+  const left = role => round(g.stackBb - invested[role]);
+  const put = (role, amount) => { const value = round(Math.min(left(role), amount)); invested[role] = round(invested[role] + value); pot = round(pot + value); return value; };
+  const history = g.tree === "oop_checks" ? [`${g.oop} Check`] : [];
+  const stacks = [];
+  for (const { node, role, action } of state.steps) {
+    const name = g[role], other = role === "ip" ? "oop" : "ip";
+    stacks.push(left(role));
+    if (action === "check") history.push(`${name} Check`);
+    else if (action === "bet33" || action === "bet75") { bet = put(role, pot * betFraction(action)); history.push(`${name} Bet ${betLabel(action)} (${bet}BB)`); }
+    else if (action === "call") { put(role, invested[other] - invested[role]); history.push(`${name} Call`); }
+    else if (action === "raise") {
+      const to = Math.min(left(role) + invested[role], round(bet * pilot.flop_check_raise_multiplier));
+      put(role, to - invested[role]);
+      history.push(`${name} ${node.startsWith("bb_") ? "Check-raise" : "Raise"} ${to}BB`);
+    } else if (action === "fold") history.push(`${name} Fold`);
+  }
+  if (state.end && ["fold", "raise-fold"].includes(state.end.type)) {
+    const winner = state.end.winner, loser = winner === "ip" ? "oop" : "ip";
+    pot = round(pot - Math.max(0, invested[winner] - invested[loser]));
+  }
+  return { g, state, pot, history, stacks, stackNow: state.role ? left(state.role) : null };
 }
 
-const flopChoices = {
-  btn_first: [{ action: "check", label: "Check" }, { action: "bet33", label: "Bet 33%" }, { action: "bet75", label: "Bet 75%" }],
-  bb_vs_33: [{ action: "fold", label: "Fold" }, { action: "call", label: "Call" }, { action: "raise", label: "Raise 3×" }],
-  bb_vs_75: [{ action: "fold", label: "Fold" }, { action: "call", label: "Call" }, { action: "raise", label: "Raise 3×" }],
-  btn_vs_raise: [{ action: "fold", label: "Fold" }, { action: "call", label: "Call" }],
-};
+export function flopDecision(actions = [], spot) {
+  const { g, state, pot, history } = replay(actions, spot);
+  if (state.node) return { node: state.node, actor: g[state.role], potBb: pot, history };
+  const { type, winner } = state.end;
+  const last = state.steps.at(-1);
+  const result = type === "check" ? `${g[last.role]}もチェック。フロップの判断は終了です。`
+    : type === "call" || type === "raise-call" ? `${g[last.role]}がコール。フロップの判断は終了です。`
+    : `${g[last.role]}がフォールド。${g[winner]}の勝ちです。`;
+  return { result, potBb: pot, history };
+}
+
+const choiceLabels = { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", fold: "Fold", call: "Call", raise: "Raise 3×" };
+const flopChoices = Object.fromEntries(Object.entries(NODES).map(([node, actions]) =>
+  [node, actions.map(action => ({ action, label: choiceLabels[action] }))]));
 
 export function buildFlopActionBlocks(actions = [], spot) {
-  const { ip, oop, potBb: start, stackBb } = geometry(spot);
-  const blocks = [{ key: "flop-oop-check", kind: "flop-forced", position: oop, stack: `${stackBb}`, chosen: "check", options: [{ action: "check", label: "Check" }], active: false }];
+  const g = geometry(spot);
+  const blocks = g.tree === "oop_checks"
+    ? [{ key: "flop-oop-check", kind: "flop-forced", position: g.oop, stack: `${g.stackBb}`, chosen: "check", options: [{ action: "check", label: "Check" }], active: false }]
+    : [];
   for (let index = 0; index <= actions.length; index++) {
-    const decision = flopDecision(actions.slice(0, index), spot);
-    if (!decision.node) {
+    const { state, stackNow } = replay(actions.slice(0, index), spot);
+    if (!state.node) {
+      const decision = flopDecision(actions.slice(0, index), spot);
       blocks.push({ key: "flop-end", kind: "end", result: decision.result, pot: `ポット ${decision.potBb}bb`, options: [] });
       break;
     }
-    const firstBet = ["bet33", "bet75"].includes(actions[0]) ? round(start * betFraction(actions[0])) : 0;
-    blocks.push({ key: `flop-${index}`, kind: "flop", flopIndex: index, position: decision.actor,
-      stack: `${round(stackBb - (decision.actor === ip && index > 0 ? firstBet : 0))}`,
-      chosen: actions[index] ?? null, options: flopChoices[decision.node], active: index === actions.length });
+    blocks.push({ key: `flop-${index}`, kind: "flop", flopIndex: index, position: g[state.role], stack: `${stackNow}`,
+      chosen: actions[index] ?? null, options: flopChoices[state.node], active: index === actions.length });
   }
   return blocks;
 }
