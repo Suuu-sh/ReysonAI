@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowClockwise, ArrowRight, Trash } from "@phosphor-icons/react";
+import { ArrowClockwise, ArrowRight, CheckCircle, Fire, Trash, WarningCircle, XCircle } from "@phosphor-icons/react";
 import { Sidebar } from "../components/layout.jsx";
-import { Panel, SectionHeading } from "../components/primitives.jsx";
+import { Panel, SectionHeading, barColor } from "../components/primitives.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
-import { barColor } from "../components/primitives.jsx";
 import {
   POSITIONS, RESULT_LABELS, aggregatesFor, compareAcross, filterSpots, grade, pickQuestion,
   randomSuits, spotPrompt, spotTitle, studyNote,
@@ -13,10 +12,17 @@ import "./trainer.css";
 
 const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const pct = value => `${Math.round((value ?? 0) * 100)}%`;
-const KIND_FILTERS = [{ value: "all", label: "すべて" }, { value: "open", label: "オープン" }, { value: "response", label: "オープンへの応答" }];
+const KIND_FILTERS = [{ value: "all", label: "すべて" }, { value: "open", label: "オープン" }, { value: "response", label: "vs オープン" }];
+const RESULT_ICONS = { best: CheckCircle, mixed: WarningCircle, miss: XCircle };
+const actionColor = key => barColor(key === "open" || key === "three_bet" ? "raise" : key);
+const shortLabel = action => action.label.split(" ")[0];
+const PANEL_TAB_KEY = "solveaai.trainer.panel-tab";
 
-function PlayingCard({ card }) {
-  return <span className={`trainer-card suit-${card[1]}`}><b>{card[0]}</b><i>{SUITS[card[1]]}</i></span>;
+// Four-colour deck (♠ graphite, ♥ red, ♦ blue, ♣ green) so the suit reads at a glance.
+function PlayingCard({ card, size = "" }) {
+  return <span className={`trainer-card suit-${card[1]} ${size}`.trim()}>
+    <b>{card[0]}</b><i>{SUITS[card[1]]}</i>
+  </span>;
 }
 
 // Seats clockwise from the hero, who always sits at the bottom centre (x%, y% of the felt).
@@ -33,40 +39,56 @@ function seatStates(spot) {
   });
 }
 
-// GTO-Wizard-like history strip: every action before the hero, then the hero's pending decision.
+// History strip: every action before the hero, then the hero's decision.
 function ActionStrip({ spot, answer, actionLabels }) {
   const seats = seatStates(spot).filter(seat => seat.acted || seat.state === "hero");
   return <ol className="trainer-strip" aria-label="ここまでのアクション">
-    {seats.map(seat => <li key={seat.position} className={`strip-${seat.state}`}>
+    {seats.map(seat => <li key={seat.position} className={`strip-${seat.state}${answer && seat.state === "hero" ? ` result-${answer.result}` : ""}`}>
       <span>{seat.position}</span><small>{seat.stack}</small>
       <b>{seat.state === "fold" ? "Fold" : seat.state === "raise" ? `Raise ${spot.openSize}` : answer ? actionLabels[answer.action] : "?"}</b>
     </li>)}
   </ol>;
 }
 
-function PokerTable({ spot, cards, hand, review }) {
+function Verdict({ answer, bestLabel, onNext }) {
+  const Icon = RESULT_ICONS[answer.result];
+  return <div className={`poker-verdict result-${answer.result}`} role="status">
+    <Icon size={34} weight="fill" />
+    <strong>{RESULT_LABELS[answer.result]}</strong>
+    <small>{answer.result === "best" ? `頻度 ${pct(answer.frequency)}` : `頻度 ${pct(answer.frequency)} · 最多は${bestLabel}`}</small>
+    <button type="button" className="poker-next" onClick={onNext}>次の問題<ArrowRight size={15} weight="bold" /><kbd>Enter</kbd></button>
+  </div>;
+}
+
+function PokerTable({ spot, cards, hand, review, answer, bestLabel, onNext }) {
   const seats = seatStates(spot);
   const heroIndex = POSITIONS.indexOf(spot.hero);
   const pot = seats.reduce((sum, seat) => sum + seat.bet, 0);
-  return <div className="poker-table" aria-label={`テーブル。${spotPrompt(spot)}`}>
+  const slotOf = index => SEAT_SLOTS[(index - heroIndex + 6) % 6];
+  return <div className={`poker-table${answer ? " answered" : ""}`} aria-label={`テーブル。${spotPrompt(spot)}`}>
     <div className="poker-felt">
       <div className="poker-center">
-        <span className="poker-spot">{spotTitle(spot)} · 100bb{review && <em>復習</em>}</span>
-        <strong className="poker-pot">{+pot.toFixed(1)} bb</strong>
+        {answer ? <Verdict answer={answer} bestLabel={bestLabel} onNext={onNext} /> : <>
+          <span className="poker-spot">{spotTitle(spot)}{review && <em>復習</em>}</span>
+          <strong className="poker-pot">{+pot.toFixed(1)}<small>bb</small></strong>
+          <span className="poker-stakes">Cash · 6max · 100bb</span>
+        </>}
       </div>
     </div>
     {seats.map((seat, index) => {
       if (!(seat.bet > 0) || seat.state === "fold") return null;
-      const [x, y] = SEAT_SLOTS[(index - heroIndex + 6) % 6];
+      const [x, y] = slotOf(index);
       return <span key={`chip-${seat.position}`} className={`poker-chip${seat.state === "raise" ? " raise" : ""}`}
-        style={{ left: `${x + (50 - x) * 0.34}%`, top: `${y + (50 - y) * 0.42}%` }}><i />{seat.bet}</span>;
+        style={{ left: `${x + (50 - x) * 0.36}%`, top: `${y + (50 - y) * 0.44}%` }}><i />{seat.bet}<small>bb</small></span>;
     })}
     {seats.map((seat, index) => {
-      const slot = SEAT_SLOTS[(index - heroIndex + 6) % 6];
-      return <div key={seat.position} className={`poker-seat seat-${seat.state}`} style={{ "--x": `${slot[0]}%`, "--y": `${slot[1]}%` }}>
+      const [x, y] = slotOf(index);
+      return <div key={seat.position} className={`poker-seat seat-${seat.state}${answer ? " answered" : ""}`} style={{ left: `${x}%`, top: `${y}%` }}>
         <span className="poker-seat-disc"><b>{seat.position}</b><small>{seat.state === "fold" ? "Fold" : seat.stack}</small></span>
         {seat.position === "BTN" && <span className="poker-dealer">D</span>}
-        {seat.state === "hero" && <span className="poker-hole" aria-label={`あなたのハンド ${hand}`}>{cards.map(card => <PlayingCard key={card} card={card} />)}</span>}
+        {seat.state === "hero" && <span className="poker-hole" key={hand + cards.join("")} aria-label={`あなたのハンド ${hand}`}>
+          {cards.map(card => <PlayingCard key={card} card={card} />)}
+        </span>}
       </div>;
     })}
   </div>;
@@ -75,21 +97,41 @@ function PokerTable({ spot, cards, hand, review }) {
 function MixBar({ spot, mix }) {
   return <span className="trainer-mix" aria-hidden="true">
     {spot.actions.filter(action => mix?.[action.key] > 0).map(action =>
-      <i key={action.key} style={{ width: pct(mix[action.key]), background: barColor(action.key === "open" || action.key === "three_bet" ? "raise" : action.key) }} />)}
+      <i key={action.key} style={{ width: pct(mix[action.key]), background: actionColor(action.key) }} />)}
   </span>;
 }
 
 function Comparison({ spot, hand }) {
   const rows = compareAcross(spot, hand);
-  return <div className="trainer-compare">
-    <h3>{spot.kind === "open" ? `${hand} をほかの席から開けると` : `${hand} を ${spot.hero} で、ほかの相手のオープンに対して`}</h3>
+  return <section className="trainer-compare">
+    <h3>{spot.kind === "open" ? `${hand} · 席ごとのオープン` : `${hand} · ${spot.hero} で相手の席ごとに`}</h3>
     <ul>
       {rows.map(row => <li key={row.spot.id} className={row.current ? "current" : ""}>
         <span>{spot.kind === "open" ? row.spot.hero : `vs ${row.spot.opener}`}</span>
         <MixBar spot={row.spot} mix={row.mix} />
-        <b>{row.mix ? row.spot.actions.map(action => row.mix[action.key] >= 0.005 ? `${action.label.split(" ")[0]} ${pct(row.mix[action.key])}` : null).filter(Boolean).join(" / ") : "—"}</b>
+        <b>{row.mix ? row.spot.actions.filter(action => row.mix[action.key] >= 0.005).map(action => `${shortLabel(action)} ${pct(row.mix[action.key])}`).join(" · ") : "—"}</b>
       </li>)}
     </ul>
+  </section>;
+}
+
+function SessionPanel({ session, history }) {
+  const recent = history.slice(-8).reverse();
+  return <div className="trainer-session-panel">
+    <div className="session-score">
+      <div className="session-ring" style={{ "--rate": session.answered ? session.score / session.answered : 0 }}>
+        <strong>{session.answered ? pct(session.score / session.answered) : "—"}</strong><small>正答率</small>
+      </div>
+      <dl>
+        <div><dt>回答</dt><dd>{session.answered}</dd></div>
+        <div><dt>連続正解</dt><dd>{session.streak}</dd></div>
+        <div><dt>最高連続</dt><dd>{session.bestStreak}</dd></div>
+      </dl>
+    </div>
+    <h3>直近の回答</h3>
+    {recent.length ? <ul className="trainer-recent">{recent.map(item => <li key={item.at} className={`result-${item.result}`}>
+      <i /><span>{item.hand}</span><small>{item.spotId.replace("_vs_", " vs ").replace("_open", " オープン")}</small><b>{RESULT_LABELS[item.result]}</b>
+    </li>)}</ul> : <p className="trainer-empty">まだ回答がありません。</p>}
   </div>;
 }
 
@@ -112,8 +154,10 @@ function Drill({ profile, history, onAnswer, reviewOnly, onExitReview }) {
   }, [spots, review, reviewOnly]);
   const [question, setQuestion] = useState(() => next());
   const [answer, setAnswer] = useState(null);
-  const [session, setSession] = useState({ answered: 0, score: 0, streak: 0 });
+  const [session, setSession] = useState({ answered: 0, score: 0, streak: 0, bestStreak: 0, results: [] });
   const [selectedHand, setSelectedHand] = useState(null);
+  const [tab, setTab] = useState(() => { try { return window.localStorage.getItem(PANEL_TAB_KEY) ?? "notes"; } catch { return "notes"; } });
+  const chooseTab = value => { setTab(value); try { window.localStorage.setItem(PANEL_TAB_KEY, value); } catch {} };
 
   useEffect(() => { setQuestion(next()); setAnswer(null); }, [kind, position, reviewOnly]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -122,8 +166,11 @@ function Drill({ profile, history, onAnswer, reviewOnly, onExitReview }) {
     const graded = grade(question.spot, question.hand, action, { lenient: profile?.level === "beginner" });
     setAnswer({ action, ...graded });
     setSelectedHand(question.hand);
-    setSession(current => ({ answered: current.answered + 1, score: current.score + graded.score,
-      streak: graded.result === "miss" ? 0 : current.streak + 1 }));
+    setSession(current => {
+      const streak = graded.result === "miss" ? 0 : current.streak + 1;
+      return { answered: current.answered + 1, score: current.score + graded.score, streak,
+        bestStreak: Math.max(current.bestStreak, streak), results: [...current.results, graded.result].slice(-10) };
+    });
     onAnswer({ spotId: question.spot.id, hand: question.hand, action, result: graded.result, score: graded.score, at: Date.now() });
   }, [answer, question, profile, onAnswer]);
 
@@ -147,82 +194,83 @@ function Drill({ profile, history, onAnswer, reviewOnly, onExitReview }) {
   const actionLabels = Object.fromEntries(spot.actions.map(action => [action.key, action.label]));
   const shownHand = selectedHand && answer ? selectedHand : hand;
   const shownMix = spot.byHand.get(shownHand);
+  const notes = answer ? spot.actions.filter(action => answer.mix[action.key] >= 0.05 && studyNote(action.key, hand, spot)) : [];
 
   return <div className="trainer-layout">
-    <div className="trainer-toolbar">
+    <header className="trainer-topbar">
       {reviewOnly ? <div className="trainer-review-banner">
-          <strong>復習モード</strong><span>間違えたハンドだけを出題中（残り {review.length}）</span>
+          <strong>復習モード</strong><span>間違えたハンドを出題中 · 残り {review.length}</span>
           <button type="button" onClick={onExitReview}>通常に戻る</button>
         </div>
-        : <>
+        : <div className="trainer-filters">
           <div className="trainer-chips" role="group" aria-label="出題範囲">
             {KIND_FILTERS.map(item => <button type="button" key={item.value} aria-pressed={kind === item.value} className={kind === item.value ? "on" : ""} onClick={() => setKind(item.value)}>{item.label}</button>)}
           </div>
           <div className="trainer-chips" role="group" aria-label="自分の席">
             {["all", ...POSITIONS].map(item => <button type="button" key={item} aria-pressed={position === item} className={position === item ? "on" : ""} onClick={() => setPosition(item)}>{item === "all" ? "全席" : item}</button>)}
           </div>
-        </>}
-      <dl className="trainer-session">
-        <div><dt>回答</dt><dd>{session.answered}</dd></div>
-        <div><dt>正答率</dt><dd>{session.answered ? pct(session.score / session.answered) : "—"}</dd></div>
-        <div><dt>連続</dt><dd>{session.streak}</dd></div>
-      </dl>
-    </div>
+        </div>}
+      <div className="trainer-hud" aria-label="このセッションの成績">
+        <ol className="hud-dots" aria-label="直近10問の結果">
+          {Array.from({ length: 10 }, (_, index) => session.results[index] ?? null).map((result, index) =>
+            <li key={index} className={result ? `result-${result}` : ""} />)}
+        </ol>
+        <span className={`hud-streak${session.streak >= 3 ? " hot" : ""}`} title="連続正解"><Fire size={15} weight="fill" />{session.streak}</span>
+        <span className="hud-rate">{session.answered ? pct(session.score / session.answered) : "—"}<small>{session.answered}問</small></span>
+      </div>
+    </header>
 
     <div className="trainer-main">
-      <Panel className={`trainer-question${answer ? ` answered result-${answer.result}` : ""}`}>
+      <section className={`trainer-stage${answer ? ` answered result-${answer.result}` : ""}`} aria-label="問題">
         <ActionStrip spot={spot} answer={answer} actionLabels={actionLabels} />
-        <PokerTable spot={spot} cards={cards} hand={hand} review={question.review} />
+        <div className="stage-table">
+          <PokerTable spot={spot} cards={cards} hand={hand} review={question.review} answer={answer}
+            bestLabel={answer && shortLabel(spot.actions.find(action => action.key === answer.best))} onNext={advance} />
+        </div>
         <div className="trainer-actions">
           {spot.actions.map((action, index) => {
             const state = !answer ? "" : action.key === answer.action ? ` chosen ${answer.result}` : action.key === answer.best ? " best" : "";
-            return <button type="button" key={action.key} className={`trainer-action action-${action.key}${state}`} onClick={() => choose(action.key)} disabled={Boolean(answer)}>
+            return <button type="button" key={action.key} className={`trainer-action action-${action.key}${state}`} onClick={() => choose(action.key)} disabled={Boolean(answer)}
+              style={{ "--action-color": actionColor(action.key), "--freq": answer ? answer.mix[action.key] : 0 }}>
               <kbd>{index + 1}</kbd><span>{action.label}</span>
               {answer && <b>{pct(answer.mix[action.key])}</b>}
             </button>;
           })}
         </div>
+      </section>
 
-        {answer && <div className="trainer-feedback" role="status">
-          <div className="trainer-verdict">
-            <strong>{RESULT_LABELS[answer.result]}</strong>
-            <span>{answer.result === "best" ? "いちばん多い選択です。" : answer.result === "mixed"
-              ? `この手では ${pct(answer.frequency)} 選ばれる選択です。いちばん多いのは${actionLabels[answer.best]}。`
-              : `この手では ${pct(answer.frequency)} しか選ばれません。いちばん多いのは${actionLabels[answer.best]}。`}</span>
-            <button type="button" className="trainer-next" onClick={advance}>次へ<ArrowRight size={15} /><kbd>Enter</kbd></button>
-          </div>
-          <ul className="trainer-notes">
-            {spot.actions.filter(action => answer.mix[action.key] >= 0.05 && studyNote(action.key, hand)).map(action =>
-              <li key={action.key} style={{ "--note-color": barColor(action.key === "open" || action.key === "three_bet" ? "raise" : action.key) }}>
-                <b>{action.label.split(" ")[0]} {pct(answer.mix[action.key])}</b>{studyNote(action.key, hand)}
-              </li>)}
-          </ul>
-          <Comparison spot={spot} hand={hand} />
-        </div>}
-      </Panel>
-
-      <div className="trainer-side">
+      <aside className="trainer-panel">
         {answer ? <>
-          <StrategyMatrix node={matrixNode} title={`${spotTitle(spot)} · レンジ`} ariaLabel={`${spotTitle(spot)}のレンジ`}
-            aggregates={aggregates} actions={spot.actions.map(action => action.key)} actionLabels={actionLabels}
-            selected={shownHand} onSelect={setSelectedHand} />
-          {shownHand !== hand && shownMix && <p className="trainer-peek"><strong>{shownHand}</strong>
-            {spot.actions.map(action => `${action.label.split(" ")[0]} ${pct(shownMix[action.key])}`).join(" / ")}</p>}
-        </> : <Panel className="trainer-waiting">
-          <SectionHeading title="直近の回答" />
-          <RecentList history={history} />
-        </Panel>}
-      </div>
+          <div className="panel-tabs" role="tablist">
+            {[["notes", "解説"], ["range", "レンジ表"]].map(([value, label]) =>
+              <button type="button" role="tab" key={value} aria-selected={tab === value} className={tab === value ? "on" : ""} onClick={() => chooseTab(value)}>{label}</button>)}
+          </div>
+          <div className="panel-body">
+            {tab === "notes" ? <div className="trainer-explain">
+              <p className="explain-lead">
+                <b className="explain-hand">{cards.map(card => <PlayingCard key={card} card={card} size="mini" />)}</b>
+                {answer.result === "best" ? "この局面でいちばん多い選択です。" : answer.result === "mixed"
+                  ? `${pct(answer.frequency)} で選ばれる混合の選択です。いちばん多いのは${actionLabels[answer.best]}。`
+                  : `この手ではほぼ選ばれません（${pct(answer.frequency)}）。いちばん多いのは${actionLabels[answer.best]}。`}
+              </p>
+              {notes.length > 0 && <ul className="trainer-notes">
+                {notes.map(action => <li key={action.key} style={{ "--note-color": actionColor(action.key) }}>
+                  <b>{shortLabel(action)} {pct(answer.mix[action.key])}</b>{studyNote(action.key, hand, spot)}
+                </li>)}
+              </ul>}
+              <Comparison spot={spot} hand={hand} />
+            </div> : <div className="trainer-range">
+              <StrategyMatrix node={matrixNode} title={`${spotTitle(spot)} · レンジ`} ariaLabel={`${spotTitle(spot)}のレンジ`}
+                aggregates={aggregates} actions={spot.actions.map(action => action.key)} actionLabels={actionLabels}
+                selected={shownHand} onSelect={setSelectedHand} />
+              {shownMix && <p className="trainer-peek"><strong>{shownHand}</strong>
+                {spot.actions.map(action => `${shortLabel(action)} ${pct(shownMix[action.key])}`).join(" · ")}</p>}
+            </div>}
+          </div>
+        </> : <div className="panel-body"><SessionPanel session={session} history={history} /></div>}
+      </aside>
     </div>
   </div>;
-}
-
-function RecentList({ history }) {
-  const recent = history.slice(-8).reverse();
-  if (!recent.length) return <p className="trainer-empty">まだ回答がありません。</p>;
-  return <ul className="trainer-recent">{recent.map(item => <li key={item.at} className={`result-${item.result}`}>
-    <span>{item.hand}</span><small>{item.spotId.replace("_vs_", " vs ").replace("_open", " オープン")}</small><b>{RESULT_LABELS[item.result]}</b>
-  </li>)}</ul>;
 }
 
 function RateList({ title, items }) {
@@ -244,8 +292,8 @@ function Weakness({ history, onStartReview, onStart, onClear }) {
   </Panel>;
   return <div className="weak-layout">
     <div className="weak-summary">
+      <div className="session-ring" style={{ "--rate": stats.rate }}><strong>{pct(stats.rate)}</strong><small>正答率</small></div>
       <div><small>回答数</small><strong>{stats.answered}</strong></div>
-      <div><small>正答率</small><strong>{pct(stats.rate)}</strong></div>
       <div><small>復習待ち</small><strong>{stats.review.length}</strong></div>
       <button type="button" className="trainer-next" onClick={onStartReview} disabled={!stats.review.length}><ArrowClockwise size={15} />間違えたハンドを復習</button>
       <button type="button" className="weak-clear" onClick={onClear}><Trash size={14} />履歴を消す</button>

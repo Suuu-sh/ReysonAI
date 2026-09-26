@@ -66,3 +66,10 @@ test("weakness summary ranks low scores first and keeps unresolved misses for re
   assert.equal(stats.bySpot[0].key, "BB_vs_BTN");
   assert.deepEqual(stats.review.map(item => item.hand), ["K9o"]);
 });
+
+test("study notes name the hero's actual seat", () => {
+  assert.match(studyNote("call", "K7s", spotById.get("BB_vs_BTN")), /BB/);
+  assert.doesNotMatch(studyNote("call", "K7s", spotById.get("CO_vs_HJ")), /BB/);
+  assert.doesNotMatch(studyNote("fold", "A4s", spotById.get("BTN_open")), /前のポジション/);
+  assert.match(studyNote("fold", "A4s", spotById.get("UTG_open")), /前のポジション/);
+});

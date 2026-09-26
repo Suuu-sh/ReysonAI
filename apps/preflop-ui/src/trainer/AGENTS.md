@@ -1,0 +1,7 @@
+# Trainer / 弱点 pages
+
+- Scope (2026-09-27): a preflop drill over the saved RFI (`opening-ranges.json`) and open-response (`preflop-ranges.json`) spots only. Grade from the saved frequencies; never invent a strategy or reuse another spot's frequencies. Flop drills wait for the postflop engine work.
+- On 2026-09-27 the user asked the trainer to look like a poker table (reference: a GTO-Wizard-style table screenshot). Keep: an oval felt with the hero fixed at bottom centre, seat discs with position and stack, folded seats dimmed, blind/open chips between seat and pot, dealer button, pot in the centre, the hero's hole cards beside the seat (below it on phones), a history strip above and wide coloured action buttons below.
+- On 2026-09-27 the user asked for a more polished UI. Desktop fits one screen (verified at 1280×720): table stage on the left, a right panel that shows session stats before answering and 解説 / レンジ表 tabs after. The verdict (正解 / 混合で可 / ミス) and the 次の問題 button replace the pot in the table centre; action buttons turn into frequency meters after answering. Cards use a four-colour deck (♠ graphite, ♥ red, ♦ blue, ♣ green) while the rest of the page keeps the black/pink SolveaAI palette.
+- Study notes are generic per hand type and action; wording that names a seat must match the hero's actual seat (see `seatNote` in `trainer-data.js`).
+- Answer history lives only in this browser's localStorage (max 500). The 弱点 page replaces the former disabled クイズ placeholder.

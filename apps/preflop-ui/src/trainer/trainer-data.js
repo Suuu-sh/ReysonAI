@@ -159,13 +159,31 @@ const ACTION_NOTES = {
     suited_connector: "コールされても伸びる手なので、ブラフの3betに混ぜます。",
     suited_other: "ブラフの3betとしてごく一部に混ぜます。",
     offsuit_broadway: "AK・AQなどはバリュー、下位は相手を降ろす狙いの3betです。",
-    offsuit_ace: "ブロッカーを持つので、SBやBBからのブラフ3betに一部使います。",
+    offsuit_ace: "Aのブロッカーを持つので、ブラフの3betに一部使います。",
     offsuit_other: "",
   },
 };
 
-export function studyNote(action, hand) {
-  return ACTION_NOTES[action]?.[handCategory(hand)] ?? "";
+// Seat-specific wording where the generic note would name the wrong position.
+function seatNote(action, category, spot) {
+  if (!spot) return null;
+  const earlyOpen = spot.kind === "open" && ["UTG", "HJ"].includes(spot.hero);
+  if (action === "call" && ["suited_other", "offsuit_ace", "offsuit_other"].includes(category)) {
+    if (spot.hero === "BB") return "BBはすでに1BB払っていてポットオッズが良いので、広く守れます。";
+    if (spot.hero === "SB") return "SBはポストフロップでポジションが悪いので、コールは強めの手に絞ります。";
+    return "ポジションを取れるので、安くコールしてフロップを見に行きます。";
+  }
+  if (action === "fold" && !earlyOpen) {
+    if (category === "pair_low") return "相手のレンジが強く、セットができない時に続けにくいので降ります。";
+    if (category === "suited_ace") return "キッカーが弱く、相手の強いAに負けやすいので降ります。";
+    if (category === "suited_connector") return "相手のレンジに対して勝ちにくく、降りる方が損の少ない手です。";
+  }
+  return null;
+}
+
+export function studyNote(action, hand, spot = null) {
+  const category = handCategory(hand);
+  return seatNote(action, category, spot) ?? ACTION_NOTES[action]?.[category] ?? "";
 }
 
 // Same hand across related spots: other positions for opens, other openers for responses.
