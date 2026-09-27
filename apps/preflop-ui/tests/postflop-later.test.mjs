@@ -93,3 +93,12 @@ test("flop bets at low SPR merge into all-in (≥ 67% of the remaining stack)", 
   const small = flopDecision(["bet33"], spot);
   assert.match(small.history.at(-1), /Bet 33% \(17\.49BB\)$/);
 });
+
+test("the turn/river prompt names every later node, feature and the fallback count", async () => {
+  const { promptForLater } = await import("../scripts/postflop-ai/generate.mjs");
+  const prompt = promptForLater(loadInputs("CO_open_BTN_call"));
+  for (const node of Object.keys(LATER_NODES)) assert.ok(prompt.includes(node), node);
+  assert.match(prompt, /\(98 in total\)/);
+  assert.match(prompt, /blank\/over\/pair\/straight\/flush/);
+  assert.doesNotMatch(prompt, /GTO solution|solver output/);
+});

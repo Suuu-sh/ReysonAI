@@ -1,22 +1,22 @@
-// npm run postflop-ai:<generate|simulate|audit|hand-ev|spots> -- [--spot <id> | --all] [--samples N] [--model M] [--effort E]
+// npm run postflop-ai:<generate|generate-later|simulate|audit|hand-ev|spots> -- [--spot <id> | --all] [--samples N] [--model M] [--effort E]
 // Without --spot, the first pilot spot (BTN_open_BB_call) is used. --all runs every reachable
 // heads-up spot (single-raised and 3bet pots) in order; a failing spot is logged and skipped, then listed at the end.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { auditExperiment } from "./audit.mjs";
-import { generate, loadCandidate, loadLaterCandidate, resolveEffort, resolveModel } from "./generate.mjs";
+import { generate, generateLater, loadCandidate, loadLaterCandidate, resolveEffort, resolveModel } from "./generate.mjs";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { simulate } from "./simulation.mjs";
 import { DEFAULT_SAMPLES, generateHandEv } from "./hand-ev.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById } from "./spots.mjs";
 
-const COMMANDS = ["generate", "simulate", "audit", "hand-ev", "spots"];
-const USAGE = "Usage: postflop-ai <generate|simulate|audit|hand-ev|spots> [--spot <id> | --all] [--samples N] [--model M] [--effort E]";
+const COMMANDS = ["generate", "generate-later", "simulate", "audit", "hand-ev", "spots"];
+const USAGE = "Usage: postflop-ai <generate|generate-later|simulate|audit|hand-ev|spots> [--spot <id> | --all] [--samples N] [--model M] [--effort E]";
 const [command, ...rest] = process.argv.slice(2);
 if (!COMMANDS.includes(command)) throw new Error(USAGE);
 
 const options = { all: false };
-const allowed = { generate: ["spot", "all", "model", "effort"], simulate: ["spot", "all", "samples"], audit: ["spot", "all"],
+const allowed = { generate: ["spot", "all", "model", "effort"], "generate-later": ["spot", "all", "model", "effort"], simulate: ["spot", "all", "samples"], audit: ["spot", "all"],
   "hand-ev": ["spot", "all", "samples"], spots: [] }[command];
 for (let i = 0; i < rest.length; i++) {
   const flag = rest[i].replace(/^--/, "");
@@ -40,6 +40,11 @@ async function runSpot(spotId) {
     const { candidate, reused } = await generate(inputs, { model, effort });
     const meta = candidate.metadata;
     return `${reused ? "Reused" : "Saved"} local AI candidate (${inputs.spot.tree}) ${meta.source_hash.slice(0, 12)} (${meta.model}${meta.reasoning_effort ? `, effort ${meta.reasoning_effort}` : ""}; not GTO; not published)`;
+  }
+  if (command === "generate-later") {
+    const model = resolveModel(options.model), effort = resolveEffort(options.effort);
+    const { candidate, reused } = await generateLater(inputs, loadCandidate(inputs), { model, effort });
+    return `${reused ? "Reused" : "Saved"} local AI turn/river candidate ${candidate.metadata.policy_hash.slice(0, 12)} (${candidate.metadata.model}; not GTO; not published)`;
   }
   if (command === "simulate") {
     const samples = samplesOption(config.samples_per_board_profile_seat);
@@ -67,10 +72,10 @@ async function runSpot(spotId) {
 
 if (command === "spots") {
   const mark = path => existsSync(path) ? "yes" : "-";
-  console.log(["id", "IP", "OOP", "pot", "stack", "tree", "reachable", "policy", "report", "hand-ev"].join("\t"));
+  console.log(["id", "IP", "OOP", "pot", "stack", "tree", "reachable", "policy", "later", "report", "hand-ev"].join("\t"));
   for (const spot of POSTFLOP_SPOTS) {
     const paths = artifactPaths(spot);
-    console.log([spot.id, spot.ip, spot.oop, `${spot.potBb}BB`, `${spot.stackBb}BB`, spot.tree, spot.reachable ? "yes" : "no (caller never calls)", mark(paths.candidate), mark(paths.report), mark(paths.handEv)].join("\t"));
+    console.log([spot.id, spot.ip, spot.oop, `${spot.potBb}BB`, `${spot.stackBb}BB`, spot.tree, spot.reachable ? "yes" : "no (caller never calls)", mark(paths.candidate), mark(paths.laterCandidate), mark(paths.report), mark(paths.handEv)].join("\t"));
   }
   console.log("AI estimate pilot (not GTO). Artifacts stay in .local/postflop-ai/.");
 } else if (!options.all) {
