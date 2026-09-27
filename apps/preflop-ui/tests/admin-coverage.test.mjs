@@ -18,3 +18,16 @@ test("format backlog marks only built formats as done", () => {
   assert.equal(formats.filter(format => format.built).length, 1);
   assert.ok(formats.filter(format => !format.built).every(format => format.spots === 10));
 });
+
+test("postflop backlog lists flop and turn/river policies for every reachable spot", async () => {
+  const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.mjs");
+  const { postflopCatalog } = await import("../src/admin/coverage.js");
+  const catalog = postflopCatalog(POSTFLOP_SPOTS, ["btn-bb-srp-v1-policy.json"]);
+  const byKey = Object.fromEntries(catalog.categories.map(c => [c.key, c]));
+  const reachable = POSTFLOP_SPOTS.filter(spot => spot.reachable).length;
+  assert.equal(byKey.flop_srp.total + byKey.flop_3bp.total + byKey.flop_4bp.total + byKey.flop_limp.total, reachable);
+  assert.equal(byKey.flop_srp.done, 1);
+  assert.equal(byKey.turn_river_srp.done, 0);
+  assert.ok(catalog.unreachable.includes("BTN_open_SB_call"));
+  assert.equal(catalog.done + catalog.todo, catalog.total);
+});

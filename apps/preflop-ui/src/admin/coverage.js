@@ -99,3 +99,35 @@ export function formatBacklog(treeSize) {
     return { ...format, built, spots: built ? 0 : treeSize };
   });
 }
+
+// Postflop (heads-up AI policy) backlog. The generated policies live in the gitignored
+// .local/postflop-ai folder, so the caller passes the file names it can see there.
+// Each reachable spot needs a flop policy (<slug>-policy.json) and a turn/river policy
+// (<slug>-later-policy.json); spots whose preflop range never reaches the flop are skipped.
+const POT_KINDS = [["srp", "シングルレイズポット"], ["3bp", "3betポット"], ["4bp", "4betポット"], ["limp", "リンプポット"]];
+const STAGES = [
+  { street: "flop", label: "フロップ", suffix: "-policy.json" },
+  { street: "turn_river", label: "ターン/リバー", suffix: "-later-policy.json" },
+];
+
+export function postflopCatalog(spots, artifactNames = []) {
+  const files = new Set(artifactNames);
+  const reachable = spots.filter(spot => spot.reachable);
+  const categories = STAGES.flatMap(stage => POT_KINDS.map(([kind, kindLabel]) => {
+    const rows = reachable.filter(spot => spot.kind === kind).map(spot => ({
+      id: spot.id, hero: `${spot.ip} vs ${spot.oop}`, path: `${kindLabel} · ${spot.ip} IP / ${spot.oop} OOP`,
+      category: `${stage.street}_${kind}`, status: files.has(`${spot.slug}${stage.suffix}`) ? "done" : "todo", street: stage.street,
+    }));
+    const done = rows.filter(row => row.status === "done").length;
+    return { key: `${stage.street}_${kind}`, label: `${stage.label} · ${kindLabel}`, file: `.local/postflop-ai/*${stage.suffix}`, street: stage.street,
+      modelled: true, rows, done, total: rows.length, todo: rows.length - done };
+  }));
+  // Multiway pots have no postflop model yet: one row per saved multiway preflop spot.
+  const multiwayRows = spotsOf(multiway).map(spot => ({ id: `${spot.id}_postflop`, hero: spot.hero, path: `${spot.id} のマルチウェイ・フロップ以降`,
+    category: "postflop_multiway", status: "todo", street: "flop" }));
+  categories.push({ key: "postflop_multiway", label: "マルチウェイ・ポストフロップ", file: null, street: "flop", modelled: false,
+    rows: multiwayRows, done: 0, total: multiwayRows.length, todo: multiwayRows.length });
+  const done = categories.reduce((sum, c) => sum + c.done, 0);
+  const total = categories.reduce((sum, c) => sum + c.total, 0);
+  return { categories, done, total, todo: total - done, unreachable: spots.filter(spot => !spot.reachable).map(spot => spot.id) };
+}

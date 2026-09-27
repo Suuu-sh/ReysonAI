@@ -1,10 +1,13 @@
 import { useMemo, useState } from "react";
-import { coverageCatalog, formatBacklog } from "./coverage.js";
+import { coverageCatalog, formatBacklog, postflopCatalog } from "./coverage.js";
+import { POSTFLOP_SPOTS } from "../../scripts/postflop-ai/spots.mjs";
+import postflopArtifacts from "virtual:postflop-artifacts";
 import { formatLabel } from "../estimated/game-formats.js";
 import "./admin.css";
 
 // Reason files are only checked for existence here; nothing is loaded.
 const reasonIds = new Set(Object.keys(import.meta.glob("../estimated/reasons/*.json")).map(path => path.split("/").pop().replace(".json", "")));
+const STREETS = { preflop: "プリフロップ", flop: "フロップ", turn_river: "ターン/リバー" };
 const FILTERS = [["all", "すべて"], ["todo", "TODO"], ["done", "作成済み"], ["no_reason", "理由なし"]];
 
 function Meter({ done, total }) {
@@ -14,16 +17,18 @@ function Meter({ done, total }) {
 
 export default function AdminDashboard() {
   const catalog = useMemo(() => coverageCatalog(), []);
+  const postflop = useMemo(() => postflopCatalog(POSTFLOP_SPOTS, postflopArtifacts), []);
+  const allCategories = [...catalog.categories.map(c => ({ ...c, street: "preflop" })), ...postflop.categories];
   const formats = useMemo(() => formatBacklog(catalog.total), [catalog.total]);
   const [filter, setFilter] = useState("todo");
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
 
-  const rows = catalog.categories.flatMap(c => c.rows.map(row => ({ ...row, label: c.label, reason: reasonIds.has(row.id) })));
-  const reasonMissing = rows.filter(row => row.status === "done" && !row.reason).length;
+  const rows = allCategories.flatMap(c => c.rows.map(row => ({ ...row, label: c.label, street: c.street, reason: c.street === "preflop" ? reasonIds.has(row.id) : null })));
+  const reasonMissing = rows.filter(row => row.status === "done" && row.reason === false).length;
   const visible = rows.filter(row =>
     (category === "all" || row.category === category) &&
-    (filter === "all" || (filter === "no_reason" ? row.status === "done" && !row.reason : row.status === filter)) &&
+    (filter === "all" || (filter === "no_reason" ? row.status === "done" && row.reason === false : row.status === filter)) &&
     (!query || `${row.id} ${row.path}`.toLowerCase().includes(query.toLowerCase())));
   const unbuiltFormats = formats.filter(format => !format.built);
 
@@ -32,15 +37,20 @@ export default function AdminDashboard() {
       <header className="admin-header">
         <div>
           <p className="admin-eyebrow">SolveaAI · Admin</p>
-          <h1>レンジ表カバレッジ</h1>
-          <p className="admin-sub">Cash · 6max · 100BB · 2.5BB オープン（作成済みフォーマット）のプリフロップツリー</p>
+          <h1>カバレッジと TODO</h1>
+          <p className="admin-sub">Cash · 6max · 100BB · 2.5BB オープン（作成済みフォーマット）のプリフロップツリーと、ヘッズアップのフロップ〜リバー AI方針</p>
         </div>
         <a className="admin-back" href="/app">アプリへ戻る</a>
       </header>
 
       <section className="admin-kpis">
-        <div className="admin-kpi"><span>作成済み</span><strong>{catalog.done}</strong><small>/ {catalog.total} スポット</small></div>
-        <div className="admin-kpi accent"><span>TODO（このフォーマット）</span><strong>{catalog.todo}</strong><small>スポット</small></div>
+        <div className="admin-kpi"><span>プリフロップ作成済み</span><strong>{catalog.done}</strong><small>/ {catalog.total} スポット（TODO {catalog.todo}）</small></div>
+        {[["flop", "フロップ AI方針"], ["turn_river", "ターン/リバー AI方針"]].map(([street, label]) => {
+          const list = postflop.categories.filter(c => c.street === street && c.modelled);
+          const done = list.reduce((sum, c) => sum + c.done, 0), total = list.reduce((sum, c) => sum + c.total, 0);
+          return <div key={street} className="admin-kpi"><span>{label}</span><strong>{done}</strong><small>/ {total} スポット（TODO {total - done}）</small></div>;
+        })}
+        <div className="admin-kpi accent"><span>TODO 合計（このフォーマット）</span><strong>{catalog.todo + postflop.todo}</strong><small>プリフロップ＋ポストフロップ</small></div>
         <div className="admin-kpi"><span>理由ファイル未作成</span><strong>{reasonMissing}</strong><small>作成済みスポット中</small></div>
         <div className="admin-kpi"><span>未作成フォーマット</span><strong>{unbuiltFormats.length}</strong><small>× 約{catalog.total}スポット ＝ {(unbuiltFormats.length * catalog.total).toLocaleString()}</small></div>
       </section>
@@ -48,10 +58,11 @@ export default function AdminDashboard() {
       <section className="admin-panel">
         <h2>カテゴリ別の進捗</h2>
         <table className="admin-table">
-          <thead><tr><th>カテゴリ</th><th>データファイル</th><th className="num">作成済み</th><th className="num">TODO</th><th>進捗</th></tr></thead>
+          <thead><tr><th>ストリート</th><th>カテゴリ</th><th>データファイル</th><th className="num">作成済み</th><th className="num">TODO</th><th>進捗</th></tr></thead>
           <tbody>
-            {catalog.categories.map(c => (
+            {allCategories.map(c => (
               <tr key={c.key} className={category === c.key ? "selected" : ""} onClick={() => setCategory(category === c.key ? "all" : c.key)}>
+                <td className="muted">{STREETS[c.street]}</td>
                 <td>{c.label}</td>
                 <td className="mono">{c.file ?? <span className="admin-tag">未モデル化</span>}</td>
                 <td className="num">{c.done}</td>
@@ -72,7 +83,7 @@ export default function AdminDashboard() {
             </div>
             <select value={category} onChange={event => setCategory(event.target.value)} aria-label="カテゴリ">
               <option value="all">全カテゴリ</option>
-              {catalog.categories.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
+              {allCategories.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
             </select>
             <input type="search" placeholder="ID・アクションで検索" value={query} onChange={event => setQuery(event.target.value)} />
           </div>
@@ -88,13 +99,14 @@ export default function AdminDashboard() {
                   <td>{row.hero}</td>
                   <td className="path">{row.path}</td>
                   <td className="muted">{row.label}</td>
-                  <td>{row.status === "done" ? (row.reason ? "✓" : <span className="admin-tag">なし</span>) : "—"}</td>
+                  <td>{row.reason === null ? "—" : row.status === "done" ? (row.reason ? "✓" : <span className="admin-tag">なし</span>) : "—"}</td>
                 </tr>
               ))}
               {!visible.length && <tr><td colSpan={6} className="muted">該当するスポットはありません。</td></tr>}
             </tbody>
           </table>
         </div>
+        <p className="admin-note">ポストフロップは .local/postflop-ai の方針ファイルの有無で判定します（鮮度は未確認。.local が無い環境のビルドではすべて TODO）。プリフロップで到達しないため対象外: {postflop.unreachable.join(", ")}</p>
       </section>
 
       <section className="admin-panel">

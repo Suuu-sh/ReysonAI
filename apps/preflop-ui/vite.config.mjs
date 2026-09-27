@@ -3,6 +3,16 @@ import react from "@vitejs/plugin-react";
 import { localEstimateMiddleware } from "./scripts/local-estimate.mjs";
 import { localPostflopMiddleware } from "./scripts/postflop-ai/local-view.mjs";
 import { handEvMiddleware } from "./scripts/postflop-ai/hand-ev.mjs";
+import { existsSync, readdirSync } from "node:fs";
+
+// Admin dashboard: names of the locally generated postflop policies (gitignored, so empty in CI builds).
+const postflopArtifacts = { name: "postflop-artifacts",
+  resolveId: id => id === "virtual:postflop-artifacts" ? "\0virtual:postflop-artifacts" : null,
+  load(id) {
+    if (id !== "\0virtual:postflop-artifacts") return null;
+    const dir = new URL("./.local/postflop-ai", import.meta.url);
+    return `export default ${JSON.stringify(existsSync(dir) ? readdirSync(dir) : [])};`;
+  } };
 
 export default defineConfig({
   build: {
@@ -25,7 +35,7 @@ export default defineConfig({
       clientFiles: ["./src/main.jsx"],
     },
   },
-  plugins: [react(), { name: "local-codex-estimates", configureServer(server) {
+  plugins: [react(), postflopArtifacts, { name: "local-codex-estimates", configureServer(server) {
     server.middlewares.use(localEstimateMiddleware);
     server.middlewares.use(localPostflopMiddleware);
     server.middlewares.use(handEvMiddleware);
