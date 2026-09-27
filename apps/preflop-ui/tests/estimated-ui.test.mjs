@@ -74,6 +74,8 @@ test("primary navigation is accessible in a collapsible sidebar", () => {
   assert.match(html, /aria-label="サイドバーを折りたたむ" aria-expanded="true" aria-controls="main-navigation"/);
   assert.match(html, /<nav id="main-navigation" class="header-nav" aria-label="メインナビゲーション">/);
   assert.match(html, /aria-current="page" aria-label="レンジ分析"/);
+  assert.match(html, /aria-label="プレー分析"/);
+  assert.doesNotMatch(html, /aria-label="弱点"/);
   assert.doesNotMatch(html, /aria-label="ポストフロップ/);
 });
 

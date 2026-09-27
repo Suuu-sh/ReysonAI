@@ -17,7 +17,6 @@ const navigationGroups = [
       { Icon: GraduationCap, name: "トレーナー" },
       { Icon: ClockCounterClockwise, name: "セッション" },
       { Icon: ChartBar, name: "プレー分析" },
-      { Icon: ChartBar, name: "弱点" },
     ],
   },
 ];

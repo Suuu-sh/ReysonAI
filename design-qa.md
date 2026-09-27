@@ -1,5 +1,9 @@
 # Design QA — Persisted Estimated Ranges (2026-09-23)
 
+## Remove redundant weakness tab (2026-09-27)
+- Removed the dedicated 弱点 item from the sidebar. Strengths and weaknesses remain in プレー分析, and its existing detail link still opens the detailed review screen.
+- Browser verification at `http://127.0.0.1:5174/app`: the sidebar shows レンジ分析 / トレーナー / セッション / プレー分析 without 弱点; プレー分析 → 弱点の詳細を見る still opens the review details. All 212 UI tests, typecheck, build, 4 Sites tests and lint passed. The existing large-chunk build warning remains.
+
 ## Practice sessions and hand history (2026-09-27)
 - Added a セッション destination with a dated practice list, status filtering, and a detail view of the exact saved answer log. In-progress sessions can be resumed; completed named drills and review attempts keep their hand logs locally. Existing summary-only attempts explicitly say their per-hand history was not recorded.
 - Browser verification at `http://127.0.0.1:5174/app`: opened an interrupted one-answer session, saw its saved Q5o hand and verdict, resumed it, finished it, and confirmed the completed hand history remained after reloading. The narrow viewport stayed readable with horizontal scrolling for the table.
@@ -14,7 +18,7 @@
 - Checked the running app with 30 distinct answered questions: the point appears near the baseline centre, matching the current 「基準に近い」 label. The chart states that these are preflop practice tendencies rather than real-play VPIP/PFR.
 
 ## Practice player analysis (2026-09-27)
-- Added a separate プレー分析 destination alongside トレーナー and 弱点. It compares each chosen action with the saved AI estimate for the exact sampled spot/hand, deduplicates review repeats, and waits for diverse evidence before showing tentative NIT/TAG/LAG-style labels.
+- Added a separate プレー分析 destination alongside トレーナー. It compares each chosen action with the saved AI estimate for the exact sampled spot/hand, deduplicates review repeats, and waits for diverse evidence before showing tentative NIT/TAG/LAG-style labels.
 - Verified the empty state and its drill-library link in the running app. The page explicitly limits claims to practice choices rather than real-play VPIP/PFR or GTO; all answer history stays local to the browser.
 
 ## Unified range-navigation label (2026-09-27)
