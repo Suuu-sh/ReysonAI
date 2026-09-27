@@ -3,7 +3,7 @@ import { X } from "@phosphor-icons/react";
 import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../components/primitives.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { HandEvBars, useHandEv } from "./PostflopHandEv.jsx";
-import { actionReason, dominantTier, textureLabels, tierLabels } from "./postflop-reasons.js";
+import { actionReason, dominantTier, evidenceReason, textureLabels, tierLabels } from "./postflop-reasons.js";
 import { flopDecision, recognizedFlop, representativeFlops } from "./postflop-trial.js";
 
 const baseLabels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
@@ -82,7 +82,12 @@ function HandReasons({ node, hand, actions, texture, explain, labels }) {
     </p>
     <ul>
       {actions.filter(action => hand.actions[action] >= 0.005).sort((a, b) => hand.actions[b] - hand.actions[a]).map(action =>
-        <li key={action}><b style={{ "--reason-color": barColor(action) }}>{labels[action]} {pct(hand.actions[action])}</b>{actionReason(node, action, tier)}<ActionDetail action={action} explain={explain} /></li>)}
+        {
+          const evidence = evidenceReason(action, explain?.actions?.[action], explain?.equity);
+          return <li key={action}><b style={{ "--reason-color": barColor(action) }}>{labels[action]} {pct(hand.actions[action])}</b>
+            {evidence ? <><span className="postflop-reason-evidence">{evidence}</span><small className="postflop-reason-general">{actionReason(node, action, tier)}</small></> : actionReason(node, action, tier)}
+            <ActionDetail action={action} explain={explain} /></li>;
+        })}
     </ul>
   </div>;
 }

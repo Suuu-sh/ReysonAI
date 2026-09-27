@@ -112,3 +112,27 @@ export function actionReason(node, action, tier) {
   if (aliases[node]) return (reasons[aliases[node]]?.[action]?.[tier] ?? "").replaceAll("チェックレイズ", "レイズ");
   return reasons[node]?.[action]?.[tier] ?? "";
 }
+
+// Data-driven reason for one combo, built from the opponent-range explanation
+// (`/local-postflop-explain`), so the headline never contradicts the numbers.
+export function evidenceReason(action, detail, equity) {
+  if (!detail || !Number.isFinite(equity)) return null;
+  const pct = value => `${Math.round(value * 100)}%`;
+  const share = key => detail.groups?.find(group => group.key === key)?.share ?? 0;
+  if (detail.required != null) {
+    const enough = equity >= detail.required;
+    if (action === "call") return enough
+      ? `勝率${pct(equity)}が必要勝率${pct(detail.required)}を上回るので、続ける価値があります。`
+      : `勝率${pct(equity)}は必要勝率${pct(detail.required)}に届かず、コールは割に合いにくい選択です。`;
+    if (action === "fold") return enough
+      ? `勝率${pct(equity)}は必要勝率${pct(detail.required)}を上回りますが、方針では一部を降ろしてレンジを整えます。`
+      : `勝率${pct(equity)}が必要勝率${pct(detail.required)}に届かないため、降りるのが基本です。`;
+  }
+  if (detail.foldShare != null) {
+    const value = share("value"), foldBetter = share("foldBetter");
+    if (value >= foldBetter && value >= 0.15) return `主にバリュー：こちらが有利な手の${pct(value)}がコールしてきます（相手が降りる${pct(detail.foldShare)}）。`;
+    if (foldBetter >= 0.1) return `主に降ろし：こちらより強い手の${pct(foldBetter)}を降ろせます（相手が降りる${pct(detail.foldShare)}）。`;
+    return `有利な手からのコール${pct(value)}・強い手の降り${pct(foldBetter)}とも少なく、効果は限定的です。`;
+  }
+  return `相手レンジへの勝率${pct(equity)}（有利な相手${pct(share("ahead"))}）。`;
+}

@@ -401,3 +401,15 @@ test("combo explanation splits the opponent range into value, fold-out and conti
   const vsRaise = explainCombo({ boardCards, node: "oop_vs_raise", cards: "AsAd", prev: "bet75", inputs: threeBetInputs, policy: leads });
   assert.ok(Math.abs(vsRaise.actions.call.required - (24.5 * 0.75 * 2) / (24.5 + 24.5 * 0.75 * 4 + 24.5 * 0.75 * 2)) < 0.001);
 });
+
+test("combo evidence reasons follow the computed numbers", async () => {
+  const { evidenceReason } = await import("../src/estimated/postflop-reasons.js");
+  const bet = groups => ({ foldShare: 0.3, groups: Object.entries(groups).map(([key, share]) => ({ key, share, hands: [] })) });
+  assert.match(evidenceReason("bet33", bet({ value: 0.4, foldBetter: 0.1, continueBetter: 0.2 }), 0.6), /主にバリュー.*40%/);
+  assert.match(evidenceReason("bet75", bet({ value: 0.05, foldBetter: 0.25, continueBetter: 0.3 }), 0.4), /主に降ろし.*25%/);
+  assert.match(evidenceReason("bet75", bet({ value: 0.05, foldBetter: 0.03, continueBetter: 0.6 }), 0.3), /効果は限定的/);
+  assert.match(evidenceReason("call", { required: 0.2, groups: [] }, 0.35), /上回る/);
+  assert.match(evidenceReason("call", { required: 0.3, groups: [] }, 0.2), /届かず/);
+  assert.match(evidenceReason("fold", { required: 0.3, groups: [] }, 0.2), /降りるのが基本/);
+  assert.equal(evidenceReason("check", null, 0.5), null);
+});
