@@ -734,7 +734,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, squeezeResponse, raiseSizeFor };
   const actionBlocks = buildActionBlocks(actionState);
   const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
-    callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format) }) : null;
+    callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
   const flopBoard = recognizedFlop(flopCards);
   const combinedBlocks = flopActive

@@ -226,7 +226,7 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
   const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId);
   return <div className="postflop-trial" aria-label="ポストフロップ試作">
-    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、1人がオープンし1人だけがコールしたシングルレイズポットと、オープン→3bet→コールの3betポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
+    {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title="フロップを選択してください">上のアクション列にあるフロップカードを押して、3枚を選んでください。</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title="このフロップの方針は未収録">選んだ3枚は代表12ボードに含まれません。未監査のレンジは表示しません。</StatusState></Panel>
       : <>

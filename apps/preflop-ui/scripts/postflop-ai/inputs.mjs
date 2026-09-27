@@ -22,7 +22,7 @@ export function loadInputs(spotId = DEFAULT_SPOT_ID) {
   const spot = spotById(spotId);
   if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
   const opening = read("opening-ranges").spots.find(item => item.id === spot.openingId);
-  const baseOk = opening && opening.hero === spot.opener && opening.open_size_bb === spot.openBb && opening.effective_stack_bb === 100 &&
+  const baseOk = opening && opening.hero === spot.opener && (spot.kind === "limp" || opening.open_size_bb === spot.openBb) && opening.effective_stack_bb === 100 &&
     gameConfig.stack_bb === 100 && gameConfig.ante_bb === 0 && gameConfig.rake.rate === 0.05 && gameConfig.rake.cap_bb === 3;
   if (spot.kind === "srp") {
     const response = read("preflop-ranges").spots.find(item => item.id === spot.responseId);
@@ -34,6 +34,8 @@ export function loadInputs(spotId = DEFAULT_SPOT_ID) {
     const seatRows = { [spot.opener]: freqRows(opening.hands, "open"), [spot.caller]: freqRows(response.hands, "call") };
     return { spot, opening, response, config, fingerprint, seatRows };
   }
+  if (spot.kind === "4bp") return loadFourBetInputs(spot, opening, baseOk);
+  if (spot.kind === "limp") return loadLimpInputs(spot, opening, baseOk);
   const response = read("three-bet-responses").spots.find(item => item.id === spot.responseId);
   const threeBet = read("preflop-ranges").spots.find(item => item.id === spot.threeBetId);
   if (!baseOk || !response || !threeBet || response.opener !== spot.opener || response.three_bettor !== spot.threeBettor ||
@@ -52,6 +54,58 @@ export function loadInputs(spotId = DEFAULT_SPOT_ID) {
 }
 
 const freqRows = (rows, action) => rows.map(row => ({ hand: row.hand, freq: row[action] }));
+
+// Per-hand product of saved frequencies (percent) from several spots, in the first spot's hand order.
+function productRows(factors) {
+  const maps = factors.map(([rows, action]) => new Map(rows.map(row => [row.hand, row[action]])));
+  const hands = factors[0][0].map(row => row.hand);
+  if (maps.some(map => map.size !== hands.length || hands.some(hand => !Number.isFinite(map.get(hand))))) throw new Error("Postflop source hand rows differ");
+  return hands.map(hand => ({ hand, freq: maps.reduce((product, map) => product * map.get(hand) / 100, 100) }));
+}
+
+// O opens, X 3bets, O 4bets, X calls: O = open × 4bet versus the 3bet, X = 3bet × call versus the 4bet.
+function loadFourBetInputs(spot, opening, baseOk) {
+  const response = read("four-bet-responses").spots.find(item => item.id === spot.responseId);
+  const threeBetResponse = read("three-bet-responses").spots.find(item => item.id === spot.fourBetId);
+  const threeBet = read("preflop-ranges").spots.find(item => item.id === spot.threeBetId);
+  if (!baseOk || !response || !threeBetResponse || !threeBet ||
+      response.opener !== spot.opener || response.hero !== spot.threeBettor || response.effective_stack_bb !== 100 ||
+      response.three_bet_size_bb !== spot.threeBetBb || response.four_bet_size_bb !== spot.fourBetBb ||
+      response.source_three_bet_response_id !== threeBetResponse.id || response.source_response_id !== threeBet.id ||
+      threeBetResponse.three_bet_size_bb !== spot.threeBetBb || threeBetResponse.four_bet_size_bb !== spot.fourBetBb ||
+      threeBetResponse.hands.some(row => row.four_bet > 0 && row.four_bet_size_bb !== spot.fourBetBb) ||
+      threeBet.hands.some(row => row.three_bet > 0 && row.three_bet_size_bb !== spot.threeBetBb)) throw new Error(`${spot.id} source geometry changed`);
+  const seatRows = {
+    [spot.opener]: productRows([[opening.hands, "open"], [threeBetResponse.hands, "four_bet"]]),
+    [spot.threeBettor]: productRows([[threeBet.hands, "three_bet"], [response.hands, "call"]]),
+  };
+  if (Object.values(seatRows).some(rows => !rows.some(row => row.freq > 0))) throw new Error(`${spot.id} is unreachable: a saved range never reaches the flop`);
+  const fingerprint = sha({ spot, opening, response, threeBetResponse, threeBet, gameConfig, config });
+  return { spot, opening, response, threeBetResponse, threeBet, config, fingerprint, seatRows };
+}
+
+// Limped pots: each seat's factors are [file, spot id, action] (spots.mjs).
+function loadLimpInputs(spot, opening, baseOk) {
+  const limp = read("limp-responses");
+  const byId = id => limp.spots.find(item => item.id === id);
+  const bbLimp = byId("BB_vs_SB_limp"), iso = byId("SB_vs_BB_iso"), reraise = byId("BB_vs_SB_limp_reraise");
+  if (!baseOk || !bbLimp || !iso || !reraise ||
+      opening.hands.some(row => row.limp > 0 && row.limp_size_bb !== 1) || bbLimp.raise_size_bb !== 3.5 ||
+      iso.iso_size_bb !== 3.5 || iso.raise_to_bb !== 10.5 || reraise.iso_size_bb !== 3.5 || reraise.limp_reraise_size_bb !== 10.5) {
+    throw new Error(`${spot.id} source geometry changed`);
+  }
+  const files = { "opening-ranges": { spots: [opening] }, "limp-responses": limp };
+  const sources = {};
+  const seatRows = Object.fromEntries(Object.entries(spot.ranges).map(([seat, factors]) => [seat, productRows(factors.map(([file, id, action]) => {
+    const source = files[file].spots.find(item => item.id === id);
+    if (!source) throw new Error(`${spot.id} source ${id} is missing`);
+    sources[id] = source;
+    return [source.hands, action];
+  }))]));
+  const response = sources[spot.responseId];
+  const fingerprint = sha({ spot, sources, gameConfig, config });
+  return { spot, opening, response, config, fingerprint, seatRows };
+}
 
 export function comboRange(rows, action, board) {
   const blocked = new Set(board);

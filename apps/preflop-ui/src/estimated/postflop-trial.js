@@ -1,5 +1,5 @@
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
-import { DEFAULT_SPOT_ID, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
+import { DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
 import { NODES, flopState } from "../../scripts/postflop-ai/tree.mjs";
 
 export const representativeFlops = pilot.boards.map(board => board.cards);
@@ -12,18 +12,29 @@ export function recognizedFlop(cards) {
 }
 const round = value => Math.round(value * 100) / 100;
 
-// Heads-up pots with a saved candidate (scripts/postflop-ai/spots.mjs), shown read-only:
-// single-raised pots (O opens, exactly one later seat C calls) and 3bet pots (O opens, a later
-// seat X 3bets, O calls); everyone else folds.
-export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable }) {
+// The saved heads-up flop spot a completed preflop path reaches, or null (scripts/postflop-ai/spots.mjs):
+// single-raised pots (O opens, exactly one later seat C calls), 3bet pots (O opens, X 3bets, O calls),
+// 4bet pots (… O 4bets, X calls) and SB's limped pots; everyone else folds.
+function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction }) {
+  if (rangeType === "response") return foldedHero && callers.length === 1 ? spotFor(opener, callers[0]) : null;
+  if (rangeType === "three_bet") return callers.length === 0 ? threeBetSpotFor(opener, hero) : null;
+  if (rangeType === "four_bet") return callers.length === 0 ? fourBetSpotFor(opener, hero) : null;
+  if (rangeType === "limp") {
+    if (limpAction === "check") return limpSpotFor("SB_limp_BB_check");
+    if (limpAction === "raise" && limpResponseAction === "call") return limpSpotFor("SB_limp_BB_iso_call");
+    if (limpAction === "raise" && limpResponseAction === "raise" && limpReraiseAction === "call") return limpSpotFor("SB_limp_BB_iso_SB_reraise_call");
+  }
+  return null;
+}
+
+export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, limpAction = null, limpResponseAction = null, limpReraiseAction = null }) {
   const end = actionBlocks.find(block => block.kind === "end");
   if (!end || !/^\d+人でフロップへ$/.test(end.result)) return null;
   const potBb = Number(/^ポット ([\d.]+)bb$/.exec(end.pot)?.[1]);
   if (!Number.isFinite(potBb)) return null;
   const players = rangeType === "limp" ? ["SB", "BB"]
     : rangeType === "response" ? [opener, ...callers] : [opener, hero];
-  const spot = rangeType === "response" && foldedHero && callers.length === 1 ? spotFor(opener, callers[0])
-    : rangeType === "three_bet" && callers.length === 0 ? threeBetSpotFor(opener, hero) : null;
+  const spot = flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction });
   const pilotAvailable = Boolean(spot?.reachable) && potBb === spot.potBb && Boolean(isDefaultTable);
   return {
     players, potBb, pilotAvailable,
@@ -57,12 +68,14 @@ function replay(actions, spot) {
     const name = g[role], other = role === "ip" ? "oop" : "ip";
     stacks.push(left(role));
     if (action === "check") history.push(`${name} Check`);
-    else if (action === "bet33" || action === "bet75") { bet = put(role, pot * betFraction(action)); history.push(`${name} Bet ${betLabel(action)} (${bet}BB)`); }
-    else if (action === "call") { put(role, invested[other] - invested[role]); history.push(`${name} Call`); }
+    // A bet, raise or call that uses the whole remaining stack is an all-in.
+    const allIn = () => left(role) === 0 ? " All-in" : "";
+    if (action === "bet33" || action === "bet75") { bet = put(role, pot * betFraction(action)); history.push(`${name} Bet ${betLabel(action)} (${bet}BB)${allIn()}`); }
+    else if (action === "call") { put(role, invested[other] - invested[role]); history.push(`${name} Call${allIn()}`); }
     else if (action === "raise") {
       const to = Math.min(left(role) + invested[role], round(bet * pilot.flop_check_raise_multiplier));
       put(role, to - invested[role]);
-      history.push(`${name} ${node.startsWith("bb_") ? "Check-raise" : "Raise"} ${to}BB`);
+      history.push(`${name} ${node.startsWith("bb_") ? "Check-raise" : "Raise"} ${to}BB${allIn()}`);
     } else if (action === "fold") history.push(`${name} Fold`);
   }
   if (state.end && ["fold", "raise-fold"].includes(state.end.type)) {

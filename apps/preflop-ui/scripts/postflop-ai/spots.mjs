@@ -10,21 +10,25 @@
 // position the tree is "oop_leads", otherwise "oop_checks" (the first pilot's tree; tree.mjs).
 import responses from "../../src/estimated/preflop-ranges.json" with { type: "json" };
 import threeBetResponses from "../../src/estimated/three-bet-responses.json" with { type: "json" };
-import { gameConfig, isInPosition, openSizeFor } from "../../src/estimated/sizing.js";
+import openingRanges from "../../src/estimated/opening-ranges.json" with { type: "json" };
+import limpResponses from "../../src/estimated/limp-responses.json" with { type: "json" };
+import { gameConfig, isInPosition, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb } from "../../src/estimated/sizing.js";
 
 export const DEFAULT_SPOT_ID = "BTN_open_BB_call";
 const BLINDS = { SB: 0.5, BB: 1 };
 const round = value => Math.round(value * 100) / 100;
 const deadBlinds = (...seats) => Object.entries(BLINDS).filter(([seat]) => !seats.includes(seat)).reduce((sum, [, bb]) => sum + bb, 0);
 
-function geometry({ id, kind, opener, caller, aggressor, sizeBb, slug, reachable, sources, extra = {} }) {
-  const ip = isInPosition(caller, aggressor) ? caller : aggressor;
-  const oop = ip === caller ? aggressor : caller;
+// `aggressor` made the last preflop raise (null in a limped pot, where `lead` sets the tree).
+function geometry({ id, kind, opener, caller, aggressor, sizeBb, slug, reachable, sources, extra = {}, openBb, lead }) {
+  const other = aggressor ?? opener;
+  const ip = isInPosition(caller, other) ? caller : other;
+  const oop = ip === caller ? other : caller;
   return Object.freeze({
     id, kind, opener, caller, aggressor, ip, oop, ...extra,
-    tree: aggressor === oop ? "oop_leads" : "oop_checks",
+    tree: lead ?? (aggressor === oop ? "oop_leads" : "oop_checks"),
     ...sources,
-    openBb: openSizeFor(opener), potBb: round(2 * sizeBb + deadBlinds(caller, aggressor)), stackBb: round(gameConfig.stack_bb - sizeBb),
+    openBb: openBb ?? openSizeFor(opener), potBb: round(2 * sizeBb + deadBlinds(caller, other)), stackBb: round(gameConfig.stack_bb - sizeBb),
     slug, reachable,
   });
 }
@@ -55,9 +59,53 @@ export function describeThreeBetSpot(opener, threeBettor, response = threeBetRes
     extra: { threeBettor, threeBetBb: response.three_bet_size_bb } });
 }
 
+// 4bet pot: O opens, X 3bets, O 4bets to the saved size, X calls. X is the caller, O the aggressor.
+// The call frequencies live in four-bet-responses.json, which the app loads lazily; they are
+// checked when the inputs are loaded (inputs.mjs), so `reachable` here covers O's 4bet and X's 3bet.
+export function describeFourBetSpot(opener, threeBettor, threeBetSpot = threeBetResponses.spots.find(item => item.opener === opener && item.three_bettor === threeBettor)) {
+  if (!threeBetSpot) throw new Error(`Unsupported 4bet pot: ${opener} → ${threeBettor}`);
+  const response = responses.spots.find(item => item.id === threeBetSpot.source_response_id);
+  const opening = openingRanges.spots.find(item => item.id === `${opener}_open`);
+  const open = new Map(opening?.hands.map(row => [row.hand, row.open]));
+  const id = `${opener}_open_${threeBettor}_4bp_call`;
+  return geometry({ id, kind: "4bp", opener, caller: threeBettor, aggressor: opener, sizeBb: threeBetSpot.four_bet_size_bb,
+    slug: `${opener.toLowerCase()}-${threeBettor.toLowerCase()}-4bp-v1`,
+    reachable: threeBetSpot.hands.some(row => row.four_bet > 0 && open.get(row.hand) > 0) && Boolean(response?.hands.some(row => row.three_bet > 0)),
+    sources: { openingId: `${opener}_open`, responseId: `${threeBettor}_vs_${opener}_four_bet`, threeBetId: threeBetSpot.source_response_id, fourBetId: threeBetSpot.id },
+    extra: { threeBettor, threeBetBb: threeBetSpot.three_bet_size_bb, fourBetBb: threeBetSpot.four_bet_size_bb } });
+}
+
+// Limped pots: SB completes to 1BB. Range factors are [file, spot id, action]; the seat's
+// flop weight is their product (inputs.mjs).
+const LIMPS = [
+  { id: "SB_limp_BB_check", caller: "BB", aggressor: null, sizeBb: sbCompleteToBb, lead: "oop_leads", slug: "sb-bb-limp-v1", responseId: "BB_vs_SB_limp",
+    ranges: { SB: [["opening-ranges", "SB_open", "limp"]], BB: [["limp-responses", "BB_vs_SB_limp", "check"]] } },
+  { id: "SB_limp_BB_iso_call", caller: "SB", aggressor: "BB", sizeBb: isoVsLimpToBb, slug: "sb-bb-iso-v1", responseId: "SB_vs_BB_iso",
+    ranges: { SB: [["opening-ranges", "SB_open", "limp"], ["limp-responses", "SB_vs_BB_iso", "call"]], BB: [["limp-responses", "BB_vs_SB_limp", "raise"]] } },
+  { id: "SB_limp_BB_iso_SB_reraise_call", caller: "BB", aggressor: "SB", sizeBb: limpReraiseToBb, slug: "sb-bb-limp-reraise-v1", responseId: "BB_vs_SB_limp_reraise",
+    ranges: { SB: [["opening-ranges", "SB_open", "limp"], ["limp-responses", "SB_vs_BB_iso", "raise"]],
+      BB: [["limp-responses", "BB_vs_SB_limp", "raise"], ["limp-responses", "BB_vs_SB_limp_reraise", "call"]] } },
+];
+const limpFiles = { "opening-ranges": openingRanges, "limp-responses": limpResponses };
+
+export function describeLimpSpot(definition) {
+  const { id, caller, aggressor, sizeBb, lead, slug, responseId, ranges } = definition;
+  // Per-hand product of the saved frequencies (percent), e.g. SB limp × SB call versus the iso.
+  const weights = factors => {
+    const maps = factors.map(([file, spotId, action]) => new Map(limpFiles[file].spots.find(item => item.id === spotId)?.hands.map(row => [row.hand, row[action]])));
+    return [...maps[0].keys()].map(hand => maps.reduce((product, map) => product * (map.get(hand) ?? 0) / 100, 1));
+  };
+  return geometry({ id, kind: "limp", opener: "SB", caller, aggressor, sizeBb, slug, lead, openBb: sbCompleteToBb,
+    reachable: Object.values(ranges).every(factors => weights(factors).some(weight => weight > 0)),
+    sources: { openingId: "SB_open", responseId },
+    extra: { ranges } });
+}
+
 export const POSTFLOP_SPOTS = Object.freeze([
   ...responses.spots.map(spot => describeSpot(spot.opener, spot.hero, spot)),
   ...threeBetResponses.spots.map(spot => describeThreeBetSpot(spot.opener, spot.three_bettor, spot)),
+  ...threeBetResponses.spots.map(spot => describeFourBetSpot(spot.opener, spot.three_bettor, spot)),
+  ...LIMPS.map(describeLimpSpot),
 ]);
 
 export function spotById(id = DEFAULT_SPOT_ID) {
@@ -69,6 +117,12 @@ export function spotById(id = DEFAULT_SPOT_ID) {
 export function spotFor(opener, caller) {
   return POSTFLOP_SPOTS.find(item => item.kind === "srp" && item.opener === opener && item.caller === caller) ?? null;
 }
+
+export function fourBetSpotFor(opener, threeBettor) {
+  return POSTFLOP_SPOTS.find(item => item.kind === "4bp" && item.opener === opener && item.threeBettor === threeBettor) ?? null;
+}
+
+export const limpSpotFor = id => POSTFLOP_SPOTS.find(item => item.kind === "limp" && item.id === id) ?? null;
 
 export function threeBetSpotFor(opener, threeBettor) {
   return POSTFLOP_SPOTS.find(item => item.kind === "3bp" && item.opener === opener && item.threeBettor === threeBettor) ?? null;

@@ -40,14 +40,22 @@ export function promptFor(inputs) {
   };
   const design = boards().filter(board => board.split === "design").map(board =>
     `${board.id}(${boardTexture(board.cards)};${spot.ip} ${distribution(spot.ip, board.cards)};${spot.oop} ${distribution(spot.oop, board.cards)})`);
-  const raiser = seat => seat === spot.aggressor ? (spot.kind === "3bp" ? "preflop 3bettor" : "preflop raiser") : "preflop caller";
+  const raiser = seat => !spot.aggressor ? (seat === "SB" ? "limper" : "checked the limp")
+    : seat === spot.aggressor ? ({ "3bp": "preflop 3bettor", "4bp": "preflop 4bettor", limp: "preflop last raiser" }[spot.kind] ?? "preflop raiser")
+      : "preflop caller";
   const nodes = treeNodes(spot.tree);
-  const preflop = spot.kind === "3bp"
-    ? `${spot.opener} opens ${spot.openBb}BB, ${spot.threeBettor} 3bets to ${spot.threeBetBb}BB, ${spot.opener} calls, every other seat folds; heads-up 3bet pot,`
-    : `${spot.opener} opens ${spot.openBb}BB, ${spot.caller} calls, every other seat folds; heads-up`;
+  const preflop = {
+    "3bp": `${spot.opener} opens ${spot.openBb}BB, ${spot.threeBettor} 3bets to ${spot.threeBetBb}BB, ${spot.opener} calls, every other seat folds; heads-up 3bet pot,`,
+    "4bp": `${spot.opener} opens ${spot.openBb}BB, ${spot.threeBettor} 3bets to ${spot.threeBetBb}BB, ${spot.opener} 4bets to ${spot.fourBetBb}BB, ${spot.threeBettor} calls, every other seat folds; heads-up 4bet pot (low stack-to-pot ratio),`,
+    limp: {
+      SB_limp_BB_check: "everyone folds to SB, SB limps (completes to 1BB), BB checks; heads-up limped pot,",
+      SB_limp_BB_iso_call: "everyone folds to SB, SB limps (1BB), BB raises to 3.5BB, SB calls; heads-up pot,",
+      SB_limp_BB_iso_SB_reraise_call: "everyone folds to SB, SB limps (1BB), BB raises to 3.5BB, SB reraises to 10.5BB, BB calls; heads-up pot,",
+    }[spot.id],
+  }[spot.kind] ?? `${spot.opener} opens ${spot.openBb}BB, ${spot.caller} calls, every other seat folds; heads-up`;
   const tree = spot.tree === "oop_leads"
     ? `${spot.oop} acts first and chooses check/bet33/bet75 (oop_first). Facing that bet33 or bet75, ${spot.ip} chooses fold/call/raise to 3x the bet (ip_vs_33 / ip_vs_75); facing the raise ${spot.oop} chooses fold/call (oop_vs_raise). After ${spot.oop} checks, ${spot.ip} chooses check/bet33/bet75 (btn_first); ${spot.oop} facing bet33 or bet75 chooses fold/call/raise to 3x the bet (bb_vs_33 / bb_vs_75); ${spot.ip} facing that check-raise chooses fold/call (btn_vs_raise). No further flop raises; bets and raises are capped by the ${spot.stackBb}BB stacks (all-in). Turn/river are evaluated by a separate fixed model; do not author them.`
-    : `${spot.oop} checks first. ${spot.ip} chooses check/bet33/bet75. ${spot.oop} facing bet33 or bet75 chooses fold/call/raise to 3x original bet. ${spot.ip} facing check-raise chooses fold/call. No further flop raises.${spot.kind === "3bp" ? ` Bets and raises are capped by the ${spot.stackBb}BB stacks (all-in).` : ""} Turn/river are evaluated by a separate fixed model; do not author them.`;
+    : `${spot.oop} checks first. ${spot.ip} chooses check/bet33/bet75. ${spot.oop} facing bet33 or bet75 chooses fold/call/raise to 3x original bet. ${spot.ip} facing check-raise chooses fold/call. No further flop raises.${spot.kind !== "srp" ? ` Bets and raises are capped by the ${spot.stackBb}BB stacks (all-in).` : ""} Turn/river are evaluated by a separate fixed model; do not author them.`;
   const nodeNames = spot.tree === "oop_leads"
     ? `Node names are fixed: btn_* and ip_* nodes are ${spot.ip}'s (IP) decisions and bb_* and oop_* nodes are ${spot.oop}'s (OOP) decisions.`
     : `Node names are fixed: btn_* nodes are ${spot.ip}'s (IP) decisions and bb_* nodes are ${spot.oop}'s (OOP) decisions.`;
