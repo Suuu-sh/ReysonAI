@@ -7,16 +7,20 @@ import "./styles.css";
 import "./site/site.css";
 
 const ProductApp = lazy(() => import("./ProductApp.jsx"));
+const AdminDashboard = lazy(() => import("./admin/AdminDashboard.jsx"));
+const isAdminRoute = window.location.pathname === "/admin" || window.location.pathname.startsWith("/admin/");
 const isProductRoute = window.location.pathname === "/app" || window.location.pathname.startsWith("/app/");
 const locale = window.location.pathname === "/ja" || window.location.pathname.startsWith("/ja/") ? "ja" : "en";
 const copy = locale === "ja" ? ja : en;
 document.documentElement.lang = isProductRoute ? "ja" : locale;
-document.title = isProductRoute ? "SolveaAI · Range Analysis" : copy.title;
+document.title = isAdminRoute ? "SolveaAI · Admin" : isProductRoute ? "SolveaAI · Range Analysis" : copy.title;
 if (!isProductRoute) document.querySelector('meta[name="description"]')?.setAttribute("content", copy.description);
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {isProductRoute
+    {isAdminRoute
+      ? <Suspense fallback={<div className="site-loading">Opening admin…</div>}><AdminDashboard /></Suspense>
+      : isProductRoute
       ? <Suspense fallback={<div className="site-loading">Opening Solvea…</div>}><ProductApp /></Suspense>
       : <ServiceSite locale={locale} />}
   </React.StrictMode>,
