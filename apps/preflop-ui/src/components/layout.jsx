@@ -1,6 +1,7 @@
 import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
 import { useState } from "react";
 import { levelLabel } from "../profile.js";
+import { productLocale, selectProductLocale } from "../i18n.js";
 
 export const RANGE_SECTION = "レンジ分析";
 
@@ -90,6 +91,10 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
           </div>
         ))}
       </nav>
+      <div className="app-language-switch" role="group" aria-label="Language / 言語">
+        <button type="button" aria-pressed={productLocale() === "en"} onClick={() => selectProductLocale("en")}>EN</button>
+        <button type="button" aria-pressed={productLocale() === "ja"} onClick={() => selectProductLocale("ja")}>日本語</button>
+      </div>
       {profile ? (
         <button type="button" className="header-meta profile-chip" onClick={onEditProfile} title="レベルを変更" aria-label={`プロフィール：${levelLabel(profile.level)}。レベルを変更`}>
           <strong>{profile.nickname || "ゲスト"}</strong>

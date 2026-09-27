@@ -1,6 +1,7 @@
 import { ArrowClockwise, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.js";
 import { drillStats } from "./drill-store.js";
+import { localized } from "../locale.js";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
 
@@ -13,7 +14,7 @@ export function settingsSummary(settings) {
 function relativeDay(at) {
   if (!at) return "未挑戦";
   const days = Math.floor((Date.now() - at) / 86400000);
-  return days <= 0 ? "今日" : days === 1 ? "昨日" : `${days}日前`;
+  return days <= 0 ? localized("Today", "今日") : days === 1 ? localized("Yesterday", "昨日") : localized(`${days} days ago`, `${days}日前`);
 }
 
 // Tiny accuracy trend: last attempts left to right, 0–100%.
@@ -62,7 +63,7 @@ function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
         <div><dt>ベスト</dt><dd className="best">{pct(stats.best)}</dd></div>
         <div><dt>平均</dt><dd>{pct(stats.average)}</dd></div>
         <div><dt>前回</dt><dd>{pct(stats.last)}</dd></div>
-        <div><dt>挑戦</dt><dd>{stats.attempts}<small>回</small></dd></div>
+        <div><dt>挑戦</dt><dd>{stats.attempts}<small>{localized(stats.attempts === 1 ? " time" : " times", "回")}</small></dd></div>
       </dl>
       <Sparkline values={stats.trend} />
     </div>
@@ -87,8 +88,8 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
         <p>設定を保存したドリルを繰り返し解いて、正答率の伸びを記録します。</p>
       </div>
       <dl className="library-totals">
-        <div><dt>挑戦</dt><dd>{attempts}<small>回</small></dd></div>
-        <div><dt>回答</dt><dd>{answered}<small>問</small></dd></div>
+        <div><dt>挑戦</dt><dd>{attempts}<small>{localized(attempts === 1 ? " time" : " times", "回")}</small></dd></div>
+        <div><dt>回答</dt><dd>{answered}<small>{localized(answered === 1 ? " question" : " questions", "問")}</small></dd></div>
         {bestDrill && <div><dt><Trophy size={12} weight="fill" />ベスト</dt><dd>{pct(bestDrill.best)}<small>{bestDrill.drill.name}</small></dd></div>}
       </dl>
     </div>

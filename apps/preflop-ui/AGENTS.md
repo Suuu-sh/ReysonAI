@@ -1,5 +1,9 @@
 # Prototype Instructions
 
+## Product language (2026-09-27)
+- `/app` is English-first on a fresh browser. Keep Japanese available through the language selector, persist the choice locally, and set the document language accordingly. The marketing site's `/` and `/ja` routing remains separate.
+- Localize all user-facing product copy, including onboarding, navigation, practice/session/analysis screens, status messages, accessible labels, and preflop/postflop/trainer explanations. Do not translate persisted strategy identifiers, saved frequencies/EV/facts, or practice records; English explanations must describe those recorded facts without presenting estimates as solver GTO.
+
 ## Service site (2026-09-25)
 - The marketing site lives at `/`; the existing preflop workspace and its local onboarding remain at `/app`. Keep these routes separate so landing-page work does not replace or alter persisted strategy behavior.
 - The Japanese service-site edition lives at `/ja`, with an EN/日本語 switch in the header. Keep the English and Japanese pages structurally identical, localize every user-facing section and product-preview explanation, and set the document language and metadata by route.

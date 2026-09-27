@@ -107,6 +107,13 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
 .header-meta { display: grid; gap: 2px; margin-top: auto; padding: 10px; border: 0; background: transparent; color: var(--text-subtle); text-align: left; white-space: nowrap; }
 .header-meta strong { font-size: 11px; font-weight: 650; }
 .header-meta small { font-size: 9px; }
+.app-language-switch { display: flex; gap: 4px; padding: 0 10px; }
+.app-language-switch button { flex: 1; min-width: 0; padding: 5px 4px; border-color: var(--line-strong); background: transparent; color: var(--text-muted); font-size: 11px; line-height: 1.2; }
+.app-language-switch button[aria-pressed="true"] { border-color: var(--accent); background: var(--surface-accent); color: var(--text); font-weight: 700; }
+.app-sidebar.is-collapsed .app-language-switch { flex-direction: column; padding: 0; width: 100%; }
+.app-sidebar.is-collapsed .app-language-switch button { width: 100%; font-size: 9px; padding: 5px 1px; }
+.onboarding-language { justify-content: flex-end; padding: 0; margin-top: -2px; }
+.onboarding-language button { flex: 0 0 auto; min-width: 48px; }
 .app-sidebar.is-collapsed { flex-basis: 64px; width: 64px; align-items: center; gap: 18px; padding: 12px 7px; }
 .app-sidebar.is-collapsed .sidebar-heading { flex-direction: column; justify-content: flex-start; gap: 12px; }
 .app-sidebar.is-collapsed .brand-copy, .app-sidebar.is-collapsed .header-nav button > span, .app-sidebar.is-collapsed .header-nav button > small, .app-sidebar.is-collapsed .header-meta { display: none; }

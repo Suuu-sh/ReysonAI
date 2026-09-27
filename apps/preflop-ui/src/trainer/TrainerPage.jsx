@@ -8,13 +8,14 @@ import {
   filterSpots, grade, normalizeSettings, pickQuestion, randomSuits, spotById, spotPrompt, spotTitle, spotsForSettings, studyNote,
 } from "./trainer-data.js";
 import { clearHistory, loadHistory, saveHistory, summarize } from "./trainer-store.js";
-import { drillStats, loadDrills, newDrillId, recordSession, saveDrills, upsertDrill } from "./drill-store.js";
+import { displayDrillName, drillStats, loadDrills, newDrillId, recordSession, saveDrills, upsertDrill } from "./drill-store.js";
 import { loadDrillDrafts, removeDrillDraft, restoreDrillDraft, saveDrillDraft } from "./drill-session-store.js";
 import { DrillLibrary, HistoryChart } from "./DrillLibrary.jsx";
 import { PlayerAnalysis } from "./PlayerAnalysis.jsx";
 import { SessionPage } from "./SessionPage.jsx";
 import { loadReviewSessions, newSessionRecord, recordReviewSession } from "./practice-sessions.js";
 import "./trainer.css";
+import { localized } from "../i18n.js";
 
 const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const pct = value => `${Math.round((value ?? 0) * 100)}%`;
@@ -106,7 +107,7 @@ function MixBar({ spot, mix }) {
 function Comparison({ spot, hand }) {
   const rows = compareAcross(spot, hand);
   return <section className="trainer-compare">
-    <h3>{spot.kind === "open" ? `${hand} · 席ごとのオープン` : `${hand} · ${spot.hero} で相手の席ごとに`}</h3>
+    <h3>{spot.kind === "open" ? localized(`${hand} · opening frequency by seat`, `${hand} · 席ごとのオープン`) : localized(`${hand} · versus each opener from ${spot.hero}`, `${hand} · ${spot.hero} で相手の席ごとに`)}</h3>
     <ul>
       {rows.map(row => <li key={row.spot.id} className={row.current ? "current" : ""}>
         <span>{spot.kind === "open" ? row.spot.hero : `vs ${row.spot.opener}`}</span>
@@ -166,7 +167,7 @@ function DrillEditor({ drill, isNew, onChange, onSave, onCancel, reviewCount }) 
       <h1>{isNew ? "新しいドリル" : "ドリルを編集"}</h1>
       <label className="setup-name">
         <span>ドリル名</span>
-        <input value={drill.name} maxLength={40} placeholder="例：BTNのオープン" onChange={event => onChange({ ...drill, name: event.target.value })} />
+        <input value={displayDrillName(drill)} maxLength={40} placeholder="例：BTNのオープン" onChange={event => onChange({ ...drill, name: event.target.value })} />
       </label>
     </div>
     <div className="setup-grid">
@@ -403,9 +404,9 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
             <div className="trainer-explain">
               <p className="explain-lead">
                 <b className="explain-hand">{cards.map(card => <PlayingCard key={card} card={card} size="mini" />)}</b>
-                {answer.result === "best" ? "この局面でいちばん多い選択です。" : answer.result === "mixed"
-                  ? `${pct(answer.frequency)} で選ばれる混合の選択です。いちばん多いのは${actionLabels[answer.best]}。`
-                  : `この手ではほぼ選ばれません（${pct(answer.frequency)}）。いちばん多いのは${actionLabels[answer.best]}。`}
+                {answer.result === "best" ? localized("This is the most frequent choice in this spot.", "この局面でいちばん多い選択です。") : answer.result === "mixed"
+                  ? localized(`This is a mixed choice used ${pct(answer.frequency)} of the time. The most frequent choice is ${actionLabels[answer.best]}.`, `${pct(answer.frequency)} で選ばれる混合の選択です。いちばん多いのは${actionLabels[answer.best]}。`)
+                  : localized(`This choice is rarely used with this hand (${pct(answer.frequency)}). The most frequent choice is ${actionLabels[answer.best]}.`, `この手ではほぼ選ばれません（${pct(answer.frequency)}）。いちばん多いのは${actionLabels[answer.best]}。`)}
               </p>
               {notes.length > 0 && <ul className="trainer-notes">
                 {notes.map(action => <li key={action.key} style={{ "--note-color": actionColor(action.key) }}>

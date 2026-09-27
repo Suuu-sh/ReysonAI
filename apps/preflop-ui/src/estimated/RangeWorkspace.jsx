@@ -17,6 +17,8 @@ import { limpActionTransition, nextActorsAfterRaise, responseActionTransition, r
 import { displayModes } from "./display-mode.js";
 import { displayModeKey } from "../profile.js";
 import { useDetailedReasons } from "./detailed-reasons.js";
+import { englishEquityNote, englishFactLabels, englishPreflopReason } from "./english-reasons.js";
+import { productLocale } from "../i18n.js";
 import { fiveBetMatrixModel, useFiveBetSpot } from "./five-bet-responses.js";
 import {
   findSpot,
@@ -108,18 +110,30 @@ const formatFact = ({ value, unit }) => unit === "bb"
 function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }) {
   const { data, loading, error } = reasonState;
   const detailed = data?.hands[hand.hand];
+  const english = productLocale() === "en";
   const facts = detailed
-    ? data.fact_labels.map(({ key, label, scope, unit }) => ({ key, label, unit, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
+    ? data.fact_labels.map(({ key, label, scope, unit }) => ({ key, label: english ? englishFactLabels[key] ?? label : label, unit, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
     : inlineFacts ?? [];
   const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined && !(hideCallEv && fact.key === "call_ev_bb"));
   return <div className="ai-reason">
     <span>AIの考え方</span>
-    <p>{detailed?.reason ?? (loading ? "読み込み中…" : error ? "理由を読み込めませんでした。" : hand.reason)}</p>
+    <p>{english ? (detailed ? englishPreflopReason(hand, detailed, data) : loading ? "Loading…" : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (loading ? "読み込み中…" : error ? "理由を読み込めませんでした。" : hand.reason)}</p>
     {shown.length > 0 && <dl className="reason-facts">
       {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd className={fact.unit === "bb" ? (fact.value >= 0 ? "fact-positive" : "fact-negative") : undefined}>{formatFact(fact)}</dd></div>)}
     </dl>}
-    {detailed && <small className="reason-note">{data.equity_note}</small>}
+    {detailed && <small className="reason-note">{english ? englishEquityNote : data.equity_note}</small>}
   </div>;
+}
+
+function endResultLabel(result) {
+  if (productLocale() !== "en") return result;
+  const players = /^(\d+)人でフロップへ$/.exec(result);
+  if (players) return `${players[1]} players to the flop`;
+  const winner = /^(.+)の勝ち$/.exec(result);
+  if (winner) return `${winner[1]} wins`;
+  if (result === "オールイン・ショウダウン") return "All-in showdown";
+  if (result === "データなし") return "No data";
+  return result;
 }
 
 function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, extra = null, spot, position, onReturnToComparison, displayMode }) {
@@ -459,7 +473,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
         const chosenOption = block.options.find(option => option.action === block.chosen);
         if (block.kind === "end") return <div className="action-seat action-seat-end" key={block.key}>
           <div className="action-seat-heading"><strong>終了</strong></div>
-          <p className="action-seat-result">{block.result}</p>
+          <p className="action-seat-result">{endResultLabel(block.result)}</p>
           <small>{block.pot}</small>
           {/^\d+人でフロップへ$/.test(block.result) && onEnterPostflop && <button type="button" className="enter-postflop" onClick={onEnterPostflop}>フロップへ進む →</button>}
         </div>;

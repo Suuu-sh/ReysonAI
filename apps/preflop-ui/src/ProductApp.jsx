@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Onboarding } from "./components/Onboarding.jsx";
 import { RangeWorkspace } from "./estimated/RangeWorkspace.jsx";
 import { TrainerPage } from "./trainer/TrainerPage.jsx";
 import { loadProfile, saveProfile } from "./profile.js";
 import { RANGE_SECTION } from "./components/layout.jsx";
+import { localizeProductSurface } from "./i18n.js";
 
 export default function ProductApp() {
+  useLayoutEffect(() => localizeProductSurface(document.getElementById("root")), []);
   const [profile, setProfile] = useState(loadProfile);
   const [editing, setEditing] = useState(false);
   const [section, setSection] = useState(RANGE_SECTION);

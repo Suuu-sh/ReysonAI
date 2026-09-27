@@ -1,6 +1,7 @@
 import { Spade } from "@phosphor-icons/react";
 import { useState } from "react";
 import { levels } from "../profile.js";
+import { productLocale, selectProductLocale } from "../i18n.js";
 
 export function Onboarding({ initial, onComplete, onCancel }) {
   const [level, setLevel] = useState(initial?.level ?? "");
@@ -9,6 +10,10 @@ export function Onboarding({ initial, onComplete, onCancel }) {
   return <main className="onboarding">
     <form className="onboarding-card" onSubmit={event => { event.preventDefault(); if (level) onComplete({ nickname, level }); }}>
       <div className="onboarding-brand"><Spade size={26} weight="fill" /><span>Solvea<b>AI</b></span></div>
+      <div className="app-language-switch onboarding-language" role="group" aria-label="Language / 言語">
+        <button type="button" aria-pressed={productLocale() === "en"} onClick={() => selectProductLocale("en")}>EN</button>
+        <button type="button" aria-pressed={productLocale() === "ja"} onClick={() => selectProductLocale("ja")}>日本語</button>
+      </div>
       <h1>{editing ? "レベルを変更" : "はじめに、あなたのレベルを教えてください"}</h1>
       <p className="onboarding-lead">レベルに合わせて、レンジ表の見せ方を変えます。あとからいつでも変更できます。</p>
       <fieldset className="level-options">

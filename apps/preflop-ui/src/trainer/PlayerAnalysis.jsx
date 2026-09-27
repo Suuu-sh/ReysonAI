@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { analyzePlayer, scoreProgress } from "./player-analysis.js";
 import { practiceHighlights, summarize } from "./trainer-store.js";
 import "./analysis.css";
+import { localized } from "../i18n.js";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
 const points = value => value == null ? "—" : `${value >= 0 ? "+" : ""}${Math.round(value * 100)}pt`;
@@ -110,7 +111,7 @@ function ScoreChart({ progress }) {
       </InfoTip>
     </header>
     <svg className="analysis-score-chart" viewBox="0 0 720 112" preserveAspectRatio="none" role="img"
-      aria-label={`Solvea AI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${pct(progress.current)}。`}>
+      aria-label={localized(`Solvea AI Score over time. ${progress.answered} answers; average of the last ${progress.recentCount} answers: ${pct(progress.current)}.`, `Solvea AI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${pct(progress.current)}。`)}>
       <defs><linearGradient id="score-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="var(--accent)" stopOpacity=".28" /><stop offset="1" stopColor="var(--accent)" stopOpacity="0" /></linearGradient></defs>
       {[1, 0.5, 0].map(level => <g key={level}><line className="grid" x1={left} x2={right} y1={y(level)} y2={y(level)} /><text x="0" y={y(level) + 3.5}>{level * 100}</text></g>)}
       {progress.series.length > 1 && <polygon className="area" points={`${left},${bottom} ${line} ${x(progress.series.length - 1)},${bottom}`} />}
@@ -134,12 +135,12 @@ function HighlightCard({ title, items, empty, tone, children }) {
 
 function guidanceNotes(metrics) {
   const notes = [];
-  if (metrics.fold.delta >= 0.10) notes.push("フォールドが多め。オープン・コールを選べる境界のハンドをレンジ表で確認。");
-  if (metrics.fold.delta <= -0.10) notes.push("参加が広め。フォールド頻度の高いハンドを続けすぎていないか確認。");
-  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta <= -0.10) notes.push("3betが少なめ。対オープンのドリルでバリューとブロッカーの3bet候補を復習。");
-  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta >= 0.10) notes.push("3betが多め。コールやフォールドを混ぜるハンドを見直し。");
-  if (metrics.call.count >= 10 && metrics.call.delta >= 0.10) notes.push("コールが多め。ポジションと相手のオープン位置を確認してから続ける。");
-  if (!notes.length) notes.push("大きな偏りはありません。苦手な局面とハンドを中心に練習を続けましょう。");
+  if (metrics.fold.delta >= 0.10) notes.push(localized("You fold more often than the estimate. Review borderline hands that can open or call in the range table.", "フォールドが多め。オープン・コールを選べる境界のハンドをレンジ表で確認。"));
+  if (metrics.fold.delta <= -0.10) notes.push(localized("You participate more often than the estimate. Check whether you continue too often with high-fold-frequency hands.", "参加が広め。フォールド頻度の高いハンドを続けすぎていないか確認。"));
+  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta <= -0.10) notes.push(localized("You 3-bet less often. Review value and blocker 3-bet candidates in response-to-open drills.", "3betが少なめ。対オープンのドリルでバリューとブロッカーの3bet候補を復習。"));
+  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta >= 0.10) notes.push(localized("You 3-bet more often. Review hands that mix calls and folds.", "3betが多め。コールやフォールドを混ぜるハンドを見直し。"));
+  if (metrics.call.count >= 10 && metrics.call.delta >= 0.10) notes.push(localized("You call more often. Check your position and the opponent's opening position before continuing.", "コールが多め。ポジションと相手のオープン位置を確認してから続ける。"));
+  if (!notes.length) notes.push(localized("No major imbalance stands out. Keep practicing your weaker spots and hands.", "大きな偏りはありません。苦手な局面とハンドを中心に練習を続けましょう。"));
   return notes.slice(0, 3);
 }
 

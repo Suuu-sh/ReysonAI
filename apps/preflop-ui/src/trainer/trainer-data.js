@@ -2,6 +2,7 @@
 import openingSource from "../estimated/opening-ranges.json" with { type: "json" };
 import responseSource from "../estimated/preflop-ranges.json" with { type: "json" };
 import { hands } from "../data.js";
+import { productLocale } from "../i18n.js";
 
 export const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
@@ -31,6 +32,13 @@ export function spotTitle(spot) {
 }
 
 export function spotPrompt(spot) {
+  if (productLocale() === "en") {
+    if (spot.kind === "open") {
+      const before = POSITIONS.slice(0, POSITIONS.indexOf(spot.hero));
+      return before.length ? `${before.join(", ")} folded. You are ${spot.hero}.` : `You are first to act in ${spot.hero}.`;
+    }
+    return `${spot.opener} opened to ${spot.openSize} BB. You are ${spot.hero}.`;
+  }
   if (spot.kind === "open") {
     const before = POSITIONS.slice(0, POSITIONS.indexOf(spot.hero));
     return before.length ? `${before.join("・")}がフォールド。あなたは${spot.hero}です。` : `あなたは最初に行動する${spot.hero}です。`;
@@ -223,6 +231,18 @@ function seatNote(action, category, spot) {
 
 export function studyNote(action, hand, spot = null) {
   const category = handCategory(hand);
+  if (productLocale() === "en") {
+    const family = {
+      pair_high: "a high pocket pair", pair_low: "a small or middle pocket pair", suited_ace: "a suited ace",
+      suited_broadway: "a suited broadway hand", suited_connector: "a suited connector", suited_other: "a suited hand",
+      offsuit_broadway: "an offsuit broadway hand", offsuit_ace: "an offsuit ace", offsuit_other: "an offsuit hand",
+    }[category];
+    if (action === "open") return `Opening ${family} is part of the saved estimate for ${spot?.hero ?? "this position"}. Earlier positions generally require a tighter range because more players remain to act.`;
+    if (action === "call") return `Calling keeps ${family} in the pot without enlarging the bet. Its value depends on position, pot odds, and how well the hand realizes equity after the flop.`;
+    if (action === "three_bet") return `The saved estimate assigns a 3-bet frequency to ${family} in this spot. The displayed frequency—not this general note—is the recorded recommendation.`;
+    if (action === "fold") return `Folding ${family} avoids committing more chips when this spot's saved estimate prefers not to continue.`;
+    return "This action is part of the saved AI-estimated mix, not solver GTO output.";
+  }
   return seatNote(action, category, spot) ?? ACTION_NOTES[action]?.[category] ?? "";
 }
 

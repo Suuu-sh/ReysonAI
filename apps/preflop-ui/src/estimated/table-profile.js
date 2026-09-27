@@ -1,6 +1,7 @@
 // Table profile: how the players behind the opener deviate from the saved
 // response ranges. Deterministic and explainable; an LLM may later produce the
 // same profile shape from free text, but the range math always happens here.
+import { productLocale } from "../i18n.js";
 
 export const PROFILE_LEVELS = Object.freeze(["low", "normal", "high"]);
 
@@ -129,6 +130,15 @@ export function adjustmentReason(row, profile) {
   if (!row?.adjusted) return null;
   const { call, three_bet } = normalizeProfile(profile);
   const adds = row.adjusted === "add";
+  if (productLocale() === "en") {
+    const causes = [
+      three_bet === "low" && adds && "fewer opponents 3-bet",
+      three_bet === "high" && !adds && "more opponents 3-bet",
+      call === "low" && adds && "the blinds fold more often",
+      call === "high" && !adds && "calls more often create unfavorable pots",
+    ].filter(Boolean);
+    return `With this table profile, ${causes.length ? causes.join(" and ") : "opponent responses change"}. The approximation changes EV by ${row.shift_bb > 0 ? "+" : ""}${row.shift_bb.toFixed(2)} BB, so this hand is ${adds ? "added to" : "removed from"} the opening range (saved baseline: ${row.saved_open}% open).`;
+  }
   // Only the tendencies that push in this hand's direction explain it.
   const causes = [
     three_bet === "low" && adds && "3betで降ろされることが減る",

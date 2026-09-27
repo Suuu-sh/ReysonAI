@@ -5,12 +5,18 @@ import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { HandEvBars, useHandEv } from "./PostflopHandEv.jsx";
 import { actionReason, dominantTier, evidenceReason, textureLabels, tierLabels } from "./postflop-reasons.js";
 import { flopDecision, recognizedFlop, representativeFlops } from "./postflop-trial.js";
+import { productLocale } from "../i18n.js";
 
 const baseLabels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
 // Raising a lead (ip_vs_*) is a plain raise, not a check-raise.
 const labelsFor = node => node?.startsWith("ip_") ? { ...baseLabels, raise: "3倍レイズ" } : baseLabels;
 // btn_* nodes are the in-position player's decisions, bb_* the out-of-position player's.
-const nodeTitle = (node, { ip, oop }) => ({
+const nodeTitle = (node, { ip, oop }) => (productLocale() === "en" ? {
+  btn_first: `${ip} · facing ${oop}'s check`, bb_vs_33: `${oop} · facing a 33% bet`,
+  bb_vs_75: `${oop} · facing a 75% bet`, btn_vs_raise: `${ip} · facing a check-raise`,
+  oop_first: `${oop} · first decision`, ip_vs_33: `${ip} · facing a 33% bet`,
+  ip_vs_75: `${ip} · facing a 75% bet`, oop_vs_raise: `${oop} · facing a raise`,
+} : {
   btn_first: `${ip} · ${oop}のチェックへの応答`, bb_vs_33: `${oop} · 33%ベットへの応答`,
   bb_vs_75: `${oop} · 75%ベットへの応答`, btn_vs_raise: `${ip} · チェックレイズへの応答`,
   oop_first: `${oop} · 最初の判断（先にベットできる）`, ip_vs_33: `${ip} · 33%ベットへの応答`,
@@ -45,6 +51,11 @@ const groupTitles = {
 const pct0 = value => `${Math.round(value * 100)}%`;
 
 function detailSummary(action, detail, equity) {
+  if (productLocale() === "en") {
+    if (detail.required != null) return `Equity ${pct0(equity)} ${equity >= detail.required ? "≥" : "<"} required ${pct0(detail.required)}${action === "fold" ? equity >= detail.required ? "; folding gives up equity" : "; calling is unfavorable" : ""}`;
+    if (detail.foldShare != null) return `Opponent folds ${pct0(detail.foldShare)} · equity ${pct0(equity)}`;
+    return `Equity versus opponent range ${pct0(equity)}`;
+  }
   if (detail.required != null) {
     const enough = equity >= detail.required;
     return action === "fold"
@@ -74,11 +85,16 @@ function HandReasons({ node, hand, actions, texture, explain, labels }) {
   const tier = dominantTier(hand.tiers);
   const shares = Object.entries(hand.tiers).filter(([, share]) => share >= 0.005).sort((a, b) => b[1] - a[1]);
   const pct = value => `${Math.round(value * 100)}%`;
+  const english = productLocale() === "en";
+  const englishTier = { monster: "two pair or better", strong: "top pair or better", draw: "a draw", medium: "a weak pair", air: "air" };
+  const englishTexture = { dry: "Dry board", wet: "Wet board", monotone: "Monotone board", paired: "Paired board" };
   return <div className="postflop-reasons">
     <p className="postflop-reason-tier">
-      {shares.length === 1 ? <>このボードでは<strong>{tierLabels[tier]}</strong>です。</>
+      {english ? shares.length === 1 ? <>On this board, this hand is <strong>{englishTier[tier]}</strong>.</>
+        : <>Strength varies by combo: {shares.map(([name, share]) => `${englishTier[name]} ${pct(share)}`).join(", ")}. The explanation uses the most common tier, <strong>{englishTier[tier]}</strong>.</>
+        : shares.length === 1 ? <>このボードでは<strong>{tierLabels[tier]}</strong>です。</>
         : <>コンボによって強さが分かれます：{shares.map(([name, share]) => `${tierLabels[name]} ${pct(share)}`).join("・")}。理由は最も多い<strong>{tierLabels[tier]}</strong>で説明します。</>}
-      {texture && <span>{textureLabels[texture]}</span>}
+      {texture && <span>{english ? englishTexture[texture] : textureLabels[texture]}</span>}
     </p>
     <ul>
       {actions.filter(action => hand.actions[action] >= 0.005).sort((a, b) => hand.actions[b] - hand.actions[a]).map(action =>

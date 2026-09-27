@@ -1,6 +1,7 @@
 import { barColor } from "../components/primitives.jsx";
 import { label, pct } from "../data.js";
 import "./postflop-hand-ev.css";
+import { localized } from "../i18n.js";
 
 const signed = value => `${value > 0 ? "+" : ""}${value.toFixed(2)}bb`;
 
@@ -26,6 +27,6 @@ export function PreflopCallEvBars({ items, labels = {}, facts, equityLabel = "�
         </em>
       </div>)}
     </div>
-    <small className="hand-ev-note">右端はコールのEVのみ表示します。「—」は未計算で、0bbではありません。コールEVはこの判断で追加するコール額を差し引いた、保存済みの勝率と仮定EQRによる概算です。方針全体の平均EVや他の行動のEVではなく、GTO・ソルバーのEVでもありません。</small>
+    <small className="hand-ev-note">{localized("Only call EV is shown at the right. A dash means not calculated, not zero bb. Call EV is an approximation using saved equity and assumed EQR after subtracting the extra amount needed to call. It is not the policy's average EV, another action's EV, or solver/GTO EV.", "右端はコールのEVのみ表示します。「—」は未計算で、0bbではありません。コールEVはこの判断で追加するコール額を差し引いた、保存済みの勝率と仮定EQRによる概算です。方針全体の平均EVや他の行動のEVではなく、GTO・ソルバーのEVでもありません。")}</small>
   </div>;
 }

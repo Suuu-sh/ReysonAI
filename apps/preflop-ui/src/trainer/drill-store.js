@@ -1,6 +1,7 @@
 // Saved drills (named settings) and their session records, kept in this browser only.
 import { POSITIONS, normalizeSettings } from "./trainer-data.js";
 import { validSession } from "./practice-sessions.js";
+import { productLocale } from "../locale.js";
 
 const KEY = "solveaai.trainer.drills.v1";
 const SESSION_LIMIT = 50;
@@ -12,6 +13,18 @@ export const PRESET_DRILLS = Object.freeze([
   { id: "preset-blinds", name: "SB・BBの攻防", settings: { kinds: ["response"], positions: ["SB", "BB"], count: 20, difficulty: "standard" } },
   { id: "preset-mixed-hands", name: "混合ハンド集中", settings: { kinds: ["open", "response"], positions: [...POSITIONS], count: 20, difficulty: "hard" } },
 ]);
+
+const ENGLISH_PRESET_NAMES = {
+  "preset-mixed": "All-spot mix", "preset-open": "Opening range", "preset-bb-defense": "BB defense",
+  "preset-blinds": "SB · BB blind battle", "preset-mixed-hands": "Mixed-hand focus",
+};
+
+// Keep the persisted name untouched; only a stock preset gets a localized view.
+export function displayDrillName(drill) {
+  if (productLocale() !== "en") return drill.name;
+  const preset = PRESET_DRILLS.find(item => item.id === drill.id);
+  return preset && preset.name === drill.name ? ENGLISH_PRESET_NAMES[drill.id] : drill.name;
+}
 
 function presetDrills(level) {
   return PRESET_DRILLS.map(drill => ({ ...drill, settings: normalizeSettings(drill.settings, level), preset: true, sessions: [], createdAt: 0 }));
