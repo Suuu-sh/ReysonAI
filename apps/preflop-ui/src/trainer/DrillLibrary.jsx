@@ -1,6 +1,7 @@
 import { ArrowClockwise, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.js";
 import { drillStats } from "./drill-store.js";
+import { RANKED_DAILY_LIMIT, RANKED_LENGTH, TIER_EN, playedToday, tierFor } from "./rank-store.js";
 import { localized } from "../locale.js";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
@@ -76,7 +77,7 @@ function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
   </article>;
 }
 
-export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit, onDelete, onCreate, onStartReview }) {
+export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit, onDelete, onCreate, onStartReview, rank, onStartRanked }) {
   const totals = drills.map(drillStats);
   const attempts = totals.reduce((sum, item) => sum + item.attempts, 0);
   const answered = totals.reduce((sum, item) => sum + item.answered, 0);
@@ -93,6 +94,7 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
         {bestDrill && <div><dt><Trophy size={12} weight="fill" />ベスト</dt><dd>{pct(bestDrill.best)}<small>{bestDrill.drill.name}</small></dd></div>}
       </dl>
     </div>
+    {rank && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} />}
     <div className="drill-grid">
       {(reviewCount > 0 || drafts.review) && <article className={`drill-card review${drafts.review ? " in-progress" : ""}`}>
         <header><div><h3>復習ドリル</h3><ul className="drill-tags"><li>以前ミスしたハンドだけ</li></ul></div></header>
@@ -106,4 +108,29 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
       <button type="button" className="drill-card create" onClick={onCreate}><Plus size={22} weight="bold" /><strong>新しいドリルを作る</strong><small>出題範囲・席・問題数・難易度を選んで保存</small></button>
     </div>
   </div>;
+}
+
+function RankedCard({ rank, draft, onStart }) {
+  const tier = tierFor(rank.rating);
+  const left = Math.max(0, RANKED_DAILY_LIMIT - playedToday(rank));
+  const canStart = Boolean(draft) || left > 0;
+  return <article className={`ranked-card${draft ? " in-progress" : ""}`}>
+    <div className="ranked-tier">
+      <Trophy size={26} weight="fill" />
+      <div><small>ランク</small><strong>{tier.name}</strong></div>
+      <div><small>レート</small><strong>{rank.rating}</strong></div>
+      <div><small>最高</small><strong>{rank.peak}</strong></div>
+    </div>
+    <div className="ranked-progress" aria-label={tier.next ? localized(`${tier.next.min - rank.rating} to ${TIER_EN[tier.next.name]}`, `${tier.next.name}まで あと${tier.next.min - rank.rating}`) : "最高ランク"}>
+      <i style={{ "--progress": tier.progress }} />
+      <small>{tier.next ? localized(`${tier.next.min - rank.rating} to ${TIER_EN[tier.next.name]}`, `${tier.next.name}まで あと${tier.next.min - rank.rating}`) : "最高ランクです"}</small>
+    </div>
+    <footer>
+      <p><b>ランク戦</b> {localized(`All spots · standard difficulty · ${RANKED_LENGTH} questions. Harder hands move your rating more.`, `全局面・標準難易度・${RANKED_LENGTH}問。難しいハンドほどレートが大きく動きます。`)}</p>
+      <small>{draft ? localized(`${draft.session.answered} answered`, `${draft.session.answered}問 回答済み`) : localized(`${left} / ${RANKED_DAILY_LIMIT} left today`, `今日の残り ${left} / ${RANKED_DAILY_LIMIT}回`)}</small>
+      <button type="button" className={`drill-start${draft ? " resume" : ""}`} disabled={!canStart} onClick={onStart}>
+        <Play size={14} weight="fill" />{draft ? "続きから" : canStart ? "ランク戦に挑む" : "また明日"}
+      </button>
+    </footer>
+  </article>;
 }

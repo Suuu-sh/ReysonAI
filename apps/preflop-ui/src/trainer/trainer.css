@@ -440,3 +440,22 @@
 /* Answered panel: range first, explanation underneath in one scroll. */
 .trainer-panel .panel-body > .trainer-range + .trainer-explain { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
 .trainer-range .section-heading, .trainer-range h2 { font-size: 12px; }
+
+/* Ranked match */
+.ranked-card { display: grid; gap: 12px; margin-bottom: 18px; padding: 18px; border: 1px solid var(--accent, #c9a227); border-radius: 12px; background: var(--panel, transparent); }
+.ranked-tier { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; color: var(--accent, #c9a227); }
+.ranked-tier div { display: grid; }
+.ranked-tier small, .rank-result small { color: var(--muted, #888); font-size: 12px; }
+.ranked-tier strong { font-size: 20px; color: var(--text, inherit); }
+.ranked-progress { display: grid; gap: 4px; }
+.ranked-progress i { display: block; width: 100%; max-width: 420px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--accent, #c9a227) calc(var(--progress) * 100%), rgba(128,128,128,.25) 0); }
+.ranked-progress small { color: var(--muted, #888); font-size: 12px; }
+.ranked-card footer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ranked-card footer p { flex: 1 1 260px; margin: 0; font-size: 13px; }
+.ranked-card footer .drill-start:disabled { opacity: .5; cursor: not-allowed; }
+.rank-result { display: flex; gap: 28px; align-items: end; flex-wrap: wrap; margin: 16px 0; padding: 16px; border: 1px solid var(--accent, #c9a227); border-radius: 12px; }
+.rank-result div { display: grid; }
+.rank-result strong { font-size: 26px; }
+.rank-result .up { color: var(--good, #2e9d5b); font-weight: 700; }
+.rank-result .down { color: var(--bad, #d0453a); font-weight: 700; }
+.rank-result p { margin: 0; color: var(--muted, #888); }

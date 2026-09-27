@@ -6,6 +6,7 @@ export { LOCALE_KEY, productLocale, selectProductLocale, localized } from "./loc
 // Longest phrases are applied first so a specific instruction is not damaged by
 // a shorter navigation label. These are view-copy translations only, not data.
 const COPY = {
+  "ランク戦": "Ranked match", "ランク戦に挑む": "Play ranked", "ランク": "Rank", "レート": "Rating", "最高": "Peak", "昇格": "Promoted", "降格": "Demoted", "また明日": "Come back tomorrow", "最高ランクです": "Top rank reached", "ブロンズ": "Bronze", "シルバー": "Silver", "ゴールド": "Gold", "プラチナ": "Platinum", "ダイヤモンド": "Diamond", "マスター": "Master",
   "はじめに、あなたのレベルを教えてください": "First, tell us your experience level",
   "レベルに合わせて、レンジ表の見せ方を変えます。あとからいつでも変更できます。": "We tailor the range display to your level. You can change it any time.",
   "設定はこの端末のブラウザに保存されます。アカウント登録は今後対応予定です。": "Settings are saved in this browser. Accounts are planned for later.",

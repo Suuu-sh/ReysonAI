@@ -14,6 +14,7 @@ import { DrillLibrary, HistoryChart } from "./DrillLibrary.jsx";
 import { PlayerAnalysis } from "./PlayerAnalysis.jsx";
 import { SessionPage } from "./SessionPage.jsx";
 import { loadReviewSessions, newSessionRecord, recordReviewSession } from "./practice-sessions.js";
+import { RANKED_DAILY_LIMIT, RANKED_LENGTH, RANKED_SETTINGS, loadRankState, playedToday, recordMatch, saveRankState, TIER_EN, tierFor } from "./rank-store.js";
 import "./trainer.css";
 import { localized } from "../i18n.js";
 
@@ -141,6 +142,7 @@ function SessionPanel({ session, history }) {
 const KIND_OPTIONS = [{ value: "open", label: "オープン", hint: "前の人が全員フォールド" }, { value: "response", label: "vs オープン", hint: "誰かのオープンに応答" }];
 // Every drill is a fixed 10-question session that cannot be ended early.
 const SESSION_LENGTH = 10;
+const RANKED_DRILL = Object.freeze({ id: "ranked", name: "ランク戦", settings: RANKED_SETTINGS });
 
 function Segmented({ options, value, onChange, label }) {
   return <div className="setup-segmented" role="radiogroup" aria-label={label}>
@@ -216,7 +218,7 @@ function DrillEditor({ drill, isNew, onChange, onSave, onCancel, reviewCount }) 
   </div>;
 }
 
-function SessionResult({ log, settings, drill, record, onRestart, onLibrary }) {
+function SessionResult({ log, settings, drill, record, rank, onRestart, onLibrary }) {
   const answered = log.length;
   const score = log.reduce((sum, item) => sum + item.score, 0);
   const counts = { best: 0, mixed: 0, miss: 0 };
@@ -235,6 +237,7 @@ function SessionResult({ log, settings, drill, record, onRestart, onLibrary }) {
         </ul>
       </div>
     </div>
+    {rank && <RankResult rank={rank} />}
     {record && <section className="result-record">
       <div className="record-compare">
         {record.isBest && <span className="record-badge"><Trophy size={14} weight="fill" />自己ベスト更新</span>}
@@ -263,12 +266,24 @@ function SessionResult({ log, settings, drill, record, onRestart, onLibrary }) {
     </section>}
     <div className="setup-footer">
       <button type="button" className="setup-secondary" onClick={onLibrary}>ドリル一覧へ</button>
-      <button type="button" className="setup-start" onClick={onRestart}>もう一度挑戦<ArrowClockwise size={17} weight="bold" /></button>
+      {onRestart && <button type="button" className="setup-start" onClick={onRestart}>もう一度挑戦<ArrowClockwise size={17} weight="bold" /></button>}
     </div>
   </div>;
 }
 
-function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, initialDraft, onProgress, onOpenSetup, onFinish }) {
+function RankResult({ rank }) {
+  const delta = rank.after - rank.before;
+  const tier = tierFor(rank.after);
+  const promoted = tierFor(rank.before).name !== tier.name;
+  return <section className="rank-result">
+    <div><small>レート</small><strong>{rank.after}</strong>
+      <span className={delta >= 0 ? "up" : "down"}>{delta >= 0 ? "▲" : "▼"}{Math.abs(delta)}</span></div>
+    <div><small>ランク</small><strong>{tier.name}</strong>{promoted && <span className={delta >= 0 ? "up" : "down"}>{delta >= 0 ? "昇格" : "降格"}</span>}</div>
+    <p>{tier.next ? localized(`${tier.next.min - rank.after} to ${TIER_EN[tier.next.name]}`, `${tier.next.name}まで あと${tier.next.min - rank.after}`) : "最高ランクです"}</p>
+  </section>;
+}
+
+function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, initialDraft, onProgress, onOpenSetup, onFinish, length = SESSION_LENGTH }) {
   const spots = useMemo(() => spotsForSettings(settings), [settings]);
   // Keep just-answered hands out of the review queue so a miss is not re-asked immediately.
   const review = useMemo(() => {
@@ -289,7 +304,7 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
   const [answer, setAnswer] = useState(() => restored?.answer ?? null);
   const [session, setSession] = useState(() => restored?.session ?? { answered: 0, score: 0, streak: 0, bestStreak: 0, results: [], log: [] });
   const [selectedHand, setSelectedHand] = useState(null);
-  const limit = SESSION_LENGTH;
+  const limit = length;
   const lastQuestion = limit > 0 && session.answered >= limit;
 
   const choose = useCallback(action => {
@@ -464,6 +479,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   const [editing, setEditing] = useState(null); // { drill, isNew }
   const [run, setRun] = useState(0);
   const [result, setResult] = useState(null);
+  const [rankState, setRankState] = useState(loadRankState);
   const reviewCount = useMemo(() => summarize(history).review.length, [history]);
   const onAnswer = useCallback(entry => setHistory(current => { const updated = [...current, entry]; saveHistory(updated); return updated; }), []);
   const commitDrills = next => { setDrills(next); saveDrills(next); };
@@ -471,13 +487,20 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   const discardProgress = useCallback(key => setDrafts(current => removeDrillDraft(current, key)), []);
   const start = (drill, review = false) => {
     const saved = drafts[review ? "review" : drill.id];
-    setActive({ drill, review, name: saved?.drillName ?? drill.name, settings: saved?.settings ?? drill.settings });
+    setActive({ drill, review, ranked: drill.id === RANKED_DRILL.id, name: saved?.drillName ?? drill.name, settings: saved?.settings ?? drill.settings });
     setRun(value => value + 1); setPhase("drill"); onSectionChange("トレーナー");
   };
   const reviewDrill = useMemo(() => ({ id: "review", name: "復習ドリル", settings: normalizeSettings({ count: Math.min(20, Math.max(reviewCount, 1)) }, profile?.level) }), [reviewCount, profile]);
   const onFinish = useCallback((log, durationMs) => {
     discardProgress(active.review ? "review" : active.drill.id);
     let record = null;
+    if (active.ranked) {
+      const next = recordMatch(rankState, log);
+      setRankState(next); saveRankState(next);
+      setResult({ log, record: null, rank: next.matches.at(-1) });
+      setPhase("result");
+      return;
+    }
     if (log.length) {
       const session = newSessionRecord(log, durationMs);
       if (active.review) setReviewSessions(current => recordReviewSession(current, session));
@@ -491,7 +514,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
     }
     setResult({ log, record });
     setPhase("result");
-  }, [active, drills, discardProgress]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [active, drills, discardProgress, rankState]); // eslint-disable-line react-hooks/exhaustive-deps
   const mainRef = useRef(null);
   useEffect(() => { mainRef.current?.scrollTo?.(0, 0); window.scrollTo?.(0, 0); }, [phase, section]);
   const activeDraftKey = active && (active.review ? "review" : active.drill.id);
@@ -512,12 +535,13 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
             onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("library")}
             onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("library"); }} />
-        : phase === "result" && result ? <SessionResult log={result.log} record={result.record} settings={current.settings} drill={active.review ? null : current}
-            onRestart={() => start(current, active.review)} onLibrary={() => setPhase("library")} />
+        : phase === "result" && result ? <SessionResult log={result.log} record={result.record} rank={result.rank} settings={current.settings} drill={active.review ? null : current}
+            onRestart={active.ranked && (playedToday(rankState) >= RANKED_DAILY_LIMIT) ? null : () => start(current, active.review)} onLibrary={() => setPhase("library")} />
         : phase === "drill" && current ? <Drill key={run} history={history} onAnswer={onAnswer} settings={current.settings} drillName={current.name} reviewOnly={active.review}
             draftKey={activeDraftKey} initialDraft={activeDraft} onProgress={onProgress}
-            onOpenSetup={() => setPhase("library")} onFinish={onFinish} />
+            onOpenSetup={() => setPhase("library")} onFinish={onFinish} length={active.ranked ? RANKED_LENGTH : undefined} />
         : <DrillLibrary drills={drills} reviewCount={reviewCount} drafts={drafts}
+            rank={rankState} onStartRanked={() => start(RANKED_DRILL)}
             onStart={drill => start(drill)} onStartReview={() => start(reviewDrill, true)}
             onCreate={() => { setEditing({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true }); setPhase("edit"); }}
             onEdit={drill => { setEditing({ drill, isNew: false }); setPhase("edit"); }}
