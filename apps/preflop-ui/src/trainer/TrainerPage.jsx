@@ -4,7 +4,7 @@ import { Sidebar } from "../components/layout.jsx";
 import { Panel, SectionHeading, barColor } from "../components/primitives.jsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import {
-  COUNT_OPTIONS, DIFFICULTY_OPTIONS, POSITIONS, RESULT_LABELS, SPOTS, STRICTNESS_OPTIONS, aggregatesFor, compareAcross,
+  DIFFICULTY_OPTIONS, POSITIONS, RESULT_LABELS, SPOTS, STRICTNESS_OPTIONS, aggregatesFor, compareAcross,
   filterSpots, grade, normalizeSettings, pickQuestion, randomSuits, spotById, spotPrompt, spotTitle, spotsForSettings, studyNote,
 } from "./trainer-data.js";
 import { clearHistory, loadHistory, saveHistory, summarize } from "./trainer-store.js";
@@ -139,7 +139,8 @@ function SessionPanel({ session, history }) {
 }
 
 const KIND_OPTIONS = [{ value: "open", label: "オープン", hint: "前の人が全員フォールド" }, { value: "response", label: "vs オープン", hint: "誰かのオープンに応答" }];
-const countLabel = count => count ? `${count}問` : "無制限";
+// Every drill is a fixed 10-question session that cannot be ended early.
+const SESSION_LENGTH = 10;
 
 function Segmented({ options, value, onChange, label }) {
   return <div className="setup-segmented" role="radiogroup" aria-label={label}>
@@ -189,11 +190,6 @@ function DrillEditor({ drill, isNew, onChange, onSave, onCancel, reviewCount }) 
         </div>
       </section>
       <section className="setup-block">
-        <h2>問題数</h2>
-        <Segmented label="問題数" value={settings.count} onChange={count => setSettings({ ...settings, count })}
-          options={COUNT_OPTIONS.map(count => ({ value: count, label: countLabel(count) }))} />
-      </section>
-      <section className="setup-block">
         <h2>難易度</h2>
         <Segmented label="難易度" value={settings.difficulty} onChange={difficulty => setSettings({ ...settings, difficulty })} options={DIFFICULTY_OPTIONS} />
       </section>
@@ -212,7 +208,7 @@ function DrillEditor({ drill, isNew, onChange, onSave, onCancel, reviewCount }) 
     </div>
     <div className="setup-footer">
       <span className={`setup-summary${spots.length ? "" : " invalid"}`}>
-        {spots.length ? <>対象 <b>{spots.length}</b> 局面 · {countLabel(settings.count)} · {DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label}</> : "この組み合わせでは出題できる局面がありません"}
+        {spots.length ? <>対象 <b>{spots.length}</b> 局面 · {SESSION_LENGTH}問 · {DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label}</> : "この組み合わせでは出題できる局面がありません"}
       </span>
       <button type="button" className="setup-secondary" onClick={() => onSave(false)} disabled={!spots.length || !drill.name.trim()}>保存</button>
       <button type="button" className="setup-start" onClick={() => onSave(true)} disabled={!spots.length || !drill.name.trim()}>保存して開始<ArrowRight size={17} weight="bold" /></button>
@@ -293,7 +289,7 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
   const [answer, setAnswer] = useState(() => restored?.answer ?? null);
   const [session, setSession] = useState(() => restored?.session ?? { answered: 0, score: 0, streak: 0, bestStreak: 0, results: [], log: [] });
   const [selectedHand, setSelectedHand] = useState(null);
-  const limit = reviewOnly ? Math.min(settings.count || review.length, review.length || 1) : settings.count;
+  const limit = SESSION_LENGTH;
   const lastQuestion = limit > 0 && session.answered >= limit;
 
   const choose = useCallback(action => {
@@ -351,7 +347,6 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
           <span className="config-chip">{DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label}</span>
         </>}
         <button type="button" className="config-edit" onClick={onOpenSetup}><ArrowLeft size={14} />一覧</button>
-        {session.answered > 0 && <button type="button" className="config-edit" onClick={() => onFinish(session.log, Date.now() - startedAt)}>終了して結果へ</button>}
       </div>
       {limit > 0 && <div className="trainer-progress" aria-label={`${session.answered} / ${limit} 問`}>
         <span><b>{Math.min(session.answered + (answer ? 0 : 1), limit)}</b> / {limit}</span>
