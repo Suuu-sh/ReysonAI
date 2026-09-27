@@ -7,6 +7,9 @@ import "./admin.css";
 
 // Reason files are only checked for existence here; nothing is loaded.
 const reasonIds = new Set(Object.keys(import.meta.glob("../estimated/reasons/*.json")).map(path => path.split("/").pop().replace(".json", "")));
+// Spots with a hand-authored rules module (scripts/postflop-ai/authored/<slug>.mjs) own their policy.
+const authoredSlugs = Object.keys(import.meta.glob("../../scripts/postflop-ai/authored/*.mjs")).map(path => path.split("/").pop().replace(".mjs", "-v1"));
+const authoredIds = POSTFLOP_SPOTS.filter(spot => authoredSlugs.includes(spot.slug)).map(spot => spot.id);
 const STREETS = { preflop: "プリフロップ", flop: "フロップ", turn_river: "ターン/リバー" };
 const FILTERS = [["all", "すべて"], ["todo", "TODO"], ["done", "作成済み"], ["no_reason", "理由なし"]];
 
@@ -17,7 +20,7 @@ function Meter({ done, total }) {
 
 export default function AdminDashboard() {
   const catalog = useMemo(() => coverageCatalog(), []);
-  const postflop = useMemo(() => postflopCatalog(POSTFLOP_SPOTS, postflopArtifacts), []);
+  const postflop = useMemo(() => postflopCatalog(POSTFLOP_SPOTS, postflopArtifacts, authoredIds), []);
   const allCategories = [...catalog.categories.map(c => ({ ...c, street: "preflop" })), ...postflop.categories];
   const formats = useMemo(() => formatBacklog(catalog.total), [catalog.total]);
   const [filter, setFilter] = useState("todo");
@@ -28,7 +31,7 @@ export default function AdminDashboard() {
   const reasonMissing = rows.filter(row => row.status === "done" && row.reason === false).length;
   const visible = rows.filter(row =>
     (category === "all" || row.category === category) &&
-    (filter === "all" || (filter === "no_reason" ? row.status === "done" && row.reason === false : row.status === filter)) &&
+    (filter === "all" || (filter === "no_reason" ? row.status === "done" && row.reason === false : filter === "todo" ? row.status !== "done" : row.status === filter)) &&
     (!query || `${row.id} ${row.path}`.toLowerCase().includes(query.toLowerCase())));
   const unbuiltFormats = formats.filter(format => !format.built);
 
@@ -94,7 +97,7 @@ export default function AdminDashboard() {
             <tbody>
               {visible.map(row => (
                 <tr key={row.id}>
-                  <td><span className={`admin-status ${row.status}`}>{row.status === "done" ? "作成済み" : "TODO"}</span></td>
+                  <td><span className={`admin-status ${row.status}`}>{{ done: "作成済み", todo: "TODO", copy: "TODO（流用）" }[row.status]}</span></td>
                   <td className="mono">{row.id}</td>
                   <td>{row.hero}</td>
                   <td className="path">{row.path}</td>
@@ -106,7 +109,7 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
-        <p className="admin-note">ポストフロップは .local/postflop-ai の方針ファイルの有無で判定します（鮮度は未確認。.local が無い環境のビルドではすべて TODO）。プリフロップで到達しないため対象外: {postflop.unreachable.join(", ")}</p>
+        <p className="admin-note">ポストフロップは .local/postflop-ai の方針ファイルで判定します。他スポットと同じ内容のファイルは流用（仮置き）なので TODO 扱いです。.local が無い環境のビルドではすべて TODO。プリフロップで到達しないため対象外: {postflop.unreachable.join(", ")}</p>
       </section>
 
       <section className="admin-panel">

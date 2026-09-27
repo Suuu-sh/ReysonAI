@@ -32,7 +32,7 @@
 .admin-meter span { display: block; height: 100%; background: var(--accent); }
 .admin-status { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
 .admin-status.done { background: #ffffff10; color: var(--text-muted); }
-.admin-status.todo { background: var(--surface-accent-strong); color: var(--accent-bright); }
+.admin-status.todo, .admin-status.copy { background: var(--surface-accent-strong); color: var(--accent-bright); }
 .admin-tag { padding: 1px 6px; border: 1px dashed var(--line-strong); border-radius: 4px; color: var(--text-subtle); font-size: 11px; font-family: inherit; }
 .admin-formats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
 .admin-format { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: 12px; }

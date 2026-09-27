@@ -101,7 +101,9 @@ export function formatBacklog(treeSize) {
 }
 
 // Postflop (heads-up AI policy) backlog. The generated policies live in the gitignored
-// .local/postflop-ai folder, so the caller passes the file names it can see there.
+// .local/postflop-ai folder, so the caller passes { file name: policy hash } for what it sees there.
+// A policy whose hash is shared with other spots is a copied placeholder, not that spot's own
+// policy, so it stays TODO ("copy") unless the spot is in `authoredIds` (the original).
 // Each reachable spot needs a flop policy (<slug>-policy.json) and a turn/river policy
 // (<slug>-later-policy.json); spots whose preflop range never reaches the flop are skipped.
 const POT_KINDS = [["srp", "シングルレイズポット"], ["3bp", "3betポット"], ["4bp", "4betポット"], ["limp", "リンプポット"]];
@@ -110,13 +112,19 @@ const STAGES = [
   { street: "turn_river", label: "ターン/リバー", suffix: "-later-policy.json" },
 ];
 
-export function postflopCatalog(spots, artifactNames = []) {
-  const files = new Set(artifactNames);
+export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
+  const counts = {};
+  for (const hash of Object.values(artifactHashes)) if (hash) counts[hash] = (counts[hash] ?? 0) + 1;
+  const statusOf = (spot, name) => {
+    if (!(name in artifactHashes)) return "todo";
+    const hash = artifactHashes[name];
+    return authoredIds.includes(spot.id) || (hash && counts[hash] === 1) ? "done" : "copy";
+  };
   const reachable = spots.filter(spot => spot.reachable);
   const categories = STAGES.flatMap(stage => POT_KINDS.map(([kind, kindLabel]) => {
     const rows = reachable.filter(spot => spot.kind === kind).map(spot => ({
       id: spot.id, hero: `${spot.ip} vs ${spot.oop}`, path: `${kindLabel} · ${spot.ip} IP / ${spot.oop} OOP`,
-      category: `${stage.street}_${kind}`, status: files.has(`${spot.slug}${stage.suffix}`) ? "done" : "todo", street: stage.street,
+      category: `${stage.street}_${kind}`, status: statusOf(spot, `${spot.slug}${stage.suffix}`), street: stage.street,
     }));
     const done = rows.filter(row => row.status === "done").length;
     return { key: `${stage.street}_${kind}`, label: `${stage.label} · ${kindLabel}`, file: `.local/postflop-ai/*${stage.suffix}`, street: stage.street,

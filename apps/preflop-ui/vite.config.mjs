@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { localEstimateMiddleware } from "./scripts/local-estimate.mjs";
 import { localPostflopMiddleware } from "./scripts/postflop-ai/local-view.mjs";
 import { handEvMiddleware } from "./scripts/postflop-ai/hand-ev.mjs";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 // Admin dashboard: names of the locally generated postflop policies (gitignored, so empty in CI builds).
 const postflopArtifacts = { name: "postflop-artifacts",
@@ -11,7 +11,12 @@ const postflopArtifacts = { name: "postflop-artifacts",
   load(id) {
     if (id !== "\0virtual:postflop-artifacts") return null;
     const dir = new URL("./.local/postflop-ai", import.meta.url);
-    return `export default ${JSON.stringify(existsSync(dir) ? readdirSync(dir) : [])};`;
+    // File name → policy hash, so the dashboard can tell a spot's own policy from a copy.
+    const hashes = {};
+    for (const name of existsSync(dir) ? readdirSync(dir).filter(name => /-(later-)?policy\.json$/.test(name)) : []) {
+      try { hashes[name] = JSON.parse(readFileSync(new URL(`./.local/postflop-ai/${name}`, import.meta.url), "utf8")).metadata?.policy_hash ?? null; } catch { hashes[name] = null; }
+    }
+    return `export default ${JSON.stringify(hashes)};`;
   } };
 
 export default defineConfig({
