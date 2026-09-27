@@ -1,154 +1,203 @@
-import { ArrowRight, ChartBar, Target } from "@phosphor-icons/react";
+import { ArrowRight, ChartBar, Info, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { analyzePlayer, scoreProgress } from "./player-analysis.js";
 import { practiceHighlights, summarize } from "./trainer-store.js";
+import "./analysis.css";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
 const points = value => value == null ? "—" : `${value >= 0 ? "+" : ""}${Math.round(value * 100)}pt`;
+const deltaTone = value => value == null || Math.abs(value) < 0.05 ? "even" : value > 0 ? "up" : "down";
+const STYLE_SAMPLE_TARGET = 30;
 
-function ComparisonRow({ title, detail, metric }) {
-  return <div className="analysis-comparison-row">
-    <div className="analysis-comparison-label"><strong>{title}</strong><small>{detail} · {metric.count}問</small></div>
-    <div className="analysis-comparison-bars">
-      <div><span>あなた</span><i aria-hidden="true"><b className="mine" style={{ width: `${(metric.actual ?? 0) * 100}%` }} /></i><strong>{pct(metric.actual)}</strong></div>
-      <div><span>推定方針</span><i aria-hidden="true"><b className="policy" style={{ width: `${(metric.expected ?? 0) * 100}%` }} /></i><strong>{pct(metric.expected)}</strong></div>
-    </div>
-    <b className={`analysis-delta${metric.delta > 0.005 ? " up" : metric.delta < -0.005 ? " down" : ""}`}>{points(metric.delta)}</b>
-  </div>;
+// Long method notes stay available but out of the way.
+function InfoTip({ label = "説明", children }) {
+  return <details className="analysis-info">
+    <summary aria-label={label} title={label}><Info size={14} /></summary>
+    <div className="analysis-info-body">{children}</div>
+  </details>;
 }
 
-function Guidance({ analysis }) {
-  const { metrics } = analysis;
-  const notes = [];
-  if (metrics.fold.delta >= 0.10) notes.push("フォールドが多めです。オープン・コールを選べる境界のハンドを、レンジ表で確認しましょう。");
-  if (metrics.fold.delta <= -0.10) notes.push("参加が広めです。フォールド頻度の高いハンドを続けすぎていないか確認しましょう。");
-  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta <= -0.10) notes.push("3betが少なめです。対オープンのドリルで、バリューとブロッカーを使う3bet候補を復習しましょう。");
-  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta >= 0.10) notes.push("3betが多めです。コールやフォールドを混ぜるハンドを見直しましょう。");
-  if (metrics.call.count >= 10 && metrics.call.delta >= 0.10) notes.push("コールが多めです。ポジションと相手のオープン位置を確認してから続けましょう。");
-  if (!notes.length) notes.push("大きな行動の偏りは見えていません。苦手な局面とハンドを確認し、練習を続けましょう。");
-  return <section className="analysis-card analysis-guidance"><h2><Target size={19} />次の練習ポイント</h2>
-    <ul>{notes.slice(0, 3).map(note => <li key={note}>{note}</li>)}</ul>
-  </section>;
+function Kpi({ label, value, sub, accent, children }) {
+  return <div className={`analysis-kpi${accent ? " accent" : ""}`}>
+    <span>{label}</span>
+    <strong>{value}</strong>
+    {sub && <small>{sub}</small>}
+    {children}
+  </div>;
 }
 
 function StyleMap({ analysis }) {
   const { plot, metrics, ready } = analysis;
   return <section className="analysis-card analysis-map" aria-labelledby="analysis-map-title">
-    <div className="analysis-section-heading"><div><h2 id="analysis-map-title">プレイスタイルマップ</h2>
-      <p>同じ問題のAI推定方針を中心に、あなたの選び方がどちらへ寄るかを示します。</p></div></div>
+    <header className="analysis-card-head">
+      <h2 id="analysis-map-title">プレイスタイルマップ</h2>
+      <InfoTip label="マップの見方">
+        <p>中心は「今回出た問題に対するAI推定方針」です。横軸はフォールド頻度の差（右ほど参加が多い）、縦軸は対オープンでの3bet頻度の差（上ほど多い）。NITはタイト側に付く追加ラベルです。</p>
+        <p>点は重複を除いた10問以上（オープン3問・対オープン5問以上）で表示し、30問に届くまでは暫定です。実戦の絶対的なプレイスタイルではありません。</p>
+      </InfoTip>
+    </header>
     <figure className="analysis-map-figure">
-      <div className="analysis-map-y-top">3betが多い · アグレッシブ</div>
+      <span className="axis top">3bet 多</span>
       <div className="analysis-map-grid">
-        <div className="analysis-quadrant"><b>TAG</b><small>タイト × アグレッシブ</small></div>
-        <div className="analysis-quadrant"><b>LAG</b><small>ルース × アグレッシブ</small></div>
-        <div className="analysis-quadrant"><b>タイト・パッシブ</b><small>参加を絞り、コール中心</small></div>
-        <div className="analysis-quadrant"><b>ルース・パッシブ</b><small>コール過多はこの方向</small></div>
-        <span className="analysis-map-center" aria-hidden="true" title="AI推定方針の中心" />
+        <div className="analysis-quadrant q-tag"><b>TAG</b></div>
+        <div className="analysis-quadrant q-lag"><b>LAG</b></div>
+        <div className="analysis-quadrant q-tp"><b>タイト・パッシブ</b></div>
+        <div className="analysis-quadrant q-lp"><b>ルース・パッシブ</b></div>
+        <span className="analysis-map-center" aria-hidden="true" title="AI推定方針" />
         {plot ? <span className={`analysis-map-marker${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%` }}
           role="img" aria-label={`あなたの練習位置。参加頻度は推定方針から${points(-metrics.fold.delta)}、3betは${points(metrics.threeBet.delta)}。${ready ? "" : "暫定表示。"}`}>
           <i /><b>あなた{ready ? "" : " · 暫定"}</b>
-        </span> : <span className="analysis-map-wait">回答が増えると、ここに点を表示します</span>}
+        </span> : <span className="analysis-map-wait">10問以上で表示</span>}
       </div>
-      <div className="analysis-map-y-bottom">3betが少ない · パッシブ</div>
-      <figcaption className="analysis-map-x"><span>← タイト · 参加が少ない</span><span>ルース · 参加が多い →</span></figcaption>
+      <span className="axis bottom">3bet 少</span>
+      <figcaption className="axis-x"><span>← タイト</span><span>ルース →</span></figcaption>
     </figure>
-    <p className="analysis-map-note">横軸はフォールドの差、縦軸は対オープンでの3betの差です。NITは主にタイト側に付く追加ラベルです。中心は「今回出た問題に対するAI推定方針」で、実戦の絶対的なプレイスタイルではありません。{!plot && "点は重複を除いた10問以上（オープン3問・対オープン5問以上）で表示します。"}</p>
   </section>;
 }
 
-function ScoreProgress({ progress }) {
-  if (!progress.answered) return null;
-  const left = 32, right = 700, top = 12, bottom = 138;
+// One track per action: your rate as a bar, the estimate as a tick.
+function ActionRow({ title, detail, metric }) {
+  const tone = deltaTone(metric.delta);
+  return <li className="analysis-action">
+    <div className="analysis-action-label"><strong>{title}</strong><small>{detail} · {metric.count}問</small></div>
+    <div className="analysis-action-track" aria-hidden="true">
+      <b style={{ width: `${(metric.actual ?? 0) * 100}%` }} />
+      {metric.expected != null && <i style={{ left: `${metric.expected * 100}%` }} />}
+    </div>
+    <div className="analysis-action-values"><strong>{pct(metric.actual)}</strong><small>推定 {pct(metric.expected)}</small></div>
+    <span className={`analysis-delta ${tone}`}>{points(metric.delta)}</span>
+  </li>;
+}
+
+function ActionComparison({ analysis }) {
+  const { metrics, bySpot } = analysis;
+  return <section className="analysis-card analysis-actions" aria-labelledby="analysis-actions-title">
+    <header className="analysis-card-head">
+      <h2 id="analysis-actions-title">アクションの選び方</h2>
+      <span className="analysis-legend"><b className="mine" />あなた<i className="policy" />推定方針</span>
+      <InfoTip label="比較の方法">
+        <p>出題された問題ごとの推定頻度を平均して、あなたの選択率と比べます。混合・境界ハンドを多めに出すため、実戦のVPIP・PFRとは一致しません。差分 = あなた − 推定方針。</p>
+      </InfoTip>
+    </header>
+    <ul className="analysis-action-list">
+      <ActionRow title="フォールド" detail="全局面" metric={metrics.fold} />
+      <ActionRow title="オープン" detail="先に行動" metric={metrics.open} />
+      <ActionRow title="コール" detail="vs オープン" metric={metrics.call} />
+      <ActionRow title="3bet" detail="vs オープン" metric={metrics.threeBet} />
+    </ul>
+    {bySpot.length > 0 && <div className="analysis-spot-diff">
+      <h3>フォールド差が大きい局面</h3>
+      <ul>{bySpot.slice(0, 3).map(spot => <li key={spot.id}>
+        <span>{spot.label}<small>{spot.count}問</small></span>
+        <small>{pct(spot.actual)} / 推定 {pct(spot.expected)}</small>
+        <b className={deltaTone(spot.delta)}>{points(spot.delta)}</b>
+      </li>)}</ul>
+    </div>}
+  </section>;
+}
+
+function ScoreChart({ progress }) {
+  const left = 28, right = 712, top = 8, bottom = 100;
   const x = index => left + (progress.series.length === 1 ? (right - left) / 2 : index * (right - left) / (progress.series.length - 1));
   const y = value => bottom - value * (bottom - top);
-  const points = progress.series.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
-  const lastX = x(progress.series.length - 1), lastY = y(progress.current);
+  const line = progress.series.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
   return <section className="analysis-card analysis-score" aria-labelledby="analysis-score-title">
-    <div className="analysis-score-heading">
-      <div><span className="analysis-eyebrow">POLICY ALIGNMENT</span><h2 id="analysis-score-title">Solvea AI Score</h2>
-        <p>保存済みAI推定方針との一致度の推移</p></div>
-      <div className="analysis-score-value"><strong>{Math.round(progress.current * 100)}<small>%</small></strong><span>直近{progress.recentCount}回答の平均{progress.recentCount < progress.windowSize ? " · 暫定" : ""}</span></div>
-    </div>
-    <figure className="analysis-score-figure">
-      <svg viewBox="0 0 720 168" role="img" aria-label={`Solvea AI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${Math.round(progress.current * 100)}%。`} preserveAspectRatio="none">
-        <line className="analysis-score-grid" x1={left} x2={right} y1={top} y2={top} />
-        <line className="analysis-score-grid" x1={left} x2={right} y1={y(0.5)} y2={y(0.5)} />
-        <line className="analysis-score-grid" x1={left} x2={right} y1={bottom} y2={bottom} />
-        <text x="0" y={top + 4}>100</text><text x="5" y={y(0.5) + 4}>50</text><text x="11" y={bottom + 4}>0</text>
-        {progress.series.length > 1 && <polyline className="analysis-score-line" points={points} />}
-        <circle className="analysis-score-point" cx={lastX} cy={lastY} r="5" />
-      </svg>
-      <figcaption><span>1回答目</span><span>{progress.answered}回答目</span></figcaption>
-    </figure>
-    <p className="analysis-score-note">各回答を同じ局面・ハンドの推定頻度と比較し、選んだ行動の頻度 ÷ 最頻行動の頻度で採点。線は直近10回答の移動平均です（復習の再回答も含む）。現在保存されている推定方針で再計算されます。GTOスコア・EV損失・勝率ではありません。</p>
+    <header className="analysis-card-head">
+      <h2 id="analysis-score-title">Solvea AI Score の推移</h2>
+      <span className="analysis-caption">保存済みAI推定との一致度 · GTOスコア・EV損失・勝率ではありません</span>
+      <InfoTip label="スコアの計算方法">
+        <p>各回答を同じ局面・ハンドの推定頻度と比べ、「選んだ行動の頻度 ÷ 最頻行動の頻度」で採点します。線は直近10回答の移動平均です（復習の再回答も含む）。推定方針が更新されると過去分も再計算されます。</p>
+      </InfoTip>
+    </header>
+    <svg className="analysis-score-chart" viewBox="0 0 720 112" preserveAspectRatio="none" role="img"
+      aria-label={`Solvea AI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${pct(progress.current)}。`}>
+      <defs><linearGradient id="score-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="var(--accent)" stopOpacity=".28" /><stop offset="1" stopColor="var(--accent)" stopOpacity="0" /></linearGradient></defs>
+      {[1, 0.5, 0].map(level => <g key={level}><line className="grid" x1={left} x2={right} y1={y(level)} y2={y(level)} /><text x="0" y={y(level) + 3.5}>{level * 100}</text></g>)}
+      {progress.series.length > 1 && <polygon className="area" points={`${left},${bottom} ${line} ${x(progress.series.length - 1)},${bottom}`} />}
+      {progress.series.length > 1 && <polyline className="analysis-score-line" points={line} />}
+      <circle className="point" cx={x(progress.series.length - 1)} cy={y(progress.current)} r="4" />
+    </svg>
+    <div className="analysis-score-axis"><span>1回答目</span><span>{progress.answered}回答目</span></div>
   </section>;
 }
 
-function HighlightCard({ title, items, empty, tone, review, reviewCount, onOpenWeakness }) {
-  return <section className={`analysis-card analysis-highlight-card ${tone}`} aria-label={title}>
-    <h2>{title}</h2>
+function HighlightCard({ title, items, empty, tone, children }) {
+  return <section className={`analysis-card analysis-highlight ${tone}`} aria-label={title}>
+    <header className="analysis-card-head"><h2>{tone === "strength" ? <TrendUp size={15} weight="bold" /> : <TrendDown size={15} weight="bold" />}{title}</h2></header>
     {items.length ? <ul>{items.map(item => <li key={`${item.kind}-${item.key}`}>
       <span><small>{item.kind} · {item.answered}問{item.provisional ? " · 暫定" : ""}</small><strong>{item.label}</strong></span>
       <b>{pct(item.rate)}</b>
     </li>)}</ul> : <p className="analysis-empty">{empty}</p>}
-    {tone === "weakness" && reviewCount > 0 && <div className="analysis-review">
-      <strong>復習待ち {reviewCount}ハンド</strong>
-      <p>{review.map(item => item.label).join("、")}{reviewCount > review.length ? " など" : ""}</p>
-    </div>}
-    {tone === "weakness" && onOpenWeakness && <button type="button" className="analysis-detail-link" onClick={onOpenWeakness}>弱点の詳細を見る<ArrowRight size={14} /></button>}
+    {children}
   </section>;
+}
+
+function guidanceNotes(metrics) {
+  const notes = [];
+  if (metrics.fold.delta >= 0.10) notes.push("フォールドが多め。オープン・コールを選べる境界のハンドをレンジ表で確認。");
+  if (metrics.fold.delta <= -0.10) notes.push("参加が広め。フォールド頻度の高いハンドを続けすぎていないか確認。");
+  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta <= -0.10) notes.push("3betが少なめ。対オープンのドリルでバリューとブロッカーの3bet候補を復習。");
+  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta >= 0.10) notes.push("3betが多め。コールやフォールドを混ぜるハンドを見直し。");
+  if (metrics.call.count >= 10 && metrics.call.delta >= 0.10) notes.push("コールが多め。ポジションと相手のオープン位置を確認してから続ける。");
+  if (!notes.length) notes.push("大きな偏りはありません。苦手な局面とハンドを中心に練習を続けましょう。");
+  return notes.slice(0, 3);
 }
 
 export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
   const analysis = useMemo(() => analyzePlayer(history), [history]);
   const progress = useMemo(() => scoreProgress(history), [history]);
-  const highlights = useMemo(() => practiceHighlights(summarize(history)), [history]);
+  const stats = useMemo(() => summarize(history), [history]);
+  const highlights = useMemo(() => practiceHighlights(stats), [stats]);
   const { metrics } = analysis;
+  const scoreDelta = progress.series.length > progress.windowSize ? progress.current - progress.series.at(-1 - progress.windowSize) : null;
+  const styleProgress = Math.min(1, analysis.samples / STYLE_SAMPLE_TARGET);
+
   return <div className="player-analysis">
     <header className="analysis-heading">
-      <div><span className="analysis-eyebrow"><ChartBar size={16} /> PRACTICE INSIGHTS</span><h1>プレー分析</h1>
-        <p>練習で選んだアクションを、同じ局面・同じハンドの保存済みAI推定方針と比べます。</p></div>
-      <button type="button" className="analysis-start" onClick={onStart}>練習する<ArrowRight size={16} /></button>
+      <div>
+        <span className="analysis-eyebrow"><ChartBar size={14} />PRACTICE INSIGHTS</span>
+        <h1>プレー分析</h1>
+      </div>
+      <button type="button" className="analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
     </header>
 
-    <StyleMap analysis={analysis} />
-
-    <ScoreProgress progress={progress} />
-
-    {!analysis.ready && <p className="analysis-notice" role="status">傾向判定には、重複を除いて30問以上（オープン・対オープン各10問以上、計3局面以上）が必要です。現在はオープン {analysis.openSamples}問・対オープン {analysis.responseSamples}問です。</p>}
-
-    {!analysis.samples ? <section className="analysis-card analysis-welcome">
-      <span className="analysis-welcome-icon"><Target size={25} weight="duotone" /></span>
-      <h2>まずは練習から</h2>
-      <p>オープン・コール・3bet・フォールドの選び方を記録し、推定方針との差からプレースタイルを見つけます。</p>
-      <button type="button" className="analysis-start" onClick={onStart}>ドリルを選ぶ<ArrowRight size={16} /></button>
-    </section> : <>
-    <section className="analysis-card" aria-label="アクション傾向の比較">
-      <div className="analysis-section-heading"><div><h2>アクションの選び方</h2><p>出題された問題ごとの推定頻度を平均して比較。出題範囲の違いによる偏りを抑えます。</p></div><span>差分 = あなた − 推定方針</span></div>
-      <div className="analysis-comparisons">
-        <ComparisonRow title="フォールド" detail="全局面" metric={metrics.fold} />
-        <ComparisonRow title="オープン" detail="先に行動する局面" metric={metrics.open} />
-        <ComparisonRow title="コール" detail="相手のオープンに対して" metric={metrics.call} />
-        <ComparisonRow title="3bet" detail="相手のオープンに対して" metric={metrics.threeBet} />
-      </div>
-    </section>
-
-    <div className="analysis-highlights" aria-label="練習結果の強みと弱点">
-      <HighlightCard title="強み" tone="strength" items={highlights.strengths} empty="正答率80%以上の局面・ハンド種類は、まだありません。" />
-      <HighlightCard title="弱点" tone="weakness" items={highlights.weaknesses} empty="まだ判定できる弱点データがありません。"
-        review={highlights.review} reviewCount={highlights.reviewCount} onOpenWeakness={onOpenWeakness} />
+    <div className="analysis-kpis">
+      <Kpi label="Solvea AI Score" accent value={progress.current == null ? "—" : <>{Math.round(progress.current * 100)}<small>%</small></>}
+        sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)} · 10回答前比</span>} />
+      <Kpi label="正答率" value={stats.answered ? <>{Math.round(stats.rate * 100)}<small>%</small></> : "—"} sub={`${stats.answered}回答`} />
+      <Kpi label="プレイスタイル" value={analysis.ready ? analysis.style.label : "判定中"} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>
+        {!analysis.ready && <span className="analysis-kpi-bar" aria-hidden="true"><i style={{ width: `${styleProgress * 100}%` }} /></span>}
+      </Kpi>
+      <Kpi label="出題の内訳" value={<>{analysis.openSamples}<small>オープン</small> {analysis.responseSamples}<small>vs オープン</small></>}
+        sub={analysis.ready ? `${analysis.distinctSpots}局面` : "判定には各10問・3局面以上"} />
     </div>
-    <p className="analysis-highlight-note">強みは5問以上で正答率80%以上、弱点は5問以上で60%以下を目安に表示します。3～4問の弱点候補は「暫定」とし、実戦の実力評価ではありません。</p>
 
-    <div className="analysis-bottom">
-      <section className="analysis-card analysis-spots"><h2>差が大きい局面</h2><p>各局面で5種類以上のハンドを解いた場合のみ表示します。</p>
-        {analysis.bySpot.length ? <ul>{analysis.bySpot.slice(0, 5).map(spot => <li key={spot.id}>
-          <span><strong>{spot.label}</strong><small>{spot.count}問 · フォールド</small></span>
-          <b>{points(spot.delta)}</b><small>{pct(spot.actual)} / 推定 {pct(spot.expected)}</small>
-        </li>)}</ul> : <p className="analysis-empty">まだ比較できる局面がありません。</p>}
-      </section>
-      <Guidance analysis={analysis} />
-    </div></>}
-    <p className="analysis-footnote">これは練習問題での選択傾向です。実戦のVPIP・PFRや性格、勝率の判定ではありません。問題は混合・境界ハンドを多めに出し、比較先もGTO解ではなくAI推定です。SBのオープン練習では、提示される選択肢だけに条件づけて比較します。回答はこのブラウザ内だけに保存されます。</p>
+    <div className="analysis-main">
+      <StyleMap analysis={analysis} />
+      {analysis.samples ? <ActionComparison analysis={analysis} /> : <section className="analysis-card analysis-welcome">
+        <span className="analysis-welcome-icon"><Target size={22} weight="duotone" /></span>
+        <h2>まずは練習から</h2>
+        <p>オープン・コール・3bet・フォールドの選び方を記録し、推定方針との差からプレースタイルを見つけます。</p>
+        <button type="button" className="analysis-start" onClick={onStart}>ドリルを選ぶ<ArrowRight size={15} /></button>
+      </section>}
+    </div>
+    {analysis.samples > 0 && <>
+      {progress.answered > 0 && <ScoreChart progress={progress} />}
+      <div className="analysis-bottom" aria-label="練習結果の強みと弱点">
+        <HighlightCard title="強み" tone="strength" items={highlights.strengths} empty="5問以上で正答率80%以上の項目はまだありません。" />
+        <HighlightCard title="弱点" tone="weakness" items={highlights.weaknesses} empty="判定できる弱点データはまだありません。">
+          {highlights.reviewCount > 0 && <p className="analysis-review"><strong>復習待ち {highlights.reviewCount}ハンド</strong>{highlights.review.map(item => item.label).join("、")}{highlights.reviewCount > highlights.review.length ? " など" : ""}</p>}
+          <button type="button" className="analysis-link" onClick={onOpenWeakness}>弱点の詳細を見る<ArrowRight size={13} /></button>
+        </HighlightCard>
+        <section className="analysis-card analysis-guidance" aria-label="次の練習ポイント">
+          <header className="analysis-card-head"><h2><Target size={15} weight="bold" />次の練習ポイント</h2></header>
+          <ul>{guidanceNotes(metrics).map(note => <li key={note}>{note}</li>)}</ul>
+        </section>
+      </div>
+    </>}
+
+    <p className="analysis-footnote">
+      練習問題での選択傾向です（強み・弱点は5問以上で80%以上／60%以下、3〜4問は暫定）。実戦のVPIP・PFR・勝率やGTOの評価ではありません。回答はこのブラウザ内だけに保存されます。
+    </p>
   </div>;
 }
