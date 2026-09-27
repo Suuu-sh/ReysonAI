@@ -65,7 +65,7 @@ test("per-hand rows carry equity, EQR, per-action EV and the class mix for every
   const root = result[""];
   assert.deepEqual([root.node, root.actor, root.pot_bb], ["btn_first", "BTN", 5.5]);
   const aa = root.rows.AA;
-  assert.deepEqual(Object.keys(aa.ev_bb), ["check", "bet33", "bet75"]);
+  assert.deepEqual(Object.keys(aa.ev_bb), ["check", "bet33", "bet75", "bet125"]);
   assert.ok(aa.equity_pct > 80 && aa.eqr > 0);
   assert.equal(Object.values(aa.mix).reduce((sum, value) => sum + value, 0), 100);
   // EQR follows the preflop definition: EV = equity × EQR × raked(pot).

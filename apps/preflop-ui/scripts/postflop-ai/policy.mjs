@@ -1,13 +1,13 @@
 import { boardTexture, handTier, TEXTURES, TIERS } from "./model.mjs";
 
-import { DEFAULT_TREE, NODES, TREES, nodeRole, treeNodes } from "./tree.mjs";
+import { DEFAULT_TREE, FLOP_BETS, NODES, TREES, nodeRole, treeNodes } from "./tree.mjs";
 
 // Node names and trees live in tree.mjs: "btn_*" / "ip_*" nodes belong to the in-position
 // player and "bb_*" / "oop_*" nodes to the out-of-position player of a heads-up pot.
 export { NODES, TREES, nodeRole, treeNodes };
 
 // A policy is valid for one tree: only that tree's nodes, and a texture=any fallback for
-// every node and tier (20 rules for "oop_checks", 40 for "oop_leads").
+// every node and tier (5 per node of the tree; the node count follows the configured bet sizes).
 export function validatePolicy(policy, tree = DEFAULT_TREE) {
   const nodes = treeNodes(tree);
   if (!policy || policy.version !== 1 || policy.kind !== "ai_estimate_not_gto" ||
@@ -51,49 +51,42 @@ export function choose(mix, random, actions = Object.keys(mix)) {
 
 // Fixed independent comparator. These are intentionally simple reference policies,
 // not GTO or performance targets; simulations report differences only.
-const standard = {
-  btn_first: {
-    monster: [5, 25, 70], strong: [25, 55, 20], draw: [45, 45, 10],
-    medium: [75, 25, 0], air: [85, 15, 0],
-  },
-  bb_vs_33: {
-    monster: [0, 45, 55], strong: [5, 80, 15], draw: [20, 70, 10],
-    medium: [35, 65, 0], air: [90, 10, 0],
-  },
-  bb_vs_75: {
-    monster: [0, 55, 45], strong: [20, 70, 10], draw: [45, 50, 5],
-    medium: [70, 30, 0], air: [95, 5, 0],
-  },
-  btn_vs_raise: {
-    monster: [0, 100], strong: [25, 75], draw: [45, 55],
-    medium: [75, 25], air: [95, 5],
-  },
+// First-to-act nodes: [check, total bet %]; the bet is spread over the configured sizes
+// by tier (value leans big, medium hands small, air slightly polarized).
+const FIRST = {
+  btn_first: { monster: [5, 95], strong: [25, 75], draw: [45, 55], medium: [75, 25], air: [85, 15] },
   // The OOP preflop raiser leading (oop_leads tree): a little less betting than IP after a check.
-  oop_first: {
-    monster: [30, 40, 30], strong: [45, 45, 10], draw: [55, 35, 10],
-    medium: [80, 20, 0], air: [80, 20, 0],
-  },
-  ip_vs_33: {
-    monster: [0, 45, 55], strong: [5, 80, 15], draw: [20, 70, 10],
-    medium: [35, 65, 0], air: [90, 10, 0],
-  },
-  ip_vs_75: {
-    monster: [0, 55, 45], strong: [20, 70, 10], draw: [45, 50, 5],
-    medium: [70, 30, 0], air: [95, 5, 0],
-  },
-  oop_vs_raise: {
-    monster: [0, 100], strong: [25, 75], draw: [45, 55],
-    medium: [75, 25], air: [95, 5],
-  },
+  oop_first: { monster: [30, 70], strong: [45, 55], draw: [55, 45], medium: [80, 20], air: [80, 20] },
 };
+const SIZE_WEIGHTS = {
+  monster: { 33: 25, 75: 50, 125: 25 }, strong: { 33: 70, 75: 25, 125: 5 }, draw: { 33: 50, 75: 35, 125: 15 },
+  medium: { 33: 100, 75: 0, 125: 0 }, air: { 33: 70, 75: 15, 125: 15 },
+};
+// Facing a bet: [fold, call, raise] by bet size (the smallest size row is reused for unknown sizes).
+const FACING = {
+  33: { monster: [0, 45, 55], strong: [5, 80, 15], draw: [20, 70, 10], medium: [35, 65, 0], air: [90, 10, 0] },
+  75: { monster: [0, 55, 45], strong: [20, 70, 10], draw: [45, 50, 5], medium: [70, 30, 0], air: [95, 5, 0] },
+  125: { monster: [0, 65, 35], strong: [30, 65, 5], draw: [55, 42, 3], medium: [80, 20, 0], air: [97, 3, 0] },
+};
+const VS_RAISE = { monster: [0, 100], strong: [25, 75], draw: [45, 55], medium: [75, 25], air: [95, 5] };
 
-// The fixed reference policy of one tree (only that tree's nodes, in the original rule order).
+function referenceMix(node, tier) {
+  const actions = NODES[node];
+  if (node.endsWith("_first")) {
+    const [check, bet] = FIRST[node][tier];
+    const weights = FLOP_BETS.map(action => SIZE_WEIGHTS[tier][action.slice(3)] ?? 0);
+    const sum = weights.reduce((a, b) => a + b, 0) || 1;
+    return roundMix({ check, ...Object.fromEntries(FLOP_BETS.map((action, i) => [action, bet * weights[i] / sum])) }, actions);
+  }
+  if (node.endsWith("_vs_raise")) return Object.fromEntries(actions.map((action, i) => [action, VS_RAISE[tier][i]]));
+  const row = (FACING[node.split("_vs_")[1]] ?? FACING[33])[tier];
+  return Object.fromEntries(actions.map((action, i) => [action, row[i]]));
+}
+
+// The fixed reference policy of one tree (only that tree's nodes, in tree order).
 export function referencePolicyFor(tree = DEFAULT_TREE) {
-  const nodes = treeNodes(tree);
   return validatePolicy({ version: 1, kind: "ai_estimate_not_gto",
-    rules: Object.entries(standard).filter(([node]) => nodes.includes(node)).flatMap(([node, tiers]) => Object.entries(tiers).map(([tier, values]) => ({
-      node, tier, texture: "any", mix: Object.fromEntries(NODES[node].map((action, i) => [action, values[i]])),
-    }))),
+    rules: treeNodes(tree).flatMap(node => TIERS.map(tier => ({ node, tier, texture: "any", mix: referenceMix(node, tier) }))),
   }, tree);
 }
 export const referencePolicy = referencePolicyFor(DEFAULT_TREE);
@@ -115,9 +108,9 @@ export function opponentMix(node, hole, flop, profile) {
   const factor = profile === "passive" ? 0.5 : 1.5;
   const actions = NODES[node];
   if (node === "btn_first" || node === "oop_first") {
-    const betTotal = Math.min(100, (base.bet33 + base.bet75) * factor);
-    const fraction33 = base.bet33 / (base.bet33 + base.bet75 || 1);
-    return roundMix({ check: 100 - betTotal, bet33: betTotal * fraction33, bet75: betTotal * (1 - fraction33) }, actions);
+    const current = FLOP_BETS.reduce((sum, action) => sum + base[action], 0);
+    const betTotal = Math.min(100, current * factor);
+    return roundMix({ check: 100 - betTotal, ...Object.fromEntries(FLOP_BETS.map(action => [action, current ? betTotal * base[action] / current : 0])) }, actions);
   }
   if (node === "btn_vs_raise" || node === "oop_vs_raise") {
     const call = Math.min(100, Math.max(0, base.call + (profile === "passive" ? 10 : -10)));

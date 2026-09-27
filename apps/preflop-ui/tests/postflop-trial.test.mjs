@@ -91,8 +91,8 @@ test("3bet pot ranges: the 3bettor's saved 3bet and the opener's open × call ve
 });
 
 test("the two flop trees: OOP checks after a flat, the OOP preflop raiser leads", () => {
-  assert.deepEqual(Object.keys(treeHistories("oop_checks")), ["", "bet33", "bet75", "bet33,raise", "bet75,raise"]);
-  assert.deepEqual(Object.keys(treeHistories("oop_leads")), ["", "check", "bet33", "bet75", "check,bet33", "check,bet75", "bet33,raise", "bet75,raise", "check,bet33,raise", "check,bet75,raise"]);
+  assert.deepEqual(Object.keys(treeHistories("oop_checks")), ["", "bet33", "bet75", "bet125", "bet33,raise", "bet75,raise", "bet125,raise"]);
+  assert.deepEqual(Object.keys(treeHistories("oop_leads")), ["", "check", "bet33", "bet75", "bet125", "check,bet33", "check,bet75", "check,bet125", "bet33,raise", "bet75,raise", "bet125,raise", "check,bet33,raise", "check,bet75,raise", "check,bet125,raise"]);
   assert.deepEqual(flopState("oop_leads", ["bet75", "raise", "fold"]).end, { type: "raise-fold", winner: "ip" });
   assert.deepEqual(flopState("oop_leads", ["check", "check"]).end, { type: "check" });
   assert.throws(() => flopState("oop_checks", ["check", "check"]), /Illegal/);
@@ -100,7 +100,7 @@ test("the two flop trees: OOP checks after a flat, the OOP preflop raiser leads"
   // A policy is validated against its own tree's nodes and fallbacks.
   assert.throws(() => validatePolicy(referencePolicy, "oop_leads"), /Invalid postflop policy envelope|Missing fallback/);
   assert.throws(() => validatePolicy(referencePolicyFor("oop_leads"), "oop_checks"), /Invalid postflop policy/);
-  assert.equal(referencePolicyFor("oop_leads").rules.length, 40);
+  assert.equal(referencePolicyFor("oop_leads").rules.length, 50);
 });
 
 test("4bet pots and SB's limped pots: seats, pot, stacks and tree", () => {
@@ -235,7 +235,7 @@ test("the first BTN/BB pilot keeps its files, hashes and report identity", () =>
   const report = simulate(inputs, referencePolicy, 2);
   assert.equal(report.spot, "BTN_open_BB_call");
   assert.deepEqual([...new Set(report.results.map(row => row.hero))], ["BTN", "BB"]);
-  // When the local candidate exists (it is git-ignored), it must still load against the unchanged fingerprint.
+  // When the local candidate exists (it is git-ignored), it must load against the current fingerprint.
   if (existsSync(artifactPaths(inputs.spot).candidate)) assert.equal(loadCandidate(inputs).metadata.source_hash, inputs.fingerprint);
 });
 
@@ -268,7 +268,7 @@ test("flop decisions reuse preflop-style action blocks without inventing later a
   const first = buildFlopActionBlocks();
   assert.deepEqual(first.map(block => block.position), ["BB", "BTN"]);
   assert.equal(first[1].active, true);
-  assert.deepEqual(first[1].options.map(option => option.action), ["check", "bet33", "bet75"]);
+  assert.deepEqual(first[1].options.map(option => option.action), ["check", "bet33", "bet75", "bet125"]);
   const raised = buildFlopActionBlocks(["bet33", "raise"]);
   assert.deepEqual(raised.map(block => block.position), ["BB", "BTN", "BB", "BTN"]);
   assert.deepEqual(raised[3].options.map(option => option.action), ["fold", "call"]);
@@ -282,7 +282,7 @@ test("read-only board projection expands saved source combos without revealing a
   const data = buildLocalBoard("As7d2c", inputs, candidate);
   assert.equal(data.kind, "ai_estimate_not_gto");
   assert.equal(data.board, "As7d2c");
-  assert.deepEqual(Object.keys(data.nodes), ["btn_first", "bb_vs_33", "bb_vs_75", "btn_vs_raise"]);
+  assert.deepEqual(Object.keys(data.nodes), ["btn_first", "bb_vs_33", "bb_vs_75", "bb_vs_125", "btn_vs_raise"]);
   for (const [node, section] of Object.entries(data.nodes)) {
     assert.equal(section.rows.length, 169, node);
     for (const row of section.rows) {
@@ -295,7 +295,7 @@ test("read-only board projection expands saved source combos without revealing a
   const co = buildLocalBoard("As7d2c", coInputs, { metadata: { source_hash: coInputs.fingerprint, policy_hash: sha(leads) }, policy: leads });
   assert.deepEqual([co.spot, co.tree, co.ip, co.oop, co.pot_bb, co.nodes.oop_first.seat, co.nodes.ip_vs_33.seat, co.nodes.btn_first.seat, co.nodes.bb_vs_33.seat],
     ["CO_open_BTN_call", "oop_leads", "BTN", "CO", 6.5, "CO", "BTN", "BTN", "CO"]);
-  assert.equal(Object.keys(co.nodes).length, 8);
+  assert.equal(Object.keys(co.nodes).length, 10);
   // A policy for the other tree is rejected.
   assert.throws(() => buildLocalBoard("As7d2c", coInputs, { metadata: { source_hash: coInputs.fingerprint, policy_hash: sha(referencePolicy) }, policy: referencePolicy }), /Invalid postflop policy envelope|Missing fallback/);
   assert.throws(() => buildLocalBoard("As7d2c", coInputs, { ...candidate, policy: leads }), /ハッシュ/);
@@ -382,7 +382,7 @@ test("combo explanation splits the opponent range into value, fold-out and conti
   const inputs = loadInputs();
   const boardCards = parseCards("Js8s5d", 3);
   const bet = explainCombo({ boardCards, node: "btn_first", cards: "AsKc", inputs, policy: referencePolicy });
-  assert.deepEqual(Object.keys(bet.actions).sort(), ["bet33", "bet75", "check"]);
+  assert.deepEqual(Object.keys(bet.actions).sort(), ["bet125", "bet33", "bet75", "check"]);
   assert.deepEqual(bet.actions.bet33.groups.map(group => group.key), ["value", "foldBetter", "continueBetter"]);
   const [value, foldBetter, continueBetter] = bet.actions.bet33.groups;
   const shares = value.share + continueBetter.share + bet.actions.bet33.foldShare;
@@ -394,7 +394,7 @@ test("combo explanation splits the opponent range into value, fold-out and conti
   const sbInputs = loadInputs("SB_open_BB_call");
   const sbCall = explainCombo({ boardCards, node: "ip_vs_33", cards: "Th9d", inputs: sbInputs, policy: leads });
   assert.ok(Math.abs(sbCall.actions.call.required - 2.31 / (7 + 2.31 * 2)) < 0.001);
-  assert.deepEqual(Object.keys(explainCombo({ boardCards, node: "oop_first", cards: "AsKc", inputs: sbInputs, policy: leads }).actions).sort(), ["bet33", "bet75", "check"]);
+  assert.deepEqual(Object.keys(explainCombo({ boardCards, node: "oop_first", cards: "AsKc", inputs: sbInputs, policy: leads }).actions).sort(), ["bet125", "bet33", "bet75", "check"]);
   assert.throws(() => explainCombo({ boardCards, node: "oop_first", cards: "AsKc", inputs, policy: referencePolicy }), /未対応/);
   // In a 3bet pot, a raise is capped by the stack when computing the price.
   const threeBetInputs = loadInputs("UTG_open_BB_3bet_call");

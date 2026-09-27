@@ -1,26 +1,42 @@
+import config from "../data/postflop-ai-pilot.json" with { type: "json" };
+
 // Flop betting trees of the local AI pilot. Pure data/logic shared by the browser and the Node scripts.
 //
 // "oop_checks" (the first pilot's tree): the OOP player is the preflop caller and always checks;
-//   IP check/bet33/bet75 → OOP fold/call/raise(3×) → IP fold/call.
+//   IP check/bet (each configured size) → OOP fold/call/raise(3×) → IP fold/call.
 // "oop_leads": the OOP player made the last preflop raise and acts first:
-//   OOP check/bet33/bet75; after a bet IP fold/call/raise(3×) → OOP fold/call;
+//   OOP check/bet; after a bet IP fold/call/raise(3×) → OOP fold/call;
 //   after a check the "oop_checks" branch follows.
 // Node names from the first pilot are kept: "btn_*" / "ip_*" nodes are the in-position
 // player's decisions and "bb_*" / "oop_*" nodes the out-of-position player's.
+// Bet sizes come from data/postflop-ai-pilot.json (`flop_bet_fractions`): bet33 / bet75 /
+// bet125 and the facing nodes bb_vs_33 … (after an IP bet) and ip_vs_33 … (after an OOP lead).
+export const FLOP_BETS = Object.freeze(config.flop_bet_fractions.map(fraction => `bet${Math.round(fraction * 100)}`));
+export const flopBetFraction = action => {
+  const index = FLOP_BETS.indexOf(action);
+  if (index < 0) throw new Error(`Unknown flop bet: ${action}`);
+  return config.flop_bet_fractions[index];
+};
+export const flopBetLabel = action => `${action.slice(3)}%`;
+// The node that responds to `bet` from `bettor` ("ip" → bb_vs_*, "oop" → ip_vs_*).
+export const facingNode = (bettor, bet) => `${bettor === "ip" ? "bb" : "ip"}_vs_${bet.slice(3)}`;
+export const raiseNodeAfter = bettor => bettor === "ip" ? "btn_vs_raise" : "oop_vs_raise";
+export const isFlopBet = action => FLOP_BETS.includes(action);
+
+const RESPONSE = ["fold", "call", "raise"];
 export const NODES = Object.freeze({
-  btn_first: ["check", "bet33", "bet75"],
-  bb_vs_33: ["fold", "call", "raise"],
-  bb_vs_75: ["fold", "call", "raise"],
-  btn_vs_raise: ["fold", "call"],
-  oop_first: ["check", "bet33", "bet75"],
-  ip_vs_33: ["fold", "call", "raise"],
-  ip_vs_75: ["fold", "call", "raise"],
-  oop_vs_raise: ["fold", "call"],
+  btn_first: Object.freeze(["check", ...FLOP_BETS]),
+  ...Object.fromEntries(FLOP_BETS.map(bet => [facingNode("ip", bet), Object.freeze([...RESPONSE])])),
+  btn_vs_raise: Object.freeze(["fold", "call"]),
+  oop_first: Object.freeze(["check", ...FLOP_BETS]),
+  ...Object.fromEntries(FLOP_BETS.map(bet => [facingNode("oop", bet), Object.freeze([...RESPONSE])])),
+  oop_vs_raise: Object.freeze(["fold", "call"]),
 });
 
+const ipBranch = ["btn_first", ...FLOP_BETS.map(bet => facingNode("ip", bet)), "btn_vs_raise"];
 export const TREES = Object.freeze({
-  oop_checks: Object.freeze(["btn_first", "bb_vs_33", "bb_vs_75", "btn_vs_raise"]),
-  oop_leads: Object.freeze(["oop_first", "ip_vs_33", "ip_vs_75", "oop_vs_raise", "btn_first", "bb_vs_33", "bb_vs_75", "btn_vs_raise"]),
+  oop_checks: Object.freeze(ipBranch),
+  oop_leads: Object.freeze(["oop_first", ...FLOP_BETS.map(bet => facingNode("oop", bet)), "oop_vs_raise", ...ipBranch]),
 });
 export const DEFAULT_TREE = "oop_checks";
 
@@ -53,13 +69,13 @@ export function flopState(tree, actions) {
     if (index !== actions.length) throw new Error("Illegal flop action after the flop ended");
     return { end: outcome, steps };
   };
-  const betLine = (bettor, bet, facing, raiseNode) => {
-    const pending = next(facing[bet === "bet33" ? 0 : 1]);
+  const betLine = (bettor, bet) => {
+    const pending = next(facingNode(bettor, bet));
     if (pending) return pending;
     const response = steps.at(-1).action;
     if (response === "fold") return end({ type: "fold", winner: bettor });
     if (response === "call") return end({ type: "call" });
-    const back = next(raiseNode);
+    const back = next(raiseNodeAfter(bettor));
     if (back) return back;
     return end(steps.at(-1).action === "fold" ? { type: "raise-fold", winner: otherRole(bettor) } : { type: "raise-call" });
   };
@@ -67,13 +83,13 @@ export function flopState(tree, actions) {
     const pending = next("oop_first");
     if (pending) return pending;
     const lead = steps.at(-1).action;
-    if (lead !== "check") return betLine("oop", lead, ["ip_vs_33", "ip_vs_75"], "oop_vs_raise");
+    if (lead !== "check") return betLine("oop", lead);
   }
   const pending = next("btn_first");
   if (pending) return pending;
   const first = steps.at(-1).action;
   if (first === "check") return end({ type: "check" });
-  return betLine("ip", first, ["bb_vs_33", "bb_vs_75"], "btn_vs_raise");
+  return betLine("ip", first);
 }
 
 // Every decision point of a tree, keyed by the comma-joined actions before it, in

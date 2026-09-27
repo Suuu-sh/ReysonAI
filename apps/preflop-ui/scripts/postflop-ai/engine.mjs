@@ -4,6 +4,7 @@
 import { evaluate } from "../lib/equity.mjs";
 import { gameConfig } from "../../src/estimated/sizing.js";
 import { LATER_NODES, STREETS, betFraction, streetState } from "./later-tree.mjs";
+import { facingNode, flopBetFraction, raiseNodeAfter } from "./tree.mjs";
 
 const round = value => Math.round(value * 100) / 100;
 export const rake = pot => Math.min(pot * gameConfig.rake.rate, gameConfig.rake.cap_bb);
@@ -32,24 +33,31 @@ export function playFlop(table, tree, decide, config) {
   const { ip, oop } = table.spot;
   table.lastAggressor = null;
   let step = 0;
-  const fraction = action => action === "bet33" ? config.flop_bet_fractions[0] : config.flop_bet_fractions[1];
-  const betLine = (bettor, action, facing, raiseNode) => {
-    const caller = table.other(bettor);
-    const bet = table.put(bettor, table.pot * fraction(action));
-    const response = decide(caller, action === "bet33" ? facing[0] : facing[1], step++);
+  // A wager that would commit at least the merge ratio of the remaining effective stack
+  // becomes all-in (the same rule as the turn/river; matters at low SPR).
+  const cap = seat => Math.min(table.stacks[seat], table.stacks[table.other(seat)] + table.invested[table.other(seat)] - table.invested[seat]);
+  const wager = (seat, amount) => {
+    const limit = cap(seat);
+    return table.put(seat, amount >= limit * config.later_all_in_merge_ratio ? limit : amount);
+  };
+  const betLine = (bettor, action) => {
+    const caller = table.other(bettor), role = bettor === ip ? "ip" : "oop";
+    const bet = wager(bettor, table.pot * flopBetFraction(action));
+    const response = decide(caller, facingNode(role, action), step++);
     if (response === "fold") { table.winner = bettor; return; }
-    if (response === "call") { table.put(caller, bet); table.lastAggressor = bettor; return; }
-    const raiseTo = Math.min(table.stacks[caller] + table.invested[caller], round(bet * config.flop_check_raise_multiplier));
-    table.put(caller, raiseTo - table.invested[caller]);
-    if (decide(bettor, raiseNode, step++) === "fold") table.winner = caller;
+    if (response === "call" || !cap(caller) || table.invested[caller] + cap(caller) <= table.invested[bettor]) {
+      table.put(caller, table.invested[bettor] - table.invested[caller]); table.lastAggressor = bettor; return;
+    }
+    wager(caller, round(bet * config.flop_check_raise_multiplier) - table.invested[caller]);
+    if (decide(bettor, raiseNodeAfter(role), step++) === "fold") table.winner = caller;
     else { table.put(bettor, table.invested[caller] - table.invested[bettor]); table.lastAggressor = caller; }
   };
   if (tree === "oop_leads") {
     const lead = decide(oop, "oop_first", step++);
-    if (lead !== "check") { betLine(oop, lead, ["ip_vs_33", "ip_vs_75"], "oop_vs_raise"); return; }
+    if (lead !== "check") { betLine(oop, lead); return; }
   }
   const first = decide(ip, "btn_first", step++);
-  if (first !== "check") betLine(ip, first, ["bb_vs_33", "bb_vs_75"], "btn_vs_raise");
+  if (first !== "check") betLine(ip, first);
 }
 
 // Fixed turn/river continuation. `chooseCont(seat, board, facingBet)` returns check/bet or fold/call.

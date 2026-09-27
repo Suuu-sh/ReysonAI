@@ -7,6 +7,7 @@ import { dirname } from "node:path";
 import { artifactPaths, boards, config, root, seatRange } from "./inputs.mjs";
 import { boardTexture, handTier, TIERS } from "./model.mjs";
 import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
+import { FLOP_BETS, facingNode, flopBetLabel } from "./tree.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
 
 // Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
@@ -69,9 +70,12 @@ export function promptFor(inputs) {
       SB_limp_BB_iso_SB_reraise_call: "everyone folds to SB, SB limps (1BB), BB raises to 3.5BB, SB reraises to 10.5BB, BB calls; heads-up pot,",
     }[spot.id],
   }[spot.kind] ?? `${spot.opener} opens ${spot.openBb}BB, ${spot.caller} calls, every other seat folds; heads-up`;
+  const bets = FLOP_BETS.join("/"), sizes = FLOP_BETS.map(flopBetLabel).join(" / ");
+  const facingList = bettor => FLOP_BETS.map(bet => facingNode(bettor, bet)).join(" / ");
+  const later = "Turn/river use a separate later-street policy; do not author them.";
   const tree = spot.tree === "oop_leads"
-    ? `${spot.oop} acts first and chooses check/bet33/bet75 (oop_first). Facing that bet33 or bet75, ${spot.ip} chooses fold/call/raise to 3x the bet (ip_vs_33 / ip_vs_75); facing the raise ${spot.oop} chooses fold/call (oop_vs_raise). After ${spot.oop} checks, ${spot.ip} chooses check/bet33/bet75 (btn_first); ${spot.oop} facing bet33 or bet75 chooses fold/call/raise to 3x the bet (bb_vs_33 / bb_vs_75); ${spot.ip} facing that check-raise chooses fold/call (btn_vs_raise). No further flop raises; bets and raises are capped by the ${spot.stackBb}BB stacks (all-in). Turn/river are evaluated by a separate fixed model; do not author them.`
-    : `${spot.oop} checks first. ${spot.ip} chooses check/bet33/bet75. ${spot.oop} facing bet33 or bet75 chooses fold/call/raise to 3x original bet. ${spot.ip} facing check-raise chooses fold/call. No further flop raises.${spot.kind !== "srp" ? ` Bets and raises are capped by the ${spot.stackBb}BB stacks (all-in).` : ""} Turn/river are evaluated by a separate fixed model; do not author them.`;
+    ? `${spot.oop} acts first and chooses check/${bets} (oop_first; bets are ${sizes} of the pot). Facing that bet, ${spot.ip} chooses fold/call/raise to 3x the bet (${facingList("oop")}); facing the raise ${spot.oop} chooses fold/call (oop_vs_raise). After ${spot.oop} checks, ${spot.ip} chooses check/${bets} (btn_first); ${spot.oop} facing that bet chooses fold/call/raise to 3x the bet (${facingList("ip")}); ${spot.ip} facing that check-raise chooses fold/call (btn_vs_raise). No further flop raises; bets and raises are capped by the ${spot.stackBb}BB stacks, and any wager committing at least two thirds of the remaining stack is an all-in. ${later}`
+    : `${spot.oop} checks first. ${spot.ip} chooses check/${bets} (btn_first; bets are ${sizes} of the pot). ${spot.oop} facing that bet chooses fold/call/raise to 3x the bet (${facingList("ip")}). ${spot.ip} facing check-raise chooses fold/call (btn_vs_raise). No further flop raises.${spot.kind !== "srp" ? ` Bets and raises are capped by the ${spot.stackBb}BB stacks, and any wager committing at least two thirds of the remaining stack is an all-in.` : ""} ${later}`;
   const nodeNames = spot.tree === "oop_leads"
     ? `Node names are fixed: btn_* and ip_* nodes are ${spot.ip}'s (IP) decisions and bb_* and oop_* nodes are ${spot.oop}'s (OOP) decisions.`
     : `Node names are fixed: btn_* nodes are ${spot.ip}'s (IP) decisions and bb_* nodes are ${spot.oop}'s (OOP) decisions.`;
@@ -92,8 +96,8 @@ export function runCodex(prompt, { model = resolveModel(), effort = resolveEffor
   if (!/^[a-z0-9.-]+$/.test(model) || !/^[a-z]+$/.test(effort)) throw new Error("Invalid Codex model or reasoning effort");
   return new Promise((resolve, reject) => {
     const env = { ...process.env }; delete env.OPENAI_API_KEY; delete env.CODEX_API_KEY;
-    const bundled = "/Applications/ChatGPT.app/Contents/Resources/codex";
-    const child = spawn(existsSync(bundled) ? bundled : "codex", ["app-server", "-c", "mcp_servers={}", "-c", `model_reasoning_effort="${effort}"`],
+    const bundled = ["/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex", "/Applications/ChatGPT.app/Contents/Resources/codex"].find(path => existsSync(path));
+    const child = spawn(bundled ?? "codex", ["app-server", "-c", "mcp_servers={}", "-c", `model_reasoning_effort="${effort}"`],
       { cwd: root, env, stdio: ["pipe", "pipe", "pipe"] });
     let buffer = "", final = "", threadId, done = false, stderr = "";
     const timer = setTimeout(() => fail(new Error("Codex policy generation timed out")), timeoutMs);

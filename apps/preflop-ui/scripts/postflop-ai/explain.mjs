@@ -4,7 +4,7 @@ import { evaluate, seededRandom, seedFor } from "../lib/equity.mjs";
 import { seatRange } from "./inputs.mjs";
 import { handTier, parseCards } from "./model.mjs";
 import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.mjs";
-import { flopState, historyFor, nodeRole, otherRole } from "./tree.mjs";
+import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseNodeAfter } from "./tree.mjs";
 
 const RANKS = "23456789TJQKA";
 const RUNOUTS = 120;
@@ -49,15 +49,15 @@ function opponentRange(node, inputs, policy, flop, hero, prev) {
   return scaleByPath(seatRange(inputs, spot[role], flop).filter(item => !item.combo.some(card => dead.has(card))), role, steps, policy, flop);
 }
 
-const FIRST_NODES = { btn_first: ["bb_vs_33", "bb_vs_75"], oop_first: ["ip_vs_33", "ip_vs_75"] };
+const FIRST_NODES = { btn_first: "ip", oop_first: "oop" };
 const RAISE_NODES = { btn_vs_raise: true, oop_vs_raise: true };
-const RAISE_AFTER = { bb_vs_33: "btn_vs_raise", bb_vs_75: "btn_vs_raise", ip_vs_33: "oop_vs_raise", ip_vs_75: "oop_vs_raise" };
+// Facing-bet node → the bettor's role and the bet it faces (e.g. bb_vs_125 → IP's bet125).
+const facing = node => FLOP_BETS.map(bet => [bet, ["ip", "oop"].find(role => facingNode(role, bet) === node)]).find(([, role]) => role);
 
-function betSize(node, prev, config, startPot) {
-  const fraction = key => config.flop_bet_fractions[key === "bet75" ? 1 : 0] ?? (key === "bet75" ? 0.75 : 0.33);
+function betSize(node, prev, startPot) {
   if (FIRST_NODES[node]) return null;
-  if (RAISE_NODES[node]) return fraction(prev) * startPot;
-  return fraction(node.endsWith("_75") ? "bet75" : "bet33") * startPot;
+  if (RAISE_NODES[node]) return flopBetFraction(prev) * startPot;
+  return flopBetFraction(facing(node)[0]) * startPot;
 }
 
 function summarize(items) {
@@ -113,12 +113,11 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
   };
 
   if (FIRST_NODES[node]) {
-    vsResponse(FIRST_NODES[node][0], "bet33");
-    vsResponse(FIRST_NODES[node][1], "bet75");
+    for (const bet of FLOP_BETS) vsResponse(facingNode(FIRST_NODES[node], bet), bet);
     actions.check = { groups: [group("ahead", ahead, total), group("behind", behind, total)] };
   } else {
     const startPot = inputs.spot.potBb;
-    const bet = betSize(node, prev, inputs.config, startPot);
+    const bet = betSize(node, prev, startPot);
     const multiplier = inputs.config.flop_check_raise_multiplier ?? 3;
     // A raise is capped by the stack (all-in).
     const raiseTo = Math.min(bet * multiplier, inputs.spot.stackBb);
@@ -128,7 +127,7 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
     const caught = { groups: [group("ahead", ahead, total), group("behind", behind, total)], required };
     actions.call = caught;
     actions.fold = caught;
-    if (RAISE_AFTER[node]) vsResponse(RAISE_AFTER[node], "raise");
+    if (facing(node)) vsResponse(raiseNodeAfter(facing(node)[1]), "raise");
   }
   return { kind: "ai_estimate_not_gto", cards, node, equity, combos: villains.length, actions };
 }

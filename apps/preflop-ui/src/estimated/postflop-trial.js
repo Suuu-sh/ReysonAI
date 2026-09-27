@@ -1,6 +1,6 @@
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 import { DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
-import { NODES, flopState } from "../../scripts/postflop-ai/tree.mjs";
+import { NODES, flopBetFraction, flopBetLabel, flopState, isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 
 export const representativeFlops = pilot.boards.map(board => board.cards);
 export const deck = "23456789TJQKA".split("").flatMap(rank => "shdc".split("").map(suit => `${rank}${suit}`));
@@ -48,8 +48,6 @@ function geometry(spot) {
   const base = spot?.ip && spot?.oop && Number.isFinite(spot.potBb) && Number.isFinite(spot.stackBb) ? spot : spotById(DEFAULT_SPOT_ID);
   return { ...base, tree: base.tree ?? "oop_checks" };
 }
-const betFraction = action => action === "bet33" ? pilot.flop_bet_fractions[0] : pilot.flop_bet_fractions[1];
-const betLabel = action => action === "bet33" ? "33%" : "75%";
 
 // Replays the flop actions with the same chip rules as the scripts (engine.mjs): bets are a
 // fraction of the pot, raises 3× the bet, both capped by the stack; an uncalled amount is returned.
@@ -61,6 +59,9 @@ function replay(actions, spot) {
   const invested = { ip: 0, oop: 0 };
   let pot = g.potBb, bet = 0;
   const left = role => round(g.stackBb - invested[role]);
+  // Same all-in merge as engine.mjs: a wager committing ≥ the merge ratio of the effective stack is all-in.
+  const capFor = role => { const other = role === "ip" ? "oop" : "ip"; return Math.min(left(role), left(other) + invested[other] - invested[role]); };
+  const wagerFor = (role, amount) => amount >= capFor(role) * pilot.later_all_in_merge_ratio ? capFor(role) : amount;
   const put = (role, amount) => { const value = round(Math.min(left(role), amount)); invested[role] = round(invested[role] + value); pot = round(pot + value); return value; };
   const history = g.tree === "oop_checks" ? [`${g.oop} Check`] : [];
   const stacks = [];
@@ -70,11 +71,11 @@ function replay(actions, spot) {
     if (action === "check") history.push(`${name} Check`);
     // A bet, raise or call that uses the whole remaining stack is an all-in.
     const allIn = () => left(role) === 0 ? " All-in" : "";
-    if (action === "bet33" || action === "bet75") { bet = put(role, pot * betFraction(action)); history.push(`${name} Bet ${betLabel(action)} (${bet}BB)${allIn()}`); }
+    if (isFlopBet(action)) { bet = put(role, wagerFor(role, pot * flopBetFraction(action))); history.push(`${name} Bet ${flopBetLabel(action)} (${bet}BB)${allIn()}`); }
     else if (action === "call") { put(role, invested[other] - invested[role]); history.push(`${name} Call${allIn()}`); }
     else if (action === "raise") {
-      const to = Math.min(left(role) + invested[role], round(bet * pilot.flop_check_raise_multiplier));
-      put(role, to - invested[role]);
+      put(role, wagerFor(role, round(bet * pilot.flop_check_raise_multiplier) - invested[role]));
+      const to = invested[role];
       history.push(`${name} ${node.startsWith("bb_") ? "Check-raise" : "Raise"} ${to}BB${allIn()}`);
     } else if (action === "fold") history.push(`${name} Fold`);
   }
@@ -96,7 +97,7 @@ export function flopDecision(actions = [], spot) {
   return { result, potBb: pot, history };
 }
 
-const choiceLabels = { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", fold: "Fold", call: "Call", raise: "Raise 3×" };
+const choiceLabels = { check: "Check", ...Object.fromEntries(pilot.flop_bet_fractions.map(f => [`bet${Math.round(f * 100)}`, `Bet ${Math.round(f * 100)}%`])), fold: "Fold", call: "Call", raise: "Raise 3×" };
 const flopChoices = Object.fromEntries(Object.entries(NODES).map(([node, actions]) =>
   [node, actions.map(action => ({ action, label: choiceLabels[action] }))]));
 

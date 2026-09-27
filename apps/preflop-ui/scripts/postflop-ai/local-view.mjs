@@ -7,6 +7,7 @@ import { SIMULATION_VERSION } from "./simulation.mjs";
 import { boardTexture, handTier, TIERS } from "./model.mjs";
 import { explainCombo } from "./explain.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
+import { FLOP_BETS } from "./tree.mjs";
 
 const cardText = card => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
 
@@ -48,7 +49,7 @@ export function explainLocalCombo(params, inputs, candidate) {
   if (!board) throw new Error("対象の代表フロップがありません。");
   const cards = params.get("cards") ?? "";
   if (!/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
-  const prev = params.get("prev") === "bet75" ? "bet75" : "bet33";
+  const prev = FLOP_BETS.includes(params.get("prev")) ? params.get("prev") : FLOP_BETS[0];
   return { spot: inputs.spot.id, board: board.id, ...explainCombo({ boardCards: board.cards, node: params.get("node"), cards, prev,
     inputs, policy: validatePolicy(candidate.policy, inputs.spot.tree) }) };
 }
