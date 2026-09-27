@@ -12,10 +12,18 @@ const read = name => JSON.parse(readFileSync(new URL(`../../src/estimated/${name
 export const config = JSON.parse(readFileSync(new URL("../data/postflop-ai-pilot.json", import.meta.url), "utf8"));
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
+const LATER_KEYS = ["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"];
+// Flop candidate identity predates the later-street tree. Exclude only its new sizing
+// keys, keeping the original key order and every original config field in the hash.
+const flopConfig = () => Object.fromEntries(Object.entries(config).filter(([key]) =>
+  !LATER_KEYS.includes(key)));
+// Results, unlike flop candidates, must be invalidated when later sizing changes.
+export const laterSizingHash = () => sha(Object.fromEntries(LATER_KEYS.map(key => [key, config[key]])));
+
 // Local-only artifacts of one spot under .local/postflop-ai/.
 export function artifactPaths(spot) {
   const base = join(root, ".local/postflop-ai", spot.slug);
-  return { candidate: `${base}-policy.json`, report: `${base}-report.json`, handEv: `${base}-hand-ev.json` };
+  return { candidate: `${base}-policy.json`, laterCandidate: `${base}-later-policy.json`, report: `${base}-report.json`, handEv: `${base}-hand-ev.json` };
 }
 
 export function loadInputs(spotId = DEFAULT_SPOT_ID) {
@@ -30,7 +38,7 @@ export function loadInputs(spotId = DEFAULT_SPOT_ID) {
         response.open_size_bb !== spot.openBb || response.effective_stack_bb !== 100) throw new Error(`${spot.id} source geometry changed`);
     // The single-raised pots with the first pilot's tree keep its fingerprint shape; the
     // opening and response spots identify the spot. Other spots also hash the spot itself.
-    const fingerprint = spot.tree === "oop_checks" ? sha({ opening, response, gameConfig, config }) : sha({ spot, opening, response, gameConfig, config });
+    const fingerprint = spot.tree === "oop_checks" ? sha({ opening, response, gameConfig, config: flopConfig() }) : sha({ spot, opening, response, gameConfig, config: flopConfig() });
     const seatRows = { [spot.opener]: freqRows(opening.hands, "open"), [spot.caller]: freqRows(response.hands, "call") };
     return { spot, opening, response, config, fingerprint, seatRows };
   }
@@ -42,7 +50,7 @@ export function loadInputs(spotId = DEFAULT_SPOT_ID) {
       response.three_bet_size_bb !== spot.threeBetBb || response.effective_stack_bb !== 100 ||
       threeBet.opener !== spot.opener || threeBet.hero !== spot.threeBettor ||
       threeBet.hands.some(row => row.three_bet > 0 && row.three_bet_size_bb !== spot.threeBetBb)) throw new Error(`${spot.id} source geometry changed`);
-  const fingerprint = sha({ spot, opening, response, threeBet, gameConfig, config });
+  const fingerprint = sha({ spot, opening, response, threeBet, gameConfig, config: flopConfig() });
   // The opener reaches the flop with its open frequency × its call frequency versus the 3bet.
   const calls = new Map(response.hands.map(row => [row.hand, row.call]));
   if (calls.size !== opening.hands.length || opening.hands.some(row => !calls.has(row.hand))) throw new Error(`${spot.id} hand rows differ`);
@@ -80,7 +88,7 @@ function loadFourBetInputs(spot, opening, baseOk) {
     [spot.threeBettor]: productRows([[threeBet.hands, "three_bet"], [response.hands, "call"]]),
   };
   if (Object.values(seatRows).some(rows => !rows.some(row => row.freq > 0))) throw new Error(`${spot.id} is unreachable: a saved range never reaches the flop`);
-  const fingerprint = sha({ spot, opening, response, threeBetResponse, threeBet, gameConfig, config });
+  const fingerprint = sha({ spot, opening, response, threeBetResponse, threeBet, gameConfig, config: flopConfig() });
   return { spot, opening, response, threeBetResponse, threeBet, config, fingerprint, seatRows };
 }
 
@@ -103,7 +111,7 @@ function loadLimpInputs(spot, opening, baseOk) {
     return [source.hands, action];
   }))]));
   const response = sources[spot.responseId];
-  const fingerprint = sha({ spot, sources, gameConfig, config });
+  const fingerprint = sha({ spot, sources, gameConfig, config: flopConfig() });
   return { spot, opening, response, config, fingerprint, seatRows };
 }
 

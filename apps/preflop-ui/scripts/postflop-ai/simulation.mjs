@@ -2,18 +2,21 @@ import { createHash } from "node:crypto";
 import { seedFor, seededRandom } from "../lib/equity.mjs";
 import { handTier } from "./model.mjs";
 import { NODES, choose, opponentMix, policyMix, referencePolicyFor } from "./policy.mjs";
-import { createTable, playFlop, playLaterStreets, rake, settle } from "./engine.mjs";
-import { boards, config, makeSampler, samplePair, seatRange } from "./inputs.mjs";
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
+import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterPolicy } from "./later-policy.mjs";
+import { LATER_NODES } from "./later-tree.mjs";
+import { boards, config, laterSizingHash, makeSampler, samplePair, seatRange } from "./inputs.mjs";
 import { spotById } from "./spots.mjs";
 
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const round = value => Math.round(value * 100) / 100;
 export const PROFILES = ["standard", "passive", "aggressive"];
-export const SIMULATION_VERSION = 2;
+export const SIMULATION_VERSION = 3;
+const referenceLater = referenceLaterPolicy();
 
 
-// Fixed turn/river continuation shared by the candidate and baseline. It sees
-// only this player's cards, public board, and public pot/stack/action state.
+// Legacy fixed continuation retained for callers of the old engine. Version 3 simulation
+// uses the explicit later-street rule tables instead.
 export function continuationMix(hole, board, profile, facingBet) {
   const tier = handTier(hole, board);
   const street = board.length === 4 ? "turn" : "river";
@@ -43,10 +46,10 @@ export function dealRunout(hands, flop, random) {
 }
 
 // One flop-to-river hand of a heads-up pot on the spot's tree (tree.mjs).
-export function playHand({ hands, flop, runout, hero, policy, profile, randoms, spot = spotById(), tree = spot.tree ?? "oop_checks" }) {
+export function playHand({ hands, flop, runout, hero, policy, laterPolicy = referenceLater, profile, randoms, spot = spotById(), tree = spot.tree ?? "oop_checks" }) {
   const { ip: IP, oop: OOP } = spot;
   if (![IP, OOP].includes(hero) || !PROFILES.includes(profile) || !hands?.[IP] || !hands?.[OOP] ||
-      !Array.isArray(randoms) || randoms.length < 7 || randoms.some(value => !Number.isFinite(value) || value < 0 || value >= 1) ||
+      !Array.isArray(randoms) || randoms.length < 12 || randoms.some(value => !Number.isFinite(value) || value < 0 || value >= 1) ||
       flop.length !== 3 || runout.length !== 2 || new Set([...hands[IP], ...hands[OOP], ...flop, ...runout]).size !== 9) {
     throw new Error("Invalid simulated hand");
   }
@@ -61,8 +64,11 @@ export function playHand({ hands, flop, runout, hero, policy, profile, randoms, 
     return choose(mix, random(), NODES[node]);
   };
   playFlop(table, tree, flopChoice, config);
-  const contProfile = seat => seat === hero ? "standard" : profile;
-  playLaterStreets(table, flop, runout, (seat, board, facing) => choose(continuationMix(hands[seat], board, contProfile(seat), facing), random()), config);
+  playLaterStreetsWithPolicy(table, flop, runout, (seat, node, board, line) => {
+    const mix = seat === hero ? laterPolicyMix(laterPolicy, node, hands[seat], board, line)
+      : referenceLaterMix(node, hands[seat], board, line, profile);
+    return choose(mix, random(), LATER_NODES[node]);
+  }, config, table.lastAggressor);
   const winner = settle(table, hands, [...flop, ...runout]);
   const { pot, invested } = table;
   const fee = rake(pot), paid = round(pot - fee);
@@ -82,10 +88,12 @@ function stats(values) {
   return { mean: precise(mean), ci95: [precise(mean - half), precise(mean + half)] };
 }
 
-export function simulate(inputs, candidate, samples = config.samples_per_board_profile_seat) {
+// laterCandidate may be the raw policy (like candidate) or the loadLaterCandidate artifact.
+export function simulate(inputs, candidate, samples = config.samples_per_board_profile_seat, laterCandidate = null) {
   if (!Number.isInteger(samples) || samples < 1) throw new Error("Invalid simulation sample count");
   const { spot } = inputs;
   const referencePolicy = referencePolicyFor(spot.tree);
+  const laterPolicy = laterCandidate ? validateLaterPolicy(laterCandidate.policy ?? laterCandidate) : referenceLater;
   const results = [];
   for (const board of boards()) {
     const ip = makeSampler(seatRange(inputs, spot.ip, board.cards));
@@ -96,9 +104,9 @@ export function simulate(inputs, candidate, samples = config.samples_per_board_p
       for (let i = 0; i < samples; i++) {
         const hands = samplePair(ip, oop, random, spot);
         const runout = dealRunout(hands, board.cards, random);
-        const randoms = Array.from({ length: 12 }, () => random());
+        const randoms = Array.from({ length: 24 }, () => random());
         const base = playHand({ hands, flop: board.cards, runout, hero, policy: referencePolicy, profile, randoms, spot });
-        const trial = playHand({ hands, flop: board.cards, runout, hero, policy: candidate, profile, randoms, spot });
+        const trial = playHand({ hands, flop: board.cards, runout, hero, policy: candidate, laterPolicy, profile, randoms, spot });
         candidateEvs.push(trial.returns[hero]); baselineEvs.push(base.returns[hero]);
         differences.push(trial.returns[hero] - base.returns[hero]);
       }
@@ -108,5 +116,7 @@ export function simulate(inputs, candidate, samples = config.samples_per_board_p
   }
   return { kind: "ai_estimate_not_gto", version: 1, simulation_version: SIMULATION_VERSION,
     spot: spot.id, source_hash: inputs.fingerprint,
+    later_sizing_hash: laterSizingHash(),
+    ...(laterCandidate ? { later_policy_hash: sha(laterPolicy) } : {}),
     policy_hash: sha(candidate), samples_per_board_profile_seat: samples, seed: config.seed, results };
 }

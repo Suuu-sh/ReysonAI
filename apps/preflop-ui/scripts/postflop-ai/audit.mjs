@@ -1,15 +1,18 @@
-import { boards, config, seatRange } from "./inputs.mjs";
+import { boards, config, laterSizingHash, seatRange } from "./inputs.mjs";
 import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePolicy } from "./policy.mjs";
 import { PROFILES, SIMULATION_VERSION, simulate } from "./simulation.mjs";
 import { sha } from "./generate.mjs";
+import { validateLaterPolicy } from "./later-policy.mjs";
 
-export function auditExperiment(inputs, candidate, report) {
+export function auditExperiment(inputs, candidate, report, laterCandidate = null) {
   const { spot } = inputs;
   const policy = validatePolicy(candidate?.policy, spot.tree);
+  const laterPolicy = laterCandidate ? validateLaterPolicy(laterCandidate.policy ?? laterCandidate) : null;
   if (candidate.metadata?.kind !== "ai_estimate_not_gto" ||
       candidate.metadata.source_hash !== inputs.fingerprint || candidate.metadata.config_version !== config.version ||
       candidate.metadata.policy_hash !== sha(policy) ||
       report.source_hash !== inputs.fingerprint || report.policy_hash !== sha(policy) ||
+      (report.later_policy_hash ?? null) !== (laterPolicy ? sha(laterPolicy) : null) || report.later_sizing_hash !== laterSizingHash() ||
       report.kind !== "ai_estimate_not_gto" || report.version !== 1 ||
       report.simulation_version !== SIMULATION_VERSION || report.spot !== spot.id ||
       (candidate.metadata.spot ?? spot.id) !== spot.id || (candidate.metadata.tree ?? "oop_checks") !== spot.tree ||
@@ -46,7 +49,7 @@ export function auditExperiment(inputs, candidate, report) {
     }
     if (row.delta_bb.ci95[1] < 0) warnings.push(`${key}: candidate below reference (${row.delta_bb.mean}bb)`);
   }
-  const replay = simulate(inputs, policy);
+  const replay = simulate(inputs, policy, config.samples_per_board_profile_seat, laterPolicy);
   if (JSON.stringify(replay) !== JSON.stringify(report)) throw new Error("Saved simulation report differs from fixed-seed replay");
   const sanity = simulate(inputs, referencePolicyFor(spot.tree), 12);
   if (sanity.results.some(row => row.delta_bb.mean !== 0)) throw new Error("Reference-vs-reference simulation drifted");

@@ -5,6 +5,9 @@ const ranks = "23456789TJQKA";
 const suits = "cdhs";
 export const TIERS = ["monster", "strong", "draw", "medium", "air"];
 export const TEXTURES = ["dry", "wet", "monotone", "paired"];
+export const RUNOUT_TEXTURES = ["blank", "over", "pair", "straight", "flush"];
+// From the acting player's perspective on the immediately previous completed street.
+export const LINES = ["aggressor", "defender", "checked"];
 
 export function parseCards(text, expected) {
   if (typeof text !== "string" || text.length !== expected * 2) throw new Error("Invalid card string");
@@ -26,6 +29,24 @@ export function boardTexture(board) {
   const sorted = [...rs].sort((a, b) => a - b);
   if (new Set(ss).size === 2 || sorted[2] - sorted[0] <= 4) return "wet";
   return "dry";
+}
+
+// Only the newly dealt (last) card can trigger a runout feature. Priority is intentional.
+export function runoutTexture(board) {
+  if (!Array.isArray(board) || ![4, 5].includes(board.length) || new Set(board).size !== board.length ||
+      board.some(card => !Number.isInteger(card) || card < 0 || card >= 52)) throw new Error("Invalid runout board");
+  const card = board.at(-1), rank = card >> 2, previous = board.slice(0, -1).map(value => value >> 2);
+  if (board.filter(value => (value & 3) === (card & 3)).length >= 3) return "flush";
+  if (previous.includes(rank)) return "pair";
+  const before = new Set(previous), after = new Set([...previous, rank]);
+  if (before.has(12)) before.add(-1);
+  if (after.has(12)) after.add(-1); // Wheel ace counts low as well as high.
+  for (let low = -1; low <= 8; low++) {
+    const window = Array.from({ length: 5 }, (_, i) => low + i);
+    if (window.some(value => value === rank || value === -1 && rank === 12) &&
+        window.filter(value => after.has(value)).length >= 3 && window.filter(value => before.has(value)).length <= 2) return "straight";
+  }
+  return rank > Math.max(...previous) ? "over" : "blank";
 }
 
 function hasDraw(hole, board) {

@@ -6,6 +6,9 @@
   "flop_bet_fractions": [0.33, 0.75],
   "flop_check_raise_multiplier": 3,
   "continuation_bet_fraction": 0.5,
+  "later_streets": { "turn": { "bets": [0.33, 0.75, 1.25], "all_in": false }, "river": { "bets": [0.33, 0.75, 1.25], "all_in": true } },
+  "later_raise_multiplier": 3,
+  "later_all_in_merge_ratio": 0.67,
   "boards": [
     { "cards": "As7d2c", "split": "design" },
     { "cards": "QsJd5c", "split": "design" },

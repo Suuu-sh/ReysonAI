@@ -4,7 +4,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { auditExperiment } from "./audit.mjs";
-import { generate, loadCandidate, resolveEffort, resolveModel } from "./generate.mjs";
+import { generate, loadCandidate, loadLaterCandidate, resolveEffort, resolveModel } from "./generate.mjs";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { simulate } from "./simulation.mjs";
 import { DEFAULT_SAMPLES, generateHandEv } from "./hand-ev.mjs";
@@ -44,7 +44,7 @@ async function runSpot(spotId) {
   if (command === "simulate") {
     const samples = samplesOption(config.samples_per_board_profile_seat);
     const candidate = loadCandidate(inputs);
-    const report = simulate(inputs, candidate.policy, samples);
+    const report = simulate(inputs, candidate.policy, samples, loadLaterCandidate(inputs, candidate));
     mkdirSync(dirname(paths.report), { recursive: true });
     writeFileSync(paths.report, `${JSON.stringify(report, null, 2)}\n`);
     const below = report.results.filter(row => row.delta_bb.ci95[1] < 0).length;
@@ -59,7 +59,7 @@ async function runSpot(spotId) {
   }
   const candidate = loadCandidate(inputs);
   if (!existsSync(paths.report)) throw new Error("Simulation report missing; run postflop-ai:simulate first");
-  const result = auditExperiment(inputs, candidate, JSON.parse(readFileSync(paths.report, "utf8")));
+  const result = auditExperiment(inputs, candidate, JSON.parse(readFileSync(paths.report, "utf8")), loadLaterCandidate(inputs, candidate));
   return [`PASS: ${result.checkedCombos} expanded combo decisions, ${result.resultCount} comparisons, fixed-seed replay.`,
     `Advisory EV warnings: ${result.warnings.length}${result.warnings.length ? `; ${result.warnings.slice(0, 5).join(" | ")}` : ""}`,
     "AI estimate only; human review required before any publication."].join("\n");

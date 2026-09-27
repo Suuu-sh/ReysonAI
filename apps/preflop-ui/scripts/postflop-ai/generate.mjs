@@ -7,6 +7,7 @@ import { dirname } from "node:path";
 import { artifactPaths, boards, config, root, seatRange } from "./inputs.mjs";
 import { boardTexture, handTier, TIERS } from "./model.mjs";
 import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
+import { validateLaterPolicy } from "./later-policy.mjs";
 
 // Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
 // Existing candidates are reused as saved (the first BTN/BB pilot was made with gpt-6-sol).
@@ -27,6 +28,21 @@ export function loadCandidate(inputs) {
   }
   validatePolicy(candidate.policy, inputs.spot.tree);
   if (candidate.metadata.policy_hash !== sha(candidate.policy)) throw new Error("Saved AI policy hash does not match its content");
+  return candidate;
+}
+
+// Optional local later-street artifact. Missing means use the fixed reference, while
+// malformed/stale files are errors, never a silent fallback or a generation request.
+export function loadLaterCandidate(inputs, flopCandidate) {
+  const path = artifactPaths(inputs.spot).laterCandidate;
+  if (!existsSync(path)) return null;
+  const candidate = JSON.parse(readFileSync(path, "utf8"));
+  if (candidate?.metadata?.source_hash !== inputs.fingerprint ||
+      flopCandidate?.metadata?.source_hash !== inputs.fingerprint ||
+      flopCandidate.metadata.policy_hash !== sha(flopCandidate.policy) ||
+      candidate.metadata.flop_policy_hash !== flopCandidate.metadata.policy_hash) throw new Error("Later AI policy source or flop policy is stale");
+  validateLaterPolicy(candidate.policy);
+  if (candidate.metadata.policy_hash !== sha(candidate.policy)) throw new Error("Saved later AI policy hash does not match its content");
   return candidate;
 }
 

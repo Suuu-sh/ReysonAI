@@ -1,19 +1,21 @@
 // Per-hand action EV and equity realization (EQR) for the local heads-up flop pilot (any
 // spot in spots.mjs, on its tree). Both players follow the saved AI candidate on the flop and
-// the shared fixed turn/river model, so these are values of the AI policy against itself —
+// the saved later-street policy (or the fixed reference), so these are AI self-play values —
 // not GTO, not solver EV. Local-only output under .local/postflop-ai/.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
-import { artifactPaths, boards, config, loadInputs, seatRange } from "./inputs.mjs";
-import { loadCandidate } from "./generate.mjs";
+import { artifactPaths, boards, config, laterSizingHash, loadInputs, seatRange } from "./inputs.mjs";
+import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { NODES, choose, policyMix, scaleByPath } from "./policy.mjs";
-import { continuationMix } from "./simulation.mjs";
-import { createTable, playFlop, playLaterStreets, rake, settle } from "./engine.mjs";
+import { laterPolicyMix, referenceLaterPolicy } from "./later-policy.mjs";
+import { LATER_NODES } from "./later-tree.mjs";
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
 import { DEFAULT_SPOT_ID, spotById } from "./spots.mjs";
 import { flopState, treeHistories } from "./tree.mjs";
 
-export const HAND_EV_VERSION = 1;
+export const HAND_EV_VERSION = 2;
 export const DEFAULT_SAMPLES = 2000;
+const referenceLater = referenceLaterPolicy();
 const round = value => Math.round(value * 100) / 100;
 
 // The flop decision points of a tree, keyed by the actions before them ("oop_checks" by
@@ -23,7 +25,7 @@ export const HISTORIES = Object.freeze(treeHistories("oop_checks"));
 
 // Plays the rest of the hand from `history` with the actor forced to `forced`.
 // Returns the actor's chips won from this decision on (earlier flop chips are sunk).
-export function playFromNode({ hands, flop, runout, history, forced, policy, random, spot = spotById(), tree = spot.tree ?? "oop_checks" }) {
+export function playFromNode({ hands, flop, runout, history, forced, policy, laterPolicy = referenceLater, random, spot = spotById(), tree = spot.tree ?? "oop_checks" }) {
   const start = flopState(tree, history);
   if (start.end) throw new Error("No decision after this flop history");
   const actor = spot[start.role];
@@ -35,7 +37,8 @@ export function playFromNode({ hands, flop, runout, history, forced, policy, ran
     return choose(policyMix(policy, node, hands[seat], flop), random(), NODES[node]);
   };
   playFlop(table, tree, decide, config);
-  playLaterStreets(table, flop, runout, (seat, board, facing) => choose(continuationMix(hands[seat], board, "standard", facing), random()), config);
+  playLaterStreetsWithPolicy(table, flop, runout, (seat, node, board, line) =>
+    choose(laterPolicyMix(laterPolicy, node, hands[seat], board, line), random(), LATER_NODES[node]), config, table.lastAggressor);
   const winner = settle(table, hands, [...flop, ...runout]);
   const paid = table.pot - rake(table.pot);
   const share = winner === actor ? paid : winner === "tie" ? paid / 2 : 0;
@@ -76,7 +79,7 @@ function sampler(items) {
   };
 }
 
-export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES) {
+export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES, laterPolicy = referenceLater) {
   const { spot } = inputs;
   const out = {};
   for (const [key, { node, role }] of Object.entries(treeHistories(spot.tree))) {
@@ -112,7 +115,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES)
         const streamSeed = Math.floor(random() * 2 ** 32);
         const mix = policyMix(policy, node, heroCombo, board.cards);
         for (const action of actions) {
-          const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action, policy, random: seededRandom(streamSeed), spot, tree: spot.tree });
+          const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action, policy, laterPolicy, random: seededRandom(streamSeed), spot, tree: spot.tree });
           sums[action] += value;
           mixEv += mix[action] / 100 * value;
         }
@@ -136,21 +139,28 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES)
 export function generateHandEv({ spotId = DEFAULT_SPOT_ID, samples = DEFAULT_SAMPLES, onBoard = () => {} } = {}) {
   const inputs = loadInputs(spotId);
   const candidate = loadCandidate(inputs);
+  const laterCandidate = loadLaterCandidate(inputs, candidate);
+  const laterPolicy = laterCandidate?.policy ?? referenceLater;
   const result = { kind: "ai_estimate_not_gto", version: HAND_EV_VERSION, source_hash: inputs.fingerprint,
+    later_policy_hash: sha(laterPolicy), later_sizing_hash: laterSizingHash(),
     policy_hash: candidate.metadata.policy_hash, samples_per_hand_action: samples, seed: config.seed,
-    note: "AI方針どうしの自己対戦（ターン・リバーは固定モデル）で見積もった値。GTO・ソルバーのEVではない。", boards: {} };
-  for (const board of boards()) { result.boards[board.id] = handEvForBoard(board, inputs, candidate.policy, samples); onBoard(board.id); }
+    note: "AI方針どうしの自己対戦（ターン・リバーは保存済み方針、未保存時は固定参照方針）で見積もった値。GTO・ソルバーのEVではない。", boards: {} };
+  for (const board of boards()) { result.boards[board.id] = handEvForBoard(board, inputs, candidate.policy, samples, laterPolicy); onBoard(board.id); }
   writeFileSync(artifactPaths(inputs.spot).handEv, `${JSON.stringify(result)}\n`);
   return result;
 }
 
 // Read-only lookup for the local view; null when missing or stale for the candidate.
-export function loadHandEv(inputs, candidate) {
+export function loadHandEv(inputs, candidate, laterCandidate = loadLaterCandidate(inputs, candidate)) {
   const path = artifactPaths(inputs.spot).handEv;
   if (!existsSync(path)) return null;
   const data = JSON.parse(readFileSync(path, "utf8"));
-  return data.version === HAND_EV_VERSION && data.source_hash === inputs.fingerprint && data.policy_hash === candidate.metadata.policy_hash ? data : null;
+  return matchesHandEv(data, inputs, candidate, laterCandidate) ? data : null;
 }
+
+const matchesHandEv = (data, inputs, candidate, laterCandidate) => data?.kind === "ai_estimate_not_gto" &&
+  data.version === HAND_EV_VERSION && data.source_hash === inputs.fingerprint && data.policy_hash === candidate.metadata.policy_hash &&
+  data.later_policy_hash === sha(laterCandidate?.policy ?? referenceLater) && data.later_sizing_hash === laterSizingHash();
 
 // GET /local-postflop-hand-ev?spot=BTN_open_BB_call&board=As7d2c&history=bet33,raise&hand=AKo
 // — read-only, local-only. `spot` defaults to BTN_open_BB_call.
@@ -167,9 +177,10 @@ export function handEvMiddleware(req, res, next) {
   try {
     const inputs = loadInputs(url.searchParams.get("spot") || DEFAULT_SPOT_ID);
     const candidate = loadCandidate(inputs);
+    const laterCandidate = loadLaterCandidate(inputs, candidate);
     let data = cache.get(inputs.spot.id);
-    if (!data || data.policy_hash !== candidate.metadata.policy_hash || data.source_hash !== inputs.fingerprint) {
-      data = loadHandEv(inputs, candidate);
+    if (!matchesHandEv(data, inputs, candidate, laterCandidate)) {
+      data = loadHandEv(inputs, candidate, laterCandidate);
       if (data) cache.set(inputs.spot.id, data); else cache.delete(inputs.spot.id);
     }
     if (!data) {
