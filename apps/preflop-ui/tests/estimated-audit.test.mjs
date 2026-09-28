@@ -2,9 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { auditEstimates, BALANCE_CHECKS, checkRangeBalance, isBlockingAuditFinding } from "../src/estimated/audit.js";
+import { auditEstimates, BALANCE_CHECKS, checkRangeBalance, isBlockingAuditFinding } from "../src/estimated/audit.ts";
 import handStrength from "../src/estimated/hand-strength.json" with { type: "json" };
-import { hands } from "../src/data.js";
+import { hands } from "../src/data.ts";
 
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
 const datasets = () => ({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), fiveBets: load("five-bet-responses"), multiway: load("multiway-responses"), squeezes: load("squeeze-responses"), limp: load("limp-responses"), coldThreeBets: load("cold-three-bet-responses") });

@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { hands } from "../src/data.js";
-import { coldThreeBetSpots, validateColdThreeBetDataset, findColdThreeBetSpot, coldThreeBetMatrixModel } from "../src/estimated/cold-three-bet-responses.js";
-import { callContexts, callFacts, allowedCall, THREE_BET_FILL_EV } from "../src/estimated/call-ev.js";
-import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.js";
-import { fourBetToSize, isInPosition, threeBetToSize } from "../src/estimated/sizing.js";
+import { hands } from "../src/data.ts";
+import { coldThreeBetSpots, validateColdThreeBetDataset, findColdThreeBetSpot, coldThreeBetMatrixModel } from "../src/estimated/cold-three-bet-responses.ts";
+import { callContexts, callFacts, allowedCall, THREE_BET_FILL_EV } from "../src/estimated/call-ev.ts";
+import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.ts";
+import { fourBetToSize, isInPosition, threeBetToSize } from "../src/estimated/sizing.ts";
 
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url), "utf8"));
 const data = load("cold-three-bet-responses");

@@ -39,16 +39,9 @@ export default defineConfig({
     server: {
       host: "0.0.0.0",
       allowedHosts: ["terminal.local"],
-      proxy: {
-        "/api": {
-          target: "http://127.0.0.1:3000",
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ""),
-        },
+      warmup: {
+        clientFiles: ["./src/main.tsx"],
       },
-    warmup: {
-      clientFiles: ["./src/main.jsx"],
-    },
   },
   plugins: [react(), postflopArtifacts, { name: "retired-japanese-route", configureServer(server) { server.middlewares.use(rejectRetiredJapanesePath); }, configurePreviewServer(server) { server.middlewares.use(rejectRetiredJapanesePath); } }, { name: "local-codex-estimates", configureServer(server) {
     server.middlewares.use(localEstimateMiddleware);

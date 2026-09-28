@@ -4,12 +4,12 @@ import { readFileSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { EQR, BB_BEHIND_EQR, CALLER_BEHIND_EQR, MULTIWAY_EQR, OPENER_BEHIND_EQR, eqrCategory, equityRealization } from "../src/estimated/eqr.js";
-import { allowedCall, callContexts, callFacts, limpReraiseFoldThreshold, validCallEquities } from "../src/estimated/call-ev.js";
-import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.js";
-import { hands } from "../src/data.js";
-import { positions } from "../src/estimated/sizing.js";
-import { raked } from "../src/estimated/rake.js";
+import { EQR, BB_BEHIND_EQR, CALLER_BEHIND_EQR, MULTIWAY_EQR, OPENER_BEHIND_EQR, eqrCategory, equityRealization } from "../src/estimated/eqr.ts";
+import { allowedCall, callContexts, callFacts, limpReraiseFoldThreshold, validCallEquities } from "../src/estimated/call-ev.ts";
+import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.ts";
+import { hands } from "../src/data.ts";
+import { positions } from "../src/estimated/sizing.ts";
+import { raked } from "../src/estimated/rake.ts";
 
 const root = new URL("..", import.meta.url);
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
@@ -268,7 +268,7 @@ test("reason composer refuses stale local facts instead of silently reintroducin
 });
 
 test("generation fills clearly positive-EV calls without touching raises", async () => {
-  const { targetCall } = await import("../src/estimated/call-ev.js");
+  const { targetCall } = await import("../src/estimated/call-ev.ts");
   assert.equal(targetCall(35, 0.12, 100), 100);
   assert.equal(targetCall(20, 0.07, 90), 45);
   assert.equal(targetCall(60, 0.07, 90), 60);
@@ -278,7 +278,7 @@ test("generation fills clearly positive-EV calls without touching raises", async
 });
 
 test("3bet, squeeze and cold-3bet pots fill only calls of +0.50bb or better, never touching 4bets", async () => {
-  const { threeBetTargetCall, THREE_BET_FILL_EV } = await import("../src/estimated/call-ev.js");
+  const { threeBetTargetCall, THREE_BET_FILL_EV } = await import("../src/estimated/call-ev.ts");
   assert.equal(THREE_BET_FILL_EV, 0.5);
   assert.equal(threeBetTargetCall(60, 0.5, 95), 95);
   assert.equal(threeBetTargetCall(60, 0.49, 95), 60);

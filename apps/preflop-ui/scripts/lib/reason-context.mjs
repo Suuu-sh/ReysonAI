@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { EQR, MULTIWAY_EQR, BB_BEHIND_EQR, CALLER_BEHIND_EQR, OPENER_BEHIND_EQR } from "../../src/estimated/eqr.js";
-import { rakeConfig } from "../../src/estimated/rake.js";
+import { EQR, MULTIWAY_EQR, BB_BEHIND_EQR, CALLER_BEHIND_EQR, OPENER_BEHIND_EQR } from "../../src/estimated/eqr.ts";
+import { rakeConfig } from "../../src/estimated/rake.ts";
 
 // Facts must belong to the exact current strategy, not merely the same spot id.
 export function reasonSourceFingerprint(load) {

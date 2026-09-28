@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { combosOf } from "../lib/equity.mjs";
-import { gameConfig } from "../../src/estimated/sizing.js";
+import { gameConfig } from "../../src/estimated/sizing.ts";
 import { parseCards } from "./model.mjs";
 import { DEFAULT_SPOT_ID, spotById } from "./spots.mjs";
 

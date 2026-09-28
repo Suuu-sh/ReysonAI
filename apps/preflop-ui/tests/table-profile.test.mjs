@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { adjustOpeningSpot, adjustResponseRow, adjustmentReason, applyTableProfile, isDefaultProfile, markAdjustedModel, normalizeProfile, parseTableDescription, profileKey } from "../src/estimated/table-profile.js";
+import { adjustOpeningSpot, adjustResponseRow, adjustmentReason, applyTableProfile, isDefaultProfile, markAdjustedModel, normalizeProfile, parseTableDescription, profileKey } from "../src/estimated/table-profile.ts";
 import { compareOpenEv, limitToBudget } from "../scripts/exploit-open.mjs";
 import adjustments from "../src/estimated/table-profile-adjustments.json" with { type: "json" };
 import opening from "../src/estimated/opening-ranges.json" with { type: "json" };

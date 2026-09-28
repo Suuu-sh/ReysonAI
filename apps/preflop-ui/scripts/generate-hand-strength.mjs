@@ -1,7 +1,7 @@
 // One-off, reproducible audit fallback. Not a strategy or a solver ranking.
 // Usage: node scripts/generate-hand-strength.mjs
 import { writeFileSync } from "node:fs";
-import { hands } from "../src/data.js";
+import { hands } from "../src/data.ts";
 import { equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
 
 const samples = 30000;

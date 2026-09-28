@@ -1,18 +1,16 @@
 # SolveaAI Edge API
 
-Cloudflare Worker上で動作する、本番用の読み取り専用APIです。
+Cloudflare Worker上で動作するTypeScriptの読み取り専用APIです。
 
 ## 責務
 
-- 本番UIからのSolution一覧・詳細・Resolveリクエストを処理する
+- 公開済みSolutionの一覧・詳細・Resolveリクエストを処理する
 - Cloudflare R2の検証済み成果物だけを読む
 - Solver、Redis、ローカルAPIへ接続しない
 - Job登録 route を持たない
 
-ローカルUIは引き続き `/api` を使います。Viteの開発proxyまたはkindのNginxが
-ローカルRust APIへ転送し、ローカルRedisとローカルSolver Workerが処理します。
-
-本番UIでは `VITE_SOLVEAAI_API_BASE_URL` をこのWorkerのURLに設定します。
+現在の `preflop-ui` は保存済み推定レンジを直接読み、このAPIを呼び出しません。
+このWorkerは独立した実験・配信経路で、公開済みR2成果物だけを返します。
 
 ## R2の成果物
 
@@ -35,12 +33,12 @@ bash scripts/publish-solution-r2.sh release/solveaai solveaai-solutions
 成果物を先に、`manifest.json`を最後にアップロードします。Workerが未配置の
 Solutionをmanifest経由で参照しないようにするためです。
 
-本番UIの一覧・Resolve・Node取得は分割済みのedge artifactを使います。大きな
+一覧・Resolve・Node取得のレスポンスは分割済みのedge artifactを使います。大きな
 Solution全体JSONは互換用に残しますが、通常のリクエストごとに全体を読み込みません。
 
 ## Cloudflare設定
 
-`wrangler.jsonc` のR2バケット名と、`ALLOWED_ORIGIN`を本番UIのOriginに合わせます。
+`wrangler.jsonc` のR2バケット名と、`ALLOWED_ORIGIN`をAPI利用者のOriginに合わせます。
 
 ```jsonc
 {

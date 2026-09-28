@@ -1,7 +1,7 @@
 // Generation-time selection, never a runtime strategy fallback. Only stages writes.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { callContexts, callFacts, allowedCall, targetCall, threeBetTargetCall, validCallEquities, CALL_EQUITY_VERSION, CALL_EQUITY_SAMPLES, CALL_EQUITY_SEED } from "../src/estimated/call-ev.js";
+import { callContexts, callFacts, allowedCall, targetCall, threeBetTargetCall, validCallEquities, CALL_EQUITY_VERSION, CALL_EQUITY_SAMPLES, CALL_EQUITY_SEED } from "../src/estimated/call-ev.ts";
 import { reconcileCalls } from "./lib/call-consistency.mjs";
 import { comboCount, equityVsRange, equityVsRanges, weightedRange, seededRandom, seedFor } from "./lib/equity.mjs";
 

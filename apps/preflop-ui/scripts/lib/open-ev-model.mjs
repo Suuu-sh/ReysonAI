@@ -1,6 +1,6 @@
 import { comboCount, combosOf, equityVsRange, seedFor, seededRandom, weightedRange } from "./equity.mjs";
-import { rake, rakeMetadata, raked } from "../../src/estimated/rake.js";
-import { openSizeFor } from "../../src/estimated/sizing.js";
+import { rake, rakeMetadata, raked } from "../../src/estimated/rake.ts";
+import { openSizeFor } from "../../src/estimated/sizing.ts";
 
 export const SAMPLE_COUNT = 6000;
 export const OPEN_SIZE_BB = 2.5;

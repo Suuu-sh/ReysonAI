@@ -4,16 +4,16 @@ import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { loadFourBetDataset } from "../src/estimated/four-bet-responses.js";
-import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.js";
+import { loadFourBetDataset } from "../src/estimated/four-bet-responses.ts";
+import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "../src/estimated/action-path.ts";
 
 let server, EstimatedRanges, ActionPath, Sidebar, StrategyMatrix, PreflopCallEvBars, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
-  ({ EstimatedRanges, ActionPath, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
-  ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
-  ({ StrategyMatrix } = await server.ssrLoadModule("/src/components/StrategyMatrix.jsx"));
-  ({ PreflopCallEvBars } = await server.ssrLoadModule("/src/estimated/PreflopCallEvBars.jsx"));
+  ({ EstimatedRanges, ActionPath, buildActionBlocks, prioritizeParticipantRanges, selectedHandForRangeEntry } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx"));
+  ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.tsx"));
+  ({ StrategyMatrix } = await server.ssrLoadModule("/src/components/StrategyMatrix.tsx"));
+  ({ PreflopCallEvBars } = await server.ssrLoadModule("/src/estimated/PreflopCallEvBars.tsx"));
 });
 
 test("a rewound action block resolves the selected hand before opening its details", () => {

@@ -44,7 +44,7 @@ Solvea が解きたいのは、計算結果の量ではなく、**戦略を人�
 | トレーナー | 保存済みのオープン／対オープン推定レンジによるプリフロップドリル。設定、採点、解説、復習を提供。 |
 | セッション・プレー分析・弱点 | このブラウザーに保存した練習履歴を振り返る。傾向やスコアは、出題された推定レンジに対する練習上の指標。 |
 | フロップの試作 | 標準設定の一部のヘッズアップ経路と代表 12 ボードに限り、ローカルに保存・監査した AI 候補を読み取り専用で表示。一般公開用の GTO 解ではない。 |
-| Solver / API / SDK | 独立した計算・保存・配信基盤を開発中。現行 Solver の継続価値と GTO 精度は未検証で、上記の推定レンジを Solver の解として扱わない。 |
+| Solver / SDK / Edge API | 現行アプリとは別の計算・保存・配信基盤。Rust Solver の継続価値と GTO 精度は未検証で、上記の推定レンジを Solver の解として扱わない。 |
 
 レンジ閲覧の基本条件は **6-max キャッシュゲーム、100BB、アンティなし**です。通常のオープンは 2.5BB、SB オープンは 3.5BB で、SB にはリンプ経路もあります。保存済みデータがない設定や分岐には、戦略を表示しません。プリフロップ推定のコール評価には、低額オンラインゲームを想定したレーキと仮定上の EQR を用いる箇所があります。これらは Solver による実測値ではありません。
 
@@ -73,26 +73,26 @@ Solvea が解きたいのは、計算結果の量ではなく、**戦略を人�
                               │
 ローカルのフロップ候補 ────────┘  （試作・読み取り専用）
 
-Rust Solver ──► 構造検証 ──► Solution保存 ──► API / SDK
+Rust Solver ──► 構造検証 ──► Solution保存 ──► Edge API / SDK
                                     └──► 検証済み成果物だけをR2へ配布する設計
 ```
 
-**現在のレンジ分析画面は保存済み JSON を読み、閲覧時に Rust API や Solver を実行しません。** Solver/API 系列は別の実験・配信基盤です。本番向け Edge API は保存済み成果物の読み取り専用で、ローカルの Solver、Worker、Redis へ接続しません。
+**現在のレンジ分析画面は保存済み JSON を読み、閲覧時に Solver や Edge API を実行しません。** Rust Solver / Worker と読み取り専用の TypeScript Edge API は別の実験・配信基盤で、現行アプリには接続されていません。
 
 | 場所 | 役割 |
 | --- | --- |
-| [`apps/preflop-ui`](apps/preflop-ui) | サービスサイト、レンジ分析、トレーナー。 |
+| [`apps/preflop-ui`](apps/preflop-ui) | TypeScript / React のサービスサイト、レンジ分析、トレーナー。 |
 | [`apps/preflop-ui/src/estimated`](apps/preflop-ui/src/estimated) | 保存済み推定レンジと分析画面。 |
 | [`apps/preflop-ui/src/trainer`](apps/preflop-ui/src/trainer) | ドリル、セッション、練習分析。 |
 | [`crates`](crates) | カード・ゲームツリー・Solver・Solution・キューの Rust ライブラリ。 |
-| [`services`](services) | ローカル API と Solver Worker。 |
+| [`services`](services) | 独立して実行する実験用 Rust Solver Worker。 |
 | [`packages/solveaai-sdk-ts`](packages/solveaai-sdk-ts) | API 利用者向け TypeScript SDK。 |
-| [`apps/solveaai-edge-api`](apps/solveaai-edge-api) | Cloudflare R2 成果物を読む Edge API。 |
+| [`apps/solveaai-edge-api`](apps/solveaai-edge-api) | TypeScript の Cloudflare Worker。R2 成果物を読み取る Edge API。 |
 | [`configs`](configs) | Solver 用ゲーム設定。画面の保存済み推定レンジと同一のサイズ設定とは限らない。 |
 
 ## ローカルで試す
 
-Node.js を用意し、Web アプリを起動します。**保存済みプリフロップレンジの閲覧とトレーナーに、Rust API や Solver は不要です。**
+Node.js を用意し、Web アプリを起動します。**保存済みレンジの閲覧とトレーナーはフロントエンドだけで動作します。**
 
 ```bash
 cd apps/preflop-ui
@@ -118,7 +118,7 @@ cargo check --workspace
 cargo test --workspace
 ```
 
-API/SDK、Job Queue、R2 公開は開発・配信基盤の作業です。アプリを試すための必須手順ではありません。Edge API の責務は [`apps/solveaai-edge-api/README.md`](apps/solveaai-edge-api/README.md)、ローカルのフロップ試作は上記の専用資料に分けています。
+Solver Worker、Job Queue、SDK、R2 配信はアプリとは別の実験・配信基盤で、アプリを試すための必須手順ではありません。TypeScript Edge API の責務は [`apps/solveaai-edge-api/README.md`](apps/solveaai-edge-api/README.md)、ローカルのフロップ試作は上記の専用資料に分けています。
 
 ## この README を更新するとき
 

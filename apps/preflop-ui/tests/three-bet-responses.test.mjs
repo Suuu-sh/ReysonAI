@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { label, sortActions, hands } from "../src/data.js";
-import { rangeTypes } from "../src/estimated/ranges.js";
-import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "../src/estimated/three-bet-responses.js";
+import { label, sortActions, hands } from "../src/data.ts";
+import { rangeTypes } from "../src/estimated/ranges.ts";
+import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "../src/estimated/three-bet-responses.ts";
 
 const read = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url), "utf8"));
 const data = read("three-bet-responses"), responses = read("preflop-ranges"), openings = read("opening-ranges");

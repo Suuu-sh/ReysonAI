@@ -6,7 +6,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { callContexts, callFacts } from "../src/estimated/call-ev.js";
+import { callContexts, callFacts } from "../src/estimated/call-ev.ts";
 import { classify } from "./lib/raise-ev.mjs";
 import { createOpenResponseRaiseModel, createRaiseEquityCache } from "./lib/raise-ev-context.mjs";
 

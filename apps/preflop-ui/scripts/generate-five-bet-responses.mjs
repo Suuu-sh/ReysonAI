@@ -4,8 +4,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
-import { rakeMetadata, raked } from "../src/estimated/rake.js";
-import { openSizeFor } from "../src/estimated/sizing.js";
+import { rakeMetadata, raked } from "../src/estimated/rake.ts";
+import { openSizeFor } from "../src/estimated/sizing.ts";
 
 const staging = process.env.ESTIMATES_DIR;
 if (!staging) {

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { transform } from "esbuild";
-import { LOCALE_KEY, productLocale, rememberLocale } from "../src/locale.js";
+import { LOCALE_KEY, productLocale, rememberLocale } from "../src/locale.ts";
 
 async function loadCopy(file, exportName) {
   const source = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");

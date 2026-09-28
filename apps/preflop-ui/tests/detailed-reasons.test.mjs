@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
-import { hands } from "../src/data.js";
+import { hands } from "../src/data.ts";
 
 const dir = new URL("../src/estimated/reasons/", import.meta.url);
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));

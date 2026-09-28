@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { hands } from "../src/data.js";
-import { squeezeResponseSpots, validateSqueezeDataset, findSqueezeSpot, squeezeMatrixModel } from "../src/estimated/squeeze-responses.js";
-import { callContexts, callFacts, allowedCall, callDefenseCapacity, squeezeFoldThreshold, THREE_BET_FILL_EV } from "../src/estimated/call-ev.js";
-import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.js";
-import { fourBetToSize, threeBetToSize } from "../src/estimated/sizing.js";
+import { hands } from "../src/data.ts";
+import { squeezeResponseSpots, validateSqueezeDataset, findSqueezeSpot, squeezeMatrixModel } from "../src/estimated/squeeze-responses.ts";
+import { callContexts, callFacts, allowedCall, callDefenseCapacity, squeezeFoldThreshold, THREE_BET_FILL_EV } from "../src/estimated/call-ev.ts";
+import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.ts";
+import { fourBetToSize, threeBetToSize } from "../src/estimated/sizing.ts";
 
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url), "utf8"));
 const data = load("squeeze-responses");

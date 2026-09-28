@@ -1,7 +1,7 @@
 // Review artifact, reproducible from published inputs (no .local facts needed).
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { auditEstimates } from "../src/estimated/audit.js";
-import { callContexts, callFacts } from "../src/estimated/call-ev.js";
+import { auditEstimates } from "../src/estimated/audit.ts";
+import { callContexts, callFacts } from "../src/estimated/call-ev.ts";
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
 const data = { opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), fiveBets: load("five-bet-responses"), multiway: load("multiway-responses"), squeezes: load("squeeze-responses"), limp: load("limp-responses"), coldThreeBets: load("cold-three-bet-responses") };
 const report = load("call-ev-report"), table = load("call-equities");
@@ -50,7 +50,7 @@ for (const [id, item] of entries) {
 lines.push("", "## 監査", "");
 for (const finding of audit.findings) lines.push(`- [${finding.severity}] ${finding.check} / ${finding.spot}: ${finding.detail}`);
 lines.push("", "## 変更ファイル群", "",
-  "- モデル／監査: `src/estimated/eqr.js`, `call-ev.js`, `call-equities.json`, `call-ev-report.json`, `audit.js`。",
+  "- モデル／監査: `src/estimated/eqr.ts`, `call-ev.js`, `call-equities.json`, `call-ev-report.json`, `audit.js`。",
   "- 生成: `scripts/eqr.py`, `call_policy.py`, `apply-call-ev.mjs`, `data/response-mixes.json`, `lib/call-consistency.mjs`, 対象5生成スクリプト, `build-estimates.mjs`, `audit-estimates.mjs`。",
   "- 理由: `reason-facts.mjs`, `compose-reasons.mjs`, `lib/reason-context.mjs`, 全58局面の `src/estimated/reasons/*.json`。旧手書きBB_vs_BTNテンプレートと旧render.pyは削除。",
   "- データ: `preflop-ranges.json`, `three-bet-responses.json`, `four-bet-responses.json`, `multiway-responses.json`, `squeeze-responses.json`, `limp-responses.json`, `cold-three-bet-responses.json`。",

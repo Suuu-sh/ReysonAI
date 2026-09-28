@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { hands } from "../src/data.js";
-import { multiwayMatchups, multiwaySpots, validateMultiwayDataset, findMultiwaySpot, multiwayMatrixModel } from "../src/estimated/multiway-responses.js";
-import { callContexts, callFacts, allowedCall } from "../src/estimated/call-ev.js";
-import { threeBetToSize } from "../src/estimated/sizing.js";
+import { hands } from "../src/data.ts";
+import { multiwayMatchups, multiwaySpots, validateMultiwayDataset, findMultiwaySpot, multiwayMatrixModel } from "../src/estimated/multiway-responses.ts";
+import { callContexts, callFacts, allowedCall } from "../src/estimated/call-ev.ts";
+import { threeBetToSize } from "../src/estimated/sizing.ts";
 
 const data = JSON.parse(readFileSync(new URL("../src/estimated/multiway-responses.json", import.meta.url), "utf8"));
 const headsUp = JSON.parse(readFileSync(new URL("../src/estimated/preflop-ranges.json", import.meta.url), "utf8"));

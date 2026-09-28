@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import worker from "../src/index.js";
+import worker from "../src/index.ts";
 
 const solutionId = "cash-6max-100bb-v1";
 const artifact = {
@@ -139,7 +139,7 @@ test("lists and reads the published R2 solution", async () => {
   assert.equal((await response.json()).nodes.length, 3);
 });
 
-test("resolves implicit folds at the edge without contacting local API", async () => {
+test("resolves implicit folds at the edge", async () => {
   const response = await request("/v1/preflop/resolve", {
     method: "POST",
     headers: {

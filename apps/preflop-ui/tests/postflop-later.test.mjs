@@ -85,7 +85,7 @@ test("playHand conserves chips through turn/river policies, including low-SPR al
 });
 
 test("flop bets at low SPR merge into all-in (≥ 67% of the remaining stack)", async () => {
-  const { flopDecision } = await import("../src/estimated/postflop-trial.js");
+  const { flopDecision } = await import("../src/estimated/postflop-trial.ts");
   const { spotById } = await import("../scripts/postflop-ai/spots.mjs");
   const spot = spotById("UTG_open_SB_4bp_call"); // pot 53BB, stacks 74BB
   const big = flopDecision(["bet125"], spot);

@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { SPOTS, compareAcross, filterSpots, grade, handCategory, pickQuestion, randomSuits, spotById, studyNote } from "../src/trainer/trainer-data.js";
-import { practiceHighlights, summarize } from "../src/trainer/trainer-store.js";
-import { analyzePlayer, plotPosition, scoreProgress } from "../src/trainer/player-analysis.js";
+import { SPOTS, compareAcross, filterSpots, grade, handCategory, pickQuestion, randomSuits, spotById, studyNote } from "../src/trainer/trainer-data.ts";
+import { practiceHighlights, summarize } from "../src/trainer/trainer-store.ts";
+import { analyzePlayer, plotPosition, scoreProgress } from "../src/trainer/player-analysis.ts";
 
 const seeded = seed => () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
 
@@ -90,7 +90,7 @@ test("study notes name the hero's actual seat", () => {
 });
 
 test("settings are normalised and drive spot choice, difficulty and strictness", async () => {
-  const { normalizeSettings, spotsForSettings } = await import("../src/trainer/trainer-data.js");
+  const { normalizeSettings, spotsForSettings } = await import("../src/trainer/trainer-data.ts");
   const fallback = normalizeSettings({ kinds: [], positions: ["XX"], count: 7, difficulty: "?", review: "yes" });
   assert.deepEqual([fallback.kinds, fallback.positions.length, fallback.count, fallback.difficulty, fallback.review], [["open", "response"], 6, 20, "standard", true]);
   assert.equal(normalizeSettings({}, "beginner").strictness, "lenient");
@@ -111,7 +111,7 @@ test("settings are normalised and drive spot choice, difficulty and strictness",
 });
 
 test("drills keep named settings and per-drill accuracy records", async () => {
-  const { PRESET_DRILLS, drillStats, loadDrills, recordSession, upsertDrill } = await import("../src/trainer/drill-store.js");
+  const { PRESET_DRILLS, drillStats, loadDrills, recordSession, upsertDrill } = await import("../src/trainer/drill-store.ts");
   const drills = loadDrills(); // no storage in node: presets
   assert.equal(drills.length, PRESET_DRILLS.length);
   assert.ok(drills.every(drill => drill.preset && drill.sessions.length === 0));

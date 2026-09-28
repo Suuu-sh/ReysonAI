@@ -2,7 +2,7 @@
 // Bets and raises are capped by the remaining stack (all-in); once a player is all-in the
 // turn and river are only dealt.
 import { evaluate } from "../lib/equity.mjs";
-import { gameConfig } from "../../src/estimated/sizing.js";
+import { gameConfig } from "../../src/estimated/sizing.ts";
 import { LATER_NODES, STREETS, betFraction, streetState } from "./later-tree.mjs";
 import { facingNode, flopBetFraction, raiseNodeAfter } from "./tree.mjs";
 

@@ -29,13 +29,12 @@ export SOLVEAAI_QUEUE_BACKEND=redis
 export SOLVEAAI_REDIS_URL="redis://127.0.0.1:${REDIS_PORT}/"
 export SOLVEAAI_REDIS_PREFIX="solveaai-e2e-$$"
 export SOLVEAAI_REDIS_GROUP="solveaai-e2e-workers"
-export SOLVEAAI_E2E_PORT=3312
 
 SOLVEAAI_REDIS_TEST_URL="$SOLVEAAI_REDIS_URL" \
   cargo test -p solveaai-job-queue \
   redis_queue_deduplicates_reclaims_retries_and_completes -- --ignored
 
-bash "$ROOT_DIR/tests/api-job-e2e.sh"
+cargo build --quiet --bin solveaai-worker
 
 python3 - "$ROOT_DIR/configs/cash-6max-100bb.json" "$TMP_DIR/config.json" <<'PY'
 import json

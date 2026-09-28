@@ -3,12 +3,12 @@
 // Writes .local/reason-facts/<spot_id>.json; seeded, so reruns are reproducible.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
-import { raked } from "../src/estimated/rake.js";
+import { raked } from "../src/estimated/rake.ts";
 import { reasonSourceFingerprint } from "./lib/reason-context.mjs";
-import { callContexts, callFacts, limpReraiseFoldThreshold, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.js";
+import { callContexts, callFacts, limpReraiseFoldThreshold, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.ts";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { isInPosition, openSizeFor } from "../src/estimated/sizing.js";
+import { isInPosition, openSizeFor } from "../src/estimated/sizing.ts";
 
 const SAMPLES = 12000;
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];

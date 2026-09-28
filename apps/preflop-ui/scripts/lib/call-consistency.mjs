@@ -1,8 +1,8 @@
 // Constrained call-only reconciliation after the EV gate. Never changes raises,
 // admits a negative-EV call, or weakens the existing consistency audit.
-import { allowedCall, callFacts, limpReraiseFoldThreshold, squeezeFoldThreshold } from "../../src/estimated/call-ev.js";
+import { allowedCall, callFacts, limpReraiseFoldThreshold, squeezeFoldThreshold } from "../../src/estimated/call-ev.ts";
 import { comboCount } from "./equity.mjs";
-import { openSizeFor } from "../../src/estimated/sizing.js";
+import { openSizeFor } from "../../src/estimated/sizing.ts";
 const ranks = "AKQJT98765432", blind = { SB: 0.5, BB: 1 };
 const seats = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 const continuation = row => 100 - row.fold;

@@ -4,8 +4,8 @@
 //   call  → equity vs opener's calling range × EQR × raked(pot) − 3bet cost
 //   4bet  → hero's saved 4bet response: fold loses the 3bet; call realizes vs the 4bet range;
 //           all-in gets it in at 100BB (ignores opener folding to the shove, so conservative)
-import { raked } from "../../src/estimated/rake.js";
-import { equityRealization } from "../../src/estimated/eqr.js";
+import { raked } from "../../src/estimated/rake.ts";
+import { equityRealization } from "../../src/estimated/eqr.ts";
 import { combosOf } from "./equity.mjs";
 
 const blind = { SB: 0.5, BB: 1 };

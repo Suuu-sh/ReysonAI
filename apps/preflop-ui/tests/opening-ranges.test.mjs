@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { hands } from "../src/data.js";
-import { rangeTypes } from "../src/estimated/ranges.js";
-import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "../src/estimated/opening-ranges.js";
-import { openSizeFor } from "../src/estimated/sizing.js";
+import { hands } from "../src/data.ts";
+import { rangeTypes } from "../src/estimated/ranges.ts";
+import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "../src/estimated/opening-ranges.ts";
+import { openSizeFor } from "../src/estimated/sizing.ts";
 
 const source = JSON.parse(readFileSync(new URL("../src/estimated/opening-ranges.json", import.meta.url), "utf8"));
 test("every response matchup has its own opener's complete comparison range", () => {

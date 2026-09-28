@@ -8,8 +8,9 @@
     "noEmit": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "types": ["vite/client"]
   },
-  "include": ["src/site/**/*.ts", "src/site/**/*.tsx"]
+  "include": ["src/site/**/*.ts", "src/site/**/*.tsx", "../solveaai-edge-api/src/**/*.ts"]
 }

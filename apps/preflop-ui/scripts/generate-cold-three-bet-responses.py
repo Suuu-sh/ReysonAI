@@ -221,7 +221,7 @@ if __name__ == '__main__':
     data = build()
     check = """
 import fs from 'node:fs';
-import { validateColdThreeBetDataset } from './src/estimated/cold-three-bet-responses.js';
+import { validateColdThreeBetDataset } from './src/estimated/cold-three-bet-responses.ts';
 const read = n => JSON.parse(fs.readFileSync(`${process.env.ESTIMATES_DIR}/${n}.json`, 'utf8'));
 validateColdThreeBetDataset(JSON.parse(fs.readFileSync(0, 'utf8')), read('preflop-ranges'));
 """

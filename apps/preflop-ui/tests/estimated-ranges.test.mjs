@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { availableHeroes, availableOpeners, findSpot, hasSpot, matrixModel, positions, validateDataset } from "../src/estimated/ranges.js";
+import { availableHeroes, availableOpeners, findSpot, hasSpot, matrixModel, positions, validateDataset } from "../src/estimated/ranges.ts";
 
 const data = JSON.parse(readFileSync(new URL("../src/estimated/preflop-ranges.json", import.meta.url), "utf8"));
 test("all 15 persisted JSON spots retain all 2,535 answers in the matrix", () => {

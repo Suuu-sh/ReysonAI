@@ -1,4 +1,4 @@
-import { raked } from "../../src/estimated/rake.js";
+import { raked } from "../../src/estimated/rake.ts";
 
 // Compare the two ends of an EQR interval. A tie is a decision boundary too.
 const crosses = (low, high) => low !== high &&

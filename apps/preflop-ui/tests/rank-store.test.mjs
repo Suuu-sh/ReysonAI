@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { RANKED_SETTINGS, emptyRankState, playedToday, questionRating, rateMatch, recordMatch, tierFor } from "../src/trainer/rank-store.js";
+import { RANKED_SETTINGS, emptyRankState, playedToday, questionRating, rateMatch, recordMatch, tierFor } from "../src/trainer/rank-store.ts";
 
 const clear = { raise: 0.95, fold: 0.05 };
 const mixed = { raise: 0.5, fold: 0.5 };
@@ -42,7 +42,7 @@ test("tiers step up with rating", () => {
 });
 
 test("leaderboard ranks by rating and holds back players with too few matches", async () => {
-  const { leaderboardRows, playerSummary } = await import("../src/trainer/rank-store.js");
+  const { leaderboardRows, playerSummary } = await import("../src/trainer/rank-store.ts");
   const rows = leaderboardRows([
     { name: "a", rating: 1100, accuracy: 0.7, matches: 5 },
     { name: "b", rating: 1300, accuracy: 0.9, matches: 1 },

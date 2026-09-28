@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check src/index.js",
+    "check": "node --experimental-strip-types src/index.ts",
     "test": "node --test tests/index.test.mjs"
   }
 }

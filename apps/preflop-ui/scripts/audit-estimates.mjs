@@ -2,7 +2,7 @@
 // Usage: node scripts/audit-estimates.mjs [--dir <estimates dir>] [--json]
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { auditEstimates, BALANCE_CHECKS, isBlockingAuditFinding, pct } from "../src/estimated/audit.js";
+import { auditEstimates, BALANCE_CHECKS, isBlockingAuditFinding, pct } from "../src/estimated/audit.ts";
 
 const dirFlag = process.argv.indexOf("--dir");
 const dir = dirFlag > 0 ? resolve(process.argv[dirFlag + 1]) : new URL("../src/estimated/", import.meta.url).pathname;

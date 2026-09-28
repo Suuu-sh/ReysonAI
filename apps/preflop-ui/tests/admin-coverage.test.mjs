@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { coverageCatalog, formatBacklog, postflopCatalog, priorityBacklog } from "../src/admin/coverage.js";
+import { coverageCatalog, formatBacklog, postflopCatalog, priorityBacklog } from "../src/admin/coverage.ts";
 
 test("every persisted spot maps onto the enumerated preflop tree", () => {
   const catalog = coverageCatalog();

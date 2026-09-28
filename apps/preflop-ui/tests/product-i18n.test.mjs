@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
-import { englishFactLabels, englishPostflopReasons, englishPreflopReason } from "../src/estimated/english-reasons.js";
-import { productLocale, translateProductCopy } from "../src/i18n.js";
-import { actionReason, evidenceReason } from "../src/estimated/postflop-reasons.js";
-import { displayDrillName, PRESET_DRILLS } from "../src/trainer/drill-store.js";
+import { englishFactLabels, englishPostflopReasons, englishPreflopReason } from "../src/estimated/english-reasons.ts";
+import { productLocale, translateProductCopy } from "../src/i18n.ts";
+import { actionReason, evidenceReason } from "../src/estimated/postflop-reasons.ts";
+import { displayDrillName, PRESET_DRILLS } from "../src/trainer/drill-store.ts";
 
 const previousWindow = globalThis.window;
 before(() => { globalThis.window = { localStorage: { getItem: () => null } }; });

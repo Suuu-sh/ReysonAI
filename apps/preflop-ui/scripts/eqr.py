@@ -1,6 +1,6 @@
 """Assumed EQR, NOT solver output. Replace after solver implementation.
 
-Mirrors src/estimated/eqr.js; parity over all hands/positions is tested.
+Mirrors src/estimated/eqr.ts; parity over all hands/positions is tested.
 The first matching category wins, so suited broadways precede suited aces.
 """
 from sizing_rules import CONFIG, in_position
@@ -16,14 +16,14 @@ EQR = {
     'offsuit_other': (0.92, 0.70),
 }
 MULTIWAY_EQR = 0.90
-# SB calling an open plus a cold call with BB still to act (see eqr.js for the
+# SB calling an open plus a cold call with BB still to act (see eqr.ts for the
 # rationale): BB squeeze risk ×~0.95, four-way overcalls ×~0.95, plus margin.
 BB_BEHIND_EQR = 0.85
 # Opener facing a squeeze with the original cold caller still to act (see
-# eqr.js): overcalls make a three-way pot, rare back-raises forfeit the call.
+# eqr.ts): overcalls make a three-way pot, rare back-raises forfeit the call.
 CALLER_BEHIND_EQR = 0.90
 # Cold call of a 3bet with the original opener (and any later seats) still to
-# act (see eqr.js): the uncapped opener can 4bet (forfeiting the call) or
+# act (see eqr.ts): the uncapped opener can 4bet (forfeiting the call) or
 # overcall into a three-way pot; margin for seats behind and a capped flat.
 OPENER_BEHIND_EQR = 0.85
 RANKS = '23456789TJQKA'

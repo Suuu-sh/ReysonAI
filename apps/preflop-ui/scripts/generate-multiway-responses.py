@@ -804,9 +804,9 @@ if __name__ == '__main__':
     data = build()
     check = """
 import fs from 'node:fs';
-import { validateOpeningDataset } from './src/estimated/opening-ranges.js';
-import { validateDataset } from './src/estimated/ranges.js';
-import { validateMultiwayDataset } from './src/estimated/multiway-responses.js';
+import { validateOpeningDataset } from './src/estimated/opening-ranges.ts';
+import { validateDataset } from './src/estimated/ranges.ts';
+import { validateMultiwayDataset } from './src/estimated/multiway-responses.ts';
 const read = n => JSON.parse(fs.readFileSync(`${process.env.ESTIMATES_DIR}/${n}.json`, 'utf8'));
 validateOpeningDataset(read('opening-ranges'));
 validateDataset(read('preflop-ranges'));

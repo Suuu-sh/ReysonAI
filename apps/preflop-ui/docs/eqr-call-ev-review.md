@@ -169,7 +169,7 @@
 
 ## 変更ファイル群
 
-- モデル／監査: `src/estimated/eqr.js`, `call-ev.js`, `call-equities.json`, `call-ev-report.json`, `audit.js`。
+- モデル／監査: `src/estimated/eqr.ts`, `call-ev.ts`, `call-equities.json`, `call-ev-report.json`, `audit.ts`。
 - 生成: `scripts/eqr.py`, `call_policy.py`, `apply-call-ev.mjs`, `data/response-mixes.json`, `lib/call-consistency.mjs`, 対象5生成スクリプト, `build-estimates.mjs`, `audit-estimates.mjs`。
 - 理由: `reason-facts.mjs`, `compose-reasons.mjs`, `lib/reason-context.mjs`, 全58局面の `src/estimated/reasons/*.json`。旧手書きBB_vs_BTNテンプレートと旧render.pyは削除。
 - データ: `preflop-ranges.json`, `three-bet-responses.json`, `four-bet-responses.json`, `multiway-responses.json`, `limp-responses.json`。

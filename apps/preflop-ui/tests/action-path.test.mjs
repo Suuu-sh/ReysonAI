@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildNextActionNode, nextActorsAfterRaise, responseActionTransition } from "../src/estimated/action-path.js";
+import { buildNextActionNode, nextActorsAfterRaise, responseActionTransition } from "../src/estimated/action-path.ts";
 
 test("jumping directly to BB call folds every unselected seat before BB", () => {
   assert.deepEqual(responseActionTransition({ opener: "UTG", callers: [], position: "BB", action: "call" }), {

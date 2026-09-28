@@ -28,7 +28,7 @@ test("5bet responses call exactly when equity vs the shove range clears pot odds
 test("5bet model hides unreachable placeholders and validates frequencies", async () => {
   const server = await createServer({ server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom", logLevel: "silent" });
   try {
-    const { fiveBetMatrixModel, validateFiveBetDataset } = await server.ssrLoadModule("/src/estimated/five-bet-responses.js");
+    const { fiveBetMatrixModel, validateFiveBetDataset } = await server.ssrLoadModule("/src/estimated/five-bet-responses.ts");
     const data = validateFiveBetDataset(load("five-bet-responses"));
     const model = fiveBetMatrixModel(data.spots[0]);
     assert.deepEqual(model.actions, ["call", "fold"]);

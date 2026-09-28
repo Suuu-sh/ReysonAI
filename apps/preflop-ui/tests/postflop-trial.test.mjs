@@ -5,7 +5,7 @@ import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { existsSync } from "node:fs";
-import { color, label } from "../src/data.js";
+import { color, label } from "../src/data.ts";
 import { artifactPaths, loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { loadCandidate, sha } from "../scripts/postflop-ai/generate.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../scripts/postflop-ai/spots.mjs";
@@ -18,7 +18,7 @@ import threeBetResponses from "../src/estimated/three-bet-responses.json" with {
 import { buildLaterView, buildLocalBoard } from "../scripts/postflop-ai/local-view.mjs";
 import { referencePolicy, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.mjs";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, flopDecision, laterStart, replayLater, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.js";
+import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, flopDecision, laterStart, replayLater, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.ts";
 
 const end = (result, pot) => [{ kind: "end", result, pot: `ポット ${pot}bb` }];
 
@@ -402,9 +402,9 @@ let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, StreetCardDialog
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)),
     server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
-  ({ ActionPath, buildActionBlocks } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
-  ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
-  ({ PostflopTrial, FlopCardDialog, StreetCardDialog, labelsFor, nodeTitle, laterNodeTitle } = await server.ssrLoadModule("/src/estimated/PostflopTrial.jsx"));
+  ({ ActionPath, buildActionBlocks } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx"));
+  ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.tsx"));
+  ({ PostflopTrial, FlopCardDialog, StreetCardDialog, labelsFor, nodeTitle, laterNodeTitle } = await server.ssrLoadModule("/src/estimated/PostflopTrial.tsx"));
 });
 after(async () => { await server?.close(); });
 
@@ -510,7 +510,7 @@ test("125% flop bets use the shared size list, localized labels, and facing-node
 });
 
 test("every flop node, action and hand tier has a plain-language reason", async () => {
-  const { actionReason, dominantTier } = await import("../src/estimated/postflop-reasons.js");
+  const { actionReason, dominantTier } = await import("../src/estimated/postflop-reasons.ts");
   const nodes = { btn_first: ["check", "bet33", "bet75", "bet125"], bb_vs_33: ["fold", "call", "raise"], bb_vs_75: ["fold", "call", "raise"], bb_vs_125: ["fold", "call", "raise"], ip_vs_125: ["fold", "call", "raise"], btn_vs_raise: ["fold", "call"] };
   for (const [node, actions] of Object.entries(nodes)) for (const action of actions)
     for (const tier of ["monster", "strong", "draw", "medium", "air"]) assert.ok(actionReason(node, action, tier), `${node}/${action}/${tier}`);
@@ -547,7 +547,7 @@ test("combo explanation splits the opponent range into value, fold-out and conti
 });
 
 test("combo evidence reasons follow the computed numbers", async () => {
-  const { evidenceReason } = await import("../src/estimated/postflop-reasons.js");
+  const { evidenceReason } = await import("../src/estimated/postflop-reasons.ts");
   const bet = groups => ({ foldShare: 0.3, groups: Object.entries(groups).map(([key, share]) => ({ key, share, hands: [] })) });
   assert.match(evidenceReason("bet33", bet({ value: 0.4, foldBetter: 0.1, continueBetter: 0.2 }), 0.6), /主にバリュー.*40%/);
   assert.match(evidenceReason("bet75", bet({ value: 0.05, foldBetter: 0.25, continueBetter: 0.3 }), 0.4), /主に降ろし.*25%/);

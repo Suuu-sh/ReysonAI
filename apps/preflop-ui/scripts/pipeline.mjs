@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { isBlockingAuditFinding } from "../src/estimated/audit.js";
+import { isBlockingAuditFinding } from "../src/estimated/audit.ts";
 import { diffDatasets, isUnchanged, parseFindings, summarizeFindings } from "./lib/estimate-diff.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));

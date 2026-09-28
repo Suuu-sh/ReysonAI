@@ -7,8 +7,8 @@ import { createServer } from "vite";
 let server, formats, GameFormatDialog, AdvancedSettingsPage;
 before(async () => {
   server = await createServer({ server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom", logLevel: "silent" });
-  formats = await server.ssrLoadModule("/src/estimated/game-formats.js");
-  ({ GameFormatDialog, AdvancedSettingsPage } = await server.ssrLoadModule("/src/estimated/GameFormatDialog.jsx"));
+  formats = await server.ssrLoadModule("/src/estimated/game-formats.ts");
+  ({ GameFormatDialog, AdvancedSettingsPage } = await server.ssrLoadModule("/src/estimated/GameFormatDialog.tsx"));
 });
 after(async () => { await server?.close(); });
 

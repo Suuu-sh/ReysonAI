@@ -9,7 +9,7 @@
     "build": "node scripts/build-site-preview.mjs && vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "lint": "biome lint src/site/ServiceSite.tsx src/site/content.ts src/site/content-ja.ts src/main.jsx src/ProductApp.jsx",
+    "lint": "biome lint src/site/ServiceSite.tsx src/site/content.ts src/site/content-ja.ts src/main.tsx src/ProductApp.tsx",
     "benchmark": "node scripts/benchmark-compare.mjs",
     "benchmark:record": "node scripts/benchmark-record.mjs",
     "open-ev": "node scripts/open-ev.mjs",

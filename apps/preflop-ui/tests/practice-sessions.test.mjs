@@ -4,9 +4,9 @@ import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
-import { grade, spotById } from "../src/trainer/trainer-data.js";
-import { loadDrills, recordSession, saveDrills } from "../src/trainer/drill-store.js";
-import { loadReviewSessions, newSessionRecord, practiceSessionRows, recordReviewSession } from "../src/trainer/practice-sessions.js";
+import { grade, spotById } from "../src/trainer/trainer-data.ts";
+import { loadDrills, recordSession, saveDrills } from "../src/trainer/drill-store.ts";
+import { loadReviewSessions, newSessionRecord, practiceSessionRows, recordReviewSession } from "../src/trainer/practice-sessions.ts";
 
 function memoryStorage() {
   const values = new Map();
@@ -55,7 +55,7 @@ let server;
 let SessionPage;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
-  ({ SessionPage } = await server.ssrLoadModule("/src/trainer/SessionPage.jsx"));
+  ({ SessionPage } = await server.ssrLoadModule("/src/trainer/SessionPage.tsx"));
 });
 after(async () => { await server?.close(); });
 

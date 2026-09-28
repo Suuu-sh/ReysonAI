@@ -10,7 +10,7 @@ import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { FLOP_BETS, flopState } from "./tree.mjs";
 import { LATER_NODES } from "./later-tree.mjs";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
-import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.js";
+import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
 
 const cardText = card => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
 

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { grade, normalizeSettings, spotById } from "../src/trainer/trainer-data.js";
-import { loadDrillDrafts, removeDrillDraft, restoreDrillDraft, saveDrillDraft } from "../src/trainer/drill-session-store.js";
+import { grade, normalizeSettings, spotById } from "../src/trainer/trainer-data.ts";
+import { loadDrillDrafts, removeDrillDraft, restoreDrillDraft, saveDrillDraft } from "../src/trainer/drill-session-store.ts";
 
 function memoryStorage() {
   const values = new Map();

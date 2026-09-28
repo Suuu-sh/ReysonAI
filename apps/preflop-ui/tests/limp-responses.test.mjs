@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { hands } from "../src/data.js";
-import { findLimpResponseSpot, limpResponsesMatrixModel, validateLimpResponses } from "../src/estimated/limp-responses.js";
-import { fourBetToSize } from "../src/estimated/sizing.js";
+import { hands } from "../src/data.ts";
+import { findLimpResponseSpot, limpResponsesMatrixModel, validateLimpResponses } from "../src/estimated/limp-responses.ts";
+import { fourBetToSize } from "../src/estimated/sizing.ts";
 
 const read = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url), "utf8"));
 const opening = read("opening-ranges");

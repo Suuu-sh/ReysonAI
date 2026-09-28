@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import { comboCount } from "./lib/equity.mjs";
 import { DATASET_NAMES, compareToReferences, loadReferences } from "./lib/benchmark.mjs";
 import { diffSpot, parseFindings, summarizeFindings } from "./lib/estimate-diff.mjs";
-import { isBlockingAuditFinding } from "../src/estimated/audit.js";
+import { isBlockingAuditFinding } from "../src/estimated/audit.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const RANKS = "AKQJT98765432";

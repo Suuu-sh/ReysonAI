@@ -4,20 +4,20 @@
 
 共通ルール（全タスク）:
 - cwd は `apps/preflop-ui`。`src/estimated/*.json` を直接編集しない（生成は `npm run build:estimates` / `npm run pipeline`）。
-- UI ファイル（RangeWorkspace.jsx 等、range-author.md に列挙）は触らない。
+- UI ファイル（RangeWorkspace.tsx 等、range-author.md に列挙）は触らない。
 - 他セッションの未コミット変更を戻さない。commit / push / reset はしない。
 - 完了条件は `npm test` が通ること＋各タスクの確認コマンド。
 
 ## A. 3bet 周りの EV モデル強化（先にやる）
 
 1. **3bet ポットの EQR を分ける**
-   - `src/estimated/eqr.js` / `scripts/eqr.py` に 3bet 側・コール側の係数を追加（初期値は仮定、根拠コメント必須）。`scripts/lib/raise-ev.mjs` と 3bet 応答の call EV で使う。
+   - `src/estimated/eqr.ts` / `scripts/eqr.py` に 3bet 側・コール側の係数を追加（初期値は仮定、根拠コメント必須）。`scripts/lib/raise-ev.mjs` と 3bet 応答の call EV で使う。
    - 確認: `npm run raise-ev` の結果の変化を報告。
 2. **後ろのプレイヤーを raise-ev に入れる**
    - 3bet 後に残る人のコールド 4bet / コールを、保存済みデータがあれば使い、なければ固定の割合（定数化）で近似。IP の 3bet が過大評価されないこと。
    - 確認: `npm run raise-ev -- CO_vs_HJ BTN_vs_UTG`。
 3. **raise-ev を監査に組み込む（警告）**
-   - `audit.js` に advisory チェック `raise-ev-mismatch`（margin 0.5bb、局面ごとの件数）。blocking にしない。`npm run range -- check` にも表示される。
+   - `audit.ts` に advisory チェック `raise-ev-mismatch`（margin 0.5bb、局面ごとの件数）。blocking にしない。`npm run range -- check` にも表示される。
 4. **4bet / スクイーズ / アイソ への拡張**
    - raise-ev と同じ方式で、3bet に対する 4bet、multiway のスクイーズ、limp へのアイソの EV を比べる。
 

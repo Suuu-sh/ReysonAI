@@ -279,7 +279,7 @@ if __name__ == '__main__':
     # Validate with the same cross-reference boundary as the UI BEFORE writing.
     check = """
 import fs from 'node:fs';
-import {validateFourBetDataset} from './src/estimated/four-bet-responses.js';
+import {validateFourBetDataset} from './src/estimated/four-bet-responses.ts';
 const read = n => JSON.parse(fs.readFileSync(`${process.env.ESTIMATES_DIR}/${n}.json`, 'utf8'));
 validateFourBetDataset(JSON.parse(fs.readFileSync(0, 'utf8')), read('preflop-ranges'), read('three-bet-responses'), read('opening-ranges'));
 """

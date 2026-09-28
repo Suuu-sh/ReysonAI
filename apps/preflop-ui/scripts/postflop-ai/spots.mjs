@@ -12,7 +12,7 @@ import responses from "../../src/estimated/preflop-ranges.json" with { type: "js
 import threeBetResponses from "../../src/estimated/three-bet-responses.json" with { type: "json" };
 import openingRanges from "../../src/estimated/opening-ranges.json" with { type: "json" };
 import limpResponses from "../../src/estimated/limp-responses.json" with { type: "json" };
-import { gameConfig, isInPosition, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb } from "../../src/estimated/sizing.js";
+import { gameConfig, isInPosition, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb } from "../../src/estimated/sizing.ts";
 
 export const DEFAULT_SPOT_ID = "BTN_open_BB_call";
 const BLINDS = { SB: 0.5, BB: 1 };

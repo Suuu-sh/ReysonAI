@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { defaultModeForLevel, dominantAction, summarizeMix } from "../src/estimated/display-mode.js";
+import { defaultModeForLevel, dominantAction, summarizeMix } from "../src/estimated/display-mode.ts";
 
 const mix = actions => ({ actions });
 const order = ["raise_ai", "call", "fold"];

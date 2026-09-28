@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { hands } from '../src/data.js';
+import { hands } from '../src/data.ts';
 import { validateRequest, validateEstimate } from '../scripts/local-estimate.mjs';
 const request = validateRequest({ opener: 'BTN', callers: ['SB'], hero: 'BB' });
 test('only reachable caller-before-hero paths are accepted', () => {

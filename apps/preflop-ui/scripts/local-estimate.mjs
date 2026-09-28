@@ -4,8 +4,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
-import { hands } from '../src/data.js';
-import { fourBetToSize, openSizeFor, threeBetToSize } from '../src/estimated/sizing.js';
+import { hands } from '../src/data.ts';
+import { fourBetToSize, openSizeFor, threeBetToSize } from '../src/estimated/sizing.ts';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const cacheDir = join(root, '.local', 'estimated');

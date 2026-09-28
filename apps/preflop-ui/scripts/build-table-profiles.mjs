@@ -8,7 +8,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { OPENING_POSITIONS, calculateOpenEvForPosition } from "./lib/open-ev-model.mjs";
 import { MARGIN_BB, WIDTH_BUDGET, compareOpenEv, limitToBudget } from "./exploit-open.mjs";
-import { PROFILE_LEVELS, applyTableProfile, isDefaultProfile, profileKey } from "../src/estimated/table-profile.js";
+import { PROFILE_LEVELS, applyTableProfile, isDefaultProfile, profileKey } from "../src/estimated/table-profile.ts";
 
 const estimatedRoot = join(dirname(dirname(fileURLToPath(import.meta.url))), "src", "estimated");
 const read = file => readFileSync(join(estimatedRoot, file));

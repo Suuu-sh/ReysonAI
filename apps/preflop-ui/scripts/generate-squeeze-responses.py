@@ -261,7 +261,7 @@ if __name__ == '__main__':
     data = build()
     check = """
 import fs from 'node:fs';
-import { validateSqueezeDataset } from './src/estimated/squeeze-responses.js';
+import { validateSqueezeDataset } from './src/estimated/squeeze-responses.ts';
 const read = n => JSON.parse(fs.readFileSync(`${process.env.ESTIMATES_DIR}/${n}.json`, 'utf8'));
 validateSqueezeDataset(JSON.parse(fs.readFileSync(0, 'utf8')), read('multiway-responses'), read('preflop-ranges'), read('opening-ranges'));
 """

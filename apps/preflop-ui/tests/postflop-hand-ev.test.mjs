@@ -80,7 +80,7 @@ let view;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), logLevel: "silent",
     server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
-  view = await server.ssrLoadModule("/src/estimated/PostflopHandEv.jsx");
+  view = await server.ssrLoadModule("/src/estimated/PostflopHandEv.tsx");
 });
 after(async () => { await server?.close(); });
 

@@ -10,7 +10,7 @@ let PlayerAnalysis;
 
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
-  ({ PlayerAnalysis } = await server.ssrLoadModule("/src/trainer/PlayerAnalysis.jsx"));
+  ({ PlayerAnalysis } = await server.ssrLoadModule("/src/trainer/PlayerAnalysis.tsx"));
 });
 
 after(async () => { await server?.close(); });

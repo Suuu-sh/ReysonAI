@@ -19,7 +19,7 @@
 - 影響: アプリの主な表示（何でレイズするか）の根拠が数値で説明できない。
 
 ### 2. EQR の値 — 重要度: 高
-- `scripts/eqr.py` / `src/estimated/eqr.js`: ハンド種別×IP/OOP の係数（例 suited_connected IP 1.10 / OOP 0.92）、`MULTIWAY_EQR 0.90`、`BB_BEHIND_EQR 0.85`、`CALLER_BEHIND_EQR 0.90`。
+- `scripts/eqr.py` / `src/estimated/eqr.ts`: ハンド種別×IP/OOP の係数（例 suited_connected IP 1.10 / OOP 0.92）、`MULTIWAY_EQR 0.90`、`BB_BEHIND_EQR 0.85`、`CALLER_BEHIND_EQR 0.90`。
 - 全コールの EV がこの仮定に比例して動く。ポストフロップ実装までは検証手段がない。
 
 ### 3. オープンレンジ（RFI） — 重要度: 中
@@ -32,7 +32,7 @@
 - 「AA/KK/AKs を 10% フラット」「EV でコール 100% になる手に 5% の軽い 3bet」など（response-mixes.json の method に記載）。監査の range-capped / over-segregated を消すための手調整。
 
 ### 6. 監査のしきい値 — 重要度: 低
-- `src/estimated/audit.js` の各チェックの基準値。判定ロジック自体はコード。
+- `src/estimated/audit.ts` の各チェックの基準値。判定ロジック自体はコード。
 
 ## やった方がいいこと
 
