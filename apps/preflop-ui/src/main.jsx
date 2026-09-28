@@ -5,13 +5,17 @@ import { en } from "./site/content.ts";
 import { ja } from "./site/content-ja.ts";
 import "./styles.css";
 import "./site/site.css";
-import { isJapaneseSiteRoute, productLocale, rememberLocale, siteLocale } from "./locale.js";
+import { canonicalServiceSiteUrl, productLocale, rememberLocale } from "./locale.js";
 
 const ProductApp = lazy(() => import("./ProductApp.jsx"));
 const AdminDashboard = lazy(() => import("./admin/AdminDashboard.jsx"));
 const isAdminRoute = window.location.pathname === "/admin" || window.location.pathname.startsWith("/admin/");
 const isProductRoute = window.location.pathname === "/app" || window.location.pathname.startsWith("/app/");
-const initialSiteLocale = siteLocale(window.location.pathname);
+if (!isAdminRoute && !isProductRoute) {
+  const canonicalUrl = canonicalServiceSiteUrl(window.location);
+  if (canonicalUrl) window.history.replaceState(window.history.state, "", canonicalUrl);
+}
+const initialSiteLocale = productLocale();
 const copy = initialSiteLocale === "ja" ? ja : en;
 document.documentElement.lang = isAdminRoute ? "en" : isProductRoute ? productLocale() : initialSiteLocale;
 document.title = isAdminRoute ? "SolveaAI · Admin" : isProductRoute ? (productLocale() === "ja" ? "SolveaAI · レンジ分析" : "SolveaAI · Range Analysis") : copy.title;
@@ -19,7 +23,6 @@ if (!isProductRoute) document.querySelector('meta[name="description"]')?.setAttr
 
 function MarketingSite() {
   const [locale, setLocale] = React.useState(initialSiteLocale);
-  React.useEffect(() => { if (isJapaneseSiteRoute(window.location.pathname)) rememberLocale("ja"); }, []);
   React.useEffect(() => {
     const selectedCopy = locale === "ja" ? ja : en;
     document.documentElement.lang = locale;
@@ -29,7 +32,6 @@ function MarketingSite() {
   const switchLocale = () => {
     const next = locale === "ja" ? "en" : "ja";
     rememberLocale(next);
-    if (isJapaneseSiteRoute(window.location.pathname)) window.history.replaceState(window.history.state, "", `/${window.location.search}${window.location.hash}`);
     setLocale(next);
   };
   return <ServiceSite locale={locale} onLocaleChange={switchLocale} />;

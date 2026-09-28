@@ -254,5 +254,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 
 ## Same-URL service-site language switch (2026-09-28)
 - The header language button changes English/Japanese copy on `/` without navigating to `/ja`, and remembers the choice for reloads and the product app. The visible heading, document language, title, and description update together.
-- The legacy `/ja#pricing` deep link still opens in Japanese; switching to English moves to `/#pricing` and keeps the anchor.
-- Browser verification covered both directions, reload persistence, and the legacy deep link. All 238 tests, the production build, Sites tests, lint, and typecheck passed.
+- Browser verification covered both directions and reload persistence. All 238 tests, the production build, Sites tests, lint, and typecheck passed.
+
+## Single service-site URL (2026-09-28)
+- The Japanese-language route was retired. Service-site visits on old paths normalize to `/` while preserving query and hash; the stored language preference alone determines whether `/` shows English or Japanese.
+- Browser verification: opening the old path with `#pricing` immediately showed `/#pricing` in English; selecting Japanese and reloading stayed on `/` with Japanese copy and metadata. Switching back to English also stayed on `/`.

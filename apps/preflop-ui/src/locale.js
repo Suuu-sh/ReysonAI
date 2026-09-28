@@ -8,10 +8,8 @@ export function productLocale() {
   catch { return "en"; }
 }
 
-export const isJapaneseSiteRoute = pathname => pathname === "/ja" || pathname.startsWith("/ja/");
-
-export function siteLocale(pathname) {
-  return isJapaneseSiteRoute(pathname) ? "ja" : productLocale();
+export function canonicalServiceSiteUrl({ pathname, search = "", hash = "" }) {
+  return pathname === "/" ? null : `/${search}${hash}`;
 }
 
 export function rememberLocale(locale) {
