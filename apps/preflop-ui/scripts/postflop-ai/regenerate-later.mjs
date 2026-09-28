@@ -5,12 +5,42 @@
 import { copyFileSync, existsSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { generateLater, loadCandidate, loadLaterCandidate } from "./generate.mjs";
-import { simulate } from "./simulation.mjs";
+import { PROFILES, simulate } from "./simulation.mjs";
+import { checkLaterBalance } from "./balance.mjs";
 
-const score = report => {
-  const values = report.results.map(row => row.delta_bb.mean);
-  return values.reduce((a, b) => a + b, 0) / values.length;
-};
+export function worstProfileScore(report) {
+  if (!Array.isArray(report?.results)) throw new Error("Simulation report has no results");
+  const profileScores = PROFILES.map(profile => {
+    const rows = report.results.filter(row => row.opponent === profile);
+    if (!rows.length || rows.some(row => !Number.isFinite(row.delta_bb?.mean))) {
+      throw new Error(`Simulation report is incomplete for ${profile}`);
+    }
+    return rows.reduce((sum, row) => sum + row.delta_bb.mean, 0) / rows.length;
+  });
+  return Math.min(...profileScores);
+}
+
+export function adoptionDecision({ candidate, candidateReport, genericReport, genericFindings, candidateFindings }) {
+  const genericWarningCount = genericFindings.filter(finding => finding.severity === "warn").length;
+  const candidateWarningCount = candidateFindings.filter(finding => finding.severity === "warn").length;
+  const candidateErrors = candidateFindings.filter(finding => finding.severity === "error");
+  const genericScore = worstProfileScore(genericReport);
+  const candidateScore = worstProfileScore(candidateReport);
+  return {
+    candidate, adopt: candidateErrors.length === 0 && candidateWarningCount <= genericWarningCount && candidateScore >= genericScore,
+    genericScore, candidateScore, genericWarningCount, candidateWarningCount, candidateErrors, genericFindings, candidateFindings,
+  };
+}
+
+// Pure adoption decision over already-generated candidates and reports. In particular,
+// tests pass a candidate directly and never invoke generateLater or write local artifacts.
+export function compareLaterCandidate({ inputs, flopPolicy, genericPolicy, candidate, genericReport, candidateReport }) {
+  const policy = candidate?.policy ?? candidate;
+  const genericFindings = checkLaterBalance(inputs, flopPolicy, genericPolicy).findings;
+  const candidateFindings = checkLaterBalance(inputs, flopPolicy, policy).findings;
+  return adoptionDecision({ candidate, genericReport, candidateReport, genericFindings, candidateFindings });
+}
+
 for (const spotId of process.argv.slice(2)) {
   const inputs = loadInputs(spotId), paths = artifactPaths(inputs.spot), flop = loadCandidate(inputs);
   const generic = { policy: paths.laterCandidate.replace(/\.json$/, ".generic.json"), report: paths.report.replace(/\.json$/, ".generic.json") };
@@ -18,17 +48,23 @@ for (const spotId of process.argv.slice(2)) {
     renameSync(paths.laterCandidate, generic.policy);
     copyFileSync(paths.report, generic.report);
   }
-  const genericScore = score(JSON.parse(readFileSync(generic.report, "utf8")));
+  const genericPolicy = JSON.parse(readFileSync(generic.policy, "utf8"));
+  const genericReport = JSON.parse(readFileSync(generic.report, "utf8"));
   const { candidate } = await generateLater(inputs, flop);
   const report = simulate(inputs, flop.policy, config.samples_per_board_profile_seat, candidate);
-  const ownScore = score(report);
-  if (ownScore >= genericScore) {
+  const decision = compareLaterCandidate({ inputs, flopPolicy: flop.policy, genericPolicy: genericPolicy.policy ?? genericPolicy,
+    candidate, genericReport, candidateReport: report });
+  const comparison = `candidate ${decision.candidateScore.toFixed(3)}bb / ${decision.candidateWarningCount} warn vs copied ${decision.genericScore.toFixed(3)}bb / ${decision.genericWarningCount} warn`;
+  if (decision.adopt) {
     writeFileSync(paths.report, `${JSON.stringify(report, null, 2)}\n`);
-    console.log(`${spotId}: adopted spot-specific rules (${ownScore.toFixed(3)} vs copied ${genericScore.toFixed(3)} bb)`);
+    console.log(`${spotId}: adopted spot-specific rules (${comparison})`);
   } else {
     renameSync(paths.laterCandidate, paths.laterCandidate.replace(/\.json$/, `.${candidate.metadata.model}.json`));
     copyFileSync(generic.policy, paths.laterCandidate);
     copyFileSync(generic.report, paths.report);
-    console.log(`${spotId}: kept copied rules (${genericScore.toFixed(3)} vs spot-specific ${ownScore.toFixed(3)} bb)`);
+    const reasons = [decision.candidateErrors.length ? `${decision.candidateErrors.length} balance error(s)` : null,
+      decision.candidateWarningCount > decision.genericWarningCount ? "more balance warnings" : null,
+      decision.candidateScore < decision.genericScore ? "lower worst-profile score" : null].filter(Boolean).join(", ");
+    console.log(`${spotId}: kept copied rules (${comparison}${reasons ? `; ${reasons}` : ""})`);
   }
 }

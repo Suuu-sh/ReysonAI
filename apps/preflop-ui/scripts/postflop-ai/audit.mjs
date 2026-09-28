@@ -3,6 +3,7 @@ import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePoli
 import { PROFILES, SIMULATION_VERSION, simulate } from "./simulation.mjs";
 import { sha } from "./generate.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
+import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
 
 export function auditExperiment(inputs, candidate, report, laterCandidate = null) {
   const { spot } = inputs;
@@ -38,6 +39,14 @@ export function auditExperiment(inputs, candidate, report, laterCandidate = null
     `${board.id}|${profile}|${hero}`))));
   if (!Array.isArray(report.results) || report.results.length !== expected.size) throw new Error("Simulation results are incomplete");
   const warnings = [];
+  const balanceFindings = [
+    ...checkFlopBalance(inputs, policy).findings,
+    ...(laterPolicy ? checkLaterBalance(inputs, policy, laterPolicy).findings : []),
+  ];
+  for (const finding of balanceFindings) {
+    if (finding.severity === "error") throw new Error(`Balance audit failed [${finding.check}] ${finding.node}: ${finding.detail}`);
+    warnings.push(`balance [${finding.check}] ${finding.node}: ${finding.detail}`);
+  }
   for (const row of report.results) {
     const key = `${row.board}|${row.opponent}|${row.hero}`;
     if (!expected.delete(key) || row.split !== splitByBoard.get(row.board)) throw new Error(`Unexpected/duplicate simulation result: ${key}`);

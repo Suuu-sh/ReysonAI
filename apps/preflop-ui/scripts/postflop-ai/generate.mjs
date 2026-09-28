@@ -187,6 +187,10 @@ export function promptForLater(inputs) {
     `Features: tier = the acting player's hand on the current board (monster two pair+, strong top pair/overpair, draw flush/straight draw (turn only), medium other pair, air). texture = what the newest card did: ${RUNOUT_TEXTURES.join("/")} (flush = completes/extends a suit, pair = pairs the board, straight = new 3-to-a-straight, over = new highest card, blank = none). line = the acting player's result on the previous street: ${LINES.join("/")} (aggressor = they made the last called bet/raise, defender = the opponent did, checked = it checked through).`,
     `Nodes/actions: ${JSON.stringify(LATER_NODES)}. River tiers exclude draw.`,
     `Output exactly {version:1,kind:'ai_estimate_not_gto',streets:{turn:{rules:[...]},river:{rules:[...]}}} where each rule is {node,line,texture,tier,mix}; line is 'any' or one of ${LINES.join("/")}, texture is 'any' or one of ${RUNOUT_TEXTURES.join("/")}. Every node x tier MUST have one line='any',texture='any' fallback (${fallbacks} in total); at most 20 other rules per node. Mix keys must be exactly the node's legal actions, integers 0..100 summing to 100. No rationale, code or other properties.`,
+    "For every *_first node on each street, add at least 3 overrides keyed by line (aggressor/defender/checked) and at least 3 keyed by texture (e.g. slow down on flush/pair cards, barrel blanks and overcards as the aggressor, probe when the previous street checked through).",
+    "OOP and IP play differently: the out-of-position player checks more and leads less; do not copy oop_first into ip_first.",
+    "Keep river bluffs proportional to the bet size: among hands that bet, the share of air should be about 20% for 33% pot, 30% for 75%, 36% for 125% and 40% for all-in. Raises must include some bluffs or draws, not only monsters.",
+    "The opponent is not a fixed bot; do not exploit an opponent that folds too often.",
   ].join("\n");
 }
 

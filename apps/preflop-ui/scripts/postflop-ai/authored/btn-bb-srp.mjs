@@ -30,6 +30,8 @@ const vsRaise = (street, tiers) => [...later(`${street}_oop_vs_raise`, "any", "a
 
 const turn = [
   ...later("turn_oop_first", "any", "any", { monster: [45, 15, 25, 15], strong: [75, 20, 5, 0], draw: [80, 10, 10, 0], medium: [90, 10, 0, 0], air: [88, 8, 2, 2] }, T),
+  ...later("turn_oop_first", "any", "flush", { monster: [30, 20, 30, 20], strong: [85, 15, 0, 0], air: [90, 8, 1, 1] }, T),
+  ...later("turn_oop_first", "any", "pair", { monster: [55, 20, 15, 10], strong: [85, 15, 0, 0] }, T),
   ...later("turn_oop_first", "aggressor", "any", { monster: [25, 15, 35, 25], strong: [45, 35, 20, 0], draw: [50, 15, 25, 10], air: [70, 10, 10, 10] }, T),
   ...later("turn_ip_first", "any", "any", { monster: [20, 20, 35, 25], strong: [40, 40, 20, 0], draw: [45, 25, 20, 10], medium: [70, 30, 0, 0], air: [65, 20, 5, 10] }, T),
   ...later("turn_ip_first", "aggressor", "blank", { strong: [25, 45, 30, 0], draw: [25, 25, 30, 20], air: [45, 20, 15, 20] }, T),
@@ -43,9 +45,13 @@ const turn = [
   ...vsRaise("turn", { monster: [0, 100], strong: [35, 65], draw: [40, 60], medium: [80, 20], air: [95, 5] }),
 ];
 const river = [
-  ...later("river_oop_first", "any", "any", { monster: [40, 10, 25, 15, 10], strong: [75, 20, 5, 0, 0], medium: [92, 8, 0, 0, 0], air: [85, 5, 0, 5, 5] }, R),
-  ...later("river_oop_first", "aggressor", "any", { monster: [25, 10, 30, 20, 15], strong: [55, 35, 10, 0, 0], air: [70, 5, 5, 10, 10] }, R),
-  ...later("river_ip_first", "any", "any", { monster: [10, 15, 35, 25, 15], strong: [45, 45, 10, 0, 0], medium: [80, 20, 0, 0, 0], air: [65, 10, 0, 15, 10] }, R),
+  ...later("river_oop_first", "any", "any", { monster: [40, 10, 25, 15, 10], strong: [75, 20, 5, 0, 0], medium: [92, 8, 0, 0, 0], air: [78, 6, 6, 5, 5] }, R),
+  ...later("river_oop_first", "aggressor", "any", { monster: [25, 10, 30, 20, 15], strong: [55, 35, 10, 0, 0], air: [30, 10, 20, 20, 20] }, R),
+  ...later("river_oop_first", "any", "flush", { strong: [85, 15, 0, 0, 0], air: [84, 4, 4, 4, 4] }, R),
+  ...later("river_ip_first", "any", "any", { monster: [10, 15, 35, 25, 15], strong: [45, 45, 10, 0, 0], medium: [80, 20, 0, 0, 0], air: [62, 10, 10, 10, 8] }, R),
+  // After calling a turn bet the range is strong; the few missed draws that remain are the
+  // bluffs, so they bet often to keep bluffs proportional to value (balance audit).
+  ...later("river_ip_first", "defender", "any", { air: [25, 20, 20, 20, 15] }, R),
   ...later("river_ip_first", "aggressor", "any", { strong: [40, 45, 15, 0, 0], air: [55, 5, 5, 20, 15] }, R),
   ...later("river_ip_first", "aggressor", "flush", { monster: [15, 20, 35, 20, 10], strong: [65, 30, 5, 0, 0], air: [70, 10, 0, 10, 10] }, R),
   ...both("river", "33", { monster: [0, 55, 45], strong: [10, 85, 5], medium: [35, 65, 0], air: [88, 0, 12] }),
