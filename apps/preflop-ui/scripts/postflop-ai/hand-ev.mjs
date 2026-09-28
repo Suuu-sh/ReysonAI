@@ -87,7 +87,10 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
     const history = key ? key.split(",") : [];
     const { pot, hero, villain } = nodeSetup(history, inputs, policy, board.cards, spot.tree);
     const actions = NODES[node];
-    const pickVillain = sampler(villain.filter(item => item.weight > 0));
+    const reachable = villain.filter(item => item.weight > 0);
+    // A node the policies never reach on this board (e.g. no hand bets 125% on a paired flop).
+    if (!reachable.length || !hero.some(item => item.weight > 0)) { out[key] = { node, actor, pot_bb: pot, rows: {}, unreachable: true }; continue; }
+    const pickVillain = sampler(reachable);
     const byClass = new Map();
     for (const item of hero) if (item.weight > 0) {
       const hand = handClass(item.combo);
