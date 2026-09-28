@@ -1,13 +1,16 @@
 // Read-only local preview of the audited pilot. Never generates or publishes a policy.
 import { readFileSync } from "node:fs";
 import { artifactPaths, boards, comboRange, loadInputs } from "./inputs.mjs";
-import { loadCandidate, sha } from "./generate.mjs";
-import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.mjs";
+import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
+import { NODES, nodeRole, policyMix, scaleByPath, treeNodes, validatePolicy } from "./policy.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
-import { boardTexture, handTier, TIERS } from "./model.mjs";
+import { boardTexture, handTier, parseCards, runoutTexture, TIERS } from "./model.mjs";
 import { explainCombo } from "./explain.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
-import { FLOP_BETS } from "./tree.mjs";
+import { FLOP_BETS, flopState } from "./tree.mjs";
+import { LATER_NODES } from "./later-tree.mjs";
+import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
+import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.js";
 
 const cardText = card => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
 
@@ -54,9 +57,140 @@ export function explainLocalCombo(params, inputs, candidate) {
     inputs, policy: validatePolicy(candidate.policy, inputs.spot.tree) }) };
 }
 
+const cardKey = cards => [...cards].sort((a, b) => a - b).join(",");
+
+function policyForLater(inputs, candidate, laterCandidate) {
+  if (!laterCandidate) {
+    const error = new Error("ターン・リバーのAI方針がありません。");
+    error.code = "LATER_POLICY_MISSING";
+    throw error;
+  }
+  const flopPolicy = validatePolicy(candidate?.policy, inputs.spot.tree);
+  if (candidate?.metadata?.source_hash !== inputs.fingerprint ||
+      candidate.metadata.policy_hash !== sha(flopPolicy) ||
+      laterCandidate.metadata?.source_hash !== inputs.fingerprint ||
+      laterCandidate.metadata?.flop_policy_hash !== candidate.metadata.policy_hash) {
+    throw new Error("Later AI policy source or flop policy is stale");
+  }
+  const laterPolicy = validateLaterPolicy(laterCandidate.policy);
+  if (laterCandidate.metadata.policy_hash !== sha(laterPolicy)) throw new Error("Saved later AI policy hash does not match its content");
+  return { flopPolicy, laterPolicy };
+}
+
+const lineFor = (previousAggressor, role) => previousAggressor === null
+  ? "checked" : previousAggressor === role ? "aggressor" : "defender";
+
+function scaleLaterPath(items, role, steps, policy, board, previousAggressor) {
+  return steps.filter(step => step.role === role).reduce((range, step) => {
+    const line = lineFor(previousAggressor, role);
+    return range.map(item => ({ ...item,
+      weight: item.weight * laterPolicyMix(policy, step.node, item.combo, board, line)[step.action] / 100,
+    }));
+  }, items);
+}
+
+function representativeBoard(value) {
+  if (typeof value !== "string" || !/^([2-9TJQKA][cdhs]){3}$/.test(value)) throw new Error("フロップの形式が正しくありません。");
+  const cards = parseCards(value, 3);
+  const match = boards().find(board => cardKey(board.cards) === cardKey(cards));
+  if (!match) throw new Error("対象の代表フロップがありません。");
+  return match;
+}
+
+function singleCard(value, label, used) {
+  if (!value) return null;
+  if (typeof value !== "string" || !/^[2-9TJQKA][cdhs]$/.test(value)) throw new Error(`${label}の形式が正しくありません。`);
+  const card = parseCards(value, 1)[0];
+  if (used.has(card)) throw new Error("盤面カードが重複しています。");
+  used.add(card);
+  return card;
+}
+
+function parseActions(value) {
+  if (value == null || value === "") return [];
+  if (typeof value !== "string") throw new Error("アクション履歴の形式が正しくありません。");
+  return value.split(",");
+}
+
+function mixRows({ actor, role, board, node, line, inputs, flopPolicy, laterPolicy, flopSteps, turnSteps, riverSteps,
+  turnBoard, riverBoard, turnPreviousAggressor, riverPreviousAggressor }) {
+  const actions = LATER_NODES[node];
+  const rows = inputs.seatRows[actor];
+  if (!rows) throw new Error(`Missing saved range for ${actor}`);
+  return rows.map(row => {
+    let combos = comboRange([row], "freq", board);
+    combos = scaleByPath(combos, role, flopSteps, flopPolicy, board.slice(0, 3));
+    if (turnSteps) combos = scaleLaterPath(combos, role, turnSteps, laterPolicy, turnBoard, turnPreviousAggressor);
+    if (riverSteps) combos = scaleLaterPath(combos, role, riverSteps, laterPolicy, riverBoard, riverPreviousAggressor);
+    const totals = Object.fromEntries(actions.map(action => [action, 0]));
+    const tiers = Object.fromEntries(TIERS.map(tier => [tier, 0]));
+    let weightTotal = 0;
+    for (const item of combos) {
+      if (!item.weight) continue;
+      const rawTier = handTier(item.combo, board);
+      const tier = rawTier === "draw" && node.startsWith("river_") ? "medium" : rawTier;
+      const mix = laterPolicyMix(laterPolicy, node, item.combo, board, line);
+      weightTotal += item.weight;
+      tiers[tier] += item.weight;
+      for (const action of actions) totals[action] += item.weight * mix[action] / 100;
+    }
+    const tier = Object.entries(tiers).reduce((best, item) => item[1] > best[1] ? item : best, ["air", -1])[0];
+    const averaged = Object.fromEntries(actions.map(action => [action, weightTotal ? totals[action] / weightTotal : 0]));
+    const mixTotal = Object.values(averaged).reduce((sum, value) => sum + value, 0);
+    return { hand: row.hand, reachable: weightTotal > 0, tier,
+      mix: Object.fromEntries(actions.map(action => [action, mixTotal ? averaged[action] / mixTotal : 0])) };
+  });
+}
+
+// Read-only projection of one saved turn/river decision. Only the acting player's own
+// earlier actions narrow its combos; opponent actions are deliberately ignored as range
+// weights and their hidden cards are never inspected.
+export function buildLaterView({ flop, flopActions = "", turn = "", turnActions = "", river = "", riverActions = "" }, inputs, candidate, laterCandidate) {
+  const { flopPolicy, laterPolicy } = policyForLater(inputs, candidate, laterCandidate);
+  const flopBoard = representativeBoard(flop);
+  const used = new Set(flopBoard.cards);
+  const turnCard = singleCard(turn, "ターン", used);
+  const riverCard = singleCard(river, "リバー", used);
+  const flopPath = parseActions(flopActions);
+  const turnPath = parseActions(turnActions);
+  const riverPath = parseActions(riverActions);
+  const start = laterStart(flopPath, inputs.spot);
+  if (!start) throw new Error("フロップのアクションが後続ストリートへ進める状態ではありません。");
+  if (turnCard === null) throw new Error("ターンカードを選択してください。");
+
+  const turnBoard = [...flopBoard.cards, turnCard];
+  const turnReplay = replayLater("turn", turnPath, start, inputs.spot);
+  let street = "turn", currentBoard = turnBoard;
+  let riverBoard = null, turnSteps = turnReplay.state.steps, riverSteps = null, riverPreviousAggressor = null;
+  let decision = laterDecision("turn", turnPath, start, inputs.spot);
+  if (!decision.node) {
+    if (["fold", "raise-fold"].includes(turnReplay.end?.type) || turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0) {
+      throw new Error("このアクションではショーダウンまで進んでおり、次の判断はありません。");
+    }
+    if (riverCard === null) throw new Error("リバーカードを選択してください。");
+    street = "river";
+    const riverStart = { pot: turnReplay.pot, stacks: turnReplay.stacks, lastAggressor: turnReplay.lastAggressor };
+    currentBoard = [...turnBoard, riverCard];
+    riverBoard = currentBoard;
+    riverPreviousAggressor = turnReplay.lastAggressor;
+    const riverReplay = replayLater("river", riverPath, riverStart, inputs.spot);
+    riverSteps = riverReplay.state.steps;
+    decision = laterDecision("river", riverPath, riverStart, inputs.spot);
+    if (!decision.node) throw new Error("リバーの判断は終了しています。");
+  }
+  const flopSteps = flopState(inputs.spot.tree, flopPath).steps;
+  const role = decision.role;
+  const actor = inputs.spot[role];
+  const rows = mixRows({ actor, role, board: currentBoard, node: decision.node, line: decision.line,
+    inputs, flopPolicy, laterPolicy, flopSteps, turnSteps, riverSteps, turnBoard, riverBoard,
+    turnPreviousAggressor: start.lastAggressor, riverPreviousAggressor });
+  return { kind: "ai_estimate_not_gto", street, node: decision.node, actor, line: decision.line,
+    texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows };
+}
+
 export function localPostflopMiddleware(req, res, next) {
   const url = new URL(req.url, "http://localhost");
-  if (url.pathname !== "/local-postflop" && url.pathname !== "/local-postflop-explain") { next(); return; }
+  if (url.pathname !== "/local-postflop" && url.pathname !== "/local-postflop-explain" && url.pathname !== "/local-postflop-later") { next(); return; }
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "GET") { res.writeHead(405).end(JSON.stringify({ error: "読み取り専用です。" })); return; }
@@ -69,17 +203,30 @@ export function localPostflopMiddleware(req, res, next) {
   try {
     const inputs = loadInputs(url.searchParams.get("spot") || DEFAULT_SPOT_ID);
     const candidate = loadCandidate(inputs);
+    const laterCandidate = url.pathname === "/local-postflop-later" ? loadLaterCandidate(inputs, candidate) : null;
+    if (url.pathname === "/local-postflop-later" && !laterCandidate) {
+      const error = new Error("ターン・リバーのAI方針がありません。");
+      error.code = "LATER_POLICY_MISSING";
+      throw error;
+    }
     const report = JSON.parse(readFileSync(artifactPaths(inputs.spot).report, "utf8"));
     if (report.source_hash !== inputs.fingerprint || report.policy_hash !== candidate.metadata.policy_hash ||
         report.simulation_version !== SIMULATION_VERSION || report.spot !== inputs.spot.id || report.results?.length !== 72) {
       throw new Error("候補に対応する最新の監査レポートがありません。");
     }
-    const data = url.pathname === "/local-postflop-explain"
-      ? explainLocalCombo(url.searchParams, inputs, candidate)
-      : buildLocalBoard(url.searchParams.get("board"), inputs, candidate);
+    let data;
+    if (url.pathname === "/local-postflop-explain") data = explainLocalCombo(url.searchParams, inputs, candidate);
+    else if (url.pathname === "/local-postflop-later") {
+      data = buildLaterView({
+        flop: url.searchParams.get("flop"), flopActions: url.searchParams.get("flopActions") ?? "",
+        turn: url.searchParams.get("turn") ?? "", turnActions: url.searchParams.get("turnActions") ?? "",
+        river: url.searchParams.get("river") ?? "", riverActions: url.searchParams.get("riverActions") ?? "",
+      }, inputs, candidate, laterCandidate);
+    } else data = buildLocalBoard(url.searchParams.get("board"), inputs, candidate);
     res.writeHead(200).end(JSON.stringify(data));
   } catch (error) {
-    res.writeHead(error.code === "ENOENT" ? 404 : 409).end(JSON.stringify({ error: error.code === "ENOENT"
+    const missingLaterPolicy = error.code === "LATER_POLICY_MISSING";
+    res.writeHead(error.code === "ENOENT" || missingLaterPolicy ? 404 : 409).end(JSON.stringify({ error: missingLaterPolicy ? error.message : error.code === "ENOENT"
       ? "ローカルAI推定候補または監査レポートがありません。CLIで明示生成・監査してください。" : error.message }));
   }
 }

@@ -5,18 +5,20 @@ import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { existsSync } from "node:fs";
+import { color, label } from "../src/data.js";
 import { artifactPaths, loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { loadCandidate, sha } from "../scripts/postflop-ai/generate.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../scripts/postflop-ai/spots.mjs";
 import { playHand, simulate } from "../scripts/postflop-ai/simulation.mjs";
-import { createTable, playFlop, playLaterStreets, settle } from "../scripts/postflop-ai/engine.mjs";
+import { createTable, playFlop, playLaterStreets, playLaterStreetsWithPolicy, settle } from "../scripts/postflop-ai/engine.mjs";
 import { FLOP_BETS, flopState, isFlopBet, treeHistories } from "../scripts/postflop-ai/tree.mjs";
 import { parseCards } from "../scripts/postflop-ai/model.mjs";
 import preflopRanges from "../src/estimated/preflop-ranges.json" with { type: "json" };
 import threeBetResponses from "../src/estimated/three-bet-responses.json" with { type: "json" };
-import { buildLocalBoard } from "../scripts/postflop-ai/local-view.mjs";
+import { buildLaterView, buildLocalBoard } from "../scripts/postflop-ai/local-view.mjs";
 import { referencePolicy, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.mjs";
-import { buildFlopActionBlocks, completedFlopContext, flopDecision, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.js";
+import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
+import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, flopDecision, laterStart, replayLater, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.js";
 
 const end = (result, pot) => [{ kind: "end", result, pot: `ポット ${pot}bb` }];
 
@@ -304,13 +306,105 @@ test("read-only board projection expands saved source combos without revealing a
   assert.throws(() => buildLocalBoard("As7d2c", inputs, candidate), /ハッシュ/);
 });
 
-let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, buildActionBlocks, labelsFor, nodeTitle;
+test("later-street action blocks follow the completed flop, deal one board card, and stop on folds or all-ins", () => {
+  const spot = spotById("BTN_open_BB_call");
+  const pending = buildLaterActionBlocks({ flopActions: ["bet33", "call"] }, spot);
+  assert.deepEqual(pending, [{ key: "turn-board", kind: "board", cards: [], street: "turn", pending: true }]);
+  const turn = buildLaterActionBlocks({ flopActions: ["bet33", "call"], turnCard: "Kh" }, spot);
+  assert.deepEqual(turn[0], { key: "turn-board", kind: "board", cards: ["Kh"], street: "turn", pending: false });
+  assert.equal(turn.at(-1).key, "turn_oop_first");
+  assert.equal(turn.at(-1).active, true);
+  assert.deepEqual(turn.at(-1).options.map(option => option.action), ["check", "bet33", "bet75", "bet125"]);
+
+  const turnComplete = buildLaterActionBlocks({ flopActions: ["bet33", "call"], turnCard: "Kh", turnActions: ["check", "check"] }, spot);
+  assert.equal(turnComplete.some(block => block.kind === "end"), false);
+  assert.deepEqual(turnComplete.at(-1), { key: "river-board", kind: "board", cards: [], street: "river", pending: true });
+  assert.equal(buildLaterActionBlocks({ flopActions: ["bet33", "fold"] }, spot).length, 0);
+  const fourBet = spotById("BTN_open_BB_4bp_call");
+  assert.equal(laterStart(["bet125", "raise", "call"], fourBet), null);
+  assert.equal(buildLaterActionBlocks({ flopActions: ["bet125", "raise", "call"] }, fourBet).length, 0);
+  const foldedTurn = buildLaterActionBlocks({ flopActions: ["bet33", "call"], turnCard: "Kh", turnActions: ["bet75", "fold"] }, spot);
+  assert.equal(foldedTurn.at(-1).kind, "end");
+  assert.match(foldedTurn.at(-1).result, /フォールド/);
+  assert.equal(foldedTurn.some(block => block.key === "river-board"), false);
+  const allInTurn = buildLaterActionBlocks({ flopActions: ["check"], turnCard: "Kh", turnActions: ["bet125", "call"] }, fourBet);
+  assert.equal(allInTurn.at(-1).kind, "end");
+  assert.equal(allInTurn.at(-1).result, "オールイン・ショウダウン");
+  assert.equal(allInTurn.some(block => block.key === "river-board"), false);
+});
+
+test("later-street chip replay matches the engine for an SRP line and a low-SPR all-in merge", () => {
+  const inputs = loadInputs();
+  const cases = [
+    { spot: spotById("BTN_open_BB_call"), flop: ["bet33", "call"], turn: ["bet75", "call"], river: ["check", "bet33", "raise", "call"] },
+    { spot: spotById("BTN_open_BB_4bp_call"), flop: ["check"], turn: ["bet125", "call"], river: [] },
+  ];
+  for (const fixture of cases) {
+    const { spot, flop, turn, river } = fixture;
+    const table = createTable(spot);
+    let flopIndex = 0;
+    playFlop(table, spot.tree, () => flop[flopIndex++], inputs.config);
+    const start = laterStart(flop, spot);
+    assert.ok(start);
+    assert.deepEqual([start.pot, start.stacks.ip, start.stacks.oop], [table.pot, table.stacks[spot.ip], table.stacks[spot.oop]]);
+
+    const turnReplay = replayLater("turn", turn, start, spot);
+    let expected = { pot: turnReplay.pot, stacks: turnReplay.stacks, lastAggressor: turnReplay.lastAggressor };
+    const forced = Object.fromEntries(turnReplay.state.steps.map(step => [step.node, step.action]));
+    let riverReplay = null;
+    if (river.length && turnReplay.state.end && turnReplay.stacks.ip > 0 && turnReplay.stacks.oop > 0) {
+      riverReplay = replayLater("river", river, expected, spot);
+      expected = { pot: riverReplay.pot, stacks: riverReplay.stacks, lastAggressor: riverReplay.lastAggressor };
+      for (const step of riverReplay.state.steps) forced[step.node] = step.action;
+    }
+    playLaterStreetsWithPolicy(table, parseCards("As7d2c", 3), parseCards("3s4s", 2), (_seat, node) => forced[node], inputs.config, table.lastAggressor);
+    const expectedStacks = riverReplay?.stacks ?? turnReplay.stacks;
+    const expectedPot = riverReplay?.pot ?? turnReplay.pot;
+    assert.deepEqual([expectedPot, expectedStacks.ip, expectedStacks.oop], [table.pot, table.stacks[spot.ip], table.stacks[spot.oop]], spot.id);
+    if (spot.kind === "4bp") {
+      assert.deepEqual([turnReplay.pot, turnReplay.stacks.ip, turnReplay.stacks.oop], [200.5, 0, 0]);
+      assert.match(turnReplay.history[0], /Bet 125% \(74BB\) All-in$/);
+      assert.match(turnReplay.history[1], /Call All-in$/);
+    }
+  }
+});
+
+test("later decision projections return 169 normalized rows without weighting opponent actions", () => {
+  const inputs = loadInputs();
+  const flopCandidate = { metadata: { source_hash: inputs.fingerprint }, policy: referencePolicy };
+  flopCandidate.metadata.policy_hash = sha(referencePolicy);
+  const laterPolicy = referenceLaterPolicy();
+  const laterCandidate = { metadata: { source_hash: inputs.fingerprint, flop_policy_hash: flopCandidate.metadata.policy_hash, policy_hash: sha(laterPolicy) }, policy: laterPolicy };
+  const view = buildLaterView({ flop: "As7d2c", flopActions: "bet33,call", turn: "Kh" }, inputs, flopCandidate, laterCandidate);
+  assert.deepEqual([view.kind, view.street, view.node, view.actor, view.line, view.rows.length], ["ai_estimate_not_gto", "turn", "turn_oop_first", "BB", "defender", 169]);
+  for (const row of view.rows) {
+    if (row.reachable) assert.ok(Math.abs(Object.values(row.mix).reduce((sum, value) => sum + value, 0) - 1) < 1e-10, row.hand);
+    assert.ok(!("combo" in row) && !("opponentHand" in row));
+  }
+  const riverView = buildLaterView({ flop: "As7d2c", flopActions: "bet33,call", turn: "Kh", turnActions: "check,check", river: "2d" }, inputs, flopCandidate, laterCandidate);
+  assert.deepEqual([riverView.street, riverView.node, riverView.actor, riverView.line, riverView.texture, riverView.rows.length], ["river", "river_oop_first", "BB", "checked", "pair", 169]);
+
+  const coInputs = loadInputs("CO_open_BTN_call");
+  const leads = referencePolicyFor("oop_leads");
+  const noOpponentWeightPolicy = { ...leads, rules: leads.rules.map(rule => /^ip_vs_\d+$/.test(rule.node)
+    ? { ...rule, mix: { fold: 0, call: 100, raise: 0 } } : rule) };
+  validatePolicy(noOpponentWeightPolicy, "oop_leads");
+  const coCandidate = { metadata: { source_hash: coInputs.fingerprint, policy_hash: sha(noOpponentWeightPolicy) }, policy: noOpponentWeightPolicy };
+  const coLaterCandidate = { metadata: { source_hash: coInputs.fingerprint, flop_policy_hash: coCandidate.metadata.policy_hash, policy_hash: sha(laterPolicy) }, policy: laterPolicy };
+  const smallLead = buildLaterView({ flop: "As7d2c", flopActions: "bet33,call", turn: "Kh", turnActions: "check" }, coInputs, coCandidate, coLaterCandidate);
+  const largeLead = buildLaterView({ flop: "As7d2c", flopActions: "bet75,call", turn: "Kh", turnActions: "check" }, coInputs, coCandidate, coLaterCandidate);
+  assert.deepEqual([smallLead.node, smallLead.actor, smallLead.line], ["turn_ip_first", "BTN", "defender"]);
+  assert.deepEqual(smallLead.rows, largeLead.rows);
+  assert.throws(() => buildLaterView({ flop: "As7d2c", flopActions: "bet33,call", turn: "Kh" }, inputs, flopCandidate, null), /ターン・リバーのAI方針がありません/);
+});
+
+let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, StreetCardDialog, buildActionBlocks, labelsFor, nodeTitle, laterNodeTitle;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)),
     server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ ActionPath, buildActionBlocks } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
-  ({ PostflopTrial, FlopCardDialog, labelsFor, nodeTitle } = await server.ssrLoadModule("/src/estimated/PostflopTrial.jsx"));
+  ({ PostflopTrial, FlopCardDialog, StreetCardDialog, labelsFor, nodeTitle, laterNodeTitle } = await server.ssrLoadModule("/src/estimated/PostflopTrial.jsx"));
 });
 after(async () => { await server?.close(); });
 
@@ -323,6 +417,12 @@ test("completed preflop end block extends the same action path", () => {
   const combined = renderToStaticMarkup(createElement(ActionPath, { blocks: [...blocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: ["As", "7d", "2c"] }, ...buildFlopActionBlocks()], expanded: true, onOpenFlopCards() {}, onFlopAction() {}, onEnterPostflop() {} }));
   assert.match(combined, /aria-label="フロップカードを変更"[\s\S]*A<span class="suit">♠<\/span>[\s\S]*7<span class="suit">♦<\/span>[\s\S]*2<span class="suit">♣<\/span>[\s\S]*action-seat-flop-forced[\s\S]*action-seat-flop active/);
   assert.doesNotMatch(combined, /終了|フロップへ進む →/);
+  const laterPath = renderToStaticMarkup(createElement(ActionPath, { expanded: true, blocks: [
+    { key: "turn-board", kind: "board", cards: ["Kh"], street: "turn" },
+    { key: "turn_oop_first", kind: "flop", street: "turn", laterIndex: 0, position: "BB", stack: "95.68", chosen: null,
+      options: [{ action: "check", label: "Check" }, { action: "bet75", label: "Bet 75%" }], active: true },
+  ], onOpenLaterCard() {}, onLaterAction() {}, onRewindActionBlock() {} }));
+  assert.match(laterPath, /action-seat-board-later[\s\S]*Turn[\s\S]*K<span class="suit">♥<\/span>[\s\S]*action-seat-flop active[\s\S]*BB[\s\S]*Bet 75%/);
   const navigation = renderToStaticMarkup(createElement(Sidebar, { activeSection: "レンジ分析", onSectionChange() {} }));
   assert.doesNotMatch(navigation, /aria-label="ポストフロップ/);
 });
@@ -362,6 +462,29 @@ test("representative flops are picked from a modal, while unsupported spots stay
     const limpBlocks = buildActionBlocks({ rangeType: "limp", opener: "SB", hero: "BB", callers: [], ...actions });
     const limpContext = completedFlopContext({ actionBlocks: limpBlocks, rangeType: "limp", opener: "SB", hero: "BB", callers: [], isDefaultTable: true, ...actions });
     assert.deepEqual([limpContext.spotId, limpContext.potBb], [id, pot]);
+  }
+});
+
+test("single-card street picker blocks used cards and localizes later node headings", () => {
+  const dialog = renderToStaticMarkup(createElement(StreetCardDialog, { street: "turn", currentCard: "Kh", usedCards: ["As", "7d", "2c"], onApply() {}, onClose() {} }));
+  assert.match(dialog, /role="dialog" aria-modal="true"/);
+  assert.equal((dialog.match(/<button type="button" class="street-card-option/g) ?? []).length, 52);
+  assert.match(dialog, /aria-label="A♠" disabled/);
+  assert.match(dialog, /class="street-card-option suit-h selected" aria-pressed="true" aria-label="K♥"/);
+  assert.equal(color("allin"), color("all_in"));
+  assert.equal(label("allin"), label("all_in"));
+  assert.equal(laterNodeTitle("turn_oop_first", { ip: "BTN", oop: "BB" }, "turn"), "BB · ターン · 最初の判断");
+  assert.equal(laterNodeTitle("river_ip_vs_75", { ip: "BTN", oop: "BB" }, "river"), "BTN · リバー · 75%ベットへの応答");
+
+  const previousWindow = globalThis.window;
+  const hadWindow = Object.hasOwn(globalThis, "window");
+  globalThis.window = { localStorage: { getItem: key => key === "solveaai:locale:v1" ? "en" : null } };
+  try {
+    assert.equal(laterNodeTitle("turn_oop_first", { ip: "BTN", oop: "BB" }, "turn"), "BB · Turn · first decision");
+    assert.equal(laterNodeTitle("river_ip_vs_allin", { ip: "BTN", oop: "BB" }, "river"), "BTN · River · facing an all-in");
+  } finally {
+    if (hadWindow) globalThis.window = previousWindow;
+    else delete globalThis.window;
   }
 });
 

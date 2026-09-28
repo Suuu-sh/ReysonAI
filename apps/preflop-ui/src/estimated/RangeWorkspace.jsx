@@ -29,9 +29,9 @@ import {
 } from "./ranges.js";
 import { ArrowCounterClockwise, PencilSimple } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.jsx";
-import { FlopCardDialog, PostflopTrial, suitLabels } from "./PostflopTrial.jsx";
+import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.jsx";
 import { PreflopCallEvBars } from "./PreflopCallEvBars.jsx";
-import { buildFlopActionBlocks, completedFlopContext, recognizedFlop } from "./postflop-trial.js";
+import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, laterStart, recognizedFlop } from "./postflop-trial.js";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.js";
 import tableAdjustments from "./table-profile-adjustments.json";
 import { DEFAULT_PROFILE, adjustOpeningSpot, adjustmentReason, describeProfile, isDefaultProfile, markAdjustedModel, normalizeProfile } from "./table-profile.js";
@@ -131,6 +131,9 @@ function endResultLabel(result) {
   if (players) return `${players[1]} players to the flop`;
   const winner = /^(.+)の勝ち$/.exec(result);
   if (winner) return `${winner[1]} wins`;
+  const laterFold = /^(.+)がフォールド。(.+)の勝ちです。$/.exec(result);
+  if (laterFold) return `${laterFold[1]} folded. ${laterFold[2]} wins.`;
+  if (result === "ショーダウン") return "Showdown";
   if (result === "オールイン・ショウダウン") return "All-in showdown";
   if (result === "データなし") return "No data";
   return result;
@@ -443,7 +446,7 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
   return null;
 }
 
-export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onOpenFlopCards = () => {}, onFlopAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onSqueezeResponse = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onOpenFlopCards = () => {}, onOpenLaterCard = () => {}, onFlopAction = () => {}, onLaterAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onSqueezeResponse = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
   const blocks = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef(null);
   useEffect(() => {
@@ -451,7 +454,8 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
     if (seats) seats.scrollTo({ left: seats.scrollWidth, behavior: "smooth" });
   }, [blocks.length]);
   const select = (block, action) => {
-    if (block.kind === "flop") onFlopAction(block, action);
+    if (block.kind === "flop" && block.street) onLaterAction(block, action);
+    else if (block.kind === "flop") onFlopAction(block, action);
     else if (block.stage === "limp-bb" || block.stage === "limp-sb-response" || block.stage === "limp-bb-reraise") onAct(block.position, action);
     else if (block.kind === "squeeze-response") onSqueezeResponse(block.role, action);
     else if (block.kind === "seat") onAct(block.position, action);
@@ -466,10 +470,20 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
     <div className="action-path-seats" ref={seatsRef}>
       {leading}
       {blocks.map(block => {
-        if (block.kind === "board") return <button type="button" className="action-seat action-seat-board" key={block.key} onClick={onOpenFlopCards} aria-label={block.cards.every(Boolean) ? "フロップカードを変更" : "フロップカードを選択"}>
-          <span className="action-seat-heading"><strong>Flop</strong><span className="action-seat-board-edit" aria-hidden="true">{block.cards.every(Boolean) ? "変更" : "選択"}</span></span>
-          <span className="action-seat-board-cards">{block.cards.map((card, index) => <span key={index} className={`action-seat-board-card${/[hd]$/.test(card) ? " red" : ""}${card ? "" : " empty"}`}>{card ? <>{card[0]}<span className="suit">{suitLabels[card[1]]}</span></> : "?"}</span>)}</span>
-        </button>;
+        if (block.kind === "board") {
+          const street = block.street ?? "flop";
+          const isFlop = street === "flop";
+          const title = isFlop ? "Flop" : street === "turn" ? "Turn" : "River";
+          const label = isFlop ? "フロップ" : street === "turn" ? "ターン" : "リバー";
+          const selected = block.cards.some(Boolean);
+          const english = productLocale() === "en";
+          return <button type="button" className={`action-seat action-seat-board${isFlop ? "" : " action-seat-board-later"}`} key={block.key}
+            onClick={isFlop ? onOpenFlopCards : () => onOpenLaterCard(street)}
+            aria-label={english ? `${title} card ${selected ? "change" : "select"}` : `${label}カードを${selected ? "変更" : "選択"}`}>
+            <span className="action-seat-heading"><strong>{title}</strong><span className="action-seat-board-edit" aria-hidden="true">{english ? selected ? "Edit" : "Select" : selected ? "変更" : "選択"}</span></span>
+            <span className="action-seat-board-cards">{(isFlop ? [0, 1, 2].map(index => block.cards[index] ?? "") : [block.cards[0] ?? ""]).map((card, index) => <span key={index} className={`action-seat-board-card${/[hd]$/.test(card) ? " red" : ""}${card ? "" : " empty"}`}>{card ? <>{card[0]}<span className="suit">{suitLabels[card[1]]}</span></> : "?"}</span>)}</span>
+          </button>;
+        }
         const chosenOption = block.options.find(option => option.action === block.chosen);
         if (block.kind === "end") return <div className="action-seat action-seat-end" key={block.key}>
           <div className="action-seat-heading"><strong>終了</strong></div>
@@ -499,8 +513,19 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
 export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }) {
   const [showFlop, setShowFlop] = useState(false);
   const [flopDialogOpen, setFlopDialogOpen] = useState(false);
+  const [streetCardDialog, setStreetCardDialog] = useState(null);
   const [flopCards, setFlopCards] = useState(["", "", ""]);
   const [flopActions, setFlopActions] = useState([]);
+  const [turnCard, setTurnCard] = useState("");
+  const [turnActions, setTurnActions] = useState([]);
+  const [riverCard, setRiverCard] = useState("");
+  const [riverActions, setRiverActions] = useState([]);
+  useEffect(() => {
+    setTurnCard(""); setTurnActions([]); setRiverCard(""); setRiverActions([]);
+  }, [flopCards, flopActions]);
+  useEffect(() => {
+    setRiverCard(""); setRiverActions([]);
+  }, [turnCard, turnActions]);
   const [initialSelection] = useState(() => restoredSelection(initialRangeType));
   const [rangeType, setRangeType] = useState(initialSelection.rangeType);
   const isOpening = rangeType === "open";
@@ -533,7 +558,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   });
   const [formatOpen, setFormatOpen] = useState(false);
   function saveFormat(value, profileValue = tableProfile) {
-    setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
+    setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]);
     setFormat(value);
     setTableProfile(profileValue);
     setFormatOpen(false);
@@ -571,7 +596,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     : dataset ? findSpot(dataset, opener, hero) : null;
   const model = useMemo(() => spot ? (isOpening ? openingModelFor(spot) : isFourBet ? fourBetMatrixModel(spot, findSpot(dataset, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot) : matrixModel(spot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
   function resetPath() {
-    setShowFlop(false); setFlopDialogOpen(false); setFlopCards(["", "", ""]); setFlopActions([]);
+    setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopCards(["", "", ""]); setFlopActions([]);
     setRangeType("response");
     setOpener("BTN");
     setHero("BB");
@@ -645,6 +670,17 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }
 
   function rewindToActionBlock(block) {
+    if (block.kind === "flop" && block.street === "turn") {
+      setTurnActions(current => current.slice(0, block.laterIndex ?? 0));
+      setRiverCard(""); setRiverActions([]);
+      setSelectedRangeBlock(current => current === block.key ? null : block.key);
+      return;
+    }
+    if (block.kind === "flop" && block.street === "river") {
+      setRiverActions(current => current.slice(0, block.laterIndex ?? 0));
+      setSelectedRangeBlock(current => current === block.key ? null : block.key);
+      return;
+    }
     if (block.kind === "flop" || block.kind === "flop-forced") {
       setFlopActions(current => current.slice(0, block.flopIndex ?? 0));
       setSelectedRangeBlock(block.key);
@@ -751,9 +787,15 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
   const flopBoard = recognizedFlop(flopCards);
+  const canEnterLaterStreets = Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
+  const laterBlocks = canEnterLaterStreets
+    ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
+    : [];
   const combinedBlocks = flopActive
-    ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards },
-      ...(flopContext.pilotAvailable && flopBoard ? buildFlopActionBlocks(flopActions, flopContext) : [])]
+    ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop" },
+      ...(flopContext.pilotAvailable && flopBoard
+        ? [...buildFlopActionBlocks(flopActions, flopContext).filter(block => !(canEnterLaterStreets && block.kind === "end")), ...laterBlocks]
+        : [])]
     : actionBlocks;
   const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
@@ -937,7 +979,13 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onRewindActionBlock={rewindToActionBlock}
           onEnterPostflop={flopContext ? () => { setShowFlop(true); setFlopDialogOpen(true); setSelectedRangeBlock(null); } : null}
           onOpenFlopCards={() => setFlopDialogOpen(true)}
+          onOpenLaterCard={street => setStreetCardDialog(street)}
           onFlopAction={(block, action) => { setFlopActions(current => [...current.slice(0, block.flopIndex), action]); setSelectedRangeBlock(null); }}
+          onLaterAction={(block, action) => {
+            if (block.street === "turn") setTurnActions(current => [...current.slice(0, block.laterIndex), action]);
+            else if (block.street === "river") setRiverActions(current => [...current.slice(0, block.laterIndex), action]);
+            setSelectedRangeBlock(null);
+          }}
           onShoveResponse={action => { setFocusedRange(null); setSelectedRangeBlock(null); setShoveResponse(action); }}
           onAct={actAt}
           onFourBet={selectFourBet}
@@ -947,7 +995,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        {flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイのAIソリューションをローカルで生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
@@ -958,6 +1006,18 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
       {flopActive && flopDialogOpen && <FlopCardDialog cards={flopCards} onClose={() => setFlopDialogOpen(false)} onApply={cards => { if (cards.join("") !== flopCards.join("")) { setFlopCards(cards); setFlopActions([]); setSelectedRangeBlock(null); } setFlopDialogOpen(false); }} />}
+      {flopActive && streetCardDialog && <StreetCardDialog street={streetCardDialog}
+        currentCard={streetCardDialog === "turn" ? turnCard : riverCard}
+        usedCards={[...flopCards, ...(streetCardDialog === "river" ? [turnCard] : [])].filter(Boolean)}
+        onClose={() => setStreetCardDialog(null)}
+        onApply={card => {
+          if (streetCardDialog === "turn") {
+            if (card !== turnCard) setTurnActions([]);
+            setTurnCard(card);
+          }
+          else if (streetCardDialog === "river") { if (card !== riverCard) setRiverActions([]); setRiverCard(card); }
+          setSelectedRangeBlock(null); setStreetCardDialog(null);
+        }} />}
     </main>
   </div>;
 }

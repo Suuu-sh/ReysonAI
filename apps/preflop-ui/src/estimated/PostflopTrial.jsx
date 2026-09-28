@@ -4,7 +4,7 @@ import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../com
 import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { HandEvBars, useHandEv } from "./PostflopHandEv.jsx";
 import { actionReason, dominantTier, evidenceReason, textureLabels, tierLabels } from "./postflop-reasons.js";
-import { flopDecision, recognizedFlop, representativeFlops } from "./postflop-trial.js";
+import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.js";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { productLocale } from "../i18n.js";
 
@@ -23,6 +23,20 @@ export const nodeTitle = (node, { ip, oop }) => (productLocale() === "en" ? {
   oop_first: `${oop} · 最初の判断（先にベットできる）`, ip_vs_33: `${ip} · 33%ベットへの応答`,
   ip_vs_75: `${ip} · 75%ベットへの応答`, ip_vs_125: `${ip} · 125%ベットへの応答`, oop_vs_raise: `${oop} · レイズへの応答`,
 })[node];
+export function laterNodeTitle(node, { ip, oop }, street) {
+  const role = node?.split("_")[1];
+  const actor = role === "ip" ? ip : oop;
+  const english = productLocale() === "en";
+  const streetName = english ? (street === "turn" ? "Turn" : "River") : (street === "turn" ? "ターン" : "リバー");
+  let action = english ? "first decision" : "最初の判断";
+  if (node?.includes("_vs_raise")) action = english ? "facing a raise" : "レイズへの応答";
+  else if (node?.includes("_vs_allin")) action = english ? "facing an all-in" : "オールインへの応答";
+  else if (node?.includes("_vs_")) {
+    const size = node.split("_vs_")[1];
+    action = english ? `facing a ${size}% bet` : `${size}%ベットへの応答`;
+  }
+  return `${actor} · ${streetName} · ${action}`;
+}
 export const suitLabels = { s: "♠", h: "♥", d: "♦", c: "♣" };
 
 function rangeTotals(node) {
@@ -169,6 +183,13 @@ function matrixFor(node) {
   }]));
 }
 
+function laterMatrixFor(view) {
+  return new Map(view.rows.map(row => [row.hand, {
+    hand: row.hand, comboCount: row.reachable ? 1 : 0, unreachable: !row.reachable,
+    actions: row.mix, tiers: { [row.tier]: 1 },
+  }]));
+}
+
 export function FlopCardDialog({ cards, onApply, onClose }) {
   const current = recognizedFlop(cards);
   const dialogRef = useRef(null);
@@ -197,19 +218,66 @@ export function FlopCardDialog({ cards, onApply, onClose }) {
   </div>;
 }
 
-export function PostflopTrial({ context, cards, actions = [], displayMode = "standard" }) {
+export function StreetCardDialog({ usedCards = [], street, currentCard = "", onApply, onClose }) {
+  const dialogRef = useRef(null);
+  const english = productLocale() === "en";
+  const title = street === "turn" ? (english ? "Select turn" : "ターンを選択") : (english ? "Select river" : "リバーを選択");
+  const unavailable = new Set(usedCards);
+  useEffect(() => {
+    dialogRef.current?.focus();
+    const onKey = event => { if (event.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  return <div className="modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
+    <div className="modal postflop-card-dialog street-card-dialog" role="dialog" aria-modal="true" aria-labelledby="street-card-title" tabIndex={-1} ref={dialogRef}>
+      <div className="modal-heading"><h2 id="street-card-title">{title}</h2>
+        <button type="button" className="modal-close" aria-label={english ? "Close" : "閉じる"} onClick={onClose}><X size={16} /></button>
+      </div>
+      <div className="street-card-options" role="group" aria-label={english ? "Available cards" : "選べるカード"}>
+        {deck.map(card => {
+          const isUsed = unavailable.has(card);
+          const rank = card[0], suit = card[1];
+          const label = `${rank}${suitLabels[suit]}`;
+          return <button type="button" key={card} className={`street-card-option suit-${suit}${card === currentCard ? " selected" : ""}`}
+            aria-pressed={card === currentCard} aria-label={label} disabled={isUsed}
+            onClick={() => onApply(card)}>{label}</button>;
+        })}
+      </div>
+      <p className="modal-description">{english ? "Board cards cannot be selected again." : "盤面と重なるカードは選べません。"}</p>
+    </div>
+  </div>;
+}
+
+export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard" }) {
   const board = recognizedFlop(cards);
   const [selectedHand, setSelectedHand] = useState("AKo");
   const [data, setData] = useState(null);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
+  const [laterData, setLaterData] = useState(null);
+  const [laterStatus, setLaterStatus] = useState("idle");
+  const [laterError, setLaterError] = useState("");
   const decision = flopDecision(actions, context);
   const labels = labelsFor(decision.node);
   const spotId = context.spotId;
+  const flopPath = actions.join(",");
+  const turnPath = turnActions.join(",");
+  const riverPath = riverActions.join(",");
+  const start = board && !decision.node ? laterStart(actions, context) : null;
+  const turnReplay = start && turnCard ? replayLater("turn", turnActions, start, context) : null;
+  let later = null, riverReplay = null;
+  if (turnReplay?.state.node) later = laterDecision("turn", turnActions, start, context);
+  else if (turnReplay?.state.end && !["fold", "raise-fold"].includes(turnReplay.state.end.type) &&
+      turnReplay.stacks.ip > 0 && turnReplay.stacks.oop > 0 && riverCard) {
+    const riverStart = { pot: turnReplay.pot, stacks: turnReplay.stacks, lastAggressor: turnReplay.lastAggressor };
+    riverReplay = replayLater("river", riverActions, riverStart, context);
+    if (riverReplay.state.node) later = laterDecision("river", riverActions, riverStart, context);
+  }
 
   useEffect(() => {
     setData(null); setError("");
-    if (!context.pilotAvailable || !spotId || !board) { setStatus("idle"); return; }
+    if (!context.pilotAvailable || !spotId || !board || !decision.node) { setStatus("idle"); return; }
     const controller = new AbortController();
     setStatus("loading");
     fetch(`/local-postflop?${new URLSearchParams({ spot: spotId, board })}`, { signal: controller.signal })
@@ -222,13 +290,46 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
       .then(body => { setData(body); setStatus("ready"); })
       .catch(reason => { if (reason.name !== "AbortError") { setError(reason.message); setStatus("error"); } });
     return () => controller.abort();
-  }, [board, context.pilotAvailable, spotId]);
+  }, [board, context.pilotAvailable, decision.node, spotId]);
+
+  useEffect(() => {
+    setLaterData(null); setLaterError("");
+    if (!context.pilotAvailable || !spotId || !board || !later?.node || !turnCard) { setLaterStatus("idle"); return; }
+    const controller = new AbortController();
+    setLaterStatus("loading");
+    const params = new URLSearchParams({ spot: spotId, flop: board, flopActions: flopPath, turn: turnCard,
+      turnActions: turnPath, river: riverCard, riverActions: riverPath });
+    fetch(`/local-postflop-later?${params}`, { signal: controller.signal })
+      .then(async response => {
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.error || "後続ストリートの候補を読み込めませんでした。");
+        if (body.kind !== "ai_estimate_not_gto" || body.street !== later.street || body.node !== later.node ||
+            body.actor !== later.actor || body.line !== later.line || !Array.isArray(body.rows) || body.rows.length !== 169) {
+          throw new Error("候補の局面または形式が一致しません。");
+        }
+        return body;
+      })
+      .then(body => { setLaterData(body); setLaterStatus("ready"); })
+      .catch(reason => { if (reason.name !== "AbortError") { setLaterError(reason.message); setLaterStatus("error"); } });
+    return () => controller.abort();
+  }, [board, context.pilotAvailable, flopPath, later?.actor, later?.line, later?.node, later?.street, riverCard, riverPath, spotId, turnCard, turnPath]);
 
   const current = decision.node && data?.board === board && data.spot === spotId && data.nodes[decision.node];
   const aggregates = useMemo(() => current ? matrixFor(current) : null, [current]);
   const totals = useMemo(() => current ? rangeTotals(current) : null, [current]);
   const matrixNode = useMemo(() => current ? { actingPosition: current.seat } : null, [current]);
   const chosen = aggregates?.get(selectedHand);
+  const laterCurrent = later?.node && laterData?.street === later.street && laterData.node === later.node &&
+    laterData.actor === later.actor && laterData.line === later.line ? laterData : null;
+  const laterAggregates = useMemo(() => laterCurrent ? laterMatrixFor(laterCurrent) : null, [laterCurrent]);
+  const laterChosen = laterAggregates?.get(selectedHand);
+  const selectedLaterRow = laterCurrent?.rows.find(row => row.hand === selectedHand);
+  const laterTier = selectedLaterRow?.tier;
+  const laterLabels = productLocale() === "en"
+    ? { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise 3×" }
+    : { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ 3×" };
+  const laterActions = laterCurrent ? Object.keys(selectedLaterRow?.mix ?? {}) : [];
+  const laterHeading = later ? laterNodeTitle(later.node, context, later.street) : "";
   const [selectedCombo, setSelectedCombo] = useState("all");
   useEffect(() => { setSelectedCombo("all"); }, [selectedHand, board, decision.node]);
   const combo = chosen?.combos?.find(item => item.cards === selectedCombo);
@@ -247,14 +348,34 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
   }, [combo?.cards, board, decision.node, prevBet, spotId]);
   const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId);
+  const english = productLocale() === "en";
+  const laterTexture = laterCurrent ? (english ? {
+    blank: "a blank", over: "an overcard", pair: "a card that pairs the board", straight: "a straight-completing card", flush: "a flush card",
+  }[laterCurrent.texture] : {
+    blank: "変化の少ないカード", over: "オーバーカード", pair: "ボードがペアになるカード", straight: "ストレートが近づくカード", flush: "フラッシュが近づく（完成する）カード",
+  }[laterCurrent.texture]) : "";
+  const previousStreet = laterCurrent ? (english ? {
+    aggressor: "You bet/raised and were called on the previous street.",
+    defender: "You called the opponent's bet on the previous street.",
+    checked: "The previous street checked through.",
+  }[laterCurrent.line] : {
+    aggressor: "前のストリートで自分がベット/レイズしてコールされた",
+    defender: "前のストリートで相手のベットにコールした",
+    checked: "前のストリートはチェックで回った",
+  }[laterCurrent.line]) : "";
   return <div className="postflop-trial" aria-label="ポストフロップ試作">
     {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title="フロップを選択してください">上のアクション列にあるフロップカードを押して、3枚を選んでください。</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title="このフロップの方針は未収録">選んだ3枚は代表12ボードに含まれません。未監査のレンジは表示しません。</StatusState></Panel>
       : <>
-        {status === "loading" && <Panel><StatusState title="ローカル候補を読み込み中" /></Panel>}
-        {status === "error" && <Panel><StatusState title="ローカル候補を表示できません" tone="error">{error}</StatusState></Panel>}
-        {!decision.node && <Panel><StatusState title="フロップの判断終了">{decision.result} ターン・リバーの公開用方針はまだありません。</StatusState></Panel>}
+        {decision.node && status === "loading" && <Panel><StatusState title="ローカル候補を読み込み中" /></Panel>}
+        {decision.node && status === "error" && <Panel><StatusState title="ローカル候補を表示できません" tone="error">{error}</StatusState></Panel>}
+        {!decision.node && !start && <Panel><StatusState title={english ? "Flop action complete" : "フロップの判断終了"}>{decision.result}</StatusState></Panel>}
+        {!decision.node && start && !turnCard && <Panel><StatusState title={english ? "Select a turn card" : "ターンを選択してください"}>{english ? "Choose a turn card in the action path above." : "上のアクション列にあるターンカードを押して、1枚選んでください。"}</StatusState></Panel>}
+        {!decision.node && start && turnReplay && !later?.node && !riverCard && turnReplay.state.end && !["fold", "raise-fold"].includes(turnReplay.state.end.type) && turnReplay.stacks.ip > 0 && turnReplay.stacks.oop > 0 && <Panel><StatusState title={english ? "Select a river card" : "リバーを選択してください"}>{english ? "The turn action is complete. Choose one river card in the action path above." : "ターンの判断が終わりました。上のアクション列にあるリバーカードを押して、1枚選んでください。"}</StatusState></Panel>}
+        {!decision.node && start && turnReplay && !later?.node && (turnReplay.end?.type === "fold" || turnReplay.end?.type === "raise-fold" || turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0 || Boolean(riverReplay?.state.end)) && <Panel><StatusState title={english ? "Later-street action complete" : "後続ストリートの判断終了"}>{english ? "The action has ended; no later decision is available." : "フォールドまたはオールインでアクションが終了しました。後続の判断はありません。"}</StatusState></Panel>}
+        {!decision.node && start && later?.node && laterStatus === "loading" && <Panel><StatusState title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} /></Panel>}
+        {!decision.node && start && later?.node && laterStatus === "error" && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
         {current && aggregates && <div className="postflop-range-layout">
           <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · AI推定レンジ`} ariaLabel={`${current.seat}のフロップAI推定レンジ`}
             aggregates={aggregates} actions={current.actions} actionLabels={labels} simplified={displayMode === "simple"}
@@ -285,6 +406,26 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
               </>}
           </Panel>
           </div>
+        </div>}
+        {laterCurrent && laterAggregates && <div className="postflop-range-layout postflop-later-range-layout">
+          <StrategyMatrix node={{ actingPosition: laterCurrent.actor }} title={`${laterHeading} · ${english ? "AI-estimated range" : "AI推定レンジ"}`}
+            ariaLabel={`${laterCurrent.actor} ${laterCurrent.street} ${english ? "AI-estimated range" : "AI推定レンジ"}`}
+            aggregates={laterAggregates} actions={laterActions} actionLabels={laterLabels} simplified={displayMode === "simple"}
+            selected={selectedHand} onSelect={setSelectedHand}
+            unreachableReason={english ? "No combo reaches this node; no recommendation" : "この判断に到達するコンボがありません。推奨なし"} />
+          <Panel className="postflop-hand-detail postflop-later-hand-detail">
+            {laterChosen?.unreachable ? <><SectionHeading title={selectedHand} /><StatusState title={english ? "Unreachable" : "到達不能"}>{english ? "No combo of this hand reaches this decision." : "このハンドはこの判断に到達しません。"}</StatusState></>
+              : laterChosen && <>
+                <SectionHeading title={`${selectedHand} · ${english ? "Hand details" : "ハンド詳細"}`} />
+                <dl className="postflop-later-facts">
+                  <div><dt>{english ? "Hand strength" : "手の強さ"}</dt><dd>{english ? ({ monster: "two pair or better", strong: "top pair or better", draw: "a draw", medium: "a weak pair", air: "air" }[laterTier]) : tierLabels[laterTier]}</dd></div>
+                  <div><dt>{english ? "Card dealt" : "落ちたカード"}</dt><dd><BoardCards cards={[laterCurrent.street === "turn" ? turnCard : riverCard]} /> <span>{laterTexture}</span></dd></div>
+                  <div><dt>{english ? "Previous street" : "前のストリート"}</dt><dd>{previousStreet}</dd></div>
+                </dl>
+                <ActionBars items={laterActions.map(action => ({ action, frequency: laterChosen.actions[action] ?? 0 }))} labels={laterLabels} />
+                <small>{english ? "Per-hand EV on the turn and river is not supported yet." : "ターン・リバーの手ごとのEVは未対応です。"}</small>
+              </>}
+          </Panel>
         </div>}
       </>}
   </div>;

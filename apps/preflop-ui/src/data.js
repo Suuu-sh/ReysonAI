@@ -16,9 +16,11 @@ const ACTION_COLORS = Object.freeze({
 export function label(a) {
   if (a === "raise_four_bet") return "4bet（推定サイズ）";
   if (a === "raise_ai") return "レイズ（推定サイズ）";
+  if (a === "allin") return label("all_in");
   return ({fold:"フォールド",limp:"リンプ",call:"コール",check:"チェック",all_in:"オールイン",raise:"レイズ"})[a] ?? a.replace("raise_","レイズ ").replaceAll("_",".")+" BB";
 }
 export function color(a) {
+  if (a === "allin") return ACTION_COLORS.all_in;
   return a?.startsWith("raise_") ? ACTION_COLORS.raise : ACTION_COLORS[a] ?? ACTION_COLORS.raise;
 }
 function actionName(item) {

@@ -10,3 +10,10 @@
 - Trainer answer: English feedback and study note checked. Flop trial: English board/hand explanation checked on a saved representative board.
 - Language menu: English/Japanese choices visible; choosing Japanese reloads the Japanese UI and sets `lang="ja"`.
 - Build, full UI tests, and Sites packaging tests are run before delivery; unrelated in-progress changes are preserved.
+
+## Turn / river trial QA — 2026-09-28
+
+- Local `/app` browser walkthrough on the persisted BTN-open / BB-call SRP and representative A♠ 7♦ 2♣ flop: selected K♥ turn and 3♠ river, completed flop Bet 33% → Call and turn Check → Check, then verified 169-hand AI-estimated matrices, selected-hand facts/action bars, and the river bet response heading.
+- Used-card options were disabled in both single-card dialogs. Fold/all-in stop states and chip replay parity are covered by the postflop-trial tests.
+- At 1280×720, the river matrix and selected-hand detail fit in the viewport; the action path remains horizontally scrollable. Restored the browser's default viewport after verification.
+- Browser preview is open on local `/app`; no local strategy files were changed.
