@@ -30,8 +30,11 @@ const lessRaise = (mix, factor) => ({ ...mix, raise: mix.raise * factor, call: m
 
 function adjustFirst(rule, spot, node) {
   let mix = rule.mix;
-  if (spot.kind === "3bp") mix = shrinkSizes(mix, 0.6);
-  if (spot.kind === "4bp") mix = shrinkSizes(mix, 1);
+  // Bloated pots versus a strong calling range: value bets more, fewer bluffs.
+  if (spot.kind === "3bp" || spot.kind === "4bp") {
+    if (["monster", "strong"].includes(rule.tier)) mix = { ...mix, check: mix.check * 0.5, bet33: mix.bet33 + mix.check * 0.5 };
+    else mix = moreChecks(mix, 0.5);
+  }
   if (spot.kind === "limp") mix = moreChecks(shrinkSizes(mix, 0.8), 0.8);
   if (node === "oop_first") mix = moreChecks(mix, 0.7);
   // oop_leads: after the OOP raiser checks, the IP caller stabs; medium/air bet more (small).
@@ -40,7 +43,8 @@ function adjustFirst(rule, spot, node) {
 }
 function adjustFacing(rule, spot, node) {
   let mix = rule.mix;
-  if (spot.kind === "3bp" || spot.kind === "4bp") mix = lessFold(mix, rule.tier === "air" ? 0.95 : 0.75);
+  // Versus a strong 3bet/4bet range: raise mainly for value, no bluff raises.
+  if (spot.kind === "3bp" || spot.kind === "4bp") mix = rule.tier === "air" ? { ...mix, fold: mix.fold + mix.raise, raise: 0 } : rule.tier === "monster" ? { ...mix, raise: 60, call: 40 - mix.fold, fold: mix.fold } : lessRaise(mix, 0.4);
   if (node.startsWith("ip_vs_")) mix = lessRaise(lessFold(mix, 0.9), 0.7); // IP defends with position.
   if (node.startsWith("bb_vs_") && spot.tree === "oop_leads") mix = lessFold(mix, 0.85); // OOP raiser vs a stab.
   const actions = Object.keys(rule.mix);
