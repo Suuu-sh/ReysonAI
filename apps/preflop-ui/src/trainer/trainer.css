@@ -459,3 +459,19 @@
 .rank-result .up { color: var(--good, #2e9d5b); font-weight: 700; }
 .rank-result .down { color: var(--bad, #d0453a); font-weight: 700; }
 .rank-result p { margin: 0; color: var(--muted, #888); }
+.ranked-card footer .setup-secondary { padding: 7px 12px; }
+.leaderboard { display: grid; gap: 16px; }
+.leaderboard h1 { display: flex; align-items: center; gap: 8px; }
+.leaderboard h1 svg { color: var(--accent); }
+.leaderboard-tabs { display: flex; gap: 6px; }
+.leaderboard-tabs button { padding: 6px 16px; border-radius: 999px; }
+.leaderboard-tabs button.on { border-color: var(--accent); color: var(--accent); }
+.leaderboard-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.leaderboard-table th { text-align: left; font-weight: 500; font-size: 12px; color: var(--muted, #888); padding: 8px 10px; border-bottom: 1px solid rgba(128,128,128,.25); }
+.leaderboard-table td { padding: 10px; border-bottom: 1px solid rgba(128,128,128,.12); white-space: nowrap; }
+.leaderboard-table tr.self td { background: rgba(240, 96, 158, .1); }
+.leaderboard-table .place { font-weight: 700; width: 3em; }
+.leaderboard-table .up { color: var(--good, #2e9d5b); }
+.leaderboard-table .down { color: var(--bad, #d0453a); }
+.leaderboard-note { margin: 0; font-size: 12px; color: var(--muted, #888); }
+.leaderboard-history h2 { font-size: 15px; margin: 8px 0; }

@@ -77,7 +77,7 @@ function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
   </article>;
 }
 
-export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit, onDelete, onCreate, onStartReview, rank, onStartRanked }) {
+export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit, onDelete, onCreate, onStartReview, rank, onStartRanked, onOpenRanking }) {
   const totals = drills.map(drillStats);
   const attempts = totals.reduce((sum, item) => sum + item.attempts, 0);
   const answered = totals.reduce((sum, item) => sum + item.answered, 0);
@@ -94,7 +94,7 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
         {bestDrill && <div><dt><Trophy size={12} weight="fill" />ベスト</dt><dd>{pct(bestDrill.best)}<small>{bestDrill.drill.name}</small></dd></div>}
       </dl>
     </div>
-    {rank && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} />}
+    {rank && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} />}
     <div className="drill-grid">
       {(reviewCount > 0 || drafts.review) && <article className={`drill-card review${drafts.review ? " in-progress" : ""}`}>
         <header><div><h3>復習ドリル</h3><ul className="drill-tags"><li>以前ミスしたハンドだけ</li></ul></div></header>
@@ -110,7 +110,7 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
   </div>;
 }
 
-function RankedCard({ rank, draft, onStart }) {
+function RankedCard({ rank, draft, onStart, onOpenRanking }) {
   const tier = tierFor(rank.rating);
   const left = Math.max(0, RANKED_DAILY_LIMIT - playedToday(rank));
   const canStart = Boolean(draft) || left > 0;
@@ -128,6 +128,7 @@ function RankedCard({ rank, draft, onStart }) {
     <footer>
       <p><b>ランク戦</b> {localized(`All spots · standard difficulty · ${RANKED_LENGTH} questions. Harder hands move your rating more.`, `全局面・標準難易度・${RANKED_LENGTH}問。難しいハンドほどレートが大きく動きます。`)}</p>
       <small>{draft ? localized(`${draft.session.answered} answered`, `${draft.session.answered}問 回答済み`) : localized(`${left} / ${RANKED_DAILY_LIMIT} left today`, `今日の残り ${left} / ${RANKED_DAILY_LIMIT}回`)}</small>
+      <button type="button" className="setup-secondary" onClick={onOpenRanking}>ランキング</button>
       <button type="button" className={`drill-start${draft ? " resume" : ""}`} disabled={!canStart} onClick={onStart}>
         <Play size={14} weight="fill" />{draft ? "続きから" : canStart ? "ランク戦に挑む" : "また明日"}
       </button>

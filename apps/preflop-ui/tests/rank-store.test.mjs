@@ -40,3 +40,20 @@ test("tiers step up with rating", () => {
   assert.equal(tierFor(1600).name, "マスター");
   assert.equal(tierFor(1600).next, null);
 });
+
+test("leaderboard ranks by rating and holds back players with too few matches", async () => {
+  const { leaderboardRows, playerSummary } = await import("../src/trainer/rank-store.js");
+  const rows = leaderboardRows([
+    { name: "a", rating: 1100, accuracy: 0.7, matches: 5 },
+    { name: "b", rating: 1300, accuracy: 0.9, matches: 1 },
+    { name: "c", rating: 1200, accuracy: 0.8, matches: 3 },
+  ]);
+  assert.deepEqual(rows.map(row => [row.name, row.place]), [["c", 1], ["a", 2], ["b", null]]);
+  const now = new Date(2026, 8, 28, 12).getTime();
+  const old = { at: now - 10 * 86400000, before: 1000, after: 1050, accuracy: 0.8, answered: 20 };
+  const recent = { at: now - 1000, before: 1050, after: 1030, accuracy: 0.5, answered: 20 };
+  const state = { rating: 1030, peak: 1050, matches: [old, recent] };
+  assert.equal(playerSummary(state, "all", now).matches, 2);
+  assert.equal(playerSummary(state, "week", now).gain, -20);
+  assert.equal(playerSummary({ rating: 1000, peak: 1000, matches: [] }, "week", now), null);
+});
