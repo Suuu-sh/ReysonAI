@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { coverageCatalog, formatBacklog } from "../src/admin/coverage.js";
+import { coverageCatalog, formatBacklog, postflopCatalog, priorityBacklog } from "../src/admin/coverage.js";
 
 test("every persisted spot maps onto the enumerated preflop tree", () => {
   const catalog = coverageCatalog();
@@ -21,7 +21,6 @@ test("format backlog marks only built formats as done", () => {
 
 test("postflop backlog lists flop and turn/river policies for every reachable spot", async () => {
   const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.mjs");
-  const { postflopCatalog } = await import("../src/admin/coverage.js");
   const catalog = postflopCatalog(POSTFLOP_SPOTS, {
     "btn-bb-srp-v1-policy.json": "a", "co-bb-srp-v1-policy.json": "a", "hj-bb-srp-v1-policy.json": "a", "utg-bb-srp-v1-policy.json": "b",
   }, ["BTN_open_BB_call"]);
@@ -34,4 +33,25 @@ test("postflop backlog lists flop and turn/river policies for every reachable sp
   assert.equal(byKey.turn_river_srp.done, 0);
   assert.ok(catalog.unreachable.includes("BTN_open_SB_call"));
   assert.equal(catalog.done + catalog.todo, catalog.total);
+});
+
+test("TODO priority follows BTN-BB heads-up, other heads-up, then multiway", async () => {
+  const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.mjs");
+  const preflop = coverageCatalog();
+  const postflop = postflopCatalog(POSTFLOP_SPOTS);
+  const preflopRows = preflop.categories.flatMap(category => category.rows);
+  const postflopRows = postflop.categories.flatMap(category => category.rows);
+  assert.deepEqual(preflopRows.filter(row => row.priority === 1).map(row => row.id), [
+    "BTN_open", "BB_vs_BTN", "BTN_vs_BB_three_bet", "BB_vs_BTN_four_bet", "BTN_vs_BB_five_bet",
+  ]);
+  assert.deepEqual(new Set(postflopRows.filter(row => row.priority === 1).map(row => row.id)), new Set([
+    "BTN_open_BB_call", "BTN_open_BB_3bet_call", "BTN_open_BB_4bp_call",
+  ]));
+  assert.ok(preflopRows.filter(row => ["multiway", "squeeze", "cold_three_bet", "cold_four_bet"].includes(row.category)).every(row => row.priority === 3));
+  assert.ok(postflopRows.filter(row => row.category === "postflop_multiway").every(row => row.priority === 3));
+  assert.equal(preflopRows.find(row => row.id === "BB_vs_SB_limp").priority, 2);
+  const priorities = priorityBacklog(preflop, postflop);
+  assert.deepEqual(priorities.map(priority => priority.value), [1, 2, 3]);
+  assert.equal(priorities.reduce((total, priority) => total + priority.total, 0), preflop.total + postflop.total);
+  assert.equal(priorities.reduce((total, priority) => total + priority.todo, 0), preflop.todo + postflop.todo);
 });

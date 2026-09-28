@@ -264,3 +264,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 ## Admin sidebar link (2026-09-28)
 - Added an accessible Admin link in the `/app` primary sidebar, with a visible label when expanded and an icon plus accessible name when collapsed. It navigates to the existing `/admin` dashboard rather than creating another app section.
 - Browser accessibility inspection at `http://127.0.0.1:5174/app` showed the English “Admin dashboard” link targeting `/admin`. Both `/app` and `/admin` returned HTTP 200. All 244 UI tests, the production build, 5 Sites tests, lint, and typecheck passed. The existing large-chunk build warning remains.
+
+## Admin TODO priorities (2026-09-28)
+- The Admin backlog is ordered P1 BTN versus BB, P2 other heads-up (including SRP/3bet/4bet and SB limp), then P3 multiway. Every enumerated preflop and postflop row has a priority badge; the TODO table sorts by priority and street and offers a priority filter.
+- The roadmap states that spot/policy-file counts are not a claim of full board or action-branch coverage. Browser inspection on `/admin` showed P1 TODO rows above P2/P3, with P1 3bet and 4bet flop/turn-river copies still marked TODO rather than done.
+- Full verification passed: 245 UI tests, production build, 5 Sites tests, lint, and typecheck. The existing large-chunk build warning remains.

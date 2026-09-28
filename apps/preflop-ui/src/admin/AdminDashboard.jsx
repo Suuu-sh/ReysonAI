@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { coverageCatalog, formatBacklog, postflopCatalog } from "./coverage.js";
+import { coverageCatalog, formatBacklog, postflopCatalog, PRIORITIES, priorityBacklog } from "./coverage.js";
 import { POSTFLOP_SPOTS } from "../../scripts/postflop-ai/spots.mjs";
 import postflopArtifacts from "virtual:postflop-artifacts";
 import { formatLabel } from "../estimated/game-formats.js";
@@ -11,6 +11,7 @@ const reasonIds = new Set(Object.keys(import.meta.glob("../estimated/reasons/*.j
 const authoredSlugs = Object.keys(import.meta.glob("../../scripts/postflop-ai/authored/*.mjs")).map(path => path.split("/").pop().replace(".mjs", "-v1"));
 const authoredIds = POSTFLOP_SPOTS.filter(spot => authoredSlugs.includes(spot.slug)).map(spot => spot.id);
 const STREETS = { preflop: "プリフロップ", flop: "フロップ", turn_river: "ターン/リバー" };
+const STREET_ORDER = { preflop: 0, flop: 1, turn_river: 2 };
 const FILTERS = [["all", "すべて"], ["todo", "TODO"], ["done", "作成済み"], ["no_reason", "理由なし"]];
 
 function Meter({ done, total }) {
@@ -24,15 +25,19 @@ export default function AdminDashboard() {
   const allCategories = [...catalog.categories.map(c => ({ ...c, street: "preflop" })), ...postflop.categories];
   const formats = useMemo(() => formatBacklog(catalog.total), [catalog.total]);
   const [filter, setFilter] = useState("todo");
+  const [priorityFilter, setPriorityFilter] = useState("all");
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
 
   const rows = allCategories.flatMap(c => c.rows.map(row => ({ ...row, label: c.label, street: c.street, reason: c.street === "preflop" ? reasonIds.has(row.id) : null })));
+  const priorities = priorityBacklog(catalog, postflop);
   const reasonMissing = rows.filter(row => row.status === "done" && row.reason === false).length;
   const visible = rows.filter(row =>
     (category === "all" || row.category === category) &&
+    (priorityFilter === "all" || row.priority === Number(priorityFilter)) &&
     (filter === "all" || (filter === "no_reason" ? row.status === "done" && row.reason === false : filter === "todo" ? row.status !== "done" : row.status === filter)) &&
-    (!query || `${row.id} ${row.path}`.toLowerCase().includes(query.toLowerCase())));
+    (!query || `${row.id} ${row.path}`.toLowerCase().includes(query.toLowerCase())))
+    .sort((a, b) => a.priority - b.priority || STREET_ORDER[a.street] - STREET_ORDER[b.street]);
   const unbuiltFormats = formats.filter(format => !format.built);
 
   return (
@@ -58,6 +63,19 @@ export default function AdminDashboard() {
         <div className="admin-kpi"><span>未作成フォーマット</span><strong>{unbuiltFormats.length}</strong><small>× 約{catalog.total}スポット ＝ {(unbuiltFormats.length * catalog.total).toLocaleString()}</small></div>
       </section>
 
+      <section className="admin-panel" aria-labelledby="admin-priorities-title">
+        <h2 id="admin-priorities-title">開発優先度</h2>
+        <ol className="admin-priorities">
+          {priorities.map(priority => (
+            <li key={priority.value}>
+              <span className={`admin-priority p${priority.value}`}>{priority.label}</span>
+              <div><strong>{priority.title}</strong><p>{priority.scope}</p><small>一覧化済み TODO {priority.todo} / {priority.total} 件</small></div>
+            </li>
+          ))}
+        </ol>
+        <p className="admin-note">順番は P1 → P2 → P3。件数は既存のスポット・方針ファイル単位で、全ボード・全アクション分岐の完成を意味しません。オールインで終了する経路はリバーまでの追加方針を必要としません。</p>
+      </section>
+
       <section className="admin-panel">
         <h2>カテゴリ別の進捗</h2>
         <table className="admin-table">
@@ -81,9 +99,13 @@ export default function AdminDashboard() {
         <div className="admin-panel-head">
           <h2>スポット一覧 <small>{visible.length}件</small></h2>
           <div className="admin-controls">
-            <div className="admin-seg" role="group" aria-label="状態で絞り込み">
+            <fieldset className="admin-seg" aria-label="状態で絞り込み">
               {FILTERS.map(([value, label]) => <button key={value} type="button" className={filter === value ? "on" : ""} onClick={() => setFilter(value)}>{label}</button>)}
-            </div>
+            </fieldset>
+            <select value={priorityFilter} onChange={event => setPriorityFilter(event.target.value)} aria-label="優先度で絞り込み">
+              <option value="all">全優先度</option>
+              {PRIORITIES.map(priority => <option key={priority.value} value={priority.value}>{priority.label} · {priority.title}</option>)}
+            </select>
             <select value={category} onChange={event => setCategory(event.target.value)} aria-label="カテゴリ">
               <option value="all">全カテゴリ</option>
               {allCategories.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
@@ -93,10 +115,11 @@ export default function AdminDashboard() {
         </div>
         <div className="admin-scroll">
           <table className="admin-table">
-            <thead><tr><th>状態</th><th>スポットID</th><th>ヒーロー</th><th>アクション</th><th>カテゴリ</th><th>理由</th></tr></thead>
+            <thead><tr><th>優先度</th><th>状態</th><th>スポットID</th><th>ヒーロー</th><th>アクション</th><th>カテゴリ</th><th>理由</th></tr></thead>
             <tbody>
               {visible.map(row => (
-                <tr key={row.id}>
+                <tr key={`${row.street}-${row.category}-${row.id}`}>
+                  <td><span className={`admin-priority p${row.priority}`}>P{row.priority}</span></td>
                   <td><span className={`admin-status ${row.status}`}>{{ done: "作成済み", todo: "TODO", copy: "TODO（流用）" }[row.status]}</span></td>
                   <td className="mono">{row.id}</td>
                   <td>{row.hero}</td>
@@ -105,7 +128,7 @@ export default function AdminDashboard() {
                   <td>{row.reason === null ? "—" : row.status === "done" ? (row.reason ? "✓" : <span className="admin-tag">なし</span>) : "—"}</td>
                 </tr>
               ))}
-              {!visible.length && <tr><td colSpan={6} className="muted">該当するスポットはありません。</td></tr>}
+              {!visible.length && <tr><td colSpan={7} className="muted">該当するスポットはありません。</td></tr>}
             </tbody>
           </table>
         </div>

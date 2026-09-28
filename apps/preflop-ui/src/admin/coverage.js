@@ -20,6 +20,23 @@ const pairs = list => list.flatMap((a, i) => list.slice(i + 1).map(b => [a, b]))
 const triples = list => list.flatMap((a, i) => pairs(list.slice(i + 1)).map(rest => [a, ...rest]));
 const headsUp = RFI.flatMap(opener => after(opener).map(hero => ({ opener, hero })));
 
+export const PRIORITIES = Object.freeze([
+  { value: 1, label: "P1", title: "BTN vs BB", scope: "BTNオープン対BBのプリフロップ全分岐（5bet終端を含む）を起点に、SRP・3bet・4betを全ボード・全アクション分岐でリバーまで対応する。" },
+  { value: 2, label: "P2", title: "その他のヘッズアップ", scope: "残りの全ヘッズアップを、SRP・3bet・4bet・リンプと全ボード・全アクション分岐を含めてプリフロップからリバーまで対応する。" },
+  { value: 3, label: "P3", title: "マルチウェイ", scope: "ヘッズアップ完成後に、複数コーラー・スクイーズ・コールド4betとマルチウェイのポストフロップに対応する。" },
+]);
+
+const BTN_BB_PREFLOP = new Set(["BTN_open", "BB_vs_BTN", "BTN_vs_BB_three_bet", "BB_vs_BTN_four_bet", "BTN_vs_BB_five_bet"]);
+const HEADS_UP_PREFLOP = new Set(["open", "response", "three_bet", "four_bet", "five_bet", "limp", "limp_deep"]);
+export function preflopPriority(category, id) {
+  if (BTN_BB_PREFLOP.has(id)) return 1;
+  return HEADS_UP_PREFLOP.has(category) ? 2 : 3;
+}
+
+export function postflopPriority(spot) {
+  return spot.opener === "BTN" && spot.ip === "BTN" && spot.oop === "BB" ? 1 : 2;
+}
+
 // Every category lists its full expected spot set; ids match the persisted datasets.
 const CATEGORIES = [
   { key: "open", label: "オープン（RFI）", file: "opening-ranges.json", data: opening,
@@ -75,11 +92,11 @@ export function coverageCatalog() {
     const expectedIds = new Set(category.expected.map(spot => spot.id));
     const rows = category.expected.map(spot => {
       const record = saved.find(item => item.id === spot.id);
-      return { ...spot, category: category.key, status: record ? "done" : "todo", hands: record?.hands?.length ?? 0 };
+      return { ...spot, category: category.key, priority: preflopPriority(category.key, spot.id), status: record ? "done" : "todo", hands: record?.hands?.length ?? 0 };
     });
     // Persisted spots outside the enumerated tree are still shown so nothing is hidden.
     for (const spot of saved) {
-      if (!expectedIds.has(spot.id)) rows.push({ id: spot.id, hero: spot.hero, path: "（ツリー外の保存スポット）", category: category.key, status: "done", hands: spot.hands?.length ?? 0 });
+      if (!expectedIds.has(spot.id)) rows.push({ id: spot.id, hero: spot.hero, path: "（ツリー外の保存スポット）", category: category.key, priority: preflopPriority(category.key, spot.id), status: "done", hands: spot.hands?.length ?? 0 });
     }
     const done = rows.filter(row => row.status === "done").length;
     return { key: category.key, label: category.label, file: category.file, modelled: Boolean(category.file), rows, done, total: rows.length, todo: rows.length - done };
@@ -124,7 +141,7 @@ export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
   const categories = STAGES.flatMap(stage => POT_KINDS.map(([kind, kindLabel]) => {
     const rows = reachable.filter(spot => spot.kind === kind).map(spot => ({
       id: spot.id, hero: `${spot.ip} vs ${spot.oop}`, path: `${kindLabel} · ${spot.ip} IP / ${spot.oop} OOP`,
-      category: `${stage.street}_${kind}`, status: statusOf(spot, `${spot.slug}${stage.suffix}`), street: stage.street,
+      category: `${stage.street}_${kind}`, priority: postflopPriority(spot), status: statusOf(spot, `${spot.slug}${stage.suffix}`), street: stage.street,
     }));
     const done = rows.filter(row => row.status === "done").length;
     return { key: `${stage.street}_${kind}`, label: `${stage.label} · ${kindLabel}`, file: `.local/postflop-ai/*${stage.suffix}`, street: stage.street,
@@ -132,10 +149,18 @@ export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
   }));
   // Multiway pots have no postflop model yet: one row per saved multiway preflop spot.
   const multiwayRows = spotsOf(multiway).map(spot => ({ id: `${spot.id}_postflop`, hero: spot.hero, path: `${spot.id} のマルチウェイ・フロップ以降`,
-    category: "postflop_multiway", status: "todo", street: "flop" }));
+    category: "postflop_multiway", priority: 3, status: "todo", street: "flop" }));
   categories.push({ key: "postflop_multiway", label: "マルチウェイ・ポストフロップ", file: null, street: "flop", modelled: false,
     rows: multiwayRows, done: 0, total: multiwayRows.length, todo: multiwayRows.length });
   const done = categories.reduce((sum, c) => sum + c.done, 0);
   const total = categories.reduce((sum, c) => sum + c.total, 0);
   return { categories, done, total, todo: total - done, unreachable: spots.filter(spot => !spot.reachable).map(spot => spot.id) };
+}
+
+export function priorityBacklog(preflopCatalog, postflopCatalog) {
+  const rows = [...preflopCatalog.categories, ...postflopCatalog.categories].flatMap(category => category.rows);
+  return PRIORITIES.map(priority => {
+    const assigned = rows.filter(row => row.priority === priority.value);
+    return { ...priority, total: assigned.length, todo: assigned.filter(row => row.status !== "done").length };
+  });
 }
