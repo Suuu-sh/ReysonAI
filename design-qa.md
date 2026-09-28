@@ -251,3 +251,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Added compact strength/weakness cards beneath the action comparison, using the same graded browser-local answer history as the detailed 弱点 page. Established highlights require five answers; weak groups with three or four answers are explicitly provisional. The weakness card also lists pending review hands and links to the detailed page.
 - Browser verification at `http://127.0.0.1:5173/app`: the existing 31-answer history showed strong groups, provisional weak groups, two review hands, and a working link to 弱点. The removed large summary card stayed absent.
 - Typecheck, all 205 tests, build and all 4 Sites tests passed. The existing large-bundle warning remains.
+
+## Same-URL service-site language switch (2026-09-28)
+- The header language button changes English/Japanese copy on `/` without navigating to `/ja`, and remembers the choice for reloads and the product app. The visible heading, document language, title, and description update together.
+- The legacy `/ja#pricing` deep link still opens in Japanese; switching to English moves to `/#pricing` and keeps the anchor.
+- Browser verification covered both directions, reload persistence, and the legacy deep link. All 238 tests, the production build, Sites tests, lint, and typecheck passed.

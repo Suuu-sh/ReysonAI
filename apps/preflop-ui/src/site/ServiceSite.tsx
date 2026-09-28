@@ -4,7 +4,7 @@ import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
 
-const SiteContext = createContext<{ locale: SiteLocale; copy: SiteCopy }>({ locale: "en", copy: en });
+const SiteContext = createContext<{ locale: SiteLocale; copy: SiteCopy; onLocaleChange: () => void }>({ locale: "en", copy: en, onLocaleChange: () => {} });
 const useSite = () => useContext(SiteContext);
 
 type Action = "raise" | "call" | "fold";
@@ -31,8 +31,8 @@ function dominantAction(values: Record<Action, number>): Action {
 }
 
 function Brand({ inverted = false }: { inverted?: boolean }) {
-  const { locale, copy } = useSite();
-  return <a className={`site-brand${inverted ? " site-brand-footer" : ""}`} href={locale === "ja" ? "/ja" : "/"} aria-label={copy.common.home}>
+  const { copy } = useSite();
+  return <a className={`site-brand${inverted ? " site-brand-footer" : ""}`} href="/" aria-label={copy.common.home}>
     <span className="site-brand-mark" aria-hidden="true"><span /></span>
     <span>Solvea<span className="site-brand-period">.</span></span>
   </a>;
@@ -140,7 +140,7 @@ function RangePreview({ compact = false }: { compact?: boolean }) {
 }
 
 function Header() {
-  const { locale, copy: c } = useSite();
+  const { locale, copy: c, onLocaleChange } = useSite();
   const [open, setOpen] = useState(false);
   return <header className="site-header">
     <div className="site-header-inner">
@@ -150,7 +150,7 @@ function Header() {
         <span className="site-signin" title={c.common.signInHint}>{c.common.signIn} <small>{c.common.soon}</small></span>
         <a className="site-btn site-btn-small site-btn-primary site-mobile-cta" href="/app">{c.common.try} <ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
       </nav>
-      <div className="site-header-actions"><a className="site-language-link" href={locale === "ja" ? `/${window.location.hash}` : `/ja${window.location.hash}`} hrefLang={locale === "ja" ? "en" : "ja"} aria-label={locale === "ja" ? "Switch to English" : "日本語に切り替える"}>{locale === "ja" ? "EN" : "日本語"}</a><a className="site-btn site-btn-small site-btn-primary site-desktop-cta" href="/app">{c.common.try} <ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a></div>
+      <div className="site-header-actions"><button type="button" className="site-language-link" onClick={onLocaleChange} aria-label={locale === "ja" ? "Switch to English" : "日本語に切り替える"}>{locale === "ja" ? "EN" : "日本語"}</button><a className="site-btn site-btn-small site-btn-primary site-desktop-cta" href="/app">{c.common.try} <ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a></div>
       <button className="site-menu-button" type="button" onClick={() => setOpen(!open)} aria-label={open ? c.common.menuClose : c.common.menuOpen} aria-expanded={open}>{open ? <X size={23} /> : <List size={23} />}</button>
     </div>
   </header>;
@@ -258,7 +258,7 @@ function Footer() {
   return <footer className="site-footer"><div className="site-container"><div className="site-footer-top"><div><Brand inverted /><p>{c.footer.tagline}</p></div><div className="site-footer-links"><div><span>{c.footer.product}</span><a href="#how">{c.footer.how}</a><a href="#solution">AI Solution</a><a href="/app">{c.footer.open}</a></div><div><span>{c.footer.explore}</span><a href="#pricing">{c.footer.pricing}</a><a href="#why">{c.footer.about}</a><span className="site-footer-unavailable">{c.footer.privacy}</span><span className="site-footer-unavailable">{c.footer.terms}</span></div></div></div><p className="site-disclaimer">{c.footer.disclaimer}</p><div className="site-footer-bottom"><span>© {new Date().getFullYear()} Solvea</span><span>{c.footer.madeFor} <span>✦</span></span></div></div></footer>;
 }
 
-export function ServiceSite({ locale }: { locale: SiteLocale }) {
+export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; onLocaleChange: () => void }) {
   const copy = locale === "ja" ? ja : en;
-  return <SiteContext.Provider value={{ locale, copy }}><div className={`site site-${locale}`}><a className="site-skip" href="#site-main">{copy.common.skip}</a><Header /><main id="site-main"><Hero /><Problem /><HowItWorks /><SimpleStrategy /><Solution /><Adaptive /><Learning /><Levels /><Comparison /><Pricing /><FinalCta /></main><Footer /></div></SiteContext.Provider>;
+  return <SiteContext.Provider value={{ locale, copy, onLocaleChange }}><div className={`site site-${locale}`}><a className="site-skip" href="#site-main">{copy.common.skip}</a><Header /><main id="site-main"><Hero /><Problem /><HowItWorks /><SimpleStrategy /><Solution /><Adaptive /><Learning /><Levels /><Comparison /><Pricing /><FinalCta /></main><Footer /></div></SiteContext.Provider>;
 }

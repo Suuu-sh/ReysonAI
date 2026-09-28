@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { transform } from "esbuild";
+import { LOCALE_KEY, rememberLocale, siteLocale } from "../src/locale.js";
 
 async function loadCopy(file, exportName) {
   const source = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
@@ -24,4 +25,22 @@ test("Japanese service-site copy covers every English field", async () => {
   assert.match(ja.pricing.note, /仮案/);
   assert.match(ja.preview.notGto, /GTO/);
   assert.equal(ja.pricing.plans[1].href, null);
+});
+
+test("the root site remembers its language without a /ja URL", () => {
+  const previousWindow = globalThis.window;
+  const values = new Map();
+  globalThis.window = { localStorage: { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) } };
+  try {
+    assert.equal(siteLocale("/"), "en");
+    rememberLocale("ja");
+    assert.equal(values.get(LOCALE_KEY), "ja");
+    assert.equal(siteLocale("/"), "ja");
+    rememberLocale("en");
+    assert.equal(siteLocale("/"), "en");
+    assert.equal(siteLocale("/ja"), "ja");
+    assert.equal(siteLocale("/ja/pricing"), "ja");
+  } finally {
+    globalThis.window = previousWindow;
+  }
 });

@@ -5,17 +5,35 @@ import { en } from "./site/content.ts";
 import { ja } from "./site/content-ja.ts";
 import "./styles.css";
 import "./site/site.css";
-import { productLocale } from "./locale.js";
+import { isJapaneseSiteRoute, productLocale, rememberLocale, siteLocale } from "./locale.js";
 
 const ProductApp = lazy(() => import("./ProductApp.jsx"));
 const AdminDashboard = lazy(() => import("./admin/AdminDashboard.jsx"));
 const isAdminRoute = window.location.pathname === "/admin" || window.location.pathname.startsWith("/admin/");
 const isProductRoute = window.location.pathname === "/app" || window.location.pathname.startsWith("/app/");
-const locale = window.location.pathname === "/ja" || window.location.pathname.startsWith("/ja/") ? "ja" : "en";
-const copy = locale === "ja" ? ja : en;
-document.documentElement.lang = isProductRoute ? productLocale() : locale;
+const initialSiteLocale = siteLocale(window.location.pathname);
+const copy = initialSiteLocale === "ja" ? ja : en;
+document.documentElement.lang = isAdminRoute ? "en" : isProductRoute ? productLocale() : initialSiteLocale;
 document.title = isAdminRoute ? "SolveaAI · Admin" : isProductRoute ? (productLocale() === "ja" ? "SolveaAI · レンジ分析" : "SolveaAI · Range Analysis") : copy.title;
 if (!isProductRoute) document.querySelector('meta[name="description"]')?.setAttribute("content", copy.description);
+
+function MarketingSite() {
+  const [locale, setLocale] = React.useState(initialSiteLocale);
+  React.useEffect(() => { if (isJapaneseSiteRoute(window.location.pathname)) rememberLocale("ja"); }, []);
+  React.useEffect(() => {
+    const selectedCopy = locale === "ja" ? ja : en;
+    document.documentElement.lang = locale;
+    document.title = selectedCopy.title;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", selectedCopy.description);
+  }, [locale]);
+  const switchLocale = () => {
+    const next = locale === "ja" ? "en" : "ja";
+    rememberLocale(next);
+    if (isJapaneseSiteRoute(window.location.pathname)) window.history.replaceState(window.history.state, "", `/${window.location.search}${window.location.hash}`);
+    setLocale(next);
+  };
+  return <ServiceSite locale={locale} onLocaleChange={switchLocale} />;
+}
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -23,6 +41,6 @@ createRoot(document.getElementById("root")).render(
       ? <Suspense fallback={<div className="site-loading">Opening admin…</div>}><AdminDashboard /></Suspense>
       : isProductRoute
       ? <Suspense fallback={<div className="site-loading">Opening Solvea…</div>}><ProductApp /></Suspense>
-      : <ServiceSite locale={locale} />}
+      : <MarketingSite />}
   </React.StrictMode>,
 );

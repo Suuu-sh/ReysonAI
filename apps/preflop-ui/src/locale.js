@@ -8,9 +8,20 @@ export function productLocale() {
   catch { return "en"; }
 }
 
-export function selectProductLocale(locale) {
+export const isJapaneseSiteRoute = pathname => pathname === "/ja" || pathname.startsWith("/ja/");
+
+export function siteLocale(pathname) {
+  return isJapaneseSiteRoute(pathname) ? "ja" : productLocale();
+}
+
+export function rememberLocale(locale) {
   if (locale !== "en" && locale !== "ja") return;
   try { window.localStorage.setItem(LOCALE_KEY, locale); } catch {}
+}
+
+export function selectProductLocale(locale) {
+  if (locale !== "en" && locale !== "ja") return;
+  rememberLocale(locale);
   window.location.reload();
 }
 

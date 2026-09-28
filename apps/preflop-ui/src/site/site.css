@@ -52,7 +52,7 @@
 .site-brand-mark span { display: block; width: 12px; height: 12px; border: 2px solid var(--site-pink); border-radius: 2px; transform: rotate(26deg); }
 .site-nav { display: flex; align-items: center; gap: clamp(18px, 2.2vw, 33px); margin-left: auto; margin-right: 34px; }
 .site-header-actions { display: flex; align-items: center; flex: 0 0 auto; gap: 17px; }
-.site-language-link { padding: 6px 0; color: #c8bfc7 !important; font-size: 11px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
+.site-language-link { padding: 6px 0; border: 0; background: transparent; color: #c8bfc7 !important; font-size: 11px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; cursor: pointer; }
 .site-language-link:hover { color: var(--site-pink) !important; }
 .site-nav > a:not(.site-btn), .site-signin { color: #a8a4ab; font-size: 12px; font-weight: 550; transition: color .2s ease; }
 .site-nav > a:not(.site-btn):hover { color: white; }
