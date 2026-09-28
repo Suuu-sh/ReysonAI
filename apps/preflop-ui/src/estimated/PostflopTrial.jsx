@@ -5,22 +5,23 @@ import { StrategyMatrix } from "../components/StrategyMatrix.jsx";
 import { HandEvBars, useHandEv } from "./PostflopHandEv.jsx";
 import { actionReason, dominantTier, evidenceReason, textureLabels, tierLabels } from "./postflop-reasons.js";
 import { flopDecision, recognizedFlop, representativeFlops } from "./postflop-trial.js";
+import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { productLocale } from "../i18n.js";
 
-const baseLabels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
+const baseLabels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
 // Raising a lead (ip_vs_*) is a plain raise, not a check-raise.
-const labelsFor = node => node?.startsWith("ip_") ? { ...baseLabels, raise: "3倍レイズ" } : baseLabels;
+export const labelsFor = node => node?.startsWith("ip_") ? { ...baseLabels, raise: "3倍レイズ" } : baseLabels;
 // btn_* nodes are the in-position player's decisions, bb_* the out-of-position player's.
-const nodeTitle = (node, { ip, oop }) => (productLocale() === "en" ? {
+export const nodeTitle = (node, { ip, oop }) => (productLocale() === "en" ? {
   btn_first: `${ip} · facing ${oop}'s check`, bb_vs_33: `${oop} · facing a 33% bet`,
-  bb_vs_75: `${oop} · facing a 75% bet`, btn_vs_raise: `${ip} · facing a check-raise`,
+  bb_vs_75: `${oop} · facing a 75% bet`, bb_vs_125: `${oop} · facing a 125% bet`, btn_vs_raise: `${ip} · facing a check-raise`,
   oop_first: `${oop} · first decision`, ip_vs_33: `${ip} · facing a 33% bet`,
-  ip_vs_75: `${ip} · facing a 75% bet`, oop_vs_raise: `${oop} · facing a raise`,
+  ip_vs_75: `${ip} · facing a 75% bet`, ip_vs_125: `${ip} · facing a 125% bet`, oop_vs_raise: `${oop} · facing a raise`,
 } : {
   btn_first: `${ip} · ${oop}のチェックへの応答`, bb_vs_33: `${oop} · 33%ベットへの応答`,
-  bb_vs_75: `${oop} · 75%ベットへの応答`, btn_vs_raise: `${ip} · チェックレイズへの応答`,
+  bb_vs_75: `${oop} · 75%ベットへの応答`, bb_vs_125: `${oop} · 125%ベットへの応答`, btn_vs_raise: `${ip} · チェックレイズへの応答`,
   oop_first: `${oop} · 最初の判断（先にベットできる）`, ip_vs_33: `${ip} · 33%ベットへの応答`,
-  ip_vs_75: `${ip} · 75%ベットへの応答`, oop_vs_raise: `${oop} · レイズへの応答`,
+  ip_vs_75: `${ip} · 75%ベットへの応答`, ip_vs_125: `${ip} · 125%ベットへの応答`, oop_vs_raise: `${oop} · レイズへの応答`,
 })[node];
 export const suitLabels = { s: "♠", h: "♥", d: "♦", c: "♣" };
 
@@ -232,7 +233,7 @@ export function PostflopTrial({ context, cards, actions = [], displayMode = "sta
   useEffect(() => { setSelectedCombo("all"); }, [selectedHand, board, decision.node]);
   const combo = chosen?.combos?.find(item => item.cards === selectedCombo);
   const [explain, setExplain] = useState(null);
-  const prevBet = actions.find(action => action === "bet33" || action === "bet75") ?? "bet33";
+  const prevBet = actions.find(isFlopBet) ?? "bet33";
   useEffect(() => {
     setExplain(null);
     if (!combo || !board || !decision.node) return;

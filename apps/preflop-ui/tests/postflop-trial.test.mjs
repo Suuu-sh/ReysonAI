@@ -10,7 +10,7 @@ import { loadCandidate, sha } from "../scripts/postflop-ai/generate.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../scripts/postflop-ai/spots.mjs";
 import { playHand, simulate } from "../scripts/postflop-ai/simulation.mjs";
 import { createTable, playFlop, playLaterStreets, settle } from "../scripts/postflop-ai/engine.mjs";
-import { flopState, treeHistories } from "../scripts/postflop-ai/tree.mjs";
+import { FLOP_BETS, flopState, isFlopBet, treeHistories } from "../scripts/postflop-ai/tree.mjs";
 import { parseCards } from "../scripts/postflop-ai/model.mjs";
 import preflopRanges from "../src/estimated/preflop-ranges.json" with { type: "json" };
 import threeBetResponses from "../src/estimated/three-bet-responses.json" with { type: "json" };
@@ -304,13 +304,13 @@ test("read-only board projection expands saved source combos without revealing a
   assert.throws(() => buildLocalBoard("As7d2c", inputs, candidate), /ハッシュ/);
 });
 
-let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, buildActionBlocks;
+let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, buildActionBlocks, labelsFor, nodeTitle;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)),
     server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ ActionPath, buildActionBlocks } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.jsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.jsx"));
-  ({ PostflopTrial, FlopCardDialog } = await server.ssrLoadModule("/src/estimated/PostflopTrial.jsx"));
+  ({ PostflopTrial, FlopCardDialog, labelsFor, nodeTitle } = await server.ssrLoadModule("/src/estimated/PostflopTrial.jsx"));
 });
 after(async () => { await server?.close(); });
 
@@ -365,9 +365,30 @@ test("representative flops are picked from a modal, while unsupported spots stay
   }
 });
 
+test("125% flop bets use the shared size list, localized labels, and facing-node titles", () => {
+  assert.deepEqual(FLOP_BETS, ["bet33", "bet75", "bet125"]);
+  assert.equal(isFlopBet("bet125"), true);
+  assert.equal(labelsFor("btn_first").bet125, "ベット 125%");
+  assert.equal(labelsFor("ip_vs_125").bet125, "ベット 125%");
+  const context = { ip: "BTN", oop: "BB" };
+  assert.equal(nodeTitle("bb_vs_125", context), "BB · 125%ベットへの応答");
+  assert.equal(nodeTitle("ip_vs_125", context), "BTN · 125%ベットへの応答");
+
+  const previousWindow = globalThis.window;
+  const hadWindow = Object.hasOwn(globalThis, "window");
+  globalThis.window = { localStorage: { getItem: key => key === "solveaai:locale:v1" ? "en" : null } };
+  try {
+    assert.equal(nodeTitle("bb_vs_125", context), "BB · facing a 125% bet");
+    assert.equal(nodeTitle("ip_vs_125", context), "BTN · facing a 125% bet");
+  } finally {
+    if (hadWindow) globalThis.window = previousWindow;
+    else delete globalThis.window;
+  }
+});
+
 test("every flop node, action and hand tier has a plain-language reason", async () => {
   const { actionReason, dominantTier } = await import("../src/estimated/postflop-reasons.js");
-  const nodes = { btn_first: ["check", "bet33", "bet75"], bb_vs_33: ["fold", "call", "raise"], bb_vs_75: ["fold", "call", "raise"], btn_vs_raise: ["fold", "call"] };
+  const nodes = { btn_first: ["check", "bet33", "bet75", "bet125"], bb_vs_33: ["fold", "call", "raise"], bb_vs_75: ["fold", "call", "raise"], bb_vs_125: ["fold", "call", "raise"], ip_vs_125: ["fold", "call", "raise"], btn_vs_raise: ["fold", "call"] };
   for (const [node, actions] of Object.entries(nodes)) for (const action of actions)
     for (const tier of ["monster", "strong", "draw", "medium", "air"]) assert.ok(actionReason(node, action, tier), `${node}/${action}/${tier}`);
   assert.equal(dominantTier({ monster: 0.2, strong: 0, draw: 0.5, medium: 0.3, air: 0 }), "draw");

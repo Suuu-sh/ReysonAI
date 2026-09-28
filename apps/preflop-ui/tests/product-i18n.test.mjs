@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
-import { englishFactLabels, englishPreflopReason } from "../src/estimated/english-reasons.js";
+import { englishFactLabels, englishPostflopReasons, englishPreflopReason } from "../src/estimated/english-reasons.js";
 import { productLocale, translateProductCopy } from "../src/i18n.js";
 import { actionReason, evidenceReason } from "../src/estimated/postflop-reasons.js";
 import { displayDrillName, PRESET_DRILLS } from "../src/trainer/drill-store.js";
@@ -32,6 +32,22 @@ test("preflop reasoning uses recorded facts without Japanese or invented EV", ()
 
 test("flop explanations are English while their numeric evidence stays intact", () => {
   assert.match(actionReason("btn_first", "bet33", "strong"), /thin value bet/);
+  const tiers = ["monster", "strong", "draw", "medium", "air"];
+  for (const tier of tiers) {
+    assert.ok(englishPostflopReasons.btn_first.bet125[tier], `english btn_first/bet125/${tier}`);
+    assert.match(actionReason("btn_first", "bet125", tier), /[A-Za-z]/, `btn_first/bet125/${tier}`);
+    for (const action of ["fold", "call", "raise"]) {
+      assert.ok(englishPostflopReasons.bb_vs_125[action][tier], `english bb_vs_125/${action}/${tier}`);
+      for (const node of ["bb_vs_125", "ip_vs_125"]) {
+        const reason = actionReason(node, action, tier);
+        assert.ok(reason, `${node}/${action}/${tier}`);
+        assert.notEqual(reason, "This action is part of the saved AI-estimated policy.", `${node}/${action}/${tier} should use its 125% copy`);
+        assert.doesNotMatch(reason, /[ぁ-んァ-ヶ一-龠]/, `${node}/${action}/${tier}`);
+      }
+    }
+  }
+  assert.match(actionReason("btn_first", "bet125", "monster"), /overbet/i);
+  assert.match(actionReason("bb_vs_125", "fold", "draw"), /36%/);
   const reason = evidenceReason("call", { required: 0.25 }, 0.42);
   assert.match(reason, /42%/);
   assert.match(reason, /25%/);

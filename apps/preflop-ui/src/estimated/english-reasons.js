@@ -40,6 +40,125 @@ export const englishFactLabels = {
 
 export const englishEquityNote = "Raw equity estimates showdown chances. Realized equity uses an assumed equity-realization factor (EQR), which may exceed 1. Call EV does not fully model future investments or opponent strategy changes. These are AI estimates, not solver GTO output.";
 
+// English postflop explanations mirror the Japanese node/action/tier keys.
+// Numeric opponent-range evidence remains the primary explanation when present.
+export const englishPostflopReasons = {
+  btn_first: {
+    check: {
+      monster: "Checking some very strong hands leaves room for the opponent to bet.",
+      strong: "Checking controls the pot and protects the checking range with strong hands.",
+      draw: "Checking takes a free turn card to try to complete the draw.",
+      medium: "This hand has showdown value, so checking avoids building a large pot.",
+      air: "With little equity and few better hands likely to fold, checking gives up cheaply.",
+    },
+    bet33: {
+      monster: "A small bet can still be called by weaker hands.",
+      strong: "This is a thin value bet targeting weaker pairs and draws.",
+      draw: "A small semi-bluff can win now or improve after a call.",
+      medium: "A small bet protects the hand at lower cost and may fold out weaker hands.",
+      air: "When the opponent has many unmade hands, a small bet can seek folds at low cost.",
+    },
+    bet75: {
+      monster: "A large bet builds the pot with a very strong hand.",
+      strong: "A large bet charges draws while seeking value.",
+      draw: "A strong draw can use a large bet for fold pressure and upside when completed.",
+      medium: "Large bets with marginal hands are rare because mostly stronger hands continue.",
+      air: "Large bluffs are risky, so they appear only at low frequency.",
+    },
+    bet125: {
+      monster: "An overbet bigger than the pot maximizes value with a very strong hand.",
+      strong: "This size is too large for a top pair and is rarely used.",
+      draw: "Some strong draws use the larger size to put pressure on the opponent.",
+      medium: "There is little reason to overbet with a weak pair, so this size is not used.",
+      air: "A small number of bluffs are mixed with strong-hand overbets.",
+    },
+  },
+  bb_vs_33: {
+    fold: {
+      monster: "Very strong hands almost never fold here.", strong: "Strong made hands almost never fold here.",
+      draw: "Weak draws sometimes fold even against a small bet.",
+      medium: "Some weak pairs fold when the opponent bets this board frequently.",
+      air: "With very little equity, continuing has little justification.",
+    },
+    call: {
+      monster: "Calling lets the opponent keep bluffing and preserves value for later streets.",
+      strong: "Against a small bet, calling has sufficient value.",
+      draw: "The required equity is relatively low (about 20%), so this draw can continue.",
+      medium: "The small bet and low required equity allow a showdown-oriented call.",
+      air: "Only the limited chance to improve, such as with overcards, supports continuing.",
+    },
+    raise: {
+      monster: "A check-raise builds the pot for value.",
+      strong: "Some strong hands check-raise to charge draws.",
+      draw: "A semi-bluff raise can make the opponent fold now.",
+      medium: "Raising is rarely useful when mostly stronger hands continue.",
+      air: "Bluff raises are used only sparingly.",
+    },
+  },
+  bb_vs_75: {
+    fold: {
+      monster: "Very strong hands almost never fold here.",
+      strong: "Some top pairs with weak kickers fold against the larger bet.",
+      draw: "The higher required equity (about 30%) makes weak draws fold.",
+      medium: "Calling a large bet with a weak pair is often not worthwhile.",
+      air: "With very little equity, continuing has little justification.",
+    },
+    call: {
+      monster: "Calling controls the pot and lets the opponent keep bluffing.",
+      strong: "This hand can continue against much of the opponent's value range.",
+      draw: "Strong draws retain upside when they complete.",
+      medium: "Some calls remain to catch bluffs.",
+      air: "Most unmade hands fold; only some with backdoor improvement potential continue.",
+    },
+    raise: {
+      monster: "Raising a large pot seeks more value with a very strong hand.",
+      strong: "Some strong hands raise to charge draws.",
+      draw: "Some strong draws raise as semi-bluffs.",
+      medium: "This hand is generally unsuitable for a raise.",
+      air: "Bluff raises are used only sparingly.",
+    },
+  },
+  bb_vs_125: {
+    fold: {
+      monster: "Very strong hands do not fold.",
+      strong: "Against an overbet, some top pairs with weak kickers fold.",
+      draw: "The required equity is high (about 36%), so draws with little chance to improve fold.",
+      medium: "Weak pairs have difficulty continuing against a large bet, so most fold.",
+      air: "There is no reason to continue.",
+    },
+    call: {
+      monster: "Calling keeps the opponent's bluffs in and leaves room to win more later.",
+      strong: "Strong top pairs and better continue by calling even against a large bet.",
+      draw: "Strong draws continue because they can win a large pot when completed.",
+      medium: "Only a very small portion continues to catch the opponent's bluffs.",
+      air: "These hands do not continue.",
+    },
+    raise: {
+      monster: "With stacks nearing an all-in, raising takes the remaining value.",
+      strong: "Raises are used only rarely.",
+      draw: "Raises are used only rarely.",
+      medium: "This hand does not raise.",
+      air: "This hand does not raise.",
+    },
+  },
+  btn_vs_raise: {
+    fold: {
+      monster: "Very strong hands do not fold here.",
+      strong: "Because check-raises skew strong, some top pairs fold.",
+      draw: "Draws without sufficient odds fold to the raise.",
+      medium: "Weak pairs are usually behind once raised.",
+      air: "There is little reason to continue.",
+    },
+    call: {
+      monster: "Calling keeps strong hands in and preserves value for later streets.",
+      strong: "Calling continues against the opponent's possible semi-bluffs.",
+      draw: "Draws with enough upside can continue.",
+      medium: "Some calls remain to catch bluffs.",
+      air: "Unmade hands almost never continue.",
+    },
+  },
+};
+
 function handDescription(hand) {
   if (hand.length === 2) return `${hand} is ${"AKQJT".includes(hand[0]) ? "a high pocket pair with strong showdown potential" : "a pocket pair that can improve to a set"}`;
   if (hand.endsWith("s") && hand[0] === "A") return `${hand} is a suited ace with flush potential and an ace blocker`;
