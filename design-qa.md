@@ -257,5 +257,6 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Browser verification covered both directions and reload persistence. All 238 tests, the production build, Sites tests, lint, and typecheck passed.
 
 ## Single service-site URL (2026-09-28)
-- The Japanese-language route was retired. Service-site visits on old paths normalize to `/` while preserving query and hash; the stored language preference alone determines whether `/` shows English or Japanese.
-- Browser verification: opening the old path with `#pricing` immediately showed `/#pricing` in English; selecting Japanese and reloading stayed on `/` with Japanese copy and metadata. Switching back to English also stayed on `/`.
+- The Japanese-language route was retired. The stored language preference alone determines whether `/` shows English or Japanese. The former `/ja` route and its descendants return 404 rather than redirecting or serving the site, in both local development/preview and the published Sites worker.
+- Browser verification before the strict 404 follow-up: selecting Japanese and reloading stayed on `/` with Japanese copy and metadata. Switching back to English also stayed on `/`.
+- Strict-route verification at `http://127.0.0.1:5174`: `/ja`, `/ja/`, `/ja/pricing`, and `/%6a%61` returned 404 with no redirect; `/` and `/app` still returned 200. The Sites worker test also confirms the retired route is blocked before static serving or app fallback. Full tests, build, Sites tests, lint, and typecheck passed.

@@ -4,6 +4,16 @@ import { localEstimateMiddleware } from "./scripts/local-estimate.mjs";
 import { localPostflopMiddleware } from "./scripts/postflop-ai/local-view.mjs";
 import { handEvMiddleware } from "./scripts/postflop-ai/hand-ev.mjs";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { isRetiredJapanesePath } from "./worker/index.js";
+
+function rejectRetiredJapanesePath(req, res, next) {
+  const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
+  if (!isRetiredJapanesePath(pathname)) return next();
+  res.statusCode = 404;
+  res.setHeader("content-type", "text/plain; charset=utf-8");
+  res.setHeader("cache-control", "no-store");
+  res.end("Not Found");
+}
 
 // Admin dashboard: names of the locally generated postflop policies (gitignored, so empty in CI builds).
 const postflopArtifacts = { name: "postflop-artifacts",
@@ -40,7 +50,7 @@ export default defineConfig({
       clientFiles: ["./src/main.jsx"],
     },
   },
-  plugins: [react(), postflopArtifacts, { name: "local-codex-estimates", configureServer(server) {
+  plugins: [react(), postflopArtifacts, { name: "retired-japanese-route", configureServer(server) { server.middlewares.use(rejectRetiredJapanesePath); }, configurePreviewServer(server) { server.middlewares.use(rejectRetiredJapanesePath); } }, { name: "local-codex-estimates", configureServer(server) {
     server.middlewares.use(localEstimateMiddleware);
     server.middlewares.use(localPostflopMiddleware);
     server.middlewares.use(handEvMiddleware);

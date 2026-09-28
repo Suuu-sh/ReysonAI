@@ -5,16 +5,12 @@ import { en } from "./site/content.ts";
 import { ja } from "./site/content-ja.ts";
 import "./styles.css";
 import "./site/site.css";
-import { canonicalServiceSiteUrl, productLocale, rememberLocale } from "./locale.js";
+import { productLocale, rememberLocale } from "./locale.js";
 
 const ProductApp = lazy(() => import("./ProductApp.jsx"));
 const AdminDashboard = lazy(() => import("./admin/AdminDashboard.jsx"));
 const isAdminRoute = window.location.pathname === "/admin" || window.location.pathname.startsWith("/admin/");
 const isProductRoute = window.location.pathname === "/app" || window.location.pathname.startsWith("/app/");
-if (!isAdminRoute && !isProductRoute) {
-  const canonicalUrl = canonicalServiceSiteUrl(window.location);
-  if (canonicalUrl) window.history.replaceState(window.history.state, "", canonicalUrl);
-}
 const initialSiteLocale = productLocale();
 const copy = initialSiteLocale === "ja" ? ja : en;
 document.documentElement.lang = isAdminRoute ? "en" : isProductRoute ? productLocale() : initialSiteLocale;

@@ -8,10 +8,6 @@ export function productLocale() {
   catch { return "en"; }
 }
 
-export function canonicalServiceSiteUrl({ pathname, search = "", hash = "" }) {
-  return pathname === "/" ? null : `/${search}${hash}`;
-}
-
 export function rememberLocale(locale) {
   if (locale !== "en" && locale !== "ja") return;
   try { window.localStorage.setItem(LOCALE_KEY, locale); } catch {}

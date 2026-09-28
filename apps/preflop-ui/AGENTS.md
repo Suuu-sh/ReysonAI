@@ -6,7 +6,7 @@
 
 ## Service site (2026-09-25)
 - The marketing site lives at `/`; the existing preflop workspace and its local onboarding remain at `/app`. Keep these routes separate so landing-page work does not replace or alter persisted strategy behavior.
-- The service site uses an EN/日本語 switch in the header on `/`, switching language in place and remembering the choice in the shared browser locale preference. Do not maintain a separate Japanese-language route; normalize legacy service paths to `/` while retaining query and hash. Keep both languages structurally identical, localize every user-facing section and product-preview explanation, and set the document language and metadata by the selected language.
+- The service site uses an EN/日本語 switch in the header on `/`, switching language in place and remembering the choice in the shared browser locale preference. Do not maintain a separate Japanese-language route: `/ja` and its descendants must return 404 in both local preview and Sites, not redirect or fall back to the service site. Keep both languages structurally identical, localize every user-facing section and product-preview explanation, and set the document language and metadata by the selected language.
 - The hero range matrix should stay visually clean at small cell sizes: use a solid color for each hand's dominant action, not narrow split-color frequency stripes. Keep the underlying saved frequencies intact and available in the Standard selected-hand detail and each cell's accessible description.
 - The hero range preview offers a localized シンプル / スタンダード choice. Simple emphasizes the dominant action without visible percentages; Standard adds compact horizontal mix strips to mixed cells and the selected hand's exact action-frequency breakdown. Never bring back full-height split-color stripes, and keep the chosen preview mode across page reloads and the EN/日本語 switch.
 - Use the black/charcoal and restrained pink Solvea visual language. The hero must show an interactive 13×13 range plus a selected hand and explanation, using a compact projection of the persisted BTN-open and BB-vs-BTN data, not invented strategy rows.
@@ -19,7 +19,7 @@ Before making substantial visual changes, use the Product Design plugin's `get-c
 
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
 
-Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
+Build app UI in `src/`. Keep `.openai/hosting.json` and `scripts/prepare-sites-build.mjs` intact so the same local prototype can be handed to Sites. The explicit retired-route 404 guard is the only allowed change to `worker/index.js` and `tests/sites-worker.test.mjs` for this request. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
 
 ## Current visual and data source
 - Use the current black/pink SolveaAI branding direction, not the earlier GTOWizard screenshot.

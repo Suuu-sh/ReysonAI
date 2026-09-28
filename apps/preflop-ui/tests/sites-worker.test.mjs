@@ -1,7 +1,23 @@
 import assert from "node:assert/strict";
 import { access } from "node:fs/promises";
 import test from "node:test";
-import worker from "../worker/index.js";
+import worker, { isRetiredJapanesePath } from "../worker/index.js";
+
+test("retired Japanese paths return 404 before static assets or app fallback", async () => {
+  assert.equal(isRetiredJapanesePath("/ja"), true);
+  assert.equal(isRetiredJapanesePath("/ja/pricing"), true);
+  assert.equal(isRetiredJapanesePath("/%6a%61"), true);
+  assert.equal(isRetiredJapanesePath("/japan"), false);
+  for (const path of ["/ja", "/ja/", "/ja/pricing", "/%6a%61"]) {
+    let assetCalls = 0;
+    const response = await worker.fetch(new Request(`https://example.test${path}`, { headers: { accept: "text/html" } }), {
+      ASSETS: { fetch: async () => { assetCalls += 1; return new Response("site"); } },
+    });
+    assert.equal(response.status, 404);
+    assert.equal(await response.text(), "Not Found");
+    assert.equal(assetCalls, 0);
+  }
+});
 
 test("serves existing static assets without a fallback", async () => {
   const calls = [];

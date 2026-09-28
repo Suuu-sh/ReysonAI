@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { transform } from "esbuild";
-import { canonicalServiceSiteUrl, LOCALE_KEY, productLocale, rememberLocale } from "../src/locale.js";
+import { LOCALE_KEY, productLocale, rememberLocale } from "../src/locale.js";
 
 async function loadCopy(file, exportName) {
   const source = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");
@@ -27,7 +27,7 @@ test("Japanese service-site copy covers every English field", async () => {
   assert.equal(ja.pricing.plans[1].href, null);
 });
 
-test("the root site remembers its language and old paths canonicalize to root", () => {
+test("the root site remembers its language without a separate route", () => {
   const previousWindow = globalThis.window;
   const values = new Map();
   globalThis.window = { localStorage: { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) } };
@@ -38,9 +38,6 @@ test("the root site remembers its language and old paths canonicalize to root", 
     assert.equal(productLocale(), "ja");
     rememberLocale("en");
     assert.equal(productLocale(), "en");
-    assert.equal(canonicalServiceSiteUrl({ pathname: "/" }), null);
-    assert.equal(canonicalServiceSiteUrl({ pathname: "/ja", hash: "#pricing" }), "/#pricing");
-    assert.equal(canonicalServiceSiteUrl({ pathname: "/ja/pricing", search: "?source=old" }), "/?source=old");
   } finally {
     globalThis.window = previousWindow;
   }
