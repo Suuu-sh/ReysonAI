@@ -1,7 +1,7 @@
 import { ArrowClockwise, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.js";
 import { drillStats } from "./drill-store.js";
-import { RANKED_DAILY_LIMIT, RANKED_LENGTH, TIER_EN, playedToday, tierFor } from "./rank-store.js";
+import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIER_EN, playedToday, tierFor } from "./rank-store.js";
 import { localized } from "../locale.js";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
@@ -94,7 +94,7 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
         {bestDrill && <div><dt><Trophy size={12} weight="fill" />ベスト</dt><dd>{pct(bestDrill.best)}<small>{bestDrill.drill.name}</small></dd></div>}
       </dl>
     </div>
-    {rank && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} />}
+    {rank && RANKED_ENABLED && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} />}
     <div className="drill-grid">
       {(reviewCount > 0 || drafts.review) && <article className={`drill-card review${drafts.review ? " in-progress" : ""}`}>
         <header><div><h3>復習ドリル</h3><ul className="drill-tags"><li>以前ミスしたハンドだけ</li></ul></div></header>

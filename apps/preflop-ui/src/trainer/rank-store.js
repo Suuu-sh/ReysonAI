@@ -3,6 +3,8 @@
 import { normalizeSettings } from "./trainer-data.js";
 
 const KEY = "solveaai.trainer.ranked.v1";
+// Locked in production builds until launch; only the dev server shows ranked matches and the leaderboard.
+export const RANKED_ENABLED = Boolean(import.meta.env?.DEV);
 export const RANKED_LENGTH = 20;
 export const RANKED_DAILY_LIMIT = 3;
 export const START_RATING = 1000;

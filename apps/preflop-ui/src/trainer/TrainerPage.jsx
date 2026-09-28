@@ -14,7 +14,7 @@ import { DrillLibrary, HistoryChart } from "./DrillLibrary.jsx";
 import { PlayerAnalysis } from "./PlayerAnalysis.jsx";
 import { SessionPage } from "./SessionPage.jsx";
 import { loadReviewSessions, newSessionRecord, recordReviewSession } from "./practice-sessions.js";
-import { RANKED_DAILY_LIMIT, RANKED_LENGTH, RANKED_SETTINGS, loadRankState, playedToday, recordMatch, saveRankState, TIER_EN, tierFor } from "./rank-store.js";
+import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, RANKED_SETTINGS, loadRankState, playedToday, recordMatch, saveRankState, TIER_EN, tierFor } from "./rank-store.js";
 import { Leaderboard } from "./Leaderboard.jsx";
 import "./trainer.css";
 import { localized } from "../i18n.js";
@@ -536,7 +536,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
             onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("library")}
             onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("library"); }} />
-        : phase === "ranking" ? <Leaderboard rank={rankState} profile={profile} onBack={() => setPhase("library")} />
+        : phase === "ranking" && RANKED_ENABLED ? <Leaderboard rank={rankState} profile={profile} onBack={() => setPhase("library")} />
         : phase === "result" && result ? <SessionResult log={result.log} record={result.record} rank={result.rank} settings={current.settings} drill={active.review ? null : current}
             onRestart={active.ranked && (playedToday(rankState) >= RANKED_DAILY_LIMIT) ? null : () => start(current, active.review)} onLibrary={() => setPhase("library")} />
         : phase === "drill" && current ? <Drill key={run} history={history} onAnswer={onAnswer} settings={current.settings} drillName={current.name} reviewOnly={active.review}
