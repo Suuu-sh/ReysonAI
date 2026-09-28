@@ -260,3 +260,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - The Japanese-language route was retired. The stored language preference alone determines whether `/` shows English or Japanese. The former `/ja` route and its descendants return 404 rather than redirecting or serving the site, in both local development/preview and the published Sites worker.
 - Browser verification before the strict 404 follow-up: selecting Japanese and reloading stayed on `/` with Japanese copy and metadata. Switching back to English also stayed on `/`.
 - Strict-route verification at `http://127.0.0.1:5174`: `/ja`, `/ja/`, `/ja/pricing`, and `/%6a%61` returned 404 with no redirect; `/` and `/app` still returned 200. The Sites worker test also confirms the retired route is blocked before static serving or app fallback. Full tests, build, Sites tests, lint, and typecheck passed.
+
+## Admin sidebar link (2026-09-28)
+- Added an accessible Admin link in the `/app` primary sidebar, with a visible label when expanded and an icon plus accessible name when collapsed. It navigates to the existing `/admin` dashboard rather than creating another app section.
+- Browser accessibility inspection at `http://127.0.0.1:5174/app` showed the English “Admin dashboard” link targeting `/admin`. Both `/app` and `/admin` returned HTTP 200. All 244 UI tests, the production build, 5 Sites tests, lint, and typecheck passed. The existing large-chunk build warning remains.
