@@ -125,12 +125,15 @@ function mixRows({ actor, role, board, node, line, inputs, flopPolicy, laterPoli
     if (riverSteps) combos = scaleLaterPath(combos, role, riverSteps, laterPolicy, riverBoard, riverPreviousAggressor);
     const totals = Object.fromEntries(actions.map(action => [action, 0]));
     const tiers = Object.fromEntries(TIERS.map(tier => [tier, 0]));
+    const detail = [];
     let weightTotal = 0;
     for (const item of combos) {
       if (!item.weight) continue;
       const rawTier = handTier(item.combo, board);
       const tier = rawTier === "draw" && node.startsWith("river_") ? "medium" : rawTier;
       const mix = laterPolicyMix(laterPolicy, node, item.combo, board, line);
+      detail.push({ cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
+        mix: Object.fromEntries(actions.map(action => [action, mix[action] / 100])) });
       weightTotal += item.weight;
       tiers[tier] += item.weight;
       for (const action of actions) totals[action] += item.weight * mix[action] / 100;
@@ -138,8 +141,9 @@ function mixRows({ actor, role, board, node, line, inputs, flopPolicy, laterPoli
     const tier = Object.entries(tiers).reduce((best, item) => item[1] > best[1] ? item : best, ["air", -1])[0];
     const averaged = Object.fromEntries(actions.map(action => [action, weightTotal ? totals[action] / weightTotal : 0]));
     const mixTotal = Object.values(averaged).reduce((sum, value) => sum + value, 0);
-    return { hand: row.hand, reachable: weightTotal > 0, tier,
-      mix: Object.fromEntries(actions.map(action => [action, mixTotal ? averaged[action] / mixTotal : 0])) };
+    return { hand: row.hand, reachable: weightTotal > 0, tier, comboCount: detail.length, reachWeight: weightTotal,
+      tiers: Object.fromEntries(TIERS.map(name => [name, weightTotal ? tiers[name] / weightTotal : 0])),
+      mix: Object.fromEntries(actions.map(action => [action, mixTotal ? averaged[action] / mixTotal : 0])), combos: detail };
   });
 }
 

@@ -242,6 +242,11 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Browser verification on `/app`: BTN open → BB call → Flop `As 7d 2c` → Check opened Select turn. Closing it left the pending Turn view stable; reopening and selecting `Kh`, then Check → Check opened Select river.
 - Typecheck, all 286 UI tests, production build, and all 5 Sites tests passed.
 
+## Turn/River combo-level hand detail (2026-09-30)
+- Turn and River now use the Flop detail structure: an entire-range summary, a hand-class Average, and selectable exact suit combinations. Each combo retains its own reachable weight, tier, action mix, and exact-combo explanation; hand-class EV is suppressed while a combo is selected.
+- Browser verification on `/app`: Turn showed the suit grid; selecting `A♥ K♠` displayed that exact combo and its numeric explanation. After Turn Check → Check, the River card modal opened automatically. Selecting `2♦` showed the River entire-range and hand-average panels plus reachable suit combinations.
+- `npm run typecheck`, all 286 UI tests, `npm run build`, and all 5 Sites tests passed. The local preview remained available at `http://127.0.0.1:5173/app`.
+
 ## Resume interrupted trainer drills (2026-09-27)
 - The trainer now autosaves the current question, selected answer, score, streak and elapsed practice time in browser storage. Leaving the table or reloading the app keeps the draft; the drill library marks it `途中保存` and offers `続きから`. Completing or explicitly ending a drill removes the draft; review drills remain outside per-drill accuracy records.
 - Browser verification at `http://127.0.0.1:5174/app`: answered a question, returned to the library, and resumed the same hand with its answer/verdict intact. Reloading the app retained the draft and `続きから` entry.

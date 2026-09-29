@@ -378,11 +378,26 @@ test("later decision projections return 169 normalized rows without weighting op
   const view = buildLaterView({ flop: "As7d2c", flopActions: "bet33,call", turn: "Kh" }, inputs, flopCandidate, laterCandidate);
   assert.deepEqual([view.kind, view.street, view.node, view.actor, view.line, view.rows.length], ["ai_estimate_not_gto", "turn", "turn_oop_first", "BB", "defender", 169]);
   for (const row of view.rows) {
-    if (row.reachable) assert.ok(Math.abs(Object.values(row.mix).reduce((sum, value) => sum + value, 0) - 1) < 1e-10, row.hand);
-    assert.ok(!("combo" in row) && !("opponentHand" in row));
+    if (row.reachable) {
+      assert.ok(Math.abs(Object.values(row.mix).reduce((sum, value) => sum + value, 0) - 1) < 1e-10, row.hand);
+      assert.ok(Math.abs(Object.values(row.tiers).reduce((sum, value) => sum + value, 0) - 1) < 1e-10, row.hand);
+    }
+    assert.equal(row.comboCount, row.combos.length);
+    assert.ok(Math.abs(row.reachWeight - row.combos.reduce((sum, combo) => sum + combo.weight, 0)) < 1e-10, row.hand);
+    assert.ok(row.combos.every(combo => combo.weight > 0 && combo.cards.length === 4 && !["As", "7d", "2c", "Kh"].includes(combo.cards.slice(0, 2)) && !["As", "7d", "2c", "Kh"].includes(combo.cards.slice(2))), row.hand);
+    for (const action of Object.keys(row.mix)) {
+      const weighted = row.combos.reduce((sum, combo) => sum + combo.weight * combo.mix[action], 0);
+      assert.ok(Math.abs((row.reachWeight ? weighted / row.reachWeight : 0) - row.mix[action]) < 1e-10, `${row.hand}/${action}`);
+    }
   }
+  assert.ok(view.rows.some(row => row.combos.length > 1 && new Set(row.combos.map(combo => combo.cards.slice(1, 2))).size > 1));
   const riverView = buildLaterView({ flop: "As7d2c", flopActions: "bet33,call", turn: "Kh", turnActions: "check,check", river: "2d" }, inputs, flopCandidate, laterCandidate);
   assert.deepEqual([riverView.street, riverView.node, riverView.actor, riverView.line, riverView.texture, riverView.rows.length], ["river", "river_oop_first", "BB", "checked", "pair", 169]);
+  assert.ok(riverView.rows.every(row => row.combos.every(combo => ![combo.cards.slice(0, 2), combo.cards.slice(2)].includes("2d"))));
+  const suitedTurn = buildLaterView({ flop: "Js8s5d", flopActions: "bet33,call", turn: "2s" }, inputs, flopCandidate, laterCandidate);
+  assert.ok(suitedTurn.rows.some(row => new Set(row.combos.map(combo => JSON.stringify(combo.mix))).size > 1), "turn policy retains suit-specific mixes");
+  const suitedRiver = buildLaterView({ flop: "Js8s5d", flopActions: "bet33,call", turn: "2s", turnActions: "check,check", river: "2d" }, inputs, flopCandidate, laterCandidate);
+  assert.ok(suitedRiver.rows.some(row => new Set(row.combos.map(combo => JSON.stringify(combo.mix))).size > 1), "river policy retains suit-specific mixes");
 
   const coInputs = loadInputs("CO_open_BTN_call");
   const leads = referencePolicyFor("oop_leads");
