@@ -55,3 +55,14 @@ test("TODO priority follows BTN-BB heads-up, other heads-up, then multiway", asy
   assert.equal(priorities.reduce((total, priority) => total + priority.total, 0), preflop.total + postflop.total);
   assert.equal(priorities.reduce((total, priority) => total + priority.todo, 0), preflop.todo + postflop.todo);
 });
+
+test("hand-EV counts as done only while it matches the current policies", async () => {
+  const { postflopCatalog } = await import("../src/admin/coverage.ts");
+  const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.mjs");
+  const spot = POSTFLOP_SPOTS.find(item => item.id === "BTN_open_BB_call");
+  const status = value => postflopCatalog([spot], { [`${spot.slug}-hand-ev.json`]: value })
+    .categories.find(category => category.key === "hand_ev_srp").rows[0].status;
+  assert.equal(status("fresh"), "done");
+  assert.equal(status(null), "todo");
+  assert.equal(postflopCatalog([spot], {}).categories.find(category => category.key === "hand_ev_srp").rows[0].status, "todo");
+});

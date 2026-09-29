@@ -128,13 +128,16 @@ const POT_KINDS = [["srp", "シングルレイズポット"], ["3bp", "3betポ�
 const STAGES = [
   { street: "flop", label: "フロップ", suffix: "-policy.json" },
   { street: "turn_river", label: "ターン/リバー", suffix: "-later-policy.json" },
+  // Per-hand action EV shown in the app; done only when it matches the current policies.
+  { street: "hand_ev", label: "手ごとのEV", suffix: "-hand-ev.json", freshness: true },
 ];
 
 export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
   const counts = {};
-  for (const hash of Object.values(artifactHashes)) if (hash) counts[hash] = (counts[hash] ?? 0) + 1;
-  const statusOf = (spot, name) => {
+  for (const hash of Object.values(artifactHashes)) if (hash && hash !== "fresh") counts[hash] = (counts[hash] ?? 0) + 1;
+  const statusOf = (spot, name, stage) => {
     if (!(name in artifactHashes)) return "todo";
+    if (stage.freshness) return artifactHashes[name] === "fresh" ? "done" : "todo";
     const hash = artifactHashes[name];
     return authoredIds.includes(spot.id) || (hash && counts[hash] === 1) ? "done" : "copy";
   };
@@ -142,7 +145,7 @@ export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
   const categories = STAGES.flatMap(stage => POT_KINDS.map(([kind, kindLabel]) => {
     const rows = reachable.filter(spot => spot.kind === kind).map(spot => ({
       id: spot.id, hero: `${spot.ip} vs ${spot.oop}`, path: `${kindLabel} · ${spot.ip} IP / ${spot.oop} OOP`,
-      category: `${stage.street}_${kind}`, priority: postflopPriority(spot), status: statusOf(spot, `${spot.slug}${stage.suffix}`), street: stage.street,
+      category: `${stage.street}_${kind}`, priority: postflopPriority(spot), status: statusOf(spot, `${spot.slug}${stage.suffix}`, stage), street: stage.street,
     }));
     const done = rows.filter(row => row.status === "done").length;
     return { key: `${stage.street}_${kind}`, label: `${stage.label} · ${kindLabel}`, file: `.local/postflop-ai/*${stage.suffix}`, street: stage.street,

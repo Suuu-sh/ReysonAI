@@ -26,6 +26,14 @@ const postflopArtifacts = { name: "postflop-artifacts",
     for (const name of existsSync(dir) ? readdirSync(dir).filter(name => /-(later-)?policy\.json$/.test(name)) : []) {
       try { hashes[name] = JSON.parse(readFileSync(new URL(`./.local/postflop-ai/${name}`, import.meta.url), "utf8")).metadata?.policy_hash ?? null; } catch { hashes[name] = null; }
     }
+    // Hand-EV files count only while they match the spot's current flop and turn/river policies
+    // ("fresh"); a stale or missing one stays TODO.
+    const read = name => { try { return JSON.parse(readFileSync(new URL(`./.local/postflop-ai/${name}`, import.meta.url), "utf8")); } catch { return null; } };
+    for (const name of existsSync(dir) ? readdirSync(dir).filter(name => /-hand-ev\.json$/.test(name)) : []) {
+      const slug = name.replace(/-hand-ev\.json$/, ""), ev = read(name);
+      const flop = hashes[`${slug}-policy.json`], later = hashes[`${slug}-later-policy.json`];
+      hashes[name] = ev && flop && ev.policy_hash === flop && (!later || ev.later_policy_hash === later) ? "fresh" : null;
+    }
     return `export default ${JSON.stringify(hashes)};`;
   } };
 
