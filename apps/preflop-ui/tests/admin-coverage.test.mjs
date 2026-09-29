@@ -35,7 +35,7 @@ test("postflop backlog lists flop and turn/river policies for every reachable sp
   assert.equal(catalog.done + catalog.todo, catalog.total);
 });
 
-test("TODO priority follows BTN-BB heads-up, other heads-up, then multiway", async () => {
+test("TODO priority follows BTN-BB heads-up, other heads-up, release prep, then multiway", async () => {
   const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.mjs");
   const preflop = coverageCatalog();
   const postflop = postflopCatalog(POSTFLOP_SPOTS);
@@ -47,11 +47,12 @@ test("TODO priority follows BTN-BB heads-up, other heads-up, then multiway", asy
   assert.deepEqual(new Set(postflopRows.filter(row => row.priority === 1).map(row => row.id)), new Set([
     "BTN_open_BB_call", "BTN_open_BB_3bet_call", "BTN_open_BB_4bp_call",
   ]));
-  assert.ok(preflopRows.filter(row => ["multiway", "squeeze", "cold_three_bet", "cold_four_bet"].includes(row.category)).every(row => row.priority === 3));
-  assert.ok(postflopRows.filter(row => row.category === "postflop_multiway").every(row => row.priority === 3));
+  assert.ok(preflopRows.filter(row => ["multiway", "squeeze", "cold_three_bet", "cold_four_bet"].includes(row.category)).every(row => row.priority === 4));
+  assert.ok(postflopRows.filter(row => row.category === "postflop_multiway").every(row => row.priority === 4));
+  assert.ok(postflopRows.filter(row => ["release_tasks"].includes(row.category) || row.category.startsWith("turn_river_reasons") || row.category.startsWith("turn_river_ev")).every(row => row.priority === 3));
   assert.equal(preflopRows.find(row => row.id === "BB_vs_SB_limp").priority, 2);
   const priorities = priorityBacklog(preflop, postflop);
-  assert.deepEqual(priorities.map(priority => priority.value), [1, 2, 3]);
+  assert.deepEqual(priorities.map(priority => priority.value), [1, 2, 3, 4]);
   assert.equal(priorities.reduce((total, priority) => total + priority.total, 0), preflop.total + postflop.total);
   assert.equal(priorities.reduce((total, priority) => total + priority.todo, 0), preflop.todo + postflop.todo);
 });

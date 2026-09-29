@@ -10,8 +10,8 @@ const reasonIds = new Set(Object.keys(import.meta.glob("../estimated/reasons/*.j
 // Spots with a hand-authored rules module (scripts/postflop-ai/authored/<slug>.mjs) own their policy.
 const authoredSlugs = Object.keys(import.meta.glob("../../scripts/postflop-ai/authored/*.mjs")).map(path => path.split("/").pop().replace(".mjs", "-v1"));
 const authoredIds = POSTFLOP_SPOTS.filter(spot => authoredSlugs.includes(spot.slug)).map(spot => spot.id);
-const STREETS = { preflop: "プリフロップ", flop: "フロップ", turn_river: "ターン/リバー", hand_ev: "手ごとのEV" };
-const STREET_ORDER = { preflop: 0, flop: 1, turn_river: 2, hand_ev: 3 };
+const STREETS = { preflop: "プリフロップ", flop: "フロップ", turn_river: "ターン/リバー", hand_ev: "手ごとのEV", turn_river_reasons: "ターン/リバー理由文", turn_river_ev: "ターン/リバー手ごとのEV", release: "リリース" };
+const STREET_ORDER = { preflop: 0, flop: 1, turn_river: 2, hand_ev: 3, turn_river_reasons: 4, turn_river_ev: 5, release: 6 };
 const FILTERS = [["all", "すべて"], ["todo", "TODO"], ["done", "作成済み"], ["no_reason", "理由なし"]];
 
 function Meter({ done, total }) {

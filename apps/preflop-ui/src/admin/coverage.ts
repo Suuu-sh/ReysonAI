@@ -24,14 +24,15 @@ const headsUp = RFI.flatMap(opener => after(opener).map(hero => ({ opener, hero 
 export const PRIORITIES = Object.freeze([
   { value: 1, label: "P1", title: "BTN vs BB", scope: "BTNオープン対BBのプリフロップ全分岐（5bet終端を含む）を起点に、SRP・3bet・4betを全ボード・全アクション分岐でリバーまで対応する。" },
   { value: 2, label: "P2", title: "その他のヘッズアップ", scope: "残りの全ヘッズアップを、SRP・3bet・4bet・リンプと全ボード・全アクション分岐を含めてプリフロップからリバーまで対応する。" },
-  { value: 3, label: "P3", title: "マルチウェイ", scope: "ヘッズアップ完成後に、複数コーラー・スクイーズ・コールド4betとマルチウェイのポストフロップに対応する。" },
+  { value: 3, label: "R", title: "リリース準備", scope: "ヘッズアップのポストフロップをD1から本番配信し、ターン・リバーの精密な理由文と手ごとのEVを入れる。「GTOではない」表示は利用規約のみ（2026-09-29 決定）。" },
+  { value: 4, label: "P3", title: "マルチウェイ", scope: "リリース後に、複数コーラー・スクイーズ・コールド4betとマルチウェイのポストフロップに対応する。" },
 ]);
 
 const BTN_BB_PREFLOP = new Set(["BTN_open", "BB_vs_BTN", "BTN_vs_BB_three_bet", "BB_vs_BTN_four_bet", "BTN_vs_BB_five_bet"]);
 const HEADS_UP_PREFLOP = new Set(["open", "response", "three_bet", "four_bet", "five_bet", "limp", "limp_deep"]);
 export function preflopPriority(category, id) {
   if (BTN_BB_PREFLOP.has(id)) return 1;
-  return HEADS_UP_PREFLOP.has(category) ? 2 : 3;
+  return HEADS_UP_PREFLOP.has(category) ? 2 : 4;
 }
 
 export function postflopPriority(spot) {
@@ -130,7 +131,16 @@ const STAGES = [
   { street: "turn_river", label: "ターン/リバー", suffix: "-later-policy.json" },
   // Per-hand action EV shown in the app; done only when it matches the current policies.
   { street: "hand_ev", label: "手ごとのEV", suffix: "-hand-ev.json", freshness: true },
+  // Release preparation (priority R): precise turn/river reasons and turn/river hand-EV per spot.
+  { street: "turn_river_reasons", label: "ターン/リバー理由文", suffix: "-later-reasons.json", freshness: true, priority: 3 },
+  { street: "turn_river_ev", label: "ターン/リバー手ごとのEV", suffix: "-later-hand-ev.json", freshness: true, priority: 3 },
 ];
+
+// One-off release tasks without per-spot files. Update `done` when the task lands.
+export const RELEASE_TASKS = Object.freeze([
+  { id: "release_d1", hero: "—", path: "Cloudflare D1 に方針・手ごとのEV・理由文を入れ、solveaai-edge-api から本番配信（ローカル専用 middleware を置き換え）", done: false },
+  { id: "release_no_gto_ui", hero: "—", path: "「GTOではない / AI推定」表示をUIから外し、利用規約だけに残す", done: false },
+]);
 
 export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
   const counts = {};
@@ -145,7 +155,7 @@ export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
   const categories = STAGES.flatMap(stage => POT_KINDS.map(([kind, kindLabel]) => {
     const rows = reachable.filter(spot => spot.kind === kind).map(spot => ({
       id: spot.id, hero: `${spot.ip} vs ${spot.oop}`, path: `${kindLabel} · ${spot.ip} IP / ${spot.oop} OOP`,
-      category: `${stage.street}_${kind}`, priority: postflopPriority(spot), status: statusOf(spot, `${spot.slug}${stage.suffix}`, stage), street: stage.street,
+      category: `${stage.street}_${kind}`, priority: stage.priority ?? postflopPriority(spot), status: statusOf(spot, `${spot.slug}${stage.suffix}`, stage), street: stage.street,
     }));
     const done = rows.filter(row => row.status === "done").length;
     return { key: `${stage.street}_${kind}`, label: `${stage.label} · ${kindLabel}`, file: `.local/postflop-ai/*${stage.suffix}`, street: stage.street,
@@ -153,7 +163,12 @@ export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
   }));
   // Multiway pots have no postflop model yet: one row per saved multiway preflop spot.
   const multiwayRows = spotsOf(multiway).map(spot => ({ id: `${spot.id}_postflop`, hero: spot.hero, path: `${spot.id} のマルチウェイ・フロップ以降`,
-    category: "postflop_multiway", priority: 3, status: "todo", street: "flop" }));
+    category: "postflop_multiway", priority: 4, status: "todo", street: "flop" }));
+  const releaseRows = RELEASE_TASKS.map(task => ({ id: task.id, hero: task.hero, path: task.path, category: "release_tasks",
+    priority: 3, status: task.done ? "done" : "todo", street: "release" }));
+  categories.push({ key: "release_tasks", label: "リリース作業", file: null, street: "release", modelled: true,
+    rows: releaseRows, done: releaseRows.filter(row => row.status === "done").length, total: releaseRows.length,
+    todo: releaseRows.filter(row => row.status !== "done").length });
   categories.push({ key: "postflop_multiway", label: "マルチウェイ・ポストフロップ", file: null, street: "flop", modelled: false,
     rows: multiwayRows, done: 0, total: multiwayRows.length, todo: multiwayRows.length });
   const done = categories.reduce((sum, c) => sum + c.done, 0);
