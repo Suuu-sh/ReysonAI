@@ -237,6 +237,11 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Browser verification at `http://127.0.0.1:5173/app`: the completed BTN→BB path opened the modal, `As 7d 2c` appeared in the compact row block, and the BTN flop range remained visible. The obstructing inline selection panel was absent.
 - Focused postflop tests passed (9/9); typecheck, production build and Sites tests passed. The full run passed 171/172; its sole failure was the existing 4bet UI title assertion after separate saved-data changes. Vite still reports its large-chunk warning.
 
+## Automatic Turn and River card selection (2026-09-29)
+- Completing an eligible Flop or Turn action now opens the next street's card-selection modal without clicking the board block. The board block still reopens it after dismissal; dismissing an unchanged pending street does not immediately reopen it.
+- Browser verification on `/app`: BTN open → BB call → Flop `As 7d 2c` → Check opened Select turn. Closing it left the pending Turn view stable; reopening and selecting `Kh`, then Check → Check opened Select river.
+- Typecheck, all 286 UI tests, production build, and all 5 Sites tests passed.
+
 ## Resume interrupted trainer drills (2026-09-27)
 - The trainer now autosaves the current question, selected answer, score, streak and elapsed practice time in browser storage. Leaving the table or reloading the app keeps the draft; the drill library marks it `途中保存` and offers `続きから`. Completing or explicitly ending a drill removes the draft; review drills remain outside per-drill accuracy records.
 - Browser verification at `http://127.0.0.1:5174/app`: answered a question, returned to the library, and resumed the same hand with its answer/verdict intact. Reloading the app retained the draft and `続きから` entry.

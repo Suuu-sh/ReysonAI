@@ -793,6 +793,14 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
+  const pendingStreetCard = flopActive ? laterBlocks.find(block => block.kind === "board" && block.pending)?.street ?? null : null;
+  const previousPendingStreetCard = useRef(null);
+  useEffect(() => {
+    if (pendingStreetCard && pendingStreetCard !== previousPendingStreetCard.current) {
+      setStreetCardDialog(pendingStreetCard);
+    }
+    previousPendingStreetCard.current = pendingStreetCard;
+  }, [pendingStreetCard]);
   const combinedBlocks = flopActive
     ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop" },
       ...(flopContext.pilotAvailable && flopBoard
