@@ -98,9 +98,10 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     const key = version ? new Request(`${url.origin}${url.pathname}?${url.searchParams}&dataset=${version}`) : null;
     const hit = key ? await cache!.match(key) : undefined;
     if (hit) return hit;
-    const { status, body } = await routePostflop(env.POSTFLOP_DB, url.pathname, url.searchParams);
+    const { status, body, text } = await routePostflop(env.POSTFLOP_DB, url.pathname, url.searchParams);
     if (status !== 200) return errorResponse(status, String((body as JsonRecord).error ?? "error"));
-    const response = json(body, { cacheControl: "public, max-age=300, s-maxage=86400" });
+    const response = text == null ? json(body, { cacheControl: "public, max-age=300, s-maxage=86400" })
+      : new Response(text, { status: 200, headers: { ...JSON_HEADERS, "cache-control": "public, max-age=300, s-maxage=86400" } });
     if (key) await cache!.put(key, response.clone());
     return response;
   }

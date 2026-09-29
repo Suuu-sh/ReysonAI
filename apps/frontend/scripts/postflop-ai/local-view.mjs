@@ -1,5 +1,5 @@
 // Read-only local preview of the audited pilot. Never generates or publishes a policy.
-import { boards, comboRange, loadInputs, requireArtifact } from "./inputs.mjs";
+import { boards, comboRange, loadInputs, readArtifact, requireArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { NODES, nodeRole, policyMix, scaleByPath, treeNodes, validatePolicy } from "./policy.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
@@ -189,7 +189,7 @@ export function buildLaterView({ flop, flopActions = "", turn = "", turnActions 
     texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows };
 }
 
-export const LOCAL_POSTFLOP_ROUTES = ["/local-postflop", "/local-postflop-explain", "/local-postflop-later",
+export const LOCAL_POSTFLOP_ROUTES = ["/local-postflop-spot", "/local-postflop", "/local-postflop-explain", "/local-postflop-later",
   "/local-postflop-later-explain", "/local-postflop-later-hand-ev"];
 
 // The response of one read-only postflop route as { status, body }. Shared by the Vite
@@ -209,6 +209,11 @@ export function postflopResponse(pathname, params) {
     if (report.source_hash !== inputs.fingerprint || report.policy_hash !== candidate.metadata.policy_hash ||
         report.simulation_version !== SIMULATION_VERSION || report.spot !== inputs.spot.id || report.results?.length !== 72) {
       throw new Error("候補に対応する最新の監査レポートがありません。");
+    }
+    if (pathname === "/local-postflop-spot") {
+      // Same body as the worker's /v1/postflop/spot: the artifacts the browser computes from.
+      return { status: 200, body: { kind: "ai_estimate_not_gto", spot: inputs.spot, candidate,
+        laterCandidate: readArtifact(inputs.spot, "laterCandidate"), report } };
     }
     if (pathname === "/local-postflop-later-hand-ev" && !params.has("key")) {
       // On-demand EV of one hand at the current turn/river decision (deterministic per input).

@@ -38,10 +38,14 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
 
 ## ポストフロップAI方針（D1）
 
-`/v1/postflop/{board|explain|later|later-explain|later-hand-ev|hand-ev}?spot=...` は、
-apps/frontend のローカル表示（`/local-postflop*`）と同じ本文を D1 `evionai-postflop` から返します。
-計算コードは `apps/frontend/scripts/postflop-ai` を共有し、ファイル読み込みだけを D1 の行に差し替えます。
-`/v1/postflop/spots` は公開中のスポットと方針ハッシュの一覧です。AI推定でありGTOではありません。
+Worker は D1 `evionai-postflop` を読んで返すだけです。表示の計算（盤面・ターン/リバー・根拠・
+手ごとのEV）はブラウザで行います。計算は1回17〜63msかかり、Workers Free の CPU 上限 10ms を超えるためです。
+
+- `GET /v1/postflop/spots` 公開中のスポットと方針ハッシュ
+- `GET /v1/postflop/spot?spot=<id>` `{ kind, spot, candidate, laterCandidate, report }`（公開時のファイルをそのまま返す）
+- `GET /v1/postflop/hand-ev?spot=<id>&board=<flop>&history=<a,b>&hand=<AKo>` フロップの手ごとのEV。`hand` を省くと `{ spot, header, node }`
+
+どれも AI 推定で、GTO ではありません。ローカルでは apps/frontend の Vite の `/local-postflop-spot` と `/local-postflop-hand-ev` が同じ本文を返します。
 
 公開手順（1・3行目は apps/backend、2行目は apps/frontend で実行）:
 
