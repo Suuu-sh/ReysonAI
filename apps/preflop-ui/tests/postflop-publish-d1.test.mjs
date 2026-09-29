@@ -6,7 +6,7 @@ import { postflopUrl } from "../src/estimated/postflop-api.ts";
 const spot = { id: "X_open_Y_call", slug: "x-y-srp-v1", kind: "srp", tree: "oop_checks", ip: "Y", oop: "X", potBb: 5.5, stackBb: 97.5, note: "it's" };
 const candidate = { metadata: { policy_hash: "h1" }, policy: {} };
 const entry = { spot, candidate, laterCandidate: null, report: { ok: true },
-  handEv: { kind: "k", boards: { As7d2c: { "": { node: "a" }, bet33: { node: "b" } } } }, laterHandEv: null };
+  handEv: { kind: "k", boards: { As7d2c: { "": { node: "a" }, bet33: { node: "b" } } } } };
 
 test("publish SQL replaces every row, escapes quotes and records the dataset version", () => {
   const sql = buildSql([entry], "2026-09-29T00:00:00Z");
