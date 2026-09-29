@@ -20,5 +20,5 @@ bash tests/solution-promotion-e2e.sh
 Test the Cloudflare Worker contract with a mocked R2 binding:
 
 ```bash
-npm test --prefix apps/solveaai-edge-api
+npm test --prefix apps/backend
 ```

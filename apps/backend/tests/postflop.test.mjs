@@ -3,10 +3,10 @@ import { existsSync } from "node:fs";
 import test from "node:test";
 import worker from "../src/index.ts";
 import { assembleHandEv } from "../src/postflop.ts";
-import { handEvRows, spotArtifacts } from "../../preflop-ui/scripts/postflop-ai/publish-d1.mjs";
-import { postflopResponse } from "../../preflop-ui/scripts/postflop-ai/local-view.mjs";
-import { boards, useArtifactSource } from "../../preflop-ui/scripts/postflop-ai/inputs.mjs";
-import { spotById } from "../../preflop-ui/scripts/postflop-ai/spots.mjs";
+import { handEvRows, spotArtifacts } from "../../frontend/scripts/postflop-ai/publish-d1.mjs";
+import { postflopResponse } from "../../frontend/scripts/postflop-ai/local-view.mjs";
+import { boards, useArtifactSource } from "../../frontend/scripts/postflop-ai/inputs.mjs";
+import { spotById } from "../../frontend/scripts/postflop-ai/spots.mjs";
 
 // In-memory D1 that answers the worker's three per-spot queries and the spot listing.
 function mockDb(tables) {
@@ -62,7 +62,7 @@ function fromFiles(read) {
 }
 
 const spot = spotById("BTN_open_BB_call");
-const local = existsSync(new URL(`../../preflop-ui/.local/postflop-ai/${spot.slug}-policy.json`, import.meta.url));
+const local = existsSync(new URL(`../../frontend/.local/postflop-ai/${spot.slug}-policy.json`, import.meta.url));
 test("worker views equal the local middleware views for published artifacts", { skip: !local && "no local postflop artifacts" }, async () => {
   const artifacts = fromFiles(() => spotArtifacts(spot));
   assert.ok(!artifacts.skip, artifacts.skip);

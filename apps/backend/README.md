@@ -9,7 +9,7 @@ Cloudflare Worker上で動作するTypeScriptの読み取り専用APIです。
 - Solver、Redis、ローカルAPIへ接続しない
 - Job登録 route を持たない
 
-現在の `preflop-ui` は保存済み推定レンジを直接読み、このAPIを呼び出しません。
+現在の `apps/frontend` は保存済み推定レンジを直接読み、このAPIを呼び出しません。
 このWorkerは独立した実験・配信経路で、公開済みR2成果物だけを返します。
 
 ## R2の成果物
@@ -39,14 +39,14 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
 ## ポストフロップAI方針（D1）
 
 `/v1/postflop/{board|explain|later|later-explain|later-hand-ev|hand-ev}?spot=...` は、
-preflop-ui のローカル表示（`/local-postflop*`）と同じ本文を D1 `solveaai-postflop` から返します。
-計算コードは `apps/preflop-ui/scripts/postflop-ai` を共有し、ファイル読み込みだけを D1 の行に差し替えます。
+apps/frontend のローカル表示（`/local-postflop*`）と同じ本文を D1 `evionai-postflop` から返します。
+計算コードは `apps/frontend/scripts/postflop-ai` を共有し、ファイル読み込みだけを D1 の行に差し替えます。
 `/v1/postflop/spots` は公開中のスポットと方針ハッシュの一覧です。AI推定でありGTOではありません。
 
-公開手順（1・3行目は edge-api、2行目は preflop-ui で実行）:
+公開手順（1・3行目は apps/backend、2行目は apps/frontend で実行）:
 
 ```bash
-npx wrangler d1 migrations apply solveaai-postflop --remote
+npx wrangler d1 migrations apply evionai-postflop --remote
 npm run postflop-ai:publish-d1 -- --execute remote
 npx wrangler deploy
 ```

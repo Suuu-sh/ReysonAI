@@ -1,6 +1,6 @@
 # レンジ生成で LLM の判断に頼っている箇所
 
-調査日: 2026-09-25 / 対象: `apps/preflop-ui/scripts/`, `src/estimated/`
+調査日: 2026-09-25 / 対象: `apps/frontend/scripts/`, `src/estimated/`
 
 ## 全体像
 

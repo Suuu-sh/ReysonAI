@@ -3,7 +3,7 @@
 作成日: 2026-09-25 / 背景: [llm-decision-points.md](llm-decision-points.md)
 
 共通ルール（全タスク）:
-- cwd は `apps/preflop-ui`。`src/estimated/*.json` を直接編集しない（生成は `npm run build:estimates` / `npm run pipeline`）。
+- cwd は `apps/frontend`。`src/estimated/*.json` を直接編集しない（生成は `npm run build:estimates` / `npm run pipeline`）。
 - UI ファイル（RangeWorkspace.tsx 等、range-author.md に列挙）は触らない。
 - 他セッションの未コミット変更を戻さない。commit / push / reset はしない。
 - 完了条件は `npm test` が通ること＋各タスクの確認コマンド。

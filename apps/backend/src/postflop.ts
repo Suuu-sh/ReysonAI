@@ -1,16 +1,16 @@
-// Heads-up postflop AI policies (AI estimates, not GTO) served from the solveaai-postflop D1
-// database. The views are computed by the same code as the preflop-ui Vite middleware, with
+// Heads-up postflop AI policies (AI estimates, not GTO) served from the evionai-postflop D1
+// database. The views are computed by the same code as the frontend Vite middleware, with
 // its artifact reads redirected to rows published by scripts/postflop-ai/publish-d1.mjs.
 // @ts-nocheck -- the shared view code is untyped JavaScript
-import { useArtifactSource } from "../../preflop-ui/scripts/postflop-ai/inputs.mjs";
-import { postflopResponse } from "../../preflop-ui/scripts/postflop-ai/local-view.mjs";
-import { handEvResponse } from "../../preflop-ui/scripts/postflop-ai/hand-ev.mjs";
-import { spotById } from "../../preflop-ui/scripts/postflop-ai/spots.mjs";
-import openingRanges from "../../preflop-ui/src/estimated/opening-ranges.json" with { type: "json" };
-import preflopRanges from "../../preflop-ui/src/estimated/preflop-ranges.json" with { type: "json" };
-import threeBetResponses from "../../preflop-ui/src/estimated/three-bet-responses.json" with { type: "json" };
-import fourBetResponses from "../../preflop-ui/src/estimated/four-bet-responses.json" with { type: "json" };
-import limpResponses from "../../preflop-ui/src/estimated/limp-responses.json" with { type: "json" };
+import { useArtifactSource } from "../../frontend/scripts/postflop-ai/inputs.mjs";
+import { postflopResponse } from "../../frontend/scripts/postflop-ai/local-view.mjs";
+import { handEvResponse } from "../../frontend/scripts/postflop-ai/hand-ev.mjs";
+import { spotById } from "../../frontend/scripts/postflop-ai/spots.mjs";
+import openingRanges from "../../frontend/src/estimated/opening-ranges.json" with { type: "json" };
+import preflopRanges from "../../frontend/src/estimated/preflop-ranges.json" with { type: "json" };
+import threeBetResponses from "../../frontend/src/estimated/three-bet-responses.json" with { type: "json" };
+import fourBetResponses from "../../frontend/src/estimated/four-bet-responses.json" with { type: "json" };
+import limpResponses from "../../frontend/src/estimated/limp-responses.json" with { type: "json" };
 
 export type D1Statement = { bind(...values: unknown[]): D1Statement; all<T>(): Promise<{ results: T[] }> };
 export type D1Database = { prepare(sql: string): D1Statement };

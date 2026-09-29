@@ -85,7 +85,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Estimates only, with no GTO/EV claim, competitor chart reuse, runtime generation or API fallback.
 
 ## Automated verification
-- `npm run build` and `npm run test:sites` pass in `apps/preflop-ui`; Sites client/server/hosting outputs are present.
+- `npm run build` and `npm run test:sites` pass in `apps/frontend`; Sites client/server/hosting outputs are present.
 - `node --test tests/*.test.mjs`: 37 tests pass (including Sites tests).
 - New data checks cover every one of the 15 spots, IDs, source sizes, 169 unique canonical hands, frequency totals, legal all-in size and zero-3bet reachability.
 - Every spot is mutation-tested for malformed sizes/IDs/hands/frequencies, invalid reasons and unreachable continuation. Missing JSON, malformed syntax and corrupted upstream data fail closed.
@@ -198,7 +198,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Regenerated the limp path; BB iso width narrows from 27.71% to 18.23%, and SB's strong limps can both call and reraise. Updated SB-dependent reasons, later-street reachability and saved table-profile adjustments; non-SB profile entries are unchanged.
 - Full warning list: `range-capped` — 1 finding, `BB_vs_SB_limp` (check); `over-segregated` — 1 finding, `BB_vs_SB_limp`. All other spots: zero balance warnings. Left these warnings for Claude rather than making additional balance fixes. Blocking consistency findings: zero.
 - Verification: `npm run build:estimates` passed with the two advisory warnings; `npm test` passed (105/105); `npm run benchmark` reports zero deviations beyond ±3pt for all five opens; `npm run build` passed with the existing large-chunk warning.
-- Review packets now include SB limp and both limp-response nodes. Full audit and handoff: `apps/preflop-ui/.local/review/range-balance-2026-09-24.{md,json}`; packet canary answers remain separate.
+- Review packets now include SB limp and both limp-response nodes. Full audit and handoff: `apps/frontend/.local/review/range-balance-2026-09-24.{md,json}`; packet canary answers remain separate.
 
 ## Solvea service site (2026-09-25)
 - Added a separate service site at `/`, retaining the existing estimated-range workspace at `/app`. The landing preview shows an interactive 13×13 matrix and K7s decision from the saved BTN-open and BB-vs-BTN data. A small generated projection keeps the marketing bundle independent of the larger app datasets.

@@ -6,7 +6,7 @@
 
 正本は `src/estimated/opening-ranges.json` の `BTN_open`、`src/estimated/preflop-ranges.json` の `BB_vs_BTN`、`configs/cash-6max-100bb.json` です。100BB、BTN 2.5BBオープン、BBコール、フロップ5.5BB、アンティなし、レーキ5%・上限3BB。各ハンドクラスの保存頻度を実際の2枚組へ展開し、ボードと両者のカード重複を除去します。
 
-`apps/preflop-ui` で、次の順に**明示実行**します。
+`apps/frontend` で、次の順に**明示実行**します。
 
 ```sh
 npm run postflop-ai:generate

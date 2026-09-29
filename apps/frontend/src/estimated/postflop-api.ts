@@ -1,4 +1,4 @@
-// Where postflop views come from: the solveaai-edge-api worker (D1) when the build sets
+// Where postflop views come from: the evionai-api worker (D1) when the build sets
 // VITE_POSTFLOP_API, otherwise the local Vite middleware. Both return identical bodies.
 const LOCAL_PATHS = {
   board: "/local-postflop",

@@ -87,7 +87,7 @@ export default {
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname === "/health" && request.method === "GET") {
-    return json({ status: "ok", service: "solveaai-edge-api" });
+    return json({ status: "ok", service: "evionai-api" });
   }
 
   if (url.pathname.startsWith("/v1/postflop/") && request.method === "GET") {

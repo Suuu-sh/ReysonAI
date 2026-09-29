@@ -1,5 +1,5 @@
--- Heads-up postflop AI policies (AI estimates, not GTO) served by solveaai-edge-api.
--- Rows are replaced wholesale by apps/preflop-ui/scripts/postflop-ai/publish-d1.mjs; the
+-- Heads-up postflop AI policies (AI estimates, not GTO) served by evionai-api.
+-- Rows are replaced wholesale by apps/frontend/scripts/postflop-ai/publish-d1.mjs; the
 -- dataset_versions row records which local artifacts a publish came from.
 CREATE TABLE IF NOT EXISTS postflop_spots (
   spot_id TEXT PRIMARY KEY,

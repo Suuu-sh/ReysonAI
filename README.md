@@ -48,11 +48,11 @@ Solvea が解きたいのは、計算結果の量ではなく、**戦略を人�
 
 レンジ閲覧の基本条件は **6-max キャッシュゲーム、100BB、アンティなし**です。通常のオープンは 2.5BB、SB オープンは 3.5BB で、SB にはリンプ経路もあります。保存済みデータがない設定や分岐には、戦略を表示しません。プリフロップ推定のコール評価には、低額オンラインゲームを想定したレーキと仮定上の EQR を用いる箇所があります。これらは Solver による実測値ではありません。
 
-トレーナーの結果、セッション、プロフィールはブラウザー内に保存されます。アカウント間の同期はありません。フロップの候補・評価レポートもローカル開発用で、公開済みプリフロップレンジへ自動反映されません。詳細な条件と制限は [`apps/preflop-ui/AGENTS.md`](apps/preflop-ui/AGENTS.md)、[`apps/preflop-ui/src/estimated/AGENTS.md`](apps/preflop-ui/src/estimated/AGENTS.md)、[`apps/preflop-ui/docs/postflop-ai-pilot.md`](apps/preflop-ui/docs/postflop-ai-pilot.md) を参照してください。
+トレーナーの結果、セッション、プロフィールはブラウザー内に保存されます。アカウント間の同期はありません。フロップの候補・評価レポートもローカル開発用で、公開済みプリフロップレンジへ自動反映されません。詳細な条件と制限は [`apps/frontend/AGENTS.md`](apps/frontend/AGENTS.md)、[`apps/frontend/src/estimated/AGENTS.md`](apps/frontend/src/estimated/AGENTS.md)、[`apps/frontend/docs/postflop-ai-pilot.md`](apps/frontend/docs/postflop-ai-pilot.md) を参照してください。
 
 ## データをどう扱うか
 
-画面が読むプリフロップレンジの正本は、`apps/preflop-ui/src/estimated/` 以下の保存済み JSON です。生成時には独自に作成した局面別プロファイル、シードを固定したエクイティ計算、EQR・EV の仮定、整合性監査などを組み合わせます。外部サービスのレンジ表を転載しません。外部の集計値は、オープンレンジの限定的なベンチマークとして参照する場合があります。
+画面が読むプリフロップレンジの正本は、`apps/frontend/src/estimated/` 以下の保存済み JSON です。生成時には独自に作成した局面別プロファイル、シードを固定したエクイティ計算、EQR・EV の仮定、整合性監査などを組み合わせます。外部サービスのレンジ表を転載しません。外部の集計値は、オープンレンジの限定的なベンチマークとして参照する場合があります。
 
 この工程で確認できるのは、入力と出力の整合性、合法なアクション、頻度・サイズの条件、モデル内の一部の損得や警告です。**相手の実際のプレーに対する優位性や、均衡への収束は確認できません。** EV や EQR は用いた相手レンジ、レーキ、実現率などの仮定に依存します。計算していないアクションの EV はゼロではなく「未計算」です。
 
@@ -81,13 +81,13 @@ Rust Solver ──► 構造検証 ──► Solution保存 ──► Edge API /
 
 | 場所 | 役割 |
 | --- | --- |
-| [`apps/preflop-ui`](apps/preflop-ui) | TypeScript / React のサービスサイト、レンジ分析、トレーナー。 |
-| [`apps/preflop-ui/src/estimated`](apps/preflop-ui/src/estimated) | 保存済み推定レンジと分析画面。 |
-| [`apps/preflop-ui/src/trainer`](apps/preflop-ui/src/trainer) | ドリル、セッション、練習分析。 |
+| [`apps/frontend`](apps/frontend) | TypeScript / React のサービスサイト、レンジ分析、トレーナー。 |
+| [`apps/frontend/src/estimated`](apps/frontend/src/estimated) | 保存済み推定レンジと分析画面。 |
+| [`apps/frontend/src/trainer`](apps/frontend/src/trainer) | ドリル、セッション、練習分析。 |
 | [`crates`](crates) | カード・ゲームツリー・Solver・Solution・キューの Rust ライブラリ。 |
 | [`services`](services) | 独立して実行する実験用 Rust Solver Worker。 |
 | [`packages/solveaai-sdk-ts`](packages/solveaai-sdk-ts) | API 利用者向け TypeScript SDK。 |
-| [`apps/solveaai-edge-api`](apps/solveaai-edge-api) | TypeScript の Cloudflare Worker。R2 成果物を読み取る Edge API。 |
+| [`apps/backend`](apps/backend) | TypeScript の Cloudflare Worker。R2 成果物を読み取る Edge API。 |
 | [`configs`](configs) | Solver 用ゲーム設定。画面の保存済み推定レンジと同一のサイズ設定とは限らない。 |
 
 ## ローカルで試す
@@ -95,17 +95,17 @@ Rust Solver ──► 構造検証 ──► Solution保存 ──► Edge API /
 Node.js を用意し、Web アプリを起動します。**保存済みレンジの閲覧とトレーナーはフロントエンドだけで動作します。**
 
 ```bash
-cd apps/preflop-ui
+cd apps/frontend
 npm ci
 npm run dev -- --host 127.0.0.1 --port 4173 --strictPort
 ```
 
-`http://127.0.0.1:4173/` がサービスサイトです。ヘッダーで英語・日本語を切り替えられ、`/app` がアプリです。フロップ試作はローカル候補ファイルが存在し、入力ハッシュなどの条件を満たす場合だけ表示されます。生成・監査の手順は [`postflop-ai-pilot.md`](apps/preflop-ui/docs/postflop-ai-pilot.md) を参照してください。
+`http://127.0.0.1:4173/` がサービスサイトです。ヘッダーで英語・日本語を切り替えられ、`/app` がアプリです。フロップ試作はローカル候補ファイルが存在し、入力ハッシュなどの条件を満たす場合だけ表示されます。生成・監査の手順は [`postflop-ai-pilot.md`](apps/frontend/docs/postflop-ai-pilot.md) を参照してください。
 
 主な確認コマンド:
 
 ```bash
-cd apps/preflop-ui
+cd apps/frontend
 npm run build
 npm test
 npm run test:sites
@@ -118,7 +118,7 @@ cargo check --workspace
 cargo test --workspace
 ```
 
-Solver Worker、Job Queue、SDK、R2 配信はアプリとは別の実験・配信基盤で、アプリを試すための必須手順ではありません。TypeScript Edge API の責務は [`apps/solveaai-edge-api/README.md`](apps/solveaai-edge-api/README.md)、ローカルのフロップ試作は上記の専用資料に分けています。
+Solver Worker、Job Queue、SDK、R2 配信はアプリとは別の実験・配信基盤で、アプリを試すための必須手順ではありません。TypeScript Edge API の責務は [`apps/backend/README.md`](apps/backend/README.md)、ローカルのフロップ試作は上記の専用資料に分けています。
 
 ## この README を更新するとき
 

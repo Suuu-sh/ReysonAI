@@ -8,7 +8,7 @@ import { parseCards } from "./model.mjs";
 import { DEFAULT_SPOT_ID, spotById } from "./spots.mjs";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-// The edge worker (apps/solveaai-edge-api) has no filesystem: it installs a source that
+// The edge worker (apps/backend) has no filesystem: it installs a source that
 // serves bundled range JSON and artifacts preloaded from D1. Node keeps reading files, so
 // a running dev server still sees range and artifact edits.
 let source = null;
