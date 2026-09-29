@@ -67,7 +67,10 @@ export function raiseDefence(policy, nodes, kind, share) {
 }
 
 // Pure adoption check. Under-bluff warnings are advisory in regenerate-later too;
-// a fix must strictly reduce counted warnings while staying within 0.05bb of score.
+// a fix must strictly reduce counted warnings while staying within SCORE_ALLOWANCE bb of score.
+// Claude review (2026-09-29): defending more always costs a little against the low-bluff
+// reference, so FIX_OVERFOLD_ALLOWANCE may widen it when balance is judged more important.
+const SCORE_ALLOWANCE = Number(process.env.FIX_OVERFOLD_ALLOWANCE ?? 0.05);
 export function overfoldFixDecision({ baselineReport, candidateReport, baselineFindings, candidateFindings }) {
   if (!Array.isArray(baselineFindings) || !Array.isArray(candidateFindings)) {
     throw new Error("Balance findings must be arrays");
@@ -79,7 +82,7 @@ export function overfoldFixDecision({ baselineReport, candidateReport, baselineF
   const candidateScore = worstProfileScore(candidateReport);
   // Reports are rounded to four decimals; the tiny epsilon only avoids rejecting an
   // exact -0.05 boundary due to binary floating-point representation.
-  const scoreWithinAllowance = candidateScore + 1e-12 >= baselineScore - 0.05;
+  const scoreWithinAllowance = candidateScore + 1e-12 >= baselineScore - SCORE_ALLOWANCE;
   return {
     adopt: candidateErrors.length === 0 && candidateWarningCount < baselineWarningCount && scoreWithinAllowance,
     baselineScore,
@@ -113,7 +116,7 @@ function fixedLine(spotId, kind, nodes, share, decision) {
   const reasons = [
     decision.candidateErrors.length ? `${decision.candidateErrors.length} balance error(s)` : null,
     decision.candidateWarningCount >= decision.baselineWarningCount ? "warnings not reduced" : null,
-    decision.candidateScore + 1e-12 < decision.baselineScore - 0.05 ? "score below -0.05 allowance" : null,
+    decision.candidateScore + 1e-12 < decision.baselineScore - SCORE_ALLOWANCE ? `score below -${SCORE_ALLOWANCE} allowance` : null,
   ].filter(Boolean).join(", ");
   return `${spotId}: not adopted ${kind} nodes=${nodes.join(",")} share=${share} (${comparison}; ${reasons})`;
 }
