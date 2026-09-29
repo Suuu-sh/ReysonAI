@@ -1,15 +1,22 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { combosOf } from "../lib/equity.mjs";
 import { gameConfig } from "../../src/estimated/sizing.ts";
 import { parseCards } from "./model.mjs";
 import { DEFAULT_SPOT_ID, spotById } from "./spots.mjs";
+import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-export const root = fileURLToPath(new URL("../..", import.meta.url));
-const read = name => JSON.parse(readFileSync(new URL(`../../src/estimated/${name}.json`, import.meta.url), "utf8"));
-export const config = JSON.parse(readFileSync(new URL("../data/postflop-ai-pilot.json", import.meta.url), "utf8"));
+// The edge worker (apps/solveaai-edge-api) has no filesystem: it installs a source that
+// serves bundled range JSON and artifacts preloaded from D1. Node keeps reading files, so
+// a running dev server still sees range and artifact edits.
+let source = null;
+export function useArtifactSource(next) { const previous = source; source = next; return previous; }
+
+export const root = (() => { try { return fileURLToPath(new URL("../..", import.meta.url)); } catch { return ""; } })();
+const read = name => source ? source.ranges[name] : JSON.parse(readFileSync(new URL(`../../src/estimated/${name}.json`, import.meta.url), "utf8"));
+export const config = pilotConfig;
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
 const LATER_KEYS = ["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"];
@@ -23,7 +30,24 @@ export const laterSizingHash = () => sha(Object.fromEntries(LATER_KEYS.map(key =
 // Local-only artifacts of one spot under .local/postflop-ai/.
 export function artifactPaths(spot) {
   const base = join(root, ".local/postflop-ai", spot.slug);
-  return { candidate: `${base}-policy.json`, laterCandidate: `${base}-later-policy.json`, report: `${base}-report.json`, handEv: `${base}-hand-ev.json` };
+  return { candidate: `${base}-policy.json`, laterCandidate: `${base}-later-policy.json`, report: `${base}-report.json`,
+    handEv: `${base}-hand-ev.json`, laterHandEv: `${base}-later-hand-ev.json` };
+}
+
+// One parsed artifact of a spot (a key of artifactPaths), or null when it does not exist.
+export function readArtifact(spot, kind) {
+  if (source) return source.artifact(spot, kind) ?? null;
+  const path = artifactPaths(spot)[kind];
+  return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : null;
+}
+
+// Like readArtifact, but a missing file is an ENOENT error (the local view maps it to 404).
+export function requireArtifact(spot, kind) {
+  const data = readArtifact(spot, kind);
+  if (data) return data;
+  const error = new Error(`${spot.slug}: ${kind} is missing`);
+  error.code = "ENOENT";
+  throw error;
 }
 
 export function loadInputs(spotId = DEFAULT_SPOT_ID) {

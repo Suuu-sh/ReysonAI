@@ -1,3 +1,5 @@
+import { routePostflop, type D1Database } from "./postflop.ts";
+
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"] as const;
 
 type Position = (typeof POSITIONS)[number];
@@ -50,7 +52,7 @@ type Manifest = {
   edge?: EdgeManifest;
 };
 type R2Bucket = { get(key: string): Promise<{ text(): Promise<string> } | null> };
-type Env = { SOLUTIONS: R2Bucket; ALLOWED_ORIGIN?: string };
+type Env = { SOLUTIONS: R2Bucket; POSTFLOP_DB?: D1Database; ALLOWED_ORIGIN?: string };
 type PublishedData = {
   summary: Solution;
   nodesIndex: NodeSummary[];
@@ -86,6 +88,12 @@ export default {
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname === "/health" && request.method === "GET") {
     return json({ status: "ok", service: "solveaai-edge-api" });
+  }
+
+  if (url.pathname.startsWith("/v1/postflop/") && request.method === "GET") {
+    const { status, body } = await routePostflop(env.POSTFLOP_DB, url.pathname, url.searchParams);
+    if (status !== 200) return errorResponse(status, String((body as JsonRecord).error ?? "error"));
+    return json(body, { cacheControl: "public, max-age=300, s-maxage=300" });
   }
 
   if (!url.pathname.startsWith("/v1/preflop/")) {

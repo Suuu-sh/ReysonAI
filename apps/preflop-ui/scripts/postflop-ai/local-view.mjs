@@ -1,11 +1,12 @@
 // Read-only local preview of the audited pilot. Never generates or publishes a policy.
-import { readFileSync } from "node:fs";
-import { artifactPaths, boards, comboRange, loadInputs } from "./inputs.mjs";
+import { boards, comboRange, loadInputs, requireArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { NODES, nodeRole, policyMix, scaleByPath, treeNodes, validatePolicy } from "./policy.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
 import { boardTexture, handTier, parseCards, runoutTexture, TIERS } from "./model.mjs";
 import { explainCombo } from "./explain.mjs";
+import { explainLaterCombo } from "./explain-later.mjs";
+import { laterHandEvResult, loadLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { FLOP_BETS, flopState } from "./tree.mjs";
 import { LATER_NODES } from "./later-tree.mjs";
@@ -188,9 +189,62 @@ export function buildLaterView({ flop, flopActions = "", turn = "", turnActions 
     texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows };
 }
 
+export const LOCAL_POSTFLOP_ROUTES = ["/local-postflop", "/local-postflop-explain", "/local-postflop-later",
+  "/local-postflop-later-explain", "/local-postflop-later-hand-ev"];
+
+// The response of one read-only postflop route as { status, body }. Shared by the Vite
+// middleware below and the edge worker, which serves the same bodies from D1 artifacts.
+export function postflopResponse(pathname, params) {
+  try {
+    const inputs = loadInputs(params.get("spot") || DEFAULT_SPOT_ID);
+    const candidate = loadCandidate(inputs);
+    const laterRoute = ["/local-postflop-later", "/local-postflop-later-explain", "/local-postflop-later-hand-ev"].includes(pathname);
+    const laterCandidate = laterRoute ? loadLaterCandidate(inputs, candidate) : null;
+    if (laterRoute && !laterCandidate) {
+      const error = new Error("ターン・リバーのAI方針がありません。");
+      error.code = "LATER_POLICY_MISSING";
+      throw error;
+    }
+    const report = requireArtifact(inputs.spot, "report");
+    if (report.source_hash !== inputs.fingerprint || report.policy_hash !== candidate.metadata.policy_hash ||
+        report.simulation_version !== SIMULATION_VERSION || report.spot !== inputs.spot.id || report.results?.length !== 72) {
+      throw new Error("候補に対応する最新の監査レポートがありません。");
+    }
+    if (pathname === "/local-postflop-later-hand-ev") {
+      const ev = loadLaterHandEv(inputs, candidate, laterCandidate);
+      if (!ev) return { status: 404, body: { error: "ターン・リバーのハンド別EVが未計算か、方針と一致しません。" } };
+      const key = params.get("key");
+      if (!key) return { status: 400, body: { error: "EV場面の key が必要です。" } };
+      const result = laterHandEvResult(ev, key, params.get("hand"));
+      if (!result) return { status: 404, body: { error: "この場面のEVはありません。" } };
+      return { status: 200, body: { spot: inputs.spot.id, ...result } };
+    }
+    let data;
+    if (pathname === "/local-postflop-explain") data = explainLocalCombo(params, inputs, candidate);
+    else if (pathname === "/local-postflop-later-explain") data = { spot: inputs.spot.id, ...explainLaterCombo({
+      flop: params.get("flop"), flopActions: params.get("flopActions") ?? "",
+      turn: params.get("turn"), turnActions: params.get("turnActions") ?? "",
+      river: params.get("river") ?? "", riverActions: params.get("riverActions") ?? "",
+      cards: params.get("cards"), inputs, flopPolicy: candidate.policy, laterPolicy: laterCandidate.policy,
+    }) };
+    else if (pathname === "/local-postflop-later") {
+      data = buildLaterView({
+        flop: params.get("flop"), flopActions: params.get("flopActions") ?? "",
+        turn: params.get("turn") ?? "", turnActions: params.get("turnActions") ?? "",
+        river: params.get("river") ?? "", riverActions: params.get("riverActions") ?? "",
+      }, inputs, candidate, laterCandidate);
+    } else data = buildLocalBoard(params.get("board"), inputs, candidate);
+    return { status: 200, body: data };
+  } catch (error) {
+    const missingLaterPolicy = error.code === "LATER_POLICY_MISSING";
+    return { status: error.code === "ENOENT" || missingLaterPolicy ? 404 : 409, body: { error: missingLaterPolicy ? error.message : error.code === "ENOENT"
+      ? "ローカルAI推定候補または監査レポートがありません。CLIで明示生成・監査してください。" : error.message } };
+  }
+}
+
 export function localPostflopMiddleware(req, res, next) {
   const url = new URL(req.url, "http://localhost");
-  if (url.pathname !== "/local-postflop" && url.pathname !== "/local-postflop-explain" && url.pathname !== "/local-postflop-later") { next(); return; }
+  if (!LOCAL_POSTFLOP_ROUTES.includes(url.pathname)) { next(); return; }
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "GET") { res.writeHead(405).end(JSON.stringify({ error: "読み取り専用です。" })); return; }
@@ -200,33 +254,6 @@ export function localPostflopMiddleware(req, res, next) {
       origin && !["http://127.0.0.1:5173", "http://localhost:5173"].includes(origin)) {
     res.writeHead(403).end(JSON.stringify({ error: "ローカル環境でのみ利用できます。" })); return;
   }
-  try {
-    const inputs = loadInputs(url.searchParams.get("spot") || DEFAULT_SPOT_ID);
-    const candidate = loadCandidate(inputs);
-    const laterCandidate = url.pathname === "/local-postflop-later" ? loadLaterCandidate(inputs, candidate) : null;
-    if (url.pathname === "/local-postflop-later" && !laterCandidate) {
-      const error = new Error("ターン・リバーのAI方針がありません。");
-      error.code = "LATER_POLICY_MISSING";
-      throw error;
-    }
-    const report = JSON.parse(readFileSync(artifactPaths(inputs.spot).report, "utf8"));
-    if (report.source_hash !== inputs.fingerprint || report.policy_hash !== candidate.metadata.policy_hash ||
-        report.simulation_version !== SIMULATION_VERSION || report.spot !== inputs.spot.id || report.results?.length !== 72) {
-      throw new Error("候補に対応する最新の監査レポートがありません。");
-    }
-    let data;
-    if (url.pathname === "/local-postflop-explain") data = explainLocalCombo(url.searchParams, inputs, candidate);
-    else if (url.pathname === "/local-postflop-later") {
-      data = buildLaterView({
-        flop: url.searchParams.get("flop"), flopActions: url.searchParams.get("flopActions") ?? "",
-        turn: url.searchParams.get("turn") ?? "", turnActions: url.searchParams.get("turnActions") ?? "",
-        river: url.searchParams.get("river") ?? "", riverActions: url.searchParams.get("riverActions") ?? "",
-      }, inputs, candidate, laterCandidate);
-    } else data = buildLocalBoard(url.searchParams.get("board"), inputs, candidate);
-    res.writeHead(200).end(JSON.stringify(data));
-  } catch (error) {
-    const missingLaterPolicy = error.code === "LATER_POLICY_MISSING";
-    res.writeHead(error.code === "ENOENT" || missingLaterPolicy ? 404 : 409).end(JSON.stringify({ error: missingLaterPolicy ? error.message : error.code === "ENOENT"
-      ? "ローカルAI推定候補または監査レポートがありません。CLIで明示生成・監査してください。" : error.message }));
-  }
+  const { status, body } = postflopResponse(url.pathname, url.searchParams);
+  res.writeHead(status).end(JSON.stringify(body));
 }

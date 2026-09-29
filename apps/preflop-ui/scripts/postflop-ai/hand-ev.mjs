@@ -4,7 +4,7 @@
 // not GTO, not solver EV. Local-only output under .local/postflop-ai/.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
-import { artifactPaths, boards, config, laterSizingHash, loadInputs, seatRange } from "./inputs.mjs";
+import { artifactPaths, boards, readArtifact, config, laterSizingHash, loadInputs, seatRange } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { NODES, choose, policyMix, scaleByPath } from "./policy.mjs";
 import { laterPolicyMix, referenceLaterPolicy } from "./later-policy.mjs";
@@ -155,9 +155,7 @@ export function generateHandEv({ spotId = DEFAULT_SPOT_ID, samples = DEFAULT_SAM
 
 // Read-only lookup for the local view; null when missing or stale for the candidate.
 export function loadHandEv(inputs, candidate, laterCandidate = loadLaterCandidate(inputs, candidate)) {
-  const path = artifactPaths(inputs.spot).handEv;
-  if (!existsSync(path)) return null;
-  const data = JSON.parse(readFileSync(path, "utf8"));
+  const data = readArtifact(inputs.spot, "handEv");
   return matchesHandEv(data, inputs, candidate, laterCandidate) ? data : null;
 }
 
@@ -177,8 +175,14 @@ export function handEvMiddleware(req, res, next) {
   if (req.method !== "GET" || !["127.0.0.1", "localhost"].includes(host)) {
     res.writeHead(req.method !== "GET" ? 405 : 403).end(JSON.stringify({ error: "ローカルの読み取り専用です。" })); return;
   }
+  const { status, body } = handEvResponse(url.searchParams);
+  res.writeHead(status).end(JSON.stringify(body));
+}
+
+// Flop hand-EV lookup as { status, body }; shared with the edge worker.
+export function handEvResponse(params) {
   try {
-    const inputs = loadInputs(url.searchParams.get("spot") || DEFAULT_SPOT_ID);
+    const inputs = loadInputs(params.get("spot") || DEFAULT_SPOT_ID);
     const candidate = loadCandidate(inputs);
     const laterCandidate = loadLaterCandidate(inputs, candidate);
     let data = cache.get(inputs.spot.id);
@@ -186,16 +190,14 @@ export function handEvMiddleware(req, res, next) {
       data = loadHandEv(inputs, candidate, laterCandidate);
       if (data) cache.set(inputs.spot.id, data); else cache.delete(inputs.spot.id);
     }
-    if (!data) {
-      res.writeHead(404).end(JSON.stringify({ error: `ハンド別EVが未計算か、方針と一致しません。npm run postflop-ai:hand-ev -- --spot ${inputs.spot.id} で計算してください。` })); return;
-    }
-    const history = url.searchParams.get("history") ?? "";
-    const node = data.boards[url.searchParams.get("board")]?.[history];
-    if (!node) { res.writeHead(404).end(JSON.stringify({ error: "この場面のEVはありません。" })); return; }
-    const hand = url.searchParams.get("hand");
-    res.writeHead(200).end(JSON.stringify({ spot: inputs.spot.id, node: node.node, actor: node.actor, pot_bb: node.pot_bb, hand,
-      row: node.rows[hand] ?? null, samples: data.samples_per_hand_action, note: data.note }));
+    if (!data) return { status: 404, body: { error: `ハンド別EVが未計算か、方針と一致しません。npm run postflop-ai:hand-ev -- --spot ${inputs.spot.id} で計算してください。` } };
+    const history = params.get("history") ?? "";
+    const node = data.boards[params.get("board")]?.[history];
+    if (!node) return { status: 404, body: { error: "この場面のEVはありません。" } };
+    const hand = params.get("hand");
+    return { status: 200, body: { spot: inputs.spot.id, node: node.node, actor: node.actor, pot_bb: node.pot_bb, hand,
+      row: node.rows[hand] ?? null, samples: data.samples_per_hand_action, note: data.note } };
   } catch (error) {
-    res.writeHead(error.code === "ENOENT" ? 404 : 409).end(JSON.stringify({ error: error.message }));
+    return { status: error.code === "ENOENT" ? 404 : 409, body: { error: error.message } };
   }
 }

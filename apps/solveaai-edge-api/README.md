@@ -36,6 +36,26 @@ Solutionをmanifest経由で参照しないようにするためです。
 一覧・Resolve・Node取得のレスポンスは分割済みのedge artifactを使います。大きな
 Solution全体JSONは互換用に残しますが、通常のリクエストごとに全体を読み込みません。
 
+## ポストフロップAI方針（D1）
+
+`/v1/postflop/{board|explain|later|later-explain|later-hand-ev|hand-ev}?spot=...` は、
+preflop-ui のローカル表示（`/local-postflop*`）と同じ本文を D1 `solveaai-postflop` から返します。
+計算コードは `apps/preflop-ui/scripts/postflop-ai` を共有し、ファイル読み込みだけを D1 の行に差し替えます。
+`/v1/postflop/spots` は公開中のスポットと方針ハッシュの一覧です。AI推定でありGTOではありません。
+
+公開手順（1・3行目は edge-api、2行目は preflop-ui で実行）:
+
+```bash
+npx wrangler d1 migrations apply solveaai-postflop --remote
+npm run postflop-ai:publish-d1 -- --execute remote
+npx wrangler deploy
+```
+
+`--execute` を付けなければ `.local/postflop-d1.sql` を作るだけです。`--execute local` と
+`npx wrangler dev --local` でローカル確認できます。ハンド別EVは D1 の1文100KB制限に収めるため
+盤面×履歴ごとの行に分けて保存し、Worker で元のファイル形に戻します。
+アプリ側は `VITE_POSTFLOP_API=https://<worker>` を付けてビルドすると Worker を使います。
+
 ## Cloudflare設定
 
 `wrangler.jsonc` のR2バケット名と、`ALLOWED_ORIGIN`をAPI利用者のOriginに合わせます。

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { barColor } from "../components/primitives.tsx";
 import { label, pct } from "../data.ts";
+import { postflopUrl } from "./postflop-api.ts";
 import "./postflop-hand-ev.css";
 
 const signed = value => `${value > 0 ? "+" : ""}${value.toFixed(2)}bb`;
@@ -9,7 +10,7 @@ const signed = value => `${value > 0 ? "+" : ""}${value.toFixed(2)}bb`;
 // `history` is the flop actions before the decision shown, e.g. ["bet33", "raise"];
 // `spot` is the heads-up single-raised-pot id (the server defaults to BTN_open_BB_call).
 export function handEvQuery(board, history, hand, spot) {
-  return `/local-postflop-hand-ev?${new URLSearchParams({ ...(spot ? { spot } : {}), board, history: history.join(","), hand })}`;
+  return postflopUrl("hand-ev", { ...(spot ? { spot } : {}), board, history: history.join(","), hand });
 }
 
 export function useHandEv(board, history = [], hand, spot) {

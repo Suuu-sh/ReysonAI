@@ -6,6 +6,7 @@ import { HandEvBars, useHandEv } from "./PostflopHandEv.tsx";
 import { actionReason, dominantTier, evidenceReason, textureLabels, tierLabels } from "./postflop-reasons.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
+import { postflopUrl } from "./postflop-api.ts";
 import { productLocale } from "../i18n.ts";
 
 const baseLabels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
@@ -280,7 +281,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     if (!context.pilotAvailable || !spotId || !board || !decision.node) { setStatus("idle"); return; }
     const controller = new AbortController();
     setStatus("loading");
-    fetch(`/local-postflop?${new URLSearchParams({ spot: spotId, board })}`, { signal: controller.signal })
+    fetch(postflopUrl("board", { spot: spotId, board }), { signal: controller.signal })
       .then(async response => {
         const body = await response.json();
         if (!response.ok) throw new Error(body.error || "ポストフロップ候補を読み込めませんでした。");
@@ -299,7 +300,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     setLaterStatus("loading");
     const params = new URLSearchParams({ spot: spotId, flop: board, flopActions: flopPath, turn: turnCard,
       turnActions: turnPath, river: riverCard, riverActions: riverPath });
-    fetch(`/local-postflop-later?${params}`, { signal: controller.signal })
+    fetch(postflopUrl("later", params), { signal: controller.signal })
       .then(async response => {
         const body = await response.json();
         if (!response.ok) throw new Error(body.error || "後続ストリートの候補を読み込めませんでした。");
@@ -340,7 +341,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     if (!combo || !board || !decision.node) return;
     const controller = new AbortController();
     const params = new URLSearchParams({ spot: spotId, board, node: decision.node, cards: combo.cards, prev: prevBet });
-    fetch(`/local-postflop-explain?${params}`, { signal: controller.signal })
+    fetch(postflopUrl("explain", params), { signal: controller.signal })
       .then(response => response.ok ? response.json() : null)
       .then(body => { if (body?.spot === spotId && body.cards === combo.cards && body.node === decision.node) setExplain(body); })
       .catch(() => {});

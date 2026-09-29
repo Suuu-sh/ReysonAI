@@ -4,7 +4,7 @@ import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { artifactPaths, boards, config, root, seatRange } from "./inputs.mjs";
+import { artifactPaths, boards, config, readArtifact, requireArtifact, root, seatRange } from "./inputs.mjs";
 import { LATER_NODES, STREETS, openingActions, streetNodes } from "./later-tree.mjs";
 import { boardTexture, handTier, LINES, RUNOUT_TEXTURES, TIERS } from "./model.mjs";
 import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
@@ -22,7 +22,7 @@ export const resolveEffort = cliEffort => cliEffort || process.env.POSTFLOP_AI_E
 export const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
 export function loadCandidate(inputs) {
-  const candidate = JSON.parse(readFileSync(artifactPaths(inputs.spot).candidate, "utf8"));
+  const candidate = requireArtifact(inputs.spot, "candidate");
   if (candidate?.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.config_version !== config.version ||
       (candidate.metadata.spot ?? inputs.spot.id) !== inputs.spot.id ||
       (candidate.metadata.tree ?? "oop_checks") !== inputs.spot.tree) {
@@ -36,9 +36,8 @@ export function loadCandidate(inputs) {
 // Optional local later-street artifact. Missing means use the fixed reference, while
 // malformed/stale files are errors, never a silent fallback or a generation request.
 export function loadLaterCandidate(inputs, flopCandidate) {
-  const path = artifactPaths(inputs.spot).laterCandidate;
-  if (!existsSync(path)) return null;
-  const candidate = JSON.parse(readFileSync(path, "utf8"));
+  const candidate = readArtifact(inputs.spot, "laterCandidate");
+  if (!candidate) return null;
   if (candidate?.metadata?.source_hash !== inputs.fingerprint ||
       flopCandidate?.metadata?.source_hash !== inputs.fingerprint ||
       flopCandidate.metadata.policy_hash !== sha(flopCandidate.policy) ||
