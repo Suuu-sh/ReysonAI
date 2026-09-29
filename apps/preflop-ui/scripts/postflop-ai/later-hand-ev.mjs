@@ -1,3 +1,4 @@
+// 本番はオンデマンドの laterHandEvForHand を使う。事前計算は検証用。
 // Per-hand action EV/EQR for representative turn and river nodes. Values are sampled by
 // AI-policy self-play and are local estimates, not GTO or solver output.
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -9,6 +10,7 @@ import { artifactPaths, boards, config, loadInputs, readArtifact, seatRange } fr
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { choose, scaleByPath, validatePolicy } from "./policy.mjs";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
+import { parseCards } from "./model.mjs";
 import { LATER_NODES, streetHistories } from "./later-tree.mjs";
 import { FLOP_BETS, flopState } from "./tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
@@ -16,6 +18,7 @@ import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
 
 export const LATER_HAND_EV_DEFAULT_SAMPLES = 1000;
+export const LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES = 600;
 export const LATER_HAND_EV_VERSION = 1;
 const referenceLine = (aggressor, role) => aggressor == null ? "checked" : aggressor === role ? "aggressor" : "defender";
 const ranks = "23456789TJQKA";
@@ -159,7 +162,8 @@ function playFromLaterNode({ hands, flopBoard, runout, flopActions, turnActions,
   return share - table.invested[actor] + atNode[actor];
 }
 
-function computeNode({ key, street, history, turnHistory = [], expectedNode, expectedRole, flopPath, runout, board, inputs, flopPolicy, laterPolicy, laterMix, samples }) {
+function computeNode({ key, street, history, turnHistory = [], expectedNode, expectedRole, flopPath, runout, board, inputs,
+  flopPolicy, laterPolicy, laterMix, samples, onlyHand = null, sampleSeed = null }) {
   const { spot } = inputs;
   const turnStart = laterStart(flopPath.actions, spot);
   if (!turnStart) throw new Error("Invalid representative flop path");
@@ -195,6 +199,7 @@ function computeNode({ key, street, history, turnHistory = [], expectedNode, exp
   const grouped = new Map();
   for (const item of actorRange) {
     const hand = handClass(item.combo);
+    if (onlyHand && hand !== onlyHand) continue;
     if (!grouped.has(hand)) grouped.set(hand, []);
     grouped.get(hand).push(item);
   }
@@ -202,6 +207,7 @@ function computeNode({ key, street, history, turnHistory = [], expectedNode, exp
   const comboMix = new Map();
   for (const item of actorRange) {
     const hand = handClass(item.combo);
+    if (onlyHand && hand !== onlyHand) continue;
     if (!nodeMix.has(hand)) nodeMix.set(hand, []);
     const mix = laterMix(decision.node, item.combo, currentBoard, decision.line);
     nodeMix.get(hand).push({ item, mix });
@@ -211,24 +217,47 @@ function computeNode({ key, street, history, turnHistory = [], expectedNode, exp
   const rows = {};
   let validClasses = 0;
   for (const [hand, combos] of grouped) {
-    const pickActor = makeSampler(combos), pickVillain = makeSampler(villainRange);
-    if (!pickVillain) continue;
+    // On-demand evaluation samples only actor combos with at least one compatible villain
+    // combo. This avoids rejection sampling (and terminates for narrow 4bet ranges).
+    const compatibleVillain = new Map();
+    const compatibleSamplerFor = combo => {
+      const comboKey = combo.join(",");
+      if (!compatibleVillain.has(comboKey)) {
+        const compatible = villainRange.filter(item => !item.combo.some(card => combo.includes(card)));
+        compatibleVillain.set(comboKey, compatible.length ? makeSampler(compatible) : null);
+      }
+      return compatibleVillain.get(comboKey);
+    };
+    const sampleCombos = onlyHand ? combos.filter(item => compatibleSamplerFor(item.combo)) : combos;
+    if (!sampleCombos.length) continue;
+    const pickActor = makeSampler(sampleCombos), pickVillain = onlyHand ? null : makeSampler(villainRange);
+    if (!onlyHand && !pickVillain) continue;
     // compatiblePair also needs the arrays only for its rare deterministic fallback.
     pickActor.items = combos;
-    pickVillain.items = villainRange;
-    const random = seededRandom(seedFor(`${config.seed}|later-hand-ev|${key}|${decision.node}|${hand}`));
+    if (pickVillain) pickVillain.items = villainRange;
+    const random = seededRandom(sampleSeed ?? seedFor(`${config.seed}|later-hand-ev|${key}|${decision.node}|${hand}`));
     const sums = Object.fromEntries(actions.map(action => [action, 0]));
     let wins = 0, mixedEv = 0, completed = 0;
-    const mixEntries = nodeMix.get(hand);
-    const totalWeight = combos.reduce((sum, item) => sum + item.weight, 0);
+    const allowedCombos = onlyHand ? new Set(sampleCombos) : null;
+    const mixEntries = nodeMix.get(hand).filter(entry => !allowedCombos || allowedCombos.has(entry.item));
+    const totalWeight = sampleCombos.reduce((sum, item) => sum + item.weight, 0);
     const mix = Object.fromEntries(actions.map(action => [action, totalWeight
       ? round(mixEntries.reduce((sum, entry) => sum + entry.item.weight * entry.mix[action], 0) / totalWeight) : 0]));
     const mixSum = Object.values(mix).reduce((sum, value) => sum + value, 0);
     if (actions.length) mix[actions.at(-1)] = round(mix[actions.at(-1)] + 100 - mixSum);
     for (let sample = 0; sample < samples; sample++) {
-      const pair = compatiblePair(pickActor, pickVillain, random);
-      if (!pair) break;
-      const actorCombo = pair.actor.combo, villainCombo = pair.villain.combo;
+      let actorCombo, villainCombo;
+      if (onlyHand) {
+        actorCombo = pickActor(random).combo;
+        const pickCompatibleVillain = compatibleSamplerFor(actorCombo);
+        if (!pickCompatibleVillain) continue;
+        villainCombo = pickCompatibleVillain(random).combo;
+      } else {
+        const pair = compatiblePair(pickActor, pickVillain, random);
+        if (!pair) break;
+        actorCombo = pair.actor.combo;
+        villainCombo = pair.villain.combo;
+      }
       const used = new Set([...actorCombo, ...villainCombo, ...runout.turnBoard]);
       let finalRunout;
       if (street === "turn") {
@@ -266,6 +295,72 @@ function computeNode({ key, street, history, turnHistory = [], expectedNode, exp
     };
   }
   return [key, { node: decision.node, actor, pot_bb: decision.potBb, rows, ...(!validClasses ? { unreachable: true } : {}) }];
+}
+
+function validateHandClass(hand) {
+  if (typeof hand !== "string" || !/^[2-9TJQKA]{2}[so]?$/.test(hand)) throw new Error("Invalid hand class");
+  const high = ranks.indexOf(hand[0]), low = ranks.indexOf(hand[1]);
+  if (high < low || (high === low) !== (hand.length === 2)) throw new Error("Invalid hand class");
+}
+
+function unreachableHandResult({ node = null, actor = null, potBb = null, street }) {
+  return { node, actor, pot_bb: potBb, street, row: null, unreachable: true };
+}
+
+// On-demand, pure one-hand entry point. All ranges and policies are provided by the caller;
+// it does not load artifacts or touch the local filesystem.
+export function laterHandEvForHand({ flop, flopActions = [], turn, turnActions = [], river = null, riverActions = [],
+  hand, inputs, flopPolicy, laterPolicy, samples = LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, seed } = {}) {
+  if (!Number.isInteger(samples) || samples < 1) throw new Error("samples must be a positive integer");
+  validateHandClass(hand);
+  if (!inputs?.spot || !inputs?.seatRows) throw new Error("Invalid postflop inputs");
+  if (!Array.isArray(flopActions) || !Array.isArray(turnActions) || !Array.isArray(riverActions)) throw new Error("Invalid action path");
+
+  const flopCards = parseCards(flop, 3), turnCard = parseCards(turn, 1)[0];
+  const riverCard = river == null ? null : parseCards(river, 1)[0];
+  const boardCards = [...flopCards, turnCard, ...(riverCard == null ? [] : [riverCard])];
+  if (new Set(boardCards).size !== boardCards.length) throw new Error("Duplicate board cards");
+  const street = riverCard == null ? "turn" : "river";
+  const history = street === "turn" ? turnActions : riverActions;
+  const spot = inputs.spot;
+  const flopStateAtPath = flopState(spot.tree, flopActions);
+  if (!flopStateAtPath.end || !["check", "call", "raise-call"].includes(flopStateAtPath.end.type)) {
+    return unreachableHandResult({ street });
+  }
+  const turnStart = laterStart(flopActions, spot);
+  if (!turnStart) return unreachableHandResult({ street });
+
+  let riverStart = null;
+  if (street === "river") {
+    const turnReplay = replayLater("turn", turnActions, turnStart, spot);
+    if (!turnReplay.state.end || ["fold", "raise-fold"].includes(turnReplay.state.end.type) ||
+        turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0) {
+      return unreachableHandResult({ potBb: turnReplay.pot, street });
+    }
+    riverStart = { pot: turnReplay.pot, stacks: turnReplay.stacks, lastAggressor: turnReplay.lastAggressor };
+  }
+  const decision = laterDecision(street, history, street === "turn" ? turnStart : riverStart, spot);
+  if (!decision.node) return unreachableHandResult({ potBb: decision.potBb, street });
+
+  const policy = validatePolicy(flopPolicy, spot.tree);
+  const later = validateLaterPolicy(laterPolicy);
+  const laterMix = makeLaterMixReader(later);
+  const runout = { turn: turnCard, river: riverCard,
+    turnBoard: [...flopCards, turnCard],
+    ...(riverCard == null ? {} : { riverBoard: [...flopCards, turnCard, riverCard] }) };
+  const board = { id: flop, cards: flopCards };
+  const flopPath = { actions: flopActions, steps: flopStateAtPath.steps };
+  const key = laterHandEvKey({ flop, turn, river: riverCard == null ? "-" : river,
+    flopActions, turnActions, riverActions: street === "river" ? riverActions : null });
+  const seedMaterial = seed ?? `${config.seed}|later-hand-ev|${flop}|${turn}|${river}|${flopActions}|${turnActions}|${riverActions}|${hand}`;
+  const sampleSeed = typeof seedMaterial === "number" && Number.isInteger(seedMaterial)
+    ? seedMaterial : seedFor(String(seedMaterial));
+  const [, result] = computeNode({ key, street, history, turnHistory: turnActions,
+    expectedNode: decision.node, expectedRole: decision.role, flopPath, runout, board, inputs,
+    flopPolicy: policy, laterPolicy: later, laterMix, samples, onlyHand: hand, sampleSeed });
+  const row = result.rows[hand] ?? null;
+  return { node: result.node, actor: result.actor, pot_bb: result.pot_bb, street, row,
+    ...(!row || result.unreachable ? { unreachable: true } : {}) };
 }
 
 // Pure per-flop generator for tests and batch generation. Optional subsets are useful for
