@@ -104,14 +104,14 @@ function ScoreChart({ progress }) {
   const line = progress.series.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
   return <section className="analysis-card analysis-score" aria-labelledby="analysis-score-title">
     <header className="analysis-card-head">
-      <h2 id="analysis-score-title">Solvea AI Score の推移</h2>
+      <h2 id="analysis-score-title">EvionAI Score の推移</h2>
       <span className="analysis-caption">保存済みレンジとの一致度</span>
       <InfoTip label="スコアの計算方法">
         <p>各回答を同じ局面・ハンドの推定頻度と比べ、「選んだ行動の頻度 ÷ 最頻行動の頻度」で採点します。線は直近10回答の移動平均です（復習の再回答も含む）。推定方針が更新されると過去分も再計算されます。</p>
       </InfoTip>
     </header>
     <svg className="analysis-score-chart" viewBox="0 0 720 112" preserveAspectRatio="none" role="img"
-      aria-label={localized(`Solvea AI Score over time. ${progress.answered} answers; average of the last ${progress.recentCount} answers: ${pct(progress.current)}.`, `Solvea AI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${pct(progress.current)}。`)}>
+      aria-label={localized(`EvionAI Score over time. ${progress.answered} answers; average of the last ${progress.recentCount} answers: ${pct(progress.current)}.`, `EvionAI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${pct(progress.current)}。`)}>
       <defs><linearGradient id="score-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="var(--accent)" stopOpacity=".28" /><stop offset="1" stopColor="var(--accent)" stopOpacity="0" /></linearGradient></defs>
       {[1, 0.5, 0].map(level => <g key={level}><line className="grid" x1={left} x2={right} y1={y(level)} y2={y(level)} /><text x="0" y={y(level) + 3.5}>{level * 100}</text></g>)}
       {progress.series.length > 1 && <polygon className="area" points={`${left},${bottom} ${line} ${x(progress.series.length - 1)},${bottom}`} />}
@@ -163,7 +163,7 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
     </header>
 
     <div className="analysis-kpis">
-      <Kpi label="Solvea AI Score" accent value={progress.current == null ? "—" : <>{Math.round(progress.current * 100)}<small>%</small></>}
+      <Kpi label="EvionAI Score" accent value={progress.current == null ? "—" : <>{Math.round(progress.current * 100)}<small>%</small></>}
         sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)} · 10回答前比</span>} />
       <Kpi label="正答率" value={stats.answered ? <>{Math.round(stats.rate * 100)}<small>%</small></> : "—"} sub={`${stats.answered}回答`} />
       <Kpi label="プレイスタイル" value={analysis.ready ? analysis.style.label : "判定中"} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>

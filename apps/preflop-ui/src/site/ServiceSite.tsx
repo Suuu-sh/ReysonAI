@@ -34,7 +34,7 @@ function Brand({ inverted = false }: { inverted?: boolean }) {
   const { copy } = useSite();
   return <a className={`site-brand${inverted ? " site-brand-footer" : ""}`} href="/" aria-label={copy.common.home}>
     <span className="site-brand-mark" aria-hidden="true"><span /></span>
-    <span>Solvea<span className="site-brand-period">.</span></span>
+    <span>EvionAI<span className="site-brand-period">.</span></span>
   </a>;
 }
 
@@ -98,7 +98,7 @@ function RangePreview({ compact = false }: { compact?: boolean }) {
   }
 
   return <div className={`site-product-frame${compact ? " site-product-frame-compact" : ""}`}>
-    <div className="site-frame-top"><span className="site-frame-brand"><span className="site-frame-logo">✦</span> SOLVEA <span>{c.preview.explorer}</span></span><span className="site-frame-status"><span /> AI SOLUTION</span></div>
+    <div className="site-frame-top"><span className="site-frame-brand"><span className="site-frame-logo">✦</span> EVIONAI <span>{c.preview.explorer}</span></span><span className="site-frame-status"><span /> AI SOLUTION</span></div>
     <div className="site-frame-toolbar">
       <div><span className="site-frame-overline">{c.preview.currentSpot}</span><strong>{c.preview.cash} <span>/</span> 100BB <span>/</span> {mode === "opening" ? c.preview.open : c.preview.response}</strong></div>
       <span className="site-frame-pill">{c.preview.preflop} <ArrowDown size={12} weight="bold" aria-hidden="true" /></span>
@@ -209,7 +209,7 @@ function SimpleStrategy() {
       <div className="site-decision-cards">
         <div className="site-decision-card site-decision-complex"><span>{c.simple.mixed}</span><strong>A5s</strong><div><span>{c.common.raise}</span><b>47%</b></div><div><span>{c.common.call}</span><b>38%</b></div><div><span>{c.common.fold}</span><b>15%</b></div><small>{c.simple.illustration}</small></div>
         <div className="site-decision-arrow"><ArrowRight size={22} weight="bold" /></div>
-        <div className="site-decision-card site-decision-solvea"><span>{c.simple.simpleView}</span><strong>A5s</strong><div><span className="site-action-dot is-raise" />{c.common.raise} <Check size={23} weight="bold" /></div><small>{c.simple.oneDecision}</small></div>
+        <div className="site-decision-card site-decision-evion"><span>{c.simple.simpleView}</span><strong>A5s</strong><div><span className="site-action-dot is-raise" />{c.common.raise} <Check size={23} weight="bold" /></div><small>{c.simple.oneDecision}</small></div>
       </div>
     </div>
   </section>;
@@ -223,7 +223,7 @@ function Solution() {
 function Adaptive() {
   const { copy: c } = useSite();
   const [example, setExample] = useState(0);
-  return <section className="site-section site-adaptive"><div className="site-container site-adaptive-inner"><div className="site-adaptive-copy"><span className="site-soon-tag">{c.common.comingSoon}</span><Eyebrow>{c.adaptive.eyebrow}</Eyebrow><h2>{c.adaptive.title1}<br />{c.adaptive.title2} <span>{c.adaptive.title3}</span></h2><p>{c.adaptive.description}</p><div className="site-prompt-list"><span>{c.adaptive.promptLabel}</span>{c.adaptive.examples.map((item, index) => <button type="button" key={item.prompt} aria-pressed={example === index} onClick={() => setExample(index)}>“{item.prompt}” <ArrowUpRight size={15} /></button>)}</div><small className="site-concept-note">{c.adaptive.note}</small></div><div className="site-chat-frame" aria-live="polite"><div className="site-chat-top"><span><span className="site-chat-symbol">✦</span> {c.adaptive.tableContext}</span><span>{c.adaptive.concept}</span></div><div className="site-chat-content"><span className="site-chat-divider">{c.adaptive.personal}</span><div className="site-chat-user">{c.adaptive.examples[example].prompt}</div><div className="site-chat-answer"><span className="site-chat-avatar">✦</span><div><strong>Solvea <span>· {c.adaptive.preview}</span></strong><p>{c.adaptive.examples[example].response}</p></div></div><div className="site-chat-note"><Minus size={16} /> {c.adaptive.future}</div></div><div className="site-chat-input">{c.adaptive.input} <ArrowUpRight size={18} /></div></div></div></section>;
+  return <section className="site-section site-adaptive"><div className="site-container site-adaptive-inner"><div className="site-adaptive-copy"><span className="site-soon-tag">{c.common.comingSoon}</span><Eyebrow>{c.adaptive.eyebrow}</Eyebrow><h2>{c.adaptive.title1}<br />{c.adaptive.title2} <span>{c.adaptive.title3}</span></h2><p>{c.adaptive.description}</p><div className="site-prompt-list"><span>{c.adaptive.promptLabel}</span>{c.adaptive.examples.map((item, index) => <button type="button" key={item.prompt} aria-pressed={example === index} onClick={() => setExample(index)}>“{item.prompt}” <ArrowUpRight size={15} /></button>)}</div><small className="site-concept-note">{c.adaptive.note}</small></div><div className="site-chat-frame" aria-live="polite"><div className="site-chat-top"><span><span className="site-chat-symbol">✦</span> {c.adaptive.tableContext}</span><span>{c.adaptive.concept}</span></div><div className="site-chat-content"><span className="site-chat-divider">{c.adaptive.personal}</span><div className="site-chat-user">{c.adaptive.examples[example].prompt}</div><div className="site-chat-answer"><span className="site-chat-avatar">✦</span><div><strong>EvionAI <span>· {c.adaptive.preview}</span></strong><p>{c.adaptive.examples[example].response}</p></div></div><div className="site-chat-note"><Minus size={16} /> {c.adaptive.future}</div></div><div className="site-chat-input">{c.adaptive.input} <ArrowUpRight size={18} /></div></div></div></section>;
 }
 
 function Learning() {
@@ -240,7 +240,7 @@ function Levels() {
 
 function Comparison() {
   const { copy: c } = useSite();
-  return <section className="site-section site-comparison"><div className="site-container"><SectionHeading eyebrow={c.comparison.eyebrow} title={<>{c.comparison.title1}<br />{c.comparison.title2}</>} description={c.comparison.description} /><div className="site-comparison-grid"><div className="site-comparison-card"><div className="site-comparison-icon">∑</div><h3>{c.comparison.solver}</h3><p>{c.comparison.solverDescription}</p><ul>{c.comparison.solverFeatures.map(feature => <li key={feature}>{feature}</li>)}</ul><span>{c.comparison.solverTag}</span></div><div className="site-comparison-card is-solvea"><div className="site-comparison-icon">✦</div><h3>Solvea</h3><p>{c.comparison.solveaDescription}</p><ul>{c.comparison.solveaFeatures.map(feature => <li key={feature}>{feature}</li>)}</ul><span>{c.comparison.solveaTag}</span></div></div></div></section>;
+  return <section className="site-section site-comparison"><div className="site-container"><SectionHeading eyebrow={c.comparison.eyebrow} title={<>{c.comparison.title1}<br />{c.comparison.title2}</>} description={c.comparison.description} /><div className="site-comparison-grid"><div className="site-comparison-card"><div className="site-comparison-icon">∑</div><h3>{c.comparison.solver}</h3><p>{c.comparison.solverDescription}</p><ul>{c.comparison.solverFeatures.map(feature => <li key={feature}>{feature}</li>)}</ul><span>{c.comparison.solverTag}</span></div><div className="site-comparison-card is-solvea"><div className="site-comparison-icon">✦</div><h3>EvionAI</h3><p>{c.comparison.solveaDescription}</p><ul>{c.comparison.solveaFeatures.map(feature => <li key={feature}>{feature}</li>)}</ul><span>{c.comparison.solveaTag}</span></div></div></div></section>;
 }
 
 function Pricing() {
@@ -255,7 +255,7 @@ function FinalCta() {
 
 function Footer() {
   const { copy: c } = useSite();
-  return <footer className="site-footer"><div className="site-container"><div className="site-footer-top"><div><Brand inverted /><p>{c.footer.tagline}</p></div><div className="site-footer-links"><div><span>{c.footer.product}</span><a href="#how">{c.footer.how}</a><a href="#solution">AI Solution</a><a href="/app">{c.footer.open}</a></div><div><span>{c.footer.explore}</span><a href="#pricing">{c.footer.pricing}</a><a href="#why">{c.footer.about}</a><span className="site-footer-unavailable">{c.footer.privacy}</span><span className="site-footer-unavailable">{c.footer.terms}</span></div></div></div><p className="site-disclaimer">{c.footer.disclaimer}</p><div className="site-footer-bottom"><span>© {new Date().getFullYear()} Solvea</span><span>{c.footer.madeFor} <span>✦</span></span></div></div></footer>;
+  return <footer className="site-footer"><div className="site-container"><div className="site-footer-top"><div><Brand inverted /><p>{c.footer.tagline}</p></div><div className="site-footer-links"><div><span>{c.footer.product}</span><a href="#how">{c.footer.how}</a><a href="#solution">AI Solution</a><a href="/app">{c.footer.open}</a></div><div><span>{c.footer.explore}</span><a href="#pricing">{c.footer.pricing}</a><a href="#why">{c.footer.about}</a><span className="site-footer-unavailable">{c.footer.privacy}</span><span className="site-footer-unavailable">{c.footer.terms}</span></div></div></div><p className="site-disclaimer">{c.footer.disclaimer}</p><div className="site-footer-bottom"><span>© {new Date().getFullYear()} EvionAI</span><span>{c.footer.madeFor} <span>✦</span></span></div></div></footer>;
 }
 
 export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; onLocaleChange: () => void }) {

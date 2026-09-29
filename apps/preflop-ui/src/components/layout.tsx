@@ -44,12 +44,12 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
   return (
     <>
     {!collapsed && <div className="sidebar-backdrop" aria-hidden="true" onClick={() => toggle(true)} />}
-    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="SolveaAI サイドバー">
+    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="EvionAI サイドバー">
       <div className="sidebar-heading">
         <div className="brand">
           <Spade size={30} weight="fill" />
           <div className="brand-copy">
-            Solvea<span>AI</span>
+            Evion<span>AI</span>
             <small>Play Closer to Perfect</small>
           </div>
         </div>

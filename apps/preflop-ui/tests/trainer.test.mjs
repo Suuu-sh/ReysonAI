@@ -160,7 +160,7 @@ test("SB open analysis conditions on the drill's available fold/open choices", (
   assert.equal(stats.metrics.fold.expected, 0);
 });
 
-test("Solvea AI Score follows each valid answer, including repeated review, independent of grades", () => {
+test("EvionAI Score follows each valid answer, including repeated review, independent of grades", () => {
   const spot = spotById.get("UTG_open");
   const [hand, mix] = [...spot.byHand].find(([, item]) => item.open > 0.2 && item.open < 0.4);
   const minority = mix.open < mix.fold ? "open" : "fold";
@@ -178,7 +178,7 @@ test("Solvea AI Score follows each valid answer, including repeated review, inde
   assert.deepEqual(scoreProgress([]), { answered: 0, windowSize: 10, recentCount: 0, current: null, series: [] });
 });
 
-test("Solvea AI Score uses a bounded rolling window and normalizes SB offered actions", () => {
+test("EvionAI Score uses a bounded rolling window and normalizes SB offered actions", () => {
   const history = [
     { spotId: "UTG_open", hand: "AA", action: "fold" },
     { spotId: "UTG_open", hand: "AA", action: "open" },
