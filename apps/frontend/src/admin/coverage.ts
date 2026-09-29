@@ -1,19 +1,22 @@
 // Range coverage catalog for the admin dashboard: which spots are persisted,
 // and which spots of the preflop tree still need an authored range.
 // Pure data (no React) so tests and scripts can reuse it.
+import { dataset } from "../estimated/datasets.ts";
 import { positions } from "../estimated/sizing.ts";
 import { coldThreeBetSpots } from "../estimated/cold-three-bet-responses.ts";
 import { BUILT, formatOptions } from "../estimated/game-formats.ts";
-import opening from "../estimated/opening-ranges.json" with { type: "json" };
-import responses from "../estimated/preflop-ranges.json" with { type: "json" };
-import threeBets from "../estimated/three-bet-responses.json" with { type: "json" };
-import fourBets from "../estimated/four-bet-responses.json" with { type: "json" };
-import fiveBets from "../estimated/five-bet-responses.json" with { type: "json" };
-import limp from "../estimated/limp-responses.json" with { type: "json" };
-import coldThreeBets from "../estimated/cold-three-bet-responses.json" with { type: "json" };
-import multiway from "../estimated/multiway-responses.json" with { type: "json" };
-import squeezes from "../estimated/squeeze-responses.json" with { type: "json" };
-import limpDeep from "../estimated/limp-deep-responses.json" with { type: "json" };
+
+// Published preflop datasets (src/estimated/datasets.ts); preloaded before this module runs in the browser.
+const opening = dataset("opening-ranges");
+const responses = dataset("preflop-ranges");
+const threeBets = dataset("three-bet-responses");
+const fourBets = dataset("four-bet-responses");
+const fiveBets = dataset("five-bet-responses");
+const limp = dataset("limp-responses");
+const coldThreeBets = dataset("cold-three-bet-responses");
+const multiway = dataset("multiway-responses");
+const squeezes = dataset("squeeze-responses");
+const limpDeep = dataset("limp-deep-responses");
 
 const RFI = positions.slice(0, 5); // UTG..SB
 const after = seat => positions.slice(positions.indexOf(seat) + 1);

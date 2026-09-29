@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { loadDataset } from "./datasets.ts";
 import { positions } from "./sizing.ts";
 import { multiwayMatchups, multiwayMatrixModel, validateMultiwayDataset } from "./multiway-responses.ts";
 import { squeezeMatrixModel, validateSqueezeDataset } from "./squeeze-responses.ts";
@@ -6,12 +7,11 @@ import { coldThreeBetMatrixModel, validateColdThreeBetDataset } from "./cold-thr
 
 // Multiway, squeeze-response and cold-3bet ranges are loaded together, only once a
 // path with callers or a 3bet needs them (about 1.7MB of JSON).
-const files = ["./multiway-responses.json", "./squeeze-responses.json", "./cold-three-bet-responses.json"];
-const loaders = import.meta.glob(["./multiway-responses.json", "./squeeze-responses.json", "./cold-three-bet-responses.json"], { import: "default" });
+const files = ["multiway-responses", "squeeze-responses", "cold-three-bet-responses"];
 let pending;
 
 export function loadExtendedDatasets(responses, openings) {
-  pending ??= Promise.all(files.map(file => loaders[file] ? loaders[file]() : Promise.reject(new Error(`${file.slice(2)} がありません。`))))
+  pending ??= Promise.all(files.map(file => loadDataset(file)))
     .then(([multiwaySource, squeezeSource, coldSource]) => {
       if (!responses || !openings) throw new Error("前段のオープン・応答データを読み込めません。");
       const multiway = validateMultiwayDataset(multiwaySource);

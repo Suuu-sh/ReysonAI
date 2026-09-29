@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
+import { loadDataset } from "./datasets.ts";
 import { validateFiveBetDataset } from "./five-bet-dataset.ts";
 
 export { validateFiveBetDataset };
 
 // Loaded only when a 5bet all-in is selected; the dataset is not needed for any other path.
-const loaders = import.meta.glob("./five-bet-responses.json", { import: "default" });
 let pending;
 
 export function loadFiveBetDataset() {
-  const loader = loaders["./five-bet-responses.json"];
-  if (!loader) return Promise.reject(new Error("5bet応答データがありません。"));
-  pending ??= loader().then(validateFiveBetDataset).catch(error => { pending = undefined; throw error; });
+  pending ??= loadDataset("five-bet-responses").then(validateFiveBetDataset).catch(error => { pending = undefined; throw error; });
   return pending;
 }
 

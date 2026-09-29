@@ -1,8 +1,11 @@
 // Preflop drill: question picking, grading and study notes built on the saved estimated ranges.
-import openingSource from "../estimated/opening-ranges.json" with { type: "json" };
-import responseSource from "../estimated/preflop-ranges.json" with { type: "json" };
+import { dataset } from "../estimated/datasets.ts";
 import { hands } from "../data.ts";
 import { productLocale } from "../i18n.ts";
+
+// Published preflop datasets (src/estimated/datasets.ts); preloaded before this module runs in the browser.
+const openingSource = dataset("opening-ranges");
+const responseSource = dataset("preflop-ranges");
 
 export const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 

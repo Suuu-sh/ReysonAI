@@ -1,14 +1,11 @@
+import { dataset as publishedDataset } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
 import { hands } from "../data.ts";
 import { RANGE_SECTION, Sidebar } from "../components/layout.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { ActionBars, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.tsx";
-import source from "./preflop-ranges.json";
-import openingSource from "./opening-ranges.json";
-import limpSource from "./limp-responses.json";
 import { findFourBetSpot, fourBetMatrixModel, loadFourBetDataset } from "./four-bet-responses.ts";
-import threeBetSource from "./three-bet-responses.json";
 import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "./three-bet-responses.ts";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.ts";
 import { LIMP_RERAISE_RESPONSE_ID, findLimpResponseSpot, limpResponsesMatrixModel, validateLimpResponses } from "./limp-responses.ts";
@@ -33,9 +30,15 @@ import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./P
 import { PreflopCallEvBars } from "./PreflopCallEvBars.tsx";
 import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, laterStart, recognizedFlop } from "./postflop-trial.ts";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.ts";
-import tableAdjustments from "./table-profile-adjustments.json";
 import { DEFAULT_PROFILE, adjustOpeningSpot, adjustmentReason, describeProfile, isDefaultProfile, markAdjustedModel, normalizeProfile } from "./table-profile.ts";
 import "./ranges.css";
+
+// Published preflop datasets (src/estimated/datasets.ts); preloaded before this module runs in the browser.
+const source = publishedDataset("preflop-ranges");
+const openingSource = publishedDataset("opening-ranges");
+const limpSource = publishedDataset("limp-responses");
+const threeBetSource = publishedDataset("three-bet-responses");
+const tableAdjustments = publishedDataset("table-profile-adjustments");
 
 let dataset;
 let dataError;
@@ -56,9 +59,9 @@ try {
   threeBetDataset = validateThreeBetDataset(threeBetSource, dataset, openingDataset);
 } catch (error) { threeBetDataError = error.message; }
 
-// Raw glob keeps missing files and invalid JSON inside the explicit error boundary.
-const fourBetFiles = import.meta.glob("./four-bet-responses.json", { eager: true, query: "?raw", import: "default" });
-const fourBetState = loadFourBetDataset(fourBetFiles["./four-bet-responses.json"], dataset, threeBetDataset, openingDataset);
+// A missing dataset stays inside the explicit error boundary, like invalid JSON.
+const fourBetRaw = (() => { try { return JSON.stringify(publishedDataset("four-bet-responses")); } catch { return undefined; } })();
+const fourBetState = loadFourBetDataset(fourBetRaw, dataset, threeBetDataset, openingDataset);
 
 const selectionStorageKey = "solveaai:estimated-selection:v1";
 const displayModeStorageKey = displayModeKey;

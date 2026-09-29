@@ -1,8 +1,11 @@
 // Consistency audit for persisted estimated ranges. Shared by the CLI, tests and the build pipeline.
+import { dataset } from "./datasets.ts";
 import { openSizeFor } from "./sizing.ts";
-import handStrength from "./hand-strength.json" with { type: "json" };
-import callEquitiesTable from "./call-equities.json" with { type: "json" };
 import { callContexts, callFacts, validCallEquities, callDefenseCapacity, limpFiveBetFoldThreshold, limpFourBetFoldThreshold, limpReraiseFoldThreshold, squeezeFoldThreshold } from "./call-ev.ts";
+
+// Published preflop datasets (src/estimated/datasets.ts); preloaded before this module runs in the browser.
+const handStrength = dataset("hand-strength");
+const callEquitiesTable = dataset("call-equities");
 const ranks = "AKQJT98765432";
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 const blind = { SB: 0.5, BB: 1 };

@@ -4,9 +4,10 @@ import { POSTFLOP_SPOTS } from "../../scripts/postflop-ai/spots.mjs";
 import postflopArtifacts from "virtual:postflop-artifacts";
 import { formatLabel } from "../estimated/game-formats.ts";
 import "./admin.css";
+import { hasDataset } from "../estimated/datasets.ts";
 
 // Reason files are only checked for existence here; nothing is loaded.
-const reasonIds = new Set(Object.keys(import.meta.glob("../estimated/reasons/*.json")).map(path => path.split("/").pop().replace(".json", "")));
+const reasonIds = { has: id => hasDataset(`reasons/${id}`) };
 // Spots with a hand-authored rules module (scripts/postflop-ai/authored/<slug>.mjs) own their policy.
 const authoredSlugs = Object.keys(import.meta.glob("../../scripts/postflop-ai/authored/*.mjs")).map(path => path.split("/").pop().replace(".mjs", "-v1"));
 const authoredIds = POSTFLOP_SPOTS.filter(spot => authoredSlugs.includes(spot.slug)).map(spot => spot.id);

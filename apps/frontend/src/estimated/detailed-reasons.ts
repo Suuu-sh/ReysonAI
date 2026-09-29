@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 
-// Each spot's detailed reasons ship as a separate chunk, fetched only when a hand's details open.
-const loaders = import.meta.glob("./reasons/*.json", { import: "default" });
+import { hasDataset, loadDataset } from "./datasets.ts";
+
+// Each spot's detailed reasons are a separate dataset, fetched only when a hand's details open.
 const cache = new Map();
 
 export function hasDetailedReasons(spotId) {
-  return Boolean(spotId && loaders[`./reasons/${spotId}.json`]);
+  return Boolean(spotId && hasDataset(`reasons/${spotId}`));
 }
 
 export function loadDetailedReasons(spotId) {
   if (!hasDetailedReasons(spotId)) return Promise.resolve(null);
-  if (!cache.has(spotId)) cache.set(spotId, loaders[`./reasons/${spotId}.json`]().catch(error => { cache.delete(spotId); throw error; }));
+  if (!cache.has(spotId)) cache.set(spotId, loadDataset(`reasons/${spotId}`).catch(error => { cache.delete(spotId); throw error; }));
   return cache.get(spotId);
 }
 

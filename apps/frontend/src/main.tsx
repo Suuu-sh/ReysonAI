@@ -6,9 +6,13 @@ import { ja } from "./site/content-ja.ts";
 import "./styles.css";
 import "./site/site.css";
 import { productLocale, rememberLocale } from "./locale.ts";
+import { ADMIN_DATASETS, APP_DATASETS, datasetNames, preloadDatasets } from "./estimated/datasets.ts";
 
-const ProductApp = lazy(() => import("./ProductApp.tsx"));
-const AdminDashboard = lazy(() => import("./admin/AdminDashboard.tsx"));
+// The app and the admin read preflop datasets synchronously, so each route preloads them
+// (and the dataset index) before its module is imported.
+const withDatasets = (names, load) => () => Promise.all([preloadDatasets(names), datasetNames()]).then(load);
+const ProductApp = lazy(withDatasets(APP_DATASETS, () => import("./ProductApp.tsx")));
+const AdminDashboard = lazy(withDatasets(ADMIN_DATASETS, () => import("./admin/AdminDashboard.tsx")));
 const isAdminRoute = window.location.pathname === "/admin" || window.location.pathname.startsWith("/admin/");
 const isProductRoute = window.location.pathname === "/app" || window.location.pathname.startsWith("/app/");
 const initialSiteLocale = productLocale();

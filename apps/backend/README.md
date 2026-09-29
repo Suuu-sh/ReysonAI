@@ -38,7 +38,8 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
 
 ## プリフロップのデータセット（D1）
 
-`apps/frontend/src/estimated/**/*.json` が正本で、D1 `evionai` はその配信用の写しです。
+`apps/frontend/src/estimated/**/*.json` が正本で、D1 `evionai` はその配信用の写しです。アプリは同梱せず、
+`VITE_API_BASE` の Worker から先読みします（未設定なら Vite の同じ形のローカル経路）。
 
 - `GET /v1/preflop/datasets` データセット名とハッシュの一覧
 - `GET /v1/preflop/datasets/<name>` JSON 本文（例: `opening-ranges`, `reasons/BB_vs_BTN`）。ETag 付き
@@ -65,7 +66,7 @@ npx wrangler deploy
 `--execute` を付けなければ `apps/frontend/.local/evionai-d1.sql` を作るだけです。`--execute local` と
 `npx wrangler dev --local` でローカル確認できます。ハンド別EVは D1 の1文100KB制限に収めるため
 盤面×履歴ごとの行に分けて保存し、Worker で元のファイル形に戻します。
-アプリ側は `VITE_POSTFLOP_API=https://<worker>` を付けてビルドすると Worker を使います。
+アプリ側は `VITE_API_BASE=https://<worker>` を付けてビルドすると Worker を使います。
 
 ## Cloudflare設定
 

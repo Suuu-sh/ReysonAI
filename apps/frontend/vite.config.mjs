@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { localEstimateMiddleware } from "./scripts/local-estimate.mjs";
+import { localDatasetsMiddleware } from "./scripts/local-datasets.mjs";
 import { localPostflopMiddleware } from "./scripts/postflop-ai/local-view.mjs";
 import { handEvMiddleware } from "./scripts/postflop-ai/hand-ev.mjs";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -51,8 +52,9 @@ export default defineConfig({
         clientFiles: ["./src/main.tsx"],
       },
   },
-  plugins: [react(), postflopArtifacts, { name: "retired-japanese-route", configureServer(server) { server.middlewares.use(rejectRetiredJapanesePath); }, configurePreviewServer(server) { server.middlewares.use(rejectRetiredJapanesePath); } }, { name: "local-codex-estimates", configureServer(server) {
+  plugins: [react(), postflopArtifacts, { name: "retired-japanese-route", configureServer(server) { server.middlewares.use(rejectRetiredJapanesePath); }, configurePreviewServer(server) { server.middlewares.use(rejectRetiredJapanesePath); server.middlewares.use(localDatasetsMiddleware); } }, { name: "local-codex-estimates", configureServer(server) {
     server.middlewares.use(localEstimateMiddleware);
+    server.middlewares.use(localDatasetsMiddleware);
     server.middlewares.use(localPostflopMiddleware);
     server.middlewares.use(handEvMiddleware);
   } }],

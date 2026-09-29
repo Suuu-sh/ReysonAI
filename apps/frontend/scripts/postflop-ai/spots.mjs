@@ -8,11 +8,14 @@
 //
 // The flop tree depends on who made the last preflop raise: if that player is out of
 // position the tree is "oop_leads", otherwise "oop_checks" (the first pilot's tree; tree.mjs).
-import responses from "../../src/estimated/preflop-ranges.json" with { type: "json" };
-import threeBetResponses from "../../src/estimated/three-bet-responses.json" with { type: "json" };
-import openingRanges from "../../src/estimated/opening-ranges.json" with { type: "json" };
-import limpResponses from "../../src/estimated/limp-responses.json" with { type: "json" };
+import { dataset } from "../../src/estimated/datasets.ts";
 import { gameConfig, isInPosition, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb } from "../../src/estimated/sizing.ts";
+
+// Published preflop datasets (src/estimated/datasets.ts); preloaded before this module runs in the browser.
+const responses = dataset("preflop-ranges");
+const threeBetResponses = dataset("three-bet-responses");
+const openingRanges = dataset("opening-ranges");
+const limpResponses = dataset("limp-responses");
 
 export const DEFAULT_SPOT_ID = "BTN_open_BB_call";
 const BLINDS = { SB: 0.5, BB: 1 };
