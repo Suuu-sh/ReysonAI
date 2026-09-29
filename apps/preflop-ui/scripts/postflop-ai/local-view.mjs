@@ -6,7 +6,7 @@ import { SIMULATION_VERSION } from "./simulation.mjs";
 import { boardTexture, handTier, parseCards, runoutTexture, TIERS } from "./model.mjs";
 import { explainCombo } from "./explain.mjs";
 import { explainLaterCombo } from "./explain-later.mjs";
-import { laterHandEvResult, loadLaterHandEv } from "./later-hand-ev.mjs";
+import { laterHandEvForHand, laterHandEvResult, loadLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { FLOP_BETS, flopState } from "./tree.mjs";
 import { LATER_NODES } from "./later-tree.mjs";
@@ -209,6 +209,16 @@ export function postflopResponse(pathname, params) {
     if (report.source_hash !== inputs.fingerprint || report.policy_hash !== candidate.metadata.policy_hash ||
         report.simulation_version !== SIMULATION_VERSION || report.spot !== inputs.spot.id || report.results?.length !== 72) {
       throw new Error("候補に対応する最新の監査レポートがありません。");
+    }
+    if (pathname === "/local-postflop-later-hand-ev" && !params.has("key")) {
+      // On-demand EV of one hand at the current turn/river decision (deterministic per input).
+      const hand = params.get("hand");
+      if (!hand || !params.get("flop") || !params.get("turn")) return { status: 400, body: { error: "flop・turn・hand が必要です。" } };
+      const actions = name => (params.get(name) ?? "").split(",").filter(Boolean);
+      const result = laterHandEvForHand({ flop: params.get("flop"), flopActions: actions("flopActions"), turn: params.get("turn"),
+        turnActions: actions("turnActions"), river: params.get("river") || null, riverActions: actions("riverActions"),
+        hand, inputs, flopPolicy: candidate.policy, laterPolicy: laterCandidate.policy });
+      return { status: 200, body: { spot: inputs.spot.id, hand, kind: "ai_estimate_not_gto", ...result } };
     }
     if (pathname === "/local-postflop-later-hand-ev") {
       const ev = loadLaterHandEv(inputs, candidate, laterCandidate);

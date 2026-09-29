@@ -72,6 +72,8 @@ test("worker views equal the local middleware views for published artifacts", { 
   const cases = [
     ["board", "/local-postflop", { spot: spot.id, board: boards()[0].id }],
     ["later", "/local-postflop-later", { spot: spot.id, flop: "As7d2c", flopActions: "check", turn: "3s" }],
+    ["later-hand-ev", "/local-postflop-later-hand-ev", { spot: spot.id, flop: "As7d2c", flopActions: "check", turn: "3s", hand: "AKo" }],
+    ["later-hand-ev", "/local-postflop-later-hand-ev", { spot: spot.id, flop: "As7d2c", flopActions: "check", turn: "3s", turnActions: "check,check", river: "9h", hand: "AKo" }],
   ];
   for (const [route, path, query] of cases) {
     const params = new URLSearchParams(query);
