@@ -2,6 +2,7 @@
 // (copied) turn/river rules with a spot-specific local Codex candidate, keeping whichever
 // simulates better. The copied rules and their report are kept as *.generic.json; nothing
 // is deleted. AI estimate, not GTO.
+import { fileURLToPath } from "node:url";
 import { copyFileSync, existsSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { generateLater, loadCandidate, loadLaterCandidate } from "./generate.mjs";
@@ -45,7 +46,8 @@ export function compareLaterCandidate({ inputs, flopPolicy, genericPolicy, candi
   return adoptionDecision({ candidate, genericReport, candidateReport, genericFindings, candidateFindings });
 }
 
-for (const spotId of process.argv.slice(2)) {
+const isCli = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+for (const spotId of isCli ? process.argv.slice(2) : []) {
   const inputs = loadInputs(spotId), paths = artifactPaths(inputs.spot), flop = loadCandidate(inputs);
   const generic = { policy: paths.laterCandidate.replace(/\.json$/, ".generic.json"), report: paths.report.replace(/\.json$/, ".generic.json") };
   if (!existsSync(generic.policy)) {
