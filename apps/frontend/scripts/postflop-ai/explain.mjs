@@ -1,7 +1,7 @@
 // Explains one private combo's flop options against the opponent's AI-estimated range.
 // Read-only: it reuses the audited candidate policy and never changes it.
 import { evaluate, seededRandom, seedFor } from "../lib/equity.mjs";
-import { seatRange } from "./inputs.mjs";
+import { seatRange } from "./browser-inputs.mjs";
 import { handTier, parseCards } from "./model.mjs";
 import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.mjs";
 import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseNodeAfter } from "./tree.mjs";

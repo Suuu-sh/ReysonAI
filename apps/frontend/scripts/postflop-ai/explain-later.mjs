@@ -1,7 +1,7 @@
 // Evidence for one private combo on the saved AI-estimated turn/river policy.
 // This is a range-weighted estimate, not a solver or GTO result.
 import { evaluate } from "../lib/equity.mjs";
-import { boards, seatRange } from "./inputs.mjs";
+import { boards, seatRange } from "./browser-inputs.mjs";
 import { handTier, parseCards, runoutTexture } from "./model.mjs";
 import { scaleByPath, validatePolicy } from "./policy.mjs";
 import { LATER_NODES, laterNodeRole } from "./later-tree.mjs";
