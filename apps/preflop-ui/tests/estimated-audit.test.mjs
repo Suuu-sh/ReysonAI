@@ -7,7 +7,7 @@ import handStrength from "../src/estimated/hand-strength.json" with { type: "jso
 import { hands } from "../src/data.ts";
 
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
-const datasets = () => ({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), fiveBets: load("five-bet-responses"), multiway: load("multiway-responses"), squeezes: load("squeeze-responses"), limp: load("limp-responses"), coldThreeBets: load("cold-three-bet-responses") });
+const datasets = () => ({ opening: load("opening-ranges"), responses: load("preflop-ranges"), threeBets: load("three-bet-responses"), fourBets: load("four-bet-responses"), fiveBets: load("five-bet-responses"), multiway: load("multiway-responses"), squeezes: load("squeeze-responses"), limp: load("limp-responses"), limpDeep: load("limp-deep-responses"), coldThreeBets: load("cold-three-bet-responses") });
 
 test("persisted estimates pass the consistency audit", () => {
   const report = auditEstimates(datasets());
@@ -28,7 +28,7 @@ test("CLI reports balance counts and spot lists but does not fail for their warn
     assert.equal(report.balanceSummary[check].count, matches.length);
     assert.deepEqual(report.balanceSummary[check].spots, [...new Set(matches.map(f => f.spot))].sort());
   }
-  assert.equal(report.rangeBalance.length, 136); // +36 squeeze-response spots, +1 BB vs SB limp-reraise, +20 cold 3bet responses
+  assert.equal(report.rangeBalance.length, 138); // +36 squeeze-response spots, +1 BB vs SB limp-reraise, +20 cold 3bet responses, +2 limp 4bet / all-in responses
 });
 
 test("audit rejects an overfolding 4bet response", () => {

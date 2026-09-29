@@ -24,7 +24,20 @@ export function limpReraiseFoldThreshold(spot) {
   return risk / (risk + spot.open_size_bb + spot.iso_size_bb);
 }
 
-export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets }) {
+// Deep limp branch (limp-deep-responses.json). Break-evens count the whole pot
+// before the raise, like limpReraiseFoldThreshold:
+// BB's 4bet risks 26 − 3.5 = 22.5 to win 3.5 + 10.5 = 14 → 61.6%;
+// SB's all-in risks 100 − 10.5 = 89.5 to win 10.5 + 26 = 36.5 → 71.0%.
+export function limpFourBetFoldThreshold(spot) {
+  const risk = spot.four_bet_size_bb - spot.iso_size_bb;
+  return risk / (risk + spot.iso_size_bb + spot.limp_reraise_size_bb);
+}
+export function limpFiveBetFoldThreshold(spot) {
+  const risk = spot.all_in_size_bb - spot.limp_reraise_size_bb;
+  return risk / (risk + spot.limp_reraise_size_bb + spot.four_bet_size_bb);
+}
+
+export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets, limpDeep }) {
   const opens = new Map(opening.spots.map(s => [s.hero, s]));
   const response = (opener, hero) => responses.spots.find(s => s.opener === opener && s.hero === hero);
   const contexts = [];
@@ -84,6 +97,18 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
     const sbIso = limp.spots.find(s => s.id === spot.source_iso_response_id);
     add("limp_reraise", spot, [spot.opponent], spot.limp_reraise_size_bb - spot.iso_size_bb, 2 * spot.limp_reraise_size_bb,
       [range(sbIso, row => open.get(row.hand).limp / 100 * row.raise / 100)], hand => iso.get(hand).raise / 100, spot.limp_reraise_size_bb);
+  }
+  // SB facing BB's 26BB 4bet after its limp-reraise: 15.5BB more into a 52BB pot, OOP.
+  // Opponent range: BB's iso × 4bet; reach: SB's limp × limp-reraise.
+  for (const spot of limpDeep?.spots.filter(s => s.id === "SB_vs_BB_limp_four_bet") ?? []) {
+    if (!limp) throw new Error("limp-deep-responses requires limp-responses");
+    const open = byHand(opens.get("SB"));
+    const bbIso = byHand(limp.spots.find(s => s.id === spot.source_limp_response_id));
+    const sbIso = byHand(limp.spots.find(s => s.id === spot.source_iso_response_id));
+    const bbReraise = limp.spots.find(s => s.id === spot.source_limp_reraise_response_id);
+    add("limp_four_bet", spot, [spot.opponent], spot.four_bet_size_bb - spot.limp_reraise_size_bb, 2 * spot.four_bet_size_bb,
+      [range(bbReraise, row => bbIso.get(row.hand).raise / 100 * row.four_bet / 100)],
+      hand => open.get(hand).limp / 100 * sbIso.get(hand).raise / 100, spot.four_bet_size_bb);
   }
   // Facing a squeeze (S = BB or SB; with SB squeezing, BB has folded). Opponent
   // range: S's saved squeeze frequencies. The other blind is dead money.

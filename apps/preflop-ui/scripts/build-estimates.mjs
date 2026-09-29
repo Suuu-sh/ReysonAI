@@ -12,12 +12,13 @@ import { validateFourBetDataset } from "../src/estimated/four-bet-responses.ts";
 import { validateFiveBetDataset } from "../src/estimated/five-bet-dataset.ts";
 import { validateMultiwayDataset } from "../src/estimated/multiway-responses.ts";
 import { validateLimpResponses } from "../src/estimated/limp-responses.ts";
+import { validateLimpDeepResponses } from "../src/estimated/limp-deep-responses.ts";
 import { validateSqueezeDataset } from "../src/estimated/squeeze-responses.ts";
 import { validateColdThreeBetDataset } from "../src/estimated/cold-three-bet-responses.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const published = join(root, "src/estimated");
-const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "cold-three-bet-responses"];
+const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses"];
 // Order matters: each generator reads the previous stages from the staging dir.
 const generators = [
   ["python3", "generate-opening-ranges.py"],
@@ -28,6 +29,7 @@ const generators = [
   ["python3", "generate-multiway-responses.py"],
   ["python3", "generate-squeeze-responses.py"],
   ["python3", "generate-limp-responses.py"],
+  ["node", "generate-limp-deep-responses.mjs"],
   ["python3", "generate-cold-three-bet-responses.py"],
 ];
 // Keep even transient generated data in this worktree.
@@ -53,6 +55,7 @@ try {
   const multiway = load("multiway-responses");
   const squeezes = load("squeeze-responses");
   const limp = load("limp-responses");
+  const limpDeep = load("limp-deep-responses");
   const coldThreeBets = load("cold-three-bet-responses");
   validateOpeningDataset(opening);
   validateDataset(responses);
@@ -62,8 +65,9 @@ try {
   validateMultiwayDataset(multiway);
   validateSqueezeDataset(squeezes, multiway, responses, opening);
   validateLimpResponses(limp, opening);
+  validateLimpDeepResponses(limpDeep, opening, limp);
   validateColdThreeBetDataset(coldThreeBets, responses);
-  const { findings } = auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, coldThreeBets, callEquities: load("call-equities") });
+  const { findings } = auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, limpDeep, coldThreeBets, callEquities: load("call-equities") });
   for (const f of findings) console.error(`- [${f.severity}] ${f.check} · ${f.spot}: ${f.detail}`);
   const blocking = findings.filter(isBlockingAuditFinding);
   if (blocking.length) {

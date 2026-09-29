@@ -1,6 +1,6 @@
 // Constrained call-only reconciliation after the EV gate. Never changes raises,
 // admits a negative-EV call, or weakens the existing consistency audit.
-import { allowedCall, callFacts, limpReraiseFoldThreshold, squeezeFoldThreshold } from "../../src/estimated/call-ev.ts";
+import { allowedCall, callFacts, limpFourBetFoldThreshold, limpReraiseFoldThreshold, squeezeFoldThreshold } from "../../src/estimated/call-ev.ts";
 import { comboCount } from "./equity.mjs";
 import { openSizeFor } from "../../src/estimated/sizing.ts";
 const ranks = "AKQJT98765432", blind = { SB: 0.5, BB: 1 };
@@ -110,5 +110,7 @@ export function reconcileCalls(contexts, table) {
   }
   // BB facing SB's limp-reraise: SB's reraise auto-profits when BB folds more than its break-even.
   for (const c of contexts.filter(c => c.type === "limp_reraise")) defend([c], limpReraiseFoldThreshold(c.spot), c.spot.id);
+  // SB facing BB's 4bet after its limp-reraise: BB's 4bet auto-profits when SB folds more than its break-even.
+  for (const c of contexts.filter(c => c.type === "limp_four_bet")) defend([c], limpFourBetFoldThreshold(c.spot), c.spot.id);
   return changes;
 }

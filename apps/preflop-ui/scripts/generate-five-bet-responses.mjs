@@ -4,6 +4,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
+import { ALL_IN_CALL_SAMPLES as SAMPLES, MIX_BAND_PCT, allInCallFrequency as callFrequency } from "./lib/all-in-call.mjs";
 import { rakeMetadata, raked } from "../src/estimated/rake.ts";
 import { openSizeFor } from "../src/estimated/sizing.ts";
 
@@ -12,8 +13,6 @@ if (!staging) {
   console.error("Run `npm run build:estimates`; generators never write src/estimated directly.");
   process.exit(1);
 }
-const SAMPLES = 20000;
-const MIX_BAND_PCT = 2; // equity margin (pt) over which call frequency ramps from 0 to 100
 const blind = { SB: 0.5, BB: 1 };
 const load = name => JSON.parse(readFileSync(join(staging, `${name}.json`), "utf8"));
 const opening = load("opening-ranges");
@@ -21,11 +20,6 @@ const responses = load("preflop-ranges");
 const threeBets = load("three-bet-responses");
 const fourBets = load("four-bet-responses");
 const round1 = value => Math.round(value * 10) / 10;
-
-function callFrequency(marginPct) {
-  const raw = 50 + marginPct / MIX_BAND_PCT * 50;
-  return Math.max(0, Math.min(100, Math.round(raw / 5) * 5));
-}
 
 function reasonFor({ hand, equity, need, margin, call, opener, fiveBettor, fourBet, blocked }) {
   const verdict = call === 100 ? "コールします" : call === 0 ? "フォールドします" : `境界のため、コール${call}%・フォールド${100 - call}%に分けます`;

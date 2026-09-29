@@ -2,7 +2,7 @@
 import { openSizeFor } from "./sizing.ts";
 import handStrength from "./hand-strength.json" with { type: "json" };
 import callEquitiesTable from "./call-equities.json" with { type: "json" };
-import { callContexts, callFacts, validCallEquities, callDefenseCapacity, limpReraiseFoldThreshold, squeezeFoldThreshold } from "./call-ev.ts";
+import { callContexts, callFacts, validCallEquities, callDefenseCapacity, limpFiveBetFoldThreshold, limpFourBetFoldThreshold, limpReraiseFoldThreshold, squeezeFoldThreshold } from "./call-ev.ts";
 const ranks = "AKQJT98765432";
 const positions = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 const blind = { SB: 0.5, BB: 1 };
@@ -151,11 +151,11 @@ function weightedFold(spot, weight = () => 1) {
   return total ? folded / total : 0;
 }
 
-export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, coldThreeBets, callEquities = callEquitiesTable }) {
+export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, limpDeep, coldThreeBets, callEquities = callEquitiesTable }) {
   const findings = [];
   const add = (check, severity, spot, detail) => findings.push({ check, severity, spot, detail });
   const openBy = new Map(opening.spots.map(spot => [spot.hero, rows(spot)]));
-  const callModels = callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets });
+  const callModels = callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets, limpDeep });
   const capacityConflicts = [];
   const reportOverfold = (context, label, foldRate, threshold, detail) => {
     const capacity = context && validCallEquities(callEquities, context) ? callDefenseCapacity(context, callEquities) : null;
@@ -248,6 +248,51 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
         limpReraiseDefense.push({ spot: label, foldRate, threshold });
         if (foldRate > threshold) reportOverfold(callModels.find(c => c.spot === bbReraise), label, foldRate, threshold, `BBのフォールド率 ${pct(foldRate)} > 損益分岐 ${pct(threshold)}（SBがどの2枚でもリンプ・リレイズで得をする）`);
       }
+    }
+  }
+
+  // Deep limp branch (limp-deep-responses.json): SB facing BB's 4bet after its
+  // limp-reraise, then BB facing SB's all-in. Reach: SB limp × limp-reraise, and
+  // BB iso × 4bet. Each aggressor auto-profits when the responder's reach-weighted
+  // fold rate exceeds its break-even (limpFourBetFoldThreshold / limpFiveBetFoldThreshold).
+  const limpDeepDefense = [];
+  const limpDeepReach = new Map();
+  if (limpDeep) {
+    const find = (data, id) => data?.spots.find(spot => spot.id === id);
+    const sbOpenRows = openBy.get("SB");
+    const bbIso = find(limp, "BB_vs_SB_limp"), sbIso = find(limp, "SB_vs_BB_iso"), bbReraise = find(limp, "BB_vs_SB_limp_reraise");
+    const sbFourBet = find(limpDeep, "SB_vs_BB_limp_four_bet"), bbFiveBet = find(limpDeep, "BB_vs_SB_limp_five_bet");
+    if (!sbOpenRows || !bbIso || !sbIso || !bbReraise || !sbFourBet || !bbFiveBet) {
+      add("range-flow", "error", "SB limp deep", "リンプ深部（4bet・オールイン応答）の局面または前段が不足");
+    } else {
+      const sbIsoRows = rows(sbIso), bbIsoRows = rows(bbIso), bbReraiseRows = rows(bbReraise), sbFourBetRows = rows(sbFourBet);
+      const sbReach = hand => (sbOpenRows.get(hand)?.limp ?? 0) / 100 * (sbIsoRows.get(hand)?.raise ?? 0) / 100;
+      const bbReach = hand => (bbIsoRows.get(hand)?.raise ?? 0) / 100 * (bbReraiseRows.get(hand)?.four_bet ?? 0) / 100;
+      limpDeepReach.set(sbFourBet.id, sbReach).set(bbFiveBet.id, bbReach);
+      const sbLabel = "SB vs BB limp 4bet", bbLabel = "BB vs SB limp all-in";
+      for (const row of sbFourBet.hands) {
+        if (row.fold + row.call + row.all_in !== 100) add("range-flow", "error", sbLabel, `${row.hand}: fold/call/all_inの合計が100でない`);
+        if (!sbReach(row.hand) && row.fold !== 100) add("range-flow", "error", sbLabel, `${row.hand}: SBのリンプ×リレイズ0%なのに到達不能プレースホルダーでない`);
+      }
+      for (const row of bbFiveBet.hands) {
+        if (row.fold + row.call !== 100) add("range-flow", "error", bbLabel, `${row.hand}: fold/callの合計が100でない`);
+        if (!bbReach(row.hand) && (row.fold !== 100 || row.equity_vs_shove_pct !== null)) add("range-flow", "error", bbLabel, `${row.hand}: BBのアイソ×4bet 0%なのに到達不能プレースホルダーでない`);
+        if (bbReach(row.hand) && row.equity_vs_shove_pct === null) add("range-flow", "error", bbLabel, `${row.hand}: 4betしているのに対象外扱い`);
+      }
+      const shoveCombos = sbFourBet.hands.reduce((sum, row) => sum + combos(row.hand) * sbReach(row.hand) * (sbFourBetRows.get(row.hand).all_in / 100), 0);
+      if (Math.abs(shoveCombos - bbFiveBet.shove_range_combos) > 0.05 + 1e-9) {
+        add("range-flow", "error", bbLabel, `保存済みのSBオールインレンジ ${shoveCombos.toFixed(2)}コンボと応答の前提 ${bbFiveBet.shove_range_combos}コンボが一致しない`);
+      }
+      checkStrengthOrder(add, sbLabel, sbFourBet, hand => sbReach(hand) > 0);
+      checkStrengthOrder(add, bbLabel, bbFiveBet, hand => bbReach(hand) > 0);
+      const sbThreshold = limpFourBetFoldThreshold(sbFourBet);
+      const sbFold = weightedFold(sbFourBet, sbReach);
+      limpDeepDefense.push({ spot: sbLabel, foldRate: sbFold, threshold: sbThreshold });
+      if (sbFold > sbThreshold) reportOverfold(callModels.find(c => c.spot === sbFourBet), sbLabel, sbFold, sbThreshold, `SBのフォールド率 ${pct(sbFold)} > 損益分岐 ${pct(sbThreshold)}（BBがどの2枚でも4betで得をする）`);
+      const bbThreshold = limpFiveBetFoldThreshold(bbFiveBet);
+      const bbFold = weightedFold(bbFiveBet, bbReach);
+      limpDeepDefense.push({ spot: bbLabel, foldRate: bbFold, threshold: bbThreshold });
+      if (bbFold > bbThreshold) add("auto-profit", "error", bbLabel, `BBのフォールド率 ${pct(bbFold)} > 損益分岐 ${pct(bbThreshold)}（SBがどの2枚でもオールインで得をする）`);
     }
   }
 
@@ -437,6 +482,11 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     inspectRange(spot, spot.hero === "SB" ? hand => openBy.get("SB").get(hand).limp / 100
       : iso ? hand => iso.get(hand).raise / 100 : undefined);
   }
+  for (const spot of limpDeep?.spots ?? []) {
+    const reach = limpDeepReach.get(spot.id);
+    // Facing the all-in, only equity and price decide call/fold (same exemption as five-bet-responses).
+    if (reach) inspectRange(spot, reach, spot.id === "BB_vs_SB_limp_five_bet" ? "5bet all-in response" : null);
+  }
   const balanceSummary = Object.fromEntries(BALANCE_CHECKS.map(check => {
     const matches = findings.filter(f => f.check === check);
     return [check, { count: matches.length, spots: [...new Set(matches.map(f => f.spot))].sort() }];
@@ -466,5 +516,5 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
 
   // Range widths for a sanity read.
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
-  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, limpReraiseDefense, coldThreeBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
+  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, limpReraiseDefense, limpDeepDefense, coldThreeBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
 }

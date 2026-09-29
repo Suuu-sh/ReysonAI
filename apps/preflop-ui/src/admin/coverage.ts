@@ -13,6 +13,7 @@ import limp from "../estimated/limp-responses.json" with { type: "json" };
 import coldThreeBets from "../estimated/cold-three-bet-responses.json" with { type: "json" };
 import multiway from "../estimated/multiway-responses.json" with { type: "json" };
 import squeezes from "../estimated/squeeze-responses.json" with { type: "json" };
+import limpDeep from "../estimated/limp-deep-responses.json" with { type: "json" };
 
 const RFI = positions.slice(0, 5); // UTG..SB
 const after = seat => positions.slice(positions.indexOf(seat) + 1);
@@ -75,10 +76,10 @@ const CATEGORIES = [
       { id: `${spot.opener}_vs_${spot.hero}_cold4bet_${spot.three_bettor}3bet`, hero: spot.opener, path: `${spot.opener} open → ${spot.three_bettor} 3bet → ${spot.hero} 4bet → ${spot.opener}` },
       { id: `${spot.three_bettor}_vs_${spot.hero}_cold4bet_${spot.opener}open`, hero: spot.three_bettor, path: `… ${spot.hero} 4bet → ${spot.opener} fold → ${spot.three_bettor}` },
     ]) },
-  { key: "limp_deep", label: "リンプ木の深い分岐", file: null, data: null,
+  { key: "limp_deep", label: "リンプ木の深い分岐", file: "limp-deep-responses.json", data: limpDeep,
     expected: [
-      { id: "SB_vs_BB_iso_three_bet_response", hero: "SB", path: "SB limp → BB iso → SB call/reraise 後の再レイズ" },
-      { id: "BB_vs_SB_limp_reraise_four_bet", hero: "SB", path: "SB limp → BB iso → SB reraise → BB 4bet → SB" },
+      { id: "SB_vs_BB_limp_four_bet", hero: "SB", path: "SB limp → BB iso → SB reraise → BB 4bet → SB" },
+      { id: "BB_vs_SB_limp_five_bet", hero: "BB", path: "… BB 4bet → SB all-in → BB" },
     ] },
 ];
 

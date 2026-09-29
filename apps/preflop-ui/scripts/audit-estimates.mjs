@@ -18,6 +18,7 @@ const report = auditEstimates({
   squeezes: load("squeeze-responses"),
   coldThreeBets: load("cold-three-bet-responses"),
   limp: load("limp-responses"),
+  limpDeep: load("limp-deep-responses"),
 });
 const { findings, autoProfit, threeBetDefense, fourBetDefense, widths } = report;
 
@@ -50,6 +51,8 @@ if (process.argv.includes("--json")) {
   for (const d of report.squeezeDefense) console.log(`- ${d.spot}: ${pct(d.openerFold)} × ${pct(d.callerFold)} = ${pct(d.foldRate)}（分岐 ${pct(d.threshold)}）${d.foldRate > d.threshold ? " ⚠" : ""}`);
   console.log("\n## リンプ・リレイズへのBBのフォールド率");
   for (const d of report.limpReraiseDefense) console.log(`- ${d.spot}: ${pct(d.foldRate)}（分岐 ${pct(d.threshold)}）${d.foldRate > d.threshold ? " ⚠" : ""}`);
+  console.log("\n## リンプ・リレイズ後の4bet／オールインへのフォールド率");
+  for (const d of report.limpDeepDefense) console.log(`- ${d.spot}: ${pct(d.foldRate)}（分岐 ${pct(d.threshold)}）${d.foldRate > d.threshold ? " ⚠" : ""}`);
   console.log("\n## 3betへのコールド応答（Hero×オープナーのフォールド率、参考値）");
   for (const d of report.coldThreeBetDefense) console.log(`- ${d.spot}: ${pct(d.heroFold)} × ${pct(d.openerFold)} = ${pct(d.foldRate)}`);
   console.log("\n## 指摘一覧");
