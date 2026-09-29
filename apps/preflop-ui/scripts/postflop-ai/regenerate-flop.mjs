@@ -138,8 +138,9 @@ async function regenerateSpot(spotId) {
       console.log(`${spotId}: adopted spot-specific flop policy (${comparison}; ${reasonFor(decision)})`);
     } else {
       mutatingArtifacts = true;
+      // Keep every rejected attempt: the first is .<model>.json, retries get .<model>.tryN.json.
       archivePath = paths.candidate.replace(/\.json$/, `.${candidate.metadata.model}.json`);
-      if (existsSync(archivePath)) throw new Error(`Candidate archive already exists: ${archivePath}`);
+      for (let attempt = 2; existsSync(archivePath); attempt++) archivePath = paths.candidate.replace(/\.json$/, `.${candidate.metadata.model}.try${attempt}.json`);
       renameSync(paths.candidate, archivePath);
       archivedCandidate = true;
       copyFileSync(generic.candidate, paths.candidate);
