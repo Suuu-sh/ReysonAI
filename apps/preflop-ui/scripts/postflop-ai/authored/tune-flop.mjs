@@ -33,10 +33,13 @@ for (const spotId of process.argv.slice(2)) {
   if (!existsSync(genericPath)) { console.log(`${spotId}: no shared flop rules to start from`); continue; }
   const current = loadCandidate(inputs), later = loadLaterCandidate(inputs, current);
   const generic = JSON.parse(readFileSync(genericPath, "utf8"));
+  // TUNE_BASE=<suffix> starts from another saved candidate of this spot (e.g. a rejected
+  // gpt-6-sol attempt) instead of the shared rules; adoption is still judged against the shared rules.
+  const base = process.env.TUNE_BASE ? JSON.parse(readFileSync(paths.candidate.replace(/\.json$/, `.${process.env.TUNE_BASE}.json`), "utf8")) : generic;
   const warnings = policy => checkFlopBalance(inputs, policy).findings.filter(f => f.severity !== "info").length;
   const allowed = warnings(generic.policy);
   const quick = policy => worstProfileScore(simulate(inputs, policy, 2500, later));
-  let best = { name: "shared", policy: generic.policy, score: quick(generic.policy) };
+  let best = { name: process.env.TUNE_BASE ?? "shared", policy: base.policy, score: quick(base.policy) };
   for (let round = 0; round < 2; round++) for (const [name, apply] of Object.entries(ADJUSTMENTS)) {
     const policy = clone(best.policy); apply(policy); validatePolicy(policy, tree);
     if (warnings(policy) > allowed) continue;
@@ -48,7 +51,7 @@ for (const spotId of process.argv.slice(2)) {
   const decision = flopAdoptionDecision({ candidate: best.policy, candidateReport: report, genericReport,
     genericFindings: checkFlopBalance(inputs, generic.policy).findings, candidateFindings: checkFlopBalance(inputs, best.policy).findings });
   const summary = `${best.name}: ${decision.candidateScore.toFixed(3)}bb / ${decision.candidateWarningCount} warn vs shared ${decision.genericScore.toFixed(3)}bb / ${decision.genericWarningCount} warn`;
-  if (!decision.adopt || best.name === "shared") { console.log(`${spotId}: not adopted (${summary})`); continue; }
+  if (!decision.adopt || best.policy === generic.policy) { console.log(`${spotId}: not adopted (${summary})`); continue; }
   const candidate = { metadata: { ...generic.metadata, policy_hash: sha(best.policy), model: "claude-opus-5-5", reasoning_effort: "high", authored_adjustments: best.name }, policy: best.policy };
   writeFileSync(paths.candidate, `${JSON.stringify(candidate, null, 2)}\n`);
   if (later) writeFileSync(paths.laterCandidate, `${JSON.stringify(rebindLaterPolicy(later, candidate.metadata.policy_hash), null, 2)}\n`);
