@@ -243,6 +243,30 @@ function overfoldFindings(collection, nodes) {
   return findings;
 }
 
+function overcallFindings(collection, nodes) {
+  const findings = [];
+  for (const node of nodes.filter(name => isFlopFacingNode(name) || isLaterFacingNode(name))) {
+    const defense = averaged(collection, node, row => row.rangeWeight
+      ? (row.actionWeights.call + (row.actionWeights.raise ?? 0)) / row.rangeWeight : null);
+    const minimumDefense = averaged(collection, node, row => row.rangeWeight
+      ? row.minimumDefenseWeight / row.rangeWeight : null);
+    // Monsters continue against any size, so judge the rest of the range: the bluff-catchers
+    // it needs are the minimum defence the monsters do not already cover.
+    const monsterShare = averaged(collection, node, row => row.rangeWeight ? row.monsterWeight / row.rangeWeight : null) ?? 0;
+    if (defense === null || minimumDefense === null || monsterShare >= 1) continue;
+    const needed = Math.max(0, minimumDefense - monsterShare) / (1 - monsterShare);
+    const catching = Math.max(0, defense - monsterShare) / (1 - monsterShare);
+    // The allowance shrinks with the need: against a shove the monsters already cover, even a
+    // few bluff-catcher calls are the leak that made all-ins look far better than any bet.
+    const allowance = Math.min(0.15, needed + 0.05);
+    if (catching > needed + allowance) {
+      findings.push({ check: "overcall", severity: "warn", node,
+        detail: `non-monster hands defend ${pct(catching)} versus the ${pct(needed)} the minimum defence of ${pct(minimumDefense)} still needs (more than ${Math.round(allowance * 100)} percentage points over).` });
+    }
+  }
+  return findings;
+}
+
 function representativeRunouts(board) {
   const random = seededRandom(seedFor(`${config.seed}|balance|${board.id}`));
   const deck = Array.from({ length: 52 }, (_, card) => card).filter(card => !board.cards.includes(card));
@@ -326,7 +350,7 @@ export function checkFlopBalance(inputs, flopPolicy) {
     addSummary(collection, node, board.id, NODES[node], summary, {}, flopMinimumDefense(node));
   }
   return { findings: [...cappedCheckFindings(collection, nodes), ...raiseFindings(collection, nodes),
-    ...overfoldFindings(collection, nodes)] };
+    ...overfoldFindings(collection, nodes), ...overcallFindings(collection, nodes)] };
 }
 
 // `authored`: the policy is a generated/authored candidate, which must show both override
@@ -419,6 +443,7 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
 
   const laterNodes = [...turnNodes, ...riverNodes];
   findings.push(...cappedCheckFindings(collection, laterNodes), ...raiseFindings(collection, turnNodes),
-    ...bluffFindings(collection, riverNodes), ...overfoldFindings(collection, laterNodes));
+    ...bluffFindings(collection, riverNodes), ...overfoldFindings(collection, laterNodes),
+    ...overcallFindings(collection, laterNodes));
   return { findings };
 }
