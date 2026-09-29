@@ -90,7 +90,6 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
     const reachable = villain.filter(item => item.weight > 0);
     // A node the policies never reach on this board (e.g. no hand bets 125% on a paired flop).
     if (!reachable.length || !hero.some(item => item.weight > 0)) { out[key] = { node, actor, pot_bb: pot, rows: {}, unreachable: true }; continue; }
-    const pickVillain = sampler(reachable);
     const byClass = new Map();
     for (const item of hero) if (item.weight > 0) {
       const hand = handClass(item.combo);
@@ -98,7 +97,20 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
       byClass.get(hand).push(item);
     }
     const rows = {};
-    for (const [hand, combos] of byClass) {
+    // Opponent samplers restricted to combos that do not share a card with the hero combo, so a
+    // narrow opponent range (e.g. deep in a 4bet pot) can never loop forever on rejection.
+    const compatible = new Map();
+    const villainFor = heroCombo => {
+      const key = heroCombo.join(",");
+      if (!compatible.has(key)) {
+        const items = reachable.filter(item => !item.combo.some(card => heroCombo.includes(card)));
+        compatible.set(key, items.length ? sampler(items) : null);
+      }
+      return compatible.get(key);
+    };
+    for (const [hand, allCombos] of byClass) {
+      const combos = allCombos.filter(item => villainFor(item.combo));
+      if (!combos.length) continue;
       const pickHero = sampler(combos);
       const random = seededRandom(seedFor(`${config.seed}|hand-ev|${board.id}|${key}|${hand}`));
       const sums = Object.fromEntries(actions.map(action => [action, 0]));
@@ -106,7 +118,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
       for (let i = 0; i < samples; i++) {
         const heroCombo = pickHero(random).combo;
         let villainCombo;
-        do villainCombo = pickVillain(random).combo; while (villainCombo.some(card => heroCombo.includes(card)));
+        villainCombo = villainFor(heroCombo)(random).combo;
         const used = new Set([...heroCombo, ...villainCombo, ...board.cards]);
         const runout = [];
         while (runout.length < 2) { const card = Math.floor(random() * 52); if (!used.has(card)) { used.add(card); runout.push(card); } }
