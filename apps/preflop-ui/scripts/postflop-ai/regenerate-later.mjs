@@ -20,9 +20,13 @@ export function worstProfileScore(report) {
   return Math.min(...profileScores);
 }
 
+// River under-bluffing is flagged for every policy so far (few missed draws survive to the
+// river on the sampled lines), so it stays advisory and does not decide adoption; over-bluffing
+// — the way a candidate exploits the fold-heavy reference — still counts.
+const countsForAdoption = finding => finding.severity === "warn" && !(finding.check === "bluff-ratio" && finding.direction === "under");
 export function adoptionDecision({ candidate, candidateReport, genericReport, genericFindings, candidateFindings }) {
-  const genericWarningCount = genericFindings.filter(finding => finding.severity === "warn").length;
-  const candidateWarningCount = candidateFindings.filter(finding => finding.severity === "warn").length;
+  const genericWarningCount = genericFindings.filter(countsForAdoption).length;
+  const candidateWarningCount = candidateFindings.filter(countsForAdoption).length;
   const candidateErrors = candidateFindings.filter(finding => finding.severity === "error");
   const genericScore = worstProfileScore(genericReport);
   const candidateScore = worstProfileScore(candidateReport);

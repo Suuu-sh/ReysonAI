@@ -194,9 +194,9 @@ function bluffFindings(collection, nodes) {
       const avgTarget = averaged(collection, node, row => row.actionWeights[action]
         ? row.targetActionWeights[action] / row.actionWeights[action] : null);
       const label = action === "allin" ? "all-in" : `${action.slice(3)}% pot`;
-      if (difference > 0.15) findings.push({ check: "bluff-ratio", severity: "warn", node,
+      if (difference > 0.15) findings.push({ check: "bluff-ratio", direction: "over", severity: "warn", node,
         detail: `${label} bets average ${pct(avgAir)} air versus a size target of ${pct(avgTarget)} (more than 15 percentage points over).` });
-      else if (difference < -0.15 && frequency >= 0.05) findings.push({ check: "bluff-ratio", severity: "warn", node,
+      else if (difference < -0.15 && frequency >= 0.05) findings.push({ check: "bluff-ratio", direction: "under", severity: "warn", node,
         detail: `${label} bets average ${pct(avgAir)} air versus a size target of ${pct(avgTarget)} at ${pct(frequency)} range frequency (more than 15 points under).` });
     }
   }
