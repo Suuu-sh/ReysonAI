@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // EvionAI web app: the built client (npm run build) served as static assets. The worker
+  // only adds the SPA fallback for /app and /admin and rejects the retired /ja paths.
+  "name": "evionai-app",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-09-22",
+  "assets": {
+    "directory": "dist/client",
+    "binding": "ASSETS",
+    // worker/index.js falls back to /index.html; the default "auto-trailing-slash" handling
+    // would redirect that request to "/" and bounce every /app and /admin load to the site.
+    "html_handling": "none"
+  }
+}
