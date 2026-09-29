@@ -434,6 +434,8 @@ test("representative flops are picked from a modal, while unsupported spots stay
   assert.equal((dialog.match(/aria-label="フロップ /g) ?? []).length, 12);
   const complete = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["2c", "As", "7d"], onApply() {}, onClose() {} }));
   assert.match(complete, /class="selected" aria-pressed="true" aria-label="フロップ A♠ 7♦ 2♣"/);
+  assert.match(complete, /代表12ボードから選べます。/);
+  assert.doesNotMatch(complete, /AI推定|AI-estimated|AI estimate|GTO|未検証|not a solver/i);
   const html = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["SB", "BB"], potBb: 2, pilotAvailable: false }, cards: ["", "", ""] }));
   assert.match(html, /この局面のポストフロップ方針は未収録/);
   assert.doesNotMatch(html, /AI推定レンジ/);

@@ -35,7 +35,7 @@ test("player analysis includes graded strengths, weaknesses and a link to detail
   assert.doesNotMatch(html, /analysis-hero/);
 });
 
-test("player analysis shows a distinct, explicitly non-GTO Solvea AI Score trend", () => {
+test("player analysis shows a distinct Solvea AI Score trend", () => {
   const history = [
     { spotId: "UTG_open", hand: "AA", action: "open", result: "best", score: 1 },
     { spotId: "UTG_open", hand: "AA", action: "fold", result: "miss", score: 0 },
@@ -45,6 +45,7 @@ test("player analysis shows a distinct, explicitly non-GTO Solvea AI Score trend
   assert.match(html, /直近2回答の平均 · 暫定/);
   assert.match(html, /aria-label="Solvea AI Score の推移。2回答、直近2回答の平均は50%。"/);
   assert.match(html, /復習の再回答も含む/);
-  assert.match(html, /GTOスコア・EV損失・勝率ではありません/);
+  assert.match(html, /保存済みレンジとの一致度/);
+  assert.doesNotMatch(html, /GTO|AI推定|AI-estimated|AI estimate|未検証|not a solver/i);
   assert.match(html, /class="analysis-score-line"/);
 });

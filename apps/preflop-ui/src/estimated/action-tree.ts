@@ -3,11 +3,11 @@ import { positions } from "./sizing.ts";
 
 export const RANGE_ENCODING = "base64-two-character-percent-v1";
 export const reasonText = Object.freeze({
-  value: "ハンド強度の高い部分として、コールまたはバリュー寄りのレイズを配分したAI推定です。",
-  blocker: "高位カードのブロッカーを考慮し、限定的なレイズを含めたAI推定です。",
-  playability: "スーテッド性・接続性・プレイアビリティを考慮してコールを残したAI推定です。",
-  marginal: "境界的な強さのハンドとして、継続とフォールドを混合したAI推定です。",
-  fold: "この履歴とサイズでは継続が難しいと見積もったAI推定です。",
+  value: "ハンド強度の高い部分として、コールまたはバリュー寄りのレイズを配分しています。",
+  blocker: "高位カードのブロッカーを考慮し、限定的なレイズを含めています。",
+  playability: "スーテッド性・接続性・プレイアビリティを考慮してコールを残しています。",
+  marginal: "境界的な強さのハンドとして、継続とフォールドを混合しています。",
+  fold: "この履歴とサイズでは継続が難しいため、フォールドを多く配分しています。",
   unreachable: "前段で選択されたアクションの推定頻度が0%だったため、このハンドは到達不能です。推奨として扱いません。",
 });
 
@@ -106,7 +106,7 @@ export function validateActionTreeDataset(data) {
         fail(`既存レンジ参照 ${spot.id}`);
       }
     } else if (spot.range_profile_id) {
-      if (typeof spot.range_file !== "string" || !spot.range_file.startsWith("action-tree-ranges-")) fail(`AI推定レンジ参照 ${spot.id}`);
+      if (typeof spot.range_file !== "string" || !spot.range_file.startsWith("action-tree-ranges-")) fail(`レンジ参照 ${spot.id}`);
     } else if (spot.action_options.some(option => option.action !== "check")) {
       fail(`レンジ参照欠落 ${spot.id}`);
     }
@@ -124,7 +124,7 @@ export function validateActionTreeDataset(data) {
 }
 
 export function validateActionRangeDataset(data, expectedProfiles) {
-  const fail = detail => { throw new Error(`保存済みAI推定レンジが不正です: ${detail}`); };
+  const fail = detail => { throw new Error(`保存済みレンジが不正です: ${detail}`); };
   if (data?.metadata?.schema_version !== "1.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.effective_stack_bb !== 100 || data.metadata.ante_bb !== 0 ||

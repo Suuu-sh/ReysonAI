@@ -343,14 +343,14 @@ test("local generation controls are embedded in the missing range slot", () => {
     const openerPanel = allIn.match(/<section class="panel multiway-range-panel missing-range-panel" aria-label="UTGのレンジ">[\s\S]*?<\/section>/)?.[0];
     assert.ok(openerPanel, "5bet response has an opener range slot");
     assert.match(openerPanel, /保存済みレンジを読み込んでいます。/);
-    assert.doesNotMatch(openerPanel, /CodexでAI推定レンジを生成/); // persisted data replaces local generation
+    assert.doesNotMatch(openerPanel, /Codexでレンジを生成/); // persisted data replaces local generation
     assert.doesNotMatch(allIn, /class="local-estimate-control"/);
     assert.doesNotMatch(allIn, /5betオールイン後の応答レンジは未収録/);
 
     const multiway = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"] });
     const heroPanel = multiway.match(/<section class="panel multiway-range-panel missing-range-panel" aria-label="BBのレンジ">[\s\S]*?<\/section>/)?.[0];
     assert.ok(heroPanel, "multiway Hero has a pending range slot");
-    assert.match(heroPanel, /CodexでAI推定レンジを生成|保存状態を確認中…/);
+    assert.match(heroPanel, /Codexでレンジを生成|保存状態を確認中…/);
     assert.doesNotMatch(multiway, /class="local-estimate-control"/);
   } finally {
     if (originalWindow === undefined) delete globalThis.window;

@@ -142,7 +142,7 @@ const aliases = { oop_first: "btn_first", ip_vs_33: "bb_vs_33", ip_vs_75: "bb_vs
 
 export function actionReason(node, action, tier) {
   if (productLocale() === "en") {
-    const reason = englishPostflopReasons[aliases[node] ?? node]?.[action]?.[tier] ?? "This action is part of the saved AI-estimated policy.";
+    const reason = englishPostflopReasons[aliases[node] ?? node]?.[action]?.[tier] ?? "This action is part of the saved policy.";
     return aliases[node] ? reason.replaceAll("check-raise", "raise") : reason;
   }
   if (aliases[node]) return (reasons[aliases[node]]?.[action]?.[tier] ?? "").replaceAll("チェックレイズ", "レイズ");

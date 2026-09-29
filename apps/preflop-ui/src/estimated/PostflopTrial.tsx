@@ -263,7 +263,7 @@ export function FlopCardDialog({ cards, onApply, onClose }) {
           </button>;
         })}
       </div>
-      <p className="modal-description">AI推定があるのは、この代表12ボードだけです。</p>
+      <p className="modal-description">代表12ボードから選べます。</p>
     </div>
   </div>;
 }
@@ -501,7 +501,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         {!decision.node && start && later?.node && laterStatus === "loading" && <Panel><StatusState title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} /></Panel>}
         {!decision.node && start && later?.node && laterStatus === "error" && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
         {current && aggregates && <div className="postflop-range-layout">
-          <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · AI推定レンジ`} ariaLabel={`${current.seat}のフロップAI推定レンジ`}
+          <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · ${english ? "range" : "レンジ"}`} ariaLabel={english ? `${current.seat} flop range` : `${current.seat}のフロップレンジ`}
             aggregates={aggregates} actions={current.actions} actionLabels={labels} simplified={displayMode === "simple"}
             selected={selectedHand} onSelect={setSelectedHand} unreachableReason="元のプリフロップ頻度0%またはボードで到達不能、推奨なし" />
           <div className="postflop-side">
@@ -532,8 +532,8 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
           </div>
         </div>}
         {laterCurrent && laterAggregates && <div className="postflop-range-layout postflop-later-range-layout">
-          <StrategyMatrix node={{ actingPosition: laterCurrent.actor }} title={`${laterHeading} · ${english ? "AI-estimated range" : "AI推定レンジ"}`}
-            ariaLabel={`${laterCurrent.actor} ${laterCurrent.street} ${english ? "AI-estimated range" : "AI推定レンジ"}`}
+          <StrategyMatrix node={{ actingPosition: laterCurrent.actor }} title={`${laterHeading} · ${english ? "range" : "レンジ"}`}
+            ariaLabel={english ? `${laterCurrent.actor} ${laterCurrent.street} range` : `${laterCurrent.actor} ${laterCurrent.street}のレンジ`}
             aggregates={laterAggregates} actions={laterActions} actionLabels={laterLabels} simplified={displayMode === "simple"}
             selected={selectedHand} onSelect={setSelectedHand}
             unreachableReason={english ? "No combo reaches this node; no recommendation" : "この判断に到達するコンボがありません。推奨なし"} />
@@ -548,7 +548,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                 </dl>
                 {laterHandEv?.data?.row
                   ? <HandEvBars items={laterActions.map(action => ({ action, frequency: laterChosen.actions[action] ?? 0 }))}
-                    labels={laterLabels} ev={laterHandEv} showEstimateBadge={false} />
+                    labels={laterLabels} ev={laterHandEv} />
                   : <>
                     <ActionBars items={laterActions.map(action => ({ action, frequency: laterChosen.actions[action] ?? 0 }))} labels={laterLabels} />
                     {laterHandEv?.loading && <small className="hand-ev-status">{english ? "Loading per-hand EV…" : "手ごとのEVを読み込み中…"}</small>}

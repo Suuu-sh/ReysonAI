@@ -204,7 +204,6 @@ function LocalHandBreakdown({ entry, selected, onClose, displayMode }) {
       { label: "直前の3bet（合計）", value: `${entry.threeBetSizeBb} BB` },
       { label: "頻度合計", value: "100%" },
     ] : [{ label: "レイズ先（合計）", value: `${entry.raiseToBb} BB` }, { label: "頻度合計", value: "100%" }]} /></>}
-    <small>ローカルで生成したAIソリューションです。</small>
   </Panel></div>;
 }
 
@@ -212,7 +211,7 @@ function InlineGenerationControl({ description, status, error, onGenerate }) {
   const label = status === "checking" ? "保存状態を確認中…"
     : status === "loading" ? "Codexで生成中…"
     : status === "cached" ? "保存済みレンジを表示中"
-    : "CodexでAI推定レンジを生成";
+    : "Codexでレンジを生成";
   return <>
     <div className="inline-generation-control">
       <small>{description}</small>
@@ -866,7 +865,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         rangeEntries.push(extendedEntry({ kind: "multiway", position, caller }, extendedTitle({ kind: "multiway", position })));
       } else {
         const localRange = currentLocalEstimate?.ranges.find(range => range.position === position);
-        rangeEntries.push(localRange ? { position, kind: "local", model: localMatrix(localRange), title: `${position} · ${pendingRaise === "squeeze" ? "スクイーズ選択" : position === hero ? "現在の応答" : "コール選択"}（AI推定・レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb } : { position, kind: "pending", title: `${position} · 推定レンジ準備中`, statusTitle: "レンジ未収録", statusDescription: pendingRaise === "squeeze" ? "この局面の推定レンジはまだ生成・保存されていません。" : "この履歴のレンジはまだ保存されていません。" });
+        rangeEntries.push(localRange ? { position, kind: "local", model: localMatrix(localRange), title: `${position} · ${pendingRaise === "squeeze" ? "スクイーズ選択" : position === hero ? "現在の応答" : "コール選択"}（レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb } : { position, kind: "pending", title: `${position} · 推定レンジ準備中`, statusTitle: "レンジ未収録", statusDescription: pendingRaise === "squeeze" ? "この局面の推定レンジはまだ生成・保存されていません。" : "この履歴のレンジはまだ保存されていません。" });
       }
     }
   } else if (isThreeBet) {
@@ -879,7 +878,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       if (fiveBet.spot) addSaved(opener, "five_bet", fiveBet.spot, fiveBetModel, `${opener} · 5betオールインへの応答`);
       else if (fiveBet.loading) rangeEntries.push({ position: opener, kind: "pending", title: `${opener} · 5betオールインへの応答`, statusTitle: "読み込み中", statusDescription: "保存済みレンジを読み込んでいます。" });
       else rangeEntries.push(allInRange
-        ? { position: opener, kind: "local", model: localMatrix(allInRange), title: `${opener} · 5betオールインへの応答（AI推定）`, allInSizeBb: 100, fourBetSizeBb: spot.four_bet_size_bb, threeBetSizeBb: spot.three_bet_size_bb }
+        ? { position: opener, kind: "local", model: localMatrix(allInRange), title: `${opener} · 5betオールインへの応答`, allInSizeBb: 100, fourBetSizeBb: spot.four_bet_size_bb, threeBetSizeBb: spot.three_bet_size_bb }
         : { position: opener, kind: "pending", title: `${opener} · 5betオールインへの応答`, statusTitle: "レンジ未収録", statusDescription: "5betオールイン後の応答データはまだ保存されていません。" });
       addSaved(hero, "four_bet", spot, model, `${hero} · 4betへの応答（5bet選択）`);
     } else {
@@ -937,11 +936,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       if (fiveBet.loading) return missing("5betオールインへの応答", "保存済みレンジを読み込んでいます。", "読み込み中");
       const allInRange = currentLocalEstimate?.scenario === "five_bet_all_in_response" && currentLocalEstimate.ranges?.find(range => range.position === ref.position);
       return allInRange
-        ? withContext({ position: ref.position, kind: "local", model: localMatrix(allInRange), title: `${ref.position} · 5betオールインへの応答（AI推定）`, allInSizeBb: 100, fourBetSizeBb: spot?.four_bet_size_bb, threeBetSizeBb: spot?.three_bet_size_bb })
+        ? withContext({ position: ref.position, kind: "local", model: localMatrix(allInRange), title: `${ref.position} · 5betオールインへの応答`, allInSizeBb: 100, fourBetSizeBb: spot?.four_bet_size_bb, threeBetSizeBb: spot?.three_bet_size_bb })
         : missing("5betオールインへの応答", "5betオールイン後の応答データはまだ保存されていません。");
     }
     const localRange = currentLocalEstimate?.ranges.find(range => range.position === ref.position);
-    if (localRange) return withContext({ position: ref.position, kind: "local", model: localMatrix(localRange), title: `${ref.position} · AI推定レンジ（レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb });
+    if (localRange) return withContext({ position: ref.position, kind: "local", model: localMatrix(localRange), title: `${ref.position} · レンジ（レイズ先 ${localRange.raise_to_bb}BB）`, raiseToBb: localRange.raise_to_bb });
     return missing(ref.reason ? "推定レンジ準備中" : "この履歴のレンジ");
   };
   const selectedBlockIndex = actionBlocks.findIndex(block => block.key === selectedRangeBlock);
@@ -998,8 +997,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         {flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
-            {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイのAIソリューションをローカルで生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
-            {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のAIソリューションをローカルで生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
+            {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
+            {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のレンジを生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}
           {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} extra={extendedBreakdown(focusedEntry.kind, focusedEntry.spot, focusedEntry.hand)} spot={focusedEntry.spot} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>

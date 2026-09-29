@@ -41,7 +41,7 @@ test("flop explanations are English while their numeric evidence stays intact", 
       for (const node of ["bb_vs_125", "ip_vs_125"]) {
         const reason = actionReason(node, action, tier);
         assert.ok(reason, `${node}/${action}/${tier}`);
-        assert.notEqual(reason, "This action is part of the saved AI-estimated policy.", `${node}/${action}/${tier} should use its 125% copy`);
+        assert.notEqual(reason, "This action is part of the saved policy.", `${node}/${action}/${tier} should use its 125% copy`);
         assert.doesNotMatch(reason, /[ぁ-んァ-ヶ一-龠]/, `${node}/${action}/${tier}`);
       }
     }

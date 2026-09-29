@@ -38,7 +38,7 @@ export const englishFactLabels = {
   three_bettor_fold_to_4bet_pct: "Chance 3-bettor folds to 4-bet",
 };
 
-export const englishEquityNote = "Raw equity estimates showdown chances. Realized equity uses an assumed equity-realization factor (EQR), which may exceed 1. Call EV does not fully model future investments or opponent strategy changes. These are AI estimates, not solver GTO output.";
+export const englishEquityNote = "Raw equity estimates showdown chances. Realized equity uses an assumed equity-realization factor (EQR), which may exceed 1. Call EV does not fully model future investments or opponent strategy changes.";
 
 // English postflop explanations mirror the Japanese node/action/tier keys.
 // Numeric opponent-range evidence remains the primary explanation when present.
@@ -172,7 +172,7 @@ export function englishPreflopReason(hand, detailed, data) {
     return "The preceding action has zero recorded frequency for this hand, so this branch is unreachable. A saved 100% fold here is a data placeholder, not a recommendation.";
   }
   const facts = detailed.facts ?? {};
-  const parts = [`${handDescription(hand.hand)} in this saved AI-estimated spot.`];
+  const parts = [`${handDescription(hand.hand)} in this saved spot.`];
   const equityEntry = Object.entries(facts).find(([key, value]) => key.startsWith("equity_vs_") && key.endsWith("_pct") && Number.isFinite(value));
   if (equityEntry) {
     const [key, value] = equityEntry;

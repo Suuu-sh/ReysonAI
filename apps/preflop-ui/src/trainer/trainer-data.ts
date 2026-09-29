@@ -241,7 +241,7 @@ export function studyNote(action, hand, spot = null) {
     if (action === "call") return `Calling keeps ${family} in the pot without enlarging the bet. Its value depends on position, pot odds, and how well the hand realizes equity after the flop.`;
     if (action === "three_bet") return `The saved estimate assigns a 3-bet frequency to ${family} in this spot. The displayed frequency—not this general note—is the recorded recommendation.`;
     if (action === "fold") return `Folding ${family} avoids committing more chips when this spot's saved estimate prefers not to continue.`;
-    return "This action is part of the saved AI-estimated mix, not solver GTO output.";
+    return "This action is part of the saved action mix.";
   }
   return seatNote(action, category, spot) ?? ACTION_NOTES[action]?.[category] ?? "";
 }

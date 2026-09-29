@@ -33,7 +33,7 @@ function StyleMap({ analysis }) {
     <header className="analysis-card-head">
       <h2 id="analysis-map-title">プレイスタイルマップ</h2>
       <InfoTip label="マップの見方">
-        <p>中心は「今回出た問題に対するAI推定方針」です。横軸はフォールド頻度の差（右ほど参加が多い）、縦軸は対オープンでの3bet頻度の差（上ほど多い）。NITはタイト側に付く追加ラベルです。</p>
+        <p>中心は「今回出た問題の平均方針」です。横軸はフォールド頻度の差（右ほど参加が多い）、縦軸は対オープンでの3bet頻度の差（上ほど多い）。NITはタイト側に付く追加ラベルです。</p>
         <p>点は重複を除いた10問以上（オープン3問・対オープン5問以上）で表示し、30問に届くまでは暫定です。実戦の絶対的なプレイスタイルではありません。</p>
       </InfoTip>
     </header>
@@ -44,7 +44,7 @@ function StyleMap({ analysis }) {
         <div className="analysis-quadrant q-lag"><b>LAG</b></div>
         <div className="analysis-quadrant q-tp"><b>タイト・パッシブ</b></div>
         <div className="analysis-quadrant q-lp"><b>ルース・パッシブ</b></div>
-        <span className="analysis-map-center" aria-hidden="true" title="AI推定方針" />
+        <span className="analysis-map-center" aria-hidden="true" title="方針" />
         {plot ? <span className={`analysis-map-marker${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%` }}
           role="img" aria-label={`あなたの練習位置。参加頻度は推定方針から${points(-metrics.fold.delta)}、3betは${points(metrics.threeBet.delta)}。${ready ? "" : "暫定表示。"}`}>
           <i /><b>あなた{ready ? "" : " · 暫定"}</b>
@@ -105,7 +105,7 @@ function ScoreChart({ progress }) {
   return <section className="analysis-card analysis-score" aria-labelledby="analysis-score-title">
     <header className="analysis-card-head">
       <h2 id="analysis-score-title">Solvea AI Score の推移</h2>
-      <span className="analysis-caption">保存済みAI推定との一致度 · GTOスコア・EV損失・勝率ではありません</span>
+      <span className="analysis-caption">保存済みレンジとの一致度</span>
       <InfoTip label="スコアの計算方法">
         <p>各回答を同じ局面・ハンドの推定頻度と比べ、「選んだ行動の頻度 ÷ 最頻行動の頻度」で採点します。線は直近10回答の移動平均です（復習の再回答も含む）。推定方針が更新されると過去分も再計算されます。</p>
       </InfoTip>
@@ -198,7 +198,7 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
     </>}
 
     <p className="analysis-footnote">
-      練習問題での選択傾向です（強み・弱点は5問以上で80%以上／60%以下、3〜4問は暫定）。実戦のVPIP・PFR・勝率やGTOの評価ではありません。回答はこのブラウザ内だけに保存されます。
+      練習問題での選択傾向です（強み・弱点は5問以上で80%以上／60%以下、3〜4問は暫定）。回答はこのブラウザ内だけに保存されます。
     </p>
   </div>;
 }

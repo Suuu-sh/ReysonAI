@@ -17,3 +17,9 @@
 - Used-card options were disabled in both single-card dialogs. Fold/all-in stop states and chip replay parity are covered by the postflop-trial tests.
 - At 1280×720, the river matrix and selected-hand detail fit in the viewport; the action path remains horizontally scrollable. Restored the browser's default viewport after verification.
 - Browser preview is open on local `/app`; no local strategy files were changed.
+
+## App copy cleanup QA — 2026-09-29
+
+- Opened the production preview at local `/app` in English and checked the range workspace and player-analysis screen in the browser.
+- The requested source scan has no user-facing matches for AI-estimate, GTO, or unverified disclaimers outside comments, `src/site/`, and `src/admin/`.
+- `npm test`: 282 passed. `npm run test:sites`: 5 passed. `npm run build`: passed and emitted the client, server, and hosting artifacts.
