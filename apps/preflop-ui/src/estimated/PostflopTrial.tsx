@@ -4,6 +4,7 @@ import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../com
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { HandEvBars, useHandEv } from "./PostflopHandEv.tsx";
 import { actionReason, dominantTier, evidenceReason, textureLabels, tierLabels } from "./postflop-reasons.ts";
+import { laterActionReason } from "./later-reasons.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { postflopUrl } from "./postflop-api.ts";
@@ -124,7 +125,55 @@ function HandReasons({ node, hand, actions, texture, explain, labels }) {
   </div>;
 }
 
+function LaterHandReasons({ street, node, hand, actions, texture, line, explain, loading, error, labels }) {
+  if (!hand.tiers) return null;
+  const tier = dominantTier(hand.tiers);
+  const shownActions = actions.filter(action => hand.actions[action] >= 0.005)
+    .sort((a, b) => hand.actions[b] - hand.actions[a]);
+  const pct = value => `${Math.round(value * 100)}%`;
+  const english = productLocale() === "en";
+  const englishTier = { monster: "two pair or better", strong: "top pair or better", draw: "a draw", medium: "a weak pair", air: "air" };
+  const englishTexture = { blank: "Blank runout", over: "Overcard runout", pair: "Paired-board runout", straight: "Straight-completing runout", flush: "Flush-threatening runout" };
+  const japaneseTexture = { blank: "変化の少ないカード", over: "オーバーカード", pair: "ボードがペアになるカード", straight: "ストレートが近づくカード", flush: "フラッシュが近づく（完成する）カード" };
+  return <div className="postflop-reasons">
+    <p className="postflop-reason-tier">
+      {english ? <>On this runout, this hand is <strong>{englishTier[tier]}</strong>.</>
+        : <>このランアウトでは<strong>{tierLabels[tier]}</strong>です。</>}
+      <span>{english ? englishTexture[texture] : japaneseTexture[texture]}</span>
+    </p>
+    <ul>
+      {shownActions.map(action => {
+        const reason = laterActionReason({ street, node, action, tier, texture, line, locale: english ? "en" : "ja" });
+        const evidence = evidenceReason(action, explain?.actions?.[action], explain?.equity);
+        return <li key={action}>
+          <b style={{ "--reason-color": barColor(action) }}>{labels[action]} {pct(hand.actions[action])}</b>
+          {reason && <span className="postflop-reason-general">{reason}</span>}
+          {evidence && <span className="postflop-reason-evidence">{evidence}</span>}
+          <ActionDetail action={action} explain={explain} />
+        </li>;
+      })}
+    </ul>
+    {loading && <small className="postflop-reason-general">{english ? "Loading explanation…" : "読み込み中…"}</small>}
+    {error && <small className="postflop-reason-general">{english ? "Numeric explanation is unavailable." : "数値の説明を読み込めませんでした。"}</small>}
+  </div>;
+}
+
 const suitOrder = ["s", "h", "d", "c"];
+const handRanks = "23456789TJQKA";
+
+// The later range endpoint exposes hand-class rows rather than combo rows. Choose a
+// stable, legal combo from that class so the later-explain endpoint can provide evidence.
+function representativeLaterCombo(hand, boardCards) {
+  const available = deck.filter(card => !boardCards.includes(card));
+  for (let first = 0; first < available.length; first++) for (let second = first + 1; second < available.length; second++) {
+    const a = available[first], b = available[second];
+    const [high, low] = handRanks.indexOf(a[0]) >= handRanks.indexOf(b[0]) ? [a, b] : [b, a];
+    const comboClass = high[0] === low[0] ? high[0].repeat(2)
+      : `${high[0]}${low[0]}${high[1] === low[1] ? "s" : "o"}`;
+    if (comboClass === hand) return `${a}${b}`;
+  }
+  return null;
+}
 
 function mixGradient(mix, actions) {
   let at = 0;
@@ -259,6 +308,8 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const [laterData, setLaterData] = useState(null);
   const [laterStatus, setLaterStatus] = useState("idle");
   const [laterError, setLaterError] = useState("");
+  const [laterExplainState, setLaterExplainState] = useState(null);
+  const [laterHandEvState, setLaterHandEvState] = useState(null);
   const decision = flopDecision(actions, context);
   const labels = labelsFor(decision.node);
   const spotId = context.spotId;
@@ -331,6 +382,36 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     : { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ 3×" };
   const laterActions = laterCurrent ? Object.keys(selectedLaterRow?.mix ?? {}) : [];
   const laterHeading = later ? laterNodeTitle(later.node, context, later.street) : "";
+  const laterBoardCards = board && turnCard
+    ? [...(board.match(/../g) ?? []), turnCard, ...(laterCurrent?.street === "river" && riverCard ? [riverCard] : [])]
+    : [];
+  const laterRepresentativeCards = laterCurrent && laterChosen && !laterChosen.unreachable
+    ? representativeLaterCombo(selectedHand, laterBoardCards)
+    : null;
+  const laterExplainUrl = laterCurrent && laterRepresentativeCards && spotId && board
+    ? postflopUrl("later-explain", {
+      spot: spotId, flop: board, flopActions: flopPath, turn: turnCard, turnActions: turnPath,
+      river: laterCurrent.street === "river" ? riverCard : "",
+      riverActions: laterCurrent.street === "river" ? riverPath : "", cards: laterRepresentativeCards,
+    })
+    : null;
+  const laterHandEvUrl = laterCurrent && laterChosen && !laterChosen.unreachable && spotId && board
+    ? postflopUrl("later-hand-ev", {
+      spot: spotId, flop: board, flopActions: flopPath, turn: turnCard, turnActions: turnPath,
+      ...(laterCurrent.street === "river" ? { river: riverCard } : {}),
+      riverActions: laterCurrent.street === "river" ? riverPath : "", hand: selectedHand,
+    })
+    : null;
+  const laterExplain = laterExplainUrl
+    ? laterExplainState?.url === laterExplainUrl
+      ? { ...laterExplainState, loading: false }
+      : { data: null, error: null, loading: true }
+    : { data: null, error: null, loading: false };
+  const laterHandEv = laterHandEvUrl
+    ? laterHandEvState?.url === laterHandEvUrl
+      ? { ...laterHandEvState, loading: false }
+      : { data: null, error: null, loading: true }
+    : null;
   const [selectedCombo, setSelectedCombo] = useState("all");
   useEffect(() => { setSelectedCombo("all"); }, [selectedHand, board, decision.node]);
   const combo = chosen?.combos?.find(item => item.cards === selectedCombo);
@@ -347,6 +428,48 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
       .catch(() => {});
     return () => controller.abort();
   }, [combo?.cards, board, decision.node, prevBet, spotId]);
+  useEffect(() => {
+    setLaterExplainState(null);
+    if (!laterExplainUrl) return;
+    const controller = new AbortController();
+    setLaterExplainState({ url: laterExplainUrl, data: null, error: null, loading: true });
+    fetch(laterExplainUrl, { signal: controller.signal })
+      .then(async response => {
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.error || (productLocale() === "en" ? "Numeric explanation could not be loaded." : "数値の説明を読み込めませんでした。"));
+        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.street !== laterCurrent?.street ||
+            body.node !== laterCurrent?.node || body.line !== laterCurrent?.line || !body.actions || !Number.isFinite(body.equity)) {
+          throw new Error(productLocale() === "en" ? "Explanation does not match this decision." : "説明の局面が選択中の判断と一致しません。");
+        }
+        return body;
+      })
+      .then(body => setLaterExplainState({ url: laterExplainUrl, data: body, error: null, loading: false }))
+      .catch(reason => {
+        if (reason.name !== "AbortError") setLaterExplainState({ url: laterExplainUrl, data: null, error: reason.message, loading: false });
+      });
+    return () => controller.abort();
+  }, [laterExplainUrl, laterCurrent?.line, laterCurrent?.node, laterCurrent?.street, spotId]);
+  useEffect(() => {
+    setLaterHandEvState(null);
+    if (!laterHandEvUrl) return;
+    const controller = new AbortController();
+    setLaterHandEvState({ url: laterHandEvUrl, data: null, error: null, loading: true });
+    fetch(laterHandEvUrl, { signal: controller.signal })
+      .then(async response => {
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.error || (productLocale() === "en" ? "Per-hand EV could not be loaded." : "手ごとのEVを読み込めませんでした。"));
+        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.hand !== selectedHand ||
+            body.street !== laterCurrent?.street || body.node !== laterCurrent?.node) {
+          throw new Error(productLocale() === "en" ? "EV does not match this decision." : "EVの局面が選択中の判断と一致しません。");
+        }
+        return body;
+      })
+      .then(body => setLaterHandEvState({ url: laterHandEvUrl, data: body, error: null, loading: false }))
+      .catch(reason => {
+        if (reason.name !== "AbortError") setLaterHandEvState({ url: laterHandEvUrl, data: null, error: reason.message, loading: false });
+      });
+    return () => controller.abort();
+  }, [laterHandEvUrl, laterCurrent?.node, laterCurrent?.street, selectedHand, spotId]);
   const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId);
   const english = productLocale() === "en";
@@ -423,8 +546,17 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                   <div><dt>{english ? "Card dealt" : "落ちたカード"}</dt><dd><BoardCards cards={[laterCurrent.street === "turn" ? turnCard : riverCard]} /> <span>{laterTexture}</span></dd></div>
                   <div><dt>{english ? "Previous street" : "前のストリート"}</dt><dd>{previousStreet}</dd></div>
                 </dl>
-                <ActionBars items={laterActions.map(action => ({ action, frequency: laterChosen.actions[action] ?? 0 }))} labels={laterLabels} />
-                <small>{english ? "Per-hand EV on the turn and river is not supported yet." : "ターン・リバーの手ごとのEVは未対応です。"}</small>
+                {laterHandEv?.data?.row
+                  ? <HandEvBars items={laterActions.map(action => ({ action, frequency: laterChosen.actions[action] ?? 0 }))}
+                    labels={laterLabels} ev={laterHandEv} showEstimateBadge={false} />
+                  : <>
+                    <ActionBars items={laterActions.map(action => ({ action, frequency: laterChosen.actions[action] ?? 0 }))} labels={laterLabels} />
+                    {laterHandEv?.loading && <small className="hand-ev-status">{english ? "Loading per-hand EV…" : "手ごとのEVを読み込み中…"}</small>}
+                    {laterHandEv?.error && <small className="hand-ev-status">{laterHandEv.error}</small>}
+                  </>}
+                <LaterHandReasons street={laterCurrent.street} node={laterCurrent.node} hand={laterChosen} actions={laterActions}
+                  texture={laterCurrent.texture} line={laterCurrent.line} explain={laterExplain.data}
+                  loading={laterExplain.loading} error={laterExplain.error} labels={laterLabels} />
               </>}
           </Panel>
         </div>}
