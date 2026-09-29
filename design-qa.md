@@ -274,3 +274,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - The Admin backlog is ordered P1 BTN versus BB, P2 other heads-up (including SRP/3bet/4bet and SB limp), then P3 multiway. Every enumerated preflop and postflop row has a priority badge; the TODO table sorts by priority and street and offers a priority filter.
 - The roadmap states that spot/policy-file counts are not a claim of full board or action-branch coverage. Browser inspection on `/admin` showed P1 TODO rows above P2/P3, with P1 3bet and 4bet flop/turn-river copies still marked TODO rather than done.
 - Full verification passed: 245 UI tests, production build, 5 Sites tests, lint, and typecheck. The existing large-chunk build warning remains.
+
+## Turn/river card-picker layout (2026-09-30)
+- Replaced the rank-major 52-card wrap with four labeled suit rows. The dialog now shows the existing board, preserves unavailable-card and selected-card states, and wraps each suit into two rank lines on narrow screens.
+- Browser verification on `/app`: completed BTN open → BB call → flop A♠ 7♦ 2♣ → turn K♠ → river. The river dialog showed four suit groups, the four used cards disabled, and a readable desktop layout. A 390px viewport also showed all four groups without horizontal clipping.
+- Verification: 24 postflop-trial tests, typecheck, all 286 UI tests, production build, and 5 Sites tests passed.

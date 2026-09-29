@@ -162,6 +162,10 @@ function LaterHandReasons({ street, node, hand, actions, texture, line, explain,
 }
 
 const suitOrder = ["s", "h", "d", "c"];
+const suitNames = {
+  en: { s: "Spades", h: "Hearts", d: "Diamonds", c: "Clubs" },
+  ja: { s: "スペード", h: "ハート", d: "ダイヤ", c: "クラブ" },
+};
 const handRanks = "23456789TJQKA";
 
 // The later range endpoint exposes hand-class rows rather than combo rows. Choose a
@@ -287,17 +291,23 @@ export function StreetCardDialog({ usedCards = [], street, currentCard = "", onA
       <div className="modal-heading"><h2 id="street-card-title">{title}</h2>
         <button type="button" className="modal-close" aria-label={english ? "Close" : "閉じる"} onClick={onClose}><X size={16} /></button>
       </div>
-      <div className="street-card-options" role="group" aria-label={english ? "Available cards" : "選べるカード"}>
-        {deck.map(card => {
-          const isUsed = unavailable.has(card);
-          const rank = card[0], suit = card[1];
-          const label = `${rank}${suitLabels[suit]}`;
-          return <button type="button" key={card} className={`street-card-option suit-${suit}${card === currentCard ? " selected" : ""}`}
-            aria-pressed={card === currentCard} aria-label={label} disabled={isUsed}
-            onClick={() => onApply(card)}>{label}</button>;
-        })}
+      <div className="street-card-board">
+        <span>{english ? "Board" : "ボード"}</span>
+        <BoardCards cards={usedCards} />
       </div>
-      <p className="modal-description">{english ? "Board cards cannot be selected again." : "盤面と重なるカードは選べません。"}</p>
+      <p className="modal-description">{english ? "Choose one card. Cards on the board are unavailable." : "1枚選んでください。盤面のカードは選べません。"}</p>
+      <div className="street-card-options" role="group" aria-label={english ? "Available cards by suit" : "スート別のカード一覧"}>
+        {suitOrder.map(suit => <div className={`street-suit-row suit-${suit}`} key={suit} role="group" aria-label={suitNames[english ? "en" : "ja"][suit]}>
+          <span className="street-suit-label" aria-hidden="true">{suitLabels[suit]}</span>
+          {deck.filter(card => card[1] === suit).map(card => {
+            const isUsed = unavailable.has(card);
+            const label = `${card[0]}${suitLabels[suit]}`;
+            return <button type="button" key={card} className={`street-card-option suit-${suit}${card === currentCard ? " selected" : ""}`}
+              aria-pressed={card === currentCard} aria-label={label} disabled={isUsed}
+              onClick={() => onApply(card)}>{card[0]}</button>;
+          })}
+        </div>)}
+      </div>
     </div>
   </div>;
 }

@@ -471,6 +471,13 @@ test("single-card street picker blocks used cards and localizes later node headi
   const dialog = renderToStaticMarkup(createElement(StreetCardDialog, { street: "turn", currentCard: "Kh", usedCards: ["As", "7d", "2c"], onApply() {}, onClose() {} }));
   assert.match(dialog, /role="dialog" aria-modal="true"/);
   assert.equal((dialog.match(/<button type="button" class="street-card-option/g) ?? []).length, 52);
+  const suitRows = [...dialog.matchAll(/<div class="street-suit-row suit-([shdc])"[^>]*>(.*?)<\/div>/g)];
+  assert.deepEqual(suitRows.map(([, suit]) => suit), ["s", "h", "d", "c"]);
+  for (const [, suit, row] of suitRows) {
+    assert.equal((row.match(/class="street-card-option/g) ?? []).length, 13);
+    assert.ok(row.indexOf(`aria-label="2${{ s: "♠", h: "♥", d: "♦", c: "♣" }[suit]}"`) < row.indexOf(`aria-label="A${{ s: "♠", h: "♥", d: "♦", c: "♣" }[suit]}"`));
+  }
+  assert.match(dialog, /class="street-card-board"/);
   assert.match(dialog, /aria-label="A♠" disabled/);
   assert.match(dialog, /class="street-card-option suit-h selected" aria-pressed="true" aria-label="K♥"/);
   assert.equal(color("allin"), color("all_in"));
