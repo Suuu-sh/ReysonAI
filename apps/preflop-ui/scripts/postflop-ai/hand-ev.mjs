@@ -42,6 +42,9 @@ export function playFromNode({ hands, flop, runout, history, forced, policy, lat
   const winner = settle(table, hands, [...flop, ...runout]);
   const paid = table.pot - rake(table.pot);
   const share = winner === actor ? paid : winner === "tie" ? paid / 2 : 0;
+  // At low SPR an earlier wager can merge into an all-in, so the play never reaches this
+  // decision (e.g. a raise that becomes a call). Callers treat the node as unreachable.
+  if (!atNode) return null;
   return share - table.invested[actor] + atNode[actor];
 }
 
@@ -97,6 +100,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
       byClass.get(hand).push(item);
     }
     const rows = {};
+    let neverReached = false;
     // Opponent samplers restricted to combos that do not share a card with the hero combo, so a
     // narrow opponent range (e.g. deep in a 4bet pot) can never loop forever on rejection.
     const compatible = new Map();
@@ -109,6 +113,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
       return compatible.get(key);
     };
     for (const [hand, allCombos] of byClass) {
+      if (neverReached) break;
       const combos = allCombos.filter(item => villainFor(item.combo));
       if (!combos.length) continue;
       const pickHero = sampler(combos);
@@ -131,9 +136,11 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
         const mix = policyMix(policy, node, heroCombo, board.cards);
         for (const action of actions) {
           const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action, policy, laterPolicy, random: seededRandom(streamSeed), spot, tree: spot.tree });
+          if (value === null) { neverReached = true; break; }
           sums[action] += value;
           mixEv += mix[action] / 100 * value;
         }
+        if (neverReached) break;
       }
       const equity = wins / samples, ev = mixEv / samples;
       const totalWeight = combos.reduce((sum, item) => sum + item.weight, 0);
@@ -146,7 +153,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
         mix: Object.fromEntries(actions.map(action => [action, round(combos.reduce((sum, item) => sum + item.weight * policyMix(policy, node, item.combo, board.cards)[action], 0) / totalWeight)])),
       };
     }
-    out[key] = { node, actor, pot_bb: pot, rows };
+    out[key] = neverReached ? { node, actor, pot_bb: pot, rows: {}, unreachable: true } : { node, actor, pot_bb: pot, rows };
   }
   return out;
 }
