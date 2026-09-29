@@ -4,7 +4,7 @@ import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { checkFlopBalance, checkLaterBalance } from "../scripts/postflop-ai/balance.mjs";
 import { referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
 import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
-import { referencePolicy, NODES } from "../scripts/postflop-ai/policy.mjs";
+import { referencePolicy, referencePolicyFor, NODES } from "../scripts/postflop-ai/policy.mjs";
 import { adoptionDecision, worstProfileScore } from "../scripts/postflop-ai/regenerate-later.mjs";
 
 const clone = value => structuredClone(value);
@@ -37,6 +37,24 @@ test("flop balance flags monster-only betting and value-only raises", () => {
   assert.ok(findings.some(item => item.check === "value-only-raise" && item.node === "bb_vs_33"), JSON.stringify(findings));
 });
 
+test("overfold flags fold-only flop responses more than the fixed reference policy", () => {
+  const reference = referencePolicyFor(inputs.spot.tree);
+  const referenceFindings = checkFlopBalance(inputs, reference).findings;
+  const foldOnly = clone(reference);
+  for (const rule of foldOnly.rules) if (/^(?:bb|ip)_vs_\d+$/.test(rule.node)) {
+    rule.mix = actionMix(NODES[rule.node], "fold");
+  }
+  const foldOnlyFindings = checkFlopBalance(inputs, foldOnly).findings;
+  const referenceOverfolds = referenceFindings.filter(item => item.check === "overfold");
+  const foldOnlyOverfolds = foldOnlyFindings.filter(item => item.check === "overfold");
+  assert.deepEqual(referenceFindings.filter(item => item.severity === "error"), []);
+  assert.deepEqual(foldOnlyFindings.filter(item => item.severity === "error"), []);
+  assert.ok(foldOnlyOverfolds.length > referenceOverfolds.length,
+    `fold-only=${foldOnlyOverfolds.length}; reference=${referenceOverfolds.length}`);
+  assert.ok(foldOnlyOverfolds.every(item => item.severity === "warn" && !("direction" in item) &&
+    /defends 0\.0% versus a minimum defence of /.test(item.detail)), JSON.stringify(foldOnlyOverfolds));
+});
+
 test("later balance catches excess river air, value-only raises, capped checks, missing overrides and copied roles", () => {
   const policy = clone(referenceLaterPolicy());
   for (const node of ["turn_oop_first", "turn_ip_first"]) {
@@ -65,9 +83,26 @@ test("later balance catches excess river air, value-only raises, capped checks, 
   assert.ok(findings.some(item => item.check === "role-copy" && item.node.includes("turn_oop_first")), JSON.stringify(findings));
 });
 
-test("the reference later policy has no balance errors", () => {
-  const findings = checkLaterBalance(inputs, referencePolicy, referenceLaterPolicy(), { authored: false }).findings;
+test("overfold flags fold-only later responses more than the fixed reference policy", () => {
+  const referenceLater = referenceLaterPolicy();
+  const findings = checkLaterBalance(inputs, referencePolicyFor(inputs.spot.tree), referenceLater, { authored: false }).findings;
+  const foldOnly = clone(referenceLater);
+  for (const node of Object.keys(LATER_NODES).filter(name =>
+    /^(?:turn|river)_(?:oop|ip)_vs_(?:33|75|125|allin)$/.test(name))) {
+    const street = node.split("_")[0];
+    for (const rule of foldOnly.streets[street].rules) if (rule.node === node) {
+      rule.mix = actionMix(LATER_NODES[node], "fold");
+    }
+  }
+  const foldOnlyFindings = checkLaterBalance(inputs, referencePolicyFor(inputs.spot.tree), foldOnly, { authored: false }).findings;
+  const referenceOverfolds = findings.filter(item => item.check === "overfold");
+  const foldOnlyOverfolds = foldOnlyFindings.filter(item => item.check === "overfold");
   assert.deepEqual(findings.filter(item => item.severity === "error"), []);
+  assert.deepEqual(foldOnlyFindings.filter(item => item.severity === "error"), []);
+  assert.ok(foldOnlyOverfolds.length > referenceOverfolds.length,
+    `fold-only=${foldOnlyOverfolds.length}; reference=${referenceOverfolds.length}`);
+  assert.ok(foldOnlyOverfolds.every(item => item.severity === "warn" && !("direction" in item) &&
+    /defends 0\.0% versus a minimum defence of /.test(item.detail)), JSON.stringify(foldOnlyOverfolds));
   assert.ok(findings.every(item => ["warn", "error"].includes(item.severity)));
 });
 

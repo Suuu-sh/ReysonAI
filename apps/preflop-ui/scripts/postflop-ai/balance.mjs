@@ -6,7 +6,7 @@ import { boardTexture, handTier, runoutTexture } from "./model.mjs";
 import { LATER_NODES, betFraction, laterNodeRole, streetHistories, streetState } from "./later-tree.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
 import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.mjs";
-import { FLOP_BETS, flopState, treeHistories } from "./tree.mjs";
+import { FLOP_BETS, flopBetFraction, flopState, treeHistories } from "./tree.mjs";
 import { createTable, playFlop } from "./engine.mjs";
 
 const pct = value => `${(value * 100).toFixed(1)}%`;
@@ -127,6 +127,7 @@ function nodeBoardBucket(collection, node, boardId, actions) {
   let row = nodeRows.get(boardId);
   if (!row) nodeRows.set(boardId, row = {
     rangeWeight: 0, monsterWeight: 0, monsterCheckWeight: 0, nonMonsterRaiseWeight: 0,
+    minimumDefenseWeight: 0,
     actionWeights: Object.fromEntries(actions.map(action => [action, 0])),
     airActionWeights: Object.fromEntries(actions.map(action => [action, 0])),
     targetActionWeights: Object.fromEntries(actions.map(action => [action, 0])),
@@ -134,12 +135,13 @@ function nodeBoardBucket(collection, node, boardId, actions) {
   return row;
 }
 
-function addSummary(collection, node, boardId, actions, summary, targets = {}) {
+function addSummary(collection, node, boardId, actions, summary, targets = {}, minimumDefense = null) {
   const row = nodeBoardBucket(collection, node, boardId, actions);
   row.rangeWeight += summary.rangeWeight;
   row.monsterWeight += summary.monsterWeight;
   row.monsterCheckWeight += summary.monsterCheckWeight;
   row.nonMonsterRaiseWeight += summary.nonMonsterRaiseWeight;
+  if (minimumDefense !== null) row.minimumDefenseWeight += summary.rangeWeight * minimumDefense;
   for (const action of actions) {
     row.actionWeights[action] += summary.actionWeights[action];
     row.airActionWeights[action] += summary.airActionWeights[action];
@@ -198,6 +200,44 @@ function bluffFindings(collection, nodes) {
         detail: `${label} bets average ${pct(avgAir)} air versus a size target of ${pct(avgTarget)} (more than 15 percentage points over).` });
       else if (difference < -0.15 && frequency >= 0.05) findings.push({ check: "bluff-ratio", direction: "under", severity: "warn", node,
         detail: `${label} bets average ${pct(avgAir)} air versus a size target of ${pct(avgTarget)} at ${pct(frequency)} range frequency (more than 15 points under).` });
+    }
+  }
+  return findings;
+}
+
+function isFlopFacingNode(node) {
+  return /^(?:bb|ip)_vs_\d+$/.test(node);
+}
+
+function isLaterFacingNode(node) {
+  return /^(?:turn|river)_(?:oop|ip)_vs_(?:33|75|125|allin)$/.test(node);
+}
+
+function flopMinimumDefense(node) {
+  if (!isFlopFacingNode(node)) return null;
+  const size = node.match(/_vs_(\d+)$/)[1];
+  return 1 / (1 + flopBetFraction(`bet${size}`));
+}
+
+function laterMinimumDefense(node, street, table, inputs) {
+  if (!isLaterFacingNode(node)) return null;
+  const size = node.match(/_vs_(33|75|125|allin)$/)[1];
+  const betSize = size === "allin"
+    ? Math.min(table.stacks[inputs.spot.ip], table.stacks[inputs.spot.oop]) / table.pot
+    : betFraction(street, `bet${size}`);
+  return 1 / (1 + betSize);
+}
+
+function overfoldFindings(collection, nodes) {
+  const findings = [];
+  for (const node of nodes.filter(name => isFlopFacingNode(name) || isLaterFacingNode(name))) {
+    const defense = averaged(collection, node, row => row.rangeWeight
+      ? (row.actionWeights.call + (row.actionWeights.raise ?? 0)) / row.rangeWeight : null);
+    const minimumDefense = averaged(collection, node, row => row.rangeWeight
+      ? row.minimumDefenseWeight / row.rangeWeight : null);
+    if (defense !== null && minimumDefense !== null && defense < minimumDefense - 0.15) {
+      findings.push({ check: "overfold", severity: "warn", node,
+        detail: `defends ${pct(defense)} versus a minimum defence of ${pct(minimumDefense)} (more than 15 percentage points under).` });
     }
   }
   return findings;
@@ -283,9 +323,10 @@ export function checkFlopBalance(inputs, flopPolicy) {
     const role = nodeRole(node), seat = inputs.spot[role];
     const range = scaleFlopPath(seatRange(inputs, seat, board.cards), role, state.steps, mixFor, board.cards);
     const summary = summarize(range, NODES[node], mixFor, tierFor, node, board.cards, null);
-    addSummary(collection, node, board.id, NODES[node], summary);
+    addSummary(collection, node, board.id, NODES[node], summary, {}, flopMinimumDefense(node));
   }
-  return { findings: [...cappedCheckFindings(collection, nodes), ...raiseFindings(collection, nodes)] };
+  return { findings: [...cappedCheckFindings(collection, nodes), ...raiseFindings(collection, nodes),
+    ...overfoldFindings(collection, nodes)] };
 }
 
 // `authored`: the policy is a generated/authored candidate, which must show both override
@@ -325,8 +366,8 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
   const turnHistoryByNode = firstHistoryByNode(streetHistories("turn"));
   const riverHistoryByNode = firstHistoryByNode(streetHistories("river"));
   const turnNodes = [...turnHistoryByNode.keys()], riverNodes = [...riverHistoryByNode.keys()];
-  const turnCheckNodes = turnNodes.filter(node => node.endsWith("_first") || LATER_NODES[node].includes("raise"));
-  const riverCheckNodes = riverNodes.filter(node => node.endsWith("_first"));
+  const turnCheckNodes = turnNodes.filter(node => node.endsWith("_first") || LATER_NODES[node].includes("raise") || isLaterFacingNode(node));
+  const riverCheckNodes = riverNodes.filter(node => node.endsWith("_first") || isLaterFacingNode(node));
 
   for (const flopBoard of boards()) {
     const runouts = representativeRunouts(flopBoard);
@@ -340,7 +381,8 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
       const line = lineFor(flopPath.aggressor, role);
       const items = scaleLaterPath(reached, role, state.steps, mixFor, turnBoard, flopPath.aggressor);
       const summary = summarize(items, LATER_NODES[node], mixFor, tierFor, node, turnBoard, line, true);
-      addSummary(collection, node, flopBoard.id, LATER_NODES[node], summary);
+      const minimumDefense = laterMinimumDefense(node, "turn", flopTableByPath.get(flopPath.actions.join(",")), inputs);
+      addSummary(collection, node, flopBoard.id, LATER_NODES[node], summary, {}, minimumDefense);
     }
 
     for (const runout of runouts) {
@@ -367,7 +409,8 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
               targets[action] = size / (1 + 2 * size);
             }
             const summary = summarize(items, LATER_NODES[node], mixFor, tierFor, node, runout.riverBoard, line, true);
-            addSummary(collection, node, flopBoard.id, LATER_NODES[node], summary, targets);
+            const minimumDefense = laterMinimumDefense(node, "river", table, inputs);
+            addSummary(collection, node, flopBoard.id, LATER_NODES[node], summary, targets, minimumDefense);
           }
         }
       }
@@ -375,6 +418,7 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
   }
 
   const laterNodes = [...turnNodes, ...riverNodes];
-  findings.push(...cappedCheckFindings(collection, laterNodes), ...raiseFindings(collection, turnNodes), ...bluffFindings(collection, riverNodes));
+  findings.push(...cappedCheckFindings(collection, laterNodes), ...raiseFindings(collection, turnNodes),
+    ...bluffFindings(collection, riverNodes), ...overfoldFindings(collection, laterNodes));
   return { findings };
 }
