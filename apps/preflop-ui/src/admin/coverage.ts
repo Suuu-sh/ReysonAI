@@ -131,15 +131,14 @@ const STAGES = [
   { street: "turn_river", label: "ターン/リバー", suffix: "-later-policy.json" },
   // Per-hand action EV shown in the app; done only when it matches the current policies.
   { street: "hand_ev", label: "手ごとのEV", suffix: "-hand-ev.json", freshness: true },
-  // Release preparation (priority R): precise turn/river reasons and turn/river hand-EV per spot.
-  { street: "turn_river_reasons", label: "ターン/リバー理由文", suffix: "-later-reasons.json", freshness: true, priority: 3 },
-  { street: "turn_river_ev", label: "ターン/リバー手ごとのEV", suffix: "-later-hand-ev.json", freshness: true, priority: 3 },
 ];
 
 // One-off release tasks without per-spot files. Update `done` when the task lands.
 export const RELEASE_TASKS = Object.freeze([
   { id: "release_d1", hero: "—", path: "Cloudflare D1 に方針・手ごとのEV・理由文を入れ、solveaai-edge-api から本番配信（ローカル専用 middleware を置き換え）", done: false },
   { id: "release_no_gto_ui", hero: "—", path: "「GTOではない / AI推定」表示をUIから外し、利用規約だけに残す", done: false },
+  { id: "release_turn_river_reasons", hero: "—", path: "ターン・リバーの精密な理由文（ノード×アクション×手の強さ×落ちたカード×前のストリートの文面を日英で用意し、相手レンジへの勝率・降ろせる割合・必要勝率の数字を根拠に添える）", done: false },
+  { id: "release_turn_river_ev", hero: "—", path: "ターン・リバーの手ごとのEV（選んだハンドをその場で計算する edge API と画面表示。事前計算は1スポット約150MBで不採用）", done: false },
 ]);
 
 export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {

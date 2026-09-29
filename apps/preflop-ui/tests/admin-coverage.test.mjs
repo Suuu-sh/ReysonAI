@@ -49,7 +49,7 @@ test("TODO priority follows BTN-BB heads-up, other heads-up, release prep, then 
   ]));
   assert.ok(preflopRows.filter(row => ["multiway", "squeeze", "cold_three_bet", "cold_four_bet"].includes(row.category)).every(row => row.priority === 4));
   assert.ok(postflopRows.filter(row => row.category === "postflop_multiway").every(row => row.priority === 4));
-  assert.ok(postflopRows.filter(row => ["release_tasks"].includes(row.category) || row.category.startsWith("turn_river_reasons") || row.category.startsWith("turn_river_ev")).every(row => row.priority === 3));
+  assert.ok(postflopRows.filter(row => ["release_tasks"].includes(row.category)).every(row => row.priority === 3));
   assert.equal(preflopRows.find(row => row.id === "BB_vs_SB_limp").priority, 2);
   const priorities = priorityBacklog(preflop, postflop);
   assert.deepEqual(priorities.map(priority => priority.value), [1, 2, 3, 4]);
