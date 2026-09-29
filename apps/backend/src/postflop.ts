@@ -1,4 +1,4 @@
-// Heads-up postflop AI policies (AI estimates, not GTO) read from the evionai-postflop D1
+// Heads-up postflop AI policies (AI estimates, not GTO) read from the evionai D1
 // database. The worker only reads: every view is computed in the browser from these
 // artifacts, because the computations take 17-63ms and Workers Free allows 10ms of CPU.
 // Stored JSON is passed through as text so a request never parses a whole policy.
@@ -10,7 +10,7 @@ type Result = { status: number; body?: unknown; text?: string };
 const SPOT_ID = /^[A-Za-z0-9_]+$/;
 
 export async function routePostflop(db: D1Database | undefined, path: string, params: URLSearchParams): Promise<Result> {
-  if (!db) throw new Error("POSTFLOP_DB binding is not configured");
+  if (!db) throw new Error("DB binding is not configured");
   if (path === "/v1/postflop/spots") {
     const { results } = await db.prepare("SELECT spot_id, stage, policy_hash FROM postflop_policies ORDER BY spot_id, stage").all<{ spot_id: string; stage: string; policy_hash: string }>();
     const spots: Record<string, Record<string, string>> = {};

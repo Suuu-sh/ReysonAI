@@ -43,7 +43,7 @@ function tablesFor(published) {
 }
 
 test("postflop routes validate the spot and serve no computed views", async () => {
-  const env = { SOLUTIONS: null, POSTFLOP_DB: mockDb({}) };
+  const env = { SOLUTIONS: null, DB: mockDb({}) };
   const status = async path => (await worker.fetch(new Request(`https://edge.test${path}`), env)).status;
   assert.equal(await status("/v1/postflop/spot"), 400);
   assert.equal(await status("/v1/postflop/spot?spot=a'b"), 400);
@@ -58,7 +58,7 @@ const local = existsSync(new URL(`../../frontend/.local/postflop-ai/${spot.slug}
 test("worker artifacts and hand-EV equal the local middleware", { skip: !local && "no local postflop artifacts" }, async () => {
   const artifacts = spotArtifacts(spot);
   assert.ok(!artifacts.skip, artifacts.skip);
-  const env = { SOLUTIONS: null, POSTFLOP_DB: mockDb(tablesFor([artifacts])) };
+  const env = { SOLUTIONS: null, DB: mockDb(tablesFor([artifacts])) };
   const get = async path => worker.fetch(new Request(`https://edge.test${path}`), env);
   assert.equal((await (await get("/v1/postflop/spots")).json()).spots[spot.id].flop, artifacts.candidate.metadata.policy_hash);
 

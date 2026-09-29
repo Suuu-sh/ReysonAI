@@ -1,4 +1,5 @@
 import { routePostflop, type D1Database } from "./postflop.ts";
+import { routePreflopDatasets } from "./preflop-datasets.ts";
 
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"] as const;
 
@@ -52,7 +53,7 @@ type Manifest = {
   edge?: EdgeManifest;
 };
 type R2Bucket = { get(key: string): Promise<{ text(): Promise<string> } | null> };
-type Env = { SOLUTIONS: R2Bucket; POSTFLOP_DB?: D1Database; ALLOWED_ORIGIN?: string };
+type Env = { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
 type PublishedData = {
   summary: Solution;
   nodesIndex: NodeSummary[];
@@ -94,16 +95,25 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     // Views are deterministic per published dataset, so cache them at the edge under the
     // dataset hash: a republish changes the key instead of waiting for entries to expire.
     const cache = (globalThis as { caches?: { default?: EdgeCache } }).caches?.default;
-    const version = cache ? await datasetVersion(env.POSTFLOP_DB) : null;
+    const version = cache ? await datasetVersion(env.DB) : null;
     const key = version ? new Request(`${url.origin}${url.pathname}?${url.searchParams}&dataset=${version}`) : null;
     const hit = key ? await cache!.match(key) : undefined;
     if (hit) return hit;
-    const { status, body, text } = await routePostflop(env.POSTFLOP_DB, url.pathname, url.searchParams);
+    const { status, body, text } = await routePostflop(env.DB, url.pathname, url.searchParams);
     if (status !== 200) return errorResponse(status, String((body as JsonRecord).error ?? "error"));
     const response = text == null ? json(body, { cacheControl: "public, max-age=300, s-maxage=86400" })
       : new Response(text, { status: 200, headers: { ...JSON_HEADERS, "cache-control": "public, max-age=300, s-maxage=86400" } });
     if (key) await cache!.put(key, response.clone());
     return response;
+  }
+
+  // Preflop datasets live in D1, not in the R2 solution manifest, so they route before it.
+  if ((url.pathname === "/v1/preflop/datasets" || url.pathname.startsWith("/v1/preflop/datasets/")) && request.method === "GET") {
+    const { status, body, text, etag } = await routePreflopDatasets(env.DB, url.pathname);
+    if (status !== 200) return errorResponse(status, String((body as JsonRecord).error ?? "error"));
+    if (text == null) return json(body, { cacheControl: "public, max-age=60, s-maxage=300" });
+    if (etag && request.headers.get("if-none-match") === etag) return new Response(null, { status: 304, headers: { etag } });
+    return new Response(text, { status: 200, headers: { ...JSON_HEADERS, etag: etag ?? "", "cache-control": "public, max-age=300, s-maxage=86400" } });
   }
 
   if (!url.pathname.startsWith("/v1/preflop/")) {

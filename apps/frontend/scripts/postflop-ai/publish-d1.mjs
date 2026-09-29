@@ -1,20 +1,15 @@
-// Publish the canonical local postflop artifacts to the evionai-postflop D1 database
-// (schema: apps/backend/migrations). Generates SQL; runs wrangler only with
-// --execute local|remote. Spots whose flop policy or report is missing or stale are skipped.
-//   node scripts/postflop-ai/publish-d1.mjs [--out file] [--execute local|remote]
-import { execFileSync } from "node:child_process";
+// SQL for the canonical local postflop artifacts in the evionai D1 database (schema:
+// apps/backend/migrations). Spots whose flop policy or report is missing or stale are
+// skipped. Run through scripts/publish-d1.mjs.
 import { createHash } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
-import { loadInputs, readArtifact, root } from "./inputs.mjs";
+import { loadInputs, readArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
 import { POSTFLOP_SPOTS } from "./spots.mjs";
 
 // D1 rejects SQL statements over 100 KB, so every stored JSON value must stay below this.
 export const MAX_VALUE_BYTES = 90_000;
-const quote = value => `'${String(value).replaceAll("'", "''")}'`;
+export const quote = value => `'${String(value).replaceAll("'", "''")}'`;
 const sha = value => createHash("sha256").update(value).digest("hex");
 
 function jsonValue(value, label) {
@@ -75,25 +70,14 @@ export function buildSql(published, publishedAt = new Date().toISOString()) {
   return `${lines.join("\n")}\n`;
 }
 
-function main(argv) {
-  const arg = name => { const index = argv.indexOf(name); return index >= 0 ? argv[index + 1] : undefined; };
-  const out = resolve(arg("--out") ?? join(root, ".local/postflop-d1.sql"));
-  const execute = arg("--execute");
-  if (execute && !["local", "remote"].includes(execute)) throw new Error("--execute must be local or remote");
+// Every publishable spot, logging what is skipped and why.
+export function publishableSpots(log = console.log) {
   const published = [];
   for (const spot of POSTFLOP_SPOTS) {
     const result = spotArtifacts(spot);
-    if (result.skip) { console.log(`skip ${spot.id}: ${result.skip}`); continue; }
+    if (result.skip) { log(`skip ${spot.id}: ${result.skip}`); continue; }
     published.push(result);
-    console.log(`publish ${spot.id}${result.laterCandidate ? " +later" : ""}${result.handEv ? " +hand-ev" : ""}`);
+    log(`publish ${spot.id}${result.laterCandidate ? " +later" : ""}${result.handEv ? " +hand-ev" : ""}`);
   }
-  mkdirSync(dirname(out), { recursive: true });
-  writeFileSync(out, buildSql(published));
-  console.log(`${published.length} spots → ${out}`);
-  if (execute) {
-    execFileSync("npx", ["wrangler", "d1", "execute", "evionai-postflop", `--${execute}`, "--yes", "--file", out],
-      { cwd: join(root, "../backend"), stdio: "inherit" });
-  }
+  return published;
 }
-
-if (import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2));
