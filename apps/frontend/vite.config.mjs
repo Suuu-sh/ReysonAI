@@ -39,6 +39,8 @@ const postflopArtifacts = { name: "postflop-artifacts",
   } };
 
 export default defineConfig({
+  // The postflop compute worker imports shared modules, so it needs ES module output.
+  worker: { format: "es" },
   build: {
     outDir: "dist/client",
   },

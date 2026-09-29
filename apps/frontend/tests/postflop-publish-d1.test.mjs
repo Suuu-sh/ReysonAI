@@ -30,7 +30,8 @@ test("hand-EV rows split the flop file by board and history", () => {
   assert.deepEqual(handEvRows(entry.handEv, "flop").map(row => [row.board_key, row.history]), [["", ""], ["As7d2c", ""], ["As7d2c", "bet33"]]);
 });
 
-test("postflop URLs use the edge API only when a base is configured", () => {
-  assert.equal(postflopUrl("board", { spot: "S", board: "As7d2c" }), "/local-postflop?spot=S&board=As7d2c");
+test("postflop URLs expose only read-only spot artifacts and saved flop hand-EV", () => {
+  assert.equal(postflopUrl("spot", { spot: "S" }), "/local-postflop-spot?spot=S");
+  assert.equal(postflopUrl("spot", { spot: "S" }, "https://api.test/"), "https://api.test/v1/postflop/spot?spot=S");
   assert.equal(postflopUrl("hand-ev", { spot: "S" }, "https://api.test/"), "https://api.test/v1/postflop/hand-ev?spot=S");
 });

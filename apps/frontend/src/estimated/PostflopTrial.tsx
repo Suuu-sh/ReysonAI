@@ -7,7 +7,8 @@ import { actionReason, dominantTier, evidenceReason, textureLabels, tierLabels }
 import { laterActionReason } from "./later-reasons.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
-import { postflopUrl } from "./postflop-api.ts";
+import { computeBoard, computeExplain, computeLaterExplain, computeLaterView } from "./postflop-compute.ts";
+import { computeLaterHandEvInWorker, deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot } from "./postflop-browser.ts";
 import { productLocale } from "../i18n.ts";
 
 const baseLabels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
@@ -97,7 +98,7 @@ function ActionDetail({ action, explain }) {
   </details>;
 }
 
-function HandReasons({ node, hand, actions, texture, explain, labels }) {
+function HandReasons({ node, hand, actions, texture, explain, loading, error, labels }) {
   if (!hand.tiers) return null;
   const tier = dominantTier(hand.tiers);
   const shares = Object.entries(hand.tiers).filter(([, share]) => share >= 0.005).sort((a, b) => b[1] - a[1]);
@@ -122,6 +123,8 @@ function HandReasons({ node, hand, actions, texture, explain, labels }) {
             <ActionDetail action={action} explain={explain} /></li>;
         })}
     </ul>
+    {loading && <small className="postflop-reason-general">{productLocale() === "en" ? "Loading explanation…" : "読み込み中…"}</small>}
+    {error && <small className="postflop-reason-general">{productLocale() === "en" ? "Numeric explanation is unavailable." : "数値の説明を読み込めませんでした。"}</small>}
   </div>;
 }
 
@@ -305,11 +308,14 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const [data, setData] = useState(null);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
+  const [spotState, setSpotState] = useState({ spotId: null, data: null, error: null, loading: false });
+  const [datasetState, setDatasetState] = useState({ spotId: null, datasets: null, error: null, loading: false });
   const [laterData, setLaterData] = useState(null);
   const [laterStatus, setLaterStatus] = useState("idle");
   const [laterError, setLaterError] = useState("");
   const [laterExplainState, setLaterExplainState] = useState(null);
   const [laterHandEvState, setLaterHandEvState] = useState(null);
+  const [explainState, setExplainState] = useState(null);
   const decision = flopDecision(actions, context);
   const labels = labelsFor(decision.node);
   const spotId = context.spotId;
@@ -328,43 +334,80 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   }
 
   useEffect(() => {
+    setSpotState({ spotId: null, data: null, error: null, loading: false });
+    if (!context.pilotAvailable || !spotId) return undefined;
+    const controller = new AbortController();
+    setSpotState({ spotId, data: null, error: null, loading: true });
+    loadPostflopSpot(spotId, controller.signal)
+      .then(result => {
+        if (controller.signal.aborted) return;
+        if (context.tree && result.spot.tree !== context.tree) throw new Error("候補の局面が選択中のポットと一致しません。");
+        setSpotState({ spotId, data: result, error: null, loading: false });
+      })
+      .catch(reason => {
+        if (!controller.signal.aborted && !isAbortError(reason)) setSpotState({ spotId, data: null, error: reason.message, loading: false });
+      });
+    return () => controller.abort();
+  }, [context.pilotAvailable, context.tree, spotId]);
+
+  useEffect(() => {
+    setDatasetState({ spotId: null, datasets: null, error: null, loading: false });
+    if (!context.pilotAvailable || spotState.spotId !== spotId || !spotState.data) return undefined;
+    const controller = new AbortController();
+    setDatasetState({ spotId, datasets: null, error: null, loading: true });
+    loadPostflopDatasets(spotState.data.spot, controller.signal)
+      .then(datasets => {
+        if (!controller.signal.aborted) setDatasetState({ spotId, datasets, error: null, loading: false });
+      })
+      .catch(reason => {
+        if (!controller.signal.aborted && !isAbortError(reason)) setDatasetState({ spotId, datasets: null, error: reason.message, loading: false });
+      });
+    return () => controller.abort();
+  }, [context.pilotAvailable, spotId, spotState.data, spotState.spotId]);
+
+  const postflopSource = spotState.spotId === spotId ? spotState.data : null;
+  const postflopDatasets = datasetState.spotId === spotId ? datasetState.datasets : null;
+  const sourceError = spotState.spotId === spotId && spotState.error ? spotState.error
+    : datasetState.spotId === spotId ? datasetState.error : null;
+  useEffect(() => {
     setData(null); setError("");
-    if (!context.pilotAvailable || !spotId || !board || !decision.node) { setStatus("idle"); return; }
+    if (!context.pilotAvailable || !spotId || !board || !decision.node) { setStatus("idle"); return undefined; }
+    if (sourceError) { setError(sourceError); setStatus("error"); return undefined; }
+    if (!postflopSource || !postflopDatasets) { setStatus("loading"); return undefined; }
     const controller = new AbortController();
     setStatus("loading");
-    fetch(postflopUrl("board", { spot: spotId, board }), { signal: controller.signal })
-      .then(async response => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error || "ポストフロップ候補を読み込めませんでした。");
-        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.board !== board || !body.nodes || (context.tree && body.tree !== context.tree)) throw new Error("候補の局面・盤面または形式が一致しません。");
-        return body;
+    deferPostflopCalculation(() => computeBoard({ spotId, board, datasets: postflopDatasets,
+      flopCandidate: postflopSource.candidate }), controller.signal)
+      .then(body => {
+        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.board !== board || !body.nodes ||
+            (context.tree && body.tree !== context.tree)) throw new Error("候補の局面・盤面または形式が一致しません。");
+        setData(body); setStatus("ready");
       })
-      .then(body => { setData(body); setStatus("ready"); })
-      .catch(reason => { if (reason.name !== "AbortError") { setError(reason.message); setStatus("error"); } });
+      .catch(reason => { if (!isAbortError(reason)) { setError(reason.message); setStatus("error"); } });
     return () => controller.abort();
-  }, [board, context.pilotAvailable, decision.node, spotId]);
+  }, [board, context.pilotAvailable, context.tree, decision.node, postflopDatasets, postflopSource, sourceError, spotId]);
 
   useEffect(() => {
     setLaterData(null); setLaterError("");
-    if (!context.pilotAvailable || !spotId || !board || !later?.node || !turnCard) { setLaterStatus("idle"); return; }
+    if (!context.pilotAvailable || !spotId || !board || !later?.node || !turnCard) { setLaterStatus("idle"); return undefined; }
+    if (sourceError) { setLaterError(sourceError); setLaterStatus("error"); return undefined; }
+    if (!postflopSource || !postflopDatasets) { setLaterStatus("loading"); return undefined; }
     const controller = new AbortController();
     setLaterStatus("loading");
-    const params = new URLSearchParams({ spot: spotId, flop: board, flopActions: flopPath, turn: turnCard,
-      turnActions: turnPath, river: riverCard, riverActions: riverPath });
-    fetch(postflopUrl("later", params), { signal: controller.signal })
-      .then(async response => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error || "後続ストリートの候補を読み込めませんでした。");
+    deferPostflopCalculation(() => computeLaterView({ spotId, flop: board, flopActions: flopPath, turn: turnCard,
+      turnActions: turnPath, river: riverCard, riverActions: riverPath, datasets: postflopDatasets,
+      flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate }), controller.signal)
+      .then(body => {
         if (body.kind !== "ai_estimate_not_gto" || body.street !== later.street || body.node !== later.node ||
             body.actor !== later.actor || body.line !== later.line || !Array.isArray(body.rows) || body.rows.length !== 169) {
           throw new Error("候補の局面または形式が一致しません。");
         }
-        return body;
+        setLaterData(body); setLaterStatus("ready");
       })
-      .then(body => { setLaterData(body); setLaterStatus("ready"); })
-      .catch(reason => { if (reason.name !== "AbortError") { setLaterError(reason.message); setLaterStatus("error"); } });
+      .catch(reason => { if (!isAbortError(reason)) { setLaterError(reason.message); setLaterStatus("error"); } });
     return () => controller.abort();
-  }, [board, context.pilotAvailable, flopPath, later?.actor, later?.line, later?.node, later?.street, riverCard, riverPath, spotId, turnCard, turnPath]);
+  }, [board, context.pilotAvailable, flopPath, later?.actor, later?.line, later?.node, later?.street,
+    postflopDatasets, postflopSource, riverCard, riverPath, sourceError, spotId, turnCard, turnPath]);
 
   const current = decision.node && data?.board === board && data.spot === spotId && data.nodes[decision.node];
   const aggregates = useMemo(() => current ? matrixFor(current) : null, [current]);
@@ -388,88 +431,97 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const laterRepresentativeCards = laterCurrent && laterChosen && !laterChosen.unreachable
     ? representativeLaterCombo(selectedHand, laterBoardCards)
     : null;
-  const laterExplainUrl = laterCurrent && laterRepresentativeCards && spotId && board
-    ? postflopUrl("later-explain", {
-      spot: spotId, flop: board, flopActions: flopPath, turn: turnCard, turnActions: turnPath,
+  const laterExplainInput = laterCurrent && laterRepresentativeCards && spotId && board
+    ? { spotId, flop: board, flopActions: flopPath, turn: turnCard, turnActions: turnPath,
       river: laterCurrent.street === "river" ? riverCard : "",
-      riverActions: laterCurrent.street === "river" ? riverPath : "", cards: laterRepresentativeCards,
-    })
+      riverActions: laterCurrent.street === "river" ? riverPath : "", cards: laterRepresentativeCards }
     : null;
-  const laterHandEvUrl = laterCurrent && laterChosen && !laterChosen.unreachable && spotId && board
-    ? postflopUrl("later-hand-ev", {
-      spot: spotId, flop: board, flopActions: flopPath, turn: turnCard, turnActions: turnPath,
-      ...(laterCurrent.street === "river" ? { river: riverCard } : {}),
-      riverActions: laterCurrent.street === "river" ? riverPath : "", hand: selectedHand,
-    })
+  const laterExplainKey = laterExplainInput ? JSON.stringify(laterExplainInput) : null;
+  const laterHandEvInput = laterCurrent && laterChosen && !laterChosen.unreachable && spotId && board
+    ? { spotId, flop: board, flopActions: actions, turn: turnCard, turnActions,
+      river: laterCurrent.street === "river" ? riverCard : null,
+      riverActions: laterCurrent.street === "river" ? riverActions : [], hand: selectedHand }
     : null;
-  const laterExplain = laterExplainUrl
-    ? laterExplainState?.url === laterExplainUrl
+  const laterHandEvKey = laterHandEvInput ? JSON.stringify(laterHandEvInput) : null;
+  const laterExplain = laterExplainKey
+    ? laterExplainState?.key === laterExplainKey
       ? { ...laterExplainState, loading: false }
       : { data: null, error: null, loading: true }
     : { data: null, error: null, loading: false };
-  const laterHandEv = laterHandEvUrl
-    ? laterHandEvState?.url === laterHandEvUrl
+  const laterHandEv = laterHandEvKey
+    ? laterHandEvState?.key === laterHandEvKey
       ? { ...laterHandEvState, loading: false }
       : { data: null, error: null, loading: true }
     : null;
   const [selectedCombo, setSelectedCombo] = useState("all");
   useEffect(() => { setSelectedCombo("all"); }, [selectedHand, board, decision.node]);
   const combo = chosen?.combos?.find(item => item.cards === selectedCombo);
-  const [explain, setExplain] = useState(null);
   const prevBet = actions.find(isFlopBet) ?? "bet33";
+  const explainKey = combo && board && decision.node
+    ? JSON.stringify({ spotId, board, node: decision.node, cards: combo.cards, prev: prevBet }) : null;
+  const explain = explainKey && explainState?.key === explainKey ? explainState.data : null;
+  const explainLoading = Boolean(explainKey && !sourceError && postflopSource && postflopDatasets &&
+    (explainState?.key !== explainKey || explainState.loading));
+  const explainError = explainKey && explainState?.key === explainKey ? explainState.error : null;
   useEffect(() => {
-    setExplain(null);
-    if (!combo || !board || !decision.node) return;
+    setExplainState(null);
+    if (!combo || !board || !decision.node || !explainKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
     const controller = new AbortController();
-    const params = new URLSearchParams({ spot: spotId, board, node: decision.node, cards: combo.cards, prev: prevBet });
-    fetch(postflopUrl("explain", params), { signal: controller.signal })
-      .then(response => response.ok ? response.json() : null)
-      .then(body => { if (body?.spot === spotId && body.cards === combo.cards && body.node === decision.node) setExplain(body); })
-      .catch(() => {});
+    setExplainState({ key: explainKey, data: null, error: null, loading: true });
+    deferPostflopCalculation(() => computeExplain({ spotId, board, node: decision.node, cards: combo.cards, prev: prevBet,
+      datasets: postflopDatasets, flopCandidate: postflopSource.candidate }), controller.signal)
+      .then(body => {
+        if (body?.spot !== spotId || body.cards !== combo.cards || body.node !== decision.node) throw new Error("説明の局面が一致しません。");
+        setExplainState({ key: explainKey, data: body, error: null, loading: false });
+      })
+      .catch(reason => {
+        if (!isAbortError(reason)) setExplainState({ key: explainKey, data: null, error: reason.message, loading: false });
+      });
     return () => controller.abort();
-  }, [combo?.cards, board, decision.node, prevBet, spotId]);
+  }, [combo?.cards, board, decision.node, explainKey, postflopDatasets, postflopSource, prevBet, sourceError, spotId]);
   useEffect(() => {
     setLaterExplainState(null);
-    if (!laterExplainUrl) return;
+    if (!laterExplainKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
     const controller = new AbortController();
-    setLaterExplainState({ url: laterExplainUrl, data: null, error: null, loading: true });
-    fetch(laterExplainUrl, { signal: controller.signal })
-      .then(async response => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error || (productLocale() === "en" ? "Numeric explanation could not be loaded." : "数値の説明を読み込めませんでした。"));
+    setLaterExplainState({ key: laterExplainKey, data: null, error: null, loading: true });
+    deferPostflopCalculation(() => computeLaterExplain({ ...laterExplainInput, datasets: postflopDatasets,
+      flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate }), controller.signal)
+      .then(body => {
         if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.street !== laterCurrent?.street ||
             body.node !== laterCurrent?.node || body.line !== laterCurrent?.line || !body.actions || !Number.isFinite(body.equity)) {
           throw new Error(productLocale() === "en" ? "Explanation does not match this decision." : "説明の局面が選択中の判断と一致しません。");
         }
         return body;
       })
-      .then(body => setLaterExplainState({ url: laterExplainUrl, data: body, error: null, loading: false }))
+      .then(body => setLaterExplainState({ key: laterExplainKey, data: body, error: null, loading: false }))
       .catch(reason => {
-        if (reason.name !== "AbortError") setLaterExplainState({ url: laterExplainUrl, data: null, error: reason.message, loading: false });
+        if (!isAbortError(reason)) setLaterExplainState({ key: laterExplainKey, data: null, error: reason.message, loading: false });
       });
     return () => controller.abort();
-  }, [laterExplainUrl, laterCurrent?.line, laterCurrent?.node, laterCurrent?.street, spotId]);
+  }, [laterCurrent?.line, laterCurrent?.node, laterCurrent?.street, laterExplainKey,
+    postflopDatasets, postflopSource, sourceError, spotId]);
   useEffect(() => {
     setLaterHandEvState(null);
-    if (!laterHandEvUrl) return;
+    if (!laterHandEvKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
     const controller = new AbortController();
-    setLaterHandEvState({ url: laterHandEvUrl, data: null, error: null, loading: true });
-    fetch(laterHandEvUrl, { signal: controller.signal })
-      .then(async response => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error || (productLocale() === "en" ? "Per-hand EV could not be loaded." : "手ごとのEVを読み込めませんでした。"));
+    setLaterHandEvState({ key: laterHandEvKey, data: null, error: null, loading: true });
+    const input = { ...laterHandEvInput, datasets: postflopDatasets,
+      flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate };
+    computeLaterHandEvInWorker(input, controller.signal)
+      .then(body => {
         if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.hand !== selectedHand ||
             body.street !== laterCurrent?.street || body.node !== laterCurrent?.node) {
           throw new Error(productLocale() === "en" ? "EV does not match this decision." : "EVの局面が選択中の判断と一致しません。");
         }
         return body;
       })
-      .then(body => setLaterHandEvState({ url: laterHandEvUrl, data: body, error: null, loading: false }))
+      .then(body => setLaterHandEvState({ key: laterHandEvKey, data: body, error: null, loading: false }))
       .catch(reason => {
-        if (reason.name !== "AbortError") setLaterHandEvState({ url: laterHandEvUrl, data: null, error: reason.message, loading: false });
+        if (!isAbortError(reason)) setLaterHandEvState({ key: laterHandEvKey, data: null, error: reason.message, loading: false });
       });
     return () => controller.abort();
-  }, [laterHandEvUrl, laterCurrent?.node, laterCurrent?.street, selectedHand, spotId]);
+  }, [laterCurrent?.node, laterCurrent?.street, laterHandEvKey, postflopDatasets, postflopSource,
+    selectedHand, sourceError, spotId]);
   const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId);
   const english = productLocale() === "en";
@@ -526,7 +578,9 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                     <HandEvBars items={current.actions.map(action => ({ action, frequency: view.actions[action] }))} labels={labels} ev={handEv} comboSelected={Boolean(view.combo)} />
                   </details>
                 <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
-                <HandReasons node={decision.node} hand={view} actions={current.actions} texture={data.texture} explain={view.combo ? explain : null} labels={labels} />
+                <HandReasons node={decision.node} hand={view} actions={current.actions} texture={data.texture}
+                  explain={view.combo ? explain : null} loading={Boolean(view.combo && explainLoading)}
+                  error={Boolean(view.combo && explainError)} labels={labels} />
               </>}
           </Panel>
           </div>

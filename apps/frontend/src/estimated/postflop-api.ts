@@ -1,15 +1,8 @@
-// Where postflop data comes from: the evionai-api worker (D1, read-only) when the build sets
-// VITE_API_BASE, otherwise the local Vite middleware. The worker serves only artifacts
-// ("spot") and the flop hand-EV lookup; views are computed in the browser from the spot's
-// artifacts. The other routes are local-development views of the same computations.
+// The worker and local middleware expose only read-only artifacts and the saved flop hand-EV.
+// Board views and explanations are computed in the browser from the returned spot artifacts.
 const LOCAL_PATHS = {
   spot: "/local-postflop-spot",
   "hand-ev": "/local-postflop-hand-ev",
-  board: "/local-postflop",
-  explain: "/local-postflop-explain",
-  later: "/local-postflop-later",
-  "later-explain": "/local-postflop-later-explain",
-  "later-hand-ev": "/local-postflop-later-hand-ev",
 } as const;
 const API_ROUTES = new Set(["spot", "hand-ev"]);
 
