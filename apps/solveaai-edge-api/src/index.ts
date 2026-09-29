@@ -91,9 +91,18 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
   }
 
   if (url.pathname.startsWith("/v1/postflop/") && request.method === "GET") {
+    // Views are deterministic per published dataset, so cache them at the edge under the
+    // dataset hash: a republish changes the key instead of waiting for entries to expire.
+    const cache = (globalThis as { caches?: { default?: EdgeCache } }).caches?.default;
+    const version = cache ? await datasetVersion(env.POSTFLOP_DB) : null;
+    const key = version ? new Request(`${url.origin}${url.pathname}?${url.searchParams}&dataset=${version}`) : null;
+    const hit = key ? await cache!.match(key) : undefined;
+    if (hit) return hit;
     const { status, body } = await routePostflop(env.POSTFLOP_DB, url.pathname, url.searchParams);
     if (status !== 200) return errorResponse(status, String((body as JsonRecord).error ?? "error"));
-    return json(body, { cacheControl: "public, max-age=300, s-maxage=300" });
+    const response = json(body, { cacheControl: "public, max-age=300, s-maxage=86400" });
+    if (key) await cache!.put(key, response.clone());
+    return response;
   }
 
   if (!url.pathname.startsWith("/v1/preflop/")) {
@@ -188,6 +197,17 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
   }
 
   return errorResponse(404, "not found");
+}
+
+type EdgeCache = { match(key: Request): Promise<Response | undefined>; put(key: Request, response: Response): Promise<void> };
+let datasetCache: { at: number; hash: string | null } | null = null;
+
+async function datasetVersion(db: D1Database | undefined): Promise<string | null> {
+  if (!db) return null;
+  if (datasetCache && Date.now() - datasetCache.at < 60_000) return datasetCache.hash;
+  const { results } = await db.prepare("SELECT content_hash FROM dataset_versions WHERE name = 'postflop'").all<{ content_hash: string }>();
+  datasetCache = { at: Date.now(), hash: results[0]?.content_hash ?? null };
+  return datasetCache.hash;
 }
 
 async function readManifest(bucket: R2Bucket | undefined): Promise<Manifest> {
