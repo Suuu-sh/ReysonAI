@@ -4,6 +4,7 @@
 import { createHash } from "node:crypto";
 import { loadInputs, readArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
+import { loadHandEv } from "./hand-ev.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
 import { POSTFLOP_SPOTS } from "./spots.mjs";
 
@@ -44,7 +45,9 @@ export function spotArtifacts(spot) {
   const report = readArtifact(spot, "report");
   if (!report || report.policy_hash !== candidate.metadata.policy_hash || report.source_hash !== inputs.fingerprint ||
       report.simulation_version !== SIMULATION_VERSION) return { skip: "report missing or stale" };
-  return { spot, candidate, laterCandidate, report, handEv: readArtifact(spot, "handEv") };
+  // Only hand-EV computed from these policies with the current defence model is published; the worker
+  // serves stored rows as they are, and the app computes missing boards on demand.
+  return { spot, candidate, laterCandidate, report, handEv: loadHandEv(inputs, candidate, laterCandidate) };
 }
 
 export function buildSql(published, publishedAt = new Date().toISOString()) {

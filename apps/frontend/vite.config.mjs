@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { localEstimateMiddleware } from "./scripts/local-estimate.mjs";
+import { DEFENCE_VERSION } from "./scripts/postflop-ai/defence.mjs";
 import { localDatasetsMiddleware } from "./scripts/local-datasets.mjs";
 import { localPostflopMiddleware } from "./scripts/postflop-ai/local-view.mjs";
 import { handEvMiddleware } from "./scripts/postflop-ai/hand-ev.mjs";
@@ -33,7 +34,8 @@ const postflopArtifacts = { name: "postflop-artifacts",
     for (const name of existsSync(dir) ? readdirSync(dir).filter(name => /-(later-)?(hand-ev|reasons)\.json$/.test(name)) : []) {
       const slug = name.replace(/-(later-)?(hand-ev|reasons)\.json$/, ""), ev = read(name);
       const flop = hashes[`${slug}-policy.json`], later = hashes[`${slug}-later-policy.json`];
-      hashes[name] = ev && flop && ev.policy_hash === flop && (!later || ev.later_policy_hash === later) ? "fresh" : null;
+      hashes[name] = ev && flop && ev.policy_hash === flop && (!later || ev.later_policy_hash === later) &&
+        (!/-hand-ev\.json$/.test(name) || /-later-hand-ev\.json$/.test(name) || ev.defence_version === DEFENCE_VERSION) ? "fresh" : null;
     }
     return `export default ${JSON.stringify(hashes)};`;
   } };
