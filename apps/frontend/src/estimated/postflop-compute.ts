@@ -1,19 +1,14 @@
-import { buildInputs, boards, sha } from "../../scripts/postflop-ai/browser-inputs.mjs";
+import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.mjs";
 import { explainCombo } from "../../scripts/postflop-ai/explain.mjs";
 import { explainLaterCombo } from "../../scripts/postflop-ai/explain-later.mjs";
 import { validatePolicy } from "../../scripts/postflop-ai/policy.mjs";
-import { boardTexture, parseCards, runoutTexture } from "../../scripts/postflop-ai/model.mjs";
+import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "../../scripts/postflop-ai/model.mjs";
 import { FLOP_BETS, flopState } from "../../scripts/postflop-ai/tree.mjs";
-import { validateLaterPolicy } from "../../scripts/postflop-ai/later-policy.mjs";
+import { referenceLaterPolicy, validateLaterPolicy } from "../../scripts/postflop-ai/later-policy.mjs";
 import { laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
+import { flopHandEvForHand } from "../../scripts/postflop-ai/flop-hand-ev-core.mjs";
 import { laterHandEvForHand } from "../../scripts/postflop-ai/later-hand-ev-core.mjs";
 import { flopNodes, laterMixRows } from "../../scripts/postflop-ai/views.mjs";
-
-const cardKey = cards => [...cards].sort((a, b) => a - b).join(",");
-
-function currentBoard(value) {
-  return boards().find(item => item.id === value);
-}
 
 function policyForLater(inputs, candidate, laterCandidate) {
   if (!laterCandidate) {
@@ -35,8 +30,7 @@ function policyForLater(inputs, candidate, laterCandidate) {
 
 export function computeBoard({ spotId, board, datasets, flopCandidate }) {
   const inputs = buildInputs(spotId, datasets);
-  const selected = currentBoard(board);
-  if (!selected) throw new Error("対象の代表フロップがありません。");
+  const selected = parseFlopBoard(board);
   const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
   if (flopCandidate.metadata?.source_hash !== inputs.fingerprint || flopCandidate.metadata.policy_hash !== sha(policy)) {
     throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
@@ -51,21 +45,12 @@ export function computeBoard({ spotId, board, datasets, flopCandidate }) {
 
 export function computeExplain({ spotId, board, node, cards, prev, datasets, flopCandidate }) {
   const inputs = buildInputs(spotId, datasets);
-  const selected = currentBoard(board);
-  if (!selected) throw new Error("対象の代表フロップがありません。");
+  const selected = parseFlopBoard(board);
   if (typeof cards !== "string" || !/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
   const previous = FLOP_BETS.includes(prev) ? prev : FLOP_BETS[0];
   return { spot: inputs.spot.id, board: selected.id,
     ...explainCombo({ boardCards: selected.cards, node, cards, prev: previous, inputs,
       policy: validatePolicy(flopCandidate.policy, inputs.spot.tree) }) };
-}
-
-function representativeBoard(value) {
-  if (typeof value !== "string" || !/^([2-9TJQKA][cdhs]){3}$/.test(value)) throw new Error("フロップの形式が正しくありません。");
-  const cards = parseCards(value, 3);
-  const match = boards().find(board => cardKey(board.cards) === cardKey(cards));
-  if (!match) throw new Error("対象の代表フロップがありません。");
-  return match;
 }
 
 function singleCard(value, label, used) {
@@ -87,7 +72,7 @@ export function computeLaterView({ spotId, flop, flopActions = "", turn = "", tu
   datasets, flopCandidate, laterCandidate }) {
   const inputs = buildInputs(spotId, datasets);
   const { flopPolicy, laterPolicy } = policyForLater(inputs, flopCandidate, laterCandidate);
-  const flopBoard = representativeBoard(flop);
+  const flopBoard = parseFlopBoard(flop);
   const used = new Set(flopBoard.cards);
   const turnCard = singleCard(turn, "ターン", used);
   const riverCard = singleCard(river, "リバー", used);
@@ -143,4 +128,26 @@ export function computeLaterHandEv({ spotId, flop, flopActions = [], turn, turnA
   const inputs = buildInputs(spotId, datasets);
   return laterHandEvForHand({ flop, flopActions, turn, turnActions, river, riverActions, hand, samples, seed,
     inputs, flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate.policy });
+}
+
+// Flop hand EV uses the same browser-safe core as scripts/postflop-ai/hand-ev.mjs. The
+// representative artifact is an optional fast path; this function handles any valid flop.
+export function computeFlopHandEv({ spotId, board, history = [], hand, samples, seed, datasets,
+  flopCandidate, laterCandidate }) {
+  const inputs = buildInputs(spotId, datasets);
+  const selected = parseFlopBoard(board);
+  const policy = validatePolicy(flopCandidate?.policy, inputs.spot.tree);
+  if (flopCandidate?.metadata?.source_hash !== inputs.fingerprint ||
+      flopCandidate.metadata.policy_hash !== sha(policy)) throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
+  let laterPolicy = referenceLaterPolicy();
+  if (laterCandidate) {
+    const checked = validateLaterPolicy(laterCandidate.policy);
+    if (laterCandidate.metadata?.source_hash !== inputs.fingerprint ||
+        laterCandidate.metadata?.flop_policy_hash !== flopCandidate.metadata.policy_hash ||
+        laterCandidate.metadata.policy_hash !== sha(checked)) throw new Error("Later AI policy source or hash is stale");
+    laterPolicy = checked;
+  }
+  return { spot: inputs.spot.id, hand, kind: "ai_estimate_not_gto",
+    ...flopHandEvForHand({ flop: selected.id, history, hand, samples, seed,
+      inputs, flopPolicy: policy, laterPolicy }) };
 }

@@ -61,6 +61,22 @@ function BoardCards({ cards }) {
     : <span key={index} className="postflop-card empty">?</span>)}</span>;
 }
 
+function SuitCardPicker({ selectedCards = new Set(), disabledCards = new Set(), onSelect, ariaLabel }) {
+  const english = productLocale() === "en";
+  return <div className="street-card-options" role="group" aria-label={ariaLabel}>
+    {suitOrder.map(suit => <div className={`street-suit-row suit-${suit}`} key={suit} role="group" aria-label={suitNames[english ? "en" : "ja"][suit]}>
+      <span className="street-suit-label" aria-hidden="true">{suitLabels[suit]}</span>
+      {deck.filter(card => card[1] === suit).map(card => {
+        const isSelected = selectedCards.has(card);
+        const label = `${card[0]}${suitLabels[card[1]]}`;
+        return <button type="button" key={card} className={`street-card-option suit-${suit}${isSelected ? " selected" : ""}`}
+          aria-pressed={isSelected} aria-label={label} disabled={disabledCards.has(card)}
+          onClick={() => onSelect(card)}>{card[0]}</button>;
+      })}
+    </div>)}
+  </div>;
+}
+
 const groupTitles = {
   value: ["バリュー", "こちらが勝率で上回る手がコール"],
   foldBetter: ["降ろせる格上", "勝率で上回られている手が降りる"],
@@ -236,8 +252,19 @@ function laterMatrixFor(view) {
   }]));
 }
 
+export function randomFlop(random = Math.random) {
+  const shuffled = [...deck];
+  for (let index = 0; index < 3; index++) {
+    const selected = index + Math.floor(random() * (shuffled.length - index));
+    [shuffled[index], shuffled[selected]] = [shuffled[selected], shuffled[index]];
+  }
+  return shuffled.slice(0, 3);
+}
+
 export function FlopCardDialog({ cards, onApply, onClose }) {
   const current = recognizedFlop(cards);
+  const english = productLocale() === "en";
+  const [draft, setDraft] = useState(() => [...cards]);
   const dialogRef = useRef(null);
   useEffect(() => {
     dialogRef.current?.focus();
@@ -245,21 +272,66 @@ export function FlopCardDialog({ cards, onApply, onClose }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
+  const selected = new Set(draft.filter(Boolean));
+  const count = selected.size;
+  const chooseCard = card => {
+    const next = [...draft];
+    const existing = next.indexOf(card);
+    if (existing >= 0) next[existing] = "";
+    else {
+      const empty = next.indexOf("");
+      if (empty < 0) return;
+      next[empty] = card;
+    }
+    setDraft(next);
+  };
+  const apply = chosen => onApply(chosen);
   return <div className="modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
     <div className="modal postflop-card-dialog" role="dialog" aria-modal="true" aria-labelledby="flop-card-title" tabIndex={-1} ref={dialogRef}>
-      <div className="modal-heading"><h2 id="flop-card-title">フロップを選択</h2>
-        <button type="button" className="modal-close" aria-label="閉じる" onClick={onClose}><X size={16} /></button>
+      <div className="modal-heading"><h2 id="flop-card-title">{english ? "Select flop" : "フロップを選択"}</h2>
+        <div className="flop-dialog-heading-actions">
+          <button type="button" className="flop-random-button" onClick={() => apply(randomFlop())}>
+            {english ? "Random flop" : "ランダムなフロップ"}
+          </button>
+          <button type="button" className="modal-close" aria-label={english ? "Close" : "閉じる"} onClick={onClose}><X size={16} /></button>
+        </div>
       </div>
-      <div className="postflop-board-options">
+      <div className="street-card-board flop-card-board">
+        <span>{english ? "Selected" : "選択中"}</span>
+        <div className="flop-card-slots" role="group" aria-label={english ? "Selected flop cards; click a card to remove it" : "選択中のフロップカード。カードを押すと外せます"}>
+          {[0, 1, 2].map(index => {
+            const card = draft[index] ?? "";
+            return <button type="button" key={index} className={`postflop-card${card ? ` suit-${card[1]}` : " empty"}`}
+              aria-label={card ? (english ? `Remove ${card[0]}${suitLabels[card[1]]} from flop` : `フロップから ${card[0]}${suitLabels[card[1]]} を外す`)
+                : (english ? `Empty flop card ${index + 1}` : `フロップの空き枠 ${index + 1}`)}
+              disabled={!card} onClick={() => chooseCard(card)}>
+              {card ? <>{card[0]}{suitLabels[card[1]]}<small>×</small></> : "?"}
+            </button>;
+          })}
+        </div>
+        <span className="flop-card-count" aria-live="polite">{english ? `${count} / 3` : `${count} / 3 枚`}</span>
+        <button type="button" className="flop-apply-button" disabled={count !== 3} onClick={() => apply(draft.filter(Boolean))}>
+          {english ? "Use flop" : "このフロップを使う"}
+        </button>
+      </div>
+      <p className="modal-description">{english ? "Choose any three distinct cards. The flop AI estimate is computed for every board." : "好きなカードを3枚選べます。すべてのフロップでAI推定レンジを計算します。"}</p>
+      <div className="flop-card-options">
+        <SuitCardPicker selectedCards={selected} disabledCards={count === 3
+          ? new Set(deck.filter(card => !selected.has(card))) : undefined}
+          ariaLabel={english ? "Available flop cards by suit" : "スート別のフロップカード一覧"} onSelect={chooseCard} />
+      </div>
+      <div className="flop-quick-picks">
+        <h3>{english ? "Quick picks · 12 representative flops" : "クイック選択 · 代表12ボード"}</h3>
+        <div className="postflop-board-options">
         {representativeFlops.map(board => {
           const boardCards = board.match(/../g);
           return <button type="button" key={board} className={board === current ? "selected" : ""} aria-pressed={board === current}
-            aria-label={`フロップ ${boardCards.map(card => card[0] + suitLabels[card[1]]).join(" ")}`} onClick={() => onApply(boardCards)}>
+            aria-label={`${english ? "Flop" : "フロップ"} ${boardCards.map(card => card[0] + suitLabels[card[1]]).join(" ")}`} onClick={() => apply(boardCards)}>
             <BoardCards cards={boardCards} />
           </button>;
         })}
+        </div>
       </div>
-      <p className="modal-description">代表12ボードから選べます。</p>
     </div>
   </div>;
 }
@@ -285,18 +357,8 @@ export function StreetCardDialog({ usedCards = [], street, currentCard = "", onA
         <BoardCards cards={usedCards} />
       </div>
       <p className="modal-description">{english ? "Choose one card. Cards on the board are unavailable." : "1枚選んでください。盤面のカードは選べません。"}</p>
-      <div className="street-card-options" role="group" aria-label={english ? "Available cards by suit" : "スート別のカード一覧"}>
-        {suitOrder.map(suit => <div className={`street-suit-row suit-${suit}`} key={suit} role="group" aria-label={suitNames[english ? "en" : "ja"][suit]}>
-          <span className="street-suit-label" aria-hidden="true">{suitLabels[suit]}</span>
-          {deck.filter(card => card[1] === suit).map(card => {
-            const isUsed = unavailable.has(card);
-            const label = `${card[0]}${suitLabels[suit]}`;
-            return <button type="button" key={card} className={`street-card-option suit-${suit}${card === currentCard ? " selected" : ""}`}
-              aria-pressed={card === currentCard} aria-label={label} disabled={isUsed}
-              onClick={() => onApply(card)}>{card[0]}</button>;
-          })}
-        </div>)}
-      </div>
+      <SuitCardPicker selectedCards={currentCard ? new Set([currentCard]) : undefined} disabledCards={unavailable}
+        ariaLabel={english ? "Available cards by suit" : "スート別のカード一覧"} onSelect={onApply} />
     </div>
   </div>;
 }
@@ -521,12 +583,15 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   }, [laterCurrent?.node, laterCurrent?.street, laterHandEvKey, postflopDatasets, postflopSource,
     selectedHand, sourceError, spotId]);
   const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
-  const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId);
+  const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId, {
+    datasets: postflopDatasets, flopCandidate: postflopSource?.candidate,
+    laterCandidate: postflopSource?.laterCandidate, precomputed: representativeFlops.includes(board),
+  });
   const english = productLocale() === "en";
-  return <div className="postflop-trial" aria-label="ポストフロップ試作">
+  return <div className="postflop-trial" aria-label={english ? "Postflop estimate" : "ポストフロップ試作"}>
     {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
-      : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title="フロップを選択してください">上のアクション列にあるフロップカードを押して、3枚を選んでください。</StatusState></Panel>
-      : !board ? <Panel className="postflop-unavailable"><StatusState title="このフロップの方針は未収録">選んだ3枚は代表12ボードに含まれません。未監査のレンジは表示しません。</StatusState></Panel>
+      : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title={english ? "Select a flop" : "フロップを選択してください"}>{english ? "Open the flop cards in the action path and choose any three cards." : "上のアクション列にあるフロップカードを押して、任意の3枚を選んでください。"}</StatusState></Panel>
+      : !board ? <Panel className="postflop-unavailable"><StatusState title={english ? "Invalid flop cards" : "フロップのカードが正しくありません"}>{english ? "Choose three distinct cards from the deck." : "重複しないカードを3枚選んでください。"}</StatusState></Panel>
       : <>
         {decision.node && status === "loading" && <Panel><StatusState title="ローカル候補を読み込み中" /></Panel>}
         {decision.node && status === "error" && <Panel><StatusState title="ローカル候補を表示できません" tone="error">{error}</StatusState></Panel>}

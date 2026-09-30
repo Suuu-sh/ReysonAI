@@ -93,7 +93,24 @@
 .postflop-hand-detail p { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
 .postflop-hand-detail small { color: var(--text-muted); font-size: 11px; line-height: 1.5; }
 .postflop-unavailable { min-height: 220px; }
-.postflop-card-dialog { width: min(100%, 440px); }
+.postflop-card-dialog { width: min(100%, 710px); gap: 12px; }
+.flop-dialog-heading-actions { display: flex; align-items: center; gap: 8px; }
+.flop-random-button, .flop-apply-button { min-height: 34px; padding: 6px 11px; border: 1px solid var(--line-strong); border-radius: 7px; background: var(--surface-raised); color: var(--text); font: inherit; font-size: 12px; font-weight: 650; cursor: pointer; }
+.flop-random-button:hover:not(:disabled) { border-color: var(--accent-soft); background: var(--surface-hover); }
+.flop-apply-button { border-color: transparent; background: var(--accent); color: #1a0b12; }
+.flop-apply-button:hover:not(:disabled) { filter: brightness(1.1); }
+.flop-random-button:focus-visible, .flop-apply-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.flop-random-button:disabled, .flop-apply-button:disabled { opacity: .42; cursor: not-allowed; }
+.flop-card-board { flex-wrap: wrap; }
+.flop-card-slots { display: flex; gap: 5px; }
+.flop-card-slots .postflop-card { position: relative; min-width: 34px; height: 40px; border: 0; cursor: pointer; }
+.flop-card-slots .postflop-card:disabled { cursor: default; }
+.flop-card-slots .postflop-card small { position: absolute; top: 0; right: 2px; color: #555; font-size: 10px; }
+.flop-card-count { color: var(--text-subtle); font-size: 11px; font-variant-numeric: tabular-nums; }
+.flop-quick-picks { display: grid; gap: 8px; padding-top: 2px; border-top: 1px solid var(--line); }
+.flop-quick-picks h3 { margin: 8px 0 0; color: var(--text-muted); font-size: 12px; font-weight: 650; }
+.flop-quick-picks .postflop-board-options { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+.flop-quick-picks .postflop-board-options button { padding: 8px 4px; }
 .modal.street-card-dialog { width: min(100%, 710px); gap: 12px; }
 .street-card-dialog .modal-heading h2 { font-size: 19px; letter-spacing: -.02em; }
 .street-card-board { display: flex; align-items: center; gap: 12px; min-height: 36px; }
@@ -110,6 +127,15 @@
 .street-card-option:disabled { opacity: .34; cursor: not-allowed; text-decoration: line-through; }
 .street-card-option:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (max-width: 620px) {
+  .postflop-card-dialog { padding: 16px; }
+  .flop-dialog-heading-actions { gap: 5px; }
+  .flop-random-button { min-height: 30px; padding: 4px 7px; font-size: 11px; }
+  .flop-card-board { gap: 8px; }
+  .flop-card-board > span:first-child { display: none; }
+  .flop-card-slots .postflop-card { min-width: 29px; height: 35px; font-size: 13px; }
+  .flop-apply-button { margin-left: auto; min-height: 30px; padding: 4px 8px; font-size: 11px; }
+  .flop-quick-picks .postflop-board-options { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .flop-quick-picks .postflop-card { min-width: 24px; height: 31px; font-size: 13px; }
   .modal.street-card-dialog { padding: 16px; }
   .street-suit-row { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
   .street-suit-label { grid-column: 1 / -1; justify-self: start; padding-left: 4px; font-size: 21px; }

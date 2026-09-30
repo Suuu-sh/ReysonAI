@@ -8,13 +8,20 @@ import { seededRandom } from "../scripts/lib/equity.mjs";
 import { boards, loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { parseCards } from "../scripts/postflop-ai/model.mjs";
 import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
-import { HISTORIES, handEvForBoard, historiesFor, playFromNode } from "../scripts/postflop-ai/hand-ev.mjs";
+import { HISTORIES, handEvArtifactBoardId, handEvForBoard, historiesFor, playFromNode } from "../scripts/postflop-ai/hand-ev.mjs";
 import { spotById } from "../scripts/postflop-ai/spots.mjs";
 
 const flop = parseCards("As7d2c", 3);
 const hands = { BTN: parseCards("AhKd", 2), BB: parseCards("7h7c", 2) };
 const runout = parseCards("3s4s", 2);
 const play = (history, forced, seed = 1) => playFromNode({ hands, flop, runout, history, forced, policy: referencePolicy, random: seededRandom(seed) });
+
+test("precomputed hand-EV lookup preserves authored paired-board artifact keys", () => {
+  for (const board of boards()) assert.equal(handEvArtifactBoardId(board.id), board.id);
+  assert.equal(handEvArtifactBoardId("KdKc4h"), "KcKd4h");
+  assert.equal(handEvArtifactBoardId("8d8c2h"), "8c8d2h");
+  assert.equal(handEvArtifactBoardId("AsKsQs"), "AsKsQs");
+});
 
 test("folding at a flop decision is worth exactly zero from that decision on", () => {
   assert.equal(play(["bet33"], "fold"), 0);

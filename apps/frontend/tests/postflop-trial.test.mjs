@@ -18,7 +18,7 @@ import threeBetResponses from "../src/estimated/three-bet-responses.json" with {
 import { buildLaterView, buildLocalBoard } from "../scripts/postflop-ai/local-view.mjs";
 import { referencePolicy, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.mjs";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, flopDecision, laterStart, replayLater, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.ts";
+import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, deck, flopDecision, laterStart, replayLater, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.ts";
 
 const end = (result, pot) => [{ kind: "end", result, pot: `ポット ${pot}bb` }];
 
@@ -259,11 +259,25 @@ test("flop navigation has legal actions, consistent pots, refunds, and a step ba
   assert.throws(() => flopDecision(["bet33", "raise", "raise"]), /Illegal/);
 });
 
-test("three individually selected cards resolve only an audited representative flop", () => {
+test("three distinct selected cards resolve to one canonical flop, representative or not", () => {
   assert.equal(recognizedFlop(["2c", "As", "7d"]), "As7d2c");
+  assert.equal(recognizedFlop(["Kc", "Kd", "4h"]), "KdKc4h");
+  assert.ok(representativeFlops.includes(recognizedFlop(["Kc", "Kd", "4h"])));
   assert.equal(recognizedFlop(["As", "As", "7d"]), null);
   assert.equal(recognizedFlop(["As", "7d", ""]), null);
-  assert.equal(recognizedFlop(["As", "7d", "3c"]), null);
+  assert.equal(recognizedFlop(["As", "7d", "3c"]), "As7d3c");
+  assert.equal(recognizedFlop(["3c", "As", "7d"]), "As7d3c");
+});
+
+test("every three-card combination in the deck has a canonical selectable flop", () => {
+  const flops = new Set();
+  for (let first = 0; first < deck.length; first++) for (let second = first + 1; second < deck.length; second++) {
+    for (let third = second + 1; third < deck.length; third++) {
+      flops.add(recognizedFlop([deck[first], deck[second], deck[third]]));
+    }
+  }
+  assert.equal(flops.size, 22100);
+  assert.ok(!flops.has(null));
 });
 
 test("flop decisions reuse preflop-style action blocks without inventing later actions", () => {
@@ -301,7 +315,7 @@ test("read-only board projection expands saved source combos without revealing a
   // A policy for the other tree is rejected.
   assert.throws(() => buildLocalBoard("As7d2c", coInputs, { metadata: { source_hash: coInputs.fingerprint, policy_hash: sha(referencePolicy) }, policy: referencePolicy }), /Invalid postflop policy envelope|Missing fallback/);
   assert.throws(() => buildLocalBoard("As7d2c", coInputs, { ...candidate, policy: leads }), /ハッシュ/);
-  assert.throws(() => buildLocalBoard("AsAsAs", inputs, candidate), /代表フロップ/);
+  assert.throws(() => buildLocalBoard("AsAsAs", inputs, candidate), /Duplicate cards/);
   candidate.metadata.policy_hash = "wrong";
   assert.throws(() => buildLocalBoard("As7d2c", inputs, candidate), /ハッシュ/);
 });
@@ -413,13 +427,13 @@ test("later decision projections return 169 normalized rows without weighting op
   assert.throws(() => buildLaterView({ flop: "As7d2c", flopActions: "bet33,call", turn: "Kh" }, inputs, flopCandidate, null), /ターン・リバーのAI方針がありません/);
 });
 
-let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, StreetCardDialog, buildActionBlocks, labelsFor, nodeTitle, laterNodeTitle;
+let server, ActionPath, Sidebar, PostflopTrial, FlopCardDialog, StreetCardDialog, buildActionBlocks, labelsFor, nodeTitle, laterNodeTitle, randomFlop;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)),
     server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ ActionPath, buildActionBlocks } = await server.ssrLoadModule("/src/estimated/RangeWorkspace.tsx"));
   ({ Sidebar } = await server.ssrLoadModule("/src/components/layout.tsx"));
-  ({ PostflopTrial, FlopCardDialog, StreetCardDialog, labelsFor, nodeTitle, laterNodeTitle } = await server.ssrLoadModule("/src/estimated/PostflopTrial.tsx"));
+  ({ PostflopTrial, FlopCardDialog, StreetCardDialog, labelsFor, nodeTitle, laterNodeTitle, randomFlop } = await server.ssrLoadModule("/src/estimated/PostflopTrial.tsx"));
 });
 after(async () => { await server?.close(); });
 
@@ -442,20 +456,37 @@ test("completed preflop end block extends the same action path", () => {
   assert.doesNotMatch(navigation, /aria-label="ポストフロップ/);
 });
 
-test("representative flops are picked from a modal, while unsupported spots stay truthful", () => {
+test("any flop can be selected in the card picker, with random and representative quick picks", () => {
   const dialog = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["As", "", ""], onApply() {}, onClose() {} }));
   assert.match(dialog, /role="dialog" aria-modal="true"/);
   assert.equal((dialog.match(/<select/g) ?? []).length, 0);
   assert.equal((dialog.match(/aria-label="フロップ /g) ?? []).length, 12);
+  assert.equal((dialog.match(/class="street-card-option suit-/g) ?? []).length, 52);
+  assert.match(dialog, /ランダムなフロップ/);
+  assert.match(dialog, /好きなカードを3枚選べます/);
+  const random = randomFlop(() => 0.37);
+  assert.equal(random.length, 3);
+  assert.equal(new Set(random).size, 3);
+  const previousWindow = globalThis.window;
+  globalThis.window = { localStorage: { getItem: () => "en" } };
+  try {
+    const english = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["As", "", ""], onApply() {}, onClose() {} }));
+    assert.match(english, /Select flop/);
+    assert.match(english, /Random flop/);
+    assert.match(english, /Quick picks · 12 representative flops/);
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
   const complete = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["2c", "As", "7d"], onApply() {}, onClose() {} }));
-  assert.match(complete, /class="selected" aria-pressed="true" aria-label="フロップ A♠ 7♦ 2♣"/);
-  assert.match(complete, /代表12ボードから選べます。/);
-  assert.doesNotMatch(complete, /AI推定|AI-estimated|AI estimate|GTO|未検証|not a solver/i);
+  assert.match(complete, /class="postflop-board-options"[\s\S]*?class="selected" aria-pressed="true" aria-label="フロップ A♠ 7♦ 2♣"/);
+  assert.match(complete, /class="flop-apply-button"[^>]*>このフロップを使う/);
+  assert.doesNotMatch(complete, /GTO|solver/i);
   const html = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["SB", "BB"], potBb: 2, pilotAvailable: false }, cards: ["", "", ""] }));
   assert.match(html, /この局面のポストフロップ方針は未収録/);
   assert.doesNotMatch(html, /AI推定レンジ/);
-  const missing = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["BTN", "BB"], potBb: 5.5, pilotAvailable: true, spotId: "BTN_open_BB_call", ip: "BTN", oop: "BB", stackBb: 97.5 }, cards: ["As", "7d", "3c"] }));
-  assert.match(missing, /このフロップの方針は未収録/);
+  const available = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["BTN", "BB"], potBb: 5.5, pilotAvailable: true, spotId: "BTN_open_BB_call", ip: "BTN", oop: "BB", stackBb: 97.5 }, cards: ["As", "7d", "3c"] }));
+  assert.doesNotMatch(available, /代表12ボードに含まれません|このフロップの方針は未収録/);
   // A completed CO open → BTN call path ends in a 6.5BB heads-up pot that the pilot covers.
   const coBlocks = buildActionBlocks({ rangeType: "response", opener: "CO", hero: "BB", callers: ["BTN"], foldedHero: true });
   const coContext = completedFlopContext({ actionBlocks: coBlocks, rangeType: "response", opener: "CO", hero: "BB", callers: ["BTN"], foldedHero: true, isDefaultTable: true });

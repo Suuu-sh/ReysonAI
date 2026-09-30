@@ -1,8 +1,8 @@
 // Evidence for one private combo on the saved AI-estimated turn/river policy.
 // This is a range-weighted estimate, not a solver or GTO result.
 import { evaluate } from "../lib/equity.mjs";
-import { boards, seatRange } from "./browser-inputs.mjs";
-import { handTier, parseCards, runoutTexture } from "./model.mjs";
+import { seatRange } from "./browser-inputs.mjs";
+import { handTier, parseCards, parseFlopBoard, runoutTexture } from "./model.mjs";
 import { scaleByPath, validatePolicy } from "./policy.mjs";
 import { LATER_NODES, laterNodeRole } from "./later-tree.mjs";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
@@ -13,17 +13,9 @@ import { defenceFor, isFacingNode, replayOrNull } from "./defence.mjs";
 const RANKS = "23456789TJQKA";
 const MAX_TURN_COMBOS = 300;
 const cardText = card => RANKS[card >> 2] + "cdhs"[card & 3];
-const cardKey = cards => [...cards].sort((a, b) => a - b).join(",");
 const otherRole = role => role === "ip" ? "oop" : "ip";
 const lineFor = (previousAggressor, role) => previousAggressor === null
   ? "checked" : previousAggressor === role ? "aggressor" : "defender";
-
-function representativeFlop(value) {
-  const cards = parseCards(value, 3);
-  const board = boards().find(item => cardKey(item.cards) === cardKey(cards));
-  if (!board) throw new Error("対象の代表フロップがありません。");
-  return board;
-}
 
 function parsePath(value, label) {
   if (value == null || value === "") return [];
@@ -43,7 +35,7 @@ function singleCard(value, label, used, required = false) {
 }
 
 export function laterExplainContext({ flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "" }, inputs) {
-  const flopBoard = representativeFlop(flop);
+  const flopBoard = parseFlopBoard(flop);
   const flopPath = parsePath(flopActions, "フロップ");
   const turnPath = parsePath(turnActions, "ターン");
   const riverPath = parsePath(riverActions, "リバー");

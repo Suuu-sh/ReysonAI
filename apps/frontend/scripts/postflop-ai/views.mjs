@@ -23,8 +23,8 @@ export function scaleLaterPath(items, role, steps, policy, board, previousAggres
   }, items);
 }
 
-// The flop view of a representative board: every node of the spot's tree, one row per hand class.
-// A facing node is shown after the canonical line that reaches it (historyFor, the smallest bet).
+// The flop view of any valid three-card board: every node of the spot's tree, one row per hand
+// class. A facing node is shown after the canonical line that reaches it (historyFor, smallest bet).
 export function flopNodes(inputs, policy, boardCards) {
   const { spot } = inputs;
   const defence = defenceFor(inputs, policy, null);

@@ -1,4 +1,4 @@
-import { computeLaterHandEv } from "./postflop-compute.ts";
+import { computeFlopHandEv, computeLaterHandEv } from "./postflop-compute.ts";
 import { dataset, loadDataset } from "./datasets.ts";
 import { postflopUrl } from "./postflop-api.ts";
 
@@ -105,16 +105,17 @@ export function deferPostflopCalculation<T>(calculate: () => T, signal?: AbortSi
   });
 }
 
-export function computeLaterHandEvInWorker(input: any, signal?: AbortSignal): Promise<any> {
+export function computePostflopHandEvInWorker(input: any, signal?: AbortSignal): Promise<any> {
   if (signal?.aborted) return Promise.reject(abortError());
   const envelope = (result: any) => ({ spot: input.spotId, hand: input.hand, kind: "ai_estimate_not_gto", ...result });
-  if (typeof Worker === "undefined") return deferPostflopCalculation(() => envelope(computeLaterHandEv(input)), signal);
+  const calculate = () => envelope(input.street === "flop" ? computeFlopHandEv(input) : computeLaterHandEv(input));
+  if (typeof Worker === "undefined") return deferPostflopCalculation(calculate, signal);
 
   let worker: Worker;
   try {
     worker = new Worker(new URL("./postflop-compute.worker.ts", import.meta.url), { type: "module" });
   } catch {
-    return deferPostflopCalculation(() => envelope(computeLaterHandEv(input)), signal);
+    return deferPostflopCalculation(calculate, signal);
   }
 
   return new Promise((resolve, reject) => {
@@ -136,4 +137,8 @@ export function computeLaterHandEvInWorker(input: any, signal?: AbortSignal): Pr
     try { worker.postMessage(input); }
     catch (error) { cleanup(); reject(error); }
   });
+}
+
+export function computeLaterHandEvInWorker(input: any, signal?: AbortSignal): Promise<any> {
+  return computePostflopHandEvInWorker({ ...input, street: input.street ?? (input.river ? "river" : "turn") }, signal);
 }

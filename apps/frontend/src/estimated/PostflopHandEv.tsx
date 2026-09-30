@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { barColor } from "../components/primitives.tsx";
 import { label, pct } from "../data.ts";
 import { postflopUrl } from "./postflop-api.ts";
+import { computePostflopHandEvInWorker, isAbortError } from "./postflop-browser.ts";
 import "./postflop-hand-ev.css";
 
 const signed = value => `${value > 0 ? "+" : ""}${value.toFixed(2)}bb`;
@@ -13,23 +14,49 @@ export function handEvQuery(board, history, hand, spot) {
   return postflopUrl("hand-ev", { ...(spot ? { spot } : {}), board, history: history.join(","), hand });
 }
 
-export function useHandEv(board, history = [], hand, spot) {
+export function useHandEv(board, history = [], hand, spot, options = {}) {
   const url = board && hand ? handEvQuery(board, history, hand, spot) : null;
-  const [state, setState] = useState({ url: null, data: null, error: null });
+  const datasets = options.datasets;
+  const flopCandidate = options.flopCandidate;
+  const laterCandidate = options.laterCandidate;
+  const precomputed = Boolean(options.precomputed);
+  const key = url && `${url}|${flopCandidate?.metadata?.source_hash ?? ""}|${flopCandidate?.metadata?.policy_hash ?? ""}|${laterCandidate?.metadata?.policy_hash ?? "reference"}`;
+  const [state, setState] = useState({ key: null, data: null, error: null });
   useEffect(() => {
-    if (!url) return undefined;
+    if (!url || !key || !datasets || !flopCandidate) return undefined;
     const controller = new AbortController();
-    fetch(url, { signal: controller.signal })
-      .then(async response => {
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "EVを読み込めません。");
-        setState({ url, data: result, error: null });
-      })
-      .catch(error => { if (error.name !== "AbortError") setState({ url, data: null, error: error.message }); });
+    const load = async () => {
+      if (precomputed) {
+        try {
+          const response = await fetch(url, { signal: controller.signal });
+          const result = await response.json();
+          if (response.ok && result.spot === spot && result.hand === hand && result.row && Number.isFinite(result.row.mix_ev_bb)) {
+            setState({ key, data: result, error: null });
+            return;
+          }
+        } catch (error) {
+          if (isAbortError(error)) return;
+          // Missing or stale representative-board EV falls through to the same pure worker path.
+        }
+      }
+      try {
+        const result = await computePostflopHandEvInWorker({ street: "flop", spotId: spot, board,
+          history, hand, datasets, flopCandidate, laterCandidate }, controller.signal);
+        if (controller.signal.aborted) return;
+        if (result.kind !== "ai_estimate_not_gto" || result.spot !== spot || result.hand !== hand ||
+            result.street !== "flop" || !result.node || result.row && !Number.isFinite(result.row.mix_ev_bb)) {
+          throw new Error("EVの局面が選択中の判断と一致しません。");
+        }
+        setState({ key, data: result, error: null });
+      } catch (error) {
+        if (!isAbortError(error)) setState({ key, data: null, error: error.message });
+      }
+    };
+    load();
     return () => controller.abort();
-  }, [url]);
-  if (!url) return { data: null, error: null, loading: false };
-  return state.url === url ? { ...state, loading: false } : { data: null, error: null, loading: true };
+  }, [board, datasets, flopCandidate, hand, history.join(","), key, laterCandidate, precomputed, spot, url]);
+  if (!url || !datasets || !flopCandidate) return { data: null, error: null, loading: false };
+  return state.key === key ? { ...state, loading: false } : { data: null, error: null, loading: true };
 }
 
 // The expanded action breakdown: frequency bars with each action's EV beside them,

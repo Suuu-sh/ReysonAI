@@ -1,9 +1,9 @@
 // Read-only local preview of the audited pilot. Never generates or publishes a policy.
-import { boards, loadInputs, readArtifact, requireArtifact } from "./inputs.mjs";
+import { loadInputs, readArtifact, requireArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { scaleByPath, validatePolicy } from "./policy.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
-import { boardTexture, parseCards, runoutTexture } from "./model.mjs";
+import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "./model.mjs";
 import { explainCombo } from "./explain.mjs";
 import { explainLaterCombo } from "./explain-later.mjs";
 import { laterHandEvForHand, laterHandEvResult, loadLaterHandEv } from "./later-hand-ev.mjs";
@@ -14,8 +14,7 @@ import { laterDecision, laterStart, replayLater } from "../../src/estimated/post
 import { flopNodes, laterMixRows } from "./views.mjs";
 
 export function buildLocalBoard(boardId, inputs, candidate) {
-  const board = boards().find(item => item.id === boardId);
-  if (!board) throw new Error("対象の代表フロップがありません。");
+  const board = parseFlopBoard(boardId);
   const policy = validatePolicy(candidate.policy, inputs.spot.tree);
   if (candidate.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.policy_hash !== sha(policy)) {
     throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
@@ -27,16 +26,13 @@ export function buildLocalBoard(boardId, inputs, candidate) {
 }
 
 export function explainLocalCombo(params, inputs, candidate) {
-  const board = boards().find(item => item.id === params.get("board"));
-  if (!board) throw new Error("対象の代表フロップがありません。");
+  const board = parseFlopBoard(params.get("board"));
   const cards = params.get("cards") ?? "";
   if (!/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
   const prev = FLOP_BETS.includes(params.get("prev")) ? params.get("prev") : FLOP_BETS[0];
   return { spot: inputs.spot.id, board: board.id, ...explainCombo({ boardCards: board.cards, node: params.get("node"), cards, prev,
     inputs, policy: validatePolicy(candidate.policy, inputs.spot.tree) }) };
 }
-
-const cardKey = cards => [...cards].sort((a, b) => a - b).join(",");
 
 function policyForLater(inputs, candidate, laterCandidate) {
   if (!laterCandidate) {
@@ -54,14 +50,6 @@ function policyForLater(inputs, candidate, laterCandidate) {
   const laterPolicy = validateLaterPolicy(laterCandidate.policy);
   if (laterCandidate.metadata.policy_hash !== sha(laterPolicy)) throw new Error("Saved later AI policy hash does not match its content");
   return { flopPolicy, laterPolicy };
-}
-
-function representativeBoard(value) {
-  if (typeof value !== "string" || !/^([2-9TJQKA][cdhs]){3}$/.test(value)) throw new Error("フロップの形式が正しくありません。");
-  const cards = parseCards(value, 3);
-  const match = boards().find(board => cardKey(board.cards) === cardKey(cards));
-  if (!match) throw new Error("対象の代表フロップがありません。");
-  return match;
 }
 
 function singleCard(value, label, used) {
@@ -84,7 +72,7 @@ function parseActions(value) {
 // weights and their hidden cards are never inspected.
 export function buildLaterView({ flop, flopActions = "", turn = "", turnActions = "", river = "", riverActions = "" }, inputs, candidate, laterCandidate) {
   const { flopPolicy, laterPolicy } = policyForLater(inputs, candidate, laterCandidate);
-  const flopBoard = representativeBoard(flop);
+  const flopBoard = parseFlopBoard(flop);
   const used = new Set(flopBoard.cards);
   const turnCard = singleCard(turn, "ターン", used);
   const riverCard = singleCard(river, "リバー", used);

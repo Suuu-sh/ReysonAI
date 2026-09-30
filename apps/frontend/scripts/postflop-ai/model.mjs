@@ -6,6 +6,7 @@ const suits = "cdhs";
 export const TIERS = ["monster", "strong", "draw", "medium", "air"];
 export const TEXTURES = ["dry", "wet", "monotone", "paired"];
 export const RUNOUT_TEXTURES = ["blank", "over", "pair", "straight", "flush"];
+const cardText = card => ranks[card >> 2] + suits[card & 3];
 // From the acting player's perspective on the immediately previous completed street.
 export const LINES = ["aggressor", "defender", "checked"];
 
@@ -19,6 +20,14 @@ export function parseCards(text, expected) {
   }
   if (new Set(out).size !== out.length) throw new Error("Duplicate cards");
   return out;
+}
+
+// A flop is any three distinct cards. Keep a canonical ID (rank descending, then suit
+// descending) so the same combination has one cache key and one deterministic seed no
+// matter in what order the picker selected its cards.
+export function parseFlopBoard(value) {
+  const cards = parseCards(value, 3).sort((a, b) => b - a);
+  return { id: cards.map(cardText).join(""), cards };
 }
 
 export function boardTexture(board) {

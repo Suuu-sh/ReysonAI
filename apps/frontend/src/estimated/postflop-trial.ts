@@ -2,15 +2,18 @@ import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json
 import { DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
 import { NODES, flopBetFraction, flopBetLabel, flopState, isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.mjs";
+import { parseFlopBoard } from "../../scripts/postflop-ai/model.mjs";
 import pilotConfig from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 
-export const representativeFlops = pilot.boards.map(board => board.cards);
+export const representativeFlops = pilot.boards.map(board => parseFlopBoard(board.cards).id);
 export const deck = "23456789TJQKA".split("").flatMap(rank => "shdc".split("").map(suit => `${rank}${suit}`));
-const boardKey = cards => [...cards].sort().join("");
-const representativeByCards = new Map(representativeFlops.map(board => [boardKey(board.match(/../g)), board]));
 export function recognizedFlop(cards) {
   if (!Array.isArray(cards) || cards.length !== 3 || cards.some(card => !deck.includes(card)) || new Set(cards).size !== 3) return null;
-  return representativeByCards.get(boardKey(cards)) ?? null;
+  try {
+    return parseFlopBoard(cards.join("")).id;
+  } catch {
+    return null;
+  }
 }
 const round = value => Math.round(value * 100) / 100;
 
