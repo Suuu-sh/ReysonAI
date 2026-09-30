@@ -127,10 +127,17 @@ test("flop fold, call and check-raise terminals conserve chips after capped rake
 
 test("candidate and baseline share deals and fixed-seed replay is byte-for-byte deterministic", () => {
   const inputs = loadInputs();
-  const one = simulate(inputs, referencePolicy, 16), two = simulate(inputs, referencePolicy, 16);
+  // Without the computed defence the reference policy is its own baseline; with it (the default) the
+  // candidate defends by calculation and may differ from the tier-mix baseline.
+  const plain = { computedDefence: false };
+  const one = simulate(inputs, referencePolicy, 16, null, plain), two = simulate(inputs, referencePolicy, 16, null, plain);
   assert.deepEqual(one, two);
   assert.equal(one.results.length, 72);
   assert.ok(one.results.every(row => row.delta_bb.mean === 0 && row.delta_bb.ci95[0] === 0));
+  assert.equal(one.defence_version, undefined);
+  const defended = simulate(inputs, referencePolicy, 16), again = simulate(inputs, referencePolicy, 16);
+  assert.deepEqual(defended, again);
+  assert.equal(defended.defence_version, 1);
   const changed = simulate(inputs, forced({ btn_first: "check" }), 16);
   assert.ok(changed.results.some(row => row.delta_bb.mean !== 0));
   assert.equal(changed.source_hash, inputs.fingerprint);

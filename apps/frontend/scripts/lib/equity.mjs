@@ -33,38 +33,59 @@ export function combosOf(hand) {
   return out;
 }
 
-// 7-card evaluator returning a comparable score.
+// 5-7 card evaluator returning a comparable score. Allocation free (it ranks every combo of a board
+// in the computed defence); tests/equity-evaluate.test.mjs pins it to the original
+// array-based implementation, including its kicker quirks, on random hands.
+const counts = new Int8Array(13);
+const suitCount = new Int8Array(4);
+const suitMask = new Int16Array(4);
+const byCount = new Int8Array(13);
+
+// High card of the best straight in a 13-bit rank mask (the wheel counts as 3), or -1.
+function straightHighOf(mask) {
+  for (let high = 12; high >= 4; high -= 1) if (((mask >> (high - 4)) & 31) === 31) return high;
+  return (mask & 0x100F) === 0x100F ? 3 : -1;
+}
+
+const packed = (category, k0, k1, k2, k3, k4) => ((((category * 16 + k0) * 16 + k1) * 16 + k2) * 16 + k3) * 16 + k4;
+
 export function evaluate(cards) {
-  const counts = new Array(13).fill(0);
-  const suits = [[], [], [], []];
-  for (const card of cards) { counts[rankOf(card)] += 1; suits[suitOf(card)].push(rankOf(card)); }
-  const straightHigh = ranks => {
-    const has = new Set(ranks);
-    for (let high = 12; high >= 4; high -= 1) if ([0, 1, 2, 3, 4].every(i => has.has(high - i))) return high;
-    return has.has(12) && [0, 1, 2, 3].every(r => has.has(r)) ? 3 : -1;
-  };
-  const score = (category, kickers) => {
-    let value = category;
-    for (let i = 0; i < 5; i += 1) value = value * 16 + (kickers[i] ?? 0);
-    return value;
-  };
-  const flushSuit = suits.find(s => s.length >= 5);
-  if (flushSuit) {
-    const high = straightHigh(flushSuit);
-    if (high >= 0) return score(8, [high]);
+  counts.fill(0); suitCount.fill(0); suitMask.fill(0);
+  let mask = 0;
+  for (let i = 0; i < cards.length; i += 1) {
+    const rank = cards[i] >> 2, suit = cards[i] & 3;
+    counts[rank] += 1; suitCount[suit] += 1; suitMask[suit] |= 1 << rank; mask |= 1 << rank;
   }
-  const byCount = [...counts.keys()].filter(r => counts[r]).sort((a, b) => counts[b] - counts[a] || b - a);
-  const [top, second] = byCount;
-  if (counts[top] === 4) return score(7, [top, byCount.filter(r => r !== top)[0]]);
-  if (counts[top] === 3 && counts[second] >= 2) return score(6, [top, second]);
-  if (flushSuit) return score(5, flushSuit.sort((a, b) => b - a));
-  const straight = straightHigh([...counts.keys()].filter(r => counts[r]));
-  if (straight >= 0) return score(4, [straight]);
-  const singles = byCount.filter(r => counts[r] === 1);
-  if (counts[top] === 3) return score(3, [top, ...singles]);
-  if (counts[top] === 2 && counts[second] === 2) return score(2, [top, second, byCount.filter(r => r !== top && r !== second)[0]]);
-  if (counts[top] === 2) return score(1, [top, ...singles]);
-  return score(0, singles);
+  let flush = -1;
+  for (let suit = 0; suit < 4; suit += 1) if (suitCount[suit] >= 5) { flush = suit; break; }
+  if (flush >= 0) {
+    const high = straightHighOf(suitMask[flush]);
+    if (high >= 0) return packed(8, high, 0, 0, 0, 0);
+  }
+  // Ranks by count (descending), then rank (descending).
+  let n = 0;
+  for (let c = 4; c >= 1; c -= 1) for (let rank = 12; rank >= 0; rank -= 1) if (counts[rank] === c) byCount[n++] = rank;
+  const top = byCount[0], second = n > 1 ? byCount[1] : -1;
+  if (counts[top] === 4) return packed(7, top, n > 1 ? second : 0, 0, 0, 0);
+  if (counts[top] === 3 && counts[second] >= 2) return packed(6, top, second, 0, 0, 0);
+  if (flush >= 0) {
+    const kickers = [0, 0, 0, 0, 0];
+    let k = 0;
+    for (let rank = 12; rank >= 0 && k < 5; rank -= 1) if (suitMask[flush] & (1 << rank)) kickers[k++] = rank;
+    return packed(5, kickers[0], kickers[1], kickers[2], kickers[3], kickers[4]);
+  }
+  const straight = straightHighOf(mask);
+  if (straight >= 0) return packed(4, straight, 0, 0, 0, 0);
+  // Singles in descending rank order (they follow the multiples in byCount).
+  let s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, singles = 0;
+  for (let rank = 12; rank >= 0; rank -= 1) if (counts[rank] === 1) {
+    if (singles === 0) s0 = rank; else if (singles === 1) s1 = rank; else if (singles === 2) s2 = rank; else if (singles === 3) s3 = rank; else if (singles === 4) s4 = rank;
+    singles += 1;
+  }
+  if (counts[top] === 3) return packed(3, top, s0, s1, s2, s3);
+  if (counts[top] === 2 && counts[second] === 2) return packed(2, top, second, n > 2 ? byCount[2] : 0, 0, 0);
+  if (counts[top] === 2) return packed(1, top, s0, s1, s2, s3);
+  return packed(0, s0, s1, s2, s3, s4);
 }
 
 // rows: [{hand, weight}] with weight in 0..1 per hand class.

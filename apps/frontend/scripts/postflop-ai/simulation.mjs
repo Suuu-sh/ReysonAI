@@ -7,6 +7,7 @@ import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterP
 import { LATER_NODES } from "./later-tree.mjs";
 import { boards, config, laterSizingHash, makeSampler, samplePair, seatRange } from "./inputs.mjs";
 import { spotById } from "./spots.mjs";
+import { DEFENCE_VERSION, defenceFor } from "./defence.mjs";
 
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const round = value => Math.round(value * 100) / 100;
@@ -45,8 +46,11 @@ export function dealRunout(hands, flop, random) {
   return [takeRandom(deck, used, random), takeRandom(deck, used, random)];
 }
 
-// One flop-to-river hand of a heads-up pot on the spot's tree (tree.mjs).
-export function playHand({ hands, flop, runout, hero, policy, laterPolicy = referenceLater, profile, randoms, spot = spotById(), tree = spot.tree ?? "oop_checks" }) {
+// One flop-to-river hand of a heads-up pot on the spot's tree (tree.mjs). `defence` (defence.mjs,
+// built for the hero's policies) replaces the hero's call / fold part at facing nodes with the
+// computed defence; without it the hero plays its policy mixes as saved. The opponent is the fixed
+// reference and never uses it.
+export function playHand({ hands, flop, runout, hero, policy, laterPolicy = referenceLater, profile, randoms, spot = spotById(), tree = spot.tree ?? "oop_checks", defence = null }) {
   const { ip: IP, oop: OOP } = spot;
   if (![IP, OOP].includes(hero) || !PROFILES.includes(profile) || !hands?.[IP] || !hands?.[OOP] ||
       !Array.isArray(randoms) || randoms.length < 12 || randoms.some(value => !Number.isFinite(value) || value < 0 || value >= 1) ||
@@ -60,13 +64,20 @@ export function playHand({ hands, flop, runout, hero, policy, laterPolicy = refe
   };
   const table = createTable(spot);
   const flopChoice = (seat, node) => {
-    const mix = seat === hero ? policyMix(policy, node, hands[seat], flop) : opponentMix(node, hands[seat], flop, profile);
+    let mix;
+    if (seat === hero) {
+      mix = policyMix(policy, node, hands[seat], flop);
+      if (defence) mix = defence.mix(table, flop, node, hands[seat], mix);
+    } else mix = opponentMix(node, hands[seat], flop, profile);
     return choose(mix, random(), NODES[node]);
   };
   playFlop(table, tree, flopChoice, config);
   playLaterStreetsWithPolicy(table, flop, runout, (seat, node, board, line) => {
-    const mix = seat === hero ? laterPolicyMix(laterPolicy, node, hands[seat], board, line)
-      : referenceLaterMix(node, hands[seat], board, line, profile);
+    let mix;
+    if (seat === hero) {
+      mix = laterPolicyMix(laterPolicy, node, hands[seat], board, line);
+      if (defence) mix = defence.mix(table, board, node, hands[seat], mix);
+    } else mix = referenceLaterMix(node, hands[seat], board, line, profile);
     return choose(mix, random(), LATER_NODES[node]);
   }, config, table.lastAggressor);
   const winner = settle(table, hands, [...flop, ...runout]);
@@ -89,11 +100,14 @@ function stats(values) {
 }
 
 // laterCandidate may be the raw policy (like candidate) or the loadLaterCandidate artifact.
-export function simulate(inputs, candidate, samples = config.samples_per_board_profile_seat, laterCandidate = null) {
+// The candidate plays the computed defence at facing nodes (`computedDefence: false` plays its
+// policy mixes as saved, e.g. the reference-versus-reference drift check).
+export function simulate(inputs, candidate, samples = config.samples_per_board_profile_seat, laterCandidate = null, { computedDefence = true } = {}) {
   if (!Number.isInteger(samples) || samples < 1) throw new Error("Invalid simulation sample count");
   const { spot } = inputs;
   const referencePolicy = referencePolicyFor(spot.tree);
   const laterPolicy = laterCandidate ? validateLaterPolicy(laterCandidate.policy ?? laterCandidate) : referenceLater;
+  const defence = computedDefence ? defenceFor(inputs, candidate, laterPolicy) : null;
   const results = [];
   for (const board of boards()) {
     const ip = makeSampler(seatRange(inputs, spot.ip, board.cards));
@@ -106,7 +120,7 @@ export function simulate(inputs, candidate, samples = config.samples_per_board_p
         const runout = dealRunout(hands, board.cards, random);
         const randoms = Array.from({ length: 24 }, () => random());
         const base = playHand({ hands, flop: board.cards, runout, hero, policy: referencePolicy, profile, randoms, spot });
-        const trial = playHand({ hands, flop: board.cards, runout, hero, policy: candidate, laterPolicy, profile, randoms, spot });
+        const trial = playHand({ hands, flop: board.cards, runout, hero, policy: candidate, laterPolicy, profile, randoms, spot, defence });
         candidateEvs.push(trial.returns[hero]); baselineEvs.push(base.returns[hero]);
         differences.push(trial.returns[hero] - base.returns[hero]);
       }
@@ -118,5 +132,6 @@ export function simulate(inputs, candidate, samples = config.samples_per_board_p
     spot: spot.id, source_hash: inputs.fingerprint,
     later_sizing_hash: laterSizingHash(),
     ...(laterCandidate ? { later_policy_hash: sha(laterPolicy) } : {}),
+    ...(computedDefence ? { defence_version: DEFENCE_VERSION } : {}),
     policy_hash: sha(candidate), samples_per_board_profile_seat: samples, seed: config.seed, results };
 }

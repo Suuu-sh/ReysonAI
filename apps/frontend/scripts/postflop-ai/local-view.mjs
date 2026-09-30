@@ -1,19 +1,17 @@
 // Read-only local preview of the audited pilot. Never generates or publishes a policy.
-import { boards, comboRange, loadInputs, readArtifact, requireArtifact } from "./inputs.mjs";
+import { boards, loadInputs, readArtifact, requireArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
-import { NODES, nodeRole, policyMix, scaleByPath, treeNodes, validatePolicy } from "./policy.mjs";
+import { scaleByPath, validatePolicy } from "./policy.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
-import { boardTexture, handTier, parseCards, runoutTexture, TIERS } from "./model.mjs";
+import { boardTexture, parseCards, runoutTexture } from "./model.mjs";
 import { explainCombo } from "./explain.mjs";
 import { explainLaterCombo } from "./explain-later.mjs";
 import { laterHandEvForHand, laterHandEvResult, loadLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { FLOP_BETS, flopState } from "./tree.mjs";
-import { LATER_NODES } from "./later-tree.mjs";
-import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
+import { validateLaterPolicy } from "./later-policy.mjs";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
-
-const cardText = card => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
+import { flopNodes, laterMixRows } from "./views.mjs";
 
 export function buildLocalBoard(boardId, inputs, candidate) {
   const board = boards().find(item => item.id === boardId);
@@ -23,27 +21,7 @@ export function buildLocalBoard(boardId, inputs, candidate) {
     throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
   }
   const { spot } = inputs;
-  const nodes = Object.fromEntries(treeNodes(spot.tree).map(node => {
-    const actions = NODES[node];
-    const seat = spot[nodeRole(node)]; // btn_* / ip_* = IP, bb_* / oop_* = OOP
-    const rows = inputs.seatRows[seat].map(row => {
-      const combos = comboRange([row], "freq", board.cards);
-      const total = combos.reduce((sum, item) => sum + item.weight, 0);
-      const mix = Object.fromEntries(actions.map(action => [action, total
-        ? combos.reduce((sum, item) => sum + item.weight * policyMix(policy, node, item.combo, board.cards)[action], 0) / total / 100
-        : 0]));
-      const tiers = Object.fromEntries(TIERS.map(tier => [tier, 0]));
-      const detail = combos.map(item => {
-        const tier = handTier(item.combo, board.cards);
-        if (total) tiers[tier] += item.weight / total;
-        const itemMix = policyMix(policy, node, item.combo, board.cards);
-        return { cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
-          mix: Object.fromEntries(actions.map(action => [action, itemMix[action] / 100])) };
-      });
-      return { hand: row.hand, comboCount: combos.length, reachable: total > 0, mix, tiers, combos: detail };
-    });
-    return [node, { seat, actions, rows }];
-  }));
+  const nodes = flopNodes(inputs, policy, board.cards);
   return { kind: "ai_estimate_not_gto", spot: spot.id, tree: spot.tree, ip: spot.ip, oop: spot.oop, pot_bb: spot.potBb, stack_bb: spot.stackBb, board: board.id, split: board.split, texture: boardTexture(board.cards),
     source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash, nodes };
 }
@@ -78,18 +56,6 @@ function policyForLater(inputs, candidate, laterCandidate) {
   return { flopPolicy, laterPolicy };
 }
 
-const lineFor = (previousAggressor, role) => previousAggressor === null
-  ? "checked" : previousAggressor === role ? "aggressor" : "defender";
-
-function scaleLaterPath(items, role, steps, policy, board, previousAggressor) {
-  return steps.filter(step => step.role === role).reduce((range, step) => {
-    const line = lineFor(previousAggressor, role);
-    return range.map(item => ({ ...item,
-      weight: item.weight * laterPolicyMix(policy, step.node, item.combo, board, line)[step.action] / 100,
-    }));
-  }, items);
-}
-
 function representativeBoard(value) {
   if (typeof value !== "string" || !/^([2-9TJQKA][cdhs]){3}$/.test(value)) throw new Error("フロップの形式が正しくありません。");
   const cards = parseCards(value, 3);
@@ -111,40 +77,6 @@ function parseActions(value) {
   if (value == null || value === "") return [];
   if (typeof value !== "string") throw new Error("アクション履歴の形式が正しくありません。");
   return value.split(",");
-}
-
-function mixRows({ actor, role, board, node, line, inputs, flopPolicy, laterPolicy, flopSteps, turnSteps, riverSteps,
-  turnBoard, riverBoard, turnPreviousAggressor, riverPreviousAggressor }) {
-  const actions = LATER_NODES[node];
-  const rows = inputs.seatRows[actor];
-  if (!rows) throw new Error(`Missing saved range for ${actor}`);
-  return rows.map(row => {
-    let combos = comboRange([row], "freq", board);
-    combos = scaleByPath(combos, role, flopSteps, flopPolicy, board.slice(0, 3));
-    if (turnSteps) combos = scaleLaterPath(combos, role, turnSteps, laterPolicy, turnBoard, turnPreviousAggressor);
-    if (riverSteps) combos = scaleLaterPath(combos, role, riverSteps, laterPolicy, riverBoard, riverPreviousAggressor);
-    const totals = Object.fromEntries(actions.map(action => [action, 0]));
-    const tiers = Object.fromEntries(TIERS.map(tier => [tier, 0]));
-    const detail = [];
-    let weightTotal = 0;
-    for (const item of combos) {
-      if (!item.weight) continue;
-      const rawTier = handTier(item.combo, board);
-      const tier = rawTier === "draw" && node.startsWith("river_") ? "medium" : rawTier;
-      const mix = laterPolicyMix(laterPolicy, node, item.combo, board, line);
-      detail.push({ cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
-        mix: Object.fromEntries(actions.map(action => [action, mix[action] / 100])) });
-      weightTotal += item.weight;
-      tiers[tier] += item.weight;
-      for (const action of actions) totals[action] += item.weight * mix[action] / 100;
-    }
-    const tier = Object.entries(tiers).reduce((best, item) => item[1] > best[1] ? item : best, ["air", -1])[0];
-    const averaged = Object.fromEntries(actions.map(action => [action, weightTotal ? totals[action] / weightTotal : 0]));
-    const mixTotal = Object.values(averaged).reduce((sum, value) => sum + value, 0);
-    return { hand: row.hand, reachable: weightTotal > 0, tier, comboCount: detail.length, reachWeight: weightTotal,
-      tiers: Object.fromEntries(TIERS.map(name => [name, weightTotal ? tiers[name] / weightTotal : 0])),
-      mix: Object.fromEntries(actions.map(action => [action, mixTotal ? averaged[action] / mixTotal : 0])), combos: detail };
-  });
 }
 
 // Read-only projection of one saved turn/river decision. Only the acting player's own
@@ -186,9 +118,10 @@ export function buildLaterView({ flop, flopActions = "", turn = "", turnActions 
   const flopSteps = flopState(inputs.spot.tree, flopPath).steps;
   const role = decision.role;
   const actor = inputs.spot[role];
-  const rows = mixRows({ actor, role, board: currentBoard, node: decision.node, line: decision.line,
+  const rows = laterMixRows({ actor, role, board: currentBoard, node: decision.node, line: decision.line,
     inputs, flopPolicy, laterPolicy, flopSteps, turnSteps, riverSteps, turnBoard, riverBoard,
-    turnPreviousAggressor: start.lastAggressor, riverPreviousAggressor });
+    turnPreviousAggressor: start.lastAggressor, riverPreviousAggressor,
+    paths: { flop: flopPath, turn: turnPath, river: riverPath } });
   return { kind: "ai_estimate_not_gto", street, node: decision.node, actor, line: decision.line,
     texture: runoutTexture(currentBoard), pot_bb: decision.potBb, rows };
 }

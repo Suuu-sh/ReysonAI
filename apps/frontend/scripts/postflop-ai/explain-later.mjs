@@ -8,6 +8,7 @@ import { LATER_NODES, laterNodeRole } from "./later-tree.mjs";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
 import { flopState } from "./tree.mjs";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
+import { defenceFor, isFacingNode, replayOrNull } from "./defence.mjs";
 
 const RANKS = "23456789TJQKA";
 const MAX_TURN_COMBOS = 300;
@@ -97,6 +98,9 @@ export function laterOpponentRange({ context, inputs, hero, flopPolicy, laterPol
   const role = otherRole(context.decision.role);
   const seat = spot[role];
   const board = context.board;
+  // Reach weights with the bluff cap from the engine table at the hero's decision.
+  const table = replayOrNull(inputs, board, { flop: context.flopPath, turn: context.turnPath, river: context.street === "river" ? context.riverPath : [] });
+  if (table) return defenceFor(inputs, flopPolicy, laterPolicy).rangeItems(table, board, seat).filter(item => !item.combo.some(card => hero.includes(card)));
   let items = seatRange(inputs, seat, board).filter(item => !item.combo.some(card => hero.includes(card)));
   items = scaleByPath(items, role, context.flopSteps, flopPolicy, context.flopBoard.cards);
   items = scaleLaterPath(items, role, context.turnReplay.state.steps, laterPolicy, context.turnBoard, context.start.lastAggressor);
@@ -150,7 +154,9 @@ function group(key, items, all) {
   return { key, share: all ? weight / all : 0, hands };
 }
 
-function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks) {
+// `defenceOf(action)` returns { defence, table } for the responder's decision after `action`
+// (defence.mjs), or null when the line is not a legal continuation.
+function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks, heroDefence, defenceOf) {
   let range = villains.filter(item => item.weight > 0);
   let truncated = false;
   // Turn equity enumerates all legal rivers per combo. Bound worker latency by retaining
@@ -165,8 +171,10 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
   const ahead = evaluated.filter(item => item.equity >= 0.5), behind = evaluated.filter(item => item.equity < 0.5);
   const actions = {};
   const responseDetail = (responseNode, lineRole, action) => {
+    const computed = defenceOf(action);
     const response = evaluated.map(item => {
-      const mix = laterPolicyMix(policy, responseNode, item.combo, board, lineFor(decision.previousAggressor, lineRole));
+      let mix = laterPolicyMix(policy, responseNode, item.combo, board, lineFor(decision.previousAggressor, lineRole));
+      if (computed) mix = computed.defence.mix(computed.table, board, responseNode, item.combo, mix);
       return { item, fold: mix.fold / 100, cont: 1 - mix.fold / 100 };
     });
     const weighted = (list, key) => list.map(({ item, ...rest }) => ({ ...item, weight: item.weight * rest[key] })).filter(item => item.weight > 0);
@@ -195,7 +203,8 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
     const ownCommitted = spot.stackBb - stacks[role];
     const otherCommitted = spot.stackBb - stacks[other];
     const toCall = Math.max(0, otherCommitted - ownCommitted);
-    const required = toCall / (potBb + toCall);
+    // Break-even from the computed defence (rake and stack caps included).
+    const required = heroDefence?.requirement?.required ?? toCall / (potBb + toCall);
     const caught = { groups: [group("ahead", ahead, total), group("behind", behind, total)], required };
     actions.call = caught;
     actions.fold = caught;
@@ -215,10 +224,27 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
   const hero = parseCards(cards, 2);
   if (hero.some(card => boardContext.board.includes(card))) throw new Error("ボードと重なるカードです。");
   const villains = laterOpponentRange({ context: boardContext, inputs, hero, flopPolicy: flopRules, laterPolicy: laterRules });
-  const result = detailsFor(hero, villains, boardContext.board, laterRules, {
-    ...boardContext.decision, street: boardContext.street, previousAggressor: boardContext.previousAggressor,
-  }, inputs.spot, boardContext.decision.potBb, boardContext.street === "turn" ? boardContext.turnReplay.stacks : boardContext.riverReplay.stacks);
-  return { kind: "ai_estimate_not_gto", node: boardContext.decision.node, street: boardContext.street,
-    line: boardContext.decision.line, texture: runoutTexture(boardContext.board), equity: result.equity,
-    combos: result.combos, actions: result.actions, ...(result.truncated ? { truncated: true } : {}) };
+  // Responders (and the hero's own break-even / defence facts) use the computed defence.
+  const defence = defenceFor(inputs, flopRules, laterRules);
+  const { board, street } = boardContext;
+  const pathWith = action => ({ flop: boardContext.flopPath,
+    turn: street === "turn" ? [...boardContext.turnPath, action] : boardContext.turnPath,
+    river: street === "river" ? [...boardContext.riverPath, action] : [] });
+  const defenceOf = action => {
+    const table = replayOrNull(inputs, board, pathWith(action));
+    return table ? { defence, table } : null;
+  };
+  const heroTable = isFacingNode(boardContext.decision.node)
+    ? replayOrNull(inputs, board, { flop: boardContext.flopPath, turn: boardContext.turnPath, river: street === "river" ? boardContext.riverPath : [] }) : null;
+  const heroDefence = heroTable && { requirement: defence.requirement(heroTable, board, boardContext.decision.node),
+    facts: defence.facts(heroTable, board, boardContext.decision.node, hero,
+      laterPolicyMix(laterRules, boardContext.decision.node, hero, board, boardContext.decision.line)) };
+  const result = detailsFor(hero, villains, board, laterRules, {
+    ...boardContext.decision, street, previousAggressor: boardContext.previousAggressor,
+  }, inputs.spot, boardContext.decision.potBb, street === "turn" ? boardContext.turnReplay.stacks : boardContext.riverReplay.stacks,
+  heroDefence, defenceOf);
+  return { kind: "ai_estimate_not_gto", node: boardContext.decision.node, street,
+    line: boardContext.decision.line, texture: runoutTexture(board), equity: result.equity,
+    combos: result.combos, actions: result.actions, ...(result.truncated ? { truncated: true } : {}),
+    ...(heroDefence?.facts ? { defence: heroDefence.facts } : {}) };
 }

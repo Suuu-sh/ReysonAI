@@ -65,11 +65,13 @@ function hasDraw(hole, board) {
   return false;
 }
 
-export function handTier(hole, board) {
+// `score` may carry an already computed evaluate([...hole, ...board]) (the defence tables rank
+// every combo once per board and reuse that value).
+export function handTier(hole, board, score = null) {
   if (hole.length !== 2 || board.length < 3 || board.length > 5 || new Set([...hole, ...board]).size !== hole.length + board.length) {
     throw new Error("Invalid private hand or board");
   }
-  const category = Math.floor(evaluate([...hole, ...board]) / 16 ** 5);
+  const category = Math.floor((score ?? evaluate([...hole, ...board])) / 16 ** 5);
   if (category >= 2) return "monster";
   const boardRanks = board.map(card => card >> 2);
   const holeRanks = hole.map(card => card >> 2);

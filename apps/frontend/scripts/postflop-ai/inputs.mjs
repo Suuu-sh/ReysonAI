@@ -22,8 +22,10 @@ const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("
 const LATER_KEYS = ["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"];
 // Flop candidate identity predates the later-street tree. Exclude only its new sizing
 // keys, keeping the original key order and every original config field in the hash.
+// The computed-defence constants (defence.mjs) are not part of any candidate's identity either.
+const NON_FLOP_KEYS = [...LATER_KEYS, "defence_realization"];
 const flopConfig = () => Object.fromEntries(Object.entries(config).filter(([key]) =>
-  !LATER_KEYS.includes(key)));
+  !NON_FLOP_KEYS.includes(key)));
 // Results, unlike flop candidates, must be invalidated when later sizing changes.
 export const laterSizingHash = () => sha(Object.fromEntries(LATER_KEYS.map(key => [key, config[key]])));
 

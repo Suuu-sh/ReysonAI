@@ -15,6 +15,10 @@ export function createTable(spot) {
     spot, other: seat => seat === ip ? oop : ip,
     stacks: { [ip]: spot.stackBb, [oop]: spot.stackBb }, invested: { [ip]: 0, [oop]: 0 },
     pot: spot.potBb, winner: null, lastAggressor: null,
+    // Decision log for the computed defence (defence.mjs): one entry per decision asked, in order
+    // ({ seat, node, street, boardLen, line, pot: pot before the decision, action }; `action` stays null
+    // while the decision is pending), and the actions taken so far on each street.
+    log: [], path: { flop: [], turn: [], river: [] },
   };
   table.put = (seat, amount) => {
     const value = round(Math.min(table.stacks[seat], amount));
@@ -32,7 +36,16 @@ export function createTable(spot) {
 export function playFlop(table, tree, decide, config) {
   const { ip, oop } = table.spot;
   table.lastAggressor = null;
+  table.log = []; table.path = { flop: [], turn: [], river: [] };
   let step = 0;
+  const ask = (seat, node) => {
+    const entry = { seat, node, street: "flop", boardLen: 3, line: null, pot: table.pot, index: table.path.flop.length, action: null };
+    table.log.push(entry);
+    const action = decide(seat, node, step++);
+    entry.action = action;
+    table.path.flop.push(action);
+    return action;
+  };
   // A wager that would commit at least the merge ratio of the remaining effective stack
   // becomes all-in (the same rule as the turn/river; matters at low SPR).
   const cap = seat => Math.min(table.stacks[seat], table.stacks[table.other(seat)] + table.invested[table.other(seat)] - table.invested[seat]);
@@ -43,20 +56,20 @@ export function playFlop(table, tree, decide, config) {
   const betLine = (bettor, action) => {
     const caller = table.other(bettor), role = bettor === ip ? "ip" : "oop";
     const bet = wager(bettor, table.pot * flopBetFraction(action));
-    const response = decide(caller, facingNode(role, action), step++);
+    const response = ask(caller, facingNode(role, action));
     if (response === "fold") { table.winner = bettor; return; }
     if (response === "call" || !cap(caller) || table.invested[caller] + cap(caller) <= table.invested[bettor]) {
       table.put(caller, table.invested[bettor] - table.invested[caller]); table.lastAggressor = bettor; return;
     }
     wager(caller, round(bet * config.flop_check_raise_multiplier) - table.invested[caller]);
-    if (decide(bettor, raiseNodeAfter(role), step++) === "fold") table.winner = caller;
+    if (ask(bettor, raiseNodeAfter(role)) === "fold") table.winner = caller;
     else { table.put(bettor, table.invested[caller] - table.invested[bettor]); table.lastAggressor = caller; }
   };
   if (tree === "oop_leads") {
-    const lead = decide(oop, "oop_first", step++);
+    const lead = ask(oop, "oop_first");
     if (lead !== "check") { betLine(oop, lead); return; }
   }
-  const first = decide(ip, "btn_first", step++);
+  const first = ask(ip, "btn_first");
   if (first !== "check") betLine(ip, first);
 }
 
@@ -104,9 +117,12 @@ export function playLaterStreetsWithPolicy(table, flop, runout, decide, config, 
     };
     let aggressor = null;
     let state = streetState(street, actions);
+    table.path[street] = actions;
     while (!state.end) {
       const seat = table.spot[state.role], other = table.other(seat);
       const line = previousAggressor === null ? "checked" : previousAggressor === seat ? "aggressor" : "defender";
+      const entry = { seat, node: state.node, street, boardLen: board.length, line, pot: table.pot, index: actions.length, action: null };
+      table.log.push(entry);
       let action = decide(seat, state.node, board, line);
       if (!LATER_NODES[state.node].includes(action)) throw new Error(`Illegal later action at ${state.node}`);
       // A fixed rule table still has a raise key when facing a capped all-in. Collapse
@@ -121,6 +137,7 @@ export function playLaterStreetsWithPolicy(table, flop, runout, decide, config, 
         else { wager(seat, raiseBy); aggressor = seat; }
       }
       if (action === "call") put(seat, round(committed[other] - committed[seat]));
+      entry.action = action;
       actions.push(action);
       state = streetState(street, actions);
     }

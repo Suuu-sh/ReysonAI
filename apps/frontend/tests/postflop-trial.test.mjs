@@ -555,19 +555,26 @@ test("combo explanation splits the opponent range into value, fold-out and conti
   const [value, foldBetter, continueBetter] = bet.actions.bet33.groups;
   const shares = value.share + continueBetter.share + bet.actions.bet33.foldShare;
   assert.ok(shares > 0.99 && shares <= 1.0001, `shares ${shares}`);
+  // Break-even is call / (final pot - capped rake) (defence.mjs).
+  const breakEven = (call, potBefore, wager) => {
+    const finalPot = potBefore + wager + call;
+    return call / (finalPot - Math.min(finalPot * 0.05, 3));
+  };
   const call = explainCombo({ boardCards, node: "bb_vs_33", cards: "Th9d", inputs, policy: referencePolicy });
-  assert.ok(Math.abs(call.actions.call.required - 1.815 / (5.5 + 1.815 * 2)) < 0.001);
+  assert.ok(Math.abs(call.actions.call.required - breakEven(1.815, 5.5, 1.815)) < 0.001);
+  assert.equal(call.defence.node, "bb_vs_33");
+  assert.ok(Math.abs(call.defence.required_equity - call.actions.call.required) < 1e-3);
   assert.throws(() => explainCombo({ boardCards, node: "btn_first", cards: "JsKc", inputs, policy: referencePolicy }), /ボード/);
   const leads = (await import("../scripts/postflop-ai/policy.mjs")).referencePolicyFor("oop_leads");
   const sbInputs = loadInputs("SB_open_BB_call");
   const sbCall = explainCombo({ boardCards, node: "ip_vs_33", cards: "Th9d", inputs: sbInputs, policy: leads });
-  assert.ok(Math.abs(sbCall.actions.call.required - 2.31 / (7 + 2.31 * 2)) < 0.001);
+  assert.ok(Math.abs(sbCall.actions.call.required - breakEven(2.31, 7, 2.31)) < 0.001);
   assert.deepEqual(Object.keys(explainCombo({ boardCards, node: "oop_first", cards: "AsKc", inputs: sbInputs, policy: leads }).actions).sort(), ["bet125", "bet33", "bet75", "check"]);
   assert.throws(() => explainCombo({ boardCards, node: "oop_first", cards: "AsKc", inputs, policy: referencePolicy }), /未対応/);
   // In a 3bet pot, a raise is capped by the stack when computing the price.
   const threeBetInputs = loadInputs("UTG_open_BB_3bet_call");
   const vsRaise = explainCombo({ boardCards, node: "oop_vs_raise", cards: "AsAd", prev: "bet75", inputs: threeBetInputs, policy: leads });
-  assert.ok(Math.abs(vsRaise.actions.call.required - (24.5 * 0.75 * 2) / (24.5 + 24.5 * 0.75 * 4 + 24.5 * 0.75 * 2)) < 0.001);
+  assert.ok(Math.abs(vsRaise.actions.call.required - breakEven(24.5 * 0.75 * 2, 24.5 + 24.5 * 0.75, 24.5 * 0.75 * 3)) < 0.001);
 });
 
 test("combo evidence reasons follow the computed numbers", async () => {

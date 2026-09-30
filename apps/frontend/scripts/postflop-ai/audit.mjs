@@ -60,7 +60,7 @@ export function auditExperiment(inputs, candidate, report, laterCandidate = null
   }
   const replay = simulate(inputs, policy, config.samples_per_board_profile_seat, laterPolicy);
   if (JSON.stringify(replay) !== JSON.stringify(report)) throw new Error("Saved simulation report differs from fixed-seed replay");
-  const sanity = simulate(inputs, referencePolicyFor(spot.tree), 12);
+  const sanity = simulate(inputs, referencePolicyFor(spot.tree), 12, null, { computedDefence: false });
   if (sanity.results.some(row => row.delta_bb.mean !== 0)) throw new Error("Reference-vs-reference simulation drifted");
   return { checkedCombos: checked, resultCount: report.results.length, warnings };
 }

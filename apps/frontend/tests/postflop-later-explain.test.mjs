@@ -6,6 +6,7 @@ import { referencePolicy } from "../scripts/postflop-ai/policy.mjs";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
 import { streetHistories } from "../scripts/postflop-ai/later-tree.mjs";
 import { laterDecision, laterStart, replayLater } from "../src/estimated/postflop-trial.ts";
+import { rake } from "../scripts/postflop-ai/engine.mjs";
 import { explainLaterCombo, laterExplainContext, laterOpponentRange } from "../scripts/postflop-ai/explain-later.mjs";
 import { laterHandEvForBoard, laterHandEvKey, loadLaterHandEv, representativeLaterRunouts } from "../scripts/postflop-ai/later-hand-ev.mjs";
 import { localPostflopMiddleware } from "../scripts/postflop-ai/local-view.mjs";
@@ -19,9 +20,13 @@ const base = { flop: "As7d2c", flopActions: "check", turn: "3s", cards: "AhKd", 
 const cardText = card => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
 const near = (actual, expected, tolerance = 1e-9) => assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} != ${expected}`);
 
+// Call / fold details split the range into ahead and behind. A response detail reports the
+// villains that continue while the hero is ahead (value) or behind (continueBetter), and every
+// fold (foldShare, including the folds of better hands reported as foldBetter), so
+// value + continueBetter + foldShare covers the whole range.
 function assertSharesConserve(detail) {
-  const groups = detail.groups.reduce((sum, item) => sum + item.share, 0);
-  near(groups + (detail.foldShare ?? 0), 1, 1e-8);
+  const counted = detail.groups.filter(item => detail.foldShare === undefined || item.key !== "foldBetter");
+  near(counted.reduce((sum, item) => sum + item.share, 0) + (detail.foldShare ?? 0), 1, 1e-8);
 }
 
 test("turn/river evidence groups conserve range share and pot odds match replayed chips", () => {
@@ -36,7 +41,9 @@ test("turn/river evidence groups conserve range share and pot odds match replaye
   const turnRole = turnDecision.role;
   const turnOther = turnRole === "ip" ? "oop" : "ip";
   const turnCall = inputs.spot.stackBb - turnReplay.stacks[turnOther] - (inputs.spot.stackBb - turnReplay.stacks[turnRole]);
-  near(turn.actions.call.required, turnCall / (turnReplay.pot + turnCall));
+  // Break-even includes the capped rake on the final pot (defence.mjs).
+  const breakEven = (call, pot) => call / (pot + call - rake(pot + call));
+  near(turn.actions.call.required, breakEven(turnCall, turnReplay.pot));
 
   const river = explainLaterCombo({ ...base, turnActions: "check,check", river: "5s", riverActions: "bet75" });
   assert.equal(river.street, "river");
@@ -48,7 +55,7 @@ test("turn/river evidence groups conserve range share and pot odds match replaye
   const riverDecision = laterDecision("river", ["bet75"], riverStart, inputs.spot);
   const riverRole = riverDecision.role, riverOther = riverRole === "ip" ? "oop" : "ip";
   const riverCall = inputs.spot.stackBb - riverReplay.stacks[riverOther] - (inputs.spot.stackBb - riverReplay.stacks[riverRole]);
-  near(river.actions.call.required, riverCall / (riverReplay.pot + riverCall));
+  near(river.actions.call.required, breakEven(riverCall, riverReplay.pot));
 });
 
 test("opponent reach is narrowed by its own earlier saved actions and excludes hero/board cards", () => {

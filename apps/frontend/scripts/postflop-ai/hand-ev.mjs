@@ -12,6 +12,7 @@ import { LATER_NODES } from "./later-tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
 import { DEFAULT_SPOT_ID, spotById } from "./spots.mjs";
 import { flopState, treeHistories } from "./tree.mjs";
+import { defenceFor, replayOrNull } from "./defence.mjs";
 
 export const HAND_EV_VERSION = 2;
 export const DEFAULT_SAMPLES = 2000;
@@ -25,7 +26,8 @@ export const HISTORIES = Object.freeze(treeHistories("oop_checks"));
 
 // Plays the rest of the hand from `history` with the actor forced to `forced`.
 // Returns the actor's chips won from this decision on (earlier flop chips are sunk).
-export function playFromNode({ hands, flop, runout, history, forced, policy, laterPolicy = referenceLater, random, spot = spotById(), tree = spot.tree ?? "oop_checks" }) {
+// `defence` (defence.mjs) replaces the call / fold part of facing decisions for both players.
+export function playFromNode({ hands, flop, runout, history, forced, policy, laterPolicy = referenceLater, random, spot = spotById(), tree = spot.tree ?? "oop_checks", defence = null }) {
   const start = flopState(tree, history);
   if (start.end) throw new Error("No decision after this flop history");
   const actor = spot[start.role];
@@ -34,11 +36,14 @@ export function playFromNode({ hands, flop, runout, history, forced, policy, lat
   const decide = (seat, node, step) => {
     if (step < history.length) return history[step];
     if (step === history.length) { atNode = { ...table.invested }; return forced; }
-    return choose(policyMix(policy, node, hands[seat], flop), random(), NODES[node]);
+    const mix = policyMix(policy, node, hands[seat], flop);
+    return choose(defence ? defence.mix(table, flop, node, hands[seat], mix) : mix, random(), NODES[node]);
   };
   playFlop(table, tree, decide, config);
-  playLaterStreetsWithPolicy(table, flop, runout, (seat, node, board, line) =>
-    choose(laterPolicyMix(laterPolicy, node, hands[seat], board, line), random(), LATER_NODES[node]), config, table.lastAggressor);
+  playLaterStreetsWithPolicy(table, flop, runout, (seat, node, board, line) => {
+    const mix = laterPolicyMix(laterPolicy, node, hands[seat], board, line);
+    return choose(defence ? defence.mix(table, board, node, hands[seat], mix) : mix, random(), LATER_NODES[node]);
+  }, config, table.lastAggressor);
   const winner = settle(table, hands, [...flop, ...runout]);
   const paid = table.pot - rake(table.pot);
   const share = winner === actor ? paid : winner === "tie" ? paid / 2 : 0;
@@ -50,7 +55,7 @@ export function playFromNode({ hands, flop, runout, history, forced, policy, lat
 
 // Pot at a decision and each player's reach there (saved preflop frequency × the
 // candidate's earlier flop actions for that exact combo).
-function nodeSetup(history, inputs, policy, flop, tree) {
+function nodeSetup(history, inputs, policy, flop, tree, defence) {
   const { spot } = inputs;
   const state = flopState(tree, history);
   // Replays the chips of the history (the same rounding and stack caps as the hand itself).
@@ -59,7 +64,11 @@ function nodeSetup(history, inputs, policy, flop, tree) {
   try {
     playFlop(table, tree, (seat, node, index) => { if (index < history.length) return history[index]; throw stop; }, config);
   } catch (error) { if (error !== stop) throw error; }
-  const range = role => scaleByPath(seatRange(inputs, spot[role], flop), role, state.steps, policy, flop);
+  // Reach weights of both ranges (with the bluff cap) from the engine table at this decision; a history the
+  // engine resolves differently keeps the policy scaling.
+  const nodeTable = replayOrNull(inputs, flop, { flop: history });
+  const range = role => nodeTable ? defence.rangeItems(nodeTable, flop, spot[role])
+    : scaleByPath(seatRange(inputs, spot[role], flop), role, state.steps, policy, flop);
   const heroRole = state.role, villainRole = heroRole === "ip" ? "oop" : "ip";
   return { pot: table.pot, hero: range(heroRole), villain: range(villainRole) };
 }
@@ -84,11 +93,20 @@ function sampler(items) {
 
 export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES, laterPolicy = referenceLater) {
   const { spot } = inputs;
+  const defence = defenceFor(inputs, policy, laterPolicy);
   const out = {};
   for (const [key, { node, role }] of Object.entries(treeHistories(spot.tree))) {
     const actor = spot[role];
     const history = key ? key.split(",") : [];
-    const { pot, hero, villain } = nodeSetup(history, inputs, policy, board.cards, spot.tree);
+    // The engine table at this decision: facing decisions use the computed defence (defence.mjs).
+    let nodeTable = null;
+    const nodeMix = combo => {
+      const base = policyMix(policy, node, combo, board.cards);
+      // A history the engine resolves differently (e.g. a wager merged into an all-in) keeps the policy mix.
+      nodeTable ??= replayOrNull(inputs, board.cards, { flop: history }) ?? false;
+      return nodeTable ? defence.mix(nodeTable, board.cards, node, combo, base) : base;
+    };
+    const { pot, hero, villain } = nodeSetup(history, inputs, policy, board.cards, spot.tree, defence);
     const actions = NODES[node];
     const reachable = villain.filter(item => item.weight > 0);
     // A node the policies never reach on this board (e.g. no hand bets 125% on a paired flop).
@@ -133,9 +151,9 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
         wins += h > v ? 1 : h === v ? 0.5 : 0;
         // Common random numbers: every action replays the same deal and random stream.
         const streamSeed = Math.floor(random() * 2 ** 32);
-        const mix = policyMix(policy, node, heroCombo, board.cards);
+        const mix = nodeMix(heroCombo);
         for (const action of actions) {
-          const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action, policy, laterPolicy, random: seededRandom(streamSeed), spot, tree: spot.tree });
+          const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action, policy, laterPolicy, random: seededRandom(streamSeed), spot, tree: spot.tree, defence });
           if (value === null) { neverReached = true; break; }
           sums[action] += value;
           mixEv += mix[action] / 100 * value;
@@ -150,7 +168,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
         mix_ev_bb: round(ev),
         // Same definition as preflop: EV = equity × EQR × raked(pot).
         eqr: equity > 0.02 ? round(ev / (equity * (pot - rake(pot)))) : null,
-        mix: Object.fromEntries(actions.map(action => [action, round(combos.reduce((sum, item) => sum + item.weight * policyMix(policy, node, item.combo, board.cards)[action], 0) / totalWeight)])),
+        mix: Object.fromEntries(actions.map(action => [action, round(combos.reduce((sum, item) => sum + item.weight * nodeMix(item.combo)[action], 0) / totalWeight)])),
       };
     }
     out[key] = neverReached ? { node, actor, pot_bb: pot, rows: {}, unreachable: true } : { node, actor, pot_bb: pot, rows };
@@ -166,7 +184,7 @@ export function generateHandEv({ spotId = DEFAULT_SPOT_ID, samples = DEFAULT_SAM
   const result = { kind: "ai_estimate_not_gto", version: HAND_EV_VERSION, source_hash: inputs.fingerprint,
     later_policy_hash: sha(laterPolicy), later_sizing_hash: laterSizingHash(),
     policy_hash: candidate.metadata.policy_hash, samples_per_hand_action: samples, seed: config.seed,
-    note: "AI方針どうしの自己対戦（ターン・リバーは保存済み方針、未保存時は固定参照方針）で見積もった値。GTO・ソルバーのEVではない。", boards: {} };
+    note: "AI方針どうしの自己対戦（ターン・リバーは保存済み方針、未保存時は固定参照方針。ベットに対するコール／フォールドはエクイティと必要勝率の計算）で見積もった値。GTO・ソルバーのEVではない。", boards: {} };
   for (const board of boards()) { result.boards[board.id] = handEvForBoard(board, inputs, candidate.policy, samples, laterPolicy); onBoard(board.id); }
   writeFileSync(artifactPaths(inputs.spot).handEv, `${JSON.stringify(result)}\n`);
   return result;

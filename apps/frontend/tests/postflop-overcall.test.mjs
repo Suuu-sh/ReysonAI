@@ -87,33 +87,34 @@ test("lowerDefence rejects invalid shares, nodes, policy kinds, and malformed po
 });
 
 test("flop and later balance report overcall above minimum defence, not a balanced response", () => {
+  // Facing nodes are judged on the computed defence (defence.mjs): calling too much shows up when the
+  // bettor's range is mostly bluffs, not when the policy's own call numbers are raised.
   const flopPolicy = referencePolicyFor(inputs.spot.tree);
   const overcallingFlop = clone(flopPolicy);
-  for (const rule of overcallingFlop.rules) if (rule.node === "bb_vs_33") {
-    rule.mix = { fold: 0, call: 100, raise: 0 };
+  for (const rule of overcallingFlop.rules) if (rule.node === "btn_first") {
+    rule.mix = { check: 0, bet33: 100, bet75: 0, bet125: 0 };
   }
   const flopFindings = checkFlopBalance(inputs, overcallingFlop).findings;
   const flopOvercall = flopFindings.find(item => item.check === "overcall" && item.node === "bb_vs_33");
   assert.ok(flopOvercall, JSON.stringify(flopFindings));
   assert.equal(flopOvercall.severity, "warn");
   assert.match(flopOvercall.detail, /non-monster hands defend .* versus the .* the minimum defence of .* still needs \(more than \d+ percentage points over\)\./);
+  assert.equal(checkFlopBalance(inputs, flopPolicy).findings.some(item => item.check === "overcall" && item.node === "bb_vs_33"), false);
 
   const reference = referenceLaterPolicy();
-  const overcallingLater = clone(reference);
-  for (const rule of overcallingLater.streets.river.rules) if (rule.node === "river_ip_vs_allin") {
-    rule.mix = { fold: 0, call: 100 };
-  }
-  const overcallFindings = checkLaterBalance(inputs, flopPolicy, overcallingLater, { authored: false }).findings;
-  const laterOvercall = overcallFindings.find(item => item.check === "overcall" && item.node === "river_ip_vs_allin");
-  assert.ok(laterOvercall, JSON.stringify(overcallFindings));
-  assert.equal(laterOvercall.severity, "warn");
-  assert.match(laterOvercall.detail, /non-monster hands defend .* versus the .* the minimum defence of .* still needs \(more than \d+ percentage points over\)\./);
+  const shoveWith = tiers => {
+    const policy = clone(reference);
+    for (const rule of policy.streets.river.rules) if (rule.node === "river_oop_first") {
+      rule.mix = { check: tiers.includes(rule.tier) ? 0 : 100, bet33: 0, bet75: 0, bet125: 0, allin: tiers.includes(rule.tier) ? 100 : 0 };
+    }
+    return policy;
+  };
+  const overcallFindings = checkLaterBalance(inputs, flopPolicy, shoveWith(["air", "medium"]), { authored: false }).findings;
+  // River shoves are bluff-capped and defended at no more than the minimum defence, so even a policy that
+  // shoves only air and medium hands cannot produce an over-calling response to the all-in.
+  assert.equal(overcallFindings.some(item => item.check === "overcall" && item.node === "river_ip_vs_allin"), false, JSON.stringify(overcallFindings));
 
-  const balancedLater = clone(reference);
-  for (const rule of balancedLater.streets.river.rules) if (rule.node === "river_ip_vs_allin") {
-    rule.mix = { fold: 95, call: 5 };
-  }
-  const balancedFindings = checkLaterBalance(inputs, flopPolicy, balancedLater, { authored: false }).findings;
+  const balancedFindings = checkLaterBalance(inputs, flopPolicy, shoveWith(["monster"]), { authored: false }).findings;
   assert.equal(balancedFindings.some(item => item.check === "overcall" && item.node === "river_ip_vs_allin"), false,
     JSON.stringify(balancedFindings));
 });

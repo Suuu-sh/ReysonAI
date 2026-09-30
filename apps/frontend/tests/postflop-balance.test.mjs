@@ -37,22 +37,29 @@ test("flop balance flags monster-only betting and value-only raises", () => {
   assert.ok(findings.some(item => item.check === "value-only-raise" && item.node === "bb_vs_33"), JSON.stringify(findings));
 });
 
-test("overfold flags fold-only flop responses more than the fixed reference policy", () => {
+test("overfold flags flop defences that fold far more than the minimum against a value-only bettor", () => {
+  // Facing nodes are judged on the computed defence (defence.mjs), so folding is not set by the policy's
+  // fold numbers: a bettor whose range is only monsters is what makes the calculation fold.
   const reference = referencePolicyFor(inputs.spot.tree);
   const referenceFindings = checkFlopBalance(inputs, reference).findings;
-  const foldOnly = clone(reference);
-  for (const rule of foldOnly.rules) if (/^(?:bb|ip)_vs_\d+$/.test(rule.node)) {
-    rule.mix = actionMix(NODES[rule.node], "fold");
+  const valueOnly = clone(reference);
+  for (const rule of valueOnly.rules) if (rule.node === "btn_first") {
+    rule.mix = actionMix(NODES.btn_first, rule.tier === "monster" ? "bet33" : "check");
   }
-  const foldOnlyFindings = checkFlopBalance(inputs, foldOnly).findings;
+  const valueOnlyFindings = checkFlopBalance(inputs, valueOnly).findings;
   const referenceOverfolds = referenceFindings.filter(item => item.check === "overfold");
-  const foldOnlyOverfolds = foldOnlyFindings.filter(item => item.check === "overfold");
+  const valueOnlyOverfolds = valueOnlyFindings.filter(item => item.check === "overfold");
   assert.deepEqual(referenceFindings.filter(item => item.severity === "error"), []);
-  assert.deepEqual(foldOnlyFindings.filter(item => item.severity === "error"), []);
-  assert.ok(foldOnlyOverfolds.length > referenceOverfolds.length,
-    `fold-only=${foldOnlyOverfolds.length}; reference=${referenceOverfolds.length}`);
-  assert.ok(foldOnlyOverfolds.every(item => item.severity === "warn" && !("direction" in item) &&
-    /defends 0\.0% versus a minimum defence of /.test(item.detail)), JSON.stringify(foldOnlyOverfolds));
+  assert.deepEqual(valueOnlyFindings.filter(item => item.severity === "error"), []);
+  assert.ok(!referenceOverfolds.some(item => item.node === "bb_vs_33"), JSON.stringify(referenceOverfolds));
+  const versus33 = valueOnlyOverfolds.find(item => item.node === "bb_vs_33");
+  assert.ok(versus33, JSON.stringify(valueOnlyOverfolds));
+  assert.ok(valueOnlyOverfolds.every(item => item.severity === "warn" && !("direction" in item) &&
+    /^defends \d+\.\d% versus a minimum defence of /.test(item.detail)), JSON.stringify(valueOnlyOverfolds));
+  // Rewriting the policy's own call / fold split (keeping its raise share) no longer moves the finding.
+  const foldOnly = clone(reference);
+  for (const rule of foldOnly.rules) if (/^(?:bb|ip)_vs_\d+$/.test(rule.node)) rule.mix = { fold: 100 - rule.mix.raise, call: 0, raise: rule.mix.raise };
+  assert.deepEqual(checkFlopBalance(inputs, foldOnly).findings.filter(item => item.check === "overfold"), referenceOverfolds);
 });
 
 test("later balance catches excess river air, value-only raises, capped checks, missing overrides and copied roles", () => {
@@ -83,26 +90,22 @@ test("later balance catches excess river air, value-only raises, capped checks, 
   assert.ok(findings.some(item => item.check === "role-copy" && item.node.includes("turn_oop_first")), JSON.stringify(findings));
 });
 
-test("overfold flags fold-only later responses more than the fixed reference policy", () => {
+test("overfold flags later defences that fold far more than the minimum against a value-only bettor", () => {
   const referenceLater = referenceLaterPolicy();
   const findings = checkLaterBalance(inputs, referencePolicyFor(inputs.spot.tree), referenceLater, { authored: false }).findings;
-  const foldOnly = clone(referenceLater);
-  for (const node of Object.keys(LATER_NODES).filter(name =>
-    /^(?:turn|river)_(?:oop|ip)_vs_(?:33|75|125|allin)$/.test(name))) {
-    const street = node.split("_")[0];
-    for (const rule of foldOnly.streets[street].rules) if (rule.node === node) {
-      rule.mix = actionMix(LATER_NODES[node], "fold");
-    }
+  const valueOnly = clone(referenceLater);
+  for (const node of ["turn_oop_first", "turn_ip_first"]) for (const tier of ["monster", "strong", "draw", "medium", "air"]) {
+    setMix(valueOnly, "turn", node, tier, actionMix(LATER_NODES[node], tier === "monster" ? "bet33" : "check"));
   }
-  const foldOnlyFindings = checkLaterBalance(inputs, referencePolicyFor(inputs.spot.tree), foldOnly, { authored: false }).findings;
+  const valueOnlyFindings = checkLaterBalance(inputs, referencePolicyFor(inputs.spot.tree), valueOnly, { authored: false }).findings;
   const referenceOverfolds = findings.filter(item => item.check === "overfold");
-  const foldOnlyOverfolds = foldOnlyFindings.filter(item => item.check === "overfold");
+  const valueOnlyOverfolds = valueOnlyFindings.filter(item => item.check === "overfold");
   assert.deepEqual(findings.filter(item => item.severity === "error"), []);
-  assert.deepEqual(foldOnlyFindings.filter(item => item.severity === "error"), []);
-  assert.ok(foldOnlyOverfolds.length > referenceOverfolds.length,
-    `fold-only=${foldOnlyOverfolds.length}; reference=${referenceOverfolds.length}`);
-  assert.ok(foldOnlyOverfolds.every(item => item.severity === "warn" && !("direction" in item) &&
-    /defends 0\.0% versus a minimum defence of /.test(item.detail)), JSON.stringify(foldOnlyOverfolds));
+  assert.deepEqual(valueOnlyFindings.filter(item => item.severity === "error"), []);
+  assert.ok(!referenceOverfolds.some(item => item.node === "turn_ip_vs_33"), JSON.stringify(referenceOverfolds));
+  assert.ok(valueOnlyOverfolds.some(item => item.node === "turn_ip_vs_33"), JSON.stringify(valueOnlyOverfolds));
+  assert.ok(valueOnlyOverfolds.every(item => item.severity === "warn" && !("direction" in item) &&
+    /^defends \d+\.\d% versus a minimum defence of /.test(item.detail)), JSON.stringify(valueOnlyOverfolds));
   assert.ok(findings.every(item => ["warn", "error"].includes(item.severity)));
 });
 

@@ -8,6 +8,7 @@ import { validateLaterPolicy } from "./later-policy.mjs";
 import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.mjs";
 import { FLOP_BETS, flopBetFraction, flopState, treeHistories } from "./tree.mjs";
 import { createTable, playFlop } from "./engine.mjs";
+import { defenceFor, replayOrNull } from "./defence.mjs";
 
 const pct = value => `${(value * 100).toFixed(1)}%`;
 const mean = values => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
@@ -340,13 +341,19 @@ export function checkFlopBalance(inputs, flopPolicy) {
   const nodes = treeNodes(inputs.spot.tree).filter(node => node.endsWith("_first") || NODES[node].includes("raise"));
   const histories = firstHistoryByNode(treeHistories(inputs.spot.tree));
   const tierFor = makeTierReader(), mixFor = makeFlopMixReader(policy, tierFor), collection = new Map();
+  // Facing nodes are judged on the computed defence (defence.mjs), not the tier mixes of the policy.
+  const defence = defenceFor(inputs, policy, null);
   for (const board of boards()) for (const node of nodes) {
     const history = histories.get(node);
     if (!history) throw new Error(`No representative history for flop node: ${node}`);
     const state = flopState(inputs.spot.tree, history);
     const role = nodeRole(node), seat = inputs.spot[role];
-    const range = scaleFlopPath(seatRange(inputs, seat, board.cards), role, state.steps, mixFor, board.cards);
-    const summary = summarize(range, NODES[node], mixFor, tierFor, node, board.cards, null);
+    // Reach weights and mixes come from the engine table at the node (computed defence and bluff cap).
+    const table = replayOrNull(inputs, board.cards, { flop: history });
+    const range = table ? defence.rangeItems(table, board.cards, seat)
+      : scaleFlopPath(seatRange(inputs, seat, board.cards), role, state.steps, mixFor, board.cards);
+    const nodeMixFor = table ? (name, combo, cards) => defence.mix(table, cards, name, combo, mixFor(name, combo, cards)) : mixFor;
+    const summary = summarize(range, NODES[node], nodeMixFor, tierFor, node, board.cards, null);
     addSummary(collection, node, board.id, NODES[node], summary, {}, flopMinimumDefense(node));
   }
   return { findings: [...cappedCheckFindings(collection, nodes), ...raiseFindings(collection, nodes),
@@ -385,6 +392,9 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
 
   const tierFor = makeTierReader(), flopMixFor = makeFlopMixReader(flop, tierFor);
   const mixFor = makeLaterMixReader(later, tierFor), collection = new Map(), baseCache = new Map();
+  // Facing nodes are judged on the computed defence (defence.mjs), not the tier mixes of the policy.
+  const defence = defenceFor(inputs, flop, later);
+  const defended = (table, name, combo, cards, line) => defence.mix(table, cards, name, combo, mixFor(name, combo, cards, line));
   const flopPaths = flopPathSamples(inputs.spot.tree), turnPaths = laterPathSamples("turn");
   const flopTableByPath = new Map(flopPaths.map(path => [path.actions.join(","), replayFlopPath(inputs, path)]));
   const turnHistoryByNode = firstHistoryByNode(streetHistories("turn"));
@@ -400,11 +410,13 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
       const history = turnHistoryByNode.get(node);
       const state = streetState("turn", history);
       const role = laterNodeRole(node), seat = inputs.spot[role];
-      const baseItems = cachedBaseRange(inputs, baseCache, seat, turnBoard);
-      const reached = scaleFlopPath(baseItems, role, flopPath.steps, flopMixFor, flopBoard.cards);
       const line = lineFor(flopPath.aggressor, role);
-      const items = scaleLaterPath(reached, role, state.steps, mixFor, turnBoard, flopPath.aggressor);
-      const summary = summarize(items, LATER_NODES[node], mixFor, tierFor, node, turnBoard, line, true);
+      const table = replayOrNull(inputs, turnBoard, { flop: flopPath.actions, turn: history });
+      const items = table ? defence.rangeItems(table, turnBoard, seat)
+        : scaleLaterPath(scaleFlopPath(cachedBaseRange(inputs, baseCache, seat, turnBoard), role, flopPath.steps, flopMixFor, flopBoard.cards),
+          role, state.steps, mixFor, turnBoard, flopPath.aggressor);
+      const nodeMixFor = table ? (name, combo, cards, cardLine) => defended(table, name, combo, cards, cardLine) : mixFor;
+      const summary = summarize(items, LATER_NODES[node], nodeMixFor, tierFor, node, turnBoard, line, true);
       const minimumDefense = laterMinimumDefense(node, "turn", flopTableByPath.get(flopPath.actions.join(",")), inputs);
       addSummary(collection, node, flopBoard.id, LATER_NODES[node], summary, {}, minimumDefense);
     }
@@ -422,9 +434,14 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
             const state = streetState("river", history);
             const role = laterNodeRole(node), seat = inputs.spot[role];
             const baseItems = cachedBaseRange(inputs, baseCache, seat, runout.riverBoard);
-            let items = scaleFlopPath(baseItems, role, flopPath.steps, flopMixFor, flopBoard.cards);
-            items = scaleLaterPath(items, role, turnSteps, mixFor, runout.turnBoard, flopPath.aggressor);
-            items = scaleLaterPath(items, role, state.steps, mixFor, runout.riverBoard, riverAggressor);
+            const defenceTable = replayOrNull(inputs, runout.riverBoard, { flop: flopPath.actions, turn: turnPath.actions, river: history });
+            let items;
+            if (defenceTable) items = defence.rangeItems(defenceTable, runout.riverBoard, seat);
+            else {
+              items = scaleFlopPath(baseItems, role, flopPath.steps, flopMixFor, flopBoard.cards);
+              items = scaleLaterPath(items, role, turnSteps, mixFor, runout.turnBoard, flopPath.aggressor);
+              items = scaleLaterPath(items, role, state.steps, mixFor, runout.riverBoard, riverAggressor);
+            }
             const line = lineFor(riverAggressor, role);
             const targets = {};
             if (node.endsWith("_first")) for (const action of LATER_NODES[node].filter(value => value !== "check")) {
@@ -432,7 +449,8 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
                 : betFraction("river", action);
               targets[action] = size / (1 + 2 * size);
             }
-            const summary = summarize(items, LATER_NODES[node], mixFor, tierFor, node, runout.riverBoard, line, true);
+            const nodeMixFor = defenceTable ? (name, combo, cards, cardLine) => defended(defenceTable, name, combo, cards, cardLine) : mixFor;
+            const summary = summarize(items, LATER_NODES[node], nodeMixFor, tierFor, node, runout.riverBoard, line, true);
             const minimumDefense = laterMinimumDefense(node, "river", table, inputs);
             addSummary(collection, node, flopBoard.id, LATER_NODES[node], summary, targets, minimumDefense);
           }
