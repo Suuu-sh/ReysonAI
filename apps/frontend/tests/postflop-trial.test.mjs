@@ -19,6 +19,28 @@ import { buildLaterView, buildLocalBoard } from "../scripts/postflop-ai/local-vi
 import { referencePolicy, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.mjs";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
 import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, deck, flopDecision, laterStart, replayLater, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.ts";
+import { nextPendingStreetCardDialog } from "../src/estimated/street-card-dialog-state.ts";
+
+test("turn and river card dialogs open on each newly pending street, but not after a manual close", () => {
+  const context = completedFlopContext({ actionBlocks: [{ kind: "end", result: "2人でフロップへ", pot: "ポット 5.5bb" }],
+    rangeType: "response", opener: "BTN", hero: "BB", callers: ["BB"], foldedHero: true, isDefaultTable: true });
+  const pendingBoard = blocks => blocks.find(block => block.kind === "board" && block.pending)?.street ?? null;
+  let previous = null;
+  const advance = pending => {
+    const next = nextPendingStreetCardDialog(pending, previous);
+    previous = pending;
+    return next;
+  };
+  const turnPending = pendingBoard(buildLaterActionBlocks({ flopActions: ["check"] }, context));
+  assert.equal(turnPending, "turn");
+  assert.equal(advance(turnPending), "turn");
+  assert.equal(advance(turnPending), null, "closing without selecting must not immediately reopen the same street");
+  assert.equal(advance(pendingBoard(buildLaterActionBlocks({ flopActions: ["check"], turnCard: "Kh" }, context))), null,
+    "selecting the turn clears the pending street");
+  const riverPending = pendingBoard(buildLaterActionBlocks({ flopActions: ["check"], turnCard: "Kh", turnActions: ["check", "check"] }, context));
+  assert.equal(riverPending, "river");
+  assert.equal(advance(riverPending), "river", "completing the turn action opens the river picker automatically");
+});
 
 const end = (result, pot) => [{ kind: "end", result, pot: `ポット ${pot}bb` }];
 

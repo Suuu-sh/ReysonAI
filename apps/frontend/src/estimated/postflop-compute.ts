@@ -1,6 +1,6 @@
 import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.mjs";
-import { explainCombo } from "../../scripts/postflop-ai/explain.mjs";
-import { explainLaterCombo } from "../../scripts/postflop-ai/explain-later.mjs";
+import { explainCombo, explainCombos } from "../../scripts/postflop-ai/explain.mjs";
+import { explainLaterCombo, explainLaterCombos } from "../../scripts/postflop-ai/explain-later.mjs";
 import { validatePolicy } from "../../scripts/postflop-ai/policy.mjs";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "../../scripts/postflop-ai/model.mjs";
 import { FLOP_BETS, flopState } from "../../scripts/postflop-ai/tree.mjs";
@@ -43,14 +43,25 @@ export function computeBoard({ spotId, board, datasets, flopCandidate }) {
     policy_hash: flopCandidate.metadata.policy_hash, nodes };
 }
 
-export function computeExplain({ spotId, board, node, cards, prev, datasets, flopCandidate }) {
+export function computeExplain({ spotId, board, node, cards, combos, prev, datasets, flopCandidate }) {
   const inputs = buildInputs(spotId, datasets);
   const selected = parseFlopBoard(board);
-  if (typeof cards !== "string" || !/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
   const previous = FLOP_BETS.includes(prev) ? prev : FLOP_BETS[0];
+  const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
+  const options = { boardCards: selected.cards, node, prev: previous, inputs, policy };
+  let explanation;
+  if (combos !== undefined) {
+    if (!Array.isArray(combos) || !combos.length || combos.some(item => typeof item?.cards !== "string" ||
+        !/^([2-9TJQKA][cdhs]){2}$/.test(item.cards) || !Number.isFinite(item.weight) || item.weight <= 0)) {
+      throw new Error("ハンドクラスのコンボ形式が正しくありません。");
+    }
+    explanation = explainCombos({ ...options, combos });
+  } else {
+    if (typeof cards !== "string" || !/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
+    explanation = explainCombo({ ...options, cards });
+  }
   return { spot: inputs.spot.id, board: selected.id,
-    ...explainCombo({ boardCards: selected.cards, node, cards, prev: previous, inputs,
-      policy: validatePolicy(flopCandidate.policy, inputs.spot.tree) }) };
+    ...explanation };
 }
 
 function singleCard(value, label, used) {
@@ -115,10 +126,22 @@ export function computeLaterView({ spotId, flop, flopActions = "", turn = "", tu
 }
 
 export function computeLaterExplain({ spotId, flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "",
-  cards, datasets, flopCandidate, laterCandidate }) {
+  cards, combos, datasets, flopCandidate, laterCandidate }) {
   const inputs = buildInputs(spotId, datasets);
-  return { spot: inputs.spot.id, ...explainLaterCombo({ flop, flopActions, turn, turnActions, river, riverActions,
-    cards, inputs, flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate.policy }) };
+  const options = { flop, flopActions, turn, turnActions, river, riverActions,
+    inputs, flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate.policy };
+  let explanation;
+  if (combos !== undefined) {
+    if (!Array.isArray(combos) || !combos.length || combos.some(item => typeof item?.cards !== "string" ||
+        !/^([2-9TJQKA][cdhs]){2}$/.test(item.cards) || !Number.isFinite(item.weight) || item.weight <= 0)) {
+      throw new Error("ハンドクラスのコンボ形式が正しくありません。");
+    }
+    explanation = explainLaterCombos({ ...options, combos });
+  } else {
+    if (typeof cards !== "string" || !/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
+    explanation = explainLaterCombo({ ...options, cards });
+  }
+  return { spot: inputs.spot.id, ...explanation };
 }
 
 // The on-demand hand EV is the pure core shared with the Node scripts (later-hand-ev-core.mjs), so the

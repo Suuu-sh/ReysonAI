@@ -27,6 +27,7 @@ import {
 import { ArrowCounterClockwise, PencilSimple } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
+import { nextPendingStreetCardDialog } from "./street-card-dialog-state.ts";
 import { PreflopCallEvBars } from "./PreflopCallEvBars.tsx";
 import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, laterStart, recognizedFlop } from "./postflop-trial.ts";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.ts";
@@ -796,9 +797,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const pendingStreetCard = flopActive ? laterBlocks.find(block => block.kind === "board" && block.pending)?.street ?? null : null;
   const previousPendingStreetCard = useRef(null);
   useEffect(() => {
-    if (pendingStreetCard && pendingStreetCard !== previousPendingStreetCard.current) {
-      setStreetCardDialog(pendingStreetCard);
-    }
+    const nextDialog = nextPendingStreetCardDialog(pendingStreetCard, previousPendingStreetCard.current);
+    if (nextDialog) setStreetCardDialog(nextDialog);
     previousPendingStreetCard.current = pendingStreetCard;
   }, [pendingStreetCard]);
   const combinedBlocks = flopActive

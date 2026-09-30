@@ -35,10 +35,10 @@ A facing node is any node whose actions include `call`: the flop `bb_vs_*`, `ip_
    Calling wins when `realized equity x (F - r(F)) - C > 0`, so
    **required equity = C / (F - r(F))**.
    - River: realized equity = equity.
-   - Turn and flop: realized equity = equity x R, with R = `defence_realization` in
-     `scripts/data/postflop-ai-pilot.json` (1.0 in position, 0.9 out of position). **This is an
-     explicit estimate of how much of its equity a hand realizes on later streets, not a solved
-     value.**
+   - Turn and flop: realized equity = equity x R, with R = `defence_realization[street][role][tier]`
+     in `scripts/data/postflop-ai-pilot.json`. The hand tier is evaluated on the current board;
+     river remains exact (R = 1). **These are explicit estimates of how much of its equity a hand
+     realizes on later streets, not solved values.**
 4. **Decision.** The policy keeps the combo's `raise` share. The remaining `100 - raise` percent is
    split with `call share = logistic((realized - required) / 0.02)` (so a margin of +-4pt is about
    88 / 12). Whole percentages, summing to 100. There is no special case for monsters: the
@@ -81,7 +81,7 @@ can support. The cap is applied inside the mix that every consumer uses.
 ## Facts returned for explanations / UI
 
 `defence.facts(table, board, node, combo, base)` returns, for one defender combo:
-required equity, the combo's equity and realized equity, the margin and the call share, the
+required equity, the combo's equity, realization factor and realized equity, the margin and the call share, the
 combo's **percentile** inside the defender's range at this node (share of defender weight with a
 lower realized equity, 0-1), the **overall defence frequency** (call + raise share of the whole
 defender range under the defended mixes), **MDF** = P / (P + W), the bettor range **value / bluff
@@ -106,6 +106,35 @@ and the baseline run keep their tier mixes), `hand-ev.mjs`, `later-hand-ev-core.
 call / fold numbers: they are validated as before, feed only the raise share and are the fallback
 when no context can be built (an empty bettor range, or a path the engine resolves differently).
 `fix-overcall.mjs` may still be used but is no longer needed for the defence.
+
+## Hand-strength realization table (2026-09-30)
+
+Flop and turn equity is scaled by R(tier, position) before it is compared with the break-even:
+
+| Tier | IP | OOP |
+|---|---:|---:|
+| Monster | 1.00 | 1.00 |
+| Strong | 0.97 | 0.92 |
+| Draw | 0.95 | 0.88 |
+| Medium | 0.85 | 0.78 |
+| Air | 0.75 | 0.65 |
+
+Strong hands realize about their equity, weak ones much less, and out of position less than in
+position. The table is an explicit estimate, checked rather than fitted: on five BTN_open_BB_call
+flops (KhTh4s, As7d2c, 8h7h6c, Kd8s3c, 9s7c3h) BB's computed defence against 33/75/125% bets
+stays between MDF − 10 points and a little above MDF. Turn uses the same table; the river is exact.
+
+An EQR average taken from the flop hand-EV artifacts was tried first and rejected: EQR there is
+mix EV over equity × the pot before the decision, not the share of equity a call realizes, and
+using it (monster 0.83, air above medium) made BB defend 9–23% against a 75% bet where MDF is 57%.
+
+## Defence floor
+
+Uncapped bets (flop, turn) can be under-bluffed by the AI policy. The best response then folds far
+below MDF, which only reads this policy and would be exploited by any extra bluffs. When the
+computed defence is more than 10 points under MDF, the strongest folding hands by realized equity
+call until defence reaches MDF − 10 points (`DEFENCE_FLOOR_MARGIN`). Capped actions use the
+ceiling above instead.
 
 The three candidate hashes are unchanged (`defence_realization` is excluded from the flop
 fingerprint and from `later_sizing_hash`); simulation reports carry `defence_version`.

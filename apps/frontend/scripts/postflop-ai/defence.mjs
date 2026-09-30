@@ -14,8 +14,8 @@
 //   3. Break-even: pot P before the aggressive action, chips W it added, call C (capped by the
 //      stacks, as engine.mjs does), final pot F = P + W + C, calling wins when
 //      realized equity * (F - rake(F)) - C > 0, i.e. required equity = C / (F - rake(F)).
-//      River: realized = equity. Turn / flop: realized = equity * R with R = defence_realization
-//      (1.0 in position, 0.9 out of position; an estimate, not a solved value).
+//      River: realized = equity. Turn / flop: realized = equity * R(tier, role, street) from
+//      the artifact-derived defence_realization table (an estimate, not a solved value).
 //   4. The AI policy keeps its raise share. The rest (100 - raise) splits into call / fold with
 //      call share = logistic((realized - required) / 0.02).
 //
@@ -28,11 +28,13 @@ import { LATER_NODES } from "./later-tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-export const DEFENCE_VERSION = 1;
+export const DEFENCE_VERSION = 2;
 // Sampled turn+river runouts per flop decision (seeded by the flop, shared by every node of it).
 export const FLOP_RUNOUTS = 300;
 // call share = logistic(margin / LOGISTIC_SCALE): +-4pt of margin is about 88 / 12.
-export const LOGISTIC_SCALE = 0.02;
+export // Allowed shortfall of computed defence under MDF before the floor adds calls.
+const DEFENCE_FLOOR_MARGIN = 0.1;
+const LOGISTIC_SCALE = 0.02;
 // A bettor combo is "value" when its equity against the defender's whole range is at least this.
 export const VALUE_EQUITY = 0.5;
 
@@ -424,6 +426,7 @@ export function defenceFor(inputs, flopPolicy, laterPolicy = null, { bluffCap = 
 
 // Contexts kept per street: a river context is small, a turn context may hold up to 46 prefix tables.
 const LIMITS = { flop: 24, turn: 500, river: 4000 };
+const FACT_RANGE_LIMITS = { flop: 24, turn: 64, river: 96 };
 
 class Defence {
   constructor(inputs, flopPolicy, laterPolicy, bluffCap = true) {
@@ -436,6 +439,7 @@ class Defence {
     this.stages = new Map();
     this.contexts = { flop: new Map(), turn: new Map(), river: new Map() };
     this.bets = { flop: new Map(), turn: new Map(), river: new Map() };
+    this.bettingFactRanges = { flop: new Map(), turn: new Map(), river: new Map() };
   }
 
   // Saved preflop weights of a seat by combo id (no board removed).
@@ -540,12 +544,15 @@ class Defence {
     const bettorWeights = this.reach(bettor, log.filter(entry => entry.seat === bettor), board, table);
     const bettorRange = makeRange(bettorWeights);
     if (!(bettorRange.total > 0)) return null;
+    const priorBetting = this.entryBetting(table, board, prior);
+    const facedCap = priorBetting?.caps.find(item => item.action === prior.action) ?? null;
     return { key, node, street, board, role, bettor, defender, target, ...chips,
-      potBefore: prior.pot, wager, call, realization: street === "river" ? 1 : (this.realization[role] ?? 1),
+      potBefore: prior.pot, wager, call,
       bettorRange, defenderEntries: log.filter(entry => entry.seat === defender && entry !== target),
-      table, cap: this.betting(table, board, node), tables: null, ceiling: undefined,
+      table, cap: this.betting(table, board, node), tables: null, ceiling: undefined, floor: undefined,
       // The faced action was under the bluff cap: its range is at or below break-even in bluffs.
-      capped: Boolean(this.entryBetting(table, board, prior)?.caps.some(item => item.action === prior.action)), equities: new Map(), summary: null };
+      capped: Boolean(facedCap && facedCap.factor < 1), facedCap,
+      equities: new Map(), summary: null };
   }
 
   // The bluff cap of the pending betting decision (null when nothing is capped). See docs/postflop-defence.md.
@@ -627,16 +634,49 @@ class Defence {
       applyCombo: (base, combo) => apply(base, kind[comboId(combo[0], combo[1])]) };
   }
 
-  // Facts about the bluff cap for the bettor's combo at a betting node (null when nothing is capped).
+  // Break-even requirement and supported bluffs for every aggressive option at a betting node.
   bettingFacts(table, board, node, combo) {
+    if (!isBettingNode(node)) return null;
     const info = this.betting(table, board, node);
-    if (!info) return null;
-    const type = info.kind[comboId(combo[0], combo[1])];
+    const type = info?.kind[comboId(combo[0], combo[1])] ?? 0;
+    const street = streetOf(node), factCache = this.bettingFactRanges[street];
+    const key = `${node}#${board.join(",")}#${table.path.flop}#${table.path.turn}#${table.path.river}`;
+    let rangeContext = factCache.get(key);
+    if (!rangeContext) {
+      const target = table.log.at(-1), defender = table.other(target.seat);
+      const weights = this.reach(defender, table.log.filter(entry => entry.seat === defender), board, table);
+      rangeContext = { range: makeRange(weights), tables: finalTables(board), equities: new Map() };
+      if (factCache.size >= FACT_RANGE_LIMITS[street]) factCache.delete(factCache.keys().next().value);
+      factCache.set(key, rangeContext);
+    }
+    const id = comboId(combo[0], combo[1]);
+    let equityVsDefender = rangeContext.equities.get(id);
+    if (equityVsDefender === undefined) {
+      equityVsDefender = equityVersus(rangeContext.range, id, rangeContext.tables);
+      rangeContext.equities.set(id, equityVsDefender);
+    }
     const share = (value, bluff) => value + bluff > 0 ? round4(bluff / (value + bluff)) : null;
-    return { node, combo_class: type === 1 ? "value" : type === 2 ? "bluff" : "unranked", passive: info.passive,
-      actions: info.caps.map(cap => ({ action: cap.action, alpha: round4(cap.alpha), factor: round4(cap.factor),
-        value_before: round4(cap.valueBefore), bluff_before: round4(cap.bluffBefore), bluff_share_before: share(cap.valueBefore, cap.bluffBefore),
-        value_after: round4(cap.valueAfter), bluff_after: round4(cap.bluffAfter), bluff_share_after: share(cap.valueAfter, cap.bluffAfter) })) };
+    const target = table.log.at(-1), bettor = target.seat, defender = table.other(bettor);
+    const actions = (NODES[node] ?? LATER_NODES[node]).filter(isAggressive).flatMap(action => {
+      const after = replayOrNull(this.inputs, board, { flop: table.path.flop, turn: table.path.turn, river: table.path.river,
+        [target.street]: [...table.path[target.street], action] });
+      if (!after) return [];
+      const wager = r2(after.pot - target.pot);
+      const call = Math.min(after.stacks[defender], r2(after.invested[bettor] - after.invested[defender]));
+      const alpha = requiredEquity({ potBefore: target.pot, wager, call }).required;
+      const cap = info?.caps.find(item => item.action === action);
+      return [{ action, alpha: round4(alpha), bluffs_per_100_value: round4(alpha < 1 ? alpha / (1 - alpha) * 100 : 0),
+        capped: Boolean(cap && cap.factor < 1), factor: round4(cap?.factor ?? 1),
+        value_before: cap ? round4(cap.valueBefore) : null, bluff_before: cap ? round4(cap.bluffBefore) : null,
+        bluff_share_before: cap ? share(cap.valueBefore, cap.bluffBefore) : null,
+        bluff_share_before_pct: cap && share(cap.valueBefore, cap.bluffBefore) !== null ? round4(share(cap.valueBefore, cap.bluffBefore) * 100) : null,
+        value_after: cap ? round4(cap.valueAfter) : null, bluff_after: cap ? round4(cap.bluffAfter) : null,
+        bluff_share_after: cap ? share(cap.valueAfter, cap.bluffAfter) : null,
+        bluff_share_after_pct: cap && share(cap.valueAfter, cap.bluffAfter) !== null ? round4(share(cap.valueAfter, cap.bluffAfter) * 100) : null }];
+    });
+    return { node, combo_class: type === 1 ? "value" : type === 2 ? "bluff" : "unranked",
+      equity_vs_defender: Number.isFinite(equityVsDefender) ? round4(equityVsDefender) : null,
+      passive: info?.passive ?? ((NODES[node] ?? LATER_NODES[node]).includes("check") ? "check" : "call"), actions };
   }
 
   // Reach weights (dense by combo id) of `seat` at the pending decision of `table`, with the bluff cap applied.
@@ -665,9 +705,23 @@ class Defence {
     return value;
   }
 
-  applyEquity(context, base, equity, raw = false) {
-    const realized = equity * context.realization, margin = realized - context.required;
+  realizationFor(context, combo) {
+    if (context.street === "river") return 1;
+    const tier = TIERS[tierArray(context.board)[comboId(combo[0], combo[1])]];
+    const value = this.realization?.[context.street]?.[context.role]?.[tier];
+    return Number.isFinite(value) ? value : 1;
+  }
+
+  applyEquity(context, base, equity, combo, raw = false) {
+    const realized = equity * this.realizationFor(context, combo), margin = realized - context.required;
     const mix = splitMix(base, logistic(margin / LOGISTIC_SCALE));
+    const floor = raw ? null : this.floorOf(context);
+    if (floor) {
+      const factor = realized > floor.threshold + 1e-9 ? 1 : realized >= floor.threshold - 1e-9 ? floor.fraction : 0;
+      if (!(factor > 0) || !(mix.fold > 0)) return mix;
+      const moved = Number.isInteger(mix.fold) && Number.isInteger(mix.call) ? Math.round(mix.fold * factor) : round6(mix.fold * factor);
+      return { ...mix, fold: round6(mix.fold - moved), call: round6(mix.call + moved) };
+    }
     const ceiling = raw ? null : this.ceilingOf(context);
     if (!ceiling) return mix;
     const factor = realized > ceiling.threshold + 1e-9 ? 1 : realized >= ceiling.threshold - 1e-9 ? ceiling.fraction : 0;
@@ -692,15 +746,16 @@ class Defence {
     for (let id = 0; id < NUM_IDS; id++) {
       const weight = weights[id];
       if (!(weight > 0)) continue;
-      const equity = this.equity(context, [Math.floor(id / 52), id % 52]);
+      const combo = [Math.floor(id / 52), id % 52];
+      const equity = this.equity(context, combo);
       if (equity === null) continue;
       let base = this.policyRule(entry, texture, tiers[id]);
       if (context.cap) base = context.cap.apply(base, context.cap.kind[id]);
-      const mix = this.applyEquity(context, base, equity, true);
+      const mix = this.applyEquity(context, base, equity, combo, true);
       total += weight; raiseWeight += weight * (mix.raise ?? 0) / 100;
       const call = weight * mix.call / 100;
       callWeight += call;
-      items.push({ realized: equity * context.realization, call });
+      items.push({ realized: equity * this.realizationFor(context, combo), call });
     }
     const budget = Math.max(0, context.mdf * total - raiseWeight);
     if (!(callWeight > budget + 1e-9)) return null;
@@ -718,6 +773,51 @@ class Defence {
     return null;
   }
 
+  // Defence floor. Against an uncapped action the bettor may under-bluff, and the best response then
+  // folds far below MDF (a dry-board 75% bet made almost only with value drew 12% defence). That is a
+  // read on this AI policy, not a strategy to teach: any extra bluffs would exploit it. So when the
+  // computed defence is more than DEFENCE_FLOOR_MARGIN under MDF, the strongest folding hands (by
+  // realized equity) call until defence reaches MDF minus that margin.
+  floorOf(context) {
+    if (context.floor !== undefined) return context.floor;
+    context.floor = null;
+    if (context.capped) return null;
+    const { board } = context, entry = context.target;
+    const weights = this.reach(context.defender, context.defenderEntries, board, context.table);
+    const tiers = tierArray(board), texture = textureOf(entry.street, board.slice(0, entry.boardLen));
+    const items = [];
+    let total = 0, continued = 0;
+    for (let id = 0; id < NUM_IDS; id++) {
+      const weight = weights[id];
+      if (!(weight > 0)) continue;
+      const combo = [Math.floor(id / 52), id % 52];
+      const equity = this.equity(context, combo);
+      if (equity === null) continue;
+      let base = this.policyRule(entry, texture, tiers[id]);
+      if (context.cap) base = context.cap.apply(base, context.cap.kind[id]);
+      const mix = this.applyEquity(context, base, equity, combo, true);
+      total += weight;
+      continued += weight * ((mix.call ?? 0) + (mix.raise ?? 0)) / 100;
+      items.push({ realized: equity * this.realizationFor(context, combo), fold: weight * (mix.fold ?? 0) / 100 });
+    }
+    const target = Math.max(0, context.mdf - DEFENCE_FLOOR_MARGIN) * total;
+    if (!(total > 0) || !(continued < target - 1e-9)) return null;
+    items.sort((a, b) => b.realized - a.realized);
+    let added = 0;
+    const need = target - continued;
+    for (let i = 0; i < items.length;) {
+      let j = i, group = 0;
+      while (j < items.length && Math.abs(items[j].realized - items[i].realized) <= 1e-9) group += items[j++].fold;
+      if (added + group >= need - 1e-12) {
+        context.floor = { threshold: items[i].realized, fraction: group > 0 ? Math.min(1, (need - added) / group) : 0 };
+        return context.floor;
+      }
+      added += group; i = j;
+    }
+    context.floor = { threshold: -Infinity, fraction: 1 };
+    return context.floor;
+  }
+
   // The defended mix of `combo` at the pending decision of `table`; `base` is the AI policy mix,
   // returned unchanged when the node is not a facing decision or no context can be built.
   mix(table, board, node, combo, base) {
@@ -730,14 +830,14 @@ class Defence {
       : (isBettingNode(node) ? this.betting(table, board, node)?.applyCombo(base, combo) ?? base : base);
     if (!context) return capped;
     const equity = this.equity(context, combo);
-    return equity === null ? capped : this.applyEquity(context, capped, equity);
+    return equity === null ? capped : this.applyEquity(context, capped, equity, combo);
   }
 
   // Chips and break-even of the facing decision (null when it is not a facing decision).
   requirement(table, board, node) {
     const context = this.context(table, board, node);
     return context && { potBefore: context.potBefore, wager: context.wager, call: context.call, finalPot: context.finalPot,
-      rake: context.rake, required: context.required, mdf: context.mdf, realization: context.realization };
+      rake: context.rake, required: context.required, mdf: context.mdf };
   }
 
   // Range level facts of a context, computed once: defender and bettor ranges, their equities, the
@@ -757,8 +857,9 @@ class Defence {
       if (equity === null) continue;
       let base = this.policyRule(entry, texture, tiers[id]);
       if (context.cap) base = context.cap.apply(base, context.cap.kind[id]);
-      const mix = this.applyEquity(context, base, equity);
-      defenders.push({ id, weight: defenderWeights[id], equity, realized: equity * context.realization });
+      const mix = this.applyEquity(context, base, equity, combo);
+      defenders.push({ id, weight: defenderWeights[id], equity,
+        realized: equity * this.realizationFor(context, combo) });
       continued += defenderWeights[id] * (mix.call + (mix.raise ?? 0)) / 100;
     }
     defenders.sort((a, b) => a.realized - b.realized);
@@ -797,21 +898,24 @@ class Defence {
     }
     let percentile = null;
     if (equity !== null && summary.defenderTotal > 0) {
-      const target = equity * context.realization - 1e-12;
+      const realized = equity * this.realizationFor(context, combo);
+      const target = realized - 1e-12;
       let lo = 0, hi = summary.defenders.length;
       while (lo < hi) { const mid = (lo + hi) >> 1; if (summary.defenders[mid].realized < target) lo = mid + 1; else hi = mid; }
       percentile = lo ? summary.cumulative[lo - 1] / summary.defenderTotal : 0;
     }
     const split = summary.valueWeight + summary.bluffWeight;
-    const realized = equity === null ? null : equity * context.realization;
+    const realization = this.realizationFor(context, combo);
+    const realized = equity === null ? null : equity * realization;
     const margin = realized === null ? null : realized - context.required;
-    const mix = base && equity !== null ? this.applyEquity(context, context.cap ? context.cap.applyCombo(base, combo) : base, equity) : null;
+    const mix = base && equity !== null ? this.applyEquity(context, context.cap ? context.cap.applyCombo(base, combo) : base, equity, combo) : null;
+    const share = (value, bluff) => value + bluff > 0 ? round4(bluff / (value + bluff) * 100) : null;
     return {
       node, street: context.street, role: context.role, fallback: equity === null,
       pot_before_bb: round4(context.potBefore), bet_bb: round4(context.wager), call_bb: round4(context.call),
       final_pot_bb: round4(context.finalPot), rake_bb: round4(context.rake),
       required_equity: round4(context.required), equity: equity === null ? null : round4(equity),
-      realization: context.realization, realized_equity: realized === null ? null : round4(realized),
+      realization, realized_equity: realized === null ? null : round4(realized),
       margin: margin === null ? null : round4(margin),
       call_share: margin === null ? null : round4(logistic(margin / LOGISTIC_SCALE)),
       percentile: percentile === null ? null : round4(percentile),
@@ -819,6 +923,11 @@ class Defence {
       mdf: round4(context.mdf),
       bettor_range: { value_weight: round4(summary.valueWeight), bluff_weight: round4(summary.bluffWeight),
         value_pct: split ? round4(summary.valueWeight / split * 100) : null, bluff_pct: split ? round4(summary.bluffWeight / split * 100) : null },
+      faced_action: context.facedCap ? { action: context.facedCap.action, alpha: round4(context.facedCap.alpha),
+        capped: context.facedCap.factor < 1,
+        bluff_share_before_pct: share(context.facedCap.valueBefore, context.facedCap.bluffBefore),
+        bluff_share_after_pct: share(context.facedCap.valueAfter, context.facedCap.bluffAfter) }
+        : { action: context.table.log.at(-2)?.action ?? null, capped: false },
       blockers: { value_removed_pct: summary.valueWeight ? round4(removed[1] / summary.valueWeight * 100) : 0,
         bluff_removed_pct: summary.bluffWeight ? round4(removed[2] / summary.bluffWeight * 100) : 0 },
       ...(mix ? { mix } : {}),

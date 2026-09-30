@@ -94,12 +94,18 @@ test("flop and later balance report overcall above minimum defence, not a balanc
   for (const rule of overcallingFlop.rules) if (rule.node === "btn_first") {
     rule.mix = { check: 0, bet33: 100, bet75: 0, bet125: 0 };
   }
-  const flopFindings = checkFlopBalance(inputs, overcallingFlop).findings;
+  // Isolate the balance check at full realization so the deliberate all-bluff-catcher
+  // response exercises its overcall branch despite the calibrated default realization curve.
+  const fullRealizationInputs = structuredClone(inputs);
+  for (const role of ["ip", "oop"]) for (const tier of ["monster", "strong", "draw", "medium", "air"]) {
+    fullRealizationInputs.config.defence_realization.flop[role][tier] = 1;
+  }
+  const flopFindings = checkFlopBalance(fullRealizationInputs, overcallingFlop).findings;
   const flopOvercall = flopFindings.find(item => item.check === "overcall" && item.node === "bb_vs_33");
   assert.ok(flopOvercall, JSON.stringify(flopFindings));
   assert.equal(flopOvercall.severity, "warn");
   assert.match(flopOvercall.detail, /non-monster hands defend .* versus the .* the minimum defence of .* still needs \(more than \d+ percentage points over\)\./);
-  assert.equal(checkFlopBalance(inputs, flopPolicy).findings.some(item => item.check === "overcall" && item.node === "bb_vs_33"), false);
+  assert.equal(checkFlopBalance(fullRealizationInputs, flopPolicy).findings.some(item => item.check === "overcall" && item.node === "bb_vs_33"), false);
 
   const reference = referenceLaterPolicy();
   const shoveWith = tiers => {

@@ -137,7 +137,7 @@ test("candidate and baseline share deals and fixed-seed replay is byte-for-byte 
   assert.equal(one.defence_version, undefined);
   const defended = simulate(inputs, referencePolicy, 16), again = simulate(inputs, referencePolicy, 16);
   assert.deepEqual(defended, again);
-  assert.equal(defended.defence_version, 1);
+  assert.equal(defended.defence_version, 2);
   const changed = simulate(inputs, forced({ btn_first: "check" }), 16);
   assert.ok(changed.results.some(row => row.delta_bb.mean !== 0));
   assert.equal(changed.source_hash, inputs.fingerprint);

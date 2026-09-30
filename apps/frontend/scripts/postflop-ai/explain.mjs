@@ -6,6 +6,7 @@ import { handTier, parseCards } from "./model.mjs";
 import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.mjs";
 import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseNodeAfter } from "./tree.mjs";
 import { defenceFor, replayOrNull } from "./defence.mjs";
+import { averageExplanationFacts } from "./explain-aggregate.mjs";
 
 const RANKS = "23456789TJQKA";
 const RUNOUTS = 120;
@@ -99,9 +100,11 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
   const ahead = villains.filter(item => item.equity >= 0.5), behind = villains.filter(item => item.equity < 0.5);
   const actions = {};
   let defenceFacts = null;
+  let bettingFacts = null;
   // Villain responses use the computed defence (defence.mjs) after the line `history` + hero's action.
   const defence = defenceFor(inputs, policy, null);
   const history = historyFor(inputs.spot.tree, node, prev);
+  const table = replayOrNull(inputs, flop, { flop: history });
 
   const vsResponse = (responseNode, action, line) => {
     const table = replayOrNull(inputs, flop, { flop: [...history, ...line] });
@@ -126,9 +129,9 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
   if (FIRST_NODES[node]) {
     for (const bet of FLOP_BETS) vsResponse(facingNode(FIRST_NODES[node], bet), bet, [bet]);
     actions.check = { groups: [group("ahead", ahead, total), group("behind", behind, total)] };
+    if (table) bettingFacts = defence.bettingFacts(table, flop, node, hero);
   } else {
     // Break-even and the hero's defence facts from the computed defence (rake and stack caps included).
-    const table = replayOrNull(inputs, flop, { flop: history });
     const requirement = table ? defence.requirement(table, flop, node) : null;
     let required;
     if (requirement) required = requirement.required;
@@ -146,7 +149,18 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
     actions.call = caught;
     actions.fold = caught;
     if (facing(node)) vsResponse(raiseNodeAfter(facing(node)[1]), "raise", ["raise"]);
-    if (table) defenceFacts = defence.facts(table, flop, node, hero, policyMix(policy, node, hero, flop));
+    if (table) {
+      defenceFacts = defence.facts(table, flop, node, hero, policyMix(policy, node, hero, flop));
+      bettingFacts = defence.bettingFacts(table, flop, node, hero);
+    }
   }
-  return { kind: "ai_estimate_not_gto", cards, node, equity, combos: villains.length, actions, ...(defenceFacts ? { defence: defenceFacts } : {}) };
+  return { kind: "ai_estimate_not_gto", cards, node, equity: defenceFacts?.equity ?? equity, combos: villains.length, actions,
+    ...(defenceFacts ? { defence: defenceFacts } : {}), ...(bettingFacts ? { betting: bettingFacts } : {}) };
+}
+
+export function explainCombos({ boardCards, node, combos, prev = "bet33", inputs, policy }) {
+  if (!Array.isArray(combos) || !combos.length) throw new Error("At least one reachable combo is required.");
+  const entries = combos.map(({ cards, weight }) => ({ weight,
+    facts: explainCombo({ boardCards, node, cards, prev, inputs, policy }) }));
+  return averageExplanationFacts(entries);
 }

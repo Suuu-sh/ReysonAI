@@ -3,17 +3,22 @@ import { X } from "@phosphor-icons/react";
 import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../components/primitives.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { HandEvBars, useHandEv } from "./PostflopHandEv.tsx";
-import { actionReason, dominantTier, evidenceReason, textureLabels, tierLabels } from "./postflop-reasons.ts";
-import { laterActionReason } from "./later-reasons.ts";
+import { tierLabels } from "./postflop-reasons.ts";
+import { buildPostflopExplanation } from "./postflop-explanation.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterView } from "./postflop-compute.ts";
 import { computeLaterHandEvInWorker, deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot } from "./postflop-browser.ts";
 import { productLocale } from "../i18n.ts";
 
-const baseLabels = { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
+const baseLabels = () => productLocale() === "en"
+  ? { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", fold: "Fold", call: "Call", raise: "Check-raise 3×" }
+  : { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
 // Raising a lead (ip_vs_*) is a plain raise, not a check-raise.
-export const labelsFor = node => node?.startsWith("ip_") ? { ...baseLabels, raise: "3倍レイズ" } : baseLabels;
+export const labelsFor = node => {
+  const labels = baseLabels();
+  return node?.startsWith("ip_") ? { ...labels, raise: productLocale() === "en" ? "Raise 3×" : "3倍レイズ" } : labels;
+};
 // btn_* nodes are the in-position player's decisions, bb_* the out-of-position player's.
 export const nodeTitle = (node, { ip, oop }) => (productLocale() === "en" ? {
   btn_first: `${ip} · facing ${oop}'s check`, bb_vs_33: `${oop} · facing a 33% bet`,
@@ -77,107 +82,30 @@ function SuitCardPicker({ selectedCards = new Set(), disabledCards = new Set(), 
   </div>;
 }
 
-const groupTitles = {
-  value: ["バリュー", "こちらが勝率で上回る手がコール"],
-  foldBetter: ["降ろせる格上", "勝率で上回られている手が降りる"],
-  continueBetter: ["続けてくる格上", "勝率で上回られたまま続行される"],
-  ahead: ["有利な相手", "勝率50%以上"],
-  behind: ["不利な相手", "勝率50%未満"],
-};
-const pct0 = value => `${Math.round(value * 100)}%`;
-
-function detailSummary(action, detail, equity) {
-  if (productLocale() === "en") {
-    if (detail.required != null) return `Equity ${pct0(equity)} ${equity >= detail.required ? "≥" : "<"} required ${pct0(detail.required)}${action === "fold" ? equity >= detail.required ? "; folding gives up equity" : "; calling is unfavorable" : ""}`;
-    if (detail.foldShare != null) return `Opponent folds ${pct0(detail.foldShare)} · equity ${pct0(equity)}`;
-    return `Equity versus opponent range ${pct0(equity)}`;
-  }
-  if (detail.required != null) {
-    const enough = equity >= detail.required;
-    return action === "fold"
-      ? `勝率 ${pct0(equity)} ${enough ? "≥" : "<"} 必要勝率 ${pct0(detail.required)}${enough ? "。降りると取り分を捨てます" : "。コールは割に合いません"}`
-      : `勝率 ${pct0(equity)} ${enough ? "≥" : "<"} 必要勝率 ${pct0(detail.required)}`;
-  }
-  if (detail.foldShare != null) return `相手が降りる ${pct0(detail.foldShare)} ・ 勝率 ${pct0(equity)}`;
-  return `相手レンジへの勝率 ${pct0(equity)}`;
-}
-
-function ActionDetail({ action, explain }) {
-  const detail = explain?.actions?.[action];
-  if (!detail) return null;
-  return <details className="postflop-action-detail">
-    <summary>{detailSummary(action, detail, explain.equity)}</summary>
-    <dl>
-      {detail.groups.filter(group => group.share >= 0.005).map(group => <div key={group.key} className={`group-${group.key}`}>
-        <dt><strong>{groupTitles[group.key][0]}</strong><span>{groupTitles[group.key][1]}</span><b>{pct0(group.share)}</b></dt>
-        <dd>{group.hands.map(hand => <span key={hand.hand} title={tierLabels[hand.tier]} className={`tier-${hand.tier}`}>{hand.hand}</span>)}</dd>
-      </div>)}
-    </dl>
-  </details>;
-}
-
-function HandReasons({ node, hand, actions, texture, explain, loading, error, labels }) {
-  if (!hand.tiers) return null;
-  const tier = dominantTier(hand.tiers);
-  const shares = Object.entries(hand.tiers).filter(([, share]) => share >= 0.005).sort((a, b) => b[1] - a[1]);
-  const pct = value => `${Math.round(value * 100)}%`;
+function HandReasons({ node, hand, texture, explain, loading, error, handEv, positions }) {
+  if (!hand?.tiers) return null;
   const english = productLocale() === "en";
-  const englishTier = { monster: "two pair or better", strong: "top pair or better", draw: "a draw", medium: "a weak pair", air: "air" };
-  const englishTexture = { dry: "Dry board", wet: "Wet board", monotone: "Monotone board", paired: "Paired board" };
-  return <div className="postflop-reasons">
-    <p className="postflop-reason-tier">
-      {english ? shares.length === 1 ? <>On this board, this hand is <strong>{englishTier[tier]}</strong>.</>
-        : <>Strength varies by combo: {shares.map(([name, share]) => `${englishTier[name]} ${pct(share)}`).join(", ")}. The explanation uses the most common tier, <strong>{englishTier[tier]}</strong>.</>
-        : shares.length === 1 ? <>このボードでは<strong>{tierLabels[tier]}</strong>です。</>
-        : <>コンボによって強さが分かれます：{shares.map(([name, share]) => `${tierLabels[name]} ${pct(share)}`).join("・")}。理由は最も多い<strong>{tierLabels[tier]}</strong>で説明します。</>}
-      {texture && <span>{english ? englishTexture[texture] : textureLabels[texture]}</span>}
-    </p>
-    <ul>
-      {actions.filter(action => hand.actions[action] >= 0.005).sort((a, b) => hand.actions[b] - hand.actions[a]).map(action =>
-        {
-          const evidence = evidenceReason(action, explain?.actions?.[action], explain?.equity);
-          return <li key={action}><b style={{ "--reason-color": barColor(action) }}>{labels[action]} {pct(hand.actions[action])}</b>
-            {evidence ? <><span className="postflop-reason-evidence">{evidence}</span><small className="postflop-reason-general">{actionReason(node, action, tier)}</small></> : actionReason(node, action, tier)}
-            <ActionDetail action={action} explain={explain} /></li>;
-        })}
-    </ul>
-    {loading && <small className="postflop-reason-general">{productLocale() === "en" ? "Loading explanation…" : "読み込み中…"}</small>}
-    {error && <small className="postflop-reason-general">{productLocale() === "en" ? "Numeric explanation is unavailable." : "数値の説明を読み込めませんでした。"}</small>}
-  </div>;
-}
-
-function LaterHandReasons({ street, node, hand, actions, texture, line, explain, loading, error, labels }) {
-  if (!hand.tiers) return null;
-  const tier = dominantTier(hand.tiers);
-  const shares = Object.entries(hand.tiers).filter(([, share]) => share >= 0.005).sort((a, b) => b[1] - a[1]);
-  const shownActions = actions.filter(action => hand.actions[action] >= 0.005)
-    .sort((a, b) => hand.actions[b] - hand.actions[a]);
-  const pct = value => `${Math.round(value * 100)}%`;
-  const english = productLocale() === "en";
-  const englishTier = { monster: "two pair or better", strong: "top pair or better", draw: "a draw", medium: "a weak pair", air: "air" };
-  const englishTexture = { blank: "Blank runout", over: "Overcard runout", pair: "Paired-board runout", straight: "Straight-completing runout", flush: "Flush-threatening runout" };
-  const japaneseTexture = { blank: "変化の少ないカード", over: "オーバーカード", pair: "ボードがペアになるカード", straight: "ストレートが近づくカード", flush: "フラッシュが近づく（完成する）カード" };
-  return <div className="postflop-reasons">
-    <p className="postflop-reason-tier">
-      {english ? shares.length === 1 ? <>On this runout, this hand is <strong>{englishTier[tier]}</strong>.</>
-        : <>Strength varies by combo: {shares.map(([name, share]) => `${englishTier[name]} ${pct(share)}`).join(", ")}. The explanation uses the most common tier, <strong>{englishTier[tier]}</strong>.</>
-        : shares.length === 1 ? <>このランアウトでは<strong>{tierLabels[tier]}</strong>です。</>
-        : <>コンボによって強さが分かれます：{shares.map(([name, share]) => `${tierLabels[name]} ${pct(share)}`).join("・")}。理由は最も多い<strong>{tierLabels[tier]}</strong>で説明します。</>}
-      <span>{english ? englishTexture[texture] : japaneseTexture[texture]}</span>
-    </p>
-    <ul>
-      {shownActions.map(action => {
-        const reason = laterActionReason({ street, node, action, tier, texture, line, locale: english ? "en" : "ja" });
-        const evidence = evidenceReason(action, explain?.actions?.[action], explain?.equity);
-        return <li key={action}>
-          <b style={{ "--reason-color": barColor(action) }}>{labels[action]} {pct(hand.actions[action])}</b>
-          {reason && <span className="postflop-reason-general">{reason}</span>}
-          {evidence && <span className="postflop-reason-evidence">{evidence}</span>}
-          <ActionDetail action={action} explain={explain} />
-        </li>;
-      })}
-    </ul>
-    {loading && <small className="postflop-reason-general">{english ? "Loading explanation…" : "読み込み中…"}</small>}
+  const explanation = buildPostflopExplanation({ locale: english ? "en" : "ja", node,
+    hand: hand.hand, actionMix: hand.actions, tiers: hand.tiers, texture, explain,
+    handEv: handEv?.data?.row ?? null, positions });
+  return <div className="postflop-reasons postflop-reasons-structured">
+    <p className="postflop-reason-headline">{explanation.headline}</p>
+    {explanation.facing && <section className="postflop-reason-section">
+      <h4>{explanation.facing.title}</h4>
+      <dl className="postflop-fact-list">{explanation.facing.rows.map(row => <div key={row.label}>
+        <dt title={row.tooltip} aria-label={`${row.label}: ${row.value}. ${row.tooltip}`}>{row.label}<span aria-hidden="true">ⓘ</span></dt><dd>{row.value}</dd>
+      </div>)}</dl>
+    </section>}
+    {explanation.betting && <section className="postflop-reason-section">
+      <h4>{explanation.betting.title} · {explanation.betting.role}</h4>
+      <p>{explanation.betting.reason}</p>
+      {explanation.betting.mixReason && <p>{explanation.betting.mixReason}</p>}
+      {explanation.betting.sizes.length > 0 && <ul>{explanation.betting.sizes.map((line, index) => <li key={`size-${index}`}>{line}</li>)}</ul>}
+      {explanation.betting.alternatives.length > 0 && <ul>{explanation.betting.alternatives.map((line, index) => <li key={`alt-${index}`}>{line}</li>)}</ul>}
+    </section>}
+    {explanation.texture && <p className="postflop-reason-texture">{explanation.texture}</p>}
+    {explanation.evNote && <p className="postflop-reason-ev-note">{explanation.evNote}</p>}
+    {loading && <small className="postflop-reason-general">{english ? "Loading explanation…" : "説明を計算中…"}</small>}
     {error && <small className="postflop-reason-general">{english ? "Numeric explanation is unavailable." : "数値の説明を読み込めませんでした。"}</small>}
   </div>;
 }
@@ -196,8 +124,14 @@ function mixGradient(mix, actions) {
   return stops.length ? `linear-gradient(90deg, ${stops.join(", ")})` : undefined;
 }
 
-function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missingReason = "ボードと重複", missingTitle = "ボードのカードと重なるため存在しません" }) {
+function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missingReason, missingTitle }) {
   if (!combos?.length) return null;
+  const english = productLocale() === "en";
+  const missing = missingReason ?? (english ? "Overlaps the board" : "ボードと重複");
+  const missingDescription = missingTitle ?? (english ? "Unavailable because the cards overlap the board" : "ボードのカードと重なるため存在しません");
+  const tierName = tier => english
+    ? ({ monster: "Two pair or better", strong: "Top pair or better", draw: "Draw", medium: "Weak pair", air: "Unpaired high cards" })[tier]
+    : tierLabels[tier];
   const pair = hand[0] === hand[1];
   const byCell = new Map(combos.map(combo => {
     let [first, second] = [combo.cards[1], combo.cards[3]];
@@ -207,7 +141,7 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
   const possible = (row, col) => pair ? suitOrder.indexOf(row) < suitOrder.indexOf(col) : hand.endsWith("s") ? row === col : row !== col;
   const pct = value => `${Math.round(value * 100)}%`;
   return <div className="postflop-suit-picker">
-    <div className="postflop-suit-grid" role="group" aria-label="スートの組み合わせ">
+    <div className="postflop-suit-grid" role="group" aria-label={english ? "Suit combinations" : "スートの組み合わせ"}>
       <span />
       {suitOrder.map(suit => <span key={suit} className={`postflop-suit-head suit-${suit}`}>{hand[1]}{suitLabels[suit]}</span>)}
       {suitOrder.map(row => <div key={row} className="postflop-suit-row">
@@ -215,12 +149,13 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
         {suitOrder.map(col => {
           const combo = byCell.get(`${row}${col}`);
           if (!possible(row, col)) return <span key={col} className="postflop-suit-cell void" aria-hidden="true" />;
-          if (!combo) return <span key={col} className="postflop-suit-cell blocked" title={missingTitle}>×</span>;
+          if (!combo) return <span key={col} className="postflop-suit-cell blocked" title={missingDescription}>×</span>;
           const top = actions.reduce((best, action) => combo.mix[action] > combo.mix[best] ? action : best);
           return <button type="button" key={col} className={`postflop-suit-cell${selected === combo.cards ? " selected" : ""}`}
             style={{ background: mixGradient(combo.mix, actions) }} aria-pressed={selected === combo.cards}
-            aria-label={`${hand[0]}${suitLabels[row]} ${hand[1]}${suitLabels[col]}：${tierLabels[combo.tier]}、${labels[top]} ${pct(combo.mix[top])}`}
-            title={`${tierLabels[combo.tier]}｜${actions.map(action => `${labels[action]} ${pct(combo.mix[action])}`).join(" / ")}`}
+            aria-label={english ? `${hand[0]}${suitLabels[row]} ${hand[1]}${suitLabels[col]}: ${tierName(combo.tier)}, ${labels[top]} ${pct(combo.mix[top])}`
+              : `${hand[0]}${suitLabels[row]} ${hand[1]}${suitLabels[col]}：${tierName(combo.tier)}、${labels[top]} ${pct(combo.mix[top])}`}
+            title={`${tierName(combo.tier)} · ${actions.map(action => `${labels[action]} ${pct(combo.mix[action])}`).join(" / ")}`}
             onClick={() => onSelect(selected === combo.cards ? "all" : combo.cards)}>
             {combo.tier !== "air" && combo.tier !== "medium" && <i className={`postflop-tier-dot tier-${combo.tier}`} />}
           </button>;
@@ -228,12 +163,12 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
       </div>)}
     </div>
     <div className="postflop-suit-side">
-      <button type="button" className={`postflop-suit-all${selected === "all" ? " selected" : ""}`} aria-pressed={selected === "all"} onClick={() => onSelect("all")}>すべて（平均）</button>
+      <button type="button" className={`postflop-suit-all${selected === "all" ? " selected" : ""}`} aria-pressed={selected === "all"} onClick={() => onSelect("all")}>{english ? "All combos (average)" : "すべて（平均）"}</button>
       <ul className="postflop-tier-legend">
-        <li><i className="postflop-tier-dot tier-monster" />強い役</li>
-        <li><i className="postflop-tier-dot tier-strong" />トップペア以上</li>
-        <li><i className="postflop-tier-dot tier-draw" />ドロー</li>
-        <li><i className="postflop-suit-cell blocked" />{missingReason}</li>
+        <li><i className="postflop-tier-dot tier-monster" />{english ? "Two pair or better" : "強い役"}</li>
+        <li><i className="postflop-tier-dot tier-strong" />{english ? "Top pair or better" : "トップペア以上"}</li>
+        <li><i className="postflop-tier-dot tier-draw" />{english ? "Draw" : "ドロー"}</li>
+        <li><i className="postflop-suit-cell blocked" />{missing}</li>
       </ul>
     </div>
   </div>;
@@ -491,10 +426,14 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const laterCombo = laterChosen?.combos?.find(item => item.cards === selectedLaterCombo);
   const laterView = selectedLaterCombo === "all" ? laterChosen : laterCombo
     ? { ...laterChosen, actions: laterCombo.mix, tiers: { [laterCombo.tier]: 1 }, combo: laterCombo } : null;
-  const laterExplainInput = laterCurrent && laterCombo && spotId && board
+  const laterExplainCombos = selectedLaterCombo === "all"
+    ? laterChosen?.combos?.filter(item => item.weight > 0).map(({ cards, weight }) => ({ cards, weight }))
+    : laterCombo ? [{ cards: laterCombo.cards, weight: laterCombo.weight }] : null;
+  const laterExplainInput = laterCurrent && laterChosen && !laterChosen.unreachable && laterExplainCombos?.length && spotId && board
     ? { spotId, flop: board, flopActions: flopPath, turn: turnCard, turnActions: turnPath,
       river: laterCurrent.street === "river" ? riverCard : "",
-      riverActions: laterCurrent.street === "river" ? riverPath : "", cards: laterCombo.cards }
+      riverActions: laterCurrent.street === "river" ? riverPath : "",
+      ...(selectedLaterCombo === "all" ? { combos: laterExplainCombos } : laterCombo ? { cards: laterCombo.cards } : {}) }
     : null;
   const laterExplainKey = laterExplainInput ? JSON.stringify(laterExplainInput) : null;
   const laterHandEvInput = laterCurrent && laterChosen && !laterChosen.unreachable && spotId && board
@@ -517,28 +456,36 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   useEffect(() => { setSelectedCombo("all"); }, [selectedHand, board, decision.node]);
   const combo = chosen?.combos?.find(item => item.cards === selectedCombo);
   const prevBet = actions.find(isFlopBet) ?? "bet33";
-  const explainKey = combo && board && decision.node
-    ? JSON.stringify({ spotId, board, node: decision.node, cards: combo.cards, prev: prevBet }) : null;
+  const explainCombos = selectedCombo === "all"
+    ? chosen?.combos?.filter(item => item.weight > 0).map(({ cards, weight }) => ({ cards, weight }))
+    : combo ? [{ cards: combo.cards, weight: combo.weight }] : null;
+  const explainInput = chosen && !chosen.unreachable && explainCombos?.length && board && decision.node
+    ? { spotId, board, node: decision.node, prev: prevBet,
+      ...(selectedCombo === "all" ? { combos: explainCombos } : { cards: combo.cards }) } : null;
+  const explainKey = explainInput ? JSON.stringify(explainInput) : null;
   const explain = explainKey && explainState?.key === explainKey ? explainState.data : null;
   const explainLoading = Boolean(explainKey && !sourceError && postflopSource && postflopDatasets &&
     (explainState?.key !== explainKey || explainState.loading));
   const explainError = explainKey && explainState?.key === explainKey ? explainState.error : null;
   useEffect(() => {
     setExplainState(null);
-    if (!combo || !board || !decision.node || !explainKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
+    if (!explainInput || !explainKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
     const controller = new AbortController();
     setExplainState({ key: explainKey, data: null, error: null, loading: true });
-    deferPostflopCalculation(() => computeExplain({ spotId, board, node: decision.node, cards: combo.cards, prev: prevBet,
+    deferPostflopCalculation(() => computeExplain({ ...explainInput,
       datasets: postflopDatasets, flopCandidate: postflopSource.candidate }), controller.signal)
       .then(body => {
-        if (body?.spot !== spotId || body.cards !== combo.cards || body.node !== decision.node) throw new Error("説明の局面が一致しません。");
+        const matchesSelection = selectedCombo === "all"
+          ? body?.aggregate?.kind === "hand_class_average" && body.cards === null
+          : body?.cards === combo?.cards;
+        if (body?.spot !== spotId || body?.board !== board || body.node !== decision.node || !matchesSelection) throw new Error("説明の局面が一致しません。");
         setExplainState({ key: explainKey, data: body, error: null, loading: false });
       })
       .catch(reason => {
         if (!isAbortError(reason)) setExplainState({ key: explainKey, data: null, error: reason.message, loading: false });
       });
     return () => controller.abort();
-  }, [combo?.cards, board, decision.node, explainKey, postflopDatasets, postflopSource, prevBet, sourceError, spotId]);
+  }, [combo?.cards, board, decision.node, explainKey, postflopDatasets, postflopSource, sourceError, spotId]);
   useEffect(() => {
     setLaterExplainState(null);
     if (!laterExplainKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
@@ -620,16 +567,16 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
               : chosen && view && <>
                   <details className="postflop-view-detail">
                     <summary className="postflop-view-line">
-                    <h3 className="postflop-view-title">{view.combo ? <>{view.combo.cards.match(/../g).map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>平均</small></>}</h3>
+                    <h3 className="postflop-view-title">{view.combo ? <>{view.combo.cards.match(/../g).map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                     <span className="postflop-view-bar" style={{ background: mixGradient(view.actions, current.actions) }}
                       aria-label={current.actions.map(action => `${labels[action]} ${Math.round(view.actions[action] * 100)}%`).join("、")} />
                     </summary>
                     <HandEvBars items={current.actions.map(action => ({ action, frequency: view.actions[action] }))} labels={labels} ev={handEv} comboSelected={Boolean(view.combo)} />
-                  </details>
+                </details>
                 <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
-                <HandReasons node={decision.node} hand={view} actions={current.actions} texture={data.texture}
-                  explain={view.combo ? explain : null} loading={Boolean(view.combo && explainLoading)}
-                  error={Boolean(view.combo && explainError)} labels={labels} />
+                <HandReasons node={decision.node} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data.texture} explain={explain}
+                  loading={Boolean(explainLoading)} error={Boolean(explainError)} handEv={view.combo ? null : handEv}
+                  positions={{ ip: context.ip, oop: context.oop }} />
               </>}
           </Panel>
           </div>
@@ -665,9 +612,9 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                   <ComboPicker hand={selectedHand} combos={laterChosen.combos} actions={laterActions} selected={selectedLaterCombo} onSelect={setSelectedLaterCombo} labels={laterLabels}
                     missingReason={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しない"}
                     missingTitle={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しません"} />
-                  <LaterHandReasons street={laterCurrent.street} node={laterCurrent.node} hand={laterView} actions={laterActions}
-                    texture={laterCurrent.texture} line={laterCurrent.line} explain={laterView.combo ? laterExplain.data : null}
-                    loading={Boolean(laterView.combo && laterExplain.loading)} error={Boolean(laterView.combo && laterExplain.error)} labels={laterLabels} />
+                  <HandReasons node={laterCurrent.node} hand={laterView.combo ? { ...laterView, hand: laterView.combo.cards } : laterView} texture={laterCurrent.texture} explain={laterExplain.data}
+                    loading={Boolean(laterExplain.loading)} error={Boolean(laterExplain.error)} handEv={laterView.combo ? null : laterHandEv}
+                    positions={{ ip: context.ip, oop: context.oop }} />
                 </>}
             </Panel>
           </div>

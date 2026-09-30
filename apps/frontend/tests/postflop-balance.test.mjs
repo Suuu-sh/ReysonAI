@@ -37,29 +37,23 @@ test("flop balance flags monster-only betting and value-only raises", () => {
   assert.ok(findings.some(item => item.check === "value-only-raise" && item.node === "bb_vs_33"), JSON.stringify(findings));
 });
 
-test("overfold flags flop defences that fold far more than the minimum against a value-only bettor", () => {
-  // Facing nodes are judged on the computed defence (defence.mjs), so folding is not set by the policy's
-  // fold numbers: a bettor whose range is only monsters is what makes the calculation fold.
+test("the defence floor keeps flop defence near MDF even against a value-only bettor", () => {
+  // Facing nodes are judged on the computed defence (defence.mjs). A bettor whose range is only
+  // monsters would make the best response fold far below MDF; the defence floor adds the
+  // strongest folding hands back until defence is within 10 points of MDF, so no overfold remains.
   const reference = referencePolicyFor(inputs.spot.tree);
-  const referenceFindings = checkFlopBalance(inputs, reference).findings;
   const valueOnly = clone(reference);
   for (const rule of valueOnly.rules) if (rule.node === "btn_first") {
     rule.mix = actionMix(NODES.btn_first, rule.tier === "monster" ? "bet33" : "check");
   }
-  const valueOnlyFindings = checkFlopBalance(inputs, valueOnly).findings;
-  const referenceOverfolds = referenceFindings.filter(item => item.check === "overfold");
-  const valueOnlyOverfolds = valueOnlyFindings.filter(item => item.check === "overfold");
-  assert.deepEqual(referenceFindings.filter(item => item.severity === "error"), []);
-  assert.deepEqual(valueOnlyFindings.filter(item => item.severity === "error"), []);
-  assert.ok(!referenceOverfolds.some(item => item.node === "bb_vs_33"), JSON.stringify(referenceOverfolds));
-  const versus33 = valueOnlyOverfolds.find(item => item.node === "bb_vs_33");
-  assert.ok(versus33, JSON.stringify(valueOnlyOverfolds));
-  assert.ok(valueOnlyOverfolds.every(item => item.severity === "warn" && !("direction" in item) &&
-    /^defends \d+\.\d% versus a minimum defence of /.test(item.detail)), JSON.stringify(valueOnlyOverfolds));
-  // Rewriting the policy's own call / fold split (keeping its raise share) no longer moves the finding.
+  const findings = checkFlopBalance(inputs, valueOnly).findings;
+  assert.deepEqual(findings.filter(item => item.severity === "error"), []);
+  assert.deepEqual(findings.filter(item => item.check === "overfold" && item.node === "bb_vs_33"), []);
+  // Rewriting the policy's own call / fold split (keeping its raise share) does not move the finding.
   const foldOnly = clone(reference);
   for (const rule of foldOnly.rules) if (/^(?:bb|ip)_vs_\d+$/.test(rule.node)) rule.mix = { fold: 100 - rule.mix.raise, call: 0, raise: rule.mix.raise };
-  assert.deepEqual(checkFlopBalance(inputs, foldOnly).findings.filter(item => item.check === "overfold"), referenceOverfolds);
+  assert.deepEqual(checkFlopBalance(inputs, foldOnly).findings.filter(item => item.check === "overfold"),
+    checkFlopBalance(inputs, reference).findings.filter(item => item.check === "overfold"));
 });
 
 test("later balance catches excess river air, value-only raises, capped checks, missing overrides and copied roles", () => {
@@ -90,23 +84,17 @@ test("later balance catches excess river air, value-only raises, capped checks, 
   assert.ok(findings.some(item => item.check === "role-copy" && item.node.includes("turn_oop_first")), JSON.stringify(findings));
 });
 
-test("overfold flags later defences that fold far more than the minimum against a value-only bettor", () => {
+test("the defence floor keeps turn defence near MDF even against a value-only bettor", () => {
   const referenceLater = referenceLaterPolicy();
-  const findings = checkLaterBalance(inputs, referencePolicyFor(inputs.spot.tree), referenceLater, { authored: false }).findings;
   const valueOnly = clone(referenceLater);
   for (const node of ["turn_oop_first", "turn_ip_first"]) for (const tier of ["monster", "strong", "draw", "medium", "air"]) {
     setMix(valueOnly, "turn", node, tier, actionMix(LATER_NODES[node], tier === "monster" ? "bet33" : "check"));
   }
-  const valueOnlyFindings = checkLaterBalance(inputs, referencePolicyFor(inputs.spot.tree), valueOnly, { authored: false }).findings;
-  const referenceOverfolds = findings.filter(item => item.check === "overfold");
-  const valueOnlyOverfolds = valueOnlyFindings.filter(item => item.check === "overfold");
+  const findings = checkLaterBalance(inputs, referencePolicyFor(inputs.spot.tree), valueOnly, { authored: false }).findings;
   assert.deepEqual(findings.filter(item => item.severity === "error"), []);
-  assert.deepEqual(valueOnlyFindings.filter(item => item.severity === "error"), []);
-  assert.ok(!referenceOverfolds.some(item => item.node === "turn_ip_vs_33"), JSON.stringify(referenceOverfolds));
-  assert.ok(valueOnlyOverfolds.some(item => item.node === "turn_ip_vs_33"), JSON.stringify(valueOnlyOverfolds));
-  assert.ok(valueOnlyOverfolds.every(item => item.severity === "warn" && !("direction" in item) &&
-    /^defends \d+\.\d% versus a minimum defence of /.test(item.detail)), JSON.stringify(valueOnlyOverfolds));
-  assert.ok(findings.every(item => ["warn", "error"].includes(item.severity)));
+  // Only the 33% responses are reachable: this bettor never bets 75% or 125%, so those nodes have no
+  // bettor range and fall back to the policy mix.
+  assert.deepEqual(findings.filter(item => item.check === "overfold" && /^turn_(ip|oop)_vs_33$/.test(item.node)), []);
 });
 
 test("later generation prompt contains the balance requirements verbatim", async () => {

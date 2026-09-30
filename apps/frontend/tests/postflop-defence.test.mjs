@@ -196,6 +196,25 @@ test("cached tiers and policy lookups equal handTier, policyMix and laterPolicyM
   }
 });
 
+test("flop and turn realization use the configured tier and position curve while river stays exact", () => {
+  const defence = defenceFor(base, referencePolicy, referenceLaterPolicy());
+  const flop = parseCards("KhTh4s", 3);
+  const tierCases = [
+    ["KcTc", "monster", 1, 1],
+    ["KcQd", "strong", 0.97, 0.92],
+    ["QhJh", "draw", 0.95, 0.88],
+    ["9c2d", "air", 0.75, 0.65],
+  ];
+  for (const [text, tier, ip, oop] of tierCases) {
+    const combo = parseCards(text, 2);
+    assert.equal(handTier(combo, flop), tier, text);
+    assert.equal(defence.realizationFor({ street: "flop", role: "ip", board: flop }, combo), ip, `${text} flop IP`);
+    assert.equal(defence.realizationFor({ street: "flop", role: "oop", board: flop }, combo), oop, `${text} flop OOP`);
+    assert.equal(defence.realizationFor({ street: "turn", role: "ip", board: [...flop, parseCards("3c", 1)[0]] }, combo), ip, `${text} turn IP`);
+  }
+  assert.equal(defence.realizationFor({ street: "river", role: "oop", board: parseCards("KhTh4s2h3d", 5) }, parseCards("KcQd", 2)), 1);
+});
+
 test("a path that does not reach a pending decision is a DefencePathError", () => {
   assert.throws(() => replayDecision(base, board, { flop: ["check"], turn: ["check", "check"], river: ["allin", "call"] }), DefencePathError);
   assert.throws(() => replayDecision(base, board.slice(0, 4), { flop: ["bet33"], turn: [] }), DefencePathError);

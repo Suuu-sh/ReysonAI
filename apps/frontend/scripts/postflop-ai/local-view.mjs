@@ -4,8 +4,8 @@ import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { scaleByPath, validatePolicy } from "./policy.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "./model.mjs";
-import { explainCombo } from "./explain.mjs";
-import { explainLaterCombo } from "./explain-later.mjs";
+import { explainCombo, explainCombos } from "./explain.mjs";
+import { explainLaterCombo, explainLaterCombos } from "./explain-later.mjs";
 import { laterHandEvForHand, laterHandEvResult, loadLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { FLOP_BETS, flopState } from "./tree.mjs";
@@ -27,11 +27,24 @@ export function buildLocalBoard(boardId, inputs, candidate) {
 
 export function explainLocalCombo(params, inputs, candidate) {
   const board = parseFlopBoard(params.get("board"));
-  const cards = params.get("cards") ?? "";
-  if (!/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
   const prev = FLOP_BETS.includes(params.get("prev")) ? params.get("prev") : FLOP_BETS[0];
-  return { spot: inputs.spot.id, board: board.id, ...explainCombo({ boardCards: board.cards, node: params.get("node"), cards, prev,
-    inputs, policy: validatePolicy(candidate.policy, inputs.spot.tree) }) };
+  const options = { boardCards: board.cards, node: params.get("node"), prev,
+    inputs, policy: validatePolicy(candidate.policy, inputs.spot.tree) };
+  let explanation;
+  if (params.has("combos")) {
+    let combos;
+    try { combos = JSON.parse(params.get("combos")); } catch { throw new Error("ハンドクラスのコンボ形式が正しくありません。"); }
+    if (!Array.isArray(combos) || !combos.length || combos.some(item => typeof item?.cards !== "string" ||
+        !/^([2-9TJQKA][cdhs]){2}$/.test(item.cards) || !Number.isFinite(item.weight) || item.weight <= 0)) {
+      throw new Error("ハンドクラスのコンボ形式が正しくありません。");
+    }
+    explanation = explainCombos({ ...options, combos });
+  } else {
+    const cards = params.get("cards") ?? "";
+    if (!/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
+    explanation = explainCombo({ ...options, cards });
+  }
+  return { spot: inputs.spot.id, board: board.id, ...explanation };
 }
 
 function policyForLater(inputs, candidate, laterCandidate) {
@@ -161,12 +174,23 @@ export function postflopResponse(pathname, params) {
     }
     let data;
     if (pathname === "/local-postflop-explain") data = explainLocalCombo(params, inputs, candidate);
-    else if (pathname === "/local-postflop-later-explain") data = { spot: inputs.spot.id, ...explainLaterCombo({
-      flop: params.get("flop"), flopActions: params.get("flopActions") ?? "",
-      turn: params.get("turn"), turnActions: params.get("turnActions") ?? "",
-      river: params.get("river") ?? "", riverActions: params.get("riverActions") ?? "",
-      cards: params.get("cards"), inputs, flopPolicy: candidate.policy, laterPolicy: laterCandidate.policy,
-    }) };
+    else if (pathname === "/local-postflop-later-explain") {
+      const options = { flop: params.get("flop"), flopActions: params.get("flopActions") ?? "",
+        turn: params.get("turn"), turnActions: params.get("turnActions") ?? "",
+        river: params.get("river") ?? "", riverActions: params.get("riverActions") ?? "",
+        inputs, flopPolicy: candidate.policy, laterPolicy: laterCandidate.policy };
+      let explanation;
+      if (params.has("combos")) {
+        let combos;
+        try { combos = JSON.parse(params.get("combos")); } catch { throw new Error("ハンドクラスのコンボ形式が正しくありません。"); }
+        if (!Array.isArray(combos) || !combos.length || combos.some(item => typeof item?.cards !== "string" ||
+            !/^([2-9TJQKA][cdhs]){2}$/.test(item.cards) || !Number.isFinite(item.weight) || item.weight <= 0)) {
+          throw new Error("ハンドクラスのコンボ形式が正しくありません。");
+        }
+        explanation = explainLaterCombos({ ...options, combos });
+      } else explanation = explainLaterCombo({ ...options, cards: params.get("cards"), });
+      data = { spot: inputs.spot.id, ...explanation };
+    }
     else if (pathname === "/local-postflop-later") {
       data = buildLaterView({
         flop: params.get("flop"), flopActions: params.get("flopActions") ?? "",

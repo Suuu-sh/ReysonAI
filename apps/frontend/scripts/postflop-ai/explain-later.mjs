@@ -9,6 +9,7 @@ import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
 import { flopState } from "./tree.mjs";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
 import { defenceFor, isFacingNode, replayOrNull } from "./defence.mjs";
+import { averageExplanationFacts } from "./explain-aggregate.mjs";
 
 const RANKS = "23456789TJQKA";
 const MAX_TURN_COMBOS = 300;
@@ -226,17 +227,28 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
     const table = replayOrNull(inputs, board, pathWith(action));
     return table ? { defence, table } : null;
   };
-  const heroTable = isFacingNode(boardContext.decision.node)
-    ? replayOrNull(inputs, board, { flop: boardContext.flopPath, turn: boardContext.turnPath, river: street === "river" ? boardContext.riverPath : [] }) : null;
+  const heroTable = replayOrNull(inputs, board, {
+    flop: boardContext.flopPath, turn: boardContext.turnPath, river: street === "river" ? boardContext.riverPath : [],
+  });
   const heroDefence = heroTable && { requirement: defence.requirement(heroTable, board, boardContext.decision.node),
     facts: defence.facts(heroTable, board, boardContext.decision.node, hero,
       laterPolicyMix(laterRules, boardContext.decision.node, hero, board, boardContext.decision.line)) };
+  const bettingFacts = heroTable && defence.bettingFacts(heroTable, board, boardContext.decision.node, hero);
   const result = detailsFor(hero, villains, board, laterRules, {
     ...boardContext.decision, street, previousAggressor: boardContext.previousAggressor,
   }, inputs.spot, boardContext.decision.potBb, street === "turn" ? boardContext.turnReplay.stacks : boardContext.riverReplay.stacks,
   heroDefence, defenceOf);
   return { kind: "ai_estimate_not_gto", node: boardContext.decision.node, street,
-    line: boardContext.decision.line, texture: runoutTexture(board), equity: result.equity,
+    line: boardContext.decision.line, texture: runoutTexture(board), equity: heroDefence?.facts?.equity ?? result.equity,
     combos: result.combos, actions: result.actions, ...(result.truncated ? { truncated: true } : {}),
-    ...(heroDefence?.facts ? { defence: heroDefence.facts } : {}) };
+    ...(heroDefence?.facts ? { defence: heroDefence.facts } : {}), ...(bettingFacts ? { betting: bettingFacts } : {}) };
+}
+
+export function explainLaterCombos({ flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "", combos,
+  inputs, flopPolicy, laterPolicy }) {
+  if (!Array.isArray(combos) || !combos.length) throw new Error("At least one reachable combo is required.");
+  const entries = combos.map(({ cards, weight }) => ({ weight,
+    facts: explainLaterCombo({ flop, flopActions, turn, turnActions, river, riverActions, cards,
+      inputs, flopPolicy, laterPolicy }) }));
+  return averageExplanationFacts(entries);
 }
