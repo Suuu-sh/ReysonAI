@@ -1,5 +1,6 @@
 import { dataset as publishedDataset } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
 import { hands } from "../data.ts";
 import { RANGE_SECTION, Sidebar } from "../components/layout.tsx";
@@ -452,6 +453,7 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
 function ActionDropdown({ position, options, onSelect }) {
   const [menu, setMenu] = useState(null);
   const english = productLocale() === "en";
+  const uniqueOptions = options.filter((option, index) => options.findIndex(other => other.label === option.label) === index);
   const toggle = event => {
     event.stopPropagation();
     if (menu) { setMenu(null); return; }
@@ -460,12 +462,12 @@ function ActionDropdown({ position, options, onSelect }) {
   };
   return <div className="action-seat-select" onClick={event => event.stopPropagation()}>
     <button type="button" className="action-seat-select-trigger" aria-haspopup="menu" aria-expanded={Boolean(menu)} aria-label={`${position}のアクションを選択`} onClick={toggle}>{english ? "Take action" : "アクションを選択"}<CaretDown size={12} aria-hidden="true" /></button>
-    {menu && <>
+    {menu && createPortal(<>
       <button type="button" className="action-seat-select-backdrop" aria-label="閉じる" onClick={() => setMenu(null)} />
       <div className="action-seat-select-menu" role="menu" style={{ top: menu.top, right: menu.right }}>
-        {options.map(option => <button type="button" role="menuitem" key={option.action} onClick={() => { setMenu(null); onSelect(option.action); }}>{option.label}</button>)}
+        {uniqueOptions.map(option => <button type="button" role="menuitem" key={option.action} onClick={() => { setMenu(null); onSelect(option.action); }}>{option.label}</button>)}
       </div>
-    </>}
+    </>, document.body)}
   </div>;
 }
 
