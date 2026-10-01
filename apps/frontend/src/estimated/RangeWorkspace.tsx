@@ -975,7 +975,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         <ActionPath
           leading={<div className={`action-seat action-seat-info${settingsOpen ? " is-open" : ""}`}>
             <div className="action-seat-heading">
-              <button type="button" className="settings-toggle" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><strong>推定レンジ</strong><CaretDown size={12} aria-hidden="true" /></button>
+              <button type="button" className="settings-toggle" aria-label="推定レンジの設定を開閉" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><strong>推定レンジ</strong><CaretDown size={12} aria-hidden="true" /></button>
               <div className="settings-actions">
                 <button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を編集" title="ゲーム設定を編集" onClick={() => setFormatOpen(true)}><PencilSimple size={14} aria-hidden="true" /></button>
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>

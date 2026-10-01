@@ -340,10 +340,11 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .settings-toggle svg { display: none; }
 .settings-body { display: flex; flex-direction: column; gap: 6px; }
 @media (max-width: 760px) {
-  .action-seat-info { flex-basis: 150px; }
   .settings-toggle { cursor: pointer; pointer-events: auto; }
-  .settings-toggle svg { display: block; color: var(--text-muted); transition: transform .15s; }
-  .action-seat-info.is-open .settings-toggle svg { transform: rotate(180deg); }
-  .action-seat-info:not(.is-open) .settings-body { display: none; }
-  .action-seat-info.is-open { flex-basis: 188px; }
+  .settings-toggle svg { display: block; color: var(--text-muted); transform: rotate(-90deg); transition: transform .15s; }
+  .action-seat-info.is-open .settings-toggle svg { transform: rotate(90deg); }
+  .action-seat-info:not(.is-open) { flex-basis: 40px; width: 40px; padding-left: 0; padding-right: 0; align-items: center; }
+  .action-seat-info:not(.is-open) .settings-toggle strong, .action-seat-info:not(.is-open) .settings-actions, .action-seat-info:not(.is-open) .settings-body { display: none; }
+  .action-seat-info:not(.is-open) .action-seat-heading { padding: 0; }
+  .action-seat-info:not(.is-open) .settings-toggle { padding: 10px 0; width: 100%; justify-content: center; }
 }
