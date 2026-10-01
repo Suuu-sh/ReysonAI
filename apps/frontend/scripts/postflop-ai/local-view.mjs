@@ -4,7 +4,7 @@ import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { scaleByPath, validatePolicy } from "./policy.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "./model.mjs";
-import { flopUiFacts } from "./flop-ui-facts.mjs";
+import { flopBetTable, flopUiFacts } from "./flop-ui-facts.mjs";
 import { explainLaterCombo, explainLaterCombos } from "./explain-later.mjs";
 import { laterHandEvForHand, laterHandEvResult, loadLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
@@ -38,11 +38,11 @@ export function explainLocalCombo(params, inputs, candidate) {
         !/^([2-9TJQKA][cdhs]){2}$/.test(item.cards) || !Number.isFinite(item.weight) || item.weight <= 0)) {
       throw new Error("ハンドクラスのコンボ形式が正しくありません。");
     }
-    explanation = flopUiFacts({ ...options, combos });
+    explanation = { ...flopUiFacts({ ...options, combos }), ...flopBetTable({ ...options, combos }) };
   } else {
     const cards = params.get("cards") ?? "";
     if (!/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
-    explanation = flopUiFacts({ ...options, cards });
+    explanation = { ...flopUiFacts({ ...options, cards }), ...flopBetTable({ ...options, cards }) };
   }
   return { spot: inputs.spot.id, board: board.id, ...explanation };
 }

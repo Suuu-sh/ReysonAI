@@ -305,3 +305,18 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .postflop-action-detail dd span.tier-draw { box-shadow: inset 0 -2px 0 #6ec6f5; }
 .postflop-reason-evidence { color: var(--text); }
 .postflop-reason-general { color: var(--text-subtle); font-size: 11.5px; line-height: 1.5; }
+
+/* Per-action comparison table in the postflop hand detail. */
+.postflop-action-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; }
+.postflop-action-table { width: 100%; min-width: 420px; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.postflop-action-table caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.postflop-action-table th, .postflop-action-table td { padding: 5px 8px; text-align: right; border-bottom: 1px solid var(--line); }
+.postflop-action-table thead th { color: var(--text-subtle); font-size: 10px; font-weight: 500; line-height: 1.3; vertical-align: bottom; }
+.postflop-action-table tbody th { text-align: left; color: var(--text); font-weight: 600; white-space: nowrap; }
+.postflop-action-table th:first-child, .postflop-action-table td:first-child { text-align: left; }
+.postflop-action-table tbody tr:last-child > * { border-bottom: 0; }
+.postflop-action-table tbody th i { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 2px; }
+.postflop-action-table tr.best-ev { background: var(--surface-accent); }
+.postflop-action-table .best-mark { margin-left: 4px; color: var(--accent-soft); font-size: 10px; font-weight: 600; }
+.postflop-action-table .ev-positive { color: #6fd08c; }
+.postflop-action-table .ev-negative { color: #ff8a9a; }

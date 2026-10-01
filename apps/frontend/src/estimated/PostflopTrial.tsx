@@ -82,6 +82,28 @@ function SuitCardPicker({ selectedCards = new Set(), disabledCards = new Set(), 
   </div>;
 }
 
+const tablePct = (value: number | null) => value === null ? "—" : `${Math.round(value * 100)}%`;
+const tableBb = (value: number | null) => value === null ? "—" : `${value > 0.05 ? "+" : ""}${value.toFixed(1)}bb`;
+
+// Per-action comparison at a betting decision; scrolls sideways inside its own wrapper on narrow screens.
+function ActionTableView({ table, english }) {
+  return <div className="postflop-action-table-wrap" tabIndex={0} role="region" aria-label={table.caption}>
+    <table className="postflop-action-table">
+      <caption>{table.caption}</caption>
+      <thead><tr>
+        <th scope="col">{table.headers.action}</th><th scope="col">{table.headers.frequency}</th>
+        <th scope="col">{table.headers.folds}</th><th scope="col">{table.headers.equity}</th><th scope="col">{table.headers.ev}</th>
+      </tr></thead>
+      <tbody>{table.rows.map(row => <tr key={row.action} className={row.best ? "best-ev" : undefined}>
+        <th scope="row"><i style={{ background: barColor(row.action) }} aria-hidden="true" />{row.label}
+          {row.best && <span className="best-mark" title={english ? "Highest EV" : "EVが最大"}>{english ? " ★ best EV" : " ★ EV最大"}</span>}</th>
+        <td>{tablePct(row.frequency)}</td><td>{tablePct(row.foldShare)}</td><td>{tablePct(row.calledEquity)}</td>
+        <td className={row.ev === null ? undefined : row.ev >= 0 ? "ev-positive" : "ev-negative"}>{row.ev === null && table.evPending ? (english ? "…" : "…") : tableBb(row.ev)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>;
+}
+
 function HandReasons({ node, hand, texture, explain, loading, error, handEv, positions }) {
   if (!hand?.tiers) return null;
   const english = productLocale() === "en";
@@ -100,6 +122,7 @@ function HandReasons({ node, hand, texture, explain, loading, error, handEv, pos
       <h4>{explanation.betting.title} · {explanation.betting.role}</h4>
       <p>{explanation.betting.reason}</p>
       {explanation.betting.mixReason && <p>{explanation.betting.mixReason}</p>}
+      {explanation.betting.table && <ActionTableView table={explanation.betting.table} english={english} />}
       {explanation.betting.sizes.length > 0 && <ul>{explanation.betting.sizes.map((line, index) => <li key={`size-${index}`}>{line}</li>)}</ul>}
       {explanation.betting.alternatives.length > 0 && <ul>{explanation.betting.alternatives.map((line, index) => <li key={`alt-${index}`}>{line}</li>)}</ul>}
     </section>}

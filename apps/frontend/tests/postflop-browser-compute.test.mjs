@@ -6,7 +6,7 @@ import { buildInputs } from "../scripts/postflop-ai/browser-inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "../scripts/postflop-ai/generate.mjs";
 import { buildLaterView, buildLocalBoard, explainLocalCombo, postflopResponse } from "../scripts/postflop-ai/local-view.mjs";
 import { explainLaterCombo, explainLaterCombos } from "../scripts/postflop-ai/explain-later.mjs";
-import { flopUiFacts } from "../scripts/postflop-ai/flop-ui-facts.mjs";
+import { flopBetTable, flopUiFacts } from "../scripts/postflop-ai/flop-ui-facts.mjs";
 import { canonicalFlop } from "../scripts/postflop-ai/flop-isomorphism.mjs";
 import { laterHandEvForHand } from "../scripts/postflop-ai/later-hand-ev.mjs";
 import { computeBoard, computeExplain, computeFlopHandEv, computeLaterExplain, computeLaterHandEv, computeLaterView } from "../src/estimated/postflop-compute.ts";
@@ -84,10 +84,15 @@ test("browser postflop computations match the server-side route calculations", {
     const explainParams = new URLSearchParams({ board, node: firstNode, cards: "KhKd", prev: "bet33" });
     assertJsonEqual(computeExplain({ spotId, board, node: firstNode, cards: "KhKd", prev: "bet33", datasets, flopCandidate }),
       explainLocalCombo(explainParams, inputs, flopCandidate), `${spotId} flop explain`);
+    const betTable = explainLocalCombo(explainParams, inputs, flopCandidate).bet_table;
+    assert.ok(betTable && Object.values(betTable.actions).every(entry => entry.calledEquity === null || entry.calledEquity >= 0 && entry.calledEquity <= 1), `${spotId} flop bet table`);
+    assert.ok(Number.isFinite(betTable.actions.check.calledEquity), `${spotId} flop check equity`);
     const averageCombos = [{ cards: "KhKd", weight: 1 }, { cards: "QhJd", weight: 3 }];
     const averageFlopParams = new URLSearchParams({ board, node: firstNode, prev: "bet33", combos: JSON.stringify(averageCombos) });
     const expectedAverageFlop = { spot: inputs.spot.id, board,
       ...flopUiFacts({ boardCards: parseFlopBoard(board).cards, node: firstNode, prev: "bet33", combos: averageCombos,
+        inputs, policy: flopCandidate.policy }),
+      ...flopBetTable({ boardCards: parseFlopBoard(board).cards, node: firstNode, prev: "bet33", combos: averageCombos,
         inputs, policy: flopCandidate.policy }) };
     assertJsonEqual(computeExplain({ spotId, board, node: firstNode, combos: averageCombos, prev: "bet33", datasets, flopCandidate }),
       expectedAverageFlop, `${spotId} average flop explanation`);
@@ -102,6 +107,7 @@ test("browser postflop computations match the server-side route calculations", {
       inputs, flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate.policy }) };
     assertJsonEqual(computeLaterExplain({ spotId, ...laterExplainParams, datasets, flopCandidate, laterCandidate }),
       expectedLaterExplain, `${spotId} later explain`);
+    assert.ok(expectedLaterExplain.bet_table?.actions && Object.values(expectedLaterExplain.bet_table.actions).every(entry => entry.calledEquity === null || Number.isFinite(entry.calledEquity)), `${spotId} later bet table`);
     const laterAverageCombos = [{ cards: "QcJd", weight: 1 }, { cards: "TcTd", weight: 3 }];
     const averageLaterParams = { ...later, combos: laterAverageCombos };
     const expectedAverageLater = { spot: inputs.spot.id, ...explainLaterCombos({ ...later, combos: laterAverageCombos,

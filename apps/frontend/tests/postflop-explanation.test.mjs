@@ -44,10 +44,8 @@ test("river betting explanation prices sizes and flags a material EV disagreemen
     handEv: { ev_bb: { check: 0.4, bet33: 1.2, bet75: 1.5, bet125: 0.2, allin: 0.8 } } });
   const text = renderExplanationPlainText(result);
   assert.match(text, /Betting plan · Protection/);
-  assert.match(text, /All-in.*α is 49%, supporting about 96 bluffs per 100 value combos/);
-  assert.match(text, /Bet 75%.*α is 30%, supporting about 43 bluffs per 100 value combos/);
-  assert.match(text, /Bet 33% is used 0%; it changes expected folds by 25 points/);
-  assert.match(text, /EV when both players follow the shown strategy rates Bet 75% 0\.7bb higher than the policy's main All-in/);
+  assert.match(text, /Bet 75% ★ \| 25% \| 30% \| — \| \+1\.5bb/);
+  assert.match(text, /The shown strategy mainly uses All-in 50%; by EV alone, Bet 75% is slightly better \(\+0\.7bb\)/);
   assert.match(text, /Overcard runout/);
   assert.doesNotMatch(text, /GTO/i);
 });
@@ -89,11 +87,10 @@ test("first-node check and bet mixes use the value role and do not repeat fold p
   assert.match(result.headline, /^Check 75% \/ Bet 33% 20% \/ Bet 75% 5%: At 95% equity/);
   assert.match(result.headline, /policy checks more often and mixes value-bet sizes/);
   assert.match(text, /Betting plan · Value: This hand has 95% equity/);
-  assert.equal((text.match(/49%/g) ?? []).length, 1);
+  assert.equal((text.match(/49%/g) ?? []).length, 2); // once in the table, once in the sentence
   assert.doesNotMatch(text, /top pair or better has/);
   assert.equal((text.match(/This hand has 95% equity against the defender's range, supporting a value bet\./g) ?? []).length, 1);
-  assert.match(text, /Bet 33%.*α is 21%.*27 bluffs per 100 value combos/);
-  assert.match(text, /Bet 75%.*α is 30%.*43 bluffs per 100 value combos/);
+  assert.match(text, /Bet 33% gets folds 49% of the time/);
 });
 
 test("fold and raise mixtures identify the bluff-raise branch", () => {
@@ -106,7 +103,7 @@ test("fold and raise mixtures identify the bluff-raise branch", () => {
   assert.match(result.headline, /Fold 93% \/ Raise 3× 7%/);
   assert.match(result.headline, /mixes a bluff-raise with folds/);
   assert.match(renderExplanationPlainText(result), /This hand has 22% equity.*raise 3× relies on fold equity/);
-  assert.equal((renderExplanationPlainText(result).match(/43%/g) ?? []).length, 1);
+  assert.match(renderExplanationPlainText(result), /Raise 3× \| 7% \| 43% \| — \| —/);
 });
 
 test("an exact combo is named as that combo, not as its hand-class average", () => {
@@ -129,4 +126,42 @@ test("later-street node prefixes identify the actual bettor", () => {
       explain: { equity: 0.58, defence: facingFacts({ node, street: node.startsWith("turn") ? "turn" : "river" }) } });
     assert.match(result.headline, new RegExp(`${bettor}'s 75% bet|${bettor}'s all-in`));
   }
+});
+
+function betTableInput(locale, handEv) {
+  return { locale, node: "btn_first", hand: "AKo", actionMix: { check: 0.4, bet33: 0, bet75: 0.35, bet125: 0.25, allin: 0 },
+    tiers: { strong: 1 }, texture: "dry", positions: { ip: "BTN", oop: "BB" },
+    explain: { equity: 0.6, betting: { equity_vs_defender: 0.6 },
+      actions: { bet33: { foldShare: 0.3 }, bet75: { foldShare: 0.65 }, bet125: { foldShare: 0.7 }, allin: { foldShare: 0.8 } },
+      bet_table: { actions: { check: { calledEquity: 0.6 }, bet33: { calledEquity: 0.5 }, bet75: { calledEquity: 0.41 },
+        bet125: { calledEquity: 0.33 }, allin: { calledEquity: null } } } },
+    handEv };
+}
+
+test("betting table lists every action, marks the best EV, and the sentences compare EVs", () => {
+  const ev = { ev_bb: { check: 7.1, bet33: 5, bet75: 6.3, bet125: 6.9, allin: 4 } };
+  const en = buildPostflopExplanation(betTableInput("en", ev));
+  assert.deepEqual(en.betting.table.rows.map(row => row.action), ["check", "bet33", "bet75", "bet125", "allin"]);
+  assert.deepEqual(en.betting.table.rows.filter(row => row.best).map(row => row.action), ["check"]);
+  const text = renderExplanationPlainText(en);
+  assert.match(text, /Check ★ \| 40% \| — \| 60% \| \+7\.1bb/);
+  assert.match(text, /Bet 75% \| 35% \| 65% \| 41% \| \+6\.3bb/);
+  assert.match(text, /Bet 75% gets folds 65% of the time and is called mostly by better hands \(your equity when called 41%\), so it earns \+6\.3bb\./);
+  assert.match(text, /Checking keeps their bluffs in and earns \+7\.1bb, the most\./);
+  assert.equal(en.betting.sizes.length <= 4, true);
+  assert.doesNotMatch(text, /GTO/i);
+  const ja = renderExplanationPlainText(buildPostflopExplanation(betTableInput("ja", ev)));
+  assert.match(ja, /ベット 75%は相手が65%フォールドします。コールしてくるのは主に自分より強い手です（コールされた時の勝率41%）。EVは\+6\.3bbです。/);
+  assert.match(ja, /チェックなら相手のブラフが残り、EVは\+7\.1bbで最大です。/);
+  assert.doesNotMatch(ja, /GTO/i);
+});
+
+test("close EVs are called close; a single combo shows no EV and no EV sentences", () => {
+  const close = renderExplanationPlainText(buildPostflopExplanation(betTableInput("en",
+    { ev_bb: { check: 6.2, bet33: 5, bet75: 6.3, bet125: 4, allin: 3 } })));
+  assert.match(close, /differ by only 0\.1bb in EV, which is why the strategy mixes them/);
+  const combo = buildPostflopExplanation(betTableInput("en", null));
+  assert.ok(combo.betting.table.rows.every(row => row.ev === null && !row.best));
+  assert.equal(combo.betting.sizes.length, 1);
+  assert.doesNotMatch(renderExplanationPlainText(combo), /earns \+.*the most/);
 });

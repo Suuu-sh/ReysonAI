@@ -1,5 +1,5 @@
 import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.mjs";
-import { flopUiFacts } from "../../scripts/postflop-ai/flop-ui-facts.mjs";
+import { flopBetTable, flopUiFacts } from "../../scripts/postflop-ai/flop-ui-facts.mjs";
 import { explainLaterCombo, explainLaterCombos } from "../../scripts/postflop-ai/explain-later.mjs";
 import { validatePolicy } from "../../scripts/postflop-ai/policy.mjs";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "../../scripts/postflop-ai/model.mjs";
@@ -71,6 +71,8 @@ export function computeExplain({ spotId, board, node, cards, combos, prev, histo
     try { explanation = storedFlopExplanation(flopBase, options); } catch { /* optional base must never prevent fallback */ }
   }
   explanation ??= flopUiFacts(options);
+  // Called-range equity is not in the stored base; compute it from the same contexts (never stored).
+  explanation = { ...explanation, ...flopBetTable(options) };
   return { spot: inputs.spot.id, board: selected.id,
     ...explanation };
 }

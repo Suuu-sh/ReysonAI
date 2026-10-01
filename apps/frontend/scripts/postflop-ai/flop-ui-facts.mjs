@@ -2,8 +2,8 @@
 // or independent 120-runout equity simulation: UI equity already comes from defence/betting.
 // Direct and stored paths use this same projection in canonical suit coordinates.
 import { canonicalFlop, cardIds, comboKey } from "./flop-isomorphism.mjs";
-import { comboId, defenceFor, replayOrNull } from "./defence.mjs";
-import { indexOf, weightOf } from "./range-equity.mjs";
+import { comboId, defenceFor, flopRunouts, rankTable, replayOrNull } from "./defence.mjs";
+import { equityVersus, indexOf, makeRange, weightOf } from "./range-equity.mjs";
 import { seatRange } from "./browser-inputs.mjs";
 import { NODES, policyMix, scaleByPath } from "./policy.mjs";
 import { FLOP_BETS, facingNode, flopState, historyFor, nodeRole, otherRole, raiseNodeAfter } from "./tree.mjs";
@@ -74,6 +74,55 @@ export function flopUiComboFactsCanonical({ boardCards, node, cards, history, pr
       faced_action: pick(facing.faced_action, ["action", "capped", "alpha", "bluff_share_after_pct"]),
     } } : {}), ...(betting ? { betting: { equity_vs_defender: betting.equity_vs_defender,
       actions: betting.actions.map(action => pick(action, ["action", "alpha", "bluffs_per_100_value", "capped"])) } } : {}) };
+}
+
+// The final boards the defence evaluates equity over (same measure as defence.mjs finalTables).
+function finalTables(board) {
+  if (board.length === 5) return [rankTable(board)];
+  if (board.length === 4) return Array.from({ length: 52 }, (_, card) => card).filter(card => !board.includes(card)).map(card => rankTable([...board, card]));
+  const entry = flopRunouts(board);
+  return entry.tables ??= entry.runouts.map(([turn, river]) => rankTable([...board, turn, river]));
+}
+
+// Per-action "your equity when called": the hero's equity against the part of the opponent's range that
+// continues (1 - fold) after each aggressive action, and against the whole range for a check. Computed
+// from the same contexts as the fold shares, so nothing about the stored flop base changes.
+export function flopBetTableCanonical({ boardCards, node, cards, history, prev = "bet33", inputs, policy }) {
+  const betting = node.endsWith("_first") || NODES[node]?.includes("raise");
+  if (!betting) return {};
+  history ??= historyFor(inputs.spot.tree, node, prev);
+  if (flopState(inputs.spot.tree, history).node !== node) throw new Error("Flop explanation history does not reach the node");
+  const hero = cardIds(cards, 2);
+  if (hero.some(card => boardCards.includes(card))) throw new Error("ボードと重なるカードです。");
+  const context = contextFor(inputs, policy, boardCards, node, history);
+  const id = comboId(hero[0], hero[1]);
+  const tables = context.tables ??= finalTables(boardCards);
+  const ranges = context.calledRanges ??= {};
+  const rangeFor = (name, weightOfItem) => ranges[name] ??= (() => {
+    const dense = new Float64Array(52 * 52);
+    for (const item of context.villains) dense[comboId(item.combo[0], item.combo[1])] = weightOfItem(item);
+    return makeRange(dense);
+  })();
+  const actions = {};
+  if (node.endsWith("_first")) actions.check = { calledEquity: equityVersus(rangeFor("all", item => item.weight), id, tables) };
+  for (const [action, range] of Object.entries(context.responses)) {
+    const dense = new Map(range.map(item => [comboId(item.combo[0], item.combo[1]), item.weight * (1 - item.fold)]));
+    const called = rangeFor(action, item => dense.get(comboId(item.combo[0], item.combo[1])) ?? 0);
+    actions[action] = { calledEquity: called.total > 0 ? equityVersus(called, id, tables) : null };
+  }
+  return { bet_table: roundFacts({ actions }) };
+}
+
+export function flopBetTable(options) {
+  const one = cards => {
+    const canonical = canonicalFlop(options.boardCards);
+    return flopBetTableCanonical({ ...options, boardCards: canonical.cards, cards: comboKey(cards, canonical.toCanonical) });
+  };
+  if (!options.combos) return one(options.cards);
+  const entries = options.combos.map(({ cards, weight }) => ({ weight, facts: one(cards) }));
+  if (!entries[0].facts.bet_table) return {};
+  const { bet_table } = averageFlopUiFacts(entries);
+  return { bet_table };
 }
 
 export function flopUiComboFacts(options) {

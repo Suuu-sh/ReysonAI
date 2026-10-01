@@ -162,7 +162,7 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
   const total = evaluated.reduce((sum, item) => sum + item.weight, 0);
   const equity = total ? evaluated.reduce((sum, item) => sum + item.weight * item.equity, 0) / total : 0;
   const ahead = evaluated.filter(item => item.equity >= 0.5), behind = evaluated.filter(item => item.equity < 0.5);
-  const actions = {};
+  const actions = {}, betTable = {};
   const responseDetail = (responseNode, lineRole, action) => {
     const computed = defenceOf(action);
     const response = evaluated.map(item => {
@@ -172,6 +172,9 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
     });
     const weighted = (list, key) => list.map(({ item, ...rest }) => ({ ...item, weight: item.weight * rest[key] })).filter(item => item.weight > 0);
     const folds = response.reduce((sum, entry) => sum + entry.item.weight * entry.fold, 0);
+    let calledWeight = 0, calledEquity = 0;
+    for (const entry of response) { const w = entry.item.weight * entry.cont; calledWeight += w; calledEquity += w * entry.item.equity; }
+    betTable[action] = { calledEquity: calledWeight > 0 ? Math.round(calledEquity / calledWeight * 1e4) / 1e4 : null };
     actions[action] = { foldShare: total ? folds / total : 0, groups: [
       group("value", weighted(response.filter(entry => entry.item.equity >= 0.5), "cont"), total),
       group("foldBetter", weighted(response.filter(entry => entry.item.equity < 0.5), "fold"), total),
@@ -188,6 +191,7 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
       responseDetail(`${decision.street}_${responderRole}_vs_${size}`, responderRole, bet);
     }
     actions.check = { groups: [group("ahead", ahead, total), group("behind", behind, total)] };
+    betTable.check = { calledEquity: Math.round(equity * 1e4) / 1e4 };
   } else {
     const facing = /_vs_(33|75|125|allin)$/.exec(node);
     if (!facing && !node.endsWith("_vs_raise")) throw new Error(`Unsupported later decision: ${node}`);
@@ -206,7 +210,7 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
       responseDetail(`${decision.street}_${bettorRole}_vs_raise`, bettorRole, "raise");
     }
   }
-  return { actions, equity, combos: evaluated.length, truncated };
+  return { actions, equity, combos: evaluated.length, truncated, betTable };
 }
 
 export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "", cards,
@@ -241,7 +245,8 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
   return { kind: "ai_estimate_not_gto", node: boardContext.decision.node, street,
     line: boardContext.decision.line, texture: runoutTexture(board), equity: heroDefence?.facts?.equity ?? result.equity,
     combos: result.combos, actions: result.actions, ...(result.truncated ? { truncated: true } : {}),
-    ...(heroDefence?.facts ? { defence: heroDefence.facts } : {}), ...(bettingFacts ? { betting: bettingFacts } : {}) };
+    ...(heroDefence?.facts ? { defence: heroDefence.facts } : {}), ...(bettingFacts ? { betting: bettingFacts } : {}),
+    ...(Object.keys(result.betTable).length ? { bet_table: { actions: result.betTable } } : {}) };
 }
 
 export function explainLaterCombos({ flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "", combos,
