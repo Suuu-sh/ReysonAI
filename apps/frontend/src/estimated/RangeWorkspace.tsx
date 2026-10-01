@@ -24,7 +24,7 @@ import {
   rangeTypes,
   validateDataset,
 } from "./ranges.ts";
-import { ArrowCounterClockwise, DotsThreeVertical, GearSix } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, CaretDown, DotsThreeVertical, GearSix } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
 import { nextPendingStreetCardDialog } from "./street-card-dialog-state.ts";
@@ -449,6 +449,26 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
   return null;
 }
 
+function ActionDropdown({ position, options, onSelect }) {
+  const [menu, setMenu] = useState(null);
+  const english = productLocale() === "en";
+  const toggle = event => {
+    event.stopPropagation();
+    if (menu) { setMenu(null); return; }
+    const rect = event.currentTarget.getBoundingClientRect();
+    setMenu({ top: rect.bottom + 4, right: Math.max(8, window.innerWidth - rect.right) });
+  };
+  return <div className="action-seat-select" onClick={event => event.stopPropagation()}>
+    <button type="button" className="action-seat-select-trigger" aria-haspopup="menu" aria-expanded={Boolean(menu)} aria-label={`${position}のアクションを選択`} onClick={toggle}>{english ? "Take action" : "アクションを選択"}<CaretDown size={12} aria-hidden="true" /></button>
+    {menu && <>
+      <button type="button" className="action-seat-select-backdrop" aria-label="閉じる" onClick={() => setMenu(null)} />
+      <div className="action-seat-select-menu" role="menu" style={{ top: menu.top, right: menu.right }}>
+        {options.map(option => <button type="button" role="menuitem" key={option.action} onClick={() => { setMenu(null); onSelect(option.action); }}>{option.label}</button>)}
+      </div>
+    </>}
+  </div>;
+}
+
 export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onOpenFlopCards = () => {}, onOpenLaterCard = () => {}, onFlopAction = () => {}, onLaterAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onSqueezeResponse = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
   const blocks = providedBlocks ?? buildActionBlocks(state);
   const seatsRef = useRef(null);
@@ -507,10 +527,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
               return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={event => { event.stopPropagation(); selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action); }}>{option.label}</button>;
             })}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
-            {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && <select className="action-seat-select" aria-label={`${block.position}のアクションを選択`} value="" onClick={event => event.stopPropagation()} onChange={event => select(block, event.target.value)}>
-              <option value="" disabled>{productLocale() === "en" ? "Take action" : "アクションを選択"}</option>
-              {block.options.filter(option => !option.disabled).map(option => <option key={option.action} value={option.action}>{option.label}</option>)}
-            </select>}
+            {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && <ActionDropdown position={block.position} options={block.options.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
           </div> : <span className={`action-seat-summary${block.kind === "pending" ? " action-path-pending" : ""}`}>{chosenOption?.label ?? (block.kind === "pending" ? "推定レンジ準備中" : "—")}</span>}
         </div>;
       })}
