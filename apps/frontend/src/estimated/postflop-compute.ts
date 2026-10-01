@@ -1,6 +1,7 @@
 import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.mjs";
 import { flopBetTable, flopUiFacts } from "../../scripts/postflop-ai/flop-ui-facts.mjs";
-import { explainLaterCombo, explainLaterCombos } from "../../scripts/postflop-ai/explain-later.mjs";
+import { explainLaterCombo, explainLaterCombos, laterExplainContext } from "../../scripts/postflop-ai/explain-later.mjs";
+import { flopRangeFacts, laterRangeFacts } from "../../scripts/postflop-ai/range-facts.mjs";
 import { validatePolicy } from "../../scripts/postflop-ai/policy.mjs";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "../../scripts/postflop-ai/model.mjs";
 import { FLOP_BETS, flopState } from "../../scripts/postflop-ai/tree.mjs";
@@ -153,4 +154,23 @@ export function computeLaterExplain({ spotId, flop, flopActions = "", turn, turn
     explanation = explainLaterCombo({ ...options, cards });
   }
   return { spot: inputs.spot.id, ...explanation };
+}
+
+// Range-level facts (tier shares of both ranges, bet-size composition, SPR, runout shift) for the advanced
+// explanations. Hero independent and never stored, so it stays out of computeExplain's stored/parity payload.
+export function computeRangeFacts({ spotId, board, node, prev, history, datasets, flopCandidate }) {
+  const inputs = buildInputs(spotId, datasets);
+  const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
+  return flopRangeFacts({ inputs, policy, boardCards: parseFlopBoard(board).cards, node,
+    prev: FLOP_BETS.includes(prev) ? prev : FLOP_BETS[0], history }) ?? null;
+}
+
+export function computeLaterRangeFacts({ spotId, flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "",
+  datasets, flopCandidate, laterCandidate }) {
+  try {
+    const inputs = buildInputs(spotId, datasets);
+    const { flopPolicy, laterPolicy } = policyForLater(inputs, flopCandidate, laterCandidate);
+    return laterRangeFacts({ inputs, flopPolicy, laterPolicy,
+      context: laterExplainContext({ flop, flopActions, turn, turnActions, river, riverActions }, inputs) }) ?? null;
+  } catch { return null; }
 }

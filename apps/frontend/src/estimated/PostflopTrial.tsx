@@ -4,11 +4,11 @@ import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../com
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { tierLabels } from "./postflop-reasons.ts";
 import { buildPostflopExplanation } from "./postflop-explanation.ts";
-import { buildBeginnerExplanation } from "./postflop-beginner.ts";
+import { buildAdvancedExplanation } from "./postflop-advanced.ts";
 import { loadProfile } from "../profile.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
-import { computeBoard, computeExplain, computeLaterExplain, computeLaterView } from "./postflop-compute.ts";
+import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
 import { productLocale } from "../i18n.ts";
 
@@ -108,7 +108,7 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions }
   const explanation = buildPostflopExplanation({ locale: english ? "en" : "ja", node,
     hand: hand.hand, actionMix: hand.actions, tiers: hand.tiers, texture, explain,
     positions });
-  const plain = buildBeginnerExplanation({ locale: english ? "en" : "ja", node, hand: hand.hand, actionMix: hand.actions,
+  const plain = buildAdvancedExplanation({ locale: english ? "en" : "ja", node, hand: hand.hand, actionMix: hand.actions,
     tiers: hand.tiers, texture, explain, positions });
   const advanced = loadProfile()?.level === "advanced";
   return <div className="postflop-reasons postflop-reasons-structured">
@@ -499,9 +499,14 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     if (!explainInput || !explainKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
     const controller = new AbortController();
     setExplainState({ key: explainKey, data: null, error: null, loading: true });
-    deferPostflopCalculation(() => computeExplain({ ...explainInput,
-      history: actions, datasets: postflopDatasets, flopCandidate: postflopSource.candidate,
-      laterCandidate: postflopSource.laterCandidate, flopBase }), controller.signal)
+    deferPostflopCalculation(() => {
+      const explanation = computeExplain({ ...explainInput,
+        history: actions, datasets: postflopDatasets, flopCandidate: postflopSource.candidate,
+        laterCandidate: postflopSource.laterCandidate, flopBase });
+      const range_facts = computeRangeFacts({ ...explainInput, history: actions, datasets: postflopDatasets,
+        flopCandidate: postflopSource.candidate });
+      return range_facts ? { ...explanation, range_facts } : explanation;
+    }, controller.signal)
       .then(body => {
         const matchesSelection = selectedCombo === "all"
           ? body?.aggregate?.kind === "hand_class_average" && body.cards === null
@@ -519,8 +524,13 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     if (!laterExplainKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
     const controller = new AbortController();
     setLaterExplainState({ key: laterExplainKey, data: null, error: null, loading: true });
-    deferPostflopCalculation(() => computeLaterExplain({ ...laterExplainInput, datasets: postflopDatasets,
-      flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate }), controller.signal)
+    deferPostflopCalculation(() => {
+      const options = { ...laterExplainInput, datasets: postflopDatasets,
+        flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate };
+      const explanation = computeLaterExplain(options);
+      const range_facts = computeLaterRangeFacts(options);
+      return range_facts ? { ...explanation, range_facts } : explanation;
+    }, controller.signal)
       .then(body => {
         if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.street !== laterCurrent?.street ||
             body.node !== laterCurrent?.node || body.line !== laterCurrent?.line || !body.actions || !Number.isFinite(body.equity)) {
