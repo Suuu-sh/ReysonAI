@@ -165,3 +165,15 @@ test("close EVs are called close; a single combo shows no EV and no EV sentences
   assert.equal(combo.betting.sizes.length, 1);
   assert.doesNotMatch(renderExplanationPlainText(combo), /earns \+.*the most/);
 });
+
+test("a draw that bets is a semi-bluff even near 50% equity, in English and Japanese", () => {
+  const input = locale => ({ locale, node: "turn_ip_first", hand: "AQs",
+    actionMix: { check: 0.45, bet33: 0.25, bet75: 0.2, bet125: 0.1 }, tiers: { draw: 1 }, texture: "blank",
+    explain: { street: "turn", equity: 0.5, actions: { bet33: { foldShare: 0.32 } },
+      betting: { equity_vs_defender: 0.5, actions: [] } } });
+  const en = renderExplanationPlainText(buildPostflopExplanation(input("en")));
+  const ja = renderExplanationPlainText(buildPostflopExplanation(input("ja")));
+  assert.match(en, /Betting plan · Semi-bluff: This draw has 50% equity/);
+  assert.doesNotMatch(en, /Betting plan · Value/);
+  assert.match(ja, /セミブラフ/);
+});

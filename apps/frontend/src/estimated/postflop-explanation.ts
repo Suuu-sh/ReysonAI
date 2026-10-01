@@ -179,6 +179,8 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
 function handRole(equity: number, tiers: NumericMap | undefined, main: string) {
   const tier = Object.entries(tiers ?? {}).sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))[0]?.[0] ?? "air";
   if (!isAggressive(main)) return "pot-control";
+  // A draw bets for fold equity plus its outs, even near 50% equity against the whole range.
+  if (tier === "draw" && equity < 0.6) return "semi-bluff";
   if (equity >= 0.5) return "value";
   if (tier === "medium" && equity >= 0.25) return "protection";
   return "bluff";
@@ -191,6 +193,7 @@ function bettingCopy({ locale, role, main, equity, tiers }: {
   const text = {
     value: english ? `This hand has ${pct(equity)} equity against the defender's range, supporting a value bet.` : `この手は相手レンジに対して勝率${pct(equity)}で、バリューベットを支える強さです。`,
     bluff: english ? `This hand has ${pct(equity)} equity against the defender's range; this ${actionLabel(main, locale).toLowerCase()} relies on fold equity.` : `この手の相手レンジへの勝率は${pct(equity)}です。この${actionLabel(main, locale)}はフォールドを引き出す狙いです。`,
+    "semi-bluff": english ? `This draw has ${pct(equity)} equity against the defender's range; betting wins when they fold and still has outs when called.` : `このドローは相手レンジに対して勝率${pct(equity)}です。ベットで相手を降ろせるうえ、コールされても完成の可能性が残るセミブラフです。`,
     protection: english ? `This hand has ${pct(equity)} equity against the defender's range; betting can deny free cards.` : `この手は相手レンジに対して勝率${pct(equity)}です。ベットで無料のカードを防げます。`,
     "pot-control": english ? `Checking keeps the pot smaller; this hand has ${pct(equity)} equity with ${handTier}.` : `この手は${handTier}で相手レンジに対して勝率${pct(equity)}を保ちながら、チェックでポットを小さくします。`,
   };
@@ -362,8 +365,8 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
     const role = handRole(roleEquity, tiers, roleAction);
     if (main === "check" && mixedSizes.length) {
       const roleLabel = english
-        ? ({ value: "value", bluff: "bluff", protection: "protection", "pot-control": "pot-control" } as Record<string, string>)[role]
-        : ({ value: "バリュー", bluff: "ブラフ", protection: "プロテクション", "pot-control": "ポットコントロール" } as Record<string, string>)[role];
+        ? ({ value: "value", "semi-bluff": "semi-bluff", bluff: "bluff", protection: "protection", "pot-control": "pot-control" } as Record<string, string>)[role]
+        : ({ value: "バリュー", "semi-bluff": "セミブラフ", bluff: "ブラフ", protection: "プロテクション", "pot-control": "ポットコントロール" } as Record<string, string>)[role];
       const sizeMix = mixedSizes.length > 1;
       const sizeRole = role === "value" ? "value-bet" : roleLabel;
       mainReason = english
@@ -385,7 +388,7 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
       : "毎回同じサイズに固定せず、ベットサイズを混ぜる方針です。";
     else if (selected.length > 1 && selected.some(([action]) => action === "check") && mixedSizes.length) mixRationale = english
       ? `The policy keeps both a check and a ${actionLabel(mixedSizes[0][0], locale)} branch for this ${role} hand.`
-      : `この${({ value: "バリュー", protection: "プロテクション", bluff: "ブラフ", "pot-control": "ポットコントロール" } as Record<string, string>)[role]}候補は、チェックと${actionLabel(mixedSizes[0][0], locale)}の両方を使います。`;
+      : `この${({ value: "バリュー", "semi-bluff": "セミブラフ", protection: "プロテクション", bluff: "ブラフ", "pot-control": "ポットコントロール" } as Record<string, string>)[role]}候補は、チェックと${actionLabel(mixedSizes[0][0], locale)}の両方を使います。`;
     else if (selected.length > 1) mixRationale = english
       ? "The saved policy keeps both a continue and a fold branch for this hand."
       : "この手には続行とフォールドの両方を残す方針です。";
@@ -397,8 +400,8 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
   if (bettingDecision) {
     const roleEquity = fraction(explain?.betting?.equity_vs_defender ?? rawEquity);
     const roleNames = locale === "en"
-      ? { value: "Value", bluff: "Bluff", protection: "Protection", "pot-control": "Pot control" }
-      : { value: "バリュー", bluff: "ブラフ", protection: "プロテクション", "pot-control": "ポットコントロール" };
+      ? { value: "Value", "semi-bluff": "Semi-bluff", bluff: "Bluff", protection: "Protection", "pot-control": "Pot control" }
+      : { value: "バリュー", "semi-bluff": "セミブラフ", bluff: "ブラフ", protection: "プロテクション", "pot-control": "ポットコントロール" };
     const mainSize = selected.find(([action]) => isAggressive(action))?.[0] ?? main;
     const table = buildActionTable(input, rawEquity);
     const role = handRole(roleEquity, tiers, mainSize);
