@@ -217,8 +217,8 @@ export function replayLater(street, actions = [], start, spot) {
   return { state, pot, stacks, history, end: state.end ?? null, lastAggressor };
 }
 
-function boardBlock(street, card) {
-  return { key: `${street}-board`, kind: "board", cards: card ? [card] : [], street, pending: !card };
+function boardBlock(street, card, potBb) {
+  return { key: `${street}-board`, kind: "board", cards: card ? [card] : [], street, pending: !card, potBb };
 }
 
 function appendLaterDecisionBlocks(blocks, street, actions, start, spot, hasNextStreet = false) {
@@ -247,13 +247,13 @@ function appendLaterDecisionBlocks(blocks, street, actions, start, spot, hasNext
 export function buildLaterActionBlocks({ flopActions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [] } = {}, spot) {
   const turnStart = laterStart(flopActions, spot);
   if (!turnStart) return [];
-  const blocks = [boardBlock("turn", turnCard)];
+  const blocks = [boardBlock("turn", turnCard, turnStart.pot)];
   if (!turnCard) return blocks;
   const turnReplay = appendLaterDecisionBlocks(blocks, "turn", turnActions, turnStart, spot, true);
   if (!turnReplay.state.end || ["fold", "raise-fold"].includes(turnReplay.state.end.type) ||
       turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0) return blocks;
   const riverStart = { pot: turnReplay.pot, stacks: turnReplay.stacks, lastAggressor: turnReplay.lastAggressor };
-  blocks.push(boardBlock("river", riverCard));
+  blocks.push(boardBlock("river", riverCard, riverStart.pot));
   if (!riverCard) return blocks;
   appendLaterDecisionBlocks(blocks, "river", riverActions, riverStart, spot);
   return blocks;

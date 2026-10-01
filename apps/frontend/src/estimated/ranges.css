@@ -287,6 +287,7 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .action-seat-board-edit { padding: 1px 6px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent-soft) !important; font-size: 10px; font-weight: 600 !important; opacity: .75; transition: opacity .12s ease; }
 .action-seat-board:hover .action-seat-board-edit { opacity: 1; }
 .action-seat-board-cards { display: flex; gap: 4px; padding: 0 6px; }
+.action-seat-board-pot { margin-top: -3px; padding: 0 6px; color: var(--text-subtle); font-size: 10px; font-variant-numeric: tabular-nums; line-height: 1.2; white-space: nowrap; }
 .action-seat-board-card { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 32px; height: 42px; border-radius: 5px; background: #f4f1ec; color: #1b1b1f; font-size: 16px; font-weight: 750; line-height: 1; box-shadow: 0 1px 0 rgb(0 0 0 / 35%); }
 .action-seat-board-card .suit { margin-top: 2px; font-size: 13px; color: inherit; }
 .action-seat-board-card.red { color: #d1334f; }

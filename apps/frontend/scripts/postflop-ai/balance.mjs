@@ -442,6 +442,8 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
               items = scaleLaterPath(items, role, turnSteps, mixFor, runout.turnBoard, flopPath.aggressor);
               items = scaleLaterPath(items, role, state.steps, mixFor, runout.riverBoard, riverAggressor);
             }
+            // An unreachable facing node (e.g. the all-in the SPR rule removed) has no bettor range to judge.
+            if (defenceTable && isLaterFacingNode(node) && !defence.context(defenceTable, runout.riverBoard, node)) continue;
             const line = lineFor(riverAggressor, role);
             const targets = {};
             if (node.endsWith("_first")) for (const action of LATER_NODES[node].filter(value => value !== "check")) {

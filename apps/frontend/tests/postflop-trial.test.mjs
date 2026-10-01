@@ -345,16 +345,16 @@ test("read-only board projection expands saved source combos without revealing a
 test("later-street action blocks follow the completed flop, deal one board card, and stop on folds or all-ins", () => {
   const spot = spotById("BTN_open_BB_call");
   const pending = buildLaterActionBlocks({ flopActions: ["bet33", "call"] }, spot);
-  assert.deepEqual(pending, [{ key: "turn-board", kind: "board", cards: [], street: "turn", pending: true }]);
+  assert.deepEqual(pending, [{ key: "turn-board", kind: "board", cards: [], street: "turn", pending: true, potBb: 9.14 }]);
   const turn = buildLaterActionBlocks({ flopActions: ["bet33", "call"], turnCard: "Kh" }, spot);
-  assert.deepEqual(turn[0], { key: "turn-board", kind: "board", cards: ["Kh"], street: "turn", pending: false });
+  assert.deepEqual(turn[0], { key: "turn-board", kind: "board", cards: ["Kh"], street: "turn", pending: false, potBb: 9.14 });
   assert.equal(turn.at(-1).key, "turn_oop_first");
   assert.equal(turn.at(-1).active, true);
   assert.deepEqual(turn.at(-1).options.map(option => option.action), ["check", "bet33", "bet75", "bet125"]);
 
   const turnComplete = buildLaterActionBlocks({ flopActions: ["bet33", "call"], turnCard: "Kh", turnActions: ["check", "check"] }, spot);
   assert.equal(turnComplete.some(block => block.kind === "end"), false);
-  assert.deepEqual(turnComplete.at(-1), { key: "river-board", kind: "board", cards: [], street: "river", pending: true });
+  assert.deepEqual(turnComplete.at(-1), { key: "river-board", kind: "board", cards: [], street: "river", pending: true, potBb: 9.14 });
   assert.equal(buildLaterActionBlocks({ flopActions: ["bet33", "fold"] }, spot).length, 0);
   const fourBet = spotById("BTN_open_BB_4bp_call");
   assert.equal(laterStart(["bet125", "raise", "call"], fourBet), null);

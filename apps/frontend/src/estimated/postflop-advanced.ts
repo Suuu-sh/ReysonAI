@@ -130,11 +130,17 @@ function sizeSentence(a: string, kind: SizeKind | null, c: Ctx): string {
   const nuts = c.adv?.nuts === "hero";
   const en = c.en;
   if (a === "allin") {
-    const spr = c.rf?.spr;
-    if (finite(spr) && spr < 3) return en ? "With the SPR this low, the shove just commits the stacks, so raw hand strength outweighs polarisation."
-      : "SPRが低いので、オールインは単にスタックをコミットするだけで、ポラライズよりも純粋な手の強さが重みを持ちます。";
-    return en ? "Shoving turns the remaining stack into a single decision, which only works as a polarised range with few medium hands."
-      : "オールインは残りスタックを一度の判断に変えるので、中間の手が少ないポラライズしたレンジでないと成立しません。";
+    const spr = c.rf?.spr, h = c.hand, tier = c.tier, value = tier === "monster" || tier === "strong";
+    if (finite(spr) && spr < 3) {
+      if (value) return en ? `${h} is strong enough to stack off: at this low SPR the shove just commits the stacks, so raw hand strength outweighs polarisation.`
+        : `${h}はスタックを入れきれる強さです。SPRが低いのでオールインは単にスタックをコミットするだけで、ポラライズよりも手の強さが重みを持ちます。`;
+      return en ? `${h} shoves as a bluff that the capped value range supports, and at this low SPR the shove is close to the natural geometric size.`
+        : `${h}はブラフとしてのオールインです。SPRが低くオールインが自然なジオメトリックサイズに近いため、バリューとのバランスの範囲で成立します。`;
+    }
+    if (value) return en ? `${h} shoves with the remaining stack, a geometric-size bet where only the strongest hands and a few bluffs can go all-in.`
+      : `${h}は残りスタックをすべて入れるオールインです。ジオメトリックサイズの賭けなので、最強クラスの手と少数のブラフだけが成立します。`;
+    return en ? `${h} shoves as a bluff, and only a small share of the range can do so while keeping the value-to-bluff balance.`
+      : `${h}はブラフとしてのオールインで、バリューとのバランスを保てる範囲の少数のハンドだけが選びます。`;
   }
   if (a === "bet33") switch (kind) {
     case "merged": return c.street === "river"

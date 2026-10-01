@@ -208,3 +208,18 @@ The defence is a best response to B, so it is only as sensible as the policy's b
 shove range with more air than the bet size can support makes wide calls correct, and a value
 hand that deviates to a shove then wins a lot; a value-heavy range folds bluff-catchers. The
 `bluff-ratio` balance check is what tells you the betting policy needs regenerating.
+
+## River all-in sized by SPR
+
+The later-street policy gives river first nodes an `allin` share regardless of depth, which at 100bb deep means shoving
+about 9x the pot with a wide range. The effective mix (`defence.mjs`, `buildBetting`) therefore applies a computed rule:
+
+- shove/pot = min(stacks) / pot at the decision. When it is above `river_allin_max_pot_ratio` (2.5 in
+  `scripts/data/postflop-ai-pilot.json`, about the largest overbet commonly used: 2x to 2.5x pot), the all-in share of every
+  combo moves to the largest regular bet (bet125). The all-in stays legal in the tree but is 0% in the shown strategy, so
+  the facing-all-in nodes are unreachable.
+- At or below the limit the all-in is a natural stack-off and keeps its share for strong hands and the capped bluffs, while
+  the medium tier (river draws count as medium) moves to bet125, so there are no thin shoves.
+- A null limit switches the rule off (used only by tests of the plain bluff cap).
+
+`DEFENCE_VERSION` is 4. The stored flop base is flop-only and its contents do not change.

@@ -12,7 +12,9 @@ import { buildLaterView } from "../scripts/postflop-ai/local-view.mjs";
 import { laterHandEvForHand } from "../scripts/postflop-ai/later-hand-ev.mjs";
 import { seededRandom } from "../scripts/lib/equity.mjs";
 
-const base = loadInputs("BTN_open_BB_call");
+// These tests exercise the plain bluff cap and defence; null turns the SPR all-in rule off (tested separately).
+const noShoveRule = inputs => ({ ...inputs, config: { ...inputs.config, river_allin_max_pot_ratio: null } });
+const base = noShoveRule(loadInputs("BTN_open_BB_call"));
 const rows = (hands, freq = 100) => hands.map(hand => ({ hand, freq }));
 // Same spot with tiny synthetic ranges: BB (out of position, the bettor) and BTN (the defender).
 const synthetic = (bb, btn) => ({ ...base, seatRows: { BTN: btn, BB: bb } });
@@ -229,7 +231,7 @@ const candidatesMissing = !existsSync(artifactPaths(base.spot).candidate) || !ex
 const spot = { flop: "As7d2c", flopActions: ["check"], turn: "3s", turnActions: ["check", "check"], river: "9h" };
 
 test("the view mix and the mix inside laterHandEvForHand are the same computed defence", { skip: candidatesMissing && ".local candidate pair is unavailable" }, () => {
-  const inputs = loadInputs("BTN_open_BB_call");
+  const inputs = noShoveRule(loadInputs("BTN_open_BB_call"));
   const candidate = loadCandidate(inputs), later = loadLaterCandidate(inputs, candidate);
   const view = buildLaterView({ flop: spot.flop, flopActions: "check", turn: spot.turn, turnActions: "check,check", river: spot.river, riverActions: "allin" },
     inputs, candidate, later);
@@ -302,7 +304,7 @@ test("bluff cap: pure value, over-bluffed and under-bluffed ranges", () => {
 });
 
 test("regression on the saved policy: AKo's all-in EV is below its best bet and the shove range sits at the break-even", { skip: candidatesMissing && ".local candidate pair is unavailable" }, () => {
-  const inputs = loadInputs("BTN_open_BB_call");
+  const inputs = noShoveRule(loadInputs("BTN_open_BB_call"));
   const candidate = loadCandidate(inputs), later = loadLaterCandidate(inputs, candidate);
   const boardCards = parseCards("As7d2c3s9h", 5);
   const facing = replayDecision(inputs, boardCards, { flop: ["check"], turn: ["check", "check"], river: ["allin"] });
@@ -323,4 +325,49 @@ test("regression on the saved policy: AKo's all-in EV is below its best bet and 
     const ev = evOf(hand);
     assert.ok(ev.allin < Math.max(ev.bet33, ev.bet75, ev.bet125), `${hand}: ${JSON.stringify(ev)}`);
   }
+});
+
+// ---- River all-in sized by SPR ---------------------------------------------------------------------
+// Deep stacks: the shove is far above the pot (> river_allin_max_pot_ratio), so its share moves to the largest bet.
+// Low SPR: the shove is a natural stack-off, kept for value hands; medium hands get the big bet instead.
+function riverFirst(inputs, spotBoard, laterPolicy) {
+  const defence = defenceFor(inputs, referencePolicy, laterPolicy);
+  const table = replayDecision(inputs, spotBoard, { flop: ["check"], turn: ["check", "check"], river: [] });
+  return { table, mix: text => {
+    const combo = parseCards(text, 2);
+    return defence.mix(table, spotBoard, "river_oop_first", combo, laterPolicyMix(laterPolicy, "river_oop_first", combo, spotBoard, "checked"));
+  } };
+}
+
+test("deep-stack river: the all-in share moves to bet125 for every hand", () => {
+  const inputs = loadInputs("BTN_open_BB_call");
+  const policy = structuredClone(referenceLaterPolicy());
+  for (const rule of policy.streets.river.rules) if (rule.node === "river_oop_first") rule.mix = { check: 10, bet33: 0, bet75: 0, bet125: 20, allin: 70 };
+  const { table, mix } = riverFirst(inputs, board, policy);
+  assert.ok(Math.min(table.stacks.BB, table.stacks.BTN) / table.pot > 2.5);
+  for (const hand of ["QcJd", "AcQd", "8c8h", "Ac2c", "KsKd"]) {
+    const result = mix(hand);
+    assert.equal(result.allin, 0, hand);
+    assert.ok(Math.abs(Object.values(result).reduce((a, b) => a + b, 0) - 100) < 1e-6, hand);
+    assert.ok(result.bet125 >= 20 - 1e-9, hand);
+  }
+  // The plain bluff cap path without the rule keeps the policy all-in.
+  const off = riverFirst(noShoveRule(inputs), board, policy);
+  assert.equal(off.mix("8c8h").allin, 70);
+});
+
+test("low-SPR river: the all-in is kept for value hands and removed from medium hands", () => {
+  const inputs = loadInputs("UTG_open_BB_4bp_call");
+  const policy = structuredClone(referenceLaterPolicy());
+  for (const rule of policy.streets.river.rules) if (rule.node === "river_oop_first") rule.mix = { check: 0, bet33: 0, bet75: 0, bet125: 0, allin: 100 };
+  const { table, mix } = riverFirst(inputs, board, policy);
+  assert.ok(Math.min(...Object.values(table.stacks)) / table.pot <= 2.5);
+  const tiers = tierArray(board);
+  const tierOf = text => { const [a, b] = parseCards(text, 2); return TIERS[tiers[comboId(a, b)]]; };
+  assert.equal(tierOf("8c8h"), "monster");
+  assert.equal(mix("8c8h").allin, 100);
+  const medium = ["Ah9c", "Ad4d", "Kc9d", "Jh8h", "Qs4h", "Ac9s", "Kd4s", "Th9s", "Kc6s"].find(text => tierOf(text) === "medium");
+  assert.ok(medium, "a medium hand exists on the board");
+  assert.equal(mix(medium).allin, 0);
+  assert.equal(mix(medium).bet125, 100);
 });

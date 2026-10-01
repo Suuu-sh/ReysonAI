@@ -32,7 +32,7 @@ import { flopBetFraction } from "./tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-export const DEFENCE_VERSION = 3;
+export const DEFENCE_VERSION = 4;
 // Sampled turn+river runouts per flop decision (seeded by the flop, shared by every node of it).
 export const FLOP_RUNOUTS = 300;
 // call share = logistic(margin / LOGISTIC_SCALE): +-4pt of margin is about 88 / 12.
@@ -370,7 +370,7 @@ class Defence {
         const factors = new Float64Array(TIERS.length * 3);
         for (let tier = 0; tier < TIERS.length; tier++) {
           const base = this.policyRule(entry, texture, tier);
-          for (let kind = 0; kind < 3; kind++) factors[tier * 3 + kind] = (cap ? cap.apply(base, kind) : base)[entry.action] / 100;
+          for (let kind = 0; kind < 3; kind++) factors[tier * 3 + kind] = (cap ? cap.apply(base, kind, tier) : base)[entry.action] / 100;
         }
         const kinds = cap ? cap.kind : null;
         next = new Float64Array(NUM_IDS);
@@ -483,7 +483,7 @@ class Defence {
       if (street !== "river" && after.stacks[bettor] > 1e-9) continue;
       const wager = r2(after.pot - target.pot);
       const call = Math.min(after.stacks[defender], r2(after.invested[bettor] - after.invested[defender]));
-      caps.push({ action, alpha: requiredEquity({ potBefore: target.pot, wager, call }).required });
+      caps.push({ action, alpha: requiredEquity({ potBefore: target.pot, wager, call }).required, ratio: wager / target.pot });
     }
     if (!caps.length) return null;
     const bettorWeights = this.reach(bettor, log.filter(entry => entry.seat === bettor && entry !== target), board, table);
@@ -498,7 +498,18 @@ class Defence {
       const equity = values[i];
       if (equity !== null) kind[bettorRange.ids[i]] = equity >= VALUE_EQUITY ? 1 : 2;
     }
-    const baseMixes = TIERS.map((_, tier) => this.policyRule(target, texture, tier));
+    // River all-in sized by SPR: a shove above the pot-ratio limit is replaced by the largest regular
+    // bet for every hand; within the limit only the medium tier is moved (no thin shoves).
+    const bigBet = street === "river" ? [...(NODES[node] ?? LATER_NODES[node])].reverse().find(a => a.startsWith("bet")) : null;
+    const maxRatio = this.config.river_allin_max_pot_ratio;
+    // A null limit switches the rule off (tests of the plain bluff cap and defence).
+    const shoveCap = bigBet && maxRatio != null ? caps.find(item => item.action === "allin") : null;
+    const reroute = (base, tier) => {
+      if (!shoveCap || !(base.allin > 0)) return base;
+      if (!(shoveCap.ratio > maxRatio) && !["medium", "draw"].includes(TIERS[tier])) return base;
+      return { ...base, allin: 0, [bigBet]: round6((base[bigBet] ?? 0) + base.allin) };
+    };
+    const baseMixes = TIERS.map((_, tier) => reroute(this.policyRule(target, texture, tier), tier));
     for (const cap of caps) {
       let value = 0, bluff = 0;
       for (const id of bettorRange.ids) {
@@ -512,7 +523,8 @@ class Defence {
       Object.assign(cap, { valueBefore: value, bluffBefore: bluff, valueAfter: value, bluffAfter: bluff * cap.factor });
     }
     const passive = (NODES[node] ?? LATER_NODES[node]).includes("check") ? "check" : "call";
-    const apply = (base, type) => {
+    const apply = (base, type, tier = -1) => {
+      base = reroute(base, tier);
       if (type !== 2) return base;
       let out = null;
       for (const cap of caps) {
@@ -525,7 +537,7 @@ class Defence {
       return out ?? base;
     };
     return { node, bettor, caps, kind, passive, apply,
-      applyCombo: (base, combo) => apply(base, kind[comboId(combo[0], combo[1])]) };
+      applyCombo: (base, combo) => apply(base, kind[comboId(combo[0], combo[1])], tiers[comboId(combo[0], combo[1])]) };
   }
 
   // Break-even requirement and supported bluffs for every aggressive option at a betting node.

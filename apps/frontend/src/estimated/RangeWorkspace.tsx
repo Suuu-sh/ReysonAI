@@ -485,6 +485,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
             aria-label={english ? `${title} card ${selected ? "change" : "select"}` : `${label}カードを${selected ? "変更" : "選択"}`}>
             <span className="action-seat-heading"><strong>{title}</strong><span className="action-seat-board-edit" aria-hidden="true">{english ? selected ? "Edit" : "Select" : selected ? "変更" : "選択"}</span></span>
             <span className="action-seat-board-cards">{(isFlop ? [0, 1, 2].map(index => block.cards[index] ?? "") : [block.cards[0] ?? ""]).map((card, index) => <span key={index} className={`action-seat-board-card${/[hd]$/.test(card) ? " red" : ""}${card ? "" : " empty"}`}>{card ? <>{card[0]}<span className="suit">{suitLabels[card[1]]}</span></> : "?"}</span>)}</span>
+            {Number.isFinite(block.potBb) && <small className="action-seat-board-pot" aria-label={`${english ? "Pot at the start of the street" : "ストリート開始時のポット"} ${formatBb(block.potBb)}BB`}>{english ? "Pot" : "ポット"} {formatBb(block.potBb)}BB</small>}
           </button>;
         }
         const chosenOption = block.options.find(option => option.action === block.chosen);
@@ -802,7 +803,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     previousPendingStreetCard.current = pendingStreetCard;
   }, [pendingStreetCard]);
   const combinedBlocks = flopActive
-    ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop" },
+    ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop", potBb: flopContext.potBb },
       ...(flopContext.pilotAvailable && flopBoard
         ? [...buildFlopActionBlocks(flopActions, flopContext).filter(block => !(canEnterLaterStreets && block.kind === "end")), ...laterBlocks]
         : [])]
