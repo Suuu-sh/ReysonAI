@@ -70,6 +70,12 @@ const displayModeStorageKey = displayModeKey;
 const formatStorageKey = "solveaai:game-format:v1";
 const tableProfileStorageKey = "solveaai:table-profile:v1";
 const openingModelFor = spot => markAdjustedModel(openingMatrixModel(spot), spot);
+// Postflop labels end in "(33%)"; show that part right-aligned so the amounts line up.
+function OptionLabel({ label }: { label: string }) {
+  const match = /^(.*\S)\s+(\(\d+%\))$/.exec(label);
+  return match ? <><span className="action-seat-main">{match[1]}</span><span className="action-seat-pct">{match[2]}</span></> : <>{label}</>;
+}
+
 export function selectedHandForRangeEntry(entry, selected) {
   return entry.spot?.hands.find(row => row.hand === selected) ?? entry.hand;
 }
@@ -525,7 +531,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
             {block.options.map(option => {
               const selected = option.action === block.chosen;
               const disabled = option.disabled || block.kind === "forced" || block.kind === "pending";
-              return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={event => { event.stopPropagation(); selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action); }}>{option.label}</button>;
+              return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={event => { event.stopPropagation(); selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action); }}><OptionLabel label={option.label} /></button>;
             })}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
             {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && <ActionDropdown position={block.position} options={block.options.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}

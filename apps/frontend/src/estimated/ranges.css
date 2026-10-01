@@ -17,6 +17,9 @@
 .action-seat-options { display: flex; flex-direction: column; gap: 1px; margin-top: 5px; }
 .action-seat-options button, .action-seat-summary { display: block; width: 100%; padding: 3px 6px; border: 0; border-radius: 5px; background: none; color: var(--text-muted); text-align: left; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .action-seat.active .action-seat-options button:not(:disabled) { color: var(--text); }
+.action-seat-options button:has(.action-seat-pct) { display: flex; justify-content: space-between; gap: 6px; }
+.action-seat-main { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.action-seat-pct { flex: none; font-variant-numeric: tabular-nums; }
 .action-seat-options button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text); }
 .action-seat-options button.chosen { background: #ffffff0f; color: var(--text); font-weight: 600; box-shadow: inset 2px 0 0 var(--accent); border-radius: 0 5px 5px 0; }
 .action-seat-options button:disabled { opacity: 1; cursor: default; }
