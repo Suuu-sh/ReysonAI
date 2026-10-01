@@ -153,6 +153,11 @@ export function decisionOptions(chips, node, street = "flop", locale = "en") {
   return buildOptions(chips, node, nodeRoleOf(node), LATER_NODES[node], pilotConfig.later_raise_multiplier,
     action => betFraction(street, action), locale).map(({ paid, ...rest }) => rest);
 }
+// A bet or raise that the merge ratio turns into an all-in is the same line as the explicit all-in,
+// so the action path offers it once (the explicit all-in wins).
+const blockOptions = options => options
+  .filter(option => !(option.allIn && option.action !== "allin" && option.action !== "call" && options.some(other => other.action === "allin")))
+  .map(({ action, label }) => ({ action, label }));
 const buildOptionsFor = (street, chips, node, role) =>
   buildOptions(chips, node, role, LATER_NODES[node], pilotConfig.later_raise_multiplier, action => betFraction(street, action), "en");
 const nodeRoleOf = node => node.startsWith("btn_") || node.startsWith("ip_") || /^(turn|river)_ip_/.test(node) ? "ip" : "oop";
@@ -186,7 +191,7 @@ export function buildFlopActionBlocks(actions = [], spot) {
       break;
     }
     blocks.push({ key: `flop-${index}`, kind: "flop", flopIndex: index, position: g[state.role], stack: `${stackNow}`,
-      chosen: actions[index] ?? null, options: decisionOptions(chipsNow, state.node, "flop").map(({ action, label }) => ({ action, label })), active: index === actions.length });
+      chosen: actions[index] ?? null, options: blockOptions(decisionOptions(chipsNow, state.node, "flop")), active: index === actions.length });
   }
   return blocks;
 }
@@ -290,7 +295,7 @@ function appendLaterDecisionBlocks(blocks, street, actions, start, spot, hasNext
     }
     const role = state.role;
     blocks.push({ key: state.node, kind: "flop", street, laterIndex: index, position: g[role],
-      stack: formatBb(replayed.stacks[role]), chosen: actions[index] ?? null, options: decisionOptions(replayed.chipsNow, state.node, street).map(({ action, label }) => ({ action, label })), active: index === actions.length });
+      stack: formatBb(replayed.stacks[role]), chosen: actions[index] ?? null, options: blockOptions(decisionOptions(replayed.chipsNow, state.node, street)), active: index === actions.length });
   }
   return replayLater(street, actions, start, spot);
 }

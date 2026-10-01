@@ -453,7 +453,6 @@ function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise
 function ActionDropdown({ position, options, onSelect }) {
   const [menu, setMenu] = useState(null);
   const english = productLocale() === "en";
-  const uniqueOptions = options.filter((option, index) => options.findIndex(other => other.label === option.label) === index);
   const toggle = event => {
     event.stopPropagation();
     if (menu) { setMenu(null); return; }
@@ -465,7 +464,7 @@ function ActionDropdown({ position, options, onSelect }) {
     {menu && createPortal(<>
       <button type="button" className="action-seat-select-backdrop" aria-label="閉じる" onClick={() => setMenu(null)} />
       <div className="action-seat-select-menu" role="menu" style={{ top: menu.top, right: menu.right }}>
-        {uniqueOptions.map(option => <button type="button" role="menuitem" key={option.action} onClick={() => { setMenu(null); onSelect(option.action); }}>{option.label}</button>)}
+        {options.map(option => <button type="button" role="menuitem" key={option.action} onClick={() => { setMenu(null); onSelect(option.action); }}>{option.label}</button>)}
       </div>
     </>, document.body)}
   </div>;
