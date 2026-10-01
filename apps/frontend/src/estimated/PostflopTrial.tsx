@@ -3,10 +3,8 @@ import { X } from "@phosphor-icons/react";
 import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../components/primitives.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { tierLabels } from "./postflop-reasons.ts";
-import { buildPostflopExplanation } from "./postflop-explanation.ts";
 import { buildAdvancedExplanation } from "./postflop-advanced.ts";
 import { glossaryPieces } from "./poker-glossary.ts";
-import { loadProfile } from "../profile.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
@@ -87,31 +85,12 @@ function SuitCardPicker({ selectedCards = new Set(), disabledCards = new Set(), 
 const tablePct = (value: number | null) => value === null ? "—" : `${Math.round(value * 100)}%`;
 
 // Per-action comparison at a betting decision; scrolls sideways inside its own wrapper on narrow screens.
-function ActionTableView({ table, english }) {
-  return <div className="postflop-action-table-wrap" tabIndex={0} role="region" aria-label={table.caption}>
-    <table className="postflop-action-table">
-      <caption>{table.caption}</caption>
-      <thead><tr>
-        <th scope="col">{table.headers.action}</th><th scope="col">{table.headers.frequency}</th>
-        <th scope="col">{table.headers.folds}</th><th scope="col">{table.headers.equity}</th>
-      </tr></thead>
-      <tbody>{table.rows.map(row => <tr key={row.action}>
-        <th scope="row"><i style={{ background: barColor(row.action) }} aria-hidden="true" />{row.label}</th>
-        <td>{tablePct(row.frequency)}</td><td>{tablePct(row.foldShare)}</td><td>{tablePct(row.calledEquity)}</td>
-      </tr>)}</tbody>
-    </table>
-  </div>;
-}
 
 function HandReasons({ node, hand, texture, explain, loading, error, positions }) {
   if (!hand?.tiers) return null;
   const english = productLocale() === "en";
-  const explanation = buildPostflopExplanation({ locale: english ? "en" : "ja", node,
-    hand: hand.hand, actionMix: hand.actions, tiers: hand.tiers, texture, explain,
-    positions });
   const plain = buildAdvancedExplanation({ locale: english ? "en" : "ja", node, hand: hand.hand, actionMix: hand.actions,
     tiers: hand.tiers, texture, explain, positions });
-  const advanced = loadProfile()?.level === "advanced";
   return <div className="postflop-reasons postflop-reasons-structured">
     <GlossaryText className="postflop-reason-headline" text={plain.headline} locale={english ? "en" : "ja"} />
     {plain.blocks.map(block => <details className="postflop-reason-section postflop-reason-action" key={block.action} style={{ "--action-color": barColor(block.action) } as any}>
@@ -125,25 +104,6 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions }
       <GlossaryText text={block.text} locale={english ? "en" : "ja"} />
     </details>)}
     {plain.texture && <GlossaryText className="postflop-reason-texture" text={plain.texture} locale={english ? "en" : "ja"} />}
-    {advanced && <details className="postflop-reason-section postflop-detailed-numbers">
-      <summary>{english ? "Detailed numbers" : "詳しい数字"}</summary>
-    <p className="postflop-reason-headline">{explanation.headline}</p>
-    {explanation.facing && <section className="postflop-reason-section">
-      <h4>{explanation.facing.title}</h4>
-      <dl className="postflop-fact-list">{explanation.facing.rows.map(row => <div key={row.label}>
-        <dt title={row.tooltip} aria-label={`${row.label}: ${row.value}. ${row.tooltip}`}>{row.label}<span aria-hidden="true">ⓘ</span></dt><dd>{row.value}</dd>
-      </div>)}</dl>
-    </section>}
-    {explanation.betting && <section className="postflop-reason-section">
-      <h4>{explanation.betting.title} · {explanation.betting.role}</h4>
-      <p>{explanation.betting.reason}</p>
-      {explanation.betting.mixReason && <p>{explanation.betting.mixReason}</p>}
-      {explanation.betting.table && <ActionTableView table={explanation.betting.table} english={english} />}
-      {explanation.betting.sizes.length > 0 && <ul>{explanation.betting.sizes.map((line, index) => <li key={`size-${index}`}>{line}</li>)}</ul>}
-      {explanation.betting.alternatives.length > 0 && <ul>{explanation.betting.alternatives.map((line, index) => <li key={`alt-${index}`}>{line}</li>)}</ul>}
-    </section>}
-      {explanation.texture && <p className="postflop-reason-texture">{explanation.texture}</p>}
-    </details>}
     {loading && <small className="postflop-reason-general">{english ? "Loading explanation…" : "説明を計算中…"}</small>}
     {error && <small className="postflop-reason-general">{english ? "Part of the explanation is unavailable." : "説明の一部を読み込めませんでした。"}</small>}
   </div>;

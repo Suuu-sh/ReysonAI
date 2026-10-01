@@ -120,11 +120,8 @@ test("real BTN_open_BB_call facts produce grounded range facts and jargon", { sk
   assert.ok(lfacts.runout_shift);
 });
 
-test("detailed numbers are rendered only for the advanced level", async () => {
+test("the hand detail shows no detailed-number section or action table for any level", async () => {
   const { readFileSync } = await import("node:fs");
   const src = readFileSync(new URL("../src/estimated/PostflopTrial.tsx", import.meta.url), "utf8");
-  assert.match(src, /const advanced = loadProfile\(\)\?\.level === "advanced"/);
-  assert.match(src, /\{advanced && <details[^>]*postflop-detailed-numbers/);
-  const detailsAt = src.indexOf("postflop-detailed-numbers");
-  for (const marker of ["explanation.facing.rows", "ActionTableView table="]) assert.ok(src.indexOf(marker, detailsAt) > detailsAt, marker);
+  for (const marker of ["postflop-detailed-numbers", "ActionTableView", "explanation.facing.rows"]) assert.equal(src.includes(marker), false, marker);
 });

@@ -211,11 +211,6 @@
 .postflop-reason-section p { margin: 0; }
 .postflop-reason-section ul { gap: 3px; }
 .postflop-reason-section li { padding-left: 8px; font-size: 11.5px; }
-.postflop-fact-list { display: grid; gap: 3px; margin: 0; }
-.postflop-fact-list > div { display: grid; grid-template-columns: minmax(92px, .42fr) minmax(0, 1fr); gap: 8px; }
-.postflop-fact-list dt { display: flex; align-items: baseline; gap: 4px; color: var(--text-subtle); font-size: 10.5px; text-decoration: underline dotted; text-underline-offset: 2px; cursor: help; }
-.postflop-fact-list dt span { font-size: 9px; opacity: .7; }
-.postflop-fact-list dd { margin: 0; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .postflop-reason-texture { margin: 0; color: var(--text-subtle); font-size: 11px; }
 /* Estimated view: keep range tables inside one screen from tablet width up. */
 @media (min-width: 761px) {
@@ -319,15 +314,6 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .postflop-reason-general { color: var(--text-subtle); font-size: 11.5px; line-height: 1.5; }
 
 /* Per-action comparison table in the postflop hand detail. */
-.postflop-action-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; }
-.postflop-action-table { width: 100%; min-width: 340px; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
-.postflop-action-table caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.postflop-action-table th, .postflop-action-table td { padding: 5px 8px; text-align: right; border-bottom: 1px solid var(--line); }
-.postflop-action-table thead th { color: var(--text-subtle); font-size: 10px; font-weight: 500; line-height: 1.3; vertical-align: bottom; }
-.postflop-action-table tbody th { text-align: left; color: var(--text); font-weight: 600; white-space: nowrap; }
-.postflop-action-table th:first-child, .postflop-action-table td:first-child { text-align: left; }
-.postflop-action-table tbody tr:last-child > * { border-bottom: 0; }
-.postflop-action-table tbody th i { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 2px; }
 
 .postflop-reason-action-name { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
 .postflop-reason-frequency { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
