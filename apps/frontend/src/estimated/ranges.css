@@ -337,6 +337,7 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .postflop-term-definition strong { color: var(--text); }
 
 .action-seat-info { gap: 8px; padding: 10px 12px; }
+.action-seat-select { display: none; }
 .settings-toggle { display: inline-flex; align-items: baseline; gap: 6px; padding: 0; border: 0; background: transparent; color: var(--text-muted); font: inherit; font-size: 15px; cursor: default; pointer-events: none; }
 .settings-toggle strong { font-weight: 700; }
 .settings-toggle span { font-weight: 700; }
@@ -362,7 +363,13 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
   .action-seat-result { margin: 0; font-size: 12px; white-space: nowrap; }
   .action-seat-end small { white-space: nowrap; }
   .enter-postflop { padding: 4px 10px; white-space: nowrap; }
-  .action-seat-board-pot { display: none; }
+  .action-seat-board-pot, .action-seat-board-edit { display: none; }
+  .action-seat-board { flex-direction: row; gap: 6px; }
+  .action-seat-board-cards { gap: 2px; padding: 0; }
+  .action-seat-board-card { flex-direction: row; width: auto; height: 22px; padding: 0 4px; font-size: 12px; }
+  .action-seat-board-card .suit { margin: 0 0 0 1px; font-size: 11px; }
+  .action-seat.active:has(.action-seat-select) .action-seat-options button { display: none; }
+  .action-seat-select { display: block; padding: 4px 6px; border: 1px solid var(--line-strong); border-radius: 5px; background: var(--surface); color: var(--text); font: inherit; font-size: 12px; }
   .settings-toggle { cursor: pointer; pointer-events: auto; align-items: center; height: 100%; padding: 4px 10px 4px 6px; font-size: 13px; white-space: nowrap; }
   .settings-toggle svg { display: block; color: var(--text-muted); }
   .settings-body { display: none; }
