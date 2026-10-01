@@ -86,6 +86,11 @@ export default {
   },
 };
 
+function notModified(request: Request, response: Response): Response | null {
+  const etag = response.headers.get("etag");
+  return etag && request.headers.get("if-none-match") === etag ? new Response(null, { status: 304, headers: { etag } }) : null;
+}
+
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname === "/health" && request.method === "GET") {
     return json({ status: "ok", service: "evionai-api" });
@@ -97,11 +102,25 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     const cache = (globalThis as { caches?: { default?: EdgeCache } }).caches?.default;
     const versionName = url.pathname === "/v1/postflop/flop" ? "flop-base" : "postflop";
     const version = cache ? await datasetVersion(env.DB, versionName) : null;
-    const key = version ? new Request(`${url.origin}${url.pathname}?${url.searchParams}&dataset=${version}`) : null;
+    // Flop bases are served as stored Brotli; clients without br get a decompressed variant, cached apart.
+    const brotli = /\bbr\b/.test(request.headers.get("accept-encoding") ?? "");
+    const variant = versionName === "flop-base" ? `&enc=${brotli ? "br" : "id"}` : "";
+    const key = version ? new Request(`${url.origin}${url.pathname}?${url.searchParams}&dataset=${version}${variant}`) : null;
     const hit = key ? await cache!.match(key) : undefined;
-    if (hit) return hit;
-    const { status, body, text } = await routePostflop(env.DB, url.pathname, url.searchParams);
+    if (hit) return notModified(request, hit) ?? hit;
+    const { status, body, text, bytes, etag } = await routePostflop(env.DB, url.pathname, url.searchParams);
     if (status !== 200) return errorResponse(status, String((body as JsonRecord).error ?? "error"));
+    if (bytes) {
+      const headers: Record<string, string> = { "content-type": "application/json", vary: "accept-encoding", "cache-control": "public, max-age=300, s-maxage=86400", ...(etag ? { etag } : {}) };
+      let flop: Response;
+      if (brotli) flop = new Response(bytes as unknown as BodyInit, { status: 200, headers: { ...headers, "content-encoding": "br" }, encodeBody: "manual" } as ResponseInit);
+      else {
+        try { flop = new Response(new Blob([bytes as unknown as BlobPart]).stream().pipeThrough(new DecompressionStream("brotli" as CompressionFormat)), { status: 200, headers }); }
+        catch { return errorResponse(406, "This flop base is served as Brotli; send accept-encoding: br"); }
+      }
+      if (key) await cache!.put(key, flop.clone());
+      return notModified(request, flop) ?? flop;
+    }
     const response = text == null ? json(body, { cacheControl: "public, max-age=300, s-maxage=86400" })
       : new Response(text, { status: 200, headers: { ...JSON_HEADERS, "cache-control": "public, max-age=300, s-maxage=86400" } });
     if (key) await cache!.put(key, response.clone());
@@ -457,8 +476,10 @@ function withCors(response: Response, request: Request, env: Env): Response {
   if (allowed) headers.set("access-control-allow-origin", configuredOrigin === "*" ? "*" : requestOrigin ?? configuredOrigin);
   headers.set("access-control-allow-methods", "GET, POST, OPTIONS");
   headers.set("access-control-allow-headers", "content-type");
-  headers.set("vary", "Origin");
-  return new Response(response.body, { status: response.status, headers });
+  headers.set("vary", [...new Set(["Origin", ...(response.headers.get("vary") ?? "").split(",").map(item => item.trim()).filter(Boolean)])].join(", "));
+  // Bodies already carrying a content-encoding (stored Brotli) must not be encoded again.
+  const init = { status: response.status, headers, ...(headers.has("content-encoding") ? { encodeBody: "manual" } : {}) } as ResponseInit;
+  return new Response(response.body, init);
 }
 
 class HttpError extends Error {

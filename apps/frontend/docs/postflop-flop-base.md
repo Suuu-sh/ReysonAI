@@ -55,7 +55,15 @@ files and return small metrics, not huge documents. Benchmark artifacts live
 separately under `.local/postflop-ai/flop-base-benchmark/`, outside the product
 artifact footprint.
 
-Migration `0004_flop_base.sql` keys ordered JSON TEXT parts by
+**Compressed storage (migration `0005_flop_base_br.sql`, replaces the TEXT table of 0004).**
+`postflop_flop_base_br` holds the Brotli bytes of each flop (identical to the `.json.br`
+files) as BLOB parts written as `X'...'` hex literals, at most 44,500 bytes per part so a
+statement stays under 90,000 bytes. BTN_open_BB_call: 1,755 flops, 1,840 rows, 118.8 MB of
+SQL, about 61 MB in D1 (vs 313 MB as TEXT), so 44 spots are about 2.7 GB. The Worker joins
+the parts and returns them with `content-encoding: br` (`encodeBody: "manual"`, also kept
+through the CORS wrapper) without decompressing; clients without `br` get a
+DecompressionStream("brotli") body, else 406. The local Vite middleware does the same.
+Older description of 0004 follows (superseded): ordered JSON TEXT parts keyed by
 `(spot_id, flop_key, part)`. Publishing streams SQL and limits the **whole escaped
 statement**, not just the value, to 90,000 bytes. The measured maximum is **89,201
 bytes**. `--only flop-base` does not replace policy/preflop tables. The Worker route

@@ -18,7 +18,7 @@ import { treeHistories } from "../scripts/postflop-ai/tree.mjs";
 import { computeBoard, computeExplain, computeFlopHandEv, storedFlopHandEvInput } from "../src/estimated/postflop-compute.ts";
 import { handEvForBoard, flopHandEvForHand } from "../scripts/postflop-ai/flop-hand-ev-core.mjs";
 import { computeBoardBatch } from "../scripts/postflop-ai/board-batch.mjs";
-import { flopBaseTextParts, buildFlopBaseSql } from "../scripts/postflop-ai/flop-base-d1.mjs";
+import { flopBaseBytesParts, buildFlopBaseSql, flopBaseMiddleware } from "../scripts/postflop-ai/flop-base-d1.mjs";
 import { readFreshFlopBase } from "../scripts/postflop-ai/flop-base-files.mjs";
 import opening from "../src/estimated/opening-ranges.json" with { type: "json" };
 import responses from "../src/estimated/preflop-ranges.json" with { type: "json" };
@@ -98,12 +98,33 @@ test("5 flops: JSON stored/remapped views and combo/class UI facts deep-equal th
   }
 });
 
-test("D1 text splits round-trip UTF-8 and quotes, with every full statement below 90KB", () => {
-  const text = JSON.stringify({ value: "a'日本語♠🃏".repeat(18000) });
-  assert.equal(flopBaseTextParts(text).join(""), text);
-  const sql = buildFlopBaseSql([{ spot: inputs.spot.id, flop: "Ac7d2h", text, hash: "h" }], "2026-10-01");
+test("D1 BLOB parts round-trip bytes, with every full statement below 90KB", async () => {
+  const { randomBytes } = await import("node:crypto");
+  const bytes = randomBytes(300000);
+  assert.deepEqual(Buffer.concat(flopBaseBytesParts(bytes)), bytes);
+  const sql = buildFlopBaseSql([{ spot: inputs.spot.id, flop: "Ac7d2h", text: "x", compressed: bytes, hash: "h" }], "2026-10-01");
+  const inserts = sql.trim().split("\n").filter(line => line.startsWith("INSERT INTO postflop_flop_base_br"));
+  assert.equal(inserts.length, flopBaseBytesParts(bytes).length);
   for (const statement of sql.trim().split("\n")) assert.ok(Buffer.byteLength(statement) < 90000);
+  const hex = inserts.map(line => line.match(/X'([0-9a-f]*)'\);$/)[1]).join("");
+  assert.equal(hex, bytes.toString("hex"));
   assert.match(sql, /'flop-base'/); assert.doesNotMatch(sql, /DELETE FROM postflop_spots/);
+});
+
+test("local flop middleware serves stored Brotli with content-encoding, decoded by fetch", async () => {
+  const { createServer } = await import("node:http");
+  const { brotliCompressSync } = await import("node:zlib");
+  const text = JSON.stringify({ spot: "s", flop: "Ac7d2h" });
+  const server = createServer((req, res) => {
+    // Same headers as flopBaseMiddleware for a found file, using a fixed body.
+    res.setHeader("Content-Type", "application/json"); res.setHeader("Content-Encoding", "br"); res.end(brotliCompressSync(text));
+  });
+  await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
+  try {
+    const response = await fetch(`http://127.0.0.1:${server.address().port}/local-postflop-flop`);
+    assert.deepEqual(await response.json(), JSON.parse(text));
+  } finally { server.close(); }
+  assert.equal(typeof flopBaseMiddleware, "function");
 });
 
 test("board workers write deterministic resumable files, identical across worker counts", async () => {

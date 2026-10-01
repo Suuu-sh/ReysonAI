@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import test from "node:test";
+import { brotliCompressSync, brotliDecompressSync } from "node:zlib";
 import worker from "../src/index.ts";
 import { handEvRows, spotArtifacts } from "../../frontend/scripts/postflop-ai/publish-d1.mjs";
 import { postflopResponse } from "../../frontend/scripts/postflop-ai/local-view.mjs";
@@ -21,7 +22,7 @@ function mockDb(tables) {
           if (sql.includes("WHERE spot_id")) rows = rows.filter(row => row.spot_id === args[0]);
           if (table === "postflop_hand_ev") rows = rows.filter(row => row.stage === "flop" &&
             ((row.board_key === "" && row.history === "") || (row.board_key === args[1] && row.history === args[2])));
-          if (table === "postflop_flop_base") rows = rows.filter(row => row.flop_key === args[1]).sort((a, b) => a.part - b.part);
+          if (table === "postflop_flop_base_br") rows = rows.filter(row => row.flop_key === args[1]).sort((a, b) => a.part - b.part);
           return { results: rows };
         },
       };
@@ -78,16 +79,18 @@ test("worker artifacts and hand-EV equal the local middleware", { skip: !local &
 });
 
 
-test("flop base route validates keys and returns ordered stored JSON text without parsing", async () => {
+test("flop base route validates keys and returns joined stored Brotli bytes without parsing", async () => {
   // Deliberately invalid JSON proves no payload parse happens on this route.
   const payload = "opaque stored JSON text: not parsed";
+  const packed = brotliCompressSync(payload);
+  const cut = 5; // D1 returns BLOBs as arrays of byte values
   const rows = [
-    { spot_id: spot.id, flop_key: "Ac7d2h", part: 1, parts: 2, content_hash: "fresh", body: payload.slice(12) },
-    { spot_id: spot.id, flop_key: "Ac7d2h", part: 0, parts: 2, content_hash: "fresh", body: payload.slice(0, 12) },
-    { spot_id: spot.id, flop_key: "KcKd4h", part: 0, parts: 2, content_hash: "fresh", body: "missing second part" },
+    { spot_id: spot.id, flop_key: "Ac7d2h", part: 1, parts: 2, content_hash: "fresh", body: [...packed.subarray(cut)] },
+    { spot_id: spot.id, flop_key: "Ac7d2h", part: 0, parts: 2, content_hash: "fresh", body: [...packed.subarray(0, cut)] },
+    { spot_id: spot.id, flop_key: "KcKd4h", part: 0, parts: 2, content_hash: "fresh", body: [1] },
   ];
-  const env = { DB: mockDb({ postflop_flop_base: rows }) };
-  const get = key => worker.fetch(new Request(`https://edge.test/v1/postflop/flop?spot=${spot.id}&flop=${key}`), env);
+  const env = { DB: mockDb({ postflop_flop_base_br: rows }) };
+  const get = (key, headers = { "accept-encoding": "gzip, br" }) => worker.fetch(new Request(`https://edge.test/v1/postflop/flop?spot=${spot.id}&flop=${key}`, { headers }), env);
   assert.equal((await get("As7d2c")).status, 400, "actual suits are not a canonical API key");
   assert.equal((await get("AcAc2h")).status, 400);
   assert.equal((await get("Ac7d2h%27")).status, 400);
@@ -95,27 +98,34 @@ test("flop base route validates keys and returns ordered stored JSON text withou
   assert.equal((await get("KcKd4h")).status, 409);
   const response = await get("Ac7d2h");
   assert.equal(response.status, 200);
-  assert.equal(await response.text(), payload);
+  assert.equal(response.headers.get("content-encoding"), "br");
+  assert.equal(brotliDecompressSync(Buffer.from(await response.arrayBuffer())).toString(), payload);
   assert.match(response.headers.get("cache-control"), /s-maxage/);
-  assert.match(response.headers.get("content-type"), /application\/json/);
+  assert.equal(response.headers.get("content-type"), "application/json");
+  assert.equal(response.headers.get("etag"), '"fresh"');
+  // Without br the body is decompressed when the runtime can, otherwise 406.
+  const plain = await get("Ac7d2h", {});
+  if (plain.status === 200) { assert.equal(plain.headers.get("content-encoding"), null); assert.equal(await plain.text(), payload); }
+  else assert.equal(plain.status, 406);
 });
 
 test("three actual generated flop bases are byte-identical to the local middleware", async () => {
-  const { flopBaseResponse } = await import("../../frontend/scripts/postflop-ai/flop-base-d1.mjs");
-  const { flopBaseTextParts } = await import("../../frontend/scripts/postflop-ai/flop-base-d1.mjs");
+  const { flopBaseResponse, flopBaseBytesParts } = await import("../../frontend/scripts/postflop-ai/flop-base-d1.mjs");
   const keys = ["Ac7d2h", "KcKd4h", "AcKc4c"];
   const rows = [];
   for (const flop of keys) {
     const response = flopBaseResponse(new URLSearchParams({ spot: spot.id, flop }));
     if (response.status !== 200) continue; // CI without local artifacts still exercises synthetic rows above.
-    const parts = flopBaseTextParts(response.text);
-    parts.forEach((body, part) => rows.push({ spot_id: spot.id, flop_key: flop, part, parts: parts.length, content_hash: "h", body }));
+    const parts = flopBaseBytesParts(response.bytes);
+    parts.forEach((body, part) => rows.push({ spot_id: spot.id, flop_key: flop, part, parts: parts.length, content_hash: "h", body: [...body] }));
   }
-  const env = { DB: mockDb({ postflop_flop_base: rows }) };
+  const env = { DB: mockDb({ postflop_flop_base_br: rows }) };
   for (const flop of keys) {
     if (!rows.some(row => row.flop_key === flop)) continue;
-    const response = await worker.fetch(new Request(`https://edge.test/v1/postflop/flop?spot=${spot.id}&flop=${flop}`), env);
+    const response = await worker.fetch(new Request(`https://edge.test/v1/postflop/flop?spot=${spot.id}&flop=${flop}`, { headers: { "accept-encoding": "br" } }), env);
     assert.equal(response.status, 200);
-    assert.equal(await response.text(), flopBaseResponse(new URLSearchParams({ spot: spot.id, flop })).text);
+    const expected = flopBaseResponse(new URLSearchParams({ spot: spot.id, flop }));
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), Buffer.from(expected.bytes));
+    assert.equal(brotliDecompressSync(expected.bytes).toString(), expected.text);
   }
 });

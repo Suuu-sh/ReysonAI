@@ -6,7 +6,15 @@ import { isCanonicalFlopKey } from "../../frontend/scripts/postflop-ai/flop-isom
 
 export type D1Statement = { bind(...values: unknown[]): D1Statement; all<T>(): Promise<{ results: T[] }> };
 export type D1Database = { prepare(sql: string): D1Statement };
-type Result = { status: number; body?: unknown; text?: string };
+type Result = { status: number; body?: unknown; text?: string; bytes?: Uint8Array; etag?: string };
+
+// D1 returns a BLOB as an array of byte values (or an ArrayBuffer/Uint8Array in other runtimes).
+function blobBytes(value: unknown): Uint8Array {
+  if (value instanceof Uint8Array) return value;
+  if (value instanceof ArrayBuffer) return new Uint8Array(value);
+  if (Array.isArray(value)) return Uint8Array.from(value as number[]);
+  throw new Error("flop base part is not a BLOB");
+}
 
 const SPOT_ID = /^[A-Za-z0-9_]+$/;
 
@@ -40,14 +48,19 @@ export async function routePostflop(db: D1Database | undefined, path: string, pa
   if (path === "/v1/postflop/flop") {
     const flop = params.get("flop") ?? "";
     if (!isCanonicalFlopKey(flop)) return { status: 400, body: { error: "canonical flop key is required" } };
-    const { results } = await db.prepare("SELECT part, parts, content_hash, body FROM postflop_flop_base WHERE spot_id = ? AND flop_key = ? ORDER BY part")
-      .bind(spotId, flop).all<{ part: number; parts: number; content_hash: string; body: string }>();
+    const { results } = await db.prepare("SELECT part, parts, content_hash, body FROM postflop_flop_base_br WHERE spot_id = ? AND flop_key = ? ORDER BY part")
+      .bind(spotId, flop).all<{ part: number; parts: number; content_hash: string; body: unknown }>();
     if (!results.length) return { status: 404, body: { error: "No stored flop base" } };
     const first = results[0];
     if (results.length !== first.parts || results.some((row, index) => row.part !== index || row.parts !== first.parts || row.content_hash !== first.content_hash)) {
       return { status: 409, body: { error: "Incomplete flop base" } };
     }
-    return { status: 200, text: results.map(row => row.body).join("") };
+    // The parts are the stored Brotli bytes; they are joined, never decompressed or parsed here.
+    const chunks = results.map(row => blobBytes(row.body));
+    const bytes = new Uint8Array(chunks.reduce((sum, chunk) => sum + chunk.length, 0));
+    let offset = 0;
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
+    return { status: 200, bytes, etag: `"${first.content_hash}"` };
   }
 
   // Flop hand-EV at one representative board and flop history. With `hand` the body matches
