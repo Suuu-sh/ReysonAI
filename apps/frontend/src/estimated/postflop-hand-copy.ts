@@ -284,9 +284,15 @@ export function betSentences(d: Desc, a: string, role: Role, c: HC): string[] {
         `${d.name}は${d.has}でペアも有効なドローもなく、相手に降りてもらう必要がある${small ? "小さな" : shove ? "オールインの" : "大きな"}ブラフです。`));
       out.push(small ? e(`The small size makes the bluff cheap: ${d.tag} needs few folds to pay off.`, `小さいサイズならブラフが安く済み、${d.tag}でも必要なフォールドが少なくて済みます。`)
         : e(`The larger size needs more folds, so ${d.tag} goes this big only when it has good blockers or backdoors.`, `大きいサイズはより多くのフォールドが必要なので、${d.tag}は良いブロッカーやバックドアがあるときだけ選びます。`));
-      const b = blockerLine(d, c, `, so ${o} has fewer strong hands to call with`, "ので、相手の強い手を減らせます");
-      out.push(b || (d.unblock ? cap(d.unblock) + (c.en ? "." : "。") : ""));
-      if (d.backdoor && !d.has.includes(d.backdoor)) out.push(e(`The ${d.backdoor} gives it a little equity when called.`, `${d.backdoor}があり、コールされても少しエクイティが残ります。`));
+      // Why this particular hand was picked as a bluff (rather than a check or another combo).
+      const why: [string, string][] = [];
+      if (!d.f?.aceHighValue) why.push([`it has almost no showdown value, so checking rarely wins and folding ${o} out is its only way to win`, "チェックしてもショーダウンでほとんど勝てず、相手を降ろす以外に勝ち筋がない"]);
+      if (d.blockers.length) why.push(c.en ? [`${d.blockers[0]}, so ${o} has fewer strong hands to call with`, ""] : ["", `${d.blockers[0]}ため、相手がコールできる強い手が減る`]);
+      if (d.unblock) why.push([`it does not block the weak hands ${o} would fold`, "相手が降りるはずの弱い手をブロックしていない"]);
+      if (d.backdoor && !d.river && !d.has.includes(d.backdoor)) why.push([`the ${d.backdoor} gives it a little equity when called`, `${d.backdoor}があり、コールされても逆転の余地が残る`]);
+      if (why.length) out.push(c.en
+        ? `Why this hand bluffs: ${why.map(([en]) => en).join("; ")}.`
+        : `この手をブラフに選ぶ理由：${why.map(([, ja]) => ja).join("。また、")}。`);
       if (d.f?.aceHighValue) out.push(e("Its ace-high has some showdown value, so it bets this way only part of the time.", "エースハイにはショーダウンバリューがあるので、ブラフに回るのは一部の頻度です。"));
       break;
     }
