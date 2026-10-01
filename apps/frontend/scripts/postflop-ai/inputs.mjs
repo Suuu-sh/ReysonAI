@@ -23,7 +23,8 @@ const LATER_KEYS = ["later_streets", "later_raise_multiplier", "later_all_in_mer
 // Flop candidate identity predates the later-street tree. Exclude only its new sizing
 // keys, keeping the original key order and every original config field in the hash.
 // The computed-defence constants (defence.mjs) are not part of any candidate's identity either.
-const NON_FLOP_KEYS = [...LATER_KEYS, "defence_realization", "river_allin_max_pot_ratio"];
+// The raise-chain depth (max_raises_per_street) is not part of any identity either: saved policies stay valid.
+const NON_FLOP_KEYS = [...LATER_KEYS, "defence_realization", "river_allin_max_pot_ratio", "max_raises_per_street"];
 const flopConfig = () => Object.fromEntries(Object.entries(config).filter(([key]) =>
   !NON_FLOP_KEYS.includes(key)));
 // Results, unlike flop candidates, must be invalidated when later sizing changes.

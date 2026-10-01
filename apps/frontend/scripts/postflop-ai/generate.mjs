@@ -8,7 +8,7 @@ import { artifactPaths, boards, config, readArtifact, requireArtifact, root, sea
 import { LATER_NODES, STREETS, openingActions, streetNodes } from "./later-tree.mjs";
 import { boardTexture, handTier, LINES, RUNOUT_TEXTURES, TIERS } from "./model.mjs";
 import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
-import { FLOP_BETS, facingNode, flopBetLabel } from "./tree.mjs";
+import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
 
 // Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
@@ -84,8 +84,8 @@ export function promptFor(inputs) {
   const facingList = bettor => FLOP_BETS.map(bet => facingNode(bettor, bet)).join(" / ");
   const later = "Turn/river use a separate later-street policy; do not author them.";
   const tree = spot.tree === "oop_leads"
-    ? `${spot.oop} acts first and chooses check/${bets} (oop_first; bets are ${sizes} of the pot). Facing that bet, ${spot.ip} chooses fold/call/raise to 3x the bet (${facingList("oop")}); facing the raise ${spot.oop} chooses fold/call (oop_vs_raise). After ${spot.oop} checks, ${spot.ip} chooses check/${bets} (btn_first); ${spot.oop} facing that bet chooses fold/call/raise to 3x the bet (${facingList("ip")}); ${spot.ip} facing that check-raise chooses fold/call (btn_vs_raise). No further flop raises; bets and raises are capped by the ${spot.stackBb}BB stacks, and any wager committing at least two thirds of the remaining stack is an all-in. ${later}`
-    : `${spot.oop} checks first. ${spot.ip} chooses check/${bets} (btn_first; bets are ${sizes} of the pot). ${spot.oop} facing that bet chooses fold/call/raise to 3x the bet (${facingList("ip")}). ${spot.ip} facing check-raise chooses fold/call (btn_vs_raise). No further flop raises.${spot.kind !== "srp" ? ` Bets and raises are capped by the ${spot.stackBb}BB stacks, and any wager committing at least two thirds of the remaining stack is an all-in.` : ""} ${later}`;
+    ? `${spot.oop} acts first and chooses check/${bets} (oop_first; bets are ${sizes} of the pot). Facing that bet, ${spot.ip} chooses fold/call/raise to 3x the bet (${facingList("oop")}); facing the raise ${spot.oop} chooses fold/call/raise (oop_vs_raise); re-raises continue through ip_vs_raise2, oop_vs_raise3 and ip_vs_raise4 (fold/call only). Those re-raise nodes (raise2 and deeper) need no rules: reference mixes are used. After ${spot.oop} checks, ${spot.ip} chooses check/${bets} (btn_first); ${spot.oop} facing that bet chooses fold/call/raise to 3x the bet (${facingList("ip")}); ${spot.ip} facing that check-raise chooses fold/call/raise (btn_vs_raise; deeper re-raise nodes bb_vs_raise2, btn_vs_raise3, bb_vs_raise4 need no rules). Up to 4 raises; bets and raises are capped by the ${spot.stackBb}BB stacks, and any wager committing at least two thirds of the remaining stack is an all-in. ${later}`
+    : `${spot.oop} checks first. ${spot.ip} chooses check/${bets} (btn_first; bets are ${sizes} of the pot). ${spot.oop} facing that bet chooses fold/call/raise to 3x the bet (${facingList("ip")}). ${spot.ip} facing check-raise chooses fold/call/raise (btn_vs_raise; deeper re-raise nodes bb_vs_raise2, btn_vs_raise3, bb_vs_raise4 need no rules). Up to 4 raises.${spot.kind !== "srp" ? ` Bets and raises are capped by the ${spot.stackBb}BB stacks, and any wager committing at least two thirds of the remaining stack is an all-in.` : ""} ${later}`;
   return [
     "Create compact flop-only AI-estimated poker policy rules, not GTO, solver, equilibrium, or external chart output. Return one JSON object only. Do not call tools or write files.",
     `Cash 6-max 100BB no ante, ${preflop} flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB.`,
@@ -174,13 +174,13 @@ export function promptForLater(inputs) {
   const { preflop, design, raiser } = spotContext(inputs);
   const street = name => {
     const bets = openingActions(name).filter(action => action !== "check");
-    return `${name}: ${spot.oop} (OOP) acts first with ${name}_oop_first (${openingActions(name).join("/")}); ${spot.ip} (IP) facing it uses ${name}_ip_vs_<size> (fold/call/raise to 3x; facing allin only fold/call), then ${name}_oop_vs_raise (fold/call). After an OOP check, ${spot.ip} uses ${name}_ip_first, ${spot.oop} answers with ${name}_oop_vs_<size>, and ${name}_ip_vs_raise closes. Bets: ${bets.map(bet => bet === "allin" ? "all-in" : `${bet.slice(3)}% pot`).join(", ")}.`;
+    return `${name}: ${spot.oop} (OOP) acts first with ${name}_oop_first (${openingActions(name).join("/")}); ${spot.ip} (IP) facing it uses ${name}_ip_vs_<size> (fold/call/raise to 3x; facing allin only fold/call), then ${name}_oop_vs_raise (fold/call/raise; re-raise nodes *_vs_raise2.. need no rules). After an OOP check, ${spot.ip} uses ${name}_ip_first, ${spot.oop} answers with ${name}_oop_vs_<size>, and ${name}_ip_vs_raise follows a raise. Bets: ${bets.map(bet => bet === "allin" ? "all-in" : `${bet.slice(3)}% pot`).join(", ")}.`;
   };
   const tiers = name => name === "river" ? TIERS.filter(tier => tier !== "draw") : TIERS;
-  const fallbacks = STREETS.reduce((sum, name) => sum + streetNodes(name).length * tiers(name).length, 0);
+  const fallbacks = STREETS.reduce((sum, name) => sum + streetNodes(name).filter(node => raiseDepth(node) < 2).length * tiers(name).length, 0);
   return [
     "Create compact turn and river AI-estimated poker policy rules, not GTO, solver, equilibrium, or external chart output. Return one JSON object only. Do not call tools or write files.",
-    `Cash 6-max 100BB no ante, ${preflop} flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB. The flop is played by a separate saved flop policy (bets 33/75/125% pot, one 3x raise); you author only the turn and river.`,
+    `Cash 6-max 100BB no ante, ${preflop} flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB. The flop is played by a separate saved flop policy (bets 33/75/125% pot, up to 4 3x raises); you author only the turn and river.`,
     `${spot.ip} (${raiser(spot.ip)}) is in position; ${spot.oop} (${raiser(spot.oop)}) is out of position.`,
     "Preflop range summaries on example flops (weighted two-card combos; tiers in monster/strong/draw/medium/air %): " + design.join(", ") + ". Ranges narrow on later streets according to earlier actions; never infer the opponent's hidden cards.",
     `Street trees (the same shape on turn and river; one raise per street; any wager committing at least two thirds of the remaining stack becomes all-in): ${street("turn")} ${street("river")}`,

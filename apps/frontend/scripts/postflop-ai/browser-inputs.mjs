@@ -61,7 +61,7 @@ export function sha256(text) {
 export const sha = value => sha256(JSON.stringify(value));
 
 const LATER_KEYS = ["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"];
-const NON_FLOP_KEYS = [...LATER_KEYS, "defence_realization", "river_allin_max_pot_ratio"];
+const NON_FLOP_KEYS = [...LATER_KEYS, "defence_realization", "river_allin_max_pot_ratio", "max_raises_per_street"];
 const flopConfig = () => Object.fromEntries(Object.entries(pilotConfig).filter(([key]) => !NON_FLOP_KEYS.includes(key)));
 const getDataset = (datasets, key, ...aliases) => {
   for (const name of [key, ...aliases]) if (datasets?.[name]) return datasets[name];

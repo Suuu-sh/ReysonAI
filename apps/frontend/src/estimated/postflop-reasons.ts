@@ -138,7 +138,9 @@ export function dominantTier(tiers = {}) {
 
 // Nodes of the tree where the OOP preflop raiser leads reuse the matching reasons; there a
 // raise against a lead is a plain raise, not a check-raise.
-const aliases = { oop_first: "btn_first", ip_vs_33: "bb_vs_33", ip_vs_75: "bb_vs_75", ip_vs_125: "bb_vs_125", oop_vs_raise: "btn_vs_raise" };
+const aliases = { oop_first: "btn_first", ip_vs_33: "bb_vs_33", ip_vs_75: "bb_vs_75", ip_vs_125: "bb_vs_125", oop_vs_raise: "btn_vs_raise",
+  bb_vs_raise2: "btn_vs_raise", btn_vs_raise3: "btn_vs_raise", bb_vs_raise4: "btn_vs_raise",
+  ip_vs_raise2: "btn_vs_raise", oop_vs_raise3: "btn_vs_raise", ip_vs_raise4: "btn_vs_raise" };
 
 export function actionReason(node, action, tier) {
   if (productLocale() === "en") {

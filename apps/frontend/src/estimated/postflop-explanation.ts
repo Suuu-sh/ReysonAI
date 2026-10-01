@@ -40,8 +40,8 @@ const TIER_LABELS: Record<string, Record<string, string>> = {
   ja: { monster: "ツーペア以上", strong: "トップペア以上", draw: "ドロー", medium: "弱いペア", air: "役なし" },
 };
 const ACTION_LABELS: Record<string, Record<string, string>> = {
-  en: { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise 3×" },
-  ja: { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ 3倍" },
+  en: { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise" },
+  ja: { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ" },
 };
 const pct = (value: number) => `${Math.round(value * 100)}%`;
 const pctNumber = (value: number) => `${Math.round(value)}%`;

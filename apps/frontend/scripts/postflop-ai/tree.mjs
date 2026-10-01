@@ -20,23 +20,43 @@ export const flopBetFraction = action => {
 export const flopBetLabel = action => `${action.slice(3)}%`;
 // The node that responds to `bet` from `bettor` ("ip" → bb_vs_*, "oop" → ip_vs_*).
 export const facingNode = (bettor, bet) => `${bettor === "ip" ? "bb" : "ip"}_vs_${bet.slice(3)}`;
-export const raiseNodeAfter = bettor => bettor === "ip" ? "btn_vs_raise" : "oop_vs_raise";
+// Raises per street (bet -> raise -> re-raise ...); the node facing the last allowed raise is fold/call only.
+export const MAX_RAISES = config.max_raises_per_street ?? 4;
+// The node that answers raise number `k` (1-based) of a chain started by `bettor`'s bet: odd k is the
+// bettor facing the first raise (btn_vs_raise / oop_vs_raise), even k the original responder again
+// (bb_vs_raise2 / ip_vs_raise2), and so on.
+export const raiseNode = (k, bettor) => {
+  const bettorFaces = k % 2 === 1, suffix = k === 1 ? "" : String(k);
+  const name = bettor === "ip" ? (bettorFaces ? "btn" : "bb") : (bettorFaces ? "oop" : "ip");
+  return `${name}_vs_raise${suffix}`;
+};
+export const raiseNodeAfter = bettor => raiseNode(1, bettor);
+// 0 for non-raise nodes, otherwise the number of raises the node faces (1 for *_vs_raise, 2 for *_vs_raise2 ...).
+export const raiseDepth = node => {
+  const match = /_vs_raise(\d*)$/.exec(node);
+  return match ? (match[1] ? Number(match[1]) : 1) : 0;
+};
 export const isFlopBet = action => FLOP_BETS.includes(action);
 
 const RESPONSE = ["fold", "call", "raise"];
+function raiseChain(bettor) {
+  return Object.fromEntries(Array.from({ length: MAX_RAISES }, (_, i) => i + 1).map(k =>
+    [raiseNode(k, bettor), Object.freeze(k < MAX_RAISES ? [...RESPONSE] : ["fold", "call"])]));
+}
+const raiseChainNodes = bettor => Array.from({ length: MAX_RAISES }, (_, i) => raiseNode(i + 1, bettor));
 export const NODES = Object.freeze({
   btn_first: Object.freeze(["check", ...FLOP_BETS]),
   ...Object.fromEntries(FLOP_BETS.map(bet => [facingNode("ip", bet), Object.freeze([...RESPONSE])])),
-  btn_vs_raise: Object.freeze(["fold", "call"]),
+  ...raiseChain("ip"),
   oop_first: Object.freeze(["check", ...FLOP_BETS]),
   ...Object.fromEntries(FLOP_BETS.map(bet => [facingNode("oop", bet), Object.freeze([...RESPONSE])])),
-  oop_vs_raise: Object.freeze(["fold", "call"]),
+  ...raiseChain("oop"),
 });
 
-const ipBranch = ["btn_first", ...FLOP_BETS.map(bet => facingNode("ip", bet)), "btn_vs_raise"];
+const ipBranch = ["btn_first", ...FLOP_BETS.map(bet => facingNode("ip", bet)), ...raiseChainNodes("ip")];
 export const TREES = Object.freeze({
   oop_checks: Object.freeze(ipBranch),
-  oop_leads: Object.freeze(["oop_first", ...FLOP_BETS.map(bet => facingNode("oop", bet)), "oop_vs_raise", ...ipBranch]),
+  oop_leads: Object.freeze(["oop_first", ...FLOP_BETS.map(bet => facingNode("oop", bet)), ...raiseChainNodes("oop"), ...ipBranch]),
 });
 export const DEFAULT_TREE = "oop_checks";
 
@@ -69,15 +89,17 @@ export function flopState(tree, actions) {
     if (index !== actions.length) throw new Error("Illegal flop action after the flop ended");
     return { end: outcome, steps };
   };
+  // bet -> (fold | call | raise -> (fold | call | raise -> ...)); `raises` counts the raises made.
   const betLine = (bettor, bet) => {
-    const pending = next(facingNode(bettor, bet));
-    if (pending) return pending;
-    const response = steps.at(-1).action;
-    if (response === "fold") return end({ type: "fold", winner: bettor });
-    if (response === "call") return end({ type: "call" });
-    const back = next(raiseNodeAfter(bettor));
-    if (back) return back;
-    return end(steps.at(-1).action === "fold" ? { type: "raise-fold", winner: otherRole(bettor) } : { type: "raise-call" });
+    let node = facingNode(bettor, bet), raises = 0;
+    for (;;) {
+      const pending = next(node);
+      if (pending) return pending;
+      const { action, role } = steps.at(-1);
+      if (action === "fold") return end({ type: raises ? "raise-fold" : "fold", winner: otherRole(role), raises });
+      if (action === "call") return end({ type: raises ? "raise-call" : "call", raises });
+      node = raiseNode(++raises, bettor);
+    }
   };
   if (tree === "oop_leads") {
     const pending = next("oop_first");
@@ -112,8 +134,9 @@ export function treeHistories(tree = DEFAULT_TREE) {
 
 // The canonical history before `node`; `prev` picks the bet size before a raise.
 export function historyFor(tree, node, prev = "bet33") {
+  const depth = raiseDepth(node);
   const entry = Object.entries(treeHistories(tree)).find(([key, value]) => value.node === node &&
-    (!key.split(",").includes("raise") || key.split(",").includes(prev)));
+    (!depth || key.split(",").includes(prev)));
   if (!entry) throw new Error("未対応の判断です。");
   return entry[0] ? entry[0].split(",") : [];
 }

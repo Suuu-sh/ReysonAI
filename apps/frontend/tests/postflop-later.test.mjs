@@ -13,8 +13,8 @@ const clone = value => JSON.parse(JSON.stringify(value));
 test("later trees follow the configured 33/75/125 sizes, with all-in only on the river", () => {
   assert.deepEqual(openingActions("turn"), ["check", "bet33", "bet75", "bet125"]);
   assert.deepEqual(openingActions("river"), ["check", "bet33", "bet75", "bet125", "allin"]);
-  assert.equal(streetNodes("turn").length, 10);
-  assert.equal(streetNodes("river").length, 12);
+  assert.equal(streetNodes("turn").length, 16);
+  assert.equal(streetNodes("river").length, 18);
   assert.deepEqual(LATER_NODES.river_ip_vs_allin, ["fold", "call"]);
   assert.deepEqual(LATER_NODES.turn_oop_vs_125, ["fold", "call", "raise"]);
   const river = streetHistories("river");
@@ -22,9 +22,14 @@ test("later trees follow the configured 33/75/125 sizes, with all-in only on the
   assert.equal(river.check.node, "river_ip_first");
   assert.equal(river["check,bet125"].node, "river_oop_vs_125");
   assert.equal(river["bet75,raise"].node, "river_oop_vs_raise");
+  assert.equal(river["bet75,raise,raise"].node, "river_ip_vs_raise2");
+  assert.equal(river["bet75,raise,raise,raise"].node, "river_oop_vs_raise3");
+  assert.equal(river["bet75,raise,raise,raise,raise"].node, "river_ip_vs_raise4");
+  assert.deepEqual(LATER_NODES.river_ip_vs_raise4, ["fold", "call"]);
+  assert.deepEqual(LATER_NODES.river_ip_vs_raise2, ["fold", "call", "raise"]);
   assert.equal(river.allin.node, "river_ip_vs_allin");
   assert.deepEqual(streetState("turn", ["check", "check"]).end, { type: "check" });
-  assert.deepEqual(streetState("turn", ["bet33", "fold"]).end, { type: "fold", winner: "oop" });
+  assert.deepEqual(streetState("turn", ["bet33", "fold"]).end, { type: "fold", winner: "oop", raises: 0 });
   assert.throws(() => streetState("turn", ["allin"]), /Illegal/);
 });
 
@@ -89,9 +94,9 @@ test("flop bets at low SPR merge into all-in (≥ 67% of the remaining stack)", 
   const { spotById } = await import("../scripts/postflop-ai/spots.mjs");
   const spot = spotById("UTG_open_SB_4bp_call"); // pot 53BB, stacks 74BB
   const big = flopDecision(["bet125"], spot);
-  assert.match(big.history.at(-1), /Bet 125% \(74BB\) All-in/);
+  assert.match(big.history.at(-1), /All-in 74/);
   const small = flopDecision(["bet33"], spot);
-  assert.match(small.history.at(-1), /Bet 33% \(17\.49BB\)$/);
+  assert.match(small.history.at(-1), /Bet 17\.49 \(33%\)$/);
 });
 
 test("the turn/river prompt names every later node, feature and the fallback count", async () => {

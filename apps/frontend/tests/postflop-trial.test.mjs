@@ -1,4 +1,5 @@
 import test, { before, after } from "node:test";
+const core = ({ options, labels, labelsJa, ...rest }) => rest;
 import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
@@ -11,7 +12,7 @@ import { loadCandidate, sha } from "../scripts/postflop-ai/generate.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../scripts/postflop-ai/spots.mjs";
 import { playHand, simulate } from "../scripts/postflop-ai/simulation.mjs";
 import { createTable, playFlop, playLaterStreets, playLaterStreetsWithPolicy, settle } from "../scripts/postflop-ai/engine.mjs";
-import { FLOP_BETS, flopState, isFlopBet, treeHistories } from "../scripts/postflop-ai/tree.mjs";
+import { FLOP_BETS, flopState, isFlopBet, treeHistories, treeNodes } from "../scripts/postflop-ai/tree.mjs";
 import { parseCards } from "../scripts/postflop-ai/model.mjs";
 import preflopRanges from "../src/estimated/preflop-ranges.json" with { type: "json" };
 import threeBetResponses from "../src/estimated/three-bet-responses.json" with { type: "json" };
@@ -115,16 +116,18 @@ test("3bet pot ranges: the 3bettor's saved 3bet and the opener's open × call ve
 });
 
 test("the two flop trees: OOP checks after a flat, the OOP preflop raiser leads", () => {
-  assert.deepEqual(Object.keys(treeHistories("oop_checks")), ["", "bet33", "bet75", "bet125", "bet33,raise", "bet75,raise", "bet125,raise"]);
-  assert.deepEqual(Object.keys(treeHistories("oop_leads")), ["", "check", "bet33", "bet75", "bet125", "check,bet33", "check,bet75", "check,bet125", "bet33,raise", "bet75,raise", "bet125,raise", "check,bet33,raise", "check,bet75,raise", "check,bet125,raise"]);
-  assert.deepEqual(flopState("oop_leads", ["bet75", "raise", "fold"]).end, { type: "raise-fold", winner: "ip" });
+  const chain = (bets, depth) => Array.from({ length: depth }, (_, i) => bets.map(bet => `${bet},${Array(i + 1).fill("raise").join(",")}`)).flat();
+  assert.deepEqual(Object.keys(treeHistories("oop_checks")), ["", "bet33", "bet75", "bet125", ...chain(["bet33", "bet75", "bet125"], 4)]);
+  assert.deepEqual(Object.keys(treeHistories("oop_leads")).filter(key => !key.includes("raise")), ["", "check", "bet33", "bet75", "bet125", "check,bet33", "check,bet75", "check,bet125"]);
+  assert.equal(Object.keys(treeHistories("oop_leads")).length, 8 + 24);
+  assert.deepEqual(flopState("oop_leads", ["bet75", "raise", "fold"]).end, { type: "raise-fold", winner: "ip", raises: 1 });
   assert.deepEqual(flopState("oop_leads", ["check", "check"]).end, { type: "check" });
   assert.throws(() => flopState("oop_checks", ["check", "check"]), /Illegal/);
   assert.throws(() => flopState("oop_leads", ["bet33", "check"]), /Illegal/);
   // A policy is validated against its own tree's nodes and fallbacks.
   assert.throws(() => validatePolicy(referencePolicy, "oop_leads"), /Invalid postflop policy envelope|Missing fallback/);
   assert.throws(() => validatePolicy(referencePolicyFor("oop_leads"), "oop_checks"), /Invalid postflop policy/);
-  assert.equal(referencePolicyFor("oop_leads").rules.length, 50);
+  assert.equal(referencePolicyFor("oop_leads").rules.length, treeNodes("oop_leads").length * 5);
 });
 
 test("4bet pots and SB's limped pots: seats, pot, stacks and tree", () => {
@@ -153,13 +156,13 @@ test("4bet pots and SB's limped pots: seats, pot, stacks and tree", () => {
   const iso = loadInputs("SB_limp_BB_iso_call");
   const sbLimp = iso.opening.hands.find(item => item.hand === "K9s").limp, sbCall = iso.response.hands.find(item => item.hand === "K9s").call;
   assert.equal(iso.seatRows.SB.find(item => item.hand === "K9s").freq, sbLimp * sbCall / 100);
-  assert.deepEqual(flopDecision(["bet33"], limpSpotFor("SB_limp_BB_check")), { node: "ip_vs_33", actor: "BB", potBb: 2.66, history: ["SB Bet 33% (0.66BB)"] });
+  assert.deepEqual(core(flopDecision(["bet33"], limpSpotFor("SB_limp_BB_check"))), { node: "ip_vs_33", actor: "BB", potBb: 2.66, history: ["SB Bet 0.66 (33%)"] });
 });
 
 test("low-SPR 4bet pots: a raise over the stack is an all-in, the rest is dealt, chips are conserved", () => {
   const spot = spotById("UTG_open_HJ_4bp_call");
-  assert.deepEqual(flopDecision(["bet75", "raise"], spot).history, ["UTG Bet 75% (31.13BB)", "HJ Raise 80BB All-in"]);
-  assert.deepEqual(flopDecision(["bet75", "raise", "call"], spot), { result: "UTGがコール。フロップの判断は終了です。", potBb: 201.5, history: ["UTG Bet 75% (31.13BB)", "HJ Raise 80BB All-in", "UTG Call All-in"] });
+  assert.deepEqual(flopDecision(["bet75", "raise"], spot).history, ["UTG Bet 31.13 (75%)", "HJ All-in 80"]);
+  assert.deepEqual(flopDecision(["bet75", "raise", "call"], spot), { result: "UTGがコール。フロップの判断は終了です。", potBb: 201.5, history: ["UTG Bet 31.13 (75%)", "HJ All-in 80", "UTG Call All-in"] });
   assert.deepEqual(buildFlopActionBlocks(["bet75", "raise"], spotById("BTN_open_BB_4bp_call")).map(block => [block.position, block.stack]), [["BB", "74"], ["BTN", "74"], ["BB", "74"], ["BTN", "34.62"]]);
   const table = createTable(spot);
   const forced = { oop_first: "bet75", ip_vs_75: "raise", oop_vs_raise: "call" };
@@ -196,29 +199,29 @@ test("SB vs BB and CO vs BTN let the OOP opener lead, with their own seats, pot 
     opener: "CO", hero: "BB", callers: ["BTN", "BB"], foldedHero: true, isDefaultTable: true });
   assert.deepEqual([multiway.pilotAvailable, multiway.spotId], [false, null]);
 
-  assert.deepEqual(flopDecision([], sb), { node: "oop_first", actor: "SB", potBb: 7, history: [] });
-  assert.deepEqual(flopDecision(["bet33"], sb), { node: "ip_vs_33", actor: "BB", potBb: 9.31, history: ["SB Bet 33% (2.31BB)"] });
-  assert.deepEqual(flopDecision(["bet33", "raise"], sb).history, ["SB Bet 33% (2.31BB)", "BB Raise 6.93BB"]);
+  assert.deepEqual(core(flopDecision([], sb)), { node: "oop_first", actor: "SB", potBb: 7, history: [] });
+  assert.deepEqual(core(flopDecision(["bet33"], sb)), { node: "ip_vs_33", actor: "BB", potBb: 9.31, history: ["SB Bet 2.31 (33%)"] });
+  assert.deepEqual(flopDecision(["bet33", "raise"], sb).history, ["SB Bet 2.31 (33%)", "BB Raise 6.93 (40%)"]);
   assert.equal(flopDecision(["bet33", "raise"], sb).node, "oop_vs_raise");
   assert.equal(flopDecision(["bet33", "fold"], sb).result, "BBがフォールド。SBの勝ちです。");
   assert.equal(flopDecision(["bet75", "raise", "call"], sb).potBb, 38.5);
-  assert.deepEqual(flopDecision(["check", "bet33"], sb).history, ["SB Check", "BB Bet 33% (2.31BB)"]);
-  assert.equal(flopDecision(["check", "bet33", "raise"], sb).history.at(-1), "SB Check-raise 6.93BB");
+  assert.deepEqual(flopDecision(["check", "bet33"], sb).history, ["SB Check", "BB Bet 2.31 (33%)"]);
+  assert.equal(flopDecision(["check", "bet33", "raise"], sb).history.at(-1), "SB Check-raise 6.93 (40%)");
   const sbBlocks = buildFlopActionBlocks(["check", "bet75", "raise"], sb);
   assert.deepEqual(sbBlocks.map(block => [block.position, block.stack]), [["SB", "96.5"], ["BB", "96.5"], ["SB", "96.5"], ["BB", "91.25"]]);
   assert.ok(!sbBlocks.some(block => block.kind === "flop-forced"));
 
   assert.deepEqual(buildFlopActionBlocks(["bet33"], co).map(block => block.position), ["CO", "BTN"]);
-  assert.equal(flopDecision(["bet33"], co).history[0], "CO Bet 33% (2.15BB)");
+  assert.equal(flopDecision(["bet33"], co).history[0], "CO Bet 2.15 (33%)");
   assert.equal(flopDecision(["check", "check"], co).result, "BTNもチェック。フロップの判断は終了です。");
 });
 
 test("3bet pots: the SB/BB 3bettor leads out of position, an IP 3bettor faces a check", () => {
   const bb = spotById("UTG_open_BB_3bet_call"), hj = spotById("UTG_open_HJ_3bet_call");
-  assert.deepEqual(flopDecision(["bet33"], bb), { node: "ip_vs_33", actor: "UTG", potBb: 32.59, history: ["BB Bet 33% (8.09BB)"] });
-  assert.equal(flopDecision(["bet33", "raise"], bb).history.at(-1), "UTG Raise 24.27BB");
+  assert.deepEqual(core(flopDecision(["bet33"], bb)), { node: "ip_vs_33", actor: "UTG", potBb: 32.59, history: ["BB Bet 8.09 (33%)"] });
+  assert.equal(flopDecision(["bet33", "raise"], bb).history.at(-1), "UTG Raise 24.27 (40%)");
   assert.equal(flopDecision(["bet75", "raise", "call"], bb).potBb, 134.78);
-  assert.deepEqual(flopDecision(["bet33"], hj), { node: "bb_vs_33", actor: "UTG", potBb: 23.28, history: ["UTG Check", "HJ Bet 33% (5.78BB)"] });
+  assert.deepEqual(core(flopDecision(["bet33"], hj)), { node: "bb_vs_33", actor: "UTG", potBb: 23.28, history: ["UTG Check", "HJ Bet 5.78 (33%)"] });
   const sb3 = threeBetSpotFor("SB", "BB");
   assert.deepEqual([sb3.ip, sb3.oop, sb3.tree, flopDecision([], sb3).history[0]], ["BB", "SB", "oop_checks", "SB Check"]);
   const context = completedFlopContext({ actionBlocks: end("2人でフロップへ", 24.5), rangeType: "three_bet",
@@ -278,7 +281,8 @@ test("flop navigation has legal actions, consistent pots, refunds, and a step ba
   assert.deepEqual(flopDecision(["bet33", "raise"].slice(0, -1)), flopDecision(["bet33"]));
   assert.throws(() => flopDecision(["raise"]), /Illegal/);
   assert.throws(() => flopDecision(["check", "call"]), /Illegal/);
-  assert.throws(() => flopDecision(["bet33", "raise", "raise"]), /Illegal/);
+  assert.equal(flopDecision(["bet33", "raise", "raise"]).node, "bb_vs_raise2");
+  assert.throws(() => flopDecision(["bet33", "raise", "raise", "raise", "raise", "raise"]), /Illegal/);
 });
 
 test("three distinct selected cards resolve to one canonical flop, representative or not", () => {
@@ -309,7 +313,7 @@ test("flop decisions reuse preflop-style action blocks without inventing later a
   assert.deepEqual(first[1].options.map(option => option.action), ["check", "bet33", "bet75", "bet125"]);
   const raised = buildFlopActionBlocks(["bet33", "raise"]);
   assert.deepEqual(raised.map(block => block.position), ["BB", "BTN", "BB", "BTN"]);
-  assert.deepEqual(raised[3].options.map(option => option.action), ["fold", "call"]);
+  assert.deepEqual(raised[3].options.map(option => option.action), ["fold", "call", "raise"]);
   assert.equal(raised[2].flopIndex, 1);
   assert.equal(buildFlopActionBlocks(["bet33", "raise", "call"]).at(-1).kind, "end");
 });
@@ -320,7 +324,7 @@ test("read-only board projection expands saved source combos without revealing a
   const data = buildLocalBoard("As7d2c", inputs, candidate);
   assert.equal(data.kind, "ai_estimate_not_gto");
   assert.equal(data.board, "As7d2c");
-  assert.deepEqual(Object.keys(data.nodes), ["btn_first", "bb_vs_33", "bb_vs_75", "bb_vs_125", "btn_vs_raise"]);
+  assert.deepEqual(Object.keys(data.nodes), ["btn_first", "bb_vs_33", "bb_vs_75", "bb_vs_125", "btn_vs_raise", "bb_vs_raise2", "btn_vs_raise3", "bb_vs_raise4"]);
   for (const [node, section] of Object.entries(data.nodes)) {
     assert.equal(section.rows.length, 169, node);
     for (const row of section.rows) {
@@ -333,7 +337,7 @@ test("read-only board projection expands saved source combos without revealing a
   const co = buildLocalBoard("As7d2c", coInputs, { metadata: { source_hash: coInputs.fingerprint, policy_hash: sha(leads) }, policy: leads });
   assert.deepEqual([co.spot, co.tree, co.ip, co.oop, co.pot_bb, co.nodes.oop_first.seat, co.nodes.ip_vs_33.seat, co.nodes.btn_first.seat, co.nodes.bb_vs_33.seat],
     ["CO_open_BTN_call", "oop_leads", "BTN", "CO", 6.5, "CO", "BTN", "BTN", "CO"]);
-  assert.equal(Object.keys(co.nodes).length, 10);
+  assert.equal(Object.keys(co.nodes).length, 16);
   // A policy for the other tree is rejected.
   assert.throws(() => buildLocalBoard("As7d2c", coInputs, { metadata: { source_hash: coInputs.fingerprint, policy_hash: sha(referencePolicy) }, policy: referencePolicy }), /Invalid postflop policy envelope|Missing fallback/);
   assert.throws(() => buildLocalBoard("As7d2c", coInputs, { ...candidate, policy: leads }), /ハッシュ/);
@@ -357,8 +361,8 @@ test("later-street action blocks follow the completed flop, deal one board card,
   assert.deepEqual(turnComplete.at(-1), { key: "river-board", kind: "board", cards: [], street: "river", pending: true, potBb: 9.14 });
   assert.equal(buildLaterActionBlocks({ flopActions: ["bet33", "fold"] }, spot).length, 0);
   const fourBet = spotById("BTN_open_BB_4bp_call");
-  assert.equal(laterStart(["bet125", "raise", "call"], fourBet), null);
-  assert.equal(buildLaterActionBlocks({ flopActions: ["bet125", "raise", "call"] }, fourBet).length, 0);
+  assert.equal(laterStart(["bet125", "call"], fourBet), null);
+  assert.equal(buildLaterActionBlocks({ flopActions: ["bet125", "call"] }, fourBet).length, 0);
   const foldedTurn = buildLaterActionBlocks({ flopActions: ["bet33", "call"], turnCard: "Kh", turnActions: ["bet75", "fold"] }, spot);
   assert.equal(foldedTurn.at(-1).kind, "end");
   assert.match(foldedTurn.at(-1).result, /フォールド/);
@@ -399,7 +403,7 @@ test("later-street chip replay matches the engine for an SRP line and a low-SPR 
     assert.deepEqual([expectedPot, expectedStacks.ip, expectedStacks.oop], [table.pot, table.stacks[spot.ip], table.stacks[spot.oop]], spot.id);
     if (spot.kind === "4bp") {
       assert.deepEqual([turnReplay.pot, turnReplay.stacks.ip, turnReplay.stacks.oop], [200.5, 0, 0]);
-      assert.match(turnReplay.history[0], /Bet 125% \(74BB\) All-in$/);
+      assert.match(turnReplay.history[0], /All-in 74$/);
       assert.match(turnReplay.history[1], /Call All-in$/);
     }
   }

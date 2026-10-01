@@ -11,14 +11,13 @@ import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFac
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
 import { productLocale } from "../i18n.ts";
 
+// Action labels with real amounts come from the replay (decisionOptions in postflop-trial.ts); these
+// plain labels are only the fallback (amount-free) for actions a decision does not carry.
 const baseLabels = () => productLocale() === "en"
-  ? { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", fold: "Fold", call: "Call", raise: "Check-raise 3×" }
-  : { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", fold: "フォールド", call: "コール", raise: "3倍チェックレイズ" };
-// Raising a lead (ip_vs_*) is a plain raise, not a check-raise.
-export const labelsFor = node => {
-  const labels = baseLabels();
-  return node?.startsWith("ip_") ? { ...labels, raise: productLocale() === "en" ? "Raise 3×" : "3倍レイズ" } : labels;
-};
+  ? { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise" }
+  : { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ" };
+export const labelsFor = (node, decisionLabels = null) => ({ ...baseLabels(), ...(decisionLabels ?? {}) });
+const decisionLabelsOf = d => d ? (productLocale() === "en" ? d.labels : d.labelsJa) : null;
 // btn_* nodes are the in-position player's decisions, bb_* the out-of-position player's.
 export const nodeTitle = (node, { ip, oop }) => (productLocale() === "en" ? {
   btn_first: `${ip} · facing ${oop}'s check`, bb_vs_33: `${oop} · facing a 33% bet`,
@@ -30,14 +29,21 @@ export const nodeTitle = (node, { ip, oop }) => (productLocale() === "en" ? {
   bb_vs_75: `${oop} · 75%ベットへの応答`, bb_vs_125: `${oop} · 125%ベットへの応答`, btn_vs_raise: `${ip} · チェックレイズへの応答`,
   oop_first: `${oop} · 最初の判断（先にベットできる）`, ip_vs_33: `${ip} · 33%ベットへの応答`,
   ip_vs_75: `${ip} · 75%ベットへの応答`, ip_vs_125: `${ip} · 125%ベットへの応答`, oop_vs_raise: `${oop} · レイズへの応答`,
-})[node];
+})[node] ?? raiseTitle(node, { ip, oop });
+function raiseTitle(node, { ip, oop }) {
+  const match = /^(btn|bb|ip|oop)_vs_raise(\d+)$/.exec(node ?? "");
+  if (!match) return undefined;
+  const actor = match[1] === "btn" || match[1] === "ip" ? ip : oop;
+  return `${actor} · ${productLocale() === "en" ? "facing a re-raise" : "再レイズへの応答"}`;
+}
 export function laterNodeTitle(node, { ip, oop }, street) {
   const role = node?.split("_")[1];
   const actor = role === "ip" ? ip : oop;
   const english = productLocale() === "en";
   const streetName = english ? (street === "turn" ? "Turn" : "River") : (street === "turn" ? "ターン" : "リバー");
   let action = english ? "first decision" : "最初の判断";
-  if (node?.includes("_vs_raise")) action = english ? "facing a raise" : "レイズへの応答";
+  const depth = /_vs_raise(\d*)$/.exec(node ?? "");
+  if (depth) action = Number(depth[1] || 1) >= 2 ? (english ? "facing a re-raise" : "再レイズへの応答") : (english ? "facing a raise" : "レイズへの応答");
   else if (node?.includes("_vs_allin")) action = english ? "facing an all-in" : "オールインへの応答";
   else if (node?.includes("_vs_")) {
     const size = node.split("_vs_")[1];
@@ -313,7 +319,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const [explainState, setExplainState] = useState(null);
   const [flopBaseState, setFlopBaseState] = useState(null);
   const decision = flopDecision(actions, context);
-  const labels = labelsFor(decision.node);
+  const labels = labelsFor(decision.node, decisionLabelsOf(decision));
   const spotId = context.spotId;
   const flopPath = actions.join(",");
   const turnPath = turnActions.join(",");
@@ -422,9 +428,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const laterChosen = laterAggregates?.get(selectedHand);
   const selectedLaterRow = laterCurrent?.rows.find(row => row.hand === selectedHand);
   const laterTotals = useMemo(() => laterCurrent ? rangeTotals({ rows: laterCurrent.rows, actions: Object.keys(laterCurrent.rows[0]?.mix ?? {}) }, "reachWeight") : null, [laterCurrent]);
-  const laterLabels = productLocale() === "en"
-    ? { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise 3×" }
-    : { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ 3×" };
+  const laterLabels = labelsFor(later?.node, decisionLabelsOf(later));
   const laterActions = laterCurrent ? Object.keys(selectedLaterRow?.mix ?? {}) : [];
   const laterHeading = later ? laterNodeTitle(later.node, context, later.street) : "";
   const [selectedLaterCombo, setSelectedLaterCombo] = useState("all");

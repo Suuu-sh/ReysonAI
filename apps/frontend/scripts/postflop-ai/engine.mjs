@@ -4,7 +4,7 @@
 import { evaluate } from "../lib/equity.mjs";
 import { gameConfig } from "../../src/estimated/sizing.ts";
 import { LATER_NODES, STREETS, betFraction, streetState } from "./later-tree.mjs";
-import { facingNode, flopBetFraction, raiseNodeAfter } from "./tree.mjs";
+import { NODES, facingNode, flopBetFraction, raiseNode } from "./tree.mjs";
 
 const round = value => Math.round(value * 100) / 100;
 export const rake = pot => Math.min(pot * gameConfig.rake.rate, gameConfig.rake.cap_bb);
@@ -38,32 +38,42 @@ export function playFlop(table, tree, decide, config) {
   table.lastAggressor = null;
   table.log = []; table.path = { flop: [], turn: [], river: [] };
   let step = 0;
+  // A wager that would commit at least the merge ratio of the remaining effective stack
+  // becomes all-in (the same rule as the turn/river; matters at low SPR).
+  const cap = seat => Math.min(table.stacks[seat], table.stacks[table.other(seat)] + table.invested[table.other(seat)] - table.invested[seat]);
+  // Raising needs chips beyond the call and an opponent who is not all-in. When it is impossible the
+  // decision is recorded with `canRaise: false` and a requested raise plays (and is recorded) as a call.
+  const canRaise = seat => table.stacks[table.other(seat)] > 0 && table.invested[seat] + cap(seat) > table.invested[table.other(seat)];
   const ask = (seat, node) => {
-    const entry = { seat, node, street: "flop", boardLen: 3, line: null, pot: table.pot, index: table.path.flop.length, action: null };
+    const entry = { seat, node, street: "flop", boardLen: 3, line: null, pot: table.pot, index: table.path.flop.length, action: null, canRaise: canRaise(seat) };
     table.log.push(entry);
-    const action = decide(seat, node, step++);
+    let action = decide(seat, node, step++);
+    if (!NODES[node].includes(action)) throw new Error(`Illegal flop action at ${node}`);
+    if (action === "raise" && !entry.canRaise) action = "call";
     entry.action = action;
     table.path.flop.push(action);
     return action;
   };
-  // A wager that would commit at least the merge ratio of the remaining effective stack
-  // becomes all-in (the same rule as the turn/river; matters at low SPR).
-  const cap = seat => Math.min(table.stacks[seat], table.stacks[table.other(seat)] + table.invested[table.other(seat)] - table.invested[seat]);
   const wager = (seat, amount) => {
     const limit = cap(seat);
     return table.put(seat, amount >= limit * config.later_all_in_merge_ratio ? limit : amount);
   };
+  // bet -> (fold | call | raise -> (fold | call | raise -> ...)): the raiser's total is the multiplier times
+  // the facing total, until a player folds or calls (the last allowed raise's node offers only fold/call).
   const betLine = (bettor, action) => {
-    const caller = table.other(bettor), role = bettor === ip ? "ip" : "oop";
-    const bet = wager(bettor, table.pot * flopBetFraction(action));
-    const response = ask(caller, facingNode(role, action));
-    if (response === "fold") { table.winner = bettor; return; }
-    if (response === "call" || !cap(caller) || table.invested[caller] + cap(caller) <= table.invested[bettor]) {
-      table.put(caller, table.invested[bettor] - table.invested[caller]); table.lastAggressor = bettor; return;
+    const role = bettor === ip ? "ip" : "oop";
+    wager(bettor, table.pot * flopBetFraction(action));
+    let aggressor = bettor;
+    for (let raises = 0; ; raises++) {
+      const seat = table.other(aggressor);
+      const response = ask(seat, raises ? raiseNode(raises, role) : facingNode(role, action));
+      if (response === "fold") { table.winner = aggressor; return; }
+      if (response === "call") {
+        table.put(seat, table.invested[aggressor] - table.invested[seat]); table.lastAggressor = aggressor; return;
+      }
+      wager(seat, round(table.invested[aggressor] * config.flop_check_raise_multiplier) - table.invested[seat]);
+      aggressor = seat;
     }
-    wager(caller, round(bet * config.flop_check_raise_multiplier) - table.invested[caller]);
-    if (ask(bettor, raiseNodeAfter(role)) === "fold") table.winner = caller;
-    else { table.put(bettor, table.invested[caller] - table.invested[bettor]); table.lastAggressor = caller; }
   };
   if (tree === "oop_leads") {
     const lead = ask(oop, "oop_first");
@@ -123,18 +133,18 @@ export function playLaterStreetsWithPolicy(table, flop, runout, decide, config, 
       const line = previousAggressor === null ? "checked" : previousAggressor === seat ? "aggressor" : "defender";
       const entry = { seat, node: state.node, street, boardLen: board.length, line, pot: table.pot, index: actions.length, action: null };
       table.log.push(entry);
+      // Raising needs an opponent who is not all-in and chips beyond the call.
+      entry.canRaise = table.stacks[other] > 0 && committed[seat] + cap(seat) > committed[other];
       let action = decide(seat, state.node, board, line);
       if (!LATER_NODES[state.node].includes(action)) throw new Error(`Illegal later action at ${state.node}`);
       // A fixed rule table still has a raise key when facing a capped all-in. Collapse
       // that choice into call: it cannot reopen action or let an all-in player fold.
-      if (action === "raise" && !table.stacks[other]) action = "call";
+      if (action === "raise" && !entry.canRaise) action = "call";
       if (action === "allin" || action.startsWith("bet")) {
         wager(seat, action === "allin" ? cap(seat) : round(table.pot * betFraction(street, action)));
         aggressor = seat;
       } else if (action === "raise") {
-        const raiseBy = round(committed[other] * multiplier - committed[seat]);
-        if (committed[seat] + cap(seat) <= committed[other]) action = "call";
-        else { wager(seat, raiseBy); aggressor = seat; }
+        wager(seat, round(committed[other] * multiplier - committed[seat])); aggressor = seat;
       }
       if (action === "call") put(seat, round(committed[other] - committed[seat]));
       entry.action = action;

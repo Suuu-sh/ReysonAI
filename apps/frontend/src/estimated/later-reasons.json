@@ -204,6 +204,28 @@
             "ja": "役なしでレイズをコールするのは、明確な改善の道がある例外に限ります。単なる期待だけでは続けません。",
             "en": "Calling a raise without a made hand needs a concrete route to improve; hope alone is not enough."
           }
+        },
+        "raise": {
+          "monster": {
+            "ja": "強い役でレイズすれば、相手の強めの一枚ペアやドローからさらに取り、リバー前にポットを大きくできます。",
+            "en": "Raising a very strong hand builds the pot before the river and extracts more from strong one-pair hands and draws."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアのレイズは、相手のドローに代金を求める選択です。ただし強い手だけが残るなら控えます。",
+            "en": "Raising top pair or an overpair charges draws, but becomes unattractive if only stronger hands continue."
+          },
+          "draw": {
+            "ja": "強いドローでレイズすると、相手を今降ろす道が増えます。コールされてもリバーの完成で勝つ機会があります。",
+            "en": "Raising a strong draw adds a way to win immediately through a fold while retaining river completion chances."
+          },
+          "medium": {
+            "ja": "中くらいのペアはレイズしても弱い手から取りにくく、強い手に再び打たれやすいので、通常は向きません。",
+            "en": "A middling pair rarely gains calls from worse hands when raising and risks more pressure from stronger ones."
+          },
+          "air": {
+            "ja": "役なしのレイズは、相手のベットに弱い手が多く、こちらの強さを信じさせられる流れでだけ使うブラフです。",
+            "en": "A raise with no made hand is a bluff for spots where the bettor can be weak and the story of strength is credible."
+          }
         }
       }
     },
@@ -373,6 +395,24 @@
           "air": {
             "ja": "役なしでレイズをコールしても、相手のブラフと引き分けるか負けることが多いです。高いカードで勝てる例外だけです。",
             "en": "Calling a raise without a made hand usually loses even to many bluffs; only a high-card hand that can beat some bluffs may qualify."
+          }
+        },
+        "raise": {
+          "monster": {
+            "ja": "強い役で最後にレイズすれば、相手の価値を取りに来た下の役からさらに取れます。もう逆転されるカードはありません。",
+            "en": "A river raise with a very strong hand gets more from the opponent’s lesser value hands, with no card left to outdraw it."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアをレイズしても、相手の弱い手は降りやすく、強い役にコールされがちです。普通はコールに留めます。",
+            "en": "Raising top pair or an overpair often folds out worse hands and gets called by better ones, so calling is usually safer."
+          },
+          "medium": {
+            "ja": "中くらいのペアはレイズして価値を取れる相手がほとんどありません。ブラフを捕まえられるならコールを考えます。",
+            "en": "A middling pair has few worse hands to target with a raise; calling is better if catching bluffs is the aim."
+          },
+          "air": {
+            "ja": "役なしのレイズは、相手のベットした一枚ペアまで降ろすためのブラフです。相手が降りないなら使えません。",
+            "en": "A river raise with no made hand is a bluff targeting even a betting one-pair hand; it fails if that hand will not fold."
           }
         }
       }

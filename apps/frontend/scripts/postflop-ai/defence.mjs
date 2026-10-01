@@ -25,10 +25,11 @@ import { packEquities, packWeights, unpackWeights } from "./cached-values.mjs";
 import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
 import { comboRange } from "./browser-inputs.mjs";
 import { boardTexture, handTier, runoutTexture, TIERS } from "./model.mjs";
-import { NODES } from "./policy.mjs";
+import { NODES, effectiveMix, referenceMix, withRaise } from "./policy.mjs";
 import { LATER_NODES } from "./later-tree.mjs";
+import { referenceLaterTierMix } from "./later-policy.mjs";
 import { betFraction } from "./later-tree.mjs";
-import { flopBetFraction } from "./tree.mjs";
+import { flopBetFraction, raiseDepth } from "./tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
@@ -322,7 +323,7 @@ class Defence {
   // The AI policy mix of a tier at a decision (the same lookup as policyMix / laterPolicyMix).
   policyRule(entry, texture, tierIndex) {
     const flop = entry.street === "flop";
-    const key = `${entry.node}|${entry.line}|${texture}|${tierIndex}`;
+    const key = `${entry.node}|${entry.line}|${texture}|${tierIndex}|${entry.canRaise === false ? 0 : 1}`;
     let mix = this.rules.get(key);
     if (mix) return mix;
     let tier = TIERS[tierIndex];
@@ -338,7 +339,10 @@ class Defence {
         if (rule) { mix = rule.mix; break; }
       }
     }
+    if (!mix && raiseDepth(entry.node) >= 2) mix = flop ? referenceMix(entry.node, tier) : referenceLaterTierMix(entry.node, tier);
     if (!mix) throw new Error(`Uncovered policy node: ${entry.node}/${texture}/${tier}`);
+    // Saved *_vs_raise rules have no raise key; a raise that is impossible plays as a call.
+    mix = effectiveMix(withRaise(entry.node, mix), entry.canRaise);
     this.rules.set(key, mix);
     return mix;
   }

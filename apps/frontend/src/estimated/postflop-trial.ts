@@ -1,6 +1,6 @@
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 import { DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
-import { NODES, flopBetFraction, flopBetLabel, flopState, isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
+import { NODES, flopBetFraction, flopState, isFlopBet, raiseDepth } from "../../scripts/postflop-ai/tree.mjs";
 import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.mjs";
 import { parseFlopBoard } from "../../scripts/postflop-ai/model.mjs";
 import pilotConfig from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
@@ -60,43 +60,111 @@ function geometry(spot) {
 // "oop_leads": the OOP preflop raiser acts first (oop_first → ip_vs_* → oop_vs_raise).
 function replay(actions, spot) {
   const g = geometry(spot);
-  const state = flopState(g.tree, actions);
+  const requested = flopState(g.tree, actions);
   const invested = { ip: 0, oop: 0 };
-  let pot = g.potBb, bet = 0, aggressor = null;
+  let pot = g.potBb, aggressor = null;
   const left = role => round(g.stackBb - invested[role]);
-  // Same all-in merge as engine.mjs: a wager committing ≥ the merge ratio of the effective stack is all-in.
-  const capFor = role => { const other = role === "ip" ? "oop" : "ip"; return Math.min(left(role), left(other) + invested[other] - invested[role]); };
-  const wagerFor = (role, amount) => amount >= capFor(role) * pilot.later_all_in_merge_ratio ? capFor(role) : amount;
+  const rival = role => role === "ip" ? "oop" : "ip";
+  const chipsNow = () => ({ pot, committed: { ...invested }, stacks: { ip: left("ip"), oop: left("oop") } });
   const put = (role, amount) => { const value = round(Math.min(left(role), amount)); invested[role] = round(invested[role] + value); pot = round(pot + value); return value; };
   const history = g.tree === "oop_checks" ? [`${g.oop} Check`] : [];
-  const stacks = [];
-  for (const { node, role, action } of state.steps) {
-    const name = g[role], other = role === "ip" ? "oop" : "ip";
+  const stacks = [], effective = [], canRaises = [];
+  for (const { node, role, action: asked } of requested.steps) {
+    const name = g[role], other = rival(role);
     stacks.push(left(role));
+    const can = canRaiseNow(chipsNow(), role);
+    canRaises.push(can);
+    let action = asked;
+    if (action === "raise" && !can) action = "call";
+    const option = flopOptionsFor(chipsNow(), node, role).find(item => item.action === action);
     if (action === "check") history.push(`${name} Check`);
-    // A bet, raise or call that uses the whole remaining stack is an all-in.
-    const allIn = () => left(role) === 0 ? " All-in" : "";
-    if (isFlopBet(action)) { bet = put(role, wagerFor(role, pot * flopBetFraction(action))); aggressor = role; history.push(`${name} Bet ${flopBetLabel(action)} (${bet}BB)${allIn()}`); }
-    else if (action === "call") { put(role, invested[other] - invested[role]); history.push(`${name} Call${allIn()}`); }
-    else if (action === "raise") {
-      put(role, wagerFor(role, round(bet * pilot.flop_check_raise_multiplier) - invested[role]));
-      aggressor = role;
-      const to = invested[role];
-      history.push(`${name} ${node.startsWith("bb_") ? "Check-raise" : "Raise"} ${to}BB${allIn()}`);
-    } else if (action === "fold") history.push(`${name} Fold`);
+    else if (isFlopBet(action)) { put(role, option.paid); aggressor = role; history.push(`${name} ${option.label}`); }
+    else if (action === "call") { put(role, invested[other] - invested[role]); history.push(`${name} Call${left(role) === 0 ? " All-in" : ""}`); }
+    else if (action === "raise") { put(role, option.paid); aggressor = role; history.push(`${name} ${option.label}`); }
+    else if (action === "fold") history.push(`${name} Fold`);
+    effective.push(action);
+    // An impossible raise plays as a call, which ends the betting: nothing may follow it.
+    if (action !== asked && effective.length !== requested.steps.length) throw new Error("Illegal flop action after an effective call");
   }
+  const state = flopState(g.tree, effective);
+  state.steps.forEach((step, index) => { step.canRaise = canRaises[index]; });
   if (state.end && ["fold", "raise-fold"].includes(state.end.type)) {
-    const winner = state.end.winner, loser = winner === "ip" ? "oop" : "ip";
+    const winner = state.end.winner, loser = rival(winner);
     pot = round(pot - Math.max(0, invested[winner] - invested[loser]));
   }
   const chips = { invested, stacks: { ip: left("ip"), oop: left("oop") } };
   return { g, state, pot, history, stacks, stackNow: state.role ? left(state.role) : null, ...chips,
+    chipsNow: state.node ? { pot, committed: { ...invested }, stacks: { ip: left("ip"), oop: left("oop") } } : null,
     lastAggressor: state.end && ["call", "raise-call"].includes(state.end.type) ? aggressor : null };
 }
 
+// ---- amount-based action options (shared by the flop and later streets) ----
+// `chips`: { pot, committed: { ip, oop } (street totals so far), stacks: { ip, oop } (remaining before acting) }.
+const rival = role => role === "ip" ? "oop" : "ip";
+const capOf = (chips, role) => Math.min(chips.stacks[role], chips.stacks[rival(role)] + chips.committed[rival(role)] - chips.committed[role]);
+// Raising needs an opponent who is not all-in and chips beyond the call (same rule as engine.mjs).
+export function canRaiseNow(chips, role) {
+  const other = rival(role);
+  return chips.stacks[other] > 0 && chips.committed[role] + capOf(chips, role) > chips.committed[other];
+}
+// A wager of `amount` chips: committing >= the merge ratio of the effective stack becomes all-in.
+function wagerOf(chips, role, amount) {
+  const limit = capOf(chips, role);
+  return amount >= limit * pilot.later_all_in_merge_ratio ? { paid: round(limit), allIn: true } : { paid: round(Math.min(amount, chips.stacks[role])), allIn: round(Math.min(amount, chips.stacks[role])) >= chips.stacks[role] };
+}
+const optionText = {
+  en: { check: "Check", fold: "Fold", call: "Call", bet: "Bet", raise: "Raise", checkRaise: "Check-raise", allIn: "All-in" },
+  ja: { check: "チェック", fold: "フォールド", call: "コール", bet: "ベット", raise: "レイズ", checkRaise: "チェックレイズ", allIn: "オールイン" },
+};
+function buildOptions(chips, node, role, actions, multiplier, fractionOf, locale) {
+  const t = optionText[locale] ?? optionText.en, other = rival(role), mine = chips.committed[role], theirs = chips.committed[other];
+  const canRaise = canRaiseNow(chips, role);
+  const out = [];
+  for (const action of actions) {
+    if (action === "check") out.push({ action, label: t.check, amountBb: 0, allIn: false, paid: 0 });
+    else if (action === "fold") out.push({ action, label: t.fold, amountBb: 0, allIn: false, paid: 0 });
+    else if (action === "call") {
+      const paid = round(Math.min(chips.stacks[role], theirs - mine));
+      out.push({ action, label: `${t.call} ${formatBb(paid)}`, amountBb: paid, allIn: paid >= chips.stacks[role] && paid > 0, paid });
+    } else if (action === "allin") {
+      const paid = round(capOf(chips, role));
+      out.push({ action, label: `${t.allIn} ${formatBb(mine + paid)}`, amountBb: round(mine + paid), allIn: true, paid });
+    } else if (action === "raise") {
+      if (!canRaise) continue;
+      const { paid, allIn } = wagerOf(chips, role, round(theirs * multiplier) - mine);
+      const to = round(mine + paid), pct = Math.round((to - theirs) / (chips.pot + theirs - mine) * 100);
+      const lead = allIn ? `${t.allIn} ${formatBb(to)}` : `${/^bb_vs_\d/.test(node) ? t.checkRaise : t.raise} ${formatBb(to)} (${pct}%)`;
+      out.push({ action, label: lead, amountBb: to, allIn, paid });
+    } else {
+      const fraction = fractionOf(action), { paid, allIn } = wagerOf(chips, role, round(chips.pot * fraction));
+      out.push({ action, label: allIn ? `${t.allIn} ${formatBb(mine + paid)}` : `${t.bet} ${formatBb(paid)} (${Math.round(fraction * 100)}%)`,
+        amountBb: round(mine + paid), allIn, paid });
+    }
+  }
+  return out;
+}
+function flopOptionsFor(chips, node, role, locale = "en") {
+  return buildOptions(chips, node, role, NODES[node], pilot.flop_check_raise_multiplier, flopBetFraction, locale);
+}
+// The options of a decision with their real amounts: [{ action, label, amountBb, allIn }] (raise is dropped
+// when raising is impossible). `street` is "flop", "turn" or "river"; `locale` "en" or "ja".
+export function decisionOptions(chips, node, street = "flop", locale = "en") {
+  if (street === "flop") return flopOptionsFor(chips, node, nodeRoleOf(node), locale).map(({ paid, ...rest }) => rest);
+  return buildOptions(chips, node, nodeRoleOf(node), LATER_NODES[node], pilotConfig.later_raise_multiplier,
+    action => betFraction(street, action), locale).map(({ paid, ...rest }) => rest);
+}
+const buildOptionsFor = (street, chips, node, role) =>
+  buildOptions(chips, node, role, LATER_NODES[node], pilotConfig.later_raise_multiplier, action => betFraction(street, action), "en");
+const nodeRoleOf = node => node.startsWith("btn_") || node.startsWith("ip_") || /^(turn|river)_ip_/.test(node) ? "ip" : "oop";
+
 export function flopDecision(actions = [], spot) {
-  const { g, state, pot, history } = replay(actions, spot);
-  if (state.node) return { node: state.node, actor: g[state.role], potBb: pot, history };
+  const { g, state, pot, history, chipsNow } = replay(actions, spot);
+  if (state.node) {
+    const options = decisionOptions(chipsNow, state.node, "flop");
+    return { node: state.node, actor: g[state.role], potBb: pot, history, options,
+      labels: Object.fromEntries(decisionOptions(chipsNow, state.node, "flop", "en").map(o => [o.action, o.label])),
+      labelsJa: Object.fromEntries(decisionOptions(chipsNow, state.node, "flop", "ja").map(o => [o.action, o.label])) };
+  }
   const { type, winner } = state.end;
   const last = state.steps.at(-1);
   const result = type === "check" ? `${g[last.role]}もチェック。フロップの判断は終了です。`
@@ -105,36 +173,25 @@ export function flopDecision(actions = [], spot) {
   return { result, potBb: pot, history };
 }
 
-const choiceLabels = { check: "Check", ...Object.fromEntries(pilot.flop_bet_fractions.map(f => [`bet${Math.round(f * 100)}`, `Bet ${Math.round(f * 100)}%`])), fold: "Fold", call: "Call", raise: "Raise 3×" };
-const flopChoices = Object.fromEntries(Object.entries(NODES).map(([node, actions]) =>
-  [node, actions.map(action => ({ action, label: choiceLabels[action] }))]));
-
 export function buildFlopActionBlocks(actions = [], spot) {
   const g = geometry(spot);
   const blocks = g.tree === "oop_checks"
     ? [{ key: "flop-oop-check", kind: "flop-forced", position: g.oop, stack: `${g.stackBb}`, chosen: "check", options: [{ action: "check", label: "Check" }], active: false }]
     : [];
   for (let index = 0; index <= actions.length; index++) {
-    const { state, stackNow } = replay(actions.slice(0, index), spot);
+    const { state, stackNow, chipsNow } = replay(actions.slice(0, index), spot);
     if (!state.node) {
       const decision = flopDecision(actions.slice(0, index), spot);
       blocks.push({ key: "flop-end", kind: "end", result: decision.result, pot: `ポット ${decision.potBb}bb`, options: [] });
       break;
     }
     blocks.push({ key: `flop-${index}`, kind: "flop", flopIndex: index, position: g[state.role], stack: `${stackNow}`,
-      chosen: actions[index] ?? null, options: flopChoices[state.node], active: index === actions.length });
+      chosen: actions[index] ?? null, options: decisionOptions(chipsNow, state.node, "flop").map(({ action, label }) => ({ action, label })), active: index === actions.length });
   }
   return blocks;
 }
 
 const formatBb = value => `${Number(round(value).toFixed(2))}`;
-const laterChoiceLabels = {
-  check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in",
-  fold: "Fold", call: "Call", raise: "Raise 3×",
-};
-const laterChoices = Object.fromEntries(Object.entries(LATER_NODES).map(([node, actions]) => [node,
-  actions.map(action => ({ action, label: laterChoiceLabels[action] }))]));
-
 const foldEnd = (state, spot) => {
   const foldedRole = state.steps.at(-1)?.role;
   const winnerRole = state.end?.winner;
@@ -179,26 +236,20 @@ export function replayLater(street, actions = [], start, spot) {
     return put(role, amount >= limit * pilotConfig.later_all_in_merge_ratio ? limit : amount);
   };
   const requestedState = streetState(street, actions);
-  const actualActions = [];
+  const actualActions = [], canRaises = [];
   for (let index = 0; index < requestedState.steps.length; index++) {
     const { node, role } = requestedState.steps[index];
     const name = g[role], other = role === "ip" ? "oop" : "ip";
     let action = requestedState.steps[index].action;
-    const suffix = () => stacks[role] === 0 ? " All-in" : "";
-    if (action === "allin" || action.startsWith("bet")) {
-      const amount = action === "allin" ? cap(role) : round(pot * betFraction(street, action));
-      const paid = wager(role, amount);
+    const chips = { pot, committed: { ...committed }, stacks: { ip: stacks.ip, oop: stacks.oop } };
+    const can = canRaiseNow(chips, role);
+    canRaises.push(can);
+    if (action === "raise" && !can) action = "call";
+    const option = buildOptionsFor(street, chips, node, role).find(item => item.action === action);
+    if (action === "allin" || action.startsWith("bet") || action === "raise") {
+      put(role, option.paid);
       aggressor = role;
-      history.push(action === "allin" ? `${name} All-in (${formatBb(paid)}BB) All-in` : `${name} Bet ${action.slice(3)}% (${formatBb(paid)}BB)${suffix()}`);
-    } else if (action === "raise") {
-      const raiseBy = round(committed[other] * pilotConfig.later_raise_multiplier - committed[role]);
-      if (committed[role] + cap(role) <= committed[other] || !stacks[other]) {
-        action = "call";
-      } else {
-        wager(role, raiseBy);
-        aggressor = role;
-        history.push(`${name} Raise ${pilotConfig.later_raise_multiplier}× (${formatBb(committed[role])}BB)${suffix()}`);
-      }
+      history.push(`${name} ${option.label}`);
     }
     if (action === "check") history.push(`${name} Check`);
     else if (action === "call") {
@@ -213,8 +264,10 @@ export function replayLater(street, actions = [], start, spot) {
     }
   }
   const state = streetState(street, actualActions);
+  state.steps.forEach((step, index) => { step.canRaise = canRaises[index]; });
   const lastAggressor = state.end?.winner ? null : state.end ? aggressor : start.lastAggressor;
-  return { state, pot, stacks, history, end: state.end ?? null, lastAggressor };
+  return { state, pot, stacks, history, end: state.end ?? null, lastAggressor,
+    chipsNow: state.node ? { pot, committed: { ...committed }, stacks: { ip: stacks.ip, oop: stacks.oop } } : null };
 }
 
 function boardBlock(street, card, potBb) {
@@ -237,7 +290,7 @@ function appendLaterDecisionBlocks(blocks, street, actions, start, spot, hasNext
     }
     const role = state.role;
     blocks.push({ key: state.node, kind: "flop", street, laterIndex: index, position: g[role],
-      stack: formatBb(replayed.stacks[role]), chosen: actions[index] ?? null, options: laterChoices[state.node], active: index === actions.length });
+      stack: formatBb(replayed.stacks[role]), chosen: actions[index] ?? null, options: decisionOptions(replayed.chipsNow, state.node, street).map(({ action, label }) => ({ action, label })), active: index === actions.length });
   }
   return replayLater(street, actions, start, spot);
 }
@@ -269,6 +322,8 @@ export function laterDecision(street, actions = [], start, spot) {
   const replayed = replayLater(street, actions, start, spot);
   if (!replayed.state.node) return { street, end: replayed.end, potBb: replayed.pot, stacks: replayed.stacks, history: replayed.history, lastAggressor: replayed.lastAggressor };
   const role = replayed.state.role;
+  const labelsFor = locale => Object.fromEntries(decisionOptions(replayed.chipsNow, replayed.state.node, street, locale).map(o => [o.action, o.label]));
   return { street, node: replayed.state.node, actor: geometry(spot)[role], role, potBb: replayed.pot,
+    options: decisionOptions(replayed.chipsNow, replayed.state.node, street), labels: labelsFor("en"), labelsJa: labelsFor("ja"),
     line: lineFor(start.lastAggressor ?? null, role), history: replayed.history, lastAggressor: replayed.lastAggressor };
 }

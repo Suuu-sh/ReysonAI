@@ -24,7 +24,7 @@ const leadActions: Record<string, string> = {
 
 function situationForNode(node: string): Situation | undefined {
   if (node.endsWith("_first")) return "lead";
-  if (node.endsWith("_vs_raise")) return "facing_raise";
+  if (/_vs_raise\d*$/.test(node)) return "facing_raise";
   if (node.includes("_vs_")) return "facing";
   return undefined;
 }

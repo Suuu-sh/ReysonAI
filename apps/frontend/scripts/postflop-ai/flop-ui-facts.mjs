@@ -6,7 +6,7 @@ import { comboId, defenceFor, flopRunouts, rankTable, replayOrNull } from "./def
 import { equityVersus, indexOf, makeRange, weightOf } from "./range-equity.mjs";
 import { seatRange } from "./browser-inputs.mjs";
 import { NODES, policyMix, scaleByPath } from "./policy.mjs";
-import { FLOP_BETS, facingNode, flopState, historyFor, nodeRole, otherRole, raiseNodeAfter } from "./tree.mjs";
+import { FLOP_BETS, facingNode, flopState, historyFor, nodeRole, otherRole } from "./tree.mjs";
 import { averageExplanationFacts } from "./explain-aggregate.mjs";
 
 const caches = new WeakMap();
@@ -43,7 +43,11 @@ function contextFor(inputs, policy, board, node, history) {
     });
   };
   if (node.endsWith("_first")) for (const bet of FLOP_BETS) response(bet, facingNode(role, bet));
-  else if (NODES[node].includes("raise")) response("raise", raiseNodeAfter(otherRole(role)));
+  else if (NODES[node].includes("raise")) {
+    // Whoever answers the raise: the node after history + raise (a re-raise chain has several).
+    const answer = flopState(inputs.spot.tree, [...history, "raise"]).node;
+    if (answer) response("raise", answer);
+  }
   const value = { defence, table, villains, responses };
   cache.set(key, value);
   return value;

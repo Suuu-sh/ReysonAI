@@ -166,7 +166,8 @@ export function exactActionEv({ spot, defence, rootPath, finals, expectedNode, h
   if (root.terminal || root.node !== expectedNode) throw new Error(`Exact EV root mismatch: ${root.node} !== ${expectedNode}`);
   const heroSeat = root.seat, oppSeat = spot.ip === heroSeat ? spot.oop : spot.ip;
   const atRoot = { ...root.table.invested };
-  const actions = root.actions, nA = actions.length;
+  // An impossible raise (the opponent is all-in, no chips beyond the call) is not an option of the root.
+  const actions = root.table.log.at(-1)?.canRaise === false ? root.actions.filter(action => action !== "raise") : root.actions, nA = actions.length;
 
   const slotKey = (len, finalBoard) => len <= 3 ? 0 : len === 4 ? finalBoard[3] + 1 : (finalBoard[3] + 1) * 64 + finalBoard[4] + 1;
   const childOf = (entry, k, finalBoard) => {

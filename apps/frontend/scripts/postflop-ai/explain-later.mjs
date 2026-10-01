@@ -194,7 +194,7 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
     betTable.check = { calledEquity: Math.round(equity * 1e4) / 1e4 };
   } else {
     const facing = /_vs_(33|75|125|allin)$/.exec(node);
-    if (!facing && !node.endsWith("_vs_raise")) throw new Error(`Unsupported later decision: ${node}`);
+    if (!facing && !/_vs_raise\d*$/.test(node)) throw new Error(`Unsupported later decision: ${node}`);
     const role = decision.role;
     const other = otherRole(role);
     const ownCommitted = spot.stackBb - stacks[role];
@@ -207,7 +207,9 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
     actions.fold = caught;
     if (LATER_NODES[node].includes("raise")) {
       const bettorRole = other;
-      responseDetail(`${decision.street}_${bettorRole}_vs_raise`, bettorRole, "raise");
+      // The answer to this raise: the other seat at raise depth + 1 (turn_oop_vs_raise, turn_ip_vs_raise2 ...).
+      const depth = /_vs_raise(\d*)$/.exec(node), next = depth ? Number(depth[1] || 1) + 1 : 1;
+      responseDetail(`${decision.street}_${bettorRole}_vs_raise${next === 1 ? "" : next}`, bettorRole, "raise");
     }
   }
   return { actions, equity, combos: evaluated.length, truncated, betTable };

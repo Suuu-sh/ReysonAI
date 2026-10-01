@@ -20,7 +20,7 @@ after(async () => { await server?.close(); });
 
 function situationFor(node) {
   if (node.endsWith("_first")) return "lead";
-  if (node.endsWith("_vs_raise")) return "facing_raise";
+  if (/_vs_raise\d*$/.test(node)) return "facing_raise";
   if (node.includes("_vs_")) return "facing";
 }
 
@@ -95,7 +95,7 @@ test("reasons switch between Japanese and English", () => {
 });
 
 test("missing reason keys are skipped without suppressing available sentences", () => {
-  const args = { street: "turn", node: "turn_oop_vs_raise", action: "raise", tier: "medium", texture: "blank", line: "unrecorded", locale: "ja" };
+  const args = { street: "turn", node: "turn_oop_vs_raise", action: "unrecorded", tier: "medium", texture: "blank", line: "unrecorded", locale: "ja" };
   assert.equal(laterActionReason(args), reasons.texture.turn.blank.medium.ja);
   const missingTexture = laterActionReason({ ...args, action: "call", texture: "unrecorded", line: "checked" });
   assert.equal(missingTexture, reasons.base.turn.facing_raise.call.medium.ja + reasons.line.turn.facing_raise.checked.ja);

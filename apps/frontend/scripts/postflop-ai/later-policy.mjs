@@ -1,7 +1,12 @@
 import { handTier, LINES, RUNOUT_TEXTURES, runoutTexture, TIERS } from "./model.mjs";
 import { LATER_NODES, STREETS, streetNodes } from "./later-tree.mjs";
+import { raiseDepth } from "./tree.mjs";
+import { raiseReferenceRow, withRaise } from "./policy.mjs";
 
 const tiersFor = street => TIERS.filter(tier => street !== "river" || tier !== "draw");
+// Policies saved before repeated raises have no raise key on *_vs_raise rules and no *_vs_raise2..N nodes.
+const legacyActions = (node, mix) => raiseDepth(node) === 1 && mix && typeof mix === "object" && !("raise" in mix)
+  ? LATER_NODES[node].filter(action => action !== "raise") : LATER_NODES[node];
 const hasKeys = (value, keys) => value && typeof value === "object" && !Array.isArray(value) &&
   Object.keys(value).sort().join(",") === [...keys].sort().join(",");
 
@@ -20,12 +25,12 @@ export function validateLaterPolicy(policy) {
       const key = `${rule.node}|${rule.line}|${rule.texture}|${rule.tier}`;
       if (seen.has(key)) throw new Error(`Duplicate later policy rule: ${key}`);
       seen.add(key);
-      const actions = LATER_NODES[rule.node];
+      const actions = legacyActions(rule.node, rule.mix);
       if (!hasKeys(rule.mix, actions) || actions.some(action => !Number.isInteger(rule.mix[action]) || rule.mix[action] < 0 || rule.mix[action] > 100) ||
           actions.reduce((sum, action) => sum + rule.mix[action], 0) !== 100) throw new Error(`Invalid later action mix: ${key}`);
       if ((rule.line !== "any" || rule.texture !== "any") && ++overrides[rule.node] > 20) throw new Error(`Too many later overrides: ${rule.node}`);
     }
-    for (const node of nodes) for (const tier of tiers) {
+    for (const node of nodes.filter(name => raiseDepth(name) < 2)) for (const tier of tiers) {
       if (!seen.has(`${node}|any|any|${tier}`)) throw new Error(`Missing later fallback rule: ${node}/${tier}`);
     }
   }
@@ -40,8 +45,10 @@ export function laterPolicyMix(policy, node, hole, board, line) {
   const texture = runoutTexture(board), rules = policy.streets[street].rules;
   for (const [matchLine, matchTexture] of [[line, texture], [line, "any"], ["any", texture], ["any", "any"]]) {
     const rule = rules.find(item => item.node === node && item.tier === tier && item.line === matchLine && item.texture === matchTexture);
-    if (rule) return rule.mix;
+    if (rule) return withRaise(node, rule.mix);
   }
+  // Nodes added after a policy was saved (re-raises) use the reference mixes.
+  if (raiseDepth(node) >= 2 && policy !== reference) return referenceLaterTierMix(node, tier);
   throw new Error(`Uncovered later policy node: ${node}/${line}/${texture}/${tier}`);
 }
 
@@ -71,6 +78,12 @@ function spreadBets(total, bets, tier) {
   return Object.fromEntries(bets.map((action, i) => [action, total * weights[i] / sum]));
 }
 
+// The reference mix of a node and tier (any line / texture).
+export function referenceLaterTierMix(node, tier) {
+  const actions = LATER_NODES[node];
+  return roundMix(Object.fromEntries(raiseReferenceRow(node, tier, actions).map((value, i) => [actions[i], value])), actions);
+}
+
 export function referenceLaterPolicy() {
   return validateLaterPolicy({ version: 1, kind: "ai_estimate_not_gto", streets: Object.fromEntries(STREETS.map(street => [street, {
     rules: streetNodes(street).flatMap(node => tiersFor(street).map(tier => {
@@ -80,6 +93,7 @@ export function referenceLaterPolicy() {
       const raise = tier === "monster" ? 15 : tier === "strong" ? 5 : 0;
       let raw;
       if (node.endsWith("_first")) raw = { check: 100 - bet, ...spreadBets(bet, actions.slice(1), tier) };
+      else if (raiseDepth(node)) return { node, line: "any", texture: "any", tier, mix: referenceLaterTierMix(node, tier) };
       else if (!actions.includes("raise")) raw = { fold: 100 - call, call };
       else raw = { fold: 100 - call, call: call - raise, raise };
       return { node, line: "any", texture: "any", tier, mix: roundMix(raw, actions) };

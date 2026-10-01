@@ -13,14 +13,16 @@ export type AdvancedInput = {
   texture?: string; explain?: any; positions?: { ip?: string; oop?: string };
   // Concrete cards make the copy hand-specific: the full board ("6h5h2d"), the exact combo ("As4s") or, for an
   // averaged hand class, its combos (the most common combo class is described).
+  // Per-decision labels with real amounts (decisionOptions); falls back to the plain labels.
+  labels?: Record<string, string>;
   board?: string; cards?: string; combos?: { cards: string; weight: number }[];
 };
 export type AdvancedBlock = { action: string; label: string; frequency: number; text: string };
 export type AdvancedExplanation = { headline: string; blocks: AdvancedBlock[]; texture?: string };
 
 const LABELS: Record<string, Record<string, string>> = {
-  en: { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise 3×" },
-  ja: { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ 3倍" },
+  en: { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise" },
+  ja: { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ" },
 };
 const ORDER = ["check", "bet33", "bet75", "bet125", "allin", "fold", "call", "raise"];
 const FRACTION: Record<string, number> = { bet33: 0.33, bet75: 0.75, bet125: 1.25 };
@@ -325,7 +327,7 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
       const cl = calledLevel(input.explain?.bet_table?.actions?.[action]?.calledEquity);
       sentences.push(...betSentences(desc, action, roleOf(action), hc), responseSentence(f, cl, ctx, desc.tag));
     }
-    blocks.push({ action, label: LABELS[input.locale][action] ?? action, frequency, text: "" });
+    blocks.push({ action, label: input.labels?.[action] ?? LABELS[input.locale][action] ?? action, frequency, text: "" });
     (blocks[blocks.length - 1] as any)._s = sentences;
   }
   // The single range-level sentence of the explanation: one of the available range statements (advantage, texture,

@@ -4,7 +4,7 @@ import { evaluate, seededRandom, seedFor } from "../lib/equity.mjs";
 import { seatRange } from "./browser-inputs.mjs";
 import { handTier, parseCards } from "./model.mjs";
 import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.mjs";
-import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseNodeAfter } from "./tree.mjs";
+import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseDepth } from "./tree.mjs";
 import { defenceFor, replayOrNull } from "./defence.mjs";
 import { averageExplanationFacts } from "./explain-aggregate.mjs";
 
@@ -56,14 +56,16 @@ function opponentRange(node, inputs, policy, flop, hero, prev) {
 }
 
 const FIRST_NODES = { btn_first: "ip", oop_first: "oop" };
-const RAISE_NODES = { btn_vs_raise: true, oop_vs_raise: true };
 // Facing-bet node → the bettor's role and the bet it faces (e.g. bb_vs_125 → IP's bet125).
 const facing = node => FLOP_BETS.map(bet => [bet, ["ip", "oop"].find(role => facingNode(role, bet) === node)]).find(([, role]) => role);
 
-function betSize(node, prev, startPot) {
-  if (FIRST_NODES[node]) return null;
-  if (RAISE_NODES[node]) return flopBetFraction(prev) * startPot;
-  return flopBetFraction(facing(node)[0]) * startPot;
+// Chips (totals on the street) of the wager faced at `node`, without a replayed table: the bet, then each
+// raise at `multiplier` times the previous total, capped by the stack. Returns [facing total, previous total].
+function facedTotals(node, prev, startPot, multiplier, stack) {
+  const depth = raiseDepth(node), bet = flopBetFraction(depth ? prev : facing(node)[0]) * startPot;
+  const totals = [bet];
+  for (let k = 1; k <= depth; k++) totals.push(Math.min(totals[k - 1] * multiplier, stack));
+  return [totals[depth], totals[depth - 1] ?? 0];
 }
 
 function summarize(items) {
@@ -137,18 +139,18 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
     if (requirement) required = requirement.required;
     else {
       const startPot = inputs.spot.potBb;
-      const bet = betSize(node, prev, startPot);
-      const multiplier = inputs.config.flop_check_raise_multiplier ?? 3;
       // A raise is capped by the stack (all-in).
-      const raiseTo = Math.min(bet * multiplier, inputs.spot.stackBb);
-      const toCall = RAISE_NODES[node] ? raiseTo - bet : bet;
-      const potBefore = RAISE_NODES[node] ? startPot + bet + raiseTo : startPot + bet;
-      required = toCall / (potBefore + toCall);
+      const [faced, before] = facedTotals(node, prev, startPot, inputs.config.flop_check_raise_multiplier ?? 3, inputs.spot.stackBb);
+      const toCall = faced - before;
+      required = toCall / (startPot + faced + before + toCall);
     }
     const caught = { groups: [group("ahead", ahead, total), group("behind", behind, total)], required };
     actions.call = caught;
     actions.fold = caught;
-    if (facing(node)) vsResponse(raiseNodeAfter(facing(node)[1]), "raise", ["raise"]);
+    if (NODES[node].includes("raise")) {
+      const answer = flopState(inputs.spot.tree, [...history, "raise"]).node;
+      if (answer) vsResponse(answer, "raise", ["raise"]);
+    }
     if (table) {
       defenceFacts = defence.facts(table, flop, node, hero, policyMix(policy, node, hero, flop));
       bettingFacts = defence.bettingFacts(table, flop, node, hero);

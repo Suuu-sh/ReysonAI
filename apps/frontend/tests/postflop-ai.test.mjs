@@ -73,7 +73,7 @@ test("malformed LLM policy output is rejected before any combo expansion", () =>
   illegal.rules[0].mix.raise = 0;
   assert.throws(() => validatePolicy(illegal), /Invalid action mix/);
   const missing = structuredClone(good);
-  missing.rules.pop();
+  missing.rules.shift();
   assert.throws(() => validatePolicy(missing), /Invalid postflop policy envelope|Missing fallback/);
   const duplicate = structuredClone(good);
   duplicate.rules.push(structuredClone(good.rules[0]));

@@ -1,9 +1,10 @@
 // Turn/river public action trees, derived from the sizing in data/postflop-ai-pilot.json
-// (`later_streets`). One raise per street; stack caps and the all-in merge are applied by
+// (`later_streets`). Up to MAX_RAISES raises per street (raise, re-raise ...); stack caps and the all-in merge are applied by
 // the engine. Action names encode the size: bet33 / bet75 / bet125 (% of pot) and allin.
 // Facing nodes are named by that size (turn_ip_vs_75, river_oop_vs_allin); an all-in
 // can only be folded to or called.
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
+import { MAX_RAISES } from "./tree.mjs";
 
 export const STREETS = Object.freeze(["turn", "river"]);
 const betName = fraction => `bet${Math.round(fraction * 100)}`;
@@ -29,13 +30,18 @@ export const betFraction = (street, action) => {
   return fraction;
 };
 
+// The node answering raise number `k` of a chain started by `bettor`: the bettor faces odd raises and the
+// responder even ones (turn_oop_vs_raise, turn_ip_vs_raise2, turn_oop_vs_raise3 ...).
+export const laterRaiseNode = (street, k, bettor) =>
+  `${street}_${k % 2 === 1 ? bettor : bettor === "oop" ? "ip" : "oop"}_vs_raise${k === 1 ? "" : k}`;
+
 function nodesFor(street) {
   const opening = openingActions(street), bets = opening.filter(action => action !== "check");
   const out = {};
   for (const [actor, responder] of [["oop", "ip"], ["ip", "oop"]]) {
     out[`${street}_${actor}_first`] = opening;
     for (const bet of bets) out[`${street}_${responder}_vs_${sizeOf(bet)}`] = bet === "allin" ? ["fold", "call"] : ["fold", "call", "raise"];
-    out[`${street}_${actor}_vs_raise`] = ["fold", "call"];
+    for (let k = 1; k <= MAX_RAISES; k++) out[laterRaiseNode(street, k, actor)] = k < MAX_RAISES ? ["fold", "call", "raise"] : ["fold", "call"];
   }
   return out;
 }
@@ -73,11 +79,17 @@ export function streetState(street, actions) {
     const pending = next(`${responder}_vs_${sizeOf(bet)}`);
     if (pending) return pending;
     const response = steps.at(-1).action;
-    if (response === "fold") return end({ type: "fold", winner: bettor });
-    if (response === "call") return end({ type: "call" });
-    const back = next(`${bettor}_vs_raise`);
-    if (back) return back;
-    return end(steps.at(-1).action === "fold" ? { type: "raise-fold", winner: responder } : { type: "raise-call" });
+    if (response === "fold") return end({ type: "fold", winner: bettor, raises: 0 });
+    if (response === "call") return end({ type: "call", raises: 0 });
+    // Raise chain: the bettor and the responder alternate until someone folds or calls.
+    for (let k = 1; ; k++) {
+      const node = laterRaiseNode(street, k, bettor).slice(street.length + 1);
+      const back = next(node);
+      if (back) return back;
+      const { action, role } = steps.at(-1);
+      if (action === "fold") return end({ type: "raise-fold", winner: role === bettor ? responder : bettor, raises: k });
+      if (action === "call") return end({ type: "raise-call", raises: k });
+    }
   };
   const oop = next("oop_first");
   if (oop) return oop;

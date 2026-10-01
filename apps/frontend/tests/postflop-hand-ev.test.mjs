@@ -55,7 +55,7 @@ test("SB vs BB: SB leads out of position into BB, with a 7BB pot and 96.5BB stac
   assert.deepEqual([result[""].node, result[""].actor, result[""].pot_bb], ["oop_first", "SB", 7]);
   assert.deepEqual([result.bet33.node, result.bet33.actor, result.bet33.pot_bb], ["ip_vs_33", "BB", 9.31]);
   assert.deepEqual([result["check,bet75,raise"].node, result["check,bet75,raise"].actor, result["check,bet75,raise"].pot_bb], ["btn_vs_raise", "BB", 28]);
-  assert.ok(Object.values(result["bet33,raise"].rows).every(row => Object.keys(row.ev_bb).join() === "fold,call"));
+  assert.ok(Object.values(result["bet33,raise"].rows).every(row => Object.keys(row.ev_bb).join() === "fold,call,raise"));
 });
 
 test("a 3bet pot where the IP 3bettor faces a check uses the first pilot's decision keys", () => {

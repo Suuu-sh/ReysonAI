@@ -100,10 +100,10 @@ test("fold and raise mixtures identify the bluff-raise branch", () => {
     actionMix: { fold: 0.93, call: 0, raise: 0.07 }, tiers: { air: 1 },
     explain: { equity: 0.22, defence: facts, betting: { equity_vs_defender: 0.22 },
       actions: { raise: { foldShare: 0.43 } } } });
-  assert.match(result.headline, /Fold 93% \/ Raise 3× 7%/);
+  assert.match(result.headline, /Fold 93% \/ Raise 7%/);
   assert.match(result.headline, /mixes a bluff-raise with folds/);
-  assert.match(renderExplanationPlainText(result), /This hand has 22% equity.*raise 3× relies on fold equity/);
-  assert.match(renderExplanationPlainText(result), /Raise 3× \| 7% \| 43% \| —$/m);
+  assert.match(renderExplanationPlainText(result), /This hand has 22% equity.*raise relies on fold equity/);
+  assert.match(renderExplanationPlainText(result), /Raise \| 7% \| 43% \| —$/m);
 });
 
 test("an exact combo is named as that combo, not as its hand-class average", () => {

@@ -107,7 +107,7 @@ export function computeNodeMonteCarlo({ board, history, inputs, flopPolicy, late
   const setup = nodeSetup(history, inputs, flopPolicy, board.cards, spot.tree, defence);
   const actions = NODES[state.node];
   const reachableVillain = setup.villain.filter(item => item.weight > 0);
-  if (!reachableVillain.length || !setup.hero.some(item => item.weight > 0)) {
+  if (!setup.nodeTable || !reachableVillain.length || !setup.hero.some(item => item.weight > 0)) {
     return { node: state.node, actor, pot_bb: setup.pot, rows: {}, unreachable: true };
   }
 
@@ -213,7 +213,8 @@ export function computeNodeExact({ board, history, inputs, flopPolicy, laterPoli
   const setup = nodeSetup(history, inputs, flopPolicy, board.cards, spot.tree, defence);
   const actions = NODES[state.node];
   const oppItems = setup.villain.filter(item => item.weight > 0);
-  if (!oppItems.length || !setup.hero.some(item => item.weight > 0)) {
+  // A history through an impossible raise (the opponent is all-in) never reaches this decision.
+  if (!setup.nodeTable || !oppItems.length || !setup.hero.some(item => item.weight > 0)) {
     return { node: state.node, actor, pot_bb: setup.pot, rows: {}, unreachable: true };
   }
   const groups = new Map();
