@@ -113,10 +113,10 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions }
   const advanced = loadProfile()?.level === "advanced";
   return <div className="postflop-reasons postflop-reasons-structured">
     <p className="postflop-reason-headline">{plain.headline}</p>
-    {plain.blocks.map(block => <section className="postflop-reason-section" key={block.action}>
-      <h4><i style={{ background: barColor(block.action) }} aria-hidden="true" /> {block.label}{block.frequency > 0 ? ` · ${Math.round(block.frequency * 100)}%` : ""}</h4>
+    {plain.blocks.map(block => <details className="postflop-reason-section postflop-reason-action" key={block.action}>
+      <summary><i style={{ background: barColor(block.action) }} aria-hidden="true" /> {block.label}{block.frequency > 0 ? ` · ${Math.round(block.frequency * 100)}%` : ""}</summary>
       <p>{block.text}</p>
-    </section>)}
+    </details>)}
     {plain.texture && <p className="postflop-reason-texture">{plain.texture}</p>}
     {advanced && <details className="postflop-reason-section postflop-detailed-numbers">
       <summary>{english ? "Detailed numbers" : "詳しい数字"}</summary>
