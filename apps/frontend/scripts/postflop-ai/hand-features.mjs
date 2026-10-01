@@ -64,17 +64,19 @@ function madeHand(hole, board, cat, ctx) {
       if (pos === 0) made.kickerStrength = kickerStrength(made.kicker);
     } else made.kind = "boardPair";
   } else if (cat === 2) {
-    const pairs = ranksByCount(2).slice(0, 2);
+    // The two pairs actually played come from the evaluated score (a third, lower pair is a kicker candidate only).
+    const pairs = [Math.floor(ctx.score / 16 ** 4) % 16, Math.floor(ctx.score / 16 ** 3) % 16];
     made.pairRanks = pairs;
-    if (pocket && bc[hr[0]] === 0) { made.kind = "pocketPlusBoardPair"; made.usesHole = 2; }
-    else if (holeMatches.length === 2 && !pocket) {
+    const inPlay = hr.filter(r => pairs.includes(r));
+    if (pocket && inPlay.length === 2 && bc[hr[0]] === 0) { made.kind = "pocketPlusBoardPair"; made.usesHole = 2; }
+    else if (!pocket && inPlay.length === 2) {
       const positions = hr.map(r => boardRanks.indexOf(r)).sort((a, b) => a - b);
       made.usesHole = 2;
       made.kind = positions[0] === 0 && positions[1] === 1 ? "topTwo" : positions[0] === 0 ? "topAndLower" : "lowerTwo";
-    } else if (holeMatches.length >= 1) {
+    } else if (!pocket && inPlay.length === 1) {
       made.kind = "boardPairPlusOne"; made.usesHole = 1;
       // A lower unpaired board card means weaker two pair exists (it shares the board pair); otherwise only the board pair is below us.
-      made.hasLowerBoardCard = boardRanks.some(r => bc[r] === 1 && r < holeMatches[0]);
+      made.hasLowerBoardCard = boardRanks.some(r => bc[r] === 1 && r < inPlay[0]);
     }
     else made.kind = "boardTwoPair";
   } else if (cat === 3) {
@@ -84,10 +86,12 @@ function madeHand(hole, board, cat, ctx) {
     else if (hr.includes(tr)) { made.kind = "trips"; made.usesHole = 1; }
     else made.kind = "boardTrips";
   } else if (cat === 6) {
-    made.tripsRank = ranksByCount(3)[0];
-    made.usesHole = hr.filter(r => rc[r] >= 2).length;
+    const tr = Math.floor(ctx.score / 16 ** 4) % 16, pr = Math.floor(ctx.score / 16 ** 3) % 16;
+    made.tripsRank = tr;
+    made.usesHole = hr.filter(r => r === tr || r === pr).length;
   } else if (cat === 7) {
-    made.usesHole = hr.filter(r => rc[r] === 4).length;
+    const qr = Math.floor(ctx.score / 16 ** 4) % 16;
+    made.usesHole = hr.filter(r => r === qr).length;
   }
   return made;
 }
@@ -113,7 +117,7 @@ export function handFeatures(hole, board) {
   const topB = boardRanks[0];
   const score = evaluate(all);
   const cat = Math.floor(score / 16 ** 5);
-  const ctx = { rc, bc, boardRanks };
+  const ctx = { rc, bc, boardRanks, score };
   const made = madeHand(hole, board, cat, ctx);
   const holeRanks = hole.map(rankOf);
 
@@ -125,14 +129,27 @@ export function handFeatures(hole, board) {
     made.usesHole = suitHole[s];
   }
 
+  // A hand whose five best cards are the board's own plays the board: the hole cards add nothing (a split at best).
+  if (board.length === 5 && cat >= 4 && score === evaluate(board)) { made.usesHole = 0; made.playsBoard = true; }
+
   // Standing against every holding that fits the dead cards, and the best straight any holding makes.
   const dead = new Set(all);
   const rem = [];
   for (let c = 0; c < 52; c++) if (!dead.has(c)) rem.push(c);
+  const tally = Array.from({ length: 9 }, () => [0, 0]); // per category: [we beat them, they beat or tie us]
+  const sub = { overpair: [0, 0], topPair: [0, 0], underpair: [0, 0], lower: [0, 0] }; // one-pair holdings by kind: [lose to us, beat or tie us]
   let beat = 0, tie = 0, win = 0, bestStraight = -1, bestStraightRanks = null;
   for (let i = 0; i < rem.length; i++) for (let j = i + 1; j < rem.length; j++) {
     const v = evaluate([rem[i], rem[j], ...board]);
-    if (v > score) beat++; else if (v === score) tie++; else win++;
+    const vc = Math.floor(v / 16 ** 5);
+    if (v > score) { beat++; tally[vc][1]++; } else if (v === score) { tie++; tally[vc][1]++; } else { win++; tally[vc][0]++; }
+    // One-pair classes by the holding's shape (not its outcome), so a top-pair holding that made a flush counts as beating us.
+    {
+      const r1 = rankOf(rem[i]), r2 = rankOf(rem[j]), side = v < score ? 0 : 1;
+      if (r1 === r2) { if (bc[r1] === 0) sub[r1 > topB ? "overpair" : "underpair"][side]++; }
+      else if (r1 === topB || r2 === topB) sub.topPair[side]++;
+      if (vc === 1 && made.pairRank !== undefined && made.category === "pair" && Math.floor(v / 16 ** 4) % 16 < made.pairRank) sub.lower[side]++;
+    }
     if (v >= 4 * 16 ** 5 && v < 5 * 16 ** 5) {
       if (v > bestStraight) { bestStraight = v; bestStraightRanks = new Set(); }
       if (v === bestStraight) { bestStraightRanks.add(rankOf(rem[i])); bestStraightRanks.add(rankOf(rem[j])); }
@@ -145,6 +162,10 @@ export function handFeatures(hole, board) {
   made.beatenBy = Math.round(beatenBy * 1e4) / 1e4;
   made.percentile = Math.round(ahead * 1e4) / 1e4;
   made.nut = beat === 0;
+  // Coarse classes of holdings that lose to us (more of them lose than beat or tie us), by combo count.
+  made.worsePairs = Object.fromEntries(Object.entries(sub).map(([k, [lose, other]]) => [k, lose > 0 && lose > other]));
+  made.worseClasses = tally.map(([lose, other], c) => ({ cls: CATEGORIES[c], lose, other })).filter(x => x.lose > x.other && x.lose > 0)
+    .sort((x, y) => y.lose - x.lose).map(x => x.cls);
 
   // Flush quality: our best card of the suit against the best unseen ones.
   const suitRankFree = (s, skip = 0) => {
@@ -180,38 +201,28 @@ export function handFeatures(hole, board) {
       draws.flush = { suit: flushDrawSuit, kind: t === suitRankFree(flushDrawSuit) ? "nut" : t === suitRankFree(flushDrawSuit, 1) ? "secondNut" : "nonNut",
         oneCard: suitHole[flushDrawSuit] === 1 };
     }
-    // Straight completions by rank.
-    if (cat < 4) {
-      const completing = [];
-      for (let r = 0; r < 13; r++) {
-        if (mask & (1 << r) || !rem.some(c => rankOf(c) === r)) continue;
-        const m2 = mask | (1 << r);
-        for (const w of WINDOWS) {
-          const slots = w.map(slot);
-          if (!w.includes(r) && !(r === 12 && w.includes(-1))) continue;
-          if (slots.every(x => m2 & (1 << x)) && holeRanks.some(h => slots.includes(h))) { completing.push(r); break; }
-        }
-      }
-      draws.outRanks = completing;
-      if (completing.length === 1) draws.straight = "gutshot";
-      else if (completing.length === 2) {
-        const [a, b] = completing.map(r => r === 12 && completing.some(x => x <= 4) ? -1 : r).sort((x, y) => x - y);
-        draws.straight = b - a === 5 ? "openEnded" : "doubleGutter";
-      } else if (completing.length >= 3) draws.straight = "doubleGutter";
-    }
-    // Outs: unseen cards that complete a straight or flush using a hole card.
-    const clean = new Set();
+    // Outs: unseen cards that complete a straight or flush using a hole card. A straight out is "dirty" when the card also
+    // puts three of a suit on the board. Straight completions are named only from ranks that give at least one out.
+    const clean = new Set(), outRankSet = new Set();
     if (cat < 4) for (const x of rem) {
       const s2 = evaluate([...all, x]);
       const c2 = Math.floor(s2 / 16 ** 5);
       if (c2 !== 4 && c2 !== 5 && c2 !== 8) continue;
       if (board.length + 1 >= 5 && Math.floor(evaluate([...board, x]) / 16 ** 5) >= c2) continue;
       const flush = c2 === 5 || c2 === 8;
+      if (c2 === 4) outRankSet.add(rankOf(x));
       const dirty = !flush && [0, 1, 2, 3].some(s => [...board, x].filter(c => suitOf(c) === s).length >= 3);
       if (dirty) { draws.dirtyOuts++; continue; }
       clean.add(x);
       if (flush) draws.flushOuts++; else draws.straightOuts++;
     }
+    const completing = [...outRankSet].sort((x, y) => x - y);
+    draws.outRanks = completing;
+    if (completing.length === 1) draws.straight = "gutshot";
+    else if (completing.length === 2) {
+      const [a, b] = completing.map(r => r === 12 && completing.some(x => x <= 4) ? -1 : r).sort((x, y) => x - y);
+      draws.straight = b - a === 5 ? "openEnded" : "doubleGutter";
+    } else if (completing.length >= 3) draws.straight = "doubleGutter";
     draws.outs = clean.size;
     draws.combo = Boolean(draws.flush && draws.straight);
     if (street === "flop") {
@@ -225,7 +236,7 @@ export function handFeatures(hole, board) {
     }
   }
   draws.any = Boolean(draws.flush || draws.straight);
-  draws.strong = Boolean(draws.combo || draws.flush?.kind === "nut" || draws.straight === "openEnded" || draws.straight === "doubleGutter" || draws.outs >= 8);
+  draws.strong = Boolean(draws.combo || draws.flush?.kind === "nut" || ((draws.straight === "openEnded" || draws.straight === "doubleGutter") && draws.outs >= 4) || draws.outs >= 8);
 
   // Overcards to the board.
   const overRanks = holeRanks.filter(r => r > topB).sort((a, b) => b - a);
