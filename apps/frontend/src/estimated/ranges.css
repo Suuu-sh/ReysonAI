@@ -349,6 +349,20 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .settings-body .settings-icon-button { border: 0; background: var(--surface-hover); }
 @media (max-width: 760px) {
   .action-seat-info { flex: 0 0 auto; width: auto; padding: 0; justify-content: center; }
+  .action-path-seats { align-items: stretch; }
+  .action-seat:not(.action-seat-info) { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; padding: 4px 4px 4px 8px; }
+  .action-seat:not(.action-seat-info) .action-seat-heading { padding: 0; gap: 6px; }
+  .action-seat-options { flex-direction: row; gap: 2px; margin-top: 0; }
+  .action-seat:not(.active) .action-seat-options button:not(.chosen) { display: none; }
+  .action-seat-options button { width: auto; padding: 4px 8px; }
+  .action-seat-options button.chosen { border-radius: 5px; box-shadow: none; background: var(--surface-hover); }
+  .action-seat-options .action-path-pending { margin: 0; white-space: nowrap; }
+  .action-seat-end { flex-direction: row; }
+  .action-seat-end .action-seat-heading { display: none; }
+  .action-seat-result { margin: 0; font-size: 12px; white-space: nowrap; }
+  .action-seat-end small { white-space: nowrap; }
+  .enter-postflop { padding: 4px 10px; white-space: nowrap; }
+  .action-seat-board-pot { display: none; }
   .settings-toggle { cursor: pointer; pointer-events: auto; align-items: center; height: 100%; padding: 4px 10px 4px 6px; font-size: 13px; white-space: nowrap; }
   .settings-toggle svg { display: block; color: var(--text-muted); }
   .settings-body { display: none; }
