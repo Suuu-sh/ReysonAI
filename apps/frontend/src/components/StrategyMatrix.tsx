@@ -12,6 +12,14 @@ const keyFor = node => {
 
 const adjustedLabel = { add: "卓に合わせてオープンに追加", drop: "卓に合わせてオープンから除外" };
 
+// Mix strips read from the most aggressive action on the left to the most passive on the right
+// (all-in, larger bets/raises, smaller bets, call, check, fold).
+const AGGRESSION = ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"];
+const stripOrder = actions => [...actions].sort((a, b) => {
+  const rank = action => { const index = AGGRESSION.indexOf(action); return index < 0 ? AGGRESSION.length : index; };
+  return rank(a) - rank(b);
+});
+
 export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, title, ariaLabel, footer, actionLabels = {}, simplified = false, unreachableReason = "既存3bet頻度0%、推奨なし" }) {
   return (
     <Panel className="matrix-panel" aria-label={ariaLabel}>
@@ -36,7 +44,7 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
               >
                 <strong>{hand}</strong>
                 {!aggregate.unreachable && !simplified && mixedActions.length > 1 && <span className="cell-mix" aria-hidden="true">
-                  {mixedActions.map(action => <span key={action} style={{ width: pct(aggregate.actions[action]), background: color(action) }} />)}
+                  {stripOrder(mixedActions).map(action => <span key={action} style={{ width: pct(aggregate.actions[action]), background: color(action) }} />)}
                 </span>}
               </button>
             );
