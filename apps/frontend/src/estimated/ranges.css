@@ -197,7 +197,7 @@
 .postflop-reason-headline { margin: 0; color: var(--text); font-weight: 650; }
 .postflop-reason-section { display: grid; gap: 5px; padding-top: 7px; border-top: 1px solid var(--line); }
 .postflop-reason-section h4 { margin: 0; color: var(--text); font-size: 11px; font-weight: 700; }
-.postflop-reason-action > summary { display: flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; color: var(--text); font-size: 11px; font-weight: 700; }
+.postflop-reason-action > summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; color: var(--text); font-size: 11px; font-weight: 700; }
 .postflop-reason-action > summary::-webkit-details-marker { display: none; }
 .postflop-reason-action > summary::after { content: "▸"; margin-left: auto; color: var(--text-muted); transition: transform .15s; }
 .postflop-reason-action[open] > summary::after { transform: rotate(90deg); }
@@ -323,3 +323,17 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .postflop-action-table th:first-child, .postflop-action-table td:first-child { text-align: left; }
 .postflop-action-table tbody tr:last-child > * { border-bottom: 0; }
 .postflop-action-table tbody th i { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 2px; }
+
+.postflop-reason-action-name { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.postflop-reason-frequency { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+.postflop-reason-frequency-bar { position: relative; width: 72px; height: 6px; border-radius: 3px; background: var(--surface-hover, rgba(255,255,255,.08)); overflow: hidden; }
+.postflop-reason-frequency-bar > span { position: absolute; inset: 0 auto 0 0; border-radius: 3px; }
+.postflop-reason-frequency strong { min-width: 30px; text-align: right; font-variant-numeric: tabular-nums; }
+.postflop-reason-action > summary::after { margin-left: 6px; }
+.postflop-glossary-text > p { margin: 0; }
+.postflop-glossary-text.postflop-reason-headline > p { font: inherit; }
+.postflop-term { display: inline; padding: 0 1px; border: 0; border-bottom: 1px dotted currentColor; background: none; color: var(--accent-soft, #f19ac2); font: inherit; cursor: pointer; }
+.postflop-term:hover, .postflop-term.active { color: var(--accent-bright, #ff7fbf); background: rgba(255, 127, 191, .1); border-radius: 2px; }
+.postflop-term:focus-visible { outline: 2px solid var(--accent-bright, #ff7fbf); outline-offset: 1px; }
+.postflop-term-definition { margin: 6px 0 0; padding: 7px 9px; border-left: 2px solid var(--accent, #e0559a); border-radius: 4px; background: var(--surface-raised, rgba(255,255,255,.04)); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
+.postflop-term-definition strong { color: var(--text); }

@@ -5,6 +5,7 @@ import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { tierLabels } from "./postflop-reasons.ts";
 import { buildPostflopExplanation } from "./postflop-explanation.ts";
 import { buildAdvancedExplanation } from "./postflop-advanced.ts";
+import { glossaryPieces } from "./poker-glossary.ts";
 import { loadProfile } from "../profile.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
@@ -112,12 +113,18 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions }
     tiers: hand.tiers, texture, explain, positions });
   const advanced = loadProfile()?.level === "advanced";
   return <div className="postflop-reasons postflop-reasons-structured">
-    <p className="postflop-reason-headline">{plain.headline}</p>
+    <GlossaryText className="postflop-reason-headline" text={plain.headline} locale={english ? "en" : "ja"} />
     {plain.blocks.map(block => <details className="postflop-reason-section postflop-reason-action" key={block.action}>
-      <summary><i style={{ background: barColor(block.action) }} aria-hidden="true" /> {block.label}{block.frequency > 0 ? ` · ${Math.round(block.frequency * 100)}%` : ""}</summary>
-      <p>{block.text}</p>
+      <summary>
+        <span className="postflop-reason-action-name"><i style={{ background: barColor(block.action) }} aria-hidden="true" />{block.label}</span>
+        <span className="postflop-reason-frequency" aria-label={`${Math.round(block.frequency * 100)}%`}>
+          <span className="postflop-reason-frequency-bar"><span style={{ width: `${Math.round(block.frequency * 100)}%`, background: barColor(block.action) }} /></span>
+          <strong>{Math.round(block.frequency * 100)}%</strong>
+        </span>
+      </summary>
+      <GlossaryText text={block.text} locale={english ? "en" : "ja"} />
     </details>)}
-    {plain.texture && <p className="postflop-reason-texture">{plain.texture}</p>}
+    {plain.texture && <GlossaryText className="postflop-reason-texture" text={plain.texture} locale={english ? "en" : "ja"} />}
     {advanced && <details className="postflop-reason-section postflop-detailed-numbers">
       <summary>{english ? "Detailed numbers" : "詳しい数字"}</summary>
     <p className="postflop-reason-headline">{explanation.headline}</p>
@@ -625,5 +632,19 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
           </div>
         </div>}
       </>}
+  </div>;
+}
+
+// Explanation text with poker terms as tappable chips; tapping shows the term's definition.
+function GlossaryText({ text, locale, className = "" }) {
+  const [open, setOpen] = useState(null);
+  const pieces = glossaryPieces(text, locale);
+  const definition = pieces.find(piece => piece.term === open)?.definition;
+  return <div className={`postflop-glossary-text ${className}`}>
+    <p>{pieces.map((piece, index) => piece.definition
+      ? <button key={index} type="button" className={`postflop-term${open === piece.term ? " active" : ""}`}
+        aria-expanded={open === piece.term} onClick={() => setOpen(open === piece.term ? null : piece.term)}>{piece.text}</button>
+      : <span key={index}>{piece.text}</span>)}</p>
+    {definition && <p className="postflop-term-definition" role="note"><strong>{open}</strong>{locale === "ja" ? "：" : ": "}{definition}</p>}
   </div>;
 }
