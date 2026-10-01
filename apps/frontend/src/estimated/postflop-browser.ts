@@ -1,8 +1,32 @@
-import { computeFlopHandEv, computeLaterHandEv } from "./postflop-compute.ts";
+import { computeFlopHandEv, computeLaterHandEv, storedFlopHandEvInput } from "./postflop-compute.ts";
 import { dataset, loadDataset } from "./datasets.ts";
 import { postflopUrl } from "./postflop-api.ts";
+import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
 
 const spotRequests = new Map<string, { promise: Promise<any>; settled: boolean }>();
+const flopRequests = new Map<string, Promise<any>>();
+
+export function loadPostflopFlop(spotId: string, board: string, signal?: AbortSignal): Promise<any> {
+  if (signal?.aborted) return Promise.reject(abortError());
+  const flop = canonicalFlop(board).key, key = `${spotId}|${flop}`;
+  let request = flopRequests.get(key);
+  if (!request) {
+    // Share the request, not its caller's abort signal: one cancelled view must not
+    // cancel another consumer. Failed/missing entries are not cached indefinitely.
+    request = fetch(postflopUrl("flop", { spot: spotId, flop }))
+      .then(async response => {
+        if (!response.ok) return null;
+        const data = await response.json();
+        return data.spot === spotId && data.flop === flop ? data : null;
+      }).catch(() => null).then(data => {
+        if (!data && flopRequests.get(key) === request) flopRequests.delete(key);
+        return data;
+      });
+    if (flopRequests.size >= 8) flopRequests.delete(flopRequests.keys().next().value!);
+    flopRequests.set(key, request);
+  }
+  return waitForAbort(request, signal);
+}
 
 export function isAbortError(error: unknown): boolean {
   return Boolean(error && typeof error === "object" && "name" in error && error.name === "AbortError");
@@ -107,6 +131,10 @@ export function deferPostflopCalculation<T>(calculate: () => T, signal?: AbortSi
 
 export function computePostflopHandEvInWorker(input: any, signal?: AbortSignal): Promise<any> {
   if (signal?.aborted) return Promise.reject(abortError());
+  if (input.street === "flop") {
+    const stored = storedFlopHandEvInput(input);
+    if (stored) return Promise.resolve(stored);
+  }
   const envelope = (result: any) => ({ spot: input.spotId, hand: input.hand, kind: "ai_estimate_not_gto", ...result });
   const calculate = () => envelope(input.street === "flop" ? computeFlopHandEv(input) : computeLaterHandEv(input));
   if (typeof Worker === "undefined") return deferPostflopCalculation(calculate, signal);
@@ -134,7 +162,9 @@ export function computePostflopHandEvInWorker(input: any, signal?: AbortSignal):
       reject(new Error(event.message || "手ごとのEV計算を開始できませんでした。"));
     };
     signal?.addEventListener("abort", onAbort, { once: true });
-    try { worker.postMessage(input); }
+    // Do not transfer a multi-node base to a worker when this hand still needs EV.
+    const { flopBase: unused, ...workerInput } = input;
+    try { worker.postMessage(workerInput); }
     catch (error) { cleanup(); reject(error); }
   });
 }

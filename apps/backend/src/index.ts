@@ -95,7 +95,8 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
     // Views are deterministic per published dataset, so cache them at the edge under the
     // dataset hash: a republish changes the key instead of waiting for entries to expire.
     const cache = (globalThis as { caches?: { default?: EdgeCache } }).caches?.default;
-    const version = cache ? await datasetVersion(env.DB) : null;
+    const versionName = url.pathname === "/v1/postflop/flop" ? "flop-base" : "postflop";
+    const version = cache ? await datasetVersion(env.DB, versionName) : null;
     const key = version ? new Request(`${url.origin}${url.pathname}?${url.searchParams}&dataset=${version}`) : null;
     const hit = key ? await cache!.match(key) : undefined;
     if (hit) return hit;
@@ -211,14 +212,16 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
 }
 
 type EdgeCache = { match(key: Request): Promise<Response | undefined>; put(key: Request, response: Response): Promise<void> };
-let datasetCache: { at: number; hash: string | null } | null = null;
+const datasetCaches = new Map<string, { at: number; hash: string | null }>();
 
-async function datasetVersion(db: D1Database | undefined): Promise<string | null> {
+async function datasetVersion(db: D1Database | undefined, name: string): Promise<string | null> {
   if (!db) return null;
-  if (datasetCache && Date.now() - datasetCache.at < 60_000) return datasetCache.hash;
-  const { results } = await db.prepare("SELECT content_hash FROM dataset_versions WHERE name = 'postflop'").all<{ content_hash: string }>();
-  datasetCache = { at: Date.now(), hash: results[0]?.content_hash ?? null };
-  return datasetCache.hash;
+  const cached = datasetCaches.get(name);
+  if (cached && Date.now() - cached.at < 60_000) return cached.hash;
+  const { results } = await db.prepare("SELECT content_hash FROM dataset_versions WHERE name = ?").bind(name).all<{ content_hash: string }>();
+  const hash = results[0]?.content_hash ?? null;
+  datasetCaches.set(name, { at: Date.now(), hash });
+  return hash;
 }
 
 async function readManifest(bucket: R2Bucket | undefined): Promise<Manifest> {

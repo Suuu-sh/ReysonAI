@@ -6,7 +6,8 @@ import { buildInputs } from "../scripts/postflop-ai/browser-inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "../scripts/postflop-ai/generate.mjs";
 import { buildLaterView, buildLocalBoard, explainLocalCombo, postflopResponse } from "../scripts/postflop-ai/local-view.mjs";
 import { explainLaterCombo, explainLaterCombos } from "../scripts/postflop-ai/explain-later.mjs";
-import { explainCombos } from "../scripts/postflop-ai/explain.mjs";
+import { flopUiFacts } from "../scripts/postflop-ai/flop-ui-facts.mjs";
+import { canonicalFlop } from "../scripts/postflop-ai/flop-isomorphism.mjs";
 import { laterHandEvForHand } from "../scripts/postflop-ai/later-hand-ev.mjs";
 import { computeBoard, computeExplain, computeFlopHandEv, computeLaterExplain, computeLaterHandEv, computeLaterView } from "../src/estimated/postflop-compute.ts";
 import { FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, flopHandEvForHand } from "../scripts/postflop-ai/flop-hand-ev-core.mjs";
@@ -86,7 +87,7 @@ test("browser postflop computations match the server-side route calculations", {
     const averageCombos = [{ cards: "KhKd", weight: 1 }, { cards: "QhJd", weight: 3 }];
     const averageFlopParams = new URLSearchParams({ board, node: firstNode, prev: "bet33", combos: JSON.stringify(averageCombos) });
     const expectedAverageFlop = { spot: inputs.spot.id, board,
-      ...explainCombos({ boardCards: parseFlopBoard(board).cards, node: firstNode, prev: "bet33", combos: averageCombos,
+      ...flopUiFacts({ boardCards: parseFlopBoard(board).cards, node: firstNode, prev: "bet33", combos: averageCombos,
         inputs, policy: flopCandidate.policy }) };
     assertJsonEqual(computeExplain({ spotId, board, node: firstNode, combos: averageCombos, prev: "bet33", datasets, flopCandidate }),
       expectedAverageFlop, `${spotId} average flop explanation`);
@@ -190,7 +191,8 @@ test("on-demand flop hand-EV shares the saved core, has the saved row shape, and
   assert.equal(Object.values(first.row.mix).reduce((sum, value) => sum + value, 0), 100);
   const browser = computeFlopHandEv({ spotId: "BTN_open_BB_call", board: request.flop, history: request.history,
     hand: request.hand, samples: request.samples, datasets, flopCandidate, laterCandidate });
-  assertJsonEqual(browser.row, first.row, "browser and shared flop hand EV");
+  const canonical = flopHandEvForHand({ ...request, flop: canonicalFlop(request.flop).key });
+  assertJsonEqual(browser.row, canonical.row, "browser and shared canonical flop hand EV");
 });
 
 test("600-sample on-demand flop hand-EV stays below 4.5 seconds under the parallel test load", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {

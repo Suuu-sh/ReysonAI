@@ -88,7 +88,7 @@ function nodeSetup(history, inputs, policy, flop, tree, defence) {
   return { pot: table.pot, hero: range(heroRole), villain: range(villainRole), state, nodeTable };
 }
 
-function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples, onlyHand = null, seed }) {
+function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples, onlyHand = null, seed, uncertainty = false }) {
   const { spot } = inputs;
   const state = flopState(spot.tree, history);
   if (!state.node) return { node: null, actor: null, pot_bb: null, rows: {}, unreachable: true };
@@ -116,6 +116,7 @@ function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples,
     byClass.get(hand).push(item);
   }
   const rows = {};
+  const diagnostics = {};
   let neverReached = false;
   const compatible = new Map();
   const villainFor = heroCombo => {
@@ -136,6 +137,8 @@ function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples,
     const totalWeight = combos.reduce((sum, item) => sum + item.weight, 0);
     const mix = Object.fromEntries(actions.map(action => [action,
       round(combos.reduce((sum, item) => sum + item.weight * nodeMix(item.combo)[action], 0) / totalWeight)]));
+    const frequent = [...actions].sort((a, b) => mix[b] - mix[a]).slice(0, 2);
+    let deltaMean = 0, deltaM2 = 0;
     for (let sample = 0; sample < samples; sample++) {
       const heroCombo = pickHero(random).combo;
       const pickVillain = villainFor(heroCombo);
@@ -153,15 +156,23 @@ function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples,
       wins += mine > theirs ? 1 : mine === theirs ? 0.5 : 0;
       const streamSeed = Math.floor(random() * 2 ** 32);
       const comboMix = nodeMix(heroCombo);
+      const values = uncertainty ? {} : null;
       for (const action of actions) {
         const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action,
           policy: flopPolicy, laterPolicy, random: seededRandom(streamSeed), spot, tree: spot.tree, defence });
         if (value === null) { neverReached = true; break; }
         sums[action] += value;
         mixEv += comboMix[action] / 100 * value;
+        if (values) values[action] = value;
       }
       if (neverReached) break;
       completed++;
+      if (values) {
+        const delta = values[frequent[0]] - values[frequent[1]];
+        const difference = delta - deltaMean;
+        deltaMean += difference / completed;
+        deltaM2 += difference * (delta - deltaMean);
+      }
     }
     if (neverReached) break;
     if (!completed) continue;
@@ -173,13 +184,16 @@ function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples,
       eqr: equity > 0.02 ? round(ev / (equity * (setup.pot - rake(setup.pot)))) : null,
       mix,
     };
+    if (uncertainty) diagnostics[hand] = { actions: frequent, samples: completed, difference_bb: deltaMean,
+      se_bb: completed > 1 ? Math.sqrt(deltaM2 / (completed - 1) / completed) : null };
   }
   if (neverReached) return { node: state.node, actor, pot_bb: setup.pot, rows: {}, unreachable: true };
-  return { node: state.node, actor, pot_bb: setup.pot, rows, ...(!Object.keys(rows).length ? { unreachable: true } : {}) };
+  return { node: state.node, actor, pot_bb: setup.pot, rows, ...(!Object.keys(rows).length ? { unreachable: true } : {}),
+    ...(uncertainty ? { uncertainty: diagnostics } : {}) };
 }
 
 export function handEvForBoard(board, inputs, policy, samples = FLOP_HAND_EV_DEFAULT_SAMPLES,
-  laterPolicy = referenceLaterPolicy()) {
+  laterPolicy = referenceLaterPolicy(), { uncertainty = false } = {}) {
   if (!Number.isInteger(samples) || samples < 1) throw new Error("samples must be a positive integer");
   const selected = parseFlopBoard(board.id);
   const validatedFlop = validatePolicy(policy, inputs.spot.tree);
@@ -187,7 +201,7 @@ export function handEvForBoard(board, inputs, policy, samples = FLOP_HAND_EV_DEF
   return Object.fromEntries(Object.entries(treeHistories(inputs.spot.tree)).map(([key]) => {
     const history = key ? key.split(",") : [];
     const result = computeNode({ board: selected, history, inputs, flopPolicy: validatedFlop,
-      laterPolicy: validatedLater, samples });
+      laterPolicy: validatedLater, samples, uncertainty });
     return [key, result];
   }));
 }

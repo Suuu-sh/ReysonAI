@@ -8,7 +8,7 @@ import { buildPostflopExplanation } from "./postflop-explanation.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterView } from "./postflop-compute.ts";
-import { computeLaterHandEvInWorker, deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot } from "./postflop-browser.ts";
+import { computeLaterHandEvInWorker, deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
 import { productLocale } from "../i18n.ts";
 
 const baseLabels = () => productLocale() === "en"
@@ -312,6 +312,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const [laterExplainState, setLaterExplainState] = useState(null);
   const [laterHandEvState, setLaterHandEvState] = useState(null);
   const [explainState, setExplainState] = useState(null);
+  const [flopBaseState, setFlopBaseState] = useState(null);
   const decision = flopDecision(actions, context);
   const labels = labelsFor(decision.node);
   const spotId = context.spotId;
@@ -363,6 +364,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
 
   const postflopSource = spotState.spotId === spotId ? spotState.data : null;
   const postflopDatasets = datasetState.spotId === spotId ? datasetState.datasets : null;
+  const flopBase = flopBaseState && flopBaseState.spot === spotId && flopBaseState.board === board ? flopBaseState.base : null;
   const sourceError = spotState.spotId === spotId && spotState.error ? spotState.error
     : datasetState.spotId === spotId ? datasetState.error : null;
   useEffect(() => {
@@ -372,16 +374,21 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     if (!postflopSource || !postflopDatasets) { setStatus("loading"); return undefined; }
     const controller = new AbortController();
     setStatus("loading");
-    deferPostflopCalculation(() => computeBoard({ spotId, board, datasets: postflopDatasets,
-      flopCandidate: postflopSource.candidate }), controller.signal)
+    loadPostflopFlop(spotId, board, controller.signal).then(base => {
+      if (controller.signal.aborted) return null;
+      setFlopBaseState({ spot: spotId, board, base });
+      return deferPostflopCalculation(() => computeBoard({ spotId, board, history: actions, datasets: postflopDatasets,
+        flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate, flopBase: base }), controller.signal);
+    })
       .then(body => {
+        if (controller.signal.aborted) return;
         if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.board !== board || !body.nodes ||
             (context.tree && body.tree !== context.tree)) throw new Error("候補の局面・盤面または形式が一致しません。");
         setData(body); setStatus("ready");
       })
       .catch(reason => { if (!isAbortError(reason)) { setError(reason.message); setStatus("error"); } });
     return () => controller.abort();
-  }, [board, context.pilotAvailable, context.tree, decision.node, postflopDatasets, postflopSource, sourceError, spotId]);
+  }, [board, context.pilotAvailable, context.tree, decision.node, flopPath, postflopDatasets, postflopSource, sourceError, spotId]);
 
   useEffect(() => {
     setLaterData(null); setLaterError("");
@@ -473,7 +480,8 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     const controller = new AbortController();
     setExplainState({ key: explainKey, data: null, error: null, loading: true });
     deferPostflopCalculation(() => computeExplain({ ...explainInput,
-      datasets: postflopDatasets, flopCandidate: postflopSource.candidate }), controller.signal)
+      history: actions, datasets: postflopDatasets, flopCandidate: postflopSource.candidate,
+      laterCandidate: postflopSource.laterCandidate, flopBase }), controller.signal)
       .then(body => {
         const matchesSelection = selectedCombo === "all"
           ? body?.aggregate?.kind === "hand_class_average" && body.cards === null
@@ -485,7 +493,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         if (!isAbortError(reason)) setExplainState({ key: explainKey, data: null, error: reason.message, loading: false });
       });
     return () => controller.abort();
-  }, [combo?.cards, board, decision.node, explainKey, postflopDatasets, postflopSource, sourceError, spotId]);
+  }, [combo?.cards, board, decision.node, explainKey, flopBase, flopPath, postflopDatasets, postflopSource, sourceError, spotId]);
   useEffect(() => {
     setLaterExplainState(null);
     if (!laterExplainKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
@@ -533,6 +541,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId, {
     datasets: postflopDatasets, flopCandidate: postflopSource?.candidate,
     laterCandidate: postflopSource?.laterCandidate, precomputed: representativeFlops.includes(board),
+    flopBase,
   });
   const english = productLocale() === "en";
   return <div className="postflop-trial" aria-label={english ? "Postflop estimate" : "ポストフロップ試作"}>

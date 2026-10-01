@@ -3,6 +3,7 @@ import { barColor } from "../components/primitives.tsx";
 import { label, pct } from "../data.ts";
 import { postflopUrl } from "./postflop-api.ts";
 import { computePostflopHandEvInWorker, isAbortError } from "./postflop-browser.ts";
+import { storedFlopHandEvInput } from "./postflop-compute.ts";
 import "./postflop-hand-ev.css";
 
 const signed = value => `${value > 0 ? "+" : ""}${value.toFixed(2)}bb`;
@@ -19,6 +20,7 @@ export function useHandEv(board, history = [], hand, spot, options = {}) {
   const datasets = options.datasets;
   const flopCandidate = options.flopCandidate;
   const laterCandidate = options.laterCandidate;
+  const flopBase = options.flopBase;
   const precomputed = Boolean(options.precomputed);
   const key = url && `${url}|${flopCandidate?.metadata?.source_hash ?? ""}|${flopCandidate?.metadata?.policy_hash ?? ""}|${laterCandidate?.metadata?.policy_hash ?? "reference"}`;
   const [state, setState] = useState({ key: null, data: null, error: null });
@@ -26,6 +28,8 @@ export function useHandEv(board, history = [], hand, spot, options = {}) {
     if (!url || !key || !datasets || !flopCandidate) return undefined;
     const controller = new AbortController();
     const load = async () => {
+      const stored = storedFlopHandEvInput({ spotId: spot, board, history, hand, datasets, flopCandidate, laterCandidate, flopBase });
+      if (stored) { setState({ key, data: stored, error: null }); return; }
       if (precomputed) {
         try {
           const response = await fetch(url, { signal: controller.signal });
@@ -41,7 +45,7 @@ export function useHandEv(board, history = [], hand, spot, options = {}) {
       }
       try {
         const result = await computePostflopHandEvInWorker({ street: "flop", spotId: spot, board,
-          history, hand, datasets, flopCandidate, laterCandidate }, controller.signal);
+          history, hand, datasets, flopCandidate, laterCandidate, flopBase }, controller.signal);
         if (controller.signal.aborted) return;
         if (result.kind !== "ai_estimate_not_gto" || result.spot !== spot || result.hand !== hand ||
             result.street !== "flop" || !result.node || result.row && !Number.isFinite(result.row.mix_ev_bb)) {
@@ -54,7 +58,7 @@ export function useHandEv(board, history = [], hand, spot, options = {}) {
     };
     load();
     return () => controller.abort();
-  }, [board, datasets, flopCandidate, hand, history.join(","), key, laterCandidate, precomputed, spot, url]);
+  }, [board, datasets, flopBase, flopCandidate, hand, history.join(","), key, laterCandidate, precomputed, spot, url]);
   if (!url || !datasets || !flopCandidate) return { data: null, error: null, loading: false };
   return state.key === key ? { ...state, loading: false } : { data: null, error: null, loading: true };
 }

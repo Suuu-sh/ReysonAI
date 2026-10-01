@@ -5,6 +5,7 @@ import { DEFENCE_VERSION } from "./scripts/postflop-ai/defence.mjs";
 import { localDatasetsMiddleware } from "./scripts/local-datasets.mjs";
 import { localPostflopMiddleware } from "./scripts/postflop-ai/local-view.mjs";
 import { handEvMiddleware } from "./scripts/postflop-ai/hand-ev.mjs";
+import { flopBaseMiddleware } from "./scripts/postflop-ai/flop-base-d1.mjs";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { isRetiredJapanesePath } from "./worker/index.js";
 
@@ -61,5 +62,6 @@ export default defineConfig({
     server.middlewares.use(localDatasetsMiddleware);
     server.middlewares.use(localPostflopMiddleware);
     server.middlewares.use(handEvMiddleware);
+    server.middlewares.use(flopBaseMiddleware);
   } }],
 });

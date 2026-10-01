@@ -1,5 +1,5 @@
 import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.mjs";
-import { explainCombo, explainCombos } from "../../scripts/postflop-ai/explain.mjs";
+import { flopUiFacts } from "../../scripts/postflop-ai/flop-ui-facts.mjs";
 import { explainLaterCombo, explainLaterCombos } from "../../scripts/postflop-ai/explain-later.mjs";
 import { validatePolicy } from "../../scripts/postflop-ai/policy.mjs";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "../../scripts/postflop-ai/model.mjs";
@@ -9,6 +9,8 @@ import { laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
 import { flopHandEvForHand } from "../../scripts/postflop-ai/flop-hand-ev-core.mjs";
 import { laterHandEvForHand } from "../../scripts/postflop-ai/later-hand-ev-core.mjs";
 import { flopNodes, laterMixRows } from "../../scripts/postflop-ai/views.mjs";
+import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
+import { isFreshFlopBase, storedFlopNodes, storedFlopExplanation, storedFlopHandEv } from "../../scripts/postflop-ai/flop-base-core.mjs";
 
 function policyForLater(inputs, candidate, laterCandidate) {
   if (!laterCandidate) {
@@ -28,7 +30,7 @@ function policyForLater(inputs, candidate, laterCandidate) {
   return { flopPolicy, laterPolicy };
 }
 
-export function computeBoard({ spotId, board, datasets, flopCandidate }) {
+export function computeBoard({ spotId, board, history = null, datasets, flopCandidate, laterCandidate, flopBase }) {
   const inputs = buildInputs(spotId, datasets);
   const selected = parseFlopBoard(board);
   const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
@@ -36,30 +38,39 @@ export function computeBoard({ spotId, board, datasets, flopCandidate }) {
     throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
   }
   const { spot } = inputs;
-  const nodes = flopNodes(inputs, policy, selected.cards);
+  let nodes = null;
+  if (isFreshFlopBase(flopBase, inputs, flopCandidate, laterCandidate)) {
+    try { nodes = storedFlopNodes(flopBase, inputs, selected.cards, history); } catch { /* malformed optional cache: use the shared computation */ }
+  }
+  nodes ??= flopNodes(inputs, policy, selected.cards, history);
   return { kind: "ai_estimate_not_gto", spot: spot.id, tree: spot.tree, ip: spot.ip, oop: spot.oop,
     pot_bb: spot.potBb, stack_bb: spot.stackBb, board: selected.id, split: selected.split,
     texture: boardTexture(selected.cards), source_hash: inputs.fingerprint,
     policy_hash: flopCandidate.metadata.policy_hash, nodes };
 }
 
-export function computeExplain({ spotId, board, node, cards, combos, prev, datasets, flopCandidate }) {
+export function computeExplain({ spotId, board, node, cards, combos, prev, history, datasets, flopCandidate, laterCandidate, flopBase }) {
   const inputs = buildInputs(spotId, datasets);
   const selected = parseFlopBoard(board);
   const previous = FLOP_BETS.includes(prev) ? prev : FLOP_BETS[0];
   const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
-  const options = { boardCards: selected.cards, node, prev: previous, inputs, policy };
+  if (flopCandidate.metadata?.source_hash !== inputs.fingerprint || flopCandidate.metadata.policy_hash !== sha(policy)) {
+    throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
+  }
+  const options = { boardCards: selected.cards, node, prev: previous, history, inputs, policy, cards, combos };
   let explanation;
   if (combos !== undefined) {
     if (!Array.isArray(combos) || !combos.length || combos.some(item => typeof item?.cards !== "string" ||
         !/^([2-9TJQKA][cdhs]){2}$/.test(item.cards) || !Number.isFinite(item.weight) || item.weight <= 0)) {
       throw new Error("ハンドクラスのコンボ形式が正しくありません。");
     }
-    explanation = explainCombos({ ...options, combos });
   } else {
     if (typeof cards !== "string" || !/^([2-9TJQKA][cdhs]){2}$/.test(cards)) throw new Error("カードの形式が正しくありません。");
-    explanation = explainCombo({ ...options, cards });
   }
+  if (isFreshFlopBase(flopBase, inputs, flopCandidate, laterCandidate)) {
+    try { explanation = storedFlopExplanation(flopBase, options); } catch { /* optional base must never prevent fallback */ }
+  }
+  explanation ??= flopUiFacts(options);
   return { spot: inputs.spot.id, board: selected.id,
     ...explanation };
 }
@@ -156,7 +167,7 @@ export function computeLaterHandEv({ spotId, flop, flopActions = [], turn, turnA
 // Flop hand EV uses the same browser-safe core as scripts/postflop-ai/hand-ev.mjs. The
 // representative artifact is an optional fast path; this function handles any valid flop.
 export function computeFlopHandEv({ spotId, board, history = [], hand, samples, seed, datasets,
-  flopCandidate, laterCandidate }) {
+  flopCandidate, laterCandidate, flopBase }) {
   const inputs = buildInputs(spotId, datasets);
   const selected = parseFlopBoard(board);
   const policy = validatePolicy(flopCandidate?.policy, inputs.spot.tree);
@@ -170,7 +181,25 @@ export function computeFlopHandEv({ spotId, board, history = [], hand, samples, 
         laterCandidate.metadata.policy_hash !== sha(checked)) throw new Error("Later AI policy source or hash is stale");
     laterPolicy = checked;
   }
+  const stored = storedFlopHandEvInput({ spotId, board, history, hand, samples, seed, datasets, flopCandidate, laterCandidate, flopBase });
+  if (stored) return stored;
   return { spot: inputs.spot.id, hand, kind: "ai_estimate_not_gto",
-    ...flopHandEvForHand({ flop: selected.id, history, hand, samples, seed,
+    ...flopHandEvForHand({ flop: canonicalFlop(selected.cards).key, history, hand, samples, seed,
       inputs, flopPolicy: policy, laterPolicy }) };
+}
+
+// Cheap lookup, also called before creating/transferring a Web Worker. No equity work.
+export function storedFlopHandEvInput({ spotId, board, history = [], hand, samples, seed, datasets,
+  flopCandidate, laterCandidate, flopBase }) {
+  if (!flopBase?.ev || seed != null || samples != null && samples !== flopBase.metadata?.samples?.ev_per_hand_action) return null;
+  const inputs = buildInputs(spotId, datasets);
+  if (flopCandidate?.metadata?.source_hash !== inputs.fingerprint || sha(flopCandidate.policy) !== flopCandidate.metadata.policy_hash ||
+      laterCandidate && (laterCandidate.metadata?.source_hash !== inputs.fingerprint ||
+        laterCandidate.metadata?.flop_policy_hash !== flopCandidate.metadata.policy_hash || sha(laterCandidate.policy) !== laterCandidate.metadata?.policy_hash)) return null;
+  if (!isFreshFlopBase(flopBase, inputs, flopCandidate, laterCandidate) || canonicalFlop(board).key !== flopBase.flop) return null;
+  let result;
+  try { result = storedFlopHandEv(flopBase, history, hand); } catch { return null; }
+  if (result?.row && (!Number.isFinite(result.row.mix_ev_bb) || !Number.isFinite(result.row.equity_pct) ||
+      !result.row.ev_bb || !Object.values(result.row.ev_bb).every(Number.isFinite))) return null;
+  return result ? { spot: inputs.spot.id, hand, kind: "ai_estimate_not_gto", ...result } : null;
 }

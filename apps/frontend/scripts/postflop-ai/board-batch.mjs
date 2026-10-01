@@ -19,7 +19,7 @@ export const boardWorkOrder = (kind, boardList) => kind === "hand-ev"
 // A worker processes a whole board: every history/hand shares one inputs/policy identity.
 // Work completion order never determines output order or any random stream.
 export async function computeBoardBatch({ kind, inputs, policy, laterCandidate, samples, onBoard = () => {},
-  boardList = boards(), parallelism = availableParallelism() }) {
+  boardList = boards(), parallelism = availableParallelism(), taskOptions = {} }) {
   if (!Number.isInteger(samples) || samples < 1) throw new Error("samples must be a positive integer");
   if (!Number.isInteger(parallelism) || parallelism < 1) throw new Error("Invalid parallelism");
   if (!boardList.length) return {};
@@ -29,7 +29,7 @@ export async function computeBoardBatch({ kind, inputs, policy, laterCandidate, 
   try {
     await Promise.all(Array.from({ length: count }, () => new Promise((resolve, reject) => {
       const worker = new Worker(new URL("./board-worker.mjs", import.meta.url), {
-        workerData: { kind, inputs, policy, laterCandidate, samples },
+        workerData: { kind, inputs, policy, laterCandidate, samples, taskOptions },
         // Worker startup must not inherit main-thread-only --test/--input-type flags.
         execArgv: [],
         // Ten board workers must not each grow towards Node's multi-GiB default
@@ -46,7 +46,7 @@ export async function computeBoardBatch({ kind, inputs, policy, laterCandidate, 
         if (message.error) { reject(new Error(message.error)); return; }
         if (!message.boardId || results.has(message.boardId)) { reject(new Error("Invalid board worker result")); return; }
         results.set(message.boardId, message.result);
-        try { onBoard(message.boardId); dispatch(); } catch (error) { reject(error); }
+        try { onBoard(message.boardId, message.result); dispatch(); } catch (error) { reject(error); }
       });
       worker.on("error", reject);
       worker.on("exit", code => code === 0 ? resolve() : reject(new Error(`Postflop board worker exited (${code})`)));

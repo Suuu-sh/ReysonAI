@@ -1,6 +1,7 @@
+import { isCanonicalFlopKey } from "../../frontend/scripts/postflop-ai/flop-isomorphism.mjs";
 // Heads-up postflop AI policies (AI estimates, not GTO) read from the evionai D1
-// database. The worker only reads: every view is computed in the browser from these
-// artifacts, because the computations take 17-63ms and Workers Free allows 10ms of CPU.
+// database. The worker only reads: canonical flop bases and policies are stored data;
+// missing flop bases and later-street views are computed in the browser.
 // Stored JSON is passed through as text so a request never parses a whole policy.
 
 export type D1Statement = { bind(...values: unknown[]): D1Statement; all<T>(): Promise<{ results: T[] }> };
@@ -35,6 +36,20 @@ export async function routePostflop(db: D1Database | undefined, path: string, pa
       `"laterCandidate":${policy("later")},"report":${reports.results[0]?.payload_json ?? "null"}}` };
   }
 
+  // Canonical balanced-mode flop JSON, passed through without parsing any payload.
+  if (path === "/v1/postflop/flop") {
+    const flop = params.get("flop") ?? "";
+    if (!isCanonicalFlopKey(flop)) return { status: 400, body: { error: "canonical flop key is required" } };
+    const { results } = await db.prepare("SELECT part, parts, content_hash, body FROM postflop_flop_base WHERE spot_id = ? AND flop_key = ? ORDER BY part")
+      .bind(spotId, flop).all<{ part: number; parts: number; content_hash: string; body: string }>();
+    if (!results.length) return { status: 404, body: { error: "No stored flop base" } };
+    const first = results[0];
+    if (results.length !== first.parts || results.some((row, index) => row.part !== index || row.parts !== first.parts || row.content_hash !== first.content_hash)) {
+      return { status: 409, body: { error: "Incomplete flop base" } };
+    }
+    return { status: 200, text: results.map(row => row.body).join("") };
+  }
+
   // Flop hand-EV at one representative board and flop history. With `hand` the body matches
   // the local /local-postflop-hand-ev lookup; without it the whole node (every hand) is returned.
   if (path === "/v1/postflop/hand-ev") {
@@ -53,3 +68,4 @@ export async function routePostflop(db: D1Database | undefined, path: string, pa
   }
   return { status: 404, body: { error: "not found" } };
 }
+

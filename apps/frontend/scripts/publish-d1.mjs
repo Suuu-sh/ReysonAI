@@ -2,13 +2,14 @@
 // apps/backend/migrations): every preflop dataset under src/estimated (the JSON files stay
 // the source of truth) and the canonical local postflop artifacts. Generates SQL; runs
 // wrangler only with --execute local|remote.
-//   node scripts/publish-d1.mjs [--only preflop|postflop] [--out file] [--execute local|remote]
+//   node scripts/publish-d1.mjs [--only preflop|postflop|flop-base] [--out file] [--execute local|remote]
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { closeSync, openSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { buildSql as buildPostflopSql, publishableSpots, quote } from "./postflop-ai/publish-d1.mjs";
+import { publishableFlopBases, flopBaseSqlLines } from "./postflop-ai/flop-base-d1.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 export const ESTIMATED_DIR = join(root, "src/estimated");
@@ -45,23 +46,29 @@ export function buildPreflopSql(datasets) {
 function main(argv) {
   const arg = name => { const index = argv.indexOf(name); return index >= 0 ? argv[index + 1] : undefined; };
   const only = arg("--only");
-  if (only && !["preflop", "postflop"].includes(only)) throw new Error("--only must be preflop or postflop");
+  if (only && !["preflop", "postflop", "flop-base"].includes(only)) throw new Error("--only must be preflop, postflop or flop-base");
   const execute = arg("--execute");
   if (execute && !["local", "remote"].includes(execute)) throw new Error("--execute must be local or remote");
   const out = resolve(arg("--out") ?? join(root, ".local/evionai-d1.sql"));
   let sql = "";
-  if (only !== "postflop") {
+  if (!only || only === "preflop") {
     const datasets = preflopDatasets();
     sql += buildPreflopSql(datasets);
     console.log(`${Object.keys(datasets).length} preflop datasets`);
   }
-  if (only !== "preflop") {
+  if (!only || only === "postflop") {
     const spots = publishableSpots();
     sql += buildPostflopSql(spots);
     console.log(`${spots.length} postflop spots`);
   }
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, sql);
+  if (!only || only === "flop-base") {
+    // Stream, avoiding V8's maximum string size and a large in-memory SQL copy.
+    const descriptor = openSync(out, "a");
+    try { for (const line of flopBaseSqlLines(publishableFlopBases())) writeFileSync(descriptor, line); }
+    finally { closeSync(descriptor); }
+  }
   console.log(`→ ${out}`);
   if (execute) {
     execFileSync("npx", ["wrangler", "d1", "execute", "evionai", `--${execute}`, "--yes", "--file", out],

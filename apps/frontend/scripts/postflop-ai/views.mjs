@@ -7,8 +7,9 @@ import { handTier, TIERS } from "./model.mjs";
 import { LATER_NODES } from "./later-tree.mjs";
 import { laterPolicyMix } from "./later-policy.mjs";
 import { NODES, nodeRole, policyMix, scaleByPath, treeNodes } from "./policy.mjs";
-import { FLOP_BETS, historyFor } from "./tree.mjs";
+import { FLOP_BETS, flopState, historyFor, treeHistories } from "./tree.mjs";
 import { comboId, defenceFor, replayOrNull } from "./defence.mjs";
+import { canonicalFlop, remapFlopNodes } from "./flop-isomorphism.mjs";
 
 const cardText = card => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
 const lineFor = (previousAggressor, role) => previousAggressor === null
@@ -25,14 +26,23 @@ export function scaleLaterPath(items, role, steps, policy, board, previousAggres
 
 // The flop view of any valid three-card board: every node of the spot's tree, one row per hand
 // class. A facing node is shown after the canonical line that reaches it (historyFor, smallest bet).
-export function flopNodes(inputs, policy, boardCards) {
+export function flopNodes(inputs, policy, boardCards, history = null) {
+  const canonical = canonicalFlop(boardCards);
+  const nodes = flopNodesCanonical(inputs, policy, canonical.cards, history);
+  return remapFlopNodes(nodes, canonical.fromCanonical);
+}
+
+// The raw canonical-coordinate implementation is also used by the offline base generator.
+export function flopNodesCanonical(inputs, policy, boardCards, history = null) {
   const { spot } = inputs;
   const defence = defenceFor(inputs, policy, null);
   return Object.fromEntries(treeNodes(spot.tree).map(node => {
     const actions = NODES[node];
     const seat = spot[nodeRole(node)]; // btn_* / ip_* = IP, bb_* / oop_* = OOP
     // A line the engine resolves differently (e.g. a wager merged into an all-in) keeps the policy mix.
-    const table = replayOrNull(inputs, boardCards, { flop: historyFor(spot.tree, node, FLOP_BETS[0]) });
+    const path = history && flopState(spot.tree, history).node === node ? history : historyFor(spot.tree, node, FLOP_BETS[0]);
+    const table = replayOrNull(inputs, boardCards, { flop: path });
+    const reach = table ? defence.rangeOf(table, boardCards, seat) : null;
     const mixOf = combo => {
       const base = policyMix(policy, node, combo, boardCards);
       return table ? defence.mix(table, boardCards, node, combo, base) : base;
@@ -49,11 +59,22 @@ export function flopNodes(inputs, policy, boardCards) {
         const tier = handTier(item.combo, boardCards);
         if (total) tiers[tier] += item.weight / total;
         return { cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
+          reachWeight: reach ? reach[comboId(...item.combo)] : item.weight,
           mix: Object.fromEntries(actions.map(action => [action, mixes[index][action] / 100])) };
       });
-      return { hand: row.hand, comboCount: combos.length, reachable: total > 0, mix, tiers, combos: detail };
+      return { hand: row.hand, comboCount: combos.length, reachable: total > 0, mix, tiers, combos: detail,
+        reachWeight: detail.reduce((sum, combo) => sum + combo.reachWeight, 0) };
     });
     return [node, { seat, actions, rows }];
+  }));
+}
+
+export function flopHistoryViews(inputs, policy, boardCards) {
+  // All histories, not just the smallest-bet template of *_vs_raise.
+  return Object.fromEntries(Object.keys(treeHistories(inputs.spot.tree)).map(key => {
+    const history = key ? key.split(",") : [];
+    const node = flopState(inputs.spot.tree, history).node;
+    return [key, { node, ...flopNodesCanonical(inputs, policy, boardCards, history)[node] }];
   }));
 }
 
