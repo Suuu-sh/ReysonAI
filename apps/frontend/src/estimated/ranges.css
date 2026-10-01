@@ -67,7 +67,7 @@
 .action-seat-info { position: sticky; left: 0; z-index: 2; flex: 0 0 188px; display: flex; flex-direction: column; gap: 6px; border-color: var(--surface-raised); background: var(--surface-raised); box-shadow: 6px 0 0 0 var(--surface), 14px 0 12px -6px var(--surface); }
 /* Cover the strip of the scroller above, below and left of the sticky block so scrolled seat cards
    (and their highlighted borders) never show around it. */
-.action-seat-info::before { content: ""; position: absolute; inset: -8px -6px -8px -8px; z-index: -2; background: var(--surface); }
+.action-seat-info::before { content: ""; position: absolute; inset: -8px -6px 0 -8px; z-index: -2; background: var(--surface); }
 .action-seat-info::after { content: ""; position: absolute; inset: -1px; z-index: -1; border-radius: 8px; background: var(--surface-raised); }
 .action-seat-info .action-seat-heading span { color: var(--text-muted); }
 .action-seat-info ul { margin: 0; padding: 0 6px 0 22px; color: var(--text-muted); font-size: 12px; line-height: 1.6; }
