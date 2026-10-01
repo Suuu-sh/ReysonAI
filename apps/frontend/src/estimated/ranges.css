@@ -336,21 +336,24 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .postflop-term-definition { margin: 6px 0 0; padding: 7px 9px; border-left: 2px solid var(--accent, #e0559a); border-radius: 4px; background: var(--surface-raised, rgba(255,255,255,.04)); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 .postflop-term-definition strong { color: var(--text); }
 
-.settings-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: default; pointer-events: none; }
-.settings-toggle svg, .settings-backdrop, .settings-actions-mobile { display: none; }
-.settings-body { display: flex; flex-direction: column; gap: 6px; }
+.action-seat-info { gap: 8px; padding: 10px 12px; }
+.settings-toggle { display: inline-flex; align-items: baseline; gap: 6px; padding: 0; border: 0; background: transparent; color: var(--text-muted); font: inherit; font-size: 15px; cursor: default; pointer-events: none; }
+.settings-toggle strong { font-weight: 700; }
+.settings-toggle span { font-weight: 700; }
+.settings-toggle svg, .settings-backdrop { display: none; }
+.settings-body { display: flex; flex: 1; flex-direction: column; gap: 8px; }
+.action-seat-info .settings-body ul { padding: 0 0 0 18px; font-size: 13px; }
+.settings-body .settings-actions { margin-top: auto; margin-left: 0; gap: 6px; }
+.settings-change-button { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: var(--surface-hover); color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.settings-change-button:hover { background: var(--line-strong); }
+.settings-body .settings-icon-button { border: 0; background: var(--surface-hover); }
 @media (max-width: 760px) {
-  .action-seat-info { flex-basis: 104px; width: 104px; }
-  .action-seat-info > .action-seat-heading > .settings-actions { display: none; }
-  .action-seat-info > .action-seat-heading { white-space: normal; padding: 0; }
-  .settings-toggle { cursor: pointer; pointer-events: auto; width: 100%; justify-content: space-between; gap: 4px; padding: 2px 6px; text-align: left; line-height: 1.3; }
-  .settings-toggle strong { min-width: 0; }
-  .settings-toggle svg { flex: 0 0 12px; }
+  .action-seat-info { flex: 0 0 auto; width: auto; padding: 0; justify-content: center; }
+  .settings-toggle { cursor: pointer; pointer-events: auto; align-items: center; height: 100%; padding: 4px 10px 4px 6px; font-size: 13px; white-space: nowrap; }
   .settings-toggle svg { display: block; color: var(--text-muted); }
   .settings-body { display: none; }
   .action-seat-info.is-open .settings-backdrop { display: block; position: fixed; inset: 0; z-index: 40; border: 0; background: rgba(0, 0, 0, .5); }
   .action-seat-info.is-open .settings-body { display: flex; position: fixed; top: 72px; left: 16px; right: 16px; z-index: 41; padding: 14px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface-raised); box-shadow: 0 12px 32px rgba(0, 0, 0, .5); }
-  .action-seat-info.is-open .settings-actions-mobile { display: flex; margin-left: 0; }
-  .action-seat-info.is-open .settings-body ul { padding-left: 22px; font-size: 13px; }
 }
+
 .estimate-settings { animation-fill-mode: backwards; }

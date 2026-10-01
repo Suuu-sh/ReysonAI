@@ -40,7 +40,7 @@ const COPY = {
   "レンジ未収録": "Range not recorded",
   "対象外（到達不能）": "Not applicable (unreachable)",
   "表示モード": "Display mode",
-  "ゲーム設定を編集": "Edit game settings",
+  "ゲーム設定を編集": "Edit game settings", "ゲーム設定を開閉": "Toggle game settings",
   "アクションをリセット": "Reset actions",
   "アクション履歴": "Action history",
   "サイドバーを展開": "Expand sidebar",
