@@ -206,7 +206,7 @@ test("SB vs BB and CO vs BTN let the OOP opener lead, with their own seats, pot 
   assert.equal(flopDecision(["bet33", "fold"], sb).result, "BBがフォールド。SBの勝ちです。");
   assert.equal(flopDecision(["bet75", "raise", "call"], sb).potBb, 38.5);
   assert.deepEqual(flopDecision(["check", "bet33"], sb).history, ["SB Check", "BB Bet 2.31 (33%)"]);
-  assert.equal(flopDecision(["check", "bet33", "raise"], sb).history.at(-1), "SB Check-raise 6.93 (40%)");
+  assert.equal(flopDecision(["check", "bet33", "raise"], sb).history.at(-1), "SB Raise 6.93 (40%)");
   const sbBlocks = buildFlopActionBlocks(["check", "bet75", "raise"], sb);
   assert.deepEqual(sbBlocks.map(block => [block.position, block.stack]), [["SB", "96.5"], ["BB", "96.5"], ["SB", "96.5"], ["BB", "91.25"]]);
   assert.ok(!sbBlocks.some(block => block.kind === "flop-forced"));

@@ -113,8 +113,8 @@ function wagerOf(chips, role, amount) {
   return amount >= limit * pilot.later_all_in_merge_ratio ? { paid: round(limit), allIn: true } : { paid: round(Math.min(amount, chips.stacks[role])), allIn: round(Math.min(amount, chips.stacks[role])) >= chips.stacks[role] };
 }
 const optionText = {
-  en: { check: "Check", fold: "Fold", call: "Call", bet: "Bet", raise: "Raise", checkRaise: "Check-raise", allIn: "All-in" },
-  ja: { check: "チェック", fold: "フォールド", call: "コール", bet: "ベット", raise: "レイズ", checkRaise: "チェックレイズ", allIn: "オールイン" },
+  en: { check: "Check", fold: "Fold", call: "Call", bet: "Bet", raise: "Raise", allIn: "All-in" },
+  ja: { check: "チェック", fold: "フォールド", call: "コール", bet: "ベット", raise: "レイズ", allIn: "オールイン" },
 };
 function buildOptions(chips, node, role, actions, multiplier, fractionOf, locale) {
   const t = optionText[locale] ?? optionText.en, other = rival(role), mine = chips.committed[role], theirs = chips.committed[other];
@@ -133,7 +133,7 @@ function buildOptions(chips, node, role, actions, multiplier, fractionOf, locale
       if (!canRaise) continue;
       const { paid, allIn } = wagerOf(chips, role, round(theirs * multiplier) - mine);
       const to = round(mine + paid), pct = Math.round((to - theirs) / (chips.pot + theirs - mine) * 100);
-      const lead = allIn ? `${t.allIn} ${formatBb(to)}` : `${/^bb_vs_\d/.test(node) ? t.checkRaise : t.raise} ${formatBb(to)} (${pct}%)`;
+      const lead = allIn ? `${t.allIn} ${formatBb(to)}` : `${t.raise} ${formatBb(to)} (${pct}%)`;
       out.push({ action, label: lead, amountBb: to, allIn, paid });
     } else {
       const fraction = fractionOf(action), { paid, allIn } = wagerOf(chips, role, round(chips.pot * fraction));

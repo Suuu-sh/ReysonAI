@@ -103,8 +103,8 @@ test("labels carry real amounts (ja/en), never '3×' or a bare percentage", () =
   assert.equal(first.labelsJa.bet75, "ベット 4.13 (75%)");
   const facing = flopDecision(["bet75"]);
   assert.equal(facing.labels.call, "Call 4.13");
-  assert.equal(facing.labels.raise, "Check-raise 12.39 (60%)");
-  assert.equal(facing.labelsJa.raise, "チェックレイズ 12.39 (60%)");
+  assert.equal(facing.labels.raise, "Raise 12.39 (60%)");
+  assert.equal(facing.labelsJa.raise, "レイズ 12.39 (60%)");
   assert.match(flopDecision(["bet75", "raise"]).labels.raise, /^Raise 37\.17 \(\d+%\)$/);
   const all = [first, facing, flopDecision(["bet75", "raise"]), flopDecision(["bet75", "raise", "raise"])]
     .flatMap(decision => [...Object.values(decision.labels), ...Object.values(decision.labelsJa)]);
