@@ -1,6 +1,9 @@
 // Structured, fact-led postflop explanations. This module is pure: callers supply the selected
 // locale, policy mix, board classifier and computed defence facts. It never states an EV: the strategy is the answer.
 
+import { roleFromFeatures } from "../../scripts/postflop-ai/hand-role.mjs";
+import { featuresFromText } from "../../scripts/postflop-ai/hand-features.mjs";
+
 export type ExplanationLocale = "en" | "ja";
 type NumericMap = Record<string, number | undefined>;
 type TooltipLine = { label: string; value: string; tooltip: string };
@@ -13,6 +16,9 @@ type ExplanationInput = {
   texture?: string;
   explain?: any;
   positions?: { ip?: string; oop?: string };
+  // Optional concrete cards ("As4s" on "6h5h2d"): when present the role comes from the hand's features.
+  board?: string;
+  cards?: string;
 };
 export type ActionTableRow = {
   action: string; label: string; frequency: number;
@@ -160,7 +166,8 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
   return { title: english ? "Facing this bet" : "このベットへの対応", rows };
 }
 
-export function handRole(equity: number, tiers: NumericMap | undefined, main: string) {
+export function handRole(equity: number, tiers: NumericMap | undefined, main: string, features?: any) {
+  if (features) return roleFromFeatures(features, { action: main, equity }).role;
   const tier = Object.entries(tiers ?? {}).sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))[0]?.[0] ?? "air";
   if (!isAggressive(main)) return "pot-control";
   // A draw bets for fold equity plus its outs, even near 50% equity against the whole range.
@@ -282,6 +289,8 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
   const opponent = input.positions?.[actingRoleKey === "ip" ? "oop" : "ip"] ?? (english ? "the opponent" : "相手");
   const classStrength = tierDescription(tiers, hand, locale);
   const rawEquity = fraction(facingFacts?.equity ?? explain?.equity ?? 0);
+  let cardFeatures: any;
+  if (input.board && input.cards) { try { cardFeatures = featuresFromText(input.cards, input.board); } catch { cardFeatures = undefined; } }
   let mainReason: string;
   let mixRationale: string | undefined;
   if (facingFacts && Number.isFinite(facingFacts.required_equity)) {
@@ -319,7 +328,7 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
     // When a check is the main branch of a check/bet mix, describe the hand's betting role
     // from the saved bet branch rather than calling the entire hand a pot-control hand.
     const roleAction = main === "check" && mixedSizes.length ? mixedSizes[0][0] : main;
-    const role = handRole(roleEquity, tiers, roleAction);
+    const role = handRole(roleEquity, tiers, roleAction, cardFeatures);
     if (main === "check" && mixedSizes.length) {
       const roleLabel = english
         ? ({ value: "value", "semi-bluff": "semi-bluff", bluff: "bluff", protection: "protection", "pot-control": "pot-control" } as Record<string, string>)[role]
@@ -361,7 +370,7 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
       : { value: "バリュー", "semi-bluff": "セミブラフ", bluff: "ブラフ", protection: "プロテクション", "pot-control": "ポットコントロール" };
     const mainSize = selected.find(([action]) => isAggressive(action))?.[0] ?? main;
     const table = buildActionTable(input, rawEquity);
-    const role = handRole(roleEquity, tiers, mainSize);
+    const role = handRole(roleEquity, tiers, mainSize, cardFeatures);
     const reason = bettingCopy({ locale, role, main: mainSize, equity: roleEquity, tiers });
     betting = { title: english ? "Betting plan" : "ベットの考え方", role: roleNames[role] ?? role, reason,
       sizes: tableSentences(table, locale), alternatives: [], table };

@@ -86,11 +86,12 @@ const tablePct = (value: number | null) => value === null ? "—" : `${Math.roun
 
 // Per-action comparison at a betting decision; scrolls sideways inside its own wrapper on narrow screens.
 
-function HandReasons({ node, hand, texture, explain, loading, error, positions }) {
+function HandReasons({ node, hand, texture, explain, loading, error, positions, boardCards }: any) {
   if (!hand?.tiers) return null;
   const english = productLocale() === "en";
   const plain = buildAdvancedExplanation({ locale: english ? "en" : "ja", node, hand: hand.hand, actionMix: hand.actions,
-    tiers: hand.tiers, texture, explain, positions });
+    tiers: hand.tiers, texture, explain, positions, board: boardCards,
+    ...(hand.combo ? { cards: hand.combo.cards } : { combos: (hand.combos ?? []).map((item: any) => ({ cards: item.cards, weight: item.weight ?? item.reachWeight ?? 0 })) }) });
   return <div className="postflop-reasons postflop-reasons-structured">
     <GlossaryText className="postflop-reason-headline" text={plain.headline} locale={english ? "en" : "ja"} />
     {plain.blocks.map(block => <details className="postflop-reason-section postflop-reason-action" key={block.action} style={{ "--action-color": barColor(block.action) } as any}>
@@ -546,11 +547,9 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
               : chosen && view && <>
                   <div className="postflop-view-line static">
                     <h3 className="postflop-view-title">{view.combo ? <>{view.combo.cards.match(/../g).map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
-                    <span className="postflop-view-bar" style={{ background: mixGradient(view.actions, current.actions) }}
-                      aria-label={current.actions.map(action => `${labels[action]} ${Math.round(view.actions[action] * 100)}%`).join("、")} />
                     </div>
                 <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
-                <HandReasons node={decision.node} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data.texture} explain={explain}
+                <HandReasons node={decision.node} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data.texture} explain={explain} boardCards={board}
                   loading={Boolean(explainLoading)} error={Boolean(explainError)}
                   positions={{ ip: context.ip, oop: context.oop }} />
               </>}
@@ -578,13 +577,12 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                 : laterChosen && laterView && <>
                   <div className="postflop-view-line static">
                       <h3 className="postflop-view-title">{laterView.combo ? <>{laterView.combo.cards.match(/../g).map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
-                      <span className="postflop-view-bar" style={{ background: mixGradient(laterView.actions, laterActions) }}
-                        aria-label={laterActions.map(action => `${laterLabels[action]} ${Math.round(laterView.actions[action] * 100)}%`).join("、")} />
                     </div>
                   <ComboPicker hand={selectedHand} combos={laterChosen.combos} actions={laterActions} selected={selectedLaterCombo} onSelect={setSelectedLaterCombo} labels={laterLabels}
                     missingReason={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しない"}
                     missingTitle={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しません"} />
                   <HandReasons node={laterCurrent.node} hand={laterView.combo ? { ...laterView, hand: laterView.combo.cards } : laterView} texture={laterCurrent.texture} explain={laterExplain.data}
+                    boardCards={`${board}${turnCard ?? ""}${laterCurrent.street === "river" ? riverCard ?? "" : ""}`}
                     loading={Boolean(laterExplain.loading)} error={Boolean(laterExplain.error)}
                     positions={{ ip: context.ip, oop: context.oop }} />
                 </>}

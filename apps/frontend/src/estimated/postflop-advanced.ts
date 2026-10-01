@@ -4,12 +4,16 @@
 // (fold shares, equity when called, defence facts) and the range-level facts (`explain.range_facts`: tier shares of
 // both reach ranges, the bettor's composition per size, SPR, how the last card shifted the ranges).
 import { handRole } from "./postflop-explanation.ts";
+import { betSentences, checkSentences, describeHand, displayName, facingHandSentences, featuresForInput, handHeadline, roleFromFeatures, type HC } from "./postflop-hand-copy.ts";
 
 export type AdvancedLocale = "en" | "ja";
 type NumericMap = Record<string, number | undefined>;
 export type AdvancedInput = {
   locale: AdvancedLocale; node: string; hand: string; actionMix: NumericMap; tiers?: NumericMap;
   texture?: string; explain?: any; positions?: { ip?: string; oop?: string };
+  // Concrete cards make the copy hand-specific: the full board ("6h5h2d"), the exact combo ("As4s") or, for an
+  // averaged hand class, its combos (the most common combo class is described).
+  board?: string; cards?: string; combos?: { cards: string; weight: number }[];
 };
 export type AdvancedBlock = { action: string; label: string; frequency: number; text: string };
 export type AdvancedExplanation = { headline: string; blocks: AdvancedBlock[]; texture?: string };
@@ -57,27 +61,9 @@ export function advantages(rf: any): { range: Advantage; nuts: Advantage; heroCa
   return { range, nuts, heroCapped: hm < 0.015 && om >= 0.02, oppCapped: om < 0.015 && hm >= 0.02 };
 }
 
-// Streets left to play (including the current one) and the geometric fraction that puts the stacks in by the river.
-function geometricFraction(rf: any): number | null {
-  const spr = rf?.spr, left = rf?.street === "flop" ? 3 : rf?.street === "turn" ? 2 : 1;
-  if (!finite(spr) || spr <= 0 || left < 2) return null;
-  return (Math.pow(1 + 2 * spr, 1 / left) - 1) / 2;
-}
-
 type Ctx = {
   en: boolean; node: string; hand: string; tier: string; street: "flop" | "turn" | "river"; ip: boolean; facing: boolean;
   rf: any; adv: ReturnType<typeof advantages>; line?: string; texture?: string; explain: any; opp: string; equity: number;
-};
-
-const textureWord = (c: Ctx): string => {
-  const t = c.texture ?? "";
-  const w: Record<string, [string, string]> = {
-    dry: ["a dry board", "ドライなボード"], wet: ["a wet board", "ウェットなボード"], paired: ["a paired board", "ペアボード"],
-    monotone: ["a monotone board", "モノトーンのボード"], blank: ["a blank runout", "ブランクのランアウト"],
-    over: ["an overcard runout", "オーバーカードのランアウト"], pair: ["a board-pairing runout", "ボードがペアになるランアウト"],
-    straight: ["a straight-completing runout", "ストレートが絡むランアウト"], flush: ["a flush-completing runout", "フラッシュが絡むランアウト"],
-  };
-  return (w[t] ?? ["this board", "このボード"])[c.en ? 0 : 1];
 };
 
 // ---- context sentences ----------------------------------------------------------------------------------
@@ -111,9 +97,7 @@ function advantageSentence(c: Ctx): string {
   if (a.range === "opp") return c.en
     ? "The opponent's range is ahead on this texture, so checking dominates and only the hands that clearly want to bet do so."
     : "このテクスチャでは相手のレンジが優位なので、チェックが中心になり、はっきり打ちたい手だけがベットします。";
-  return c.en
-    ? "Neither range has a clear edge here, so the line comes down to each hand's own incentives."
-    : "どちらのレンジにも明確な優位がなく、ラインは各ハンドごとの事情で決まります。";
+  return "";
 }
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -123,6 +107,19 @@ function sprNote(c: Ctx): string {
   if (spr < 2) return c.en ? "With the SPR this low, the stacks are close to committed already, so hand strength matters more than polarisation."
     : "SPRがここまで低いと、スタックはほぼコミット済みで、ポラライズよりも手の強さが重要になります。";
   return "";
+}
+
+// What kind of range the bet we face comes from (facing decisions only).
+function bettorSentence(c: Ctx): string {
+  const kind = sizeKind(c.rf?.tiers?.opp);
+  if (!c.facing || !kind) return "";
+  const o = c.opp;
+  return ({
+    polar: c.en ? `${cap(o)}'s bet comes from a polarised range, strong value plus air, so the hands in the middle are under pressure.` : "この相手のベットは強いバリューとエアに分かれたポラライズしたレンジから来ていて、中間の強さの手は圧力を受けます。",
+    merged: c.en ? `${cap(o)}'s bet comes from a merged range of strong and medium hands, so there are fewer pure bluffs behind it.` : "相手のベットは強い手と中程度の手がマージしたレンジから来ていて、純粋なブラフは多くありません。",
+    value: c.en ? `${cap(o)}'s bet comes from an almost pure value range, so bluff-catching is rarely rewarded.` : "相手のベットはほぼバリューだけのレンジから来ていて、ブラフキャッチが報われる場面は多くありません。",
+    wide: c.en ? `${cap(o)}'s bet comes from a wide range that mixes value, medium hands and bluffs.` : "相手のベットはバリュー、中程度の手、ブラフが幅広く混ざったレンジから来ています。",
+  } as Record<string, string>)[kind] ?? "";
 }
 
 // ---- betting actions -------------------------------------------------------------------------------------
@@ -181,39 +178,13 @@ function sizeSentence(a: string, kind: SizeKind | null, c: Ctx): string {
   return "";
 }
 
-function handSentence(a: string, role: string, kind: SizeKind | null, called: Called | null, c: Ctx, level: Level | null): string {
-  const en = c.en, h = c.hand, tier = c.tier;
-  const small = a === "bet33";
-  switch (role) {
-    case "value":
-      if (tier === "monster") return en ? `${h} is at the very top of the range and bets to build the pot.` : `${h}はレンジの最上位で、ポットを育てるためにベットします。`;
-      if (kind === "polar") return en ? `${h} is part of the strong end, a polar value bet that wants calls from second-best hands.`
-        : `${h}は強い側に入り、2番手の手にコールさせたいポラライズしたバリューベットです。`;
-      if (kind === "value") return en ? `${h} is part of the strong core of this size and wants calls from second-best hands.`
-        : `${h}はこのサイズの強い中核に入り、2番手の手にコールさせたい手です。`;
-      if (called === "similar" || tier === "medium") return en ? `${h} bets for thin value, with showdown strength that still beats most of what calls.`
-        : `${h}はシンバリューのベットで、ショーダウンバリューがコールしてくる手の大半に勝っています。`;
-      return en ? `${h} bets for value and protection: worse pairs and draws can call, and the bet denies them a cheap card.`
-        : `${h}はバリューとプロテクションのベットで、劣るペアやドローのコールを引き出しつつ、安くカードを見せません。`;
-    case "semi-bluff":
-      return en ? `${h} is a semi-bluff: it wins when the opponent folds and keeps equity that is easy to realise when called, so it does not need to hit to profit.`
-        : `${h}はセミブラフで、相手が降りれば勝て、コールされても実現しやすいエクイティが残るため、ヒットしなくても利益になります。`;
-    case "protection":
-      return en ? `${h} bets for protection, denying equity to overcards and draws that could outdraw it and getting thin value from weaker hands.`
-        : `${h}はプロテクションのベットで、逆転しうるオーバーカードやドローのエクイティを奪い、弱い手からシンバリューも取ります。`;
-    default: {
-      if (small) return en ? `${h} sits in the bluffing part of the range, and the small size makes it cheap because few folds are needed.`
-        : `${h}はレンジの中でブラフ側に入り、小さいサイズなので必要なフォールドが少なく、安く打てます。`;
-      return level === "most" || level === "many"
-        ? (en ? `${h} is a pure bluff with little showdown value, supported by how many hands in the opponent's range give up.`
-          : `${h}はショーダウンバリューの乏しい純粋なブラフで、相手のレンジに降りる手が多いことが根拠です。`)
-        : (en ? `${h} is a thin bluff with little showdown value, so it is used only part of the time.`
-          : `${h}はショーダウンバリューの乏しい薄いブラフで、使うのは一部の頻度に限られます。`);
-    }
-  }
+function responseSentence(f: Level | null, cl: Called | null, c: Ctx, tag = ""): string {
+  const base = responseBase(f, cl, c);
+  if (!base || !tag) return base;
+  const lower = (t: string) => /^[A-Z](?![A-Z])/.test(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t;
+  return c.en ? `From ${tag}, ${lower(base)}` : `${tag}から見ると、${base}`;
 }
-
-function responseSentence(f: Level | null, cl: Called | null, c: Ctx): string {
+function responseBase(f: Level | null, cl: Called | null, c: Ctx): string {
   if (!f && !cl) return "";
   const en = c.en, o = c.opp;
   const foldGood = f === "most" || f === "many";
@@ -252,43 +223,6 @@ function streetSentence(a: string, role: string, c: Ctx): string {
   return "";
 }
 
-function extraBetSentence(a: string, role: string, c: Ctx, usedGeo: { done: boolean }): string {
-  const g = geometricFraction(c.rf);
-  if (g !== null && FRACTION[a] && Math.abs(FRACTION[a] - g) <= 0.15 && !usedGeo.done) {
-    usedGeo.done = true;
-    return c.en ? "This size is close to geometric for the stacks behind, setting up a river shove."
-      : "このサイズは残りスタックに対してほぼジオメトリックで、リバーのオールインまで見据えた設計です。";
-  }
-  return streetSentence(a, role, c);
-}
-
-// ---- check ------------------------------------------------------------------------------------------------
-function checkSentences(played: string[], c: Ctx): string[] {
-  const en = c.en, h = c.hand, tier = c.tier, bets = played.filter(aggressive).length > 0;
-  const out: string[] = [];
-  if (tier === "monster" || tier === "strong") {
-    out.push(en ? `${h} checks as a slowplay, hiding its strength so the checking range does not end up capped.`
-      : `${h}はスロープレイでチェックし、強さを隠してチェックレンジがキャップされないようにします。`);
-    if (c.street === "flop" && c.ip) out.push(en ? "Checking back still leaves a delayed c-bet on the turn."
-      : "チェックバックしてもターンでのディレイドCベットが残ります。");
-  } else if (tier === "draw") {
-    out.push(en ? `${h} takes the free card: a draw with this much equity realises it best without putting more chips in.`
-      : `${h}はフリーカードを見に行きます。エクイティのあるドローは、追加のチップを入れずに実現するのが最も効率的です。`);
-  } else if (tier === "medium") {
-    out.push(en ? `${h} is a showdown-value hand that does not like a big pot, so it checks to control the pot and induces bluffs from worse.`
-      : `${h}はショーダウンバリューのある手で大きなポットは好まないため、チェックでポットコントロールし、劣る手のブラフを誘います。`);
-  } else {
-    out.push(en ? `${h} falls outside the bluffing part of the range, so it checks and gives up cheaply.`
-      : `${h}はブラフに回るレンジの外側にあり、チェックして安くあきらめます。`);
-  }
-  const a = c.adv;
-  if (a?.range === "opp") out.push(en ? "On this texture the opponent's range is ahead, so a high checking frequency is the baseline."
-    : "このテクスチャでは相手のレンジが優位で、高いチェック頻度が基本になります。");
-  if (bets) out.push(en ? "Because the same kind of hand also bets, the action alone does not reveal what you hold."
-    : "同種の手がベットにも回るので、アクションだけでは手の中身を読まれません。");
-  return out;
-}
-
 // ---- facing a bet -----------------------------------------------------------------------------------------
 function strengthOf(c: Ctx) {
   const d = c.explain?.defence;
@@ -307,120 +241,7 @@ function strengthOf(c: Ctx) {
   return { level, place, blocker, mix, bluffCapped: !!d.faced_action?.capped };
 }
 
-function positionNote(c: Ctx): string {
-  return c.ip
-    ? (c.en ? "Being in position helps you realise equity, which supports continuing." : "ポジションがあるため実現しやすいエクイティが増え、続行を後押しします。")
-    : (c.en ? "Out of position you realise less of your equity, so every continue needs some margin." : "ポジションがないと実現できるエクイティが減るため、続行にはある程度の余裕が必要です。");
-}
-
-function facingSentences(action: string, c: Ctx, zero: boolean): string[] {
-  const en = c.en, h = c.hand, st = strengthOf(c), tier = c.tier, o = c.opp;
-  const out: string[] = [];
-  const lv = st?.level, place = st?.place;
-  const raiseNode = c.node.includes("raise");
-  const bettorKind = sizeKind(c.rf?.tiers?.opp);
-  const mixEn = st?.mix === "strong" ? "value-heavy" : st?.mix === "bluffy" ? "full of bluffs" : st?.mix === "mixed" ? "balanced between value and bluffs" : "";
-  const mixJa = st?.mix === "strong" ? "バリュー寄り" : st?.mix === "bluffy" ? "ブラフが多め" : st?.mix === "mixed" ? "バリューとブラフが拮抗" : "";
-  if (action === "call") {
-    if (zero) {
-      out.push(en ? `${h} is good enough to continue but sits near the bottom of the continuing range, so the plan folds it and keeps the defence on better hands.`
-        : `${h}は続行できる強さがありますが、続行レンジの下のほうなので、より良い手で守る方針でフォールドを選びます。`);
-      out.push(en ? "You only need to defend enough of your range, and the weakest continues go first."
-        : "守るべきなのはレンジの必要な割合だけで、最も弱い続行候補から先に降ります。");
-      return out;
-    }
-    if (tier === "monster" || tier === "strong" && place === "top") out.push(en ? `${h} is a value call from the top of the continuing range, and flatting keeps worse hands and bluffs in.`
-      : `${h}は続行レンジの上位にあるバリューコールで、フラットに受けると劣る手やブラフを残せます。`);
-    else if (tier === "air") out.push(en ? `${h} has no pair, so it only beats the pure bluffs and calls as a marginal bluff-catcher.`
-      : `${h}はペアがなく、純粋なブラフにしか勝てない境界線上のブラフキャッチャーとしてコールします。`);
-    else if (tier === "draw") out.push(en ? `${h} continues as a draw, with enough equity and implied odds to call.`
-      : `${h}はドローとして続行し、エクイティとインプライドオッズでコールできます。`);
-    else out.push(en ? `${h} is a bluff-catcher: it beats the bluffs and loses to the value${mixEn ? `, and the bettor's range is ${mixEn}` : ""}.`
-      : `${h}はブラフキャッチャーで、ブラフには勝ちバリューには負けます${mixJa ? `。相手のレンジは${mixJa}です` : ""}。`);
-    if (lv === "comfortable") out.push(en ? "Its realised equity clears the price comfortably, so this is a clean call."
-      : "実現エクイティは必要な水準を余裕で上回り、迷いのないコールです。");
-    else if (lv === "borderline") out.push(en ? "It sits right at the indifference point, which is why the strategy mixes calls and folds."
-      : "ちょうど無差別の水準にあり、そのためコールとフォールドを混ぜる戦略になっています。");
-    else out.push(en ? "It is below the price on paper, so it calls only at a low frequency to keep the defence unexploitable."
-      : "数字上は必要な水準に届かず、守りを搾取されないために低い頻度でだけコールします。");
-    out.push(positionNote(c));
-    if (st?.blocker === "value") out.push(en ? "Its blockers remove part of the value range, which improves the call."
-      : "ブロッカーが相手のバリューレンジの一部を消し、コールの質を高めます。");
-    else if (st?.blocker === "bluff") out.push(en ? "Its blockers remove some of the bluffs, which makes catching less attractive."
-      : "ブロッカーが相手のブラフを一部消すため、ブラフキャッチの魅力は下がります。");
-    return out;
-  }
-  if (action === "fold") {
-    if (lv === "short") out.push(en ? `${h} falls below the price: it loses to most of the value and has too little equity against the rest.`
-      : `${h}は必要な水準を下回り、バリューの大半に負け、残りに対してもエクイティが足りません。`);
-    else out.push(en ? `${h} is close to the threshold but not clearly worth continuing, so folding keeps its place in the mix.`
-      : `${h}は続行の水準に近いものの、はっきり続けるほどではないため、フォールドも混ぜて残します。`);
-    out.push(en ? `You only need to defend enough of your range${place === "bottom" ? ", and a hand at the bottom of it is the first to go" : ""}.`
-      : place === "bottom" ? "守るべきなのはレンジの必要な割合だけで、レンジの下位にあるこの手は真っ先に降ります。" : "守るべきなのはレンジの必要な割合だけです。");
-    if (st?.blocker === "bluff") out.push(en ? "It also blocks the bettor's bluffs, so folding gives up little."
-      : "さらに相手のブラフを減らしてしまうため、降りても失うものは小さくなります。");
-    else if (st?.blocker === "value") out.push(en ? "It does block some of the value, which is why it is not folded every time."
-      : "相手のバリューを一部ブロックしているので、毎回フォールドするわけではありません。");
-    if (st?.bluffCapped) out.push(en ? `${cap(o)}'s bluffs are limited on this line, so bluff-catchers lose value.`
-      : "このラインでは相手のブラフ頻度が抑えられていて、ブラフキャッチャーの価値は下がります。");
-    return out;
-  }
-  // raise
-  if (lv === "comfortable") {
-    out.push(en ? `${h} raises for value: it is well ahead of the bettor's range, so worse hands get to pay more.`
-      : `${h}はバリューレイズで、相手のレンジを大きく上回っているため、劣る手からより多く取れます。`);
-    out.push(c.ip ? (en ? "Raising over a lead also puts a capped betting range under pressure." : "リードへのレイズは、キャップされたベットレンジにも圧力をかけます。")
-      : (en ? "As a check-raise it also builds the pot out of position, where it is hard to get value otherwise." : "チェックレイズにすれば、ポジションがなくても取りにくいバリューを引き出せます。"));
-  } else if (tier === "draw") {
-    out.push(en ? `${h} raises as a semi-bluff: it wins when the bettor folds and keeps equity that is easy to realise when called.`
-      : `${h}はセミブラフのレイズで、相手が降りれば勝て、コールされても実現しやすいエクイティが残ります。`);
-  } else {
-    out.push(en ? `${h} is too weak to call profitably, so it becomes a bluff-raise candidate that folds out hands that beat it.`
-      : `${h}はコールでは採算が合わない弱さで、勝っている手を降ろすためのブラフレイズ候補になります。`);
-    if (st?.blocker === "value") out.push(en ? "Its blockers remove part of the bettor's value, which is exactly what a bluff-raise wants."
-      : "ブロッカーが相手のバリューの一部を消しており、ブラフレイズが求める条件を満たします。");
-  }
-  if (raiseNode || bettorKind === "polar") out.push(en ? "Raising against a polarised bet keeps your own range from being only bluff-catchers."
-    : "ポラライズしたベットに対してレイズを混ぜると、自分のレンジがブラフキャッチャーだけにならずに済みます。");
-  return out;
-}
-
-// ---- headline ----------------------------------------------------------------------------------------------
-function headlineFor(c: Ctx, played: [string, number][], role: string, facing: boolean, kinds: Record<string, SizeKind | null>): string {
-  const en = c.en, a = c.adv, main = played[0]?.[0] ?? "check", tex = textureWord(c), h = c.hand;
-  if (facing) {
-    const bk = sizeKind(c.rf?.tiers?.opp);
-    const who = bk === "polar" ? (en ? "a polarised bet" : "ポラライズしたベット") : bk === "value" ? (en ? "a value-heavy bet" : "バリュー寄りのベット") : (en ? "a merged bet" : "マージしたベット");
-    const state = a?.heroCapped ? (en ? " with a capped range" : "（レンジがキャップ）") : a?.range === "opp" ? (en ? " while the bettor holds the range advantage" : "（相手にレンジアドバンテージ）") : "";
-    const plan = ({
-      call: c.tier === "monster" || c.tier === "strong" ? (en ? `${h} is a value call that continues mostly by calling` : `${h}は主にコールで続行するバリューコール`)
-        : (en ? `${h} is a bluff-catcher that continues mostly by calling` : `${h}は主にコールで続行するブラフキャッチャー`),
-      fold: en ? `${h} sits below the defence line and mostly folds` : `${h}はディフェンスの線を下回り、基本はフォールド`,
-      raise: en ? `${h} leans on raising, as value or as a semi-bluff` : `${h}はバリューまたはセミブラフとしてレイズ中心`,
-    } as Record<string, string>)[main] ?? (en ? `${h} mixes continuing and giving up` : `${h}は続行とギブアップの混合`);
-    return en ? `Facing ${who} on ${tex}${state}: ${plan}.` : `${tex}で${who}に直面${state}：${plan}。`;
-  }
-  const lead = a?.range === "hero" && a.nuts === "hero" ? (en ? "Range and nut advantage" : "レンジ・ナッツアドバンテージ")
-    : a?.range === "hero" ? (en ? "Range advantage" : "レンジアドバンテージ")
-    : a?.nuts === "hero" ? (en ? "Nut advantage" : "ナッツアドバンテージ")
-    : a?.range === "opp" ? (en ? "Opponent's range advantage" : "相手のレンジアドバンテージ") : (en ? "Even ranges" : "拮抗したレンジ");
-  const k = kinds[main];
-  const plan = main === "check"
-    ? (played.length > 1 ? (en ? "mostly check, with a bet mixed in to keep the checking range protected" : "基本はチェックで、チェックレンジを守るためにベットを混ぜる")
-      : (en ? "check and keep the pot small" : "チェックでポットを小さく保つ"))
-    : main === "bet33" ? (en ? `high-frequency small bet with a ${k === "polar" ? "polarised" : "merged"} range` : `${k === "polar" ? "ポラライズ" : "マージ"}したレンジでの高頻度の小さいベット`)
-    : main === "bet75" ? (en ? `large bet with a ${k === "polar" ? "polarised" : k === "value" ? "value-heavy" : "merged"} range` : `${k === "polar" ? "ポラライズ" : k === "value" ? "バリュー寄り" : "マージ"}したレンジでの大きなベット`)
-    : main === "bet125" ? (en ? "overbet with a polarised range" : "ポラライズしたレンジでのオーバーベット")
-    : (en ? "shove to commit the stacks" : "オールインでスタックをコミット");
-  const handPlan = role === "value" ? (en ? `${h} bets for value` : `${h}はバリューで打つ`)
-    : role === "semi-bluff" ? (en ? `${h} semi-bluffs` : `${h}はセミブラフ`)
-    : role === "protection" ? (en ? `${h} bets for protection` : `${h}はプロテクション目的で打つ`)
-    : role === "bluff" ? (en ? `${h} is a bluff candidate` : `${h}はブラフ候補`)
-    : (en ? `${h} checks to control the pot` : `${h}はポットコントロールでチェック`);
-  return en ? `${lead} on ${tex}: ${plan}; ${handPlan}.` : `${tex}での${lead}：${plan}。${handPlan}。`;
-}
-
-function textureNote(c: Ctx): string | undefined {
+function textureNotes(c: Ctx): string[] {
   const en = c.en, t = c.texture ?? "", shift = c.rf?.runout_shift;
   const base: Record<string, [string, string]> = {
     dry: ["Dry board: few draws, so equity realises stably and the range advantage tends to persist, which favours small, frequent bets.",
@@ -449,8 +270,10 @@ function textureNote(c: Ctx): string | undefined {
     if (diff >= 0.04) parts.push(en ? "This card helps your range more than the opponent's, so more of your range can keep betting." : "このカードはあなたのレンジに有利に働き、より多くの手がベットを続けられます。");
     else if (diff <= -0.04) parts.push(en ? "This card helps the opponent's range more than yours, so expect fewer barrels and more checking." : "このカードは相手のレンジに有利に働き、バレルは減ってチェックが増えます。");
   }
-  return parts.length ? parts.join(en ? " " : "") : undefined;
+  return parts;
 }
+
+const hashOf = (text: string) => { let h = 2166136261; for (const ch of text) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
 
 export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanation {
   const en = input.locale === "en";
@@ -464,14 +287,22 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
   const equity = finite(input.explain?.betting?.equity_vs_defender) ? input.explain.betting.equity_vs_defender : (finite(input.explain?.equity) ? input.explain.equity : 0);
   const street: Ctx["street"] = input.node.startsWith("turn_") ? "turn" : input.node.startsWith("river_") ? "river" : "flop";
   const ipNode = input.node.startsWith("btn_") || input.node.startsWith("ip_") || /^(turn|river)_ip_/.test(input.node);
-  const ctx: Ctx = { en, node: input.node, hand: input.hand, tier: mainTier(input.tiers), street, ip: ipNode, facing, rf,
-    adv: advantages(rf), line: input.explain?.line, texture: input.texture, explain: input.explain, equity,
-    opp: input.positions?.[ipNode ? "oop" : "ip"] ?? (en ? "the opponent" : "相手") };
+  const opp = input.positions?.[ipNode ? "oop" : "ip"] ?? (en ? "the opponent" : "相手");
+  const features = featuresForInput(input.board, input.cards, input.combos);
+  const desc = describeHand(features, displayName(input.cards ?? input.hand), en, mainTier(input.tiers), opp);
+  const ctx: Ctx = { en, node: input.node, hand: desc.name, tier: mainTier(input.tiers), street, ip: ipNode, facing, rf,
+    adv: advantages(rf), line: input.explain?.line, texture: input.texture, explain: input.explain, equity, opp };
   const kinds: Record<string, SizeKind | null> = {};
   for (const a of Object.keys(input.actionMix)) kinds[a] = sizeKind(rf?.sizes?.[a]?.tiers);
+  const st = strengthOf(ctx);
+  const hc: HC = { en, o: opp, street, ip: ipNode, st: st ? { level: st.level, place: st.place, blocker: st.blocker, mix: st.mix, bluffCapped: st.bluffCapped } : null,
+    bettorMix: st?.mix ?? null };
+  const roleOf = (action: string): { role: string; sub: string } => features
+    ? roleFromFeatures(features, { action, equity, facingBet: facing })
+    : { role: handRole(equity, input.tiers, action), sub: "" };
 
   const seen = new Set<string>();
-  const finish = (sentences: string[], limit = 4): string => {
+  const finish = (sentences: string[], limit = 6): string => {
     const kept: string[] = [];
     for (const s of sentences) {
       if (!s || seen.has(s) || kept.length >= limit) continue;
@@ -483,51 +314,50 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
 
   const ordered = [...played].sort((a, b) => ORDER.indexOf(a[0]) - ORDER.indexOf(b[0]));
   const topAction = played[0]?.[0];
-  const geo = { done: false };
   const blocks: AdvancedBlock[] = [];
+  const anyBet = names.some(aggressive);
   for (const [action, frequency] of ordered) {
     const sentences: string[] = [];
-    if (action === "check") sentences.push(...checkSentences(names, ctx));
-    else if (facing) {
-      const lead = action === topAction ? advantageSentence(ctx) : "";
-      sentences.push(...facingSentences(action, ctx, false));
-      if (lead) sentences.splice(1, 0, lead);
-    } else {
-      const role = handRole(equity, input.tiers, action);
+    if (action === "check") sentences.push(...checkSentences(desc, hc, anyBet ? roleOf(names.find(aggressive)!).role : null));
+    else if (facing) sentences.push(...facingHandSentences(desc, action, roleOf(action), hc));
+    else {
       const f = foldLevel(input.explain?.actions?.[action]?.foldShare);
       const cl = calledLevel(input.explain?.bet_table?.actions?.[action]?.calledEquity);
-      sentences.push(sizeSentence(action, kinds[action], ctx), handSentence(action, role, kinds[action], cl, ctx, f),
-        responseSentence(f, cl, ctx));
-      if (action === topAction) sentences.splice(2, 0, advantageSentence(ctx));
-      sentences.push(extraBetSentence(action, role, ctx, geo), sprNote(ctx));
+      sentences.push(...betSentences(desc, action, roleOf(action), hc), responseSentence(f, cl, ctx, desc.tag));
     }
-    blocks.push({ action, label: LABELS[input.locale][action] ?? action, frequency, text: finish(sentences) });
+    blocks.push({ action, label: LABELS[input.locale][action] ?? action, frequency, text: "" });
+    (blocks[blocks.length - 1] as any)._s = sentences;
   }
-  const sizes = blocks.filter(b => b.action.startsWith("bet") || b.action === "allin");
-  if (!facing && sizes.length > 1) {
-    const last = sizes[sizes.length - 1];
-    const first = kinds[sizes[0].action], lastKind = kinds[last.action];
-    const wideFirst = first === "merged" || first === "wide";
-    last.text += en
-      ? (wideFirst && lastKind === "polar" ? " Splitting the sizes lets the small bet carry the merged range and the large one the polarised range, so neither size gives the hand away."
-        : wideFirst && lastKind === "value" ? " Splitting the sizes lets the small bet carry the wide range while the large one is reserved for the value-heavy top of the range."
-        : first !== lastKind ? " Each size carries a different composition, so no single size gives the hand away."
-        : " The hand is close to indifferent between the sizes, which is why the frequencies are split.")
-      : (wideFirst && lastKind === "polar" ? "サイズを分けることで、小さいベットがマージしたレンジを、大きいベットがポラライズしたレンジを担い、どのサイズからも手が読まれません。"
-        : wideFirst && lastKind === "value" ? "サイズを分けることで、小さいベットが広いレンジを担い、大きいベットはバリュー寄りのレンジの上位に限られます。"
-        : first !== lastKind ? "サイズごとにレンジの構成が違うため、どのサイズからも手が読まれません。"
-        : "サイズ間でほぼ無差別なので、頻度を分けています。");
+  // The single range-level sentence of the explanation: one of the available range statements (advantage, texture,
+  // runout, size composition, street story, SPR), chosen per hand so that hands at the same node do not all share it.
+  const topBlock = blocks.find(b => b.action === topAction) ?? blocks[0];
+  const pool: { texture: boolean; text: string }[] = [
+    { texture: false, text: advantageSentence(ctx) },
+    ...textureNotes(ctx).map(text => ({ texture: true, text })),
+    { texture: false, text: topAction && !facing ? sizeSentence(topAction, kinds[topAction], ctx) : "" },
+    { texture: false, text: streetSentence(topAction ?? "", "", ctx) },
+    { texture: false, text: sprNote(ctx) },
+    { texture: false, text: bettorSentence(ctx) },
+  ].filter(x => x.text);
+  const pick = pool.length ? pool[hashOf(`${input.cards ?? input.hand}|${input.node}`) % pool.length] : null;
+  for (const b of blocks) {
+    const s: string[] = (b as any)._s;
+    delete (b as any)._s;
+    b.text = finish(b === topBlock && pick && !pick.texture ? [...s.slice(0, 5), pick.text] : s);
   }
   const d = input.explain?.defence;
   if (facing && d && (input.actionMix.call ?? 0) === 0 && (input.actionMix.fold ?? 0) >= 0.95 && finite(d.realized_equity) && finite(d.required_equity) && d.realized_equity >= d.required_equity) {
-    blocks.push({ action: "call", label: LABELS[input.locale].call, frequency: 0, text: finish(facingSentences("call", ctx, true)) });
-  } else if (!facing && !names.some(aggressive) && ctx.tier === "monster" && (input.tiers?.monster ?? 0) >= 0.8 && Object.keys(input.actionMix).some(aggressive)) {
+    blocks.push({ action: "call", label: LABELS[input.locale].call, frequency: 0, text: finish([en
+      ? `${desc.name} has ${desc.short}, enough to continue, but it sits near the bottom of the continuing range, so the plan folds it and keeps the defence on better hands.`
+      : `${desc.name}は${desc.short}で続行できる強さがありますが、続行レンジの下のほうなので、より良い手で守る方針でフォールドを選びます。`]) });
+  } else if (!facing && !names.some(aggressive) && desc.m === "nuts" && Object.keys(input.actionMix).some(aggressive)) {
     blocks.push({ action: "bet75", label: LABELS[input.locale].bet75, frequency: 0, text: finish([en
-      ? "A bet is not used with this very strong hand: slowplaying keeps worse hands in and the checking range uncapped."
-      : "とても強いこの手ではベットを使いません。スロープレイで劣る手を残し、チェックレンジのキャップを防ぎます。"]) });
+      ? `${desc.name} has ${desc.made || desc.short}, so a bet is not used: slowplaying keeps worse hands in and the checking range uncapped.`
+      : `${desc.name}は${desc.made || desc.short}で、ベットは使いません。スロープレイで劣る手を残し、チェックレンジのキャップを防ぎます。`]) });
   }
-  const role = handRole(equity, input.tiers, names.find(aggressive) ?? names[0] ?? "check");
-  return { headline: headlineFor(ctx, played, role, facing, kinds), blocks, ...(textureNote(ctx) ? { texture: textureNote(ctx) } : {}) };
+  const main = names[0] ?? "check";
+  const headline = handHeadline(desc, main, roleOf(main), facing, hc);
+  return { headline, blocks, ...(pick?.texture ? { texture: pick.text } : {}) };
 }
 
 export function renderAdvancedPlainText(e: AdvancedExplanation): string {
