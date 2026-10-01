@@ -1,10 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { localEstimateMiddleware } from "./scripts/local-estimate.mjs";
-import { DEFENCE_VERSION } from "./scripts/postflop-ai/defence.mjs";
 import { localDatasetsMiddleware } from "./scripts/local-datasets.mjs";
 import { localPostflopMiddleware } from "./scripts/postflop-ai/local-view.mjs";
-import { handEvMiddleware } from "./scripts/postflop-ai/hand-ev.mjs";
 import { flopBaseMiddleware } from "./scripts/postflop-ai/flop-base-d1.mjs";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { isRetiredJapanesePath } from "./worker/index.js";
@@ -29,14 +27,13 @@ const postflopArtifacts = { name: "postflop-artifacts",
     for (const name of existsSync(dir) ? readdirSync(dir).filter(name => /-(later-)?policy\.json$/.test(name)) : []) {
       try { hashes[name] = JSON.parse(readFileSync(new URL(`./.local/postflop-ai/${name}`, import.meta.url), "utf8")).metadata?.policy_hash ?? null; } catch { hashes[name] = null; }
     }
-    // Hand-EV files count only while they match the spot's current flop and turn/river policies
+    // Reason files count only while they match the spot's current flop and turn/river policies
     // ("fresh"); a stale or missing one stays TODO.
     const read = name => { try { return JSON.parse(readFileSync(new URL(`./.local/postflop-ai/${name}`, import.meta.url), "utf8")); } catch { return null; } };
-    for (const name of existsSync(dir) ? readdirSync(dir).filter(name => /-(later-)?(hand-ev|reasons)\.json$/.test(name)) : []) {
-      const slug = name.replace(/-(later-)?(hand-ev|reasons)\.json$/, ""), ev = read(name);
+    for (const name of existsSync(dir) ? readdirSync(dir).filter(name => /-(later-)?reasons\.json$/.test(name)) : []) {
+      const slug = name.replace(/-(later-)?reasons\.json$/, ""), data = read(name);
       const flop = hashes[`${slug}-policy.json`], later = hashes[`${slug}-later-policy.json`];
-      hashes[name] = ev && flop && ev.policy_hash === flop && (!later || ev.later_policy_hash === later) &&
-        (!/-hand-ev\.json$/.test(name) || /-later-hand-ev\.json$/.test(name) || ev.defence_version === DEFENCE_VERSION) ? "fresh" : null;
+      hashes[name] = data && flop && data.policy_hash === flop && (!later || data.later_policy_hash === later) ? "fresh" : null;
     }
     return `export default ${JSON.stringify(hashes)};`;
   } };
@@ -61,7 +58,6 @@ export default defineConfig({
     server.middlewares.use(localEstimateMiddleware);
     server.middlewares.use(localDatasetsMiddleware);
     server.middlewares.use(localPostflopMiddleware);
-    server.middlewares.use(handEvMiddleware);
     server.middlewares.use(flopBaseMiddleware);
   } }],
 });

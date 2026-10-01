@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { brotliDecompressSync } from "node:zlib";
 import { canonicalFlop, canonicalFlops, comboKey, mapCards, suitPermutations } from "../scripts/postflop-ai/flop-isomorphism.mjs";
 import { packFrame, unpackFrame } from "../scripts/postflop-ai/flop-base-codec.mjs";
-import { buildFlopBase, FLOP_BASE_EV_SAMPLES, isFreshFlopBase, storedFlopNodes, storedFlopExplanation, storedFlopHandEv } from "../scripts/postflop-ai/flop-base-core.mjs";
+import { buildFlopBase, FLOP_BASE_VERSION, isFreshFlopBase, storedFlopNodes, storedFlopExplanation } from "../scripts/postflop-ai/flop-base-core.mjs";
 import { flopNodes, flopNodesCanonical } from "../scripts/postflop-ai/views.mjs";
 import { flopUiFacts } from "../scripts/postflop-ai/flop-ui-facts.mjs";
 import { referencePolicy } from "../scripts/postflop-ai/policy.mjs";
@@ -15,8 +15,7 @@ import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { sha } from "../scripts/postflop-ai/browser-inputs.mjs";
 import { seededRandom } from "../scripts/lib/equity.mjs";
 import { treeHistories } from "../scripts/postflop-ai/tree.mjs";
-import { computeBoard, computeExplain, computeFlopHandEv, storedFlopHandEvInput } from "../src/estimated/postflop-compute.ts";
-import { handEvForBoard, flopHandEvForHand } from "../scripts/postflop-ai/flop-hand-ev-core.mjs";
+import { computeBoard, computeExplain } from "../src/estimated/postflop-compute.ts";
 import { computeBoardBatch } from "../scripts/postflop-ai/board-batch.mjs";
 import { flopBaseBytesParts, buildFlopBaseSql, flopBaseMiddleware } from "../scripts/postflop-ai/flop-base-d1.mjs";
 import { readFreshFlopBase } from "../scripts/postflop-ai/flop-base-files.mjs";
@@ -89,7 +88,7 @@ test("5 flops: JSON stored/remapped views and combo/class UI facts deep-equal th
     const explain = { ...request, board, node, cards: row.combos[0].cards };
     assert.deepEqual(computeExplain({ ...explain, flopBase: base }), computeExplain(explain));
     for (const change of [{ defence_version: -1 }, { generator_version: -1 }, { source_hash: "old" }, { policy_hash: "old" },
-      { later_policy_hash: "old" }, { defence_config_hash: "old" }, { samples: { defence_runouts: 1, ev_per_hand_action: 1 } }]) {
+      { later_policy_hash: "old" }, { defence_config_hash: "old" }, { samples: { defence_runouts: 1 } }]) {
       const stale = { ...base, metadata: { ...base.metadata, ...change } };
       assert.ok(!isFreshFlopBase(stale, inputs, candidate, laterCandidate));
       assert.deepEqual(computeBoard({ ...request, board, flopBase: stale }), computeBoard({ ...request, board }));
@@ -132,7 +131,7 @@ test("board workers write deterministic resumable files, identical across worker
   const boardList = ["As7d2c", "KhKd4h"].map(board => ({ id: canonicalFlop(board).key, cards: canonicalFlop(board).cards }));
   try {
     for (const [outputDir, parallelism] of [[one, 1], [two, 2]]) {
-      await computeBoardBatch({ kind: "flop-base", inputs, policy: candidate.policy, laterCandidate, samples: FLOP_BASE_EV_SAMPLES,
+      await computeBoardBatch({ kind: "flop-base", inputs, policy: candidate.policy, laterCandidate, samples: 1,
         boardList, parallelism, taskOptions: { outputDir, candidate, laterCandidate } });
     }
     for (const board of boardList) {
@@ -142,40 +141,19 @@ test("board workers write deterministic resumable files, identical across worker
         let at = 0; while (a[at] === b[at]) at++;
         assert.fail(`${board.id} differs at ${at}: ${a.slice(at - 100, at + 180)} != ${b.slice(at - 100, at + 180)}`);
       }
-      assert.ok(readFreshFlopBase(inputs.spot, board.id, inputs, candidate, laterCandidate, FLOP_BASE_EV_SAMPLES, one));
-      assert.equal(readFreshFlopBase(inputs.spot, board.id, inputs, { ...candidate, metadata: { policy_hash: "changed" } }, laterCandidate, FLOP_BASE_EV_SAMPLES, one), null);
+      assert.ok(readFreshFlopBase(inputs.spot, board.id, inputs, candidate, laterCandidate, one));
+      assert.equal(readFreshFlopBase(inputs.spot, board.id, inputs, { ...candidate, metadata: { policy_hash: "changed" } }, laterCandidate, one), null);
     }
   } finally { rmSync(one, { recursive: true }); rmSync(two, { recursive: true }); }
 });
 
-test("missing stored EV stays on demand; stored class rows never claim combo-specific EV", () => {
-  assert.equal(storedFlopHandEv({ ev: null }, [], "AA"), null);
-  const row = { mix: { call: 100 }, ev_bb: { call: 2.5 } };
-  assert.deepEqual(storedFlopHandEv({ ev: { "bet75": { node: "bb_vs_75", actor: "BB", pot_bb: 9.63, rows: { AA: row } } } }, ["bet75"], "AA"),
-    { node: "bb_vs_75", actor: "BB", pot_bb: 9.63, street: "flop", row });
-});
-
-test("the exact flop EV has no sampling diagnostics and does not depend on the requested sample count", () => {
-  const canonical = canonicalFlop("8d8h8s"), board = { id: canonical.key, cards: canonical.cards };
-  const plain = handEvForBoard(board, inputs, candidate.policy, 3, laterCandidate.policy);
-  const asked = handEvForBoard(board, inputs, candidate.policy, 99, laterCandidate.policy, { uncertainty: true });
-  assert.deepEqual(asked, plain);
-  for (const result of Object.values(plain)) assert.equal(result.uncertainty, undefined);
-});
-
-test("fresh stored class EV skips the core and equals the on-demand value; stale policies use on-demand", () => {
-  const board = "As7d2c", canonical = canonicalFlop(board), history = ["bet75"];
-  const result = flopHandEvForHand({ flop: canonical.key, history, hand: "AA",
-    inputs, flopPolicy: candidate.policy, laterPolicy: laterCandidate.policy });
-  // A small synthetic row tests delivery, not the production precision audit.
-  const base = buildFlopBase({ ...options, board, ev: { bet75: {
-    node: result.node, actor: result.actor, pot_bb: result.pot_bb, rows: { AA: result.row },
-  } } });
-  const query = { ...request, board, history, hand: "AA", flopBase: base };
-  const expected = { spot: inputs.spot.id, hand: "AA", kind: "ai_estimate_not_gto", ...result };
-  assert.deepEqual(storedFlopHandEvInput(query), expected);
-  assert.deepEqual(computeFlopHandEv(query), expected);
-  // The EV is an exact expectation: a sample count or seed cannot change it, so the stored row still applies.
-  assert.deepEqual(storedFlopHandEvInput({ ...query, samples: 3, seed: 1 }), expected);
-  assert.equal(storedFlopHandEvInput({ ...query, flopCandidate: { ...candidate, metadata: { ...candidate.metadata, policy_hash: "stale" } } }), null);
+test("the base stores no EV and a base that still carries EV is stale", () => {
+  assert.ok(FLOP_BASE_VERSION >= 6);
+  const base = buildFlopBase({ ...options, board: "As7d2c" });
+  assert.equal(base.ev, undefined);
+  assert.equal(base.metadata.generator_version, FLOP_BASE_VERSION);
+  assert.equal(base.metadata.samples.ev_per_hand_action, undefined);
+  assert.ok(isFreshFlopBase(base, inputs, candidate, laterCandidate));
+  assert.equal(isFreshFlopBase({ ...base, ev: {} }, inputs, candidate, laterCandidate), false);
+  assert.equal(isFreshFlopBase({ ...base, metadata: { ...base.metadata, generator_version: 5 } }, inputs, candidate, laterCandidate), false);
 });

@@ -51,9 +51,11 @@ Worker は D1 `evionai` を読んで返すだけです。表示の計算（盤�
 
 - `GET /v1/postflop/spots` 公開中のスポットと方針ハッシュ
 - `GET /v1/postflop/spot?spot=<id>` `{ kind, spot, candidate, laterCandidate, report }`（公開時のファイルをそのまま返す）
-- `GET /v1/postflop/hand-ev?spot=<id>&board=<flop>&history=<a,b>&hand=<AKo>` フロップの手ごとのEV。`hand` を省くと `{ spot, header, node }`
+- `GET /v1/postflop/flop?spot=<id>&flop=<canonical>` フロップの基礎データ（Brotli）
 
-どれも AI 推定で、GTO ではありません。ローカルでは apps/frontend の Vite の `/local-postflop-spot` と `/local-postflop-hand-ev` が同じ本文を返します。
+ポストフロップのEVは出しません（2026-10-01 決定。`/v1/postflop/hand-ev` と `postflop_hand_ev` テーブルは廃止、マイグレーション 0006）。
+
+どれも AI 推定で、GTO ではありません。ローカルでは apps/frontend の Vite の `/local-postflop-spot` と `/local-postflop-flop` が同じ本文を返します。
 
 公開手順（1・3行目は apps/backend、2行目は apps/frontend で実行）:
 

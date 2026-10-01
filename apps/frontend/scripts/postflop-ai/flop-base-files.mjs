@@ -32,15 +32,10 @@ export function writeFlopBaseFile(data, directory, computeMs) {
       if (JSON.parse(previous).mode === "balanced") unlinkSync(old);
     } catch { /* not a W2 JSON: leave untouched */ }
   }
-  const uncertainty = Object.values(data.ev ?? {}).flatMap(node => Object.values(node.uncertainty ?? {}));
-  const finite = uncertainty.filter(item => Number.isFinite(item.se_bb));
   return { flop: data.flop, bytes: Buffer.byteLength(text), gzip_bytes: gzip.length, stored_bytes: compressed.length,
-    hash: textHash(text), compute_ms: computeMs, ev: Boolean(data.ev),
-    ...(uncertainty.length ? { uncertainty: { classes: uncertainty.length, below_01: finite.filter(item => item.se_bb < 0.1).length,
-      missing: uncertainty.length - finite.length, p90_se_bb: finite.map(item => item.se_bb).sort((a, b) => a - b)[Math.ceil(finite.length * .9) - 1],
-      max_se_bb: Math.max(...finite.map(item => item.se_bb)) } } : {}) };
+    hash: textHash(text), compute_ms: computeMs };
 }
-export function readFreshFlopBase(spot, key, inputs, candidate, laterCandidate, samples, directory = flopBaseDir(spot)) {
+export function readFreshFlopBase(spot, key, inputs, candidate, laterCandidate, directory = flopBaseDir(spot)) {
   if (!/^(?:[2-9TJQKA][cdhs]){3}$/.test(key)) return null;
   const brotli = join(directory, `${key}.json.br`), gzip = join(directory, `${key}.json.gz`);
   const path = existsSync(brotli) ? brotli : existsSync(gzip) ? gzip : join(directory, `${key}.json`);
@@ -48,6 +43,6 @@ export function readFreshFlopBase(spot, key, inputs, candidate, laterCandidate, 
   try {
     const text = path === brotli ? brotliDecompressSync(readFileSync(path)).toString("utf8")
       : path === gzip ? gunzipSync(readFileSync(path)).toString("utf8") : readFileSync(path, "utf8"), data = JSON.parse(text);
-    return data.flop === key && isFreshFlopBase(data, inputs, candidate, laterCandidate, samples) ? { text, data } : null;
+    return data.flop === key && isFreshFlopBase(data, inputs, candidate, laterCandidate) ? { text, data } : null;
   } catch { return null; }
 }

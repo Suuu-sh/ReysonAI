@@ -1,5 +1,9 @@
 # Computed defence at facing nodes (postflop pilot)
 
+> **Decision 2026-10-01 (user): postflop EV is not shown or computed in the product.** References below to hand-EV
+> (`hand-ev.mjs`, `later-hand-ev*.mjs`, exact-ev, the browser worker) describe **offline research tools only**, not product
+> code; the defence mix itself, the explanation facts and MDF are unchanged. See `docs/postflop-flop-base.md`.
+
 AI estimate, not GTO. `scripts/postflop-ai/defence.mjs` (pure, no `node:*`; runs in Node, the browser worker and the edge worker).
 
 ## Why

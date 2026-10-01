@@ -2,13 +2,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../components/primitives.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
-import { HandEvBars, useHandEv } from "./PostflopHandEv.tsx";
 import { tierLabels } from "./postflop-reasons.ts";
 import { buildPostflopExplanation } from "./postflop-explanation.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterView } from "./postflop-compute.ts";
-import { computeLaterHandEvInWorker, deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
+import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
 import { productLocale } from "../i18n.ts";
 
 const baseLabels = () => productLocale() === "en"
@@ -83,7 +82,6 @@ function SuitCardPicker({ selectedCards = new Set(), disabledCards = new Set(), 
 }
 
 const tablePct = (value: number | null) => value === null ? "—" : `${Math.round(value * 100)}%`;
-const tableBb = (value: number | null) => value === null ? "—" : `${value > 0.05 ? "+" : ""}${value.toFixed(1)}bb`;
 
 // Per-action comparison at a betting decision; scrolls sideways inside its own wrapper on narrow screens.
 function ActionTableView({ table, english }) {
@@ -92,24 +90,22 @@ function ActionTableView({ table, english }) {
       <caption>{table.caption}</caption>
       <thead><tr>
         <th scope="col">{table.headers.action}</th><th scope="col">{table.headers.frequency}</th>
-        <th scope="col">{table.headers.folds}</th><th scope="col">{table.headers.equity}</th><th scope="col">{table.headers.ev}</th>
+        <th scope="col">{table.headers.folds}</th><th scope="col">{table.headers.equity}</th>
       </tr></thead>
-      <tbody>{table.rows.map(row => <tr key={row.action} className={row.best ? "best-ev" : undefined}>
-        <th scope="row"><i style={{ background: barColor(row.action) }} aria-hidden="true" />{row.label}
-          {row.best && <span className="best-mark" title={english ? "Highest EV" : "EVが最大"}>{english ? " ★ best EV" : " ★ EV最大"}</span>}</th>
+      <tbody>{table.rows.map(row => <tr key={row.action}>
+        <th scope="row"><i style={{ background: barColor(row.action) }} aria-hidden="true" />{row.label}</th>
         <td>{tablePct(row.frequency)}</td><td>{tablePct(row.foldShare)}</td><td>{tablePct(row.calledEquity)}</td>
-        <td className={row.ev === null ? undefined : row.ev >= 0 ? "ev-positive" : "ev-negative"}>{row.ev === null && table.evPending ? (english ? "…" : "…") : tableBb(row.ev)}</td>
       </tr>)}</tbody>
     </table>
   </div>;
 }
 
-function HandReasons({ node, hand, texture, explain, loading, error, handEv, positions }) {
+function HandReasons({ node, hand, texture, explain, loading, error, positions }) {
   if (!hand?.tiers) return null;
   const english = productLocale() === "en";
   const explanation = buildPostflopExplanation({ locale: english ? "en" : "ja", node,
     hand: hand.hand, actionMix: hand.actions, tiers: hand.tiers, texture, explain,
-    handEv: handEv?.data?.row ?? null, positions });
+    positions });
   return <div className="postflop-reasons postflop-reasons-structured">
     <p className="postflop-reason-headline">{explanation.headline}</p>
     {explanation.facing && <section className="postflop-reason-section">
@@ -127,7 +123,6 @@ function HandReasons({ node, hand, texture, explain, loading, error, handEv, pos
       {explanation.betting.alternatives.length > 0 && <ul>{explanation.betting.alternatives.map((line, index) => <li key={`alt-${index}`}>{line}</li>)}</ul>}
     </section>}
     {explanation.texture && <p className="postflop-reason-texture">{explanation.texture}</p>}
-    {explanation.evNote && <p className="postflop-reason-ev-note">{explanation.evNote}</p>}
     {loading && <small className="postflop-reason-general">{english ? "Loading explanation…" : "説明を計算中…"}</small>}
     {error && <small className="postflop-reason-general">{english ? "Numeric explanation is unavailable." : "数値の説明を読み込めませんでした。"}</small>}
   </div>;
@@ -333,7 +328,6 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const [laterStatus, setLaterStatus] = useState("idle");
   const [laterError, setLaterError] = useState("");
   const [laterExplainState, setLaterExplainState] = useState(null);
-  const [laterHandEvState, setLaterHandEvState] = useState(null);
   const [explainState, setExplainState] = useState(null);
   const [flopBaseState, setFlopBaseState] = useState(null);
   const decision = flopDecision(actions, context);
@@ -466,22 +460,11 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
       ...(selectedLaterCombo === "all" ? { combos: laterExplainCombos } : laterCombo ? { cards: laterCombo.cards } : {}) }
     : null;
   const laterExplainKey = laterExplainInput ? JSON.stringify(laterExplainInput) : null;
-  const laterHandEvInput = laterCurrent && laterChosen && !laterChosen.unreachable && spotId && board
-    ? { spotId, flop: board, flopActions: actions, turn: turnCard, turnActions,
-      river: laterCurrent.street === "river" ? riverCard : null,
-      riverActions: laterCurrent.street === "river" ? riverActions : [], hand: selectedHand }
-    : null;
-  const laterHandEvKey = laterHandEvInput ? JSON.stringify(laterHandEvInput) : null;
   const laterExplain = laterExplainKey
     ? laterExplainState?.key === laterExplainKey
       ? { ...laterExplainState, loading: false }
       : { data: null, error: null, loading: true }
     : { data: null, error: null, loading: false };
-  const laterHandEv = laterHandEvKey
-    ? laterHandEvState?.key === laterHandEvKey
-      ? { ...laterHandEvState, loading: false }
-      : { data: null, error: null, loading: true }
-    : null;
   const [selectedCombo, setSelectedCombo] = useState("all");
   useEffect(() => { setSelectedCombo("all"); }, [selectedHand, board, decision.node]);
   const combo = chosen?.combos?.find(item => item.cards === selectedCombo);
@@ -538,34 +521,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     return () => controller.abort();
   }, [laterCurrent?.line, laterCurrent?.node, laterCurrent?.street, laterExplainKey,
     postflopDatasets, postflopSource, sourceError, spotId]);
-  useEffect(() => {
-    setLaterHandEvState(null);
-    if (!laterHandEvKey || sourceError || !postflopSource || !postflopDatasets) return undefined;
-    const controller = new AbortController();
-    setLaterHandEvState({ key: laterHandEvKey, data: null, error: null, loading: true });
-    const input = { ...laterHandEvInput, datasets: postflopDatasets,
-      flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate };
-    computeLaterHandEvInWorker(input, controller.signal)
-      .then(body => {
-        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.hand !== selectedHand ||
-            body.street !== laterCurrent?.street || body.node !== laterCurrent?.node) {
-          throw new Error(productLocale() === "en" ? "EV does not match this decision." : "EVの局面が選択中の判断と一致しません。");
-        }
-        return body;
-      })
-      .then(body => setLaterHandEvState({ key: laterHandEvKey, data: body, error: null, loading: false }))
-      .catch(reason => {
-        if (!isAbortError(reason)) setLaterHandEvState({ key: laterHandEvKey, data: null, error: reason.message, loading: false });
-      });
-    return () => controller.abort();
-  }, [laterCurrent?.node, laterCurrent?.street, laterHandEvKey, postflopDatasets, postflopSource,
-    selectedHand, sourceError, spotId]);
   const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
-  const handEv = useHandEv(current && !chosen?.unreachable ? board : null, actions, selectedHand, spotId, {
-    datasets: postflopDatasets, flopCandidate: postflopSource?.candidate,
-    laterCandidate: postflopSource?.laterCandidate, precomputed: representativeFlops.includes(board),
-    flopBase,
-  });
   const english = productLocale() === "en";
   return <div className="postflop-trial" aria-label={english ? "Postflop estimate" : "ポストフロップ試作"}>
     {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
@@ -597,17 +553,14 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
           <Panel className="postflop-hand-detail">
             {chosen?.unreachable ? <><SectionHeading title={selectedHand} /><StatusState title="到達不能">元のプリフロップレンジに含まれないか、このボードで組み合わせがありません。</StatusState></>
               : chosen && view && <>
-                  <details className="postflop-view-detail">
-                    <summary className="postflop-view-line">
+                  <div className="postflop-view-line static">
                     <h3 className="postflop-view-title">{view.combo ? <>{view.combo.cards.match(/../g).map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                     <span className="postflop-view-bar" style={{ background: mixGradient(view.actions, current.actions) }}
                       aria-label={current.actions.map(action => `${labels[action]} ${Math.round(view.actions[action] * 100)}%`).join("、")} />
-                    </summary>
-                    <HandEvBars items={current.actions.map(action => ({ action, frequency: view.actions[action] }))} labels={labels} ev={handEv} comboSelected={Boolean(view.combo)} />
-                </details>
+                    </div>
                 <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
                 <HandReasons node={decision.node} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data.texture} explain={explain}
-                  loading={Boolean(explainLoading)} error={Boolean(explainError)} handEv={view.combo ? null : handEv}
+                  loading={Boolean(explainLoading)} error={Boolean(explainError)}
                   positions={{ ip: context.ip, oop: context.oop }} />
               </>}
           </Panel>
@@ -632,20 +585,16 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
             <Panel className="postflop-hand-detail postflop-later-hand-detail">
               {laterChosen?.unreachable ? <><SectionHeading title={selectedHand} /><StatusState title={english ? "Unreachable" : "到達不能"}>{english ? "No combo of this hand reaches this decision." : "このハンドはこの判断に到達しません。"}</StatusState></>
                 : laterChosen && laterView && <>
-                  <details className="postflop-view-detail">
-                    <summary className="postflop-view-line">
+                  <div className="postflop-view-line static">
                       <h3 className="postflop-view-title">{laterView.combo ? <>{laterView.combo.cards.match(/../g).map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                       <span className="postflop-view-bar" style={{ background: mixGradient(laterView.actions, laterActions) }}
                         aria-label={laterActions.map(action => `${laterLabels[action]} ${Math.round(laterView.actions[action] * 100)}%`).join("、")} />
-                    </summary>
-                    <HandEvBars items={laterActions.map(action => ({ action, frequency: laterView.actions[action] ?? 0 }))}
-                      labels={laterLabels} ev={laterHandEv} comboSelected={Boolean(laterView.combo)} />
-                  </details>
+                    </div>
                   <ComboPicker hand={selectedHand} combos={laterChosen.combos} actions={laterActions} selected={selectedLaterCombo} onSelect={setSelectedLaterCombo} labels={laterLabels}
                     missingReason={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しない"}
                     missingTitle={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しません"} />
                   <HandReasons node={laterCurrent.node} hand={laterView.combo ? { ...laterView, hand: laterView.combo.cards } : laterView} texture={laterCurrent.texture} explain={laterExplain.data}
-                    loading={Boolean(laterExplain.loading)} error={Boolean(laterExplain.error)} handEv={laterView.combo ? null : laterHandEv}
+                    loading={Boolean(laterExplain.loading)} error={Boolean(laterExplain.error)}
                     positions={{ ip: context.ip, oop: context.oop }} />
                 </>}
             </Panel>

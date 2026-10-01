@@ -7,7 +7,7 @@ import { POSTFLOP_SPOTS, DEFAULT_SPOT_ID } from "./spots.mjs";
 import { isCanonicalFlopKey } from "./flop-isomorphism.mjs";
 import { loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
-import { FLOP_BASE_EV_SAMPLES, flopBaseIdentity } from "./flop-base-core.mjs";
+import { flopBaseIdentity } from "./flop-base-core.mjs";
 import { flopBaseDir, readFreshFlopBase, textHash } from "./flop-base-files.mjs";
 import { MAX_VALUE_BYTES, quote } from "./publish-d1.mjs";
 
@@ -67,7 +67,7 @@ export function flopBaseResponse(params) {
   try {
     if (!/^[A-Za-z0-9_]+$/.test(spotId) || !isCanonicalFlopKey(key)) return { status: 400, body: { error: "A spot and canonical flop key are required" } };
     const inputs = loadInputs(spotId), candidate = loadCandidate(inputs), laterCandidate = loadLaterCandidate(inputs, candidate);
-    const file = readFreshFlopBase(inputs.spot, key, inputs, candidate, laterCandidate, FLOP_BASE_EV_SAMPLES);
+    const file = readFreshFlopBase(inputs.spot, key, inputs, candidate, laterCandidate);
     return file ? { status: 200, bytes: storedBytes(inputs.spot, key, file.text), text: file.text } : { status: 404, body: { error: "No fresh stored flop base" } };
   } catch (error) { return { status: 404, body: { error: error.message } }; }
 }

@@ -6,22 +6,20 @@ import { loadPostflopSpot, loadPostflopFlop } from "../src/estimated/postflop-br
 const source = path => readFile(new URL(path, import.meta.url), "utf8");
 
 test("PostflopTrial requests only read-only spot/base artifacts; missing bases compute locally", async () => {
-  const [trial, browserClient, handEv, api] = await Promise.all([
+  const [trial, browserClient, api] = await Promise.all([
     source("../src/estimated/PostflopTrial.tsx"),
     source("../src/estimated/postflop-browser.ts"),
-    source("../src/estimated/PostflopHandEv.tsx"),
     source("../src/estimated/postflop-api.ts"),
   ]);
   const routeBlock = api.match(/const LOCAL_PATHS = \{([\s\S]*?)\} as const/)?.[1] ?? "";
   const routes = [...routeBlock.matchAll(/^\s*(?:"([^"]+)"|([\w-]+)):/gm)].map(match => match[1] ?? match[2]).sort();
 
-  assert.deepEqual(routes, ["flop", "hand-ev", "spot"]);
+  assert.deepEqual(routes, ["flop", "spot"]);
   assert.doesNotMatch(trial, /\bfetch\s*\(|postflopUrl\s*\(/);
   assert.match(browserClient, /fetch\(postflopUrl\("spot"/);
   assert.match(browserClient, /fetch\(postflopUrl\("flop"/);
-  assert.doesNotMatch(browserClient, /postflopUrl\("(?:board|explain|later|later-explain|later-hand-ev)"/);
-  assert.match(handEv, /postflopUrl\("hand-ev"/);
-  assert.match(handEv, /fetch\(url/);
+  assert.doesNotMatch(browserClient, /postflopUrl\("(?:board|explain|later|later-explain|later-hand-ev|hand-ev)"/);
+  assert.doesNotMatch(trial + browserClient + api, /hand-ev|HandEv/);
 });
 
 test("suit-isomorphic requests share the canonical base; cancelling one caller does not cancel another", async () => {

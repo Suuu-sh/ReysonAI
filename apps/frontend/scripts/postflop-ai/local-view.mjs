@@ -6,7 +6,6 @@ import { SIMULATION_VERSION } from "./simulation.mjs";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "./model.mjs";
 import { flopBetTable, flopUiFacts } from "./flop-ui-facts.mjs";
 import { explainLaterCombo, explainLaterCombos } from "./explain-later.mjs";
-import { laterHandEvForHand, laterHandEvResult, loadLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { FLOP_BETS, flopState } from "./tree.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
@@ -128,7 +127,7 @@ export function buildLaterView({ flop, flopActions = "", turn = "", turnActions 
 }
 
 export const LOCAL_POSTFLOP_ROUTES = ["/local-postflop-spot", "/local-postflop", "/local-postflop-explain", "/local-postflop-later",
-  "/local-postflop-later-explain", "/local-postflop-later-hand-ev"];
+  "/local-postflop-later-explain"];
 
 // The response of one read-only postflop route as { status, body }. Shared by the Vite
 // middleware below and the edge worker, which serves the same bodies from D1 artifacts.
@@ -136,7 +135,7 @@ export function postflopResponse(pathname, params) {
   try {
     const inputs = loadInputs(params.get("spot") || DEFAULT_SPOT_ID);
     const candidate = loadCandidate(inputs);
-    const laterRoute = ["/local-postflop-later", "/local-postflop-later-explain", "/local-postflop-later-hand-ev"].includes(pathname);
+    const laterRoute = ["/local-postflop-later", "/local-postflop-later-explain"].includes(pathname);
     const laterCandidate = laterRoute ? loadLaterCandidate(inputs, candidate) : null;
     if (laterRoute && !laterCandidate) {
       const error = new Error("ターン・リバーのAI方針がありません。");
@@ -152,25 +151,6 @@ export function postflopResponse(pathname, params) {
       // Same body as the worker's /v1/postflop/spot: the artifacts the browser computes from.
       return { status: 200, body: { kind: "ai_estimate_not_gto", spot: inputs.spot, candidate,
         laterCandidate: readArtifact(inputs.spot, "laterCandidate"), report } };
-    }
-    if (pathname === "/local-postflop-later-hand-ev" && !params.has("key")) {
-      // On-demand EV of one hand at the current turn/river decision (deterministic per input).
-      const hand = params.get("hand");
-      if (!hand || !params.get("flop") || !params.get("turn")) return { status: 400, body: { error: "flop・turn・hand が必要です。" } };
-      const actions = name => (params.get(name) ?? "").split(",").filter(Boolean);
-      const result = laterHandEvForHand({ flop: params.get("flop"), flopActions: actions("flopActions"), turn: params.get("turn"),
-        turnActions: actions("turnActions"), river: params.get("river") || null, riverActions: actions("riverActions"),
-        hand, inputs, flopPolicy: candidate.policy, laterPolicy: laterCandidate.policy });
-      return { status: 200, body: { spot: inputs.spot.id, hand, kind: "ai_estimate_not_gto", ...result } };
-    }
-    if (pathname === "/local-postflop-later-hand-ev") {
-      const ev = loadLaterHandEv(inputs, candidate, laterCandidate);
-      if (!ev) return { status: 404, body: { error: "ターン・リバーのハンド別EVが未計算か、方針と一致しません。" } };
-      const key = params.get("key");
-      if (!key) return { status: 400, body: { error: "EV場面の key が必要です。" } };
-      const result = laterHandEvResult(ev, key, params.get("hand"));
-      if (!result) return { status: 404, body: { error: "この場面のEVはありません。" } };
-      return { status: 200, body: { spot: inputs.spot.id, ...result } };
     }
     let data;
     if (pathname === "/local-postflop-explain") data = explainLocalCombo(params, inputs, candidate);

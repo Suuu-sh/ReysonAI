@@ -81,35 +81,3 @@ test("per-hand rows carry equity, EQR, per-action EV and the class mix for every
   assert.equal(result.bet33.rows.bet33, undefined);
   assert.ok(Object.values(result.bet33.rows).every(row => row.ev_bb.fold === 0));
 });
-
-let server;
-let view;
-before(async () => {
-  server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), logLevel: "silent",
-    server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
-  view = await server.ssrLoadModule("/src/estimated/PostflopHandEv.tsx");
-});
-after(async () => { await server?.close(); });
-
-test("the expanded breakdown puts each action's EV beside its frequency bar, with EQR above", () => {
-  const row = { equity_pct: 42.25, eqr: 0.05, mix_ev_bb: 0.16, ev_bb: { fold: 0, call: 1.07, raise: 1.89 }, mix: { fold: 85, call: 15, raise: 0 } };
-  const ev = { data: { pot_bb: 7.32, samples: 2000, row }, error: null, loading: false };
-  const items = [{ action: "fold", frequency: 0.85 }, { action: "call", frequency: 0.15 }, { action: "raise", frequency: 0 }];
-  const render = props => renderToStaticMarkup(createElement(view.HandEvBars, { items, labels: { raise: "3倍チェックレイズ" }, ...props }));
-  const html = render({ ev });
-  assert.match(html, /EQR<\/dt><dd>0\.05</);
-  assert.equal((html.match(/class="bar-row with-ev/g) || []).length, 3);
-  // The highest-EV action (the check-raise here) is marked; every row shows its EV after the frequency.
-  assert.match(html, /bar-row with-ev best-ev"[^>]*><span>[^<]*<i[^>]*><\/i>3倍チェックレイズ<\/span>[\s\S]*?<b>0\.0%<\/b><em class="ev-positive"[^>]*>\+1\.89bb<\/em>/);
-  assert.match(html, /<b>85\.0%<\/b><em class="ev-positive">0\.00bb<\/em>/);
-  assert.doesNotMatch(html, /AI推定|未検証|GTO|AI estimate|not a solver/i);
-  assert.doesNotMatch(html, /右端はEV|AI方針どうしの自己対戦/);
-  // A single combo shows its own frequencies without the class-average EV.
-  const combo = render({ ev, comboSelected: true });
-  assert.doesNotMatch(combo, /with-ev|EQR<\/dt>/);
-  assert.match(combo, /EVはハンド平均で表示します/);
-  assert.match(render({ ev: { data: { ...ev.data, row: null }, error: null, loading: false } }), /この場面に来ません/);
-  assert.match(render({ ev: { data: null, error: null, loading: true } }), /EVを読み込み中/);
-  assert.equal(view.handEvQuery("As7d2c", ["bet33", "raise"], "AKo"), "/local-postflop-hand-ev?board=As7d2c&history=bet33%2Craise&hand=AKo");
-  assert.equal(view.handEvQuery("As7d2c", ["bet33"], "AKo", "SB_open_BB_call"), "/local-postflop-hand-ev?spot=SB_open_BB_call&board=As7d2c&history=bet33&hand=AKo");
-});

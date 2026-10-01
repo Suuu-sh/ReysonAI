@@ -11,8 +11,8 @@ const reasonIds = { has: id => hasDataset(`reasons/${id}`) };
 // Spots with a hand-authored rules module (scripts/postflop-ai/authored/<slug>.mjs) own their policy.
 const authoredSlugs = Object.keys(import.meta.glob("../../scripts/postflop-ai/authored/*.mjs")).map(path => path.split("/").pop().replace(".mjs", "-v1"));
 const authoredIds = POSTFLOP_SPOTS.filter(spot => authoredSlugs.includes(spot.slug)).map(spot => spot.id);
-const STREETS = { preflop: "プリフロップ", flop: "フロップ", turn_river: "ターン/リバー", hand_ev: "手ごとのEV", release: "リリース" };
-const STREET_ORDER = { preflop: 0, flop: 1, turn_river: 2, hand_ev: 3, release: 4 };
+const STREETS = { preflop: "プリフロップ", flop: "フロップ", turn_river: "ターン/リバー", release: "リリース" };
+const STREET_ORDER = { preflop: 0, flop: 1, turn_river: 2, release: 3 };
 const FILTERS = [["all", "すべて"], ["todo", "TODO"], ["done", "作成済み"], ["no_reason", "理由なし"]];
 
 function Meter({ done, total }) {
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
 
       <section className="admin-kpis">
         <div className="admin-kpi"><span>プリフロップ作成済み</span><strong>{catalog.done}</strong><small>/ {catalog.total} スポット（TODO {catalog.todo}）</small></div>
-        {[["flop", "フロップ AI方針"], ["turn_river", "ターン/リバー AI方針"], ["hand_ev", "手ごとのEV"]].map(([street, label]) => {
+        {[["flop", "フロップ AI方針"], ["turn_river", "ターン/リバー AI方針"]].map(([street, label]) => {
           const list = postflop.categories.filter(c => c.street === street && c.modelled);
           const done = list.reduce((sum, c) => sum + c.done, 0), total = list.reduce((sum, c) => sum + c.total, 0);
           return <div key={street} className="admin-kpi"><span>{label}</span><strong>{done}</strong><small>/ {total} スポット（TODO {total - done}）</small></div>;

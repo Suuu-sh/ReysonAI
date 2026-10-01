@@ -1,3 +1,5 @@
+// OFFLINE RESEARCH TOOL ONLY (decision 2026-10-01): postflop EV is not part of the product. Not imported by the app bundle,
+// the backend or the Vite dev server; the middleware below is no longer registered.
 // Per-hand action EV and equity realization (EQR) for the local heads-up flop pilot (any
 // spot in spots.mjs, on its tree). Both players follow the saved AI candidate on the flop and
 // the saved later-street policy (or the fixed reference). Each value is the expected value when both

@@ -54,7 +54,7 @@ npm run postflop-ai:generate -- --spot BTN_open_BB_call
 npm run postflop-ai:generate-later -- --spot BTN_open_BB_call
 npm run postflop-ai:simulate -- --spot BTN_open_BB_call
 npm run postflop-ai:audit -- --spot BTN_open_BB_call
-npm run postflop-ai:hand-ev -- --spot BTN_open_BB_call
+npm run postflop-ai:hand-ev -- --spot BTN_open_BB_call   # オフライン研究用のみ。プロダクトはポストフロップのEVを出さない（2026-10-01 決定）
 ```
 
 `--spot` の既定は `BTN_open_BB_call`。既存候補は自動上書きしません。入力が変われば停止し、再生成には既存候補・レポートの退避と明示実行が必要です。モデル設定と出所は `generate.mjs` と候補metadataで確認します。

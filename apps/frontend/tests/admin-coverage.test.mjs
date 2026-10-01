@@ -57,13 +57,10 @@ test("TODO priority follows BTN-BB heads-up, other heads-up, release prep, then 
   assert.equal(priorities.reduce((total, priority) => total + priority.todo, 0), preflop.todo + postflop.todo);
 });
 
-test("hand-EV counts as done only while it matches the current policies", async () => {
-  const { postflopCatalog } = await import("../src/admin/coverage.ts");
+test("postflop hand-EV is not tracked as a coverage stage (dropped 2026-10-01)", async () => {
+  const { postflopCatalog, RELEASE_TASKS } = await import("../src/admin/coverage.ts");
   const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.mjs");
   const spot = POSTFLOP_SPOTS.find(item => item.id === "BTN_open_BB_call");
-  const status = value => postflopCatalog([spot], { [`${spot.slug}-hand-ev.json`]: value })
-    .categories.find(category => category.key === "hand_ev_srp").rows[0].status;
-  assert.equal(status("fresh"), "done");
-  assert.equal(status(null), "todo");
-  assert.equal(postflopCatalog([spot], {}).categories.find(category => category.key === "hand_ev_srp").rows[0].status, "todo");
+  assert.equal(postflopCatalog([spot], {}).categories.some(category => category.street === "hand_ev"), false);
+  assert.match(RELEASE_TASKS.find(task => task.id === "release_turn_river_ev").path, /見送り/);
 });

@@ -9,30 +9,30 @@ import { packFrame, packView, unpackFrameRow, unpackView, compactFlopBase, hydra
 import { FLOP_BETS, historyFor, treeNodes } from "./tree.mjs";
 import { referenceLaterPolicy } from "./later-policy.mjs";
 
-export const FLOP_BASE_VERSION = 5;
-// 20-board paired-variance probe: 327,680 gives projected p90 SE < 0.1bb,
-// including the noisiest board's p90. The budget decides whether EV is stored.
-export const FLOP_BASE_EV_SAMPLES = 327680;
+// Version 6: the base stores strategies and explanation facts only. Postflop EV is not part of the
+// product (decision 2026-10-01), so any base that still carries EV (version 5) is stale.
+export const FLOP_BASE_VERSION = 6;
 const laterSizingHash = config => sha(Object.fromEntries(["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"].map(key => [key, config[key]])));
 
-export function flopBaseIdentity(inputs, candidate, laterCandidate, samples = FLOP_BASE_EV_SAMPLES) {
+export function flopBaseIdentity(inputs, candidate, laterCandidate) {
   return { generator_version: FLOP_BASE_VERSION, isomorphism_version: ISOMORPHISM_VERSION,
     source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash,
     later_policy_hash: sha(laterCandidate?.policy ?? referenceLaterPolicy()),
     later_sizing_hash: laterSizingHash(inputs.config), defence_version: DEFENCE_VERSION,
     defence_config_hash: sha(inputs.config.defence_realization), seed: inputs.config.seed,
     explanation_precision: 4,
-    samples: { defence_runouts: FLOP_RUNOUTS, ev_per_hand_action: samples } };
+    samples: { defence_runouts: FLOP_RUNOUTS } };
 }
 
-export function isFreshFlopBase(data, inputs, candidate, laterCandidate, samples = FLOP_BASE_EV_SAMPLES) {
+export function isFreshFlopBase(data, inputs, candidate, laterCandidate) {
   if (data?.kind !== "ai_estimate_not_gto" || data.mode !== "balanced" || data.spot !== inputs.spot.id ||
       !data.histories || !data.metadata) return false;
-  const identity = flopBaseIdentity(inputs, candidate, laterCandidate, samples);
+  const identity = flopBaseIdentity(inputs, candidate, laterCandidate);
+  if (data.ev !== undefined) return false;
   return Object.keys(identity).every(key => JSON.stringify(data.metadata[key]) === JSON.stringify(identity[key]));
 }
 
-export function buildFlopBase({ board, inputs, candidate, laterCandidate, samples = FLOP_BASE_EV_SAMPLES, ev = null }) {
+export function buildFlopBase({ board, inputs, candidate, laterCandidate }) {
   const canonical = canonicalFlop(board);
   const views = flopHistoryViews(inputs, candidate.policy, canonical.cards);
   for (const view of Object.values(views)) for (const row of view.rows) {
@@ -59,8 +59,7 @@ export function buildFlopBase({ board, inputs, candidate, laterCandidate, sample
     return [history, { view: packView(view), combo_facts: packFrame(facts), class_facts: packFrame(averages) }];
   }));
   return compactFlopBase({ kind: "ai_estimate_not_gto", mode: "balanced", spot: inputs.spot.id, flop: canonical.key,
-    metadata: flopBaseIdentity(inputs, candidate, laterCandidate, samples), histories,
-    ...(ev ? { ev } : {}) }, predictors);
+    metadata: flopBaseIdentity(inputs, candidate, laterCandidate), histories }, predictors);
 }
 
 const decoded = new WeakMap();
@@ -117,11 +116,4 @@ export function storedFlopExplanation(base, { boardCards, node, cards, combos, p
   }
   const entries = combos.map(combo => ({ weight: combo.weight, facts: read(combo.cards) }));
   return entries.every(entry => entry.facts) ? averageFlopUiFacts(entries) : null;
-}
-
-export function storedFlopHandEv(base, history, hand) {
-  const node = base.ev?.[history.join(",")];
-  if (!node) return null;
-  return { node: node.node, actor: node.actor, pot_bb: node.pot_bb, street: "flop",
-    row: node.rows[hand] ?? null, ...(!node.rows[hand] || node.unreachable ? { unreachable: true } : {}) };
 }

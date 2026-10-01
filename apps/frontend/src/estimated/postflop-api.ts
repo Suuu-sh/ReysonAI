@@ -1,11 +1,10 @@
-// The worker and local middleware expose only read-only artifacts and the saved flop hand-EV.
-// A canonical flop base is optional; missing/stale entries use the same browser computation.
+// The worker and local middleware expose only read-only artifacts: the spot policy and the canonical flop base.
+// Postflop EV is not part of the product (decision 2026-10-01).
 const LOCAL_PATHS = {
   spot: "/local-postflop-spot",
   flop: "/local-postflop-flop",
-  "hand-ev": "/local-postflop-hand-ev",
 } as const;
-const API_ROUTES = new Set(["spot", "flop", "hand-ev"]);
+const API_ROUTES = new Set(["spot", "flop"]);
 
 export type PostflopRoute = keyof typeof LOCAL_PATHS;
 

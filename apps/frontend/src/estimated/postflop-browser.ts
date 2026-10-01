@@ -1,4 +1,3 @@
-import { computeFlopHandEv, computeLaterHandEv, storedFlopHandEvInput } from "./postflop-compute.ts";
 import { dataset, loadDataset } from "./datasets.ts";
 import { postflopUrl } from "./postflop-api.ts";
 import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
@@ -127,48 +126,4 @@ export function deferPostflopCalculation<T>(calculate: () => T, signal?: AbortSi
     };
     signal?.addEventListener("abort", onAbort, { once: true });
   });
-}
-
-export function computePostflopHandEvInWorker(input: any, signal?: AbortSignal): Promise<any> {
-  if (signal?.aborted) return Promise.reject(abortError());
-  if (input.street === "flop") {
-    const stored = storedFlopHandEvInput(input);
-    if (stored) return Promise.resolve(stored);
-  }
-  const envelope = (result: any) => ({ spot: input.spotId, hand: input.hand, kind: "ai_estimate_not_gto", ...result });
-  const calculate = () => envelope(input.street === "flop" ? computeFlopHandEv(input) : computeLaterHandEv(input));
-  if (typeof Worker === "undefined") return deferPostflopCalculation(calculate, signal);
-
-  let worker: Worker;
-  try {
-    worker = new Worker(new URL("./postflop-compute.worker.ts", import.meta.url), { type: "module" });
-  } catch {
-    return deferPostflopCalculation(calculate, signal);
-  }
-
-  return new Promise((resolve, reject) => {
-    const cleanup = () => {
-      worker.terminate();
-      signal?.removeEventListener("abort", onAbort);
-    };
-    const onAbort = () => { cleanup(); reject(abortError()); };
-    worker.onmessage = event => {
-      cleanup();
-      if (event.data?.ok) resolve(envelope(event.data.result));
-      else reject(new Error(event.data?.error || "手ごとのEVを計算できませんでした。"));
-    };
-    worker.onerror = event => {
-      cleanup();
-      reject(new Error(event.message || "手ごとのEV計算を開始できませんでした。"));
-    };
-    signal?.addEventListener("abort", onAbort, { once: true });
-    // Do not transfer a multi-node base to a worker when this hand still needs EV.
-    const { flopBase: unused, ...workerInput } = input;
-    try { worker.postMessage(workerInput); }
-    catch (error) { cleanup(); reject(error); }
-  });
-}
-
-export function computeLaterHandEvInWorker(input: any, signal?: AbortSignal): Promise<any> {
-  return computePostflopHandEvInWorker({ ...input, street: input.street ?? (input.river ? "river" : "turn") }, signal);
 }

@@ -6,11 +6,9 @@ import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "../../s
 import { FLOP_BETS, flopState } from "../../scripts/postflop-ai/tree.mjs";
 import { referenceLaterPolicy, validateLaterPolicy } from "../../scripts/postflop-ai/later-policy.mjs";
 import { laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
-import { flopHandEvForHand } from "../../scripts/postflop-ai/flop-hand-ev-core.mjs";
-import { laterHandEvForHand } from "../../scripts/postflop-ai/later-hand-ev-core.mjs";
 import { flopNodes, laterMixRows } from "../../scripts/postflop-ai/views.mjs";
 import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
-import { isFreshFlopBase, storedFlopNodes, storedFlopExplanation, storedFlopHandEv } from "../../scripts/postflop-ai/flop-base-core.mjs";
+import { isFreshFlopBase, storedFlopNodes, storedFlopExplanation } from "../../scripts/postflop-ai/flop-base-core.mjs";
 
 function policyForLater(inputs, candidate, laterCandidate) {
   if (!laterCandidate) {
@@ -155,54 +153,4 @@ export function computeLaterExplain({ spotId, flop, flopActions = "", turn, turn
     explanation = explainLaterCombo({ ...options, cards });
   }
   return { spot: inputs.spot.id, ...explanation };
-}
-
-// The on-demand hand EV is the pure core shared with the Node scripts (later-hand-ev-core.mjs), so the
-// worker transfers one self-contained request without the Node-only artifact and worker-pool code.
-export function computeLaterHandEv({ spotId, flop, flopActions = [], turn, turnActions = [], river = null, riverActions = [],
-  hand, samples, seed, datasets, flopCandidate, laterCandidate }) {
-  const inputs = buildInputs(spotId, datasets);
-  return laterHandEvForHand({ flop, flopActions, turn, turnActions, river, riverActions, hand, samples, seed,
-    inputs, flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate.policy });
-}
-
-// Flop hand EV uses the same browser-safe core as scripts/postflop-ai/hand-ev.mjs. The
-// representative artifact is an optional fast path; this function handles any valid flop.
-export function computeFlopHandEv({ spotId, board, history = [], hand, samples, seed, datasets,
-  flopCandidate, laterCandidate, flopBase }) {
-  const inputs = buildInputs(spotId, datasets);
-  const selected = parseFlopBoard(board);
-  const policy = validatePolicy(flopCandidate?.policy, inputs.spot.tree);
-  if (flopCandidate?.metadata?.source_hash !== inputs.fingerprint ||
-      flopCandidate.metadata.policy_hash !== sha(policy)) throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
-  let laterPolicy = referenceLaterPolicy();
-  if (laterCandidate) {
-    const checked = validateLaterPolicy(laterCandidate.policy);
-    if (laterCandidate.metadata?.source_hash !== inputs.fingerprint ||
-        laterCandidate.metadata?.flop_policy_hash !== flopCandidate.metadata.policy_hash ||
-        laterCandidate.metadata.policy_hash !== sha(checked)) throw new Error("Later AI policy source or hash is stale");
-    laterPolicy = checked;
-  }
-  const stored = storedFlopHandEvInput({ spotId, board, history, hand, samples, seed, datasets, flopCandidate, laterCandidate, flopBase });
-  if (stored) return stored;
-  return { spot: inputs.spot.id, hand, kind: "ai_estimate_not_gto",
-    ...flopHandEvForHand({ flop: canonicalFlop(selected.cards).key, history, hand, samples, seed,
-      inputs, flopPolicy: policy, laterPolicy }) };
-}
-
-// Cheap lookup, also called before creating/transferring a Web Worker. No equity work.
-export function storedFlopHandEvInput({ spotId, board, history = [], hand, samples, seed, datasets,
-  flopCandidate, laterCandidate, flopBase }) {
-  // The EV is an exact expectation, so neither a sample count nor a seed changes it; stored and computed rows are identical.
-  if (!flopBase?.ev) return null;
-  const inputs = buildInputs(spotId, datasets);
-  if (flopCandidate?.metadata?.source_hash !== inputs.fingerprint || sha(flopCandidate.policy) !== flopCandidate.metadata.policy_hash ||
-      laterCandidate && (laterCandidate.metadata?.source_hash !== inputs.fingerprint ||
-        laterCandidate.metadata?.flop_policy_hash !== flopCandidate.metadata.policy_hash || sha(laterCandidate.policy) !== laterCandidate.metadata?.policy_hash)) return null;
-  if (!isFreshFlopBase(flopBase, inputs, flopCandidate, laterCandidate) || canonicalFlop(board).key !== flopBase.flop) return null;
-  let result;
-  try { result = storedFlopHandEv(flopBase, history, hand); } catch { return null; }
-  if (result?.row && (!Number.isFinite(result.row.mix_ev_bb) || !Number.isFinite(result.row.equity_pct) ||
-      !result.row.ev_bb || !Object.values(result.row.ev_bb).every(Number.isFinite))) return null;
-  return result ? { spot: inputs.spot.id, hand, kind: "ai_estimate_not_gto", ...result } : null;
 }

@@ -120,7 +120,7 @@ test("new local later endpoints preserve GET-only and localhost restrictions", (
     localPostflopMiddleware({ url: path, method, headers: { host } }, response, () => { continued = true; });
     return { response, continued };
   };
-  for (const path of ["/local-postflop-later-explain", "/local-postflop-later-hand-ev"]) {
+  for (const path of ["/local-postflop-later-explain"]) {
     assert.equal(request(path, "POST", "localhost:5173").response.status, 405);
     const external = request(path, "GET", "example.com");
     assert.equal(external.response.status, 403);

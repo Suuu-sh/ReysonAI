@@ -13,7 +13,7 @@ parentPort.on("message", message => {
   if (message.done) { parentPort.close(); return; }
   try {
     const board = message.board;
-    if (kind === "hand-ev" || kind === "flop-base" || kind === "flop-base-probe") {
+    if (kind === "hand-ev" || kind === "flop-base") {
       defenceFor(inputs, policy, laterPolicy).releaseBoardCaches();
       defenceFor(inputs, policy, null).releaseBoardCaches();
       releaseFlopUiFacts(inputs, policy);
@@ -21,12 +21,10 @@ parentPort.on("message", message => {
     const started = performance.now();
     let result = kind === "hand-ev" ? handEvForBoard(board, inputs, policy, samples, laterPolicy, taskOptions)
       : kind === "simulate" ? simulate(inputs, policy, samples, laterCandidate, { boardList: [board] }).results
-      : kind === "flop-base" || kind === "flop-base-probe" ? buildFlopBase({ board: board.cards, inputs,
-        candidate: taskOptions.candidate, laterCandidate: taskOptions.laterCandidate, samples,
-        ev: taskOptions.evBoards?.includes(board.id) || kind === "flop-base-probe" && taskOptions.measureEv
-          ? handEvForBoard(board, inputs, policy, samples, laterPolicy, { uncertainty: Boolean(taskOptions.uncertainty) }) : null })
+      : kind === "flop-base" ? buildFlopBase({ board: board.cards, inputs,
+        candidate: taskOptions.candidate, laterCandidate: taskOptions.laterCandidate })
       : (() => { throw new Error(`Unknown board task: ${kind}`); })();
-    if (kind === "flop-base" || kind === "flop-base-probe") {
+    if (kind === "flop-base") {
       result = writeFlopBaseFile(result, taskOptions.outputDir, performance.now() - started);
     }
     parentPort.postMessage({ boardId: board.id, result });

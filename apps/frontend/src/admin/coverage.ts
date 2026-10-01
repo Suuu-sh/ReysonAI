@@ -27,7 +27,7 @@ const headsUp = RFI.flatMap(opener => after(opener).map(hero => ({ opener, hero 
 export const PRIORITIES = Object.freeze([
   { value: 1, label: "P1", title: "BTN vs BB", scope: "BTNオープン対BBのプリフロップ全分岐（5bet終端を含む）を起点に、SRP・3bet・4betを全ボード・全アクション分岐でリバーまで対応する。" },
   { value: 2, label: "P2", title: "その他のヘッズアップ", scope: "残りの全ヘッズアップを、SRP・3bet・4bet・リンプと全ボード・全アクション分岐を含めてプリフロップからリバーまで対応する。" },
-  { value: 3, label: "R", title: "リリース準備", scope: "ヘッズアップのポストフロップをD1から本番配信し、ターン・リバーの精密な理由文と手ごとのEVを入れる。「GTOではない」表示は利用規約のみ（2026-09-29 決定）。" },
+  { value: 3, label: "R", title: "リリース準備", scope: "ヘッズアップのポストフロップをD1から本番配信し、ターン・リバーの精密な理由文を入れる。手ごとのEVは出さない（2026-10-01 決定）。「GTOではない」表示は利用規約のみ（2026-09-29 決定）。" },
   { value: 4, label: "P3", title: "マルチウェイ", scope: "リリース後に、複数コーラー・スクイーズ・コールド4betとマルチウェイのポストフロップに対応する。" },
 ]);
 
@@ -132,17 +132,16 @@ const POT_KINDS = [["srp", "シングルレイズポット"], ["3bp", "3betポ�
 const STAGES = [
   { street: "flop", label: "フロップ", suffix: "-policy.json" },
   { street: "turn_river", label: "ターン/リバー", suffix: "-later-policy.json" },
-  // Per-hand action EV shown in the app; done only when it matches the current policies.
-  { street: "hand_ev", label: "手ごとのEV", suffix: "-hand-ev.json", freshness: true },
+  // Per-hand EV was dropped from the product (2026-10-01): there is no EV stage to track.
 ];
 
 // One-off release tasks without per-spot files. Update `done` when the task lands.
 export const RELEASE_TASKS = Object.freeze([
-  { id: "release_d1", hero: "—", path: "Cloudflare D1 に方針・手ごとのEV・理由文を入れ、evionai-api から本番配信（ローカル専用 middleware を置き換え）", done: true },
+  { id: "release_d1", hero: "—", path: "Cloudflare D1 に方針・理由文を入れ、evionai-api から本番配信（ローカル専用 middleware を置き換え）", done: true },
   { id: "release_no_gto_ui", hero: "—", path: "「GTOではない / AI推定」表示をUIから外し、利用規約だけに残す", done: true },
   { id: "release_terms", hero: "—", path: "利用規約ページを用意し、「AIの推定であり GTO・数学的最適性を保証しない」旨をそこに書く（今はサイトのフッターに「準備中」のリンクと注意書きがあるだけ）", done: false },
   { id: "release_turn_river_reasons", hero: "—", path: "ターン・リバーの精密な理由文（ノード×アクション×手の強さ×落ちたカード×前のストリートの文面を日英で用意し、相手レンジへの勝率・降ろせる割合・必要勝率の数字を根拠に添える）", done: true },
-  { id: "release_turn_river_ev", hero: "—", path: "ターン・リバーの手ごとのEV（選んだハンドをその場で計算する edge API と画面表示。事前計算は1スポット約150MBで不採用）", done: true },
+  { id: "release_turn_river_ev", hero: "—", path: "【見送り・2026-10-01 決定】ターン・リバーの手ごとのEV。EVは両者の想定戦略に依存し、相手のコールレンジがGTOと違うと正確でないため、ポストフロップのEVは出さない", done: true },
 ]);
 
 export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {

@@ -1,5 +1,16 @@
 # W2 — persisted balanced flop base (2026-10-01)
 
+> **Decision 2026-10-01 (user): postflop EV is not part of the product.** EV depends on both players'
+> assumed strategies; if the calling ranges differ from GTO the EV is not accurate, so showing it misleads.
+> The AI strategy (frequencies) is the answer and explanations show the facts behind it. The flop base
+> (generator version 6) therefore stores strategies and explanation facts only, with no EV; `flop-base.mjs`
+> rejects `--ev`, `--samples`, `--measure-ev` and `--benchmark`, and a base that still carries EV is stale.
+> The `/v1/postflop/hand-ev` route, the local hand-EV middlewares and the `postflop_hand_ev` table
+> (migration `0006`) are removed. `exact-ev.mjs`, `hand-ev.mjs`, `later-hand-ev*.mjs`, `flop-hand-ev-core.mjs`
+> and the Monte Carlo validation stay as **offline research tools only**: the app bundle and the backend do not
+> import them. The EV sections below are historical and describe those offline tools. Preflop call EV is unaffected.
+
+
 ## Scope and sources of truth
 
 `BTN_open_BB_call` now has all **1,755** canonical flops stored, covering all

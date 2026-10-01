@@ -8,9 +8,7 @@ import { buildLaterView, buildLocalBoard, explainLocalCombo, postflopResponse } 
 import { explainLaterCombo, explainLaterCombos } from "../scripts/postflop-ai/explain-later.mjs";
 import { flopBetTable, flopUiFacts } from "../scripts/postflop-ai/flop-ui-facts.mjs";
 import { canonicalFlop } from "../scripts/postflop-ai/flop-isomorphism.mjs";
-import { laterHandEvForHand } from "../scripts/postflop-ai/later-hand-ev.mjs";
-import { computeBoard, computeExplain, computeFlopHandEv, computeLaterExplain, computeLaterHandEv, computeLaterView } from "../src/estimated/postflop-compute.ts";
-import { flopHandEvForHand } from "../scripts/postflop-ai/flop-hand-ev-core.mjs";
+import { computeBoard, computeExplain, computeLaterExplain, computeLaterView } from "../src/estimated/postflop-compute.ts";
 import { NODES, treeNodes } from "../scripts/postflop-ai/policy.mjs";
 import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
 import { parseFlopBoard } from "../scripts/postflop-ai/model.mjs";
@@ -118,13 +116,6 @@ test("browser postflop computations match the server-side route calculations", {
       flop: board, flopActions, turn: later.turn, turnActions: "", river: "", riverActions: "", combos: JSON.stringify(laterAverageCombos) }));
     assert.equal(averageLaterRoute.status, 200);
     assertJsonEqual(expectedAverageLater, averageLaterRoute.body, `${spotId} average later route`);
-
-    const handEv = { flop: board, flopActions: flopActions.split(","), turn: "Kh", turnActions: [], river: null,
-      riverActions: [], hand: laterHand, samples: 8 };
-    const expectedHandEv = laterHandEvForHand({ ...handEv, inputs,
-      flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate.policy });
-    assertJsonEqual(computeLaterHandEv({ spotId, ...handEv, datasets, flopCandidate, laterCandidate }),
-      expectedHandEv, `${spotId} later hand EV`);
   }
 });
 
@@ -178,43 +169,7 @@ test("non-representative monotone, paired, and dry flops match the read-only loc
   }
 });
 
-test("on-demand flop hand-EV shares the saved core, has the saved row shape, and is deterministic", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {
-  const inputs = loadInputs("BTN_open_BB_call");
-  const flopCandidate = loadCandidate(inputs);
-  const laterCandidate = loadLaterCandidate(inputs, flopCandidate);
-  const request = { flop: "AsKsQs", history: [], hand: "AKo", inputs, flopPolicy: flopCandidate.policy,
-    laterPolicy: laterCandidate.policy, samples: 8 };
-  const first = flopHandEvForHand(request);
-  const second = flopHandEvForHand(request);
-  assertJsonEqual(first, second, "deterministic non-representative hand EV");
-  assert.equal(first.street, "flop");
-  assert.equal(first.node, "btn_first");
-  assert.equal(first.actor, "BTN");
-  assert.ok(first.row);
-  assert.deepEqual(Object.keys(first.row).sort(), ["eqr", "equity_pct", "ev_bb", "mix", "mix_ev_bb"]);
-  assert.deepEqual(Object.keys(first.row.ev_bb), NODES[first.node]);
-  assert.deepEqual(Object.keys(first.row.mix), NODES[first.node]);
-  assert.equal(Object.values(first.row.mix).reduce((sum, value) => sum + value, 0), 100);
-  const browser = computeFlopHandEv({ spotId: "BTN_open_BB_call", board: request.flop, history: request.history,
-    hand: request.hand, samples: request.samples, datasets, flopCandidate, laterCandidate });
-  const canonical = flopHandEvForHand({ ...request, flop: canonicalFlop(request.flop).key });
-  assertJsonEqual(browser.row, canonical.row, "browser and shared canonical flop hand EV");
-});
-
-test("exact on-demand flop hand-EV for one hand class stays below 20 seconds under the parallel test load", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {
-  const inputs = loadInputs("BTN_open_BB_call");
-  const flopCandidate = loadCandidate(inputs);
-  const laterCandidate = loadLaterCandidate(inputs, flopCandidate);
-  const started = performance.now();
-  const result = flopHandEvForHand({ flop: "As7d2c", history: [], hand: "AKo", inputs,
-    flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate.policy });
-  const elapsed = performance.now() - started;
-  assert.ok(result.row, "a valid row is produced");
-  // About 5 s isolated and cold (docs/postflop-flop-base.md); the ceiling leaves room for concurrent evaluator/board-worker tests.
-  assert.ok(elapsed < 20000, `exact one-hand flop EV took ${elapsed.toFixed(1)}ms`);
-});
-
-test("30 seeded random flops build every flop node, turn and river views, and finite flop/river EVs", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {
+test("30 seeded random flops build every flop node, turn and river views, ", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {
   const spotId = "BTN_open_BB_call";
   const inputs = loadInputs(spotId);
   const flopCandidate = loadCandidate(inputs);
@@ -245,23 +200,5 @@ test("30 seeded random flops build every flop node, turn and river views, and fi
     assert.ok(riverView.rows.length > 0);
     assert.ok(riverView.rows.every(row => Object.keys(row.mix).every(action => LATER_NODES[riverView.node].includes(action)) &&
       (!row.reachable || Math.abs(Object.values(row.mix).reduce((sum, value) => sum + value, 0) - 1) < 1e-8)), `${flop.id} river mixes`);
-
-    const flopHand = view.nodes.btn_first.rows.find(row => row.reachable)?.hand;
-    assert.ok(flopHand, `${flop.id} has a reachable flop hand`);
-    // The exact flop EV takes seconds per flop, so only the first three flops price it (the river EV below is cheap).
-    if (flopIndex < 3) {
-      const flopEv = computeFlopHandEv({ spotId, board: flop.id, history: [], hand: flopHand, datasets, flopCandidate, laterCandidate });
-      assert.ok(flopEv.row, `${flop.id} has flop EV for ${flopHand}`);
-      assert.ok(Number.isFinite(flopEv.row.equity_pct) && Number.isFinite(flopEv.row.mix_ev_bb));
-      assert.ok(Object.values(flopEv.row.ev_bb).every(Number.isFinite));
-    }
-
-    const riverHand = riverView.rows.find(row => row.reachable)?.hand;
-    assert.ok(riverHand, `${flop.id} has a reachable river hand`);
-    const riverEv = computeLaterHandEv({ spotId, flop: flop.id, flopActions: ["check"], turn, turnActions: ["check", "check"],
-      river, riverActions: [], hand: riverHand, samples: 1, datasets, flopCandidate, laterCandidate });
-    assert.ok(riverEv.row, `${flop.id} has river EV for ${riverHand}`);
-    assert.ok(Number.isFinite(riverEv.row.equity_pct) && Number.isFinite(riverEv.row.mix_ev_bb));
-    assert.ok(Object.values(riverEv.row.ev_bb).every(Number.isFinite));
   }
 });

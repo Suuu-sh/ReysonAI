@@ -1,5 +1,5 @@
 // Structured, fact-led postflop explanations. This module is pure: callers supply the selected
-// locale, policy mix, board classifier, computed defence facts, and optional hand EV (expected value when both players follow the shown strategy).
+// locale, policy mix, board classifier and computed defence facts. It never states an EV: the strategy is the answer.
 
 export type ExplanationLocale = "en" | "ja";
 type NumericMap = Record<string, number | undefined>;
@@ -12,23 +12,21 @@ type ExplanationInput = {
   tiers?: NumericMap;
   texture?: string;
   explain?: any;
-  handEv?: { ev_bb?: NumericMap } | null;
   positions?: { ip?: string; oop?: string };
 };
 export type ActionTableRow = {
   action: string; label: string; frequency: number;
-  foldShare: number | null; calledEquity: number | null; ev: number | null; best: boolean;
+  foldShare: number | null; calledEquity: number | null;
 };
 export type ActionTable = {
-  caption: string; headers: { action: string; frequency: string; folds: string; equity: string; ev: string };
-  rows: ActionTableRow[]; evPending: boolean;
+  caption: string; headers: { action: string; frequency: string; folds: string; equity: string };
+  rows: ActionTableRow[];
 };
 export type StructuredPostflopExplanation = {
   headline: string;
   facing?: { title: string; rows: TooltipLine[] };
   betting?: { title: string; role: string; reason: string; mixReason?: string; sizes: string[]; alternatives: string[]; table?: ActionTable };
   texture?: string;
-  evNote?: string;
 };
 
 const TIER_LABELS: Record<string, Record<string, string>> = {
@@ -86,20 +84,6 @@ function recommendation(actionMix: NumericMap, locale: ExplanationLocale) {
   if (!ordered.length) return [] as Array<[string, number]>;
   const prominent = ordered.filter(([, frequency]) => frequency! >= MATERIAL_MIX);
   return (prominent.length ? prominent : ordered.slice(0, 1)).map(([action, frequency]) => [action, frequency!] as [string, number]);
-}
-
-function showEvNote({ actionMix, handEv, locale }: Pick<ExplanationInput, "actionMix" | "handEv" | "locale">) {
-  const evs = handEv?.ev_bb;
-  if (!evs) return undefined;
-  const policyMain = recommendation(actionMix, locale)[0]?.[0];
-  const available = Object.entries(evs).filter(([, value]) => Number.isFinite(value)) as Array<[string, number]>;
-  if (!policyMain || !Number.isFinite(evs[policyMain])) return undefined;
-  const best = available.sort((a, b) => b[1] - a[1])[0];
-  if (!best || best[0] === policyMain || best[1] - evs[policyMain]! <= 0.3) return undefined;
-  const difference = best[1] - evs[policyMain]!;
-  return locale === "en"
-    ? `EV when both players follow the shown strategy rates ${actionLabel(best[0], locale)} ${bb(difference)} higher than the policy's main ${actionLabel(policyMain, locale)}.`
-    : `両者が表示中の戦略に従う場合のEVでは${actionLabel(best[0], locale)}が、方針の主行動${actionLabel(policyMain, locale)}より${bb(difference)}高い評価です。`;
 }
 
 function makeFacing({ locale, node, positions, hand, tiers, explain }: ExplanationInput): StructuredPostflopExplanation["facing"] {
@@ -237,79 +221,52 @@ function rangeBudgetFoldReason(facts: any, locale: ExplanationLocale): string | 
 }
 
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
-const signedBb = (value: number) => `${value > 0.05 ? "+" : ""}${value.toFixed(1)}bb`;
 
 // One row per legal action: shown frequency, how often the opponent folds, the hero's equity against the
-// part of the opponent's range that continues, and the exact hand-class EV (absent for a single combo).
-function buildActionTable({ locale, actionMix, explain, handEv }: ExplanationInput, rawEquity: number): ActionTable {
+// part of the opponent's range that continues.
+function buildActionTable({ locale, actionMix, explain }: ExplanationInput, rawEquity: number): ActionTable {
   const english = locale === "en";
-  const evs = handEv?.ev_bb;
   const bet = explain?.bet_table?.actions ?? {};
   const rows: ActionTableRow[] = Object.keys(actionMix).map(action => {
     const aggressive = isAggressive(action);
     const fold = aggressive ? explain?.actions?.[action]?.foldShare : null;
     // Folding has no showdown; calling is judged against the range that bet, the rest against the range that continues.
     const called = aggressive || action === "check" ? bet[action]?.calledEquity : action === "call" ? (explain?.defence ? rawEquity : null) : null;
-    const ev = evs?.[action];
     return { action, label: actionLabel(action, locale), frequency: fraction(actionMix[action]),
-      foldShare: finite(fold) ? fold : null, calledEquity: finite(called) ? called : null, ev: finite(ev) ? ev : null, best: false };
+      foldShare: finite(fold) ? fold : null, calledEquity: finite(called) ? called : null };
   });
-  const known = rows.filter(row => row.ev !== null);
-  const top = known.length ? known.reduce((a, b) => (b.ev as number) > (a.ev as number) ? b : a) : null;
-  if (top) top.best = true;
   return {
     caption: english ? "Each action compared" : "アクションごとの比較",
     headers: english
-      ? { action: "Action", frequency: "Shown frequency", folds: "Opponent folds", equity: "Your equity when called", ev: "EV" }
-      : { action: "アクション", frequency: "表示中の頻度", folds: "相手のフォールド", equity: "コールされた時の勝率", ev: "EV" },
-    rows, evPending: !evs,
+      ? { action: "Action", frequency: "Shown frequency", folds: "Opponent folds", equity: "Your equity when called" }
+      : { action: "アクション", frequency: "表示中の頻度", folds: "相手のフォールド", equity: "コールされた時の勝率" },
+    rows,
   };
 }
 
 function tableSentences(table: ActionTable, locale: ExplanationLocale): string[] {
   const english = locale === "en";
-  const { rows } = table;
   const lines: string[] = [];
-  const aggressive = rows.filter(row => isAggressive(row.action));
-  const played = aggressive.filter(row => row.frequency >= MATERIAL_MIX).sort((a, b) => b.frequency - a.frequency)[0];
-  const focus = played ?? [...aggressive].sort((a, b) => (b.ev ?? -Infinity) - (a.ev ?? -Infinity))[0];
-  const best = rows.find(row => row.best);
+  const aggressive = table.rows.filter(row => isAggressive(row.action));
+  const played = aggressive.filter(row => row.frequency >= MATERIAL_MIX).sort((a, b) => b.frequency - a.frequency);
+  const focus = played[0] ?? [...aggressive].sort((a, b) => b.frequency - a.frequency)[0];
   if (focus && focus.foldShare !== null) {
     const fold = pct(focus.foldShare), eq = focus.calledEquity;
     const who = eq === null ? "" : eq < 0.45 ? (english ? "is called mostly by better hands" : "コールしてくるのは主に自分より強い手です")
       : eq > 0.55 ? (english ? "is called mostly by weaker hands" : "コールしてくるのは主に自分より弱い手です")
         : (english ? "is called by hands about as strong as yours" : "コールしてくる手は自分と同じくらいの強さです");
-    const earns = focus.ev !== null ? signedBb(focus.ev) : null;
     lines.push(english
-      ? `${focus.label} gets folds ${fold} of the time${eq === null ? "" : ` and ${who} (your equity when called ${pct(eq)})`}${earns ? `, so it earns ${earns}` : ""}.`
-      : `${focus.label}は相手が${fold}フォールドします${eq === null ? "" : `。${who}（コールされた時の勝率${pct(eq)}）`}${earns ? `。EVは${earns}です` : ""}。`);
+      ? `${focus.label} gets folds ${fold} of the time${eq === null ? "" : ` and ${who} (your equity when called ${pct(eq)})`}.`
+      : `${focus.label}は相手が${fold}フォールドします${eq === null ? "" : `。${who}（コールされた時の勝率${pct(eq)}）`}。`);
   }
-  if (best && best.ev !== null) {
-    if (focus && best.action === focus.action) {
-      lines.push(english ? "That is the highest EV of your options." : "これは選択肢の中でEVが最大です。");
-    } else {
-      const checking = best.action === "check";
-      lines.push(english
-        ? `${checking ? "Checking keeps their bluffs in and earns" : `${best.label} earns`} ${signedBb(best.ev)}, the most.`
-        : checking ? `チェックなら相手のブラフが残り、EVは${signedBb(best.ev)}で最大です。` : `${best.label}のEVが${signedBb(best.ev)}で最大です。`);
-    }
-    const main = [...rows].sort((a, b) => b.frequency - a.frequency)[0];
-    const gap = main && main.ev !== null ? best.ev - main.ev : 0;
-    if (main && main.action !== best.action && gap > 0.3) {
-      const degree = gap >= 1 ? (english ? "clearly" : "明らかに") : (english ? "slightly" : "わずかに");
-      lines.push(english
-        ? `The shown strategy ${main.action === "check" ? "checks" : `mainly uses ${main.label}`} ${pct(main.frequency)}; by EV alone, ${best.label} is ${degree} better (${signedBb(gap)}).`
-        : `表示中の戦略では${main.label}が${pct(main.frequency)}で最多ですが、EVだけで見ると${best.label}のほうが${degree}高くなります（${signedBb(gap)}）。`);
-    } else {
-      const second = rows.filter(row => row.ev !== null && row.action !== best.action && row.frequency >= MATERIAL_MIX)
-        .sort((a, b) => (b.ev as number) - (a.ev as number))[0];
-      if (second && best.frequency >= MATERIAL_MIX && best.ev - (second.ev as number) <= 0.3) {
-        const diff = (best.ev - (second.ev as number)).toFixed(1);
-        lines.push(english
-          ? `${best.label} and ${second.label} differ by only ${diff}bb in EV, which is why the strategy mixes them.`
-          : `${best.label}と${second.label}はEVの差が${diff}bbしかなく、近いので戦略が混ぜて使います。`);
-      }
-    }
+  const sizes = played.filter(row => row.foldShare !== null).sort((a, b) => a.foldShare! - b.foldShare!);
+  if (sizes.length > 1) {
+    const low = sizes[0], high = sizes[sizes.length - 1];
+    const calledNote = low.calledEquity !== null && high.calledEquity !== null
+      ? (english ? `; your equity when called is ${pct(low.calledEquity)} vs ${pct(high.calledEquity)}` : `。コールされた時の勝率は${pct(low.calledEquity)}と${pct(high.calledEquity)}`) : "";
+    lines.push(english
+      ? `The strategy mixes ${low.label} (folds ${pct(low.foldShare!)}) with ${high.label} (folds ${pct(high.foldShare!)})${calledNote}.`
+      : `戦略は${low.label}（相手のフォールド${pct(low.foldShare!)}）と${high.label}（相手のフォールド${pct(high.foldShare!)}）を混ぜて使います${calledNote}。`);
   }
   return lines;
 }
@@ -410,10 +367,7 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
       sizes: tableSentences(table, locale), alternatives: [], table };
   }
   const texture = textureSentence(input.texture, locale);
-  // The betting plan's sentences already compare the EVs, so the separate EV note would repeat them.
-  const evNote = betting ? undefined : showEvNote(input);
-  return { headline, ...(facing ? { facing } : {}), ...(betting ? { betting } : {}), ...(texture ? { texture } : {}),
-    ...(evNote ? { evNote } : {}) };
+  return { headline, ...(facing ? { facing } : {}), ...(betting ? { betting } : {}), ...(texture ? { texture } : {}) };
 }
 
 export function renderExplanationPlainText(explanation: StructuredPostflopExplanation): string {
@@ -428,13 +382,12 @@ export function renderExplanationPlainText(explanation: StructuredPostflopExplan
     const table = explanation.betting.table;
     if (table) {
       const h = table.headers, cell = (value: number | null, format: (n: number) => string) => value === null ? "—" : format(value);
-      lines.push([h.action, h.frequency, h.folds, h.equity, h.ev].join(" | "));
-      for (const row of table.rows) lines.push([row.label + (row.best ? " ★" : ""), pct(row.frequency), cell(row.foldShare, pct),
-        cell(row.calledEquity, pct), cell(row.ev, signedBb)].join(" | "));
+      lines.push([h.action, h.frequency, h.folds, h.equity].join(" | "));
+      for (const row of table.rows) lines.push([row.label, pct(row.frequency), cell(row.foldShare, pct),
+        cell(row.calledEquity, pct)].join(" | "));
     }
     lines.push(...explanation.betting.sizes, ...explanation.betting.alternatives);
   }
   if (explanation.texture) lines.push(explanation.texture);
-  if (explanation.evNote) lines.push(explanation.evNote);
   return lines.join("\n");
 }
