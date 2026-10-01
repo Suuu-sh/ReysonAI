@@ -52,6 +52,9 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
 
 .shell { display: flex; min-height: 100vh; }
 .app-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
   display: flex;
   flex: 0 0 224px;
   flex-direction: column;
