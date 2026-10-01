@@ -114,7 +114,7 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions }
   const advanced = loadProfile()?.level === "advanced";
   return <div className="postflop-reasons postflop-reasons-structured">
     <GlossaryText className="postflop-reason-headline" text={plain.headline} locale={english ? "en" : "ja"} />
-    {plain.blocks.map(block => <details className="postflop-reason-section postflop-reason-action" key={block.action}>
+    {plain.blocks.map(block => <details className="postflop-reason-section postflop-reason-action" key={block.action} style={{ "--action-color": barColor(block.action) } as any}>
       <summary>
         <span className="postflop-reason-action-name"><i style={{ background: barColor(block.action) }} aria-hidden="true" />{block.label}</span>
         <span className="postflop-reason-frequency" aria-label={`${Math.round(block.frequency * 100)}%`}>
