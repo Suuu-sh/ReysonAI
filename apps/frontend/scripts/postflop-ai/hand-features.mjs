@@ -71,7 +71,11 @@ function madeHand(hole, board, cat, ctx) {
       const positions = hr.map(r => boardRanks.indexOf(r)).sort((a, b) => a - b);
       made.usesHole = 2;
       made.kind = positions[0] === 0 && positions[1] === 1 ? "topTwo" : positions[0] === 0 ? "topAndLower" : "lowerTwo";
-    } else if (holeMatches.length >= 1) { made.kind = "boardPairPlusOne"; made.usesHole = 1; }
+    } else if (holeMatches.length >= 1) {
+      made.kind = "boardPairPlusOne"; made.usesHole = 1;
+      // A lower unpaired board card means weaker two pair exists (it shares the board pair); otherwise only the board pair is below us.
+      made.hasLowerBoardCard = boardRanks.some(r => bc[r] === 1 && r < holeMatches[0]);
+    }
     else made.kind = "boardTwoPair";
   } else if (cat === 3) {
     const tr = ranksByCount(3)[0];

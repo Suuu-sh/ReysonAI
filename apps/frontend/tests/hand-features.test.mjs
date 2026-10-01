@@ -67,6 +67,10 @@ test("pair kinds, sets and two pair", () => {
   assert.equal(F("Kc9d", "Kh7s2c").made.kind, "topPair");
   assert.equal(F("7c2d", "KsKd7h").made.kind, "boardPairPlusOne");
   assert.equal(F("Ac3d", "KsKd7h").made.kind, "boardPair");
+  // Paired board (K J 9 9): a hit on the K leaves the J-9 two pair below it; a hit on the J leaves none.
+  assert.equal(F("Kc6d", "KsJd9h9s").made.kind, "boardPairPlusOne");
+  assert.equal(F("Kc6d", "KsJd9h9s").made.hasLowerBoardCard, true);
+  assert.equal(F("Jc6d", "KsJd9h9s").made.hasLowerBoardCard, false);
 });
 
 test("straight draws: open-ended, double-gutter, wheel gutshot and board-only straights", () => {

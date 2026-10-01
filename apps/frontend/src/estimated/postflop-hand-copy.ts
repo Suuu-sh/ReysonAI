@@ -126,7 +126,12 @@ export function describeHand(f: any | null, name: string, en: boolean, tier: str
     case "straight": worse = e("sets, two pair and weaker straights", "セットやツーペア、劣るストレート"); break;
     case "set": worse = w("overpairs and top pair", "overpairs, top pair and draws", "オーバーペアやトップペア", "オーバーペアやトップペア、ドロー"); break;
     case "trips": worse = w("top pair with a worse kicker", "top pair with a worse kicker and draws", "キッカーの劣るトップペア", "キッカーの劣るトップペアやドロー"); break;
-    case "topTwo": case "topAndLower": case "lowerTwo": case "pocketPlusBoardPair": case "boardPairPlusOne":
+    case "boardPairPlusOne":
+      // Higher cards that hit the board make a better two pair with the board pair, so "top pair" is not below us here.
+      worse = mk.hasLowerBoardCard
+        ? w("weaker two pair and hands with only the board pair", "weaker two pair and strong draws", "劣るツーペアやボードのペアだけの手", "劣るツーペアや強いドロー")
+        : w("hands with only the board pair", "hands with only the board pair and draws", "ボードのペアだけの手", "ボードのペアだけの手やドロー"); break;
+    case "topTwo": case "topAndLower": case "lowerTwo": case "pocketPlusBoardPair":
       worse = w("one-pair hands and weaker two pair", "top pair and strong draws", "ワンペアや劣るツーペア", "トップペアや強いドロー"); break;
     case "overpair": worse = w("top pair and underpairs", "top pair, underpairs and draws", "トップペアやアンダーペア", "トップペア、アンダーペア、ドロー"); break;
     case "topPair": worse = mk.kickerStrength === "strong"
