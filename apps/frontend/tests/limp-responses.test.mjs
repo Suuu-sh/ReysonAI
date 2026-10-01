@@ -22,7 +22,7 @@ test("SB limp response datasets contain all three 169-hand branches and configur
   for (const spot of data.spots) assert.deepEqual(spot.hands.map(row => row.hand), hands);
 });
 
-test("protected SB limps can call or reraise the iso; BB no longer value-isolates marginal broadways", () => {
+test("protected SB limps can call or reraise the iso; BB isolates marginal broadways only as a mixed fold-equity tier", () => {
   const sb = findLimpResponseSpot(data, "SB_vs_BB_iso");
   for (const hand of ["AA", "KK", "AKs"]) {
     const row = sb.hands.find(r => r.hand === hand);
@@ -30,9 +30,14 @@ test("protected SB limps can call or reraise the iso; BB no longer value-isolate
     assert.ok(row.call > 0 && row.raise > 0);
   }
   const bb = findLimpResponseSpot(data, "BB_vs_SB_limp");
-  for (const hand of ["K8s", "Q9s", "JTs", "K9o", "QJo"]) assert.equal(bb.hands.find(r => r.hand === hand).raise, 0);
+  // 2026-10-02: SB folds most of its limp range to the iso, so these hands iso
+  // partly for fold equity, but below the value tier (A8s/KQs ~65%).
+  for (const hand of ["K8s", "Q9s", "JTs", "K9o", "QJo"]) {
+    const raise = bb.hands.find(r => r.hand === hand).raise;
+    assert.ok(raise > 0 && raise <= 55, `${hand}: ${raise}`);
+  }
   const isoPct = bb.hands.reduce((sum, row) => sum + (row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12) * row.raise, 0) / 1326;
-  assert.ok(isoPct > 10 && isoPct < 25, `narrowed iso width: ${isoPct}`);
+  assert.ok(isoPct > 15 && isoPct < 30, `iso width: ${isoPct}`);
 });
 
 test("BB iso and SB limp-reraise matrices preserve combo-weighted frequencies and reachability", () => {

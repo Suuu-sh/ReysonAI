@@ -37,17 +37,19 @@ def profile(spec):
 
 
 # call%, all_in%. Coarse educational assumptions, not equilibrium outputs.
+# 2026-10-02: QQ+/AK never fold to a 4bet (call EV +5bb or more versus every
+# saved 4bet range); JJ/TT continue more often versus the tight early-seat 4bets.
 # Early openers are assumed tighter; IP hands retain more call realization.
 TIGHT_IP = profile('''
 10 90: AA
 15 85: KK
-50 35: QQ
-40 5: JJ
-25 0: TT
+60 40: QQ
+55 10: JJ
+35 0: TT
 10 0: 99
-35 60: AKs
-25 60: AKo
-40 5: AQs
+35 65: AKs
+35 65: AKo
+45 5: AQs
 20 0: AJs KQs
 10 0: ATs QJs JTs
 0 5: A5s
@@ -55,11 +57,11 @@ TIGHT_IP = profile('''
 TIGHT_OOP = profile('''
 5 95: AA
 10 90: KK
-35 40: QQ
-25 5: JJ
-10 0: TT
-25 65: AKs
-15 65: AKo
+40 60: QQ
+35 10: JJ
+15 0: TT
+30 70: AKs
+25 75: AKo
 25 5: AQs
 10 0: AJs KQs
 0 5: A5s
@@ -67,13 +69,13 @@ TIGHT_OOP = profile('''
 MID_IP = profile('''
 10 90: AA
 10 90: KK
-40 50: QQ
+45 55: QQ
 50 20: JJ
 40 5: TT
 25 0: 99
 10 0: 88
 30 70: AKs
-25 70: AKo
+30 70: AKo
 50 15: AQs
 35 5: AJs KQs
 20 0: ATs KJs QJs JTs
@@ -84,12 +86,12 @@ MID_IP = profile('''
 MID_OOP = profile('''
 5 95: AA
 10 90: KK
-30 55: QQ
+40 60: QQ
 35 20: JJ
 25 5: TT
 10 0: 99
 25 75: AKs
-15 75: AKo
+25 75: AKo
 35 15: AQs
 20 5: AJs KQs
 10 0: ATs QJs JTs
@@ -99,7 +101,7 @@ MID_OOP = profile('''
 LATE_OOP = profile('''
 5 95: AA
 5 95: KK
-25 70: QQ
+30 70: QQ
 40 40: JJ
 40 20: TT
 30 5: 99
@@ -148,7 +150,7 @@ BLINDS_IP = profile('''
 SB_VS_HJ = profile('''
 5 95: AA
 10 90: KK
-35 55: QQ
+40 60: QQ
 45 20: JJ
 40 5: TT
 25 0: 99

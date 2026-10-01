@@ -1,5 +1,5 @@
 {
-  "method": "Authored post-rake baseline as of 2026-09-24, before EQR/EV selection. Rows: [hand, call, three_bet]. Not solver output. 2026-09-25 balance revision (HJ/CO vs UTG only): AA/KK/AKs flat 10% to protect the in-position calling range, and flats that the EV gate would otherwise make 100% calls take a 5% light 3bet (call/3bet boundary mix instead of folding +EV hands). 2026-10-02 cold-call revision (HJ/CO/BTN vs UTG, CO/BTN vs HJ): re-authored as mostly 3bet-or-fold with seats behind — flats are pairs, suited broadways/aces and AQo/KQo-class offsuit hands at mixed frequencies; ATo/KJo/KTo/QJo and 22-55 mostly fold versus UTG, A5s/A4s (then A3s/A2s) are the main 3bet bluffs, A6s-A9s mostly fold versus UTG. BTN_vs_CO re-authored the same day as a wide IP flat: suited connectors/gappers T9s-76s call ~45-60% with a small 3bet share (65s/54s, whose flat is −EV under the cold-call EQR, are 25% 3bet bluffs), K7s-K2s fold or 5-15% 3bet only, 22-44 call 50-60%. Calls are then gated by call EV with COLD_CALL_SQUEEZE_EQR / COLD_CALL_OFFSUIT_EQR and fill only at +0.50bb.",
+  "method": "Authored post-rake baseline as of 2026-09-24, before EQR/EV selection. Rows: [hand, call, three_bet]. Not solver output. 2026-09-25 balance revision (HJ/CO vs UTG only): AA/KK/AKs flat 10% to protect the in-position calling range, and flats that the EV gate would otherwise make 100% calls take a 5% light 3bet (call/3bet boundary mix instead of folding +EV hands). 2026-10-02 cold-call revision (HJ/CO/BTN vs UTG, CO/BTN vs HJ): re-authored as mostly 3bet-or-fold with seats behind — flats are pairs, suited broadways/aces and AQo/KQo-class offsuit hands at mixed frequencies; ATo/KJo/KTo/QJo and 22-55 mostly fold versus UTG, A5s/A4s (then A3s/A2s) are the main 3bet bluffs, A6s-A9s mostly fold versus UTG. BTN_vs_CO re-authored the same day as a wide IP flat: suited connectors/gappers T9s-76s call ~45-60% with a small 3bet share (65s/54s, whose flat is −EV under the cold-call EQR, are 25% 3bet bluffs), K7s-K2s fold or 5-15% 3bet only, 22-44 call 50-60%. Calls are then gated by call EV with COLD_CALL_SQUEEZE_EQR / COLD_CALL_OFFSUIT_EQR and fill only at +0.50bb. 2026-10-02 premium/pair revision: SB never flats an open, so a sub-100% 3bet with AA/KK/QQ/AK was a fold — SB's premiums now 3bet 100% (QQ+/AKs vs UTG, JJ+/AQs+ vs HJ, TT+/AQs+/AKo vs CO, AKo vs BTN); HJ/CO vs UTG 66/55 smoothed (66 continues less, 55 a little more) so the pair ladder has no 40pt step.",
   "spots": {
     "HJ_vs_UTG": [
       [
@@ -564,7 +564,7 @@
       ],
       [
         "66",
-        70,
+        55,
         5
       ],
       [
@@ -634,7 +634,7 @@
       ],
       [
         "55",
-        30,
+        35,
         0
       ],
       [
@@ -1411,7 +1411,7 @@
       ],
       [
         "66",
-        75,
+        65,
         5
       ],
       [
@@ -1481,7 +1481,7 @@
       ],
       [
         "55",
-        35,
+        40,
         0
       ],
       [
@@ -2546,17 +2546,17 @@
       [
         "AA",
         0,
-        90
+        100
       ],
       [
         "AKs",
         0,
-        90
+        100
       ],
       [
         "AQs",
         0,
-        80
+        85
       ],
       [
         "AJs",
@@ -2611,12 +2611,12 @@
       [
         "AKo",
         0,
-        80
+        95
       ],
       [
         "KK",
         0,
-        90
+        100
       ],
       [
         "KQs",
@@ -2686,7 +2686,7 @@
       [
         "QQ",
         0,
-        90
+        100
       ],
       [
         "QJs",
@@ -2756,7 +2756,7 @@
       [
         "JJ",
         0,
-        85
+        95
       ],
       [
         "JTs",
@@ -5934,17 +5934,17 @@
       [
         "AA",
         0,
-        95
+        100
       ],
       [
         "AKs",
         0,
-        95
+        100
       ],
       [
         "AQs",
         0,
-        95
+        100
       ],
       [
         "AJs",
@@ -5999,12 +5999,12 @@
       [
         "AKo",
         0,
-        85
+        95
       ],
       [
         "KK",
         0,
-        95
+        100
       ],
       [
         "KQs",
@@ -6074,7 +6074,7 @@
       [
         "QQ",
         0,
-        95
+        100
       ],
       [
         "QJs",
@@ -6144,7 +6144,7 @@
       [
         "JJ",
         0,
-        95
+        100
       ],
       [
         "JTs",
@@ -8475,17 +8475,17 @@
       [
         "AA",
         0,
-        95
+        100
       ],
       [
         "AKs",
         0,
-        95
+        100
       ],
       [
         "AQs",
         0,
-        95
+        100
       ],
       [
         "AJs",
@@ -8540,12 +8540,12 @@
       [
         "AKo",
         0,
-        90
+        100
       ],
       [
         "KK",
         0,
-        95
+        100
       ],
       [
         "KQs",
@@ -8615,7 +8615,7 @@
       [
         "QQ",
         0,
-        95
+        100
       ],
       [
         "QJs",
@@ -8685,7 +8685,7 @@
       [
         "JJ",
         0,
-        95
+        100
       ],
       [
         "JTs",
@@ -8755,7 +8755,7 @@
       [
         "TT",
         0,
-        95
+        100
       ],
       [
         "T9s",
@@ -10234,7 +10234,7 @@
       [
         "AKo",
         0,
-        95
+        100
       ],
       [
         "KK",

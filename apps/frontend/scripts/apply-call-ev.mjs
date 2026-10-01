@@ -1,7 +1,7 @@
 // Generation-time selection, never a runtime strategy fallback. Only stages writes.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { callContexts, callFacts, allowedCall, targetCall, threeBetTargetCall, isOopThreeBetResponse, validCallEquities, CALL_EQUITY_VERSION, CALL_EQUITY_SAMPLES, CALL_EQUITY_SEED, OOP_THREE_BET_FILL_EV, THREE_BET_FILL_EV } from "../src/estimated/call-ev.ts";
+import { callContexts, callFacts, allowedCall, targetCall, threeBetTargetCall, isOopThreeBetResponse, validCallEquities, CALL_EQUITY_VERSION, CALL_EQUITY_SAMPLES, CALL_EQUITY_SEED, OOP_THREE_BET_FILL_EV, THREE_BET_FILL_EV, OOP_THREE_BET_FILL_RAMP, THREE_BET_FILL_RAMP } from "../src/estimated/call-ev.ts";
 import { reconcileCalls } from "./lib/call-consistency.mjs";
 import { comboCount, equityVsRange, equityVsRanges, weightedRange, seededRandom, seedFor } from "./lib/equity.mjs";
 
@@ -59,7 +59,10 @@ for (const context of contexts) {
     const fillThreeBet = weight > 0 && (coldCall || ["three_bet", "squeeze", "limp_reraise", "cold_three_bet"].includes(context.type));
     row.call = fill ? targetCall(before, facts.call_ev_bb, before + row.fold)
       : fillThreeBet ? threeBetTargetCall(before, facts.call_ev_bb, before + row.fold,
-        isOopThreeBetResponse(context) ? OOP_THREE_BET_FILL_EV : THREE_BET_FILL_EV)
+        isOopThreeBetResponse(context) ? OOP_THREE_BET_FILL_EV : THREE_BET_FILL_EV,
+        // The opener's 3bet responses and cold calls of an open ramp the fill (call-ev.ts).
+        coldCall ? THREE_BET_FILL_RAMP : context.type !== "three_bet" ? 0
+          : isOopThreeBetResponse(context) ? OOP_THREE_BET_FILL_RAMP : THREE_BET_FILL_RAMP)
       : allowedCall(before, facts.call_ev_bb);
     row.fold += before - row.call;
     afterContinue += weight * (100 - row.fold) / 100;
@@ -87,7 +90,7 @@ for (const c of contexts) {
 }
 }
 const dataset = data[Object.keys(files).find(key => files[key] === target)];
-dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls (BB's open responses). HJ/CO/BTN cold calls of an open multiply EQR by COLD_CALL_SQUEEZE_EQR (seats still to act: 2→0.94, 3→0.91, 4→0.885) and offsuit hands also by COLD_CALL_OFFSUIT_EQR 0.95; they fill only at ≥+0.50bb. Opener facing a 3bet: only calls ≥+0.50bb fill the whole non-4bet share (margin for OOP realization the assumed EQR may overstate in 3bet pots), ≥+1.50bb when the opener is out of position to the 3bettor; 4bet pots are never filled. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV.";
+dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls (BB's open responses). HJ/CO/BTN cold calls of an open multiply EQR by COLD_CALL_SQUEEZE_EQR (seats still to act: 2→0.94, 3→0.91, 4→0.885) and offsuit hands also by COLD_CALL_OFFSUIT_EQR 0.95; they fill only from +0.50bb, ramping linearly to the whole non-3bet share at +1.00bb. Opener facing a 3bet: fills start at +0.50bb and reach the whole non-4bet share at +1.00bb (margin for OOP realization the assumed EQR may overstate in 3bet pots); out of position to the 3bettor they start at +1.50bb and are complete at +3.00bb; 4bet pots are never filled. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV.";
 if (target === "limp-responses") dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. SB vs BB iso: EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; otherwise the authored call stands. BB vs SB limp-reraise (IP, 7BB into 21BB, versus SB's limp × reraise range): the same gate, and ≥+0.50bb fills the whole non-4bet share (same margin as 3bet pots). Raise/4bet frequencies unchanged; strength ceilings trim calls, and only positive-EV calls may be minimally added to keep BB's fold rate at or below SB's limp-reraise break-even. Not solver EV.";
 if (target === "limp-deep-responses") dataset.metadata.call_ev_policy = "SB vs BB's 4bet after the limp-reraise (OOP, 15.5BB into 52BB, versus BB's iso × 4bet range): fixed-seed range equity × assumed OOP EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; otherwise the authored call stands (4bet pots are never filled). All-in frequencies unchanged; strength ceilings trim calls, and only positive-EV calls may be minimally added to keep SB's fold rate at or below BB's 4bet break-even. BB's response to the all-in is computed from equity versus the saved shove range and is not EV-gated here. Not solver EV.";
 if (target === "squeeze-responses") dataset.metadata.call_ev_policy = "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost, versus the squeezer's saved squeeze range (plus the opener's squeeze-call range when the opener called). EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; ≥+0.50bb: the whole non-4bet share calls (same margin as 3bet pots). The opener facing a squeeze with the caller still behind also applies CALLER_BEHIND_EQR. 4bet frequencies unchanged; strength ceilings trim calls, and only positive-EV calls may be minimally added to keep the opener×caller fold rate at or below the squeezer's break-even. Not solver EV.";

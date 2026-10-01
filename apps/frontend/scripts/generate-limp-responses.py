@@ -64,6 +64,15 @@ def parse_profile(text, width, default=None):
 #   A3o (40%), A2o/22 (30%) become mixed isos: ace blockers and pairs versus a
 #   limp range that folds most of the time to the iso.
 # - Q6s/Q5s/K6o/K5o keep their 10% blocker probes. Total iso about 16%.
+# 2026-10-02 width revision: SB folds about 80% of its limp range to the iso
+# (reach-weighted, SB_vs_BB_iso), so a 3.5BB iso risking 2.5 to win 2 needs only
+# 55.6% folds and the old ~16% iso left the next tier of hands checking where an
+# iso earns clearly more (fold equity alone ~+1.6bb vs ~+1.0bb checking for
+# K8s/Q9s/JTs-class hands; seeded equity vs SB's limp and limp-call ranges with
+# the shared EQR). The iso extends linearly by equity versus the limp range
+# (K8s/K7s/Q9s/JTs/QJo/K9o 55%, then 45%, 35%, 25% tiers) so families stay
+# ordered; total iso about 22%. SB's call EVs versus the wider iso are then
+# re-selected by the shared EV gate.
 # This is an equity-grounded authored heuristic, not a solved strategy or a
 # claim of postflop EV.
 BB_PROFILE = parse_profile('''
@@ -73,7 +82,10 @@ BB_PROFILE = parse_profile('''
 50 50: A4o
 60 40: A3o
 70 30: A2o 22
-90 10: Q6s Q5s K6o K5o
+45 55: K8s K7s Q9s JTs QJo K9o
+55 45: Q8s QTo K6s K8o Q9o T9s J9s
+65 35: Q7s K7o K5s K4s JTo J8s
+75 25: K6o K5o Q6s Q5s J7s Q8o J9o T8s 98s
 ''', 2)
 
 # SB continuation versus BB's 3.5BB iso-raise. Each row is conditional on
@@ -87,8 +99,8 @@ SB_CALL = parse_profile('''
 25: AA KK QQ AKs AKo
 50: JJ AQs AQo
 65: TT AJs AJo KQs
-100: 99-33 ATs-A7s A5s-A2s KJs K9s-K5s QTs-Q5s JTs-J5s T9s-T5s ATo-A4o KQo-KTo QJo QTo JTo
-75: 22 A6s KTs QJs
+100: 99-33 ATs-A7s A5s-A2s KJs K9s-K5s QJs QTs-Q5s JTs-J5s T9s-T5s ATo-A4o KQo-KTo QJo QTo JTo
+75: 22 A6s KTs
 50: K4s-K2s Q4s-Q2s J4s-J2s T4s-T2s 98s 97s 87s 86s 76s 75s 65s 64s 54s 53s
 40: K9o K8o
 25: 43s 42s 32s A3o-A2o
@@ -121,6 +133,8 @@ SB_RAISE = parse_profile('''
 # 0.92), KJo/KTo, K9s and the 10% probes are -EV and fold. Value 4bets: AA 50%,
 # KK 45%, AKs 40%, QQ/AKo 20%; BB's reach-weighted fold is ~40%, below SB's
 # limp-reraise break-even.
+# 2026-10-02: with the wider iso, JJ/AQs (15%) and TT/AQo (10%) also 4bet for
+# value so the response is not almost all single-action rows (over-segregated).
 BB_VS_RERAISE = parse_profile('''
 50 50: AA
 55 45: KK
@@ -129,7 +143,10 @@ BB_VS_RERAISE = parse_profile('''
 80 20: AKo
 85 15: A5s
 90 10: A4s
-100 0: JJ-22 AQs-A6s A3s A2s KQs KJs KTs K9s QJs QTs Q6s Q5s AQo-A2o KJo KTo K6o K5o
+85 15: JJ AQs
+90 10: TT AQo
+100 0: 99-22 AJs-A6s A3s A2s KQs KJs KTs K9s QJs QTs Q6s Q5s AJo-A2o KJo KTo K6o K5o
+60 0: K8s Q9s JTs T9s QJo
 50 0: KQo
 ''', 2, default=(0, 0))
 

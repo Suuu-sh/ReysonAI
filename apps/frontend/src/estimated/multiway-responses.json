@@ -24,7 +24,7 @@
     "sizing_semantics": "スクイーズ額は追加額ではなくHeroの合計投入額。頻度0なら行のsqueeze_size_bbはnull。",
     "warning": "独立したAI推定値。レーキ環境を仮定したヒューリスティックで、ソルバー・GTO均衡・EVの厳密計算・カード除去・前段との同時均衡を保証しない。",
     "reference_note": "競合サービスのチャートや頻度は転用していない。",
-    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls (BB's open responses). HJ/CO/BTN cold calls of an open multiply EQR by COLD_CALL_SQUEEZE_EQR (seats still to act: 2→0.94, 3→0.91, 4→0.885) and offsuit hands also by COLD_CALL_OFFSUIT_EQR 0.95; they fill only at ≥+0.50bb. Opener facing a 3bet: only calls ≥+0.50bb fill the whole non-4bet share (margin for OOP realization the assumed EQR may overstate in 3bet pots), ≥+1.50bb when the opener is out of position to the 3bettor; 4bet pots are never filled. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
+    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls (BB's open responses). HJ/CO/BTN cold calls of an open multiply EQR by COLD_CALL_SQUEEZE_EQR (seats still to act: 2→0.94, 3→0.91, 4→0.885) and offsuit hands also by COLD_CALL_OFFSUIT_EQR 0.95; they fill only from +0.50bb, ramping linearly to the whole non-3bet share at +1.00bb. Opener facing a 3bet: fills start at +0.50bb and reach the whole non-4bet share at +1.00bb (margin for OOP realization the assumed EQR may overstate in 3bet pots); out of position to the 3bettor they start at +1.50bb and are complete at +3.00bb; 4bet pots are never filled. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
   },
   "spot_count": 12,
   "hand_classes_per_spot": 169,
@@ -99,8 +99,8 @@
         },
         {
           "hand": "A6s",
-          "fold": 50,
-          "call": 50,
+          "fold": 20,
+          "call": 80,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -260,8 +260,8 @@
         },
         {
           "hand": "Q9s",
-          "fold": 100,
-          "call": 0,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -330,8 +330,8 @@
         },
         {
           "hand": "QJo",
-          "fold": 40,
-          "call": 60,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -1023,8 +1023,8 @@
         },
         {
           "hand": "44",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -1316,15 +1316,15 @@
         },
         {
           "hand": "A3s",
-          "fold": 35,
-          "call": 50,
+          "fold": 10,
+          "call": 75,
           "squeeze": 15,
           "squeeze_size_bb": 13
         },
         {
           "hand": "A2s",
-          "fold": 25,
-          "call": 60,
+          "fold": 35,
+          "call": 50,
           "squeeze": 15,
           "squeeze_size_bb": 13
         },
@@ -1519,8 +1519,8 @@
         },
         {
           "hand": "KJo",
-          "fold": 50,
-          "call": 50,
+          "fold": 40,
+          "call": 60,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -1617,15 +1617,15 @@
         },
         {
           "hand": "QTo",
-          "fold": 80,
-          "call": 20,
+          "fold": 100,
+          "call": 0,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
         {
           "hand": "JTo",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -2030,8 +2030,8 @@
         },
         {
           "hand": "65s",
-          "fold": 20,
-          "call": 80,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -2491,8 +2491,8 @@
         },
         {
           "hand": "A6s",
-          "fold": 20,
-          "call": 80,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -2715,8 +2715,8 @@
         },
         {
           "hand": "KJo",
-          "fold": 50,
-          "call": 50,
+          "fold": 40,
+          "call": 60,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -2813,8 +2813,8 @@
         },
         {
           "hand": "QTo",
-          "fold": 100,
-          "call": 0,
+          "fold": 75,
+          "call": 25,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -3764,8 +3764,8 @@
         },
         {
           "hand": "K8s",
-          "fold": 10,
-          "call": 80,
+          "fold": 40,
+          "call": 50,
           "squeeze": 10,
           "squeeze_size_bb": 13
         },
@@ -4429,8 +4429,8 @@
         },
         {
           "hand": "64s",
-          "fold": 40,
-          "call": 60,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -4527,8 +4527,8 @@
         },
         {
           "hand": "53s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -4618,8 +4618,8 @@
         },
         {
           "hand": "43s",
-          "fold": 60,
-          "call": 40,
+          "fold": 100,
+          "call": 0,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -5058,8 +5058,8 @@
         },
         {
           "hand": "Q7s",
-          "fold": 100,
-          "call": 0,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -5205,15 +5205,15 @@
         },
         {
           "hand": "QTo",
-          "fold": 50,
-          "call": 50,
+          "fold": 40,
+          "call": 60,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
         {
           "hand": "JTo",
-          "fold": 50,
-          "call": 50,
+          "fold": 40,
+          "call": 60,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -5240,8 +5240,8 @@
         },
         {
           "hand": "T7s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -5723,8 +5723,8 @@
         },
         {
           "hand": "53s",
-          "fold": 50,
-          "call": 50,
+          "fold": 40,
+          "call": 60,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -6184,8 +6184,8 @@
         },
         {
           "hand": "K4s",
-          "fold": 30,
-          "call": 50,
+          "fold": 80,
+          "call": 0,
           "squeeze": 20,
           "squeeze_size_bb": 13
         },
@@ -6240,8 +6240,8 @@
         },
         {
           "hand": "Q9s",
-          "fold": 0,
-          "call": 90,
+          "fold": 40,
+          "call": 50,
           "squeeze": 10,
           "squeeze_size_bb": 13
         },
@@ -6345,8 +6345,8 @@
         },
         {
           "hand": "J7s",
-          "fold": 50,
-          "call": 50,
+          "fold": 100,
+          "call": 0,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -6408,8 +6408,8 @@
         },
         {
           "hand": "JTo",
-          "fold": 50,
-          "call": 50,
+          "fold": 40,
+          "call": 60,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -6436,8 +6436,8 @@
         },
         {
           "hand": "T7s",
-          "fold": 100,
-          "call": 0,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -6478,8 +6478,8 @@
         },
         {
           "hand": "A9o",
-          "fold": 100,
-          "call": 0,
+          "fold": 50,
+          "call": 50,
           "squeeze": 0,
           "squeeze_size_bb": null
         },
@@ -7709,8 +7709,8 @@
         },
         {
           "hand": "99",
-          "fold": 35,
-          "call": 60,
+          "fold": 45,
+          "call": 50,
           "squeeze": 5,
           "squeeze_size_bb": 13
         },
@@ -8506,8 +8506,8 @@
         },
         {
           "hand": "AKo",
-          "fold": 5,
-          "call": 25,
+          "fold": 30,
+          "call": 0,
           "squeeze": 70,
           "squeeze_size_bb": 13
         },
@@ -9632,8 +9632,8 @@
         },
         {
           "hand": "AJs",
-          "fold": 85,
-          "call": 0,
+          "fold": 35,
+          "call": 50,
           "squeeze": 15,
           "squeeze_size_bb": 13
         },
@@ -10101,8 +10101,8 @@
         },
         {
           "hand": "99",
-          "fold": 45,
-          "call": 50,
+          "fold": 25,
+          "call": 70,
           "squeeze": 5,
           "squeeze_size_bb": 13
         },
@@ -10835,8 +10835,8 @@
         },
         {
           "hand": "ATs",
-          "fold": 45,
-          "call": 45,
+          "fold": 90,
+          "call": 0,
           "squeeze": 10,
           "squeeze_size_bb": 13
         },
@@ -10912,8 +10912,8 @@
         },
         {
           "hand": "KQs",
-          "fold": 70,
-          "call": 0,
+          "fold": 30,
+          "call": 40,
           "squeeze": 30,
           "squeeze_size_bb": 13
         },
@@ -12031,8 +12031,8 @@
         },
         {
           "hand": "ATs",
-          "fold": 90,
-          "call": 0,
+          "fold": 40,
+          "call": 50,
           "squeeze": 10,
           "squeeze_size_bb": 13
         },
@@ -13304,8 +13304,8 @@
         },
         {
           "hand": "KQs",
-          "fold": 0,
-          "call": 55,
+          "fold": 5,
+          "call": 50,
           "squeeze": 45,
           "squeeze_size_bb": 13
         },

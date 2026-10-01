@@ -27,7 +27,7 @@
     "scope_note": "スクイーズ、コールド4bet、複数人応答、5bet後の応答はaction-tree.jsonの別spotとして保存。",
     "warning": "推定値。レーキ環境を仮定した上流データを参照するが、GTO・EV・相手カード除去・前段との同時均衡は保証しない。",
     "reference_note": "競合サービスのチャート・頻度は転用していない。既存コードの合法アクションと保存サイズのみを参照。",
-    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls (BB's open responses). HJ/CO/BTN cold calls of an open multiply EQR by COLD_CALL_SQUEEZE_EQR (seats still to act: 2→0.94, 3→0.91, 4→0.885) and offsuit hands also by COLD_CALL_OFFSUIT_EQR 0.95; they fill only at ≥+0.50bb. Opener facing a 3bet: only calls ≥+0.50bb fill the whole non-4bet share (margin for OOP realization the assumed EQR may overstate in 3bet pots), ≥+1.50bb when the opener is out of position to the 3bettor; 4bet pots are never filled. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
+    "call_ev_policy": "Fixed-seed range equity × assumed EQR × raked(pot after call) − call cost. EV < −0.05bb: call=0; EV < +0.05bb: call≤50%; +0.05〜0.10bb: call≥half of the non-raise share; ≥+0.10bb: all non-raise share calls (BB's open responses). HJ/CO/BTN cold calls of an open multiply EQR by COLD_CALL_SQUEEZE_EQR (seats still to act: 2→0.94, 3→0.91, 4→0.885) and offsuit hands also by COLD_CALL_OFFSUIT_EQR 0.95; they fill only from +0.50bb, ramping linearly to the whole non-3bet share at +1.00bb. Opener facing a 3bet: fills start at +0.50bb and reach the whole non-4bet share at +1.00bb (margin for OOP realization the assumed EQR may overstate in 3bet pots); out of position to the 3bettor they start at +1.50bb and are complete at +3.00bb; 4bet pots are never filled. Aggressive frequencies unchanged; strength/nesting ceilings trim calls, and only positive-EV calls may be minimally added to preserve the existing auto-profit gate. Not solver EV."
   },
   "spot_count": 15,
   "hand_classes_per_spot": 169,
@@ -56,15 +56,15 @@
         },
         {
           "hand": "AKs",
-          "fold": 5,
+          "fold": 0,
           "call": 35,
-          "all_in": 60,
+          "all_in": 65,
           "all_in_size_bb": 100
         },
         {
           "hand": "AQs",
-          "fold": 55,
-          "call": 40,
+          "fold": 50,
+          "call": 45,
           "all_in": 5,
           "all_in_size_bb": 100
         },
@@ -140,9 +140,9 @@
         },
         {
           "hand": "AKo",
-          "fold": 15,
-          "call": 25,
-          "all_in": 60,
+          "fold": 0,
+          "call": 35,
+          "all_in": 65,
           "all_in_size_bb": 100
         },
         {
@@ -245,9 +245,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 15,
-          "call": 50,
-          "all_in": 35,
+          "fold": 0,
+          "call": 60,
+          "all_in": 40,
           "all_in_size_bb": 100
         },
         {
@@ -343,9 +343,9 @@
         },
         {
           "hand": "JJ",
-          "fold": 55,
-          "call": 40,
-          "all_in": 5,
+          "fold": 35,
+          "call": 55,
+          "all_in": 10,
           "all_in_size_bb": 100
         },
         {
@@ -441,8 +441,8 @@
         },
         {
           "hand": "TT",
-          "fold": 75,
-          "call": 25,
+          "fold": 65,
+          "call": 35,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -1255,15 +1255,15 @@
         },
         {
           "hand": "AKs",
-          "fold": 5,
+          "fold": 0,
           "call": 35,
-          "all_in": 60,
+          "all_in": 65,
           "all_in_size_bb": 100
         },
         {
           "hand": "AQs",
-          "fold": 55,
-          "call": 40,
+          "fold": 50,
+          "call": 45,
           "all_in": 5,
           "all_in_size_bb": 100
         },
@@ -1339,9 +1339,9 @@
         },
         {
           "hand": "AKo",
-          "fold": 15,
-          "call": 25,
-          "all_in": 60,
+          "fold": 0,
+          "call": 35,
+          "all_in": 65,
           "all_in_size_bb": 100
         },
         {
@@ -1444,9 +1444,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 15,
-          "call": 50,
-          "all_in": 35,
+          "fold": 0,
+          "call": 60,
+          "all_in": 40,
           "all_in_size_bb": 100
         },
         {
@@ -1542,9 +1542,9 @@
         },
         {
           "hand": "JJ",
-          "fold": 55,
-          "call": 40,
-          "all_in": 5,
+          "fold": 35,
+          "call": 55,
+          "all_in": 10,
           "all_in_size_bb": 100
         },
         {
@@ -1640,8 +1640,8 @@
         },
         {
           "hand": "TT",
-          "fold": 75,
-          "call": 25,
+          "fold": 65,
+          "call": 35,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -2454,15 +2454,15 @@
         },
         {
           "hand": "AKs",
-          "fold": 5,
+          "fold": 0,
           "call": 35,
-          "all_in": 60,
+          "all_in": 65,
           "all_in_size_bb": 100
         },
         {
           "hand": "AQs",
-          "fold": 55,
-          "call": 40,
+          "fold": 50,
+          "call": 45,
           "all_in": 5,
           "all_in_size_bb": 100
         },
@@ -2538,9 +2538,9 @@
         },
         {
           "hand": "AKo",
-          "fold": 15,
-          "call": 25,
-          "all_in": 60,
+          "fold": 0,
+          "call": 35,
+          "all_in": 65,
           "all_in_size_bb": 100
         },
         {
@@ -2643,9 +2643,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 15,
-          "call": 50,
-          "all_in": 35,
+          "fold": 0,
+          "call": 60,
+          "all_in": 40,
           "all_in_size_bb": 100
         },
         {
@@ -2741,9 +2741,9 @@
         },
         {
           "hand": "JJ",
-          "fold": 55,
-          "call": 40,
-          "all_in": 5,
+          "fold": 35,
+          "call": 55,
+          "all_in": 10,
           "all_in_size_bb": 100
         },
         {
@@ -2839,8 +2839,8 @@
         },
         {
           "hand": "TT",
-          "fold": 75,
-          "call": 25,
+          "fold": 65,
+          "call": 35,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -3653,9 +3653,9 @@
         },
         {
           "hand": "AKs",
-          "fold": 10,
-          "call": 25,
-          "all_in": 65,
+          "fold": 0,
+          "call": 30,
+          "all_in": 70,
           "all_in_size_bb": 100
         },
         {
@@ -3737,9 +3737,9 @@
         },
         {
           "hand": "AKo",
-          "fold": 20,
-          "call": 15,
-          "all_in": 65,
+          "fold": 0,
+          "call": 25,
+          "all_in": 75,
           "all_in_size_bb": 100
         },
         {
@@ -3842,9 +3842,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 25,
-          "call": 35,
-          "all_in": 40,
+          "fold": 0,
+          "call": 40,
+          "all_in": 60,
           "all_in_size_bb": 100
         },
         {
@@ -3940,9 +3940,9 @@
         },
         {
           "hand": "JJ",
-          "fold": 70,
-          "call": 25,
-          "all_in": 5,
+          "fold": 55,
+          "call": 35,
+          "all_in": 10,
           "all_in_size_bb": 100
         },
         {
@@ -4038,8 +4038,8 @@
         },
         {
           "hand": "TT",
-          "fold": 90,
-          "call": 10,
+          "fold": 85,
+          "call": 15,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -4852,9 +4852,9 @@
         },
         {
           "hand": "AKs",
-          "fold": 10,
-          "call": 25,
-          "all_in": 65,
+          "fold": 0,
+          "call": 30,
+          "all_in": 70,
           "all_in_size_bb": 100
         },
         {
@@ -4936,9 +4936,9 @@
         },
         {
           "hand": "AKo",
-          "fold": 20,
-          "call": 15,
-          "all_in": 65,
+          "fold": 0,
+          "call": 25,
+          "all_in": 75,
           "all_in_size_bb": 100
         },
         {
@@ -5041,9 +5041,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 25,
-          "call": 35,
-          "all_in": 40,
+          "fold": 0,
+          "call": 40,
+          "all_in": 60,
           "all_in_size_bb": 100
         },
         {
@@ -5139,9 +5139,9 @@
         },
         {
           "hand": "JJ",
-          "fold": 70,
-          "call": 25,
-          "all_in": 5,
+          "fold": 55,
+          "call": 35,
+          "all_in": 10,
           "all_in_size_bb": 100
         },
         {
@@ -5237,8 +5237,8 @@
         },
         {
           "hand": "TT",
-          "fold": 90,
-          "call": 10,
+          "fold": 85,
+          "call": 15,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -6051,15 +6051,15 @@
         },
         {
           "hand": "AKs",
-          "fold": 5,
+          "fold": 0,
           "call": 35,
-          "all_in": 60,
+          "all_in": 65,
           "all_in_size_bb": 100
         },
         {
           "hand": "AQs",
-          "fold": 55,
-          "call": 40,
+          "fold": 50,
+          "call": 45,
           "all_in": 5,
           "all_in_size_bb": 100
         },
@@ -6135,9 +6135,9 @@
         },
         {
           "hand": "AKo",
-          "fold": 15,
-          "call": 25,
-          "all_in": 60,
+          "fold": 0,
+          "call": 35,
+          "all_in": 65,
           "all_in_size_bb": 100
         },
         {
@@ -6240,9 +6240,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 15,
-          "call": 50,
-          "all_in": 35,
+          "fold": 0,
+          "call": 60,
+          "all_in": 40,
           "all_in_size_bb": 100
         },
         {
@@ -6338,9 +6338,9 @@
         },
         {
           "hand": "JJ",
-          "fold": 55,
-          "call": 40,
-          "all_in": 5,
+          "fold": 35,
+          "call": 55,
+          "all_in": 10,
           "all_in_size_bb": 100
         },
         {
@@ -6436,8 +6436,8 @@
         },
         {
           "hand": "TT",
-          "fold": 75,
-          "call": 25,
+          "fold": 65,
+          "call": 35,
           "all_in": 0,
           "all_in_size_bb": null
         },
@@ -7334,8 +7334,8 @@
         },
         {
           "hand": "AKo",
-          "fold": 5,
-          "call": 25,
+          "fold": 0,
+          "call": 30,
           "all_in": 70,
           "all_in_size_bb": 100
         },
@@ -7439,9 +7439,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 10,
-          "call": 40,
-          "all_in": 50,
+          "fold": 0,
+          "call": 45,
+          "all_in": 55,
           "all_in_size_bb": 100
         },
         {
@@ -8638,9 +8638,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 10,
-          "call": 35,
-          "all_in": 55,
+          "fold": 0,
+          "call": 40,
+          "all_in": 60,
           "all_in_size_bb": 100
         },
         {
@@ -9732,8 +9732,8 @@
         },
         {
           "hand": "AKo",
-          "fold": 10,
-          "call": 15,
+          "fold": 0,
+          "call": 25,
           "all_in": 75,
           "all_in_size_bb": 100
         },
@@ -9837,9 +9837,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 15,
-          "call": 30,
-          "all_in": 55,
+          "fold": 0,
+          "call": 40,
+          "all_in": 60,
           "all_in_size_bb": 100
         },
         {
@@ -10931,8 +10931,8 @@
         },
         {
           "hand": "AKo",
-          "fold": 5,
-          "call": 25,
+          "fold": 0,
+          "call": 30,
           "all_in": 70,
           "all_in_size_bb": 100
         },
@@ -11036,9 +11036,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 5,
+          "fold": 0,
           "call": 45,
-          "all_in": 50,
+          "all_in": 55,
           "all_in_size_bb": 100
         },
         {
@@ -13329,8 +13329,8 @@
         },
         {
           "hand": "AKo",
-          "fold": 10,
-          "call": 15,
+          "fold": 0,
+          "call": 25,
           "all_in": 75,
           "all_in_size_bb": 100
         },
@@ -13434,9 +13434,9 @@
         },
         {
           "hand": "QQ",
-          "fold": 15,
-          "call": 30,
-          "all_in": 55,
+          "fold": 0,
+          "call": 40,
+          "all_in": 60,
           "all_in_size_bb": 100
         },
         {
@@ -15832,8 +15832,8 @@
         },
         {
           "hand": "QQ",
-          "fold": 5,
-          "call": 25,
+          "fold": 0,
+          "call": 30,
           "all_in": 70,
           "all_in_size_bb": 100
         },

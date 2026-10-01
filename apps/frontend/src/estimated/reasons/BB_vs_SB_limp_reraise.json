@@ -1,7 +1,7 @@
 {
   "spot_id": "BB_vs_SB_limp_reraise",
   "type": "limp_reraise",
-  "source_fingerprint": "bf0258b0c05f06982bba2373806ae144d289b64982e494c930ce4d0b332cbe9b",
+  "source_fingerprint": "f9bb5eb9200dd983a058b53203e00c01bf9780a5399b0325f9b3b7c76c5f4af2",
   "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
   "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
   "fact_labels": [
@@ -51,7 +51,7 @@
     "four_bet_size_bb": 26,
     "call_break_even_equity_pct": 35.1,
     "sb_reraise_range_combos": 9,
-    "bb_fold_pct": 40.5,
+    "bb_fold_pct": 53.6,
     "limp_reraise_break_even_pct": 67.9,
     "cost_to_call_bb": 7,
     "total_pot_after_call_bb": 21
@@ -158,7 +158,7 @@
       }
     },
     "AQs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率51.1%で、コールのEVは+3.20bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率51.1%で、コールのEVは+3.20bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は相手の強いハンドを22.3%ブロックできることを使って、ブラフの4bet（26BB）に回します。配分はコール 85%・4bet 15%。",
       "facts": {
         "equity_vs_limp_reraise_pct": 46.5,
         "blocked_limp_reraise_pct": 22.3,
@@ -328,53 +328,53 @@
       }
     },
     "K8s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率33.4%で、コールのEVは−0.35bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 33.4,
+        "blocked_limp_reraise_pct": 11.2,
+        "eqr": 1,
+        "realized_equity_pct": 33.358333333333334,
+        "call_ev_bb": -0.34501250000000017
       }
     },
     "K7s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率33.5%で、コールのEVは−0.31bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 33.5,
+        "blocked_limp_reraise_pct": 11.2,
+        "eqr": 1,
+        "realized_equity_pct": 33.537499999999994,
+        "call_ev_bb": -0.3092687500000011
       }
     },
     "K6s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率32.8%で、コールのEVは−0.47bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 32.8,
+        "blocked_limp_reraise_pct": 11.2,
+        "eqr": 1,
+        "realized_equity_pct": 32.75416666666667,
+        "call_ev_bb": -0.46554375000000014
       }
     },
     "K5s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率30.5%で、コールのEVは−0.91bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 30.5,
+        "blocked_limp_reraise_pct": 15.8,
+        "eqr": 1,
+        "realized_equity_pct": 30.5375,
+        "call_ev_bb": -0.9077687499999998
       }
     },
     "K4s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率29.9%で、コールのEVは−1.03bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 29.9,
+        "blocked_limp_reraise_pct": 11.6,
+        "eqr": 1,
+        "realized_equity_pct": 29.920833333333334,
+        "call_ev_bb": -1.03079375
       }
     },
     "K3s": {
@@ -398,7 +398,7 @@
       }
     },
     "AQo": {
-      "reason": "Aのブロッカーも持つ上位のオフスートAです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率46.3%で、コールのEVは+2.24bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率46.3%で、コールのEVは+2.24bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は相手の強いハンドを22.3%ブロックできることを使って、ブラフの4bet（26BB）に回します。配分はコール 90%・4bet 10%。",
       "facts": {
         "equity_vs_limp_reraise_pct": 44.1,
         "blocked_limp_reraise_pct": 22.3,
@@ -448,33 +448,33 @@
       }
     },
     "Q9s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率34.0%で、コールのEVは−0.21bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 34,
+        "blocked_limp_reraise_pct": 6.5,
+        "eqr": 1,
+        "realized_equity_pct": 34.025,
+        "call_ev_bb": -0.21201250000000016
       }
     },
     "Q8s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率33.7%で、コールのEVは−0.28bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 33.7,
+        "blocked_limp_reraise_pct": 6.5,
+        "eqr": 1,
+        "realized_equity_pct": 33.675,
+        "call_ev_bb": -0.28183749999999996
       }
     },
     "Q7s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率32.1%で、コールのEVは−0.60bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 32.1,
+        "blocked_limp_reraise_pct": 6.5,
+        "eqr": 1,
+        "realized_equity_pct": 32.1,
+        "call_ev_bb": -0.59605
       }
     },
     "Q6s": {
@@ -548,17 +548,17 @@
       }
     },
     "QJo": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率33.6%で、コールのEVは−0.31bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 32,
+        "blocked_limp_reraise_pct": 9.2,
+        "eqr": 1.05,
+        "realized_equity_pct": 33.551875,
+        "call_ev_bb": -0.3064009374999994
       }
     },
     "JJ": {
-      "reason": "強いポケットペアです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率55.8%で、コールのEVは+4.13bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
+      "reason": "強いポケットペアです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率55.8%で、コールのEVは+4.13bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は4bet（26BB）に回し、4betするレンジにも強いハンドを入れます。配分はコール 85%・4bet 15%。",
       "facts": {
         "equity_vs_limp_reraise_pct": 53.2,
         "blocked_limp_reraise_pct": 6.9,
@@ -568,43 +568,43 @@
       }
     },
     "JTs": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率39.7%で、コールのEVは+0.92bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 36.1,
+        "blocked_limp_reraise_pct": 5.6,
+        "eqr": 1.1,
+        "realized_equity_pct": 39.71,
+        "call_ev_bb": 0.9221449999999995
       }
     },
     "J9s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率37.6%で、コールのEVは+0.50bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 34.2,
+        "blocked_limp_reraise_pct": 4.7,
+        "eqr": 1.1,
+        "realized_equity_pct": 37.57875000000001,
+        "call_ev_bb": 0.4969606250000007
       }
     },
     "J8s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率34.4%で、コールのEVは−0.14bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 34.4,
+        "blocked_limp_reraise_pct": 4.7,
+        "eqr": 1,
+        "realized_equity_pct": 34.37916666666666,
+        "call_ev_bb": -0.1413562500000003
       }
     },
     "J7s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率33.0%で、コールのEVは−0.41bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 33,
+        "blocked_limp_reraise_pct": 4.7,
+        "eqr": 1,
+        "realized_equity_pct": 33.02916666666667,
+        "call_ev_bb": -0.41068125000000055
       }
     },
     "J6s": {
@@ -678,27 +678,27 @@
       }
     },
     "QTo": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率34.7%で、コールのEVは−0.08bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 33.1,
+        "blocked_limp_reraise_pct": 7.5,
+        "eqr": 1.05,
+        "realized_equity_pct": 34.706875000000004,
+        "call_ev_bb": -0.07597843749999988
       }
     },
     "JTo": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率34.3%で、コールのEVは−0.16bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 32.6,
+        "blocked_limp_reraise_pct": 5.7,
+        "eqr": 1.05,
+        "realized_equity_pct": 34.269375000000004,
+        "call_ev_bb": -0.16325968750000008
       }
     },
     "TT": {
-      "reason": "強いポケットペアです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率53.2%で、コールのEVは+3.62bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
+      "reason": "強いポケットペアです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率53.2%で、コールのEVは+3.62bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は4bet（26BB）に回し、4betするレンジにも強いハンドを入れます。配分はコール 90%・4bet 10%。",
       "facts": {
         "equity_vs_limp_reraise_pct": 50.7,
         "blocked_limp_reraise_pct": 3.6,
@@ -708,23 +708,23 @@
       }
     },
     "T9s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率39.9%で、コールのEVは+0.97bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 36.3,
+        "blocked_limp_reraise_pct": 2.9,
+        "eqr": 1.1,
+        "realized_equity_pct": 39.92541666666667,
+        "call_ev_bb": 0.965120625
       }
     },
     "T8s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率38.5%で、コールのEVは+0.68bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 35,
+        "blocked_limp_reraise_pct": 2.9,
+        "eqr": 1.1,
+        "realized_equity_pct": 38.51375000000001,
+        "call_ev_bb": 0.6834931250000009
       }
     },
     "T7s": {
@@ -798,33 +798,33 @@
       }
     },
     "K9o": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率28.5%で、コールのEVは−1.32bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 30.9,
+        "blocked_limp_reraise_pct": 11.2,
+        "eqr": 0.92,
+        "realized_equity_pct": 28.470166666666668,
+        "call_ev_bb": -1.3202017499999998
       }
     },
     "Q9o": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率28.2%で、コールのEVは−1.37bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 30.7,
+        "blocked_limp_reraise_pct": 6.5,
+        "eqr": 0.92,
+        "realized_equity_pct": 28.240166666666667,
+        "call_ev_bb": -1.36608675
       }
     },
     "J9o": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率28.1%で、コールのEVは−1.39bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 30.6,
+        "blocked_limp_reraise_pct": 4.7,
+        "eqr": 0.92,
+        "realized_equity_pct": 28.109833333333334,
+        "call_ev_bb": -1.3920882500000005
       }
     },
     "T9o": {
@@ -838,13 +838,13 @@
       }
     },
     "98s": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率38.5%で、コールのEVは+0.68bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 35,
+        "blocked_limp_reraise_pct": 1.9,
+        "eqr": 1.1,
+        "realized_equity_pct": 38.490833333333335,
+        "call_ev_bb": 0.6789212500000001
       }
     },
     "97s": {
@@ -918,23 +918,23 @@
       }
     },
     "K8o": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率27.1%で、コールのEVは−1.59bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 29.5,
+        "blocked_limp_reraise_pct": 11.2,
+        "eqr": 0.92,
+        "realized_equity_pct": 27.139999999999997,
+        "call_ev_bb": -1.5855700000000006
       }
     },
     "Q8o": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率27.2%で、コールのEVは−1.56bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 29.6,
+        "blocked_limp_reraise_pct": 6.5,
+        "eqr": 0.92,
+        "realized_equity_pct": 27.247333333333334,
+        "call_ev_bb": -1.5641569999999998
       }
     },
     "J8o": {
@@ -1038,13 +1038,13 @@
       }
     },
     "K7o": {
-      "reason": "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。SBはリンプしてからアイソレイズにリレイズしているため、強いハンドと一部のブロッカー付きブラフに絞られています。BBはIPで、コールは7BBを払って21BBのポットに参加します。仮定のEQRを加味した実現後の勝率27.3%で、コールのEVは−1.55bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
-        "equity_vs_limp_reraise_pct": null,
-        "blocked_limp_reraise_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_vs_limp_reraise_pct": 29.7,
+        "blocked_limp_reraise_pct": 11.2,
+        "eqr": 0.92,
+        "realized_equity_pct": 27.335499999999996,
+        "call_ev_bb": -1.5465677500000012
       }
     },
     "Q7o": {

@@ -296,12 +296,20 @@ test("generation fills clearly positive-EV calls without touching raises", async
   assert.throws(() => targetCall(50, 0.2, 40));
 });
 
-test("3bet, squeeze and cold-3bet pots fill only calls of +0.50bb or better, never touching 4bets", async () => {
-  const { threeBetTargetCall, THREE_BET_FILL_EV, OOP_THREE_BET_FILL_EV, isOopThreeBetResponse } = await import("../src/estimated/call-ev.ts");
+test("3bet, squeeze and cold-3bet pots fill only calls of +0.50bb or better (opener responses ramp), never touching 4bets", async () => {
+  const { threeBetTargetCall, THREE_BET_FILL_EV, OOP_THREE_BET_FILL_EV, THREE_BET_FILL_RAMP, OOP_THREE_BET_FILL_RAMP, isOopThreeBetResponse } = await import("../src/estimated/call-ev.ts");
   assert.equal(THREE_BET_FILL_EV, 0.5);
   assert.equal(OOP_THREE_BET_FILL_EV, 1.5);
+  assert.equal(THREE_BET_FILL_RAMP, 0.5);
+  assert.equal(OOP_THREE_BET_FILL_RAMP, 1.5);
   assert.equal(threeBetTargetCall(40, 1.2, 100, OOP_THREE_BET_FILL_EV), 40);
   assert.equal(threeBetTargetCall(40, 1.5, 100, OOP_THREE_BET_FILL_EV), 100);
+  // The opener's 3bet responses (and cold calls) ramp from the threshold to threshold + ramp.
+  assert.equal(threeBetTargetCall(40, 1.5, 100, OOP_THREE_BET_FILL_EV, OOP_THREE_BET_FILL_RAMP), 40);
+  assert.equal(threeBetTargetCall(40, 2.25, 100, OOP_THREE_BET_FILL_EV, OOP_THREE_BET_FILL_RAMP), 70);
+  assert.equal(threeBetTargetCall(40, 3.0, 100, OOP_THREE_BET_FILL_EV, OOP_THREE_BET_FILL_RAMP), 100);
+  assert.equal(threeBetTargetCall(60, 0.75, 95, THREE_BET_FILL_EV, THREE_BET_FILL_RAMP), 80);
+  assert.equal(threeBetTargetCall(60, 0.4, 95, THREE_BET_FILL_EV, THREE_BET_FILL_RAMP), 60);
   assert.equal(threeBetTargetCall(60, 0.5, 95), 95);
   assert.equal(threeBetTargetCall(60, 0.49, 95), 60);
   assert.equal(threeBetTargetCall(60, 0.0, 95), 50);
@@ -311,7 +319,9 @@ test("3bet, squeeze and cold-3bet pots fill only calls of +0.50bb or better, nev
   for (const c of callContexts(data).filter(c => ["three_bet", "squeeze", "cold_three_bet"].includes(c.type))) for (const row of c.spot.hands) {
     if (c.reach(row.hand) <= 0) continue;
     const ev = callFacts(c, row.hand, equities.spots[c.spot.id].equities[row.hand]).call_ev_bb;
-    if (ev >= (isOopThreeBetResponse(c) ? OOP_THREE_BET_FILL_EV : THREE_BET_FILL_EV)) assert.equal(row.fold, 0, `${c.spot.id}/${row.hand}: ${ev}`);
+    const full = c.type !== "three_bet" ? THREE_BET_FILL_EV
+      : isOopThreeBetResponse(c) ? OOP_THREE_BET_FILL_EV + OOP_THREE_BET_FILL_RAMP : THREE_BET_FILL_EV + THREE_BET_FILL_RAMP;
+    if (ev >= full) assert.equal(row.fold, 0, `${c.spot.id}/${row.hand}: ${ev}`);
   }
   // Out of position to the 3bettor, small pairs are not filled: 22-55 stay mostly fold.
   const oop = callContexts(data).filter(isOopThreeBetResponse);

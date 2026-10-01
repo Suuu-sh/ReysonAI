@@ -198,9 +198,20 @@ export const THREE_BET_FILL_EV = 0.5;
 // below it (e.g. 22-55 mostly fold, 66-99 mixed).
 export const OOP_THREE_BET_FILL_EV = 1.5;
 export const isOopThreeBetResponse = context => context.type === "three_bet" && context.spot.hero_position_vs_three_bettor === "OOP";
-export function threeBetTargetCall(call, ev, available, threshold = THREE_BET_FILL_EV) {
+// 2026-10-02: the opener's 3bet responses ramp the fill instead of jumping to
+// 100% at the threshold: the margin exists because the true EV is uncertain, so
+// a hand just past it (e.g. 66 at +1.52bb OOP) moves only a little toward the
+// full non-4bet share, which it reaches at threshold + ramp (IP +1.00bb, OOP
+// +3.00bb). HJ/CO/BTN cold calls of an open use the IP ramp too (+0.50 → +1.00bb).
+// Squeeze / limp-reraise / cold-3bet pots keep the plain step.
+export const THREE_BET_FILL_RAMP = 0.5;
+export const OOP_THREE_BET_FILL_RAMP = 1.5;
+export function threeBetTargetCall(call, ev, available, threshold = THREE_BET_FILL_EV, ramp = 0) {
   if (!Number.isFinite(available) || available < call) throw new Error("Invalid available call share");
-  return ev >= threshold ? available : allowedCall(call, ev);
+  if (ev < threshold) return allowedCall(call, ev);
+  const share = ramp > 0 ? Math.min(1, (ev - threshold) / ramp) : 1;
+  if (share >= 1) return available;
+  return Math.min(available, Math.max(call, Math.round((call + (available - call) * share) / 5) * 5));
 }
 
 // Pairs of reachable hands [stronger, weaker] whose continuation the audit's

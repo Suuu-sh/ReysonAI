@@ -1,7 +1,7 @@
 {
   "spot_id": "BTN_vs_SB_squeeze_HJcall",
   "type": "squeeze",
-  "source_fingerprint": "bf0258b0c05f06982bba2373806ae144d289b64982e494c930ce4d0b332cbe9b",
+  "source_fingerprint": "f9bb5eb9200dd983a058b53203e00c01bf9780a5399b0325f9b3b7c76c5f4af2",
   "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
   "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
   "fact_labels": [
@@ -49,8 +49,8 @@
     "call_break_even_equity_pct": 27.6,
     "squeeze_range_combos": 48,
     "opener_fold_pct": 81.5,
-    "caller_fold_after_opener_fold_pct": 54.3,
-    "fold_to_squeeze_pct": 44.3,
+    "caller_fold_after_opener_fold_pct": 52.9,
+    "fold_to_squeeze_pct": 43.1,
     "squeeze_break_even_pct": 65.8,
     "opener_call_range_combos": 32,
     "cost_to_call_bb": 10.5,

@@ -32,8 +32,8 @@ def profile(text, base=None):
 TIGHT_OOP = profile('''
 0 100: AA KK
 65 35: QQ
-75 10: JJ
-60 5: TT
+85 10: JJ
+80 5: TT
 60 0: 99
 50 0: 88
 45 0: 77
@@ -43,8 +43,8 @@ TIGHT_OOP = profile('''
 25 0: 33
 20 0: 22
 30 70: AKs
-35 60: AKo
-65 20: AQs
+40 60: AKo
+75 20: AQs
 65 5: AJs
 55 5: KQs
 40 0: ATs
@@ -201,15 +201,11 @@ LOOSE_IP = profile('''
 PROFILES = {
     ('UTG', 'HJ'): TIGHT_OOP,
     ('UTG', 'CO'): profile('''
-80 10: JJ
-65 5: TT
 65 0: 99
 40 20: AQo
 15 25: A5s
 ''', TIGHT_OOP),
     ('UTG', 'BTN'): profile('''
-80 10: JJ
-70 5: TT
 70 0: 99
 55 0: 88
 50 0: 77
@@ -221,10 +217,14 @@ PROFILES = {
 30 0: KTs QTs T9s 98s
 15 30: A5s
 ''', TIGHT_OOP),
-    ('UTG', 'SB'): TIGHT_IP,
+    ('UTG', 'SB'): profile('''
+70 0: 99
+35 0: 88
+0 0: 77 66
+''', TIGHT_IP),
     ('UTG', 'BB'): profile('''
 80 5: TT
-65 0: 99
+70 0: 99
 50 0: 88
 25 30: A5s
 ''', TIGHT_IP),
@@ -241,15 +241,29 @@ PROFILES = {
 30 0: 22
 20 40: A5s
 ''', MID_OOP),
-    ('HJ', 'SB'): MID_IP,
+    ('HJ', 'SB'): profile('''
+75 0: 77
+70 0: 66
+65 0: 55
+45 0: 44
+40 0: 33
+65 5: QJs JTs
+60 0: KTs
+40 0: QTs
+''', MID_IP),
     ('HJ', 'BB'): profile('''
 75 15: TT
 75 5: 99
 70 0: 88
+65 0: 77
+60 0: 66
+45 0: 55
 35 40: A5s
 ''', MID_IP),
     ('CO', 'BTN'): LOOSE_OOP,
     ('CO', 'SB'): profile('''
+50 0: 33
+40 0: 22
 45 55: QQ
 65 35: JJ
 60 40: AQs
@@ -260,6 +274,9 @@ PROFILES = {
 60 40: JJ
 70 20: TT
 70 10: 99
+55 0: 44
+50 0: 33
+40 0: 22
 50 45: AQs
 45 35: AQo
 ''', MID_IP),
@@ -275,6 +292,8 @@ PROFILES = {
 45 55: AQs
 55 40: AQo
 40 50: A5s
+45 10: KTo
+55 5: 98s
 ''', LOOSE_IP),
     ('SB', 'BB'): profile('''
 60 35: JJ
@@ -289,7 +308,8 @@ PROFILES = {
 30 0: 22
 70 25: AJs KQs
 80 15: ATs KJs
-90 5: QJs JTs
+90 5: QJs
+60 5: JTs
 80 5: KTs QTs T9s 98s
 65 5: A9s A8s J9s 87s 76s 65s 54s
 45 0: A7s A6s K9s Q9s T8s 97s 86s
@@ -306,26 +326,11 @@ PROFILES = {
 }
 
 
-# 2026-09-25 review fix: a pocket pair must not fold more often than a reachable
-# broadway hand (both ranks T+) that calls and has lower equity AND lower call
-# EV versus the same 3bet range (call-equities.json, assumed EQR). The shared EV
-# step (apply-call-ev.mjs) already fills every call of +0.50bb or better in 3bet
-# pots, so only pairs between +0.05 and +0.50bb are listed here. Pairs below
-# +0.05bb are never raised (no new negative or boundary calls), 4bet
-# frequencies are unchanged, and a stronger pair keeps at least a weaker pair's
-# continuation (HJ vs BB: 77 matches the filled 66). UTG vs HJ/CO keep TT fold
-# <=10, 99 <=30, 88 <=45, 77 <=55. Values are (call, four_bet); fold is the rest.
-# 2026-10-02: when the opener is OOP to the 3bettor only +1.50bb fills
-# (OOP_THREE_BET_FILL_EV), so the OOP spots (UTG/HJ/CO vs a later non-blind seat,
-# SB vs BB) no longer take pair revisions: their profiles author a monotone pair
-# ladder instead (22-55 call 20-45%, 66-99 mixed 40-70%), smoothly from 99 to 22.
-PAIR_REVISIONS = {
-    ('UTG', 'SB'): {'66': (55, 0)},
-    ('UTG', 'BB'): {'99': (70, 0)},
-    ('HJ', 'SB'): {'44': (95, 0), '33': (95, 0)},
-    ('HJ', 'BB'): {'77': (100, 0), '55': (55, 0)},
-    ('CO', 'BB'): {'33': (80, 0), '22': (55, 0)},
-}
+# Pair ladders are authored in the profiles above. Until 2026-10-02 the IP spots
+# took PAIR_REVISIONS on top of a +0.50bb step fill (pairs just past it jumped to
+# 100% next to authored 30-50% neighbours); the fill now ramps (call-ev.ts
+# THREE_BET_FILL_RAMP / OOP_THREE_BET_FILL_RAMP), so each profile authors a
+# smooth ladder from 22 up instead, and stronger pairs fill gradually with EV.
 
 
 def main():
@@ -357,7 +362,7 @@ def main():
         assert size < four_size < 100
         rows = []
         for hand in HANDS:
-            call, four = PAIR_REVISIONS.get((hero, bettor), {}).get(hand, PROFILES[hero, bettor][hand])
+            call, four = PROFILES[hero, bettor][hand]
             if opening_by_hero[hero][hand] == 0:
                 call, four = 0, 0
             rows.append({'hand': hand, 'fold': 100-call-four, 'call': call, 'four_bet': four,
