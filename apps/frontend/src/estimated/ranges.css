@@ -380,7 +380,11 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
   .settings-toggle svg { display: block; color: var(--text-muted); }
   .settings-body { display: none; }
   .action-seat-info.is-open .settings-backdrop { display: block; position: fixed; inset: 0; z-index: 40; border: 0; background: rgba(0, 0, 0, .5); }
-  .action-seat-info.is-open .settings-body { display: flex; position: fixed; top: 72px; left: 16px; right: 16px; z-index: 41; padding: 14px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface-raised); box-shadow: 0 12px 32px rgba(0, 0, 0, .5); }
+  .action-seat-info.is-open .settings-body { display: flex; position: fixed; top: 64px; left: 16px; z-index: 41; width: min(240px, calc(100vw - 32px)); gap: 8px; padding: 10px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface-raised); box-shadow: 0 12px 32px rgba(0, 0, 0, .5); }
+  .action-seat-info.is-open .settings-body ul { padding-left: 16px; font-size: 12px; line-height: 1.5; }
+  .action-seat-info.is-open .display-mode-toggle button { padding: 4px 6px; font-size: 12px; }
+  .action-seat-info.is-open .settings-change-button { height: 26px; padding: 0 10px; font-size: 12px; }
+  .action-seat-info.is-open .settings-body .settings-icon-button { flex-basis: 26px; width: 26px; height: 26px; }
 }
 
 .estimate-settings { animation-fill-mode: backwards; }
