@@ -335,3 +335,15 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .postflop-term:focus-visible { outline: 2px solid var(--accent-bright, #ff7fbf); outline-offset: 1px; }
 .postflop-term-definition { margin: 6px 0 0; padding: 7px 9px; border-left: 2px solid var(--accent, #e0559a); border-radius: 4px; background: var(--surface-raised, rgba(255,255,255,.04)); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 .postflop-term-definition strong { color: var(--text); }
+
+.settings-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: default; pointer-events: none; }
+.settings-toggle svg { display: none; }
+.settings-body { display: flex; flex-direction: column; gap: 6px; }
+@media (max-width: 760px) {
+  .action-seat-info { flex-basis: 150px; }
+  .settings-toggle { cursor: pointer; pointer-events: auto; }
+  .settings-toggle svg { display: block; color: var(--text-muted); transition: transform .15s; }
+  .action-seat-info.is-open .settings-toggle svg { transform: rotate(180deg); }
+  .action-seat-info:not(.is-open) .settings-body { display: none; }
+  .action-seat-info.is-open { flex-basis: 188px; }
+}

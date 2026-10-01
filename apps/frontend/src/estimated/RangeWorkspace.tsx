@@ -24,7 +24,7 @@ import {
   rangeTypes,
   validateDataset,
 } from "./ranges.ts";
-import { ArrowCounterClockwise, PencilSimple } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, CaretDown, PencilSimple } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
 import { nextPendingStreetCardDialog } from "./street-card-dialog-state.ts";
@@ -515,6 +515,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
 }
 
 export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }) {
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [showFlop, setShowFlop] = useState(false);
   const [flopDialogOpen, setFlopDialogOpen] = useState(false);
   const [streetCardDialog, setStreetCardDialog] = useState(null);
@@ -972,16 +973,16 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     <main>
       <Panel className="estimate-settings">
         <ActionPath
-          leading={<div className="action-seat action-seat-info">
+          leading={<div className={`action-seat action-seat-info${settingsOpen ? " is-open" : ""}`}>
             <div className="action-seat-heading">
-              <strong>推定レンジ</strong>
+              <button type="button" className="settings-toggle" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><strong>推定レンジ</strong><CaretDown size={12} aria-hidden="true" /></button>
               <div className="settings-actions">
                 <button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を編集" title="ゲーム設定を編集" onClick={() => setFormatOpen(true)}><PencilSimple size={14} aria-hidden="true" /></button>
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
               </div>
             </div>
-            <ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)} · レーキ {formatLabel("rake", format.rake)}</li>{!isDefaultProfile(tableProfile) && <li className="table-profile-summary">卓: {describeProfile(tableProfile)}</li>}</ul>
-            <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
+            <div className="settings-body"><ul><li>{formatLabel("game", format.game)} · {formatLabel("table", format.table)} · {formatLabel("stack", format.stack)}</li><li>Open {formatLabel("openSize", format.openSize)} · レーキ {formatLabel("rake", format.rake)}</li>{!isDefaultProfile(tableProfile) && <li className="table-profile-summary">卓: {describeProfile(tableProfile)}</li>}</ul>
+            <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div></div>
           </div>}
           expanded
           blocks={combinedBlocks}
