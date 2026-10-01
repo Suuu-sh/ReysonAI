@@ -160,7 +160,7 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
   return { title: english ? "Facing this bet" : "このベットへの対応", rows };
 }
 
-function handRole(equity: number, tiers: NumericMap | undefined, main: string) {
+export function handRole(equity: number, tiers: NumericMap | undefined, main: string) {
   const tier = Object.entries(tiers ?? {}).sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))[0]?.[0] ?? "air";
   if (!isAggressive(main)) return "pot-control";
   // A draw bets for fold equity plus its outs, even near 50% equity against the whole range.

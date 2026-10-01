@@ -4,6 +4,8 @@ import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../com
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { tierLabels } from "./postflop-reasons.ts";
 import { buildPostflopExplanation } from "./postflop-explanation.ts";
+import { buildBeginnerExplanation } from "./postflop-beginner.ts";
+import { loadProfile } from "../profile.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterView } from "./postflop-compute.ts";
@@ -106,7 +108,18 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions }
   const explanation = buildPostflopExplanation({ locale: english ? "en" : "ja", node,
     hand: hand.hand, actionMix: hand.actions, tiers: hand.tiers, texture, explain,
     positions });
+  const plain = buildBeginnerExplanation({ locale: english ? "en" : "ja", node, hand: hand.hand, actionMix: hand.actions,
+    tiers: hand.tiers, texture, explain, positions });
+  const advanced = loadProfile()?.level === "advanced";
   return <div className="postflop-reasons postflop-reasons-structured">
+    <p className="postflop-reason-headline">{plain.headline}</p>
+    {plain.blocks.map(block => <section className="postflop-reason-section" key={block.action}>
+      <h4><i style={{ background: barColor(block.action) }} aria-hidden="true" /> {block.label}{block.frequency > 0 ? ` · ${Math.round(block.frequency * 100)}%` : ""}</h4>
+      <p>{block.text}</p>
+    </section>)}
+    {plain.texture && <p className="postflop-reason-texture">{plain.texture}</p>}
+    {advanced && <details className="postflop-reason-section postflop-detailed-numbers">
+      <summary>{english ? "Detailed numbers" : "詳しい数字"}</summary>
     <p className="postflop-reason-headline">{explanation.headline}</p>
     {explanation.facing && <section className="postflop-reason-section">
       <h4>{explanation.facing.title}</h4>
@@ -122,9 +135,10 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions }
       {explanation.betting.sizes.length > 0 && <ul>{explanation.betting.sizes.map((line, index) => <li key={`size-${index}`}>{line}</li>)}</ul>}
       {explanation.betting.alternatives.length > 0 && <ul>{explanation.betting.alternatives.map((line, index) => <li key={`alt-${index}`}>{line}</li>)}</ul>}
     </section>}
-    {explanation.texture && <p className="postflop-reason-texture">{explanation.texture}</p>}
+      {explanation.texture && <p className="postflop-reason-texture">{explanation.texture}</p>}
+    </details>}
     {loading && <small className="postflop-reason-general">{english ? "Loading explanation…" : "説明を計算中…"}</small>}
-    {error && <small className="postflop-reason-general">{english ? "Numeric explanation is unavailable." : "数値の説明を読み込めませんでした。"}</small>}
+    {error && <small className="postflop-reason-general">{english ? "Part of the explanation is unavailable." : "説明の一部を読み込めませんでした。"}</small>}
   </div>;
 }
 
