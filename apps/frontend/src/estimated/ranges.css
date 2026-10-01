@@ -61,7 +61,11 @@
 .ai-reason { margin: 0 0 14px; padding: 10px 12px; border-left: 2px solid var(--accent); border-radius: 0 6px 6px 0; background: var(--surface-raised); }
 .ai-reason span { color: var(--accent-soft); font-size: 11px; font-weight: 600; }
 .ai-reason p { margin: 4px 0 0; font-size: 13px; line-height: 1.7; }
-.action-seat-info { position: sticky; left: 0; z-index: 2; flex: 0 0 188px; display: flex; flex-direction: column; gap: 6px; background: var(--surface-raised); box-shadow: 8px 0 12px -6px var(--surface); }
+.action-seat-info { position: sticky; left: 0; z-index: 2; flex: 0 0 188px; display: flex; flex-direction: column; gap: 6px; border-color: var(--surface-raised); background: var(--surface-raised); box-shadow: 6px 0 0 0 var(--surface), 14px 0 12px -6px var(--surface); }
+/* Cover the strip of the scroller above, below and left of the sticky block so scrolled seat cards
+   (and their highlighted borders) never show around it. */
+.action-seat-info::before { content: ""; position: absolute; inset: -8px -6px -8px -8px; z-index: -2; background: var(--surface); }
+.action-seat-info::after { content: ""; position: absolute; inset: -1px; z-index: -1; border-radius: 8px; background: var(--surface-raised); }
 .action-seat-info .action-seat-heading span { color: var(--text-muted); }
 .action-seat-info ul { margin: 0; padding: 0 6px 0 22px; color: var(--text-muted); font-size: 12px; line-height: 1.6; }
 .action-seat-info .display-mode-toggle { background: var(--surface); }
