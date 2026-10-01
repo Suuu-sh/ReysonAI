@@ -131,8 +131,8 @@ test("new local later endpoints preserve GET-only and localhost restrictions", (
 test("later hand-EV lookup returns null for a policy/hash mismatch", () => {
   const candidate = { metadata: { policy_hash: "flop-policy" } };
   const laterCandidate = { policy: { version: 1, rules: [] } };
-  const artifact = { kind: "ai_estimate_not_gto", version: 1, source_hash: inputs.fingerprint,
-    policy_hash: candidate.metadata.policy_hash, later_policy_hash: sha(laterCandidate.policy), samples: 20, seed: config.seed, boards: {} };
+  const artifact = { kind: "ai_estimate_not_gto", version: 2, source_hash: inputs.fingerprint,
+    policy_hash: candidate.metadata.policy_hash, later_policy_hash: sha(laterCandidate.policy), method: "exact_expectation", seed: config.seed, boards: {} };
   try {
     useArtifactSource({ ranges: {}, artifact: () => artifact });
     assert.equal(loadLaterHandEv(inputs, candidate, laterCandidate), artifact);

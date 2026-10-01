@@ -64,7 +64,7 @@ export async function routePostflop(db: D1Database | undefined, path: string, pa
     if (hand == null) return { status: 200, text: `{"spot":${JSON.stringify(spotId)},"header":${header.payload_json},"node":${node.payload_json}}` };
     const meta = JSON.parse(header.payload_json), data = JSON.parse(node.payload_json);
     return { status: 200, body: { spot: spotId, board, history, node: data.node, actor: data.actor, pot_bb: data.pot_bb, hand,
-      row: data.rows?.[hand] ?? null, samples: meta.samples_per_hand_action, note: meta.note } };
+      row: data.rows?.[hand] ?? null, method: meta.method, note: meta.note } };
   }
   return { status: 404, body: { error: "not found" } };
 }

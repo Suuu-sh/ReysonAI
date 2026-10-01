@@ -10,7 +10,7 @@ import { flopUiFacts } from "../scripts/postflop-ai/flop-ui-facts.mjs";
 import { canonicalFlop } from "../scripts/postflop-ai/flop-isomorphism.mjs";
 import { laterHandEvForHand } from "../scripts/postflop-ai/later-hand-ev.mjs";
 import { computeBoard, computeExplain, computeFlopHandEv, computeLaterExplain, computeLaterHandEv, computeLaterView } from "../src/estimated/postflop-compute.ts";
-import { FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, flopHandEvForHand } from "../scripts/postflop-ai/flop-hand-ev-core.mjs";
+import { flopHandEvForHand } from "../scripts/postflop-ai/flop-hand-ev-core.mjs";
 import { NODES, treeNodes } from "../scripts/postflop-ai/policy.mjs";
 import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
 import { parseFlopBoard } from "../scripts/postflop-ai/model.mjs";
@@ -195,7 +195,7 @@ test("on-demand flop hand-EV shares the saved core, has the saved row shape, and
   assertJsonEqual(browser.row, canonical.row, "browser and shared canonical flop hand EV");
 });
 
-test("600-sample on-demand flop hand-EV stays below 4.5 seconds under the parallel test load", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {
+test("exact on-demand flop hand-EV for one hand class stays below 20 seconds under the parallel test load", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {
   const inputs = loadInputs("BTN_open_BB_call");
   const flopCandidate = loadCandidate(inputs);
   const laterCandidate = loadLaterCandidate(inputs, flopCandidate);
@@ -204,9 +204,8 @@ test("600-sample on-demand flop hand-EV stays below 4.5 seconds under the parall
     flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate.policy });
   const elapsed = performance.now() - started;
   assert.ok(result.row, "a valid row is produced");
-  // Three times the isolated 1.5s budget accommodates concurrent evaluator/board-worker tests.
-  assert.ok(elapsed < 4500, `600-sample one-hand estimate took ${elapsed.toFixed(1)}ms`);
-  assert.equal(FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, 600);
+  // About 5 s isolated and cold (docs/postflop-flop-base.md); the ceiling leaves room for concurrent evaluator/board-worker tests.
+  assert.ok(elapsed < 20000, `exact one-hand flop EV took ${elapsed.toFixed(1)}ms`);
 });
 
 test("30 seeded random flops build every flop node, turn and river views, and finite flop/river EVs", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {
@@ -218,7 +217,7 @@ test("30 seeded random flops build every flop node, turn and river views, and fi
   const flops = Array.from({ length: 30 }, () => randomFlop(random));
   assert.equal(new Set(flops.map(board => board.id)).size, 30, "all 30 seeded flops are distinct");
 
-  for (const flop of flops) {
+  for (const [flopIndex, flop] of flops.entries()) {
     const view = computeBoard({ spotId, board: flop.id, datasets, flopCandidate });
     assert.equal(Object.keys(view.nodes).length, treeNodes(inputs.spot.tree).length, `${flop.id} covers every flop node for ${inputs.spot.tree}`);
     assertViewMixes(view, NODES, `${flop.id} flop`);
@@ -243,11 +242,13 @@ test("30 seeded random flops build every flop node, turn and river views, and fi
 
     const flopHand = view.nodes.btn_first.rows.find(row => row.reachable)?.hand;
     assert.ok(flopHand, `${flop.id} has a reachable flop hand`);
-    const flopEv = computeFlopHandEv({ spotId, board: flop.id, history: [], hand: flopHand, samples: 1,
-      datasets, flopCandidate, laterCandidate });
-    assert.ok(flopEv.row, `${flop.id} has flop EV for ${flopHand}`);
-    assert.ok(Number.isFinite(flopEv.row.equity_pct) && Number.isFinite(flopEv.row.mix_ev_bb));
-    assert.ok(Object.values(flopEv.row.ev_bb).every(Number.isFinite));
+    // The exact flop EV takes seconds per flop, so only the first three flops price it (the river EV below is cheap).
+    if (flopIndex < 3) {
+      const flopEv = computeFlopHandEv({ spotId, board: flop.id, history: [], hand: flopHand, datasets, flopCandidate, laterCandidate });
+      assert.ok(flopEv.row, `${flop.id} has flop EV for ${flopHand}`);
+      assert.ok(Number.isFinite(flopEv.row.equity_pct) && Number.isFinite(flopEv.row.mix_ev_bb));
+      assert.ok(Object.values(flopEv.row.ev_bb).every(Number.isFinite));
+    }
 
     const riverHand = riverView.rows.find(row => row.reachable)?.hand;
     assert.ok(riverHand, `${flop.id} has a reachable river hand`);

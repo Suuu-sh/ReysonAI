@@ -299,6 +299,13 @@ class Defence {
     }
   }
 
+  // Exact hand-EV visits thousands of river boards; drop the river contexts (the only large ones) once
+  // more than `limit` are held. Everything else (policy, base weights, flop / turn stages) is kept.
+  trimRiverCaches(limit) {
+    if (this.contexts.river.size <= limit) return;
+    this.contexts.river.clear(); this.bets.river.clear(); this.bettingFactRanges.river.clear();
+  }
+
   // Saved preflop weights of a seat by combo id (no board removed).
   baseWeights(seat) {
     let weights = this.base.get(seat);

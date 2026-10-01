@@ -1,5 +1,5 @@
 // Structured, fact-led postflop explanations. This module is pure: callers supply the selected
-// locale, policy mix, board classifier, computed defence facts, and optional self-play hand EV.
+// locale, policy mix, board classifier, computed defence facts, and optional hand EV (expected value when both players follow the shown strategy).
 
 export type ExplanationLocale = "en" | "ja";
 type NumericMap = Record<string, number | undefined>;
@@ -90,8 +90,8 @@ function showEvNote({ actionMix, handEv, locale }: Pick<ExplanationInput, "actio
   if (!best || best[0] === policyMain || best[1] - evs[policyMain]! <= 0.3) return undefined;
   const difference = best[1] - evs[policyMain]!;
   return locale === "en"
-    ? `Self-play EV rates ${actionLabel(best[0], locale)} ${bb(difference)} higher than the policy's main ${actionLabel(policyMain, locale)}.`
-    : `自己対戦EVでは${actionLabel(best[0], locale)}が、方針の主行動${actionLabel(policyMain, locale)}より${bb(difference)}高い評価です。`;
+    ? `EV when both players follow the shown strategy rates ${actionLabel(best[0], locale)} ${bb(difference)} higher than the policy's main ${actionLabel(policyMain, locale)}.`
+    : `両者が表示中の戦略に従う場合のEVでは${actionLabel(best[0], locale)}が、方針の主行動${actionLabel(policyMain, locale)}より${bb(difference)}高い評価です。`;
 }
 
 function makeFacing({ locale, node, positions, hand, tiers, explain }: ExplanationInput): StructuredPostflopExplanation["facing"] {

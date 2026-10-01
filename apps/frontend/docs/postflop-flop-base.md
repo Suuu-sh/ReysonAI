@@ -165,3 +165,57 @@ layout/ProductApp files, `.claude/launch.json`, and `apps/preflop-ui/` were not 
 - `apps/backend/migrations/0004_flop_base.sql`, `apps/backend/src/postflop.ts`,
   `apps/backend/src/index.ts`, `apps/backend/tests/postflop.test.mjs`
 - Repository `design-qa.md`: dated W2 section appended only.
+
+## Exact hand-EV (W3, 2026-10-01)
+
+Per-hand action EV (flop `flopHandEvForHand` / `handEvForBoard`, turn and river `laterHandEvForHand`) is no longer
+sampled. `scripts/postflop-ai/exact-ev.mjs` computes **the expected value of each action when both players then
+follow the shown strategy**: every opponent combo of the node's reach range (card-removed against the hero combo),
+every runout, and at every later decision of both players the full mix (policy + computed defence + bluff cap +
+MDF ceiling / floor from `defence.mjs`) instead of one sampled action. Both mixes depend only on the public line and
+their own combo, so a path has probability `s_hero(path) * v_opp(path)` (a scalar times a vector over opponent
+combos); leaves are fold payoffs or showdowns, summed with rank-sorted prefix sums and per-card blocker lists.
+Chips, rake (on the final pot), stack caps and the all-in merge come from `engine.mjs` itself (every state is an
+engine replay). The hero's own later decisions use the hero combo's own mix, not a best response.
+
+- River: all opponent combos, no runout. Turn: every river card. Flop: the first `FLOP_EV_RUNOUTS = 24` of the
+  defence's seeded 300 turn+river runouts (`flopRunouts`, `config.seed`). Exhaustive and the 300-set are too slow: each
+  runout needs about 800 river defence contexts (one hand class: 54 s for 300 runouts, 5 s for 24).
+- The result is a pure function of the inputs: repeated requests, sample counts, seeds, the 12-board artifact and the
+  on-demand worker all give identical numbers (`tests/postflop-exact-ev.test.mjs`).
+- Branches whose opponent mass times the best hero probability is under `PRUNE = 1e-5` of the root are skipped and
+  the covered mass is renormalised (|EV change| <= 0.01bb on the cases checked).
+- The old Monte Carlo is kept as `*MonteCarlo` functions (`method: "monte-carlo"`) for validation only.
+  `tests/reference/hand-ev-enumeration.mjs` is an independent plain enumeration the exact code is tested against.
+- Runout-set error (flop only), measured on As7d2c, 7 classes, against all 300 runouts: RMSE of an action's EV with
+  24 runouts 0.4-0.7bb (differences between actions 0.1-0.4bb); 300 runouts 0.15-0.3bb. The earlier 40-sample p90
+  standard error of an action difference was 7.5bb; 600 on-demand samples about 1.9bb.
+
+Validation against 8 independent Monte Carlo runs (`perf/exact-validate.mjs`; flop Monte Carlo drawn from the same 24
+runouts; all |z| <= 3):
+
+| Decision | exact vs MC mean (largest |z| of 5-7 values) |
+| --- | --- |
+| river OOP first (KQs), facing bet75 (AKo), IP facing bet33 (77) | 2.34 / 1.29 / 0.92 |
+| turn OOP first (AKo, 77), IP after check (KQs) | 1.59 / 1.39 / 0.89 |
+| flop first action (KQs, 77) | 0.70 / 1.43 |
+
+The seeded `mulberry32` stream of the old code is slightly low-biased for this sampling scheme (class equity of 77 on
+the turn: 95.86 sampled vs 95.93 exact, brute-force enumeration 95.926; `Math.random` gives 95.93 / 95.96), so the
+validation uses `Math.random` through the `rng` option.
+
+| Timing (Apple M5, Node 25, cold process) | Budget | Result |
+| --- | ---: | ---: |
+| River decision, one class | 50 ms | 14 ms (warm 1 ms) |
+| Turn decision, one class (all 48 rivers) | 400 ms | 1.5 s cold, 0.34 s warm |
+| Flop decision, one class (24 runouts) | 1.5 s | 4.8 s cold, 3.3 s warm |
+| 12 representative boards, all classes and nodes (`postflop-ai:hand-ev`) | much faster | **61 s** (was 43m50s) |
+
+The turn and flop budgets are not met: the time is the defence's own river contexts (equity, floor, ceiling per
+board and line), not the EV arithmetic. A whole board shares those contexts between hand classes, which is why
+all classes of 12 boards take 61 s while one class takes 5 s.
+
+**Flop base EV:** `--ev all` was measured (20 flops, ten workers): 103.8 s wall, 927 s of compute (46 s per flop).
+All 1,755 flops project to about 2.5 h wall (22.6 CPU-hours), over the 1 hour limit, so EV is **not** stored in the
+flop base (no generator version bump; strategies and facts files are unchanged). `--ev` now stores exact rows and
+`--samples` no longer affects them. `HAND_EV_VERSION` is 3 and `LATER_HAND_EV_VERSION` 2 (older files are stale).

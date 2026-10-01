@@ -2,8 +2,8 @@
 import assert from "node:assert/strict";
 import { loadInputs } from "../inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "../generate.mjs";
-import { FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, flopHandEvForHand } from "../flop-hand-ev-core.mjs";
-import { LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, laterHandEvForHand } from "../later-hand-ev-core.mjs";
+import { flopHandEvForHand } from "../flop-hand-ev-core.mjs";
+import { laterHandEvForHand } from "../later-hand-ev-core.mjs";
 
 const inputs = loadInputs("BTN_open_BB_call"), candidate = loadCandidate(inputs), later = loadLaterCandidate(inputs, candidate);
 const street = process.argv[2] ?? "flop";
@@ -17,6 +17,7 @@ const cold = run(), coldMs = performance.now() - t;
 t = performance.now();
 const warm = run(), warmMs = performance.now() - t;
 assert.deepEqual(warm, cold);
-const targetMs = street === "flop" ? 1500 : 500;
-console.log(JSON.stringify({ street, samples: street === "flop" ? FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES : LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES,
+// W3 budgets: river 50 ms, turn 400 ms, flop 1.5 s. Exhaustive turn / flop measured above them; see postflop-flop-base.md.
+const targetMs = street === "flop" ? 1500 : street === "turn" ? 400 : 50;
+console.log(JSON.stringify({ street, method: "exact",
   coldMs: Math.round(coldMs), warmMs: Math.round(warmMs), targetMs, withinTarget: coldMs <= targetMs, equal: true }));

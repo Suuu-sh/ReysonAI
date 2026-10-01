@@ -192,8 +192,8 @@ ten independent multi-GiB default heaps; typed-array caches remain outside the J
 The fixed representative-board hand-EV queue uses a measured longest-first order to avoid
 starting the expensive low-paired boards only after the first wave has completed. Custom boards
 retain their relative order; results are always restored to the caller's original board order.
-Shared browser modules do not import the Node scheduler. On-demand flop EV uses **600** samples
-per action; saved board EV remains **2,000**, and later-street defaults remain **600**.
+Shared browser modules do not import the Node scheduler. Per-hand action EV is an exact expectation (see `docs/postflop-flop-base.md`, W3): no sample counts remain on
+the EV path.
 
 See `scripts/postflop-ai/perf/README.md` for golden replay, isolated timing and the measured W1
 results. Performance changes never author or publish a policy or modify the saved ranges.

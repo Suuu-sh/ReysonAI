@@ -30,7 +30,7 @@ test("facing explanation presents fraction facts as whole percentages and gives 
   assert.doesNotMatch(text, /GTO/i);
 });
 
-test("river betting explanation prices sizes and flags a material self-play EV disagreement", () => {
+test("river betting explanation prices sizes and flags a material EV disagreement", () => {
   const result = buildPostflopExplanation({ locale: "en", node: "river_oop_first", hand: "AKo",
     actionMix: { check: 0.25, bet33: 0, bet75: 0.25, bet125: 0, allin: 0.5 },
     tiers: { medium: 1 }, texture: "over", positions: { ip: "BTN", oop: "BB" },
@@ -47,7 +47,7 @@ test("river betting explanation prices sizes and flags a material self-play EV d
   assert.match(text, /All-in.*α is 49%, supporting about 96 bluffs per 100 value combos/);
   assert.match(text, /Bet 75%.*α is 30%, supporting about 43 bluffs per 100 value combos/);
   assert.match(text, /Bet 33% is used 0%; it changes expected folds by 25 points/);
-  assert.match(text, /Self-play EV rates Bet 75% 0\.7bb higher than the policy's main All-in/);
+  assert.match(text, /EV when both players follow the shown strategy rates Bet 75% 0\.7bb higher than the policy's main All-in/);
   assert.match(text, /Overcard runout/);
   assert.doesNotMatch(text, /GTO/i);
 });

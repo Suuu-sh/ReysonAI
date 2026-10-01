@@ -296,3 +296,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Configured typecheck and lint passed, production build and all 5 Sites packaging tests passed. Typecheck currently covers site/backend only, not the complete product UI; lint also has an explicit limited file list.
 - Updated README, postflop pilot guide, backend introduction and later-policy instructions to match arbitrary-board runtime support, representative-only authoring/audit, fail-closed later policies, local settings and D1 delivery. Preserved compatibility identifiers and did not regenerate/publish strategies.
 - Kept unrelated perf/equality.mjs, .claude/launch.json and old apps/preflop-ui/.vite cache uncommitted and unchanged. App remains running at http://127.0.0.1:5173/app.
+
+## Exact per-hand EV (2026-10-01)
+- Replaced the sampled per-hand action EV with an exact expectation over opponent combos, later-street mixes and runouts; the EV panel and explanations now say "expected value when both players follow the shown strategy" and no longer mention samples or self-play. Repeated and precomputed vs on-demand requests are identical.
+- Validated against high-sample Monte Carlo (3 river, 3 turn, 2 flop decisions) and an independent enumeration; the 12-board BTN_open_BB_call hand-EV regenerated in 61 s (was 43m50s). Turn and flop on-demand budgets are not met (1.5 s and 4.8 s cold); details in apps/frontend/docs/postflop-flop-base.md.

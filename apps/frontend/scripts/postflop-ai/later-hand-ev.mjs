@@ -18,7 +18,8 @@ import { LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, computeNode, laterHandEvForHand
 // The on-demand one-hand entry point lives in the pure core (shared with the browser worker).
 export { LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, laterHandEvForHand, laterHandEvKey };
 export const LATER_HAND_EV_DEFAULT_SAMPLES = 1000;
-export const LATER_HAND_EV_VERSION = 1;
+// 2: exact expectation (exact-ev.mjs) instead of Monte Carlo samples; version 1 files are stale.
+export const LATER_HAND_EV_VERSION = 2;
 const cardText = card => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
 
 function flopPaths(spot) {
@@ -98,7 +99,7 @@ function artifactPath(inputs) {
 function matchesLaterHandEv(data, inputs, candidate, laterCandidate) {
   return Boolean(laterCandidate) && data?.kind === "ai_estimate_not_gto" && data.version === LATER_HAND_EV_VERSION &&
     data.source_hash === inputs.fingerprint && data.policy_hash === candidate?.metadata?.policy_hash &&
-    data.later_policy_hash === sha(laterCandidate.policy) && Number.isInteger(data.samples) && data.samples > 0 &&
+    data.later_policy_hash === sha(laterCandidate.policy) && data.method === "exact_expectation" &&
     data.seed === config.seed;
 }
 
@@ -151,7 +152,7 @@ export async function generateLaterHandEv({ spotId = DEFAULT_SPOT_ID, samples = 
   const flopPolicy = validatePolicy(candidate.policy, inputs.spot.tree);
   const laterPolicy = validateLaterPolicy(laterCandidate.policy);
   const result = { kind: "ai_estimate_not_gto", version: LATER_HAND_EV_VERSION, source_hash: inputs.fingerprint,
-    policy_hash: candidate.metadata.policy_hash, later_policy_hash: sha(laterPolicy), samples, seed: config.seed, boards: {} };
+    policy_hash: candidate.metadata.policy_hash, later_policy_hash: sha(laterPolicy), method: "exact_expectation", seed: config.seed, boards: {} };
   result.boards = await generateBoardBatch(spotId, samples, onBoard);
   const path = artifactPath(inputs);
   mkdirSync(dirname(path), { recursive: true });
@@ -164,5 +165,5 @@ export function laterHandEvResult(data, key, hand) {
   const node = data?.boards?.[key];
   if (!node) return null;
   return { node: node.node, actor: node.actor, pot_bb: node.pot_bb, hand,
-    row: hand == null ? null : node.rows?.[hand] ?? null, samples: data.samples, kind: data.kind };
+    row: hand == null ? null : node.rows?.[hand] ?? null, method: data.method, kind: data.kind };
 }

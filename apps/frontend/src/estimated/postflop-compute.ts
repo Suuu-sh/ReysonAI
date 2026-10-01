@@ -191,7 +191,8 @@ export function computeFlopHandEv({ spotId, board, history = [], hand, samples, 
 // Cheap lookup, also called before creating/transferring a Web Worker. No equity work.
 export function storedFlopHandEvInput({ spotId, board, history = [], hand, samples, seed, datasets,
   flopCandidate, laterCandidate, flopBase }) {
-  if (!flopBase?.ev || seed != null || samples != null && samples !== flopBase.metadata?.samples?.ev_per_hand_action) return null;
+  // The EV is an exact expectation, so neither a sample count nor a seed changes it; stored and computed rows are identical.
+  if (!flopBase?.ev) return null;
   const inputs = buildInputs(spotId, datasets);
   if (flopCandidate?.metadata?.source_hash !== inputs.fingerprint || sha(flopCandidate.policy) !== flopCandidate.metadata.policy_hash ||
       laterCandidate && (laterCandidate.metadata?.source_hash !== inputs.fingerprint ||

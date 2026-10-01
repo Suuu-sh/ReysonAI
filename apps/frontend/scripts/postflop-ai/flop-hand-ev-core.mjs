@@ -8,12 +8,15 @@ import { LATER_NODES } from "./later-tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
 import { spotById } from "./spots.mjs";
 import { flopState, treeHistories } from "./tree.mjs";
-import { defenceFor, replayOrNull } from "./defence.mjs";
+import { defenceFor, flopRunouts, replayOrNull } from "./defence.mjs";
+import { exactActionEv } from "./exact-ev.mjs";
 import { parseFlopBoard } from "./model.mjs";
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 export const FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES = 600;
 export const FLOP_HAND_EV_DEFAULT_SAMPLES = 2000;
+// Exact flop EV averages over the first FLOP_EV_RUNOUTS of the defence's seeded turn+river runouts (defence.mjs flopRunouts).
+export const FLOP_EV_RUNOUTS = 24;
 export const historiesFor = tree => treeHistories(tree);
 export const HISTORIES = Object.freeze(treeHistories("oop_checks"));
 const round = value => Math.round(value * 100) / 100;
@@ -88,7 +91,7 @@ function nodeSetup(history, inputs, policy, flop, tree, defence) {
   return { pot: table.pot, hero: range(heroRole), villain: range(villainRole), state, nodeTable };
 }
 
-function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples, onlyHand = null, seed, uncertainty = false }) {
+export function computeNodeMonteCarlo({ board, history, inputs, flopPolicy, laterPolicy, samples, onlyHand = null, seed, uncertainty = false, runoutSet = null, rng = seededRandom }) {
   const { spot } = inputs;
   const state = flopState(spot.tree, history);
   if (!state.node) return { node: null, actor: null, pot_bb: null, rows: {}, unreachable: true };
@@ -131,7 +134,7 @@ function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples,
     const combos = allCombos.filter(item => villainFor(item.combo));
     if (!combos.length) continue;
     const pickHero = sampler(combos);
-    const random = seededRandom(seed ?? seedFor(`${config.seed}|hand-ev|${board.id}|${key}|${hand}`));
+    const random = rng(seed ?? seedFor(`${config.seed}|hand-ev|${board.id}|${key}|${hand}`));
     const sums = Object.fromEntries(actions.map(action => [action, 0]));
     let wins = 0, mixEv = 0, completed = 0;
     const totalWeight = combos.reduce((sum, item) => sum + item.weight, 0);
@@ -145,8 +148,11 @@ function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples,
       if (!pickVillain) continue;
       const villainCombo = pickVillain(random).combo;
       const used = new Set([...heroCombo, ...villainCombo, ...board.cards]);
-      const runout = [];
-      while (runout.length < 2) {
+      let runout = [];
+      if (runoutSet) {
+        // Validation: draw the runout from the same fixed set the exact method averages over.
+        do runout = runoutSet[Math.floor(random() * runoutSet.length)]; while (runout.some(card => used.has(card)));
+      } else while (runout.length < 2) {
         const card = Math.floor(random() * 52);
         if (!used.has(card)) { used.add(card); runout.push(card); }
       }
@@ -159,7 +165,7 @@ function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples,
       const values = uncertainty ? {} : null;
       for (const action of actions) {
         const value = playFromNode({ hands, flop: board.cards, runout, history, forced: action,
-          policy: flopPolicy, laterPolicy, random: seededRandom(streamSeed), spot, tree: spot.tree, defence });
+          policy: flopPolicy, laterPolicy, random: rng(streamSeed), spot, tree: spot.tree, defence });
         if (value === null) { neverReached = true; break; }
         sums[action] += value;
         mixEv += comboMix[action] / 100 * value;
@@ -192,24 +198,69 @@ function computeNode({ board, history, inputs, flopPolicy, laterPolicy, samples,
     ...(uncertainty ? { uncertainty: diagnostics } : {}) };
 }
 
+
+// Exact per-class action EV of one flop decision (no sampling of hands or actions): see exact-ev.mjs.
+// The runout average uses the first FLOP_EV_RUNOUTS of the defence's seeded (config.seed) turn+river
+// runouts: every later decision of every runout needs its own defence contexts (about 800 per runout),
+// so the 300 runouts the defence uses for flop equity take about a minute per hand class and the 2,352
+// exhaustive ones ten times that. The set is fixed, so the result never varies between requests.
+export function computeNodeExact({ board, history, inputs, flopPolicy, laterPolicy, onlyHand = null, runouts = null, prune }) {
+  const { spot } = inputs;
+  const state = flopState(spot.tree, history);
+  if (!state.node) return { node: null, actor: null, pot_bb: null, rows: {}, unreachable: true };
+  const actor = spot[state.role];
+  const defence = defenceFor(inputs, flopPolicy, laterPolicy);
+  const setup = nodeSetup(history, inputs, flopPolicy, board.cards, spot.tree, defence);
+  const actions = NODES[state.node];
+  const oppItems = setup.villain.filter(item => item.weight > 0);
+  if (!oppItems.length || !setup.hero.some(item => item.weight > 0)) {
+    return { node: state.node, actor, pot_bb: setup.pot, rows: {}, unreachable: true };
+  }
+  const groups = new Map();
+  for (const item of setup.hero) if (item.weight > 0) {
+    const hand = handClass(item.combo);
+    if (onlyHand && hand !== onlyHand) continue;
+    if (!groups.has(hand)) groups.set(hand, []);
+    groups.get(hand).push(item);
+  }
+  const finals = (runouts ?? flopRunouts(board.cards).runouts.slice(0, FLOP_EV_RUNOUTS)).map(([turn, river]) => [...board.cards, turn, river]);
+  const result = exactActionEv({ spot, defence, rootPath: { flop: history, turn: [], river: [] }, finals,
+    expectedNode: state.node, ...(prune === undefined ? {} : { prune }), heroGroups: [...groups].map(([key, items]) => ({ key, items })), oppItems });
+  const rows = {};
+  for (const [hand, row] of result.rows) {
+    const ev = row.mixEv, equity = row.equity;
+    rows[hand] = {
+      equity_pct: round(equity * 100),
+      ev_bb: Object.fromEntries(actions.map((action, k) => [action, round(row.ev[k])])),
+      mix_ev_bb: round(ev),
+      eqr: equity > 0.02 ? round(ev / (equity * (setup.pot - rake(setup.pot)))) : null,
+      mix: Object.fromEntries(actions.map((action, k) => [action, round(row.mix[k])])),
+    };
+  }
+  return { node: state.node, actor, pot_bb: setup.pot, rows, ...(!Object.keys(rows).length ? { unreachable: true } : {}) };
+}
+
+const computeNode = args => args.method === "monte-carlo" ? computeNodeMonteCarlo(args) : computeNodeExact(args);
+export const flopEvRunouts = flop => flopRunouts(flop).runouts.slice(0, FLOP_EV_RUNOUTS);
+
 export function handEvForBoard(board, inputs, policy, samples = FLOP_HAND_EV_DEFAULT_SAMPLES,
-  laterPolicy = referenceLaterPolicy(), { uncertainty = false } = {}) {
-  if (!Number.isInteger(samples) || samples < 1) throw new Error("samples must be a positive integer");
+  laterPolicy = referenceLaterPolicy(), { uncertainty = false, method = "exact" } = {}) {
+  if (method === "monte-carlo" && (!Number.isInteger(samples) || samples < 1)) throw new Error("samples must be a positive integer");
   const selected = parseFlopBoard(board.id);
   const validatedFlop = validatePolicy(policy, inputs.spot.tree);
   const validatedLater = validateLaterPolicy(laterPolicy);
   return Object.fromEntries(Object.entries(treeHistories(inputs.spot.tree)).map(([key]) => {
     const history = key ? key.split(",") : [];
     const result = computeNode({ board: selected, history, inputs, flopPolicy: validatedFlop,
-      laterPolicy: validatedLater, samples, uncertainty });
+      laterPolicy: validatedLater, samples, uncertainty: method === "monte-carlo" && uncertainty, method });
     return [key, result];
   }));
 }
 
 // Pure, deterministic on-demand EV for the current flop decision and one hand class.
 export function flopHandEvForHand({ flop, history = [], hand, inputs, flopPolicy, laterPolicy = referenceLaterPolicy(),
-  samples = FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, seed } = {}) {
-  if (!Number.isInteger(samples) || samples < 1) throw new Error("samples must be a positive integer");
+  samples = FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, seed, method = "exact", runoutSet = null, rng } = {}) {
+  if (method === "monte-carlo" && (!Number.isInteger(samples) || samples < 1)) throw new Error("samples must be a positive integer");
   validateHandClass(hand);
   if (!Array.isArray(history) || !inputs?.spot || !inputs?.seatRows) throw new Error("Invalid flop hand-EV inputs");
   const board = parseFlopBoard(flop);
@@ -219,8 +270,13 @@ export function flopHandEvForHand({ flop, history = [], hand, inputs, flopPolicy
   if (!state.node) return { node: null, actor: null, pot_bb: null, row: null, unreachable: true, street: "flop" };
   const sampleSeed = seed == null ? undefined : Number.isInteger(seed) ? seed : seedFor(String(seed));
   const result = computeNode({ board, history, inputs, flopPolicy: policy, laterPolicy: later, samples,
-    onlyHand: hand, seed: sampleSeed });
+    onlyHand: hand, seed: sampleSeed, method, runoutSet, rng });
   const row = result.rows[hand] ?? null;
   return { node: result.node, actor: result.actor, pot_bb: result.pot_bb, street: "flop", row,
     ...(!row || result.unreachable ? { unreachable: true } : {}) };
 }
+
+// The sampled estimate the exact method replaced; kept only to validate it (tests, validation scripts).
+export const flopHandEvForHandMonteCarlo = args => flopHandEvForHand({ ...args, method: "monte-carlo" });
+export const handEvForBoardMonteCarlo = (board, inputs, policy, samples, laterPolicy, options = {}) =>
+  handEvForBoard(board, inputs, policy, samples, laterPolicy, { ...options, method: "monte-carlo" });

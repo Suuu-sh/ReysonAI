@@ -158,3 +158,11 @@ No dependencies or external network were used. No commit, push, reset, stash, ch
 was performed. Protected and pre-existing unrelated work was preserved. `.local/postflop-ai`
 writes were limited to the explicitly authorized BTN simulation/hand-EV measurement commands;
 golden and probe outputs were stored under `/private/tmp`.
+
+## W3 note (2026-10-01)
+
+Per-hand action EV became an exact expectation (`exact-ev.mjs`, docs/postflop-flop-base.md). The hand-EV golden
+cases of `equality.mjs` (200-sample boards, 160/600-sample classes, river hands at 600 samples) and the 2,000-sample
+`measure.mjs` hand-EV comparison were Monte Carlo goldens and no longer apply; simulation, audit and explanation
+goldens are unchanged. Use `perf/exact-validate.mjs river|turn|flop` for the validation against the Monte Carlo
+and `perf/ondemand.mjs` for cold timings (budgets: river 50 ms, turn 400 ms, flop 1.5 s; the turn and flop are over).

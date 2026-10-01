@@ -8,7 +8,7 @@ import "./postflop-hand-ev.css";
 
 const signed = value => `${value > 0 ? "+" : ""}${value.toFixed(2)}bb`;
 
-// Local-only per-hand action EV and EQR for the flop pilot (AI policy self-play).
+// Per-hand action EV and EQR for the flop pilot: the expected value when both players follow the shown strategy.
 // `history` is the flop actions before the decision shown, e.g. ["bet33", "raise"];
 // `spot` is the heads-up single-raised-pot id (the server defaults to BTN_open_BB_call).
 export function handEvQuery(board, history, hand, spot) {
@@ -88,6 +88,7 @@ export function HandEvBars({ items, labels = {}, ev, comboSelected = false }) {
         </div>;
       })}
     </div>
+    {row && <p className="hand-ev-note">EVは、両者が表示中の戦略に最後まで従った場合の期待値です。</p>}
     {status && <p className="hand-ev-status">{status}</p>}
   </div>;
 }

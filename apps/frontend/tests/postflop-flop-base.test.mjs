@@ -134,23 +134,17 @@ test("missing stored EV stays on demand; stored class rows never claim combo-spe
     { node: "bb_vs_75", actor: "BB", pot_bb: 9.63, street: "flop", row });
 });
 
-test("paired-SE diagnostics preserve the deterministic common-random-number EV rows", () => {
+test("the exact flop EV has no sampling diagnostics and does not depend on the requested sample count", () => {
   const canonical = canonicalFlop("8d8h8s"), board = { id: canonical.key, cards: canonical.cards };
   const plain = handEvForBoard(board, inputs, candidate.policy, 3, laterCandidate.policy);
-  const measured = handEvForBoard(board, inputs, candidate.policy, 3, laterCandidate.policy, { uncertainty: true });
-  for (const [key, { uncertainty, ...result }] of Object.entries(measured)) {
-    assert.deepEqual(result, plain[key]);
-    for (const diagnostic of Object.values(uncertainty ?? {})) {
-      assert.equal(diagnostic.samples, 3);
-      assert.ok(Number.isFinite(diagnostic.se_bb) && diagnostic.se_bb >= 0);
-      assert.equal(diagnostic.actions.length, 2);
-    }
-  }
+  const asked = handEvForBoard(board, inputs, candidate.policy, 99, laterCandidate.policy, { uncertainty: true });
+  assert.deepEqual(asked, plain);
+  for (const result of Object.values(plain)) assert.equal(result.uncertainty, undefined);
 });
 
-test("fresh stored class EV skips the core; stale policies and custom sampling use on-demand", () => {
+test("fresh stored class EV skips the core and equals the on-demand value; stale policies use on-demand", () => {
   const board = "As7d2c", canonical = canonicalFlop(board), history = ["bet75"];
-  const result = flopHandEvForHand({ flop: canonical.key, history, hand: "AA", samples: 3,
+  const result = flopHandEvForHand({ flop: canonical.key, history, hand: "AA",
     inputs, flopPolicy: candidate.policy, laterPolicy: laterCandidate.policy });
   // A small synthetic row tests delivery, not the production precision audit.
   const base = buildFlopBase({ ...options, board, ev: { bet75: {
@@ -160,7 +154,7 @@ test("fresh stored class EV skips the core; stale policies and custom sampling u
   const expected = { spot: inputs.spot.id, hand: "AA", kind: "ai_estimate_not_gto", ...result };
   assert.deepEqual(storedFlopHandEvInput(query), expected);
   assert.deepEqual(computeFlopHandEv(query), expected);
-  assert.equal(storedFlopHandEvInput({ ...query, samples: 3 }), null);
-  assert.equal(storedFlopHandEvInput({ ...query, seed: 1 }), null);
+  // The EV is an exact expectation: a sample count or seed cannot change it, so the stored row still applies.
+  assert.deepEqual(storedFlopHandEvInput({ ...query, samples: 3, seed: 1 }), expected);
   assert.equal(storedFlopHandEvInput({ ...query, flopCandidate: { ...candidate, metadata: { ...candidate.metadata, policy_hash: "stale" } } }), null);
 });

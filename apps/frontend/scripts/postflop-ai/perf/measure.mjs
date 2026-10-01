@@ -42,11 +42,9 @@ for (const kind of ["simulate", "audit", "hand-ev"]) {
     timings[kind].goldenEqual = true;
   } else if (kind === "hand-ev") {
     const actual = readJson(paths.handEv);
-    assert.equal(actual.samples_per_hand_action, 2000, "do not lower default samples");
-    assert.deepEqual(actual.boards, handEvGolden.boards, "full 2000-sample hand-EV boards");
-    assert.equal(JSON.stringify(actual.boards), JSON.stringify(handEvGolden.boards), "full hand-EV board byte equality");
-    timings[kind].boardsEqual = true;
-    timings[kind].samples = actual.samples_per_hand_action;
+    // Since W3 the hand-EV is an exact expectation, so the 2,000-sample W1 golden no longer applies.
+    assert.equal(actual.method, "exact_expectation", "hand-EV must be the exact expectation");
+    timings[kind].method = actual.method;
     timings[kind].boards = Object.keys(actual.boards).length;
   }
   saveTimings();

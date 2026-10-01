@@ -1,22 +1,23 @@
 // Per-hand action EV and equity realization (EQR) for the local heads-up flop pilot (any
 // spot in spots.mjs, on its tree). Both players follow the saved AI candidate on the flop and
-// the saved later-street policy (or the fixed reference), so these are AI self-play values —
-// not GTO, not solver EV. Local-only output under .local/postflop-ai/.
+// the saved later-street policy (or the fixed reference). Each value is the expected value when both
+// players follow the shown strategy from the decision on (exact-ev.mjs) — not GTO, not solver EV. Local-only output under .local/postflop-ai/.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { artifactPaths, boards, readArtifact, config, laterSizingHash, loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { referenceLaterPolicy } from "./later-policy.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { parseFlopBoard } from "./model.mjs";
-import { FLOP_HAND_EV_DEFAULT_SAMPLES, HISTORIES, handEvForBoard as handEvForBoardCore, historiesFor,
+import { FLOP_EV_RUNOUTS, FLOP_HAND_EV_DEFAULT_SAMPLES, HISTORIES, handEvForBoard as handEvForBoardCore, historiesFor,
   playFromNode } from "./flop-hand-ev-core.mjs";
 import { DEFENCE_VERSION } from "./defence.mjs";
 import { computeBoardBatch } from "./board-batch.mjs";
 
 export { playFromNode };
 
-export const HAND_EV_VERSION = 2;
-export const DEFAULT_SAMPLES = FLOP_HAND_EV_DEFAULT_SAMPLES;
+// 3: exact expectation (exact-ev.mjs) instead of 2,000-sample Monte Carlo; version 2 files are stale.
+export const HAND_EV_VERSION = 3;
+export const DEFAULT_SAMPLES = FLOP_HAND_EV_DEFAULT_SAMPLES; // only used by the Monte Carlo validation path
 const referenceLater = referenceLaterPolicy();
 // The 12 saved artifacts retain their authored IDs, which are not all in canonical
 // suit order for paired boards. Normalize a request, then resolve it back to that key.
@@ -41,8 +42,8 @@ export async function generateHandEv({ spotId = DEFAULT_SPOT_ID, samples = DEFAU
   const laterPolicy = laterCandidate?.policy ?? referenceLater;
   const result = { kind: "ai_estimate_not_gto", version: HAND_EV_VERSION, defence_version: DEFENCE_VERSION, source_hash: inputs.fingerprint,
     later_policy_hash: sha(laterPolicy), later_sizing_hash: laterSizingHash(),
-    policy_hash: candidate.metadata.policy_hash, samples_per_hand_action: samples, seed: config.seed,
-    note: "AI方針どうしの自己対戦（ターン・リバーは保存済み方針、未保存時は固定参照方針。ベットに対するコール／フォールドはエクイティと必要勝率の計算）で見積もった値。GTO・ソルバーのEVではない。", boards: {} };
+    policy_hash: candidate.metadata.policy_hash, method: "exact_expectation", runouts: FLOP_EV_RUNOUTS, seed: config.seed,
+    note: "両者が表示中の戦略（ターン・リバーは保存済み方針、未保存時は固定参照方針。ベットに対するコール／フォールドはエクイティと必要勝率の計算）に最後まで従った場合の期待値。GTO・ソルバーのEVではない。", boards: {} };
   result.boards = await computeBoardBatch({ kind: "hand-ev", inputs, policy: candidate.policy, laterCandidate: laterPolicy, samples, onBoard });
   writeFileSync(artifactPaths(inputs.spot).handEv, `${JSON.stringify(result)}\n`);
   return result;
@@ -93,7 +94,7 @@ export function handEvResponse(params) {
     if (!node) return { status: 404, body: { error: "この場面のEVはありません。" } };
     const hand = params.get("hand");
     return { status: 200, body: { spot: inputs.spot.id, board, history, node: node.node, actor: node.actor, pot_bb: node.pot_bb, hand,
-      row: node.rows[hand] ?? null, samples: data.samples_per_hand_action, note: data.note } };
+      row: node.rows[hand] ?? null, method: data.method, note: data.note } };
   } catch (error) {
     return { status: error.code === "ENOENT" ? 404 : 409, body: { error: error.message } };
   }

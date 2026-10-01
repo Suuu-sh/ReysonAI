@@ -7,8 +7,8 @@ import { auditExperiment } from "./audit.mjs";
 import { generate, generateLater, loadCandidate, loadLaterCandidate, resolveEffort, resolveModel } from "./generate.mjs";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { simulateParallel } from "./simulation-parallel.mjs";
-import { DEFAULT_SAMPLES, generateHandEv } from "./hand-ev.mjs";
-import { LATER_HAND_EV_DEFAULT_SAMPLES, generateLaterHandEv } from "./later-hand-ev.mjs";
+import { generateHandEv } from "./hand-ev.mjs";
+import { generateLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById } from "./spots.mjs";
 
 const COMMANDS = ["generate", "generate-later", "simulate", "audit", "hand-ev", "later-hand-ev", "spots"];
@@ -18,7 +18,7 @@ if (!COMMANDS.includes(command)) throw new Error(USAGE);
 
 const options = { all: false };
 const allowed = { generate: ["spot", "all", "model", "effort"], "generate-later": ["spot", "all", "model", "effort"], simulate: ["spot", "all", "samples"], audit: ["spot", "all"],
-  "hand-ev": ["spot", "all", "samples"], "later-hand-ev": ["spot", "all", "samples"], spots: [] }[command];
+  "hand-ev": ["spot", "all"], "later-hand-ev": ["spot", "all"], spots: [] }[command];
 for (let i = 0; i < rest.length; i++) {
   const flag = rest[i].replace(/^--/, "");
   if (!rest[i].startsWith("--") || !allowed.includes(flag)) throw new Error(USAGE);
@@ -57,18 +57,16 @@ async function runSpot(spotId) {
     return `${report.results.length} board/profile/seat comparisons, ${samples} paired deals each; ${below} advisory below-reference results. Report: ${paths.report}`;
   }
   if (command === "hand-ev") {
-    const samples = samplesOption(DEFAULT_SAMPLES);
     mkdirSync(dirname(paths.handEv), { recursive: true });
     const started = Date.now();
-    await generateHandEv({ spotId, samples, onBoard: board => console.log(`  ${board} (${Math.round((Date.now() - started) / 1000)}s)`) });
-    return `Per-hand action EV / EQR (${samples} deals per hand and action): ${paths.handEv} (AI policy self-play; not GTO)`;
+    await generateHandEv({ spotId, onBoard: board => console.log(`  ${board} (${Math.round((Date.now() - started) / 1000)}s)`) });
+    return `Per-hand action EV / EQR (exact expectation when both players follow the shown strategy): ${paths.handEv} (AI policy; not GTO)`;
   }
   if (command === "later-hand-ev") {
-    const samples = samplesOption(LATER_HAND_EV_DEFAULT_SAMPLES);
     const started = Date.now();
-    const result = await generateLaterHandEv({ spotId, samples, onBoard: board => console.log(`  ${board} (${Math.round((Date.now() - started) / 1000)}s)`) });
+    const result = await generateLaterHandEv({ spotId, onBoard: board => console.log(`  ${board} (${Math.round((Date.now() - started) / 1000)}s)`) });
     const path = paths.laterHandEv ?? paths.handEv.replace(/-hand-ev\.json$/, "-later-hand-ev.json");
-    return `Turn/river per-hand action EV / EQR (${result.samples} deals per hand and action): ${path} (AI policy self-play; not GTO)`;
+    return `Turn/river per-hand action EV / EQR (exact expectation when both players follow the shown strategy): ${path} (AI policy; not GTO)`;
   }
   const candidate = loadCandidate(inputs);
   if (!existsSync(paths.report)) throw new Error("Simulation report missing; run postflop-ai:simulate first");
