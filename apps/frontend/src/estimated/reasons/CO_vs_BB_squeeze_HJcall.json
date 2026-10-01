@@ -1,7 +1,7 @@
 {
   "spot_id": "CO_vs_BB_squeeze_HJcall",
   "type": "squeeze",
-  "source_fingerprint": "a05fc2f156cbd05959cd2f3b71589ebee2fa349079a644996d807d30b9cf060d",
+  "source_fingerprint": "bf0258b0c05f06982bba2373806ae144d289b64982e494c930ce4d0b332cbe9b",
   "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
   "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
   "fact_labels": [
@@ -49,8 +49,8 @@
     "call_break_even_equity_pct": 28,
     "squeeze_range_combos": 52,
     "opener_fold_pct": 70.8,
-    "caller_fold_after_opener_fold_pct": 63.2,
-    "fold_to_squeeze_pct": 44.8,
+    "caller_fold_after_opener_fold_pct": 25.1,
+    "fold_to_squeeze_pct": 17.8,
     "squeeze_break_even_pct": 64.9,
     "opener_call_range_combos": 66,
     "cost_to_call_bb": 10.5,
@@ -138,23 +138,23 @@
       }
     },
     "AA": {
-      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "最上位クラスのポケットペアです。HJもコールした3人のポットで、BBとHJに挟まれています。BBのスクイーズとHJのコールの両方に対して勝率69.9%と優位なので、4bet（26BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 80%・コール 20%。",
       "facts": {
-        "equity_3way_pct": null,
-        "blocked_squeeze_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_3way_pct": 69.9,
+        "blocked_squeeze_pct": 32.5,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 66.06599999999993,
+        "call_ev_bb": 14.29126649999997
       }
     },
     "AKs": {
-      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率33.1%で、コールのEVは+1.93bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は4bet（26BB）に回し、4betするレンジが強いハンドだけに偏らないようにします。配分はコール 60%・4bet 40%。",
       "facts": {
-        "equity_3way_pct": null,
-        "blocked_squeeze_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_3way_pct": 33.5,
+        "blocked_squeeze_pct": 30.3,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 33.130625000000066,
+        "call_ev_bb": 1.9322670312500225
       }
     },
     "AQs": {
@@ -168,7 +168,7 @@
       }
     },
     "AJs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率24.2%で、コールのEVは−1.43bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率24.2%で、コールのEVは−1.43bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手の強いハンドを20.2%ブロックできるため、一部はブラフの4bet（26BB）に回します。配分はフォールド 95%・4bet 5%。",
       "facts": {
         "equity_3way_pct": 24.9,
         "blocked_squeeze_pct": 20.2,
@@ -228,43 +228,43 @@
       }
     },
     "A5s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率20.0%で、コールのEVは−3.00bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21.2,
-        "blocked_squeeze_pct": 17.5,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 19.989375000000003,
-        "call_ev_bb": -2.9989870312499995
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A4s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率20.4%で、コールのEVは−2.84bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21.6,
-        "blocked_squeeze_pct": 17.6,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 20.423812500000015,
-        "call_ev_bb": -2.8359643593749952
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A3s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率20.0%で、コールのEVは−3.00bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21.2,
-        "blocked_squeeze_pct": 17.7,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 19.986750000000004,
-        "call_ev_bb": -2.9999720624999977
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A2s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率19.1%で、コールのEVは−3.32bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 20.2,
-        "blocked_squeeze_pct": 17.7,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 19.12837500000001,
-        "call_ev_bb": -3.322077281249997
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "AKo": {
@@ -278,17 +278,17 @@
       }
     },
     "KK": {
-      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "最上位クラスのポケットペアです。HJもコールした3人のポットで、BBとHJに挟まれています。BBのスクイーズとHJのコールの両方に対して勝率52.9%と優位なので、4bet（26BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 80%・コール 20%。",
       "facts": {
-        "equity_3way_pct": null,
-        "blocked_squeeze_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_3way_pct": 52.9,
+        "blocked_squeeze_pct": 27.6,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 49.97212499999998,
+        "call_ev_bb": 8.25203990624999
       }
     },
     "KQs": {
-      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率24.3%で、コールのEVは−1.39bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率24.3%で、コールのEVは−1.39bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手の強いハンドを22.1%ブロックできるため、一部はブラフの4bet（26BB）に回します。配分はフォールド 95%・4bet 5%。",
       "facts": {
         "equity_3way_pct": 24.5,
         "blocked_squeeze_pct": 22.1,
@@ -328,33 +328,33 @@
       }
     },
     "K8s": {
-      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率20.1%で、コールのEVは−2.95bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 22.4,
-        "blocked_squeeze_pct": 14.8,
-        "eqr": 0.9,
-        "realized_equity_pct": 20.1225,
-        "call_ev_bb": -2.949031875000001
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K7s": {
-      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率20.0%で、コールのEVは−3.01bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 22.2,
-        "blocked_squeeze_pct": 14.7,
-        "eqr": 0.9,
-        "realized_equity_pct": 19.956249999999997,
-        "call_ev_bb": -3.011417187500001
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K6s": {
-      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率19.1%で、コールのEVは−3.35bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21.2,
-        "blocked_squeeze_pct": 14.7,
-        "eqr": 0.9,
-        "realized_equity_pct": 19.06625,
-        "call_ev_bb": -3.3453896875
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K5s": {
@@ -398,7 +398,7 @@
       }
     },
     "AQo": {
-      "reason": "Aのブロッカーも持つ上位のオフスートAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率21.7%で、コールのEVは−2.34bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率21.7%で、コールのEVは−2.34bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手の強いハンドを24.4%ブロックできるため、一部はブラフの4bet（26BB）に回します。配分はフォールド 90%・4bet 10%。",
       "facts": {
         "equity_3way_pct": 23,
         "blocked_squeeze_pct": 24.4,
@@ -448,13 +448,13 @@
       }
     },
     "Q9s": {
-      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率20.6%で、コールのEVは−2.78bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 22.9,
-        "blocked_squeeze_pct": 8.6,
-        "eqr": 0.9,
-        "realized_equity_pct": 20.586249999999996,
-        "call_ev_bb": -2.7750096875000025
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "Q8s": {
@@ -668,37 +668,37 @@
       }
     },
     "KTo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率20.7%で、コールのEVは−2.75bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21.9,
-        "blocked_squeeze_pct": 16.3,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 20.658749999999998,
-        "call_ev_bb": -2.747804062500001
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "QTo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率20.9%で、コールのEVは−2.66bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 22.1,
-        "blocked_squeeze_pct": 9.5,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 20.905500000000014,
-        "call_ev_bb": -2.6552111249999957
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "JTo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率21.9%で、コールのEVは−2.29bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 23.2,
-        "blocked_squeeze_pct": 4.9,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 21.88462500000001,
-        "call_ev_bb": -2.287794468749997
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "TT": {
-      "reason": "強いポケットペアです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率31.5%で、コールのEVは+1.31bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
+      "reason": "強いポケットペアです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率31.5%で、コールのEVは+1.31bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は4bet（26BB）に回し、4betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・4bet 10%。",
       "facts": {
         "equity_3way_pct": 33.3,
         "blocked_squeeze_pct": 2.9,
@@ -718,13 +718,13 @@
       }
     },
     "T8s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率24.4%で、コールのEVは−1.35bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 24.6,
-        "blocked_squeeze_pct": 1.9,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 24.395249999999997,
-        "call_ev_bb": -1.3456824375000007
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T7s": {
@@ -788,13 +788,13 @@
       }
     },
     "A9o": {
-      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率15.2%で、コールのEVは−4.80bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 18.4,
-        "blocked_squeeze_pct": 18.2,
-        "eqr": 0.8280000000000001,
-        "realized_equity_pct": 15.200699999999992,
-        "call_ev_bb": -4.795937325000003
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K9o": {
@@ -848,13 +848,13 @@
       }
     },
     "97s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率22.9%で、コールのEVは−1.90bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 23.1,
-        "blocked_squeeze_pct": 1.2,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 22.904750000000003,
-        "call_ev_bb": -1.9049925624999986
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "96s": {
@@ -908,13 +908,13 @@
       }
     },
     "A8o": {
-      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率15.0%で、コールのEVは−4.88bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 18.1,
-        "blocked_squeeze_pct": 17.5,
-        "eqr": 0.8280000000000001,
-        "realized_equity_pct": 14.979899999999994,
-        "call_ev_bb": -4.878792525000002
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K8o": {
@@ -968,23 +968,23 @@
       }
     },
     "87s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率23.7%で、コールのEVは−1.61bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 23.9,
-        "blocked_squeeze_pct": 0.5,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 23.69950000000001,
-        "call_ev_bb": -1.6067626249999964
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "86s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率23.0%で、コールのEVは−1.86bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 23.3,
-        "blocked_squeeze_pct": 0.6,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 23.03537500000001,
-        "call_ev_bb": -1.8559755312499977
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "85s": {
@@ -1028,13 +1028,13 @@
       }
     },
     "A7o": {
-      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率13.7%で、コールのEVは−5.35bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 16.6,
-        "blocked_squeeze_pct": 17.4,
-        "eqr": 0.8280000000000001,
-        "realized_equity_pct": 13.72179999999998,
-        "call_ev_bb": -5.350894550000008
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "K7o": {
@@ -1098,13 +1098,13 @@
       }
     },
     "76s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率23.1%で、コールのEVは−1.85bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 23.3,
-        "blocked_squeeze_pct": 0.5,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 23.060125000000006,
-        "call_ev_bb": -1.8466880937499983
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "75s": {
@@ -1228,13 +1228,13 @@
       }
     },
     "65s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率23.6%で、コールのEVは−1.65bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 23.8,
-        "blocked_squeeze_pct": 1.3,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 23.571625000000004,
-        "call_ev_bb": -1.6547477187499986
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "64s": {
@@ -1358,13 +1358,13 @@
       }
     },
     "54s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。HJもコールした3人のポットで、BBとHJに挟まれています。仮定のEQRを加味した実現後の勝率22.7%で、コールのEVは−1.99bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "COの対HJの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 22.9,
-        "blocked_squeeze_pct": 1.8,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 22.688875000000003,
-        "call_ev_bb": -1.9859996562499997
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "53s": {

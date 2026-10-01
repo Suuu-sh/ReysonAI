@@ -565,11 +565,11 @@ def add_squeeze_bluffs(base, spec):
 # advisory squeeze-EV estimate: 2:1 value:bluff made them lose ~1-3.6bb because the
 # opener and caller then defend much wider; value-only let the squeeze auto-profit).
 UTG_BLUFFS = '''
-15: A5s A4s K7s K3s
+15: A5s A4s K3s
 10: A3s A2s K8s
 30: K6s
 25: K5s
-20: K4s
+20: K4s K7s
 '''
 HJ_BLUFFS = '''
 20: A5s

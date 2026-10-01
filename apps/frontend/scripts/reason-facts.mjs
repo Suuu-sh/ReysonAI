@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
 import { raked } from "../src/estimated/rake.ts";
 import { reasonSourceFingerprint } from "./lib/reason-context.mjs";
-import { callContexts, callFacts, limpReraiseFoldThreshold, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.ts";
+import { callContexts, callFacts, isColdCaller, limpReraiseFoldThreshold, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.ts";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { isInPosition, openSizeFor } from "../src/estimated/sizing.ts";
@@ -92,6 +92,8 @@ function responseFacts(spot) {
   return {
     type: "response",
     spot: { opener, hero, position: spot.hero_position_vs_opener, players_behind: behind.length,
+      // HJ / CO / BTN flats carry the extra squeeze / overcall discount (COLD_CALL_*_EQR).
+      ...(isColdCaller(hero) ? { cold_call_behind: true } : {}),
       call_break_even_equity_pct: round1(need(toCall, totalPotAfterCall)), opener_fold_to_3bet_pct: round1(weightedFold(threeBetSpot, row => openRows.get(row.hand).open / 100)),
       three_bet_size_bb: spot.three_bet_size_bb },
     hands: handFacts(spot.id, spot, () => true, { equity_vs_open_pct: open, equity_vs_continue_pct: continueRange, blocked_open_pct: open }),

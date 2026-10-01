@@ -26,6 +26,16 @@ CALLER_BEHIND_EQR = 0.90
 # act (see eqr.ts): the uncapped opener can 4bet (forfeiting the call) or
 # overcall into a three-way pot; margin for seats behind and a capped flat.
 OPENER_BEHIND_EQR = 0.85
+# HJ / CO / BTN cold-calling an open with every later seat still to act (see
+# eqr.ts): ~3% squeeze per seat behind (×0.97 each), keyed by seats behind, and
+# ×0.95 for offsuit flats in the three-way pots the blinds' overcalls create.
+COLD_CALL_SQUEEZE_EQR = {2: 0.94, 3: 0.91, 4: 0.885}
+COLD_CALL_OFFSUIT_EQR = 0.95
+
+
+def seats_behind(hero):
+    positions = CONFIG['positions']
+    return len(positions) - 1 - positions.index(hero)
 RANKS = '23456789TJQKA'
 
 
@@ -51,7 +61,8 @@ def eqr_category(hand):
     return 'offsuit_connected' if gap <= 1 else 'offsuit_other'
 
 
-def equity_realization(hand, hero, opponents, all_in=False, bb_behind=False, caller_behind=False, opener_behind=False):
+def equity_realization(hand, hero, opponents, all_in=False, bb_behind=False, caller_behind=False, opener_behind=False,
+                       cold_call_behind=False):
     category = eqr_category(hand)
     seats = [hero, *opponents]
     if len(opponents) not in (1, 2) or len(set(seats)) != len(seats) or any(p not in CONFIG['positions'] for p in seats):
@@ -62,9 +73,15 @@ def equity_realization(hand, hero, opponents, all_in=False, bb_behind=False, cal
         raise ValueError('Caller behind applies only to a heads-up squeeze response')
     if opener_behind and (bb_behind or caller_behind or len(opponents) != 1):
         raise ValueError('Opener behind applies only to a heads-up cold call of a 3bet')
+    if cold_call_behind and (bb_behind or caller_behind or opener_behind or len(opponents) != 1
+                             or seats_behind(hero) not in COLD_CALL_SQUEEZE_EQR
+                             or CONFIG['positions'].index(opponents[0]) > CONFIG['positions'].index(hero)):
+        raise ValueError('Cold call behind applies only to HJ / CO / BTN calling an earlier open heads-up')
     if all_in:
         return 1
     ip = all(in_position(hero, opponent) for opponent in opponents)
     return (EQR[category][0 if ip else 1] * (MULTIWAY_EQR if len(opponents) == 2 else 1)
             * (BB_BEHIND_EQR if bb_behind else 1) * (CALLER_BEHIND_EQR if caller_behind else 1)
-            * (OPENER_BEHIND_EQR if opener_behind else 1))
+            * (OPENER_BEHIND_EQR if opener_behind else 1)
+            * (COLD_CALL_SQUEEZE_EQR[seats_behind(hero)] if cold_call_behind else 1)
+            * (COLD_CALL_OFFSUIT_EQR if cold_call_behind and category.startswith('offsuit') else 1))

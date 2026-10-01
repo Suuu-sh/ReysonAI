@@ -1,7 +1,7 @@
 {
   "spot_id": "BB_vs_SB",
   "type": "response",
-  "source_fingerprint": "a05fc2f156cbd05959cd2f3b71589ebee2fa349079a644996d807d30b9cf060d",
+  "source_fingerprint": "bf0258b0c05f06982bba2373806ae144d289b64982e494c930ce4d0b332cbe9b",
   "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
   "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
   "fact_labels": [
@@ -43,7 +43,7 @@
     "position": "IP",
     "players_behind": 0,
     "call_break_even_equity_pct": 37.6,
-    "opener_fold_to_3bet_pct": 59.3,
+    "opener_fold_to_3bet_pct": 64.7,
     "three_bet_size_bb": 10.5,
     "cost_to_call_bb": 2.5,
     "total_pot_after_call_bb": 7
@@ -53,7 +53,7 @@
       "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。仮定のEQRを加味した実現後の勝率49.8%で、コールのEVは+0.81bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 47.4,
-        "equity_vs_continue_pct": 41.2,
+        "equity_vs_continue_pct": 39.4,
         "blocked_open_pct": 1,
         "eqr": 1.05,
         "realized_equity_pct": 49.800625000000004,
@@ -64,7 +64,7 @@
       "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。仮定のEQRを加味した実現後の勝率50.4%で、コールのEVは+0.85bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 48,
-        "equity_vs_continue_pct": 41.6,
+        "equity_vs_continue_pct": 41.4,
         "blocked_open_pct": 1.5,
         "eqr": 1.05,
         "realized_equity_pct": 50.35625,
@@ -75,7 +75,7 @@
       "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。仮定のEQRを加味した実現後の勝率50.7%で、コールのEVは+0.87bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 48.3,
-        "equity_vs_continue_pct": 43.1,
+        "equity_vs_continue_pct": 42.4,
         "blocked_open_pct": 2,
         "eqr": 1.05,
         "realized_equity_pct": 50.666875,
@@ -86,7 +86,7 @@
       "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。仮定のEQRを加味した実現後の勝率53.2%で、コールのEVは+1.04bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 85%・3bet 15%。",
       "facts": {
         "equity_vs_open_pct": 50.7,
-        "equity_vs_continue_pct": 43.6,
+        "equity_vs_continue_pct": 42.6,
         "blocked_open_pct": 3.8,
         "eqr": 1.05,
         "realized_equity_pct": 53.2,
@@ -97,7 +97,7 @@
       "reason": "オーバーカードが出やすいのが弱点のミドルペアです。仮定のEQRを加味した実現後の勝率56.1%で、コールのEVは+1.23bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 85%・3bet 15%。",
       "facts": {
         "equity_vs_open_pct": 53.4,
-        "equity_vs_continue_pct": 44.9,
+        "equity_vs_continue_pct": 43.6,
         "blocked_open_pct": 5.1,
         "eqr": 1.05,
         "realized_equity_pct": 56.07000000000001,
@@ -108,7 +108,7 @@
       "reason": "オーバーカードが出やすいのが弱点のミドルペアです。仮定のEQRを加味した実現後の勝率58.0%で、コールのEVは+1.35bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 70%・3bet 30%。",
       "facts": {
         "equity_vs_open_pct": 55.2,
-        "equity_vs_continue_pct": 48.7,
+        "equity_vs_continue_pct": 46.2,
         "blocked_open_pct": 6.1,
         "eqr": 1.05,
         "realized_equity_pct": 57.96875,
@@ -116,10 +116,10 @@
       }
     },
     "88": {
-      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。SBのオープンレンジへの勝率は59.2%。3bet（10.5BB）に続けてくる相手にも勝率50.6%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 50%・コール 50%。",
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。SBのオープンレンジには勝率59.2%と優位で、続けてくる相手にも48.5%とほぼ互角です。相手が3bet（10.5BB）に64.7%降りる分を合わせると、コールより3bet（10.5BB）のほうが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 50%・コール 50%。",
       "facts": {
         "equity_vs_open_pct": 59.2,
-        "equity_vs_continue_pct": 50.6,
+        "equity_vs_continue_pct": 48.5,
         "blocked_open_pct": 7.6,
         "eqr": 1.05,
         "realized_equity_pct": 62.177499999999995,
@@ -127,10 +127,10 @@
       }
     },
     "99": {
-      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。SBのオープンレンジへの勝率は62.2%。3bet（10.5BB）に続けてくる相手にも勝率54.0%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 70%・コール 30%。",
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。SBのオープンレンジへの勝率は62.2%。3bet（10.5BB）に続けてくる相手にも勝率51.8%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 70%・コール 30%。",
       "facts": {
         "equity_vs_open_pct": 62.2,
-        "equity_vs_continue_pct": 54,
+        "equity_vs_continue_pct": 51.8,
         "blocked_open_pct": 7.9,
         "eqr": 1.05,
         "realized_equity_pct": 65.296875,
@@ -138,10 +138,10 @@
       }
     },
     "AA": {
-      "reason": "最上位クラスのポケットペアです。SBのオープンレンジへの勝率は85.6%。3bet（10.5BB）に続けてくる相手にも勝率84.5%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
+      "reason": "最上位クラスのポケットペアです。SBのオープンレンジへの勝率は85.6%。3bet（10.5BB）に続けてくる相手にも勝率84.0%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
       "facts": {
         "equity_vs_open_pct": 85.6,
-        "equity_vs_continue_pct": 84.5,
+        "equity_vs_continue_pct": 84,
         "blocked_open_pct": 18.7,
         "eqr": 1.05,
         "realized_equity_pct": 89.849375,
@@ -149,10 +149,10 @@
       }
     },
     "AKs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBのオープンレンジへの勝率は67.2%。3bet（10.5BB）に続けてくる相手にも勝率61.3%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBのオープンレンジへの勝率は67.2%。3bet（10.5BB）に続けてくる相手にも勝率60.7%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
       "facts": {
         "equity_vs_open_pct": 67.2,
-        "equity_vs_continue_pct": 61.3,
+        "equity_vs_continue_pct": 60.7,
         "blocked_open_pct": 16.4,
         "eqr": 1.1,
         "realized_equity_pct": 73.90625,
@@ -160,10 +160,10 @@
       }
     },
     "AQs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBのオープンレンジへの勝率は64.5%。3bet（10.5BB）に続けてくる相手にも勝率56.8%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBのオープンレンジへの勝率は64.5%。3bet（10.5BB）に続けてくる相手にも勝率56.6%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
       "facts": {
         "equity_vs_open_pct": 64.5,
-        "equity_vs_continue_pct": 56.8,
+        "equity_vs_continue_pct": 56.6,
         "blocked_open_pct": 14.8,
         "eqr": 1.1,
         "realized_equity_pct": 70.92708333333334,
@@ -171,10 +171,10 @@
       }
     },
     "AJs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBのオープンレンジへの勝率は62.2%。3bet（10.5BB）に続けてくる相手にも勝率52.6%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 50%・コール 50%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBのオープンレンジへの勝率は62.2%。3bet（10.5BB）に続けてくる相手にも勝率51.5%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 50%・コール 50%。",
       "facts": {
         "equity_vs_open_pct": 62.2,
-        "equity_vs_continue_pct": 52.6,
+        "equity_vs_continue_pct": 51.5,
         "blocked_open_pct": 14.5,
         "eqr": 1.08,
         "realized_equity_pct": 67.16700000000002,
@@ -182,10 +182,10 @@
       }
     },
     "ATs": {
-      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBのオープンレンジには勝率60.3%と優位で、続けてくる相手にも48.4%とほぼ互角です。相手が3bet（10.5BB）に59.3%降りる分を合わせると、コールより3bet（10.5BB）のほうが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 50%・コール 50%。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBのオープンレンジには勝率60.3%と優位で、続けてくる相手にも46.9%とほぼ互角です。相手が3bet（10.5BB）に64.7%降りる分を合わせると、コールより3bet（10.5BB）のほうが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 50%・コール 50%。",
       "facts": {
         "equity_vs_open_pct": 60.3,
-        "equity_vs_continue_pct": 48.4,
+        "equity_vs_continue_pct": 46.9,
         "blocked_open_pct": 13.9,
         "eqr": 1.08,
         "realized_equity_pct": 65.1465,
@@ -196,7 +196,7 @@
       "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。仮定のEQRを加味した実現後の勝率60.0%で、コールのEVは+1.49bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 80%・3bet 20%。",
       "facts": {
         "equity_vs_open_pct": 57.1,
-        "equity_vs_continue_pct": 43.6,
+        "equity_vs_continue_pct": 43.9,
         "blocked_open_pct": 13.3,
         "eqr": 1.05,
         "realized_equity_pct": 59.994375,
@@ -207,7 +207,7 @@
       "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。仮定のEQRを加味した実現後の勝率57.4%で、コールのEVは+1.32bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 80%・3bet 20%。",
       "facts": {
         "equity_vs_open_pct": 54.7,
-        "equity_vs_continue_pct": 43,
+        "equity_vs_continue_pct": 42.6,
         "blocked_open_pct": 13.2,
         "eqr": 1.05,
         "realized_equity_pct": 57.421875,
@@ -218,7 +218,7 @@
       "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。仮定のEQRを加味した実現後の勝率56.3%で、コールのEVは+1.24bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 53.6,
-        "equity_vs_continue_pct": 41.8,
+        "equity_vs_continue_pct": 41.9,
         "blocked_open_pct": 12.4,
         "eqr": 1.05,
         "realized_equity_pct": 56.28000000000001,
@@ -240,7 +240,7 @@
       "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。仮定のEQRを加味した実現後の勝率53.2%で、コールのEVは+1.04bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 55%・3bet 45%。",
       "facts": {
         "equity_vs_open_pct": 50.7,
-        "equity_vs_continue_pct": 40.5,
+        "equity_vs_continue_pct": 40.3,
         "blocked_open_pct": 11.3,
         "eqr": 1.05,
         "realized_equity_pct": 53.204375000000006,
@@ -251,7 +251,7 @@
       "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。仮定のEQRを加味した実現後の勝率52.1%で、コールのEVは+0.96bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 65%・3bet 35%。",
       "facts": {
         "equity_vs_open_pct": 49.6,
-        "equity_vs_continue_pct": 39.9,
+        "equity_vs_continue_pct": 40.6,
         "blocked_open_pct": 10.3,
         "eqr": 1.05,
         "realized_equity_pct": 52.088750000000005,
@@ -262,7 +262,7 @@
       "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。仮定のEQRを加味した実現後の勝率51.7%で、コールのEVは+0.94bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 75%・3bet 25%。",
       "facts": {
         "equity_vs_open_pct": 49.2,
-        "equity_vs_continue_pct": 39.2,
+        "equity_vs_continue_pct": 39.4,
         "blocked_open_pct": 10.1,
         "eqr": 1.05,
         "realized_equity_pct": 51.660000000000004,
@@ -273,7 +273,7 @@
       "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。仮定のEQRを加味した実現後の勝率49.7%で、コールのEVは+0.80bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 75%・3bet 25%。",
       "facts": {
         "equity_vs_open_pct": 47.3,
-        "equity_vs_continue_pct": 39.5,
+        "equity_vs_continue_pct": 39.7,
         "blocked_open_pct": 9.8,
         "eqr": 1.05,
         "realized_equity_pct": 49.69562500000001,
@@ -281,10 +281,10 @@
       }
     },
     "AKo": {
-      "reason": "Aのブロッカーも持つ上位のオフスートAです。SBのオープンレンジへの勝率は65.9%。3bet（10.5BB）に続けてくる相手にも勝率59.4%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 65%・コール 35%。",
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。SBのオープンレンジへの勝率は65.9%。3bet（10.5BB）に続けてくる相手にも勝率58.6%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 65%・コール 35%。",
       "facts": {
         "equity_vs_open_pct": 65.9,
-        "equity_vs_continue_pct": 59.4,
+        "equity_vs_continue_pct": 58.6,
         "blocked_open_pct": 16.4,
         "eqr": 1.05,
         "realized_equity_pct": 69.199375,
@@ -292,10 +292,10 @@
       }
     },
     "KK": {
-      "reason": "最上位クラスのポケットペアです。SBのオープンレンジへの勝率は77.9%。3bet（10.5BB）に続けてくる相手にも勝率74.4%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
+      "reason": "最上位クラスのポケットペアです。SBのオープンレンジへの勝率は77.9%。3bet（10.5BB）に続けてくる相手にも勝率73.6%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
       "facts": {
         "equity_vs_open_pct": 77.9,
-        "equity_vs_continue_pct": 74.4,
+        "equity_vs_continue_pct": 73.6,
         "blocked_open_pct": 14.1,
         "eqr": 1.05,
         "realized_equity_pct": 81.843125,
@@ -303,7 +303,7 @@
       }
     },
     "KQs": {
-      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。SBのオープンレンジには勝率57.2%と優位で、続けてくる相手にも45.4%とほぼ互角です。相手が3bet（10.5BB）に59.3%降りる分を合わせると、コールより3bet（10.5BB）のほうが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 70%・コール 30%。",
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。SBのオープンレンジには勝率57.2%と優位で、続けてくる相手にも45.4%とほぼ互角です。相手が3bet（10.5BB）に64.7%降りる分を合わせると、コールより3bet（10.5BB）のほうが得になります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 70%・コール 30%。",
       "facts": {
         "equity_vs_open_pct": 57.2,
         "equity_vs_continue_pct": 45.4,
@@ -317,7 +317,7 @@
       "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率59.0%で、コールのEVは+1.42bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 70%・3bet 30%。",
       "facts": {
         "equity_vs_open_pct": 53.6,
-        "equity_vs_continue_pct": 41.8,
+        "equity_vs_continue_pct": 42.2,
         "blocked_open_pct": 12.2,
         "eqr": 1.1,
         "realized_equity_pct": 59.005833333333335,
@@ -328,7 +328,7 @@
       "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率56.4%で、コールのEVは+1.25bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 85%・3bet 15%。",
       "facts": {
         "equity_vs_open_pct": 52.2,
-        "equity_vs_continue_pct": 40.1,
+        "equity_vs_continue_pct": 40,
         "blocked_open_pct": 11.6,
         "eqr": 1.08,
         "realized_equity_pct": 56.394,
@@ -339,7 +339,7 @@
       "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率48.9%で、コールのEVは+0.75bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 48.9,
-        "equity_vs_continue_pct": 38.4,
+        "equity_vs_continue_pct": 37.4,
         "blocked_open_pct": 11.1,
         "eqr": 1,
         "realized_equity_pct": 48.93333333333334,
@@ -350,7 +350,7 @@
       "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率47.0%で、コールのEVは+0.63bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 47,
-        "equity_vs_continue_pct": 36.1,
+        "equity_vs_continue_pct": 36.5,
         "blocked_open_pct": 10.9,
         "eqr": 1,
         "realized_equity_pct": 47.041666666666664,
@@ -361,7 +361,7 @@
       "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率45.4%で、コールのEVは+0.52bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 45.4,
-        "equity_vs_continue_pct": 36.7,
+        "equity_vs_continue_pct": 36.5,
         "blocked_open_pct": 10.2,
         "eqr": 1,
         "realized_equity_pct": 45.395833333333336,
@@ -372,7 +372,7 @@
       "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率44.3%で、コールのEVは+0.45bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 44.3,
-        "equity_vs_continue_pct": 36.2,
+        "equity_vs_continue_pct": 36,
         "blocked_open_pct": 9.7,
         "eqr": 1,
         "realized_equity_pct": 44.30416666666667,
@@ -383,7 +383,7 @@
       "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率43.4%で、コールのEVは+0.39bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 43.4,
-        "equity_vs_continue_pct": 35.5,
+        "equity_vs_continue_pct": 35.4,
         "blocked_open_pct": 9,
         "eqr": 1,
         "realized_equity_pct": 43.4375,
@@ -394,7 +394,7 @@
       "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率42.4%で、コールのEVは+0.32bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 42.4,
-        "equity_vs_continue_pct": 35.2,
+        "equity_vs_continue_pct": 34.8,
         "blocked_open_pct": 8.2,
         "eqr": 1,
         "realized_equity_pct": 42.395833333333336,
@@ -405,7 +405,7 @@
       "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率41.7%で、コールのEVは+0.27bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 41.7,
-        "equity_vs_continue_pct": 35.1,
+        "equity_vs_continue_pct": 34.7,
         "blocked_open_pct": 7.9,
         "eqr": 1,
         "realized_equity_pct": 41.67916666666667,
@@ -416,7 +416,7 @@
       "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率42.0%で、コールのEVは+0.30bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 42.1,
-        "equity_vs_continue_pct": 34.6,
+        "equity_vs_continue_pct": 35.2,
         "blocked_open_pct": 7.6,
         "eqr": 1,
         "realized_equity_pct": 42.05,
@@ -427,7 +427,7 @@
       "reason": "Aのブロッカーも持つ上位のオフスートAです。仮定のEQRを加味した実現後の勝率65.7%で、コールのEVは+1.87bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 55%・3bet 45%。",
       "facts": {
         "equity_vs_open_pct": 62.6,
-        "equity_vs_continue_pct": 55.4,
+        "equity_vs_continue_pct": 53.6,
         "blocked_open_pct": 14.8,
         "eqr": 1.05,
         "realized_equity_pct": 65.70375,
@@ -438,7 +438,7 @@
       "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率55.5%で、コールのEVは+1.19bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 65%・3bet 35%。",
       "facts": {
         "equity_vs_open_pct": 52.9,
-        "equity_vs_continue_pct": 42.2,
+        "equity_vs_continue_pct": 42.3,
         "blocked_open_pct": 12.5,
         "eqr": 1.05,
         "realized_equity_pct": 55.531875,
@@ -446,10 +446,10 @@
       }
     },
     "QQ": {
-      "reason": "最上位クラスのポケットペアです。SBのオープンレンジへの勝率は72.6%。3bet（10.5BB）に続けてくる相手にも勝率68.1%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
+      "reason": "最上位クラスのポケットペアです。SBのオープンレンジへの勝率は72.6%。3bet（10.5BB）に続けてくる相手にも勝率67.5%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
       "facts": {
         "equity_vs_open_pct": 72.6,
-        "equity_vs_continue_pct": 68.1,
+        "equity_vs_continue_pct": 67.5,
         "blocked_open_pct": 10.9,
         "eqr": 1.05,
         "realized_equity_pct": 76.25625000000001,
@@ -460,7 +460,7 @@
       "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率53.6%で、コールのEVは+1.07bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 70%・3bet 30%。",
       "facts": {
         "equity_vs_open_pct": 48.7,
-        "equity_vs_continue_pct": 40.1,
+        "equity_vs_continue_pct": 39.5,
         "blocked_open_pct": 10.5,
         "eqr": 1.1,
         "realized_equity_pct": 53.61583333333334,
@@ -471,7 +471,7 @@
       "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率52.8%で、コールのEVは+1.01bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 85%・3bet 15%。",
       "facts": {
         "equity_vs_open_pct": 48,
-        "equity_vs_continue_pct": 38.7,
+        "equity_vs_continue_pct": 38.4,
         "blocked_open_pct": 10,
         "eqr": 1.1,
         "realized_equity_pct": 52.80916666666666,
@@ -482,7 +482,7 @@
       "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率45.1%で、コールのEVは+0.50bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 45.1,
-        "equity_vs_continue_pct": 37.8,
+        "equity_vs_continue_pct": 37.1,
         "blocked_open_pct": 9.5,
         "eqr": 1,
         "realized_equity_pct": 45.125,
@@ -493,7 +493,7 @@
       "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率43.2%で、コールのEVは+0.37bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 43.2,
-        "equity_vs_continue_pct": 35.8,
+        "equity_vs_continue_pct": 34.6,
         "blocked_open_pct": 9.3,
         "eqr": 1,
         "realized_equity_pct": 43.1875,
@@ -504,7 +504,7 @@
       "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率40.7%で、コールのEVは+0.20bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 40.7,
-        "equity_vs_continue_pct": 34.7,
+        "equity_vs_continue_pct": 34,
         "blocked_open_pct": 8.6,
         "eqr": 1,
         "realized_equity_pct": 40.65833333333334,
@@ -515,7 +515,7 @@
       "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率41.6%で、コールのEVは+0.27bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 41.6,
-        "equity_vs_continue_pct": 34.3,
+        "equity_vs_continue_pct": 33.4,
         "blocked_open_pct": 8.2,
         "eqr": 1,
         "realized_equity_pct": 41.579166666666666,
@@ -526,7 +526,7 @@
       "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率39.9%で、コールのEVは+0.15bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 39.9,
-        "equity_vs_continue_pct": 34,
+        "equity_vs_continue_pct": 33.6,
         "blocked_open_pct": 7.5,
         "eqr": 1,
         "realized_equity_pct": 39.85,
@@ -537,7 +537,7 @@
       "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率39.5%で、コールのEVは+0.13bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 39.5,
-        "equity_vs_continue_pct": 33.8,
+        "equity_vs_continue_pct": 33.6,
         "blocked_open_pct": 6.5,
         "eqr": 1,
         "realized_equity_pct": 39.4875,
@@ -548,7 +548,7 @@
       "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率38.8%で、コールのEVは+0.08bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 65%・フォールド 30%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 38.8,
-        "equity_vs_continue_pct": 33.1,
+        "equity_vs_continue_pct": 33,
         "blocked_open_pct": 6.3,
         "eqr": 1,
         "realized_equity_pct": 38.77083333333333,
@@ -559,7 +559,7 @@
       "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率39.3%で、コールのEVは+0.11bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 75%・フォールド 20%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 39.3,
-        "equity_vs_continue_pct": 32.8,
+        "equity_vs_continue_pct": 31.9,
         "blocked_open_pct": 6,
         "eqr": 1,
         "realized_equity_pct": 39.275,
@@ -570,7 +570,7 @@
       "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。仮定のEQRを加味した実現後の勝率63.0%で、コールのEVは+1.69bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 65%・3bet 35%。",
       "facts": {
         "equity_vs_open_pct": 60,
-        "equity_vs_continue_pct": 50.5,
+        "equity_vs_continue_pct": 48.7,
         "blocked_open_pct": 14.5,
         "eqr": 1.05,
         "realized_equity_pct": 62.951875,
@@ -581,7 +581,7 @@
       "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率53.8%で、コールのEVは+1.07bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 75%・3bet 25%。",
       "facts": {
         "equity_vs_open_pct": 51.2,
-        "equity_vs_continue_pct": 39.5,
+        "equity_vs_continue_pct": 39.4,
         "blocked_open_pct": 12.2,
         "eqr": 1.05,
         "realized_equity_pct": 53.751250000000006,
@@ -592,7 +592,7 @@
       "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率49.3%で、コールのEVは+0.78bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 75%・3bet 25%。",
       "facts": {
         "equity_vs_open_pct": 47,
-        "equity_vs_continue_pct": 37.3,
+        "equity_vs_continue_pct": 36.5,
         "blocked_open_pct": 10.6,
         "eqr": 1.05,
         "realized_equity_pct": 49.345625,
@@ -600,10 +600,10 @@
       }
     },
     "JJ": {
-      "reason": "強いポケットペアです。SBのオープンレンジへの勝率は69.6%。3bet（10.5BB）に続けてくる相手にも勝率63.2%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
+      "reason": "強いポケットペアです。SBのオープンレンジへの勝率は69.6%。3bet（10.5BB）に続けてくる相手にも勝率61.9%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 85%・コール 15%。",
       "facts": {
         "equity_vs_open_pct": 69.6,
-        "equity_vs_continue_pct": 63.2,
+        "equity_vs_continue_pct": 61.9,
         "blocked_open_pct": 10.2,
         "eqr": 1.05,
         "realized_equity_pct": 73.08,
@@ -614,7 +614,7 @@
       "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。仮定のEQRを加味した実現後の勝率49.1%で、コールのEVは+0.76bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 70%・3bet 30%。",
       "facts": {
         "equity_vs_open_pct": 44.6,
-        "equity_vs_continue_pct": 38.3,
+        "equity_vs_continue_pct": 37.1,
         "blocked_open_pct": 9.7,
         "eqr": 1.1,
         "realized_equity_pct": 49.05541666666667,
@@ -625,7 +625,7 @@
       "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率47.8%で、コールのEVは+0.68bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 43.5,
-        "equity_vs_continue_pct": 36.8,
+        "equity_vs_continue_pct": 35.4,
         "blocked_open_pct": 9.1,
         "eqr": 1.1,
         "realized_equity_pct": 47.81791666666667,
@@ -636,7 +636,7 @@
       "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率41.5%で、コールのEVは+0.26bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 41.5,
-        "equity_vs_continue_pct": 36.4,
+        "equity_vs_continue_pct": 35.1,
         "blocked_open_pct": 9,
         "eqr": 1,
         "realized_equity_pct": 41.516666666666666,
@@ -647,7 +647,7 @@
       "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率38.2%で、コールのEVは+0.04bb。損益分岐付近のため、コールは50%以下に抑えます。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 50%・フォールド 45%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 38.2,
-        "equity_vs_continue_pct": 33.9,
+        "equity_vs_continue_pct": 33.5,
         "blocked_open_pct": 8.3,
         "eqr": 1,
         "realized_equity_pct": 38.204166666666666,
@@ -658,7 +658,7 @@
       "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率37.0%で、コールのEVは−0.04bb。損益分岐付近のため、コールは50%以下に抑えます。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 50%・フォールド 45%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 37,
-        "equity_vs_continue_pct": 33.4,
+        "equity_vs_continue_pct": 32.8,
         "blocked_open_pct": 7.9,
         "eqr": 1,
         "realized_equity_pct": 37.045833333333334,
@@ -669,7 +669,7 @@
       "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率37.3%で、コールのEVは−0.02bb。損益分岐付近のため、コールは50%以下に抑えます。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 50%・フォールド 45%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 37.3,
-        "equity_vs_continue_pct": 32.2,
+        "equity_vs_continue_pct": 31.3,
         "blocked_open_pct": 7.2,
         "eqr": 1,
         "realized_equity_pct": 37.2875,
@@ -680,7 +680,7 @@
       "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率37.1%で、コールのEVは−0.03bb。損益分岐付近のため、コールは50%以下に抑えます。既存の混合配分を維持し、一部はフォールドします。配分はコール 50%・フォールド 50%。",
       "facts": {
         "equity_vs_open_pct": 37.1,
-        "equity_vs_continue_pct": 31.9,
+        "equity_vs_continue_pct": 30.7,
         "blocked_open_pct": 6.2,
         "eqr": 1,
         "realized_equity_pct": 37.1375,
@@ -691,7 +691,7 @@
       "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率36.3%で、コールのEVは−0.09bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 36.3,
-        "equity_vs_continue_pct": 31.9,
+        "equity_vs_continue_pct": 31.1,
         "blocked_open_pct": 6,
         "eqr": 1,
         "realized_equity_pct": 36.262499999999996,
@@ -702,7 +702,7 @@
       "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。仮定のEQRを加味した実現後の勝率36.8%で、コールのEVは−0.06bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 36.8,
-        "equity_vs_continue_pct": 30.5,
+        "equity_vs_continue_pct": 31.2,
         "blocked_open_pct": 5.7,
         "eqr": 1,
         "realized_equity_pct": 36.766666666666666,
@@ -713,7 +713,7 @@
       "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。仮定のEQRを加味した実現後の勝率61.2%で、コールのEVは+1.57bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 75%・3bet 25%。",
       "facts": {
         "equity_vs_open_pct": 58.3,
-        "equity_vs_continue_pct": 45.5,
+        "equity_vs_continue_pct": 44.2,
         "blocked_open_pct": 13.9,
         "eqr": 1.05,
         "realized_equity_pct": 61.17125,
@@ -724,7 +724,7 @@
       "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率52.5%で、コールのEVは+0.99bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 80%・3bet 20%。",
       "facts": {
         "equity_vs_open_pct": 50,
-        "equity_vs_continue_pct": 36.4,
+        "equity_vs_continue_pct": 36.5,
         "blocked_open_pct": 11.6,
         "eqr": 1.05,
         "realized_equity_pct": 52.456250000000004,
@@ -735,7 +735,7 @@
       "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率47.8%で、コールのEVは+0.68bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 80%・3bet 20%。",
       "facts": {
         "equity_vs_open_pct": 45.6,
-        "equity_vs_continue_pct": 35.3,
+        "equity_vs_continue_pct": 34.3,
         "blocked_open_pct": 10,
         "eqr": 1.05,
         "realized_equity_pct": 47.840625,
@@ -746,7 +746,7 @@
       "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。仮定のEQRを加味した実現後の勝率45.5%で、コールのEVは+0.53bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 43.4,
-        "equity_vs_continue_pct": 35.2,
+        "equity_vs_continue_pct": 33.9,
         "blocked_open_pct": 9.7,
         "eqr": 1.05,
         "realized_equity_pct": 45.530625,
@@ -754,10 +754,10 @@
       }
     },
     "TT": {
-      "reason": "強いポケットペアです。SBのオープンレンジへの勝率は66.4%。3bet（10.5BB）に続けてくる相手にも勝率57.7%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 75%・コール 25%。",
+      "reason": "強いポケットペアです。SBのオープンレンジへの勝率は66.4%。3bet（10.5BB）に続けてくる相手にも勝率56.4%を保てるので、3bet（10.5BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は3bet 75%・コール 25%。",
       "facts": {
         "equity_vs_open_pct": 66.4,
-        "equity_vs_continue_pct": 57.7,
+        "equity_vs_continue_pct": 56.4,
         "blocked_open_pct": 9.1,
         "eqr": 1.05,
         "realized_equity_pct": 69.70250000000001,
@@ -768,7 +768,7 @@
       "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率47.0%で、コールのEVは+0.62bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 42.7,
-        "equity_vs_continue_pct": 37.5,
+        "equity_vs_continue_pct": 36.3,
         "blocked_open_pct": 8.6,
         "eqr": 1.1,
         "realized_equity_pct": 46.974583333333335,
@@ -779,7 +779,7 @@
       "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率44.1%で、コールのEVは+0.43bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 40.1,
-        "equity_vs_continue_pct": 36.4,
+        "equity_vs_continue_pct": 34.7,
         "blocked_open_pct": 8.4,
         "eqr": 1.1,
         "realized_equity_pct": 44.12375000000001,
@@ -790,7 +790,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率38.2%で、コールのEVは+0.04bb。損益分岐付近のため、コールは50%以下に抑えます。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 50%・フォールド 45%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 38.2,
-        "equity_vs_continue_pct": 34.1,
+        "equity_vs_continue_pct": 33.6,
         "blocked_open_pct": 7.7,
         "eqr": 1,
         "realized_equity_pct": 38.1875,
@@ -798,10 +798,10 @@
       }
     },
     "T6s": {
-      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率36.6%で、コールのEVは−0.06bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率36.6%で、コールのEVは−0.06bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 36.6,
-        "equity_vs_continue_pct": 33.5,
+        "equity_vs_continue_pct": 31.5,
         "blocked_open_pct": 7.3,
         "eqr": 1,
         "realized_equity_pct": 36.61666666666667,
@@ -812,7 +812,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率36.2%で、コールのEVは−0.09bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 36.2,
-        "equity_vs_continue_pct": 32.2,
+        "equity_vs_continue_pct": 31.8,
         "blocked_open_pct": 6.6,
         "eqr": 1,
         "realized_equity_pct": 36.24583333333333,
@@ -823,7 +823,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.6%で、コールのEVは−0.13bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.6,
-        "equity_vs_continue_pct": 33,
+        "equity_vs_continue_pct": 30.3,
         "blocked_open_pct": 5.6,
         "eqr": 1,
         "realized_equity_pct": 35.583333333333336,
@@ -834,7 +834,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.1%で、コールのEVは−0.17bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.1,
-        "equity_vs_continue_pct": 31.8,
+        "equity_vs_continue_pct": 31.5,
         "blocked_open_pct": 5.4,
         "eqr": 1,
         "realized_equity_pct": 35.079166666666666,
@@ -845,7 +845,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.9%で、コールのEVは−0.11bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.9,
-        "equity_vs_continue_pct": 31.4,
+        "equity_vs_continue_pct": 31,
         "blocked_open_pct": 5.1,
         "eqr": 1,
         "realized_equity_pct": 35.88333333333333,
@@ -856,7 +856,7 @@
       "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。仮定のEQRを加味した実現後の勝率49.8%で、コールのEVは+0.81bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 54.2,
-        "equity_vs_continue_pct": 40.5,
+        "equity_vs_continue_pct": 40.8,
         "blocked_open_pct": 13.3,
         "eqr": 0.92,
         "realized_equity_pct": 49.84483333333334,
@@ -867,7 +867,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率42.9%で、コールのEVは+0.35bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 46.6,
-        "equity_vs_continue_pct": 34.5,
+        "equity_vs_continue_pct": 33.8,
         "blocked_open_pct": 11.1,
         "eqr": 0.92,
         "realized_equity_pct": 42.85666666666666,
@@ -875,10 +875,10 @@
       }
     },
     "Q9o": {
-      "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率38.3%で、コールのEVは+0.04bb。損益分岐付近のため、フォールドが中心です。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。一部はコールで継続します。配分はフォールド 55%・コール 40%・3bet 5%。",
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率38.3%で、コールのEVは+0.04bb。損益分岐付近のため、フォールドが中心です。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。一部はコールで継続します。配分はフォールド 55%・コール 40%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 41.6,
-        "equity_vs_continue_pct": 33.6,
+        "equity_vs_continue_pct": 32.8,
         "blocked_open_pct": 9.5,
         "eqr": 0.92,
         "realized_equity_pct": 38.26433333333333,
@@ -886,10 +886,10 @@
       }
     },
     "J9o": {
-      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率36.5%で、コールのEVは−0.07bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率36.5%で、コールのEVは−0.07bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 39.7,
-        "equity_vs_continue_pct": 32.8,
+        "equity_vs_continue_pct": 32.9,
         "blocked_open_pct": 9.1,
         "eqr": 0.92,
         "realized_equity_pct": 36.543166666666664,
@@ -897,10 +897,10 @@
       }
     },
     "T9o": {
-      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率37.6%で、コールのEVは−0.00bb。損益分岐付近のため、フォールドが中心です。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。一部はコールで継続します。配分はフォールド 55%・コール 40%・3bet 5%。",
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率37.6%で、コールのEVは−0.00bb。損益分岐付近のため、フォールドが中心です。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。一部はコールで継続します。配分はフォールド 55%・コール 40%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 39.5,
-        "equity_vs_continue_pct": 33.7,
+        "equity_vs_continue_pct": 33,
         "blocked_open_pct": 8.6,
         "eqr": 0.95,
         "realized_equity_pct": 37.56458333333333,
@@ -911,7 +911,7 @@
       "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率44.7%で、コールのEVは+0.47bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 90%・3bet 10%。",
       "facts": {
         "equity_vs_open_pct": 40.6,
-        "equity_vs_continue_pct": 37,
+        "equity_vs_continue_pct": 35.6,
         "blocked_open_pct": 7.9,
         "eqr": 1.1,
         "realized_equity_pct": 44.65541666666667,
@@ -922,7 +922,7 @@
       "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率43.5%で、コールのEVは+0.39bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 39.6,
-        "equity_vs_continue_pct": 34.8,
+        "equity_vs_continue_pct": 34.7,
         "blocked_open_pct": 7.1,
         "eqr": 1.1,
         "realized_equity_pct": 43.518750000000004,
@@ -933,7 +933,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率38.5%で、コールのEVは+0.06bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 60%・フォールド 35%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 38.5,
-        "equity_vs_continue_pct": 34.3,
+        "equity_vs_continue_pct": 33.7,
         "blocked_open_pct": 6.7,
         "eqr": 1,
         "realized_equity_pct": 38.46666666666667,
@@ -941,10 +941,10 @@
       }
     },
     "95s": {
-      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.9%で、コールのEVは−0.11bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.9%で、コールのEVは−0.11bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 35.9,
-        "equity_vs_continue_pct": 32.8,
+        "equity_vs_continue_pct": 32.1,
         "blocked_open_pct": 6,
         "eqr": 1,
         "realized_equity_pct": 35.8875,
@@ -955,7 +955,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.6%で、コールのEVは−0.13bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.6,
-        "equity_vs_continue_pct": 31.6,
+        "equity_vs_continue_pct": 31.4,
         "blocked_open_pct": 5.1,
         "eqr": 1,
         "realized_equity_pct": 35.6,
@@ -977,7 +977,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.0%で、コールのEVは−0.17bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.1,
-        "equity_vs_continue_pct": 31.5,
+        "equity_vs_continue_pct": 31.2,
         "blocked_open_pct": 4.6,
         "eqr": 1,
         "realized_equity_pct": 35.05,
@@ -988,7 +988,7 @@
       "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。仮定のEQRを加味した実現後の勝率48.4%で、コールのEVは+0.72bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 52.6,
-        "equity_vs_continue_pct": 40,
+        "equity_vs_continue_pct": 38.5,
         "blocked_open_pct": 13.2,
         "eqr": 0.92,
         "realized_equity_pct": 48.38433333333334,
@@ -999,7 +999,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率40.2%で、コールのEVは+0.17bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
       "facts": {
         "equity_vs_open_pct": 43.7,
-        "equity_vs_continue_pct": 33.6,
+        "equity_vs_continue_pct": 32.6,
         "blocked_open_pct": 10.9,
         "eqr": 0.92,
         "realized_equity_pct": 40.17333333333333,
@@ -1010,7 +1010,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率36.3%で、コールのEVは−0.09bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 39.5,
-        "equity_vs_continue_pct": 31.9,
+        "equity_vs_continue_pct": 31.6,
         "blocked_open_pct": 9.3,
         "eqr": 0.92,
         "realized_equity_pct": 36.31316666666667,
@@ -1021,7 +1021,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率34.0%で、コールのEVは−0.24bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 36.9,
-        "equity_vs_continue_pct": 31.6,
+        "equity_vs_continue_pct": 30.6,
         "blocked_open_pct": 9,
         "eqr": 0.92,
         "realized_equity_pct": 33.96716666666667,
@@ -1032,7 +1032,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率33.4%で、コールのEVは−0.28bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 36.3,
-        "equity_vs_continue_pct": 32.1,
+        "equity_vs_continue_pct": 32,
         "blocked_open_pct": 8.5,
         "eqr": 0.92,
         "realized_equity_pct": 33.39983333333333,
@@ -1040,10 +1040,10 @@
       }
     },
     "98o": {
-      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率34.5%で、コールのEVは−0.21bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率34.5%で、コールのEVは−0.21bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 36.3,
-        "equity_vs_continue_pct": 34.3,
+        "equity_vs_continue_pct": 33.4,
         "blocked_open_pct": 8,
         "eqr": 0.95,
         "realized_equity_pct": 34.469166666666666,
@@ -1054,7 +1054,7 @@
       "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率43.2%で、コールのEVは+0.37bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 39.3,
-        "equity_vs_continue_pct": 36.4,
+        "equity_vs_continue_pct": 35.1,
         "blocked_open_pct": 7,
         "eqr": 1.1,
         "realized_equity_pct": 43.19791666666667,
@@ -1065,7 +1065,7 @@
       "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率42.8%で、コールのEVは+0.34bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 38.9,
-        "equity_vs_continue_pct": 35,
+        "equity_vs_continue_pct": 33.9,
         "blocked_open_pct": 6.4,
         "eqr": 1.1,
         "realized_equity_pct": 42.776250000000005,
@@ -1076,7 +1076,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率37.0%で、コールのEVは−0.04bb。損益分岐付近のため、コールは50%以下に抑えます。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 50%・フォールド 45%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 37,
-        "equity_vs_continue_pct": 33.7,
+        "equity_vs_continue_pct": 33.5,
         "blocked_open_pct": 5.9,
         "eqr": 1,
         "realized_equity_pct": 36.975,
@@ -1084,10 +1084,10 @@
       }
     },
     "84s": {
-      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.7%で、コールのEVは−0.13bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.7%で、コールのEVは−0.13bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 35.7,
-        "equity_vs_continue_pct": 32,
+        "equity_vs_continue_pct": 31.3,
         "blocked_open_pct": 4.9,
         "eqr": 1,
         "realized_equity_pct": 35.69583333333333,
@@ -1098,7 +1098,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率34.1%で、コールのEVは−0.23bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 34.1,
-        "equity_vs_continue_pct": 31.6,
+        "equity_vs_continue_pct": 30.5,
         "blocked_open_pct": 4.7,
         "eqr": 1,
         "realized_equity_pct": 34.10416666666667,
@@ -1109,7 +1109,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率34.3%で、コールのEVは−0.22bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 34.3,
-        "equity_vs_continue_pct": 30.7,
+        "equity_vs_continue_pct": 30.4,
         "blocked_open_pct": 4.4,
         "eqr": 1,
         "realized_equity_pct": 34.25416666666667,
@@ -1120,7 +1120,7 @@
       "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。仮定のEQRを加味した実現後の勝率46.8%で、コールのEVは+0.62bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 50.9,
-        "equity_vs_continue_pct": 37.4,
+        "equity_vs_continue_pct": 37.5,
         "blocked_open_pct": 12.4,
         "eqr": 0.92,
         "realized_equity_pct": 46.84716666666667,
@@ -1131,7 +1131,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率39.3%で、コールのEVは+0.11bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 100%。",
       "facts": {
         "equity_vs_open_pct": 42.7,
-        "equity_vs_continue_pct": 32.9,
+        "equity_vs_continue_pct": 33.4,
         "blocked_open_pct": 10.2,
         "eqr": 0.92,
         "realized_equity_pct": 39.27250000000001,
@@ -1142,7 +1142,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率34.3%で、コールのEVは−0.22bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 37.3,
-        "equity_vs_continue_pct": 30.8,
+        "equity_vs_continue_pct": 30.3,
         "blocked_open_pct": 8.7,
         "eqr": 0.92,
         "realized_equity_pct": 34.335166666666666,
@@ -1153,7 +1153,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率33.1%で、コールのEVは−0.30bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 36,
-        "equity_vs_continue_pct": 30.6,
+        "equity_vs_continue_pct": 30.3,
         "blocked_open_pct": 8.3,
         "eqr": 0.92,
         "realized_equity_pct": 33.11616666666667,
@@ -1164,7 +1164,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率32.0%で、コールのEVは−0.37bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 34.8,
-        "equity_vs_continue_pct": 31.1,
+        "equity_vs_continue_pct": 30.9,
         "blocked_open_pct": 7.8,
         "eqr": 0.92,
         "realized_equity_pct": 32.0275,
@@ -1175,7 +1175,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率33.2%で、コールのEVは−0.29bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 36.1,
-        "equity_vs_continue_pct": 32.2,
+        "equity_vs_continue_pct": 31.3,
         "blocked_open_pct": 7.2,
         "eqr": 0.92,
         "realized_equity_pct": 33.189,
@@ -1186,7 +1186,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率34.7%で、コールのEVは−0.19bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 36.5,
-        "equity_vs_continue_pct": 33,
+        "equity_vs_continue_pct": 32.2,
         "blocked_open_pct": 7.1,
         "eqr": 0.95,
         "realized_equity_pct": 34.69479166666667,
@@ -1208,7 +1208,7 @@
       "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率41.3%で、コールのEVは+0.25bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 37.6,
-        "equity_vs_continue_pct": 34.7,
+        "equity_vs_continue_pct": 33.1,
         "blocked_open_pct": 5,
         "eqr": 1.1,
         "realized_equity_pct": 41.33708333333334,
@@ -1216,10 +1216,10 @@
       }
     },
     "74s": {
-      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率36.7%で、コールのEVは−0.06bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率36.7%で、コールのEVは−0.06bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 36.7,
-        "equity_vs_continue_pct": 32.7,
+        "equity_vs_continue_pct": 32.1,
         "blocked_open_pct": 4.2,
         "eqr": 1,
         "realized_equity_pct": 36.65416666666667,
@@ -1227,10 +1227,10 @@
       }
     },
     "73s": {
-      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率34.8%で、コールのEVは−0.18bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率34.8%で、コールのEVは−0.18bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 34.8,
-        "equity_vs_continue_pct": 31.9,
+        "equity_vs_continue_pct": 31.4,
         "blocked_open_pct": 3.9,
         "eqr": 1,
         "realized_equity_pct": 34.84583333333333,
@@ -1241,7 +1241,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率33.0%で、コールのEVは−0.31bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 33,
-        "equity_vs_continue_pct": 30.6,
+        "equity_vs_continue_pct": 30,
         "blocked_open_pct": 3.6,
         "eqr": 1,
         "realized_equity_pct": 33,
@@ -1252,7 +1252,7 @@
       "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。仮定のEQRを加味した実現後の勝率44.1%で、コールのEVは+0.44bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 48,
-        "equity_vs_continue_pct": 36.2,
+        "equity_vs_continue_pct": 37,
         "blocked_open_pct": 11.9,
         "eqr": 0.92,
         "realized_equity_pct": 44.1485,
@@ -1263,7 +1263,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率36.9%で、コールのEVは−0.05bb。損益分岐付近のため、フォールドが中心です。一部はコールで継続します。配分はフォールド 70%・コール 30%。",
       "facts": {
         "equity_vs_open_pct": 40.1,
-        "equity_vs_continue_pct": 32,
+        "equity_vs_continue_pct": 32.5,
         "blocked_open_pct": 9.7,
         "eqr": 0.92,
         "realized_equity_pct": 36.85366666666667,
@@ -1274,7 +1274,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率34.1%で、コールのEVは−0.23bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 37.1,
-        "equity_vs_continue_pct": 30.8,
+        "equity_vs_continue_pct": 29.9,
         "blocked_open_pct": 8.1,
         "eqr": 0.92,
         "realized_equity_pct": 34.13966666666667,
@@ -1285,7 +1285,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率30.8%で、コールのEVは−0.45bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 33.4,
-        "equity_vs_continue_pct": 29.6,
+        "equity_vs_continue_pct": 28.4,
         "blocked_open_pct": 7.9,
         "eqr": 0.92,
         "realized_equity_pct": 30.75483333333333,
@@ -1296,7 +1296,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率31.1%で、コールのEVは−0.43bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 33.8,
-        "equity_vs_continue_pct": 30.1,
+        "equity_vs_continue_pct": 29.3,
         "blocked_open_pct": 7.3,
         "eqr": 0.92,
         "realized_equity_pct": 31.076833333333333,
@@ -1307,7 +1307,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率31.3%で、コールのEVは−0.42bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 34.1,
-        "equity_vs_continue_pct": 31.1,
+        "equity_vs_continue_pct": 30,
         "blocked_open_pct": 6.7,
         "eqr": 0.92,
         "realized_equity_pct": 31.326000000000004,
@@ -1318,7 +1318,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率32.4%で、コールのEVは−0.35bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.2,
-        "equity_vs_continue_pct": 31.2,
+        "equity_vs_continue_pct": 30,
         "blocked_open_pct": 6.5,
         "eqr": 0.92,
         "realized_equity_pct": 32.38783333333333,
@@ -1329,7 +1329,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率34.1%で、コールのEVは−0.23bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.9,
-        "equity_vs_continue_pct": 32,
+        "equity_vs_continue_pct": 31.3,
         "blocked_open_pct": 5.8,
         "eqr": 0.95,
         "realized_equity_pct": 34.140625,
@@ -1340,7 +1340,7 @@
       "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率41.9%で、コールのEVは+0.28bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 38.1,
-        "equity_vs_continue_pct": 34.5,
+        "equity_vs_continue_pct": 34.1,
         "blocked_open_pct": 4.5,
         "eqr": 1.1,
         "realized_equity_pct": 41.873333333333335,
@@ -1351,7 +1351,7 @@
       "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率40.5%で、コールのEVは+0.19bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 36.8,
-        "equity_vs_continue_pct": 34.2,
+        "equity_vs_continue_pct": 33.5,
         "blocked_open_pct": 3.5,
         "eqr": 1.1,
         "realized_equity_pct": 40.46625,
@@ -1359,10 +1359,10 @@
       }
     },
     "63s": {
-      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.5%で、コールのEVは−0.14bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.5%で、コールのEVは−0.14bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 35.5,
-        "equity_vs_continue_pct": 32.6,
+        "equity_vs_continue_pct": 32.1,
         "blocked_open_pct": 3.4,
         "eqr": 1,
         "realized_equity_pct": 35.45833333333333,
@@ -1373,7 +1373,7 @@
       "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.1%で、コールのEVは−0.17bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.1,
-        "equity_vs_continue_pct": 31.1,
+        "equity_vs_continue_pct": 30.7,
         "blocked_open_pct": 3.1,
         "eqr": 1,
         "realized_equity_pct": 35.07083333333333,
@@ -1384,7 +1384,7 @@
       "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。仮定のEQRを加味した実現後の勝率44.1%で、コールのEVは+0.43bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 47.9,
-        "equity_vs_continue_pct": 37.7,
+        "equity_vs_continue_pct": 37.3,
         "blocked_open_pct": 11.3,
         "eqr": 0.92,
         "realized_equity_pct": 44.068000000000005,
@@ -1406,7 +1406,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率33.0%で、コールのEVは−0.30bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.9,
-        "equity_vs_continue_pct": 30.7,
+        "equity_vs_continue_pct": 29.6,
         "blocked_open_pct": 7.4,
         "eqr": 0.92,
         "realized_equity_pct": 33.028,
@@ -1417,7 +1417,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率31.2%で、コールのEVは−0.43bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 33.9,
-        "equity_vs_continue_pct": 28.8,
+        "equity_vs_continue_pct": 28.9,
         "blocked_open_pct": 7.2,
         "eqr": 0.92,
         "realized_equity_pct": 31.165,
@@ -1428,7 +1428,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率29.6%で、コールのEVは−0.53bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 32.2,
-        "equity_vs_continue_pct": 27.4,
+        "equity_vs_continue_pct": 26.8,
         "blocked_open_pct": 6.6,
         "eqr": 0.92,
         "realized_equity_pct": 29.585666666666665,
@@ -1439,7 +1439,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率30.6%で、コールのEVは−0.46bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 33.3,
-        "equity_vs_continue_pct": 28.6,
+        "equity_vs_continue_pct": 28.4,
         "blocked_open_pct": 6,
         "eqr": 0.92,
         "realized_equity_pct": 30.643666666666668,
@@ -1450,7 +1450,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率29.6%で、コールのEVは−0.53bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 32.2,
-        "equity_vs_continue_pct": 29.7,
+        "equity_vs_continue_pct": 29.3,
         "blocked_open_pct": 5.9,
         "eqr": 0.92,
         "realized_equity_pct": 29.5895,
@@ -1461,7 +1461,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率31.5%で、コールのEVは−0.41bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 34.2,
-        "equity_vs_continue_pct": 30.4,
+        "equity_vs_continue_pct": 29.1,
         "blocked_open_pct": 5.1,
         "eqr": 0.92,
         "realized_equity_pct": 31.4985,
@@ -1472,7 +1472,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率32.7%で、コールのEVは−0.32bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 34.5,
-        "equity_vs_continue_pct": 32,
+        "equity_vs_continue_pct": 31.2,
         "blocked_open_pct": 4.6,
         "eqr": 0.95,
         "realized_equity_pct": 32.739374999999995,
@@ -1483,7 +1483,7 @@
       "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率42.1%で、コールのEVは+0.30bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 38.3,
-        "equity_vs_continue_pct": 35,
+        "equity_vs_continue_pct": 34.1,
         "blocked_open_pct": 2.8,
         "eqr": 1.1,
         "realized_equity_pct": 42.143750000000004,
@@ -1494,7 +1494,7 @@
       "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率39.8%で、コールのEVは+0.15bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 36.2,
-        "equity_vs_continue_pct": 32.8,
+        "equity_vs_continue_pct": 33.3,
         "blocked_open_pct": 2.7,
         "eqr": 1.1,
         "realized_equity_pct": 39.810833333333335,
@@ -1502,10 +1502,10 @@
       }
     },
     "52s": {
-      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.1%で、コールのEVは−0.17bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。仮定のEQRを加味した実現後の勝率35.1%で、コールのEVは−0.17bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 35.1,
-        "equity_vs_continue_pct": 31.8,
+        "equity_vs_continue_pct": 31.5,
         "blocked_open_pct": 2.4,
         "eqr": 1,
         "realized_equity_pct": 35.083333333333336,
@@ -1516,7 +1516,7 @@
       "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。仮定のEQRを加味した実現後の勝率42.4%で、コールのEVは+0.32bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 46,
-        "equity_vs_continue_pct": 37.3,
+        "equity_vs_continue_pct": 36.5,
         "blocked_open_pct": 10.3,
         "eqr": 0.92,
         "realized_equity_pct": 42.362166666666674,
@@ -1527,7 +1527,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率35.6%で、コールのEVは−0.13bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 38.7,
-        "equity_vs_continue_pct": 32.2,
+        "equity_vs_continue_pct": 31.7,
         "blocked_open_pct": 8.1,
         "eqr": 0.92,
         "realized_equity_pct": 35.61166666666667,
@@ -1538,7 +1538,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率31.9%で、コールのEVは−0.38bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 34.6,
-        "equity_vs_continue_pct": 29.6,
+        "equity_vs_continue_pct": 29,
         "blocked_open_pct": 6.5,
         "eqr": 0.92,
         "realized_equity_pct": 31.874166666666664,
@@ -1560,7 +1560,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率30.2%で、コールのEVは−0.49bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 32.8,
-        "equity_vs_continue_pct": 28.6,
+        "equity_vs_continue_pct": 28,
         "blocked_open_pct": 5.6,
         "eqr": 0.92,
         "realized_equity_pct": 30.191333333333336,
@@ -1571,7 +1571,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率29.0%で、コールのEVは−0.57bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 31.5,
-        "equity_vs_continue_pct": 28.4,
+        "equity_vs_continue_pct": 27,
         "blocked_open_pct": 5.1,
         "eqr": 0.92,
         "realized_equity_pct": 29.02216666666667,
@@ -1582,7 +1582,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率28.9%で、コールのEVは−0.58bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 31.4,
-        "equity_vs_continue_pct": 29.2,
+        "equity_vs_continue_pct": 28.3,
         "blocked_open_pct": 4.9,
         "eqr": 0.92,
         "realized_equity_pct": 28.910999999999998,
@@ -1593,7 +1593,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率29.6%で、コールのEVは−0.53bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 32.2,
-        "equity_vs_continue_pct": 29.1,
+        "equity_vs_continue_pct": 28.6,
         "blocked_open_pct": 4.2,
         "eqr": 0.92,
         "realized_equity_pct": 29.647000000000002,
@@ -1604,7 +1604,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率31.1%で、コールのEVは−0.43bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 33.8,
-        "equity_vs_continue_pct": 30,
+        "equity_vs_continue_pct": 29.2,
         "blocked_open_pct": 3.6,
         "eqr": 0.92,
         "realized_equity_pct": 31.115166666666667,
@@ -1615,7 +1615,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率32.5%で、コールのEVは−0.34bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 34.2,
-        "equity_vs_continue_pct": 31.3,
+        "equity_vs_continue_pct": 30.9,
         "blocked_open_pct": 3,
         "eqr": 0.95,
         "realized_equity_pct": 32.48208333333333,
@@ -1626,7 +1626,7 @@
       "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率39.0%で、コールのEVは+0.10bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 60%・フォールド 35%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 35.5,
-        "equity_vs_continue_pct": 33,
+        "equity_vs_continue_pct": 32.9,
         "blocked_open_pct": 1.8,
         "eqr": 1.1,
         "realized_equity_pct": 39.03625,
@@ -1637,7 +1637,7 @@
       "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。仮定のEQRを加味した実現後の勝率38.4%で、コールのEVは+0.05bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。既存の混合配分を維持し、一部はフォールドします。配分はコール 65%・フォールド 30%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 34.9,
-        "equity_vs_continue_pct": 31.1,
+        "equity_vs_continue_pct": 30.8,
         "blocked_open_pct": 1.5,
         "eqr": 1.1,
         "realized_equity_pct": 38.35333333333334,
@@ -1648,7 +1648,7 @@
       "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。仮定のEQRを加味した実現後の勝率41.9%で、コールのEVは+0.29bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 45.5,
-        "equity_vs_continue_pct": 35.8,
+        "equity_vs_continue_pct": 36.1,
         "blocked_open_pct": 10.1,
         "eqr": 0.92,
         "realized_equity_pct": 41.8945,
@@ -1659,7 +1659,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率35.8%で、コールのEVは−0.12bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 39,
-        "equity_vs_continue_pct": 30.8,
+        "equity_vs_continue_pct": 32,
         "blocked_open_pct": 7.9,
         "eqr": 0.92,
         "realized_equity_pct": 35.837833333333336,
@@ -1670,7 +1670,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率32.0%で、コールのEVは−0.37bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 34.7,
-        "equity_vs_continue_pct": 29.4,
+        "equity_vs_continue_pct": 28.9,
         "blocked_open_pct": 6.3,
         "eqr": 0.92,
         "realized_equity_pct": 31.9585,
@@ -1681,7 +1681,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率30.6%で、コールのEVは−0.46bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 33.3,
-        "equity_vs_continue_pct": 28.1,
+        "equity_vs_continue_pct": 27.2,
         "blocked_open_pct": 6,
         "eqr": 0.92,
         "realized_equity_pct": 30.63983333333334,
@@ -1692,7 +1692,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率30.1%で、コールのEVは−0.50bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 32.7,
-        "equity_vs_continue_pct": 27.4,
+        "equity_vs_continue_pct": 27.1,
         "blocked_open_pct": 5.4,
         "eqr": 0.92,
         "realized_equity_pct": 30.05333333333333,
@@ -1703,7 +1703,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率29.3%で、コールのEVは−0.55bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 31.8,
-        "equity_vs_continue_pct": 27.3,
+        "equity_vs_continue_pct": 27.5,
         "blocked_open_pct": 4.8,
         "eqr": 0.92,
         "realized_equity_pct": 29.2905,
@@ -1714,7 +1714,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率27.6%で、コールのEVは−0.67bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 30,
-        "equity_vs_continue_pct": 27,
+        "equity_vs_continue_pct": 26.7,
         "blocked_open_pct": 4.7,
         "eqr": 0.92,
         "realized_equity_pct": 27.577,
@@ -1725,7 +1725,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率28.7%で、コールのEVは−0.59bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 31.2,
-        "equity_vs_continue_pct": 27.7,
+        "equity_vs_continue_pct": 26.9,
         "blocked_open_pct": 3.9,
         "eqr": 0.92,
         "realized_equity_pct": 28.684833333333337,
@@ -1736,7 +1736,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率29.7%で、コールのEVは−0.53bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 32.3,
-        "equity_vs_continue_pct": 29.1,
+        "equity_vs_continue_pct": 28.6,
         "blocked_open_pct": 3.4,
         "eqr": 0.92,
         "realized_equity_pct": 29.689166666666665,
@@ -1747,7 +1747,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率30.5%で、コールのEVは−0.47bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 33.1,
-        "equity_vs_continue_pct": 29.9,
+        "equity_vs_continue_pct": 29.6,
         "blocked_open_pct": 2.7,
         "eqr": 0.92,
         "realized_equity_pct": 30.482666666666663,
@@ -1758,7 +1758,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率30.6%で、コールのEVは−0.47bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 32.2,
-        "equity_vs_continue_pct": 29.3,
+        "equity_vs_continue_pct": 30.1,
         "blocked_open_pct": 1.8,
         "eqr": 0.95,
         "realized_equity_pct": 30.554375,
@@ -1766,7 +1766,7 @@
       }
     },
     "32s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率36.7%で、コールのEVは−0.06bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに59.3%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。仮定のEQRを加味した実現後の勝率36.7%で、コールのEVは−0.06bb。コールでは投資を回収できない見積もりのため、フォールドします。ただし相手は3betに64.7%降りるので、一部はブラフの3betに回します。配分はフォールド 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 33.4,
         "equity_vs_continue_pct": 31.3,
@@ -1780,7 +1780,7 @@
       "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。仮定のEQRを加味した実現後の勝率41.5%で、コールのEVは+0.26bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は3betに回し、3betするレンジが強いハンドだけに偏らないようにします。配分はコール 95%・3bet 5%。",
       "facts": {
         "equity_vs_open_pct": 45.1,
-        "equity_vs_continue_pct": 35.1,
+        "equity_vs_continue_pct": 35.3,
         "blocked_open_pct": 9.9,
         "eqr": 0.92,
         "realized_equity_pct": 41.4575,
@@ -1791,7 +1791,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率35.3%で、コールのEVは−0.15bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 38.4,
-        "equity_vs_continue_pct": 31,
+        "equity_vs_continue_pct": 30.5,
         "blocked_open_pct": 7.6,
         "eqr": 0.92,
         "realized_equity_pct": 35.305,
@@ -1802,7 +1802,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率32.4%で、コールのEVは−0.34bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 35.3,
-        "equity_vs_continue_pct": 29.7,
+        "equity_vs_continue_pct": 29,
         "blocked_open_pct": 6,
         "eqr": 0.92,
         "realized_equity_pct": 32.43383333333333,
@@ -1813,7 +1813,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率30.3%で、コールのEVは−0.49bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 32.9,
-        "equity_vs_continue_pct": 28,
+        "equity_vs_continue_pct": 27.3,
         "blocked_open_pct": 5.7,
         "eqr": 0.92,
         "realized_equity_pct": 30.256499999999996,
@@ -1824,7 +1824,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率28.9%で、コールのEVは−0.58bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 31.4,
-        "equity_vs_continue_pct": 26.9,
+        "equity_vs_continue_pct": 25.8,
         "blocked_open_pct": 5.1,
         "eqr": 0.92,
         "realized_equity_pct": 28.93016666666667,
@@ -1835,7 +1835,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率28.6%で、コールのEVは−0.60bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 31,
-        "equity_vs_continue_pct": 27.3,
+        "equity_vs_continue_pct": 26.9,
         "blocked_open_pct": 4.6,
         "eqr": 0.92,
         "realized_equity_pct": 28.562166666666666,
@@ -1846,7 +1846,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率27.9%で、コールのEVは−0.64bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 30.4,
-        "equity_vs_continue_pct": 27,
+        "equity_vs_continue_pct": 26.9,
         "blocked_open_pct": 4.4,
         "eqr": 0.92,
         "realized_equity_pct": 27.93733333333333,
@@ -1857,7 +1857,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率27.3%で、コールのEVは−0.68bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 29.7,
-        "equity_vs_continue_pct": 26,
+        "equity_vs_continue_pct": 25.1,
         "blocked_open_pct": 3.6,
         "eqr": 0.92,
         "realized_equity_pct": 27.335499999999996,
@@ -1868,7 +1868,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率27.6%で、コールのEVは−0.66bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 30.1,
-        "equity_vs_continue_pct": 27,
+        "equity_vs_continue_pct": 27.2,
         "blocked_open_pct": 3.1,
         "eqr": 0.92,
         "realized_equity_pct": 27.645999999999997,
@@ -1879,7 +1879,7 @@
       "reason": "ストレートもフラッシュも作りにくいオフスートです。仮定のEQRを加味した実現後の勝率28.9%で、コールのEVは−0.58bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 31.4,
-        "equity_vs_continue_pct": 27.8,
+        "equity_vs_continue_pct": 28.9,
         "blocked_open_pct": 2.4,
         "eqr": 0.92,
         "realized_equity_pct": 28.880333333333336,
@@ -1890,7 +1890,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率28.1%で、コールのEVは−0.63bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 30.5,
-        "equity_vs_continue_pct": 27.8,
+        "equity_vs_continue_pct": 27.1,
         "blocked_open_pct": 1.5,
         "eqr": 0.92,
         "realized_equity_pct": 28.083000000000002,
@@ -1901,7 +1901,7 @@
       "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。仮定のEQRを加味した実現後の勝率28.9%で、コールのEVは−0.58bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
       "facts": {
         "equity_vs_open_pct": 30.4,
-        "equity_vs_continue_pct": 28.2,
+        "equity_vs_continue_pct": 27.7,
         "blocked_open_pct": 1.2,
         "eqr": 0.95,
         "realized_equity_pct": 28.907708333333332,

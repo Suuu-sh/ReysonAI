@@ -34,18 +34,24 @@ TIGHT_OOP = profile('''
 65 35: QQ
 75 10: JJ
 60 5: TT
-45 0: 99
-30 0: 88
-20 0: 77
-10 0: 66 55
+60 0: 99
+50 0: 88
+45 0: 77
+40 0: 66
+35 0: 55
+30 0: 44
+25 0: 33
+20 0: 22
 30 70: AKs
 35 60: AKo
 65 20: AQs
-55 5: AJs KQs
-40 0: ATs KJs QJs JTs
+65 5: AJs
+55 5: KQs
+40 0: ATs
+30 0: KJs QJs JTs
 25 0: KTs QTs T9s 98s
 10 0: A9s A8s J9s 87s 76s 65s 54s
-20 15: AQo
+40 20: AQo
 5 5: AJo KQo
 10 25: A5s
 5 15: A4s
@@ -56,10 +62,13 @@ MID_OOP = profile('''
 65 30: JJ
 70 15: TT
 65 5: 99
-50 0: 88
-40 0: 77
-25 0: 66 55
-10 0: 44 33 22
+55 0: 88
+50 0: 77
+45 0: 66
+40 0: 55
+35 0: 44
+30 0: 33
+25 0: 22
 20 80: AKs
 25 75: AKo
 60 35: AQs
@@ -69,8 +78,9 @@ MID_OOP = profile('''
 50 0: KTs QTs T9s 98s
 30 0: A9s A8s J9s 87s 76s 65s 54s
 10 0: A7s A6s K9s Q9s T8s 97s 86s
-40 20: AQo
-15 10: AJo KQo
+55 20: AQo
+30 10: AJo
+15 10: KQo
 5 5: ATo KJo QJo
 15 35: A5s
 10 25: A4s
@@ -83,8 +93,11 @@ LOOSE_OOP = profile('''
 70 15: 99
 70 5: 88
 60 0: 77
-45 0: 66 55
-25 0: 44 33 22
+50 0: 66
+45 0: 55
+40 0: 44
+35 0: 33
+30 0: 22
 10 90: AKs
 15 85: AKo
 45 55: AQs
@@ -190,15 +203,21 @@ PROFILES = {
     ('UTG', 'CO'): profile('''
 80 10: JJ
 65 5: TT
-50 0: 99
-25 20: AQo
+65 0: 99
+40 20: AQo
 15 25: A5s
 ''', TIGHT_OOP),
     ('UTG', 'BTN'): profile('''
 80 10: JJ
 70 5: TT
-55 0: 99
-40 0: 88
+70 0: 99
+55 0: 88
+50 0: 77
+45 0: 66
+40 0: 55
+35 0: 44
+30 0: 33
+25 0: 22
 30 0: KTs QTs T9s 98s
 15 30: A5s
 ''', TIGHT_OOP),
@@ -214,6 +233,12 @@ PROFILES = {
 75 15: TT
 70 5: 99
 60 0: 88
+55 0: 77
+50 0: 66
+45 0: 55
+40 0: 44
+35 0: 33
+30 0: 22
 20 40: A5s
 ''', MID_OOP),
     ('HJ', 'SB'): MID_IP,
@@ -256,9 +281,12 @@ PROFILES = {
 75 20: TT
 80 10: 99
 85 5: 88
-80 0: 77
-60 0: 66 55
-40 0: 44 33 22
+70 0: 77
+60 0: 66
+45 0: 55
+40 0: 44
+35 0: 33
+30 0: 22
 70 25: AJs KQs
 80 15: ATs KJs
 90 5: QJs JTs
@@ -287,14 +315,13 @@ PROFILES = {
 # frequencies are unchanged, and a stronger pair keeps at least a weaker pair's
 # continuation (HJ vs BB: 77 matches the filled 66). UTG vs HJ/CO keep TT fold
 # <=10, 99 <=30, 88 <=45, 77 <=55. Values are (call, four_bet); fold is the rest.
+# 2026-10-02: when the opener is OOP to the 3bettor only +1.50bb fills
+# (OOP_THREE_BET_FILL_EV), so the OOP spots (UTG/HJ/CO vs a later non-blind seat,
+# SB vs BB) no longer take pair revisions: their profiles author a monotone pair
+# ladder instead (22-55 call 20-45%, 66-99 mixed 40-70%), smoothly from 99 to 22.
 PAIR_REVISIONS = {
-    ('UTG', 'HJ'): {'77': (60, 0), '66': (60, 0), '55': (60, 0), '44': (40, 0)},
-    ('UTG', 'CO'): {'66': (55, 0), '55': (55, 0), '44': (55, 0)},
-    ('UTG', 'BTN'): {'66': (60, 0)},
     ('UTG', 'SB'): {'66': (55, 0)},
     ('UTG', 'BB'): {'99': (70, 0)},
-    ('HJ', 'CO'): {'55': (85, 0), '44': (70, 0)},
-    ('HJ', 'BTN'): {'44': (70, 0), '33': (70, 0)},
     ('HJ', 'SB'): {'44': (95, 0), '33': (95, 0)},
     ('HJ', 'BB'): {'77': (100, 0), '55': (55, 0)},
     ('CO', 'BB'): {'33': (80, 0), '22': (55, 0)},

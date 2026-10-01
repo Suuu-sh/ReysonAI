@@ -156,7 +156,9 @@ test("squeeze auto-profit: opener × caller fold is within break-even, or a prov
 test("audit flags a reachable row folded as a placeholder violation only when it is unreachable", () => {
   const d = datasets();
   const spot = d.squeezes.spots.find(s => s.id === "BTN_vs_BB_squeeze_COfold");
-  const row = spot.hands.find(r => r.hand === "AA"); // BTN never flats AA versus a CO open
+  // Any hand BTN never flats versus a CO open is an unreachable placeholder here.
+  const flats = new Map(d.responses.spots.find(s => s.id === "BTN_vs_CO").hands.map(r => [r.hand, r.call]));
+  const row = spot.hands.find(r => flats.get(r.hand) === 0 && r.fold === 100);
   Object.assign(row, { fold: 50, call: 50 });
   assert.ok(auditEstimates(d).findings.some(f => f.check === "range-flow" && f.spot === spot.id && isBlockingAuditFinding(f)));
 });
