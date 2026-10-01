@@ -42,10 +42,12 @@ const suitMask = new Int16Array(4);
 const byCount = new Int8Array(13);
 
 // High card of the best straight in a 13-bit rank mask (the wheel counts as 3), or -1.
-function straightHighOf(mask) {
-  for (let high = 12; high >= 4; high -= 1) if (((mask >> (high - 4)) & 31) === 31) return high;
-  return (mask & 0x100F) === 0x100F ? 3 : -1;
+const straightHighs = new Int8Array(8192).fill(-1);
+for (let mask = 0; mask < straightHighs.length; mask++) {
+  for (let high = 12; high >= 4; high--) if (((mask >> (high - 4)) & 31) === 31) { straightHighs[mask] = high; break; }
+  if (straightHighs[mask] === -1 && (mask & 0x100F) === 0x100F) straightHighs[mask] = 3;
 }
+const straightHighOf = mask => straightHighs[mask & 8191];
 
 const packed = (category, k0, k1, k2, k3, k4) => ((((category * 16 + k0) * 16 + k1) * 16 + k2) * 16 + k3) * 16 + k4;
 

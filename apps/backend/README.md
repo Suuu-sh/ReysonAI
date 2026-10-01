@@ -1,16 +1,16 @@
-# SolveaAI Edge API
+# EvionAI Edge API
 
 Cloudflare Worker上で動作するTypeScriptの読み取り専用APIです。
 
 ## 責務
 
 - 公開済みSolutionの一覧・詳細・Resolveリクエストを処理する
-- Cloudflare R2の検証済み成果物だけを読む
+- Cloudflare R2の検証済み成果物とD1の公開済み推定データ・方針を読む
 - Solver、Redis、ローカルAPIへ接続しない
 - Job登録 route を持たない
 
-現在の `apps/frontend` は保存済み推定レンジを直接読み、このAPIを呼び出しません。
-このWorkerは独立した実験・配信経路で、公開済みR2成果物だけを返します。
+現在の `apps/frontend` は `VITE_API_BASE` を設定したビルドで、このAPIからD1の保存済み推定データ・方針を取得します。未設定のVite開発環境は同じ形のローカル経路を使います。
+Rust SolverのR2成果物配信は、アプリ向けのD1推定データ配信とは別の経路です。
 
 ## R2の成果物
 

@@ -151,6 +151,53 @@ fingerprint and from `later_sizing_hash`); simulation reports carry `defence_ver
 - Contexts are cached per `(node, board, actions taken)` with an LRU per street; the reach weights of
   the flop and turn stages are cached separately.
 
+### W1 exact computation (2026-10-01)
+
+`range-equity.mjs` owns the weighted-range queries. Whole-range floors, ceilings and bluff
+classification batch their queries in final-board order, retaining the original scan-to-prefix
+transition, rank-prefix accumulation, blocker subtraction and runout accumulation order. Rank
+boundaries and board tiers are shared; the first card's subtractions are reusable. River queries
+merge sorted hero scores with the per-card prefix lists. Large temporary range/table indexes are
+released after the context's equities are cached, including the dense weights and per-card JS
+arrays, so the larger context LRU does not keep their indexes alive. River batch prefixes use
+worker-local typed scratch buffers; uncommon subsequent point/facts queries reconstruct the
+same original indexes from the stored sparse weights.
+
+Long self-play runs also cache equity for counterfactual hands in the saved preflop support.
+Computed calls and forced hand-EV actions can reach hands with zero saved-policy reach; without
+this completion, their point queries would rebuild and retain the released prefix tables.
+Additional queries are appended only after the original three scan queries, so the original
+floating-point path is unchanged. Completed caches use packed Float64 values (preserving null,
+undefined and signed zero), and large-run reach stages store sparse weights. Small interactive
+requests retain their cheaper shared dense stages. A permanent regression test covers the
+zero-policy-reach case and index lifetime.
+
+The optional, browser-safe scalar `equity-kernel.mjs` generates a small WebAssembly loop from its
+readable assembler. It uses the same sequential f64 operations, without SIMD, fused operations,
+reassociation, sampling changes or randomness. CSP/edge environments that cannot compile it use
+the exact JavaScript path. Its prefix/card-list preparation also preserves the original rank
+order and per-card combo-ID order. `tests/postflop-performance.test.mjs` compares both against the frozen
+test-only reference **bit-for-bit**, and pins the allocation-free draw/tier lookup as well. The
+existing evaluator reference tests cover the straight-mask lookup.
+
+Offline `simulate` and flop `hand-ev` now use `availableParallelism()` board workers. Each worker
+owns one stable inputs/policy identity and computes every history and hand of its assigned board;
+board completion order does not affect seed material or report ordering. Audit still replays the
+entire fixed-seed report (using the parallel replay) and performs all existing balance checks.
+When a hand-EV worker moves to another board, it releases the completed board's contexts,
+betting and reach-stage caches, preserving its policy/base weights and large-run storage mode.
+All hands/histories within a board still share their caches; completed boards are never revisited.
+Workers have explicit 384 MiB old-generation and 64 MiB young-generation heap limits, avoiding
+ten independent multi-GiB default heaps; typed-array caches remain outside the JS heap.
+The fixed representative-board hand-EV queue uses a measured longest-first order to avoid
+starting the expensive low-paired boards only after the first wave has completed. Custom boards
+retain their relative order; results are always restored to the caller's original board order.
+Shared browser modules do not import the Node scheduler. On-demand flop EV uses **600** samples
+per action; saved board EV remains **2,000**, and later-street defaults remain **600**.
+
+See `scripts/postflop-ai/perf/README.md` for golden replay, isolated timing and the measured W1
+results. Performance changes never author or publish a policy or modify the saved ranges.
+
 ## Reading the numbers
 
 The defence is a best response to B, so it is only as sensible as the policy's betting ranges. A

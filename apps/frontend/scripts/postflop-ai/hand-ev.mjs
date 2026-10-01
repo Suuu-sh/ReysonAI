@@ -11,6 +11,7 @@ import { parseFlopBoard } from "./model.mjs";
 import { FLOP_HAND_EV_DEFAULT_SAMPLES, HISTORIES, handEvForBoard as handEvForBoardCore, historiesFor,
   playFromNode } from "./flop-hand-ev-core.mjs";
 import { DEFENCE_VERSION } from "./defence.mjs";
+import { computeBoardBatch } from "./board-batch.mjs";
 
 export { playFromNode };
 
@@ -33,7 +34,7 @@ export function handEvForBoard(board, inputs, policy, samples = DEFAULT_SAMPLES,
   return handEvForBoardCore(board, inputs, policy, samples, laterPolicy);
 }
 
-export function generateHandEv({ spotId = DEFAULT_SPOT_ID, samples = DEFAULT_SAMPLES, onBoard = () => {} } = {}) {
+export async function generateHandEv({ spotId = DEFAULT_SPOT_ID, samples = DEFAULT_SAMPLES, onBoard = () => {} } = {}) {
   const inputs = loadInputs(spotId);
   const candidate = loadCandidate(inputs);
   const laterCandidate = loadLaterCandidate(inputs, candidate);
@@ -42,7 +43,7 @@ export function generateHandEv({ spotId = DEFAULT_SPOT_ID, samples = DEFAULT_SAM
     later_policy_hash: sha(laterPolicy), later_sizing_hash: laterSizingHash(),
     policy_hash: candidate.metadata.policy_hash, samples_per_hand_action: samples, seed: config.seed,
     note: "AI方針どうしの自己対戦（ターン・リバーは保存済み方針、未保存時は固定参照方針。ベットに対するコール／フォールドはエクイティと必要勝率の計算）で見積もった値。GTO・ソルバーのEVではない。", boards: {} };
-  for (const board of boards()) { result.boards[board.id] = handEvForBoard(board, inputs, candidate.policy, samples, laterPolicy); onBoard(board.id); }
+  result.boards = await computeBoardBatch({ kind: "hand-ev", inputs, policy: candidate.policy, laterCandidate: laterPolicy, samples, onBoard });
   writeFileSync(artifactPaths(inputs.spot).handEv, `${JSON.stringify(result)}\n`);
   return result;
 }

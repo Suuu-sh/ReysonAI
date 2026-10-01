@@ -280,7 +280,19 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - The roadmap states that spot/policy-file counts are not a claim of full board or action-branch coverage. Browser inspection on `/admin` showed P1 TODO rows above P2/P3, with P1 3bet and 4bet flop/turn-river copies still marked TODO rather than done.
 - Full verification passed: 245 UI tests, production build, 5 Sites tests, lint, and typecheck. The existing large-chunk build warning remains.
 
+## Browser-side postflop compute layer (2026-09-29)
+- Added `browser-inputs.mjs` and `postflop-compute.ts` without switching `PostflopTrial.tsx`; each compute entrypoint receives its datasets and saved candidates directly. The browser bundle dependency graph does not include Node built-in imports; a Vite library build of the compute entry emitted zero `node:` imports.
+- JSON parity coverage compares browser calculations with the existing Node route functions for BTN-open / BB-call and HJ-open / BTN 4bet-call, including input fingerprints, flop board, flop explanation, turn view, turn explanation, and on-demand hand EV. `.local` candidates were present and both spot pairs ran (not skipped).
+- Verification: the requested four postflop test files passed (38/38); full `node --test tests/*.test.mjs` passed (284/284); `npm run build` passed and emitted all Sites artifacts with zero `node:` imports in `dist/client` JS; `npm run test:sites` passed (5/5). Browser smoke opened local `/app` and confirmed the range-analysis workspace loads. `PostflopTrial.tsx` remains unchanged.
+
 ## Turn/river card-picker layout (2026-09-30)
 - Replaced the rank-major 52-card wrap with four labeled suit rows. The dialog now shows the existing board, preserves unavailable-card and selected-card states, and wraps each suit into two rank lines on narrow screens.
 - Browser verification on `/app`: completed BTN open → BB call → flop A♠ 7♦ 2♣ → turn K♠ → river. The river dialog showed four suit groups, the four used cards disabled, and a readable desktop layout. A 390px viewport also showed all four groups without horizontal clipping.
 - Verification: 24 postflop-trial tests, typecheck, all 286 UI tests, production build, and 5 Sites tests passed.
+
+## Working-tree verification and current documentation (2026-10-01)
+- Reviewed and retained the existing local-account implementation; no real authentication, sync or billing was added. Verified the English account menu and Settings page in the local browser without modifying the existing profile or practice history.
+- Full existing frontend suite passed 318/318. Added three storage regressions for selective practice export/cleanup, appearance/range persistence, and profile-only logout; focused account suite passed 7/7.
+- Configured typecheck and lint passed, production build and all 5 Sites packaging tests passed. Typecheck currently covers site/backend only, not the complete product UI; lint also has an explicit limited file list.
+- Updated README, postflop pilot guide, backend introduction and later-policy instructions to match arbitrary-board runtime support, representative-only authoring/audit, fail-closed later policies, local settings and D1 delivery. Preserved compatibility identifiers and did not regenerate/publish strategies.
+- Kept unrelated perf/equality.mjs, .claude/launch.json and old apps/preflop-ui/.vite cache uncommitted and unchanged. App remains running at http://127.0.0.1:5173/app.

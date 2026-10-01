@@ -6,7 +6,7 @@ import { dirname } from "node:path";
 import { auditExperiment } from "./audit.mjs";
 import { generate, generateLater, loadCandidate, loadLaterCandidate, resolveEffort, resolveModel } from "./generate.mjs";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
-import { simulate } from "./simulation.mjs";
+import { simulateParallel } from "./simulation-parallel.mjs";
 import { DEFAULT_SAMPLES, generateHandEv } from "./hand-ev.mjs";
 import { LATER_HAND_EV_DEFAULT_SAMPLES, generateLaterHandEv } from "./later-hand-ev.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById } from "./spots.mjs";
@@ -50,7 +50,7 @@ async function runSpot(spotId) {
   if (command === "simulate") {
     const samples = samplesOption(config.samples_per_board_profile_seat);
     const candidate = loadCandidate(inputs);
-    const report = simulate(inputs, candidate.policy, samples, loadLaterCandidate(inputs, candidate));
+    const report = await simulateParallel(inputs, candidate.policy, samples, loadLaterCandidate(inputs, candidate));
     mkdirSync(dirname(paths.report), { recursive: true });
     writeFileSync(paths.report, `${JSON.stringify(report, null, 2)}\n`);
     const below = report.results.filter(row => row.delta_bb.ci95[1] < 0).length;
@@ -60,7 +60,7 @@ async function runSpot(spotId) {
     const samples = samplesOption(DEFAULT_SAMPLES);
     mkdirSync(dirname(paths.handEv), { recursive: true });
     const started = Date.now();
-    generateHandEv({ spotId, samples, onBoard: board => console.log(`  ${board} (${Math.round((Date.now() - started) / 1000)}s)`) });
+    await generateHandEv({ spotId, samples, onBoard: board => console.log(`  ${board} (${Math.round((Date.now() - started) / 1000)}s)`) });
     return `Per-hand action EV / EQR (${samples} deals per hand and action): ${paths.handEv} (AI policy self-play; not GTO)`;
   }
   if (command === "later-hand-ev") {
@@ -72,7 +72,9 @@ async function runSpot(spotId) {
   }
   const candidate = loadCandidate(inputs);
   if (!existsSync(paths.report)) throw new Error("Simulation report missing; run postflop-ai:simulate first");
-  const result = auditExperiment(inputs, candidate, JSON.parse(readFileSync(paths.report, "utf8")), loadLaterCandidate(inputs, candidate));
+  const laterCandidate = loadLaterCandidate(inputs, candidate);
+  const replay = await simulateParallel(inputs, candidate.policy, config.samples_per_board_profile_seat, laterCandidate);
+  const result = auditExperiment(inputs, candidate, JSON.parse(readFileSync(paths.report, "utf8")), laterCandidate, { replay });
   return [`PASS: ${result.checkedCombos} expanded combo decisions, ${result.resultCount} comparisons, fixed-seed replay.`,
     `Advisory EV warnings: ${result.warnings.length}${result.warnings.length ? `; ${result.warnings.slice(0, 5).join(" | ")}` : ""}`,
     "AI estimate only; human review required before any publication."].join("\n");

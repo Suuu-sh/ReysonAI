@@ -66,7 +66,7 @@ export function playHand({ hands, flop, runout, hero, policy, laterPolicy = refe
   const flopChoice = (seat, node) => {
     let mix;
     if (seat === hero) {
-      mix = policyMix(policy, node, hands[seat], flop);
+      mix = defence ? defence.baseMix(table, flop, node, hands[seat]) : policyMix(policy, node, hands[seat], flop);
       if (defence) mix = defence.mix(table, flop, node, hands[seat], mix);
     } else mix = opponentMix(node, hands[seat], flop, profile);
     return choose(mix, random(), NODES[node]);
@@ -75,7 +75,7 @@ export function playHand({ hands, flop, runout, hero, policy, laterPolicy = refe
   playLaterStreetsWithPolicy(table, flop, runout, (seat, node, board, line) => {
     let mix;
     if (seat === hero) {
-      mix = laterPolicyMix(laterPolicy, node, hands[seat], board, line);
+      mix = defence ? defence.baseMix(table, board, node, hands[seat]) : laterPolicyMix(laterPolicy, node, hands[seat], board, line);
       if (defence) mix = defence.mix(table, board, node, hands[seat], mix);
     } else mix = referenceLaterMix(node, hands[seat], board, line, profile);
     return choose(mix, random(), LATER_NODES[node]);
@@ -102,14 +102,14 @@ function stats(values) {
 // laterCandidate may be the raw policy (like candidate) or the loadLaterCandidate artifact.
 // The candidate plays the computed defence at facing nodes (`computedDefence: false` plays its
 // policy mixes as saved, e.g. the reference-versus-reference drift check).
-export function simulate(inputs, candidate, samples = config.samples_per_board_profile_seat, laterCandidate = null, { computedDefence = true } = {}) {
+export function simulate(inputs, candidate, samples = config.samples_per_board_profile_seat, laterCandidate = null, { computedDefence = true, boardList = boards() } = {}) {
   if (!Number.isInteger(samples) || samples < 1) throw new Error("Invalid simulation sample count");
   const { spot } = inputs;
   const referencePolicy = referencePolicyFor(spot.tree);
   const laterPolicy = laterCandidate ? validateLaterPolicy(laterCandidate.policy ?? laterCandidate) : referenceLater;
   const defence = computedDefence ? defenceFor(inputs, candidate, laterPolicy) : null;
   const results = [];
-  for (const board of boards()) {
+  for (const board of boardList) {
     const ip = makeSampler(seatRange(inputs, spot.ip, board.cards));
     const oop = makeSampler(seatRange(inputs, spot.oop, board.cards));
     for (const profile of PROFILES) for (const hero of [spot.ip, spot.oop]) {
@@ -128,6 +128,12 @@ export function simulate(inputs, candidate, samples = config.samples_per_board_p
       baseline_ev_bb: stats(baselineEvs), delta_bb: stats(differences) });
     }
   }
+  return simulationReport(inputs, candidate, samples, laterCandidate, results, { computedDefence });
+}
+
+export function simulationReport(inputs, candidate, samples, laterCandidate, results, { computedDefence = true } = {}) {
+  const laterPolicy = laterCandidate ? laterCandidate.policy ?? laterCandidate : referenceLater;
+  const { spot } = inputs;
   return { kind: "ai_estimate_not_gto", version: 1, simulation_version: SIMULATION_VERSION,
     spot: spot.id, source_hash: inputs.fingerprint,
     later_sizing_hash: laterSizingHash(),

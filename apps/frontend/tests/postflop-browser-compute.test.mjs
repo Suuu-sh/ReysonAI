@@ -193,7 +193,7 @@ test("on-demand flop hand-EV shares the saved core, has the saved row shape, and
   assertJsonEqual(browser.row, first.row, "browser and shared flop hand EV");
 });
 
-test("default on-demand flop hand-EV samples stay below 4 seconds for one Node call under the parallel test load (about 1.8s alone)", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {
+test("600-sample on-demand flop hand-EV stays below 4.5 seconds under the parallel test load", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {
   const inputs = loadInputs("BTN_open_BB_call");
   const flopCandidate = loadCandidate(inputs);
   const laterCandidate = loadLaterCandidate(inputs, flopCandidate);
@@ -202,8 +202,9 @@ test("default on-demand flop hand-EV samples stay below 4 seconds for one Node c
     flopPolicy: flopCandidate.policy, laterPolicy: laterCandidate.policy });
   const elapsed = performance.now() - started;
   assert.ok(result.row, "a valid row is produced");
-  assert.ok(elapsed < 4000, `160-sample one-hand estimate took ${elapsed.toFixed(1)}ms`);
-  assert.equal(FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, 160);
+  // Three times the isolated 1.5s budget accommodates concurrent evaluator/board-worker tests.
+  assert.ok(elapsed < 4500, `600-sample one-hand estimate took ${elapsed.toFixed(1)}ms`);
+  assert.equal(FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, 600);
 });
 
 test("30 seeded random flops build every flop node, turn and river views, and finite flop/river EVs", { skip: withoutCandidates && ".local candidate pair is unavailable" }, () => {

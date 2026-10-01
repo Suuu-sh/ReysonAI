@@ -5,7 +5,7 @@ import { sha } from "./generate.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
 import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
 
-export function auditExperiment(inputs, candidate, report, laterCandidate = null) {
+export function auditExperiment(inputs, candidate, report, laterCandidate = null, { replay: providedReplay } = {}) {
   const { spot } = inputs;
   const policy = validatePolicy(candidate?.policy, spot.tree);
   const laterPolicy = laterCandidate ? validateLaterPolicy(laterCandidate.policy ?? laterCandidate) : null;
@@ -58,7 +58,7 @@ export function auditExperiment(inputs, candidate, report, laterCandidate = null
     }
     if (row.delta_bb.ci95[1] < 0) warnings.push(`${key}: candidate below reference (${row.delta_bb.mean}bb)`);
   }
-  const replay = simulate(inputs, policy, config.samples_per_board_profile_seat, laterPolicy);
+  const replay = providedReplay ?? simulate(inputs, policy, config.samples_per_board_profile_seat, laterPolicy);
   if (JSON.stringify(replay) !== JSON.stringify(report)) throw new Error("Saved simulation report differs from fixed-seed replay");
   const sanity = simulate(inputs, referencePolicyFor(spot.tree), 12, null, { computedDefence: false });
   if (sanity.results.some(row => row.delta_bb.mean !== 0)) throw new Error("Reference-vs-reference simulation drifted");

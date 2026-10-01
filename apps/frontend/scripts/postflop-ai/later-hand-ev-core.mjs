@@ -94,7 +94,7 @@ function playFromLaterNode({ hands, flopBoard, runout, flopActions, turnActions,
       atNode = { ...table.invested };
       action = forced;
     } else {
-      const mix = defence.mix(table, board, currentNode, hands[seat], laterMix(currentNode, hands[seat], board, line));
+      const mix = defence.mix(table, board, currentNode, hands[seat], defence.baseMix(table, board, currentNode, hands[seat]));
       action = choose(mix, random(), LATER_NODES[currentNode]);
     }
     history.push(action);
@@ -309,4 +309,3 @@ export function laterHandEvForHand({ flop, flopActions = [], turn, turnActions =
   return { node: result.node, actor: result.actor, pot_bb: result.pot_bb, street, row,
     ...(!row || result.unreachable ? { unreachable: true } : {}) };
 }
-

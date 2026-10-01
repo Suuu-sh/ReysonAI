@@ -1,3 +1,5 @@
+import { makeRange, indexOf, weightOf, equityVersus, equitiesVersus, releaseRangeTables } from "./range-equity.mjs";
+import { packEquities, packWeights, unpackWeights } from "./cached-values.mjs";
 // Computed defence (call / fold) at facing nodes of the heads-up postflop pilot.
 //
 // The AI policies give every facing decision a fixed mix per hand tier, so their calls ignore the
@@ -25,6 +27,8 @@ import { comboRange } from "./browser-inputs.mjs";
 import { boardTexture, handTier, runoutTexture, TIERS } from "./model.mjs";
 import { NODES } from "./policy.mjs";
 import { LATER_NODES } from "./later-tree.mjs";
+import { betFraction } from "./later-tree.mjs";
+import { flopBetFraction } from "./tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
@@ -198,167 +202,6 @@ function finalTables(board) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// A weighted range prepared for equity queries. Most contexts answer only a few queries (one
-// sampled hand of a simulation), so a query first scans the range per final board; a context that is
-// queried more (a whole-range view) switches to sorted prefix sums with per-card blocker lists.
-// ---------------------------------------------------------------------------------------------
-const PREFIX_AFTER = 3;
-
-function makeRange(dense) {
-  let count = 0;
-  for (let id = 0; id < NUM_IDS; id++) if (dense[id] > 0) count++;
-  const ids = new Int16Array(count), lo = new Uint8Array(count), hi = new Uint8Array(count), w = new Float64Array(count);
-  let total = 0, index = 0;
-  for (let id = 0; id < NUM_IDS; id++) {
-    const weight = dense[id];
-    if (!(weight > 0)) continue;
-    ids[index] = id; lo[index] = Math.floor(id / 52); hi[index] = id % 52; w[index++] = weight;
-    total += weight;
-  }
-  return { ids, lo, hi, w, total, queries: 0, dense: null, byCard: null, prefix: null };
-}
-
-// Dense weights by combo id and the per-card lists of the indexed mode.
-function indexOf(range) {
-  if (!range.byCard) {
-    range.dense = new Float64Array(NUM_IDS);
-    range.byCard = Array.from({ length: 52 }, () => []);
-    range.prefix = new Map();
-    for (let i = 0; i < range.ids.length; i++) {
-      const id = range.ids[i];
-      range.dense[id] = range.w[i];
-      range.byCard[range.lo[i]].push(id); range.byCard[range.hi[i]].push(id);
-    }
-  }
-  return range;
-}
-const weightOf = (range, id) => indexOf(range).dense[id];
-
-function prefixFor(range, table) {
-  let prefix = range.prefix.get(table);
-  if (!prefix) {
-    const { sortedIds } = table, dense = range.dense;
-    prefix = new Float64Array(sortedIds.length + 1);
-    let sum = 0;
-    for (let i = 0; i < sortedIds.length; i++) { sum += dense[sortedIds[i]]; prefix[i + 1] = sum; }
-    range.prefix.set(table, prefix);
-  }
-  return prefix;
-}
-
-const lowerBound = (values, target) => {
-  let lo = 0, hi = values.length;
-  while (lo < hi) { const mid = (lo + hi) >> 1; if (values[mid] < target) lo = mid + 1; else hi = mid; }
-  return lo;
-};
-const upperBound = (values, target) => {
-  let lo = 0, hi = values.length;
-  while (lo < hi) { const mid = (lo + hi) >> 1; if (values[mid] <= target) lo = mid + 1; else hi = mid; }
-  return lo;
-};
-
-// Equity of the combo `id` against `range` over `tables` (ties half); null when nothing is left.
-// Combos of the range that share a card with the hero combo are removed, so blockers count.
-function equityVersus(range, id, tables) {
-  return ++range.queries > PREFIX_AFTER ? equityIndexed(range, id, tables) : equityScan(range, id, tables);
-}
-
-function equityScan(range, id, tables) {
-  const c1 = Math.floor(id / 52), c2 = id % 52, { ids, lo, hi, w } = range, n = ids.length;
-  let numerator = 0, denominator = 0;
-  for (const table of tables) {
-    const score = table.score, own = score[id];
-    if (own < 0) continue;
-    let win = 0, tie = 0, total = 0;
-    for (let i = 0; i < n; i++) {
-      const other = score[ids[i]];
-      if (other < 0) continue;
-      const x = lo[i], y = hi[i];
-      if (x === c1 || x === c2 || y === c1 || y === c2) continue;
-      const weight = w[i];
-      total += weight;
-      if (other < own) win += weight; else if (other === own) tie += weight;
-    }
-    numerator += win + 0.5 * tie;
-    denominator += total;
-  }
-  return denominator > 1e-12 ? numerator / denominator : null;
-}
-
-// Per-card sorted score lists with prefix sums of one range on one table (river contexts): the blockers of
-// a hero combo are then two binary searches instead of a loop over every range combo holding its cards.
-function cardLists(range, table) {
-  let lists = range.cards?.get(table);
-  if (!lists) {
-    const scores = Array.from({ length: 52 }, () => []), weights = Array.from({ length: 52 }, () => []);
-    const dense = range.dense;
-    for (const id of table.sortedIds) {
-      const weight = dense[id];
-      if (!(weight > 0)) continue;
-      const a = (id / 52) | 0, b = id - a * 52, score = table.score[id];
-      scores[a].push(score); weights[a].push(weight); scores[b].push(score); weights[b].push(weight);
-    }
-    lists = scores.map((list, card) => {
-      const prefix = new Float64Array(list.length + 1);
-      for (let i = 0; i < list.length; i++) prefix[i + 1] = prefix[i] + weights[card][i];
-      return { scores: Int32Array.from(list), prefix };
-    });
-    (range.cards ??= new Map()).set(table, lists);
-  }
-  return lists;
-}
-
-function equityIndexedSingle(range, id, table) {
-  indexOf(range);
-  const own = table.score[id];
-  if (own < 0) return null;
-  const prefix = prefixFor(range, table), c1 = (id / 52) | 0, c2 = id % 52;
-  const first = lowerBound(table.sortedScores, own), last = upperBound(table.sortedScores, own);
-  let total = prefix[prefix.length - 1], win = prefix[first], tie = prefix[last] - prefix[first];
-  const lists = cardLists(range, table), self = range.dense[id];
-  for (const card of [c1, c2]) {
-    const { scores, prefix: sums } = lists[card];
-    const lo = lowerBound(scores, own), hi = upperBound(scores, own);
-    total -= sums[sums.length - 1]; win -= sums[lo]; tie -= sums[hi] - sums[lo];
-  }
-  // The hero's own combo holds both cards: it was removed twice.
-  if (self > 0) { total += self; tie += self; }
-  return total > 1e-12 ? (win + 0.5 * tie) / total : null;
-}
-
-function equityIndexed(range, id, tables) {
-  if (tables.length === 1) return equityIndexedSingle(range, id, tables[0]);
-  indexOf(range);
-  const c1 = Math.floor(id / 52), c2 = id % 52, dense = range.dense;
-  let numerator = 0, denominator = 0;
-  for (const table of tables) {
-    const own = table.score[id];
-    if (own < 0) continue;
-    const prefix = prefixFor(range, table);
-    const first = lowerBound(table.sortedScores, own), last = upperBound(table.sortedScores, own);
-    let total = prefix[prefix.length - 1], win = prefix[first], tie = prefix[last] - prefix[first];
-    for (const blocker of range.byCard[c1]) {
-      const other = table.score[blocker];
-      if (other < 0) continue;
-      const weight = dense[blocker];
-      total -= weight;
-      if (other < own) win -= weight; else if (other === own) tie -= weight;
-    }
-    for (const blocker of range.byCard[c2]) {
-      if (Math.floor(blocker / 52) === c1 || blocker % 52 === c1) continue; // already removed above
-      const other = table.score[blocker];
-      if (other < 0) continue;
-      const weight = dense[blocker];
-      total -= weight;
-      if (other < own) win -= weight; else if (other === own) tie -= weight;
-    }
-    numerator += win + 0.5 * tie;
-    denominator += total;
-  }
-  return denominator > 1e-12 ? numerator / denominator : null;
-}
-
-// ---------------------------------------------------------------------------------------------
 // Replay: rebuilds the engine table (chips + decision log) at a pending decision from the actions.
 // ---------------------------------------------------------------------------------------------
 const STOP = Symbol("stop at the pending decision");
@@ -425,8 +268,11 @@ export function defenceFor(inputs, flopPolicy, laterPolicy = null, { bluffCap = 
 }
 
 // Contexts kept per street: a river context is small, a turn context may hold up to 46 prefix tables.
-const LIMITS = { flop: 24, turn: 500, river: 4000 };
+const LIMITS = { flop: 96, turn: 3000, river: 16000 };
 const FACT_RANGE_LIMITS = { flop: 24, turn: 64, river: 96 };
+// Small/cold requests favour shared dense stages. Only a large self-play run
+// needs sparse reach storage; avoid expansion work on the interactive path.
+const COMPACT_CACHE_AFTER = 4096;
 
 class Defence {
   constructor(inputs, flopPolicy, laterPolicy, bluffCap = true) {
@@ -436,10 +282,21 @@ class Defence {
     this.realization = this.config.defence_realization ?? pilotConfig.defence_realization;
     this.base = new Map();
     this.rules = new Map();
+    this.largeRun = false;
     this.stages = new Map();
     this.contexts = { flop: new Map(), turn: new Map(), river: new Map() };
     this.bets = { flop: new Map(), turn: new Map(), river: new Map() };
     this.bettingFactRanges = { flop: new Map(), turn: new Map(), river: new Map() };
+  }
+
+  // Offline whole-board jobs never revisit a completed board. Release its large
+  // graphs before the worker starts another board, retaining policy/base weights
+  // and the large-run storage mode. No cache is cleared between hands/histories.
+  releaseBoardCaches() {
+    this.stages.clear();
+    for (const group of [this.contexts, this.bets, this.bettingFactRanges]) {
+      for (const cache of Object.values(group)) cache.clear();
+    }
   }
 
   // Saved preflop weights of a seat by combo id (no board removed).
@@ -479,6 +336,16 @@ class Defence {
     return mix;
   }
 
+  // The same policy lookup as policyMix/laterPolicyMix, reusing board-wide tiers and rules.
+  // Engine callers already have the pending entry (including its previous-street line).
+  baseMix(table, board, node, combo) {
+    const entry = table.log.at(-1);
+    if (entry?.node !== node) throw new Error("Policy mix needs the pending decision");
+    const tier = tierArray(board)[comboId(combo[0], combo[1])];
+    if (tier === NONE) throw new Error("Invalid private hand or board");
+    return this.policyRule(entry, textureOf(entry.street, board), tier);
+  }
+
   // Reach weights of a seat after `entries` (its earlier decisions, in order) by combo id: the saved
   // range times the policy probability of every action it took. Flop and turn stages are cached.
   reach(seat, entries, board, table = null) {
@@ -489,7 +356,8 @@ class Defence {
       // A bluff-capped decision (bluff cap) depends on the whole line, so its stage is not cached.
       const cap = table ? this.entryBetting(table, board, entry) : null;
       const cacheable = entry.street !== "river" && !cap;
-      let next = cacheable ? this.stages.get(key) : null;
+      const saved = cacheable ? this.stages.get(key) : null;
+      let next = saved ? unpackWeights(saved) : null;
       if (!next) {
         const tiers = tierArray(stageBoard), texture = textureOf(entry.street, stageBoard);
         const factors = new Float64Array(TIERS.length * 3);
@@ -504,8 +372,8 @@ class Defence {
           if (weight > 0) { const tier = tiers[id]; next[id] = tier === NONE ? 0 : weight * factors[tier * 3 + (kinds ? kinds[id] : 0)]; }
         }
         if (cacheable) {
-          if (this.stages.size >= 500) { let drop = 100; for (const oldest of this.stages.keys()) { this.stages.delete(oldest); if (--drop <= 0) break; } }
-          this.stages.set(key, next);
+          if (this.stages.size >= 8000) { let drop = 800; for (const oldest of this.stages.keys()) { this.stages.delete(oldest); if (--drop <= 0) break; } }
+          this.stages.set(key, this.largeRun ? packWeights(next) : next);
         }
       }
       weights = next;
@@ -529,6 +397,7 @@ class Defence {
     const context = this.build(table, board, node, street, key);
     if (cache.size >= LIMITS[street]) cache.delete(cache.keys().next().value);
     cache.set(key, context);
+    if (street === "river" && cache.size >= COMPACT_CACHE_AFTER) this.largeRun = true;
     return context;
   }
 
@@ -573,7 +442,13 @@ class Defence {
     if (entry === table.log.at(-1)) return this.betting(table, board, entry.node);
     const order = ["flop", "turn", "river"], at = order.indexOf(entry.street), prefix = {};
     order.forEach((name, i) => { prefix[name] = i < at ? table.path[name] : i === at ? table.path[name].slice(0, entry.index) : []; });
-    const stageBoard = board.slice(0, entry.boardLen), before = replayOrNull(this.inputs, stageBoard, prefix);
+    const stageBoard = board.slice(0, entry.boardLen);
+    const cache = this.bets[entry.street];
+    const key = `${entry.node}#${stageBoard.join(",")}#${prefix.flop}#${prefix.turn}#${prefix.river}`;
+    if (cache.has(key)) {
+      const hit = cache.get(key); cache.delete(key); cache.set(key, hit); return hit;
+    }
+    const before = replayOrNull(this.inputs, stageBoard, prefix);
     return before ? this.betting(before, stageBoard, entry.node) : null;
   }
 
@@ -581,6 +456,17 @@ class Defence {
     const { log } = table, target = log.at(-1);
     if (!target || target.node !== node || target.action !== null) throw new Error("Bluff cap needs the pending decision of the node");
     const bettor = target.seat, defender = table.other(bettor);
+    // A first decision below the all-in merge cannot be capped on flop/turn. This is
+    // just the engine's wager test; it avoids replaying all three non-all-in bet sizes.
+    if (street !== "river" && node.endsWith("_first")) {
+      const own = table.stacks[bettor];
+      const limit = Math.min(own, table.stacks[defender] + table.invested[defender] - table.invested[bettor]);
+      if (limit < own - 1e-9 && r2(own - r2(limit)) > 1e-9) return null;
+      const amounts = (NODES[node] ?? LATER_NODES[node]).filter(isAggressive).map(action =>
+        street === "flop" ? table.pot * flopBetFraction(action) : r2(table.pot * betFraction(street, action)));
+      if (limit > 0 && amounts.every(amount => amount < limit * pilotConfig.later_all_in_merge_ratio &&
+          r2(own - r2(Math.min(own, amount))) > 1e-9)) return null;
+    }
     const caps = [];
     for (const action of (NODES[node] ?? LATER_NODES[node]).filter(isAggressive)) {
       const after = replayOrNull(this.inputs, board, { flop: table.path.flop, turn: table.path.turn, river: table.path.river,
@@ -600,9 +486,10 @@ class Defence {
     const tables = finalTables(board), tiers = tierArray(board), texture = textureOf(target.street, board.slice(0, target.boardLen));
     // value = equity against the defender's whole range >= VALUE_EQUITY (the classification of the defence facts).
     const kind = new Uint8Array(NUM_IDS);
-    for (const id of bettorRange.ids) {
-      const equity = equityVersus(defenderRange, id, tables);
-      if (equity !== null) kind[id] = equity >= VALUE_EQUITY ? 1 : 2;
+    const values = equitiesVersus(defenderRange, bettorRange.ids, tables);
+    for (let i = 0; i < bettorRange.ids.length; i++) {
+      const equity = values[i];
+      if (equity !== null) kind[bettorRange.ids[i]] = equity >= VALUE_EQUITY ? 1 : 2;
     }
     const baseMixes = TIERS.map((_, tier) => this.policyRule(target, texture, tier));
     for (const cap of caps) {
@@ -702,14 +589,48 @@ class Defence {
       value = equityVersus(context.bettorRange, id, this.tablesOf(context));
       context.equities.set(id, value);
     }
+    // Keep the interactive hot lookup small/inlinable; large-run storage work is outlined.
+    if (this.largeRun) this.completeEquityCache(context);
     return value;
+  }
+
+  completeEquityCache(context) {
+    // Computed calls can reach a combo that the saved policy assigned zero reach.
+    // Such a later query used to rebuild and retain dozens of prefix tables.
+    // Complete saved preflop support only after the original three scan queries.
+    if (context.floor !== undefined || context.ceiling !== undefined) {
+      if (!context.completeEquities && context.bettorRange.queries >= 3) this.prime(context, null);
+      else if (context.bettorRange.dense) releaseRangeTables(context.bettorRange);
+    }
+  }
+
+  prime(context, weights) {
+    const ids = [];
+    if (weights) for (let id = 0; id < NUM_IDS; id++) if (weights[id] > 0 && !context.equities.has(id)) ids.push(id);
+    if (!context.completeEquities && this.largeRun &&
+        context.bettorRange.queries + ids.length >= 3) {
+      const base = this.baseWeights(context.defender), tiers = tierArray(context.board);
+      // Append extras after the original reach queries: their first-three scan
+      // identities/order remain exactly the reference's, and extras are indexed.
+      for (let id = 0; id < NUM_IDS; id++) if (base[id] > 0 && tiers[id] !== NONE &&
+          !(weights?.[id] > 0) && !context.equities.has(id)) ids.push(id);
+      context.completeEquities = true;
+    }
+    if (!ids.length) { releaseRangeTables(context.bettorRange); return; }
+    const values = equitiesVersus(context.bettorRange, ids, this.tablesOf(context));
+    for (let i = 0; i < ids.length; i++) context.equities.set(ids[i], values[i]);
+    context.equities = packEquities(context.equities);
+    releaseRangeTables(context.bettorRange);
   }
 
   realizationFor(context, combo) {
     if (context.street === "river") return 1;
-    const tier = TIERS[tierArray(context.board)[comboId(combo[0], combo[1])]];
-    const value = this.realization?.[context.street]?.[context.role]?.[tier];
-    return Number.isFinite(value) ? value : 1;
+    const tiers = context.tiers ??= tierArray(context.board);
+    const factors = context.realizationFactors ??= TIERS.map(tier => {
+      const value = this.realization?.[context.street]?.[context.role]?.[tier];
+      return Number.isFinite(value) ? value : 1;
+    });
+    return factors[tiers[comboId(combo[0], combo[1])]] ?? 1;
   }
 
   applyEquity(context, base, equity, combo, raw = false) {
@@ -740,7 +661,9 @@ class Defence {
     if (!context.capped) return null;
     const { board } = context, entry = context.target;
     const weights = this.reach(context.defender, context.defenderEntries, board, context.table);
-    const tiers = tierArray(board), texture = textureOf(entry.street, board.slice(0, entry.boardLen));
+    this.prime(context, weights);
+    const tiers = context.tiers ??= tierArray(board), texture = textureOf(entry.street, board.slice(0, entry.boardLen));
+    const baseMixes = TIERS.map((_, tier) => this.policyRule(entry, texture, tier));
     const items = [];
     let total = 0, raiseWeight = 0, callWeight = 0;
     for (let id = 0; id < NUM_IDS; id++) {
@@ -749,7 +672,7 @@ class Defence {
       const combo = [Math.floor(id / 52), id % 52];
       const equity = this.equity(context, combo);
       if (equity === null) continue;
-      let base = this.policyRule(entry, texture, tiers[id]);
+      let base = baseMixes[tiers[id]];
       if (context.cap) base = context.cap.apply(base, context.cap.kind[id]);
       const mix = this.applyEquity(context, base, equity, combo, true);
       total += weight; raiseWeight += weight * (mix.raise ?? 0) / 100;
@@ -784,7 +707,9 @@ class Defence {
     if (context.capped) return null;
     const { board } = context, entry = context.target;
     const weights = this.reach(context.defender, context.defenderEntries, board, context.table);
-    const tiers = tierArray(board), texture = textureOf(entry.street, board.slice(0, entry.boardLen));
+    this.prime(context, weights);
+    const tiers = context.tiers ??= tierArray(board), texture = textureOf(entry.street, board.slice(0, entry.boardLen));
+    const baseMixes = TIERS.map((_, tier) => this.policyRule(entry, texture, tier));
     const items = [];
     let total = 0, continued = 0;
     for (let id = 0; id < NUM_IDS; id++) {
@@ -793,7 +718,7 @@ class Defence {
       const combo = [Math.floor(id / 52), id % 52];
       const equity = this.equity(context, combo);
       if (equity === null) continue;
-      let base = this.policyRule(entry, texture, tiers[id]);
+      let base = baseMixes[tiers[id]];
       if (context.cap) base = context.cap.apply(base, context.cap.kind[id]);
       const mix = this.applyEquity(context, base, equity, combo, true);
       total += weight;
@@ -848,6 +773,7 @@ class Defence {
     const defenderWeights = this.reach(context.defender, context.defenderEntries, board, context.table);
     const defenderRange = makeRange(defenderWeights);
     const tiers = tierArray(board), entry = context.target, texture = textureOf(entry.street, board.slice(0, entry.boardLen));
+    const baseMixes = TIERS.map((_, tier) => this.policyRule(entry, texture, tier));
     // Defender: equity, defended mix and realized equity of every combo of its range.
     const defenders = [];
     let continued = 0;
@@ -855,7 +781,7 @@ class Defence {
       const combo = [Math.floor(id / 52), id % 52];
       const equity = this.equity(context, combo);
       if (equity === null) continue;
-      let base = this.policyRule(entry, texture, tiers[id]);
+      let base = baseMixes[tiers[id]];
       if (context.cap) base = context.cap.apply(base, context.cap.kind[id]);
       const mix = this.applyEquity(context, base, equity, combo);
       defenders.push({ id, weight: defenderWeights[id], equity,

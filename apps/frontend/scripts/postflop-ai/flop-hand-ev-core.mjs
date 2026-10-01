@@ -12,7 +12,7 @@ import { defenceFor, replayOrNull } from "./defence.mjs";
 import { parseFlopBoard } from "./model.mjs";
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-export const FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES = 160;
+export const FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES = 600;
 export const FLOP_HAND_EV_DEFAULT_SAMPLES = 2000;
 export const historiesFor = tree => treeHistories(tree);
 export const HISTORIES = Object.freeze(treeHistories("oop_checks"));
@@ -55,12 +55,12 @@ export function playFromNode({ hands, flop, runout, history, forced, policy, lat
   const decide = (seat, node, step) => {
     if (step < history.length) return history[step];
     if (step === history.length) { atNode = { ...table.invested }; return forced; }
-    const mix = policyMix(policy, node, hands[seat], flop);
+    const mix = defence ? defence.baseMix(table, flop, node, hands[seat]) : policyMix(policy, node, hands[seat], flop);
     return choose(defence ? defence.mix(table, flop, node, hands[seat], mix) : mix, random(), NODES[node]);
   };
   playFlop(table, tree, decide, config);
   playLaterStreetsWithPolicy(table, flop, runout, (seat, node, board, line) => {
-    const mix = laterPolicyMix(laterPolicy, node, hands[seat], board, line);
+    const mix = defence ? defence.baseMix(table, board, node, hands[seat]) : laterPolicyMix(laterPolicy, node, hands[seat], board, line);
     return choose(defence ? defence.mix(table, board, node, hands[seat], mix) : mix, random(), LATER_NODES[node]);
   }, config, table.lastAggressor);
   const winner = settle(table, hands, [...flop, ...runout]);
