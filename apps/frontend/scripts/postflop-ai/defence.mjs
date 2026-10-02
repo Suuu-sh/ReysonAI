@@ -33,7 +33,7 @@ import { flopBetFraction, raiseDepth } from "./tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-export const DEFENCE_VERSION = 4;
+export const DEFENCE_VERSION = 5;
 // Sampled turn+river runouts per flop decision (seeded by the flop, shared by every node of it).
 export const FLOP_RUNOUTS = 300;
 // call share = logistic(margin / LOGISTIC_SCALE): +-4pt of margin is about 88 / 12.
@@ -727,7 +727,8 @@ class Defence {
   floorOf(context) {
     if (context.floor !== undefined) return context.floor;
     context.floor = null;
-    if (context.capped) return null;
+    // A capped range sits at the caller's break-even, so its bluff-catchers are indifferent and the
+    // logistic split calls only about half of them; the floor keeps that defence near MDF as well.
     const { board } = context, entry = context.target;
     const weights = this.reach(context.defender, context.defenderEntries, board, context.table);
     this.prime(context, weights);
