@@ -349,7 +349,7 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .settings-toggle svg, .settings-backdrop { display: none; }
 .settings-body { display: flex; flex: 1; flex-direction: column; gap: 8px; }
 .action-seat-info .settings-body ul { padding: 0 0 0 18px; font-size: 13px; }
-.settings-body .settings-actions { margin-top: auto; margin-left: 0; gap: 6px; }
+.settings-body .settings-actions { position: absolute; top: 8px; right: 8px; margin: 0; gap: 4px; }
 .settings-change-button { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: var(--surface-hover); color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .settings-change-button:hover { background: var(--line-strong); }
 .settings-body .settings-icon-button { border: 0; background: var(--surface-hover); }

@@ -1008,7 +1008,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
               <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {formatLabel("rake", format.rake)}</li>{!isDefaultProfile(tableProfile) && <li className="table-profile-summary">卓: {describeProfile(tableProfile)}</li>}</ul>
               <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
               <div className="settings-actions">
-                <button type="button" className="format-edit settings-change-button" onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" />変更</button>
+                <button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を変更" title="ゲーム設定を変更" onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" /></button>
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
               </div>
             </div>
