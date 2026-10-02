@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, Check, CircleNotch, CursorClick, List, Minus, X } from "@phosphor-icons/react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Check, CircleNotch, CursorClick, List, Minus, Sparkle, X } from "@phosphor-icons/react";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
@@ -36,23 +36,6 @@ function Brand({ inverted = false }: { inverted?: boolean }) {
     <span className="site-brand-mark" aria-hidden="true"><span /></span>
     <span>EvionAI<span className="site-brand-period">.</span></span>
   </a>;
-}
-
-function Suit({ glyph = "♠" }: { glyph?: string }) {
-  return <span className="site-suit" aria-hidden="true">{glyph}</span>;
-}
-
-const tickerHands = ["AA", "K7s", "A5s", "QJo", "T9s", "K2s", "88", "J8o", "65s", "A2o", "Q4s", "22", "KTo", "97s"];
-
-function HandTicker() {
-  const { copy } = useSite();
-  const items = tickerHands.map(hand => {
-    const values = frequencies("opening", hand);
-    const action = dominantAction(values);
-    return { hand, action, value: values[action] };
-  });
-  const row = items.map(item => <span className={`site-ticker-item is-${item.action}`} key={item.hand}><b>{item.hand}</b>{copy.common[item.action]} <em>{item.value}%</em></span>);
-  return <div className="site-ticker" aria-hidden="true"><div className="site-ticker-track"><span className="site-ticker-group"><span className="site-ticker-label">BTN · 100BB</span>{row}</span><span className="site-ticker-group"><span className="site-ticker-label">BTN · 100BB</span>{row}</span></div></div>;
 }
 
 function Eyebrow({ children, dot = false }: { children: ReactNode; dot?: boolean }) {
@@ -115,7 +98,7 @@ function RangePreview({ compact = false }: { compact?: boolean }) {
   }
 
   return <div className={`site-product-frame${compact ? " site-product-frame-compact" : ""}`}>
-    <div className="site-frame-top"><span className="site-frame-brand"><span className="site-frame-logo">♠</span> EVIONAI <span>{c.preview.explorer}</span></span><span className="site-frame-status"><span /> AI SOLUTION</span></div>
+    <div className="site-frame-top"><span className="site-frame-brand"><span className="site-frame-logo">✦</span> EVIONAI <span>{c.preview.explorer}</span></span><span className="site-frame-status"><span /> AI SOLUTION</span></div>
     <div className="site-frame-toolbar">
       <div><span className="site-frame-overline">{c.preview.currentSpot}</span><strong>{c.preview.cash} <span>/</span> 100BB <span>/</span> {mode === "opening" ? c.preview.open : c.preview.response}</strong></div>
       <span className="site-frame-pill">{c.preview.preflop} <ArrowDown size={12} weight="bold" aria-hidden="true" /></span>
@@ -137,14 +120,14 @@ function RangePreview({ compact = false }: { compact?: boolean }) {
         <div className="site-legend"><span><i className="site-legend-raise" /> {c.common.raise}</span>{mode === "response" && <span><i className="site-legend-call" /> {c.common.call}</span>}<span><i className="site-legend-fold" /> {c.common.fold}</span></div>
       </div>
       <div className="site-hand-panel" aria-live="polite">
-        <div className="site-panel-top"><span>{c.preview.selectedHand}</span><span className="site-panel-sparkle"><Suit /></span></div>
+        <div className="site-panel-top"><span>{c.preview.selectedHand}</span><span className="site-panel-sparkle"><Sparkle size={17} weight="fill" aria-hidden="true" /></span></div>
         <div className="site-hand-name">{selected}<span>{selected.endsWith("s") ? c.preview.suited : selected.endsWith("o") ? c.preview.offsuit : c.preview.pair}</span></div>
         <div className={`site-action${displayMode === "standard" ? " has-frequency-detail" : ""}`}><span className={`site-action-dot is-${action}`} />{c.common[action]}{displayMode === "standard" && <small>{values[action]}%</small>}</div>
         {displayMode === "standard" && <fieldset className="site-frequency-detail"><legend className="site-visually-hidden">{c.preview.frequencyLabel}</legend>
           <div className="site-frequency-track" aria-hidden="true">{actions.filter(option => values[option] > 0).map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%` }} />)}</div>
           <div className="site-frequency-values">{actions.filter(option => values[option] > 0).map(option => <span key={option}><i className={`is-${option}`} />{c.common[option]} <b>{values[option]}%</b></span>)}</div>
         </fieldset>}
-        <div className="site-why"><span className="site-why-label"><Suit /> {c.preview.why}</span><p>{isK7sOpening
+        <div className="site-why"><span className="site-why-label"><Sparkle size={15} weight="fill" aria-hidden="true" /> {c.preview.why}</span><p>{isK7sOpening
           ? c.preview.k7s
           : displayMode === "simple"
             ? c.preview.simpleOther(mode === "opening" ? c.preview.spotOpening : c.preview.spotResponse, selected, c.common[action])
@@ -176,6 +159,7 @@ function Header() {
 function Hero() {
   const { copy: c } = useSite();
   return <section className="site-hero" aria-labelledby="site-hero-title">
+    <div className="site-hero-glow" aria-hidden="true" />
     <div className="site-hero-inner">
       <div className="site-hero-copy">
         <Eyebrow dot>{c.hero.eyebrow}</Eyebrow>
@@ -184,9 +168,8 @@ function Hero() {
         <div className="site-hero-actions"><a className="site-btn site-btn-primary" href="/app">{c.common.try} <ArrowUpRight size={18} weight="bold" aria-hidden="true" /></a><a className="site-btn site-btn-ghost" href="#how">{c.hero.secondary} <ArrowRight size={18} aria-hidden="true" /></a></div>
         <div className="site-hero-proof"><span className="site-proof-line" /><span>{c.hero.proof1}</span><span>·</span><span>{c.hero.proof2}</span></div>
       </div>
-      <div className="site-hero-product"><RangePreview /><span className="site-product-caption"><span>{c.hero.product}</span><span>{c.hero.clickHand}</span></span></div>
+      <div className="site-hero-product"><div className="site-product-halo" aria-hidden="true" /><RangePreview /><span className="site-product-caption"><span>{c.hero.product}</span><span>{c.hero.clickHand}</span></span></div>
     </div>
-    <HandTicker />
     <div className="site-hero-bottom"><span>{c.hero.bottom}</span><a href="#why">{c.hero.scroll} <ArrowDown size={15} aria-hidden="true" /></a></div>
   </section>;
 }
@@ -199,7 +182,7 @@ function Problem() {
       <div className="site-problem-grid">
         {c.problem.items.map(item => <div className="site-problem-item" key={item.number}><span>{item.number}</span><h3>{item.title}</h3><p>{item.detail}</p><ArrowUpRight size={19} aria-hidden="true" /></div>)}
       </div>
-      <div className="site-thesis"><span className="site-thesis-symbol">♣</span><p>{c.problem.thesis1}<br /><em>{c.problem.thesis2}</em></p></div>
+      <div className="site-thesis"><span className="site-thesis-symbol">✳</span><p>{c.problem.thesis1}<br /><em>{c.problem.thesis2}</em></p></div>
     </div>
   </section>;
 }
@@ -212,7 +195,7 @@ function HowItWorks() {
       <div className="site-steps">
         <article className="site-step"><span className="site-step-num">{c.how.steps[0].number}</span><div className="site-step-visual site-spot-visual"><span>{c.how.yourSpot}</span><strong>{c.preview.cash}</strong><div><b>100BB</b><b>BTN</b><b>{c.how.versusBb}</b></div><span className="site-spot-arrow"><ArrowRight size={18} /></span></div><h3>{c.how.steps[0].title}</h3><p>{c.how.steps[0].description}</p></article>
         <article className="site-step"><span className="site-step-num">{c.how.steps[1].number}</span><div className="site-step-visual site-mini-range"><div className="site-mini-range-head"><span>{c.how.range}</span><span>13 × 13</span></div><div className="site-mini-cells">{["AA","AKs","AQs","AJs","ATs","KQs","KK","KJs","KTs","K9s","QJs","QTs","QQ","JTs","J9s","T9s","99","88","77","66"].map((hand, index) => <span className={index > 15 ? "dim" : index === 9 ? "picked" : ""} key={hand}>{hand}</span>)}</div></div><h3>{c.how.steps[1].title}</h3><p>{c.how.steps[1].description}</p></article>
-        <article className="site-step"><span className="site-step-num">{c.how.steps[2].number}</span><div className="site-step-visual site-ask-visual"><div><Suit /> {c.how.whyK7s}</div><p>{c.how.exampleReason}</p><span>{c.how.understand} <ArrowUpRight size={14} /></span></div><h3>{c.how.steps[2].title}</h3><p>{c.how.steps[2].description}</p></article>
+        <article className="site-step"><span className="site-step-num">{c.how.steps[2].number}</span><div className="site-step-visual site-ask-visual"><div><Sparkle size={16} weight="fill" /> {c.how.whyK7s}</div><p>{c.how.exampleReason}</p><span>{c.how.understand} <ArrowUpRight size={14} /></span></div><h3>{c.how.steps[2].title}</h3><p>{c.how.steps[2].description}</p></article>
       </div>
     </div>
   </section>;
@@ -234,18 +217,18 @@ function SimpleStrategy() {
 
 function Solution() {
   const { copy: c } = useSite();
-  return <section className="site-section site-solution" id="solution"><div className="site-container site-solution-inner"><div><Eyebrow>{c.solution.eyebrow}</Eyebrow><h2>{c.solution.title1}<br />{c.solution.title2}<br /><span>{c.solution.title3}</span></h2><p>{c.solution.description}</p><a className="site-text-link" href="/app">{c.solution.link} <ArrowUpRight size={18} weight="bold" /></a></div><div className="site-pipeline"><div className="site-pipeline-header"><Suit /><span>{c.solution.trust}</span><span>01—04</span></div>{c.solution.stages.map((stage, index) => <div className={`site-pipeline-row${index === 3 ? " is-future" : ""}`} key={stage.title}><span>0{index + 1}</span><strong>{stage.title}</strong><small>{stage.detail}</small>{index === 3 ? <CircleNotch size={18} /> : <Check size={18} />}</div>)}<div className="site-pipeline-end"><span className="site-pipeline-end-mark">♥</span><div><strong>{c.solution.built}</strong><small>{c.solution.edge}</small></div></div></div></div></section>;
+  return <section className="site-section site-solution" id="solution"><div className="site-container site-solution-inner"><div><Eyebrow>{c.solution.eyebrow}</Eyebrow><h2>{c.solution.title1}<br />{c.solution.title2}<br /><span>{c.solution.title3}</span></h2><p>{c.solution.description}</p><a className="site-text-link" href="/app">{c.solution.link} <ArrowUpRight size={18} weight="bold" /></a></div><div className="site-pipeline"><div className="site-pipeline-header"><Sparkle size={18} weight="fill" /><span>{c.solution.trust}</span><span>01—04</span></div>{c.solution.stages.map((stage, index) => <div className={`site-pipeline-row${index === 3 ? " is-future" : ""}`} key={stage.title}><span>0{index + 1}</span><strong>{stage.title}</strong><small>{stage.detail}</small>{index === 3 ? <CircleNotch size={18} /> : <Check size={18} />}</div>)}<div className="site-pipeline-end"><span className="site-pipeline-end-mark">✦</span><div><strong>{c.solution.built}</strong><small>{c.solution.edge}</small></div></div></div></div></section>;
 }
 
 function Adaptive() {
   const { copy: c } = useSite();
   const [example, setExample] = useState(0);
-  return <section className="site-section site-adaptive"><div className="site-container site-adaptive-inner"><div className="site-adaptive-copy"><span className="site-soon-tag">{c.common.comingSoon}</span><Eyebrow>{c.adaptive.eyebrow}</Eyebrow><h2>{c.adaptive.title1}<br />{c.adaptive.title2} <span>{c.adaptive.title3}</span></h2><p>{c.adaptive.description}</p><div className="site-prompt-list"><span>{c.adaptive.promptLabel}</span>{c.adaptive.examples.map((item, index) => <button type="button" key={item.prompt} aria-pressed={example === index} onClick={() => setExample(index)}>“{item.prompt}” <ArrowUpRight size={15} /></button>)}</div><small className="site-concept-note">{c.adaptive.note}</small></div><div className="site-chat-frame" aria-live="polite"><div className="site-chat-top"><span><span className="site-chat-symbol">♠</span> {c.adaptive.tableContext}</span><span>{c.adaptive.concept}</span></div><div className="site-chat-content"><span className="site-chat-divider">{c.adaptive.personal}</span><div className="site-chat-user">{c.adaptive.examples[example].prompt}</div><div className="site-chat-answer"><span className="site-chat-avatar">♠</span><div><strong>EvionAI <span>· {c.adaptive.preview}</span></strong><p>{c.adaptive.examples[example].response}</p></div></div><div className="site-chat-note"><Minus size={16} /> {c.adaptive.future}</div></div><div className="site-chat-input">{c.adaptive.input} <ArrowUpRight size={18} /></div></div></div></section>;
+  return <section className="site-section site-adaptive"><div className="site-container site-adaptive-inner"><div className="site-adaptive-copy"><span className="site-soon-tag">{c.common.comingSoon}</span><Eyebrow>{c.adaptive.eyebrow}</Eyebrow><h2>{c.adaptive.title1}<br />{c.adaptive.title2} <span>{c.adaptive.title3}</span></h2><p>{c.adaptive.description}</p><div className="site-prompt-list"><span>{c.adaptive.promptLabel}</span>{c.adaptive.examples.map((item, index) => <button type="button" key={item.prompt} aria-pressed={example === index} onClick={() => setExample(index)}>“{item.prompt}” <ArrowUpRight size={15} /></button>)}</div><small className="site-concept-note">{c.adaptive.note}</small></div><div className="site-chat-frame" aria-live="polite"><div className="site-chat-top"><span><span className="site-chat-symbol">✦</span> {c.adaptive.tableContext}</span><span>{c.adaptive.concept}</span></div><div className="site-chat-content"><span className="site-chat-divider">{c.adaptive.personal}</span><div className="site-chat-user">{c.adaptive.examples[example].prompt}</div><div className="site-chat-answer"><span className="site-chat-avatar">✦</span><div><strong>EvionAI <span>· {c.adaptive.preview}</span></strong><p>{c.adaptive.examples[example].response}</p></div></div><div className="site-chat-note"><Minus size={16} /> {c.adaptive.future}</div></div><div className="site-chat-input">{c.adaptive.input} <ArrowUpRight size={18} /></div></div></div></section>;
 }
 
 function Learning() {
   const { copy: c } = useSite();
-  return <section className="site-section site-learning"><div className="site-container site-learning-inner"><div className="site-learning-visual"><div className="site-learning-card"><span>{c.learning.card}</span><strong>K7s</strong><div><span className="site-action-dot is-raise" /> {c.common.raise} <b>100%</b></div><div className="site-learning-divider" /><small><Suit /> {c.learning.explanation}</small><p>{c.learning.cardReason}</p></div>{c.learning.questions.map((question, index) => <div className={`site-question-chip chip-${["one", "two", "three"][index]}`} key={question}>{question}</div>)}</div><div className="site-learning-copy"><Eyebrow>{c.learning.eyebrow}</Eyebrow><h2>{c.learning.title1}<br /><span>{c.learning.title2}</span></h2><p>{c.learning.description}</p><div className="site-learning-feature"><CursorClick size={22} /><div><strong>{c.learning.feature1}</strong><span>{c.learning.feature1Detail}</span></div></div><div className="site-learning-feature"><Suit /><div><strong>{c.learning.feature2}</strong><span>{c.learning.feature2Detail}</span></div></div><small>{c.learning.note}</small></div></div></section>;
+  return <section className="site-section site-learning"><div className="site-container site-learning-inner"><div className="site-learning-visual"><div className="site-learning-orbit orbit-one" /><div className="site-learning-orbit orbit-two" /><div className="site-learning-card"><span>{c.learning.card}</span><strong>K7s</strong><div><span className="site-action-dot is-raise" /> {c.common.raise} <b>100%</b></div><div className="site-learning-divider" /><small><Sparkle size={15} weight="fill" /> {c.learning.explanation}</small><p>{c.learning.cardReason}</p></div>{c.learning.questions.map((question, index) => <div className={`site-question-chip chip-${["one", "two", "three"][index]}`} key={question}>{question}</div>)}</div><div className="site-learning-copy"><Eyebrow>{c.learning.eyebrow}</Eyebrow><h2>{c.learning.title1}<br /><span>{c.learning.title2}</span></h2><p>{c.learning.description}</p><div className="site-learning-feature"><CursorClick size={22} /><div><strong>{c.learning.feature1}</strong><span>{c.learning.feature1Detail}</span></div></div><div className="site-learning-feature"><Sparkle size={22} /><div><strong>{c.learning.feature2}</strong><span>{c.learning.feature2Detail}</span></div></div><small>{c.learning.note}</small></div></div></section>;
 }
 
 function Levels() {
@@ -257,7 +240,7 @@ function Levels() {
 
 function Comparison() {
   const { copy: c } = useSite();
-  return <section className="site-section site-comparison"><div className="site-container"><SectionHeading eyebrow={c.comparison.eyebrow} title={<>{c.comparison.title1}<br />{c.comparison.title2}</>} description={c.comparison.description} /><div className="site-comparison-grid"><div className="site-comparison-card"><div className="site-comparison-icon">∑</div><h3>{c.comparison.solver}</h3><p>{c.comparison.solverDescription}</p><ul>{c.comparison.solverFeatures.map(feature => <li key={feature}>{feature}</li>)}</ul><span>{c.comparison.solverTag}</span></div><div className="site-comparison-card is-solvea"><div className="site-comparison-icon">♠</div><h3>EvionAI</h3><p>{c.comparison.solveaDescription}</p><ul>{c.comparison.solveaFeatures.map(feature => <li key={feature}>{feature}</li>)}</ul><span>{c.comparison.solveaTag}</span></div></div></div></section>;
+  return <section className="site-section site-comparison"><div className="site-container"><SectionHeading eyebrow={c.comparison.eyebrow} title={<>{c.comparison.title1}<br />{c.comparison.title2}</>} description={c.comparison.description} /><div className="site-comparison-grid"><div className="site-comparison-card"><div className="site-comparison-icon">∑</div><h3>{c.comparison.solver}</h3><p>{c.comparison.solverDescription}</p><ul>{c.comparison.solverFeatures.map(feature => <li key={feature}>{feature}</li>)}</ul><span>{c.comparison.solverTag}</span></div><div className="site-comparison-card is-solvea"><div className="site-comparison-icon">✦</div><h3>EvionAI</h3><p>{c.comparison.solveaDescription}</p><ul>{c.comparison.solveaFeatures.map(feature => <li key={feature}>{feature}</li>)}</ul><span>{c.comparison.solveaTag}</span></div></div></div></section>;
 }
 
 function Pricing() {
@@ -267,12 +250,12 @@ function Pricing() {
 
 function FinalCta() {
   const { copy: c } = useSite();
-  return <section className="site-final"><div className="site-container site-final-inner"><Eyebrow>{c.final.eyebrow}</Eyebrow><h2>{c.final.title1}<br /><span>{c.final.title2}</span></h2><p>{c.final.description}</p><a className="site-btn site-btn-primary" href="/app">{c.final.action} <ArrowUpRight size={18} weight="bold" /></a><span className="site-final-micro">{c.final.note}</span></div></section>;
+  return <section className="site-final"><div className="site-final-glow" aria-hidden="true" /><div className="site-container site-final-inner"><Eyebrow>{c.final.eyebrow}</Eyebrow><h2>{c.final.title1}<br /><span>{c.final.title2}</span></h2><p>{c.final.description}</p><a className="site-btn site-btn-primary" href="/app">{c.final.action} <ArrowUpRight size={18} weight="bold" /></a><span className="site-final-micro">{c.final.note}</span></div></section>;
 }
 
 function Footer() {
   const { copy: c } = useSite();
-  return <footer className="site-footer"><div className="site-container"><div className="site-footer-top"><div><Brand inverted /><p>{c.footer.tagline}</p></div><div className="site-footer-links"><div><span>{c.footer.product}</span><a href="#how">{c.footer.how}</a><a href="#solution">AI Solution</a><a href="/app">{c.footer.open}</a></div><div><span>{c.footer.explore}</span><a href="#pricing">{c.footer.pricing}</a><a href="#why">{c.footer.about}</a><span className="site-footer-unavailable">{c.footer.privacy}</span><span className="site-footer-unavailable">{c.footer.terms}</span></div></div></div><p className="site-disclaimer">{c.footer.disclaimer}</p><div className="site-footer-bottom"><span>© {new Date().getFullYear()} EvionAI</span><span>{c.footer.madeFor} <span>♥</span></span></div></div></footer>;
+  return <footer className="site-footer"><div className="site-container"><div className="site-footer-top"><div><Brand inverted /><p>{c.footer.tagline}</p></div><div className="site-footer-links"><div><span>{c.footer.product}</span><a href="#how">{c.footer.how}</a><a href="#solution">AI Solution</a><a href="/app">{c.footer.open}</a></div><div><span>{c.footer.explore}</span><a href="#pricing">{c.footer.pricing}</a><a href="#why">{c.footer.about}</a><span className="site-footer-unavailable">{c.footer.privacy}</span><span className="site-footer-unavailable">{c.footer.terms}</span></div></div></div><p className="site-disclaimer">{c.footer.disclaimer}</p><div className="site-footer-bottom"><span>© {new Date().getFullYear()} EvionAI</span><span>{c.footer.madeFor} <span>✦</span></span></div></div></footer>;
 }
 
 export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; onLocaleChange: () => void }) {
