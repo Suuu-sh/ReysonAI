@@ -84,13 +84,9 @@ function Brand() {
   return <a className="site-brand" href="/" aria-label={copy.common.home}><Spade size={24} weight="fill" aria-hidden="true" /><span>Evion<b>AI</b></span></a>;
 }
 
-function PlayingCard({ rank, suit, index = 0, className = "" }: { rank: string; suit: Suit; index?: number; className?: string }) {
-  const label = rank === "T" ? "10" : rank;
-  return <span className={`site-card${suit === "h" || suit === "d" ? " is-red" : ""}${className ? ` ${className}` : ""}`} style={{ "--i": index } as CSSProperties} aria-hidden="true">
-    <span className="site-card-corner"><b>{label}</b><i>{suitGlyph[suit]}</i></span>
-    <span className="site-card-pip">{suitGlyph[suit]}</span>
-    <span className="site-card-corner is-bottom"><b>{label}</b><i>{suitGlyph[suit]}</i></span>
-  </span>;
+// Mirrors the trainer's PlayingCard markup so the site shows the app's four-colour cards.
+function PlayingCard({ rank, suit, index = 0 }: { rank: string; suit: Suit; index?: number }) {
+  return <span className={`site-card suit-${suit}`} style={{ "--i": index } as CSSProperties} aria-hidden="true"><b>{rank}</b><i>{suitGlyph[suit]}</i></span>;
 }
 
 function HandCards({ hand, seed = 0, className = "" }: { hand: string; seed?: number; className?: string }) {

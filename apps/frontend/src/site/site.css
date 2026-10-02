@@ -166,19 +166,15 @@
 
 /* Playing cards */
 .site-hand-cards { display: flex; gap: 8px; perspective: 700px; }
-.site-card { position: relative; display: inline-block; flex: 0 0 auto; width: 50px; height: 70px; border-radius: 7px; background: #f6f3ee; color: #18181c; box-shadow: inset 0 0 0 1px #0000000f, 0 10px 22px -10px #000; font-family: var(--display); }
-.site-card.is-red { color: #d23a69; }
-.site-card-corner { position: absolute; top: 5px; left: 6px; display: grid; justify-items: center; line-height: .95; }
-.site-card-corner b { font-size: 16px; font-weight: 700; letter-spacing: -.04em; }
-.site-card-corner i { font-size: 11px; font-style: normal; }
-.site-card-corner.is-bottom { top: auto; right: 6px; bottom: 5px; left: auto; transform: rotate(180deg); }
-.site-card-pip { position: absolute; inset: 0; display: grid; place-items: center; font-size: 26px; }
-.site-hand-cards.is-large .site-card { width: 92px; height: 128px; border-radius: 11px; }
-.site-hand-cards.is-large .site-card-corner { top: 8px; left: 9px; }
-.site-hand-cards.is-large .site-card-corner.is-bottom { top: auto; right: 9px; bottom: 8px; left: auto; }
-.site-hand-cards.is-large .site-card-corner b { font-size: 26px; }
-.site-hand-cards.is-large .site-card-corner i { font-size: 17px; }
-.site-hand-cards.is-large .site-card-pip { font-size: 50px; }
+/* Same four-colour card as the app's trainer (♠ graphite, ♥ red, ♦ blue, ♣ green), scaled by --card-w. */
+.site-card { --card-w: 50px; display: inline-grid; flex: 0 0 auto; grid-template-rows: 1fr auto; justify-items: center; align-items: center; width: var(--card-w); height: calc(var(--card-w) * 1.4); padding: calc(var(--card-w) * .075) 0 calc(var(--card-w) * .1); border-radius: calc(var(--card-w) * .15); color: #fff; box-shadow: 0 6px 16px rgb(0 0 0 / 50%), inset 0 1px 0 rgb(255 255 255 / 22%), inset 0 -3px 0 rgb(0 0 0 / 18%); font-family: Inter, sans-serif; }
+.site-card b { font-size: calc(var(--card-w) * .575); font-weight: 800; line-height: 1; }
+.site .site-card i { font-size: calc(var(--card-w) * .325); line-height: 1; opacity: .9; }
+.site-card.suit-s { background: linear-gradient(160deg, #4a4a55, #2e2e36); }
+.site-card.suit-h { background: linear-gradient(160deg, #e0485f, #b52842); }
+.site-card.suit-d { background: linear-gradient(160deg, #3f86d6, #2560a8); }
+.site-card.suit-c { background: linear-gradient(160deg, #4ea86a, #2f7d49); }
+.site-hand-cards.is-large .site-card { --card-w: 84px; }
 .site-hand-cards.is-large .site-card:first-child { transform: rotate(-5deg); }
 .site-hand-cards.is-large .site-card:last-child { transform: rotate(4deg) translateY(6px); }
 .has-motion .is-dealing .site-card { animation: site-card-flip .6s var(--ease) both; animation-delay: calc(var(--i) * 90ms); }
@@ -270,7 +266,7 @@
 .site-drill-deal { position: relative; display: grid; place-items: center; gap: 14px; height: 250px; margin-top: 14px; overflow: hidden; border-radius: 16px; background: var(--felt); box-shadow: inset 0 0 0 1px #ffffff0d; }
 .site-drill-hand { color: #cfe0d8; font-family: var(--display); font-size: 20px; letter-spacing: -.02em; }
 .site-drill-deck { position: absolute; top: 16px; right: 18px; width: 40px; height: 56px; }
-.site-drill-deck span { position: absolute; inset: 0; border: 3px solid #f6f3ee; border-radius: 6px; background: repeating-linear-gradient(45deg, var(--raise) 0 4px, #b93a6b 4px 8px); }
+.site-drill-deck span { position: absolute; inset: 0; border-radius: 6px; background: linear-gradient(160deg, #4a4a55, #2e2e36); box-shadow: 0 6px 16px rgb(0 0 0 / 50%), inset 0 1px 0 rgb(255 255 255 / 22%), inset 0 0 0 4px #ffffff14; }
 .site-drill-deck span:nth-child(2) { transform: translate(-2px, 2px); }
 .site-drill-deck span:nth-child(3) { transform: translate(-4px, 4px); }
 .site-drill-question { margin: 22px 0 12px; font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
@@ -384,10 +380,7 @@
 .site-final { padding: 120px 0 140px; border-top: 1px solid var(--line); text-align: center; }
 .site-final-inner { display: flex; flex-direction: column; align-items: center; }
 .site-fan { position: relative; width: 100%; height: 150px; margin-bottom: 40px; }
-.site-fan .site-card { position: absolute; bottom: 0; left: 50%; width: 82px; height: 114px; margin-left: -41px; border-radius: 10px; transform: translateX(calc(var(--i) * 48px)) translateY(calc(var(--i) * var(--i) * 5px)) rotate(calc(var(--i) * 8deg)); transform-origin: 50% 120%; transition: transform .9s var(--ease); }
-.site-fan .site-card-corner b { font-size: 22px; }
-.site-fan .site-card-corner i { font-size: 15px; }
-.site-fan .site-card-pip { font-size: 40px; }
+.site-fan .site-card { --card-w: 78px; position: absolute; bottom: 0; left: 50%; margin-left: calc(var(--card-w) / -2); transform: translateX(calc(var(--i) * 48px)) translateY(calc(var(--i) * var(--i) * 5px)) rotate(calc(var(--i) * 8deg)); transform-origin: 50% 120%; transition: transform .9s var(--ease); }
 .site-fan:hover .site-card { transform: translateX(calc(var(--i) * 60px)) translateY(calc(var(--i) * var(--i) * 6px - 8px)) rotate(calc(var(--i) * 11deg)); transition-duration: .5s; }
 .has-motion .site-fan:not([data-shown]) .site-card { transform: none; }
 .has-motion .site-fan .site-card { transition-delay: calc((var(--i) + 2) * 70ms + .2s); }
@@ -472,9 +465,7 @@
   .site-plan { padding: 24px; }
   .site-drill-deck { display: none; }
   .site-why-scene { grid-template-columns: 1fr; gap: 20px; justify-items: center; }
-  .site-why-scene .site-hand-cards.is-large .site-card { width: 62px; height: 86px; }
-  .site-why-scene .site-hand-cards.is-large .site-card-pip { font-size: 32px; }
-  .site-why-scene .site-hand-cards.is-large .site-card-corner b { font-size: 18px; }
+  .site-why-scene .site-hand-cards.is-large .site-card { --card-w: 60px; }
   .site-why-card { width: min(280px, 90%); }
   .site-seat-name { padding: 4px 8px; font-size: 12px; }
   .site-fan .site-card { transform: translateX(calc(var(--i) * 36px)) translateY(calc(var(--i) * var(--i) * 4px)) rotate(calc(var(--i) * 8deg)); }
