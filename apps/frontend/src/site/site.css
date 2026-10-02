@@ -212,9 +212,10 @@
 
 
 /* How it works */
-.site-how h2 { margin-bottom: 40px; }
+.site-how { --how-top: max(88px, calc(50vh - 295px)); }
+.site-how h2 { position: sticky; top: var(--how-top); z-index: 2; margin-bottom: 40px; }
 .site-how-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 72px; }
-.site-how-stage { position: sticky; top: calc(50vh - 250px); height: 500px; overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); }
+.site-how-stage { position: sticky; top: calc(var(--how-top) + 110px); height: 500px; overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); }
 .site-how-layer { position: absolute; inset: 0 0 40px; display: grid; place-items: center; opacity: 0; transform: translateY(14px) scale(.98); transition: opacity .55s ease, transform .7s var(--ease); pointer-events: none; }
 .site-how-layer.is-active { opacity: 1; transform: none; }
 .site-how-progress { position: absolute; bottom: 22px; left: 50%; display: flex; gap: 6px; transform: translateX(-50%); }
@@ -228,7 +229,7 @@
 .site-how-steps p, .site-how-text p { max-width: 440px; color: var(--muted); font-size: 18px; line-height: 1.65; }
 .site-ja .site-how-steps p, .site-ja .site-how-text p { font-size: 16px; line-height: 1.9; }
 .site-how-inline { display: none; }
-.site-how-grid > .site-how-copy { position: sticky; top: calc(50vh - 250px); grid-column: 2; grid-row: 1; height: 500px; }
+.site-how-grid > .site-how-copy { position: sticky; top: calc(var(--how-top) + 110px); grid-column: 2; grid-row: 1; height: 500px; }
 .site-how-grid > .site-how-steps { grid-column: 2; grid-row: 1; }
 .site-how-text { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; opacity: 0; transition: opacity .45s ease; pointer-events: none; }
 .site-how-text.is-active { opacity: 1; }
@@ -632,6 +633,7 @@
   .site .site-menu { display: grid; }
   .site-how-grid { grid-template-columns: 1fr; gap: 0; }
   .site-how-stage { display: none; }
+  .site-how h2 { position: static; }
   .site-how-grid > .site-how-copy { display: none; }
   .site-how-grid > .site-how-steps { grid-column: auto; grid-row: auto; }
   .site-how-steps li > :not(.site-how-inline) { opacity: 1; }
