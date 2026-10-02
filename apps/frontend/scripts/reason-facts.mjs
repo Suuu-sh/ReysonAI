@@ -23,13 +23,14 @@ const fiveBets = load("five-bet-responses");
 const limpResponses = existsSync(new URL("limp-responses.json", dataDir)) ? load("limp-responses") : { spots: [] };
 const multiway = existsSync(new URL("multiway-responses.json", dataDir)) ? load("multiway-responses") : { spots: [] };
 const squeezes = existsSync(new URL("squeeze-responses.json", dataDir)) ? load("squeeze-responses") : { spots: [] };
+const limpDeep = existsSync(new URL("limp-deep-responses.json", dataDir)) ? load("limp-deep-responses") : { spots: [] };
 const coldThreeBets = existsSync(new URL("cold-three-bet-responses.json", dataDir)) ? load("cold-three-bet-responses") : { spots: [] };
 const outDir = process.env.REASON_FACTS_DIR ? pathToFileURL(resolve(process.env.REASON_FACTS_DIR) + "/") : new URL("../.local/reason-facts/", import.meta.url);
 const sourceFingerprint = reasonSourceFingerprint(load);
 const callEquities = load("call-equities");
-const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses, squeezes, coldThreeBets }).map(c => [c.spot.id, c]));
+const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses, squeezes, coldThreeBets, limpDeep }).map(c => [c.spot.id, c]));
 for (const context of contexts.values()) if (!validCallEquities(callEquities, context)) throw new Error(`Stale call equity: ${context.spot.id}`);
-const primaryEquityKeys = new Set(["equity_vs_open_pct", "equity_vs_three_bet_pct", "equity_vs_four_bet_pct", "equity_vs_bb_iso_pct", "equity_vs_limp_reraise_pct"]);
+const primaryEquityKeys = new Set(["equity_vs_open_pct", "equity_vs_three_bet_pct", "equity_vs_four_bet_pct", "equity_vs_bb_iso_pct", "equity_vs_limp_reraise_pct", "equity_vs_bb_four_bet_pct"]);
 mkdirSync(outDir, { recursive: true });
 
 const round1 = value => value === null ? null : Math.round(value * 1000) / 10;
@@ -270,6 +271,55 @@ function limpReraiseFacts(spot) {
   };
 }
 
+// All-in call spots (five-bet and limp-deep BB): every chip is in, so the saved equity versus the
+// shove range against pot odds is the whole decision. Equity is the dataset's own value.
+function allInCallFacts(type, spot, shoveRange, extraSpot) {
+  const reachable = row => row.equity_vs_shove_pct !== null && row.equity_vs_shove_pct !== undefined;
+  const reach = new Map(spot.hands.map(row => [row.hand, reachable(row)]));
+  return {
+    type,
+    spot: { ...extraSpot, call_break_even_equity_pct: spot.call_break_even_equity_pct, shove_range_combos: spot.shove_range_combos,
+      fold_pct: round1(weightedFold(spot, row => reach.get(row.hand) ? 1 : 0)) },
+    hands: spot.hands.map(row => ({ hand: row.hand,
+      equity_vs_shove_pct: reach.get(row.hand) ? row.equity_vs_shove_pct : null,
+      blocked_shove_pct: reach.get(row.hand) ? round1(blockedShare(row.hand, shoveRange)) : null })),
+  };
+}
+
+function fiveBetFacts(spot) {
+  const { opener, five_bettor: bettor } = spot;
+  const fourBetSpot = fourBets.spots.find(s => s.opener === opener && s.hero === bettor);
+  const threeBetWeight = byHand(responseOf(opener, bettor));
+  const shoveRange = rangeFrom(fourBetSpot, row => threeBetWeight.get(row.hand).three_bet / 100 * row.all_in / 100);
+  return allInCallFacts("five_bet", spot, shoveRange, { opener, five_bettor: bettor, four_bet_size_bb: spot.four_bet_size_bb, three_bet_size_bb: spot.three_bet_size_bb });
+}
+
+function limpFiveBetFacts(spot) {
+  const sb = openOf("SB");
+  const sbIso = byHand(limpResponses.spots.find(s => s.id === spot.source_iso_response_id));
+  const sbFour = limpDeep.spots.find(s => s.id === spot.source_four_bet_response_id);
+  const shoveRange = rangeFrom(sbFour, row => sb.get(row.hand).limp / 100 * sbIso.get(row.hand).raise / 100 * row.all_in / 100);
+  return allInCallFacts("limp_five_bet", spot, shoveRange, { four_bet_size_bb: spot.four_bet_size_bb, all_in_size_bb: spot.all_in_size_bb });
+}
+
+// SB facing BB's 4bet after its limp-reraise: OOP call EV against BB's iso x 4bet range.
+function limpFourBetFacts(spot) {
+  const context = contexts.get(spot.id);
+  const bbIso = byHand(limpResponses.spots.find(s => s.id === spot.source_limp_response_id));
+  const bbReraise = limpResponses.spots.find(s => s.id === spot.source_limp_reraise_response_id);
+  const fourBetRange = rangeFrom(bbReraise, row => bbIso.get(row.hand).raise / 100 * row.four_bet / 100);
+  const fiveBet = limpDeep.spots.find(s => s.id === "BB_vs_SB_limp_five_bet");
+  const bbReraiseRows = byHand(bbReraise);
+  return {
+    type: "limp_four_bet",
+    spot: { hero: "SB", opponent: "BB", position: "OOP", limp_reraise_size_bb: spot.limp_reraise_size_bb, four_bet_size_bb: spot.four_bet_size_bb, all_in_size_bb: spot.all_in_size_bb,
+      call_break_even_equity_pct: round1(need(context.input.cost_to_call, context.input.total_pot_after_call)),
+      bb_four_bet_range_combos: Math.round(totalWeight(fourBetRange) * 10) / 10,
+      bb_fold_to_shove_pct: round1(weightedFold(fiveBet, row => bbIso.get(row.hand).raise / 100 * bbReraiseRows.get(row.hand).four_bet / 100)) },
+    hands: handFacts(spot.id, spot, hand => context.reach(hand) > 0, { equity_vs_bb_four_bet_pct: fourBetRange, blocked_bb_four_bet_pct: fourBetRange }),
+  };
+}
+
 const builders = [
   ...opening.spots.map(spot => [spot.id, () => openingFacts(spot)]),
   ...responses.spots.map(spot => [spot.id, () => responseFacts(spot)]),
@@ -281,6 +331,9 @@ const builders = [
   ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp").map(spot => [spot.id, () => limpFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "SB_vs_BB_iso").map(spot => [spot.id, () => isoFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp_reraise").map(spot => [spot.id, () => limpReraiseFacts(spot)]),
+  ...fiveBets.spots.map(spot => [spot.id, () => fiveBetFacts(spot)]),
+  ...limpDeep.spots.filter(spot => spot.id === "SB_vs_BB_limp_four_bet").map(spot => [spot.id, () => limpFourBetFacts(spot)]),
+  ...limpDeep.spots.filter(spot => spot.id === "BB_vs_SB_limp_five_bet").map(spot => [spot.id, () => limpFiveBetFacts(spot)]),
 ];
 const wanted = new Set(process.argv.slice(2));
 for (const [id, build] of builders) {

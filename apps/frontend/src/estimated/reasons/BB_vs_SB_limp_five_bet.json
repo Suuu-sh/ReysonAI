@@ -1,0 +1,1216 @@
+{
+  "spot_id": "BB_vs_SB_limp_five_bet",
+  "type": "limp_five_bet",
+  "source_fingerprint": "91973e1de320ffa4274d295d93138335d4c030656f3a8ee5395a2a3d538cbc25",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_shove_pct",
+      "label": "勝率（対オールインレンジ）",
+      "scope": "hand"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "blocked_shove_pct",
+      "label": "オールインレンジのブロック",
+      "scope": "hand"
+    }
+  ],
+  "spot_facts": {
+    "four_bet_size_bb": 26,
+    "all_in_size_bb": 100,
+    "call_break_even_equity_pct": 37.6,
+    "shove_range_combos": 2.2,
+    "fold_pct": 78.4
+  },
+  "hands": {
+    "22": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "33": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "44": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "55": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "66": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "77": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "88": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "99": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は82.6%で、必要勝率37.6%を45.0pt上回ります。Aを持つことで相手の強いハンドを45.2%減らせる点も後押しします。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 82.6,
+        "blocked_shove_pct": 45.2
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は38.3%で、必要勝率37.6%を0.7pt上回ります。Aを持つことで相手の強いハンドを44.1%減らせる点も後押しします。境界のため、コール70%・フォールド30%に分けます。配分はコール 70%・フォールド 30%。",
+      "facts": {
+        "equity_vs_shove_pct": 38.3,
+        "blocked_shove_pct": 44.1
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は29.0%で、必要勝率37.6%に8.6pt届きません。Aを持つことで相手の強いハンドを26.0%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29,
+        "blocked_shove_pct": 26
+      }
+    },
+    "AJs": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "ATs": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A9s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A8s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A7s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A6s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は29.6%で、必要勝率37.6%に8.0pt届きません。Aを持つことで相手の強いハンドを25.0%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.6,
+        "blocked_shove_pct": 25
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は28.7%で、必要勝率37.6%に8.9pt届きません。Aを持つことで相手の強いハンドを25.0%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 28.7,
+        "blocked_shove_pct": 25
+      }
+    },
+    "A3s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A2s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は34.7%で、必要勝率37.6%に2.9pt届きません。Aを持つことで相手の強いハンドを45.6%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 34.7,
+        "blocked_shove_pct": 45.6
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は41.8%で、必要勝率37.6%を4.2pt上回ります。Kを持つことで相手の強いハンドを40.6%減らせる点も後押しします。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 41.8,
+        "blocked_shove_pct": 40.6
+      }
+    },
+    "KQs": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "KJs": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "KTs": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K9s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K8s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K7s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K6s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K5s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K4s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K3s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K2s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は25.6%で、必要勝率37.6%に12.0pt届きません。Aを持つことで相手の強いハンドを26.0%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.6,
+        "blocked_shove_pct": 26
+      }
+    },
+    "KQo": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は35.7%で、必要勝率37.6%に1.9pt届きません。境界のため、コール5%・フォールド95%に分けます。配分はフォールド 95%・コール 5%。",
+      "facts": {
+        "equity_vs_shove_pct": 35.7,
+        "blocked_shove_pct": 1.7
+      }
+    },
+    "QJs": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "QTs": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q9s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q8s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q7s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q6s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q5s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q4s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q3s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q2s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "AJo": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "KJo": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "QJo": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は34.8%で、必要勝率37.6%に2.8pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 34.8,
+        "blocked_shove_pct": 0
+      }
+    },
+    "JTs": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J9s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J8s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J7s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J6s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J5s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J4s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J3s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J2s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "ATo": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "KTo": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "QTo": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "JTo": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。BBが26BBに4bet後、SBの100BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。SBのオールインレンジに対する勝率は35.4%で、必要勝率37.6%に2.2pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 35.4,
+        "blocked_shove_pct": 0
+      }
+    },
+    "T9s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T8s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T7s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T6s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T5s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T4s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T3s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T2s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A9o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K9o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q9o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J9o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T9o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "98s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "97s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "96s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "95s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "94s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "93s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "92s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A8o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K8o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q8o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J8o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T8o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "98o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "87s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "86s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "85s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "84s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "83s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "82s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A7o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K7o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q7o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J7o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T7o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "97o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "87o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "76s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "75s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "74s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "73s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "72s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A6o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K6o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q6o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J6o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T6o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "96o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "86o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "76o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "65s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "64s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "63s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "62s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A5o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K5o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q5o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J5o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T5o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "95o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "85o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "75o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "65o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "54s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "53s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "52s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A4o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K4o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q4o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J4o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T4o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "94o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "84o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "74o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "64o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "54o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "43s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "42s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A3o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K3o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q3o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J3o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T3o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "93o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "83o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "73o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "63o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "53o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "43o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "32s": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A2o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K2o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q2o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J2o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T2o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "92o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "82o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "72o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "62o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "52o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "42o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "32o": {
+      "reason": "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    }
+  }
+}
