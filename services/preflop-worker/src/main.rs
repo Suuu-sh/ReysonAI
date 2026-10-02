@@ -1,6 +1,6 @@
 use preflop_tree::PreflopConfig;
-use solveagto_job_queue::{next_job_id, FileJobQueue, SolveJob};
-use solveagto_worker::{save, solve, SolveRequest};
+use solveaai_job_queue::{next_job_id, queue_from_environment, JobQueue, SolveJob};
+use solveaai_worker::{save, solve, SolveRequest};
 use std::env;
 use std::fs;
 use std::path::Path;
@@ -9,7 +9,7 @@ use std::time::Duration;
 
 fn main() {
     if let Err(error) = run() {
-        eprintln!("solveagto-worker: {error}");
+        eprintln!("solveaai-worker: {error}");
         std::process::exit(1);
     }
 }
@@ -35,16 +35,23 @@ fn run_single(args: &[String]) -> Result<(), String> {
     let output_dir = args
         .get(3)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_SOLUTION_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_SOLUTION_DIR").ok())
         .unwrap_or_else(|| "solutions".to_string());
     let (config, solution_id) = load_config(config_path, None)?;
-    println!("SolveaGTO Preflop v0.1");
+    println!("SolveaAI Preflop v0.1");
     println!();
     println!("Config Load: {}", config_path.display());
     println!("Game: {} {}-max", config.game, config.players);
     println!("Stack: {}BB", config.stack_bb);
     println!();
-    let solution = solve_with_progress(SolveRequest { solution_id, config })?;
+    let solution = solve_with_progress(SolveRequest {
+        solution_id,
+        config,
+    })?;
+    println!(
+        "Validation: structural checks passed; status=provisional, gto_verified={}",
+        solution.validation.gto_verified
+    );
     println!();
     println!("Solution Save: {output_dir}/{}.json", solution.solution_id);
     save(&solution, &output_dir)?;
@@ -64,17 +71,17 @@ fn enqueue(args: &[String]) -> Result<(), String> {
     let queue_dir = args
         .get(3)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
     let solution_dir = args
         .get(4)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_SOLUTION_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_SOLUTION_DIR").ok())
         .unwrap_or_else(|| "solutions".to_string());
     let job_id = next_job_id();
     let (config, solution_id) = load_config(config_path, Some(&job_id))?;
     let job = SolveJob::new(job_id.clone(), solution_id, config, solution_dir);
-    FileJobQueue::new(&queue_dir).enqueue(&job)?;
+    queue_from_environment(&queue_dir)?.enqueue(&job)?;
     println!("Job enqueued: {}", job.job_id);
     println!("Queue: {}", queue_dir);
     println!("Status: pending");
@@ -86,7 +93,7 @@ fn run_worker(args: &[String]) -> Result<(), String> {
         .get(2)
         .filter(|value| !value.starts_with("--"))
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
     let once = args.iter().any(|value| value == "--once");
     let poll_ms = option_value(args, "--poll-ms")
@@ -96,16 +103,16 @@ fn run_worker(args: &[String]) -> Result<(), String> {
     let worker_id = option_value(args, "--worker-id")
         .map(ToOwned::to_owned)
         .unwrap_or_else(|| format!("worker-{}", std::process::id()));
-    let queue = FileJobQueue::new(&queue_dir);
+    let queue = queue_from_environment(&queue_dir)?;
     let recovered = queue.requeue_running()?;
     if recovered > 0 {
         println!("Recovered {recovered} running job(s)");
     }
     println!("Worker started: {worker_id}");
-    println!("Queue: {queue_dir}");
+    println!("Queue: {} ({queue_dir})", queue.backend_name());
     if once {
         if let Some(job) = queue.claim_next(&worker_id)? {
-            process_job(&queue, job)?;
+            process_job(queue.as_ref(), job)?;
         } else {
             println!("No pending jobs");
         }
@@ -114,14 +121,14 @@ fn run_worker(args: &[String]) -> Result<(), String> {
 
     loop {
         if let Some(job) = queue.claim_next(&worker_id)? {
-            process_job(&queue, job)?;
+            process_job(queue.as_ref(), job)?;
         } else {
             thread::sleep(Duration::from_millis(poll_ms));
         }
     }
 }
 
-fn process_job(queue: &FileJobQueue, job: SolveJob) -> Result<(), String> {
+fn process_job(queue: &dyn JobQueue, job: SolveJob) -> Result<(), String> {
     println!("Job started: {} ({})", job.job_id, job.solution_id);
     let result = solve_with_progress(SolveRequest {
         solution_id: job.solution_id.clone(),
@@ -135,6 +142,10 @@ fn process_job(queue: &FileJobQueue, job: SolveJob) -> Result<(), String> {
         Ok(solution) => {
             queue.complete(&job.job_id)?;
             println!("Job succeeded: {}", job.job_id);
+            println!(
+                "Validation: structural checks passed; status=provisional, gto_verified={}",
+                solution.validation.gto_verified
+            );
             println!(
                 "Solution: {}/{}.json",
                 job.solution_dir.display(),
@@ -155,9 +166,9 @@ fn show_status(args: &[String]) -> Result<(), String> {
     let queue_dir = args
         .get(3)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
-    match FileJobQueue::new(queue_dir).get(job_id)? {
+    match queue_from_environment(&queue_dir)?.get(job_id)? {
         Some(job) => println!(
             "{}",
             serde_json::to_string_pretty(&job).map_err(|error| error.to_string())?
@@ -171,9 +182,9 @@ fn list_jobs(args: &[String]) -> Result<(), String> {
     let queue_dir = args
         .get(2)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
-    let jobs = FileJobQueue::new(queue_dir).list()?;
+    let jobs = queue_from_environment(&queue_dir)?.list()?;
     for job in jobs {
         println!("{}\t{:?}\t{}", job.job_id, job.status, job.solution_id);
     }
@@ -185,9 +196,9 @@ fn retry_job(args: &[String]) -> Result<(), String> {
     let queue_dir = args
         .get(3)
         .cloned()
-        .or_else(|| env::var("SOLVEAGTO_QUEUE_DIR").ok())
+        .or_else(|| env::var("SOLVEAAI_QUEUE_DIR").ok())
         .unwrap_or_else(|| "jobs".to_string());
-    let job = FileJobQueue::new(queue_dir).retry(job_id)?;
+    let job = queue_from_environment(&queue_dir)?.retry(job_id)?;
     println!("Job requeued: {} ({:?})", job.job_id, job.status);
     Ok(())
 }
@@ -215,18 +226,15 @@ fn solve_with_progress(request: SolveRequest) -> Result<solution::Solution, Stri
     println!();
     println!("Solver Start ({})", request.config.solver.strategy);
     let mut last_reported = 0;
-    solve(
-        request,
-        &mut |progress| {
-            if progress.iteration != last_reported {
-                println!(
-                    "Iteration: {} (average strategy delta: {:.6})",
-                    progress.iteration, progress.average_strategy_delta
-                );
-                last_reported = progress.iteration;
-            }
-        },
-    )
+    solve(request, &mut |progress| {
+        if progress.iteration != last_reported || progress.exploitability > 0.0 {
+            println!(
+                "Iteration: {} (average strategy delta: {:.6}, exploitability: {:.6})",
+                progress.iteration, progress.average_strategy_delta, progress.exploitability
+            );
+            last_reported = progress.iteration;
+        }
+    })
 }
 
 fn option_value<'a>(args: &'a [String], option: &str) -> Option<&'a str> {
@@ -236,6 +244,6 @@ fn option_value<'a>(args: &'a [String], option: &str) -> Option<&'a str> {
 }
 
 fn usage() -> String {
-    "usage:\n  solveagto-worker solve <config.json> [output_dir]\n  solveagto-worker enqueue <config.json> [queue_dir] [output_dir]\n  solveagto-worker worker [queue_dir] [--once] [--poll-ms N] [--worker-id ID]\n  solveagto-worker status <job_id> [queue_dir]\n  solveagto-worker list [queue_dir]\n  solveagto-worker retry <job_id> [queue_dir]"
+    "usage:\n  solveaai-worker solve <config.json> [output_dir]\n  solveaai-worker enqueue <config.json> [queue_dir] [output_dir]\n  solveaai-worker worker [queue_dir] [--once] [--poll-ms N] [--worker-id ID]\n  solveaai-worker status <job_id> [queue_dir]\n  solveaai-worker list [queue_dir]\n  solveaai-worker retry <job_id> [queue_dir]"
         .to_string()
 }

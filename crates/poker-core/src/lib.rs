@@ -410,6 +410,14 @@ impl Range {
         })
     }
 
+    pub fn singleton(combo: StartingCombo) -> Self {
+        let mut range = Self::empty();
+        range
+            .set_weight(combo, 1.0)
+            .expect("1.0 is a valid range weight");
+        range
+    }
+
     pub fn weight(&self, combo: StartingCombo) -> RangeWeight {
         self.weights[combo.index() as usize]
     }

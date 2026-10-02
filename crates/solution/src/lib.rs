@@ -12,16 +12,90 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+fn default_stack_bb() -> f64 {
+    100.0
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SolutionStatus {
+    Provisional,
+    GtoVerified,
+}
+
+impl Default for SolutionStatus {
+    fn default() -> Self {
+        Self::Provisional
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ExploitabilityStatus {
+    SampledEstimate,
+    Exact,
+}
+
+impl Default for ExploitabilityStatus {
+    fn default() -> Self {
+        Self::SampledEstimate
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidationReport {
+    #[serde(default)]
+    pub status: SolutionStatus,
+    #[serde(default)]
+    pub format_valid: bool,
+    #[serde(default)]
+    pub full_combo_coverage: bool,
+    #[serde(default)]
+    pub frequency_integrity: bool,
+    #[serde(default)]
+    pub ev_integrity: bool,
+    #[serde(default)]
+    pub exploitability_status: ExploitabilityStatus,
+    #[serde(default)]
+    pub gto_verified: bool,
+    #[serde(default)]
+    pub notes: Vec<String>,
+}
+
+impl Default for ValidationReport {
+    fn default() -> Self {
+        Self {
+            status: SolutionStatus::Provisional,
+            format_valid: false,
+            full_combo_coverage: false,
+            frequency_integrity: false,
+            ev_integrity: false,
+            exploitability_status: ExploitabilityStatus::SampledEstimate,
+            gto_verified: false,
+            notes: Vec::new(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Solution {
     pub solution_id: String,
+    /// Starting effective stack for this preflop solution.
+    ///
+    /// The serde default keeps v0.1 files written before stack metadata was
+    /// added readable; those files were generated from the 100BB config.
+    #[serde(default = "default_stack_bb")]
+    pub stack_bb: f64,
     pub solver_version: String,
     pub continuation_model_version: String,
     pub game_config_hash: String,
     pub created_at: String,
     pub iterations: u32,
     pub convergence: solver_core::ConvergenceMetrics,
+    #[serde(default)]
+    pub validation: ValidationReport,
     pub nodes: Vec<SolutionNode>,
 }
 
@@ -52,6 +126,12 @@ pub struct ComboActionSolution {
     pub action: String,
     pub frequency: f64,
     pub ev_bb: f64,
+    #[serde(default)]
+    pub regret: f64,
+    #[serde(default)]
+    pub strategy_sum: f64,
+    #[serde(default)]
+    pub counterfactual_reach: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -66,11 +146,14 @@ pub struct HandAggregate {
 #[serde(rename_all = "camelCase")]
 pub struct SolutionSummary {
     pub solution_id: String,
+    pub stack_bb: f64,
     pub solver_version: String,
     pub continuation_model_version: String,
     pub game_config_hash: String,
     pub created_at: String,
     pub iterations: u32,
+    pub convergence: solver_core::ConvergenceMetrics,
+    pub validation: ValidationReport,
 }
 
 impl Solution {
@@ -123,24 +206,34 @@ impl Solution {
             .collect();
         Self {
             solution_id: solution_id.into(),
+            stack_bb: tree.config.stack_bb,
             solver_version: output.solver_version,
             continuation_model_version: output.continuation_model_version,
             game_config_hash: game_config_hash.into(),
             created_at: created_at.into(),
             iterations: output.iterations,
             convergence: output.convergence,
+            validation: ValidationReport::default(),
             nodes,
         }
+    }
+
+    pub fn with_validation(mut self, validation: ValidationReport) -> Self {
+        self.validation = validation;
+        self
     }
 
     pub fn summary(&self) -> SolutionSummary {
         SolutionSummary {
             solution_id: self.solution_id.clone(),
+            stack_bb: self.stack_bb,
             solver_version: self.solver_version.clone(),
             continuation_model_version: self.continuation_model_version.clone(),
             game_config_hash: self.game_config_hash.clone(),
             created_at: self.created_at.clone(),
             iterations: self.iterations,
+            convergence: self.convergence.clone(),
+            validation: self.validation.clone(),
         }
     }
 
@@ -224,6 +317,9 @@ fn combo_action_solution(action: &ComboActionStrategy) -> ComboActionSolution {
         action: action.action.label(),
         frequency: action.frequency,
         ev_bb: action.ev_bb,
+        regret: action.regret,
+        strategy_sum: action.strategy_sum,
+        counterfactual_reach: action.counterfactual_reach,
     }
 }
 
@@ -278,6 +374,148 @@ pub fn hash_game_config(config: &preflop_tree::PreflopConfig) -> String {
         hash = hash.wrapping_mul(1_099_511_628_211);
     }
     format!("fnv1a-{hash:016x}")
+}
+
+/// Validate the structural guarantees required before a solution can be
+/// stored or promoted. This deliberately does not claim mathematical GTO
+/// verification: the current continuation model and exploitability metric are
+/// provisional and are recorded as such in the report.
+pub fn validate_solution(
+    config: &preflop_tree::PreflopConfig,
+    solution: &Solution,
+) -> Result<ValidationReport, String> {
+    let expected_hash = hash_game_config(config);
+    if solution.game_config_hash != expected_hash {
+        return Err(format!(
+            "gameConfigHash mismatch: expected {expected_hash}, found {}",
+            solution.game_config_hash
+        ));
+    }
+    if solution.stack_bb != config.stack_bb {
+        return Err(format!(
+            "stack mismatch: expected {}, found {}",
+            config.stack_bb, solution.stack_bb
+        ));
+    }
+    if solution.iterations != config.solver.iterations {
+        return Err(format!(
+            "iteration mismatch: expected {}, found {}",
+            config.solver.iterations, solution.iterations
+        ));
+    }
+    if solution.nodes.is_empty() {
+        return Err("solution has no nodes".to_string());
+    }
+    if !solution.convergence.average_strategy_delta.is_finite()
+        || !solution.convergence.exploitability.is_finite()
+    {
+        return Err("solution convergence contains non-finite values".to_string());
+    }
+
+    let expected_combos = poker_core::all_starting_combos()
+        .into_iter()
+        .map(|combo| combo.to_string())
+        .collect::<std::collections::HashSet<_>>();
+    let expected_hands = all_hand_classes()
+        .into_iter()
+        .map(|hand| hand.to_string())
+        .collect::<std::collections::HashSet<_>>();
+    let strategy_nodes = solution
+        .nodes
+        .iter()
+        .filter(|node| !node.combos.is_empty())
+        .collect::<Vec<_>>();
+    if strategy_nodes.is_empty() {
+        return Err("solution has no strategy nodes".to_string());
+    }
+
+    for node in strategy_nodes {
+        if node.combos.len() != expected_combos.len() {
+            return Err(format!(
+                "node {} has {} combos; expected {}",
+                node.node_id,
+                node.combos.len(),
+                expected_combos.len()
+            ));
+        }
+        let actual_combos = node
+            .combos
+            .iter()
+            .map(|combo| combo.combo.clone())
+            .collect::<std::collections::HashSet<_>>();
+        if actual_combos != expected_combos {
+            return Err(format!(
+                "node {} does not contain the complete 1326-combo set",
+                node.node_id
+            ));
+        }
+        if node.hand_aggregates.len() != expected_hands.len() {
+            return Err(format!(
+                "node {} has {} hand aggregates; expected {}",
+                node.node_id,
+                node.hand_aggregates.len(),
+                expected_hands.len()
+            ));
+        }
+        let actual_hands = node
+            .hand_aggregates
+            .iter()
+            .map(|aggregate| aggregate.hand.clone())
+            .collect::<std::collections::HashSet<_>>();
+        if actual_hands != expected_hands {
+            return Err(format!(
+                "node {} does not contain the complete 169-hand aggregate set",
+                node.node_id
+            ));
+        }
+        for combo in &node.combos {
+            if combo.actions.is_empty() {
+                return Err(format!(
+                    "node {} combo {} has no actions",
+                    node.node_id, combo.combo
+                ));
+            }
+            let mut actions = std::collections::HashSet::new();
+            let frequency_sum = combo.actions.iter().try_fold(0.0, |sum, action| {
+                if !actions.insert(action.action.clone()) {
+                    return Err(format!(
+                        "node {} combo {} contains duplicate action {}",
+                        node.node_id, combo.combo, action.action
+                    ));
+                }
+                if !action.frequency.is_finite()
+                    || !(0.0..=1.0).contains(&action.frequency)
+                    || !action.ev_bb.is_finite()
+                {
+                    return Err(format!(
+                        "node {} combo {} has invalid action values",
+                        node.node_id, combo.combo
+                    ));
+                }
+                Ok(sum + action.frequency)
+            })?;
+            if (frequency_sum - 1.0_f64).abs() > 1e-6 {
+                return Err(format!(
+                    "node {} combo {} frequencies sum to {frequency_sum}",
+                    node.node_id, combo.combo
+                ));
+            }
+        }
+    }
+
+    Ok(ValidationReport {
+        status: SolutionStatus::Provisional,
+        format_valid: true,
+        full_combo_coverage: true,
+        frequency_integrity: true,
+        ev_integrity: true,
+        exploitability_status: ExploitabilityStatus::SampledEstimate,
+        gto_verified: false,
+        notes: vec![
+            "Postflop continuation is provided by a provisional model.".to_string(),
+            "Exploitability is a sampled estimate, not an exact best response.".to_string(),
+        ],
+    })
 }
 
 pub trait SolutionRepository: Send + Sync {
@@ -363,6 +601,7 @@ mod tests {
         let mut progress = |_| {};
         let output = CfrStrategy::cfr().solve(&tree, &SimpleContinuationModel::default(), 1, &mut progress);
         let solution = Solution::from_solver_output("test-v1", "hash", "now", output, &tree);
+        assert_eq!(solution.stack_bb, 100.0);
         let decision = solution
             .nodes
             .iter()
@@ -371,5 +610,29 @@ mod tests {
         assert_eq!(decision.combos.len(), 1326);
         assert_eq!(decision.hand_aggregates.len(), 169);
         assert!(solution.hand(&decision.node_id, "AA").is_some());
+    }
+
+    #[test]
+    fn validation_marks_structurally_valid_results_as_provisional() {
+        let mut config = PreflopConfig::default();
+        config.solver.iterations = 1;
+        let tree = GameTree::build(config.clone()).unwrap();
+        let mut progress = |_| {};
+        let output =
+            CfrStrategy::cfr().solve(&tree, &SimpleContinuationModel::default(), 1, &mut progress);
+        let solution = Solution::from_solver_output(
+            "test-v1",
+            hash_game_config(&config),
+            "now",
+            output,
+            &tree,
+        );
+        let report = validate_solution(&config, &solution).unwrap();
+        assert!(report.format_valid);
+        assert!(report.full_combo_coverage);
+        assert!(report.frequency_integrity);
+        assert!(report.ev_integrity);
+        assert!(!report.gto_verified);
+        assert_eq!(report.status, SolutionStatus::Provisional);
     }
 }

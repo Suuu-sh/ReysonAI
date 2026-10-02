@@ -297,6 +297,16 @@ impl GameTree {
         })
     }
 
+    pub fn decision_roots(&self) -> impl Iterator<Item = &PlayerDecisionNode> {
+        self.decision_nodes().filter(|node| {
+            node.common.action_history.actions.len() == 1
+                && matches!(
+                    node.common.action_history.actions[0].action,
+                    ActionKind::Raise { .. }
+                )
+        })
+    }
+
     pub fn node(&self, node_id: &str) -> Option<&Node> {
         self.by_id.get(node_id).and_then(|index| self.nodes.get(*index))
     }

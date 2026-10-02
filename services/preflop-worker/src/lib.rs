@@ -1,6 +1,8 @@
 use continuation::SimpleContinuationModel;
 use preflop_tree::PreflopConfig;
-use solution::{hash_game_config, FileSolutionStore, Solution, SolutionRepository};
+use solution::{
+    hash_game_config, validate_solution, FileSolutionStore, Solution, SolutionRepository,
+};
 use solver_core::{CfrStrategy, SolverProgress, SolverStrategy};
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -31,13 +33,15 @@ pub fn solve(
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_secs().to_string())
         .unwrap_or_else(|_| "0".to_string());
-    Ok(Solution::from_solver_output(
+    let solution = Solution::from_solver_output(
         request.solution_id,
         hash_game_config(&config),
         created_at,
         output,
         &tree,
-    ))
+    );
+    let validation = validate_solution(&config, &solution)?;
+    Ok(solution.with_validation(validation))
 }
 
 pub fn save(solution: &Solution, output_dir: impl AsRef<Path>) -> Result<(), String> {

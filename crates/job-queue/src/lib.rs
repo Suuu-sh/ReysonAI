@@ -1,4 +1,4 @@
-//! A small durable file-backed queue for local SolveaGTO jobs.
+//! A small durable file-backed queue for local SolveaAI jobs.
 //!
 //! The queue deliberately exposes a repository-like boundary so the local
 //! implementation can later be replaced with Redis, a hosted queue, or a
@@ -6,10 +6,16 @@
 
 use preflop_tree::PreflopConfig;
 use serde::{Deserialize, Serialize};
+use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
+
+mod redis_queue;
+
+pub use redis_queue::{RedisJobQueue, RedisJobQueueConfig};
 
 static JOB_SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
@@ -62,13 +68,63 @@ impl SolveJob {
 }
 
 #[derive(Debug, Clone)]
+pub struct EnqueueOutcome {
+    pub job: SolveJob,
+    pub created: bool,
+}
+
+pub trait JobQueue: Send + Sync {
+    fn backend_name(&self) -> &'static str;
+    fn enqueue(&self, job: &SolveJob) -> Result<(), String>;
+    fn enqueue_unique(&self, job: &SolveJob) -> Result<EnqueueOutcome, String>;
+    fn claim_next(&self, worker_id: &str) -> Result<Option<SolveJob>, String>;
+    fn complete(&self, job_id: &str) -> Result<SolveJob, String>;
+    fn fail(&self, job_id: &str, error: &str) -> Result<SolveJob, String>;
+    fn retry(&self, job_id: &str) -> Result<SolveJob, String>;
+    fn get(&self, job_id: &str) -> Result<Option<SolveJob>, String>;
+    fn find_active_by_solution_id(&self, solution_id: &str) -> Result<Option<SolveJob>, String>;
+    fn list(&self) -> Result<Vec<SolveJob>, String>;
+    fn requeue_running(&self) -> Result<usize, String>;
+}
+
+pub fn queue_from_environment(
+    file_root: impl Into<PathBuf>,
+) -> Result<Arc<dyn JobQueue>, String> {
+    match env::var("SOLVEAAI_QUEUE_BACKEND")
+        .unwrap_or_else(|_| "file".to_string())
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "file" => Ok(Arc::new(FileJobQueue::new(file_root))),
+        "redis" => {
+            let mut config = RedisJobQueueConfig::local(
+                env::var("SOLVEAAI_REDIS_URL")
+                    .unwrap_or_else(|_| "redis://127.0.0.1:6379/".to_string()),
+            );
+            config.prefix = env::var("SOLVEAAI_REDIS_PREFIX")
+                .unwrap_or_else(|_| "solveaai".to_string());
+            config.group = env::var("SOLVEAAI_REDIS_GROUP")
+                .unwrap_or_else(|_| "solveaai-workers".to_string());
+            config.block_ms = env_usize("SOLVEAAI_REDIS_BLOCK_MS", config.block_ms)?;
+            config.lease_ms = env_usize("SOLVEAAI_REDIS_LEASE_MS", config.lease_ms)?;
+            Ok(Arc::new(RedisJobQueue::new(config)?))
+        }
+        backend => Err(format!("unsupported SOLVEAAI_QUEUE_BACKEND: {backend}")),
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct FileJobQueue {
     root: PathBuf,
+    enqueue_lock: Arc<Mutex<()>>,
 }
 
 impl FileJobQueue {
     pub fn new(root: impl Into<PathBuf>) -> Self {
-        Self { root: root.into() }
+        Self {
+            root: root.into(),
+            enqueue_lock: Arc::new(Mutex::new(())),
+        }
     }
 
     pub fn root(&self) -> &Path {
@@ -82,6 +138,24 @@ impl FileJobQueue {
             return Err(format!("job already exists: {}", job.job_id));
         }
         self.write_atomic(&self.state_path(JobStatus::Pending, &job.job_id), job)
+    }
+
+    pub fn enqueue_unique(&self, job: &SolveJob) -> Result<EnqueueOutcome, String> {
+        let _guard = self
+            .enqueue_lock
+            .lock()
+            .map_err(|_| "job enqueue lock poisoned".to_string())?;
+        if let Some(existing) = self.find_active_by_solution_id(&job.solution_id)? {
+            return Ok(EnqueueOutcome {
+                job: existing,
+                created: false,
+            });
+        }
+        self.enqueue(job)?;
+        Ok(EnqueueOutcome {
+            job: job.clone(),
+            created: true,
+        })
     }
 
     /// Atomically claims the oldest pending job for a worker.
@@ -311,6 +385,52 @@ impl FileJobQueue {
     }
 }
 
+impl JobQueue for FileJobQueue {
+    fn backend_name(&self) -> &'static str {
+        "file"
+    }
+
+    fn enqueue(&self, job: &SolveJob) -> Result<(), String> {
+        FileJobQueue::enqueue(self, job)
+    }
+
+    fn enqueue_unique(&self, job: &SolveJob) -> Result<EnqueueOutcome, String> {
+        FileJobQueue::enqueue_unique(self, job)
+    }
+
+    fn claim_next(&self, worker_id: &str) -> Result<Option<SolveJob>, String> {
+        FileJobQueue::claim_next(self, worker_id)
+    }
+
+    fn complete(&self, job_id: &str) -> Result<SolveJob, String> {
+        FileJobQueue::complete(self, job_id)
+    }
+
+    fn fail(&self, job_id: &str, error: &str) -> Result<SolveJob, String> {
+        FileJobQueue::fail(self, job_id, error)
+    }
+
+    fn retry(&self, job_id: &str) -> Result<SolveJob, String> {
+        FileJobQueue::retry(self, job_id)
+    }
+
+    fn get(&self, job_id: &str) -> Result<Option<SolveJob>, String> {
+        FileJobQueue::get(self, job_id)
+    }
+
+    fn find_active_by_solution_id(&self, solution_id: &str) -> Result<Option<SolveJob>, String> {
+        FileJobQueue::find_active_by_solution_id(self, solution_id)
+    }
+
+    fn list(&self) -> Result<Vec<SolveJob>, String> {
+        FileJobQueue::list(self)
+    }
+
+    fn requeue_running(&self) -> Result<usize, String> {
+        FileJobQueue::requeue_running(self)
+    }
+}
+
 pub fn next_job_id() -> String {
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -320,11 +440,17 @@ pub fn next_job_id() -> String {
     format!("job-{now}-{}-{sequence}", std::process::id())
 }
 
-fn unix_timestamp() -> u64 {
+pub(crate) fn unix_timestamp() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs()
+}
+
+fn env_usize(name: &str, default: usize) -> Result<usize, String> {
+    env::var(name)
+        .map(|value| value.parse::<usize>().map_err(|error| error.to_string()))
+        .unwrap_or(Ok(default))
 }
 
 fn validate_job_id(job_id: &str) -> Result<(), String> {
@@ -343,7 +469,7 @@ mod tests {
     use super::*;
 
     fn test_root(name: &str) -> PathBuf {
-        std::env::temp_dir().join(format!("solveagto-job-queue-{name}-{}", std::process::id()))
+        std::env::temp_dir().join(format!("solveaai-job-queue-{name}-{}", std::process::id()))
     }
 
     #[test]
@@ -407,6 +533,39 @@ mod tests {
             .find_active_by_solution_id("other-solution")
             .unwrap()
             .is_none());
+
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn failed_jobs_can_be_retried_without_losing_attempt_history() {
+        let root = test_root("failure-retry");
+        let queue = FileJobQueue::new(&root);
+        let job = SolveJob::new(
+            "job-failure-retry",
+            "solution-failure-retry",
+            PreflopConfig::default(),
+            "solutions",
+        );
+        queue.enqueue(&job).unwrap();
+        let claimed = queue.claim_next("worker-test").unwrap().unwrap();
+        assert_eq!(claimed.attempts, 1);
+
+        let failed = queue
+            .fail("job-failure-retry", "synthetic solver failure")
+            .unwrap();
+        assert_eq!(failed.status, JobStatus::Failed);
+        assert_eq!(failed.error.as_deref(), Some("synthetic solver failure"));
+        assert_eq!(failed.attempts, 1);
+
+        let retried = queue.retry("job-failure-retry").unwrap();
+        assert_eq!(retried.status, JobStatus::Pending);
+        assert_eq!(retried.attempts, 1);
+        assert!(retried.error.is_none());
+
+        let claimed_again = queue.claim_next("worker-test-2").unwrap().unwrap();
+        assert_eq!(claimed_again.status, JobStatus::Running);
+        assert_eq!(claimed_again.attempts, 2);
 
         fs::remove_dir_all(root).unwrap();
     }

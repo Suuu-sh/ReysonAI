@@ -1,10 +1,11 @@
 [package]
-name = "solveagto-job-queue"
+name = "solveaai-job-queue"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [dependencies]
 preflop-tree = { path = "../preflop-tree" }
+redis = { version = "1.7", default-features = false, features = ["streams"] }
 serde.workspace = true
 serde_json.workspace = true

@@ -1,0 +1,717 @@
+{
+  "version": 1,
+  "base": {
+    "turn": {
+      "lead": {
+        "check": {
+          "monster": {
+            "ja": "強い役でもここでチェックを挟めば、相手が弱い手で打ったり、次のカードで再びコールしたりする余地を残せます。",
+            "en": "Checking even a very strong hand leaves room for the opponent to bet a weaker hand or call on the next card."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアはすぐ大きなポットにせず、チェックして相手の弱いベットを受け止める選択もできます。",
+            "en": "Top pair or an overpair can check to control the pot and leave weaker bets in the opponent’s range."
+          },
+          "draw": {
+            "ja": "まだ完成していないドローはチェックで追加の支払いを避け、リバーで役ができる機会を残します。",
+            "en": "An unfinished draw can check to avoid paying more now while keeping a chance to complete on the river."
+          },
+          "medium": {
+            "ja": "中くらいのペアには勝負できる価値が残るので、無理に打たずチェックして相手の弱い手を残します。",
+            "en": "A middle-strength pair still has showdown value; checking avoids forcing out hands it can beat."
+          },
+          "air": {
+            "ja": "役がない手でも、相手が降りにくい流れなら打つ価値は下がります。チェックして追加の損失を抑えます。",
+            "en": "Even without a made hand, betting loses appeal when the opponent is unlikely to fold; checking limits further cost."
+          }
+        },
+        "bet_small": {
+          "monster": {
+            "ja": "強い役を小さく打てば、相手の弱いペアやドローにも続けてもらいやすく、リバーでもう一度価値を取る道が残ります。",
+            "en": "A small bet with a very strong hand can keep weaker pairs and draws in, leaving another chance for value on the river."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアは小さく打ち、下のペアやドローからコールをもらいながら相手に無料のカードを渡しません。",
+            "en": "A small bet with top pair or an overpair seeks calls from weaker pairs and draws without giving a free card."
+          },
+          "draw": {
+            "ja": "ドローを小さく打つと、相手が降ればそこで勝てます。コールされてもリバーで完成する道が残ります。",
+            "en": "A small semi-bluff can win immediately if the opponent folds, while retaining a chance to complete on the river."
+          },
+          "medium": {
+            "ja": "中くらいのペアは小さく打つことで、相手の役なしには代金を払わせつつ、強い手にぶつかったときの損失を抑えます。",
+            "en": "A small bet charges unmade hands while limiting the loss when a middle-strength pair runs into a stronger hand."
+          },
+          "air": {
+            "ja": "役なしでも小さいベットなら、相手の未完成の手を低い負担で降ろしに行けます。ただしコールには弱いままです。",
+            "en": "A small bluff can pressure unfinished hands at lower cost, but an unmade hand remains weak if called."
+          }
+        },
+        "bet_big": {
+          "monster": {
+            "ja": "強い役で大きく打てば、相手の強めのペアやドローから多く取り、リバー前にポットを育てられます。",
+            "en": "A large bet builds the pot before the river and seeks more from the opponent’s stronger pairs and draws."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアで大きく打つのは、続けるドローに高い代金を求め、弱いペアにも価値を取りに行くためです。",
+            "en": "A large bet with top pair or an overpair charges continuing draws and seeks value from weaker pairs."
+          },
+          "draw": {
+            "ja": "強いドローなら大きく打って相手に降りる判断を迫れます。コールされた場合も完成すれば大きなポットを狙えます。",
+            "en": "A strong draw can apply more fold pressure with a large bet and still play for a bigger pot when it completes."
+          },
+          "medium": {
+            "ja": "中くらいのペアは大きく打つと、負けている手ばかりが続きやすくなります。使うなら相手のドローが多い場面に限ります。",
+            "en": "Large bets with a middle-strength pair tend to be called by better hands, so they make more sense only against many draws."
+          },
+          "air": {
+            "ja": "役なしで大きく打つのは、相手の一枚ペアなどを降ろせる見込みがあるときのブラフです。失敗時の負担は重くなります。",
+            "en": "A large bluff with no made hand targets hands such as a single pair, but it is costly when they do not fold."
+          }
+        },
+        "allin": {
+          "monster": {
+            "ja": "残りをすべて入れると、強い役から取れる額を増やし、相手のドローにも最後のカードを安く見せません。",
+            "en": "Moving all-in seeks full value with a very strong hand and denies draws a cheap look at the last card."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアで全額を入れるのは、弱い手にもコールされる余地があるときに限ります。強い役に偏る相手には慎重です。",
+            "en": "An all-in with top pair or an overpair needs weaker hands that can call; caution is needed against a range weighted to stronger hands."
+          },
+          "draw": {
+            "ja": "強いドローで全額を入れれば、今降ろす道と、コール後にリバーで完成する道があります。ただし失敗時の損失は大きいです。",
+            "en": "An all-in with a strong draw can win through a fold or a river completion, but the cost is high when neither happens."
+          },
+          "medium": {
+            "ja": "中くらいのペアで全額を入れると、弱い手は降り、強い手だけが残りやすくなります。通常はポットを抑えるほうが自然です。",
+            "en": "An all-in with a middling pair usually folds out worse hands and gets called by better ones, so pot control is more natural."
+          },
+          "air": {
+            "ja": "役なしの全額ベットは、相手が強いペアまで降ろせる特殊な流れでだけ意味があります。コールされたら逆転の道は細いです。",
+            "en": "An all-in bluff without a made hand needs a credible chance to fold even a strong pair; there is little fallback when called."
+          }
+        }
+      },
+      "facing": {
+        "fold": {
+          "monster": {
+            "ja": "強い役は普通は降りませんが、相手の大きなベットがさらに強い完成役を強く示すなら、例外的に撤退を考えます。",
+            "en": "A very strong hand rarely folds, but an exceptionally strong-looking bet can signal an even better made hand."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアでも、相手が大きく打ち、ボードも危険になったなら、一枚ペアに固執せず降ります。",
+            "en": "Even top pair or an overpair can fold when a large bet and a dangerous board make one pair fragile."
+          },
+          "draw": {
+            "ja": "ドローがあっても、払う額に比べて完成の見返りが乏しければ降ります。残り一枚だけで追う必要はありません。",
+            "en": "A draw can fold when its possible river payoff does not justify the price of seeing the last card."
+          },
+          "medium": {
+            "ja": "中くらいのペアは相手の価値を取りに来る手に負けやすく、強い圧力にはショーダウン価値を手放します。",
+            "en": "A middling pair often trails the hands betting for value, so heavy pressure can outweigh its showdown value."
+          },
+          "air": {
+            "ja": "役なしでベットを受けたとき、明確な改善の道も相手を降ろす機会もなければ、追加の支払いを避けます。",
+            "en": "Facing a bet with no made hand, fold when there is no clear improvement or later chance to make the opponent fold."
+          }
+        },
+        "call": {
+          "monster": {
+            "ja": "強い役をコールにとどめると、相手のブラフや弱い価値取りを残せます。リバーで再び打ってもらう余地もあります。",
+            "en": "Calling with a very strong hand keeps bluffs and thinner value bets in, with room for another bet on the river."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアは、相手の弱いペアやブラフにも勝てます。レイズでそれらを追い出さず、コールで続けます。",
+            "en": "Top pair or an overpair can beat weaker pairs and bluffs; calling keeps those hands in rather than raising them out."
+          },
+          "draw": {
+            "ja": "ドローのコールは、リバーで完成したときの見返りを狙う選択です。相手が大きく打ったほど慎重に選びます。",
+            "en": "Calling with a draw aims for a payoff when the river completes it, and needs more care against a larger bet."
+          },
+          "medium": {
+            "ja": "中くらいのペアは相手のブラフに勝てることがあります。レイズでポットを膨らませず、コールで勝負を続けます。",
+            "en": "A middling pair can catch a bluff; calling continues without inflating the pot through a raise."
+          },
+          "air": {
+            "ja": "役なしのコールは、残るオーバーカードなどで改善でき、相手の弱いベットにも対抗できる場合に限ります。",
+            "en": "Calling without a made hand needs live improvement cards, such as overcards, and a weak enough betting range."
+          }
+        },
+        "raise": {
+          "monster": {
+            "ja": "強い役でレイズすれば、相手の強めの一枚ペアやドローからさらに取り、リバー前にポットを大きくできます。",
+            "en": "Raising a very strong hand builds the pot before the river and extracts more from strong one-pair hands and draws."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアのレイズは、相手のドローに代金を求める選択です。ただし強い手だけが残るなら控えます。",
+            "en": "Raising top pair or an overpair charges draws, but becomes unattractive if only stronger hands continue."
+          },
+          "draw": {
+            "ja": "強いドローでレイズすると、相手を今降ろす道が増えます。コールされてもリバーの完成で勝つ機会があります。",
+            "en": "Raising a strong draw adds a way to win immediately through a fold while retaining river completion chances."
+          },
+          "medium": {
+            "ja": "中くらいのペアはレイズしても弱い手から取りにくく、強い手に再び打たれやすいので、通常は向きません。",
+            "en": "A middling pair rarely gains calls from worse hands when raising and risks more pressure from stronger ones."
+          },
+          "air": {
+            "ja": "役なしのレイズは、相手のベットに弱い手が多く、こちらの強さを信じさせられる流れでだけ使うブラフです。",
+            "en": "A raise with no made hand is a bluff for spots where the bettor can be weak and the story of strength is credible."
+          }
+        }
+      },
+      "facing_raise": {
+        "fold": {
+          "monster": {
+            "ja": "強い役でも、相手のレイズがより強い完成役を示し、残りのカードで逆転しにくいなら降りる余地があります。",
+            "en": "Even a very strong hand can fold if the raise points to a better made hand with little chance to recover."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアは、レイズ後に相手の強い役とぶつかりやすくなります。一枚ペアを守り切ろうとしません。",
+            "en": "After a raise, top pair or an overpair is more likely to face a stronger made hand; one pair need not be defended at any cost."
+          },
+          "draw": {
+            "ja": "ドローはレイズで必要な支払いが増えます。完成しても相手のさらに強い役に負ける危険があれば降ります。",
+            "en": "A raise makes a draw more expensive, and folding is sensible if even a completed draw could be beaten."
+          },
+          "medium": {
+            "ja": "中くらいのペアはレイズの価値取りに対抗しにくく、ブラフだけを期待して大きなポットへ進むのは避けます。",
+            "en": "A middling pair struggles against value raises, so avoid building a large pot solely in hope of a bluff."
+          },
+          "air": {
+            "ja": "役なしでレイズまで受けたら、逆転できる手がかりもほぼありません。これ以上の支払いをせずに手放します。",
+            "en": "With no made hand and a raise to face, there is usually too little improvement potential to justify more chips."
+          }
+        },
+        "call": {
+          "monster": {
+            "ja": "強い役を再レイズせずコールすると、相手のブラフを残しながらリバーへ進めます。次の判断材料も得られます。",
+            "en": "Calling a raise with a very strong hand keeps bluffs in and reaches the river without forcing them out."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアのコールは、相手にドローのレイズもある場合の守りです。リバーのカードを見て再評価します。",
+            "en": "Calling a raise with top pair or an overpair defends against possible draw raises, then reassesses on the river."
+          },
+          "draw": {
+            "ja": "強いドローは、完成したリバーで大きなポットを取れる見込みがあれば、レイズにコールして続けられます。",
+            "en": "A strong draw can call a raise when completing on the river offers enough upside in the larger pot."
+          },
+          "medium": {
+            "ja": "中くらいのペアのコールは、相手がドローやブラフもレイズする流れに限ります。強い完成役ばかりなら降ります。",
+            "en": "A middling pair calls a raise only when draws and bluffs plausibly raise too; against mostly made value hands, it folds."
+          },
+          "air": {
+            "ja": "役なしでレイズをコールするのは、明確な改善の道がある例外に限ります。単なる期待だけでは続けません。",
+            "en": "Calling a raise without a made hand needs a concrete route to improve; hope alone is not enough."
+          }
+        },
+        "raise": {
+          "monster": {
+            "ja": "強い役でレイズすれば、相手の強めの一枚ペアやドローからさらに取り、リバー前にポットを大きくできます。",
+            "en": "Raising a very strong hand builds the pot before the river and extracts more from strong one-pair hands and draws."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアのレイズは、相手のドローに代金を求める選択です。ただし強い手だけが残るなら控えます。",
+            "en": "Raising top pair or an overpair charges draws, but becomes unattractive if only stronger hands continue."
+          },
+          "draw": {
+            "ja": "強いドローでレイズすると、相手を今降ろす道が増えます。コールされてもリバーの完成で勝つ機会があります。",
+            "en": "Raising a strong draw adds a way to win immediately through a fold while retaining river completion chances."
+          },
+          "medium": {
+            "ja": "中くらいのペアはレイズしても弱い手から取りにくく、強い手に再び打たれやすいので、通常は向きません。",
+            "en": "A middling pair rarely gains calls from worse hands when raising and risks more pressure from stronger ones."
+          },
+          "air": {
+            "ja": "役なしのレイズは、相手のベットに弱い手が多く、こちらの強さを信じさせられる流れでだけ使うブラフです。",
+            "en": "A raise with no made hand is a bluff for spots where the bettor can be weak and the story of strength is credible."
+          }
+        }
+      }
+    },
+    "river": {
+      "lead": {
+        "check": {
+          "monster": {
+            "ja": "非常に強い役でもチェックすれば、相手がブラフしたり薄い価値取りをしたりする余地を残せます。",
+            "en": "Checking a very strong hand can invite a bluff or a thin value bet from the opponent."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアは、ここで打つと強い手にだけコールされがちです。チェックして勝負の額を抑えます。",
+            "en": "A river bet with top pair or an overpair may draw calls mainly from better hands, so checking controls the final cost."
+          },
+          "medium": {
+            "ja": "中くらいのペアには勝てる相手の手が残ります。弱い手を降ろすベットより、チェックして見せ合う道を選びます。",
+            "en": "A middling pair can still beat some hands; checking favors showdown over betting those weaker hands out."
+          },
+          "air": {
+            "ja": "役なしでも、相手が降りそうにないなら無理なブラフを避けます。チェックして追加のチップを失いません。",
+            "en": "With no made hand, checking avoids a costly bluff when the opponent is unlikely to fold."
+          }
+        },
+        "bet_small": {
+          "monster": {
+            "ja": "強い役を小さく打つと、相手の弱いペアにもコールの余地を与え、最後のストリートで価値を取り切れます。",
+            "en": "A small river bet with a very strong hand gives weaker pairs room to call and captures final-street value."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアの小さいベットは、下のペアからもコールをもらえるときの薄い価値取りです。",
+            "en": "A small river bet with top pair or an overpair seeks thin value when weaker pairs can still call."
+          },
+          "medium": {
+            "ja": "中くらいのペアで小さく打つなら、さらに弱いペアがコールする見込みが必要です。強い手ばかり続くならチェックします。",
+            "en": "A small bet with a middling pair needs calls from still-weaker pairs; if only better hands continue, check instead."
+          },
+          "air": {
+            "ja": "役なしの小さいベットは、相手の外れたドローなどを降ろすためです。ペアが残りやすい相手には効きにくくなります。",
+            "en": "A small river bluff targets missed draws, but works poorly when the opponent is likely to hold onto pairs."
+          }
+        },
+        "bet_big": {
+          "monster": {
+            "ja": "強い役で大きく打つと、相手の強めのペアや下の完成役から最後に多く取れます。もう次のカードはありません。",
+            "en": "A large river bet seeks maximum value from strong pairs and lesser made hands; there is no next card to wait for."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアの大きなベットは、弱い手にコールされにくい点が難所です。相手が広く払う場面に絞ります。",
+            "en": "A large river bet with one pair is difficult because worse hands may not call; use it only when they plausibly will."
+          },
+          "medium": {
+            "ja": "中くらいのペアを大きく打っても、勝っている相手は降り、負けている相手が残りがちです。通常は見せ合いを選びます。",
+            "en": "Large betting with a middling pair often folds out worse hands and keeps better ones in, making showdown preferable."
+          },
+          "air": {
+            "ja": "役なしの大きなベットは、相手の一枚ペアまで降ろせる流れを使うブラフです。弱い手だけを狙うには大きすぎます。",
+            "en": "A large bluff with no made hand needs a plausible path to fold out one-pair hands, not merely missed draws."
+          }
+        },
+        "allin": {
+          "monster": {
+            "ja": "強い完成役で全額を入れ、相手の強い一枚ペアや下の役から最大限に取ります。リバーでは引き直されません。",
+            "en": "An all-in with a very strong made hand seeks full value from strong one-pair hands or lesser made hands; there is no redraw."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアの全額ベットは、相手の弱い手が大きく払える場合に限ります。通常は額が重すぎます。",
+            "en": "An all-in with top pair or an overpair requires weaker hands willing to pay so much; usually the size is too heavy."
+          },
+          "medium": {
+            "ja": "中くらいのペアで全額を入れても、弱い手からのコールは期待しにくいです。勝てる可能性を残してチェックします。",
+            "en": "An all-in with a middling pair rarely gets called by worse, so checking preserves its chance to win at showdown."
+          },
+          "air": {
+            "ja": "役なしの全額ベットは、相手のペアを降ろせる話の筋があるときの強いブラフです。コールされたら勝てません。",
+            "en": "An all-in with no made hand is a major bluff that needs a credible story to fold out pairs; it loses when called."
+          }
+        }
+      },
+      "facing": {
+        "fold": {
+          "monster": {
+            "ja": "強い役は通常続けますが、相手のベットがさらに上の完成役に極端に偏るなら、強さだけで固執しません。",
+            "en": "A very strong hand usually continues, but can fold if the river bet is overwhelmingly weighted toward better made hands."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアは、最後の大きなベットに対して強い役を逆転できません。相手の価値取りが濃ければ降ります。",
+            "en": "Top pair or an overpair cannot improve against a final large bet, so fold when the opponent’s value hands dominate."
+          },
+          "medium": {
+            "ja": "中くらいのペアは相手の価値取りに負けやすく、リバーではもう改善できません。ブラフを十分に見込めなければ降ります。",
+            "en": "A middling pair often loses to value bets and has no card left to improve; fold without a credible bluff component."
+          },
+          "air": {
+            "ja": "役なしで相手のベットを受けても、見せ合いで勝てる相手は限られます。これ以上払わず手放します。",
+            "en": "With no made hand facing a river bet, too few hands can be beaten at showdown, so avoid paying more."
+          }
+        },
+        "call": {
+          "monster": {
+            "ja": "強い役をコールにとどめれば、相手のブラフも負かしながら、より強い役への追加の支払いを避けられます。",
+            "en": "Calling a very strong hand catches bluffs while avoiding extra chips lost to an even stronger hand."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアは、相手が外れたドローをブラフに変える流れならコールで捕まえられます。",
+            "en": "Top pair or an overpair can call when missed draws plausibly become river bluffs."
+          },
+          "medium": {
+            "ja": "中くらいのペアのコールは、相手の小さな価値取りよりブラフが目立つときに限ります。強いベットには弱いままです。",
+            "en": "A middling pair calls only when bluffs are prominent relative to value bets; it remains fragile against strong betting."
+          },
+          "air": {
+            "ja": "役なしのコールには、相手のブラフにも勝てる高いカードなどが必要です。単に外した手では見せ合いに勝てません。",
+            "en": "Calling without a pair needs a high-card hand that can beat some bluffs; a completely missed hand cannot win at showdown."
+          }
+        },
+        "raise": {
+          "monster": {
+            "ja": "強い役で最後にレイズすれば、相手の価値を取りに来た下の役からさらに取れます。もう逆転されるカードはありません。",
+            "en": "A river raise with a very strong hand gets more from the opponent’s lesser value hands, with no card left to outdraw it."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアをレイズしても、相手の弱い手は降りやすく、強い役にコールされがちです。普通はコールに留めます。",
+            "en": "Raising top pair or an overpair often folds out worse hands and gets called by better ones, so calling is usually safer."
+          },
+          "medium": {
+            "ja": "中くらいのペアはレイズして価値を取れる相手がほとんどありません。ブラフを捕まえられるならコールを考えます。",
+            "en": "A middling pair has few worse hands to target with a raise; calling is better if catching bluffs is the aim."
+          },
+          "air": {
+            "ja": "役なしのレイズは、相手のベットした一枚ペアまで降ろすためのブラフです。相手が降りないなら使えません。",
+            "en": "A river raise with no made hand is a bluff targeting even a betting one-pair hand; it fails if that hand will not fold."
+          }
+        }
+      },
+      "facing_raise": {
+        "fold": {
+          "monster": {
+            "ja": "強い役でも、相手のレイズがさらに上の役に偏り、こちらが負かせる手がほぼ残らないなら降ります。",
+            "en": "Even a very strong hand can fold if the raise is so concentrated on better hands that almost nothing worse remains."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアは、リバーのレイズに対して一枚ペアのままです。強い完成役を示す相手には降ります。",
+            "en": "Top pair or an overpair remains only one pair against a river raise; fold when it strongly represents a better made hand."
+          },
+          "medium": {
+            "ja": "中くらいのペアはレイズされた後に勝てる相手の価値取りが乏しくなります。ブラフだけを期待して追いません。",
+            "en": "After a raise, a middling pair has few value hands it beats; do not continue just hoping the raise is a bluff."
+          },
+          "air": {
+            "ja": "役なしでリバーのレイズを受けたら、次のカードでの改善もありません。追加で払う理由はありません。",
+            "en": "Facing a river raise without a made hand, there is no later card to improve and little reason to pay more."
+          }
+        },
+        "call": {
+          "monster": {
+            "ja": "強い役はレイズをコールして、相手の下の完成役やブラフを残したまま勝負します。再レイズの危険を避けます。",
+            "en": "A very strong hand can call a raise and beat lesser made hands or bluffs without risking more on a re-raise."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアでレイズをコールするのは、相手が外れたドローも強く見せる場合です。価値取り中心なら降ります。",
+            "en": "Calling a raise with one pair needs the opponent to bluff missed draws; fold if the raise is mostly for value."
+          },
+          "medium": {
+            "ja": "中くらいのペアでレイズをコールするには、相手が頻繁にブラフしている根拠が要ります。通常の価値取りには弱いです。",
+            "en": "A middling pair needs a clear reason to expect frequent bluffs before calling a raise; it loses to ordinary value raises."
+          },
+          "air": {
+            "ja": "役なしでレイズをコールしても、相手のブラフと引き分けるか負けることが多いです。高いカードで勝てる例外だけです。",
+            "en": "Calling a raise without a made hand usually loses even to many bluffs; only a high-card hand that can beat some bluffs may qualify."
+          }
+        },
+        "raise": {
+          "monster": {
+            "ja": "強い役で最後にレイズすれば、相手の価値を取りに来た下の役からさらに取れます。もう逆転されるカードはありません。",
+            "en": "A river raise with a very strong hand gets more from the opponent’s lesser value hands, with no card left to outdraw it."
+          },
+          "strong": {
+            "ja": "トップペアやオーバーペアをレイズしても、相手の弱い手は降りやすく、強い役にコールされがちです。普通はコールに留めます。",
+            "en": "Raising top pair or an overpair often folds out worse hands and gets called by better ones, so calling is usually safer."
+          },
+          "medium": {
+            "ja": "中くらいのペアはレイズして価値を取れる相手がほとんどありません。ブラフを捕まえられるならコールを考えます。",
+            "en": "A middling pair has few worse hands to target with a raise; calling is better if catching bluffs is the aim."
+          },
+          "air": {
+            "ja": "役なしのレイズは、相手のベットした一枚ペアまで降ろすためのブラフです。相手が降りないなら使えません。",
+            "en": "A river raise with no made hand is a bluff targeting even a betting one-pair hand; it fails if that hand will not fold."
+          }
+        }
+      }
+    }
+  },
+  "texture": {
+    "turn": {
+      "blank": {
+        "monster": {
+          "ja": "ターンが大きく変わらないカードなら、すでに強い役の価値は保たれやすいです。ただし相手の隠れた完成役は残ります。",
+          "en": "A quiet turn tends to preserve the value of a very strong made hand, though concealed stronger hands remain possible."
+        },
+        "strong": {
+          "ja": "変化の少ないターンではトップペアやオーバーペアの相対的な強さが保たれます。相手の弱いペアも続きやすいです。",
+          "en": "On a quiet turn, top pair or an overpair tends to retain its relative strength, while weaker pairs can still continue."
+        },
+        "draw": {
+          "ja": "変化の少ないカードでドローが完成しなかったなら、残るリバーだけが主な改善機会です。払う額を見直します。",
+          "en": "If a quiet turn does not complete the draw, the river is the main remaining improvement chance, so reconsider the price."
+        },
+        "medium": {
+          "ja": "ターンでボードがあまり変わらなければ、中くらいのペアにも見せ合いの価値が残ります。大きな圧力には慎重です。",
+          "en": "A quiet turn preserves some showdown value for a middling pair, though heavy pressure still calls for caution."
+        },
+        "air": {
+          "ja": "ターンが空振りのカードでも、役なしの手は改善していません。相手の手を降ろせるかが打つ理由になります。",
+          "en": "A quiet turn does not improve an unmade hand; betting needs a believable way to make the opponent fold."
+        }
+      },
+      "over": {
+        "monster": {
+          "ja": "高いカードが落ちても強い役は残りますが、相手に上の役ができた可能性は増えます。取り切る相手を見極めます。",
+          "en": "A high turn card does not erase a very strong hand, but it can improve the opponent; consider which worse hands still pay."
+        },
+        "strong": {
+          "ja": "オーバーカードでトップペアやオーバーペアの位置づけが変わることがあります。新しい上のペアを相手が持つかに注意します。",
+          "en": "An overcard can change where top pair or an overpair stands; watch for a newly higher pair in the opponent’s range."
+        },
+        "draw": {
+          "ja": "高いカードでドローがまだ完成しなくても、相手の一枚ペアが強くなったり弱くなったりします。降ろせる手を見直します。",
+          "en": "An overcard may shift which one-pair hands can fold or continue even if the draw itself remains unfinished."
+        },
+        "medium": {
+          "ja": "高いカードは中くらいのペアをさらに下の位置へ押し下げます。見せ合いの価値を過信せず、相手の反応を見ます。",
+          "en": "A high turn card pushes a middling pair further down the hand rankings, so do not overrate its showdown value."
+        },
+        "air": {
+          "ja": "役なしでも高いカードをこちらが代表しやすければ、相手の弱いペアに圧力をかけられます。実際に当たった相手には逆効果です。",
+          "en": "With no made hand, a credible high card can pressure weak pairs, but it is ineffective when that card helped the opponent."
+        }
+      },
+      "pair": {
+        "monster": {
+          "ja": "ボードがペアになると、すでにある強い役の順位が変わることがあります。相手のフルハウスにも注意します。",
+          "en": "A paired board can reorder made hands, so even a strong hand must account for possible full houses."
+        },
+        "strong": {
+          "ja": "ボードのペアはトップペアやオーバーペアをすぐに負けにしませんが、相手のスリーカードが増える点に注意します。",
+          "en": "A paired board does not automatically beat one pair, but it gives the opponent more ways to hold three of a kind."
+        },
+        "draw": {
+          "ja": "ボードのペアでドロー自体は完成しません。完成後もフルハウスに負ける恐れがあるため、追う価値を慎重に見ます。",
+          "en": "Pairing the board does not complete a draw and can leave its eventual completion vulnerable to a full house."
+        },
+        "medium": {
+          "ja": "ボードがペアになると、中くらいのペアは相手の高いペアやスリーカードに負けやすくなります。安く見せ合う道を探します。",
+          "en": "A middling pair faces more higher pairs and trips on a paired board, making a cheap showdown more attractive."
+        },
+        "air": {
+          "ja": "役なしにはボードのペアだけで役ができても、相手も同じペアを使えます。強い手になったと思い込まず判断します。",
+          "en": "A board pair gives both players the same shared pair, so an otherwise unmade hand should not be treated as strong."
+        }
+      },
+      "straight": {
+        "monster": {
+          "ja": "ストレートが近づくカードは、強い二枚ペアやセットにも逆転の危険を作ります。相手のつながる手を意識します。",
+          "en": "A turn that brings a straight closer can threaten even two pair or a set; consider the opponent’s connected hands."
+        },
+        "strong": {
+          "ja": "ストレートが近づくと、トップペアやオーバーペアだけでは守りきれない相手の手が増えます。大きな反撃に注意します。",
+          "en": "When straights become more likely, top pair or an overpair is less secure against the opponent’s continuing hands."
+        },
+        "draw": {
+          "ja": "つながるカードで自分のドローが強まる場合も、相手のドローが先に完成する場合もあります。両方を見て続けます。",
+          "en": "A connecting turn can strengthen your draw or complete the opponent’s; weigh both effects before continuing."
+        },
+        "medium": {
+          "ja": "ストレートが近づくターンでは、中くらいのペアの見せ合い価値が下がります。相手の強いアクションには慎重です。",
+          "en": "A turn that brings straights closer reduces a middling pair’s showdown comfort, especially against strong action."
+        },
+        "air": {
+          "ja": "役なしでもつながるカードを使って強い役を示せる場合があります。ただし相手にも実際のストレートが増えます。",
+          "en": "A connecting card can support a credible bluff with no made hand, but it also gives the opponent more real straights."
+        }
+      },
+      "flush": {
+        "monster": {
+          "ja": "フラッシュが近づく、または完成するカードでは、強い二枚ペアやセットも無敵ではありません。相手のスートを見ます。",
+          "en": "A turn that brings a flush closer or completes it can threaten even two pair or a set; consider the opponent’s suits."
+        },
+        "strong": {
+          "ja": "フラッシュが近づく、または完成すると、トップペアやオーバーペアは一枚ペアのままです。大きなベットには慎重です。",
+          "en": "When a flush draws closer or arrives, top pair or an overpair remains just one pair and must respect heavy betting."
+        },
+        "draw": {
+          "ja": "自分のフラッシュドローが強まったか、相手のフラッシュが完成したかを分けて考えます。単に同じスートが増えただけでは不十分です。",
+          "en": "Separate a stronger flush draw of your own from a completed flush for the opponent; another suited card alone is not enough."
+        },
+        "medium": {
+          "ja": "フラッシュが見えるターンでは、中くらいのペアを強く押し切りにくくなります。相手のコールやレイズを重く見ます。",
+          "en": "A flush-threatening turn makes a middling pair harder to push for value, especially against a call or raise."
+        },
+        "air": {
+          "ja": "役なしでもフラッシュを示すブラフはできますが、相手が実際にそのスートを持つ機会も増えます。無理はしません。",
+          "en": "An unmade hand may represent the flush, but the opponent is also more likely to hold that suit, so avoid automatic bluffs."
+        }
+      }
+    },
+    "river": {
+      "blank": {
+        "monster": {
+          "ja": "リバーが変化の少ないカードなら、強い役は前のストリートから価値を保ちやすいです。下の役が払うかを考えます。",
+          "en": "A quiet river tends to preserve a strong hand’s value from the previous street; focus on which worse hands can pay."
+        },
+        "strong": {
+          "ja": "変化の少ないリバーではトップペアやオーバーペアがそのまま勝てることがあります。外れたドローのブラフにも注意します。",
+          "en": "A quiet river can leave one pair ahead, while missed draws may become opponent bluffs."
+        },
+        "medium": {
+          "ja": "リバーが空振りなら中くらいのペアも残りますが、相手の上のペアは逆転できません。見せ合いの費用を抑えます。",
+          "en": "A quiet river preserves a middling pair, but it cannot outdraw higher pairs; keep showdown cost in mind."
+        },
+        "air": {
+          "ja": "変化の少ないリバーで役がないままなら、もう改善の機会はありません。勝つには相手を降ろすか弱い高カードに勝つ必要があります。",
+          "en": "On a quiet river, an unmade hand has no card left to improve; it must induce a fold or beat a weaker high card."
+        }
+      },
+      "over": {
+        "monster": {
+          "ja": "高いリバーで相手に上のペアができる可能性はありますが、強い完成役はまだ多くの一枚ペアに勝てます。",
+          "en": "A high river can give the opponent a new pair, but a strong made hand still beats many one-pair holdings."
+        },
+        "strong": {
+          "ja": "オーバーカードが落ちると、トップペアやオーバーペアだった手の強さが変わります。新しい上のペアに注意します。",
+          "en": "A river overcard can change the standing of a former top pair or overpair; account for newly higher pairs."
+        },
+        "medium": {
+          "ja": "高いリバーは中くらいのペアの見せ合い価値を下げます。相手がそのカードを使う手で続けたかを考えます。",
+          "en": "A high river lowers the showdown value of a middling pair; consider whether the opponent continued with hands using it."
+        },
+        "air": {
+          "ja": "役なしでも高いリバーを強い手として示せる場合があります。ただし相手が実際にそのカードで当たる危険もあります。",
+          "en": "A high river may support a bluff with no made hand, but it may also have paired the opponent."
+        }
+      },
+      "pair": {
+        "monster": {
+          "ja": "リバーでボードがペアになると、強い役の順位が入れ替わることがあります。フルハウスや四枚組み合わせを確認します。",
+          "en": "A paired river can reorder strong hands; check for full houses and four of a kind."
+        },
+        "strong": {
+          "ja": "ボードがペアになってもトップペアやオーバーペアだけなら一枚ペアが中心です。相手のスリーカードに注意します。",
+          "en": "Even on a paired river, top pair or an overpair must account for the opponent’s trips."
+        },
+        "medium": {
+          "ja": "ボードのペアは中くらいのペアを強くするとは限りません。相手も共有カードを使い、上のペアは残ります。",
+          "en": "A paired board does not necessarily improve a middling pair; both players share it and higher pairs remain."
+        },
+        "air": {
+          "ja": "ボードのペアで役なしに見えた手も共有のペアを使えますが、相手も同じです。高カードの差を過大評価しません。",
+          "en": "A board pair gives an unmade hand a shared pair, but the opponent has it too; do not overrate a kicker edge."
+        }
+      },
+      "straight": {
+        "monster": {
+          "ja": "ストレートができやすいリバーでは、強い二枚ペアやセットも負ける可能性があります。相手の連続したランクを確認します。",
+          "en": "A river that completes straights can beat even two pair or a set; check the opponent’s connected ranks."
+        },
+        "strong": {
+          "ja": "ストレートが近づくリバーでは、トップペアやオーバーペアだけで大きく取りに行くのは危険です。",
+          "en": "On a river that brings straights closer, top pair or an overpair becomes risky to push for large value."
+        },
+        "medium": {
+          "ja": "中くらいのペアはストレートの完成に対抗できません。相手の強いベットが自然なら、見せ合いに固執しません。",
+          "en": "A middling pair cannot beat a completed straight; do not cling to showdown against a convincing strong bet."
+        },
+        "air": {
+          "ja": "役なしでもストレート完成を示すブラフはできますが、相手の手が実際に完成している可能性も高まります。",
+          "en": "An unmade hand can represent the completed straight, but the opponent is also more likely to hold one."
+        }
+      },
+      "flush": {
+        "monster": {
+          "ja": "フラッシュが近づく、または完成したリバーでは、強い二枚ペアやセットも相手のスートに負けることがあります。",
+          "en": "A river bringing a flush closer or completing it can make even two pair or a set lose to the opponent’s suit."
+        },
+        "strong": {
+          "ja": "フラッシュが見えるリバーではトップペアやオーバーペアの価値が下がります。相手の大きなベットを慎重に受けます。",
+          "en": "On a flush-threatening river, top pair or an overpair loses value and should face large bets cautiously."
+        },
+        "medium": {
+          "ja": "中くらいのペアはフラッシュに勝てず、相手のブラフ以外には見せ合いで苦しくなります。無理にポットを膨らませません。",
+          "en": "A middling pair loses to a flush and struggles at showdown except against bluffs, so avoid inflating the pot."
+        },
+        "air": {
+          "ja": "役なしでフラッシュを示すブラフには、そのスートを持つ相手を降ろせない弱点があります。相手の続け方を重く見ます。",
+          "en": "A bluff representing a flush cannot fold out an opponent who actually has that suit; weigh how they reached the river."
+        }
+      }
+    }
+  },
+  "line": {
+    "turn": {
+      "lead": {
+        "aggressor": {
+          "ja": "前のストリートでこちらが打ってコールされたなら、相手は続ける手を残しています。同じ話を続ける前に、ターンの変化を見ます。",
+          "en": "After your previous bet was called, the opponent still has continuing hands; check how the turn changed them before betting again."
+        },
+        "defender": {
+          "ja": "前のストリートで相手のベットをコールしたなら、こちらの強さはまだ見せていません。先に打つと相手のブラフを消す面もあります。",
+          "en": "After calling the opponent’s previous bet, your strength is less defined; leading now may also drive out their bluffs."
+        },
+        "checked": {
+          "ja": "前のストリートがチェックで回ったなら、相手にも強い手と弱い手が残ります。ターンの先打ちはその両方への働きを考えます。",
+          "en": "After the previous street checked through, both strong and weak hands remain; a turn lead should account for both."
+        }
+      },
+      "facing": {
+        "aggressor": {
+          "ja": "前のストリートでこちらが打った後、今は相手から打たれています。主導権が移った理由を考え、以前の強さだけで続けません。",
+          "en": "You bet on the previous street but now face a bet; consider why the initiative changed rather than relying on the old story."
+        },
+        "defender": {
+          "ja": "前のストリートで相手のベットをコールし、再び打たれています。相手は続けて強さを示しているので、手の価値を見直します。",
+          "en": "You called the opponent’s earlier bet and face another; repeated pressure calls for a fresh look at your hand’s value."
+        },
+        "checked": {
+          "ja": "前のストリートがチェックで回った後のベットは、新しいカードで相手の手が変わった可能性があります。自動的にブラフ扱いしません。",
+          "en": "A bet after a checked-through street may reflect the new card helping the opponent; do not assume it is a bluff."
+        }
+      },
+      "facing_raise": {
+        "aggressor": {
+          "ja": "前のストリートでこちらが打ってコールされ、ターンではレイズも受けました。相手の強い手が増えた理由を確認します。",
+          "en": "Your previous bet was called and the turn brought a raise; consider which strong hands the opponent could have developed."
+        },
+        "defender": {
+          "ja": "前のストリートで相手のベットをコールした後、こちらの打ち返しがレイズされました。相手の継続はより強い意味を持ちます。",
+          "en": "After calling last street, you bet and were raised; the opponent’s continued aggression now carries more weight."
+        },
+        "checked": {
+          "ja": "前のストリートがチェックで回ったのに、ターンでレイズまで進みました。急に大きくなったポットには慎重に対応します。",
+          "en": "The previous street checked through, but the turn has reached a raise; treat the sudden pot growth cautiously."
+        }
+      }
+    },
+    "river": {
+      "lead": {
+        "aggressor": {
+          "ja": "前のストリートでこちらが打ってコールされたなら、相手はまだ払える手を持ちます。最後のベットはその下の手を狙います。",
+          "en": "After your turn bet was called, the opponent still has hands willing to pay; the final bet should target worse ones."
+        },
+        "defender": {
+          "ja": "前のストリートで相手のベットをコールしたなら、先打ちは流れを変えます。相手のブラフを残すチェックとも比べます。",
+          "en": "After calling the turn bet, leading the river changes the story; compare it with checking to keep bluffs in."
+        },
+        "checked": {
+          "ja": "前のストリートがチェックで回ったなら、相手の弱い手も強い手も残っています。最後のベットで誰が払うかを考えます。",
+          "en": "After a checked-through turn, both weak and strong hands remain; ask which of them would pay a final bet."
+        }
+      },
+      "facing": {
+        "aggressor": {
+          "ja": "前のストリートでこちらが打ってコールされた後、相手がリバーを打っています。相手の新しい強さを無視しません。",
+          "en": "After your turn bet was called, the opponent now bets the river; do not ignore this new show of strength."
+        },
+        "defender": {
+          "ja": "前のストリートで相手のベットをコールし、最後も打たれています。連続した価値取りと外れたドローのブラフを比べます。",
+          "en": "You called the turn bet and face a final bet; weigh repeated value betting against bluffs from missed draws."
+        },
+        "checked": {
+          "ja": "前のストリートがチェックで回ってから最後に打たれました。相手の新しい価値取りと遅れたブラフの両方を考えます。",
+          "en": "After a checked-through turn, a river bet can be new value or a delayed bluff; consider both."
+        }
+      },
+      "facing_raise": {
+        "aggressor": {
+          "ja": "前のストリートでこちらが打ってコールされ、リバーではレイズまで受けています。相手の下の役がそこまで払うかを考えます。",
+          "en": "Your turn bet was called and the river was raised; ask whether worse made hands would really take that line."
+        },
+        "defender": {
+          "ja": "前のストリートで相手のベットをコールし、最後はこちらのベットにレイズされました。相手の強い役を重く見ます。",
+          "en": "After calling the turn bet, you bet the river and were raised; give serious weight to the opponent’s strong hands."
+        },
+        "checked": {
+          "ja": "前のストリートがチェックで回った後のリバーレイズは、急に強く主張する行動です。どの完成役があり得るか確認します。",
+          "en": "A river raise after a checked-through turn is a sudden claim of strength; identify which made hands fit it."
+        }
+      }
+    }
+  }
+}

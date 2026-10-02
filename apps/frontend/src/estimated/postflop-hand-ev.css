@@ -1,0 +1,17 @@
+.hand-ev-breakdown { display: grid; gap: 10px; }
+.hand-ev-breakdown .bars { margin: 0; }
+.hand-ev-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 0; }
+.hand-ev-summary div { padding: 6px 8px; border-radius: 6px; background: var(--surface-raised); }
+.hand-ev-summary dt { font-size: 10px; color: var(--text-subtle); }
+.hand-ev-summary dd { margin: 2px 0 0; font-size: 15px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+/* Same grid as .bar-row, plus an EV column on the right. */
+.bar-row.with-ev { grid-template-columns: minmax(75px, 1fr) minmax(45px, 1fr) 48px 64px; }
+.bar-row em { font-style: normal; text-align: right; font-variant-numeric: tabular-nums; }
+.bar-row.best-ev > span, .bar-row.best-ev em { font-weight: 700; }
+.bar-row.best-ev em::before { content: "▲ "; font-size: 8px; vertical-align: 2px; }
+.hand-ev-breakdown .ev-positive { color: #6fd08c; }
+.hand-ev-breakdown .ev-negative { color: #ff8a9a; }
+.hand-ev-breakdown .ev-unavailable { color: var(--text-subtle); }
+.hand-ev-status, .hand-ev-note { margin: 0; font-size: 10px; line-height: 1.5; color: var(--text-subtle); }
+.hand-ev-status { font-size: 11px; color: var(--text-muted); }
+@media (max-width: 720px) { .bar-row.with-ev { grid-template-columns: minmax(65px, 1fr) minmax(25px, .65fr) 44px 58px; } }

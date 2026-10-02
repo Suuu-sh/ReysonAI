@@ -1,0 +1,21 @@
+{
+  "name": "@solveaai/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for the SolveaAI preflop solution API",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test tests/index.test.mjs tests/preflop-ranges.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

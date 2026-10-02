@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "evionai-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-22",
+  "r2_buckets": [
+    {
+      "binding": "SOLUTIONS",
+      "bucket_name": "solveaai-solutions"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "evionai",
+      "database_id": "ee3182f6-6bbd-46a7-bcdd-08134b27161e",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGIN": "https://evionai.suuu-sh.workers.dev"
+  }
+}
