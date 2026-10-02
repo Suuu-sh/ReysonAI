@@ -482,7 +482,8 @@ function Audience() {
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(true);
   const [ref, visible] = useInView<HTMLElement>("-25% 0px", false);
-  const running = auto && motion && visible;
+  const [scrolly, setScrolly] = useState(false);
+  const running = auto && motion && visible && !scrolly;
   const a5s = frequencies("response", "A5s");
   const [free, plus] = c.pricing.plans;
 
@@ -493,8 +494,47 @@ function Audience() {
     return () => window.clearTimeout(timer);
   }, [running, active]);
 
+  // Wide screens: the section pins while scrolling, and scroll position picks the persona.
+  useEffect(() => {
+    if (!motion) { setScrolly(false); return; }
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 760px)");
+    const sync = () => setScrolly(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, [motion]);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!scrolly || !node) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = node.getBoundingClientRect();
+      const span = rect.height - window.innerHeight;
+      if (span <= 0) return;
+      const progress = Math.min(Math.max(-rect.top / span, 0), 0.999);
+      setActive(Math.floor(progress * personaIds.length));
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [scrolly, ref]);
+
   function choose(index: number) {
     setAuto(false);
+    const node = ref.current;
+    if (scrolly && node) {
+      const top = node.getBoundingClientRect().top + window.scrollY;
+      const span = node.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: top + span * ((index + 0.5) / personaIds.length), behavior: "smooth" });
+    }
     setActive((index + personaIds.length) % personaIds.length);
   }
 
@@ -507,7 +547,7 @@ function Audience() {
   }
 
   const view = (index: number) => `site-persona-view${active === index ? " is-active" : ""}`;
-  return <section className="site-section site-audience" ref={ref} aria-labelledby="site-audience-title">
+  return <section className={`site-section site-audience${scrolly ? " is-scrolly" : ""}`} ref={ref} aria-labelledby="site-audience-title">
     <div className="site-wrap">
       <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
       <div className="site-audience-grid" data-reveal>
