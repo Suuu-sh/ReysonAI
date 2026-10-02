@@ -98,7 +98,7 @@ function FrequencyBars({ mode, values }: { mode: RangeMode; values: Record<Actio
   const shown = actions.filter(action => values[action] > 0);
   return <fieldset className="site-freq"><legend className="site-visually-hidden">{copy.preview.frequencyLabel}</legend>
     <span className="site-freq-track" aria-hidden="true">{shown.map(action => <span key={action} className={`is-${action}`} style={{ width: `${values[action]}%` }} />)}</span>
-    <span className="site-freq-values">{shown.map(action => <span key={action}><i className={`is-${action}`} />{actionLabel(copy, mode, action)} <b>{values[action]}%</b></span>)}</span>
+    <span className="site-freq-values">{shown.map(action => <span key={action}><i className={`is-${action}`} /><em>{actionLabel(copy, mode, action)}</em><b>{values[action]}%</b></span>)}</span>
   </fieldset>;
 }
 
@@ -381,18 +381,31 @@ function nextDrillHand(previous: string) {
   return hand;
 }
 
+// Seats clockwise from the hero on the button, matching the app trainer's layout (x%, y% of the felt).
+const drillSeats = [
+  { position: "BTN", x: 50, y: 100, stack: 100, bet: 0, state: "hero" },
+  { position: "SB", x: 5, y: 76, stack: 99.5, bet: .5, state: "blind" },
+  { position: "BB", x: 13, y: 12, stack: 99, bet: 1, state: "blind" },
+  { position: "UTG", x: 50, y: -2, stack: 100, bet: 0, state: "fold" },
+  { position: "HJ", x: 87, y: 12, stack: 100, bet: 0, state: "fold" },
+  { position: "CO", x: 95, y: 76, stack: 100, bet: 0, state: "fold" },
+];
+const stripSeats = ["UTG", "HJ", "CO", "BTN"];
+type DrillChoice = "fold" | "raise";
+
 function Drill() {
   const { copy: c } = useSite();
   const [round, setRound] = useState(0);
   const [hand, setHand] = useState("J9o");
-  const [answer, setAnswer] = useState<"raise" | "fold" | null>(null);
+  const [answer, setAnswer] = useState<DrillChoice | null>(null);
   const [score, setScore] = useState({ matched: 0, played: 0 });
   const [ref, inView] = useInView<HTMLElement>("-20% 0px", false);
   const values = frequencies("opening", hand);
   const chosen = answer ? values[answer] : 0;
   const verdict = !answer ? null : chosen === 100 ? "match" : chosen === 0 ? "differ" : "mixed";
+  const choices: DrillChoice[] = ["fold", "raise"];
 
-  function choose(next: "raise" | "fold") {
+  function choose(next: DrillChoice) {
     if (answer) return;
     setAnswer(next);
     setScore(current => ({ matched: current.matched + (values[next] === 100 ? 1 : 0), played: current.played + 1 }));
@@ -409,11 +422,10 @@ function Drill() {
   useEffect(() => {
     if (!inView) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.metaKey || event.ctrlKey || event.altKey || (event.target as HTMLElement).closest("input, textarea, select")) return;
-      const key = event.key.toLowerCase();
-      if (key === "r") handlers.current.choose("raise");
-      else if (key === "f") handlers.current.choose("fold");
-      else if (key === "n" && handlers.current.answer) handlers.current.deal();
+      if (event.metaKey || event.ctrlKey || event.altKey || (event.target as HTMLElement).closest("input, textarea, select, button, a, summary")) return;
+      if (event.key === "1") handlers.current.choose("fold");
+      else if (event.key === "2") handlers.current.choose("raise");
+      else if (event.key === "Enter" && handlers.current.answer) handlers.current.deal();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -426,26 +438,33 @@ function Drill() {
         <p>{c.drill.description}</p>
         <p className="site-drill-note">{c.drill.note}</p>
       </div>
-      <div className="site-drill-table" data-reveal>
-        <div className="site-drill-head"><span>{c.drill.situation}</span><span className="site-drill-score" aria-live="polite">{score.played > 0 && c.drill.score(score.matched, score.played)}</span></div>
-        <div className="site-drill-deal">
-          <span className="site-drill-deck" aria-hidden="true"><span /><span /><span /></span>
-          <HandCards key={round} hand={hand} seed={round} className="is-large is-dealt" />
-          <strong className="site-drill-hand">{hand}</strong>
+      <div className={`site-trainer${answer ? " is-answered" : ""}`} data-reveal>
+        <div className="site-trainer-head">
+          <ol className="site-trainer-strip">{stripSeats.map(seat => <li key={seat} className={seat === "BTN" ? "is-hero" : ""}><span>{seat}</span><small>100</small><b>{seat === "BTN" ? answer ? c.drill[answer] : "?" : c.drill.tableFold}</b></li>)}</ol>
+          <span className="site-trainer-score" aria-live="polite">{score.played > 0 && c.drill.score(score.matched, score.played)}</span>
         </div>
-        <p className="site-drill-question">{c.drill.question}</p>
-        <div className="site-drill-actions">
-          <button type="button" className={`is-raise${answer === "raise" ? " is-chosen" : ""}`} onClick={() => choose("raise")} disabled={answer !== null && answer !== "raise"} aria-pressed={answer === "raise"}>{c.drill.raise}<kbd>R</kbd></button>
-          <button type="button" className={`is-fold${answer === "fold" ? " is-chosen" : ""}`} onClick={() => choose("fold")} disabled={answer !== null && answer !== "fold"} aria-pressed={answer === "fold"}>{c.drill.fold}<kbd>F</kbd></button>
+        <div className="site-trainer-stage">
+          <figure className="site-poker-table"><figcaption className="site-visually-hidden">{c.drill.tableLabel(hand)}</figcaption>
+            <div className="site-poker-felt">
+              <div className="site-poker-center" aria-live="polite">
+                {verdict
+                  ? <div className={`site-poker-verdict is-${verdict}`} key={round}><strong>{verdict === "match" ? <Check size={16} weight="bold" aria-hidden="true" /> : verdict === "differ" ? <X size={16} weight="bold" aria-hidden="true" /> : <span className="site-poker-split" aria-hidden="true" />}{c.drill[verdict]}</strong><small>{c.drill.frequency(chosen)}</small></div>
+                  : <><span className="site-poker-spot">{c.drill.question}</span><strong className="site-poker-pot">1.5<small>bb</small></strong><span className="site-poker-stakes">{c.drill.stakes}</span></>}
+              </div>
+            </div>
+            {drillSeats.filter(seat => seat.bet > 0).map(seat => <span key={`chip-${seat.position}`} className="site-poker-chip" style={{ "--x": seat.x, "--y": seat.y } as CSSProperties}><i />{seat.bet}<small>bb</small></span>)}
+            {drillSeats.map(seat => <div key={seat.position} className={`site-poker-seat is-${seat.state}`} style={{ left: `${seat.x}%`, top: `${seat.y}%` }}>
+              <span className="site-poker-disc"><b>{seat.position}</b><small>{seat.state === "fold" ? c.drill.tableFold : seat.stack}</small></span>
+              {seat.state === "hero" && <><span className="site-poker-dealer" aria-hidden="true">D</span><HandCards key={round} hand={hand} seed={round} className="site-poker-hole is-dealt" /></>}
+            </div>)}
+          </figure>
         </div>
-        <div className={`site-drill-result${verdict ? ` is-${verdict}` : ""}`} aria-live="polite">
-          {verdict && <>
-            <p className="site-drill-verdict">{verdict === "match" ? <Check size={18} weight="bold" aria-hidden="true" /> : verdict === "differ" ? <X size={18} weight="bold" aria-hidden="true" /> : <span className="site-drill-split" aria-hidden="true" />}{verdict === "match" ? c.drill.match : verdict === "differ" ? c.drill.differ : c.drill.mixed(values.raise)}</p>
-            <div className="site-drill-estimate"><span>{c.drill.estimate}</span><FrequencyBars mode="opening" values={values} /></div>
-            <button type="button" className="site-button is-small" onClick={deal}>{c.drill.next}<kbd>N</kbd></button>
-          </>}
+        <div className="site-trainer-actions">
+          {choices.map((choice, index) => <button type="button" key={choice} className={`site-trainer-action is-${choice}${answer === choice ? ` is-chosen is-${verdict}` : ""}`} style={{ "--site-freq": values[choice] / 100 } as CSSProperties} onClick={() => choose(choice)} disabled={answer !== null} aria-pressed={answer === choice}>
+            <kbd>{index + 1}</kbd><span>{c.drill[choice]}</span>{answer && <b>{values[choice]}%</b>}
+          </button>)}
+          <button type="button" className={`site-trainer-next${answer ? " is-ready" : ""}`} onClick={deal} disabled={!answer}>{c.drill.next}<ArrowRight size={14} weight="bold" aria-hidden="true" /><kbd>Enter</kbd></button>
         </div>
-        <p className="site-drill-keys">{c.drill.keys}</p>
       </div>
     </div>
   </section>;

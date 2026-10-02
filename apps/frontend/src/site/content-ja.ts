@@ -24,7 +24,7 @@ export const ja: SiteCopy = {
     toAct: "アクション待ち", openSize: "レイズ 2.5BB", pot: "ポット 4BB", combos: "のハンド",
     whyHand: "A5s · BB vs BTN", whyNote: "アプリのハンド詳細では、その頻度になる理由も記録された形で確認できます。",
   },
-  drill: { title1: "10秒で、", title2: "ひとつの判断を。", description: "BTNまでフォールドで回ってきました。オープンしますか？ 答えたあと、保存済みの推定が同じハンドをどう打つかを確認できます。", situation: "BTN · 100BB · あなたまでフォールド", question: "オープンか、フォールドか。", raise: "オープン", fold: "フォールド", next: "次のハンドを配る", match: "推定と同じ判断です。", differ: "推定は逆の判断をしています。", mixed: (value: number) => `混合のハンドです。推定では ${value}% の頻度でオープンします。`, estimate: "保存済みの推定", score: (matched: number, played: number) => `${played}ハンド中 ${matched} 一致`, keys: "キー操作：R オープン · F フォールド · N 次へ", note: "練習の判定は保存済みのAI推定との比較です。GTOソリューションや実戦の結果との比較ではありません。" },
+  drill: { title1: "10秒で、", title2: "ひとつの判断を。", description: "BTNまでフォールドで回ってきました。オープンしますか？ 答えたあと、保存済みの推定が同じハンドをどう打つかを確認できます。", question: "BTNのアクション", tableFold: "Fold", stakes: "キャッシュ · 6-max · 100BB", pot: "ポット", raise: "レイズ 2.5BB", fold: "フォールド", next: "次へ", match: "推定と同じ判断", differ: "推定とは異なる判断", mixed: "混合のハンド", frequency: (value: number) => `推定でのこの選択の頻度 ${value}%`, score: (matched: number, played: number) => `${played}ハンド中 ${matched} 一致`, tableLabel: (hand: string) => `テーブル。BTNまでフォールドで、あなたのハンドは ${hand} です。`, note: "練習の判定は保存済みのAI推定との比較です。GTOソリューションや実戦の結果との比較ではありません。" },
   approach: {
     title1: "推定は、", title2: "推定として示す。",
     description: "EvionAIのレンジは、学習のためのAI推定です。どの表にもそう明記し、保存データのない局面は推測で埋めずに空けておきます。",
