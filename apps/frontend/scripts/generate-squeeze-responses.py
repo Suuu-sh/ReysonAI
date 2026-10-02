@@ -142,7 +142,10 @@ CALLER_FOLD_CO = profile('''
 # 3. Caller after the opener called: three-way and sandwiched between the
 # squeezer and the opener's squeeze-call range, so tighter than 2. Flats are
 # the pairs that still have the price (set value is not modelled beyond the
-# realization ratio), 4bets only the very top.
+# realization ratio), 4bets only the very top. From the HJ-open tier, TT and a
+# few A/K-blocker hands (AQo, AJs, KQs) carry low-frequency 4bets so the narrow
+# cold-call range (2026-10-02 revision) does not split into pure flats and pure
+# folds.
 # ---------------------------------------------------------------------------
 CALLER_CALL_UTG = profile('''
 20 80: AA KK
@@ -155,7 +158,10 @@ CALLER_CALL_UTG = profile('''
 ''')
 CALLER_CALL_HJ = profile('''
 80 20: JJ
+90 10: TT
 100 0: 88
+0 10: AQo
+0 5: AJs KQs
 ''', CALLER_CALL_UTG)
 CALLER_CALL_CO = profile('''
 90 10: TT

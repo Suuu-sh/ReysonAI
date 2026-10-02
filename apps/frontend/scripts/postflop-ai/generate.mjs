@@ -151,7 +151,35 @@ export function runCodex(prompt, { model = resolveModel(), effort = resolveEffor
   });
 }
 
-export async function generate(inputs, { model = resolveModel(), effort = resolveEffort(), generator = runCodex } = {}) {
+// Claude Code CLI generation (used when the model id starts with "claude-", e.g. while Codex is rate-limited).
+// Runs headless with no tools; the reply's outermost JSON object is the policy.
+export function runClaude(prompt, { model, timeoutMs = 1800000, onThread = () => {} } = {}) {
+  if (!/^claude-[a-z0-9.-]+$/.test(model)) throw new Error("Invalid Claude model");
+  return new Promise((resolve, reject) => {
+    const child = spawn("claude", ["-p", "--model", model, "--output-format", "json", "--tools", ""], { cwd: root, stdio: ["pipe", "pipe", "pipe"] });
+    let stdout = "", stderr = "", done = false;
+    const timer = setTimeout(() => { if (!done) { done = true; child.kill(); reject(new Error("Claude policy generation timed out")); } }, timeoutMs);
+    child.stdout.on("data", chunk => { stdout += chunk; });
+    child.stderr.on("data", chunk => { stderr = `${stderr}${chunk}`.slice(-1000); });
+    child.on("error", error => { if (!done) { done = true; clearTimeout(timer); reject(error); } });
+    child.on("exit", code => {
+      if (done) return;
+      done = true; clearTimeout(timer);
+      if (code !== 0) { reject(new Error(`claude exited (${code}): ${stderr.slice(-240)}`)); return; }
+      try {
+        const reply = JSON.parse(stdout);
+        if (reply.is_error) throw new Error(reply.result);
+        onThread({ model });
+        const text = String(reply.result ?? "");
+        resolve(JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)));
+      } catch (error) { reject(new Error(`Claude returned invalid JSON: ${error.message.slice(0, 240)}`)); }
+    });
+    child.stdin.end(prompt);
+  });
+}
+const generatorFor = model => model.startsWith("claude-") ? runClaude : runCodex;
+
+export async function generate(inputs, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model) } = {}) {
   const path = artifactPaths(inputs.spot).candidate;
   if (existsSync(path)) return { candidate: loadCandidate(inputs), reused: true };
   const prompt = promptFor(inputs);
@@ -194,7 +222,7 @@ export function promptForLater(inputs) {
   ].join("\n");
 }
 
-export async function generateLater(inputs, flopCandidate, { model = resolveModel(), effort = resolveEffort(), generator = runCodex } = {}) {
+export async function generateLater(inputs, flopCandidate, { model = resolveModel(), effort = resolveEffort(), generator = generatorFor(model) } = {}) {
   const path = artifactPaths(inputs.spot).laterCandidate;
   if (existsSync(path)) return { candidate: loadLaterCandidate(inputs, flopCandidate), reused: true };
   const prompt = promptForLater(inputs);

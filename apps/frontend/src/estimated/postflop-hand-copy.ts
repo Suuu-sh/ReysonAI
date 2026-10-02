@@ -52,7 +52,12 @@ export function describeHand(f: any | null, name: string, en: boolean, tier: str
 
   // ---- made hand phrase
   let made = "";
-  switch (mk.kind) {
+  if (mk.playsBoard) {
+    const kindName: Record<string, [string, string]> = { straight: ["straight", "ストレート"], flush: ["flush", "フラッシュ"], fullHouse: ["full house", "フルハウス"],
+      quads: ["quads", "フォーカード"], straightFlush: ["straight flush", "ストレートフラッシュ"] };
+    const [kn, kj] = kindName[mk.kind] ?? ["hand", "役"];
+    made = e(`only the board's ${kn} (a split)`, `ボードの${kj}だけ（分け）`);
+  } else switch (mk.kind) {
     case "overpair": made = e(`an overpair (pocket ${enPlural(mk.pairRank)})`, `オーバーペア（${R(mk.pairRank)}${R(mk.pairRank)}）`); break;
     case "underpair": made = e(`an underpair (pocket ${enPlural(mk.pairRank)})`, `アンダーペア（${R(mk.pairRank)}${R(mk.pairRank)}）`); break;
     case "topPair": made = e(`top pair (${enPlural(mk.pairRank)}) with ${art(R(mk.kicker))} kicker`, `${R(mk.pairRank)}のトップペア（${R(mk.kicker)}キッカー）`); break;
@@ -112,27 +117,48 @@ export function describeHand(f: any | null, name: string, en: boolean, tier: str
   const isAir = m === "none" && dr === "none";
   if (isAir) {
     hasParts.length = 0;
-    hasParts.push(highPhrase || e("only the board's cards", "ボードのカードだけ"));
+    hasParts.push(highPhrase || (mk.playsBoard ? made : e("only the board's cards", "ボードのカードだけ")));
     if (backdoor) hasParts.push(backdoor);
   } else if (!hasParts.length && backdoor) hasParts.push(backdoor);
-  const has = isAir ? e(`only ${join(hasParts, en)}`, `${join(hasParts, en)}だけ`) : join(hasParts, en);
+  const has = mk.playsBoard && isAir ? made : isAir ? e(`only ${join(hasParts, en)}`, `${join(hasParts, en)}だけ`) : join(hasParts, en);
 
   // ---- worse hands that keep paying a value hand
   const w = (a: string, b: string, c: string, d2: string) => e(river ? a : b, river ? c : d2);
   let worse = "";
-  switch (mk.kind) {
-    case "quads": case "fullHouse": case "straightFlush": worse = e("lower full houses, flushes and sets", "劣るフルハウスやフラッシュ、セット"); break;
-    case "flush": worse = e("lower flushes, straights and sets", "劣るフラッシュやストレート、セット"); break;
-    case "straight": worse = e("sets, two pair and weaker straights", "セットやツーペア、劣るストレート"); break;
-    case "set": worse = w("overpairs and top pair", "overpairs, top pair and draws", "オーバーペアやトップペア", "オーバーペアやトップペア、ドロー"); break;
-    case "trips": worse = w("top pair with a worse kicker", "top pair with a worse kicker and draws", "キッカーの劣るトップペア", "キッカーの劣るトップペアやドロー"); break;
-    case "topTwo": case "topAndLower": case "lowerTwo": case "pocketPlusBoardPair": case "boardPairPlusOne":
-      worse = w("one-pair hands and weaker two pair", "top pair and strong draws", "ワンペアや劣るツーペア", "トップペアや強いドロー"); break;
-    case "overpair": worse = w("top pair and underpairs", "top pair, underpairs and draws", "トップペアやアンダーペア", "トップペア、アンダーペア、ドロー"); break;
-    case "topPair": worse = mk.kickerStrength === "strong"
-      ? w("top pair with a worse kicker and second pair", "top pair with a worse kicker, second pair and draws", "キッカーの劣るトップペアやセカンドペア", "キッカーの劣るトップペア、セカンドペア、ドロー")
-      : w("second pair and lower pairs", "second pair, lower pairs and draws", "セカンドペアや下位のペア", "セカンドペアや下位のペア、ドロー"); break;
-    case "secondPair": case "bottomPair": case "underpair": worse = w("lower pairs and ace-high", "lower pairs, ace-high and weak draws", "下位のペアやエースハイ", "下位のペアやエースハイ、弱いドロー"); break;
+  // Worse hands for the strong made hands come from the holdings that really lose to us (hand-features worseClasses).
+  const PHR: Record<string, [string, string]> = {
+    pair: ["one-pair hands", "ワンペア"], twoPair: ["weaker two pair", "劣るツーペア"],
+    trips: f.boardInfo.paired ? ["trips", "トリップス"] : ["sets", "セット"],
+    straight: ["weaker straights", "劣るストレート"], flush: ["lower flushes", "劣るフラッシュ"],
+    fullHouse: ["lower full houses", "劣るフルハウス"], quads: ["lower quads", "劣るフォーカード"],
+  };
+  const fromClasses = () => {
+    const names: string[] = (mk.worseClasses ?? []).filter((c: string) => PHR[c]).slice(0, 3);
+    const parts = names.map(c => en ? PHR[c][0] : PHR[c][1]);
+    if (!river && names.includes("pair")) parts.push(e("draws", "ドロー"));
+    return parts.length ? join(parts, en) : e("weaker hands", "劣る手");
+  };
+  if (mk.playsBoard) worse = w("weaker pairs and ace-high", "weaker pairs and draws", "劣るペアやエースハイ", "劣るペアやドロー");
+  else switch (mk.kind) {
+    case "quads": case "fullHouse": case "straightFlush": case "flush": case "straight": case "set": case "trips":
+    case "boardPairPlusOne": case "topTwo": case "topAndLower": case "lowerTwo": case "pocketPlusBoardPair":
+      worse = fromClasses(); break;
+    case "overpair": {
+      const wp = mk.worsePairs ?? {};
+      const parts = [wp.topPair ? e("top pair", "トップペア") : "", wp.underpair ? e("underpairs", "アンダーペア") : "", !river ? e("draws", "ドロー") : ""].filter(Boolean);
+      worse = parts.length ? join(parts, en) : e("weaker hands", "劣る手"); break;
+    }
+    case "topPair": case "secondPair": case "bottomPair": case "underpair": {
+      const wp = mk.worsePairs ?? {};
+      const strongKicker = mk.kind === "topPair" && mk.kickerStrength === "strong";
+      const parts = [
+        strongKicker && wp.topPair ? e("top pair with a worse kicker", "キッカーの劣るトップペア") : "",
+        wp.lower ? (mk.kind === "topPair" ? e("second pair and lower pairs", "セカンドペアや下位のペア") : e("lower pairs", "下位のペア")) : "",
+        mk.kind === "topPair" ? "" : e("ace-high", "エースハイ"),
+        !river ? (mk.kind === "topPair" ? e("draws", "ドロー") : e("weak draws", "弱いドロー")) : "",
+      ].filter(Boolean);
+      worse = parts.length ? join(parts, en) : e("weaker hands", "劣る手"); break;
+    }
     default: worse = w("weaker pairs and ace-high", "weaker pairs and draws", "劣るペアやエースハイ", "劣るペアやドロー");
   }
 
@@ -262,7 +288,7 @@ export function betSentences(d: Desc, a: string, role: Role, c: HC): string[] {
       else if (mk?.kind === "topPair") out.push(mk.kickerStrength === "strong"
         ? e("The kicker keeps it ahead of the other top-pair combos.", "キッカーが強く、他のトップペアのコンボにも勝っています。")
         : e("The kicker is only fair, so it is not eager to face a raise.", "キッカーはそこそこなので、レイズされるのは歓迎しません。"));
-      else if (mk?.kind === "overpair") out.push(e("It beats every pair on the board and loses only to sets and better.", "ボード上のどのペアにも勝ち、負けるのはセット以上だけです。"));
+      else if (mk?.kind === "overpair") out.push(e("It beats every pair on the board and loses to two pair and better.", "ボード上のどのペアにも勝ち、負けるのはツーペア以上だけです。"));
       else if (mk?.kind === "set" || mk?.kind === "trips") out.push(e("A hand this strong is hard to put on, so the opponent keeps paying with top pair and draws.", "この強さは読まれにくく、相手はトップペアやドローで払い続けやすくなります。"));
       else if (mk && ["straight", "flush", "fullHouse", "quads", "straightFlush"].includes(mk.kind)) out.push(e("It beats nearly everything the opponent can continue with, so the goal is to get as much as possible in.", "相手が続行できるほぼ全ての手に勝つので、できるだけ多く取ることが目的です。"));
       break;

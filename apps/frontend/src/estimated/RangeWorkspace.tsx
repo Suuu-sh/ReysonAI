@@ -70,6 +70,12 @@ const displayModeStorageKey = displayModeKey;
 const formatStorageKey = "solveaai:game-format:v1";
 const tableProfileStorageKey = "solveaai:table-profile:v1";
 const openingModelFor = spot => markAdjustedModel(openingMatrixModel(spot), spot);
+// Postflop labels end in "(33%)"; show that part right-aligned so the amounts line up.
+function OptionLabel({ label }: { label: string }) {
+  const match = /^(.*\S)\s+(\(\d+%\))$/.exec(label);
+  return match ? <><span className="action-seat-main">{match[1]}</span><span className="action-seat-pct">{match[2]}</span></> : <>{label}</>;
+}
+
 export function selectedHandForRangeEntry(entry, selected) {
   return entry.spot?.hands.find(row => row.hand === selected) ?? entry.hand;
 }
@@ -525,7 +531,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
             {block.options.map(option => {
               const selected = option.action === block.chosen;
               const disabled = option.disabled || block.kind === "forced" || block.kind === "pending";
-              return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={event => { event.stopPropagation(); selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action); }}>{option.label}</button>;
+              return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={event => { event.stopPropagation(); selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action); }}><OptionLabel label={option.label} /></button>;
             })}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
             {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && <ActionDropdown position={block.position} options={block.options.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
@@ -1002,7 +1008,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
               <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {formatLabel("rake", format.rake)}</li>{!isDefaultProfile(tableProfile) && <li className="table-profile-summary">卓: {describeProfile(tableProfile)}</li>}</ul>
               <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
               <div className="settings-actions">
-                <button type="button" className="format-edit settings-change-button" onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" />変更</button>
+                <button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を変更" title="ゲーム設定を変更" onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" /></button>
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
               </div>
             </div>

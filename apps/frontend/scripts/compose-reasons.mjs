@@ -121,7 +121,7 @@ function factLabels(type, spot) {
   return [equity, ...CALL_FACT_LABELS, ...SQUEEZE_SPOT_LABELS];
 }
 const evText = value => `${value < 0 ? "−" : "+"}${Math.abs(value).toFixed(2)}bb`;
-function callDecision(row, facts) {
+function callDecision(row, facts, restraint = "") {
   const numbers = `仮定のEQRを加味した実現後の勝率${f1(facts.realized_equity_pct)}%で、コールのEVは${evText(facts.call_ev_bb)}。`;
   if (row.call >= row.fold && row.call > 0) {
     return numbers + (facts.call_ev_bb < 0.05 ? "損益分岐付近のため、コールは50%以下に抑えます。" : "このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。");
@@ -129,6 +129,7 @@ function callDecision(row, facts) {
   const verdict = row.fold >= 90 ? "フォールドします。" : "フォールドが中心です。";
   if (facts.call_ev_bb < -0.05) return numbers + "コールでは投資を回収できない見積もりのため、" + verdict;
   if (facts.call_ev_bb < 0.05) return numbers + "損益分岐付近のため、" + verdict;
+  if (restraint) return numbers + "コール自体はプラスの見積もりですが、" + restraint + verdict;
   return numbers + "コール自体はプラスの見積もりですが、既存配分の拡張は行わず、" + verdict;
 }
 
@@ -289,6 +290,13 @@ function compose(type, row, facts, spot) {
     }
     return `${lead}${situation}${body}${mixText(type, row)}。`;
   }
+  // HJ / CO / BTN flatting an open: the seats behind can squeeze or overcall (COLD_CALL_*_EQR).
+  const coldCall = type === "response" && spot.cold_call_behind === true;
+  // Out of position to the 3bettor only +1.50bb or better is filled (OOP_THREE_BET_FILL_EV).
+  const restraint = coldCall ? "後ろの席のスクイーズや参加でモデル以上に価値が下がりうるため、+0.50bb未満のコールは広げず、"
+    : type === "three_bet" && spot.position === "OOP" ? "OOPの3betポットでは仮定のEQRほど勝率を実現できないことがあるため、+1.50bb未満のコールは広げず、" : "";
+  const behind = coldCall && (row.call > 0 || main === "fold" && facts.call_ev_bb >= -0.05)
+    ? `後ろに${spot.players_behind}人が残り、スクイーズや複数人のポットでコールの価値が下がるため、実現率を追加で割り引いています。` : "";
   const eqKey = { response: "equity_vs_open_pct", three_bet: "equity_vs_three_bet_pct", four_bet: "equity_vs_four_bet_pct" }[type];
   const rangeName = { response: `${spot.opener}のオープンレンジ`, three_bet: `${spot.three_bettor}の3betレンジ`, four_bet: `${spot.opener}の4betレンジ` }[type];
   const eq = facts[eqKey];
@@ -314,11 +322,11 @@ function compose(type, row, facts, spot) {
     }
     if (row.call > 0) body += "一部はコールに回し、コールするレンジにも強いハンドを残します。";
   } else if (main === "call") {
-    body = callDecision(row, facts);
+    body = callDecision(row, facts, restraint);
     if (raised) body += `一部は${{ response: "3bet", three_bet: "4bet", four_bet: "オールイン" }[type]}に回し、${{ response: "3bet", three_bet: "4bet", four_bet: "オールイン" }[type]}するレンジが強いハンドだけに偏らないようにします。`;
     if (row.fold > 0) body += "既存の混合配分を維持し、一部はフォールドします。";
   } else {
-    body = callDecision(row, facts);
+    body = callDecision(row, facts, restraint);
     if (row[raiseKey] > 0) {
       const raiseName = { response: "3bet", three_bet: "4bet", four_bet: "オールイン" }[type];
       const foldRate = { response: spot.opener_fold_to_3bet_pct, three_bet: spot.three_bettor_fold_to_4bet_pct, four_bet: spot.opener_fold_to_shove_pct }[type];
@@ -326,7 +334,7 @@ function compose(type, row, facts, spot) {
     }
     if (row.call > 0) body += "一部はコールで継続します。";
   }
-  return `${lead}${body}${mixText(type, row)}。`;
+  return `${lead}${behind}${body}${mixText(type, row)}。`;
 }
 
 const factDir = process.env.REASON_FACTS_DIR ? pathToFileURL(resolve(process.env.REASON_FACTS_DIR) + "/") : new URL("../.local/reason-facts/", import.meta.url);

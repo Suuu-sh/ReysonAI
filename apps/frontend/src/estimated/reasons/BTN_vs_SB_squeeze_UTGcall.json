@@ -1,7 +1,7 @@
 {
   "spot_id": "BTN_vs_SB_squeeze_UTGcall",
   "type": "squeeze",
-  "source_fingerprint": "a05fc2f156cbd05959cd2f3b71589ebee2fa349079a644996d807d30b9cf060d",
+  "source_fingerprint": "f9bb5eb9200dd983a058b53203e00c01bf9780a5399b0325f9b3b7c76c5f4af2",
   "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
   "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
   "fact_labels": [
@@ -49,8 +49,8 @@
     "call_break_even_equity_pct": 27.6,
     "squeeze_range_combos": 39,
     "opener_fold_pct": 74.9,
-    "caller_fold_after_opener_fold_pct": 72.5,
-    "fold_to_squeeze_pct": 54.3,
+    "caller_fold_after_opener_fold_pct": 52.7,
+    "fold_to_squeeze_pct": 39.4,
     "squeeze_break_even_pct": 65.8,
     "opener_call_range_combos": 29,
     "cost_to_call_bb": 10.5,
@@ -58,13 +58,13 @@
   },
   "hands": {
     "22": {
-      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率19.9%で、コールのEVは−2.94bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21,
-        "blocked_squeeze_pct": 0,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 19.881750000000004,
-        "call_ev_bb": -2.9449349999999983
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "33": {
@@ -138,23 +138,23 @@
       }
     },
     "AA": {
-      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "最上位クラスのポケットペアです。UTGもコールした3人のポットで、SBとUTGに挟まれています。SBのスクイーズとUTGのコールの両方に対して勝率70.3%と優位なので、4bet（26BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 80%・コール 20%。",
       "facts": {
-        "equity_3way_pct": null,
-        "blocked_squeeze_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_3way_pct": 70.3,
+        "blocked_squeeze_pct": 34.9,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 66.40593749999998,
+        "call_ev_bb": 14.73425624999999
       }
     },
     "AKs": {
-      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率29.0%で、コールのEVは+0.54bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は4bet（26BB）に回し、4betするレンジが強いハンドだけに偏らないようにします。配分はコール 60%・4bet 40%。",
       "facts": {
-        "equity_3way_pct": null,
-        "blocked_squeeze_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_3way_pct": 29.3,
+        "blocked_squeeze_pct": 31.4,
+        "eqr": 0.9900000000000001,
+        "realized_equity_pct": 29.044125000000125,
+        "call_ev_bb": 0.5367675000000478
       }
     },
     "AQs": {
@@ -248,23 +248,23 @@
       }
     },
     "A3s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率20.0%で、コールのEVは−2.92bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21.1,
-        "blocked_squeeze_pct": 18.5,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 19.950000000000006,
-        "call_ev_bb": -2.918999999999998
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "A2s": {
-      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率18.9%で、コールのEVは−3.33bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 20,
-        "blocked_squeeze_pct": 18.5,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 18.880312499999995,
-        "call_ev_bb": -3.325481250000001
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "AKo": {
@@ -278,13 +278,13 @@
       }
     },
     "KK": {
-      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "reason": "最上位クラスのポケットペアです。UTGもコールした3人のポットで、SBとUTGに挟まれています。SBのスクイーズとUTGのコールの両方に対して勝率51.1%と優位なので、4bet（26BB）でバリューを取ります。一部はコールに回し、コールするレンジにも強いハンドを残します。配分は4bet 80%・コール 20%。",
       "facts": {
-        "equity_3way_pct": null,
-        "blocked_squeeze_pct": null,
-        "eqr": null,
-        "realized_equity_pct": null,
-        "call_ev_bb": null
+        "equity_3way_pct": 51.1,
+        "blocked_squeeze_pct": 27.4,
+        "eqr": 0.9450000000000001,
+        "realized_equity_pct": 48.25406249999998,
+        "call_ev_bb": 7.8365437499999935
       }
     },
     "KQs": {
@@ -538,23 +538,23 @@
       }
     },
     "KJo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率17.2%で、コールのEVは−3.97bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 18.2,
-        "blocked_squeeze_pct": 18.9,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 17.180624999999992,
-        "call_ev_bb": -3.9713625000000032
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "QJo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率18.6%で、コールのEVは−3.44bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 19.7,
-        "blocked_squeeze_pct": 12.4,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 18.587625,
-        "call_ev_bb": -3.4367025
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "JJ": {
@@ -668,13 +668,13 @@
       }
     },
     "KTo": {
-      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率16.1%で、コールのEVは−4.38bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 17.1,
-        "blocked_squeeze_pct": 16.7,
-        "eqr": 0.9450000000000001,
-        "realized_equity_pct": 16.11487499999999,
-        "call_ev_bb": -4.376347500000004
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "QTo": {
@@ -718,13 +718,13 @@
       }
     },
     "T8s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率21.4%で、コールのEVは−2.37bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21.6,
-        "blocked_squeeze_pct": 1.9,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 21.39087500000001,
-        "call_ev_bb": -2.371467499999996
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "T7s": {
@@ -838,23 +838,23 @@
       }
     },
     "98s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率21.1%で、コールのEVは−2.47bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21.3,
-        "blocked_squeeze_pct": 0.4,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 21.124125000000003,
-        "call_ev_bb": -2.472832499999999
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "97s": {
-      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率20.7%で、コールのEVは−2.62bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 20.9,
-        "blocked_squeeze_pct": 0.4,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 20.73362500000001,
-        "call_ev_bb": -2.6212224999999956
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "96s": {
@@ -968,13 +968,13 @@
       }
     },
     "87s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率21.4%で、コールのEVは−2.35bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 21.7,
-        "blocked_squeeze_pct": 0,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 21.436250000000005,
-        "call_ev_bb": -2.354224999999998
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "86s": {
@@ -1228,13 +1228,13 @@
       }
     },
     "65s": {
-      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGもコールした3人のポットで、SBとUTGに挟まれています。仮定のEQRを加味した実現後の勝率23.4%で、コールのEVは−1.61bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "reason": "BTNの対UTGの既存コール頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
       "facts": {
-        "equity_3way_pct": 23.6,
-        "blocked_squeeze_pct": 1,
-        "eqr": 0.9900000000000001,
-        "realized_equity_pct": 23.402500000000007,
-        "call_ev_bb": -1.6070499999999974
+        "equity_3way_pct": null,
+        "blocked_squeeze_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
       }
     },
     "64s": {

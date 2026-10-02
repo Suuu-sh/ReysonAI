@@ -93,8 +93,9 @@ const FACING = {
 // (fold/call nodes) uses RAISE_LAST: [fold, call].
 export const RAISE_REFERENCE = {
   1: { monster: [0, 70, 30], strong: [25, 72, 3], draw: [45, 53, 2], medium: [75, 25, 0], air: [95, 5, 0] },
-  2: { monster: [0, 80, 20], strong: [30, 69, 1], draw: [55, 45, 0], medium: [85, 15, 0], air: [97, 3, 0] },
-  3: { monster: [0, 90, 10], strong: [35, 65, 0], draw: [65, 35, 0], medium: [90, 10, 0], air: [98, 2, 0] },
+  // Re-raises keep a few draw/air bluffs so the re-raise range is not value-only.
+  2: { monster: [0, 80, 20], strong: [30, 69, 1], draw: [55, 42, 3], medium: [85, 15, 0], air: [95, 3, 2] },
+  3: { monster: [0, 90, 10], strong: [35, 65, 0], draw: [65, 33, 2], medium: [90, 10, 0], air: [97, 2, 1] },
 };
 export const RAISE_LAST = { monster: [0, 100], strong: [40, 60], draw: [70, 30], medium: [92, 8], air: [99, 1] };
 // [fold, call, raise?] of a raise-facing node and tier (depth of a node beyond the table reuses the last row).

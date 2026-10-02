@@ -44,12 +44,12 @@ test("a set and two pair raise for value and name the worse hands that pay", () 
     positions: { ip: "BTN", oop: "BB" }, explain: { equity: 0.85, defence: defence({ equity: 0.85, realized_equity: 0.8, required_equity: 0.3 }), range_facts: rf } });
   const set = texts("en", raise("7c7d", "Kh7s2c")), setJa = texts("ja", raise("7c7d", "Kh7s2c"));
   assert.match(set.all, /set of sevens/);
-  assert.match(set.e.blocks.find(b => b.action === "raise").text, /paid by overpairs, top pair and draws/);
+  assert.match(set.e.blocks.find(b => b.action === "raise").text, /paid by one-pair hands/);
   assert.match(setJa.e.blocks.find(b => b.action === "raise").text, /バリュー|払って/);
-  assert.match(setJa.all, /トップペア/);
+  assert.match(setJa.all, /ワンペア/);
   const twoPair = texts("en", raise("Kc7d", "Kh7s2c"));
   assert.match(twoPair.all, /top two pair/);
-  assert.match(twoPair.e.blocks.find(b => b.action === "raise").text, /paid by top pair and strong draws/);
+  assert.match(twoPair.e.blocks.find(b => b.action === "raise").text, /paid by one-pair hands/);
 });
 
 test("a bluff names its blockers or backdoors, a river bluff has no draws", () => {

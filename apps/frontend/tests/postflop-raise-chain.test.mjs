@@ -63,16 +63,20 @@ test("policies saved before re-raises stay valid and fall back to the reference 
 });
 
 test("re-raise frequency is tiered and shrinks with depth; raise folds into call when impossible", () => {
-  const order = ["monster", "strong", "draw", "medium", "air"];
+  // Value tiers raise less as they get weaker and as the raise chain deepens; re-raises (depth 2+)
+  // also keep a few draw/air bluffs, which never exceed the monster share and shrink with depth.
+  const value = ["monster", "strong", "medium"], bluffs = ["draw", "air"];
   for (const depth of [1, 2, 3]) {
-    const raises = order.map(tier => RAISE_REFERENCE[depth][tier][2]);
+    const raises = value.map(tier => RAISE_REFERENCE[depth][tier][2]);
     assert.deepEqual(raises, [...raises].sort((a, b) => b - a));
-    for (const tier of TIERS) assert.equal(RAISE_REFERENCE[depth][tier].reduce((a, b) => a + b), 100);
+    for (const tier of TIERS) {
+      assert.equal(RAISE_REFERENCE[depth][tier].reduce((a, b) => a + b), 100);
+      assert.ok(RAISE_REFERENCE[depth][tier][2] <= RAISE_REFERENCE[depth].monster[2]);
+    }
   }
-  for (const tier of order) {
-    assert.ok(RAISE_REFERENCE[1][tier][2] >= RAISE_REFERENCE[2][tier][2] && RAISE_REFERENCE[2][tier][2] >= RAISE_REFERENCE[3][tier][2]);
-    assert.equal(RAISE_LAST[tier].reduce((a, b) => a + b), 100);
-  }
+  for (const tier of value) assert.ok(RAISE_REFERENCE[1][tier][2] >= RAISE_REFERENCE[2][tier][2] && RAISE_REFERENCE[2][tier][2] >= RAISE_REFERENCE[3][tier][2]);
+  for (const tier of bluffs) assert.ok(RAISE_REFERENCE[2][tier][2] > 0 && RAISE_REFERENCE[2][tier][2] >= RAISE_REFERENCE[3][tier][2]);
+  for (const tier of TIERS) assert.equal(RAISE_LAST[tier].reduce((a, b) => a + b), 100);
   assert.deepEqual(effectiveMix({ fold: 10, call: 60, raise: 30 }, false), { fold: 10, call: 90, raise: 0 });
   const mix = { fold: 10, call: 60, raise: 30 };
   assert.equal(effectiveMix(mix, true), mix);
@@ -103,8 +107,8 @@ test("labels carry real amounts (ja/en), never '3×' or a bare percentage", () =
   assert.equal(first.labelsJa.bet75, "ベット 4.13 (75%)");
   const facing = flopDecision(["bet75"]);
   assert.equal(facing.labels.call, "Call 4.13");
-  assert.equal(facing.labels.raise, "Check-raise 12.39 (60%)");
-  assert.equal(facing.labelsJa.raise, "チェックレイズ 12.39 (60%)");
+  assert.equal(facing.labels.raise, "Raise 12.39 (60%)");
+  assert.equal(facing.labelsJa.raise, "レイズ 12.39 (60%)");
   assert.match(flopDecision(["bet75", "raise"]).labels.raise, /^Raise 37\.17 \(\d+%\)$/);
   const all = [first, facing, flopDecision(["bet75", "raise"]), flopDecision(["bet75", "raise", "raise"])]
     .flatMap(decision => [...Object.values(decision.labels), ...Object.values(decision.labelsJa)]);

@@ -4,9 +4,9 @@ import { seedFor, seededRandom } from "../lib/equity.mjs";
 import { boards, comboRange, config, seatRange } from "./inputs.mjs";
 import { boardTexture, handTier, runoutTexture } from "./model.mjs";
 import { LATER_NODES, betFraction, laterNodeRole, streetHistories, streetState } from "./later-tree.mjs";
-import { validateLaterPolicy } from "./later-policy.mjs";
+import { referenceLaterTierMix, validateLaterPolicy } from "./later-policy.mjs";
 import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.mjs";
-import { FLOP_BETS, flopBetFraction, flopState, treeHistories } from "./tree.mjs";
+import { FLOP_BETS, flopBetFraction, flopState, raiseDepth, treeHistories } from "./tree.mjs";
 import { createTable, playFlop } from "./engine.mjs";
 import { defenceFor, replayOrNull } from "./defence.mjs";
 
@@ -78,6 +78,8 @@ function makeLaterMixReader(policy, tierFor) {
       const find = (matchLine, matchTexture) => rules.find(rule => rule.node === node && rule.tier === tier &&
         rule.line === matchLine && rule.texture === matchTexture);
       const rule = find(line, texture) ?? find(line, "any") ?? find("any", texture) ?? find("any", "any");
+      // Re-raise nodes (*_vs_raise2..) carry no authored rules; they use the reference mixes, as in laterPolicyMix.
+      if (!rule && raiseDepth(node) >= 2) { cache.set(key, referenceLaterTierMix(node, tier)); return cache.get(key); }
       if (!rule) throw new Error(`Uncovered later policy node: ${node}/${line}/${texture}/${tier}`);
       cache.set(key, rule.mix);
     }

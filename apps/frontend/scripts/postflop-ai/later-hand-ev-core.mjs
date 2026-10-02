@@ -110,7 +110,7 @@ function playFromLaterNode({ hands, flopBoard, runout, flopActions, turnActions,
   return share - table.invested[actor] + atNode[actor];
 }
 
-export function computeNodeMonteCarlo({ key, street, history, turnHistory = [], expectedNode, expectedRole, flopPath, runout, board, inputs,
+function computeNodeMonteCarloRaw({ key, street, history, turnHistory = [], expectedNode, expectedRole, flopPath, runout, board, inputs,
   flopPolicy, laterPolicy, laterMix, samples, onlyHand = null, sampleSeed = null, rng = seededRandom }) {
   const { spot } = inputs;
   const turnStart = laterStart(flopPath.actions, spot);
@@ -247,7 +247,7 @@ export function computeNodeMonteCarlo({ key, street, history, turnHistory = [], 
 
 // Exact (zero variance) per-class action EV of one turn / river decision: see exact-ev.mjs. A turn decision
 // averages over every river card; a river decision has none left to average.
-function computeNodeExact({ key, street, history, turnHistory = [], expectedNode, expectedRole, flopPath, runout, board, inputs,
+function computeNodeExactRaw({ key, street, history, turnHistory = [], expectedNode, expectedRole, flopPath, runout, board, inputs,
   flopPolicy, laterPolicy, onlyHand = null }) {
   const { spot } = inputs;
   const turnStart = laterStart(flopPath.actions, spot);
@@ -305,6 +305,18 @@ function computeNodeExact({ key, street, history, turnHistory = [], expectedNode
 }
 
 export const computeNode = args => args.method === "monte-carlo" ? computeNodeMonteCarlo(args) : computeNodeExact(args);
+
+// A history can list actions after a raise the engine had to play as a call (the raiser had no chips
+// to raise with); that line never happens, so its node is unreachable rather than an error.
+const effectivelyCalled = error => /effectively called/.test(error?.message ?? "");
+const unreachableNode = ({ key, expectedNode, expectedRole, inputs }) =>
+  [key, { node: expectedNode, actor: inputs.spot[expectedRole], pot_bb: null, rows: {}, unreachable: true }];
+export function computeNodeMonteCarlo(args) {
+  try { return computeNodeMonteCarloRaw(args); } catch (error) { if (effectivelyCalled(error)) return unreachableNode(args); throw error; }
+}
+function computeNodeExact(args) {
+  try { return computeNodeExactRaw(args); } catch (error) { if (effectivelyCalled(error)) return unreachableNode(args); throw error; }
+}
 
 function validateHandClass(hand) {
   if (typeof hand !== "string" || !/^[2-9TJQKA]{2}[so]?$/.test(hand)) throw new Error("Invalid hand class");

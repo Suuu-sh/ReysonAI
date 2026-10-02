@@ -1,5 +1,5 @@
 // Shared generation / facts / audit model. No local facts or UI dependencies.
-import { equityRealization } from "./eqr.ts";
+import { COLD_CALL_SQUEEZE_EQR, equityRealization, seatsBehind } from "./eqr.ts";
 import { raked } from "./rake.ts";
 import { openSizeFor } from "./sizing.ts";
 
@@ -37,24 +37,30 @@ export function limpFiveBetFoldThreshold(spot) {
   return risk / (risk + spot.limp_reraise_size_bb + spot.four_bet_size_bb);
 }
 
+// Non-blind seats responding to an open (HJ / CO / BTN) have both blinds and
+// possibly more seats behind them: the cold-call EQR discounts apply to their calls.
+export const isColdCaller = hero => Object.hasOwn(COLD_CALL_SQUEEZE_EQR, seatsBehind(hero));
+
 export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets, limpDeep }) {
   const opens = new Map(opening.spots.map(s => [s.hero, s]));
   const response = (opener, hero) => responses.spots.find(s => s.opener === opener && s.hero === hero);
   const contexts = [];
-  function add(type, spot, opponents, cost, pot, ranges, reach = () => 1, toSize, { bbBehind = false, callerBehind = false, openerBehind = false } = {}) {
+  function add(type, spot, opponents, cost, pot, ranges, reach = () => 1, toSize, { bbBehind = false, callerBehind = false, openerBehind = false, coldCallBehind = false } = {}) {
     const hero = spot.hero;
     const allIn = toSize >= spot.effective_stack_bb;
-    // bb_behind / caller_behind / opener_behind are recorded only when true, so older inputs keep their fingerprint.
+    // bb_behind / caller_behind / opener_behind / cold_call_behind are recorded only when true, so older inputs keep their fingerprint.
     const input = { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn,
       ...(bbBehind ? { bb_behind: true } : {}), ...(callerBehind ? { caller_behind: true } : {}),
-      ...(openerBehind ? { opener_behind: true } : {}), ranges };
+      ...(openerBehind ? { opener_behind: true } : {}), ...(coldCallBehind ? { cold_call_behind: true } : {}), ranges };
     contexts.push({ type, spot, input, reach });
   }
   for (const spot of responses?.spots ?? []) {
     const size = spot.open_size_bb ?? openSizeFor(spot.opener);
     const dead = 1.5 - (blind[spot.hero] ?? 0) - (blind[spot.opener] ?? 0);
+    // HJ / CO / BTN flat with every later seat (including both blinds) still to act.
     add("response", spot, [spot.opener], size - (blind[spot.hero] ?? 0), 2 * size + dead,
-      [range(opens.get(spot.opener), row => row.open / 100)], undefined, size);
+      [range(opens.get(spot.opener), row => row.open / 100)], undefined, size,
+      { coldCallBehind: isColdCaller(spot.hero) });
   }
   for (const spot of threeBets?.spots ?? []) {
     const open = byHand(opens.get(spot.opener));
@@ -162,8 +168,8 @@ export function validCallEquities(table, context) {
 export function callFacts(context, hand, equity) {
   if (!Number.isFinite(equity) || equity < 0 || equity > 1) throw new Error(`Invalid equity: ${hand}`);
   const { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn, bb_behind: bbBehind = false,
-    caller_behind: callerBehind = false, opener_behind: openerBehind = false } = context.input;
-  const eqr = equityRealization(hand, hero, opponents, { allIn, bbBehind, callerBehind, openerBehind });
+    caller_behind: callerBehind = false, opener_behind: openerBehind = false, cold_call_behind: coldCallBehind = false } = context.input;
+  const eqr = equityRealization(hand, hero, opponents, { allIn, bbBehind, callerBehind, openerBehind, coldCallBehind });
   return { eqr, realized_equity_pct: equity * eqr * 100, call_ev_bb: equity * eqr * raked(pot) - cost };
 }
 export function allowedCall(call, ev) {
@@ -185,9 +191,27 @@ export function targetCall(call, ev, available) {
 // or better the whole non-4bet share calls (no fold left); below that the
 // authored call stands, subject to the usual EV gate. 4bets never change.
 export const THREE_BET_FILL_EV = 0.5;
-export function threeBetTargetCall(call, ev, available) {
+// The opener out of position to the 3bettor (UTG/HJ/CO vs a later non-blind
+// seat, SB vs BB) realizes even less: the generic pair / medium-hand EQR makes
+// small pairs and offsuit broadways look like +0.5〜1.5bb calls OOP in a 3bet
+// pot, so only +1.50bb or better is filled there and the authored mix stands
+// below it (e.g. 22-55 mostly fold, 66-99 mixed).
+export const OOP_THREE_BET_FILL_EV = 1.5;
+export const isOopThreeBetResponse = context => context.type === "three_bet" && context.spot.hero_position_vs_three_bettor === "OOP";
+// 2026-10-02: the opener's 3bet responses ramp the fill instead of jumping to
+// 100% at the threshold: the margin exists because the true EV is uncertain, so
+// a hand just past it (e.g. 66 at +1.52bb OOP) moves only a little toward the
+// full non-4bet share, which it reaches at threshold + ramp (IP +1.00bb, OOP
+// +3.00bb). HJ/CO/BTN cold calls of an open use the IP ramp too (+0.50 → +1.00bb).
+// Squeeze / limp-reraise / cold-3bet pots keep the plain step.
+export const THREE_BET_FILL_RAMP = 0.5;
+export const OOP_THREE_BET_FILL_RAMP = 1.5;
+export function threeBetTargetCall(call, ev, available, threshold = THREE_BET_FILL_EV, ramp = 0) {
   if (!Number.isFinite(available) || available < call) throw new Error("Invalid available call share");
-  return ev >= THREE_BET_FILL_EV ? available : allowedCall(call, ev);
+  if (ev < threshold) return allowedCall(call, ev);
+  const share = ramp > 0 ? Math.min(1, (ev - threshold) / ramp) : 1;
+  if (share >= 1) return available;
+  return Math.min(available, Math.max(call, Math.round((call + (available - call) * share) / 5) * 5));
 }
 
 // Pairs of reachable hands [stronger, weaker] whose continuation the audit's
