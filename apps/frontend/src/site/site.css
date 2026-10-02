@@ -189,9 +189,9 @@
 .site-how-progress { position: absolute; bottom: 22px; left: 50%; display: flex; gap: 6px; transform: translateX(-50%); }
 .site-how-progress span { width: 28px; height: 3px; border-radius: 2px; background: var(--line-strong); transition: background .4s ease; }
 .site-how-progress span.is-on { background: var(--pink); }
-.site-how-steps li { display: flex; flex-direction: column; justify-content: center; min-height: 78vh; opacity: .28; transition: opacity .5s ease; }
+.site-how-steps li { display: flex; flex-direction: column; justify-content: center; min-height: 120vh; opacity: .28; transition: opacity .5s ease; }
 .site-how-steps li.is-active { opacity: 1; }
-.site-how-steps li:first-child { min-height: 60vh; justify-content: flex-start; padding-top: 18vh; }
+.site-how-steps li:first-child { min-height: 90vh; justify-content: flex-start; padding-top: 18vh; }
 .site-how-num { color: var(--pink); font-family: var(--display); font-size: 15px; font-weight: 700; }
 .site-how-steps h3, .site-how-text h3 { margin: 10px 0 16px; font-size: clamp(30px, 3vw, 42px); line-height: 1.05; }
 .site-how-steps p, .site-how-text p { max-width: 440px; color: var(--muted); font-size: 18px; line-height: 1.65; }
