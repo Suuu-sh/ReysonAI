@@ -382,6 +382,11 @@
 .site-persona-price { display: flex; align-items: baseline; gap: 10px; }
 .site-persona-price strong { font-family: var(--display); font-size: 76px; font-weight: 750; line-height: .9; letter-spacing: -.04em; }
 .site-persona-price small { color: var(--muted); font-size: 15px; }
+.site-persona-plus { display: grid; gap: 4px; margin-top: 8px; padding-top: 18px; border-top: 1px dashed var(--line); color: var(--muted); }
+.site-persona-plus p { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin: 0; }
+.site-persona-plus strong { color: var(--ink); font-size: 15px; }
+.site-persona-plus span { color: var(--ink); font-family: var(--display); font-size: 26px; font-weight: 750; letter-spacing: -.02em; }
+.site-persona-plus small { color: var(--subtle); font-size: 13px; }
 .site-persona-view.is-free ul { display: grid; gap: 12px; }
 .site-persona-view.is-free li { display: flex; align-items: center; gap: 10px; font-size: 16px; }
 .site-persona-view.is-free li svg { color: var(--pink); }

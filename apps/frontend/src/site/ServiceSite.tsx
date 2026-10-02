@@ -484,7 +484,7 @@ function Audience() {
   const [ref, visible] = useInView<HTMLElement>("-25% 0px", false);
   const running = auto && motion && visible;
   const a5s = frequencies("response", "A5s");
-  const free = c.pricing.plans[0];
+  const [free, plus] = c.pricing.plans;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: `active` restarts the timer after every switch.
   useEffect(() => {
@@ -541,6 +541,10 @@ function Audience() {
               <span className="site-persona-pill">{c.audience.freeNote}</span>
               <ul>{c.audience.freeList.map((feature, index) => <li key={feature} style={{ "--i": index } as CSSProperties}><Check size={16} weight="bold" aria-hidden="true" />{feature}</li>)}</ul>
               <a className="site-button is-small" href="/app" tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
+              <div className="site-persona-plus">
+                <p><strong>{plus.name}</strong><span>{plus.price}</span><small>{plus.cadence}</small></p>
+                <small>{plus.status}</small>
+              </div>
             </div>
           </div>
         </div>
