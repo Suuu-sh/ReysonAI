@@ -590,6 +590,51 @@ function Audience() {
 
 const tierMins = [0, 950, 1100, 1250, 1400, 1550];
 
+// Wide screens: Training pins for one screen while scrolling slides it over to Ranked.
+function TrainingTrack() {
+  const { motion } = useSite();
+  const ref = useRef<HTMLDivElement>(null);
+  const [scrolly, setScrolly] = useState(false);
+  const [shift, setShift] = useState(0);
+  useEffect(() => {
+    if (!motion) { setScrolly(false); return; }
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 600px)");
+    const sync = () => setScrolly(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, [motion]);
+  useEffect(() => {
+    const node = ref.current;
+    if (!scrolly || !node) { setShift(0); return; }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = node.getBoundingClientRect();
+      const span = rect.height - window.innerHeight;
+      if (span <= 0) return;
+      const progress = Math.min(Math.max(-rect.top / span, 0), 1);
+      // Hold each page for the first and last quarter, slide in between.
+      const t = Math.min(Math.max((progress - 0.25) / 0.5, 0), 1);
+      setShift(t * t * (3 - 2 * t));
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [scrolly]);
+  return <div className={`site-train${scrolly ? " is-scrolly" : ""}`} ref={ref}>
+    <div className="site-train-stage">
+      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 50}%)` } : undefined}><Drill /><Ranked /></div>
+    </div>
+  </div>;
+}
+
 function Ranked() {
   const { copy: c } = useSite();
   const [ref, inView] = useInView<HTMLDivElement>("-15% 0px");
@@ -784,7 +829,7 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
       <Header />
       <Reveal>
-        <main id="site-main"><Hero /><Audience /><HowItWorks /><Drill /><Ranked /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></main>
+        <main id="site-main"><Hero /><Audience /><HowItWorks /><TrainingTrack /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></main>
         <Footer />
       </Reveal>
     </div>

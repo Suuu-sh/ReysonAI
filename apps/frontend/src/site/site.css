@@ -717,3 +717,10 @@
 @media (prefers-reduced-motion: reduce) {
   .site *, .site *::before, .site *::after { animation: none !important; transition: none !important; }
 }
+
+/* Training → Ranked horizontal slide (wide screens) */
+.site-train.is-scrolly { height: 300vh; }
+.site-train.is-scrolly .site-train-stage { position: sticky; top: 64px; height: calc(100vh - 64px); overflow: hidden; }
+.site-train.is-scrolly .site-train-rail { display: flex; width: 200%; height: 100%; will-change: transform; }
+.site-train.is-scrolly .site-train-rail > .site-section { flex: 0 0 50%; min-height: 0; height: 100%; padding-block: 24px; }
+.site-train.is-scrolly .site-ranked { border-top: 0; }
