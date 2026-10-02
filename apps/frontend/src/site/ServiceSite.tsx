@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { ArrowRight, ArrowUpRight, Check, List, Spade, Trophy, X } from "@phosphor-icons/react";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
@@ -93,13 +93,17 @@ function HandCards({ hand, seed = 0, className = "" }: { hand: string; seed?: nu
   return <span className={`site-hand-cards${className ? ` ${className}` : ""}`}>{handCards(hand, seed).map(([rank, suit], index) => <PlayingCard key={`${rank}${suit}`} rank={rank} suit={suit} index={index} />)}</span>;
 }
 
-function FrequencyBars({ mode, values }: { mode: RangeMode; values: Record<Action, number> }) {
+function ActionRows({ mode, values, displayMode }: { mode: RangeMode; values: Record<Action, number>; displayMode: DisplayMode }) {
   const { copy } = useSite();
-  const shown = actions.filter(action => values[action] > 0);
-  return <fieldset className="site-freq"><legend className="site-visually-hidden">{copy.preview.frequencyLabel}</legend>
-    <span className="site-freq-track" aria-hidden="true">{shown.map(action => <span key={action} className={`is-${action}`} style={{ width: `${values[action]}%` }} />)}</span>
-    <span className="site-freq-values">{shown.map(action => <span key={action}><i className={`is-${action}`} /><em>{actionLabel(copy, mode, action)}</em><b>{values[action]}%</b></span>)}</span>
-  </fieldset>;
+  const main = dominantAction(values);
+  // Simple mode shows only the main action, so it reads as 100%.
+  const shownValue = (action: Action) => displayMode === "simple" ? (action === main ? 100 : 0) : values[action];
+  const rows = actions.filter(action => mode === "response" || action !== "call");
+  return <ul className="site-hand-actions" aria-label={copy.preview.frequencyLabel}>
+    {rows.map(action => <li key={action} className={`site-hand-action is-${action}${shownValue(action) > 0 ? "" : " is-dim"}`}><i />{actionLabel(copy, mode, action)}<b>{shownValue(action)}%</b></li>)}
+    {/* Keep the panel the same height as the three-action BB spot. */}
+    {rows.length < actions.length && <li className="site-hand-action is-spacer" aria-hidden="true"><i />&nbsp;</li>}
+  </ul>;
 }
 
 function RangeMatrix({ mode, displayMode, selected, onSelect }: { mode: RangeMode; displayMode: DisplayMode; selected: string; onSelect: (hand: string) => void }) {
@@ -199,8 +203,7 @@ function Explorer() {
         <span className="site-hand-label">{c.preview.selectedHand}</span>
         <HandCards key={`${mode}-${selected}`} hand={selected} className="is-dealing" />
         <div className="site-hand-title"><strong>{selected}</strong><span>{selected.length === 2 ? c.preview.pair : selected.endsWith("s") ? c.preview.suited : c.preview.offsuit}</span></div>
-        <div className={`site-hand-action is-${action}`}><i />{actionLabel(c, mode, action)}{displayMode === "standard" && <b>{values[action]}%</b>}</div>
-        {displayMode === "standard" && <FrequencyBars mode={mode} values={values} />}
+        <ActionRows mode={mode} values={values} displayMode={displayMode} />
         <p className="site-hand-why"><span>{c.preview.why}</span>{explanation}</p>
         <a className="site-hand-link" href="/app">{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
       </div>
@@ -286,25 +289,6 @@ function useAnimatedNumber(to: number, from: number, run: boolean, duration = 15
   return shown;
 }
 
-function CountUp({ value, decimals = 0, suffix = "" }: { value: number; decimals?: number; suffix?: string }) {
-  const [ref, inView] = useInView<HTMLSpanElement>("-10% 0px");
-  const shown = useAnimatedNumber(value, 0, inView);
-  return <span ref={ref}>{shown.toFixed(decimals)}{suffix}</span>;
-}
-
-function Facts() {
-  const { copy: c } = useSite();
-  const opened = actionShare("opening", "raise");
-  const defended = actionShare("response", "raise") + actionShare("response", "call");
-  const numbers: [number, number, string][] = [[169, 0, ""], [opened, 1, "%"], [defended, 1, "%"], [100, 0, ""]];
-  return <section className="site-facts" aria-label={c.facts.source}>
-    <div className="site-wrap">
-      <dl className="site-facts-grid">{numbers.map(([value, decimals, suffix], index) => <div key={c.facts.items[index]} data-reveal style={{ "--delay": `${index * 90}ms` } as CSSProperties}><dt>{c.facts.items[index]}</dt><dd><CountUp value={value} decimals={decimals} suffix={suffix} /></dd></div>)}</dl>
-      <p className="site-facts-source">{c.facts.source}</p>
-    </div>
-  </section>;
-}
-
 const seats = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
 function TableScene() {
@@ -357,14 +341,21 @@ function HowItWorks() {
   const sceneNames = ["table", "read", "why"];
   return <section className="site-section site-how" id="how" aria-labelledby="site-how-title">
     <div className="site-wrap">
-      <h2 id="site-how-title" data-reveal>{c.how.title1}<br /><span>{c.how.title2}</span></h2>
+      <h2 id="site-how-title" data-reveal>{c.how.title1}<span>{c.how.title2}</span></h2>
       <div className="site-how-grid">
         <div className="site-how-stage">
           {scenes.map((scene, index) => <div className={`site-how-layer${active === index ? " is-active" : ""}`} key={sceneNames[index]}>{scene}</div>)}
-          <div className="site-how-progress" aria-hidden="true">{c.how.steps.map((step, index) => <span key={step.title} className={index <= active ? "is-on" : ""} />)}</div>
+          <div className="site-how-progress" aria-hidden="true">{sceneNames.map((name, index) => <span key={name} className={index <= active ? "is-on" : ""} />)}</div>
+        </div>
+        <div className="site-how-copy" aria-hidden="true">
+          {c.how.steps.map((step, index) => <div key={sceneNames[index]} className={`site-how-text${active === index ? " is-active" : ""}`}>
+            <span className="site-how-num">0{index + 1}</span>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </div>)}
         </div>
         <ol className="site-how-steps">
-          {c.how.steps.map((step, index) => <li key={step.title} data-step={index} ref={node => { steps.current[index] = node; }} className={active === index ? "is-active" : ""}>
+          {c.how.steps.map((step, index) => <li key={sceneNames[index]} data-step={index} ref={node => { steps.current[index] = node; }} className={active === index ? "is-active" : ""}>
             <span className="site-how-num">0{index + 1}</span>
             <h3>{step.title}</h3>
             <p>{step.body}</p>
@@ -440,7 +431,7 @@ function Drill() {
   return <section className="site-section site-drill" id="drill" ref={ref} aria-labelledby="site-drill-title">
     <div className="site-wrap site-drill-inner">
       <div className="site-drill-copy" data-reveal>
-        <h2 id="site-drill-title">{c.drill.title1}<br /><span>{c.drill.title2}</span></h2>
+        <h2 id="site-drill-title">{c.drill.title1}<span>{c.drill.title2}</span></h2>
         <p>{c.drill.description}</p>
         <p className="site-drill-note">{c.drill.note}</p>
       </div>
@@ -477,20 +468,83 @@ function Drill() {
 }
 
 function SectionHead({ id, title1, title2, children }: { id: string; title1: string; title2: string; children?: ReactNode }) {
-  return <div className={`site-section-head${children ? "" : " is-solo"}`} data-reveal><h2 id={id}>{title1}<br /><span>{title2}</span></h2>{children}</div>;
+  return <div className={`site-section-head${children ? "" : " is-solo"}`} data-reveal><h2 id={id}>{title1}<span>{title2}</span></h2>{children}</div>;
+}
+
+const personaIds = ["beginner", "learner", "budget"];
+
+function MiniMatrix({ mode, selected }: { mode: RangeMode; selected: string }) {
+  return <div className="site-mini-matrix">{cells.map(({ hand, wave }) => <span key={hand} className={`is-${dominantAction(frequencies(mode, hand))}${hand === selected ? " is-selected" : ""}`} style={{ "--wave": wave } as CSSProperties} />)}</div>;
 }
 
 function Audience() {
-  const { copy: c } = useSite();
-  return <section className="site-section site-audience" aria-labelledby="site-audience-title">
+  const { copy: c, motion } = useSite();
+  const [active, setActive] = useState(0);
+  const [auto, setAuto] = useState(true);
+  const [ref, visible] = useInView<HTMLElement>("-25% 0px", false);
+  const running = auto && motion && visible;
+  const a5s = frequencies("response", "A5s");
+  const free = c.pricing.plans[0];
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `active` restarts the timer after every switch.
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setTimeout(() => setActive(current => (current + 1) % personaIds.length), 6500);
+    return () => window.clearTimeout(timer);
+  }, [running, active]);
+
+  function choose(index: number) {
+    setAuto(false);
+    setActive((index + personaIds.length) % personaIds.length);
+  }
+
+  function onListKey(event: ReactKeyboardEvent<HTMLDivElement>) {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    event.preventDefault();
+    const next = (active + (event.key === "ArrowDown" ? 1 : -1) + personaIds.length) % personaIds.length;
+    choose(next);
+    document.getElementById(`site-persona-${personaIds[next]}`)?.focus();
+  }
+
+  const view = (index: number) => `site-persona-view${active === index ? " is-active" : ""}`;
+  return <section className="site-section site-audience" ref={ref} aria-labelledby="site-audience-title">
     <div className="site-wrap">
       <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
-      <div className="site-personas">{c.audience.items.map((item, index) => <article className="site-persona" key={item.level} data-reveal style={{ "--delay": `${index * 110}ms` } as CSSProperties}>
-        <span className="site-persona-level"><i>{index + 1}</i>{item.level}</span>
-        <p className="site-persona-quote">{item.quote}</p>
-        <p className="site-persona-body">{item.body}</p>
-        <span className="site-persona-gets">{item.gets}</span>
-      </article>)}</div>
+      <div className="site-audience-grid" data-reveal>
+        <div className="site-persona-list" role="tablist" aria-orientation="vertical" aria-labelledby="site-audience-title" onKeyDown={onListKey}>
+          {c.audience.items.map((item, index) => <button type="button" role="tab" key={personaIds[index]} id={`site-persona-${personaIds[index]}`} aria-selected={active === index} aria-controls="site-persona-panel" tabIndex={active === index ? 0 : -1} className={`site-persona${active === index ? " is-active" : ""}`} onClick={() => choose(index)}>
+            <span className="site-persona-level"><i>{index + 1}</i>{item.level}</span>
+            <span className="site-persona-quote">{item.quote}</span>
+            <span className="site-persona-more"><span><span className="site-persona-body">{item.body}</span><span className="site-persona-gets">{item.gets}</span></span></span>
+            {running && active === index && <span className="site-persona-timer" aria-hidden="true" />}
+          </button>)}
+        </div>
+        <div className="site-mock site-persona-stage" role="tabpanel" id="site-persona-panel" aria-labelledby={`site-persona-${personaIds[active]}`}>
+          <span className="site-sample">{c.audience.views[active]}</span>
+          <div className="site-persona-views">
+            <div className={`${view(0)} is-simple`} aria-hidden={active !== 0}>
+              <MiniMatrix mode="opening" selected="K7s" />
+              <div className="site-persona-callout">
+                <HandCards hand="K7s" />
+                <strong>K7s</strong>
+                <span className="site-persona-pill is-raise">{c.common.raise}</span>
+                <small>{c.preview.spotOpening} · {c.preview.simpleMode}</small>
+              </div>
+            </div>
+            <div className={`${view(1)} is-detail`} aria-hidden={active !== 1}>
+              <div className="site-persona-detail-head"><HandCards hand="A5s" seed={1} /><div><strong>A5s</strong><small>{c.how.whyHand}</small></div></div>
+              <ActionRows mode="response" values={a5s} displayMode="standard" />
+              <p className="site-persona-why"><span>{c.preview.why}</span>{c.how.whyNote}</p>
+            </div>
+            <div className={`${view(2)} is-free`} aria-hidden={active !== 2}>
+              <p className="site-persona-price"><strong>{free.price}</strong><small>{free.cadence}</small></p>
+              <span className="site-persona-pill">{c.audience.freeNote}</span>
+              <ul>{c.audience.freeList.map((feature, index) => <li key={feature} style={{ "--i": index } as CSSProperties}><Check size={16} weight="bold" aria-hidden="true" />{feature}</li>)}</ul>
+              <a className="site-button is-small" href="/app" tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
+            </div>
+          </div>
+        </div>
+      </div>
       <p className="site-audience-note" data-reveal>{c.audience.note}</p>
     </div>
   </section>;
@@ -509,7 +563,7 @@ function Ranked() {
     <div className="site-wrap site-feature">
       <div className="site-feature-copy" data-reveal>
         <span className="site-status">{c.ranked.status}</span>
-        <h2 id="site-ranked-title">{c.ranked.title1}<br /><span>{c.ranked.title2}</span></h2>
+        <h2 id="site-ranked-title">{c.ranked.title1}<span>{c.ranked.title2}</span></h2>
         <p>{c.ranked.description}</p>
         <ul className="site-points">{c.ranked.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
       </div>
@@ -547,7 +601,7 @@ function Analysis() {
   return <section className="site-section site-analysis" id="analysis" aria-labelledby="site-analysis-title">
     <div className="site-wrap site-feature is-reversed">
       <div className="site-feature-copy" data-reveal>
-        <h2 id="site-analysis-title">{c.analysis.title1}<br /><span>{c.analysis.title2}</span></h2>
+        <h2 id="site-analysis-title">{c.analysis.title1}<span>{c.analysis.title2}</span></h2>
         <p>{c.analysis.description}</p>
         <dl className="site-point-grid">{c.analysis.points.map(point => <div key={point.title}><dt>{point.title}</dt><dd>{point.body}</dd></div>)}</dl>
         <p className="site-feature-note">{c.analysis.note}</p>
@@ -610,7 +664,7 @@ function Pricing() {
   const { copy: c } = useSite();
   return <section className="site-section site-pricing" id="pricing" aria-labelledby="site-pricing-title">
     <div className="site-wrap">
-      <div className="site-pricing-head" data-reveal><h2 id="site-pricing-title">{c.pricing.title1}<br /><span>{c.pricing.title2}</span></h2><p>{c.pricing.description}</p></div>
+      <div className="site-pricing-head" data-reveal><h2 id="site-pricing-title">{c.pricing.title1}<span>{c.pricing.title2}</span></h2><p>{c.pricing.description}</p></div>
       <div className="site-plans">{c.pricing.plans.map((plan, index) => <article className={`site-plan${plan.href ? "" : " is-planned"}`} key={plan.name} data-reveal style={{ "--delay": `${index * 120}ms` } as CSSProperties}>
         <div className="site-plan-top"><h3>{plan.name}</h3><span>{plan.status}</span></div>
         <p className="site-plan-price"><strong>{plan.price}</strong><small>{plan.cadence}</small></p>
@@ -640,7 +694,7 @@ function FinalCta() {
   return <section className="site-final" aria-labelledby="site-final-title">
     <div className="site-wrap site-final-inner">
       <div className="site-fan" data-reveal aria-hidden="true">{fan.map(([rank, suit], index) => <PlayingCard key={rank} rank={rank} suit={suit} index={index - 2} />)}</div>
-      <h2 id="site-final-title" data-reveal>{c.final.title1}<br /><span>{c.final.title2}</span></h2>
+      <h2 id="site-final-title" data-reveal>{c.final.title1}<span>{c.final.title2}</span></h2>
       <p data-reveal>{c.final.description}</p>
       <a className="site-button is-large" href="/app" data-reveal>{c.final.action}<ArrowRight size={18} weight="bold" aria-hidden="true" /></a>
       <small>{c.final.note}</small>
@@ -668,7 +722,8 @@ function Footer() {
 
 function Reveal({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
-  const { motion } = useSite();
+  const { motion, locale } = useSite();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a language switch remounts localized nodes that need observing again.
   useEffect(() => {
     if (!motion || !root.current) return;
     const observer = new IntersectionObserver(entries => {
@@ -679,7 +734,7 @@ function Reveal({ children }: { children: ReactNode }) {
     }, { rootMargin: "0px 0px -12% 0px" });
     for (const node of root.current.querySelectorAll("[data-reveal]:not([data-shown])")) observer.observe(node);
     return () => observer.disconnect();
-  }, [motion]);
+  }, [motion, locale]);
   return <div ref={root}>{children}</div>;
 }
 
@@ -691,7 +746,7 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
       <Header />
       <Reveal>
-        <main id="site-main"><Hero /><Facts /><Audience /><HowItWorks /><Drill /><Ranked /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></main>
+        <main id="site-main"><Hero /><Audience /><HowItWorks /><Drill /><Ranked /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></main>
         <Footer />
       </Reveal>
     </div>

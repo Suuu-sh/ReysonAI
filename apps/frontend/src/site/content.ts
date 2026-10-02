@@ -13,16 +13,15 @@ export const en = {
   ],
   hero: { title1: "Complex strategy,", title2: "made playable.", lead: "EvionAI turns AI-estimated poker ranges into a chart you can read at a glance, and explains every hand in plain words, so it's still there when you sit down at the table.", primary: "Open the app", secondary: "See how it works", note: "Free preview · No account needed · 6-max cash, 100BB" },
   preview: { spotLabel: "Preview spot", open: "BTN open", response: "BB vs BTN", displayLabel: "Display mode", simpleMode: "Simple", standardMode: "Standard", matrixLabel: "13 by 13 starting-hand chart", scrollLabel: "chart, scrolls sideways on small screens", selectedHand: "Selected hand", suited: "Suited", offsuit: "Offsuit", pair: "Pair", frequencyLabel: "Action frequencies", why: "Why", k7s: "K7s is suited and playable after the flop. In this BTN opening estimate, it is raised every time.", simpleOther: (spot: string, hand: string, action: string) => `In this saved ${spot} range, ${hand}'s main action is ${action}. Open the app for the full hand-level explanation.`, other: (spot: string, hand: string, action: string, value: number) => `In this saved ${spot} range, ${hand} is ${action} ${value}% of the time. Open the app for the full hand-level explanation.`, explore: "Explore it in the app", saved: "Saved AI estimate", notGto: "Not a GTO solution", spotOpening: "BTN opening", spotResponse: "BB response", actionPast: { raise: "raised", threeBet: "3bet", call: "called", fold: "folded" }, touring: "Touring hands. Click any cell to take over.", manual: "Click any hand to see it." },
-  facts: { items: ["hands on every chart", "of all hands open from the button", "of hands the big blind continues with against that open", "big blinds deep, 6-max cash"], source: "Counted from the saved estimates shown above, weighted by combinations." },
   how: {
     title1: "From spot to reason,", title2: "in three moves.",
     steps: [
-      { title: "Set the spot.", body: "Walk the action seat by seat. Folded to the button, a 2.5BB open, the big blind to act. EvionAI finds the saved range for exactly that history, and says so when there isn't one." },
+      { title: "Set the spot.", body: "Walk the action seat by seat. Folded to the button, a 2.5BB open, the big blind to act." },
       { title: "Read the colors.", body: "Each of the 169 hands shows its main action as one solid color. Start there. Switch to Standard when you want to see where decisions mix." },
       { title: "Know why.", body: "Tap a hand to see its exact action mix and the facts behind it, in plain language instead of a wall of numbers." },
     ],
     toAct: "To act", openSize: "Raise 2.5BB", pot: "Pot 4BB", combos: "of hands",
-    whyHand: "A5s · BB vs BTN", whyNote: "In the app, every hand detail adds the recorded reasons behind its mix.",
+    whyHand: "A5s · BB vs BTN", whyNote: "A suited ace with an ace blocker and wheel (A–5 straight) potential. It has 52.3% equity against the button's opening range and 43.3%, close to even, against the hands that continue. Counting the 54.9% of the time the button folds to a 12BB 3-bet, 3-betting beats calling. Some combos still call, keeping strong hands in the calling range too.",
   },
   drill: { title1: "Ten seconds.", title2: "One decision.", description: "It folds to you on the button. Do you open? Answer, then see what the saved estimate does with the same hand.", question: "BTN to act", tableFold: "Fold", stakes: "Cash · 6-max · 100BB", pot: "Pot", raise: "Raise 2.5BB", fold: "Fold", next: "Next", match: "Same as the estimate", differ: "The estimate differs", mixed: "Mixed hand", frequency: (value: number) => `The estimate takes this ${value}% of the time`, score: (matched: number, played: number) => `${matched} of ${played} matched`, tableLabel: (hand: string) => `Table. Folded to the button, you hold ${hand}.`, note: "Practice compares your answer with the saved AI estimate, not with a GTO solution or real results." },
   audience: {
@@ -30,8 +29,11 @@ export const en = {
     items: [
       { level: "Beginner", quote: "Which hands should I even play?", body: "Simple display shows each hand's main action first, starting from the spots that come up most.", gets: "Simple display · common spots first" },
       { level: "Beginner to intermediate", quote: "I memorized the chart. I still don't get the mixes.", body: "Standard display shows the exact frequencies, and every hand explains why it mixes.", gets: "Standard display · hand-by-hand reasons" },
-      { level: "Short on time", quote: "I only have fifteen minutes a day.", body: "Twenty-question drills, ranked matches, and an analysis page that tells you what to practice next.", gets: "Drills · ranked matches · analysis" },
+      { level: "On a budget", quote: "Solvers cost too much for me.", body: "The preview is free. Practice with range charts, hand-by-hand reasons, twenty-question drills, ranked matches, and an analysis page, without paying for a solver subscription.", gets: "Drills · ranked matches · analysis" },
     ],
+    views: ["Simple display", "Hand detail", "Free preview"],
+    freeList: ["Range charts for saved spots", "Hand-by-hand reasons", "Drills and session review", "Play analysis"],
+    freeNote: "No account needed",
     note: "Studying exact solver output for custom game trees? A solver-based app is the better tool for that.",
   },
   ranked: {
