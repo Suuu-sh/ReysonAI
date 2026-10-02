@@ -101,8 +101,11 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
     const last = mine.at(-1) ?? null;
     return { folded: mine.some(entry => entry.action === "fold"), last };
   };
-  const lastStreet = revealed.at(-1)?.street ?? "preflop";
-  const boardCount = done ? result!.board.length : lastStreet === "flop" ? 3 : lastStreet === "turn" ? 4 : lastStreet === "river" ? 5 : 0;
+  // Deal the street as soon as its first action is next (or the human is asked on it).
+  const CARDS: Record<string, number> = { preflop: 0, flop: 3, turn: 4, river: 5 };
+  const upcoming = pending?.street ?? (shown < log.length ? log[shown]?.street : null);
+  const boardCount = done ? result!.board.length
+    : Math.max(CARDS[revealed.at(-1)?.street ?? "preflop"], upcoming && shown > 0 ? CARDS[upcoming] : 0, pending?.board.length ?? 0);
   const boardCards = done ? result!.board : (result?.board ?? []).slice(0, boardCount);
   const pot = done ? result!.pot : revealed.at(-1)?.pot ?? 1.5;
 
