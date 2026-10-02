@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { ArrowRight, ArrowUpRight, Check, List, Spade, X } from "@phosphor-icons/react";
+import { ArrowRight, ArrowUpRight, Check, List, Spade, Trophy, X } from "@phosphor-icons/react";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
@@ -266,23 +266,29 @@ function Hero() {
   </section>;
 }
 
-function CountUp({ value, decimals = 0, suffix = "" }: { value: number; decimals?: number; suffix?: string }) {
+/** Eases from `from` to `to` once `run` turns true; jumps straight to `to` without motion. */
+function useAnimatedNumber(to: number, from: number, run: boolean, duration = 1500) {
   const { motion } = useSite();
-  const [ref, inView] = useInView<HTMLSpanElement>("-10% 0px");
-  const [shown, setShown] = useState(motion ? 0 : value);
+  const [shown, setShown] = useState(motion ? from : to);
   useEffect(() => {
-    if (!motion) { setShown(value); return; }
-    if (!inView) return;
+    if (!motion) { setShown(to); return; }
+    if (!run) return;
     let frame = 0;
     const start = performance.now();
     const tick = (now: number) => {
-      const progress = Math.min(1, (now - start) / 1500);
-      setShown(value * (1 - (1 - progress) ** 4));
+      const progress = Math.min(1, (now - start) / duration);
+      setShown(from + (to - from) * (1 - (1 - progress) ** 4));
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [inView, motion, value]);
+  }, [run, motion, to, from, duration]);
+  return shown;
+}
+
+function CountUp({ value, decimals = 0, suffix = "" }: { value: number; decimals?: number; suffix?: string }) {
+  const [ref, inView] = useInView<HTMLSpanElement>("-10% 0px");
+  const shown = useAnimatedNumber(value, 0, inView);
   return <span ref={ref}>{shown.toFixed(decimals)}{suffix}</span>;
 }
 
@@ -470,36 +476,132 @@ function Drill() {
   </section>;
 }
 
-function Approach() {
+function SectionHead({ id, title1, title2, children }: { id: string; title1: string; title2: string; children?: ReactNode }) {
+  return <div className={`site-section-head${children ? "" : " is-solo"}`} data-reveal><h2 id={id}>{title1}<br /><span>{title2}</span></h2>{children}</div>;
+}
+
+function Audience() {
   const { copy: c } = useSite();
-  return <section className="site-section site-approach" id="approach" aria-labelledby="site-approach-title">
+  return <section className="site-section site-audience" aria-labelledby="site-audience-title">
     <div className="site-wrap">
-      <div className="site-approach-head" data-reveal>
-        <h2 id="site-approach-title">{c.approach.title1}<br /><span>{c.approach.title2}</span></h2>
-        <p>{c.approach.description}</p>
+      <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
+      <div className="site-personas">{c.audience.items.map((item, index) => <article className="site-persona" key={item.level} data-reveal style={{ "--delay": `${index * 110}ms` } as CSSProperties}>
+        <span className="site-persona-level"><i>{index + 1}</i>{item.level}</span>
+        <p className="site-persona-quote">{item.quote}</p>
+        <p className="site-persona-body">{item.body}</p>
+        <span className="site-persona-gets">{item.gets}</span>
+      </article>)}</div>
+      <p className="site-audience-note" data-reveal>{c.audience.note}</p>
+    </div>
+  </section>;
+}
+
+const tierMins = [0, 950, 1100, 1250, 1400, 1550];
+
+function Ranked() {
+  const { copy: c } = useSite();
+  const [ref, inView] = useInView<HTMLDivElement>("-15% 0px");
+  const rating = Math.round(useAnimatedNumber(1186, 1032, inView, 2200));
+  const tier = tierMins.filter(min => rating >= min).length - 1;
+  const next = tierMins[tier + 1];
+  const progress = next ? (rating - tierMins[tier]) / (next - tierMins[tier]) : 1;
+  return <section className="site-section site-ranked" id="ranked" aria-labelledby="site-ranked-title">
+    <div className="site-wrap site-feature">
+      <div className="site-feature-copy" data-reveal>
+        <span className="site-status">{c.ranked.status}</span>
+        <h2 id="site-ranked-title">{c.ranked.title1}<br /><span>{c.ranked.title2}</span></h2>
+        <p>{c.ranked.description}</p>
+        <ul className="site-points">{c.ranked.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
       </div>
-      <div className="site-ledger">
-        <div data-reveal><h3>{c.approach.isTitle}</h3><ul>{c.approach.is.map(item => <li key={item}><Check size={17} weight="bold" aria-hidden="true" />{item}</li>)}</ul></div>
-        <div data-reveal style={{ "--delay": "120ms" } as CSSProperties}><h3>{c.approach.isntTitle}</h3><ul>{c.approach.isnt.map(item => <li key={item}><X size={17} weight="bold" aria-hidden="true" />{item}</li>)}</ul></div>
-      </div>
-      <div className="site-process" data-reveal>
-        <h3>{c.approach.processTitle}</h3>
-        <ol>{c.approach.process.map((stage, index) => <li key={stage.title} className={index === c.approach.process.length - 1 ? "is-planned" : ""} style={{ "--i": index } as CSSProperties}><span>{index + 1}</span><strong>{stage.title}</strong><small>{stage.detail}</small></li>)}</ol>
+      <div className="site-mock site-rank" ref={ref} data-reveal aria-hidden="true">
+        <span className="site-sample">{c.ranked.sample}</span>
+        <div className="site-rank-card">
+          <div className="site-rank-top">
+            <Trophy size={30} weight="fill" />
+            <dl>
+              <div><dt>{c.ranked.rank}</dt><dd key={tier} className="site-rank-tier">{c.ranked.tiers[tier]}</dd></div>
+              <div><dt>{c.ranked.rating}</dt><dd>{rating}</dd></div>
+              <div><dt>{c.ranked.peak}</dt><dd>1204</dd></div>
+            </dl>
+          </div>
+          <span className="site-rank-bar"><span style={{ width: `${progress * 100}%` }} /></span>
+          <small>{next ? c.ranked.toNext(next - rating, c.ranked.tiers[tier + 1]) : ""}</small>
+        </div>
+        <ol className="site-tiers">{c.ranked.tiers.map((name, index) => <li key={name} className={index < tier ? "is-passed" : index === tier ? "is-current" : ""}><i />{name}<small>{tierMins[index]}</small></li>)}</ol>
+        <div className="site-rank-row">
+          <div className="site-rank-match"><span>{c.ranked.lastMatch}</span><b>+18</b><small>{c.ranked.matchLine(16, 20)}</small></div>
+          <div className="site-rank-today"><span className="site-rank-dots"><i className="is-used" /><i /><i /></span>{c.ranked.today}</div>
+        </div>
       </div>
     </div>
   </section>;
 }
 
-function Roadmap() {
+const tendencies = [9, -6, 4, -5];
+
+function Analysis() {
   const { copy: c } = useSite();
-  const column = (title: string, items: typeof c.roadmap.now, planned: boolean) => <div className={`site-road${planned ? " is-planned" : ""}`} data-reveal>
-    <h3><span>{planned ? c.common.planned : c.common.available}</span>{title}</h3>
-    <ul>{items.map((item, index) => <li key={item.title} style={{ "--i": index } as CSSProperties}><strong>{item.title}{item.tag && <em>{item.tag}</em>}</strong><p>{item.detail}</p></li>)}</ul>
-  </div>;
-  return <section className="site-section site-roadmap" aria-labelledby="site-roadmap-title">
+  const [ref, inView] = useInView<HTMLDivElement>("-15% 0px");
+  const score = useAnimatedNumber(78, 0, inView);
+  const accuracy = useAnimatedNumber(82, 0, inView);
+  return <section className="site-section site-analysis" id="analysis" aria-labelledby="site-analysis-title">
+    <div className="site-wrap site-feature is-reversed">
+      <div className="site-feature-copy" data-reveal>
+        <h2 id="site-analysis-title">{c.analysis.title1}<br /><span>{c.analysis.title2}</span></h2>
+        <p>{c.analysis.description}</p>
+        <dl className="site-point-grid">{c.analysis.points.map(point => <div key={point.title}><dt>{point.title}</dt><dd>{point.body}</dd></div>)}</dl>
+        <p className="site-feature-note">{c.analysis.note}</p>
+      </div>
+      <div className={`site-mock site-dash${inView ? " is-live" : ""}`} ref={ref} data-reveal aria-hidden="true">
+        <span className="site-sample">{c.analysis.sample}</span>
+        <div className="site-dash-kpis">
+          <div className="is-accent"><span>{c.analysis.score}</span><strong>{Math.round(score)}<small>%</small></strong><svg viewBox="0 0 120 28" preserveAspectRatio="none" aria-hidden="true"><title>{c.analysis.score}</title><path d="M0 22 L15 20 L30 23 L45 16 L60 17 L75 11 L90 13 L105 7 L120 5" /></svg><small>{c.analysis.recent}</small></div>
+          <div><span>{c.analysis.accuracy}</span><strong>{Math.round(accuracy)}<small>%</small></strong><small>124 {c.analysis.answers}</small></div>
+          <div><span>{c.analysis.style}</span><strong>{c.analysis.styleValue}</strong><small>{c.analysis.map}</small></div>
+        </div>
+        <div className="site-dash-body">
+          <div className="site-dash-map">
+            <span>{c.analysis.map}</span>
+            <div className="site-style-map">
+              {c.analysis.quadrants.map(name => <b key={name}>{name}</b>)}
+              <i className="site-style-marker" />
+            </div>
+            <div className="site-style-axis"><small>← {c.analysis.tight}</small><small>{c.analysis.loose} →</small></div>
+          </div>
+          <div className="site-dash-tend">
+            <span>{c.analysis.tendencies}</span>
+            {c.analysis.actions.map((action, index) => {
+              const delta = tendencies[index];
+              return <div className="site-tend-row" key={action} style={{ "--size": `${Math.abs(delta) / 15 * 50}%`, "--i": index } as CSSProperties}>
+                <em>{action}</em>
+                <span className={`site-tend-bar ${delta > 0 ? "is-more" : "is-less"}`}><i /></span>
+                <b>{delta > 0 ? "+" : "−"}{Math.abs(delta)}pt</b>
+              </div>;
+            })}
+            <div className="site-dash-notes"><div><span>{c.analysis.weak}</span><b>{c.analysis.weakValue}</b></div><div><span>{c.analysis.next}</span><b>{c.analysis.nextValue}</b></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>;
+}
+
+function Compare() {
+  const { copy: c } = useSite();
+  return <section className="site-section site-compare" id="compare" aria-labelledby="site-compare-title">
     <div className="site-wrap">
-      <h2 id="site-roadmap-title" data-reveal>{c.roadmap.title1}<br /><span>{c.roadmap.title2}</span></h2>
-      <div className="site-road-grid">{column(c.roadmap.nowTitle, c.roadmap.now, false)}{column(c.roadmap.nextTitle, c.roadmap.next, true)}</div>
+      <SectionHead id="site-compare-title" title1={c.compare.title1} title2={c.compare.title2}><p>{c.compare.description}</p></SectionHead>
+      <div className="site-compare-table" data-reveal>
+        <table>
+          <thead><tr><td /><th scope="col" className="is-us"><Spade size={18} weight="fill" aria-hidden="true" />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
+          <tbody>{c.compare.rows.map((row, index) => <tr key={row.label} style={{ "--i": index } as CSSProperties}>
+            <th scope="row">{row.label}</th>
+            <td className="is-us" data-label={c.compare.us}>{row.us}</td>
+            <td data-label={c.compare.them}>{row.them}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+      <p className="site-compare-note">{c.compare.note}</p>
     </div>
   </section>;
 }
@@ -553,8 +655,8 @@ function Footer() {
       <div className="site-footer-top">
         <div><Brand /><p>{c.footer.tagline}</p></div>
         <div className="site-footer-links">
-          <div><span>{c.footer.product}</span><a href="/app">{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a></div>
-          <div><span>EvionAI</span><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
+          <div><span>{c.footer.product}</span><a href="/app">{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
+          <div><span>EvionAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
           <div><span>{c.footer.legal}</span><span className="is-muted">{c.footer.privacy}</span><span className="is-muted">{c.footer.terms}</span></div>
         </div>
       </div>
@@ -589,7 +691,7 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
       <Header />
       <Reveal>
-        <main id="site-main"><Hero /><Facts /><HowItWorks /><Drill /><Approach /><Roadmap /><Pricing /><Faq /><FinalCta /></main>
+        <main id="site-main"><Hero /><Facts /><Audience /><HowItWorks /><Drill /><Ranked /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></main>
         <Footer />
       </Reveal>
     </div>
