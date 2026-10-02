@@ -74,7 +74,6 @@
 /* Header */
 .site-header { position: sticky; top: 0; z-index: 50; height: 64px; border-bottom: 1px solid transparent; transition: transform .45s var(--ease), background .3s ease, border-color .3s ease; }
 .site-header.is-scrolled, .site-header.is-open { border-bottom-color: var(--line); background: #09090bdb; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
-.site-header.is-hidden { transform: translateY(-100%); }
 .site-header-inner { display: flex; align-items: center; gap: 32px; width: min(100% - 64px, 1240px); height: 100%; margin-inline: auto; }
 .site-brand { display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; font-size: 18px; font-weight: 700; letter-spacing: -.02em; }
 .site-brand svg, .site-brand b { color: var(--pink); }

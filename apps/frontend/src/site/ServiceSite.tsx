@@ -218,25 +218,19 @@ function Explorer() {
 function Header() {
   const { copy: c, onLocaleChange } = useSite();
   const [open, setOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    let last = window.scrollY;
     let frame = 0;
     const onScroll = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        const y = window.scrollY;
-        setScrolled(y > 8);
-        setHidden(y > 240 && y > last + 2);
-        if (y < last - 2 || y <= 240) setHidden(false);
-        last = y;
+        setScrolled(window.scrollY > 8);
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(frame); };
   }, []);
-  return <header className={`site-header${hidden && !open ? " is-hidden" : ""}${scrolled ? " is-scrolled" : ""}${open ? " is-open" : ""}`}>
+  return <header className={`site-header${scrolled ? " is-scrolled" : ""}${open ? " is-open" : ""}`}>
     <div className="site-header-inner">
       <Brand />
       <nav className="site-nav" aria-label={c.common.menuLabel}>
