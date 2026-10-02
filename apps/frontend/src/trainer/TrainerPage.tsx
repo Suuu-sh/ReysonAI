@@ -11,6 +11,7 @@ import { clearHistory, loadHistory, saveHistory, summarize } from "./trainer-sto
 import { displayDrillName, drillStats, loadDrills, newDrillId, recordSession, saveDrills, upsertDrill } from "./drill-store.ts";
 import { loadDrillDrafts, removeDrillDraft, restoreDrillDraft, saveDrillDraft } from "./drill-session-store.ts";
 import { DrillLibrary, HistoryChart } from "./DrillLibrary.tsx";
+import { AgentTablePage } from "../agent/AgentTable.tsx";
 import { PlayerAnalysis } from "./PlayerAnalysis.tsx";
 import { SessionPage } from "./SessionPage.tsx";
 import { loadReviewSessions, newSessionRecord, recordReviewSession } from "./practice-sessions.ts";
@@ -481,6 +482,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   const [run, setRun] = useState(0);
   const [result, setResult] = useState(null);
   const [rankState, setRankState] = useState(loadRankState);
+  const [agentTable, setAgentTable] = useState(null); // { tableId, watch }
   const reviewCount = useMemo(() => summarize(history).review.length, [history]);
   const onAnswer = useCallback(entry => setHistory(current => { const updated = [...current, entry]; saveHistory(updated); return updated; }), []);
   const commitDrills = next => { setDrills(next); saveDrills(next); };
@@ -536,6 +538,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
             onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("library")}
             onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("library"); }} />
+        : phase === "agent" && agentTable ? <AgentTablePage key={`${agentTable.tableId}-${agentTable.watch}`} tableId={agentTable.tableId} watch={agentTable.watch} onExit={() => setPhase("library")} />
         : phase === "ranking" && RANKED_ENABLED ? <Leaderboard rank={rankState} profile={profile} onBack={() => setPhase("library")} />
         : phase === "result" && result ? <SessionResult log={result.log} record={result.record} rank={result.rank} settings={current.settings} drill={active.review ? null : current}
             onRestart={active.ranked && (playedToday(rankState) >= RANKED_DAILY_LIMIT) ? null : () => start(current, active.review)} onLibrary={() => setPhase("library")} />
@@ -543,6 +546,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             draftKey={activeDraftKey} initialDraft={activeDraft} onProgress={onProgress}
             onOpenSetup={() => setPhase("library")} onFinish={onFinish} length={active.ranked ? RANKED_LENGTH : undefined} />
         : <DrillLibrary drills={drills} reviewCount={reviewCount} drafts={drafts}
+            onStartAgent={(tableId, watch) => { setAgentTable({ tableId, watch }); setPhase("agent"); }}
             rank={rankState} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")}
             onStart={drill => start(drill)} onStartReview={() => start(reviewDrill, true)}
             onCreate={() => { setEditing({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true }); setPhase("edit"); }}

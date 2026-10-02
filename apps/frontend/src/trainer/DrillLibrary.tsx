@@ -1,4 +1,6 @@
-import { ArrowClockwise, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
+import { ArrowClockwise, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
+import { AGENT_TABLES } from "../agent/characters.ts";
+import { Monster } from "../agent/Monster.tsx";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.ts";
 import { drillStats } from "./drill-store.ts";
 import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIER_EN, playedToday, tierFor } from "./rank-store.ts";
@@ -77,7 +79,7 @@ function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
   </article>;
 }
 
-export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit, onDelete, onCreate, onStartReview, rank, onStartRanked, onOpenRanking }) {
+export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit, onDelete, onCreate, onStartReview, rank, onStartRanked, onOpenRanking, onStartAgent = null }) {
   const totals = drills.map(drillStats);
   const attempts = totals.reduce((sum, item) => sum + item.attempts, 0);
   const answered = totals.reduce((sum, item) => sum + item.answered, 0);
@@ -94,6 +96,7 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
         {bestDrill && <div><dt><Trophy size={12} weight="fill" />ベスト</dt><dd>{pct(bestDrill.best)}<small>{bestDrill.drill.name}</small></dd></div>}
       </dl>
     </div>
+    {onStartAgent && <AgentEntry onStart={onStartAgent} />}
     {rank && RANKED_ENABLED && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} />}
     <div className="drill-grid">
       {(reviewCount > 0 || drafts.review) && <article className={`drill-card review${drafts.review ? " in-progress" : ""}`}>
@@ -134,4 +137,19 @@ function RankedCard({ rank, draft, onStart, onOpenRanking }) {
       </button>
     </footer>
   </article>;
+}
+
+// Evion Agent: six-handed tables against monster agents that play the Evion solver estimate.
+function AgentEntry({ onStart }) {
+  return <section className="agent-entry">
+    <header><h3>Evion Agent</h3><small>{localized("6-max ring game against agents that play the Evion solver estimate", "Evion solver 通りに打つAgentと6人卓で対戦")}</small></header>
+    <div className="agent-tables">{AGENT_TABLES.map(table => <article key={table.id} className="agent-table-card" style={{ borderColor: table.theme }}>
+      <strong>{localized(table.name.en, table.name.ja)}</strong>
+      <div className="agent-faces">{table.agents.map(agent => <Monster key={agent.id} id={agent.id} color={agent.color} size={38} />)}</div>
+      <footer>
+        <button type="button" className="drill-start" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
+        <button type="button" className="setup-secondary" onClick={() => onStart(table.id, true)}><Eye size={14} />{localized("Watch", "観戦")}</button>
+      </footer>
+    </article>)}</div>
+  </section>;
 }

@@ -1,0 +1,81 @@
+/* Evion Agent table (trainer page). Cards reuse .trainer-card from trainer.css. */
+.agent-page { display: grid; grid-template-rows: auto 1fr auto; gap: 14px; width: 100%; max-width: 1100px; min-height: calc(100vh - 40px); margin: 0 auto; padding: 8px 4px 20px; }
+.agent-top { display: flex; align-items: center; gap: 14px; }
+.agent-top > div { display: grid; flex: 1; }
+.agent-top strong { font-size: 18px; }
+.agent-top small { color: var(--text-muted); }
+.agent-top .setup-secondary { display: inline-flex; align-items: center; gap: 6px; }
+.agent-rule { padding: 4px 10px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text-muted); font-size: 11px; white-space: nowrap; }
+
+.agent-felt-wrap { display: grid; place-items: center; padding: 70px 70px 110px; }
+.agent-felt { position: relative; width: min(100%, 760px); aspect-ratio: 2.1; border: 10px solid #1d1d23; border-radius: 999px;
+  background: radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--table-theme) 22%, #0f1d18), #0b1411 70%);
+  box-shadow: inset 0 0 60px rgb(0 0 0 / 60%), 0 30px 80px -30px #000; }
+.agent-center { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 10px; }
+.agent-board { display: flex; gap: 6px; }
+.agent-card.is-slot { display: inline-block; width: 40px; height: 56px; border: 1px dashed rgb(255 255 255 / 12%); border-radius: 6px; }
+.agent-card.is-back { display: inline-block; width: 34px; height: 48px; border-radius: 5px; background: repeating-linear-gradient(45deg, #f0609e 0 4px, #c4417c 4px 8px); box-shadow: 0 4px 10px rgb(0 0 0 / 50%), inset 0 0 0 2px rgb(255 255 255 / 30%); }
+.agent-pot { display: flex; align-items: baseline; gap: 6px; padding: 4px 12px; border-radius: 999px; background: rgb(0 0 0 / 35%); font-size: 13px; }
+.agent-pot b { font-size: 16px; }
+.agent-pot small { color: var(--text-muted); }
+.agent-thinking, .agent-note { color: var(--text-muted); font-size: 12px; }
+
+.agent-seat { position: absolute; display: grid; justify-items: center; gap: 4px; width: 120px; transform: translate(-50%, -50%); transition: opacity .3s ease; }
+.agent-seat.is-folded { opacity: .45; }
+.agent-avatar { position: relative; display: grid; place-items: center; width: 70px; height: 70px; border: 2px solid #2a2a31; border-radius: 50%; background: #141418; transition: border-color .25s ease, box-shadow .25s ease; }
+.agent-seat.is-acting .agent-avatar { border-color: var(--accent); box-shadow: 0 0 0 4px rgb(240 96 158 / 18%); }
+.agent-seat.is-winner .agent-avatar { border-color: #f6c34a; box-shadow: 0 0 0 4px rgb(246 195 74 / 22%); }
+.agent-seat.is-human .agent-avatar { background: #1a1a20; }
+.agent-you { font-weight: 800; font-size: 13px; }
+.agent-pos { position: absolute; bottom: -6px; padding: 1px 7px; border-radius: 999px; background: #26262d; font-size: 10px; font-weight: 700; }
+.agent-name { display: grid; justify-items: center; line-height: 1.2; }
+.agent-name b { font-size: 13px; }
+.agent-name small { font-variant-numeric: tabular-nums; font-size: 11px; }
+.agent-hole { display: flex; gap: 3px; }
+.agent-hole .trainer-card { width: 34px; height: 48px; }
+.agent-hole .trainer-card b { font-size: 19px; }
+.agent-seat.is-human .agent-hole .trainer-card { width: 42px; height: 58px; }
+.agent-seat.is-human .agent-hole .trainer-card b { font-size: 24px; }
+.agent-bubble { position: absolute; top: -26px; padding: 2px 9px; border-radius: 999px; background: #2a2a31; font-size: 11px; font-weight: 700; white-space: nowrap; animation: agent-pop .3s cubic-bezier(.34, 1.56, .64, 1) both; }
+.agent-bubble.act-fold { color: var(--text-muted); }
+.agent-bubble.act-open, .agent-bubble.act-raise, .agent-bubble.act-three_bet, .agent-bubble.act-four_bet, .agent-bubble.act-squeeze, .agent-bubble.act-all_in, .agent-bubble.act-allin, .agent-bubble.act-bet { background: #d9477f; color: #fff; }
+.agent-bubble.act-call, .agent-bubble.act-limp { background: #3a9fb4; color: #fff; }
+.agent-delta { font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.agent-delta.up { color: #6fdc8c; }
+.agent-delta.down { color: #ff7a7a; }
+.monster { display: block; }
+.monster.mood-win { animation: agent-bounce .8s ease-in-out infinite; }
+
+.agent-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; min-height: 52px; }
+.agent-act { min-width: 120px; padding: 11px 18px; border: 0; border-radius: 10px; background: #2c2c33; color: var(--text); font-weight: 700; cursor: pointer; }
+.agent-act:hover { filter: brightness(1.15); }
+.agent-act.act-open, .agent-act.act-raise, .agent-act.act-three_bet, .agent-act.act-four_bet, .agent-act.act-squeeze, .agent-act.act-all_in, .agent-act.act-allin, .agent-act.act-bet { background: #d9477f; }
+.agent-act.act-call, .agent-act.act-limp { background: #3a9fb4; }
+.agent-summary { margin: 0; color: var(--text-muted); font-size: 13px; }
+.agent-actions .setup-secondary, .agent-actions .drill-start { display: inline-flex; align-items: center; gap: 6px; }
+.agent-watching { display: inline-flex; align-items: center; gap: 5px; color: var(--accent); font-size: 12px; }
+.agent-error { color: #ff7a7a; }
+
+/* Library card */
+.agent-entry { display: grid; gap: 12px; margin-bottom: 18px; padding: 18px; border: 1px solid var(--line-strong); border-radius: 12px; background: linear-gradient(135deg, rgb(240 96 158 / 8%), transparent 60%); }
+.agent-entry header { display: flex; align-items: baseline; gap: 10px; }
+.agent-entry header h3 { margin: 0; font-size: 16px; }
+.agent-entry header small { color: var(--text-muted); }
+.agent-tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.agent-table-card { display: grid; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface, #111114); }
+.agent-table-card strong { font-size: 14px; }
+.agent-faces { display: flex; }
+.agent-faces .monster + .monster { margin-left: -8px; }
+.agent-table-card footer { display: flex; gap: 8px; }
+.agent-table-card footer button { display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 6px; }
+
+@keyframes agent-pop { from { opacity: 0; transform: translateY(6px) scale(.8); } to { opacity: 1; transform: none; } }
+@keyframes agent-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+@media (max-width: 720px) {
+  .agent-felt-wrap { padding: 60px 30px 100px; }
+  .agent-felt { aspect-ratio: 1.3; }
+  .agent-seat { width: 86px; }
+  .agent-avatar { width: 52px; height: 52px; }
+  .agent-avatar .monster { width: 44px; height: 44px; }
+}
