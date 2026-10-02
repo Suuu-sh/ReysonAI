@@ -76,7 +76,7 @@
 
 ## 7. 作ったあとに確認すること
 
-1. `audit --all` で全局面 PASS。
+1. `audit --all` で全局面 PASS。続けて `node scripts/postflop-ai/audit-all-boards.mjs` で全1,755フロップのバランスチェックを回し、`.local/postflop-ai/all-boards-audit/summary.md` を確認する（画面はどのフロップでも選べるので、品質は代表12ボードではなく全ボードで判断する。2026-10-03 決定。フロップのみ約30秒/局面）。
 2. 警告の種類と件数を前回と比べる（2026-10-02: 44局面で計616件 → 再レイズ基準配分にブラフを足して508件。残りの大半はリバーの under bluff-ratio と、計算防御によるフロップの overcall）。
 3. 代表ボードで画面を開き、ベット頻度・サイズの分け方が極端でないか（同じ tier が全部同じサイズ、OOP が IP と同じ、など）を目で見る。
 4. 説明文の確認は [postflop-explanation-lessons.md](postflop-explanation-lessons.md) のチェックリストに従う。

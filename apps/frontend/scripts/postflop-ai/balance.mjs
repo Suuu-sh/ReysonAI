@@ -338,14 +338,15 @@ function replayLaterPath(table, street, path) {
   return table;
 }
 
-export function checkFlopBalance(inputs, flopPolicy) {
+// `boardList` replaces the 12 configured boards (e.g. one canonical flop at a time for the all-board audit).
+export function checkFlopBalance(inputs, flopPolicy, { boardList = boards() } = {}) {
   const policy = validatePolicy(flopPolicy, inputs.spot.tree);
   const nodes = treeNodes(inputs.spot.tree).filter(node => node.endsWith("_first") || NODES[node].includes("raise"));
   const histories = firstHistoryByNode(treeHistories(inputs.spot.tree));
   const tierFor = makeTierReader(), mixFor = makeFlopMixReader(policy, tierFor), collection = new Map();
   // Facing nodes are judged on the computed defence (defence.mjs), not the tier mixes of the policy.
   const defence = defenceFor(inputs, policy, null);
-  for (const board of boards()) for (const node of nodes) {
+  for (const board of boardList) for (const node of nodes) {
     const history = histories.get(node);
     if (!history) throw new Error(`No representative history for flop node: ${node}`);
     const state = flopState(inputs.spot.tree, history);
@@ -364,7 +365,7 @@ export function checkFlopBalance(inputs, flopPolicy) {
 
 // `authored`: the policy is a generated/authored candidate, which must show both override
 // dimensions on first nodes. The fixed reference comparator is exempt.
-export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = true } = {}) {
+export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = true, boardList = boards() } = {}) {
   const flop = validatePolicy(flopPolicy, inputs.spot.tree);
   const later = validateLaterPolicy(laterPolicy);
   const findings = [];
@@ -405,7 +406,7 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
   const turnCheckNodes = turnNodes.filter(node => node.endsWith("_first") || LATER_NODES[node].includes("raise") || isLaterFacingNode(node));
   const riverCheckNodes = riverNodes.filter(node => node.endsWith("_first") || isLaterFacingNode(node));
 
-  for (const flopBoard of boards()) {
+  for (const flopBoard of boardList) {
     const runouts = representativeRunouts(flopBoard);
     const turnBoards = [...new Map(runouts.map(runout => [runout.turn, runout.turnBoard])).values()];
     for (const turnBoard of turnBoards) for (const flopPath of flopPaths) for (const node of turnCheckNodes) {
