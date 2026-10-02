@@ -163,6 +163,37 @@
 .site-tour i { position: relative; width: 26px; height: 3px; overflow: hidden; border-radius: 2px; background: var(--line-strong); }
 .site-tour i::after { position: absolute; inset: 0; background: var(--pink); content: ""; transform-origin: left; animation: site-tour 2.8s linear both; }
 
+/* Sharp trial (hero only): tight radii, hairlines, corner ticks and uppercase micro-labels. */
+.site-hero h1 { font-weight: 750; letter-spacing: -.045em; line-height: .96; }
+.site-ja .site-hero h1 { letter-spacing: -.04em; }
+.site-hero .site-hero-mark { background-size: 100% .07em; }
+.site-hero .site-button { border-radius: 3px; letter-spacing: -.005em; }
+.site-hero .site-button.is-ghost { border-color: var(--line-strong); }
+.site-hero-note { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.site-ja .site-hero-note { letter-spacing: .06em; }
+.site-hero .site-explorer { position: relative; overflow: visible; border-color: var(--line-strong); border-radius: 2px; background: linear-gradient(180deg, #121216, var(--surface) 40%); box-shadow: 0 0 0 1px #000, 0 50px 100px -50px #000; }
+.site-hero .site-explorer::before, .site-hero .site-explorer::after { position: absolute; width: 14px; height: 14px; border: 0 solid var(--pink); content: ""; pointer-events: none; }
+.site-hero .site-explorer::before { top: -1px; left: -1px; border-top-width: 2px; border-left-width: 2px; }
+.site-hero .site-explorer::after { right: -1px; bottom: -1px; border-right-width: 2px; border-bottom-width: 2px; }
+.site-hero .site-explorer-bar { padding: 12px 14px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.site-hero .site-segment { padding: 2px; border: 1px solid var(--line-strong); border-radius: 2px; background: transparent; }
+.site-hero .site-segment button { min-height: 28px; border-radius: 1px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.site-hero .site-matrix { gap: 1px; }
+.site-hero .site-cell { border-radius: 1px; }
+.site-hero .site-cell-mix { right: 0; bottom: 0; left: 0; height: 2px; border-radius: 0; box-shadow: none; }
+.site-hero .site-cell.is-selected { outline-width: 1px; outline-offset: 0; box-shadow: 0 0 0 3px #09090b, 0 0 0 4px var(--pink); }
+.site-hero .site-legend { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.site-hero .site-legend i { width: 8px; height: 8px; border-radius: 0; }
+.site-hero .site-hand { border: 1px solid var(--line); border-radius: 2px; background: #0b0b0e; }
+.site-hero .site-hand-label, .site-hero .site-hand-why span { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--subtle); }
+.site-hero .site-hand-title strong { font-weight: 750; letter-spacing: -.05em; }
+.site-hero .site-hand-title span { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.site-hero .site-hand-action { padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.site-hero .site-hand-action i { border-radius: 0; }
+.site-hero .site-card { border-radius: 4px; }
+.site-hero .site-explorer-foot { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.site-hero .site-tour i { border-radius: 0; }
+
 /* Playing cards */
 .site-hand-cards { display: flex; gap: 8px; perspective: 700px; }
 /* Same four-colour card as the app's trainer (♠ graphite, ♥ red, ♦ blue, ♣ green), scaled by --card-w. */
