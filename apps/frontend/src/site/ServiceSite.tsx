@@ -497,7 +497,7 @@ function Audience() {
   // Wide screens: the section pins while scrolling, and scroll position picks the persona.
   useEffect(() => {
     if (!motion) { setScrolly(false); return; }
-    const query = window.matchMedia("(min-width: 961px) and (min-height: 760px)");
+    const query = window.matchMedia("(min-height: 600px)");
     const sync = () => setScrolly(query.matches);
     sync();
     query.addEventListener("change", sync);

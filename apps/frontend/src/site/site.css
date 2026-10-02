@@ -609,6 +609,13 @@
   .site-drill-inner, .site-section-head, .site-pricing-head, .site-faq-inner, .site-feature, .site-feature.is-reversed { grid-template-columns: 1fr; gap: 28px; }
   .site-feature { gap: 56px; }
   .site-audience-grid { grid-template-columns: 1fr; gap: 24px; }
+  .site-audience.is-scrolly > .site-wrap { padding-top: 56px; padding-bottom: 16px; }
+  .site-audience.is-scrolly .site-audience-grid { gap: 12px; margin-top: 16px; }
+  .site-audience.is-scrolly .site-persona:not(.is-active), .site-audience.is-scrolly .site-persona-more, .site-audience.is-scrolly .site-audience-note { display: none; }
+  .site-audience.is-scrolly .site-persona { padding: 14px 18px; }
+  .site-audience.is-scrolly .site-persona-view { padding: 18px 18px; }
+  .site-audience.is-scrolly .site-persona-view .site-mini-matrix { width: min(100%, 220px); }
+  .site-audience.is-scrolly .site-persona-view.is-simple { grid-template-columns: auto 1fr; align-items: center; }
   .site-persona-view { align-content: start; min-height: 0; padding: 26px 20px; }
   .site-persona-view.is-simple { grid-template-columns: 1fr; }
   .site-persona-view .site-mini-matrix { width: min(100%, 300px); }
