@@ -614,9 +614,8 @@ function TrainingTrack() {
       const span = rect.height - window.innerHeight;
       if (span <= 0) return;
       const progress = Math.min(Math.max(-rect.top / span, 0), 1);
-      // Hold each page for the first and last quarter, slide in between.
-      const t = Math.min(Math.max((progress - 0.25) / 0.5, 0), 1);
-      setShift(t * t * (3 - 2 * t));
+      // Switch whole pages at the midpoint; CSS animates the slide so it never rests halfway.
+      setShift(progress >= 0.5 ? 1 : 0);
     };
     const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
