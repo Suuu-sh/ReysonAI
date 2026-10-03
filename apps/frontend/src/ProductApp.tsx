@@ -13,7 +13,7 @@ import { ACCOUNT_SECTION } from "./account/AccountMenu.tsx";
 import { clearPracticeData } from "./account/preferences.ts";
 import { LOGOUT_SECTION, RANGE_SECTION } from "./components/layout.tsx";
 import { localizeProductSurface } from "./i18n.ts";
-import { HOME_PATH, pathOfSection, sectionOfPath } from "./route.ts";
+import { HOME_PATH, canonicalPath, pathOfSection, sectionOfPath } from "./route.ts";
 
 export default function ProductApp() {
   useLayoutEffect(() => localizeProductSurface(document.getElementById("root")), []);
@@ -28,10 +28,10 @@ export default function ProductApp() {
   }, []);
   const [profile, setProfile] = useState(loadProfile);
   const [editing, setEditing] = useState(false);
-  // The URL is the page: /app (the old single address) lands on the front page.
+  // The URL is the page (see route.ts).
   const [path, setPath] = useState(() => {
-    let current = window.location.pathname;
-    if (current === "/app" || current.startsWith("/app/")) current = HOME_PATH;
+    // Old addresses (/app, /ranges, /trainer/…) move to their current path.
+    let current = canonicalPath(window.location.pathname);
     // A learning page picked before signing in comes back after the Google round trip (which
     // lands on the front page); a deeper URL already says where to go.
     const intent = current === HOME_PATH ? readLearningIntent() : null;
