@@ -752,7 +752,102 @@ SB_PROFILES = {
     ('UTG', 'HJ'): SB_UTG_HJ, ('UTG', 'CO'): SB_UTG_CO, ('UTG', 'BTN'): SB_UTG_BTN,
     ('HJ', 'CO'): SB_HJ_CO, ('HJ', 'BTN'): SB_HJ_BTN, ('CO', 'BTN'): SB_CO_BTN,
 }
-HERO_PROFILES = {'BB': PROFILES, 'SB': SB_PROFILES}
+# Non-blind overcalls pay the full open, with later seats still to act.
+# Premium flats protect the passive range; the shared cold-call EQR discount
+# and EV gate decide which pair / suited candidates can actually continue.
+CO_UTG_HJ = profile('''
+20 80: AA KK
+35 65: QQ
+55 35: JJ
+55 15: TT
+45 5: 99
+35 0: 88
+25 0: 77
+15 0: 66 55 44 33 22
+30 70: AKs
+55 35: AQs
+45 15: AJs
+30 5: ATs
+15 0: A9s A8s A7s A6s
+0 30: A5s
+0 20: A4s
+0 10: A3s A2s
+30 65: AKo
+35 20: AQo
+15 5: AJo
+50 20: KQs
+35 5: KJs
+20 0: KTs
+15 0: QJs JTs T9s 98s 87s 76s
+10 0: 65s 54s
+0 5: KQo
+''')
+BTN_UTG_HJ = profile('''
+60 20: TT
+50 5: 99
+40 0: 88
+30 0: 77
+20 0: 66 55 44 33 22
+50 15: AJs
+40 5: ATs
+20 0: A9s A8s A7s A6s
+55 20: KQs
+40 5: KJs
+30 0: KTs
+25 0: QJs JTs T9s 98s 87s 76s
+15 0: 65s 54s
+''', CO_UTG_HJ)
+BTN_UTG_CO = profile('''
+60 20: TT
+55 5: 99
+45 0: 88
+35 0: 77
+25 0: 66 55 44 33 22
+55 15: AJs
+45 5: ATs
+25 0: A9s A8s A7s A6s
+40 25: AQo
+20 5: AJo
+60 20: KQs
+45 5: KJs
+35 0: KTs
+30 0: QJs JTs T9s 98s 87s 76s
+20 0: 65s 54s
+''', BTN_UTG_HJ)
+BTN_HJ_CO = profile('''
+30 70: QQ
+50 45: JJ
+60 30: TT
+60 15: 99
+55 5: 88
+45 0: 77
+35 0: 66 55
+25 0: 44 33 22
+45 50: AQs
+55 30: AJs
+50 15: ATs
+35 5: A9s
+30 0: A8s A7s A6s
+0 40: A5s
+0 30: A4s
+0 15: A3s A2s
+40 35: AQo
+25 10: AJo
+60 30: KQs
+50 15: KJs
+40 5: KTs
+20 0: K9s
+40 5: QJs
+35 0: QTs JTs T9s 98s 87s 76s
+25 0: 65s 54s
+20 10: KQo
+''', BTN_UTG_CO)
+# Preserve the first 12 stored histories, then append the four IP overcalls and
+# four SB-caller histories (unreachable while SB remains 3bet-or-fold).
+HERO_PROFILES = {'BB': PROFILES, 'SB': SB_PROFILES,
+                 'CO': {('UTG', 'HJ'): CO_UTG_HJ},
+                 'BTN': {('UTG', 'HJ'): BTN_UTG_HJ, ('UTG', 'CO'): BTN_UTG_CO, ('HJ', 'CO'): BTN_HJ_CO}}
+
 
 
 def build():
@@ -766,37 +861,40 @@ def build():
             'schema_version': '1.0', 'strategy_type': 'ai_estimate_not_gto',
             'game': '6max Cash / No-Limit Texas Holdem', 'effective_stack_bb': 100,
             'open_size_bb': 2.5, 'ante_bb': 0,
-            'scope': 'オープナー2.5BB→1人が2.5BBコール→間は全員フォールド→BBまたはSBの初回応答（SBの場合は後ろにBBが残る）。BB・SB各6局面のみ。',
+            'scope': 'オープナー2.5BB→1人が2.5BBコール→間は全員フォールド→後続Heroの初回応答。20履歴。SBのコール頻度が全て0の4履歴は到達不能。',
             'source_of_truth': '先行するopening-ranges.jsonとpreflop-ranges.jsonを参照。スクイーズ額はconfigs/cash-6max-100bb.jsonの固定サイズ。',
             'legal_actions': ['fold', 'call', 'squeeze'],
-            'method': '手札群と位置履歴（BB・SB各6局面）ごとに手作業で設計した整数%のAI概算。安いコールでもOOPの3人ポットを考慮し、スクイーズはバリュー中心。SBは後ろにBBが残るためEQRを追加で割り引き、スクイーズかフォールドを中心にする。',
+            'method': '手札群と位置履歴（20履歴）ごとに手作業で設計した整数%のAI概算。安いコールでもOOPの3人ポットを考慮し、スクイーズはバリュー中心。SBは後ろにBBが残るためEQRを追加で割り引き、スクイーズかフォールドを中心にする。',
             'rake': {'rate': CONFIG['rake']['rate'], 'cap_bb': CONFIG['rake']['cap_bb'],
                      'no_flop_no_drop': CONFIG['rake']['no_flop_no_drop'], 'calibrated': True},
-            'frequency_semantics': 'その履歴でHero（BBまたはSB）が当該ハンドを持つ条件付き割合。fold+call+squeeze=100。前段のオープン・コール頻度を再乗算しない。',
+            'frequency_semantics': 'その履歴でHeroが当該ハンドを持つ条件付き割合。fold+call+squeeze=100。前段のオープン・コール頻度を再乗算しない。',
             'sizing_semantics': 'スクイーズ額は追加額ではなくHeroの合計投入額。頻度0なら行のsqueeze_size_bbはnull。',
             'warning': '独立したAI推定値。レーキ環境を仮定したヒューリスティックで、ソルバー・GTO均衡・EVの厳密計算・カード除去・前段との同時均衡を保証しない。',
             'reference_note': '競合サービスのチャートや頻度は転用していない。',
         },
-        'spot_count': 12, 'hand_classes_per_spot': 169,
-        'entry_count': 12 * 169, 'spots': [],
+        'spot_count': 20, 'hand_classes_per_spot': 169,
+        'entry_count': 20 * 169, 'spots': [],
     }
     # Order: the six BB spots, then the six SB spots (validator checks it).
-    for hero, profiles in HERO_PROFILES.items():
-        for (opener, caller), frequencies in profiles.items():
-            assert any(s['hero'] == opener for s in opening['spots'])
-            assert any(s['opener'] == opener and s['hero'] == caller for s in responses['spots'])
-            size = three_bet_to(opener, hero, caller_count=1)
-            rows = []
-            for hand in HANDS:
-                call, squeeze = frequencies[hand]
-                rows.append({'hand': hand, 'fold': 100-call-squeeze,
-                             'call': call, 'squeeze': squeeze,
-                             'squeeze_size_bb': size if squeeze else None})
-            result['spots'].append({
-                'id': f'{hero}_vs_{opener}_{caller}call', 'opener': opener,
-                'callers': [caller], 'hero': hero, 'open_size_bb': 2.5,
-                'squeeze_size_bb': size, 'effective_stack_bb': 100, 'hands': rows,
-            })
+    histories = [(hero, opener, caller, frequencies) for hero, profiles in HERO_PROFILES.items() for (opener, caller), frequencies in profiles.items()]
+    histories += [('BB', opener, 'SB', dict.fromkeys(HANDS, (0, 0))) for opener in ['UTG', 'HJ', 'CO', 'BTN']]
+    for hero, opener, caller, frequencies in histories:
+        assert any(s['hero'] == opener for s in opening['spots'])
+        assert any(s['opener'] == opener and s['hero'] == caller for s in responses['spots'])
+        reachable = any(r['call'] > 0 for r in next(s for s in responses['spots'] if s['opener'] == opener and s['hero'] == caller)['hands'])
+        size = three_bet_to(opener, hero, caller_count=1)
+        rows = []
+        for hand in HANDS:
+            call, squeeze = frequencies[hand] if reachable else (0, 0)
+            rows.append({'hand': hand, 'fold': 100-call-squeeze,
+                         'call': call, 'squeeze': squeeze,
+                         'squeeze_size_bb': size if squeeze else None})
+        result['spots'].append({
+            'id': f'{hero}_vs_{opener}_{caller}call', 'opener': opener,
+            'callers': [caller], 'hero': hero, 'open_size_bb': 2.5,
+            'squeeze_size_bb': size, 'effective_stack_bb': 100, 'hands': rows,
+            **({'unreachable': True} if not reachable else {}),
+        })
     return result
 
 
@@ -810,7 +908,7 @@ import { validateMultiwayDataset } from './src/estimated/multiway-responses.ts';
 const read = n => JSON.parse(fs.readFileSync(`${process.env.ESTIMATES_DIR}/${n}.json`, 'utf8'));
 validateOpeningDataset(read('opening-ranges'));
 validateDataset(read('preflop-ranges'));
-validateMultiwayDataset(JSON.parse(fs.readFileSync(0, 'utf8')));
+validateMultiwayDataset(JSON.parse(fs.readFileSync(0, 'utf8')), read('preflop-ranges'));
 """
     serialized = json.dumps(data, ensure_ascii=False, indent=2) + '\n'
     subprocess.run(['node', '--input-type=module', '-e', check], cwd=ROOT,

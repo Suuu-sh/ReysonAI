@@ -11,18 +11,18 @@ const headsUp = JSON.parse(readFileSync(new URL("../src/estimated/preflop-ranges
 const comboCount = hand => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
 const weightedCombos = (rows, action) => rows.reduce((sum, row) => sum + comboCount(row.hand) * row[action] / 100, 0);
 
-test("six BB and six SB open-plus-one-caller spots contain 169 canonical integer rows", () => {
+test("20 open-plus-one-caller histories contain 169 canonical integer rows", () => {
   assert.equal(validateMultiwayDataset(data), data);
-  assert.equal(data.spots.length, 12);
-  assert.equal(data.spots.reduce((total, spot) => total + spot.hands.length, 0), 2028);
-  assert.deepEqual(data.spots.map(spot => spot.hero), [...Array(6).fill("BB"), ...Array(6).fill("SB")]);
+  assert.equal(data.spots.length, 20);
+  assert.equal(data.spots.reduce((total, spot) => total + spot.hands.length, 0), 20 * 169);
+  assert.deepEqual(data.spots.map(spot => spot.hero), multiwaySpots.map(spot => spot.hero));
   for (const { hero, opener, caller } of multiwaySpots) {
     const spot = findMultiwaySpot(data, opener, caller, hero);
     assert.equal(spot.id, `${hero}_vs_${opener}_${caller}call`);
     assert.deepEqual(spot.callers, [caller]);
     assert.equal(spot.hero, hero);
     assert.equal(spot.squeeze_size_bb, threeBetToSize(opener, hero, 1));
-    assert.equal(spot.squeeze_size_bb, 13);
+    assert.equal(spot.squeeze_size_bb, ["CO", "BTN"].includes(hero) ? 12 : 13);
     assert.deepEqual(spot.hands.map(row => row.hand), hands);
     for (const row of spot.hands) {
       assert.deepEqual(Object.keys(row), ["hand", "fold", "call", "squeeze", "squeeze_size_bb"]);
@@ -30,14 +30,14 @@ test("six BB and six SB open-plus-one-caller spots contain 169 canonical integer
       assert.equal(row.fold + row.call + row.squeeze, 100);
       assert.equal(row.squeeze_size_bb, row.squeeze > 0 ? spot.squeeze_size_bb : null);
     }
-    assert.equal(spot.hands.find(row => row.hand === "AA").fold, 0);
+    assert.equal(spot.hands.find(row => row.hand === "AA").fold, spot.unreachable ? 100 : 0);
     assert.equal(spot.hands.find(row => row.hand === "72o").fold, 100);
   }
   // hero defaults to BB so existing callers keep working.
   for (const [opener, caller] of multiwayMatchups) assert.equal(findMultiwaySpot(data, opener, caller).hero, "BB");
   assert.throws(() => findMultiwaySpot(data, "BTN", "CO"));
-  assert.throws(() => findMultiwaySpot(data, "UTG", "SB"));
-  assert.throws(() => findMultiwaySpot(data, "UTG", "HJ", "CO"));
+  assert.equal(findMultiwaySpot(data, "UTG", "SB").unreachable, true);
+  assert.equal(findMultiwaySpot(data, "UTG", "HJ", "CO").hero, "CO");
 });
 
 test("matrix model uses stored squeeze, call and fold values without synthetic EV", () => {
@@ -61,6 +61,7 @@ test("EV-aware multiway defense is not forced to a heads-up width floor and keep
   const reductions = read("call-ev-report");
   const continuation = new Map();
   for (const spot of data.spots) {
+    if (spot.unreachable) { assert.ok(spot.hands.every(row => row.fold === 100)); continue; }
     const source = headsUp.spots.find(row => row.opener === spot.opener && row.hero === spot.hero);
     const call = weightedCombos(spot.hands, "call");
     const squeeze = weightedCombos(spot.hands, "squeeze");
@@ -74,7 +75,7 @@ test("EV-aware multiway defense is not forced to a heads-up width floor and keep
     }
     // BB closes the action and calls wider than it squeezes; SB (BB still behind) is squeeze-or-fold first.
     if (spot.hero === "BB") assert.ok(squeeze < call, spot.id);
-    else assert.ok(squeeze > call && call > 0, spot.id);
+    else if (spot.hero === "SB") assert.ok(squeeze > call && call > 0, spot.id);
     assert.ok(squeeze <= weightedCombos(source.hands, "three_bet"), spot.id);
     continuation.set(spot.id, call + squeeze);
   }

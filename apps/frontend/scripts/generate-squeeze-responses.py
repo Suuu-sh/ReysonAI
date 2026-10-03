@@ -1,11 +1,13 @@
-"""Author the responses after BB or SB squeezes an open plus one cold call.
+"""Author the responses after a later seat squeezes an open plus one cold call.
 
 Three decisions per squeeze history (squeezer S, opener O, caller C):
   1. O responds with C still behind              `{O}_vs_{S}_squeeze_{C}call`
   2. C responds after O folded                    `{C}_vs_{S}_squeeze_{O}fold`
   3. C responds after O called (three-way pot)    `{C}_vs_{S}_squeeze_{O}call`
-With S=SB, BB has folded (BB cold 4bets / overcalls are out of scope). O's
-4bet followed by C, and S facing a 4bet, are not stored.
+Every seat after S folds before the action returns to O (later-seat cold
+4bets / overcalls are out of scope). O's 4bet followed by C, and S facing a
+4bet, are not stored. Histories with no saved open or cold call are wholly
+unreachable, including the four histories whose original caller is SB.
 
 This is an authoring-time, hand-group frequency table, not a solver result.
 Only the staging directory used by build-estimates.mjs may be written.
@@ -17,7 +19,7 @@ import sys
 from pathlib import Path
 
 from call_policy import apply_call_policy
-from sizing_rules import CONFIG, four_bet_to, three_bet_to
+from sizing_rules import CONFIG, squeeze_four_bet_to, three_bet_to
 
 ROOT = Path(__file__).resolve().parents[1]
 STAGING = Path(os.environ.get('ESTIMATES_DIR') or sys.exit('Run `npm run build:estimates`; generators never write src/estimated directly.'))
@@ -26,6 +28,14 @@ HANDS = [a+b if i == j else a+b+'s' if i < j else b+a+'o'
          for i, a in enumerate(RANKS) for j, b in enumerate(RANKS)]
 MATCHUPS = [('UTG', 'HJ'), ('UTG', 'CO'), ('UTG', 'BTN'), ('HJ', 'CO'), ('HJ', 'BTN'), ('CO', 'BTN')]
 SQUEEZERS = ['BB', 'SB']
+# Preserve the existing twelve histories, then append the eight stage1a
+# histories in the same order as multiway-responses.ts.
+HISTORIES = [(squeezer, opener, caller) for squeezer in SQUEEZERS for opener, caller in MATCHUPS] + [
+    ('CO', 'UTG', 'HJ'), ('BTN', 'UTG', 'HJ'),
+    ('BTN', 'UTG', 'CO'), ('BTN', 'HJ', 'CO'),
+    ('BB', 'UTG', 'SB'), ('BB', 'HJ', 'SB'),
+    ('BB', 'CO', 'SB'), ('BB', 'BTN', 'SB'),
+]
 
 
 def profile(spec, base=None):
@@ -205,8 +215,61 @@ SQUEEZER_SB = {
 '''],
 }
 
+# CO/BTN squeeze to the saved IP size (12BB), while both original players
+# respond OOP and 4bet to the approved 26BB (the ordinary 20BB OOP size is
+# below the full-raise minimum). Keep premium traps; redistribute part of the
+# QQ/AK/JJ region to the 4bet and start with fewer thin OOP flat candidates.
+# The smaller price does not imply that the IP profiles are valid OOP: the
+# shared squeeze EV policy applies the actual position, caller-behind / three-
+# way EQR and saved squeeze range before selecting the final calls. These
+# explicit overlays never change any of the twelve existing blind histories.
+SQUEEZER_NONBLIND = {
+    None: [profile('''
+40 60: QQ AKo
+60 20: JJ
+50 0: TT
+65 5: AQs
+''', OPENER_UTG), profile('''
+40 60: QQ AKo
+65 25: JJ
+60 10: TT
+50 0: 99
+65 10: AQs
+40 10: AQo
+45 0: AJs KQs
+''', OPENER_HJ)],
+    'fold': [profile('''
+50 50: QQ AKo
+70 25: JJ
+70 15: TT
+65 0: 99 88 77 66 55 44
+70 10: AQs
+60 5: AJs KQs AQo ATs KJs KTs AJo A9s A8s A7s A6s
+''', CALLER_FOLD_UTG), profile('''
+50 50: QQ AKo
+75 25: JJ
+75 15: TT
+70 0: 99 88 77 66 55 44 33 22
+75 10: AQs
+65 10: AJs KQs AQo ATs KJs KTs AJo A9s A8s A7s A6s
+''', CALLER_FOLD_HJ)],
+    'call': [profile('''
+60 40: JJ
+65 10: TT
+55 0: 99
+65 0: AQs
+''', CALLER_CALL_UTG), profile('''
+65 35: JJ
+70 15: TT
+60 0: 99 88
+70 0: AQs
+''', CALLER_CALL_HJ)],
+}
+
 
 def frequencies(squeezer, opener, prior):
+    if squeezer in ('CO', 'BTN'):
+        return SQUEEZER_NONBLIND[prior][TIERS[opener]]
     base = PROFILES[prior][TIERS[opener]]
     return profile(SQUEEZER_SB[prior][TIERS[opener]], base) if squeezer == 'SB' else base
 
@@ -226,10 +289,10 @@ def build():
             'schema_version': '1.0', 'strategy_type': 'ai_estimate_not_gto',
             'game': '6max Cash / No-Limit Texas Holdem', 'effective_stack_bb': 100,
             'open_size_bb': 2.5, 'ante_bb': 0,
-            'scope': 'オープン2.5BB→1人がコール→BBまたはSBが13BBにスクイーズ（SBの場合BBはフォールド）→オープナーの応答（コーラーが後ろに残る）、オープナーがフォールドした後のコーラーの応答、オープナーがコールした後のコーラーの応答。各12局面。',
+            'scope': 'オープン2.5BB→1人がコール→後続席が固定サイズにスクイーズ（CO/BTNは12BB、SB/BBは13BB、スクイーザーより後ろは全員フォールド）→オープナーの応答（コーラーが後ろに残る）、オープナーがフォールドした後のコーラーの応答、オープナーがコールした後のコーラーの応答。各20局面。元のオープンまたはコールが全0%の履歴は全手fold=100の到達不能プレースホルダー。',
             'source_of_truth': 'multiway-responses.jsonのスクイーズ頻度と、先行するopening-ranges.json・preflop-ranges.jsonを参照。4bet額はconfigs/cash-6max-100bb.jsonの固定サイズ。',
             'legal_actions': ['fold', 'call', 'four_bet'],
-            'method': '手札群ごとに設計した整数%のAI概算（オープナーの位置で3段階の基本プロファイル）。コールはスクイーズレンジに対する固定シード勝率×仮定EQR×レーキ後ポット−コール額で選別。',
+            'method': '手札群ごとに設計した整数%のAI概算（オープナーの位置で3段階の基本プロファイルとCO/BTNスクイーズへのOOP応答プロファイル）。コールはスクイーズレンジに対する固定シード勝率×仮定EQR×レーキ後ポット−コール額で選別。',
             'rake': {'rate': CONFIG['rake']['rate'], 'cap_bb': CONFIG['rake']['cap_bb'],
                      'no_flop_no_drop': CONFIG['rake']['no_flop_no_drop'], 'calibrated': True},
             'frequency_semantics': 'その履歴でHeroが当該ハンドを持つ条件付き割合。fold+call+four_bet=100。前段の頻度を再乗算しない。前段で0%の手はfold=100の到達不能プレースホルダー。',
@@ -237,29 +300,33 @@ def build():
             'warning': '独立したAI推定値。レーキ環境を仮定したヒューリスティックで、ソルバー・GTO均衡・EVの厳密計算・前段との同時均衡を保証しない。',
             'reference_note': '競合サービスのチャートや頻度は転用していない。',
         },
-        'spot_count': 36, 'hand_classes_per_spot': 169, 'entry_count': 36 * 169, 'spots': [],
+        'spot_count': len(HISTORIES) * 3, 'hand_classes_per_spot': len(HANDS),
+        'entry_count': len(HISTORIES) * 3 * len(HANDS), 'spots': [],
     }
     for prior in [None, 'fold', 'call']:
-        for squeezer in SQUEEZERS:
-            for opener, caller in MATCHUPS:
-                source = next(s for s in multiway['spots'] if s['id'] == f'{squeezer}_vs_{opener}_{caller}call')
-                size = three_bet_to(opener, squeezer, caller_count=1)
-                assert source['squeeze_size_bb'] == size
-                hero = opener if prior is None else caller
-                four = four_bet_to(hero, squeezer)
-                reach = opens[opener] if prior is None else calls[opener, caller]
-                table = frequencies(squeezer, opener, prior)
-                rows = []
-                for hand in HANDS:
-                    call, four_bet = table[hand] if reach[hand] > 0 else (0, 0)
-                    rows.append({'hand': hand, 'fold': 100 - call - four_bet, 'call': call, 'four_bet': four_bet,
-                                 'four_bet_size_bb': four if four_bet else None})
-                result['spots'].append({
-                    'id': spot_id(squeezer, opener, caller, prior), 'hero': hero,
-                    'opener': opener, 'caller': caller, 'squeezer': squeezer, 'prior_action': prior,
-                    'source_squeeze_id': source['id'], 'open_size_bb': source['open_size_bb'],
-                    'squeeze_size_bb': size, 'four_bet_size_bb': four, 'effective_stack_bb': 100, 'hands': rows,
-                })
+        for squeezer, opener, caller in HISTORIES:
+            source = next(s for s in multiway['spots'] if s['id'] == f'{squeezer}_vs_{opener}_{caller}call')
+            size = three_bet_to(opener, squeezer, caller_count=1)
+            assert source['squeeze_size_bb'] == size
+            hero = opener if prior is None else caller
+            four = squeeze_four_bet_to(hero, squeezer)
+            reach = opens[opener] if prior is None else calls[opener, caller]
+            history_reachable = any(opens[opener].values()) and any(calls[opener, caller].values())
+            # Do not request a fictitious BTN-open profile for SB's zero-
+            # frequency cold call. A missing source still raises above.
+            table = frequencies(squeezer, opener, prior) if history_reachable else None
+            rows = []
+            for hand in HANDS:
+                call, four_bet = table[hand] if history_reachable and reach[hand] > 0 else (0, 0)
+                rows.append({'hand': hand, 'fold': 100 - call - four_bet, 'call': call, 'four_bet': four_bet,
+                             'four_bet_size_bb': four if four_bet else None})
+            result['spots'].append({
+                'id': spot_id(squeezer, opener, caller, prior), 'hero': hero,
+                'opener': opener, 'caller': caller, 'squeezer': squeezer, 'prior_action': prior,
+                'source_squeeze_id': source['id'], 'open_size_bb': source['open_size_bb'],
+                'squeeze_size_bb': size, 'four_bet_size_bb': four, 'effective_stack_bb': 100, 'hands': rows,
+                **({'unreachable': True} if not history_reachable else {}),
+            })
     return result
 
 
