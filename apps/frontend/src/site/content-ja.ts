@@ -12,7 +12,7 @@ export const ja: SiteCopy = {
     { label: "料金", href: "#pricing" },
   ],
   hero: { title1: "Don't just play.", title2: "Understand why.", lead: "ReysonAIは、ハンドごとに何をすべきかを示し、その理由をやさしい言葉で説明します。理由がわかれば、テーブルに座ったときにも判断を思い出せます。", primary: "アプリを開く", secondary: "使い方を見る", note: "無料プレビュー · アカウント不要 · 6-maxキャッシュ 100BB" },
-  preview: { spotLabel: "プレビューする局面", open: "BTN オープン", response: "BB vs BTN", displayLabel: "表示モード", simpleMode: "シンプル", standardMode: "スタンダード", matrixLabel: "13×13 スターティングハンド表", scrollLabel: "の表。狭い画面では横にスクロールできます", selectedHand: "選択中のハンド", suited: "スーテッド", offsuit: "オフスート", pair: "ペア", frequencyLabel: "アクション頻度", why: "理由", k7s: "K7s はスーテッドで、フロップ以降も戦いやすいハンドです。このBTNオープンの推定では、常にレイズします。", simpleOther: (spot: string, hand: string, action: string) => `保存済みの${spot}レンジでは、${hand} の主なアクションは${action}です。ハンドごとの詳しい説明はアプリで確認できます。`, other: (spot: string, hand: string, action: string, value: number) => `保存済みの${spot}レンジでは、${hand} を ${value}% の頻度で${action}します。ハンドごとの詳しい説明はアプリで確認できます。`, explore: "アプリでこのレンジを見る", saved: "保存済みのAI推定", notGto: "GTOソリューションではありません", spotOpening: "BTNオープン", spotResponse: "BBの応答", actionPast: { raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド" }, pauseTour: "ハンドの自動紹介を一時停止", resumeTour: "ハンドの自動紹介を再開", touring: "自動でハンドを紹介中。セルをクリックすると操作できます。", manual: "ハンドをクリックして確認できます。" },
+  preview: { simpleMode: "シンプル", matrixLabel: "13×13 スターティングハンド表", scrollLabel: "の表。狭い画面では横にスクロールできます", selectedHand: "選択中のハンド", suited: "スーテッド", offsuit: "オフスート", pair: "ペア", frequencyLabel: "アクション頻度", why: "理由", k7s: "K7s はスーテッドで、フロップ以降も戦いやすいハンドです。このBTNオープンの推定では、常にレイズします。", other: (spot: string, hand: string, action: string, value: number) => `保存済みの${spot}レンジでは、${hand} を ${value}% の頻度で${action}します。ハンドごとの詳しい説明はアプリで確認できます。`, explore: "アプリでこのレンジを見る", saved: "保存済みのAI推定", notGto: "GTOソリューションではありません", spotOpening: "BTNオープン", spotResponse: "BBの応答", actionPast: { raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド" }, pauseTour: "ハンドの自動紹介を一時停止", resumeTour: "ハンドの自動紹介を再開", touring: "自動でハンドを紹介中。セルをクリックすると操作できます。", manual: "ハンドをクリックして確認できます。" },
   how: {
     title1: "局面から理由まで、", title2: "3ステップで。",
     steps: [
@@ -73,7 +73,7 @@ export const ja: SiteCopy = {
     ],
     note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。GTO Wizard は各権利者の商標であり、ReysonAIとは関係ありません。",
   },
-  pricing: { title1: "まずは無料で。", title2: "Plusも1日約19円。", description: "現在のプレビューは無料です。Plusは月額580円、30日換算で1日あたり約19円です。", note: "Plusの有料機能と課金はまだ利用できません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/app" as string | null, status: "提供中" }, { name: "Plus", price: "¥580", cadence: "/ 月", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定" }] },
+  pricing: { title1: "まずは無料で。", title2: "Plusも1日約19円。", description: "", note: "Plusの有料機能と課金はまだ利用できません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/app" as string | null, status: "提供中" }, { name: "Plus", price: "¥580", cadence: "/ 月", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定" }] },
   faq: {
     title: "よくある質問に、率直に。",
     items: [

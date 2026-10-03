@@ -34,7 +34,7 @@ test("Plus presents an approximate dollar price and daily value in English", asy
   assert.equal(en.pricing.plans[0].price, "$0");
   assert.equal(en.pricing.plans[1].price, "$3.70");
   assert.match(en.pricing.title2, /\$0\.12 a day/);
-  assert.match(en.pricing.description, /US\$3\.70\/month.*US\$0\.12\/day.*30-day basis.*USD amount.*exchange rates/);
+  assert.equal(en.pricing.description, "");
   assert.match(en.pricing.note, /isn't available yet/);
   assert.equal(en.pricing.plans[1].href, null);
 });
@@ -43,7 +43,7 @@ test("Japanese Plus pricing shows the 30-day daily equivalent while billing rema
   const ja = await loadCopy("content-ja.ts", "ja");
   assert.equal(ja.pricing.plans[1].price, "¥580");
   assert.match(ja.pricing.title2, /1日約19円/);
-  assert.match(ja.pricing.description, /月額580円.*30日換算で1日あたり約19円/);
+  assert.equal(ja.pricing.description, "");
   assert.match(ja.pricing.note, /課金はまだ利用できません/);
   assert.equal(ja.pricing.plans[1].href, null);
 });
