@@ -76,6 +76,25 @@ export function validateLimpDeepResponses(data, opening, limp) {
   return data;
 }
 
+// SB facing BB's 4bet: hands that never limp-reraise (SB_vs_BB_iso raise 0%) are unreachable.
+export function limpFourBetMatrixModel(spot, limp) {
+  const iso = limp?.spots?.find(item => item.id === spot.source_iso_response_id);
+  if (!iso) throw new Error("BBの4betへの応答にはSBのリンプレイズ頻度が必要です。");
+  const reraise = new Map(iso.hands.map(row => [row.hand, row.raise]));
+  return {
+    actions: ["all_in", "call", "fold"],
+    actionLabels: { all_in: `オールイン ${spot.all_in_size_bb}BB` },
+    aggregates: new Map(spot.hands.map(row => {
+      const unreachable = !(reraise.get(row.hand) > 0);
+      return [row.hand, {
+        hand: row.hand, comboCount: row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12,
+        unreachable,
+        actions: unreachable ? {} : { all_in: row.all_in / 100, call: row.call / 100, fold: row.fold / 100 },
+      }];
+    })),
+  };
+}
+
 export function findLimpDeepResponseSpot(data, id) {
   const spot = bySpot(data, id);
   if (!spot) throw new Error(`リンプ深部応答局面がありません: ${id}`);

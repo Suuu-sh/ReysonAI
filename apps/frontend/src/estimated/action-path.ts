@@ -38,12 +38,16 @@ export function responseActionTransition({ opener, callers = [], position, actio
   };
 }
 
-export function limpActionTransition({ rangeType, opener, hero, limpAction = null, limpResponseAction = null, position, action }) {
+export function limpActionTransition({ rangeType, opener, hero, limpAction = null, limpResponseAction = null, limpReraiseAction = null, position, action }) {
   if (rangeType === "open" && opener === "SB" && position === "SB" && action === "call") {
     return { rangeType: "limp", opener: "SB", hero: "BB", limpAction: null, limpResponseAction: null };
   }
 
   if (rangeType !== "limp" || opener !== "SB") return null;
+  // SB facing BB's 4bet after the limp-reraise (saved SB_vs_BB_limp_four_bet).
+  if (position === "SB" && limpAction === "raise" && limpResponseAction === "raise" && limpReraiseAction === "raise" && ["fold", "call", "all_in"].includes(action)) {
+    return { rangeType: "limp", opener: "SB", hero: "SB", limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction: action };
+  }
   // Checked first: BB facing SB's limp-reraise (saved BB_vs_SB_limp_reraise).
   if (position === "BB" && limpAction === "raise" && limpResponseAction === "raise" && ["fold", "call", "raise"].includes(action)) {
     return { rangeType: "limp", opener: "SB", hero: "BB", limpAction, limpResponseAction, limpReraiseAction: action };
@@ -73,6 +77,9 @@ export function rewindActionBlockTransition({ rangeType, opener, hero, callers =
   }
   if (block.stage === "limp-bb-reraise") {
     return { rangeType: "limp", opener: "SB", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: "raise", limpResponseAction: "raise", limpReraiseAction: null };
+  }
+  if (block.stage === "limp-sb-four-bet") {
+    return { rangeType: "limp", opener: "SB", hero: "SB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: "raise", limpResponseAction: "raise", limpReraiseAction: "raise", limpFourBetAction: null };
   }
   // Responses to a saved squeeze: the opener's block clears both responses,
   // the caller's block keeps the opener's choice.

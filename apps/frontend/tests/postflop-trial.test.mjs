@@ -533,7 +533,8 @@ test("any flop can be selected in the card picker, with a random pick and no rep
   assert.deepEqual([fourBetContext.spotId, fourBetContext.potBb, fourBetContext.stackBb, fourBetContext.tree], ["BTN_open_BB_4bp_call", 52.5, 74, "oop_checks"]);
   // SB's limped pots: limp → check, limp → iso → call, limp → iso → limp-reraise → call.
   for (const [actions, id, pot] of [[{ limpAction: "check" }, "SB_limp_BB_check", 2], [{ limpAction: "raise", limpResponseAction: "call" }, "SB_limp_BB_iso_call", 7],
-    [{ limpAction: "raise", limpResponseAction: "raise", limpReraiseAction: "call" }, "SB_limp_BB_iso_SB_reraise_call", 21]]) {
+    [{ limpAction: "raise", limpResponseAction: "raise", limpReraiseAction: "call" }, "SB_limp_BB_iso_SB_reraise_call", 21],
+    [{ limpAction: "raise", limpResponseAction: "raise", limpReraiseAction: "raise", limpFourBetAction: "call" }, "SB_limp_BB_iso_SB_reraise_BB_4bet_call", 52]]) {
     const limpBlocks = buildActionBlocks({ rangeType: "limp", opener: "SB", hero: "BB", callers: [], ...actions });
     const limpContext = completedFlopContext({ actionBlocks: limpBlocks, rangeType: "limp", opener: "SB", hero: "BB", callers: [], isDefaultTable: true, ...actions });
     assert.deepEqual([limpContext.spotId, limpContext.potBb], [id, pot]);

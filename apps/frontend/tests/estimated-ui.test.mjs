@@ -144,7 +144,18 @@ test("SB can limp and BB can check or iso-raise from the saved limp response", (
   const bbCalled = limpActionTransition({ ...reraised, position: "BB", action: "call" });
   assert.equal(bbCalled.limpReraiseAction, "call");
   assert.deepEqual([buildActionBlocks(bbCalled).at(-1).result, buildActionBlocks(bbCalled).at(-1).pot], ["2人でフロップへ", "ポット 21bb"]);
-  assert.equal(buildActionBlocks(limpActionTransition({ ...reraised, position: "BB", action: "raise" })).at(-1).result, "データなし");
+  const fourBet = limpActionTransition({ ...reraised, position: "BB", action: "raise" });
+  const fourBetBlock = buildActionBlocks(fourBet).at(-1);
+  assert.equal(fourBetBlock.stage, "limp-sb-four-bet"); // SB's saved response to BB's 26BB 4bet
+  assert.deepEqual(fourBetBlock.rangeRef, { kind: "limp_four_bet", position: "SB" });
+  assert.deepEqual(fourBetBlock.options.map(option => option.label), ["Fold", "Call 26", "All-in 100"]);
+  for (const [action, result, pot] of [["fold", "BBの勝ち", "ポット 21bb"], ["call", "2人でフロップへ", "ポット 52bb"], ["all_in", "オールイン", "ポット 52bb"]]) {
+    const next = limpActionTransition({ ...fourBet, position: "SB", action });
+    assert.equal(next.limpFourBetAction, action);
+    assert.deepEqual([buildActionBlocks(next).at(-1).result, buildActionBlocks(next).at(-1).pot], [result, pot]);
+    const back = rewindActionBlockTransition({ ...next, block: fourBetBlock });
+    assert.deepEqual([back.limpReraiseAction, back.limpFourBetAction, back.hero], ["raise", null, "SB"]);
+  }
   const backToBb = rewindActionBlockTransition({ ...bbCalled, block: reraiseBlock });
   assert.deepEqual([backToBb.limpResponseAction, backToBb.limpReraiseAction], ["raise", null]);
 
