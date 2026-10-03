@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -404,4 +405,13 @@ test("missing and invalid saved JSON render errors without matrix or substitute 
     assert.doesNotMatch(html, /class="bars"/);
     assert.match(html, /aria-label="アクション履歴"/); // Can recover by choosing another path.
   }
+});
+
+
+test("selected-hand details omit redundant open-size and total-frequency rows", () => {
+  const workspace = readFileSync(new URL("../src/estimated/RangeWorkspace.tsx", import.meta.url), "utf8");
+  const details = workspace.slice(workspace.indexOf("function HandBreakdown("), workspace.indexOf("function InlineGenerationControl("));
+  assert.doesNotMatch(details, /オープンサイズ（合計）|頻度合計|totalFrequency/);
+  assert.match(details, /PreflopCallEvBars/);
+  assert.match(details, /受ける4bet（合計）/);
 });

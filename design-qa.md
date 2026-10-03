@@ -340,3 +340,9 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Full frontend run completed: 388 tests, 387 passed, one existing offline narrow-4bet timing assertion took 2.35s against its 2s budget. The exact test passed alone in 1.49s; no solver source or thresholds were modified. This full run is not an all-pass result. The viewport override was reset, English restored and the corrected Why preview left open in the running local app.
 - This is a browser responsive-layout check, not a claim of complete accessibility compliance or real-device Safari/Android testing. OS text enlargement and reduced-motion settings were not changed; existing reduced-motion gates remain intact.
 - Concurrent trainer/rank-badge source and assets in the working tree are unrelated and are not staged as part of this service-site fix.
+
+## 2026-10-03 — Remove redundant selected-hand rows
+- Removed Open size (total) and Total frequency from preflop selected-hand details, including local-estimate frequency totals; saved datasets, action bars, call EV and other sizes are unchanged.
+- Removed unused total calculation and avoid an empty stats block for opening/limp details.
+- Verification: estimated UI tests 16/16; production build passed; Sites tests 5/5; diff whitespace check passed. Full suite was started before fixing a test-source variable and is not used as a passing result.
+- Browser: localhost:5173/app, BTN AKo Standard detail shows action percentages and saved reasoning without either removed row. App left open.
