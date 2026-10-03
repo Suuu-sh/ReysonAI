@@ -124,7 +124,7 @@
 .agent-turn .agent-turn-note { color: #f6c34a; }
 .agent-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .agent-act { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 128px; padding: 11px 16px; border: 0; border-radius: 10px; background: #2c2c33; color: var(--text); font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; cursor: pointer; transition: transform .12s ease, filter .12s ease; }
-.agent-act small { font-size: 11px; font-weight: 600; opacity: .7; }
+.agent-act small { padding: 1px 6px; border-radius: 5px; background: rgb(0 0 0 / 28%); color: #fff; font-size: 12px; font-weight: 700; }
 .agent-act:hover { filter: brightness(1.15); transform: translateY(-1px); }
 .agent-act:active { transform: translateY(1px); }
 .agent-act.tone-call { background: #3a9fb4; color: #fff; }
