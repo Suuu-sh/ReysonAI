@@ -73,7 +73,7 @@ export const en = {
     ],
     note: "A general comparison of approaches; individual products vary and change. GTO Wizard is a trademark of its owner, and ReysonAI is not affiliated with it.",
   },
-  pricing: { title1: "Start free.", title2: "Grow when it's ready.", description: "The current preview is free. A paid plan is an early proposal, not a live subscription.", note: "The ¥680 Plus price and all paid features are provisional. No billing or account system is available yet.", plans: [{ name: "Free", price: "¥0", cadence: "forever", description: "Everything in the current preview.", features: ["Saved preflop ranges and hand details", "Simple and Standard display", "Trainer, session review and play analysis"], action: "Open the app", href: "/app" as string | null, status: "Available" }, { name: "Plus", price: "¥680", cadence: "/ month · proposed", description: "A deeper practice space, when it's ready.", features: ["Expanded learning tools", "More guided training", "Future table-aware features"], action: "Coming later", href: null as string | null, status: "Planned · price may change" }] },
+  pricing: { title1: "Start free.", title2: "Plus for about $0.12 a day.", description: "The current preview is free. Plus will be about US$3.70/month — about US$0.12/day on a 30-day basis. The USD amount is an approximate conversion and may change with exchange rates.", note: "Plus isn't available yet; paid features and billing are not live.", plans: [{ name: "Free", price: "$0", cadence: "forever", description: "Everything in the current preview.", features: ["Saved preflop ranges and hand details", "Simple and Standard display", "Trainer, session review and play analysis"], action: "Open the app", href: "/app" as string | null, status: "Available" }, { name: "Plus", price: "$3.70", cadence: "/ month · approx.", description: "A deeper practice space, when it's ready.", features: ["Expanded learning tools", "More guided training", "Future table-aware features"], action: "Coming later", href: null as string | null, status: "Planned" }] },
   faq: {
     title: "Questions, answered plainly.",
     items: [
@@ -82,7 +82,7 @@ export const en = {
       { question: "Which games does it cover?", answer: "6-max cash games at 100BB with no ante. Opens are 2.5BB, or 3.5BB from the small blind. Spots without saved data are shown as unrecorded, never guessed." },
       { question: "Do I need an account?", answer: "No. Your profile and practice history are saved in this browser. Accounts are planned." },
       { question: "Does it cover postflop?", answer: "An experimental trial covers supported heads-up paths from flop to river. The app labels it as experimental." },
-      { question: "What does it cost?", answer: "The current preview is free. A Plus plan has been proposed, but it isn't available and its price may change." },
+      { question: "What does it cost?", answer: "The current preview is free. Plus will be about US$3.70/month — about US$0.12/day on a 30-day basis — but isn't available yet. The USD amount is an approximate conversion and may change with exchange rates." },
     ],
   },
   final: { title1: "Your next session", title2: "starts with one hand.", description: "Open the app, pick a spot, tap a hand.", action: "Open ReysonAI", note: "Free preview · No account required" },

@@ -73,7 +73,7 @@ export const ja: SiteCopy = {
     ],
     note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。GTO Wizard は各権利者の商標であり、ReysonAIとは関係ありません。",
   },
-  pricing: { title1: "まずは無料で。", title2: "準備ができたら、その先へ。", description: "現在のプレビューは無料です。有料プランは初期の提案で、まだ提供していません。", note: "Plus の ¥680 という価格と有料機能はすべて仮案です。課金やアカウントの仕組みはまだありません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/app" as string | null, status: "提供中" }, { name: "Plus", price: "¥680", cadence: "/ 月 · 提案中", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定 · 価格は変わる可能性があります" }] },
+  pricing: { title1: "まずは無料で。", title2: "Plusも1日約19円。", description: "現在のプレビューは無料です。Plusは月額580円、30日換算で1日あたり約19円です。", note: "Plusの有料機能と課金はまだ利用できません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/app" as string | null, status: "提供中" }, { name: "Plus", price: "¥580", cadence: "/ 月", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定" }] },
   faq: {
     title: "よくある質問に、率直に。",
     items: [
@@ -82,7 +82,7 @@ export const ja: SiteCopy = {
       { question: "どのゲームに対応していますか？", answer: "6-maxキャッシュゲーム、100BB、アンティなしです。オープンは2.5BB（SBは3.5BB）。保存データのない局面は「未収録」と表示し、推測では埋めません。" },
       { question: "アカウントは必要ですか？", answer: "不要です。プロフィールと練習履歴はこのブラウザーに保存されます。アカウント機能は予定しています。" },
       { question: "ポストフロップにも対応していますか？", answer: "対応するヘッズアップの流れで、フロップからリバーまでを試験的に提供しています。アプリ内でも試験運用と明示しています。" },
-      { question: "料金はかかりますか？", answer: "現在のプレビューは無料です。Plus プランを提案していますが、まだ提供しておらず、価格も変わる可能性があります。" },
+      { question: "料金はかかりますか？", answer: "現在のプレビューは無料です。Plusは月額580円（30日換算で1日あたり約19円）です。まだ提供していません。" },
     ],
   },
   final: { title1: "次のセッションは、", title2: "ひとつのハンドから。", description: "アプリを開いて、局面を選び、ハンドをタップするだけ。", action: "ReysonAI を開く", note: "無料プレビュー · アカウント不要" },

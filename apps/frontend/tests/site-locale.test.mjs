@@ -27,6 +27,25 @@ test("Japanese service-site copy covers every English field", async () => {
   assert.equal(ja.pricing.plans[1].href, null);
 });
 
+test("Plus presents an approximate dollar price and daily value in English", async () => {
+  const en = await loadCopy("content.ts", "en");
+  assert.equal(en.pricing.plans[0].price, "$0");
+  assert.equal(en.pricing.plans[1].price, "$3.70");
+  assert.match(en.pricing.title2, /\$0\.12 a day/);
+  assert.match(en.pricing.description, /US\$3\.70\/month.*US\$0\.12\/day.*30-day basis.*USD amount.*exchange rates/);
+  assert.match(en.pricing.note, /isn't available yet/);
+  assert.equal(en.pricing.plans[1].href, null);
+});
+
+test("Japanese Plus pricing shows the 30-day daily equivalent while billing remains unavailable", async () => {
+  const ja = await loadCopy("content-ja.ts", "ja");
+  assert.equal(ja.pricing.plans[1].price, "¥580");
+  assert.match(ja.pricing.title2, /1日約19円/);
+  assert.match(ja.pricing.description, /月額580円.*30日換算で1日あたり約19円/);
+  assert.match(ja.pricing.note, /課金はまだ利用できません/);
+  assert.equal(ja.pricing.plans[1].href, null);
+});
+
 test("the root site remembers its language without a separate route", () => {
   const previousWindow = globalThis.window;
   const values = new Map();

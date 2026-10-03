@@ -31,11 +31,12 @@ test("settings page has account, subscription, appearance and language tabs", ()
   assert.match(html, /アカウントを作成/); // sign-in stays a disabled, planned control
 });
 
-test("subscription shows the provisional Plus plan from the site pricing and no live purchase", () => {
+test("subscription shows the ¥580 Plus plan without a live purchase", () => {
   const html = renderToStaticMarkup(createElement(AccountPage, { profile, tab: "subscription", onSectionChange() {}, onProfileSaved() {} }));
   assert.match(html, /Free/);
-  assert.match(html, /¥680/);
-  assert.match(html, /仮案|provisional/);
+  assert.match(html, /¥580/);
+  assert.match(html, /Planned|予定/);
+  assert.doesNotMatch(html, /¥680|provisional|仮案/);
   assert.doesNotMatch(html, /<button[^>]*class="account-primary"(?![^>]*disabled)/);
 });
 
