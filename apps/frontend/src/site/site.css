@@ -425,32 +425,46 @@
 /* Ranked (sample UI) */
 .site-ranked { border-top: 1px solid var(--line); background: var(--surface); }
 .site-ranked .site-mock { background: var(--bg); }
-.site-rank-card { padding: 20px; border: 1px solid var(--line-strong); border-radius: var(--panel-radius); background: var(--raised); }
-.site-rank-top { display: flex; align-items: center; gap: 18px; }
-.site-rank-top > svg { color: var(--pink); }
-.site-rank-top dl { display: flex; gap: 28px; }
-.site-rank-top dt { color: var(--muted); font-size: 12px; }
-.site-rank-top dd { margin-top: 2px; font-size: 26px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
-.site-rank-tier { display: inline-block; animation: site-verdict .45s cubic-bezier(.34, 1.56, .64, 1) both; }
-.site-rank-bar { display: block; height: 6px; margin-top: 18px; overflow: hidden; border-radius: var(--control-radius); background: var(--line-strong); }
-.site-rank-bar span { display: block; height: 100%; border-radius: var(--control-radius); background: var(--pink); transition: width .25s linear; }
-.site-rank-card > small { display: block; margin-top: 8px; color: var(--muted); font-size: 12px; }
-.site-tiers { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 16px; }
-.site-tiers li { display: grid; justify-items: center; gap: 4px; padding: 10px 2px 8px; border: 1px solid var(--line); border-radius: var(--control-radius); color: var(--subtle); font-size: 11px; font-weight: 650; text-align: center; transition: border-color .3s ease, color .3s ease, background .3s ease; }
-.site-tiers li small { color: var(--subtle); font-size: 10px; font-weight: 500; font-variant-numeric: tabular-nums; }
-.site .site-tiers li i { width: 14px; height: 14px; border: 2px solid currentColor; border-radius: var(--control-radius); transform: rotate(45deg); }
-.site-tiers li.is-passed { color: var(--muted); }
-.site-tiers li.is-current { border-color: var(--ink); background: var(--raised); color: var(--ink); }
-.site .site-tiers li.is-current i { border-color: var(--pink); background: var(--pink); }
+/* Same look as the trainer's ranked block: emblem in a progress ring, tier colour accents, emblem ladder. */
+.site-rank-card { display: flex; align-items: center; gap: 22px; padding: 20px 22px; border: 1px solid var(--line-strong); border-radius: var(--panel-radius);
+  background: radial-gradient(70% 140% at 0% 50%, color-mix(in srgb, var(--tier) 12%, transparent), transparent 60%), var(--raised); }
+.site-rank-emblem { position: relative; display: grid; flex: 0 0 auto; place-items: center; width: 108px; height: 108px; }
+.site-rank-emblem::before { position: absolute; inset: 20px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--tier) 24%, transparent), transparent 70%); content: ""; }
+.site-rank-emblem .rank-badge { position: relative; filter: drop-shadow(0 0 14px color-mix(in srgb, var(--tier) 50%, transparent)); animation: site-verdict .45s cubic-bezier(.34, 1.56, .64, 1) both; }
+.site-rank-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.site-rank-ring circle { fill: none; stroke-width: 4; }
+.site-rank-ring .track { stroke: rgb(255 255 255 / 7%); }
+.site-rank-ring .arc { stroke: var(--tier); stroke-linecap: round; filter: drop-shadow(0 0 6px color-mix(in srgb, var(--tier) 70%, transparent)); }
+.site-rank-ring .tick { stroke: rgb(255 255 255 / 16%); stroke-width: 1.2; }
+.site-rank-info { display: grid; flex: 1; gap: 6px; min-width: 0; }
+.site-rank-tier { display: inline-block; color: var(--tier); font-size: 13px; font-weight: 800; letter-spacing: .16em; animation: site-verdict .45s cubic-bezier(.34, 1.56, .64, 1) both; }
+.site-rank-info dl { display: flex; gap: 28px; }
+.site-rank-info dt { color: var(--muted); font-size: 11px; }
+.site-rank-info dd { margin-top: 2px; font-size: 26px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.site-rank-bar { display: block; height: 4px; margin-top: 4px; overflow: hidden; border-radius: 2px; background: rgb(255 255 255 / 7%); }
+.site-rank-bar span { display: block; height: 100%; border-radius: 2px; background: var(--tier); transition: width .25s linear; }
+.site-rank-info > small { color: var(--muted); font-size: 12px; }
+.site-tiers { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 12px; }
+.site-tiers li { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 6px; padding: 6px 8px; border-radius: 8px; color: var(--subtle); font-size: 11px; opacity: .55; }
+.site-tiers li .rank-badge { grid-row: span 2; }
+.site-tiers li span { overflow: hidden; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.site-tiers li small { font-size: 10px; font-variant-numeric: tabular-nums; }
+.site-tiers li.is-passed { opacity: .85; }
+.site-tiers li.is-current { color: var(--ink); opacity: 1; background: color-mix(in srgb, var(--tier) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tier) 45%, transparent); }
+.site-tiers li.is-current span { color: var(--tier); }
 .site-rank-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-.site-rank-row > div { padding: 14px; border: 1px solid var(--line); border-radius: var(--panel-radius); }
+.site-rank-row > div { padding: 14px; border: 1px solid var(--line); border-radius: var(--panel-radius); background: var(--raised); }
 .site-rank-match { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 4px 8px; }
 .site-rank-match span { color: var(--muted); font-size: 12px; }
-.site-rank-match b { grid-row: span 2; color: #7fdca4; font-size: 24px; font-variant-numeric: tabular-nums; }
+.site-rank-match b { grid-row: span 2; color: #6fdc8c; font-size: 24px; font-variant-numeric: tabular-nums; }
 .site-rank-match small { color: var(--subtle); font-size: 11.5px; }
+.site-rank-pips { display: flex; grid-column: 1 / -1; gap: 4px; margin-top: 4px; }
+.site .site-rank-pips li { width: 14px; height: 4px; border-radius: 2px; }
+.site .site-rank-pips li.is-up { background: #6fdc8c; box-shadow: 0 0 6px rgb(111 220 140 / 50%); }
+.site .site-rank-pips li.is-down { background: #ff7a7a; box-shadow: 0 0 6px rgb(255 122 122 / 45%); }
 .site-rank-today { display: grid; align-content: center; gap: 8px; color: var(--muted); font-size: 12px; }
 .site-rank-dots { display: flex; gap: 5px; }
-.site .site-rank-dots i { width: 22px; height: 6px; border-radius: var(--control-radius); background: var(--pink); }
+.site .site-rank-dots i { width: 22px; height: 6px; border-radius: 3px; background: var(--tier); }
 .site .site-rank-dots i.is-used { background: var(--line-strong); }
 
 /* Analysis (sample UI) */
@@ -732,9 +746,9 @@
   .site-tiers { grid-template-columns: repeat(3, 1fr); }
   .site-dash-kpis strong { font-size: 21px; }
   .site-dash-kpis svg { display: none; }
-  .site-rank-top { flex-wrap: wrap; }
-  .site-rank-top dl { flex: 1 1 auto; flex-wrap: wrap; justify-content: space-between; gap: 14px; }
-  .site-rank-top dd { font-size: 21px; }
+  .site-rank-card { gap: 14px; padding: 16px; }
+  .site-rank-emblem { width: 84px; height: 84px; }
+  .site-rank-info dd { font-size: 21px; }
   .site-rank-row { grid-template-columns: 1fr; }
   .site-dash-kpis > div { padding: 10px; }
   .site-dash-kpis span { font-size: 12px; }

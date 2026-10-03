@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
-import { ArrowRight, ArrowUpRight, Check, List, Trophy, X } from "@phosphor-icons/react";
+import { ArrowRight, ArrowUpRight, Check, List, X } from "@phosphor-icons/react";
+import { TierEmblem, tierColor } from "../trainer/RankEmblem.tsx";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
@@ -594,6 +595,8 @@ function Audience() {
 }
 
 const tierMins = [0, 950, 1100, 1250, 1400, 1550];
+// Tier keys (Japanese names) for the shared emblem colours, in tierMins order.
+const TIER_KEYS = ["ブロンズ", "シルバー", "ゴールド", "プラチナ", "ダイヤモンド", "マスター"];
 
 // Wide screens: Training pins for one screen while scrolling slides it over to Ranked.
 function TrainingTrack() {
@@ -655,23 +658,33 @@ function Ranked() {
         <p>{c.ranked.description}</p>
         <ul className="site-points">{c.ranked.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
       </div>
-      <div className="site-mock site-rank" ref={ref} data-reveal aria-hidden="true">
+      <div className="site-mock site-rank" ref={ref} data-reveal aria-hidden="true" style={{ "--tier": tierColor(TIER_KEYS[tier]) } as CSSProperties}>
         <span className="site-sample">{c.ranked.sample}</span>
         <div className="site-rank-card">
-          <div className="site-rank-top">
-            <Trophy size={30} weight="fill" />
-            <dl>
-              <div><dt>{c.ranked.rank}</dt><dd key={tier} className="site-rank-tier">{c.ranked.tiers[tier]}</dd></div>
-              <div><dt>{c.ranked.rating}</dt><dd>{rating}</dd></div>
-              <div><dt>{c.ranked.peak}</dt><dd>1204</dd></div>
-            </dl>
+          <div className="site-rank-emblem">
+            <svg className="site-rank-ring" viewBox="0 0 128 128">
+              <circle cx="64" cy="64" r="54" className="track" />
+              <circle cx="64" cy="64" r="54" className="arc" strokeDasharray={`${2 * Math.PI * 54 * progress} ${2 * Math.PI * 54}`} />
+              {Array.from({ length: 24 }, (_, i) => <line key={i} x1="64" y1="3" x2="64" y2={i % 6 === 0 ? 9 : 6} transform={`rotate(${i * 15} 64 64)`} className="tick" />)}
+            </svg>
+            <TierEmblem key={tier} level={tier} name={TIER_KEYS[tier]} size={58} />
           </div>
-          <span className="site-rank-bar"><span style={{ width: `${progress * 100}%` }} /></span>
-          <small>{next ? c.ranked.toNext(next - rating, c.ranked.tiers[tier + 1]) : ""}</small>
+          <div className="site-rank-info">
+            <span key={tier} className="site-rank-tier">{c.ranked.tiers[tier]}</span>
+            <dl>
+              <div><dt>{c.ranked.rating}</dt><dd>{rating.toLocaleString()}</dd></div>
+              <div><dt>{c.ranked.peak}</dt><dd>1,204</dd></div>
+            </dl>
+            <span className="site-rank-bar"><span style={{ width: `${progress * 100}%` }} /></span>
+            <small>{next ? c.ranked.toNext(next - rating, c.ranked.tiers[tier + 1]) : ""}</small>
+          </div>
         </div>
-        <ol className="site-tiers">{c.ranked.tiers.map((name, index) => <li key={name} className={index < tier ? "is-passed" : index === tier ? "is-current" : ""}><i />{name}<small>{tierMins[index]}</small></li>)}</ol>
+        <ol className="site-tiers">{c.ranked.tiers.map((name, index) => <li key={name} className={index < tier ? "is-passed" : index === tier ? "is-current" : ""}
+          style={{ "--tier": tierColor(TIER_KEYS[index]) } as CSSProperties}>
+          <TierEmblem level={index} name={TIER_KEYS[index]} size={30} /><span>{name}</span><small>{tierMins[index].toLocaleString()}+</small></li>)}</ol>
         <div className="site-rank-row">
-          <div className="site-rank-match"><span>{c.ranked.lastMatch}</span><b>+18</b><small>{c.ranked.matchLine(16, 20)}</small></div>
+          <div className="site-rank-match"><span>{c.ranked.lastMatch}</span><b>+18</b><small>{c.ranked.matchLine(16, 20)}</small>
+            <ol className="site-rank-pips">{["up", "up", "down", "up", "up"].map((result, i) => <li key={i} className={`is-${result}`} />)}</ol></div>
           <div className="site-rank-today"><span className="site-rank-dots"><i className="is-used" /><i /><i /></span>{c.ranked.today}</div>
         </div>
       </div>
