@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
@@ -22,6 +23,13 @@ test("account menu chip shows the profile and keeps the menu closed until opened
   assert.match(html, /class="account-avatar">Y</);
   assert.match(html, /aria-haspopup="menu" aria-expanded="false"/);
   assert.doesNotMatch(html, /account-popover/);
+});
+
+test("account menu escapes sidebar clipping and keeps portal clicks inside the menu", () => {
+  const source = readFileSync(new URL("../src/account/AccountMenu.tsx", import.meta.url), "utf8");
+  assert.match(source, /open && createPortal\(<div ref=\{popoverRef\} className="account-popover"/);
+  assert.match(source, /<\/div>, document\.body\)/);
+  assert.match(source, /!rootRef\.current\?\.contains\(event\.target\) && !popoverRef\.current\?\.contains\(event\.target\)/);
 });
 
 test("settings page has account, subscription, appearance and language tabs", () => {

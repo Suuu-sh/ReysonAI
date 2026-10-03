@@ -76,9 +76,26 @@ test("primary navigation is accessible in a collapsible sidebar", () => {
   assert.match(html, /<nav id="main-navigation" class="header-nav" aria-label="メインナビゲーション">/);
   assert.match(html, /aria-current="page" aria-label="レンジ分析"/);
   assert.match(html, /aria-label="プレー分析"/);
-  assert.match(html, /<a href="\/admin" aria-label="(?:Admin dashboard|管理画面)"/);
+  assert.doesNotMatch(html, /href="\/admin"|Admin dashboard|管理画面/);
   assert.doesNotMatch(html, /aria-label="弱点"/);
   assert.doesNotMatch(html, /aria-label="ポストフロップ/);
+});
+
+test("English sidebar navigation uses concise Range and Stats labels", () => {
+  const previousWindow = globalThis.window;
+  globalThis.window = {
+    localStorage: { getItem: () => null },
+    matchMedia: () => ({ matches: false }),
+  };
+  try {
+    const html = renderToStaticMarkup(createElement(Sidebar, { activeSection: "レンジ分析", onSectionChange() {} }));
+    assert.match(html, /aria-label="Range" title="Range"/);
+    assert.match(html, /aria-label="Stats" title="Stats"/);
+    assert.match(html, /<span>Range<\/span>/);
+    assert.match(html, /<span>Stats<\/span>/);
+  } finally {
+    globalThis.window = previousWindow;
+  }
 });
 
 test("action blocks are generated in order from the chosen actions", () => {

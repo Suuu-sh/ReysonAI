@@ -5,6 +5,13 @@ export function isRetiredJapanesePath(pathname) {
   return path === "/ja" || path.startsWith("/ja/");
 }
 
+export function isRetiredAdminPath(pathname) {
+  let path;
+  try { path = decodeURIComponent(pathname).toLowerCase(); }
+  catch { return false; }
+  return path === "/admin" || path.startsWith("/admin/");
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -12,7 +19,7 @@ export default {
       url.hostname = "reysonai.com";
       return Response.redirect(url.toString(), 301);
     }
-    if (isRetiredJapanesePath(new URL(request.url).pathname)) {
+    if (isRetiredJapanesePath(url.pathname) || isRetiredAdminPath(url.pathname)) {
       return new Response("Not Found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
     }
     const response = await env.ASSETS.fetch(request);

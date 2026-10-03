@@ -50,8 +50,7 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
     <button type="button" className="config-edit lb-back" onClick={onBack}><ArrowLeft size={14} />{localized("Trainer", "トレーナー")}</button>
     <header className="trainer-home-head lb-head">
       <div>
-        <span className="trainer-home-eyebrow"><Trophy size={12} weight="fill" /> LEADERBOARD</span>
-        <h1>{localized("Leaderboard", "ランキング")}</h1>
+        <h1 className="trainer-home-eyebrow"><Trophy size={12} weight="fill" /> LEADERBOARD</h1>
         <p>{localized(`Ranked by rating. Play ${LEADERBOARD_MIN_MATCHES} ranked matches in the period to be placed.`,
           `ランク戦のレート順です。期間内に${LEADERBOARD_MIN_MATCHES}試合以上プレイすると順位が付きます。`)}</p>
       </div>

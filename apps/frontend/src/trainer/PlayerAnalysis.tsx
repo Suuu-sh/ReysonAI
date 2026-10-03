@@ -194,8 +194,7 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
   return <div className="player-analysis">
     <header className="trainer-home-head analysis-heading">
       <div>
-        <span className="trainer-home-eyebrow"><ChartBar size={12} /> ANALYSIS</span>
-        <h1>プレー分析</h1>
+        <h1 className="trainer-home-eyebrow"><ChartBar size={12} /> STATS</h1>
         <p>{view === "agent" ? "Agent卓での収支と、Agentが読んでいるあなたの打ち方を振り返ります。" : "ドリルやランク戦での選び方を、保存済みレンジと比べて振り返ります。"}</p>
       </div>
       <div className="analysis-head-tools">

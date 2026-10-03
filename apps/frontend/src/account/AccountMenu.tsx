@@ -1,5 +1,6 @@
 import { CaretRight, Check, CreditCard, Palette, SignOut, Translate, UserCircle } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { levelLabel } from "../profile.ts";
 import "./account.css";
 import { localized, productLocale, selectProductLocale } from "../i18n.ts";
@@ -17,8 +18,9 @@ export function AccountMenu({ profile, collapsed, onNavigate, onLogout }) {
   const [languageOpen, setLanguageOpen] = useState(false);
   const [position, setPosition] = useState(null);
   const rootRef = useRef(null);
+  const popoverRef = useRef(null);
   const chipRef = useRef(null);
-  // The sidebar clips overflow, so the menu is placed with fixed coordinates next to the chip.
+  // Portal outside the sidebar's clipping and stacking context; keep chip-relative coordinates.
   const toggleMenu = () => {
     if (open) { setOpen(false); setLanguageOpen(false); return; }
     const rect = chipRef.current.getBoundingClientRect();
@@ -31,7 +33,7 @@ export function AccountMenu({ profile, collapsed, onNavigate, onLogout }) {
 
   useEffect(() => {
     if (!open) return undefined;
-    const close = event => { if (!rootRef.current?.contains(event.target)) { setOpen(false); setLanguageOpen(false); } };
+    const close = event => { if (!rootRef.current?.contains(event.target) && !popoverRef.current?.contains(event.target)) { setOpen(false); setLanguageOpen(false); } };
     const onKey = event => { if (event.key === "Escape") { setOpen(false); setLanguageOpen(false); } };
     document.addEventListener("mousedown", close);
     document.addEventListener("keydown", onKey);
@@ -42,7 +44,7 @@ export function AccountMenu({ profile, collapsed, onNavigate, onLogout }) {
   const name = profile?.nickname || t("ゲスト", "Guest");
 
   return <div className={`account-menu${collapsed ? " collapsed" : ""}`} ref={rootRef}>
-    {open && <div className="account-popover" role="menu" aria-label={t("アカウントメニュー", "Account menu")} style={position ?? undefined}>
+    {open && createPortal(<div ref={popoverRef} className="account-popover" role="menu" aria-label={t("アカウントメニュー", "Account menu")} style={position ?? undefined}>
       <button type="button" role="menuitem" onClick={() => go("account")}><UserCircle size={18} />{t("アカウント", "Account")}</button>
       <button type="button" role="menuitem" onClick={() => go("subscription")}><CreditCard size={18} />{t("サブスクリプション", "Subscription")}<em>Free</em></button>
       <button type="button" role="menuitem" onClick={() => go("appearance")}><Palette size={18} />{t("外観", "Appearance")}</button>
@@ -59,7 +61,7 @@ export function AccountMenu({ profile, collapsed, onNavigate, onLogout }) {
       </div>
       <hr />
       <button type="button" role="menuitem" className="danger" onClick={() => { setOpen(false); onLogout(); }}><SignOut size={18} />{t("ログアウト", "Log out")}</button>
-    </div>}
+    </div>, document.body)}
     <button type="button" ref={chipRef} className={`account-chip${open ? " open" : ""}`} aria-haspopup="menu" aria-expanded={open}
       aria-label={t(`アカウント：${name}`, `Account: ${name}`)} title={name} onClick={toggleMenu}>
       <span className="account-avatar">{initialOf(profile)}</span>

@@ -92,7 +92,7 @@
 .enter-postflop:hover { filter: brightness(1.12); }
 .enter-postflop:focus-visible { outline: 2px solid white; outline-offset: 2px; }
 .postflop-trial { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; flex: 1; }
-.estimate-settings + .postflop-trial { margin-top: 10px; }
+.estimate-settings + .postflop-trial, .estimate-settings + .results, .estimate-settings + .postflop-gate { margin-top: 10px; }
 .postflop-board-cards { display: flex; gap: 4px; }
 .postflop-card { display: inline-grid; place-items: center; min-width: 30px; height: 36px; padding: 0 4px; border-radius: 5px; background: #f4f1ec; color: #1b1b1f; font-size: 15px; font-weight: 750; }
 .postflop-card.suit-h, .postflop-card.suit-d { color: #d1334f; }

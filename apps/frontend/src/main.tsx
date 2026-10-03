@@ -7,19 +7,17 @@ import "./styles.css";
 import "./site/site.css";
 import { productLocale, rememberLocale } from "./locale.ts";
 import { isProductAppRoute } from "./route.ts";
-import { ADMIN_DATASETS, APP_DATASETS, datasetNames, preloadDatasets } from "./estimated/datasets.ts";
+import { APP_DATASETS, datasetNames, preloadDatasets } from "./estimated/datasets.ts";
 
-// The app and the admin read preflop datasets synchronously, so each route preloads them
-// (and the dataset index) before its module is imported.
+// The app reads preflop datasets synchronously, so preload them and the dataset index
+// before importing its module.
 const withDatasets = (names, load) => () => Promise.all([preloadDatasets(names), datasetNames()]).then(load);
 const ProductApp = lazy(withDatasets(APP_DATASETS, () => import("./ProductApp.tsx")));
-const AdminDashboard = lazy(withDatasets(ADMIN_DATASETS, () => import("./admin/AdminDashboard.tsx")));
-const isAdminRoute = window.location.pathname === "/admin" || window.location.pathname.startsWith("/admin/");
 const isProductRoute = isProductAppRoute(window.location.pathname, window.location.hostname);
 const initialSiteLocale = productLocale();
 const copy = initialSiteLocale === "ja" ? ja : en;
-document.documentElement.lang = isAdminRoute ? "en" : isProductRoute ? productLocale() : initialSiteLocale;
-document.title = isAdminRoute ? "ReysonAI · Admin" : isProductRoute ? (productLocale() === "ja" ? "ReysonAI · レンジ分析" : "ReysonAI · Range Analysis") : copy.title;
+document.documentElement.lang = isProductRoute ? productLocale() : initialSiteLocale;
+document.title = isProductRoute ? (productLocale() === "ja" ? "ReysonAI · レンジ分析" : "ReysonAI · Range Analysis") : copy.title;
 if (!isProductRoute) document.querySelector('meta[name="description"]')?.setAttribute("content", copy.description);
 
 function MarketingSite() {
@@ -40,9 +38,7 @@ function MarketingSite() {
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {isAdminRoute
-      ? <Suspense fallback={<div className="site-loading">Opening admin…</div>}><AdminDashboard /></Suspense>
-      : isProductRoute
+    {isProductRoute
       ? <Suspense fallback={<div className="site-loading">Opening ReysonAI…</div>}><ProductApp /></Suspense>
       : <MarketingSite />}
   </React.StrictMode>,
