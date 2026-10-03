@@ -23,6 +23,21 @@ test("the chart minimum width wins over the fieldset reset and preserves mobile 
   assert.match(css, /\.site-matrix-scroll\s*\{[^}]*overflow-x: auto/);
 });
 
+test("sections use a wider shared canvas without empty full-screen minimums", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /--content-width: 1520px/);
+  assert.match(css, /--page-gutter: clamp\(16px, 2\.5vw, 40px\)/);
+  assert.match(css, /\.site-wrap\s*\{[^}]*width: min\(100% - var\(--page-gutter\) \* 2, var\(--content-width\)\)/);
+  assert.match(css, /\.site-section\s*\{[^}]*padding: var\(--section-space\)/);
+  assert.doesNotMatch(css, /\.site-section, \.site-final\s*\{[^}]*min-height:/);
+  assert.doesNotMatch(css, /\.site-hero\s*\{[^}]*min-height:/);
+  assert.match(css, /\.site-poker-table\s*\{[^}]*width: min\(100%, 760px\)/);
+  assert.match(css, /@media \(min-width: 961px\) and \(max-height: 740px\)/);
+  const tablet = css.split("@media (max-width: 960px)")[1].split("@media (max-width: 720px)")[0];
+  assert.match(tablet, /--section-space: 48px/);
+  assert.match(css, /\.site-train\.is-scrolly \.site-train-stage\s*\{[^}]*height: calc\(100vh - 64px\)/);
+});
+
 test("the sharp geometry is shared by controls and panels without reshaping poker objects", () => {
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
   assert.match(css, /--panel-radius: 4px/);

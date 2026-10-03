@@ -1,4 +1,5 @@
-import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GearSix, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
+import { BrandIcon } from "./BrandIcon.tsx";
+import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GearSix, GraduationCap, SquaresFour } from "@phosphor-icons/react";
 import { useState } from "react";
 import { ACCOUNT_SECTION, AccountMenu } from "../account/AccountMenu.tsx";
 import "../account/preferences.ts";
@@ -46,12 +47,12 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
   return (
     <>
     {!collapsed && <div className="sidebar-backdrop" aria-hidden="true" onClick={() => toggle(true)} />}
-    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="EvionAI サイドバー">
+    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="ReysonAI サイドバー">
       <div className="sidebar-heading">
         <div className="brand">
-          <Spade size={30} weight="fill" />
+          <BrandIcon size={30} />
           <div className="brand-copy">
-            Evion<span>AI</span>
+            Reyson<span>AI</span>
             <small>Play Closer to Perfect</small>
           </div>
         </div>

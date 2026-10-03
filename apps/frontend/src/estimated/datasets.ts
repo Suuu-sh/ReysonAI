@@ -1,6 +1,6 @@
 // Preflop datasets (the JSON files in this directory, e.g. "opening-ranges" or
 // "reasons/BB_vs_BTN"). The files stay the source of truth for generation and audits; the app
-// reads the published copy from the evionai-api worker (`VITE_API_BASE`), or from the Vite dev
+// reads the published copy from the reysonai-api worker (`VITE_API_BASE`), or from the Vite dev
 // server's same-shaped /v1/preflop/datasets route when no base is set.
 //
 // Modules read datasets synchronously with dataset(name). The browser entry preloads what a

@@ -70,8 +70,8 @@ test("standard matrix keeps a dominant solid cell and puts only mixed frequencie
 
 test("primary navigation is accessible in a collapsible sidebar", () => {
   const html = renderToStaticMarkup(createElement(Sidebar, { activeSection: "レンジ分析", onSectionChange() {} }));
-  assert.match(html, /<aside class="app-sidebar" aria-label="EvionAI サイドバー">/);
-  assert.match(html, /Evion<span>AI<\/span>/);
+  assert.match(html, /<aside class="app-sidebar" aria-label="ReysonAI サイドバー">/);
+  assert.match(html, /Reyson<span>AI<\/span>/);
   assert.match(html, /aria-label="サイドバーを折りたたむ" aria-expanded="true" aria-controls="main-navigation"/);
   assert.match(html, /<nav id="main-navigation" class="header-nav" aria-label="メインナビゲーション">/);
   assert.match(html, /aria-current="page" aria-label="レンジ分析"/);
@@ -359,7 +359,7 @@ test("local generation controls are embedded in the missing range slot", () => {
   }
 });
 
-test("saved action paths survive the EvionAI storage-key migration", () => {
+test("saved action paths survive the ReysonAI storage-key migration", () => {
   const originalWindow = globalThis.window;
   const selection = { rangeType: "four_bet", opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: "all_in", continuationAction: null, selected: "AA" };
   globalThis.window = { matchMedia: () => ({ matches: false }), sessionStorage: { getItem: key => key.includes("solveagto") ? JSON.stringify(selection) : null, setItem() {} } };
@@ -377,7 +377,7 @@ test("saved action paths survive the EvionAI storage-key migration", () => {
 
 test("estimated view always shows the expanded six-seat action path", () => {
   const html = renderToStaticMarkup(createElement(EstimatedRanges));
-  assert.doesNotMatch(html, /<footer class="app-footer">|EvionAI v0\.1/);
+  assert.doesNotMatch(html, /<footer class="app-footer">|ReysonAI v0\.1/);
   assert.doesNotMatch(html, /class="estimate-context"|全15局面|全5ポジション/);
   assert.match(html, /class="results estimate-results participant-results/);
   assert.match(html, /<strong>Cash<\/strong><span>100bb<\/span><\/button>/);

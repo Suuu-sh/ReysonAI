@@ -1,4 +1,4 @@
-// Publish the delivery copy of EvionAI data to the evionai D1 database (schema:
+// Publish the delivery copy of ReysonAI data to the evionai D1 database (schema:
 // apps/backend/migrations): every preflop dataset under src/estimated (the JSON files stay
 // the source of truth) and the canonical local postflop artifacts. Generates SQL; runs
 // wrangler only with --execute local|remote.
@@ -49,7 +49,7 @@ function main(argv) {
   if (only && !["preflop", "postflop", "flop-base"].includes(only)) throw new Error("--only must be preflop, postflop or flop-base");
   const execute = arg("--execute");
   if (execute && !["local", "remote"].includes(execute)) throw new Error("--execute must be local or remote");
-  const out = resolve(arg("--out") ?? join(root, ".local/evionai-d1.sql"));
+  const out = resolve(arg("--out") ?? join(root, ".local/reysonai-d1.sql"));
   let sql = "";
   if (!only || only === "preflop") {
     const datasets = preflopDatasets();

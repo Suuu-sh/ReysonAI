@@ -1,4 +1,4 @@
-import { Spade } from "@phosphor-icons/react";
+import { BrandIcon } from "./BrandIcon.tsx";
 import { useState } from "react";
 import { levels } from "../profile.ts";
 import { productLocale, selectProductLocale } from "../i18n.ts";
@@ -9,7 +9,7 @@ export function Onboarding({ initial, onComplete, onCancel }) {
   const editing = Boolean(initial);
   return <main className="onboarding">
     <form className="onboarding-card" onSubmit={event => { event.preventDefault(); if (level) onComplete({ nickname, level }); }}>
-      <div className="onboarding-brand"><Spade size={26} weight="fill" /><span>Evion<b>AI</b></span></div>
+      <div className="onboarding-brand"><BrandIcon size={26} /><span>Reyson<b>AI</b></span></div>
       <div className="app-language-switch onboarding-language" role="group" aria-label="Language / 言語">
         <button type="button" aria-pressed={productLocale() === "en"} onClick={() => selectProductLocale("en")}>EN</button>
         <button type="button" aria-pressed={productLocale() === "ja"} onClick={() => selectProductLocale("ja")}>日本語</button>

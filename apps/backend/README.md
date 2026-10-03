@@ -1,4 +1,4 @@
-# EvionAI Edge API
+# ReysonAI Edge API
 
 Cloudflare Worker上で動作するTypeScriptの読み取り専用APIです。
 
@@ -65,7 +65,7 @@ npm run publish:d1 -- --execute remote
 npx wrangler deploy
 ```
 
-`--execute` を付けなければ `apps/frontend/.local/evionai-d1.sql` を作るだけです。`--execute local` と
+`--execute` を付けなければ `apps/frontend/.local/reysonai-d1.sql` を作るだけです。`--execute local` と
 `npx wrangler dev --local` でローカル確認できます。ハンド別EVは D1 の1文100KB制限に収めるため
 盤面×履歴ごとの行に分けて保存し、Worker で元のファイル形に戻します。
 アプリ側は `VITE_API_BASE=https://<worker>` を付けてビルドすると Worker を使います。

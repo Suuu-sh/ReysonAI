@@ -18,7 +18,7 @@ const isProductRoute = window.location.pathname === "/app" || window.location.pa
 const initialSiteLocale = productLocale();
 const copy = initialSiteLocale === "ja" ? ja : en;
 document.documentElement.lang = isAdminRoute ? "en" : isProductRoute ? productLocale() : initialSiteLocale;
-document.title = isAdminRoute ? "EvionAI · Admin" : isProductRoute ? (productLocale() === "ja" ? "EvionAI · レンジ分析" : "EvionAI · Range Analysis") : copy.title;
+document.title = isAdminRoute ? "ReysonAI · Admin" : isProductRoute ? (productLocale() === "ja" ? "ReysonAI · レンジ分析" : "ReysonAI · Range Analysis") : copy.title;
 if (!isProductRoute) document.querySelector('meta[name="description"]')?.setAttribute("content", copy.description);
 
 function MarketingSite() {
@@ -42,7 +42,7 @@ createRoot(document.getElementById("root")).render(
     {isAdminRoute
       ? <Suspense fallback={<div className="site-loading">Opening admin…</div>}><AdminDashboard /></Suspense>
       : isProductRoute
-      ? <Suspense fallback={<div className="site-loading">Opening EvionAI…</div>}><ProductApp /></Suspense>
+      ? <Suspense fallback={<div className="site-loading">Opening ReysonAI…</div>}><ProductApp /></Suspense>
       : <MarketingSite />}
   </React.StrictMode>,
 );

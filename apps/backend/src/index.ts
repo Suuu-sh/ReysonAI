@@ -93,7 +93,7 @@ function notModified(request: Request, response: Response): Response | null {
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname === "/health" && request.method === "GET") {
-    return json({ status: "ok", service: "evionai-api" });
+    return json({ status: "ok", service: "reysonai-api" });
   }
 
   if (url.pathname.startsWith("/v1/postflop/") && request.method === "GET") {

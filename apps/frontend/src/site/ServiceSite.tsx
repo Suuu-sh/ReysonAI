@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
-import { ArrowRight, ArrowUpRight, Check, List, Spade, Trophy, X } from "@phosphor-icons/react";
+import { BrandIcon } from "../components/BrandIcon.tsx";
+import { ArrowRight, ArrowUpRight, Check, List, Trophy, X } from "@phosphor-icons/react";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
@@ -81,7 +82,7 @@ function useInView<T extends Element>(rootMargin = "0px", once = true) {
 
 function Brand() {
   const { copy } = useSite();
-  return <a className="site-brand" href="/" aria-label={copy.common.home}><Spade size={24} weight="fill" aria-hidden="true" /><span>Evion<b>AI</b></span></a>;
+  return <a className="site-brand" href="/" aria-label={copy.common.home}><BrandIcon size={24} /><span>Reyson<b>AI</b></span></a>;
 }
 
 // Mirrors the trainer's PlayingCard markup so the site shows the app's four-colour cards.
@@ -730,7 +731,7 @@ function Compare() {
       <SectionHead id="site-compare-title" title1={c.compare.title1} title2={c.compare.title2}><p>{c.compare.description}</p></SectionHead>
       <div className="site-compare-table" data-reveal>
         <table>
-          <thead><tr><td /><th scope="col" className="is-us"><Spade size={18} weight="fill" aria-hidden="true" />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
+          <thead><tr><td /><th scope="col" className="is-us"><BrandIcon size={18} style={{ display: "inline-block", margin: "0 8px -3px 0" }} />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
           <tbody>{c.compare.rows.map((row, index) => <tr key={row.label} style={{ "--i": index } as CSSProperties}>
             <th scope="row">{row.label}</th>
             <td className="is-us">{row.us}</td>
@@ -793,12 +794,12 @@ function Footer() {
         <div><Brand /><p>{c.footer.tagline}</p></div>
         <div className="site-footer-links">
           <div><span>{c.footer.product}</span><a href="/app">{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
-          <div><span>EvionAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
+          <div><span>ReysonAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
           <div><span>{c.footer.legal}</span><span className="is-muted">{c.footer.privacy}</span><span className="is-muted">{c.footer.terms}</span></div>
         </div>
       </div>
       <p className="site-disclaimer">{c.footer.disclaimer}</p>
-      <p className="site-copyright">© {new Date().getFullYear()} EvionAI</p>
+      <p className="site-copyright">© {new Date().getFullYear()} ReysonAI</p>
     </div>
   </footer>;
 }
