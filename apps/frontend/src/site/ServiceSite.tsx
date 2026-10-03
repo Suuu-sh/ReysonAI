@@ -13,9 +13,7 @@ const useSite = () => useContext(SiteContext);
 
 type Action = "raise" | "call" | "fold";
 type RangeMode = "opening" | "response";
-type DisplayMode = "simple" | "standard";
 type Suit = "s" | "h" | "d" | "c";
-const displayModeKey = "reysonai:site-preview-display-mode:v1";
 const actions: Action[] = ["raise", "call", "fold"];
 
 const ranks = [..."AKQJT98765432"];
@@ -97,20 +95,17 @@ function HandCards({ hand, seed = 0, className = "" }: { hand: string; seed?: nu
   return <span className={`site-hand-cards${className ? ` ${className}` : ""}`}>{handCards(hand, seed).map(([rank, suit], index) => <PlayingCard key={`${rank}${suit}`} rank={rank} suit={suit} index={index} />)}</span>;
 }
 
-function ActionRows({ mode, values, displayMode }: { mode: RangeMode; values: Record<Action, number>; displayMode: DisplayMode }) {
+function ActionRows({ mode, values }: { mode: RangeMode; values: Record<Action, number> }) {
   const { copy } = useSite();
-  const main = dominantAction(values);
-  // Simple mode shows only the main action, so it reads as 100%.
-  const shownValue = (action: Action) => displayMode === "simple" ? (action === main ? 100 : 0) : values[action];
   const rows = actions.filter(action => mode === "response" || action !== "call");
   return <ul className="site-hand-actions" aria-label={copy.preview.frequencyLabel}>
-    {rows.map(action => <li key={action} className={`site-hand-action is-${action}${shownValue(action) > 0 ? "" : " is-dim"}`}><i />{actionLabel(copy, mode, action)}<b>{shownValue(action)}%</b></li>)}
+    {rows.map(action => <li key={action} className={`site-hand-action is-${action}${values[action] > 0 ? "" : " is-dim"}`}><i />{actionLabel(copy, mode, action)}<b>{values[action]}%</b></li>)}
     {/* Keep the panel the same height as the three-action BB spot. */}
     {rows.length < actions.length && <li className="site-hand-action is-spacer" aria-hidden="true"><i />&nbsp;</li>}
   </ul>;
 }
 
-function RangeMatrix({ mode, displayMode, selected, onSelect }: { mode: RangeMode; displayMode: DisplayMode; selected: string; onSelect: (hand: string) => void }) {
+function RangeMatrix({ mode, selected, onSelect }: { mode: RangeMode; selected: string; onSelect: (hand: string) => void }) {
   const { copy } = useSite();
   return <section className="site-matrix-scroll" aria-label={`${mode === "opening" ? copy.preview.spotOpening : copy.preview.spotResponse} ${copy.preview.scrollLabel}`}>
     <fieldset className="site-matrix"><legend className="site-visually-hidden">{copy.preview.matrixLabel}</legend>
@@ -128,7 +123,7 @@ function RangeMatrix({ mode, displayMode, selected, onSelect }: { mode: RangeMod
           aria-pressed={selected === hand}
           title={`${hand} · ${breakdown}`}
           onClick={() => onSelect(hand)}
-        >{hand}{displayMode === "standard" && mixed.length > 1 && <span className="site-cell-mix" aria-hidden="true">{mixed.map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%` }} />)}</span>}</button>;
+        >{hand}{mixed.length > 1 && <span className="site-cell-mix" aria-hidden="true">{mixed.map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%` }} />)}</span>}</button>;
       })}
     </fieldset>
   </section>;
@@ -144,9 +139,7 @@ function Explorer() {
   const [mode, setMode] = useState<RangeMode>("opening");
   const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
-  const [displayMode, setDisplayMode] = useState<DisplayMode>(() => {
-    try { return window.localStorage.getItem(displayModeKey) === "standard" ? "standard" : "simple"; } catch { return "simple"; }
-  });
+  const tourStep = useRef(0);
   const [ref, visible] = useInView<HTMLDivElement>("0px", false);
   const values = frequencies(mode, selected);
   const action = dominantAction(values);
@@ -168,30 +161,19 @@ function Explorer() {
 
   useEffect(() => {
     if (!isTouring || !visible) return;
-    const timer = window.setInterval(() => setSelected(current => {
-      const list = tourHands[mode];
-      return list[(list.indexOf(current) + 1) % list.length];
-    }), 2800);
+    const timer = window.setInterval(() => {
+      const step = ++tourStep.current;
+      const nextMode: RangeMode = step % 2 === 0 ? "opening" : "response";
+      const hands = tourHands[nextMode];
+      setMode(nextMode);
+      setSelected(hands[Math.floor(step / 2) % hands.length]);
+    }, 2800);
     return () => window.clearInterval(timer);
-  }, [isTouring, visible, mode]);
-
-  function chooseMode(next: RangeMode) {
-    setTouring(false);
-    setMode(next);
-    setSelected(next === "opening" ? "A5o" : "A5s");
-  }
-
-  function chooseDisplayMode(next: DisplayMode) {
-    setTouring(false);
-    setDisplayMode(next);
-    try { window.localStorage.setItem(displayModeKey, next); } catch {}
-  }
+  }, [isTouring, visible]);
 
   const explanation = mode === "opening" && selected === "K7s"
     ? c.preview.k7s
-    : displayMode === "simple"
-      ? c.preview.simpleOther(spot, selected, actionLabel(c, mode, action))
-      : c.preview.other(spot, selected, action === "raise" && mode === "response" ? c.preview.actionPast.threeBet : c.preview.actionPast[action], values[action]);
+    : c.preview.other(spot, selected, action === "raise" && mode === "response" ? c.preview.actionPast.threeBet : c.preview.actionPast[action], values[action]);
 
   const selectedRow = Math.floor(cells.findIndex(cell => cell.hand === selected) / ranks.length);
 
@@ -199,18 +181,8 @@ function Explorer() {
     <div className="site-wrap site-hero-main">
       <HeroCopy />
       <div className="site-hero-range">
-        <div className="site-explorer-bar">
-        <fieldset className="site-segment"><legend className="site-visually-hidden">{c.preview.spotLabel}</legend>
-          <button type="button" aria-pressed={mode === "opening"} onClick={() => chooseMode("opening")}>{c.preview.open}</button>
-          <button type="button" aria-pressed={mode === "response"} onClick={() => chooseMode("response")}>{c.preview.response}</button>
-        </fieldset>
-        <fieldset className="site-segment is-quiet"><legend className="site-visually-hidden">{c.preview.displayLabel}</legend>
-          <button type="button" aria-pressed={displayMode === "simple"} onClick={() => chooseDisplayMode("simple")}>{c.preview.simpleMode}</button>
-          <button type="button" aria-pressed={displayMode === "standard"} onClick={() => chooseDisplayMode("standard")}>{c.preview.standardMode}</button>
-        </fieldset>
-        </div>
         <div className="site-hero-chart-frame" style={{ "--selected-row": selectedRow } as CSSProperties}>
-          <RangeMatrix mode={mode} displayMode={displayMode} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
+          <RangeMatrix mode={mode} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
         </div>
         <div className="site-legend">{actions.filter(option => mode === "response" || option !== "call").map(option => <span key={option}><i className={`is-${option}`} />{actionLabel(c, mode, option)}</span>)}</div>
       </div>
@@ -222,7 +194,7 @@ function Explorer() {
           <div className="site-hero-summary">
             <span className="site-hand-label">{c.preview.selectedHand}</span>
             <div className="site-hand-title"><strong>{selected}</strong><span>{selected.length === 2 ? c.preview.pair : selected.endsWith("s") ? c.preview.suited : c.preview.offsuit}</span></div>
-            <ActionRows mode={mode} values={values} displayMode={displayMode} />
+            <ActionRows mode={mode} values={values} />
           </div>
           <div className="site-hero-reason">
             <p className="site-hand-why"><span>{c.preview.why}</span>{explanation}</p>
@@ -272,7 +244,7 @@ function Header() {
   </header>;
 }
 
-function HeroCopy() {
+function HeroCopy({ children }: { children?: ReactNode }) {
   const { copy: c } = useSite();
   return <div className="site-hero-copy">
     <h1 id="site-hero-title" lang="en"><span className="site-line site-hero-opening"><span>{c.hero.title1}</span></span><span className="site-line"><span className="site-hero-mark">{c.hero.title2}</span></span></h1>
@@ -282,6 +254,7 @@ function HeroCopy() {
       <a className="site-hero-secondary" href="#how">{c.hero.secondary}<ArrowRight size={17} aria-hidden="true" /></a>
     </div>
     <p className="site-hero-note">{c.hero.note}</p>
+    {children}
   </div>;
 }
 
@@ -521,7 +494,7 @@ function Audience() {
   // Wide screens: the section pins while scrolling, and scroll position picks the persona.
   useEffect(() => {
     if (!motion) { setScrolly(false); return; }
-    const query = window.matchMedia("(min-width: 961px) and (min-height: 840px)");
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 640px)");
     const sync = () => setScrolly(query.matches);
     sync();
     query.addEventListener("change", sync);
@@ -597,7 +570,7 @@ function Audience() {
             </div>
             <div className={`${view(1)} is-detail`} aria-hidden={active !== 1}>
               <div className="site-persona-detail-head"><HandCards hand="A5s" seed={1} /><div><strong>A5s</strong><small>{c.how.whyHand}</small></div></div>
-              <ActionRows mode="response" values={a5s} displayMode="standard" />
+              <ActionRows mode="response" values={a5s} />
               <p className="site-persona-why"><span>{c.preview.why}</span>{c.how.whyNote}</p>
             </div>
             <div className={`${view(2)} is-free`} aria-hidden={active !== 2}>
@@ -868,7 +841,7 @@ function Pricing() {
   const { copy: c } = useSite();
   return <section className="site-section site-pricing" id="pricing" aria-labelledby="site-pricing-title">
     <div className="site-wrap">
-      <div className="site-pricing-head" data-reveal><h2 id="site-pricing-title">{c.pricing.title1}<span>{c.pricing.title2}</span></h2><p>{c.pricing.description}</p></div>
+      <div className="site-pricing-head" data-reveal><h2 id="site-pricing-title">{c.pricing.title1}<span>{c.pricing.title2}</span></h2>{c.pricing.description && <p>{c.pricing.description}</p>}</div>
       <div className="site-plans">{c.pricing.plans.map((plan, index) => <article className={`site-plan${plan.href ? "" : " is-planned"}`} key={plan.name} data-reveal style={{ "--delay": `${index * 120}ms` } as CSSProperties}>
         <div className="site-plan-top"><h3>{plan.name}</h3><span>{plan.status}</span></div>
         <p className="site-plan-price"><strong>{plan.price}</strong><small>{plan.cadence}</small></p>

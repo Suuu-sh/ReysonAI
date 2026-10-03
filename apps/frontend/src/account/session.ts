@@ -26,7 +26,7 @@ export function refreshAccount() {
   // React StrictMode must not start two competing session/data loads.
   if (refreshing) return refreshing;
   refreshing = (async () => {
-    transitioning = true;
+    transitioning = true; ready = false; emit();
     clearTimeout(timer);
     await pending;
     try {
@@ -40,10 +40,28 @@ export function refreshAccount() {
         version = saved.version;
       } else data = {};
       dirty = false; error = "";
-    } catch (cause) { available = false; error = cause.message === "disabled" ? "" : "request"; }
+    } catch (cause) { available = ["session", "verification"].includes(cause.message); error = cause.message === "disabled" ? "" : available ? cause.message : "request"; }
     ready = true; transitioning = false; emit();
   })().finally(() => { refreshing = null; });
   return refreshing;
+}
+// Focus checks only the session identity: never replace unsaved in-memory data.
+let rechecking;
+export function revalidateAccountSession() {
+  if (rechecking) return rechecking;
+  if (!ready || refreshing || error) return Promise.resolve();
+  rechecking = (async () => {
+    try {
+      const result = await accountRequest("session");
+      if (result.user?.id !== user?.id || (user && result.user?.verified !== true)) {
+        error = "session"; available = true; emit();
+      }
+    } catch (cause) {
+      available = ["session", "verification"].includes(cause.message);
+      error = available ? cause.message : "request"; emit();
+    }
+  })().finally(() => { rechecking = null; });
+  return rechecking;
 }
 export function accountStorage() {
   if (!user) { try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; } }

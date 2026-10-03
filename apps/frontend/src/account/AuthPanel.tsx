@@ -9,7 +9,8 @@ export function useAccount() {
   return state;
 }
 export function AuthPanel({ onChanged = () => {}, onGuest }) {
-  const { user, error, available } = useAccount();
+  const { user: sessionUser, error, available } = useAccount();
+  const user = ["session", "verification"].includes(error) ? null : sessionUser;
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(typeof window !== "undefined" && window.location.hash.startsWith("#account-error=") ? t("Google sign-in was not completed. No automatic retry was made.", "Googleログインが完了しませんでした。自動再試行はしていません。") : "");
@@ -29,7 +30,7 @@ export function AuthPanel({ onChanged = () => {}, onGuest }) {
       <button className="account-secondary" disabled={!consent || busy || !!error} onClick={() => perform(async () => { await importGuestData(consent); setConsent(false); onChanged(); setMessage(t("Guest data imported.", "ゲストデータを移行しました。")); })}>{t("Import guest data", "ゲストデータを移行")}</button>
       <button className="account-secondary" disabled={busy} onClick={() => perform(async () => { await logoutAccount(); onChanged(); })}>{t("Sign out", "ログアウト")}</button>
     </> : <>
-      <p>{t("Use your Google account, including Google Workspace or custom-domain accounts. Guest practice remains available without signing in.", "Google Workspaceや独自ドメインを含むGoogleアカウントでログインできます。ログインなしでもゲスト練習を利用できます。")}</p>
+      <p>{t("Use your Google account, including Google Workspace or custom-domain accounts. Range analysis remains available without signing in. Learning requires Google sign-in.", "Google Workspaceや独自ドメインを含むGoogleアカウントでログインできます。レンジ分析はログインなしで利用できます。学習にはGoogleログインが必要です。")}</p>
       {!available && <p role="status">{t("Account sign-in is not enabled yet. Continue as guest.", "アカウント機能はまだ有効になっていません。ゲストとして利用できます。")}</p>}
       <button type="button" className="account-primary" disabled={busy || !available} onClick={() => perform(async () => {
         const { url } = await accountRequest("google/start", {});
@@ -40,6 +41,6 @@ export function AuthPanel({ onChanged = () => {}, onGuest }) {
     </>}
     {message && <p role="status">{message}</p>}
     {error && <p role="alert">{error === "conflict" ? t("Another device changed this account. Saving is paused; reload to load the latest account data. Unsaved edits are not uploaded.", "別の端末で更新されました。保存を停止しました。再読込で最新データを取得できます。未保存の変更はアップロードされません。") : t("Account saving is unavailable. No automatic retry was made. Export your records before reloading or signing out.", "アカウント保存が利用できません。自動再試行はしていません。再読込やログアウト前に記録を書き出してください。")}</p>}
-    {onGuest && <button className="account-secondary" disabled={busy} onClick={onGuest}>{t("Continue as guest", "ゲストとして利用")}</button>}
+    {onGuest && <button className="account-secondary" disabled={busy} onClick={onGuest}>{t("Continue to range analysis as guest", "ゲストとしてレンジ分析へ")}</button>}
   </section>;
 }
