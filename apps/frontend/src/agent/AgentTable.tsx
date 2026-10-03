@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Eye, FastForward, Info, Lightning, Play, Repeat } from "@phosphor-icons/react";
+import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning, Play, Repeat } from "@phosphor-icons/react";
 import { preloadDatasets } from "../estimated/datasets.ts";
 import { loadPostflopDatasets, loadPostflopSpot } from "../estimated/postflop-browser.ts";
 import { spotById } from "../../scripts/postflop-ai/spots.mjs";
@@ -10,7 +10,9 @@ import { productLocale } from "../locale.ts";
 import { AgentAvatar } from "./AgentAvatar.tsx";
 import { createAgent, makePostflopKit, type PostflopKit } from "./policy.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints, type Session } from "./session.ts";
-import { handRecord, saveAgentHand } from "./agent-stats.ts";
+import { handRecord, loadAgentHands, saveAgentHand } from "./agent-stats.ts";
+import { playerRead } from "./player-read.ts";
+import { PlayStyleCard, PlayStyleDashboard } from "./PlayStyleDashboard.tsx";
 import "./agent.css";
 
 export const AGENT_DATASETS = ["five-bet-responses", "cold-three-bet-responses", "multiway-responses", "squeeze-responses", "limp-deep-responses"];
@@ -22,7 +24,6 @@ const BLINDS: Record<string, number> = { SB: 0.5, BB: 1 };
 // Seats sit in slots 0-5 clockwise from the bottom centre; agent.css places the seats and chips.
 const SPEEDS = { normal: 700, fast: 280 } as const;
 type Speed = keyof typeof SPEEDS;
-const agents = createAgent();
 
 const readPref = <T,>(key: string, fallback: T): T => { try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch { return fallback; } };
 const writePref = (key: string, value: unknown) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ } };
@@ -90,16 +91,21 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   const [speed, setSpeed] = useState<Speed>(() => readPref("evionai:agent-speed", "normal"));
   const [autoNext, setAutoNext] = useState<boolean>(() => watch && readPref("evionai:agent-auto-next", true));
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [styleOpen, setStyleOpen] = useState(false);
 
   useEffect(() => { preloadDatasets(AGENT_DATASETS).then(() => setReady(true), error => setLoadError(String(error?.message ?? error))); }, []);
 
   const positions = seatPositions(session);
   const humanSeat = session.seats.findIndex(seat => seat.kind === "human");
   const humanPos = humanSeat >= 0 ? positions[humanSeat] : null;
+  // The agents read the human's latest 1000 Agent hands. The read is fixed when a hand starts so a
+  // replay of that hand never changes; it is handed to the agents as their profile (A5 hook).
+  const handRead = useMemo(() => humanPos ? playerRead(loadAgentHands()) : null, [session.handNo, humanPos]); // eslint-disable-line react-hooks/exhaustive-deps
+  const agents = useMemo(() => createAgent({ profileId: handRead && handRead.confidence !== "collecting" ? handRead.style.id : null }), [handRead]);
   const result: HandResult | null = useMemo(() => {
     if (!ready) return null;
     return playHand({ seed: handSeed(session), human: humanPos, humanActions, agents, postflop: id => kits.has(id) ? kits.get(id) : undefined });
-  }, [ready, session, humanPos, humanActions, kits]);
+  }, [ready, session, humanPos, humanActions, kits, agents]);
 
   // Load the reached spot's saved postflop policy (null when it is missing: the pot is checked down).
   useEffect(() => {
@@ -192,6 +198,15 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
     return () => window.removeEventListener("keydown", onKey);
   });
 
+  // The dashboard shows the read including the hand just finished.
+  const liveRead = useMemo(() => humanPos ? playerRead(loadAgentHands()) : null, [humanPos, history.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!styleOpen) return;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setStyleOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [styleOpen]);
+
   if (loadError) return <div className="agent-page"><p className="agent-error">{loadError}</p></div>;
   const order = humanSeat >= 0 ? humanSeat : 0;
   const standings = session.seats.map((seat, index) => ({ seat, index })).sort((a, b) => b.seat.points - a.seat.points);
@@ -214,6 +229,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
         </div>
         {watch && <button type="button" className={`agent-toggle${autoNext ? " is-on" : ""}`} aria-pressed={autoNext}
           onClick={() => { setAutoNext(!autoNext); writePref("evionai:agent-auto-next", !autoNext); }}><Repeat size={13} weight="bold" />{localized("Auto next", "自動で次へ")}</button>}
+        {liveRead && <button type="button" className="agent-toggle" onClick={() => setStyleOpen(true)}><ChartBar size={13} weight="bold" />{localized("Play style", "プレイスタイル")}</button>}
         <span className="agent-rule" tabIndex={0}><Info size={13} />{localized("Beta · heads-up flops", "β版 · フロップはHUのみ")}
           <span className="agent-rule-tip" role="tooltip">{localized("Evion Agent is in beta and multiway pots aren't supported yet. A call that would bring a third player to the flop isn't offered (agents fold that share instead), and lines without saved data fold.",
             "Evion Agentはβ版で、まだマルチウェイに対応していません。3人目としてフロップへ行くコールは選べず（Agentはその頻度をフォールドに回します）、保存データのない場面はフォールドになります。")}</span></span>
@@ -307,6 +323,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
       </section>
 
       <aside className="agent-side">
+        {liveRead && <PlayStyleCard read={liveRead} onOpen={() => setStyleOpen(true)} />}
         <section className="agent-panel">
           <h3>{localized("Session", "セッション")}<small>{localized(`${session.handNo} hands`, `${session.handNo}ハンド`)}</small></h3>
           <ol className="agent-standings">{standings.map(({ seat, index }) => {
@@ -331,6 +348,10 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
         </section>}
       </aside>
     </div>
+    {styleOpen && liveRead && <div className="style-drawer" role="dialog" aria-modal="true" aria-label={localized("Your play style", "あなたのプレイスタイル")}>
+      <button type="button" className="style-drawer-backdrop" aria-label={localized("Close", "閉じる")} onClick={() => setStyleOpen(false)} />
+      <div className="style-drawer-panel"><PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} /></div>
+    </div>}
   </div>;
 }
 

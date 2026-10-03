@@ -155,3 +155,25 @@ test("agent-game stats: flags per hand and summary", async () => {
   assert.equal(summary.wsd, 0.5);
   assert.deepEqual(summary.trend, [9.5, -0.5]);
 });
+
+test("player read: latest 1000 hands, collecting threshold, style and targeted tendencies", async () => {
+  const { playerRead, READ_WINDOW, AGENT_BASELINE } = await import("../src/agent/player-read.ts");
+  const hand = over => ({ at: 0, tableId: "t", pos: "CO", returnBb: 0, vpip: false, pfr: false, threeBetOpp: false, threeBet: false,
+    facedThreeBet: false, foldedToThreeBet: false, sawFlop: false, showdown: false, wonShowdown: false, pfBets: 0, pfCalls: 0, pfFacing: 0, pfFolds: 0, ...over });
+  assert.equal(playerRead([]).style.id, "collecting");
+  assert.equal(playerRead(Array.from({ length: 29 }, () => hand({}))).confidence, "collecting");
+  // Plays almost nothing: a nit, and the agents would steal more.
+  const tight = playerRead(Array.from({ length: 200 }, (_, i) => hand({ vpip: i % 25 === 0, pfr: i % 25 === 0 })));
+  assert.equal(tight.confidence, "provisional");
+  assert.equal(tight.style.id, "nit");
+  assert.ok(tight.tendencies.some(item => item.id === "vpip_low"));
+  // Loose and passive: a calling station; folding to every 3bet is flagged when sampled enough.
+  const loose = playerRead(Array.from({ length: 1200 }, (_, i) => hand({ vpip: i % 2 === 0, pfr: i % 20 === 0,
+    facedThreeBet: i % 20 === 0, foldedToThreeBet: i % 20 === 0 })));
+  assert.equal(loose.hands, READ_WINDOW);
+  assert.equal(loose.confidence, "settled");
+  assert.equal(loose.style.id, "station");
+  assert.ok(loose.tendencies.some(item => item.id === "f3b_high"));
+  assert.ok(loose.map.x > 0 && loose.map.y < 0);
+  assert.ok(AGENT_BASELINE.vpip > 0 && AGENT_BASELINE.pfr > 0);
+});
