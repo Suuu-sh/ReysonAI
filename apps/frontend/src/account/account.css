@@ -130,3 +130,26 @@
 .account-auth .account-dialog-actions { flex-wrap: wrap; }
 .account-auth > button { margin: 8px 8px 0 0; }
 .account-sync-error { position: sticky; top: 0; z-index: 100; background: #29232a; padding: 12px; margin: 0; }
+
+/* Learning sign-in gate */
+.learning-gate { display: grid; place-items: center; min-height: 100%; padding: 24px 16px; }
+.learning-gate-card { display: grid; justify-items: center; gap: 14px; width: min(100%, 420px); padding: 32px 28px 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); text-align: center; animation: fade-up .3s var(--ease-out) both; }
+.learning-gate-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--surface-accent); color: var(--accent-bright); }
+.learning-gate-card h1 { margin: 2px 0 0; font-size: 21px; line-height: 1.3; }
+.learning-gate-lead { margin: -6px 0 2px; color: var(--text-muted); font-size: 13.5px; line-height: 1.6; }
+.learning-gate-features { display: grid; gap: 2px; width: 100%; margin: 0; padding: 6px; border-radius: 12px; background: var(--surface-raised); list-style: none; text-align: left; }
+.learning-gate-features li { display: flex; align-items: center; gap: 12px; padding: 8px 10px; }
+.learning-gate-features svg { flex: 0 0 18px; color: var(--accent-bright); }
+.learning-gate-features span { display: grid; gap: 1px; min-width: 0; }
+.learning-gate-features strong { font-size: 13.5px; }
+.learning-gate-features small { color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.learning-gate-google { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 44px; margin-top: 4px; border: 1px solid #dadce0; border-radius: 10px; background: #fff; color: #1f1f1f; font-size: 14px; font-weight: 600; cursor: pointer; }
+.learning-gate-google:hover:not(:disabled) { background: #f2f2f2; border-color: #dadce0; }
+.learning-gate-google:disabled { opacity: .5; cursor: default; }
+.learning-gate-google:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+.learning-gate-note { margin: 0; color: var(--accent-soft); font-size: 12px; line-height: 1.6; }
+.learning-gate-fine { margin: -4px 0 0; color: var(--text-subtle); font-size: 11.5px; }
+.learning-gate-divider { width: 100%; height: 1px; background: var(--line); }
+.learning-gate-back { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--text-muted); font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.learning-gate-back:hover { background: var(--surface-hover); color: var(--text); }
+@media (max-width: 480px) { .learning-gate-card { padding: 26px 18px 18px; } .learning-gate-card h1 { font-size: 19px; } }
