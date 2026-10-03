@@ -126,6 +126,28 @@ test("a human in a pot without a postflop policy checks each street instead of s
   assert.ok(checked > 0);
 });
 
+test("a human out of position is asked on the flop even when the saved tree checks for them", () => {
+  let asked = 0;
+  for (let i = 0; i < 400 && asked < 3; i++) {
+    const seed = `oopflop-${i}`, actions = [];
+    let hand = playHand({ seed, human: "BB", agents, postflop });
+    while (hand.status === "awaiting" && hand.pending.street === "preflop") {
+      const pick = hand.pending.options.find(o => o.key === "call") ?? hand.pending.options.find(o => o.key === "check");
+      if (!pick) break;
+      actions.push(pick.key);
+      hand = playHand({ seed, human: "BB", agents, postflop, humanActions: actions });
+    }
+    const spot = hand.spotId && postflop(hand.spotId) ? spotById(hand.spotId) : null;
+    if (!spot || spot.oop !== "BB") continue;
+    assert.equal(hand.status, "awaiting");
+    assert.equal(hand.pending.street, "flop");
+    assert.equal(hand.pending.board.length, 3);
+    asked++;
+  }
+  // Saved candidates are local; without them this case does not come up.
+  if (!asked) console.log("skipped: no local postflop policies");
+});
+
 test("the human is asked and the replay continues with the answer", () => {
   let hand, seed;
   for (let i = 0; i < 50; i++) {

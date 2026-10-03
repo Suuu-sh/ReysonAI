@@ -201,6 +201,16 @@ export function playHand(setup: HandSetup): HandResult {
     return action;
   };
   try {
+    // Outside an "oop_leads" tree the engine checks for OOP without asking. Show that check: the
+    // human gets a check-only decision instead of the flop being skipped.
+    if (spot.tree !== "oop_leads") {
+      if (spot.oop === setup.human) {
+        if (!humanQueue.length) throw new Await({ street: "flop", pos: spot.oop, options: [{ key: "check" }], pot: round(table.pot), board: boardSoFar(3), toCall: 0 });
+        const key = humanQueue.shift()!;
+        if (key !== "check") throw new Error(`Illegal flop action ${key} for ${spot.oop}`);
+      }
+      log.push({ street: "flop", pos: spot.oop, action: "check", pot: round(table.pot), bets: {} });
+    }
     playFlop(table, spot.tree, (seat: Position, node: string) => ask("flop", seat, node, flop, null), kit.inputs.config);
     playLaterStreetsWithPolicy(table, flop, runout, (seat: Position, node: string, cards: number[], line: string) =>
       ask(cards.length === 4 ? "turn" : "river", seat, node, cards, line), kit.inputs.config, table.lastAggressor);
