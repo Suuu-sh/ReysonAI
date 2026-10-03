@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
-import { ArrowRight, ArrowUpRight, Check, List, Spade, Trophy, X } from "@phosphor-icons/react";
+import { BrandIcon } from "../components/BrandIcon.tsx";
+import { ArrowRight, ArrowUpRight, Check, List, Trophy, X } from "@phosphor-icons/react";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
@@ -81,7 +82,7 @@ function useInView<T extends Element>(rootMargin = "0px", once = true) {
 
 function Brand() {
   const { copy } = useSite();
-  return <a className="site-brand" href="/" aria-label={copy.common.home}><Spade size={24} weight="fill" aria-hidden="true" /><span>Evion<b>AI</b></span></a>;
+  return <a className="site-brand" href="/" aria-label={copy.common.home}><BrandIcon size={24} /><span>Reyson<b>AI</b></span></a>;
 }
 
 // Mirrors the trainer's PlayingCard markup so the site shows the app's four-colour cards.
@@ -218,25 +219,19 @@ function Explorer() {
 function Header() {
   const { copy: c, onLocaleChange } = useSite();
   const [open, setOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    let last = window.scrollY;
     let frame = 0;
     const onScroll = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        const y = window.scrollY;
-        setScrolled(y > 8);
-        setHidden(y > 240 && y > last + 2);
-        if (y < last - 2 || y <= 240) setHidden(false);
-        last = y;
+        setScrolled(window.scrollY > 8);
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(frame); };
   }, []);
-  return <header className={`site-header${hidden && !open ? " is-hidden" : ""}${scrolled ? " is-scrolled" : ""}${open ? " is-open" : ""}`}>
+  return <header className={`site-header${scrolled ? " is-scrolled" : ""}${open ? " is-open" : ""}`}>
     <div className="site-header-inner">
       <Brand />
       <nav className="site-nav" aria-label={c.common.menuLabel}>
@@ -428,7 +423,7 @@ function Drill() {
     return () => window.removeEventListener("keydown", onKey);
   }, [inView]);
 
-  return <section className="site-section site-drill" id="drill" ref={ref} aria-labelledby="site-drill-title">
+  return <section className="site-section site-drill" ref={ref} aria-labelledby="site-drill-title">
     <div className="site-wrap site-drill-inner">
       <div className="site-drill-copy" data-reveal>
         <h2 id="site-drill-title">{c.drill.title1}<span>{c.drill.title2}</span></h2>
@@ -482,9 +477,10 @@ function Audience() {
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(true);
   const [ref, visible] = useInView<HTMLElement>("-25% 0px", false);
-  const running = auto && motion && visible;
+  const [scrolly, setScrolly] = useState(false);
+  const running = auto && motion && visible && !scrolly;
   const a5s = frequencies("response", "A5s");
-  const free = c.pricing.plans[0];
+  const [free, plus] = c.pricing.plans;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: `active` restarts the timer after every switch.
   useEffect(() => {
@@ -493,8 +489,47 @@ function Audience() {
     return () => window.clearTimeout(timer);
   }, [running, active]);
 
+  // Wide screens: the section pins while scrolling, and scroll position picks the persona.
+  useEffect(() => {
+    if (!motion) { setScrolly(false); return; }
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 840px)");
+    const sync = () => setScrolly(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, [motion]);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!scrolly || !node) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = node.getBoundingClientRect();
+      const span = rect.height - window.innerHeight;
+      if (span <= 0) return;
+      const progress = Math.min(Math.max(-rect.top / span, 0), 0.999);
+      setActive(Math.floor(progress * personaIds.length));
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [scrolly, ref]);
+
   function choose(index: number) {
     setAuto(false);
+    const node = ref.current;
+    if (scrolly && node) {
+      const top = node.getBoundingClientRect().top + window.scrollY;
+      const span = node.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: top + span * ((index + 0.5) / personaIds.length), behavior: "smooth" });
+    }
     setActive((index + personaIds.length) % personaIds.length);
   }
 
@@ -507,7 +542,7 @@ function Audience() {
   }
 
   const view = (index: number) => `site-persona-view${active === index ? " is-active" : ""}`;
-  return <section className="site-section site-audience" ref={ref} aria-labelledby="site-audience-title">
+  return <section className={`site-section site-audience${scrolly ? " is-scrolly" : ""}`} ref={ref} aria-labelledby="site-audience-title">
     <div className="site-wrap">
       <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
       <div className="site-audience-grid" data-reveal>
@@ -541,6 +576,10 @@ function Audience() {
               <span className="site-persona-pill">{c.audience.freeNote}</span>
               <ul>{c.audience.freeList.map((feature, index) => <li key={feature} style={{ "--i": index } as CSSProperties}><Check size={16} weight="bold" aria-hidden="true" />{feature}</li>)}</ul>
               <a className="site-button is-small" href="/app" tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
+              <div className="site-persona-plus">
+                <p><strong>{plus.name}</strong><span>{plus.price}</span><small>{plus.cadence}</small></p>
+                <small>{plus.status}</small>
+              </div>
             </div>
           </div>
         </div>
@@ -551,6 +590,51 @@ function Audience() {
 }
 
 const tierMins = [0, 950, 1100, 1250, 1400, 1550];
+
+// Wide screens: Training pins for one screen while scrolling slides it over to Ranked.
+function TrainingTrack() {
+  const { motion } = useSite();
+  const ref = useRef<HTMLDivElement>(null);
+  const [scrolly, setScrolly] = useState(false);
+  const [shift, setShift] = useState(0);
+  useEffect(() => {
+    if (!motion) { setScrolly(false); return; }
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 600px)");
+    const sync = () => setScrolly(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, [motion]);
+  useEffect(() => {
+    const node = ref.current;
+    if (!scrolly || !node) { setShift(0); return; }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = node.getBoundingClientRect();
+      const span = rect.height - window.innerHeight;
+      if (span <= 0) return;
+      const progress = Math.min(Math.max(-rect.top / span, 0), 1);
+      // Switch whole pages at the midpoint; CSS animates the slide so it never rests halfway.
+      setShift(progress >= 0.5 ? 1 : 0);
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [scrolly]);
+  // Anchor the scroll track, not its sticky child: #drill must rewind the slide to Training.
+  return <div className={`site-train${scrolly ? " is-scrolly" : ""}`} id="drill" ref={ref}>
+    <div className="site-train-stage">
+      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 50}%)` } : undefined}><Drill /><Ranked /></div>
+    </div>
+  </div>;
+}
 
 function Ranked() {
   const { copy: c } = useSite();
@@ -640,22 +724,62 @@ function Analysis() {
   </section>;
 }
 
+const comparisonRowIds = ["strategy", "explanation", "detail", "practice", "feedback", "precision", "audience"];
+
 function Compare() {
-  const { copy: c } = useSite();
-  return <section className="site-section site-compare" id="compare" aria-labelledby="site-compare-title">
-    <div className="site-wrap">
-      <SectionHead id="site-compare-title" title1={c.compare.title1} title2={c.compare.title2}><p>{c.compare.description}</p></SectionHead>
-      <div className="site-compare-table" data-reveal>
-        <table>
-          <thead><tr><td /><th scope="col" className="is-us"><Spade size={18} weight="fill" aria-hidden="true" />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
-          <tbody>{c.compare.rows.map((row, index) => <tr key={row.label} style={{ "--i": index } as CSSProperties}>
-            <th scope="row">{row.label}</th>
-            <td className="is-us" data-label={c.compare.us}>{row.us}</td>
-            <td data-label={c.compare.them}>{row.them}</td>
-          </tr>)}</tbody>
-        </table>
+  const { copy: c, motion, locale } = useSite();
+  const ref = useRef<HTMLElement>(null);
+  const [scrolly, setScrolly] = useState(false);
+  const [visibleRows, setVisibleRows] = useState(1);
+  const rowCount = c.compare.rows.length;
+  useEffect(() => {
+    if (!motion) { setScrolly(false); return; }
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 600px)");
+    const sync = () => setScrolly(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, [motion]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a locale switch reflows the surrounding sections and changes the scroll position.
+  useEffect(() => {
+    const node = ref.current;
+    if (!scrolly || !node) { setVisibleRows(1); return; }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = node.getBoundingClientRect();
+      // The pinned stage starts below the header and releases at the track's bottom.
+      const distance = rect.height - (window.innerHeight - 64);
+      if (distance <= 0) return;
+      const progress = Math.min(Math.max((64 - rect.top) / distance, 0), 1);
+      setVisibleRows(Math.min(Math.floor(progress * rowCount) + 1, rowCount));
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [scrolly, rowCount, locale]);
+  return <section className={`site-section site-compare${scrolly ? " is-scrolly" : ""}`} id="compare" ref={ref} aria-labelledby="site-compare-title">
+    <div className="site-compare-stage">
+      <div className="site-wrap">
+        <SectionHead id="site-compare-title" title1={c.compare.title1} title2={c.compare.title2}><p>{c.compare.description}</p></SectionHead>
+        <div className="site-compare-table" data-reveal>
+          <table>
+            <thead><tr><td /><th scope="col" className="is-us"><BrandIcon size={18} style={{ display: "inline-block", margin: "0 8px -3px 0" }} />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
+            <tbody>{c.compare.rows.map((row, index) => <tr key={comparisonRowIds[index]} className={scrolly && index < visibleRows ? "is-revealed" : undefined} style={{ "--i": index } as CSSProperties}>
+              <th scope="row">{row.label}</th>
+              <td className="is-us">{row.us}</td>
+              <td>{row.them}</td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+        <p className="site-compare-note">{c.compare.note}</p>
       </div>
-      <p className="site-compare-note">{c.compare.note}</p>
     </div>
   </section>;
 }
@@ -710,12 +834,12 @@ function Footer() {
         <div><Brand /><p>{c.footer.tagline}</p></div>
         <div className="site-footer-links">
           <div><span>{c.footer.product}</span><a href="/app">{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
-          <div><span>EvionAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
+          <div><span>ReysonAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
           <div><span>{c.footer.legal}</span><span className="is-muted">{c.footer.privacy}</span><span className="is-muted">{c.footer.terms}</span></div>
         </div>
       </div>
       <p className="site-disclaimer">{c.footer.disclaimer}</p>
-      <p className="site-copyright">© {new Date().getFullYear()} EvionAI</p>
+      <p className="site-copyright">© {new Date().getFullYear()} ReysonAI</p>
     </div>
   </footer>;
 }
@@ -746,7 +870,7 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
       <Header />
       <Reveal>
-        <main id="site-main"><Hero /><Audience /><HowItWorks /><Drill /><Ranked /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></main>
+        <main id="site-main"><Hero /><Audience /><HowItWorks /><TrainingTrack /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></main>
         <Footer />
       </Reveal>
     </div>

@@ -23,6 +23,9 @@ const datasets = {
   iso_response: { spots: load("limp-responses").spots.filter(s => s.id === "SB_vs_BB_iso") },
   limp_response: { spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp") },
   limp_reraise: { spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp_reraise") },
+  five_bet: load("five-bet-responses"),
+  limp_four_bet: { spots: load("limp-deep-responses").spots.filter(s => s.id === "SB_vs_BB_limp_four_bet") },
+  limp_five_bet: { spots: load("limp-deep-responses").spots.filter(s => s.id === "BB_vs_SB_limp_five_bet") },
 };
 const f1 = value => Number(value).toFixed(1);
 
@@ -31,6 +34,9 @@ function unreachableReason(type, spot) {
   if (type === "three_bet") return `${spot.opener}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。`;
   if (type === "four_bet") return `${spot.hero}の対${spot.opener}の既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`;
   if (type === "iso_response") return "SBの既存リンプ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。";
+  if (type === "five_bet") return `${spot.opener}の既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`;
+  if (type === "limp_four_bet") return "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。";
+  if (type === "limp_five_bet") return "BBの既存アイソレイズまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。";
   if (type === "limp_reraise") return "BBの既存アイソレイズ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。";
   if (type === "squeeze") return spot.prior_action === null
     ? `${spot.opener}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`
@@ -49,8 +55,11 @@ const ACTIONS = {
   iso_response: [["raise", "リレイズ"], ["call", "コール"], ["fold", "フォールド"]],
   limp_response: [["raise", "アイソレイズ"], ["check", "チェック"]],
   limp_reraise: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
+  five_bet: [["call", "コール"], ["fold", "フォールド"]],
+  limp_four_bet: [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]],
+  limp_five_bet: [["call", "コール"], ["fold", "フォールド"]],
 };
-const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", squeeze: "four_bet", cold_three_bet: "four_bet", iso_response: "raise", limp_response: "raise", limp_reraise: "four_bet" };
+const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", squeeze: "four_bet", cold_three_bet: "four_bet", iso_response: "raise", limp_response: "raise", limp_reraise: "four_bet", limp_four_bet: "all_in" };
 
 const FACT_LABELS = {
   open: [
@@ -104,6 +113,19 @@ FACT_LABELS.limp_reraise = [
   { key: "limp_reraise_break_even_pct", label: "SBのリンプ・リレイズの損益分岐", scope: "spot" },
   { key: "blocked_limp_reraise_pct", label: "リンプ・リレイズレンジのブロック", scope: "hand" },
 ];
+const ALL_IN_CALL_LABELS = [
+  { key: "equity_vs_shove_pct", label: "勝率（対オールインレンジ）", scope: "hand" },
+  { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+  { key: "blocked_shove_pct", label: "オールインレンジのブロック", scope: "hand" },
+];
+FACT_LABELS.five_bet = ALL_IN_CALL_LABELS;
+FACT_LABELS.limp_five_bet = ALL_IN_CALL_LABELS;
+FACT_LABELS.limp_four_bet = [
+  { key: "equity_vs_bb_four_bet_pct", label: "勝率（対BBの4betレンジ）", scope: "hand" },
+  { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+  { key: "bb_fold_to_shove_pct", label: "オールインにBBが降りる率", scope: "spot" },
+  { key: "blocked_bb_four_bet_pct", label: "BBの4betレンジのブロック", scope: "hand" },
+];
 // Cold response to a 3bet: the opener (and any later seats) are still to act.
 FACT_LABELS.cold_three_bet = [
   { key: "equity_vs_three_bet_pct", label: "勝率（対3betレンジ）", scope: "hand" },
@@ -112,7 +134,7 @@ FACT_LABELS.cold_three_bet = [
   { key: "blocked_three_bet_pct", label: "3betレンジのブロック", scope: "hand" },
 ];
 FACT_LABELS.limp_response = [{ key: "equity_vs_sb_limp_pct", label: "勝率（対SBリンプ）", scope: "hand" }];
-for (const type of ["response", "three_bet", "four_bet", "multiway", "iso_response", "limp_reraise", "cold_three_bet"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
+for (const type of ["response", "three_bet", "four_bet", "multiway", "iso_response", "limp_reraise", "cold_three_bet", "limp_four_bet"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
 function factLabels(type, spot) {
   if (type !== "squeeze") return FACT_LABELS[type];
   const equity = spot.prior_action === "call"
@@ -205,6 +227,30 @@ function compose(type, row, facts, spot) {
       ? `実現後の勝率${f1(facts.realized_equity_pct)}%、コールのEVは${evText(facts.call_ev_bb)}です。既存の${raiseName}配分を維持し、強いハンドと一部のブロッカーをレイズへ配分します。`
       : callDecision(row, facts);
     return `${lead}${behind}${body}${row[raiseKey] > 0 && main !== raiseKey ? `一部は${raiseName}へ配分します。` : ""}${mixText(type, row)}。`;
+  }
+  if (type === "five_bet" || type === "limp_five_bet") {
+    const eq = facts.equity_vs_shove_pct, need = spot.call_break_even_equity_pct, margin = eq - need;
+    const who = type === "five_bet" ? spot.five_bettor : "SB";
+    const situation = type === "five_bet"
+      ? `${spot.opener}が${spot.four_bet_size_bb}BBに4bet後、${who}の${spot.all_in_size_bb ?? 100}BBオールインを受けた局面です。`
+      : `BBが${spot.four_bet_size_bb}BBに4bet後、SBの${spot.all_in_size_bb}BBオールイン（リンプ→リンプ・リレイズ→オールイン）を受けた局面です。`;
+    const lead2 = margin >= 0
+      ? `${who}のオールインレンジに対する勝率は${f1(eq)}%で、必要勝率${f1(need)}%を${f1(margin)}pt上回ります。`
+      : `${who}のオールインレンジに対する勝率は${f1(eq)}%で、必要勝率${f1(need)}%に${f1(-margin)}pt届きません。`;
+    const blocker = facts.blocked_shove_pct < 15 ? ""
+      : row.call === 0 ? `${row.hand[0]}を持つことで相手の強いハンドを${f1(facts.blocked_shove_pct)}%減らせますが、それでも必要勝率には届きません。`
+      : `${row.hand[0]}を持つことで相手の強いハンドを${f1(facts.blocked_shove_pct)}%減らせる点も後押しします。`;
+    const verdict = row.call === 100 ? "コールします。" : row.call === 0 ? "フォールドします。" : `境界のため、コール${row.call}%・フォールド${row.fold}%に分けます。`;
+    return `${lead}${situation}残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。${lead2}${blocker}${verdict}${mixText(type, row)}。`;
+  }
+  if (type === "limp_four_bet") {
+    const eq = facts.equity_vs_bb_four_bet_pct;
+    const situation = `SBはリンプ・リレイズに対しBBから${spot.four_bet_size_bb}BBの4betを受けており、OOPです。コールは${spot.cost_to_call_bb}BBを払って${spot.total_pot_after_call_bb}BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率${f1(eq)}%、必要${f1(spot.call_break_even_equity_pct)}%）。`;
+    let body = main === "all_in" ? `仮定のEQRを加味したコールのEVは${evText(facts.call_ev_bb)}。` : callDecision(row, facts);
+    if (row.all_in > 0) body += main === "all_in"
+      ? `${row.all_in >= 70 ? "オールインを中心にします" : "コールと半々で、オールインにも配分します"}。BBはオールインに${f1(spot.bb_fold_to_shove_pct)}%降りるうえ、相手の強いハンドを${f1(facts.blocked_bb_four_bet_pct)}%ブロックできます。`
+      : `一部は${spot.all_in_size_bb}BBのオールインに回します。BBはオールインに${f1(spot.bb_fold_to_shove_pct)}%降り、相手の強いハンドを${f1(facts.blocked_bb_four_bet_pct)}%ブロックできるためです。`;
+    return `${lead}${situation}${body}${mixText(type, row)}。`;
   }
   if (type === "limp_reraise") {
     const size = `4bet（${spot.four_bet_size_bb}BB）`;

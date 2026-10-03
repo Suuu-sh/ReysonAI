@@ -1,0 +1,1218 @@
+{
+  "spot_id": "CO_vs_BB_five_bet",
+  "type": "five_bet",
+  "source_fingerprint": "91973e1de320ffa4274d295d93138335d4c030656f3a8ee5395a2a3d538cbc25",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_shove_pct",
+      "label": "勝率（対オールインレンジ）",
+      "scope": "hand"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "blocked_shove_pct",
+      "label": "オールインレンジのブロック",
+      "scope": "hand"
+    }
+  ],
+  "spot_facts": {
+    "opener": "CO",
+    "five_bettor": "BB",
+    "four_bet_size_bb": 26,
+    "three_bet_size_bb": 12,
+    "call_break_even_equity_pct": 37.5,
+    "shove_range_combos": 28.2,
+    "fold_pct": 84.1
+  },
+  "hands": {
+    "22": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "33": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "44": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "55": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "66": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "77": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "88": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は34.4%で、必要勝率37.5%に3.1pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 34.4,
+        "blocked_shove_pct": 0
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は83.6%で、必要勝率37.5%を46.1pt上回ります。Aを持つことで相手の強いハンドを38.3%減らせる点も後押しします。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 83.6,
+        "blocked_shove_pct": 38.3
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は42.4%で、必要勝率37.5%を4.9pt上回ります。Aを持つことで相手の強いハンドを37.7%減らせる点も後押しします。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 42.4,
+        "blocked_shove_pct": 37.7
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は30.1%で、必要勝率37.5%に7.4pt届きません。Aを持つことで相手の強いハンドを27.5%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 30.1,
+        "blocked_shove_pct": 27.5
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.1%で、必要勝率37.5%に8.4pt届きません。Aを持つことで相手の強いハンドを22.7%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.1,
+        "blocked_shove_pct": 22.7
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.7%で、必要勝率37.5%に7.8pt届きません。Aを持つことで相手の強いハンドを21.2%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.7,
+        "blocked_shove_pct": 21.2
+      }
+    },
+    "A9s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A8s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A7s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A6s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は30.4%で、必要勝率37.5%に7.1pt届きません。Aを持つことで相手の強いハンドを20.8%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 30.4,
+        "blocked_shove_pct": 20.8
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は28.9%で、必要勝率37.5%に8.6pt届きません。Aを持つことで相手の強いハンドを20.8%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 28.9,
+        "blocked_shove_pct": 20.8
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.0%で、必要勝率37.5%に8.5pt届きません。Aを持つことで相手の強いハンドを20.8%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29,
+        "blocked_shove_pct": 20.8
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.0%で、必要勝率37.5%に8.5pt届きません。Aを持つことで相手の強いハンドを20.8%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29,
+        "blocked_shove_pct": 20.8
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は39.3%で、必要勝率37.5%を1.8pt上回ります。Aを持つことで相手の強いハンドを37.9%減らせる点も後押しします。境界のため、コール95%・フォールド5%に分けます。配分はコール 95%・フォールド 5%。",
+      "facts": {
+        "equity_vs_shove_pct": 39.3,
+        "blocked_shove_pct": 37.9
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は54.8%で、必要勝率37.5%を17.3pt上回ります。Kを持つことで相手の強いハンドを35.8%減らせる点も後押しします。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 54.8,
+        "blocked_shove_pct": 35.8
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.4%で、必要勝率37.5%に12.1pt届きません。Kを持つことで相手の強いハンドを26.6%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.4,
+        "blocked_shove_pct": 26.6
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.7%で、必要勝率37.5%に11.8pt届きません。Kを持つことで相手の強いハンドを21.5%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.7,
+        "blocked_shove_pct": 21.5
+      }
+    },
+    "KTs": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K9s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K8s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K7s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K6s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K5s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K4s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K3s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K2s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は26.6%で、必要勝率37.5%に10.9pt届きません。Aを持つことで相手の強いハンドを27.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 26.6,
+        "blocked_shove_pct": 27.9
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は21.8%で、必要勝率37.5%に15.7pt届きません。Kを持つことで相手の強いハンドを26.6%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 21.8,
+        "blocked_shove_pct": 26.6
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は41.0%で、必要勝率37.5%を3.5pt上回ります。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 41,
+        "blocked_shove_pct": 12.2
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は28.2%で、必要勝率37.5%に9.3pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 28.2,
+        "blocked_shove_pct": 9.1
+      }
+    },
+    "QTs": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q9s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q8s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q7s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q6s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q5s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q4s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q3s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q2s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.1%で、必要勝率37.5%に12.4pt届きません。Aを持つことで相手の強いハンドを22.8%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.1,
+        "blocked_shove_pct": 22.8
+      }
+    },
+    "KJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は21.9%で、必要勝率37.5%に15.6pt届きません。Kを持つことで相手の強いハンドを21.5%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 21.9,
+        "blocked_shove_pct": 21.5
+      }
+    },
+    "QJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は24.4%で、必要勝率37.5%に13.1pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 24.4,
+        "blocked_shove_pct": 9.1
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は36.1%で、必要勝率37.5%に1.4pt届きません。境界のため、コール15%・フォールド85%に分けます。配分はフォールド 85%・コール 15%。",
+      "facts": {
+        "equity_vs_shove_pct": 36.1,
+        "blocked_shove_pct": 3.3
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.0%で、必要勝率37.5%に8.5pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29,
+        "blocked_shove_pct": 2.4
+      }
+    },
+    "J9s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J8s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J7s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J6s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J5s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J4s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J3s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J2s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.1%で、必要勝率37.5%に12.4pt届きません。Aを持つことで相手の強いハンドを21.2%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.1,
+        "blocked_shove_pct": 21.2
+      }
+    },
+    "KTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は22.1%で、必要勝率37.5%に15.4pt届きません。Kを持つことで相手の強いハンドを19.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 22.1,
+        "blocked_shove_pct": 19.9
+      }
+    },
+    "QTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は24.1%で、必要勝率37.5%に13.4pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 24.1,
+        "blocked_shove_pct": 7.6
+      }
+    },
+    "JTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.1%で、必要勝率37.5%に12.4pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.1,
+        "blocked_shove_pct": 2.4
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は34.5%で、必要勝率37.5%に3.0pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 34.5,
+        "blocked_shove_pct": 0.7
+      }
+    },
+    "T9s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T8s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T7s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T6s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T5s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T4s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T3s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T2s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A9o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。COが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.6%で、必要勝率37.5%に11.9pt届きません。Aを持つことで相手の強いハンドを20.8%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.6,
+        "blocked_shove_pct": 20.8
+      }
+    },
+    "K9o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q9o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J9o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T9o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "98s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "97s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "96s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "95s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "94s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "93s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "92s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A8o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K8o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q8o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J8o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T8o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "98o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "87s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "86s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "85s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "84s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "83s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "82s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A7o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K7o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q7o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J7o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T7o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "97o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "87o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "76s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "75s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "74s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "73s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "72s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A6o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K6o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q6o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J6o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T6o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "96o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "86o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "76o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "65s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "64s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "63s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "62s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A5o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K5o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q5o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J5o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T5o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "95o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "85o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "75o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "65o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "54s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "53s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "52s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A4o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K4o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q4o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J4o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T4o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "94o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "84o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "74o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "64o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "54o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "43s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "42s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A3o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K3o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q3o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J3o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T3o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "93o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "83o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "73o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "63o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "53o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "43o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "32s": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A2o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K2o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q2o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J2o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T2o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "92o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "82o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "72o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "62o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "52o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "42o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "32o": {
+      "reason": "COの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    }
+  }
+}

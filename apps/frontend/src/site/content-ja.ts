@@ -1,9 +1,9 @@
 import type { SiteCopy } from "./content";
 
 export const ja: SiteCopy = {
-  title: "EvionAI — 実戦で使えるポーカー戦略",
+  title: "ReysonAI — Don't just play. Understand why.",
   description: "AIが推定したプリフロップレンジを読みやすい13×13の表で確認し、ハンドごとの理由を知り、ドリルで身につける。学習のための推定であり、GTOソルバーではありません。",
-  common: { home: "EvionAI ホーム", open: "アプリを開く", menuOpen: "メニューを開く", menuClose: "メニューを閉じる", menuLabel: "メインメニュー", skip: "本文へスキップ", language: "EN", languageLabel: "Switch to English", raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド", available: "提供中", planned: "予定", experimental: "試験運用" },
+  common: { home: "ReysonAI ホーム", open: "アプリを開く", menuOpen: "メニューを開く", menuClose: "メニューを閉じる", menuLabel: "メインメニュー", skip: "本文へスキップ", language: "EN", languageLabel: "Switch to English", raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド", available: "提供中", planned: "予定", experimental: "試験運用" },
   nav: [
     { label: "使い方", href: "#how" },
     { label: "トレーニング", href: "#drill" },
@@ -11,7 +11,7 @@ export const ja: SiteCopy = {
     { label: "比較", href: "#compare" },
     { label: "料金", href: "#pricing" },
   ],
-  hero: { title1: "複雑な戦略を、", title2: "使える判断に。", lead: "EvionAIは、AIが推定したポーカーのレンジを一目で読める表にし、ハンドごとの理由をやさしい言葉で説明します。テーブルに座ったときにも思い出せる形で。", primary: "アプリを開く", secondary: "使い方を見る", note: "無料プレビュー · アカウント不要 · 6-maxキャッシュ 100BB" },
+  hero: { title1: "ただ打つだけじゃない。", title2: "理由がわかる。", lead: "ReysonAIは、ハンドごとに何をすべきかを示し、その理由をやさしい言葉で説明します。理由がわかれば、テーブルに座ったときにも判断を思い出せます。", primary: "アプリを開く", secondary: "使い方を見る", note: "無料プレビュー · アカウント不要 · 6-maxキャッシュ 100BB" },
   preview: { spotLabel: "プレビューする局面", open: "BTN オープン", response: "BB vs BTN", displayLabel: "表示モード", simpleMode: "シンプル", standardMode: "スタンダード", matrixLabel: "13×13 スターティングハンド表", scrollLabel: "の表。狭い画面では横にスクロールできます", selectedHand: "選択中のハンド", suited: "スーテッド", offsuit: "オフスート", pair: "ペア", frequencyLabel: "アクション頻度", why: "理由", k7s: "K7s はスーテッドで、フロップ以降も戦いやすいハンドです。このBTNオープンの推定では、常にレイズします。", simpleOther: (spot: string, hand: string, action: string) => `保存済みの${spot}レンジでは、${hand} の主なアクションは${action}です。ハンドごとの詳しい説明はアプリで確認できます。`, other: (spot: string, hand: string, action: string, value: number) => `保存済みの${spot}レンジでは、${hand} を ${value}% の頻度で${action}します。ハンドごとの詳しい説明はアプリで確認できます。`, explore: "アプリでこのレンジを見る", saved: "保存済みのAI推定", notGto: "GTOソリューションではありません", spotOpening: "BTNオープン", spotResponse: "BBの応答", actionPast: { raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド" }, touring: "自動でハンドを紹介中。セルをクリックすると操作できます。", manual: "ハンドをクリックして確認できます。" },
   how: {
     title1: "局面から理由まで、", title2: "3ステップで。",
@@ -45,7 +45,7 @@ export const ja: SiteCopy = {
   },
   analysis: {
     title1: "自分のクセが、", title2: "数字で見える。",
-    description: "練習の回答はすべて保存済みの推定と比べられます。EvionAIはそれを、プレイスタイルマップ、アクションの傾向、強みと弱点、次に練習すべきことにまとめます。",
+    description: "練習の回答はすべて保存済みの推定と比べられます。ReysonAIはそれを、プレイスタイルマップ、アクションの傾向、強みと弱点、次に練習すべきことにまとめます。",
     points: [
       { title: "プレイスタイルマップ", body: "あなたの選択がタイトかルースか、3ベットが多いか少ないかを位置で示します。" },
       { title: "アクションの傾向", body: "フォールド・オープン・コール・3ベットの頻度を、推定と比べて表示します。" },
@@ -53,15 +53,15 @@ export const ja: SiteCopy = {
       { title: "セッション履歴", body: "このブラウザーに保存されたドリルを、振り返ったり再開したりできます。" },
     ],
     note: "このブラウザーに保存された練習の回答から作ります。傾向は練習でのもので、実戦の結果ではありません。",
-    sample: "表示例", score: "EvionAI Score", accuracy: "正答率", style: "プレイスタイル", styleValue: "TAG", recent: "直近10回答", answers: "回答",
+    sample: "表示例", score: "ReysonAI Score", accuracy: "正答率", style: "プレイスタイル", styleValue: "TAG", recent: "直近10回答", answers: "回答",
     map: "プレイスタイルマップ", tight: "タイト", loose: "ルース", quadrants: ["TAG", "LAG", "タイト・パッシブ", "ルース・パッシブ"],
     tendencies: "推定と比べたアクションの選び方", actions: ["フォールド", "オープン", "コール", "3ベット"],
     weak: "弱点", weakValue: "CO vs BTN · 3ベット", next: "次に練習", nextValue: "A5s · KTo · 76s",
   },
   compare: {
     title1: "ソルバーアプリとは、", title2: "役割が違う。",
-    description: "GTO Wizard などのソルバー系GTOアプリは、厳密な理論の基準です。EvionAIは、その戦略を理解し、練習し続けるために作られています。",
-    us: "EvionAI", them: "ソルバー系GTOアプリ", themNote: "例：GTO Wizard",
+    description: "GTO Wizard などのソルバー系GTOアプリは、厳密な理論の基準です。ReysonAIは、その戦略を理解し、練習し続けるために作られています。",
+    us: "ReysonAI", them: "ソルバー系GTOアプリ", themNote: "例：GTO Wizard",
     rows: [
       { label: "表示するもの", us: "AIが推定したレンジ。推定と明記", them: "ソルバーが計算したGTO戦略" },
       { label: "説明の仕方", us: "ハンドごとの理由を、やさしい言葉で", them: "頻度やEVなど、数字が中心" },
@@ -71,20 +71,20 @@ export const ja: SiteCopy = {
       { label: "精度", us: "実用的な近似。GTOではない", them: "解いたゲームの範囲で厳密" },
       { label: "向いている人", us: "習慣を作りたい初心者〜初中級者", them: "厳密な理論を研究したい人" },
     ],
-    note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。GTO Wizard は各権利者の商標であり、EvionAIとは関係ありません。",
+    note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。GTO Wizard は各権利者の商標であり、ReysonAIとは関係ありません。",
   },
   pricing: { title1: "まずは無料で。", title2: "準備ができたら、その先へ。", description: "現在のプレビューは無料です。有料プランは初期の提案で、まだ提供していません。", note: "Plus の ¥680 という価格と有料機能はすべて仮案です。課金やアカウントの仕組みはまだありません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/app" as string | null, status: "提供中" }, { name: "Plus", price: "¥680", cadence: "/ 月 · 提案中", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定 · 価格は変わる可能性があります" }] },
   faq: {
     title: "よくある質問に、率直に。",
     items: [
-      { question: "これはGTOですか？", answer: "いいえ。EvionAIが表示するのは、学習のためのAI推定レンジです。ソルバーの出力ではなく、数学的な最適性も保証しません。" },
-      { question: "GTO Wizard との違いは？", answer: "GTO Wizard などは、ソルバーが計算した戦略を示す厳密な理論の基準です。EvionAIは学習のためのAI推定を、解説、ドリル、ランク戦、練習の分析とあわせて提供します。詳しくは上の比較をご覧ください。" },
+      { question: "これはGTOですか？", answer: "いいえ。ReysonAIが表示するのは、学習のためのAI推定レンジです。ソルバーの出力ではなく、数学的な最適性も保証しません。" },
+      { question: "GTO Wizard との違いは？", answer: "GTO Wizard などは、ソルバーが計算した戦略を示す厳密な理論の基準です。ReysonAIは学習のためのAI推定を、解説、ドリル、ランク戦、練習の分析とあわせて提供します。詳しくは上の比較をご覧ください。" },
       { question: "どのゲームに対応していますか？", answer: "6-maxキャッシュゲーム、100BB、アンティなしです。オープンは2.5BB（SBは3.5BB）。保存データのない局面は「未収録」と表示し、推測では埋めません。" },
       { question: "アカウントは必要ですか？", answer: "不要です。プロフィールと練習履歴はこのブラウザーに保存されます。アカウント機能は予定しています。" },
       { question: "ポストフロップにも対応していますか？", answer: "対応するヘッズアップの流れで、フロップからリバーまでを試験的に提供しています。アプリ内でも試験運用と明示しています。" },
       { question: "料金はかかりますか？", answer: "現在のプレビューは無料です。Plus プランを提案していますが、まだ提供しておらず、価格も変わる可能性があります。" },
     ],
   },
-  final: { title1: "次のセッションは、", title2: "ひとつのハンドから。", description: "アプリを開いて、局面を選び、ハンドをタップするだけ。", action: "EvionAI を開く", note: "無料プレビュー · アカウント不要" },
-  footer: { tagline: "ポーカー戦略を、使える形に。", product: "プロダクト", open: "アプリを開く", how: "使い方", drill: "トレーニング", analysis: "分析", compare: "比較", pricing: "料金", faq: "よくある質問", legal: "規約", privacy: "プライバシー · 準備中", terms: "利用規約 · 準備中", disclaimer: "EvionAIはポーカーの戦略と学習のための情報を提供します。AIソリューションは推定であり、数学的な最適性やGTOソリューションとの同等性は保証されません。節度をもってお楽しみください。" },
+  final: { title1: "次のセッションは、", title2: "ひとつのハンドから。", description: "アプリを開いて、局面を選び、ハンドをタップするだけ。", action: "ReysonAI を開く", note: "無料プレビュー · アカウント不要" },
+  footer: { tagline: "Don't just play. Understand why.", product: "プロダクト", open: "アプリを開く", how: "使い方", drill: "トレーニング", analysis: "分析", compare: "比較", pricing: "料金", faq: "よくある質問", legal: "規約", privacy: "プライバシー · 準備中", terms: "利用規約 · 準備中", disclaimer: "ReysonAIはポーカーの戦略と学習のための情報を提供します。AIソリューションは推定であり、数学的な最適性やGTOソリューションとの同等性は保証されません。節度をもってお楽しみください。" },
 };

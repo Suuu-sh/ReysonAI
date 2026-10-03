@@ -1,0 +1,1218 @@
+{
+  "spot_id": "BTN_vs_BB_five_bet",
+  "type": "five_bet",
+  "source_fingerprint": "91973e1de320ffa4274d295d93138335d4c030656f3a8ee5395a2a3d538cbc25",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_shove_pct",
+      "label": "勝率（対オールインレンジ）",
+      "scope": "hand"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "blocked_shove_pct",
+      "label": "オールインレンジのブロック",
+      "scope": "hand"
+    }
+  ],
+  "spot_facts": {
+    "opener": "BTN",
+    "five_bettor": "BB",
+    "four_bet_size_bb": 26,
+    "three_bet_size_bb": 12,
+    "call_break_even_equity_pct": 37.5,
+    "shove_range_combos": 34,
+    "fold_pct": 89.7
+  },
+  "hands": {
+    "22": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "33": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "44": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "55": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "66": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "77": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は34.5%で、必要勝率37.5%に3.0pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 34.5,
+        "blocked_shove_pct": 0
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は34.7%で、必要勝率37.5%に2.8pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 34.7,
+        "blocked_shove_pct": 0.5
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は83.2%で、必要勝率37.5%を45.7pt上回ります。Aを持つことで相手の強いハンドを35.1%減らせる点も後押しします。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 83.2,
+        "blocked_shove_pct": 35.1
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は45.1%で、必要勝率37.5%を7.6pt上回ります。Aを持つことで相手の強いハンドを33.2%減らせる点も後押しします。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 45.1,
+        "blocked_shove_pct": 33.2
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は34.3%で、必要勝率37.5%に3.2pt届きません。Aを持つことで相手の強いハンドを26.1%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 34.3,
+        "blocked_shove_pct": 26.1
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は31.2%で、必要勝率37.5%に6.3pt届きません。Aを持つことで相手の強いハンドを22.7%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 31.2,
+        "blocked_shove_pct": 22.7
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は30.5%で、必要勝率37.5%に7.0pt届きません。Aを持つことで相手の強いハンドを20.5%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 30.5,
+        "blocked_shove_pct": 20.5
+      }
+    },
+    "A9s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.2%で、必要勝率37.5%に8.3pt届きません。Aを持つことで相手の強いハンドを19.2%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.2,
+        "blocked_shove_pct": 19.2
+      }
+    },
+    "A8s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は30.0%で、必要勝率37.5%に7.5pt届きません。Aを持つことで相手の強いハンドを18.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 30,
+        "blocked_shove_pct": 18.9
+      }
+    },
+    "A7s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A6s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は30.7%で、必要勝率37.5%に6.8pt届きません。Aを持つことで相手の強いハンドを18.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 30.7,
+        "blocked_shove_pct": 18.9
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は30.0%で、必要勝率37.5%に7.5pt届きません。Aを持つことで相手の強いハンドを18.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 30,
+        "blocked_shove_pct": 18.9
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.9%で、必要勝率37.5%に7.6pt届きません。Aを持つことで相手の強いハンドを18.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.9,
+        "blocked_shove_pct": 18.9
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.4%で、必要勝率37.5%に8.1pt届きません。Aを持つことで相手の強いハンドを18.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.4,
+        "blocked_shove_pct": 18.9
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は42.1%で、必要勝率37.5%を4.6pt上回ります。Aを持つことで相手の強いハンドを33.7%減らせる点も後押しします。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 42.1,
+        "blocked_shove_pct": 33.7
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は59.9%で、必要勝率37.5%を22.4pt上回ります。Kを持つことで相手の強いハンドを30.5%減らせる点も後押しします。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 59.9,
+        "blocked_shove_pct": 30.5
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は28.9%で、必要勝率37.5%に8.6pt届きません。Kを持つことで相手の強いハンドを24.6%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 28.9,
+        "blocked_shove_pct": 24.6
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は28.2%で、必要勝率37.5%に9.3pt届きません。Kを持つことで相手の強いハンドを20.5%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 28.2,
+        "blocked_shove_pct": 20.5
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は27.6%で、必要勝率37.5%に9.9pt届きません。Kを持つことで相手の強いハンドを18.4%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 27.6,
+        "blocked_shove_pct": 18.4
+      }
+    },
+    "K9s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K8s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K7s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K6s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K5s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K4s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K3s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K2s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.9%で、必要勝率37.5%に7.6pt届きません。Aを持つことで相手の強いハンドを26.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.9,
+        "blocked_shove_pct": 26.9
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は24.6%で、必要勝率37.5%に12.9pt届きません。Kを持つことで相手の強いハンドを24.8%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 24.6,
+        "blocked_shove_pct": 24.8
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は45.1%で、必要勝率37.5%を7.6pt上回ります。コールします。配分はコール 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 45.1,
+        "blocked_shove_pct": 14.3
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は28.4%で、必要勝率37.5%に9.1pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 28.4,
+        "blocked_shove_pct": 12.2
+      }
+    },
+    "QTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.0%で、必要勝率37.5%に8.5pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29,
+        "blocked_shove_pct": 9.9
+      }
+    },
+    "Q9s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q8s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q7s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q6s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q5s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q4s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q3s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q2s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は27.7%で、必要勝率37.5%に9.8pt届きません。Aを持つことで相手の強いハンドを22.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 27.7,
+        "blocked_shove_pct": 22.9
+      }
+    },
+    "KJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は23.6%で、必要勝率37.5%に13.9pt届きません。Kを持つことで相手の強いハンドを20.6%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 23.6,
+        "blocked_shove_pct": 20.6
+      }
+    },
+    "QJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は24.5%で、必要勝率37.5%に13.0pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 24.5,
+        "blocked_shove_pct": 12.2
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は38.1%で、必要勝率37.5%を0.6pt上回ります。境界のため、コール65%・フォールド35%に分けます。配分はコール 65%・フォールド 35%。",
+      "facts": {
+        "equity_vs_shove_pct": 38.1,
+        "blocked_shove_pct": 6.8
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は28.9%で、必要勝率37.5%に8.6pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 28.9,
+        "blocked_shove_pct": 5.7
+      }
+    },
+    "J9s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は28.2%で、必要勝率37.5%に9.3pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 28.2,
+        "blocked_shove_pct": 4.3
+      }
+    },
+    "J8s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J7s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J6s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J5s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J4s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J3s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J2s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は26.5%で、必要勝率37.5%に11.0pt届きません。Aを持つことで相手の強いハンドを20.7%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 26.5,
+        "blocked_shove_pct": 20.7
+      }
+    },
+    "KTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は24.1%で、必要勝率37.5%に13.4pt届きません。Kを持つことで相手の強いハンドを18.4%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 24.1,
+        "blocked_shove_pct": 18.4
+      }
+    },
+    "QTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は24.5%で、必要勝率37.5%に13.0pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 24.5,
+        "blocked_shove_pct": 9.9
+      }
+    },
+    "JTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.7%で、必要勝率37.5%に11.8pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.7,
+        "blocked_shove_pct": 5.7
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は35.9%で、必要勝率37.5%に1.6pt届きません。境界のため、コール10%・フォールド90%に分けます。配分はフォールド 90%・コール 10%。",
+      "facts": {
+        "equity_vs_shove_pct": 35.9,
+        "blocked_shove_pct": 2.9
+      }
+    },
+    "T9s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.1%で、必要勝率37.5%に8.4pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.1,
+        "blocked_shove_pct": 2
+      }
+    },
+    "T8s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T7s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T6s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T5s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T4s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T3s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T2s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A9o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.6%で、必要勝率37.5%に11.9pt届きません。Aを持つことで相手の強いハンドを19.2%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.6,
+        "blocked_shove_pct": 19.2
+      }
+    },
+    "K9o": {
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は22.3%で、必要勝率37.5%に15.2pt届きません。Kを持つことで相手の強いハンドを16.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 22.3,
+        "blocked_shove_pct": 16.9
+      }
+    },
+    "Q9o": {
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は23.9%で、必要勝率37.5%に13.6pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 23.9,
+        "blocked_shove_pct": 8.5
+      }
+    },
+    "J9o": {
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は24.4%で、必要勝率37.5%に13.1pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 24.4,
+        "blocked_shove_pct": 4.3
+      }
+    },
+    "T9o": {
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.6%で、必要勝率37.5%に11.9pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.6,
+        "blocked_shove_pct": 2
+      }
+    },
+    "98s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は28.7%で、必要勝率37.5%に8.8pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 28.7,
+        "blocked_shove_pct": 0.3
+      }
+    },
+    "97s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "96s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "95s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "94s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "93s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "92s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A8o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は26.4%で、必要勝率37.5%に11.1pt届きません。Aを持つことで相手の強いハンドを18.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 26.4,
+        "blocked_shove_pct": 18.9
+      }
+    },
+    "K8o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q8o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J8o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T8o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "98o": {
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.5%で、必要勝率37.5%に12.0pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.5,
+        "blocked_shove_pct": 0.3
+      }
+    },
+    "87s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は30.2%で、必要勝率37.5%に7.3pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 30.2,
+        "blocked_shove_pct": 0
+      }
+    },
+    "86s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "85s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "84s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "83s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "82s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A7o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は26.2%で、必要勝率37.5%に11.3pt届きません。Aを持つことで相手の強いハンドを18.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 26.2,
+        "blocked_shove_pct": 18.9
+      }
+    },
+    "K7o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q7o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J7o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T7o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "97o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "87o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "76s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.9%で、必要勝率37.5%に7.6pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.9,
+        "blocked_shove_pct": 0
+      }
+    },
+    "75s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "74s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "73s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "72s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A6o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は25.8%で、必要勝率37.5%に11.7pt届きません。Aを持つことで相手の強いハンドを18.9%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 25.8,
+        "blocked_shove_pct": 18.9
+      }
+    },
+    "K6o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q6o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J6o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T6o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "96o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "86o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "76o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "65s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.9%で、必要勝率37.5%に7.6pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.9,
+        "blocked_shove_pct": 0.2
+      }
+    },
+    "64s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "63s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "62s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A5o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は26.9%で、必要勝率37.5%に10.6pt届きません。Aを持つことで相手の強いハンドを19.1%減らせますが、それでも必要勝率には届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 26.9,
+        "blocked_shove_pct": 19.1
+      }
+    },
+    "K5o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q5o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J5o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T5o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "95o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "85o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "75o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "65o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "54s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。BTNが26BBに4bet後、BBの100BBオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。BBのオールインレンジに対する勝率は29.9%で、必要勝率37.5%に7.6pt届きません。フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_shove_pct": 29.9,
+        "blocked_shove_pct": 0.2
+      }
+    },
+    "53s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "52s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A4o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K4o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q4o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J4o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T4o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "94o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "84o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "74o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "64o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "54o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "43s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "42s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A3o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K3o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q3o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J3o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T3o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "93o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "83o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "73o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "63o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "53o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "43o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "32s": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "A2o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "K2o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "Q2o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "J2o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "T2o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "92o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "82o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "72o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "62o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "52o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "42o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    },
+    "32o": {
+      "reason": "BTNの既存オープンまたは4bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_shove_pct": null,
+        "blocked_shove_pct": null
+      }
+    }
+  }
+}

@@ -137,8 +137,12 @@ using it (monster 0.83, air above medium) made BB defend 9–23% against a 75% b
 Uncapped bets (flop, turn) can be under-bluffed by the AI policy. The best response then folds far
 below MDF, which only reads this policy and would be exploited by any extra bluffs. When the
 computed defence is more than 10 points under MDF, the strongest folding hands by realized equity
-call until defence reaches MDF − 10 points (`DEFENCE_FLOOR_MARGIN`). Capped actions use the
-ceiling above instead.
+call until defence reaches MDF − 10 points (`DEFENCE_FLOOR_MARGIN`).
+
+2026-10-03 (DEFENCE_VERSION 5): the floor also applies to capped actions. A capped range sits exactly at the
+caller's break-even, so its bluff-catchers are indifferent and the logistic split called only about half of
+them: river 33% bets were defended near 54% against an MDF of 75% on almost every one of the 1,755 flops.
+Capped actions are now defended between MDF − 10 points (floor) and MDF (ceiling).
 
 The three candidate hashes are unchanged (`defence_realization` is excluded from the flop
 fingerprint and from `later_sizing_hash`); simulation reports carry `defence_version`.

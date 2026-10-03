@@ -5,7 +5,7 @@ import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { tierLabels } from "./postflop-reasons.ts";
 import { buildAdvancedExplanation } from "./postflop-advanced.ts";
 import { glossaryPieces } from "./poker-glossary.ts";
-import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
+import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
@@ -203,7 +203,6 @@ export function randomFlop(random = Math.random) {
 }
 
 export function FlopCardDialog({ cards, onApply, onClose }) {
-  const current = recognizedFlop(cards);
   const english = productLocale() === "en";
   const [draft, setDraft] = useState(() => [...cards]);
   const dialogRef = useRef(null);
@@ -260,18 +259,6 @@ export function FlopCardDialog({ cards, onApply, onClose }) {
         <SuitCardPicker selectedCards={selected} disabledCards={count === 3
           ? new Set(deck.filter(card => !selected.has(card))) : undefined}
           ariaLabel={english ? "Available flop cards by suit" : "スート別のフロップカード一覧"} onSelect={chooseCard} />
-      </div>
-      <div className="flop-quick-picks">
-        <h3>{english ? "Quick picks · 12 representative flops" : "クイック選択 · 代表12ボード"}</h3>
-        <div className="postflop-board-options">
-        {representativeFlops.map(board => {
-          const boardCards = board.match(/../g);
-          return <button type="button" key={board} className={board === current ? "selected" : ""} aria-pressed={board === current}
-            aria-label={`${english ? "Flop" : "フロップ"} ${boardCards.map(card => card[0] + suitLabels[card[1]]).join(" ")}`} onClick={() => apply(boardCards)}>
-            <BoardCards cards={boardCards} />
-          </button>;
-        })}
-        </div>
       </div>
     </div>
   </div>;
@@ -532,6 +519,12 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         {!decision.node && start && turnReplay && !later?.node && (turnReplay.end?.type === "fold" || turnReplay.end?.type === "raise-fold" || turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0 || Boolean(riverReplay?.state.end)) && <Panel><StatusState title={english ? "Later-street action complete" : "後続ストリートの判断終了"}>{english ? "The action has ended; no later decision is available." : "フォールドまたはオールインでアクションが終了しました。後続の判断はありません。"}</StatusState></Panel>}
         {!decision.node && start && later?.node && laterStatus === "loading" && <Panel><StatusState title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} /></Panel>}
         {!decision.node && start && later?.node && laterStatus === "error" && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
+        {current && decision.node === "btn_first" && data.tree === "oop_checks" && <Panel className="postflop-oop-check-note">
+          <StatusState title={english ? `${context.oop} · first decision: Check 100%` : `${context.oop} · 最初の判断：チェック 100%`}>
+            {english ? `In this pot ${context.oop} (the preflop caller) always checks the flop; leading bets are not modelled, so there is no ${context.oop} range for this decision.`
+              : `このポットでは、プリフロップでコールした${context.oop}はフロップで常にチェックします。先にベットする選択肢は扱っていないため、この判断の${context.oop}のレンジ表はありません。`}
+          </StatusState>
+        </Panel>}
         {current && aggregates && <div className="postflop-range-layout">
           <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · ${english ? "range" : "レンジ"}`} ariaLabel={english ? `${current.seat} flop range` : `${current.seat}のフロップレンジ`}
             aggregates={aggregates} actions={current.actions} actionLabels={labels} simplified={displayMode === "simple"}

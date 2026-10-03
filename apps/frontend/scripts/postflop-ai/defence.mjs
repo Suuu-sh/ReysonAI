@@ -24,7 +24,7 @@ import { packEquities, packWeights, unpackWeights } from "./cached-values.mjs";
 // Pure and dependency-free (no node:*), so it runs in the browser worker, the edge worker and Node.
 import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
 import { comboRange } from "./browser-inputs.mjs";
-import { boardTexture, handTier, runoutTexture, TIERS } from "./model.mjs";
+import { flopTextureKeys, handTier, runoutTexture, TIERS } from "./model.mjs";
 import { NODES, effectiveMix, referenceMix, withRaise } from "./policy.mjs";
 import { LATER_NODES } from "./later-tree.mjs";
 import { referenceLaterTierMix } from "./later-policy.mjs";
@@ -33,7 +33,7 @@ import { flopBetFraction, raiseDepth } from "./tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-export const DEFENCE_VERSION = 4;
+export const DEFENCE_VERSION = 5;
 // Sampled turn+river runouts per flop decision (seeded by the flop, shared by every node of it).
 export const FLOP_RUNOUTS = 300;
 // call share = logistic(margin / LOGISTIC_SCALE): +-4pt of margin is about 88 / 12.
@@ -62,7 +62,8 @@ const round4 = value => Math.round(value * 1e4) / 1e4;
 
 const textures = new Map();
 const textureOf = (street, board) => {
-  if (street === "flop") return boardTexture(board);
+  // Flop: the most specific key ("dry_low"); policyRule falls back through flopTextureKeys.
+  if (street === "flop") return flopTextureKeys(board)[0];
   const key = board.join(",");
   let value = textures.get(key);
   if (value === undefined) {
@@ -329,8 +330,11 @@ class Defence {
     let tier = TIERS[tierIndex];
     if (flop) {
       const rules = this.flopPolicy.rules;
-      mix = (rules.find(rule => rule.node === entry.node && rule.tier === tier && rule.texture === texture) ??
-        rules.find(rule => rule.node === entry.node && rule.tier === tier && rule.texture === "any"))?.mix;
+      const [shape, height] = texture.split("_");
+      for (const key of [texture, shape, height, "any"]) {
+        const rule = rules.find(item => item.node === entry.node && item.tier === tier && item.texture === key);
+        if (rule) { mix = rule.mix; break; }
+      }
     } else {
       if (entry.street === "river" && tier === "draw") tier = "medium";
       const rules = this.laterPolicy.streets[entry.street].rules;
@@ -727,7 +731,8 @@ class Defence {
   floorOf(context) {
     if (context.floor !== undefined) return context.floor;
     context.floor = null;
-    if (context.capped) return null;
+    // A capped range sits at the caller's break-even, so its bluff-catchers are indifferent and the
+    // logistic split calls only about half of them; the floor keeps that defence near MDF as well.
     const { board } = context, entry = context.target;
     const weights = this.reach(context.defender, context.defenderEntries, board, context.table);
     this.prime(context, weights);

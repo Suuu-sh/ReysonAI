@@ -159,13 +159,6 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
   const tableReason = adjustmentReason(hand, spot?.table_profile);
   const aggregate = model.aggregates.get(hand.hand);
   const actionItems = model.actions.map(action => ({ action, frequency: aggregate.actions[action] }));
-  const totalFrequency = extra
-    ? Math.round(Object.values(aggregate.actions).reduce((sum, frequency) => sum + frequency, 0) * 100)
-    : isOpening
-    ? hand.open + (hand.limp ?? 0) + hand.fold
-    : isLimpResponse
-      ? Object.values(aggregate.actions).reduce((sum, frequency) => sum + frequency, 0) * 100
-      : hand.fold + hand.call + (isFiveBet ? 0 : isFourBet ? hand.all_in : isThreeBet ? hand.four_bet : hand.three_bet);
   const inlineFacts = isFiveBet ? [
     { label: "勝率（対オールインレンジ）", value: hand.equity_vs_shove_pct },
     { label: "コールに必要な勝率", value: spot.call_break_even_equity_pct },
@@ -185,18 +178,17 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
         : <ActionBars items={actionItems} labels={model.actionLabels} />}
       {!tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} hideCallEv={hasCallEv} />}
       {isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
-      <StatList items={extra ? [extra.sizeItem, ...extra.received, { label: "頻度合計", value: `${totalFrequency}%` }] : isLimpResponse ? [{ label: "頻度合計", value: `${totalFrequency}%` }] : [
+      {!isOpening && !isLimpResponse && <StatList items={extra ? [extra.sizeItem, ...extra.received] : [
         isFiveBet ? { label: "受けるオールイン（合計）", value: "100 BB" }
           : isOpening
-          ? { label: "オープンサイズ（合計）", value: hand.open_size_bb === null ? "—（オープンなし）" : `${hand.open_size_bb} BB` }
+          ? null
           : isFourBet ? { label: "5betオールイン（合計）", value: hand.all_in_size_bb === null ? "—（5betなし）" : `${hand.all_in_size_bb} BB` }
           : isThreeBet ? { label: "4betサイズ（合計）", value: hand.four_bet_size_bb === null ? "—（4betなし）" : `${hand.four_bet_size_bb} BB` }
           : { label: "3betサイズ（合計）", value: hand.three_bet_size_bb === null ? "—（3betなし）" : `${hand.three_bet_size_bb} BB` },
         ...(isFourBet ? [{ label: "受ける4bet（合計）", value: `${spot.four_bet_size_bb} BB` }, { label: "元の3bet（合計）", value: `${spot.three_bet_size_bb} BB` }] : []),
         ...(isThreeBet ? [{ label: "受ける3bet（合計）", value: `${spot.three_bet_size_bb} BB` }] : []),
         ...(isFiveBet ? [{ label: "自分の4bet（合計）", value: `${spot.four_bet_size_bb} BB` }, { label: "相手の元の3bet（合計）", value: `${spot.three_bet_size_bb} BB` }] : []),
-        { label: "頻度合計", value: `${totalFrequency}%` },
-      ]} />
+      ].filter(Boolean)} />}
       </>}
       </>}
       {aggregate.unreachable && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} />}
@@ -213,8 +205,7 @@ function LocalHandBreakdown({ entry, selected, onClose, displayMode }) {
       { label: "受ける5betオールイン（合計）", value: `${entry.allInSizeBb} BB` },
       { label: "直前の4bet（合計）", value: `${entry.fourBetSizeBb} BB` },
       { label: "直前の3bet（合計）", value: `${entry.threeBetSizeBb} BB` },
-      { label: "頻度合計", value: "100%" },
-    ] : [{ label: "レイズ先（合計）", value: `${entry.raiseToBb} BB` }, { label: "頻度合計", value: "100%" }]} /></>}
+    ] : [{ label: "レイズ先（合計）", value: `${entry.raiseToBb} BB` }]} /></>}
   </Panel></div>;
 }
 

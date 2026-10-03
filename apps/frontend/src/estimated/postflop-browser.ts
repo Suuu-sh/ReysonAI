@@ -75,7 +75,8 @@ export function datasetsNeededForSpot(spot: any): string[] {
     case "srp": return ["opening-ranges", "preflop-ranges"];
     case "3bp": return ["opening-ranges", "preflop-ranges", "three-bet-responses"];
     case "4bp": return ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses"];
-    case "limp": return ["opening-ranges", "limp-responses"];
+    case "limp": return spot.responseId === "SB_vs_BB_limp_four_bet"
+      ? ["opening-ranges", "limp-responses", "limp-deep-responses"] : ["opening-ranges", "limp-responses"];
     default: throw new Error("このポストフロップ局面に必要なデータセットを特定できません。");
   }
 }

@@ -35,15 +35,15 @@ test("player analysis includes graded strengths, weaknesses and a link to detail
   assert.doesNotMatch(html, /analysis-hero/);
 });
 
-test("player analysis shows a distinct EvionAI Score trend", () => {
+test("player analysis shows a distinct ReysonAI Score trend", () => {
   const history = [
     { spotId: "UTG_open", hand: "AA", action: "open", result: "best", score: 1 },
     { spotId: "UTG_open", hand: "AA", action: "fold", result: "miss", score: 0 },
   ];
   const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history, onStart() {} }));
-  assert.match(html, /EvionAI Score/);
+  assert.match(html, /ReysonAI Score/);
   assert.match(html, /直近2回答の平均 · 暫定/);
-  assert.match(html, /aria-label="EvionAI Score の推移。2回答、直近2回答の平均は50%。"/);
+  assert.match(html, /aria-label="ReysonAI Score の推移。2回答、直近2回答の平均は50%。"/);
   assert.match(html, /復習の再回答も含む/);
   assert.match(html, /保存済みレンジとの一致度/);
   assert.doesNotMatch(html, /GTO|AI推定|AI-estimated|AI estimate|未検証|not a solver/i);

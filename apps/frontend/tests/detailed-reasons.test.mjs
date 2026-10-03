@@ -16,6 +16,8 @@ const sources = [
   [{ spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp") }, [["raise", "アイソレイズ"], ["check", "チェック"]]],
   [{ spots: load("limp-responses").spots.filter(s => s.id === "BB_vs_SB_limp_reraise") }, [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]]],
   [load("four-bet-responses"), [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]]],
+  [load("five-bet-responses"), [["call", "コール"], ["fold", "フォールド"]]],
+  [load("limp-deep-responses"), [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]]],
 ];
 
 test("every detailed-reason file covers all 169 hands of an existing spot and quotes its saved mix", () => {

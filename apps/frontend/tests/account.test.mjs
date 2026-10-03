@@ -45,3 +45,62 @@ test("appearance preferences normalise unknown values and log-out offers keeping
   assert.match(html, /練習データ（ドリル・セッション・回答履歴）も削除する/);
   assert.doesNotMatch(html, /checked=""/);
 });
+
+function withLocalStorage(run) {
+  const previous = globalThis.window;
+  const values = new Map();
+  const localStorage = {
+    get length() { return values.size; },
+    key: index => [...values.keys()][index] ?? null,
+    getItem: key => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, String(value)),
+    removeItem: key => values.delete(key),
+  };
+  globalThis.window = { localStorage };
+  try { run(localStorage); } finally {
+    if (previous === undefined) delete globalThis.window;
+    else globalThis.window = previous;
+  }
+}
+
+test("practice export and cleanup preserve profile, appearance and unrelated data", () => {
+  withLocalStorage(store => {
+    store.setItem("solveaai.trainer.answers", JSON.stringify([{ hand: "AA" }]));
+    store.setItem("solveaai.trainer.draft", "legacy draft");
+    store.setItem("solveaai:profile:v1", "profile");
+    store.setItem("solveaai:appearance:v1", "appearance");
+    store.setItem("other-app", "untouched");
+    assert.deepEqual(prefs.exportLocalData().data, {
+      "solveaai.trainer.answers": [{ hand: "AA" }], "solveaai.trainer.draft": "legacy draft",
+    });
+    prefs.clearPracticeData();
+    assert.deepEqual(prefs.practiceKeys(), []);
+    assert.equal(store.getItem("solveaai:profile:v1"), "profile");
+    assert.equal(store.getItem("solveaai:appearance:v1"), "appearance");
+    assert.equal(store.getItem("other-app"), "untouched");
+  });
+});
+
+test("appearance and range mode persist with invalid appearance values normalised", () => {
+  withLocalStorage(store => {
+    prefs.saveAppearance({ cards: "two", motion: "reduce" });
+    assert.deepEqual(prefs.loadAppearance(), { cards: "two", motion: "reduce" });
+    store.setItem("solveaai:appearance:v1", JSON.stringify({ cards: "bad", motion: "bad" }));
+    assert.deepEqual(prefs.loadAppearance(), { cards: "four", motion: "standard" });
+    prefs.saveDisplayMode("simple");
+    assert.equal(prefs.loadDisplayMode(), "simple");
+    prefs.saveDisplayMode("bad");
+    assert.equal(prefs.loadDisplayMode(), "standard");
+  });
+});
+
+test("local logout removes only the profile by default", async () => {
+  const { clearProfile } = await server.ssrLoadModule("/src/profile.ts");
+  withLocalStorage(store => {
+    store.setItem("solveaai:profile:v1", "profile");
+    store.setItem("solveaai.trainer.answers", "[]");
+    clearProfile();
+    assert.equal(store.getItem("solveaai:profile:v1"), null);
+    assert.equal(store.getItem("solveaai.trainer.answers"), "[]");
+  });
+});

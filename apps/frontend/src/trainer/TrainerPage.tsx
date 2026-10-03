@@ -1,3 +1,4 @@
+import { RankBadge } from "./RankBadge.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowClockwise, ArrowLeft, ArrowRight, CheckCircle, Fire, Trash, Trophy, WarningCircle, XCircle } from "@phosphor-icons/react";
 import { Sidebar } from "../components/layout.tsx";
@@ -278,6 +279,7 @@ function RankResult({ rank }) {
   const tier = tierFor(rank.after);
   const promoted = tierFor(rank.before).name !== tier.name;
   return <section className="rank-result">
+    <RankBadge name={tier.name} size={80} />
     <div><small>レート</small><strong>{rank.after}</strong>
       <span className={delta >= 0 ? "up" : "down"}>{delta >= 0 ? "▲" : "▼"}{Math.abs(delta)}</span></div>
     <div><small>ランク</small><strong>{tier.name}</strong>{promoted && <span className={delta >= 0 ? "up" : "down"}>{delta >= 0 ? "昇格" : "降格"}</span>}</div>

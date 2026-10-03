@@ -131,3 +131,6 @@ The call / fold part of every heads-up postflop facing decision (flop `bb_vs_*` 
 - 2026-10-01 decision: postflop EV is not shown or computed in the product (no hand-EV panel, worker task, route, EV column or EV sentence); the per-hand EV paragraphs above describe removed behaviour. Preflop call EV is unaffected. Offline EV scripts under `scripts/postflop-ai/` are research tools only.
 
 - ポストフロップの説明文・レンジ表を書く前に `docs/postflop-explanation-lessons.md` を読み、新しい発見は同ファイルの「ここに追記する」へ日付つきで足す。
+
+## Selected-hand detail cleanup (2026-10-03)
+The user removed the Open size (total) and Total frequency rows from selected-hand details. Do not restore those redundant rows; preserve saved strategy values, action frequencies and other sizing facts.

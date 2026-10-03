@@ -61,7 +61,7 @@ test("only complete paths can enter the next street, with unsupported paths mark
 });
 
 test("every saved open response and 3bet response becomes a heads-up flop spot", () => {
-  assert.equal(POSTFLOP_SPOTS.length, 48);
+  assert.equal(POSTFLOP_SPOTS.length, 49);
   const srp = POSTFLOP_SPOTS.filter(spot => spot.kind === "srp"), threeBet = POSTFLOP_SPOTS.filter(spot => spot.kind === "3bp");
   assert.deepEqual(srp.map(spot => spot.responseId).sort(), preflopRanges.spots.map(spot => spot.id).sort());
   assert.deepEqual(threeBet.map(spot => spot.responseId).sort(), threeBetResponses.spots.map(spot => spot.id).sort());
@@ -144,6 +144,7 @@ test("4bet pots and SB's limped pots: seats, pot, stacks and tree", () => {
     SB_limp_BB_check: ["BB", "SB", 2, 99, "oop_leads"],
     SB_limp_BB_iso_call: ["BB", "SB", 7, 96.5, "oop_checks"],
     SB_limp_BB_iso_SB_reraise_call: ["BB", "SB", 21, 89.5, "oop_leads"],
+    SB_limp_BB_iso_SB_reraise_BB_4bet_call: ["BB", "SB", 52, 74, "oop_checks"],
   });
   assert.equal(fourBetSpotFor("SB", "BB").slug, "sb-bb-4bp-v1");
   // Ranges: O = open × 4bet, X = 3bet × call versus the 4bet; limped pots multiply their saved steps.
@@ -482,11 +483,12 @@ test("completed preflop end block extends the same action path", () => {
   assert.doesNotMatch(navigation, /aria-label="ポストフロップ/);
 });
 
-test("any flop can be selected in the card picker, with random and representative quick picks", () => {
+test("any flop can be selected in the card picker, with a random pick and no representative quick picks", () => {
   const dialog = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["As", "", ""], onApply() {}, onClose() {} }));
   assert.match(dialog, /role="dialog" aria-modal="true"/);
   assert.equal((dialog.match(/<select/g) ?? []).length, 0);
-  assert.equal((dialog.match(/aria-label="フロップ /g) ?? []).length, 12);
+  assert.equal((dialog.match(/aria-label="フロップ /g) ?? []).length, 0);
+  assert.doesNotMatch(dialog, /代表12ボード|flop-quick-picks/);
   assert.equal((dialog.match(/class="street-card-option suit-/g) ?? []).length, 52);
   assert.match(dialog, /ランダムなフロップ/);
   assert.match(dialog, /好きなカードを3枚選べます/);
@@ -499,13 +501,12 @@ test("any flop can be selected in the card picker, with random and representativ
     const english = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["As", "", ""], onApply() {}, onClose() {} }));
     assert.match(english, /Select flop/);
     assert.match(english, /Random flop/);
-    assert.match(english, /Quick picks · 12 representative flops/);
+    assert.doesNotMatch(english, /Quick picks|representative/);
   } finally {
     if (previousWindow === undefined) delete globalThis.window;
     else globalThis.window = previousWindow;
   }
   const complete = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["2c", "As", "7d"], onApply() {}, onClose() {} }));
-  assert.match(complete, /class="postflop-board-options"[\s\S]*?class="selected" aria-pressed="true" aria-label="フロップ A♠ 7♦ 2♣"/);
   assert.match(complete, /class="flop-apply-button"[^>]*>このフロップを使う/);
   assert.doesNotMatch(complete, /GTO|solver/i);
   const html = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["SB", "BB"], potBb: 2, pilotAvailable: false }, cards: ["", "", ""] }));

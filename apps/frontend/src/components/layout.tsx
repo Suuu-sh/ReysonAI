@@ -1,9 +1,12 @@
-import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GearSix, GraduationCap, SquaresFour, Spade } from "@phosphor-icons/react";
+import { BrandIcon } from "./BrandIcon.tsx";
+import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GearSix, GraduationCap, SquaresFour } from "@phosphor-icons/react";
 import { useState } from "react";
-import { levelLabel } from "../profile.ts";
+import { ACCOUNT_SECTION, AccountMenu } from "../account/AccountMenu.tsx";
+import "../account/preferences.ts";
 import { productLocale, selectProductLocale } from "../i18n.ts";
 
 export const RANGE_SECTION = "レンジ分析";
+export const LOGOUT_SECTION = "ログアウト";
 
 const navigationGroups = [
   {
@@ -44,12 +47,12 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
   return (
     <>
     {!collapsed && <div className="sidebar-backdrop" aria-hidden="true" onClick={() => toggle(true)} />}
-    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="EvionAI サイドバー">
+    <aside className={`app-sidebar${collapsed ? " is-collapsed" : ""}`} aria-label="ReysonAI サイドバー">
       <div className="sidebar-heading">
         <div className="brand">
-          <Spade size={30} weight="fill" />
+          <BrandIcon size={30} />
           <div className="brand-copy">
-            Evion<span>AI</span>
+            Reyson<span>AI</span>
             <small>Play Closer to Perfect</small>
           </div>
         </div>
@@ -104,12 +107,8 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
         <button type="button" aria-pressed={productLocale() === "en"} onClick={() => selectProductLocale("en")}>EN</button>
         <button type="button" aria-pressed={productLocale() === "ja"} onClick={() => selectProductLocale("ja")}>日本語</button>
       </div>
-      {profile ? (
-        <button type="button" className="header-meta profile-chip" onClick={onEditProfile} title="レベルを変更" aria-label={`プロフィール：${levelLabel(profile.level)}。レベルを変更`}>
-          <strong>{profile.nickname || "ゲスト"}</strong>
-          <small>{levelLabel(profile.level)} · レベルを変更</small>
-        </button>
-      ) : (
+      {profile ? <AccountMenu profile={profile} collapsed={collapsed}
+        onNavigate={tab => onSectionChange(`${ACCOUNT_SECTION}#${tab}`)} onLogout={() => onSectionChange(LOGOUT_SECTION)} /> : (
         <div className="header-meta">
           <strong>Range Explorer</strong>
           <small>READ-ONLY / v0.1</small>

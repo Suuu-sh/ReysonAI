@@ -1,3 +1,4 @@
+import { RankBadge, RankLadder } from "./RankBadge.tsx";
 import { ArrowClockwise, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { AGENT_TABLES } from "../agent/characters.ts";
 import { Monster } from "../agent/Monster.tsx";
@@ -118,19 +119,20 @@ function RankedCard({ rank, draft, onStart, onOpenRanking }) {
   const left = Math.max(0, RANKED_DAILY_LIMIT - playedToday(rank));
   const canStart = Boolean(draft) || left > 0;
   return <article className={`ranked-card${draft ? " in-progress" : ""}`}>
-    <div className="ranked-tier">
-      <Trophy size={26} weight="fill" />
-      <div><small>ランク</small><strong>{tier.name}</strong></div>
-      <div><small>レート</small><strong>{rank.rating}</strong></div>
-      <div><small>最高</small><strong>{rank.peak}</strong></div>
+    <header className="ranked-heading"><span>{localized("Ranked arena", "ランクアリーナ")}</span><small>{localized("Local progress", "このブラウザの記録")}</small></header>
+    <div className="ranked-overview">
+      <div className="ranked-identity"><RankBadge name={tier.name} size={108} /><div><small>{localized("Your rank", "現在のランク")}</small><h2>{localized(TIER_EN[tier.name], tier.name)}</h2></div></div>
+      <dl className="ranked-metrics"><div><dt>{localized("Rating", "レート")}</dt><dd>{rank.rating.toLocaleString()}</dd></div><div><dt>{localized("Personal best", "自己最高")}</dt><dd>{rank.peak.toLocaleString()}</dd></div></dl>
+      <div className="ranked-progress">
+        <div><strong>{tier.next ? localized(`Next: ${TIER_EN[tier.next.name]}`, `次のランク：${tier.next.name}`) : localized("Top rank reached", "最高ランクです")}</strong><small>{tier.next ? localized(`${tier.next.min - rank.rating} points to go`, `あと${tier.next.min - rank.rating}ポイント`) : localized("Master", "マスター")}</small></div>
+        <progress max={1} value={tier.progress} aria-label={localized("Progress to next rank", "次のランクへの進捗")} />
+        <div className="ranked-range"><small>{tier.min.toLocaleString()}</small><small>{tier.next?.min.toLocaleString() ?? "—"}</small></div>
+      </div>
     </div>
-    <div className="ranked-progress" aria-label={tier.next ? localized(`${tier.next.min - rank.rating} to ${TIER_EN[tier.next.name]}`, `${tier.next.name}まで あと${tier.next.min - rank.rating}`) : "最高ランク"}>
-      <i style={{ "--progress": tier.progress }} />
-      <small>{tier.next ? localized(`${tier.next.min - rank.rating} to ${TIER_EN[tier.next.name]}`, `${tier.next.name}まで あと${tier.next.min - rank.rating}`) : "最高ランクです"}</small>
-    </div>
+    <RankLadder rating={rank.rating} />
     <footer>
       <p><b>ランク戦</b> {localized(`All spots · standard difficulty · ${RANKED_LENGTH} questions. Harder hands move your rating more.`, `全局面・標準難易度・${RANKED_LENGTH}問。難しいハンドほどレートが大きく動きます。`)}</p>
-      <small>{draft ? localized(`${draft.session.answered} answered`, `${draft.session.answered}問 回答済み`) : localized(`${left} / ${RANKED_DAILY_LIMIT} left today`, `今日の残り ${left} / ${RANKED_DAILY_LIMIT}回`)}</small>
+      <small className="ranked-quota">{draft ? localized(`${draft.session.answered} answered`, `${draft.session.answered}問 回答済み`) : localized(`${left} / ${RANKED_DAILY_LIMIT} left today`, `今日の残り ${left} / ${RANKED_DAILY_LIMIT}回`)}</small>
       <button type="button" className="setup-secondary" onClick={onOpenRanking}>ランキング</button>
       <button type="button" className={`drill-start${draft ? " resume" : ""}`} disabled={!canStart} onClick={onStart}>
         <Play size={14} weight="fill" />{draft ? "続きから" : canStart ? "ランク戦に挑む" : "また明日"}

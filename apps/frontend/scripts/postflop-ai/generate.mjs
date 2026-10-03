@@ -6,7 +6,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { artifactPaths, boards, config, readArtifact, requireArtifact, root, seatRange } from "./inputs.mjs";
 import { LATER_NODES, STREETS, openingActions, streetNodes } from "./later-tree.mjs";
-import { boardTexture, handTier, LINES, RUNOUT_TEXTURES, TIERS } from "./model.mjs";
+import { boardHeight, boardTexture, handTier, LINES, parseCards, RUNOUT_TEXTURES, TIERS } from "./model.mjs";
 import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
 import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
@@ -58,6 +58,11 @@ function spotContext(inputs) {
   };
   const design = boards().filter(board => board.split === "design").map(board =>
     `${board.id}(${boardTexture(board.cards)};${spot.ip} ${distribution(spot.ip, board.cards)};${spot.oop} ${distribution(spot.oop, board.cards)})`);
+  // Extra boards that show how the two ranges hit high, middle and low flops.
+  const heights = ["AsKd7c", "Qh8s3d", "Jc9d4h", "Ts8c6d", "8h5c2d", "7c6d4s", "6s3h2c"].map(text => {
+    const cards = parseCards(text, 3);
+    return `${text}(${boardHeight(cards)} ${boardTexture(cards)};${spot.ip} ${distribution(spot.ip, cards)};${spot.oop} ${distribution(spot.oop, cards)})`;
+  });
   const raiser = seat => !spot.aggressor ? (seat === "SB" ? "limper" : "checked the limp")
     : seat === spot.aggressor ? ({ "3bp": "preflop 3bettor", "4bp": "preflop 4bettor", limp: "preflop last raiser" }[spot.kind] ?? "preflop raiser")
       : "preflop caller";
@@ -73,12 +78,12 @@ function spotContext(inputs) {
   const nodeNames = spot.tree === "oop_leads"
     ? `Node names are fixed: btn_* and ip_* nodes are ${spot.ip}'s (IP) decisions and bb_* and oop_* nodes are ${spot.oop}'s (OOP) decisions.`
     : `Node names are fixed: btn_* nodes are ${spot.ip}'s (IP) decisions and bb_* nodes are ${spot.oop}'s (OOP) decisions.`;
-  return { preflop, design, raiser, nodeNames };
+  return { preflop, design, heights, raiser, nodeNames };
 }
 
 export function promptFor(inputs) {
   const { spot } = inputs;
-  const { preflop, design, raiser, nodeNames } = spotContext(inputs);
+  const { preflop, design, heights, raiser, nodeNames } = spotContext(inputs);
   const nodes = treeNodes(spot.tree);
   const bets = FLOP_BETS.join("/"), sizes = FLOP_BETS.map(flopBetLabel).join(" / ");
   const facingList = bettor => FLOP_BETS.map(bet => facingNode(bettor, bet)).join(" / ");
@@ -91,10 +96,11 @@ export function promptFor(inputs) {
     `Cash 6-max 100BB no ante, ${preflop} flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB.`,
     `${spot.ip} (${raiser(spot.ip)}) is in position; ${spot.oop} (${raiser(spot.oop)}) is out of position. ${nodeNames}`,
     "Input summaries below are weighted real two-card combo distributions after excluding flop blockers. Tier values are rounded percentages, in monster/strong/draw/medium/air order. Never infer the opponent's hidden cards during a decision.",
-    `Example design flops (no other boards supplied): ${design.join(", ")}. Rules must generalize to unseen textures.`,
+    `Example design flops: ${design.join(", ")}. Boards by height: ${heights.join(", ")}. Users can pick any of the 1,755 flop classes, so rules must generalize to every board.`,
     tree,
-    "Use tier order monster(two pair+), strong(top pair/overpair), draw(flush/straight draw), medium(other pair), air. Texture is dry/wet/monotone/paired. Rules may override a texture, but every node and tier MUST have one texture=any fallback.",
+    "Use tier order monster(two pair+), strong(top pair/overpair), draw(flush/straight draw), medium(other pair), air. A rule's texture is a shape (dry/wet/monotone/paired), a height by the top card (high = A/K/Q, mid = J/T/9, low = 8 or lower), a shape_height pair such as dry_low or wet_high, or any. The most specific matching rule wins (shape_height, then shape, then height, then any). Every node and tier MUST have one texture=any fallback.",
     `Nodes/actions: ${JSON.stringify(Object.fromEntries(nodes.map(node => [node, NODES[node]])))}. Tiers: ${TIERS.join(", ")}.`,
+    "Board height decides range advantage: compare the two ranges on the height boards above. On every *_first node write a shape_height rule for every one of the 12 shape x height pairs (dry/wet/monotone/paired x high/mid/low) for the air, medium and draw tiers (a shape-only rule such as paired would otherwise hide the height), plus height rules for the other tiers: where the bettor's range is weaker on that height (e.g. a preflop raiser on low boards), check more and bet air much less often, so a bet range never carries more air than its size supports; where it is stronger (e.g. the raiser on high boards), bet more often and smaller. Facing nodes may also use heights.",
     "Add texture overrides where the board changes the strategy (e.g. bet smaller and more often on dry boards, check more on monotone and wet boards out of position); the out-of-position player checks and leads less than the in-position player; keep some monsters in checking ranges; raises must include some draws or bluffs, not only monsters; keep bluffs proportional to the bet size. The opponent is not a fixed bot; do not exploit an opponent that folds too often.",
     `Output exactly {version:1,kind:'ai_estimate_not_gto',rules:[{node,texture,tier,mix},...]}. Mix keys must be exactly the legal actions for that node, integer 0..100, summing to 100. Include the ${nodes.length * 5} mandatory fallback rules and no more than ${nodes.length * 20} overrides; no rationale, code, private opponent cards, or other properties.`,
   ].join("\n");
@@ -217,6 +223,7 @@ export function promptForLater(inputs) {
     `Output exactly {version:1,kind:'ai_estimate_not_gto',streets:{turn:{rules:[...]},river:{rules:[...]}}} where each rule is {node,line,texture,tier,mix}; line is 'any' or one of ${LINES.join("/")}, texture is 'any' or one of ${RUNOUT_TEXTURES.join("/")}. Every node x tier MUST have one line='any',texture='any' fallback (${fallbacks} in total); at most 20 other rules per node. Mix keys must be exactly the node's legal actions, integers 0..100 summing to 100. No rationale, code or other properties.`,
     "For every *_first node on each street, add at least 3 overrides keyed by line (aggressor/defender/checked) and at least 3 keyed by texture (e.g. slow down on flush/pair cards, barrel blanks and overcards as the aggressor, probe when the previous street checked through).",
     "OOP and IP play differently: the out-of-position player checks more and leads less; do not copy oop_first into ip_first.",
+    "Donk bets are rare: on turn_oop_first and river_oop_first with line='defender' (OOP called the opponent's bet on the previous street), add a line='defender' rule for EVERY tier, and keep total betting low (monster about 20%, strong/draw about 15%, medium/air at most 5%); the caller mostly checks to the aggressor.",
     "Keep river bluffs proportional to the bet size: among hands that bet, the share of air should be about 20% for 33% pot, 30% for 75%, 36% for 125% and 40% for all-in. Raises must include some bluffs or draws, not only monsters.",
     "The opponent is not a fixed bot; do not exploit an opponent that folds too often.",
   ].join("\n");
