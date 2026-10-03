@@ -43,6 +43,13 @@ export const en = {
     sample: "Sample", rank: "Rank", rating: "Rating", peak: "Peak", toNext: (points: number, tier: string) => `${points} to ${tier}`, today: "2 / 3 matches left today", lastMatch: "Last match", matchLine: (correct: number, total: number) => `${correct} / ${total} correct · ${Math.round(correct / total * 100)}% accuracy`,
     tiers: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master"],
   },
+  agent: {
+    status: "Beta", title1: "Agent table.", title2: "Put it to work in real hands.",
+    description: "Sit at a 6-max table with five Agents that play the Reyson AI estimate. Use the ranges you studied on the hands you are dealt. Fold any time, then watch the rest or skip ahead.",
+    points: ["Every Agent plays the Reyson solver (AI estimate)", "100BB cash game, results kept in points", "Your play style read from your latest 1,000 hands", "Heads-up after the flop for now (beta)"],
+    sample: "Sample", you: "You", toAct: "Your turn", pot: "Pot", raise: "Raise 2.5", fold: "Fold",
+    actions: ["Fold", "Call 2.5", "3bet 8"], read: "Agent read", readStyle: "Tight-aggressive", hands: "312 hands",
+  },
   analysis: {
     title1: "See how you", title2: "actually play.",
     description: "Every practice answer is compared with the saved estimate. ReysonAI turns them into a play-style map, action tendencies, strengths, weak spots and what to practice next.",

@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useRef, useState, type CSSPropert
 import { BrandIcon } from "../components/BrandIcon.tsx";
 import { ArrowRight, ArrowUpRight, Check, List, X } from "@phosphor-icons/react";
 import { TierEmblem, tierColor } from "../trainer/RankEmblem.tsx";
+import { AgentAvatar } from "../agent/AgentAvatar.tsx";
+import { AGENT_TABLE } from "../agent/characters.ts";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
@@ -598,7 +600,9 @@ const tierMins = [0, 950, 1100, 1250, 1400, 1550];
 // Tier keys (Japanese names) for the shared emblem colours, in tierMins order.
 const TIER_KEYS = ["ブロンズ", "シルバー", "ゴールド", "プラチナ", "ダイヤモンド", "マスター"];
 
-// Wide screens: Training pins for one screen while scrolling slides it over to Ranked.
+// Wide screens: Training pins for one screen while scrolling slides it over to Ranked, then the Agent table.
+const TRAIN_PAGES = 3;
+
 function TrainingTrack() {
   const { motion } = useSite();
   const ref = useRef<HTMLDivElement>(null);
@@ -622,8 +626,8 @@ function TrainingTrack() {
       const span = rect.height - window.innerHeight;
       if (span <= 0) return;
       const progress = Math.min(Math.max(-rect.top / span, 0), 1);
-      // Switch whole pages at the midpoint; CSS animates the slide so it never rests halfway.
-      setShift(progress >= 0.5 ? 1 : 0);
+      // Switch whole pages at each third; CSS animates the slide so it never rests halfway.
+      setShift(Math.min(TRAIN_PAGES - 1, Math.floor(progress * TRAIN_PAGES)));
     };
     const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
@@ -638,7 +642,7 @@ function TrainingTrack() {
   // Anchor the scroll track, not its sticky child: #drill must rewind the slide to Training.
   return <div className={`site-train${scrolly ? " is-scrolly" : ""}`} id="drill" ref={ref}>
     <div className="site-train-stage">
-      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 50}%)` } : undefined}><Drill /><Ranked /></div>
+      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 100 / TRAIN_PAGES}%)` } : undefined}><Drill /><Ranked /><AgentFeature /></div>
     </div>
   </div>;
 }
@@ -687,6 +691,43 @@ function Ranked() {
             <ol className="site-rank-pips">{["up", "up", "down", "up", "up"].map((result, i) => <li key={i} className={`is-${result}`} />)}</ol></div>
           <div className="site-rank-today"><span className="site-rank-dots"><i className="is-used" /><i /><i /></span>{c.ranked.today}</div>
         </div>
+      </div>
+    </div>
+  </section>;
+}
+
+// Agent table: the same felt and seats as the app's Reyson Agent table, frozen on the human's turn.
+const AGENT_SEAT_SLOTS = ["is-left", "is-top-left", "is-top", "is-top-right", "is-right"];
+
+function AgentFeature() {
+  const { copy: c } = useSite();
+  const table = AGENT_TABLE;
+  return <section className="site-section site-agent" id="agent" aria-labelledby="site-agent-title">
+    <div className="site-wrap site-feature">
+      <div className="site-feature-copy" data-reveal>
+        <span className="site-status">{c.agent.status}</span>
+        <h2 id="site-agent-title">{c.agent.title1}<span>{c.agent.title2}</span></h2>
+        <p>{c.agent.description}</p>
+        <ul className="site-points">{c.agent.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
+      </div>
+      <div className="site-mock site-agent-mock" data-reveal aria-hidden="true">
+        <span className="site-sample">{c.agent.sample}</span>
+        <div className="site-agent-table">
+          <div className="site-agent-felt"><span className="site-agent-logo">ReysonAI</span><span className="site-agent-pot">{c.agent.pot} <b>4.0BB</b></span></div>
+          {table.agents.map((agent, index) => <div key={agent.id} className={`site-agent-seat ${AGENT_SEAT_SLOTS[index]}${index === 1 ? "" : index === 2 ? " is-raised" : " is-folded"}`} style={{ "--i": index } as CSSProperties}>
+            <span className="site-agent-plate"><AgentAvatar id={agent.id} color={agent.color} size={38} state={index === 1 || index === 2 ? "idle" : "fold"} /><b>{agent.name.en}</b></span>
+            {index === 2 ? <span className="site-agent-bubble is-raise">{c.agent.raise}</span> : index !== 1 && <span className="site-agent-bubble">{c.agent.fold}</span>}
+          </div>)}
+          <div className="site-agent-seat is-hero">
+            <span className="site-agent-cards"><span className="site-agent-card is-heart">A<i>♥</i></span><span className="site-agent-card is-spade">Q<i>♠</i></span></span>
+            <span className="site-agent-plate is-you"><span className="site-agent-you">YOU</span><b>{c.agent.you}</b></span>
+          </div>
+        </div>
+        <div className="site-agent-turn">
+          <span>{c.agent.toAct}</span>
+          <div className="site-agent-actions">{c.agent.actions.map((label, index) => <span key={label} className={`site-agent-act is-${["fold", "call", "raise"][index]}`}><kbd>{index + 1}</kbd>{label}</span>)}</div>
+        </div>
+        <div className="site-agent-read"><span>{c.agent.read}</span><b>{c.agent.readStyle}</b><small>VPIP 24% · PFR 19% · 3bet 8%</small><small>{c.agent.hands}</small></div>
       </div>
     </div>
   </section>;
