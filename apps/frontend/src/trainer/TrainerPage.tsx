@@ -406,9 +406,6 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
             </button>;
           })}
         </div>
-        <button type="button" className={`trainer-next-btn${answer ? " ready" : ""}`} onClick={advance} disabled={!answer}>
-          {lastQuestion ? "結果へ" : "次へ"}<ArrowRight size={14} weight="bold" /><kbd>Enter</kbd>
-        </button>
         </div>
       </section>
 

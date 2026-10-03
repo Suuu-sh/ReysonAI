@@ -425,10 +425,9 @@
   .drill-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* Next button: fixed at the end of the action row so it is always in the same place. */
+/* Next lives on the answered action button itself. */
 .stage-footer { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
 @media (max-width: 560px) {
-  .stage-footer { grid-template-columns: minmax(0, 1fr); }
   .config-chip { display: none; }
 }
 .drill-card-stats { flex-wrap: wrap; }
