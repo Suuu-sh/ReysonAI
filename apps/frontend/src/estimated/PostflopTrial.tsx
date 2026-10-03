@@ -519,6 +519,12 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         {!decision.node && start && turnReplay && !later?.node && (turnReplay.end?.type === "fold" || turnReplay.end?.type === "raise-fold" || turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0 || Boolean(riverReplay?.state.end)) && <Panel><StatusState title={english ? "Later-street action complete" : "後続ストリートの判断終了"}>{english ? "The action has ended; no later decision is available." : "フォールドまたはオールインでアクションが終了しました。後続の判断はありません。"}</StatusState></Panel>}
         {!decision.node && start && later?.node && laterStatus === "loading" && <Panel><StatusState title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} /></Panel>}
         {!decision.node && start && later?.node && laterStatus === "error" && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
+        {current && decision.node === "btn_first" && data.tree === "oop_checks" && <Panel className="postflop-oop-check-note">
+          <StatusState title={english ? `${context.oop} · first decision: Check 100%` : `${context.oop} · 最初の判断：チェック 100%`}>
+            {english ? `In this pot ${context.oop} (the preflop caller) always checks the flop; leading bets are not modelled, so there is no ${context.oop} range for this decision.`
+              : `このポットでは、プリフロップでコールした${context.oop}はフロップで常にチェックします。先にベットする選択肢は扱っていないため、この判断の${context.oop}のレンジ表はありません。`}
+          </StatusState>
+        </Panel>}
         {current && aggregates && <div className="postflop-range-layout">
           <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · ${english ? "range" : "レンジ"}`} ariaLabel={english ? `${current.seat} flop range` : `${current.seat}のフロップレンジ`}
             aggregates={aggregates} actions={current.actions} actionLabels={labels} simplified={displayMode === "simple"}
