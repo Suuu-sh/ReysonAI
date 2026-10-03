@@ -47,14 +47,22 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
   const myRow = rows.find(row => row.self);
   const toGo = Math.max(0, LEADERBOARD_MIN_MATCHES - (me?.matches ?? 0));
   return <div className="leaderboard">
-    <div className="library-head">
+    <button type="button" className="config-edit lb-back" onClick={onBack}><ArrowLeft size={14} />{localized("Trainer", "トレーナー")}</button>
+    <header className="trainer-home-head lb-head">
       <div>
-        <h1><Trophy size={24} weight="fill" /> {localized("Leaderboard", "ランキング")}</h1>
+        <span className="trainer-home-eyebrow"><Trophy size={12} weight="fill" /> LEADERBOARD</span>
+        <h1>{localized("Leaderboard", "ランキング")}</h1>
         <p>{localized(`Ranked by rating. Play ${LEADERBOARD_MIN_MATCHES} ranked matches in the period to be placed.`,
           `ランク戦のレート順です。期間内に${LEADERBOARD_MIN_MATCHES}試合以上プレイすると順位が付きます。`)}</p>
       </div>
-      <button type="button" className="config-edit" onClick={onBack}><ArrowLeft size={14} />{localized("Back", "一覧")}</button>
-    </div>
+      <div className="lb-head-tools">
+        {demo && <small className="lb-demo-flag">{localized("Local dev: dummy players", "ローカル開発用のダミー")}</small>}
+        <div className="lb-period" role="group" aria-label={localized("Ranking period", "ランキング期間")}>
+          {PERIODS.map(item => <button key={item.value} type="button" aria-pressed={period === item.value}
+            className={period === item.value ? "on" : ""} onClick={() => setPeriod(item.value)}>{localized(item.label[0], item.label[1])}</button>)}
+        </div>
+      </div>
+    </header>
 
     <section className="lb-me" style={{ "--mode-theme": tierColor(tier.name) }} aria-label={localized("Your standing", "あなたの記録")}>
       <div className="lb-me-id">
@@ -67,13 +75,6 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
         <div><dt>{localized("Matches", "試合")}</dt><dd>{me?.matches ?? 0}<small>/{LEADERBOARD_MIN_MATCHES}</small></dd></div>
       </dl>
       <span className="lb-me-note">{toGo ? localized(`${toGo} more to be placed`, `あと${toGo}試合で順位確定`) : localized("Placed this period", "順位確定")}</span>
-      <div className="lb-me-tools">
-        {demo && <small className="lb-demo-flag">{localized("Dummy players", "ダミー表示")}</small>}
-        <div className="lb-period" role="group" aria-label={localized("Ranking period", "ランキング期間")}>
-          {PERIODS.map(item => <button key={item.value} type="button" aria-pressed={period === item.value}
-            className={period === item.value ? "on" : ""} onClick={() => setPeriod(item.value)}>{localized(item.label[0], item.label[1])}</button>)}
-        </div>
-      </div>
     </section>
 
     {rows.length ? <>
