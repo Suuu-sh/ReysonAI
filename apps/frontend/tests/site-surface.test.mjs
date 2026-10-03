@@ -60,7 +60,7 @@ test("mobile scenes grow with their explanation and cards instead of clipping a 
   assert.match(tablet, /\.site \.site-lang, \.site \.site-button\.is-small, \.site \.site-segment button\s*\{[^}]*min-height: 44px/);
   assert.match(css, /\.site-dash-kpis\s*\{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
   assert.doesNotMatch(css, /\.site-dash-kpis[^}]*text-overflow: ellipsis/);
-  assert.match(css, /\.site-rank-top\s*\{[^}]*flex-wrap: wrap/);
+  assert.match(css, /\.site-rank-card\s*\{[^}]*flex-wrap: wrap/);
   assert.match(css, /\.site-mock\s*\{[^}]*min-width: 0/);
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   assert.match(source, /matchMedia\("\(min-width: 961px\) and \(min-height: 840px\)"\)/,
