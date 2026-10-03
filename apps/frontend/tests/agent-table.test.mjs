@@ -19,11 +19,12 @@ const hasPolicies = id => { const paths = artifactPaths(spotById(id)); return ex
 const postflop = id => {
   if (!kits.has(id)) {
     let kit = null;
-    if (hasPolicies(id)) {
+    // A stale or invalid local candidate counts as missing, like in the app.
+    if (hasPolicies(id)) try {
       const inputs = loadInputs(id);
       const candidate = loadCandidate(inputs);
       kit = makePostflopKit(id, datasets, candidate, loadLaterCandidate(inputs, candidate));
-    }
+    } catch { kit = null; }
     kits.set(id, kit);
   }
   return kits.get(id);

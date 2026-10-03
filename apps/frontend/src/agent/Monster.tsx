@@ -24,7 +24,7 @@ export function Monster({ id, color, size = 56, mood = "idle" }: { id: string; c
   const dark = "#1c1c22";
   const eyeY = id === "kira" ? 44 : id === "pichi" || id === "hino" || id === "evi" ? 58 : 56;
   const sleepy = id === "nemu" || mood === "fold";
-  return <svg className={`monster mood-${mood}`} width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+  return <svg className={`monster mood-${mood}`} width={size} height={size} viewBox="0 0 100 100" aria-hidden="true"><g className="monster-body">
     {shape.extra === "ears" && <><ellipse cx="36" cy="18" rx="7" ry="16" fill={color} /><ellipse cx="64" cy="18" rx="7" ry="16" fill={color} /></>}
     {shape.extra === "tufts" && <><path d="M26 30 L22 12 L38 24 Z" fill={color} /><path d="M74 30 L78 12 L62 24 Z" fill={color} /></>}
     {shape.extra === "wolf" && <><path d="M26 38 L26 14 L42 32 Z" fill={color} /><path d="M74 38 L74 14 L58 32 Z" fill={color} /></>}
@@ -37,14 +37,14 @@ export function Monster({ id, color, size = 56, mood = "idle" }: { id: string; c
     {shape.extra === "cap" && <path d="M14 52 C14 26 32 14 50 14 C68 14 86 26 86 52 Z" fill="#e8584c" />}
     {shape.extra === "cap" && <><circle cx="34" cy="32" r="5" fill="#fff" opacity=".9" /><circle cx="60" cy="26" r="4" fill="#fff" opacity=".9" /><circle cx="70" cy="40" r="3.5" fill="#fff" opacity=".9" /></>}
     {shape.extra === "acorn" && <path d="M20 46 C22 26 78 26 80 46 Z" fill="#7a5532" />}
-    {sleepy
+    <g className="monster-eyes">{sleepy
       ? <><path d={`M36 ${eyeY} q5 4 10 0`} stroke={dark} strokeWidth="3" fill="none" strokeLinecap="round" /><path d={`M54 ${eyeY} q5 4 10 0`} stroke={dark} strokeWidth="3" fill="none" strokeLinecap="round" /></>
       : <><ellipse cx="41" cy={eyeY} rx="4.5" ry="5.5" fill={dark} /><ellipse cx="59" cy={eyeY} rx="4.5" ry="5.5" fill={dark} />
-        <circle cx="42.5" cy={eyeY - 2} r="1.6" fill="#fff" /><circle cx="60.5" cy={eyeY - 2} r="1.6" fill="#fff" /></>}
+        <circle cx="42.5" cy={eyeY - 2} r="1.6" fill="#fff" /><circle cx="60.5" cy={eyeY - 2} r="1.6" fill="#fff" /></>}</g>
     <ellipse cx="32" cy={eyeY + 9} rx="5" ry="3" fill="#ff8fb3" opacity=".55" />
     <ellipse cx="68" cy={eyeY + 9} rx="5" ry="3" fill="#ff8fb3" opacity=".55" />
     {shape.extra === "teeth"
       ? <path d={`M40 ${eyeY + 12} L60 ${eyeY + 12} L57 ${eyeY + 16} L54 ${eyeY + 12} L50 ${eyeY + 16} L46 ${eyeY + 12} L43 ${eyeY + 16} Z`} fill="#fff" />
       : <path d={mood === "win" ? `M44 ${eyeY + 10} q6 7 12 0` : `M46 ${eyeY + 11} q4 3 8 0`} stroke={dark} strokeWidth="2.6" fill="none" strokeLinecap="round" />}
-  </svg>;
+  </g></svg>;
 }

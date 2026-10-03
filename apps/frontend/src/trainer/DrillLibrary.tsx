@@ -2,6 +2,7 @@ import { RankBadge, RankLadder } from "./RankBadge.tsx";
 import { ArrowClockwise, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { AGENT_TABLES } from "../agent/characters.ts";
 import { Monster } from "../agent/Monster.tsx";
+import { loadAgentHands, summarizeAgentHands } from "../agent/agent-stats.ts";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.ts";
 import { drillStats } from "./drill-store.ts";
 import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIER_EN, playedToday, tierFor } from "./rank-store.ts";
@@ -143,15 +144,35 @@ function RankedCard({ rank, draft, onStart, onOpenRanking }) {
 
 // Evion Agent: six-handed tables against monster agents that play the Evion solver estimate.
 function AgentEntry({ onStart }) {
+  const byTable = summarizeAgentHands(loadAgentHands()).tables;
   return <section className="agent-entry">
-    <header><h3>Evion Agent</h3><small>{localized("6-max ring game against agents that play the Evion solver estimate", "Evion solver 通りに打つAgentと6人卓で対戦")}</small></header>
-    <div className="agent-tables">{AGENT_TABLES.map(table => <article key={table.id} className="agent-table-card" style={{ borderColor: table.theme }}>
-      <strong>{localized(table.name.en, table.name.ja)}</strong>
-      <div className="agent-faces">{table.agents.map(agent => <Monster key={agent.id} id={agent.id} color={agent.color} size={38} />)}</div>
-      <footer>
-        <button type="button" className="drill-start" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
-        <button type="button" className="setup-secondary" onClick={() => onStart(table.id, true)}><Eye size={14} />{localized("Watch", "観戦")}</button>
-      </footer>
-    </article>)}</div>
+    <header>
+      <div>
+        <h3>Evion Agent</h3>
+        <p>{localized("Sit at a 6-max table with agents that play the Evion solver estimate. Fold any time, then watch or skip.", "Evion solver（AI推定）通りに打つAgentと6人卓で対戦。降りたら観戦もスキップもできます。")}</p>
+      </div>
+      <ul className="agent-entry-facts"><li>6-max · 100BB</li><li>{localized("1BB = 100 pts", "1BB = 100点")}</li><li>{localized("Heads-up flops", "フロップはHUのみ")}</li></ul>
+    </header>
+    <div className="agent-tables">{AGENT_TABLES.map(table => {
+      const record = byTable.find(row => row.tableId === table.id);
+      const points = record ? Math.round(record.net * 100) : 0;
+      return <article key={table.id} className="agent-table-card" style={{ "--table-theme": table.theme }}>
+        <div className="agent-table-scene">
+          {table.agents.map((agent, index) => <span key={agent.id} className="agent-table-face" style={{ "--i": index }} title={localized(agent.name.en, agent.name.ja)}>
+            <Monster id={agent.id} color={agent.color} size={46} /></span>)}
+        </div>
+        <div className="agent-table-body">
+          <strong>{localized(table.name.en, table.name.ja)}</strong>
+          <small>{localized(table.tagline.en, table.tagline.ja)}</small>
+          <p className="agent-table-record">{record
+            ? <>{localized(`${record.hands} hands`, `${record.hands}ハンド`)} · <b className={points > 0 ? "up" : points < 0 ? "down" : ""}>{points > 0 ? "+" : ""}{points.toLocaleString()}</b></>
+            : localized("Not played yet", "まだ対戦していません")}</p>
+        </div>
+        <footer>
+          <button type="button" className="agent-sit" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
+          <button type="button" className="agent-watch" onClick={() => onStart(table.id, true)} aria-label={localized(`Watch ${table.name.en}`, `${table.name.ja}を観戦`)}><Eye size={15} />{localized("Watch", "観戦")}</button>
+        </footer>
+      </article>;
+    })}</div>
   </section>;
 }

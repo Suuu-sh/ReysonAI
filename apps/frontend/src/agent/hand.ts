@@ -27,8 +27,10 @@ export type HandSetup = {
   postflop: (spotId: string) => PostflopKit | null | undefined; // undefined: not loaded yet
 };
 
-export type Pending = { street: "preflop" | "flop" | "turn" | "river"; pos: Position; options: { key: string; to?: number }[]; pot: number; board: string[] };
-export type LogEntry = { street: string; pos: Position; action: string; to?: number; pot: number; source?: string; tableRule?: string | null };
+// `to`: the street total the action makes (BB); `toCall`: chips the human owes now.
+export type Pending = { street: "preflop" | "flop" | "turn" | "river"; pos: Position; options: { key: string; to?: number }[]; pot: number; board: string[]; toCall?: number; notice?: "no_multiway" | "no_data" | null };
+// `pot` is the pot after the action; `bets` the street totals in front of each seat after it.
+export type LogEntry = { street: string; pos: Position; action: string; to?: number; pot: number; bets?: Record<string, number>; source?: string; tableRule?: string | null };
 
 export type HandResult = {
   status: "awaiting" | "needs_postflop" | "done";
@@ -43,7 +45,14 @@ export type HandResult = {
   returns?: Record<string, number>; // BB won or lost per position
   rake?: number;
   pot?: number;
+  handRanks?: Record<string, number>; // made-hand category of each seat at showdown (0 high card … 8 straight flush)
 };
+
+const CATEGORY = ["ハイカード", "ワンペア", "ツーペア", "スリーカード", "ストレート", "フラッシュ", "フルハウス", "フォーカード", "ストレートフラッシュ"];
+const CATEGORY_EN = ["High card", "One pair", "Two pair", "Three of a kind", "Straight", "Flush", "Full house", "Four of a kind", "Straight flush"];
+// Category of a 5-7 card score from evaluate() (packed as category * 16^5 + kickers).
+export const handCategory = (score: number) => Math.floor(score / 16 ** 5);
+export const categoryName = (category: number, locale: "ja" | "en" = "ja") => (locale === "ja" ? CATEGORY : CATEGORY_EN)[category] ?? "";
 
 class Await extends Error {
   pending: Pending;
@@ -94,7 +103,9 @@ export function playHand(setup: HandSetup): HandResult {
     let action: PreflopAction, source = offered.source ?? undefined, tableRule: string | null = null;
     if (pos === setup.human) {
       const options = humanPreflopOptions(state, pos, offered);
-      if (!humanQueue.length) return result({ status: "awaiting", pending: { street: "preflop", pos, options, pot: preflopPot(state), board: [] } });
+      const owed = round(Math.max(0, ...Object.values(state.committed)) - (state.committed[pos] ?? 0));
+      if (!humanQueue.length) return result({ status: "awaiting", pending: { street: "preflop", pos, options, pot: preflopPot(state), board: [], toCall: owed,
+        notice: offered.tableRule ?? (offered.callBlocked && owed > 0 ? "no_multiway" : null) } });
       const key = humanQueue.shift()!;
       const picked = options.find(option => option.key === key);
       if (!picked) throw new Error(`Illegal preflop action ${key} for ${pos}`);
@@ -104,7 +115,7 @@ export function playHand(setup: HandSetup): HandResult {
       action = decision.action; tableRule = offered.tableRule;
     }
     state = applyPreflop(state, pos, action);
-    log.push({ street: "preflop", pos, action: action.key, to: state.committed[pos], pot: preflopPot(state), source, tableRule });
+    log.push({ street: "preflop", pos, action: action.key, to: state.committed[pos], pot: preflopPot(state), bets: { ...state.committed }, source, tableRule });
   }
 
   const alive = alivePositions(state);
@@ -127,7 +138,8 @@ export function playHand(setup: HandSetup): HandResult {
     const winners: Position[] = scoreA === scoreB ? [a, b] : scoreA > scoreB ? [a] : [b];
     const returns = Object.fromEntries(POSITIONS.map(pos => [pos,
       round((winners.includes(pos) ? paid / winners.length : 0) - (contributions[pos] ?? 0))]));
-    return result({ ...extra, board: cards.map(cardText), winners, showdown: true, returns, rake: fee, pot: total });
+    const handRanks = { [a]: handCategory(scoreA), [b]: handCategory(scoreB) };
+    return result({ ...extra, board: cards.map(cardText), winners, showdown: true, returns, rake: fee, pot: total, handRanks });
   };
 
   if (!spot || !kit || Math.abs(spot.potBb - pot) > 0.01 || ![spot.ip, spot.oop].every(pos => alive.includes(pos))) {
@@ -139,18 +151,37 @@ export function playHand(setup: HandSetup): HandResult {
   const table = createTable(spot);
   const flop = board.slice(0, 3), runout = board.slice(3, 5);
   const boardSoFar = (len: number) => board.slice(0, len).map(cardText);
+  const config = kit.inputs.config;
+  let currentStreet = "", streetBase: Record<string, number> = {}, pendingEntry: LogEntry | null = null;
+  const streetBets = () => Object.fromEntries([spot.ip, spot.oop].map(pos => [pos, round(table.invested[pos] - (streetBase[pos] ?? 0))]));
+  // Pot and street bets are known once the engine applied the action: fill them in lazily.
+  const flush = () => { if (pendingEntry) { pendingEntry.pot = round(table.pot); pendingEntry.bets = streetBets(); pendingEntry = null; } };
+  const sizeOf = (street: string, action: string, bets: Record<string, number>, seat: Position) => {
+    const facing = Math.max(...Object.values(bets)), mine = bets[seat] ?? 0, stack = table.stacks[seat];
+    if (action === "call") return round(Math.min(facing, mine + stack));
+    if (action === "allin") return round(mine + stack);
+    if (action === "raise") return round(Math.min(mine + stack, facing * (street === "flop" ? config.flop_check_raise_multiplier : config.later_raise_multiplier)));
+    const bet = /^bet(\d+)$/.exec(action);
+    return bet ? round(Math.min(mine + stack, table.pot * Number(bet[1]) / 100)) : undefined;
+  };
   const ask = (street: "flop" | "turn" | "river", seat: Position, node: string, cards: number[], line: string | null) => {
+    flush();
+    if (street !== currentStreet) { currentStreet = street; streetBase = { ...table.invested }; }
     const entry = table.log.at(-1);
     const actions: string[] = (street === "flop" ? NODES : LATER_NODES)[node].filter((act: string) => act !== "raise" || entry?.canRaise);
+    const bets = streetBets();
     let action: string;
     if (seat === setup.human) {
-      if (!humanQueue.length) throw new Await({ street, pos: seat, options: actions.map(key => ({ key })), pot: table.pot, board: boardSoFar(cards.length) });
+      const toCall = round(Math.max(...Object.values(bets)) - (bets[seat] ?? 0));
+      if (!humanQueue.length) throw new Await({ street, pos: seat, options: actions.map(key => ({ key, to: key === "fold" || key === "check" ? undefined : sizeOf(street, key, bets, seat) })),
+        pot: round(table.pot), board: boardSoFar(cards.length), toCall });
       action = humanQueue.shift()!;
       if (!actions.includes(action)) throw new Error(`Illegal ${street} action ${action} for ${seat}`);
     } else {
       action = setup.agents.postflop({ kit, table, street, seat, node, board: cards, hole: hole[seat], line, actions, random: drawFor() }).action;
     }
-    log.push({ street, pos: seat, action, pot: table.pot });
+    pendingEntry = { street, pos: seat, action, to: action === "fold" || action === "check" ? undefined : sizeOf(street, action, bets, seat), pot: table.pot };
+    log.push(pendingEntry);
     return action;
   };
   try {
@@ -161,6 +192,7 @@ export function playHand(setup: HandSetup): HandResult {
     if (error instanceof Await) return result({ status: "awaiting", pending: error.pending, spotId: spot.id, board: error.pending.board });
     throw error;
   }
+  flush();
   const foldedOut = Boolean(table.winner);
   const winner = settle(table, { [spot.ip]: hole[spot.ip], [spot.oop]: hole[spot.oop] }, board);
   const total = round(table.pot);
@@ -172,7 +204,8 @@ export function playHand(setup: HandSetup): HandResult {
   }));
   const lastStreet = log.at(-1)?.street;
   const shown = foldedOut ? (lastStreet === "flop" ? 3 : lastStreet === "turn" ? 4 : 5) : 5;
-  return result({ spotId: spot.id, board: boardSoFar(shown), winners, showdown: !foldedOut, returns, rake: fee, pot: total });
+  const handRanks = foldedOut ? undefined : Object.fromEntries([spot.ip, spot.oop].map(pos => [pos, handCategory(evaluateHand([...hole[pos], ...board]))]));
+  return result({ spotId: spot.id, board: boardSoFar(shown), winners, showdown: !foldedOut, returns, rake: fee, pot: total, handRanks });
 }
 
 
