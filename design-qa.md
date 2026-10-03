@@ -377,3 +377,37 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Full frontend run completed: 398 tests, 397 passed, one offline board-worker deterministic-file equality assertion failed. That exact test passed alone (1/1); the full run is not recorded as all-pass. No generator, solver source, saved strategy data or test threshold was changed by this UI task.
 - Internal evidence saved in /tmp/reyson-comparison-qa/desktop-first-row.png and desktop-all-rows.png. These screenshots are not attached to the reply. Reduced-motion behavior checked through source guards and non-animated server-rendered fallback, not by changing OS settings; browser checks are not real-device or full accessibility certification.
 - Later working-tree recheck encountered concurrent pricing/copy/storage tests: 18 tests, 15 passed and 3 failed outside the comparison assertions (Japanese hero expectation and the storage-key rename). Comparison-specific tests passed separately; the earlier 15/15 result predates those concurrent edits. Unrelated changes are preserved, not reverted or included in this comparison commit. The local server responds on port 4173; the previously errored browser tab was replaced with a fresh working preview, and temporary viewport overrides were reset.
+
+## Live decision-studio hero — selected concept 3 (2026-10-03)
+
+**Findings**
+- No actionable P0/P1/P2 differences remain after the short-viewport fix below. The English-first headline, Japanese supporting copy, asymmetrical chart layout, saved-range colors, dealt trainer cards, selected-hand frequencies and full-width explanation rail align with the selected visual target and user feedback.
+- No focused-region comparison was needed: at the matched viewport the complete hero, including the fine chart labels, cards, action frequencies and CTA, was legible in the full-view side-by-side comparison.
+
+**Open Questions**
+- None for this request. Native OS reduced-motion settings were not changed; the existing reduced-motion logic and responsive behavior are covered by source tests, but a real-device Safari/Android pass was not part of this hero change.
+
+**Implementation Checklist**
+- [x] Match selected design 3 while retaining the existing brand icon and persisted range strategies.
+- [x] Use “Don't just play. Understand why.” in both locales; descriptions, controls and disclosures remain localized.
+- [x] Start on A5o; retain the 169-cell interactive matrix, simple/standard frequencies and both range modes.
+- [x] Add a localized pause/resume control; manual chart/mode interaction takes over and pauses the tour. Automatic hand changes are not sent to a live region.
+- [x] Verify desktop, short desktop and narrow mobile layouts; retain the 316px horizontally scrollable matrix on the narrowest screens.
+- [x] Production build, configured typecheck, configured lint, focused site tests (24/24), and Sites packaging tests (5/5) passed. Existing >500KB product-app bundle warning remains.
+- [x] Production-preview console check returned no errors.
+
+**Comparison evidence**
+- Source visual truth: `/Users/yota/.codex/generated_images/01a100c6-6973-7f23-8d59-c23df8cba55a/exec-baf06d67-6224-4f39-82e1-21ec32741ac4.png` (1487 × 1058 px). This is the selected concept 3 with the user's English-headline revision.
+- Implementation: `/private/tmp/reyson-hero-qa/implementation-ja-1488x1056-final.png` (1488 × 1056 px, browser-rendered screenshot, CSS viewport 1488 × 1056, devicePixelRatio 1). Reference normalization for the side-by-side composite was a negligible 1px width / 2px height rescale; no content crop or browser chrome was included.
+- Full-view comparison: `/private/tmp/reyson-hero-qa/comparison-ja-1488x1056.jpg` (source and implementation side by side; selected state: Japanese locale, BTN Open, Simple, A5o, autoplay paused). Full screenshot uses the same 1488 × 1056 CSS viewport; source raster is at its native 1487 × 1058 px.
+- Short-height check: `/private/tmp/reyson-hero-qa/implementation-ja-1280x720.jpg` (1280 × 720 px; CSS viewport 1280 × 720; DPR 1). The hero detail rail ends at y=707 and playback controls at y=706, within the 720px viewport; no document-level horizontal overflow.
+- Interaction state: Japanese explanatory copy/controls with the explicitly requested English headline; BTN Open / Simple / A5o; saved strategy gives Raise 100% / Fold 0%; hand tour is paused after manual selection. The prior production browser pass also checked Standard, BB-vs-BTN frequencies, pause/resume, locale persistence and the existing app/how-it-works links.
+- Typography: Inter-based bold headline with the same three-line hierarchy and English phrase; Japanese paragraph/control text wraps cleanly. Spacing/layout: two-column hero, 13 × 13 matrix and full-width lower detail rail preserve the reference's composition. Colors/tokens: charcoal/black surfaces, white copy and restrained pink raise accent remain consistent; saved action colors are unchanged. Image/asset fidelity: product trainer cards and existing brand mark are reused, not approximated with replacement artwork. Copy/content: only the requested hero title is English on the Japanese page; the remaining visible hero text is Japanese.
+
+**Comparison history**
+- First short-height comparison at 1280 × 720 found a P2: the detail/playback rail ended at y=733, placing the lower playback control partly below the viewport. Changed the short-height `.site-hero-main` vertical padding from 16px to 8px, rebuilt, and recaptured. Post-fix evidence shows the rail ending at y=707 and playback at y=706; the controls fit fully in the 720px viewport. No other P0/P1/P2 issue was found in the final matched-size comparison.
+
+**Follow-up Polish**
+- No remaining P3 items identified for the selected hero.
+
+**final result: passed**

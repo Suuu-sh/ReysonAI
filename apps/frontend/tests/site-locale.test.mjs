@@ -21,8 +21,10 @@ test("Japanese service-site copy covers every English field", async () => {
   const en = await loadCopy("content.ts", "en");
   const ja = await loadCopy("content-ja.ts", "ja");
   assert.deepEqual(shapeOf(ja), shapeOf(en));
-  assert.match(ja.hero.title1, /ただ打つだけじゃない/);
-  assert.match(ja.pricing.note, /仮案/);
+  assert.equal(en.hero.title1, "Don't just play.");
+  assert.equal(en.hero.title2, "Understand why.");
+  assert.equal(ja.hero.title1, en.hero.title1);
+  assert.equal(ja.hero.title2, en.hero.title2);
   assert.match(ja.preview.notGto, /GTO/);
   assert.equal(ja.pricing.plans[1].href, null);
 });

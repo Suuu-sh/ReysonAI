@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
-import { ArrowRight, ArrowUpRight, Check, List, Trophy, X } from "@phosphor-icons/react";
+import { ArrowRight, ArrowUpRight, Check, List, Pause, Play, Trophy, X } from "@phosphor-icons/react";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
@@ -132,14 +132,14 @@ function RangeMatrix({ mode, displayMode, selected, onSelect }: { mode: RangeMod
 }
 
 const tourHands: Record<RangeMode, string[]> = {
-  opening: ["K7s", "A5o", "Q4s", "T9s", "J9o", "22", "K2s", "86s"],
+  opening: ["A5o", "K7s", "Q4s", "T9s", "J9o", "22", "K2s", "86s"],
   response: ["A5s", "K7s", "98o", "74s", "QJo", "A2o", "55"],
 };
 
 function Explorer() {
   const { copy: c, motion } = useSite();
   const [mode, setMode] = useState<RangeMode>("opening");
-  const [selected, setSelected] = useState("K7s");
+  const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
   const [displayMode, setDisplayMode] = useState<DisplayMode>(() => {
     try { return window.localStorage.getItem(displayModeKey) === "standard" ? "standard" : "simple"; } catch { return "simple"; }
@@ -153,7 +153,11 @@ function Explorer() {
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
-    const stop = () => setTouring(false);
+    const stop = (event: Event) => {
+      // Playback is intentional; interacting anywhere else takes over the demo.
+      if (event.target instanceof Element && event.target.closest("[data-tour-toggle]")) return;
+      setTouring(false);
+    };
     node.addEventListener("pointerdown", stop);
     node.addEventListener("keydown", stop);
     return () => { node.removeEventListener("pointerdown", stop); node.removeEventListener("keydown", stop); };
@@ -169,11 +173,13 @@ function Explorer() {
   }, [isTouring, visible, mode]);
 
   function chooseMode(next: RangeMode) {
+    setTouring(false);
     setMode(next);
-    setSelected(next === "opening" ? "K7s" : "A5s");
+    setSelected(next === "opening" ? "A5o" : "A5s");
   }
 
   function chooseDisplayMode(next: DisplayMode) {
+    setTouring(false);
     setDisplayMode(next);
     try { window.localStorage.setItem(displayModeKey, next); } catch {}
   }
@@ -184,34 +190,51 @@ function Explorer() {
       ? c.preview.simpleOther(spot, selected, actionLabel(c, mode, action))
       : c.preview.other(spot, selected, action === "raise" && mode === "response" ? c.preview.actionPast.threeBet : c.preview.actionPast[action], values[action]);
 
-  return <div className={`site-explorer is-${mode}`} ref={ref}>
-    <div className="site-explorer-bar">
-      <fieldset className="site-segment"><legend className="site-visually-hidden">{c.preview.spotLabel}</legend>
-        <button type="button" aria-pressed={mode === "opening"} onClick={() => chooseMode("opening")}>{c.preview.open}</button>
-        <button type="button" aria-pressed={mode === "response"} onClick={() => chooseMode("response")}>{c.preview.response}</button>
-      </fieldset>
-      <fieldset className="site-segment is-quiet"><legend className="site-visually-hidden">{c.preview.displayLabel}</legend>
-        <button type="button" aria-pressed={displayMode === "simple"} onClick={() => chooseDisplayMode("simple")}>{c.preview.simpleMode}</button>
-        <button type="button" aria-pressed={displayMode === "standard"} onClick={() => chooseDisplayMode("standard")}>{c.preview.standardMode}</button>
-      </fieldset>
-    </div>
-    <div className="site-explorer-body">
-      <div className="site-explorer-chart">
-        <RangeMatrix mode={mode} displayMode={displayMode} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
+  const selectedRow = Math.floor(cells.findIndex(cell => cell.hand === selected) / ranks.length);
+
+  return <div className={`site-explorer is-${mode}`} ref={ref} data-tour-running={isTouring && visible}>
+    <div className="site-wrap site-hero-main">
+      <HeroCopy />
+      <div className="site-hero-range">
+        <div className="site-explorer-bar">
+        <fieldset className="site-segment"><legend className="site-visually-hidden">{c.preview.spotLabel}</legend>
+          <button type="button" aria-pressed={mode === "opening"} onClick={() => chooseMode("opening")}>{c.preview.open}</button>
+          <button type="button" aria-pressed={mode === "response"} onClick={() => chooseMode("response")}>{c.preview.response}</button>
+        </fieldset>
+        <fieldset className="site-segment is-quiet"><legend className="site-visually-hidden">{c.preview.displayLabel}</legend>
+          <button type="button" aria-pressed={displayMode === "simple"} onClick={() => chooseDisplayMode("simple")}>{c.preview.simpleMode}</button>
+          <button type="button" aria-pressed={displayMode === "standard"} onClick={() => chooseDisplayMode("standard")}>{c.preview.standardMode}</button>
+        </fieldset>
+        </div>
+        <div className="site-hero-chart-frame" style={{ "--selected-row": selectedRow } as CSSProperties}>
+          <RangeMatrix mode={mode} displayMode={displayMode} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
+        </div>
         <div className="site-legend">{actions.filter(option => mode === "response" || option !== "call").map(option => <span key={option}><i className={`is-${option}`} />{actionLabel(c, mode, option)}</span>)}</div>
       </div>
-      <div className="site-hand" aria-live="polite">
-        <span className="site-hand-label">{c.preview.selectedHand}</span>
-        <HandCards key={`${mode}-${selected}`} hand={selected} className="is-dealing" />
-        <div className="site-hand-title"><strong>{selected}</strong><span>{selected.length === 2 ? c.preview.pair : selected.endsWith("s") ? c.preview.suited : c.preview.offsuit}</span></div>
-        <ActionRows mode={mode} values={values} displayMode={displayMode} />
-        <p className="site-hand-why"><span>{c.preview.why}</span>{explanation}</p>
-        <a className="site-hand-link" href="/app">{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
-      </div>
     </div>
-    <div className="site-explorer-foot">
-      <span className={`site-tour${isTouring ? " is-on" : ""}`}>{isTouring && <i key={`${mode}-${selected}`} aria-hidden="true" />}{isTouring ? c.preview.touring : c.preview.manual}</span>
-      <span>{c.preview.saved} · <b>{c.preview.notGto}</b></span>
+    <div className="site-hero-detail">
+      <div className="site-wrap">
+        <div className="site-hand" aria-live={isTouring ? "off" : "polite"} aria-atomic="true">
+          <div className="site-hero-deal"><HandCards key={`${mode}-${selected}`} hand={selected} className="is-dealing" /></div>
+          <div className="site-hero-summary">
+            <span className="site-hand-label">{c.preview.selectedHand}</span>
+            <div className="site-hand-title"><strong>{selected}</strong><span>{selected.length === 2 ? c.preview.pair : selected.endsWith("s") ? c.preview.suited : c.preview.offsuit}</span></div>
+            <ActionRows mode={mode} values={values} displayMode={displayMode} />
+          </div>
+          <div className="site-hero-reason">
+            <p className="site-hand-why"><span>{c.preview.why}</span>{explanation}</p>
+            <a className="site-hand-link" href="/app">{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
+          </div>
+        </div>
+        <div className="site-hero-playback">
+          {motion && <button type="button" className="site-tour-toggle" data-tour-toggle aria-label={isTouring ? c.preview.pauseTour : c.preview.resumeTour} onClick={() => setTouring(current => !current)}>{isTouring ? <Pause size={18} weight="fill" aria-hidden="true" /> : <Play size={18} weight="fill" aria-hidden="true" />}</button>}
+          <div className="site-tour" title={isTouring ? c.preview.touring : c.preview.manual}>
+            <span className="site-tour-progress" aria-hidden="true"><i key={`${mode}-${selected}-${isTouring}`} /></span>
+            <span className="site-tour-caption">{isTouring ? c.preview.touring : c.preview.manual}</span>
+          </div>
+          <p className="site-hero-disclaimer">{c.preview.saved} · <b>{c.preview.notGto}</b></p>
+        </div>
+      </div>
     </div>
   </div>;
 }
@@ -246,22 +269,21 @@ function Header() {
   </header>;
 }
 
-function Hero() {
+function HeroCopy() {
   const { copy: c } = useSite();
-  return <section className="site-hero" aria-labelledby="site-hero-title">
-    <div className="site-wrap site-hero-inner">
-      <div className="site-hero-copy">
-        <h1 id="site-hero-title"><span className="site-line"><span>{c.hero.title1}</span></span><span className="site-line"><span><span className="site-hero-mark">{c.hero.title2}</span></span></span></h1>
-        <p className="site-hero-lead">{c.hero.lead}</p>
-        <div className="site-hero-actions">
-          <a className="site-button" href="/app">{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
-          <a className="site-button is-ghost" href="#how">{c.hero.secondary}</a>
-        </div>
-        <p className="site-hero-note">{c.hero.note}</p>
-      </div>
-      <div className="site-hero-product"><Explorer /></div>
+  return <div className="site-hero-copy">
+    <h1 id="site-hero-title" lang="en"><span className="site-line site-hero-opening"><span>{c.hero.title1}</span></span><span className="site-line"><span className="site-hero-mark">{c.hero.title2}</span></span></h1>
+    <p className="site-hero-lead">{c.hero.lead}</p>
+    <div className="site-hero-actions">
+      <a className="site-button" href="/app">{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
+      <a className="site-hero-secondary" href="#how">{c.hero.secondary}<ArrowRight size={17} aria-hidden="true" /></a>
     </div>
-  </section>;
+    <p className="site-hero-note">{c.hero.note}</p>
+  </div>;
+}
+
+function Hero() {
+  return <section className="site-hero" aria-labelledby="site-hero-title"><Explorer /></section>;
 }
 
 /** Eases from `from` to `to` once `run` turns true; jumps straight to `to` without motion. */
@@ -864,7 +886,13 @@ function Reveal({ children }: { children: ReactNode }) {
 
 export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; onLocaleChange: () => void }) {
   const copy = locale === "ja" ? ja : en;
-  const [motion] = useState(() => typeof IntersectionObserver !== "undefined" && !prefersReducedMotion());
+  const [motion, setMotion] = useState(() => typeof IntersectionObserver !== "undefined" && !prefersReducedMotion());
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setMotion(typeof IntersectionObserver !== "undefined" && !preference.matches);
+    preference.addEventListener("change", update);
+    return () => preference.removeEventListener("change", update);
+  }, []);
   return <SiteContext.Provider value={{ locale, copy, onLocaleChange, motion }}>
     <div className={`site site-${locale}${motion ? " has-motion" : ""}`}>
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
