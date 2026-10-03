@@ -119,6 +119,12 @@
 .trainer-action:disabled kbd { display: none; }
 .trainer-action b { position: absolute; right: 10px; font-variant-numeric: tabular-nums; }
 .trainer-action:disabled span { position: absolute; left: 10px; }
+/* The answered button doubles as "Next": same meter look, plus a Next pill in the middle. */
+.trainer-action.is-next { color: var(--text); background: linear-gradient(90deg, color-mix(in srgb, var(--action-color) 60%, #000) calc(var(--freq) * 100%), var(--surface-raised) 0); }
+.trainer-action.is-next.action-fold { background: linear-gradient(90deg, #4a4a54 calc(var(--freq) * 100%), var(--surface-raised) 0); }
+.trainer-action.is-next kbd { display: none; }
+.trainer-action.is-next span { position: absolute; left: 10px; }
+.trainer-action-next { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; background: var(--accent); color: #1a0b12; font-size: 12px; font-style: normal; font-weight: 800; }
 .trainer-action.best { box-shadow: inset 0 0 0 2px #5fc98c; }
 .trainer-action.chosen.best { box-shadow: 0 0 0 3px #7fdca4; }
 .trainer-action.chosen.mixed { box-shadow: 0 0 0 3px #f3c95f; }
@@ -233,8 +239,8 @@
   .trainer-actions { grid-template-columns: repeat(auto-fit, minmax(86px, 1fr)); gap: 6px; }
   .trainer-action { min-height: 40px; padding: 6px; font-size: 12px; }
   .trainer-action kbd { display: none; }
-  .trainer-action:disabled { flex-direction: column; gap: 1px; }
-  .trainer-action:disabled span, .trainer-action b { position: static; font-size: 12px; }
+  .trainer-action:disabled, .trainer-action.is-next { flex-direction: column; gap: 1px; }
+  .trainer-action:disabled span, .trainer-action.is-next span, .trainer-action b { position: static; font-size: 12px; }
   .poker-table.answered .poker-chip { opacity: 0; }
   .poker-verdict svg { width: 26px; height: 26px; }
   .poker-verdict strong { font-size: 17px; }

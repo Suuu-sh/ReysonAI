@@ -311,8 +311,11 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
   const limit = length;
   const lastQuestion = limit > 0 && session.answered >= limit;
 
+  // Time of the last answer, so a double click on an action doesn't also press its Next.
+  const answeredAt = useRef(0);
   const choose = useCallback(action => {
     if (answer) return;
+    answeredAt.current = Date.now();
     const graded = grade(question.spot, question.hand, action, { strictness: settings.strictness });
     setAnswer({ action, ...graded });
     setSelectedHand(question.hand);
@@ -392,10 +395,14 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
         <div className="trainer-actions">
           {spot.actions.map((action, index) => {
             const state = !answer ? "" : action.key === answer.action ? ` chosen ${answer.result}` : action.key === answer.best ? " best" : "";
-            return <button type="button" key={action.key} className={`trainer-action action-${action.key}${state}`} onClick={() => choose(action.key)} disabled={Boolean(answer)}
+            // The answered button turns into "Next" so the cursor can stay where it clicked.
+            const isNext = Boolean(answer) && action.key === answer!.action;
+            return <button type="button" key={action.key} className={`trainer-action action-${action.key}${state}${isNext ? " is-next" : ""}`}
+              onClick={() => isNext ? (Date.now() - answeredAt.current > 350 && advance()) : choose(action.key)} disabled={Boolean(answer) && !isNext}
               style={{ "--action-color": actionColor(action.key), "--freq": answer ? answer.mix[action.key] : 0 }}>
               <kbd>{index + 1}</kbd><span>{action.label}</span>
               {answer && <b>{pct(answer.mix[action.key])}</b>}
+              {isNext && <em className="trainer-action-next">{lastQuestion ? "結果へ" : "次へ"}<ArrowRight size={13} weight="bold" /></em>}
             </button>;
           })}
         </div>
