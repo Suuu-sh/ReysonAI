@@ -1,8 +1,8 @@
 import { defaultModeForLevel } from "./estimated/display-mode.ts";
 
 // Local profile until real accounts exist; nothing here is a credential.
-const profileKey = "solveaai:profile:v1";
-export const displayModeKey = "solveaai:display-mode:v1";
+const profileKey = "reysonai:profile:v1";
+export const displayModeKey = "reysonai:display-mode:v1";
 
 export const levels = [
   { value: "beginner", label: "初級", title: "レンジの基本を覚えたい", description: "よく出る局面で、どのハンドで参加するかを一目で覚えたい。混合頻度は単純化して表示します。" },

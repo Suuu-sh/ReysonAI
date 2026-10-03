@@ -65,18 +65,18 @@ function withLocalStorage(run) {
 
 test("practice export and cleanup preserve profile, appearance and unrelated data", () => {
   withLocalStorage(store => {
-    store.setItem("solveaai.trainer.answers", JSON.stringify([{ hand: "AA" }]));
-    store.setItem("solveaai.trainer.draft", "legacy draft");
-    store.setItem("solveaai:profile:v1", "profile");
-    store.setItem("solveaai:appearance:v1", "appearance");
+    store.setItem("reysonai.trainer.answers", JSON.stringify([{ hand: "AA" }]));
+    store.setItem("reysonai.trainer.draft", "legacy draft");
+    store.setItem("reysonai:profile:v1", "profile");
+    store.setItem("reysonai:appearance:v1", "appearance");
     store.setItem("other-app", "untouched");
     assert.deepEqual(prefs.exportLocalData().data, {
-      "solveaai.trainer.answers": [{ hand: "AA" }], "solveaai.trainer.draft": "legacy draft",
+      "reysonai.trainer.answers": [{ hand: "AA" }], "reysonai.trainer.draft": "legacy draft",
     });
     prefs.clearPracticeData();
     assert.deepEqual(prefs.practiceKeys(), []);
-    assert.equal(store.getItem("solveaai:profile:v1"), "profile");
-    assert.equal(store.getItem("solveaai:appearance:v1"), "appearance");
+    assert.equal(store.getItem("reysonai:profile:v1"), "profile");
+    assert.equal(store.getItem("reysonai:appearance:v1"), "appearance");
     assert.equal(store.getItem("other-app"), "untouched");
   });
 });
@@ -85,7 +85,7 @@ test("appearance and range mode persist with invalid appearance values normalise
   withLocalStorage(store => {
     prefs.saveAppearance({ cards: "two", motion: "reduce" });
     assert.deepEqual(prefs.loadAppearance(), { cards: "two", motion: "reduce" });
-    store.setItem("solveaai:appearance:v1", JSON.stringify({ cards: "bad", motion: "bad" }));
+    store.setItem("reysonai:appearance:v1", JSON.stringify({ cards: "bad", motion: "bad" }));
     assert.deepEqual(prefs.loadAppearance(), { cards: "four", motion: "standard" });
     prefs.saveDisplayMode("simple");
     assert.equal(prefs.loadDisplayMode(), "simple");
@@ -97,10 +97,10 @@ test("appearance and range mode persist with invalid appearance values normalise
 test("local logout removes only the profile by default", async () => {
   const { clearProfile } = await server.ssrLoadModule("/src/profile.ts");
   withLocalStorage(store => {
-    store.setItem("solveaai:profile:v1", "profile");
-    store.setItem("solveaai.trainer.answers", "[]");
+    store.setItem("reysonai:profile:v1", "profile");
+    store.setItem("reysonai.trainer.answers", "[]");
     clearProfile();
-    assert.equal(store.getItem("solveaai:profile:v1"), null);
-    assert.equal(store.getItem("solveaai.trainer.answers"), "[]");
+    assert.equal(store.getItem("reysonai:profile:v1"), null);
+    assert.equal(store.getItem("reysonai.trainer.answers"), "[]");
   });
 });

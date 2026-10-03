@@ -153,7 +153,7 @@ export function runCodex(prompt, { model = resolveModel(), effort = resolveEffor
         }
       }
     });
-    send({ id: 1, method: "initialize", params: { clientInfo: { name: "solveaai_postflop_ai", title: "SolveaAI postflop AI pilot", version: "0.1.0" }, capabilities: {} } });
+    send({ id: 1, method: "initialize", params: { clientInfo: { name: "reysonai_postflop_ai", title: "ReysonAI postflop AI pilot", version: "0.1.0" }, capabilities: {} } });
   });
 }
 

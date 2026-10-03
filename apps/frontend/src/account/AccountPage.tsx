@@ -42,7 +42,7 @@ function AccountTab({ profile, onProfileSaved }) {
   const download = () => {
     const blob = new Blob([JSON.stringify(exportLocalData(), null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const link = Object.assign(document.createElement("a"), { href: url, download: `solveaai-practice-${new Date().toISOString().slice(0, 10)}.json` });
+    const link = Object.assign(document.createElement("a"), { href: url, download: `reysonai-practice-${new Date().toISOString().slice(0, 10)}.json` });
     link.click();
     URL.revokeObjectURL(url);
   };

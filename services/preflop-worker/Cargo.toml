@@ -1,20 +1,20 @@
 [package]
-name = "solveaai-worker"
+name = "reysonai-worker"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [[bin]]
-name = "solveaai-worker"
+name = "reysonai-worker"
 path = "src/main.rs"
 
 [[bin]]
-name = "solveaai-promote"
+name = "reysonai-promote"
 path = "src/bin/promote.rs"
 
 [dependencies]
 continuation = { path = "../../crates/continuation" }
-solveaai-job-queue = { path = "../../crates/job-queue" }
+reysonai-job-queue = { path = "../../crates/job-queue" }
 preflop-tree = { path = "../../crates/preflop-tree" }
 solution = { path = "../../crates/solution" }
 solver-core = { path = "../../crates/solver-core" }

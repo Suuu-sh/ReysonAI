@@ -9,7 +9,7 @@
 - Browser verification at `http://127.0.0.1:5174/app`: opened an interrupted one-answer session, saw its saved Q5o hand and verdict, resumed it, finished it, and confirmed the completed hand history remained after reloading. The narrow viewport stayed readable with horizontal scrolling for the table.
 - All UI tests, typecheck, production build, Sites tests, and lint passed. The existing Vite large-chunk warning remains.
 
-## Solvea AI Score trend (2026-09-27)
+## ReysonAI Score trend (2026-09-27)
 - Added a compact policy-alignment card below the existing four-quadrant map. Each practice answer is compared with the saved AI estimate for the same preflop spot/hand; a 10-answer rolling mean makes progress visible without calling it a GTO score or EV loss.
 - Checked the running `/app` at the current narrow viewport with 31 locally saved answers: the card showed 91%, its trend line and explanatory limits without horizontal overflow. Targeted and full UI tests, typecheck, production build, and Sites tests passed. The existing large-chunk warning remains.
 
@@ -34,7 +34,7 @@
 - The AI reason remains visible below the action bars without repeating the call-EV fact. RFI and missing-EV paths retain frequency-only bars; no policy-average or best-action claim was added.
 - Verification: 177 UI/data tests, typecheck, production build, and 4 Sites tests passed. The existing large-chunk build warning remains.
 
-## SolveaAI brand rename (2026-09-23)
+## ReysonAI brand rename (2026-09-23)
 - Updated the UI wordmark/title, SDK exports and package paths, Rust crate/binary identifiers, environment-variable prefix, storage/queue keys, deployment resources, scripts, tests and documentation.
 - Kept GTO terminology where it describes poker methodology or validation status. The project folder, Git remote and externally provisioned resources were not renamed or migrated.
 - Verification: 47 UI tests, production build, 4 Sites tests, 8 SDK tests, 5 Edge API tests, Rust workspace tests and API-job / solution-promotion E2E checks passed. The build still reports the existing large-bundle warning.
@@ -63,7 +63,7 @@
 - The non-GTO status remains visible. Unsupported paths stay pending; generated local data never overwrites saved heads-up estimates.
 
 ## Unified selection panel update (2026-09-23)
-- Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable SolveaAI panel rather than exact screenshot replication.
+- Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable ReysonAI panel rather than exact screenshot replication.
 - The compact six-seat path remains visible; the top control expands seat choices. Fixed conditions are in metadata, without a duplicate dropdown row.
 - Inspected the rendered compact state in the local browser and corrected a narrow-screen toggle overflow. The responsive path remains horizontally scrollable.
 - Final result: passed for the requested unified selection surface.
@@ -135,7 +135,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 ## In-panel local AI estimate button (2026-09-23)
 - Moved the multiway local-generation control into Hero's missing-range panel and added the same explicit-click control to the original opener's missing response panel after a 100BB 5bet all-in. The separate banner above the matrices is gone.
 - The all-in response uses only call/fold for the opener and carries the exact saved open/3bet/4bet sizes into its cache identity. Validated all 169 canonical rows, integer frequencies, legal action set, and scenario identity; generated estimates remain in ignored local cache and never update persisted range JSON.
-- Rebranded session-storage keys migrate from the previous SolveaGTO key, so an in-progress selection survives the app rename and reload.
+- Rebranded session-storage keys migrate from the previous SolveaGTO-era key, so an in-progress selection survives the app rename and reload.
 - Verification: 51 UI/data tests passed; production build passed; Sites tests passed (4). The local preview and read-only local estimate-status endpoint are reachable at `http://127.0.0.1:5173/`. No Codex estimate was initiated during verification. Existing Vite large-bundle warning remains.
 
 ## Vertically organized position/action selector (2026-09-23)
@@ -154,7 +154,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Verification: `node --test tests/*.test.mjs` passed (64 tests), `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite still reports a large-chunk warning.
 
 ## Remove bottom footer labels (2026-09-24)
-- Removed the footer strip and its “SolveaAI v0.1” / “AI生成ソリューション” labels from both app shells. The separate estimate context/status row was removed in a later iteration to enlarge the range tables.
+- Removed the footer strip and its “ReysonAI v0.1” / “AI生成ソリューション” labels from both app shells. The separate estimate context/status row was removed in a later iteration to enlarge the range tables.
 - Browser verification at `http://localhost:5173/` shows the range tables ending without the footer labels.
 - Verification: `node --test tests/*.test.mjs` passed, `npm run build` passed, and `npm run test:sites` passed. Vite still reports its existing large-chunk warning.
 
@@ -200,7 +200,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Verification: `npm run build:estimates` passed with the two advisory warnings; `npm test` passed (105/105); `npm run benchmark` reports zero deviations beyond ±3pt for all five opens; `npm run build` passed with the existing large-chunk warning.
 - Review packets now include SB limp and both limp-response nodes. Full audit and handoff: `apps/frontend/.local/review/range-balance-2026-09-24.{md,json}`; packet canary answers remain separate.
 
-## Solvea service site (2026-09-25)
+## Reyson service site (2026-09-25)
 - Added a separate service site at `/`, retaining the existing estimated-range workspace at `/app`. The landing preview shows an interactive 13×13 matrix and K7s decision from the saved BTN-open and BB-vs-BTN data. A small generated projection keeps the marketing bundle independent of the larger app datasets.
 - Desktop (1280px), tablet (768px), and mobile (390px) were visually checked in the local browser. The mobile document stays within its viewport; the matrix remains readable with horizontal overflow available where needed. Spot switching changed K7s to BB-vs-BTN Call 85%, the mobile menu navigated to Pricing, and the free CTA opened the existing onboarding at `/app` with Japanese document language.
 - Planned natural-language adjustments, advanced training, accounts, paid features, and provisional ¥680 pricing are explicitly identified as unavailable. The mixed-frequency comparison is labeled illustrative rather than competitor data.
@@ -335,7 +335,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 
 ### Verification and limits
 - Browser viewport matrix: EN and 日本語 at 320×720, 375×667, 390×844, 430×932, 768×1024 and 960×720. Measured document width equals viewport width throughout; no visible prose/heading/label clipping, inline-scene overflow or KPI horizontal text overflow. Intentionally collapsed inactive persona details and horizontally scrolling chart cells were excluded from clipping findings. Also checked 844×320 landscape and 1440×900 desktop scroll scenes.
-- Internal evidence: `/tmp/solvea-mobile-audit/01-en-why-before.png`, `02-en-why-after-320.png`, `03-en-analysis-after-320.png`, `04-ja-why-after-390.png` and `measurements.json`. Saved screenshots were kept internal per user preference.
+- Internal evidence: `/tmp/reyson-mobile-audit/01-en-why-before.png`, `02-en-why-after-320.png`, `03-en-analysis-after-320.png`, `04-ja-why-after-390.png` and `measurements.json`. Saved screenshots were kept internal per user preference.
 - Configured typecheck and lint, final production build, 5 Sites packaging tests and 10 focused site tests passed. Added a regression for growing mobile scenes, desktop-only pinning, wrapping KPIs, scrollable landscape menu and 44px controls. Existing large-chunk build warning remains.
 - Full frontend run completed: 388 tests, 387 passed, one existing offline narrow-4bet timing assertion took 2.35s against its 2s budget. The exact test passed alone in 1.49s; no solver source or thresholds were modified. This full run is not an all-pass result. The viewport override was reset, English restored and the corrected Why preview left open in the running local app.
 - This is a browser responsive-layout check, not a claim of complete accessibility compliance or real-device Safari/Android testing. OS text enlargement and reduced-motion settings were not changed; existing reduced-motion gates remain intact.

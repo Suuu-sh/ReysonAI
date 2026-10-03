@@ -63,7 +63,7 @@ ReysonAI が解きたいのは、計算結果の量ではなく、**戦略を人
 
 ## 今は提供しないこと・将来の方向
 
-自然言語による卓別レンジ調整、対話的な追加質問、高度な学習機能、アカウント登録・認証・端末間同期、課金は現行アプリでは利用できません。サービスサイトにある Plus の価格・機能は仮案です。これらを実装済み機能として紹介しないでください。
+自然言語による卓別レンジ調整、対話的な追加質問、高度な学習機能、アカウント登録・認証・端末間同期、課金は現行アプリでは利用できません。Plus は月額600円（30日換算で1日あたり約20円）に設定していますが、有料機能と課金の仕組みはまだ提供していません。これらを実装済み機能として紹介しないでください。
 
 次に進めたいのは、収録局面を増やすことだけではありません。推定の弱点を監査し、BTN対BB、その他のヘッズアップ、マルチウェイの順に対応と評価を改善することです。現行アプリのAI推定と独立したRust Solverの研究計画は分けます。ロードマップは約束された提供時期ではなく、**理解しやすさと検証可能性を両立するための方向**として扱います。
 
@@ -87,7 +87,7 @@ Rust Solver ──► 構造検証 ──► Solution保存 ──► Edge API /
 | [`apps/frontend/src/trainer`](apps/frontend/src/trainer) | ドリル、セッション、練習分析。 |
 | [`crates`](crates) | カード・ゲームツリー・Solver・Solution・キューの Rust ライブラリ。 |
 | [`services`](services) | 独立して実行する実験用 Rust Solver Worker。 |
-| [`packages/solveaai-sdk-ts`](packages/solveaai-sdk-ts) | API 利用者向け TypeScript SDK。 |
+| [`packages/reysonai-sdk-ts`](packages/reysonai-sdk-ts) | API 利用者向け TypeScript SDK。 |
 | [`apps/backend`](apps/backend) | TypeScript の Cloudflare Worker。D1の推定データ・方針とR2成果物を読む読み取り専用Edge API。 |
 | [`configs`](configs) | Solver 用ゲーム設定。画面の保存済み推定レンジと同一のサイズ設定とは限らない。 |
 

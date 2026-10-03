@@ -1,4 +1,4 @@
-//! A small durable file-backed queue for local SolveaAI jobs.
+//! A small durable file-backed queue for local ReysonAI jobs.
 //!
 //! The queue deliberately exposes a repository-like boundary so the local
 //! implementation can later be replaced with Redis, a hosted queue, or a
@@ -90,7 +90,7 @@ pub trait JobQueue: Send + Sync {
 pub fn queue_from_environment(
     file_root: impl Into<PathBuf>,
 ) -> Result<Arc<dyn JobQueue>, String> {
-    match env::var("SOLVEAAI_QUEUE_BACKEND")
+    match env::var("REYSONAI_QUEUE_BACKEND")
         .unwrap_or_else(|_| "file".to_string())
         .to_ascii_lowercase()
         .as_str()
@@ -98,18 +98,18 @@ pub fn queue_from_environment(
         "file" => Ok(Arc::new(FileJobQueue::new(file_root))),
         "redis" => {
             let mut config = RedisJobQueueConfig::local(
-                env::var("SOLVEAAI_REDIS_URL")
+                env::var("REYSONAI_REDIS_URL")
                     .unwrap_or_else(|_| "redis://127.0.0.1:6379/".to_string()),
             );
-            config.prefix = env::var("SOLVEAAI_REDIS_PREFIX")
-                .unwrap_or_else(|_| "solveaai".to_string());
-            config.group = env::var("SOLVEAAI_REDIS_GROUP")
-                .unwrap_or_else(|_| "solveaai-workers".to_string());
-            config.block_ms = env_usize("SOLVEAAI_REDIS_BLOCK_MS", config.block_ms)?;
-            config.lease_ms = env_usize("SOLVEAAI_REDIS_LEASE_MS", config.lease_ms)?;
+            config.prefix = env::var("REYSONAI_REDIS_PREFIX")
+                .unwrap_or_else(|_| "reysonai".to_string());
+            config.group = env::var("REYSONAI_REDIS_GROUP")
+                .unwrap_or_else(|_| "reysonai-workers".to_string());
+            config.block_ms = env_usize("REYSONAI_REDIS_BLOCK_MS", config.block_ms)?;
+            config.lease_ms = env_usize("REYSONAI_REDIS_LEASE_MS", config.lease_ms)?;
             Ok(Arc::new(RedisJobQueue::new(config)?))
         }
-        backend => Err(format!("unsupported SOLVEAAI_QUEUE_BACKEND: {backend}")),
+        backend => Err(format!("unsupported REYSONAI_QUEUE_BACKEND: {backend}")),
     }
 }
 
@@ -469,7 +469,7 @@ mod tests {
     use super::*;
 
     fn test_root(name: &str) -> PathBuf {
-        std::env::temp_dir().join(format!("solveaai-job-queue-{name}-{}", std::process::id()))
+        std::env::temp_dir().join(format!("reysonai-job-queue-{name}-{}", std::process::id()))
     }
 
     #[test]

@@ -1,6 +1,6 @@
 // Completed attempts and their exact answer logs stay in this browser.
 // Named drill attempts live with their drill; review attempts are separate.
-const REVIEW_KEY = "solveaai.trainer.review-sessions.v1";
+const REVIEW_KEY = "reysonai.trainer.review-sessions.v1";
 const SESSION_LIMIT = 50;
 const RESULTS = new Set(["best", "mixed", "miss"]);
 

@@ -3,7 +3,7 @@ import { POSITIONS, normalizeSettings } from "./trainer-data.ts";
 import { validSession } from "./practice-sessions.ts";
 import { productLocale } from "../locale.ts";
 
-const KEY = "solveaai.trainer.drills.v1";
+const KEY = "reysonai.trainer.drills.v1";
 const SESSION_LIMIT = 50;
 
 export const PRESET_DRILLS = Object.freeze([

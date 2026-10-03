@@ -362,7 +362,7 @@ test("local generation controls are embedded in the missing range slot", () => {
 test("saved action paths survive the ReysonAI storage-key migration", () => {
   const originalWindow = globalThis.window;
   const selection = { rangeType: "four_bet", opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: "all_in", continuationAction: null, selected: "AA" };
-  globalThis.window = { matchMedia: () => ({ matches: false }), sessionStorage: { getItem: key => key.includes("solveagto") ? JSON.stringify(selection) : null, setItem() {} } };
+  globalThis.window = { matchMedia: () => ({ matches: false }), sessionStorage: { getItem: key => key.includes("reysonai-legacy") ? JSON.stringify(selection) : null, setItem() {} } };
   try {
     const html = renderToStaticMarkup(createElement(EstimatedRanges));
     assert.match(html, /class="action-path expanded"/);

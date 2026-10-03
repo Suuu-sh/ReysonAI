@@ -560,7 +560,7 @@ test("single-card street picker blocks used cards and localizes later node headi
 
   const previousWindow = globalThis.window;
   const hadWindow = Object.hasOwn(globalThis, "window");
-  globalThis.window = { localStorage: { getItem: key => key === "solveaai:locale:v1" ? "en" : null } };
+  globalThis.window = { localStorage: { getItem: key => key === "reysonai:locale:v1" ? "en" : null } };
   try {
     assert.equal(laterNodeTitle("turn_oop_first", { ip: "BTN", oop: "BB" }, "turn"), "BB · Turn · first decision");
     assert.equal(laterNodeTitle("river_ip_vs_allin", { ip: "BTN", oop: "BB" }, "river"), "BTN · River · facing an all-in");
@@ -581,7 +581,7 @@ test("125% flop bets use the shared size list, localized labels, and facing-node
 
   const previousWindow = globalThis.window;
   const hadWindow = Object.hasOwn(globalThis, "window");
-  globalThis.window = { localStorage: { getItem: key => key === "solveaai:locale:v1" ? "en" : null } };
+  globalThis.window = { localStorage: { getItem: key => key === "reysonai:locale:v1" ? "en" : null } };
   try {
     assert.equal(nodeTitle("bb_vs_125", context), "BB · facing a 125% bet");
     assert.equal(nodeTitle("ip_vs_125", context), "BTN · facing a 125% bet");

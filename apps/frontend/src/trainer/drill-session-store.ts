@@ -2,7 +2,7 @@
 // They are stored in this browser so a learner can leave and resume later.
 import { grade, normalizeSettings, randomSuits, spotById, spotsForSettings } from "./trainer-data.ts";
 
-const KEY = "solveaai.trainer.drafts.v1";
+const KEY = "reysonai.trainer.drafts.v1";
 const VALID_RESULTS = new Set(["best", "mixed", "miss"]);
 const RANKS = new Set([ ..."23456789TJQKA" ]);
 const SUITS = new Set(["s", "h", "d", "c"]);

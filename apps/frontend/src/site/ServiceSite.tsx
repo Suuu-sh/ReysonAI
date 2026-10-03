@@ -12,7 +12,7 @@ type Action = "raise" | "call" | "fold";
 type RangeMode = "opening" | "response";
 type DisplayMode = "simple" | "standard";
 type Suit = "s" | "h" | "d" | "c";
-const displayModeKey = "solvea:site-preview-display-mode:v1";
+const displayModeKey = "reysonai:site-preview-display-mode:v1";
 const actions: Action[] = ["raise", "call", "fold"];
 
 const ranks = [..."AKQJT98765432"];

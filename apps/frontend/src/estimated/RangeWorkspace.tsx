@@ -65,10 +65,10 @@ try {
 const fourBetRaw = (() => { try { return JSON.stringify(publishedDataset("four-bet-responses")); } catch { return undefined; } })();
 const fourBetState = loadFourBetDataset(fourBetRaw, dataset, threeBetDataset, openingDataset);
 
-const selectionStorageKey = "solveaai:estimated-selection:v1";
+const selectionStorageKey = "reysonai:estimated-selection:v1";
 const displayModeStorageKey = displayModeKey;
-const formatStorageKey = "solveaai:game-format:v1";
-const tableProfileStorageKey = "solveaai:table-profile:v1";
+const formatStorageKey = "reysonai:game-format:v1";
+const tableProfileStorageKey = "reysonai:table-profile:v1";
 const openingModelFor = spot => markAdjustedModel(openingMatrixModel(spot), spot);
 // Postflop labels end in "(33%)"; show that part right-aligned so the amounts line up.
 function OptionLabel({ label }: { label: string }) {
@@ -79,7 +79,7 @@ function OptionLabel({ label }: { label: string }) {
 export function selectedHandForRangeEntry(entry, selected) {
   return entry.spot?.hands.find(row => row.hand === selected) ?? entry.hand;
 }
-const legacySelectionStorageKey = "solveagto:estimated-selection:v1";
+const legacySelectionStorageKey = "reysonai-legacy:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
   const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, squeezeResponse: [], selected: "AKo" };
   if (typeof window === "undefined") return fallback;

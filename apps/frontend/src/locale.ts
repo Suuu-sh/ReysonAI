@@ -1,4 +1,4 @@
-export const LOCALE_KEY = "solveaai:locale:v1";
+export const LOCALE_KEY = "reysonai:locale:v1";
 
 export function productLocale() {
   // Pure model/SSR callers keep their historical Japanese output; the actual

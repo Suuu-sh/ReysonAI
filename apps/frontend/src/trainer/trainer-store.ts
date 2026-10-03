@@ -1,7 +1,7 @@
 // Answer history kept in this browser only. Everything here must survive storage being unavailable.
 import { CATEGORY_LABELS, handCategory, spotById, spotTitle } from "./trainer-data.ts";
 
-const KEY = "solveaai.trainer.history.v1";
+const KEY = "reysonai.trainer.history.v1";
 const LIMIT = 500;
 
 export function loadHistory() {

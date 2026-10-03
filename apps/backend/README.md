@@ -24,10 +24,10 @@ solutions/<solutionId>/nodes/index.json
 solutions/<solutionId>/nodes/<nodeId>.json
 ```
 
-ローカルで `solveaai-promote` を実行した後、リリース成果物を公開します。
+ローカルで `reysonai-promote` を実行した後、リリース成果物を公開します。
 
 ```bash
-bash scripts/publish-solution-r2.sh release/solveaai solveaai-solutions
+bash scripts/publish-solution-r2.sh release/reysonai reysonai-solutions
 ```
 
 成果物を先に、`manifest.json`を最後にアップロードします。Workerが未配置の
@@ -79,7 +79,7 @@ npx wrangler deploy
   "r2_buckets": [
     {
       "binding": "SOLUTIONS",
-      "bucket_name": "solveaai-solutions"
+      "bucket_name": "reysonai-solutions"
     }
   ],
   "vars": {
