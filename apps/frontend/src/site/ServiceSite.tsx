@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
-import { ArrowRight, ArrowUpRight, Check, List, Pause, Play, Trophy, X } from "@phosphor-icons/react";
+import { ArrowRight, ArrowUpRight, Check, List, Pause, Play, X } from "@phosphor-icons/react";
+import { TierEmblem, tierColor } from "../trainer/RankEmblem.tsx";
+import agentTableImage from "./assets/agent-table.webp";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
@@ -195,7 +197,7 @@ function Explorer() {
           </div>
           <div className="site-hero-reason">
             <p className="site-hand-why"><span>{c.preview.why}</span>{explanation}</p>
-            <a className="site-hand-link" href="/app">{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
+            <a className="site-hand-link" href="/analyze/ranges">{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
           </div>
         </div>
         <div className="site-hero-playback">
@@ -234,7 +236,7 @@ function Header() {
       </nav>
       <div className="site-header-actions">
         <button type="button" className="site-lang" onClick={onLocaleChange} aria-label={c.common.languageLabel}>{c.common.language}</button>
-        <a className="site-button is-small" href="/app">{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
+        <a className="site-button is-small" href="/analyze/ranges">{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
         <button type="button" className="site-menu" onClick={() => setOpen(!open)} aria-label={open ? c.common.menuClose : c.common.menuOpen} aria-expanded={open}>{open ? <X size={22} /> : <List size={22} />}</button>
       </div>
     </div>
@@ -247,7 +249,7 @@ function HeroCopy({ children }: { children?: ReactNode }) {
     <h1 id="site-hero-title" lang="en"><span className="site-line site-hero-opening"><span>{c.hero.title1}</span></span><span className="site-line"><span className="site-hero-mark">{c.hero.title2}</span></span></h1>
     <p className="site-hero-lead">{c.hero.lead}</p>
     <div className="site-hero-actions">
-      <a className="site-button" href="/app">{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
+      <a className="site-button" href="/analyze/ranges">{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
       <a className="site-hero-secondary" href="#how">{c.hero.secondary}<ArrowRight size={17} aria-hidden="true" /></a>
     </div>
     <p className="site-hero-note">{c.hero.note}</p>
@@ -287,7 +289,11 @@ function TableScene() {
     <div className="site-table">
       <div className="site-table-felt"><span className="site-table-pot">{c.how.pot}</span><span className="site-chip" /></div>
       {seats.map((seat, index) => <div className={`site-seat is-${seat.toLowerCase()}`} key={seat} style={{ "--i": index } as CSSProperties}>
-        <span className="site-seat-name">{seat}</span>
+        <span className="site-seat-plate">
+          <span className="site-seat-avatar">{seat === "BB" ? "YOU" : seat}</span>
+          {seat === "BB" && <span className="site-seat-name">{seat}</span>}
+          {seat === "BTN" && <span className="site-seat-dealer">D</span>}
+        </span>
         <span className={`site-seat-act${seat === "BTN" ? " is-raise" : seat === "BB" ? " is-turn" : ""}`}>{seat === "BTN" ? c.how.openSize : seat === "BB" ? c.how.toAct : c.common.fold}</span>
       </div>)}
     </div>
@@ -570,7 +576,7 @@ function Audience() {
               <p className="site-persona-price"><strong>{free.price}</strong><small>{free.cadence}</small></p>
               <span className="site-persona-pill">{c.audience.freeNote}</span>
               <ul>{c.audience.freeList.map((feature, index) => <li key={feature} style={{ "--i": index } as CSSProperties}><Check size={16} weight="bold" aria-hidden="true" />{feature}</li>)}</ul>
-              <a className="site-button is-small" href="/app" tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
+              <a className="site-button is-small" href="/analyze/ranges" tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
               <div className="site-persona-plus">
                 <p><strong>{plus.name}</strong><span>{plus.price}</span><small>{plus.cadence}</small></p>
                 <small>{plus.status}</small>
@@ -585,8 +591,12 @@ function Audience() {
 }
 
 const tierMins = [0, 950, 1100, 1250, 1400, 1550];
+// Tier keys (Japanese names) for the shared emblem colours, in tierMins order.
+const TIER_KEYS = ["ブロンズ", "シルバー", "ゴールド", "プラチナ", "ダイヤモンド", "マスター"];
 
-// Wide screens: Training pins for one screen while scrolling slides it over to Ranked.
+// Wide screens: Training pins for one screen while scrolling slides it over to Ranked, then the Agent table.
+const TRAIN_PAGES = 3;
+
 function TrainingTrack() {
   const { motion } = useSite();
   const ref = useRef<HTMLDivElement>(null);
@@ -610,8 +620,8 @@ function TrainingTrack() {
       const span = rect.height - window.innerHeight;
       if (span <= 0) return;
       const progress = Math.min(Math.max(-rect.top / span, 0), 1);
-      // Switch whole pages at the midpoint; CSS animates the slide so it never rests halfway.
-      setShift(progress >= 0.5 ? 1 : 0);
+      // Switch whole pages at each third; CSS animates the slide so it never rests halfway.
+      setShift(Math.min(TRAIN_PAGES - 1, Math.floor(progress * TRAIN_PAGES)));
     };
     const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
@@ -626,7 +636,7 @@ function TrainingTrack() {
   // Anchor the scroll track, not its sticky child: #drill must rewind the slide to Training.
   return <div className={`site-train${scrolly ? " is-scrolly" : ""}`} id="drill" ref={ref}>
     <div className="site-train-stage">
-      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 50}%)` } : undefined}><Drill /><Ranked /></div>
+      <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 100 / TRAIN_PAGES}%)` } : undefined}><Drill /><Ranked /><AgentFeature /></div>
     </div>
   </div>;
 }
@@ -646,25 +656,53 @@ function Ranked() {
         <p>{c.ranked.description}</p>
         <ul className="site-points">{c.ranked.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
       </div>
-      <div className="site-mock site-rank" ref={ref} data-reveal aria-hidden="true">
+      <div className="site-mock site-rank" ref={ref} data-reveal aria-hidden="true" style={{ "--tier": tierColor(TIER_KEYS[tier]) } as CSSProperties}>
         <span className="site-sample">{c.ranked.sample}</span>
         <div className="site-rank-card">
-          <div className="site-rank-top">
-            <Trophy size={30} weight="fill" />
-            <dl>
-              <div><dt>{c.ranked.rank}</dt><dd key={tier} className="site-rank-tier">{c.ranked.tiers[tier]}</dd></div>
-              <div><dt>{c.ranked.rating}</dt><dd>{rating}</dd></div>
-              <div><dt>{c.ranked.peak}</dt><dd>1204</dd></div>
-            </dl>
+          <div className="site-rank-emblem">
+            <svg className="site-rank-ring" viewBox="0 0 128 128">
+              <circle cx="64" cy="64" r="54" className="track" />
+              <circle cx="64" cy="64" r="54" className="arc" strokeDasharray={`${2 * Math.PI * 54 * progress} ${2 * Math.PI * 54}`} />
+              {Array.from({ length: 24 }, (_, i) => <line key={i} x1="64" y1="3" x2="64" y2={i % 6 === 0 ? 9 : 6} transform={`rotate(${i * 15} 64 64)`} className="tick" />)}
+            </svg>
+            <TierEmblem key={tier} level={tier} name={TIER_KEYS[tier]} size={58} />
           </div>
-          <span className="site-rank-bar"><span style={{ width: `${progress * 100}%` }} /></span>
-          <small>{next ? c.ranked.toNext(next - rating, c.ranked.tiers[tier + 1]) : ""}</small>
+          <div className="site-rank-info">
+            <span key={tier} className="site-rank-tier">{c.ranked.tiers[tier]}</span>
+            <dl>
+              <div><dt>{c.ranked.rating}</dt><dd>{rating.toLocaleString()}</dd></div>
+              <div><dt>{c.ranked.peak}</dt><dd>1,204</dd></div>
+            </dl>
+            <span className="site-rank-bar"><span style={{ width: `${progress * 100}%` }} /></span>
+            <small>{next ? c.ranked.toNext(next - rating, c.ranked.tiers[tier + 1]) : ""}</small>
+          </div>
         </div>
-        <ol className="site-tiers">{c.ranked.tiers.map((name, index) => <li key={name} className={index < tier ? "is-passed" : index === tier ? "is-current" : ""}><i />{name}<small>{tierMins[index]}</small></li>)}</ol>
+        <ol className="site-tiers">{c.ranked.tiers.map((name, index) => <li key={name} className={index < tier ? "is-passed" : index === tier ? "is-current" : ""}
+          style={{ "--tier": tierColor(TIER_KEYS[index]) } as CSSProperties}>
+          <TierEmblem level={index} name={TIER_KEYS[index]} size={30} /><span>{name}</span><small>{tierMins[index].toLocaleString()}+</small></li>)}</ol>
         <div className="site-rank-row">
-          <div className="site-rank-match"><span>{c.ranked.lastMatch}</span><b>+18</b><small>{c.ranked.matchLine(16, 20)}</small></div>
+          <div className="site-rank-match"><span>{c.ranked.lastMatch}</span><b>+18</b><small>{c.ranked.matchLine(16, 20)}</small>
+            <ol className="site-rank-pips">{["up", "up", "down", "up", "up"].map((result, i) => <li key={i} className={`is-${result}`} />)}</ol></div>
           <div className="site-rank-today"><span className="site-rank-dots"><i className="is-used" /><i /><i /></span>{c.ranked.today}</div>
         </div>
+      </div>
+    </div>
+  </section>;
+}
+
+function AgentFeature() {
+  const { copy: c } = useSite();
+  return <section className="site-section site-agent" id="agent" aria-labelledby="site-agent-title">
+    <div className="site-wrap site-feature">
+      <div className="site-feature-copy" data-reveal>
+        <span className="site-status">{c.agent.status}</span>
+        <h2 id="site-agent-title">{c.agent.title1}<span>{c.agent.title2}</span></h2>
+        <p>{c.agent.description}</p>
+        <ul className="site-points">{c.agent.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
+      </div>
+      <div className="site-mock site-agent-mock" data-reveal aria-hidden="true">
+        <span className="site-sample">{c.agent.sample}</span>
+        <img className="site-agent-image" src={agentTableImage} alt="" width={1600} height={1000} decoding="async" />
       </div>
     </div>
   </section>;
@@ -682,7 +720,7 @@ function Analysis() {
       <div className="site-feature-copy" data-reveal>
         <h2 id="site-analysis-title">{c.analysis.title1}<span>{c.analysis.title2}</span></h2>
         <p>{c.analysis.description}</p>
-        <dl className="site-point-grid">{c.analysis.points.map(point => <div key={point.title}><dt>{point.title}</dt><dd>{point.body}</dd></div>)}</dl>
+        <ul className="site-points">{c.analysis.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
         <p className="site-feature-note">{c.analysis.note}</p>
       </div>
       <div className={`site-mock site-dash${inView ? " is-live" : ""}`} ref={ref} data-reveal aria-hidden="true">
@@ -815,7 +853,7 @@ function FinalCta() {
       <div className="site-fan" data-reveal aria-hidden="true">{fan.map(([rank, suit], index) => <PlayingCard key={rank} rank={rank} suit={suit} index={index - 2} />)}</div>
       <h2 id="site-final-title" data-reveal>{c.final.title1}<span>{c.final.title2}</span></h2>
       <p data-reveal>{c.final.description}</p>
-      <a className="site-button is-large" href="/app" data-reveal>{c.final.action}<ArrowRight size={18} weight="bold" aria-hidden="true" /></a>
+      <a className="site-button is-large" href="/analyze/ranges" data-reveal>{c.final.action}<ArrowRight size={18} weight="bold" aria-hidden="true" /></a>
       <small>{c.final.note}</small>
     </div>
   </section>;
@@ -828,7 +866,7 @@ function Footer() {
       <div className="site-footer-top">
         <div><Brand /><p>{c.footer.tagline}</p></div>
         <div className="site-footer-links">
-          <div><span>{c.footer.product}</span><a href="/app">{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
+          <div><span>{c.footer.product}</span><a href="/analyze/ranges">{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
           <div><span>ReysonAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
           <div><span>{c.footer.legal}</span><span className="is-muted">{c.footer.privacy}</span><span className="is-muted">{c.footer.terms}</span></div>
         </div>

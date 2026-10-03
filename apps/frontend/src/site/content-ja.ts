@@ -43,18 +43,19 @@ export const ja: SiteCopy = {
     sample: "表示例", rank: "ランク", rating: "レート", peak: "最高", toNext: (points: number, tier: string) => `${tier}まであと${points}`, today: "本日の残り 2 / 3 試合", lastMatch: "前回の試合", matchLine: (correct: number, total: number) => `${total}問中 ${correct}問正解 · 正答率 ${Math.round(correct / total * 100)}%`,
     tiers: ["ブロンズ", "シルバー", "ゴールド", "プラチナ", "ダイヤモンド", "マスター"],
   },
+  agent: {
+    status: "β版", title1: "Agent戦で、", title2: "実戦の中で確かめる。",
+    description: "AI推定どおりに打つ5体のAgentと6人卓で対戦します。覚えたレンジを、配られたハンドで実際に使ってみましょう。降りたら続きを観戦することも、スキップすることもできます。",
+    points: ["全員がReyson solver（AI推定）どおりに打つ6人卓", "100BBのキャッシュゲーム、収支はポイントで記録", "直近1000ハンドからあなたのプレイスタイルを読み取り", "フロップ以降は今のところヘッズアップのみ（β版）"],
+    sample: "表示例",
+  },
   analysis: {
     title1: "自分のクセが、", title2: "数字で見える。",
-    description: "練習の回答はすべて保存済みの推定と比べられます。ReysonAIはそれを、プレイスタイルマップ、アクションの傾向、強みと弱点、次に練習すべきことにまとめます。",
-    points: [
-      { title: "プレイスタイルマップ", body: "あなたの選択がタイトかルースか、3ベットが多いか少ないかを位置で示します。" },
-      { title: "アクションの傾向", body: "フォールド・オープン・コール・3ベットの頻度を、推定と比べて表示します。" },
-      { title: "強みと弱点", body: "得意な局面と、間違えたハンドの復習リストが分かります。" },
-      { title: "セッション履歴", body: "このブラウザーに保存されたドリルを、振り返ったり再開したりできます。" },
-    ],
-    note: "このブラウザーに保存された練習の回答から作ります。傾向は練習でのもので、実戦の結果ではありません。",
+    description: "練習の回答を推定と比べて、あなたのクセを数字にします。",
+    points: ["タイトかルースか、プレイスタイルが分かる", "フォールド・コール・3ベットの多い少ない", "弱点と、次に練習すべきハンド"],
+    note: "練習の回答から作る傾向で、実戦の成績ではありません。",
     sample: "表示例", score: "ReysonAI Score", accuracy: "正答率", style: "プレイスタイル", styleValue: "TAG", recent: "直近10回答", answers: "回答",
-    map: "プレイスタイルマップ", tight: "タイト", loose: "ルース", quadrants: ["TAG", "LAG", "タイト・パッシブ", "ルース・パッシブ"],
+    map: "プレイスタイルマップ", tight: "タイト", loose: "ルース", quadrants: ["TAG", "LAG", "タイト受動", "ルース受動"],
     tendencies: "推定と比べたアクションの選び方", actions: ["フォールド", "オープン", "コール", "3ベット"],
     weak: "弱点", weakValue: "CO vs BTN · 3ベット", next: "次に練習", nextValue: "A5s · KTo · 76s",
   },
@@ -73,7 +74,7 @@ export const ja: SiteCopy = {
     ],
     note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。GTO Wizard は各権利者の商標であり、ReysonAIとは関係ありません。",
   },
-  pricing: { title1: "まずは無料で。", title2: "Plusも1日約19円。", description: "", note: "Plusの有料機能と課金はまだ利用できません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/app" as string | null, status: "提供中" }, { name: "Plus", price: "¥580", cadence: "/ 月", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定" }] },
+  pricing: { title1: "まずは無料で。", title2: "Plusも1日約19円。", description: "", note: "Plusの有料機能と課金はまだ利用できません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/analyze/ranges" as string | null, status: "提供中" }, { name: "Plus", price: "¥580", cadence: "/ 月", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定" }] },
   faq: {
     title: "よくある質問に、率直に。",
     items: [

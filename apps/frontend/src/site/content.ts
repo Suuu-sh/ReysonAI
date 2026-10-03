@@ -43,16 +43,17 @@ export const en = {
     sample: "Sample", rank: "Rank", rating: "Rating", peak: "Peak", toNext: (points: number, tier: string) => `${points} to ${tier}`, today: "2 / 3 matches left today", lastMatch: "Last match", matchLine: (correct: number, total: number) => `${correct} / ${total} correct · ${Math.round(correct / total * 100)}% accuracy`,
     tiers: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master"],
   },
+  agent: {
+    status: "Beta", title1: "Agent table.", title2: "Put it to work in real hands.",
+    description: "Sit at a 6-max table with five Agents that play the Reyson AI estimate. Use the ranges you studied on the hands you are dealt. Fold any time, then watch the rest or skip ahead.",
+    points: ["Every Agent plays the Reyson solver (AI estimate)", "100BB cash game, results kept in points", "Your play style read from your latest 1,000 hands", "Heads-up after the flop for now (beta)"],
+    sample: "Sample",
+  },
   analysis: {
     title1: "See how you", title2: "actually play.",
-    description: "Every practice answer is compared with the saved estimate. ReysonAI turns them into a play-style map, action tendencies, strengths, weak spots and what to practice next.",
-    points: [
-      { title: "Play-style map", body: "Where your choices sit between tight and loose, and how often you 3bet." },
-      { title: "Action tendencies", body: "How often you fold, open, call and 3bet compared with the estimate." },
-      { title: "Strengths and weak spots", body: "The spots you handle well, and a review queue for the hands you miss." },
-      { title: "Session history", body: "Every drill kept in this browser, ready to review or resume." },
-    ],
-    note: "Built from practice answers saved in this browser. Tendencies describe your practice, not real-game results.",
+    description: "Every practice answer is checked against the estimate, so your habits show up as numbers.",
+    points: ["Play style: tight or loose, passive or aggressive", "Where you fold, call and 3bet too much or too little", "Weak spots and what to practice next"],
+    note: "From your practice answers, not real-game results.",
     sample: "Sample", score: "ReysonAI Score", accuracy: "Accuracy", style: "Play style", styleValue: "TAG", recent: "last 10 answers", answers: "answers",
     map: "Play-style map", tight: "Tight", loose: "Loose", quadrants: ["TAG", "LAG", "Tight-passive", "Loose-passive"],
     tendencies: "Action choices vs estimate", actions: ["Fold", "Open", "Call", "3bet"],
@@ -73,7 +74,7 @@ export const en = {
     ],
     note: "A general comparison of approaches; individual products vary and change. GTO Wizard is a trademark of its owner, and ReysonAI is not affiliated with it.",
   },
-  pricing: { title1: "Start free.", title2: "Plus for about $0.12 a day.", description: "", note: "Plus isn't available yet; paid features and billing are not live.", plans: [{ name: "Free", price: "$0", cadence: "forever", description: "Everything in the current preview.", features: ["Saved preflop ranges and hand details", "Simple and Standard display", "Trainer, session review and play analysis"], action: "Open the app", href: "/app" as string | null, status: "Available" }, { name: "Plus", price: "$3.70", cadence: "/ month · approx.", description: "A deeper practice space, when it's ready.", features: ["Expanded learning tools", "More guided training", "Future table-aware features"], action: "Coming later", href: null as string | null, status: "Planned" }] },
+  pricing: { title1: "Start free.", title2: "Plus for about $0.12 a day.", description: "", note: "Plus isn't available yet; paid features and billing are not live.", plans: [{ name: "Free", price: "$0", cadence: "forever", description: "Everything in the current preview.", features: ["Saved preflop ranges and hand details", "Simple and Standard display", "Trainer, session review and play analysis"], action: "Open the app", href: "/analyze/ranges" as string | null, status: "Available" }, { name: "Plus", price: "$3.70", cadence: "/ month · approx.", description: "A deeper practice space, when it's ready.", features: ["Expanded learning tools", "More guided training", "Future table-aware features"], action: "Coming later", href: null as string | null, status: "Planned" }] },
   faq: {
     title: "Questions, answered plainly.",
     items: [

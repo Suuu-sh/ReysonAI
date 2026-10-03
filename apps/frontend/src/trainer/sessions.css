@@ -1,49 +1,46 @@
-.sessions-page, .sessions-detail { display: flex; flex-direction: column; gap: 20px; min-width: 0; padding: 22px 24px 40px; }
-.sessions-page-head, .sessions-detail-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
-.sessions-page-head h1, .sessions-detail-head h1 { margin: 6px 0; font-size: clamp(24px, 3vw, 32px); letter-spacing: -.03em; }
-.sessions-page-head p, .sessions-detail-head p, .sessions-history-head p { margin: 0; color: var(--text-muted); font-size: 13px; }
-.sessions-eyebrow { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-bright); font-size: 10px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
-.sessions-total { display: flex; align-items: baseline; gap: 7px; color: var(--accent-bright); font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.sessions-total small { color: var(--text-muted); font-size: 12px; font-weight: 500; }
-.sessions-filters { display: flex; gap: 4px; align-self: flex-start; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); }
-.sessions-filters button { padding: 7px 12px; border: 0; border-radius: 6px; background: transparent; color: var(--text-muted); font-size: 12px; cursor: pointer; }
-.sessions-filters button.active { background: var(--surface-accent-strong); color: var(--accent-bright); font-weight: 700; }
-.sessions-table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-.sessions-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
-.sessions-table th { padding: 12px 14px; border-bottom: 1px solid var(--line-strong); background: var(--surface-raised); color: var(--text-subtle); font-size: 11px; font-weight: 700; }
-.sessions-table td { padding: 10px 14px; border-bottom: 1px solid var(--line); color: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-.sessions-table tr:last-child td { border-bottom: 0; }
-.sessions-table tbody tr:hover { background: var(--surface-hover); }
-.sessions-row-link { padding: 0; border: 0; background: transparent; color: var(--text); font: inherit; font-weight: 700; text-align: left; cursor: pointer; }
+/* Sessions: same language as the trainer home (heading + pulse tiles, segmented filter, card rows). */
+.sessions-page, .sessions-detail { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 1100px; min-width: 0; margin: 0 auto; padding: 8px 4px 32px; }
+.sessions-detail-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.sessions-detail-head h1 { margin: 2px 0 4px; font-size: 24px; letter-spacing: -.01em; }
+.sessions-detail-head p, .sessions-history-head p { margin: 0; color: var(--text-muted); font-size: 13px; }
+.sessions-eyebrow { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+.sessions-page-head .trainer-pulse dd.is-time { font-size: 16px; line-height: 1.5; }
+.lb-period.sessions-filters { display: inline-grid; grid-template-columns: repeat(3, 1fr); align-self: flex-start; min-width: 280px; }
+.sessions-table-scroll { overflow-x: auto; }
+.sessions-table { width: 100%; text-align: left; white-space: nowrap; }
+.sessions-table td { color: var(--text-muted); font-size: 12px; }
+.sessions-table tbody tr { transition: transform .15s ease; }
+.sessions-table tbody tr:hover td { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
+.sessions-row-link { padding: 0; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 13px; font-weight: 700; text-align: left; cursor: pointer; }
 .sessions-row-link:hover { color: var(--accent-bright); }
-.sessions-status { display: inline-block; padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; }
-.sessions-status.draft { background: var(--surface-accent-strong); color: var(--accent-bright); }
-.sessions-status.completed { background: #173426; color: #83dbab; }
-.sessions-rate { color: var(--text) !important; font-weight: 800; }
-.sessions-open { display: grid; place-items: center; width: 25px; height: 25px; border: 0; border-radius: 6px; background: transparent; color: var(--text-muted); cursor: pointer; }
-.sessions-open:hover { background: var(--surface-accent-strong); color: var(--accent-bright); }
-.sessions-back { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 0; border: 0; background: transparent; color: var(--text-muted); font-size: 12px; cursor: pointer; }
-.sessions-back:hover { color: var(--text); }
-.sessions-resume { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 800; cursor: pointer; }
-.sessions-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; }
-.sessions-summary div { padding: 15px 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-.sessions-summary dt { color: var(--text-subtle); font-size: 11px; }
-.sessions-summary dd { margin: 5px 0 0; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.sessions-summary dd small { margin-left: 3px; color: var(--text-muted); font-size: 11px; font-weight: 500; }
-.sessions-history { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.sessions-history-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.sessions-history h2 { margin: 0 0 4px; font-size: 17px; }
-.sessions-history-head > span { color: var(--text-muted); font-size: 12px; }
-.sessions-empty, .sessions-empty-state { padding: 35px 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text-muted); text-align: center; font-size: 13px; }
+.sessions-status { display: inline-block; padding: 2px 9px; border: 1px solid; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: .04em; }
+.sessions-status.draft { border-color: color-mix(in srgb, var(--accent) 55%, transparent); color: var(--accent-bright); }
+.sessions-status.completed { border-color: rgb(111 220 140 / 45%); color: #83dbab; }
+.sessions-rate { color: var(--text) !important; font-size: 14px; font-weight: 800; }
+.sessions-open { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--line-strong); border-radius: 8px; background: transparent; color: var(--text-muted); cursor: pointer; }
+.sessions-open:hover { border-color: var(--accent); color: var(--accent-bright); }
+.sessions-back { align-self: flex-start; }
+.sessions-resume { flex: 0 0 auto; }
+.sessions-summary { width: 100%; }
+.sessions-summary div { flex: 1; }
+.sessions-history { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.sessions-history-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.sessions-history h2 { margin: 0 0 4px; color: var(--text-muted); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.sessions-history-head > span { color: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.sessions-empty, .sessions-empty-state { padding: 35px 20px; border: 1px dashed var(--line-strong); border-radius: 14px; color: var(--text-muted); text-align: center; font-size: 13px; }
+.sessions-empty-state svg { color: var(--accent); }
 .sessions-empty-state h2 { margin: 10px 0 4px; color: var(--text); font-size: 17px; }
 .sessions-empty-state p { margin: 0; }
 .sessions-hand { display: flex; align-items: center; gap: 8px; }
-.sessions-hand strong { color: var(--text); }
+.sessions-hand strong { color: var(--text); font-size: 13px; }
 .sessions-cards { display: inline-flex; gap: 3px; }
-.sessions-cards span { display: inline-block; min-width: 24px; padding: 3px; border: 1px solid var(--line-strong); border-radius: 3px; background: var(--surface-raised); text-align: center; font-weight: 700; }
+.sessions-cards span { display: inline-block; min-width: 24px; padding: 2px 3px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--surface-raised); text-align: center; font-weight: 700; }
 .sessions-cards .suit-h { color: #ff8290; }.sessions-cards .suit-d { color: #73b1ff; }.sessions-cards .suit-c { color: #84d79f; }.sessions-cards .suit-s { color: var(--text); }
-.sessions-result { font-weight: 800; }.sessions-result.result-best { color: #83dbab; }.sessions-result.result-mixed { color: #f3c95f; }.sessions-result.result-miss { color: #ff7aa8; }
-.sessions-table td small { display: block; margin-top: 3px; color: var(--text-subtle); font-size: 10px; }
-.sessions-index { color: var(--text-subtle) !important; }
+.sessions-result { display: inline-block; padding: 2px 9px; border: 1px solid; border-radius: 999px; font-size: 10px; font-weight: 800; }
+.sessions-result.result-best { border-color: rgb(111 220 140 / 45%); color: #83dbab; }
+.sessions-result.result-mixed { border-color: rgb(243 201 95 / 45%); color: #f3c95f; }
+.sessions-result.result-miss { border-color: rgb(255 122 168 / 45%); color: #ff7aa8; }
+.sessions-table td small { display: block; margin-top: 2px; color: var(--text-subtle); font-size: 10px; }
+.sessions-index { color: var(--text-subtle) !important; font-weight: 800; }
 .sessions-page button:focus-visible, .sessions-detail button:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
-@media (max-width: 650px) { .sessions-page, .sessions-detail { padding: 16px 12px 28px; gap: 16px; } .sessions-total { display: none; } .sessions-summary { gap: 5px; } .sessions-summary div { padding: 11px; } .sessions-summary dd { font-size: 17px; } .sessions-detail-head { align-items: flex-start; flex-direction: column; } }
+@media (max-width: 650px) { .sessions-page, .sessions-detail { gap: 12px; } .sessions-detail-head { align-items: flex-start; flex-direction: column; } .sessions-filters { width: 100%; } }

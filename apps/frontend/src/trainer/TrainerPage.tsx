@@ -11,7 +11,8 @@ import {
 import { clearHistory, loadHistory, saveHistory, summarize } from "./trainer-store.ts";
 import { displayDrillName, drillStats, loadDrills, newDrillId, recordSession, saveDrills, upsertDrill } from "./drill-store.ts";
 import { loadDrillDrafts, removeDrillDraft, restoreDrillDraft, saveDrillDraft } from "./drill-session-store.ts";
-import { DrillLibrary, HistoryChart } from "./DrillLibrary.tsx";
+import { DrillLibrary, HistoryChart, TrainerHome } from "./DrillLibrary.tsx";
+import { AgentTablePage } from "../agent/AgentTable.tsx";
 import { PlayerAnalysis } from "./PlayerAnalysis.tsx";
 import { SessionPage } from "./SessionPage.tsx";
 import { loadReviewSessions, newSessionRecord, recordReviewSession } from "./practice-sessions.ts";
@@ -19,6 +20,8 @@ import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, RANKED_SETTINGS, loa
 import { Leaderboard } from "./Leaderboard.tsx";
 import "./trainer.css";
 import { localized } from "../i18n.ts";
+import { trainerPath, trainerRouteOf } from "../route.ts";
+import { agentTableById } from "../agent/characters.ts";
 
 const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const pct = value => `${Math.round((value ?? 0) * 100)}%`;
@@ -310,8 +313,11 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
   const limit = length;
   const lastQuestion = limit > 0 && session.answered >= limit;
 
+  // Time of the last answer, so a double click on an action doesn't also press its Next.
+  const answeredAt = useRef(0);
   const choose = useCallback(action => {
     if (answer) return;
+    answeredAt.current = Date.now();
     const graded = grade(question.spot, question.hand, action, { strictness: settings.strictness });
     setAnswer({ action, ...graded });
     setSelectedHand(question.hand);
@@ -391,16 +397,17 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
         <div className="trainer-actions">
           {spot.actions.map((action, index) => {
             const state = !answer ? "" : action.key === answer.action ? ` chosen ${answer.result}` : action.key === answer.best ? " best" : "";
-            return <button type="button" key={action.key} className={`trainer-action action-${action.key}${state}`} onClick={() => choose(action.key)} disabled={Boolean(answer)}
+            // The answered button turns into "Next" so the cursor can stay where it clicked.
+            const isNext = Boolean(answer) && action.key === answer!.action;
+            return <button type="button" key={action.key} className={`trainer-action action-${action.key}${state}${isNext ? " is-next" : ""}`}
+              onClick={() => isNext ? (Date.now() - answeredAt.current > 350 && advance()) : choose(action.key)} disabled={Boolean(answer) && !isNext}
               style={{ "--action-color": actionColor(action.key), "--freq": answer ? answer.mix[action.key] : 0 }}>
               <kbd>{index + 1}</kbd><span>{action.label}</span>
               {answer && <b>{pct(answer.mix[action.key])}</b>}
+              {isNext && <em className="trainer-action-next">{lastQuestion ? "結果へ" : "次へ"}<ArrowRight size={13} weight="bold" /></em>}
             </button>;
           })}
         </div>
-        <button type="button" className={`trainer-next-btn${answer ? " ready" : ""}`} onClick={advance} disabled={!answer}>
-          {lastQuestion ? "結果へ" : "次へ"}<ArrowRight size={14} weight="bold" /><kbd>Enter</kbd>
-        </button>
         </div>
       </section>
 
@@ -472,26 +479,37 @@ function Weakness({ history, onStartReview, onStart, onClear }) {
   </div>;
 }
 
-export function TrainerPage({ profile, onEditProfile, onSectionChange, section = "トレーナー" }) {
+export function TrainerPage({ profile, onEditProfile, onSectionChange, section = "トレーナー", path = "/trainer", onNavigate = (_path: string, _replace?: boolean) => {} }) {
   const [history, setHistory] = useState(loadHistory);
   const [drills, setDrills] = useState(() => loadDrills(profile?.level));
   const [drafts, setDrafts] = useState(loadDrillDrafts);
   const [reviewSessions, setReviewSessions] = useState(loadReviewSessions);
-  const [phase, setPhase] = useState("library");
   const [active, setActive] = useState(null); // { drill, review }
   const [editing, setEditing] = useState(null); // { drill, isNew }
   const [run, setRun] = useState(0);
   const [result, setResult] = useState(null);
   const [rankState, setRankState] = useState(loadRankState);
+  // The trainer's sub-page lives in the URL (see route.ts); the state below only holds what the
+  // page needs, and is rebuilt from the URL after a reload.
+  const route = section === "トレーナー" ? trainerRouteOf(path) : { phase: "library" as const };
+  const phase = route.phase === "new" || route.phase === "edit" ? "edit" : route.phase;
+  const agentTable = route.phase === "agent" ? { tableId: route.tableId, watch: route.watch } : null;
+  const keyOf = (value: { drill: { id: string }, review?: boolean, ranked?: boolean }) => value.ranked ? "ranked" : value.review ? "review" : value.drill.id;
+  const setPhase = (next: "library" | "drills" | "ranking", replace = false) => onNavigate(trainerPath({ phase: next }), replace);
+  const newDrill = () => ({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true });
   const reviewCount = useMemo(() => summarize(history).review.length, [history]);
   const onAnswer = useCallback(entry => setHistory(current => { const updated = [...current, entry]; saveHistory(updated); return updated; }), []);
   const commitDrills = next => { setDrills(next); saveDrills(next); };
   const onProgress = useCallback(draft => setDrafts(current => saveDrillDraft(current, draft)), []);
   const discardProgress = useCallback(key => setDrafts(current => removeDrillDraft(current, key)), []);
-  const start = (drill, review = false) => {
+  const begin = (drill, review = false) => {
     const saved = drafts[review ? "review" : drill.id];
     setActive({ drill, review, ranked: drill.id === RANKED_DRILL.id, name: saved?.drillName ?? drill.name, settings: saved?.settings ?? drill.settings });
-    setRun(value => value + 1); setPhase("drill"); onSectionChange("トレーナー");
+    setRun(value => value + 1);
+  };
+  const start = (drill, review = false) => {
+    begin(drill, review);
+    onNavigate(trainerPath({ phase: "drill", key: drill.id === RANKED_DRILL.id ? "ranked" : review ? "review" : drill.id }));
   };
   const reviewDrill = useMemo(() => ({ id: "review", name: "復習ドリル", settings: normalizeSettings({ count: Math.min(20, Math.max(reviewCount, 1)) }, profile?.level) }), [reviewCount, profile]);
   const onFinish = useCallback((log, durationMs) => {
@@ -501,7 +519,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
       const next = recordMatch(rankState, log);
       setRankState(next); saveRankState(next);
       setResult({ log, record: null, rank: next.matches.at(-1) });
-      setPhase("result");
+      onNavigate(trainerPath({ phase: "result", key: keyOf(active) }), true);
       return;
     }
     if (log.length) {
@@ -516,8 +534,24 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
       }
     }
     setResult({ log, record });
-    setPhase("result");
-  }, [active, drills, discardProgress, rankState]); // eslint-disable-line react-hooks/exhaustive-deps
+    onNavigate(trainerPath({ phase: "result", key: keyOf(active) }), true);
+  }, [active, drills, discardProgress, rankState, onNavigate]); // eslint-disable-line react-hooks/exhaustive-deps
+  // After a reload (or back/forward) the URL can name a page whose state is gone: rebuild it,
+  // or fall back to the nearest page that needs none.
+  useEffect(() => {
+    if (route.phase === "new" && !editing?.isNew) setEditing(newDrill());
+    if (route.phase === "edit" && editing?.drill.id !== route.id) {
+      const drill = drills.find(item => item.id === route.id);
+      if (drill) setEditing({ drill, isNew: false }); else setPhase("drills", true);
+    }
+    if (route.phase === "drill" && (!active || keyOf(active) !== route.key)) {
+      const drill = route.key === "ranked" ? RANKED_DRILL : route.key === "review" ? reviewDrill : drills.find(item => item.id === route.key);
+      const rankedClosed = route.key === "ranked" && (!RANKED_ENABLED || (!drafts.ranked && playedToday(rankState) >= RANKED_DAILY_LIMIT));
+      if (drill && !rankedClosed) begin(drill, route.key === "review"); else setPhase(route.key === "ranked" || !drill ? "library" : "drills", true);
+    }
+    if (route.phase === "agent" && !agentTableById(route.tableId)) setPhase("library", true);
+    if (route.phase === "result" && (!result || !active || keyOf(active) !== route.key)) setPhase(route.key === "ranked" ? "library" : "drills", true);
+  }, [path, section]); // eslint-disable-line react-hooks/exhaustive-deps
   const mainRef = useRef(null);
   useEffect(() => { mainRef.current?.scrollTo?.(0, 0); window.scrollTo?.(0, 0); }, [phase, section]);
   const activeDraftKey = active && (active.review ? "review" : active.drill.id);
@@ -529,27 +563,32 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
     <main className="trainer-page" ref={mainRef}>
       {section === "弱点"
         ? <Weakness history={history}
-            onStart={() => { setPhase("library"); onSectionChange("トレーナー"); }}
+            onStart={() => { setPhase("library"); }}
             onStartReview={() => start(reviewDrill, true)}
             onClear={() => { if (window.confirm("回答履歴をすべて消しますか？")) { clearHistory(); setHistory([]); } }} />
-        : section === "プレー分析" ? <PlayerAnalysis history={history} onStart={() => { setPhase("library"); onSectionChange("トレーナー"); }} onOpenWeakness={() => onSectionChange("弱点")} />
+        : section === "プレー分析" ? <PlayerAnalysis history={history} onStart={() => { setPhase("library"); }} onOpenWeakness={() => onSectionChange("弱点")} />
         : section === "セッション" ? <SessionPage drills={drills} reviews={reviewSessions} drafts={drafts}
             onResume={session => start(session.kind === "review" ? reviewDrill : drills.find(drill => drill.id === session.drillId), session.kind === "review")} />
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
-            onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("library")}
-            onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("library"); }} />
+            onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("drills")}
+            onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("drills"); }} />
+        : phase === "agent" && agentTable && agentTableById(agentTable.tableId) ? <AgentTablePage key={`${agentTable.tableId}-${agentTable.watch}`} tableId={agentTable.tableId} watch={agentTable.watch} onExit={() => setPhase("library")} />
         : phase === "ranking" && RANKED_ENABLED ? <Leaderboard rank={rankState} profile={profile} onBack={() => setPhase("library")} />
         : phase === "result" && result ? <SessionResult log={result.log} record={result.record} rank={result.rank} settings={current.settings} drill={active.review ? null : current}
-            onRestart={active.ranked && (playedToday(rankState) >= RANKED_DAILY_LIMIT) ? null : () => start(current, active.review)} onLibrary={() => setPhase("library")} />
+            onRestart={active.ranked && (playedToday(rankState) >= RANKED_DAILY_LIMIT) ? null : () => start(current, active.review)} onLibrary={() => setPhase(active.ranked ? "library" : "drills")} />
         : phase === "drill" && current ? <Drill key={run} history={history} onAnswer={onAnswer} settings={current.settings} drillName={current.name} reviewOnly={active.review}
             draftKey={activeDraftKey} initialDraft={activeDraft} onProgress={onProgress}
-            onOpenSetup={() => setPhase("library")} onFinish={onFinish} length={active.ranked ? RANKED_LENGTH : undefined} />
-        : <DrillLibrary drills={drills} reviewCount={reviewCount} drafts={drafts}
-            rank={rankState} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")}
+            onOpenSetup={() => setPhase(active.ranked ? "library" : "drills")} onFinish={onFinish} length={active.ranked ? RANKED_LENGTH : undefined} />
+        : phase === "drills" ? <DrillLibrary drills={drills} reviewCount={reviewCount} drafts={drafts} onBack={() => setPhase("library")}
             onStart={drill => start(drill)} onStartReview={() => start(reviewDrill, true)}
-            onCreate={() => { setEditing({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true }); setPhase("edit"); }}
-            onEdit={drill => { setEditing({ drill, isNew: false }); setPhase("edit"); }}
-            onDelete={drill => { if (window.confirm(`「${drill.name}」と記録を削除しますか？`)) { commitDrills(drills.filter(item => item.id !== drill.id)); discardProgress(drill.id); } }} />}
+            onCreate={() => { setEditing(newDrill()); onNavigate(trainerPath({ phase: "new" })); }}
+            onEdit={drill => { setEditing({ drill, isNew: false }); onNavigate(trainerPath({ phase: "edit", id: drill.id })); }}
+            onDelete={drill => { if (window.confirm(`「${drill.name}」と記録を削除しますか？`)) { commitDrills(drills.filter(item => item.id !== drill.id)); discardProgress(drill.id); } }} />
+        : <TrainerHome drills={drills} history={history} reviewCount={reviewCount} drafts={drafts} onOpenDrills={() => setPhase("drills")}
+            onResume={key => key === "ranked" ? start(RANKED_DRILL) : key === "review" ? start(reviewDrill, true) : start(drills.find(drill => drill.id === key) ?? drills[0])}
+            onCreate={() => { setEditing(newDrill()); onNavigate(trainerPath({ phase: "new" })); }} onStartReview={() => start(reviewDrill, true)}
+            onStartAgent={(tableId, watch) => onNavigate(trainerPath({ phase: "agent", tableId, watch }))}
+            rank={rankState} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")} />}
     </main>
   </div>;
 }
