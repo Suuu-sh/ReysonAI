@@ -176,12 +176,14 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   }, [result]);
   const skip = () => setShown(log.length);
 
-  // Spectating: deal the next hand by itself after a short pause.
+  // Deal the next hand by itself: right away, except at a showdown, where the cards stay up long
+  // enough to read the opponent's hand (in either speed).
+  const showdown = done && Boolean(result?.showdown);
   useEffect(() => {
     if (!done) return;
-    const timer = window.setTimeout(nextHand, speed === "fast" ? 300 : 600);
+    const timer = window.setTimeout(nextHand, showdown ? (speed === "fast" ? 2500 : 3500) : speed === "fast" ? 300 : 600);
     return () => window.clearTimeout(timer);
-  }, [done, nextHand, speed]);
+  }, [done, showdown, nextHand, speed]);
 
   // Keyboard: 1-9 pick an action, Enter / Space deal the next hand, S skips.
   useEffect(() => {
