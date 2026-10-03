@@ -331,3 +331,14 @@
   .style-row-label small { display: none; }
   .style-exploit li { grid-template-columns: 1fr; gap: 4px; }
 }
+
+/* ── One screen, no page scroll: the table shrinks to fit, the hand log scrolls inside its panel ── */
+.agent-page { height: calc(100dvh - 32px); min-height: 0; overflow: hidden; padding-bottom: 0; }
+.agent-layout { height: 100%; min-height: 0; align-items: stretch; }
+.agent-stage { min-height: 0; grid-template-rows: minmax(0, 1fr) auto; }
+.agent-felt-wrap { min-height: 0; padding: clamp(56px, 8dvh, 74px) 96px clamp(84px, 11dvh, 112px); }
+.agent-felt { width: min(100%, 720px, calc((100dvh - 32px - 60px - 200px - clamp(140px, 19dvh, 186px)) * 2.05)); }
+.agent-side { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.agent-side > .agent-panel { flex: none; }
+.agent-side > .agent-log { flex: 1 1 auto; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
+.agent-log .agent-log-body { max-height: none; min-height: 0; }
