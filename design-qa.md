@@ -354,3 +354,8 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Removed unused total calculation and avoid an empty stats block for opening/limp details.
 - Verification: estimated UI tests 16/16; production build passed; Sites tests 5/5; diff whitespace check passed. Full suite was started before fixing a test-source variable and is not used as a passing result.
 - Browser: localhost:5173/app, BTN AKo Standard detail shows action percentages and saved reasoning without either removed row. App left open.
+
+## 2026-10-03 — Approved ReysonAI abstract brand icon
+- Adopted the user's selected non-letter abstract pink symbol via a shared BrandIcon for the app sidebar/onboarding and service-site header/footer/comparison. Playing-card suits remain unchanged.
+- Related tests passed 29/29; Sites tests passed 5/5; production build passed (existing bundle-size warning only).
+- Browser verified the app icon loads at 30px and all three service-site symbols load at 24/18/24px. Visually checked both pages; app remains open at localhost:5173/app.
