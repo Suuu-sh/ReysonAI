@@ -247,7 +247,7 @@ function RankedCard({ rank, draft, onStart, onOpenRanking }) {
   </ModeBlock>;
 }
 
-// Evion Agent: a six-handed table against agents that play the Evion solver estimate.
+// Reyson Agent: a six-handed table against agents that play the Reyson solver estimate.
 function AgentEntry({ onStart }) {
   const table = AGENT_TABLE;
   const record = summarizeAgentHands(loadAgentHands());
@@ -255,9 +255,9 @@ function AgentEntry({ onStart }) {
   return <ModeBlock theme={table.theme} className="is-agent" visualClass="agent-lineup" label={localized("Agent table", "Agent戦")}
     visual={table.agents.map((agent, index) => <span key={agent.id} className="agent-table-face" style={{ "--i": index }} aria-hidden="true">
       <AgentAvatar id={agent.id} color={agent.color} size={52} /><small>{agent.name.en}</small></span>)}
-    eyebrow={`EVION AGENT · ${table.name.en}`}
+    eyebrow={`REYSON AGENT · ${table.name.en}`}
     title={localized("Agent table", "Agent戦")}
-    description={localized("A 6-max table where every Agent plays the Evion solver estimate. Fold any time, then watch the rest or skip.", "全員がEvion solver（AI推定）通りに打つ6人卓。降りたら続きを観戦することも、スキップすることもできます。")}
+    description={localized("A 6-max table where every Agent plays the Reyson solver estimate. Fold any time, then watch the rest or skip.", "全員がReyson solver（AI推定）通りに打つ6人卓。降りたら続きを観戦することも、スキップすることもできます。")}
     actions={<>
       <button type="button" className="mode-primary" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
       <button type="button" className="mode-secondary" onClick={() => onStart(table.id, true)}><Eye size={15} />{localized("Watch", "観戦")}</button>

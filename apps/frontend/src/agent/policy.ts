@@ -1,4 +1,4 @@
-// How an Evion Agent picks its action. The balanced agent plays the saved frequencies exactly:
+// How an Reyson Agent picks its action. The balanced agent plays the saved frequencies exactly:
 // preflop the dataset row of its hand class (after the table rules in preflop.ts), postflop the
 // mix the AI-estimate candidate plays (policy + computed defence, as in simulation.mjs).
 //

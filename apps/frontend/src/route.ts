@@ -8,7 +8,7 @@
 //   /trainer/play/:key          a drill in progress (key: drill id, "review" or "ranked")
 //   /trainer/play/:key/result   its result
 //   /trainer/ranking            leaderboard
-//   /trainer/agent/:table       Evion Agent table (/watch to spectate)
+//   /trainer/agent/:table       Reyson Agent table (/watch to spectate)
 //   /sessions  /analysis  /weakness
 //   /account/:tab
 // Section names match RANGE_SECTION (components/layout.tsx) and ACCOUNT_SECTION (account/AccountMenu.tsx);

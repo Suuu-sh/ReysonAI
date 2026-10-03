@@ -25,7 +25,8 @@ const BLINDS: Record<string, number> = { SB: 0.5, BB: 1 };
 const SPEEDS = { normal: 700, fast: 280 } as const;
 type Speed = keyof typeof SPEEDS;
 
-const readPref = <T,>(key: string, fallback: T): T => { try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch { return fallback; } };
+// Prefs moved from evionai: to reysonai: keys with the rename; the old key is still read.
+const readPref = <T,>(key: string, fallback: T): T => { try { const v = localStorage.getItem(key) ?? localStorage.getItem(key.replace(/^reysonai:/, "evionai:")); return v == null ? fallback : JSON.parse(v); } catch { return fallback; } };
 const writePref = (key: string, value: unknown) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ } };
 
 function Card({ card, hidden = false, size = "" }: { card?: string; hidden?: boolean; size?: string }) {
@@ -88,7 +89,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   const [kits, setKits] = useState<Map<string, PostflopKit | null>>(() => new Map());
   const [shown, setShown] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [speed, setSpeed] = useState<Speed>(() => readPref("evionai:agent-speed", "normal"));
+  const [speed, setSpeed] = useState<Speed>(() => readPref("reysonai:agent-speed", "normal"));
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [styleOpen, setStyleOpen] = useState(false);
 
@@ -220,18 +221,18 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
       <button type="button" className="agent-back" onClick={onExit} aria-label={localized("Back", "戻る")}><ArrowLeft size={16} weight="bold" /></button>
       <div className="agent-title">
         <strong>{localized(table.name.en, table.name.ja)}</strong>
-        <small>{watch ? localized("Spectating", "観戦") : "Evion Agent"} · 6-max 100BB · #{session.handNo + 1}</small>
+        <small>{watch ? localized("Spectating", "観戦") : "Reyson Agent"} · 6-max 100BB · #{session.handNo + 1}</small>
       </div>
       <div className="agent-tools">
         <div className="agent-segment" role="group" aria-label={localized("Speed", "速さ")}>
           {(Object.keys(SPEEDS) as Speed[]).map(value => <button key={value} type="button" aria-pressed={speed === value}
-            onClick={() => { setSpeed(value); writePref("evionai:agent-speed", value); }}>
+            onClick={() => { setSpeed(value); writePref("reysonai:agent-speed", value); }}>
             {value === "fast" && <Lightning size={12} weight="fill" />}{value === "fast" ? localized("Fast", "速い") : localized("Normal", "ふつう")}</button>)}
         </div>
         {liveRead && <button type="button" className="agent-toggle" onClick={() => setStyleOpen(true)}><ChartBar size={13} weight="bold" />{localized("Play style", "プレイスタイル")}</button>}
         <span className="agent-rule" tabIndex={0}><Info size={13} />{localized("Beta · heads-up flops", "β版 · フロップはHUのみ")}
-          <span className="agent-rule-tip" role="tooltip">{localized("Evion Agent is in beta and multiway pots aren't supported yet. A call that would bring a third player to the flop isn't offered (agents fold that share instead), and lines without saved data fold.",
-            "Evion Agentはβ版で、まだマルチウェイに対応していません。3人目としてフロップへ行くコールは選べず（Agentはその頻度をフォールドに回します）、保存データのない場面はフォールドになります。")}</span></span>
+          <span className="agent-rule-tip" role="tooltip">{localized("Reyson Agent is in beta and multiway pots aren't supported yet. A call that would bring a third player to the flop isn't offered (agents fold that share instead), and lines without saved data fold.",
+            "Reyson Agentはβ版で、まだマルチウェイに対応していません。3人目としてフロップへ行くコールは選べず（Agentはその頻度をフォールドに回します）、保存データのない場面はフォールドになります。")}</span></span>
       </div>
     </header>
 
@@ -239,7 +240,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
       <section className="agent-stage">
         <div className="agent-felt-wrap">
           <div className="agent-felt">
-            <span className="agent-felt-logo" aria-hidden="true">EvionAI</span>
+            <span className="agent-felt-logo" aria-hidden="true">ReysonAI</span>
             <div className="agent-center">
               <div className="agent-board">{[0, 1, 2, 3, 4].map(i => boardCards[i]
                 ? <Card key={`${i}-${boardCards[i]}`} card={boardCards[i]} size="is-board" />

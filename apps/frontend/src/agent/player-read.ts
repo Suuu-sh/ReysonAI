@@ -1,4 +1,4 @@
-// What the Evion Agents "know" about the human: statistics over the latest 1000 Agent-game hands,
+// What the Reyson Agents "know" about the human: statistics over the latest 1000 Agent-game hands,
 // compared with the agents' own balanced play (agent-baseline.json). The read names a play
 // style and the tendencies an opponent would target. Exploiting them needs opponent-adjusted
 // range tables (not made yet), so today the read is shown and handed to the agents, who still

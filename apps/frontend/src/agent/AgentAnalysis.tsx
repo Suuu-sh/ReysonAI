@@ -40,7 +40,7 @@ const STAT_HINTS: Record<string, [string, string]> = {
   WSD: ["Showdowns won", "ショーダウンで勝った割合"],
 };
 
-// Agent戦: results against Evion Agents, kept apart from the drill statistics.
+// Agent戦: results against Reyson Agents, kept apart from the drill statistics.
 export function AgentAnalysis() {
   const hands = useMemo(loadAgentHands, []);
   const s = useMemo(() => summarizeAgentHands(hands), [hands]);
@@ -49,12 +49,12 @@ export function AgentAnalysis() {
     <header className="agent-analysis-head">
       <div>
         <h2>{localized("Agent games", "Agent戦")}</h2>
-        <small>{localized("Your hands at the Evion Agent table · counted separately from drills", "Evion Agent卓でのあなたのハンド · ドリルとは別に集計")}</small>
+        <small>{localized("Your hands at the Reyson Agent table · counted separately from drills", "Reyson Agent卓でのあなたのハンド · ドリルとは別に集計")}</small>
       </div>
       <span className="agent-analysis-faces" aria-hidden="true">{AGENT_TABLE.agents.map(agent => <AgentAvatar key={agent.id} id={agent.id} color={agent.color} size={30} />)}</span>
     </header>
     {!s.hands ? <div className="agent-analysis-empty">
-        <p>{localized("No Agent games yet. Sit down at an Evion Agent table in the trainer to see your results here.", "まだAgent戦の記録がありません。トレーナーのEvion Agent卓で対戦すると、ここに成績が表示されます。")}</p>
+        <p>{localized("No Agent games yet. Sit down at an Reyson Agent table in the trainer to see your results here.", "まだAgent戦の記録がありません。トレーナーのReyson Agent卓で対戦すると、ここに成績が表示されます。")}</p>
       </div> : <>
       <div className="agent-analysis-kpis">
         <div className="is-main"><span>{localized("Result", "収支")}</span><strong className={toneOf(net)}>{signed(net)}<small>{localized("pts", "点")}</small></strong></div>

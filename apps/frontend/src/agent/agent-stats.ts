@@ -1,8 +1,9 @@
-// Agent戦 results for プレー分析: one record per hand the human played at an Evion Agent table,
+// Agent戦 results for プレー分析: one record per hand the human played at an Reyson Agent table,
 // kept only in this browser. Separate from the drill answer history on purpose.
 import type { HandResult } from "./hand.ts";
 
-const KEY = "evionai:agent-hands:v1";
+const KEY = "reysonai:agent-hands:v1";
+const OLD_KEY = "evionai:agent-hands:v1"; // before the ReysonAI rename: still read when the new key is empty
 const LIMIT = 3000;
 const RAISES = new Set(["open", "raise", "three_bet", "squeeze", "four_bet", "all_in"]);
 
@@ -19,7 +20,7 @@ export type AgentHandRecord = {
 const storage = () => { try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; } };
 
 export function loadAgentHands(): AgentHandRecord[] {
-  try { const value = JSON.parse(storage()?.getItem(KEY) ?? "[]"); return Array.isArray(value) ? value : []; } catch { return []; }
+  try { const value = JSON.parse(storage()?.getItem(KEY) ?? storage()?.getItem(OLD_KEY) ?? "[]"); return Array.isArray(value) ? value : []; } catch { return []; }
 }
 
 export function saveAgentHand(record: AgentHandRecord) {

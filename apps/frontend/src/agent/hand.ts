@@ -1,4 +1,4 @@
-// One Evion Agent hand, replayed from (seed, human actions). The hand is a pure function of its
+// One Reyson Agent hand, replayed from (seed, human actions). The hand is a pure function of its
 // inputs: cards come from a seeded shuffle and each agent decision from its own seeded draw, so
 // replaying with one more human action reproduces everything before it. When the human must act
 // and no action is left, the replay stops and returns the pending decision.

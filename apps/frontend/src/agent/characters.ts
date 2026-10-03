@@ -1,5 +1,5 @@
-// The Evion Agent table and its agents. Codenames, units and colours are presentation only:
-// every agent plays the same Evion solver estimate (and, later, the same opponent-adjusted tables).
+// The Reyson Agent table and its agents. Codenames, units and colours are presentation only:
+// every agent plays the same Reyson solver estimate (and, later, the same opponent-adjusted tables).
 export type AgentCharacter = { id: string; name: { ja: string; en: string }; unit: string; color: string };
 export type AgentTable = { id: string; name: { ja: string; en: string }; tagline: { ja: string; en: string }; theme: string; agents: AgentCharacter[] };
 
@@ -7,8 +7,8 @@ const agent = (id: string, codename: string, unit: string, color: string): Agent
   ({ id, name: { ja: codename, en: codename }, unit, color });
 
 export const AGENT_TABLES: AgentTable[] = [
-  { id: "evion-01", name: { ja: "EVION TABLE 01", en: "EVION TABLE 01" },
-    tagline: { ja: "Evion solver で動く5体のAgent", en: "Five agents running the Evion solver" }, theme: "#3fb8d8", agents: [
+  { id: "reyson-01", name: { ja: "REYSON TABLE 01", en: "REYSON TABLE 01" },
+    tagline: { ja: "Reyson solver で動く5体のAgent", en: "Five agents running the Reyson solver" }, theme: "#3fb8d8", agents: [
     agent("orion", "ORION", "UNIT-01", "#f0609e"),
     agent("vega", "VEGA", "UNIT-02", "#4fd1ff"),
     agent("nova", "NOVA", "UNIT-03", "#a78bfa"),

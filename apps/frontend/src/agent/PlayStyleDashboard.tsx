@@ -88,8 +88,8 @@ export function PlayStyleDashboard({ read, onClose }: { read: PlayerRead; onClos
             </li>)}</ul>
           : <p className="style-empty">{localized("No clear gap from the agents' baseline yet.", "Agent基準との大きな差はまだ見つかっていません。")}</p>}
       <p className="style-status"><Hourglass size={13} weight="bold" />{localized(
-        "Exploiting is coming: once opponent-adjusted range tables exist, the agents will switch their strategy to this read. For now they all play the balanced Evion solver estimate.",
-        "エクスプロイトは準備中です。相手像別のレンジ表ができると、Agentはこの読みに合わせて打ち方を切り替えます。今は全員が均衡（Evion solver）通りに打っています。")}</p>
+        "Exploiting is coming: once opponent-adjusted range tables exist, the agents will switch their strategy to this read. For now they all play the balanced Reyson solver estimate.",
+        "エクスプロイトは準備中です。相手像別のレンジ表ができると、Agentはこの読みに合わせて打ち方を切り替えます。今は全員が均衡（Reyson solver）通りに打っています。")}</p>
     </div>
     <p className="style-note">{localized("Practice tendencies at the Agent table only; not a diagnosis of real-money play. Kept in this browser.", "Agent卓での練習傾向です（実戦の診断ではありません）。記録はこのブラウザ内だけに保存されます。")}</p>
   </section>;

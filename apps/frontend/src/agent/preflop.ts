@@ -1,4 +1,4 @@
-// Six-handed preflop for the Evion Agent table. Every decision is looked up in a saved preflop
+// Six-handed preflop for the Reyson Agent table. Every decision is looked up in a saved preflop
 // dataset (opening, responses, 3bet/4bet/5bet, squeeze, cold 3bet, limp lines); nothing else
 // is invented. Two table rules keep every flop heads-up (the only postflop data we have):
 //   - a call that would put a third player into the pot is not offered (agents move that
