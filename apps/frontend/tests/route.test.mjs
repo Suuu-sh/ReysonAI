@@ -23,10 +23,12 @@ test("every trainer route round-trips through its /learn path", () => {
 test("sections map to /analyze and /learn", () => {
   assert.equal(pathOfSection("レンジ分析"), "/analyze/ranges");
   assert.equal(pathOfSection("セッション"), "/learn/sessions");
-  assert.equal(pathOfSection("プレー分析"), "/learn/analysis");
+  assert.equal(pathOfSection("プレー分析"), "/stats");
   assert.equal(pathOfSection("弱点"), "/learn/weakness");
   assert.equal(pathOfSection("アカウント#language"), "/account/language");
-  assert.equal(sectionOfPath("/learn/analysis"), "プレー分析");
+  assert.equal(sectionOfPath("/stats"), "プレー分析");
+  assert.equal(canonicalPath("/learn/analysis"), "/stats");
+  assert.equal(canonicalPath("/analysis"), "/stats");
   assert.equal(sectionOfPath("/analyze/ranges"), "レンジ分析");
 });
 

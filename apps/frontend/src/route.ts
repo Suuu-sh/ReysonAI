@@ -10,7 +10,8 @@
 //   /learn/trainer/ranked/play[/result]      a ranked match
 //   /learn/trainer/ranked/leaderboard        leaderboard
 //   /learn/agent/:table[/watch]              Reyson Agent table (watch: spectate)
-//   /learn/sessions  /learn/analysis  /learn/weakness
+//   /learn/sessions  /learn/weakness
+//   /stats                                   player analysis (its own section, not under /learn)
 //   /account/:tab
 //   /welcome                                 first-run onboarding (reloads land on the front page)
 //
@@ -34,7 +35,7 @@ const SECTIONS: [string, string][] = [
   [RANGE_SECTION, "/analyze/ranges"],
   [TRAINER_SECTION, "/learn/trainer"],
   ["セッション", "/learn/sessions"],
-  ["プレー分析", "/learn/analysis"],
+  ["プレー分析", "/stats"],
   ["弱点", "/learn/weakness"],
 ];
 
@@ -44,7 +45,7 @@ const under = (path: string, base: string) => path === base || path.startsWith(`
 // Paths the app (not the marketing site) answers, including the old ones it redirects.
 export function isAppPath(pathname: string) {
   const path = clean(pathname);
-  return ["/app", "/ranges", "/trainer", "/sessions", "/analysis", "/weakness", "/account", "/learn", "/analyze", "/solutions", WELCOME_PATH].some(base => under(path, base));
+  return ["/app", "/ranges", "/trainer", "/sessions", "/analysis", "/weakness", "/account", "/learn", "/analyze", "/stats", "/solutions", WELCOME_PATH].some(base => under(path, base));
 }
 
 export function isProductAppRoute(pathname: string, hostname: string) {
@@ -56,7 +57,8 @@ export function canonicalPath(pathname: string) {
   const path = clean(pathname);
   if (under(path, "/app") || under(path, "/ranges") || under(path, "/solutions") || path === "/analyze" || path === WELCOME_PATH) return HOME_PATH;
   if (under(path, "/trainer")) return trainerPath(legacyTrainerRoute(path));
-  for (const name of ["sessions", "analysis", "weakness"]) if (under(path, `/${name}`)) return `/learn/${name}`;
+  if (under(path, "/analysis") || under(path, "/learn/analysis")) return "/stats";
+  for (const name of ["sessions", "weakness"]) if (under(path, `/${name}`)) return `/learn/${name}`;
   if (path === "/learn") return "/learn/trainer";
   return path;
 }

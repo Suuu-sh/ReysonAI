@@ -3,7 +3,7 @@ import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, Gea
 import { useState } from "react";
 import { ACCOUNT_SECTION, AccountMenu } from "../account/AccountMenu.tsx";
 import "../account/preferences.ts";
-import { productLocale, selectProductLocale } from "../i18n.ts";
+import { productLocale, selectProductLocale, localized } from "../i18n.ts";
 
 export const RANGE_SECTION = "レンジ分析";
 export const LOGOUT_SECTION = "ログアウト";
@@ -20,6 +20,11 @@ const navigationGroups = [
     items: [
       { Icon: GraduationCap, name: "トレーナー" },
       { Icon: ClockCounterClockwise, name: "セッション" },
+    ],
+  },
+  {
+    label: "スタッツ",
+    items: [
       { Icon: ChartBar, name: "プレー分析" },
     ],
   },
@@ -75,6 +80,7 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
             <div className="header-nav-items">
               {group.items.map(({ Icon, name, status: pendingStatus }) => {
                 const status = pendingStatus;
+                const label = name === RANGE_SECTION ? localized("Range", name) : name === "プレー分析" ? localized("Stats", name) : name;
                 return (
                 <button
                   key={name}
@@ -82,11 +88,11 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
                   onClick={() => { onSectionChange(name); if (window.matchMedia("(max-width: 650px)").matches) toggle(true); }}
                   disabled={Boolean(status)}
                   aria-current={activeSection === name ? "page" : undefined}
-                  aria-label={status ? `${name}（${status}）` : name}
-                  title={status ? `${name}：${status}` : name}
+                  aria-label={status ? `${label}（${status}）` : label}
+                  title={status ? `${label}：${status}` : label}
                 >
                   <Icon size={18} />
-                  <span>{name}</span>
+                  <span>{label}</span>
                   {status && <small>{status}</small>}
                 </button>
               );})}
