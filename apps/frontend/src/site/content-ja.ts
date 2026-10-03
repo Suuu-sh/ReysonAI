@@ -73,7 +73,7 @@ export const ja: SiteCopy = {
     ],
     note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。GTO Wizard は各権利者の商標であり、ReysonAIとは関係ありません。",
   },
-  pricing: { title1: "まずは無料で。", title2: "準備ができたら、その先へ。", description: "現在のプレビューは無料です。有料プランは初期の提案で、まだ提供していません。", note: "Plus の ¥680 という価格と有料機能はすべて仮案です。課金やアカウントの仕組みはまだありません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/app" as string | null, status: "提供中" }, { name: "Plus", price: "¥680", cadence: "/ 月 · 提案中", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定 · 価格は変わる可能性があります" }] },
+  pricing: { title1: "まずは無料で。", title2: "準備ができたら、その先へ。", description: "現在のプレビューは無料です。有料プランは初期の提案で、まだ提供していません。", note: "Plus の ¥680 という価格と有料機能はすべて仮案です。課金やアカウントの仕組みはまだありません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "現在のプレビューのすべて。", features: ["保存済みのプリフロップレンジとハンド詳細", "シンプル／スタンダード表示", "トレーナー、振り返り、プレー分析"], action: "アプリを開く", href: "/ranges" as string | null, status: "提供中" }, { name: "Plus", price: "¥680", cadence: "/ 月 · 提案中", description: "準備ができたら、より深い練習の場を。", features: ["学習ツールの拡充", "ガイドつきトレーニングの追加", "卓に合わせた今後の機能"], action: "今後提供予定", href: null as string | null, status: "予定 · 価格は変わる可能性があります" }] },
   faq: {
     title: "よくある質問に、率直に。",
     items: [
