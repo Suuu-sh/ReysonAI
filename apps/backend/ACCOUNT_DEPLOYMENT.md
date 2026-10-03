@@ -91,3 +91,36 @@ Sources: [Google OpenID Connect](https://developers.google.com/identity/openid-c
 [OAuth security best practice](https://www.rfc-editor.org/rfc/rfc9700.html),
 [Google production readiness](https://developers.google.com/identity/protocols/oauth2/production-readiness/overview),
 [Google Testing/basic-scope exception](https://support.google.com/cloud/answer/15549945).
+
+## Isolated local Google login + local D1
+
+Use `wrangler.local.jsonc` only with `wrangler dev --local`. It binds127.0.0.1:8787;
+open frontend at `http://localhost:5173` and browser API at `http://localhost:8787`.
+No production database identifier, routes, Google client or bucket is included.
+Use a **separate development Google OAuth client** with exact redirect
+`http://localhost:8787/v1/account/google/callback` and JS origin
+`http://localhost:5173`.
+
+Store development `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and an independently
+random `AUTH_RATE_LIMIT_KEY` in `apps/backend/.dev.vars` (ignored, never print/commit).
+Do not copy production credentials. Local auth is503 until these are configured.
+`AUTH_LOCAL_DEV=true` permits HTTP only when request, app, callback and every allowed
+origin are loopback localhost/127.0.0.1 with the same hostname. A production hostname
+with this flag is rejected; it cannot weaken production cookie transport.
+Local HTTP uses distinct `reysonai-dev-session` / `reysonai-dev-oauth` HttpOnly
+SameSite=Lax cookies without Secure. Default production cookies remain `__Host-`
+Secure. There is no backend login/identity/ownership bypass.
+
+From repository root, using an already installed Wrangler:
+
+```sh
+# Run only once on a fresh local database; CREATE TABLE intentionally fails if repeated.
+wrangler d1 execute reysonai-local --local --config apps/backend/wrangler.local.jsonc --persist-to apps/backend/.wrangler/local-state --file apps/backend/migrations/0007_accounts.sql
+wrangler dev --local --config apps/backend/wrangler.local.jsonc --persist-to apps/backend/.wrangler/local-state
+```
+
+`/health` is process readiness. `/v1/account/session` returns503 without dev secrets,
+or `{user:null}` once configured. D1 state stays under ignored backend `.wrangler`.
+Only account schema is initialized; unrelated published strategy datasets/R2 are not
+copied from production. `tests/account-local.test.mjs` verifies new loopback guards,
+production-flag rejection, separate cookie namespaces and anonymous denial.

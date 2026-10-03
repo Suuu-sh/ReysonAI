@@ -6,6 +6,7 @@
   "scripts": {
     "check": "node --experimental-strip-types src/index.ts",
     "test": "node --test tests/index.test.mjs tests/postflop.test.mjs tests/preflop-datasets.test.mjs",
-    "test:account": "node --experimental-strip-types --test tests/account.test.mjs"
+    "test:account": "node --experimental-strip-types --test tests/account.test.mjs",
+    "test:account-local": "node --experimental-strip-types --test tests/account-local.test.mjs"
   }
 }

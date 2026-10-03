@@ -31,7 +31,7 @@ export function AuthPanel({ onChanged = () => {}, onGuest }) {
       <button className="account-secondary" disabled={busy} onClick={() => perform(async () => { await logoutAccount(); onChanged(); })}>{t("Sign out", "ログアウト")}</button>
     </> : <>
       <p>{t("Use your Google account, including Google Workspace or custom-domain accounts. Range analysis remains available without signing in. Learning requires Google sign-in.", "Google Workspaceや独自ドメインを含むGoogleアカウントでログインできます。レンジ分析はログインなしで利用できます。学習にはGoogleログインが必要です。")}</p>
-      {!available && <p role="status">{t("Account sign-in is not enabled yet. Continue as guest.", "アカウント機能はまだ有効になっていません。ゲストとして利用できます。")}</p>}
+      {!available && <p role="status">{error ? t("Cannot connect to the sign-in service. Check your connection and API server. No automatic retry was made.", "ログインサービスに接続できません。接続とAPIサーバーを確認してください。自動再試行はしていません。") : t("Google sign-in is not configured for this environment. Range analysis remains available as a guest.", "この環境のGoogleログイン設定が未完了です。レンジ分析はゲストでも利用できます。")}</p>}
       <button type="button" className="account-primary" disabled={busy || !available} onClick={() => perform(async () => {
         const { url } = await accountRequest("google/start", {});
         const target = new URL(url);
@@ -40,7 +40,7 @@ export function AuthPanel({ onChanged = () => {}, onGuest }) {
       })}>{t("Sign in with Google", "Googleでログイン")}</button>
     </>}
     {message && <p role="status">{message}</p>}
-    {error && <p role="alert">{error === "conflict" ? t("Another device changed this account. Saving is paused; reload to load the latest account data. Unsaved edits are not uploaded.", "別の端末で更新されました。保存を停止しました。再読込で最新データを取得できます。未保存の変更はアップロードされません。") : t("Account saving is unavailable. No automatic retry was made. Export your records before reloading or signing out.", "アカウント保存が利用できません。自動再試行はしていません。再読込やログアウト前に記録を書き出してください。")}</p>}
+    {error && sessionUser && <p role="alert">{error === "conflict" ? t("Another device changed this account. Saving is paused; reload to load the latest account data. Unsaved edits are not uploaded.", "別の端末で更新されました。保存を停止しました。再読込で最新データを取得できます。未保存の変更はアップロードされません。") : t("Account saving is unavailable. No automatic retry was made. Export your records before reloading or signing out.", "アカウント保存が利用できません。自動再試行はしていません。再読込やログアウト前に記録を書き出してください。")}</p>}
     {onGuest && <button className="account-secondary" disabled={busy} onClick={onGuest}>{t("Continue to range analysis as guest", "ゲストとしてレンジ分析へ")}</button>}
   </section>;
 }

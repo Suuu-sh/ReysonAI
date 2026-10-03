@@ -1,7 +1,7 @@
 // Google-only authorization-code login. Provider identity is keyed by sub, not email.
 type Statement = { bind(...values: unknown[]): Statement; all<T>(): Promise<{results: T[]}>; run(): Promise<unknown> };
 type DB = {prepare(sql: string): Statement};
-export type AccountEnv = {DB?: unknown; AUTH_ENABLED?: string; ALLOWED_ORIGIN?: string; AUTH_APP_URL?: string; GOOGLE_CLIENT_ID?: string; GOOGLE_CLIENT_SECRET?: string; GOOGLE_REDIRECT_URI?: string; AUTH_RATE_LIMIT_KEY?: string};
+export type AccountEnv = {DB?: unknown; AUTH_ENABLED?: string; AUTH_LOCAL_DEV?: string; ALLOWED_ORIGIN?: string; AUTH_APP_URL?: string; GOOGLE_CLIENT_ID?: string; GOOGLE_CLIENT_SECRET?: string; GOOGLE_REDIRECT_URI?: string; AUTH_RATE_LIMIT_KEY?: string};
 type User = {id:string;email:string;google_sub:string};
 type Claims = {iss:string;aud:string;azp?:string;exp:number;iat:number;sub:string;email:string;email_verified:boolean;nonce:string};
 const encoder=new TextEncoder();
@@ -11,7 +11,14 @@ const reply=(body:unknown,status=200,cookies:string[]=[])=>{const headers=new He
 const hex=(bytes:ArrayBuffer|Uint8Array)=>Array.from(new Uint8Array(bytes)).map(b=>b.toString(16).padStart(2,'0')).join('');
 export const digest=async(value:string)=>hex(await crypto.subtle.digest('SHA-256',encoder.encode(value)));
 const random=()=>hex(crypto.getRandomValues(new Uint8Array(32)));
-const cookie=(name:string,token:string,age=604800)=>`${name}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${age}`;
+export function accountTransport(requestURL:URL,app:URL,redirect:URL,origins:string[],localFlag:string|undefined) {
+  const loopback=(url:URL)=>url.protocol==='http:' && ['localhost','127.0.0.1'].includes(url.hostname) && url.hostname===requestURL.hostname && !url.username && !url.password;
+  const local=localFlag==='true';
+  if(local && (!loopback(requestURL) || !loopback(app) || !loopback(redirect) || !origins.length || !origins.every(origin=>loopback(new URL(origin))))) return null;
+  if(!local && (requestURL.protocol!=='https:' || app.protocol!=='https:' || redirect.protocol!=='https:')) return null;
+  if(!origins.includes(app.origin) || redirect.origin!==requestURL.origin || redirect.pathname!=='/v1/account/google/callback' || redirect.search || redirect.hash) return null;
+  return {session:local?'reysonai-dev-session':COOKIE,state:local?'reysonai-dev-oauth':STATE_COOKIE, cookie:(name:string,token:string,age=604800)=>`${name}=${token}; Path=/; HttpOnly; ${local?'':'Secure; '}SameSite=Lax; Max-Age=${age}`};
+}
 const readCookie=(request:Request,name:string)=>request.headers.get('cookie')?.split(';').map(s=>s.trim()).find(s=>s.startsWith(`${name}=`))?.slice(name.length+1);
 const b64url=(bytes:ArrayBuffer)=>btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const unbase64=(value:string)=>Uint8Array.from(atob(value.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
@@ -49,7 +56,9 @@ export async function routeAccount(request:Request,env:AccountEnv):Promise<Respo
   const app=new URL('/app',env.AUTH_APP_URL);
   const redirectURI=new URL(env.GOOGLE_REDIRECT_URI);
   const origins=(env.ALLOWED_ORIGIN||'').split(',').map(s=>s.trim()).filter(s=>s && s!=='*');
-  if(app.protocol!=='https:' || !origins.includes(app.origin) || redirectURI.protocol!=='https:' || redirectURI.origin!==url.origin || redirectURI.pathname!=='/v1/account/google/callback' || redirectURI.search || redirectURI.hash) return reply({error:'accounts_not_configured'},503);
+  const transport=accountTransport(url,app,redirectURI,origins,env.AUTH_LOCAL_DEV);
+  if(!transport) return reply({error:'accounts_not_configured'},503);
+  const {cookie,session:sessionCookie,state:stateCookie}=transport;
   const path=url.pathname.replace('/v1/account/','');
   if(request.method==='POST' && (!origins.includes(request.headers.get('origin')||'') || !/^application\/json(?:;|$)/i.test(request.headers.get('content-type')||''))) return reply({error:'invalid_origin_or_content_type'},403);
   if(!(request.method==='GET' && ['session','data','google/callback'].includes(path) || request.method==='POST' && ['google/start','logout','data'].includes(path))) return reply({error:'not_found'},404);
@@ -68,8 +77,8 @@ export async function routeAccount(request:Request,env:AccountEnv):Promise<Respo
   }
   const oauthRedirect=(success:boolean,cookies:string[]=[])=>{app.hash=success?'account-signed-in':'account-error=google';const response=reply(null,303,cookies);response.headers.set('location',app.toString());return response;};
   if(path==='google/callback') {
-    const state=url.searchParams.get('state');const browserState=readCookie(request,STATE_COOKIE);
-    const clear=[cookie(STATE_COOKIE,'',0)];
+    const state=url.searchParams.get('state');const browserState=readCookie(request,stateCookie);
+    const clear=[cookie(stateCookie,'',0)];
     if(!state || !/^[a-f0-9]{64}$/.test(state) || state!==browserState) return oauthRedirect(false,clear);
     // DELETE RETURNING consumes state exactly once across all isolates before code exchange.
     const states=await query<{verifier:string;nonce_hash:string}>('DELETE FROM account_oauth_states WHERE state_hash=? AND expires_at>? RETURNING verifier,nonce_hash',await digest(state),now);
@@ -87,9 +96,9 @@ export async function routeAccount(request:Request,env:AccountEnv):Promise<Respo
     // Never merge different Google subjects merely because email matches or changes.
     await db.prepare('INSERT INTO account_users(id,google_sub,email,created_at) VALUES (?,?,?,?) ON CONFLICT(google_sub) DO UPDATE SET email=excluded.email').bind(crypto.randomUUID(),claims.sub,claims.email,now).run();
     const user=(await query<User>('SELECT * FROM account_users WHERE google_sub=?',claims.sub))[0];
-    const old=readCookie(request,COOKIE);if(old && /^[a-f0-9]{64}$/.test(old)) await db.prepare('DELETE FROM account_sessions WHERE token_hash=?').bind(await digest(old)).run();
+    const old=readCookie(request,sessionCookie);if(old && /^[a-f0-9]{64}$/.test(old)) await db.prepare('DELETE FROM account_sessions WHERE token_hash=?').bind(await digest(old)).run();
     const token=random();await db.prepare('INSERT INTO account_sessions(token_hash,user_id,expires_at) VALUES (?,?,?)').bind(await digest(token),user.id,now+604800).run();
-    return oauthRedirect(true,[...clear,cookie(COOKIE,token)]);
+    return oauthRedirect(true,[...clear,cookie(sessionCookie,token)]);
   }
   let body:Record<string,unknown>={};
   if(request.method==='POST') {
@@ -105,12 +114,12 @@ export async function routeAccount(request:Request,env:AccountEnv):Promise<Respo
     const auth=new URL('https://accounts.google.com/o/oauth2/v2/auth');
     auth.search=new URLSearchParams({client_id:env.GOOGLE_CLIENT_ID,redirect_uri:env.GOOGLE_REDIRECT_URI,response_type:'code',scope:'openid email',state,nonce,code_challenge:b64url(await crypto.subtle.digest('SHA-256',encoder.encode(verifier))),code_challenge_method:'S256',prompt:'select_account'}).toString();
     // No hd/domain restriction: Google Workspace and custom-email Google accounts are welcome.
-    return reply({url:auth.toString()},200,[cookie(STATE_COOKIE,state,600)]);
+    return reply({url:auth.toString()},200,[cookie(stateCookie,state,600)]);
   }
-  const rawToken=readCookie(request,COOKIE);
+  const rawToken=readCookie(request,sessionCookie);
   const user=rawToken && /^[a-f0-9]{64}$/.test(rawToken)?(await query<User>('SELECT u.* FROM account_users u JOIN account_sessions s ON s.user_id=u.id WHERE s.token_hash=? AND s.expires_at>?',await digest(rawToken),now))[0]:undefined;
   if(path==='session') return reply({user:user?publicUser(user):null});
-  if(path==='logout') {if(rawToken) await db.prepare('DELETE FROM account_sessions WHERE token_hash=?').bind(await digest(rawToken)).run();return reply({ok:true},200,[cookie(COOKIE,'',0),cookie(STATE_COOKIE,'',0)]);}
+  if(path==='logout') {if(rawToken) await db.prepare('DELETE FROM account_sessions WHERE token_hash=?').bind(await digest(rawToken)).run();return reply({ok:true},200,[cookie(sessionCookie,'',0),cookie(stateCookie,'',0)]);}
   if(!user) return reply({error:'sign_in_required'},401);
   if(request.method==='GET') {const row=(await query<{data_json:string;version:number}>('SELECT data_json,version FROM account_data WHERE user_id=?',user.id))[0];return reply({data:row?JSON.parse(row.data_json):{},version:row?.version||0});}
   if(!allowedData(body.data) || !Number.isSafeInteger(body.version) || Number(body.version)<0) return reply({error:'invalid_data_or_ranked_data'},400);

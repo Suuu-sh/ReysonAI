@@ -1,3 +1,4 @@
+import { accountApiBase } from "./config.ts";
 // Guest records stay local; account records live in memory and use an HttpOnly cookie.
 export const accountKeys = ["reysonai:profile:v1", "reysonai:appearance:v1", "reysonai:display-mode:v1", "reysonai:locale:v1", "reysonai.trainer.history.v1", "reysonai.trainer.drills.v1", "reysonai.trainer.drafts.v1", "reysonai.trainer.review-sessions.v1"];
 let user = null;
@@ -16,7 +17,7 @@ const emit = () => listeners.forEach(listener => listener());
 export const accountSnapshot = () => ({ user, ready, available, error });
 export const subscribeAccount = listener => { listeners.add(listener); return () => listeners.delete(listener); };
 export async function accountRequest(path, body) {
-  const base = String(import.meta.env?.VITE_API_BASE || (typeof window !== "undefined" && window.location.hostname.endsWith("reysonai.com") ? "https://api.reysonai.com" : "")).replace(/\/$/, "");
+  const base = accountApiBase(import.meta.env ?? {});
   const response = await fetch(`${base}/v1/account/${path}`, { credentials: "include", ...(body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }) });
   const result = await response.json();
   if (!response.ok) throw new Error(response.status === 503 ? "disabled" : response.status === 409 ? "conflict" : response.status === 401 ? "session" : response.status === 403 ? "verification" : "request");

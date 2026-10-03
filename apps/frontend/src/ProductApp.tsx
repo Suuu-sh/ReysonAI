@@ -49,7 +49,7 @@ export default function ProductApp() {
     : isLearningSection(section) ? <LearningAccess account={account} onBack={() => navigate(RANGE_SECTION)} onChanged={reloadProfile}><TrainerPage {...shared} section={section} /></LearningAccess>
     : <RangeWorkspace {...shared} />;
   return <>
-    {account.error && <p role="alert" className="account-sync-error">{localized("Account saving unavailable. Export records in Settings before reloading. No automatic retry.", "アカウント保存が利用できません。再読込前に設定から記録を書き出してください。自動再試行はしません。")}</p>}
+    {account.error && account.user && <p role="alert" className="account-sync-error">{localized("Account saving unavailable. Export records in Settings before reloading. No automatic retry.", "アカウント保存が利用できません。再読込前に設定から記録を書き出してください。自動再試行はしません。")}</p>}
     {logoutError && <p role="alert">{localized("Sign out failed. Your session is unchanged.", "ログアウトできませんでした。セッションは変更していません。")}</p>}
     <div key={account.user?.id ?? "guest"}>{page}</div>
     {loggingOut && <LogoutDialog onCancel={() => setLoggingOut(false)} onConfirm={async ({ clearData }) => {
