@@ -341,6 +341,14 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - This is a browser responsive-layout check, not a claim of complete accessibility compliance or real-device Safari/Android testing. OS text enlargement and reduced-motion settings were not changed; existing reduced-motion gates remain intact.
 - Concurrent trainer/rank-badge source and assets in the working tree are unrelated and are not staged as part of this service-site fix.
 
+## Compact mobile comparison (2026-10-03)
+- User request: make the mobile comparison section shorter while retaining its content. No edits to either marketing-copy source, prices, comparison claims, disclaimers or strategy data.
+- Replaced the repeated branded cards at ≤720px with paired comparison columns and a shared row title above each pair. Both service names appear once in the sticky table header, which stays at 64px below the site header while the rows scroll. All seven rows and the full approach/trademark note remain visible; nothing is collapsed, abbreviated or hidden. Removed obsolete per-cell `data-label` attributes and generated repeated labels rather than keeping a second rendering mode.
+- Tightened only mobile section/description/table spacing and typography; native desktop table styling is unchanged. At 390px English, table height fell from 1409px to 871px (~38%); entire section from 1859px to 1231px (~34%), with all text retained.
+- Browser QA: English and Japanese at 320×720, 375×667, 390×844, 430×932 and 720×900. All seven rows remain present, document width equals viewport width, and no header/data-cell text overflows its column. Scrolled to the final rows and verified the sticky header stays at top 64px, with disclaimer visible below. At 1440×900 the original three-column `table-row` layout remains, and the browser exposes the native table. This is browser layout testing, not real-device or full screen-reader certification.
+- Added regressions for the compact mobile columns/shared row headings/sticky header and exact preservation of every English/Japanese comparison string and disclaimer.
+- Verification: configured typecheck/lint, production build, all 5 Sites packaging tests and all 13 focused site tests passed. Full frontend run: 395 tests, 394 passed; the existing offline narrow-4bet timing assertion took 7.15s against its 2s budget during parallel testing. It passed alone in 0.96s; no solver code or thresholds were changed. The full run is not an all-pass result. Existing bundle-size warning remains. Viewport override reset, English restored and the compact comparison left open in the local app.
+
 ## 2026-10-03 — Remove redundant selected-hand rows
 - Removed Open size (total) and Total frequency from preflop selected-hand details, including local-estimate frequency totals; saved datasets, action bars, call EV and other sizes are unchanged.
 - Removed unused total calculation and avoid an empty stats block for opening/limp details.

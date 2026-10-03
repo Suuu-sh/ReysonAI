@@ -655,15 +655,23 @@
   .site-dash-kpis > div { padding: 10px; }
   .site-dash-kpis span { font-size: 12px; }
   .site-dash-kpis > div > small { font-size: 11px; }
-  .site-compare thead { display: none; }
-  .site-compare table, .site-compare tbody, .site-compare tr, .site-compare th, .site-compare td { display: block; width: auto; }
-  .site-compare tbody tr { padding: 16px 0; border-top: 1px solid #14141622; }
-  .site-compare tbody th { width: auto; padding: 0 0 8px; border: 0; }
-  .site-compare tbody td { padding: 10px 14px; border: 0; border-radius: var(--control-radius); }
-  .site-compare tbody td.is-us { margin-bottom: 6px; border-radius: var(--control-radius); }
+  .site-compare { padding-block: 56px; }
+  .site-compare .site-section-head { gap: 16px; }
+  .site-compare .site-section-head p { font-size: 15px; line-height: 1.6; }
+  .site-compare-table { margin-top: 20px; }
+  .site-compare table, .site-compare thead, .site-compare tbody { display: block; width: 100%; }
+  .site-compare tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 10px; }
+  .site-compare thead { position: sticky; top: 64px; z-index: 3; padding-block: 8px; background: var(--paper); }
+  .site-compare thead td { display: none; }
+  .site-compare thead th { display: block; min-width: 0; padding: 10px; font-size: 13px; }
+  .site-compare thead th.is-us { display: block; border-radius: var(--control-radius); }
+  .site-compare thead th small { font-size: 11px; }
+  .site-compare tbody tr { padding: 10px 0; border-top: 1px solid #14141622; }
+  .site-compare tbody th { grid-column: 1 / -1; width: auto; padding: 0 0 6px; border: 0; font-size: 12px; }
+  .site-compare tbody td { display: block; min-width: 0; padding: 10px; border: 0; border-radius: var(--control-radius); font-size: 13px; line-height: 1.5; }
+  .site-compare tbody td.is-us { border-radius: var(--control-radius); }
   .site-compare tbody tr:last-child td.is-us { border-radius: var(--control-radius); }
-  .site-compare td::before { display: block; margin-bottom: 2px; color: #74747c; content: attr(data-label); font-size: 11px; font-weight: 700; }
-  .site-compare td.is-us::before { color: var(--pink); }
+  .site-compare-note { margin-top: 16px; font-size: 11.5px; }
   .site-plan { padding: 24px; }
   .site-why-scene { grid-template-columns: 1fr; gap: 20px; justify-items: center; }
   .site-why-scene .site-hand-cards.is-large .site-card { --card-w: 60px; }

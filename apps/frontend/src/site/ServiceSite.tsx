@@ -733,8 +733,8 @@ function Compare() {
           <thead><tr><td /><th scope="col" className="is-us"><Spade size={18} weight="fill" aria-hidden="true" />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
           <tbody>{c.compare.rows.map((row, index) => <tr key={row.label} style={{ "--i": index } as CSSProperties}>
             <th scope="row">{row.label}</th>
-            <td className="is-us" data-label={c.compare.us}>{row.us}</td>
-            <td data-label={c.compare.them}>{row.them}</td>
+            <td className="is-us">{row.us}</td>
+            <td>{row.them}</td>
           </tr>)}</tbody>
         </table>
       </div>

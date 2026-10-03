@@ -6,10 +6,13 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
 
-let server, ServiceSite;
+let server, ServiceSite, copies;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
   ({ ServiceSite } = await server.ssrLoadModule("/src/site/ServiceSite.tsx"));
+  const { en } = await server.ssrLoadModule("/src/site/content.ts");
+  const { ja } = await server.ssrLoadModule("/src/site/content-ja.ts");
+  copies = { en, ja };
 });
 after(async () => { await server?.close(); });
 const render = locale => renderToStaticMarkup(createElement(ServiceSite, { locale, onLocaleChange() {} }));
@@ -47,7 +50,33 @@ test("mobile scenes grow with their explanation and cards instead of clipping a 
     "both persona pinning and Training/Ranked pinning are wide-screen-only");
 });
 
+test("mobile comparison pairs columns with one visible sticky heading instead of repeated labels", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.split("@media (max-width: 720px)")[1].split("@media (max-width: 560px)")[0];
+  assert.match(mobile, /\.site-compare tr\s*\{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(mobile, /\.site-compare tbody th\s*\{[^}]*grid-column: 1 \/ -1/);
+  assert.match(mobile, /\.site-compare thead\s*\{[^}]*position: sticky; top: 64px/);
+  assert.doesNotMatch(mobile, /\.site-compare thead\s*\{[^}]*display: none/);
+  assert.doesNotMatch(css, /content: attr\(data-label\)/);
+});
+
 for (const locale of ["en", "ja"]) {
+  test(`${locale}: compact comparison retains every original claim and disclaimer`, () => {
+    const comparison = render(locale).match(/<section class="site-section site-compare"[\s\S]*?<\/section>/)?.[0];
+    assert.ok(comparison);
+    assert.match(comparison, /<table>/);
+    assert.equal((comparison.match(/scope="col"/g) ?? []).length, 2);
+    assert.equal((comparison.match(/scope="row"/g) ?? []).length, 7);
+    assert.doesNotMatch(comparison, /data-label=/);
+    const { compare } = copies[locale];
+    const text = [compare.description, compare.us, compare.them, compare.themNote, compare.note,
+      ...compare.rows.flatMap(row => [row.label, row.us, row.them])];
+    for (const value of text) {
+      const escaped = renderToStaticMarkup(createElement("span", null, value)).slice(6, -7);
+      assert.ok(comparison.includes(escaped), `retains: ${value}`);
+    }
+  });
+
   test(`${locale}: Training links target the outer track, never the pinned slide`, () => {
     const html = render(locale);
     assert.equal((html.match(/id="drill"/g) ?? []).length, 1);
