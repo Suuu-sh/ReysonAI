@@ -1,7 +1,7 @@
 export type SiteLocale = "en" | "ja";
 
 export const en = {
-  title: "ReysonAI — Poker strategy you can actually use",
+  title: "ReysonAI — Don't just play. Understand why.",
   description: "Read AI-estimated preflop ranges on a clear 13×13 chart, see why each hand plays the way it does, and drill it. An estimate for learning, not a GTO solver.",
   common: { home: "ReysonAI home", open: "Open the app", menuOpen: "Open menu", menuClose: "Close menu", menuLabel: "Main navigation", skip: "Skip to content", language: "日本語", languageLabel: "日本語に切り替える", raise: "Raise", threeBet: "3bet", call: "Call", fold: "Fold", available: "Available", planned: "Planned", experimental: "Experimental" },
   nav: [
@@ -11,7 +11,7 @@ export const en = {
     { label: "Compare", href: "#compare" },
     { label: "Pricing", href: "#pricing" },
   ],
-  hero: { title1: "Complex strategy,", title2: "made playable.", lead: "ReysonAI turns AI-estimated poker ranges into a chart you can read at a glance, and explains every hand in plain words, so it's still there when you sit down at the table.", primary: "Open the app", secondary: "See how it works", note: "Free preview · No account needed · 6-max cash, 100BB" },
+  hero: { title1: "Don't just play.", title2: "Understand why.", lead: "ReysonAI shows what to do with every hand, and explains why in plain words. When you know the reason, the decision is still there when you sit down at the table.", primary: "Open the app", secondary: "See how it works", note: "Free preview · No account needed · 6-max cash, 100BB" },
   preview: { spotLabel: "Preview spot", open: "BTN open", response: "BB vs BTN", displayLabel: "Display mode", simpleMode: "Simple", standardMode: "Standard", matrixLabel: "13 by 13 starting-hand chart", scrollLabel: "chart, scrolls sideways on small screens", selectedHand: "Selected hand", suited: "Suited", offsuit: "Offsuit", pair: "Pair", frequencyLabel: "Action frequencies", why: "Why", k7s: "K7s is suited and playable after the flop. In this BTN opening estimate, it is raised every time.", simpleOther: (spot: string, hand: string, action: string) => `In this saved ${spot} range, ${hand}'s main action is ${action}. Open the app for the full hand-level explanation.`, other: (spot: string, hand: string, action: string, value: number) => `In this saved ${spot} range, ${hand} is ${action} ${value}% of the time. Open the app for the full hand-level explanation.`, explore: "Explore it in the app", saved: "Saved AI estimate", notGto: "Not a GTO solution", spotOpening: "BTN opening", spotResponse: "BB response", actionPast: { raise: "raised", threeBet: "3bet", call: "called", fold: "folded" }, touring: "Touring hands. Click any cell to take over.", manual: "Click any hand to see it." },
   how: {
     title1: "From spot to reason,", title2: "in three moves.",
@@ -86,7 +86,7 @@ export const en = {
     ],
   },
   final: { title1: "Your next session", title2: "starts with one hand.", description: "Open the app, pick a spot, tap a hand.", action: "Open ReysonAI", note: "Free preview · No account required" },
-  footer: { tagline: "Poker strategy, made playable.", product: "Product", open: "Open the app", how: "How it works", drill: "Training", analysis: "Analysis", compare: "Compare", pricing: "Pricing", faq: "FAQ", legal: "Legal", privacy: "Privacy · coming soon", terms: "Terms · coming soon", disclaimer: "ReysonAI provides poker strategy and educational information. AI Solutions are estimates and are not guaranteed to be mathematically optimal or equivalent to GTO solutions. Please play responsibly." },
+  footer: { tagline: "Don't just play. Understand why.", product: "Product", open: "Open the app", how: "How it works", drill: "Training", analysis: "Analysis", compare: "Compare", pricing: "Pricing", faq: "FAQ", legal: "Legal", privacy: "Privacy · coming soon", terms: "Terms · coming soon", disclaimer: "ReysonAI provides poker strategy and educational information. AI Solutions are estimates and are not guaranteed to be mathematically optimal or equivalent to GTO solutions. Please play responsibly." },
 };
 
 export type SiteCopy = typeof en;

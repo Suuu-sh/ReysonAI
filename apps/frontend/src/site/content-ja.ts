@@ -1,7 +1,7 @@
 import type { SiteCopy } from "./content";
 
 export const ja: SiteCopy = {
-  title: "ReysonAI — 実戦で使えるポーカー戦略",
+  title: "ReysonAI — Don't just play. Understand why.",
   description: "AIが推定したプリフロップレンジを読みやすい13×13の表で確認し、ハンドごとの理由を知り、ドリルで身につける。学習のための推定であり、GTOソルバーではありません。",
   common: { home: "ReysonAI ホーム", open: "アプリを開く", menuOpen: "メニューを開く", menuClose: "メニューを閉じる", menuLabel: "メインメニュー", skip: "本文へスキップ", language: "EN", languageLabel: "Switch to English", raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド", available: "提供中", planned: "予定", experimental: "試験運用" },
   nav: [
@@ -11,7 +11,7 @@ export const ja: SiteCopy = {
     { label: "比較", href: "#compare" },
     { label: "料金", href: "#pricing" },
   ],
-  hero: { title1: "複雑な戦略を、", title2: "使える判断に。", lead: "ReysonAIは、AIが推定したポーカーのレンジを一目で読める表にし、ハンドごとの理由をやさしい言葉で説明します。テーブルに座ったときにも思い出せる形で。", primary: "アプリを開く", secondary: "使い方を見る", note: "無料プレビュー · アカウント不要 · 6-maxキャッシュ 100BB" },
+  hero: { title1: "ただ打つだけじゃない。", title2: "理由がわかる。", lead: "ReysonAIは、ハンドごとに何をすべきかを示し、その理由をやさしい言葉で説明します。理由がわかれば、テーブルに座ったときにも判断を思い出せます。", primary: "アプリを開く", secondary: "使い方を見る", note: "無料プレビュー · アカウント不要 · 6-maxキャッシュ 100BB" },
   preview: { spotLabel: "プレビューする局面", open: "BTN オープン", response: "BB vs BTN", displayLabel: "表示モード", simpleMode: "シンプル", standardMode: "スタンダード", matrixLabel: "13×13 スターティングハンド表", scrollLabel: "の表。狭い画面では横にスクロールできます", selectedHand: "選択中のハンド", suited: "スーテッド", offsuit: "オフスート", pair: "ペア", frequencyLabel: "アクション頻度", why: "理由", k7s: "K7s はスーテッドで、フロップ以降も戦いやすいハンドです。このBTNオープンの推定では、常にレイズします。", simpleOther: (spot: string, hand: string, action: string) => `保存済みの${spot}レンジでは、${hand} の主なアクションは${action}です。ハンドごとの詳しい説明はアプリで確認できます。`, other: (spot: string, hand: string, action: string, value: number) => `保存済みの${spot}レンジでは、${hand} を ${value}% の頻度で${action}します。ハンドごとの詳しい説明はアプリで確認できます。`, explore: "アプリでこのレンジを見る", saved: "保存済みのAI推定", notGto: "GTOソリューションではありません", spotOpening: "BTNオープン", spotResponse: "BBの応答", actionPast: { raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド" }, touring: "自動でハンドを紹介中。セルをクリックすると操作できます。", manual: "ハンドをクリックして確認できます。" },
   how: {
     title1: "局面から理由まで、", title2: "3ステップで。",
@@ -86,5 +86,5 @@ export const ja: SiteCopy = {
     ],
   },
   final: { title1: "次のセッションは、", title2: "ひとつのハンドから。", description: "アプリを開いて、局面を選び、ハンドをタップするだけ。", action: "ReysonAI を開く", note: "無料プレビュー · アカウント不要" },
-  footer: { tagline: "ポーカー戦略を、使える形に。", product: "プロダクト", open: "アプリを開く", how: "使い方", drill: "トレーニング", analysis: "分析", compare: "比較", pricing: "料金", faq: "よくある質問", legal: "規約", privacy: "プライバシー · 準備中", terms: "利用規約 · 準備中", disclaimer: "ReysonAIはポーカーの戦略と学習のための情報を提供します。AIソリューションは推定であり、数学的な最適性やGTOソリューションとの同等性は保証されません。節度をもってお楽しみください。" },
+  footer: { tagline: "Don't just play. Understand why.", product: "プロダクト", open: "アプリを開く", how: "使い方", drill: "トレーニング", analysis: "分析", compare: "比較", pricing: "料金", faq: "よくある質問", legal: "規約", privacy: "プライバシー · 準備中", terms: "利用規約 · 準備中", disclaimer: "ReysonAIはポーカーの戦略と学習のための情報を提供します。AIソリューションは推定であり、数学的な最適性やGTOソリューションとの同等性は保証されません。節度をもってお楽しみください。" },
 };
