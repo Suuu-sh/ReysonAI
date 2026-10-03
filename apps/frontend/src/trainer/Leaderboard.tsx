@@ -3,7 +3,6 @@ import { useState } from "react";
 import { ArrowLeft, Trophy } from "@phosphor-icons/react";
 import { LEADERBOARD_MIN_MATCHES, TIER_EN, leaderboardRows, playerSummary, tierFor } from "./rank-store.ts";
 import { demoPlayers, showDemoPlayers } from "./leaderboard-demo.ts";
-import { ModeBlock } from "./ModeBlock.tsx";
 import { localized } from "../i18n.ts";
 
 const pct = value => `${Math.round(value * 100)}%`;
@@ -57,23 +56,25 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
       <button type="button" className="config-edit" onClick={onBack}><ArrowLeft size={14} />{localized("Back", "一覧")}</button>
     </div>
 
-    <ModeBlock theme={tierColor(tier.name)} className="is-ranked leaderboard-summary" visualClass="ranked-visual" label={localized("Your standing", "あなたの記録")}
-      visual={<><RankBadge name={tier.name} size={84} /><span className="ranked-tier-name">{tierLabel(rank.rating)}</span></>}
-      eyebrow={localized("YOUR STANDING", "あなたの記録")} title={name}
-      actions={<>
+    <section className="lb-me" style={{ "--mode-theme": tierColor(tier.name) }} aria-label={localized("Your standing", "あなたの記録")}>
+      <div className="lb-me-id">
+        <RankBadge name={tier.name} size={44} />
+        <div><strong>{name}</strong><span>{tierLabel(rank.rating)}</span></div>
+      </div>
+      <dl className="lb-me-stats">
+        <div><dt>{localized("Rating", "レート")}</dt><dd>{rank.rating.toLocaleString()}</dd></div>
+        <div><dt>{localized("Place", "順位")}</dt><dd>{myRow?.place ?? "—"}</dd></div>
+        <div><dt>{localized("Matches", "試合")}</dt><dd>{me?.matches ?? 0}<small>/{LEADERBOARD_MIN_MATCHES}</small></dd></div>
+      </dl>
+      <span className="lb-me-note">{toGo ? localized(`${toGo} more to be placed`, `あと${toGo}試合で順位確定`) : localized("Placed this period", "順位確定")}</span>
+      <div className="lb-me-tools">
+        {demo && <small className="lb-demo-flag">{localized("Dummy players", "ダミー表示")}</small>}
         <div className="lb-period" role="group" aria-label={localized("Ranking period", "ランキング期間")}>
           {PERIODS.map(item => <button key={item.value} type="button" aria-pressed={period === item.value}
             className={period === item.value ? "on" : ""} onClick={() => setPeriod(item.value)}>{localized(item.label[0], item.label[1])}</button>)}
         </div>
-        {demo && <small className="lb-demo-flag">{localized("Local dev: dummy players", "ローカル開発用のダミー")}</small>}
-      </>}>
-      <div className="ranked-stats">
-        <div><span>{localized("Rating", "レート")}</span><strong>{rank.rating.toLocaleString()}</strong></div>
-        <div><span>{localized("Place", "順位")}</span><strong>{myRow?.place ?? "—"}</strong></div>
-        <div><span>{localized("Matches in period", "期間内の試合")}</span><strong>{me?.matches ?? 0}<small> / {LEADERBOARD_MIN_MATCHES}</small></strong></div>
       </div>
-      <p>{toGo ? localized(`${toGo} more matches to be placed.`, `あと${toGo}試合で順位が確定します。`) : localized("Your position is established for this period.", "この期間の順位が確定しています。")}</p>
-    </ModeBlock>
+    </section>
 
     {rows.length ? <>
       {podium.length > 0 && <Podium rows={podium} />}

@@ -426,18 +426,10 @@
 }
 
 /* Next button: fixed at the end of the action row so it is always in the same place. */
-.stage-footer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; }
-.trainer-next-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 104px; padding: 0 12px; border: 0; border-radius: 8px; background: var(--surface-raised); color: var(--text-subtle); font-size: 13px; font-weight: 800; cursor: default; box-shadow: inset 0 0 0 1px var(--line-strong); }
-.trainer-next-btn kbd { padding: 0 4px; border: 1px solid currentColor; border-radius: 4px; font: 700 9px/1.5 inherit; opacity: .6; }
-.trainer-next-btn.ready { background: var(--accent); color: #1a0b12; cursor: pointer; box-shadow: 0 4px 14px rgb(240 96 158 / 28%); animation: verdict-in .3s var(--ease-spring) both; }
-.trainer-next-btn.ready:hover { filter: brightness(1.1); }
-.trainer-next-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.stage-footer { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
 @media (max-width: 560px) {
   .stage-footer { grid-template-columns: minmax(0, 1fr); }
-  .trainer-next-btn { min-height: 40px; }
-  .trainer-next-btn:not(.ready) { display: none; }
   .config-chip { display: none; }
-  .trainer-next-btn kbd { display: none; }
 }
 .drill-card-stats { flex-wrap: wrap; }
 .drill-card-stats dt, .drill-card-stats dd, .drill-start, .library-totals dt { white-space: nowrap; }
@@ -653,3 +645,25 @@
 .ranked-pips li.up { background: #6fdc8c; box-shadow: 0 0 6px rgb(111 220 140 / 50%); }
 .ranked-pips li.down { background: #ff7a7a; box-shadow: 0 0 6px rgb(255 122 122 / 45%); }
 .mode-block.is-ranked .mode-visual { min-height: 190px; }
+
+/* Leaderboard: your standing as one compact row */
+.lb-me { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; padding: 12px 18px; overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--mode-theme) 32%, var(--line-strong)); border-radius: 12px;
+  background: radial-gradient(60% 200% at 0% 50%, color-mix(in srgb, var(--mode-theme) 16%, transparent), transparent 60%), var(--surface); }
+.lb-me::before { position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--mode-theme); content: ""; opacity: .8; }
+.lb-me-id { display: flex; align-items: center; gap: 10px; min-width: 150px; }
+.lb-me-id .rank-badge { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--mode-theme) 45%, transparent)); }
+.lb-me-id div { display: grid; line-height: 1.25; }
+.lb-me-id strong { font-size: 15px; }
+.lb-me-id span { color: var(--mode-theme); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.lb-me-stats { display: flex; gap: 24px; margin: 0; }
+.lb-me-stats div { display: grid; line-height: 1.2; }
+.lb-me-stats dt { color: var(--text-subtle); font-size: 10px; }
+.lb-me-stats dd { margin: 0; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.lb-me-stats dd small { color: var(--text-subtle); font-size: 12px; font-weight: 500; }
+.lb-me-note { color: var(--text-muted); font-size: 12px; }
+.lb-me-tools { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.lb-me .lb-period { min-width: 170px; }
+.lb-me .lb-period button { padding: 5px 10px; }
+.lb-me .lb-demo-flag { white-space: nowrap; }
+@media (max-width: 720px) { .lb-me-tools { width: 100%; margin-left: 0; justify-content: space-between; } }

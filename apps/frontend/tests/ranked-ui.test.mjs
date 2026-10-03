@@ -30,7 +30,7 @@ test('populated leaderboard shows real tiers, self marker, placement and history
   assert.ok(html.includes('Tester'));
   assert.ok(html.includes('leaderboard-player'));
   assert.ok(html.includes('leaderboard-history'));
-  assert.ok(html.includes('この期間の順位が確定しています。'));
+  assert.ok(html.includes('順位確定'));
 });
 test('dummy leaderboard players exist only for the local dev server', async () => {
   const { demoPlayers, showDemoPlayers } = await import('../src/trainer/leaderboard-demo.ts');
