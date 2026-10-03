@@ -32,6 +32,8 @@ test("sections map to /analyze and /learn", () => {
 
 test("old addresses move to the current ones", () => {
   assert.equal(canonicalPath("/app"), "/analyze/ranges");
+  assert.equal(canonicalPath("/welcome"), "/analyze/ranges");
+  assert.ok(isAppPath("/welcome"));
   assert.equal(canonicalPath("/ranges"), "/analyze/ranges");
   assert.equal(canonicalPath("/solutions"), "/analyze/ranges");
   assert.equal(canonicalPath("/analyze"), "/analyze/ranges");

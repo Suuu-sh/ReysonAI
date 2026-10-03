@@ -12,6 +12,7 @@
 //   /learn/agent/:table[/watch]              Reyson Agent table (watch: spectate)
 //   /learn/sessions  /learn/analysis  /learn/weakness
 //   /account/:tab
+//   /welcome                                 first-run onboarding (reloads land on the front page)
 //
 // Older addresses (/app, /ranges, /solutions, /trainer/…, /sessions, /analysis, /weakness) are rewritten by canonicalPath.
 // Section names match RANGE_SECTION (components/layout.tsx) and ACCOUNT_SECTION (account/AccountMenu.tsx);
@@ -26,6 +27,8 @@ export const PRODUCTION_APP_URL = "https://app.reysonai.com";
 export function appEntryHref(hostname: string) {
   return hostname === "reysonai.com" ? PRODUCTION_APP_URL : HOME_PATH;
 }
+// Shown in the address bar while first-run onboarding is up; the page behind it keeps its own path.
+export const WELCOME_PATH = "/welcome";
 
 const SECTIONS: [string, string][] = [
   [RANGE_SECTION, "/analyze/ranges"],
@@ -41,7 +44,7 @@ const under = (path: string, base: string) => path === base || path.startsWith(`
 // Paths the app (not the marketing site) answers, including the old ones it redirects.
 export function isAppPath(pathname: string) {
   const path = clean(pathname);
-  return ["/app", "/ranges", "/trainer", "/sessions", "/analysis", "/weakness", "/account", "/learn", "/analyze", "/solutions"].some(base => under(path, base));
+  return ["/app", "/ranges", "/trainer", "/sessions", "/analysis", "/weakness", "/account", "/learn", "/analyze", "/solutions", WELCOME_PATH].some(base => under(path, base));
 }
 
 export function isProductAppRoute(pathname: string, hostname: string) {
@@ -51,7 +54,7 @@ export function isProductAppRoute(pathname: string, hostname: string) {
 // The current address for an old one; anything else is returned cleaned.
 export function canonicalPath(pathname: string) {
   const path = clean(pathname);
-  if (under(path, "/app") || under(path, "/ranges") || under(path, "/solutions") || path === "/analyze") return HOME_PATH;
+  if (under(path, "/app") || under(path, "/ranges") || under(path, "/solutions") || path === "/analyze" || path === WELCOME_PATH) return HOME_PATH;
   if (under(path, "/trainer")) return trainerPath(legacyTrainerRoute(path));
   for (const name of ["sessions", "analysis", "weakness"]) if (under(path, `/${name}`)) return `/learn/${name}`;
   if (path === "/learn") return "/learn/trainer";

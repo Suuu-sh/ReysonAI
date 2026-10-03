@@ -13,7 +13,7 @@ import { ACCOUNT_SECTION } from "./account/AccountMenu.tsx";
 import { clearPracticeData } from "./account/preferences.ts";
 import { LOGOUT_SECTION, RANGE_SECTION } from "./components/layout.tsx";
 import { localizeProductSurface } from "./i18n.ts";
-import { HOME_PATH, canonicalPath, pathOfSection, sectionOfPath } from "./route.ts";
+import { HOME_PATH, WELCOME_PATH, canonicalPath, pathOfSection, sectionOfPath } from "./route.ts";
 
 export default function ProductApp() {
   useLayoutEffect(() => localizeProductSurface(document.getElementById("root")), []);
@@ -55,6 +55,13 @@ export default function ProductApp() {
 
   const reloadProfile = () => { adoptOnboardingDraft(); setProfile(loadProfile()); applyAppearance(); };
   useEffect(() => { if (account.ready) reloadProfile(); }, [account.ready, account.user?.id, account.user?.verified]);
+  // First-run onboarding is its own address; finishing it returns to the page it stood in front of.
+  const welcoming = account.ready && !profile && !authOpen;
+  const [returnTo] = useState(() => window.location.search + window.location.hash);
+  useEffect(() => {
+    const target = welcoming ? WELCOME_PATH : path + (window.location.pathname === WELCOME_PATH ? returnTo : window.location.search + window.location.hash);
+    if (window.location.pathname !== (welcoming ? WELCOME_PATH : path)) window.history.replaceState(null, "", target);
+  }, [welcoming, path]);
   if (!account.ready) return <div className="site-loading">{localized("Opening account…", "アカウントを確認中…")}</div>;
   if (authOpen) return <main className="account-page"><AuthPanel onChanged={reloadProfile} onGuest={async () => { if (accountSnapshot().user) { try { await logoutAccount(); } catch { return; } } rememberLearningIntent(null); go(HOME_PATH); setAuthOpen(false); reloadProfile(); }} />{account.user?.verified && <button className="account-primary" onClick={() => { setAuthOpen(false); reloadProfile(); }}>{localized("Continue", "続ける")}</button>}</main>;
   if (!profile || editing) {
