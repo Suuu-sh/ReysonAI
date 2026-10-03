@@ -320,13 +320,32 @@ th small { display: block; }
 .onboarding-actions .primary { padding: 10px 22px; font-size: 14px; }
 .onboarding-cancel { border: 0; background: transparent; color: var(--text-muted); }
 .onboarding-note { color: var(--text-subtle); font-size: 11px; }
+.onboarding-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.onboarding-top .onboarding-language { margin: 0; }
+.onboarding-account { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-raised); color: var(--text-muted); font-size: 12px; justify-self: start; max-width: 100%; }
+.onboarding-account-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.onboarding-account b { color: var(--text); font-weight: 600; }
+.onboarding-account-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: #34a853; }
+.onboarding-link { flex: none; padding: 0 0 0 4px; border: 0; background: transparent; color: var(--accent-soft); font-size: 12px; font-weight: 600; cursor: pointer; }
+.onboarding-link:hover { text-decoration: underline; }
+.onboarding-start { display: grid; gap: 10px; padding-top: 4px; }
+.onboarding-start-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.onboarding-start-buttons button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 44px; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: filter .15s ease, border-color .15s ease, background-color .15s ease; }
+.onboarding-guest { border: 1px solid var(--line-strong); background: transparent; color: var(--text); }
+.onboarding-guest:hover:not(:disabled) { border-color: var(--accent-soft); background: var(--surface-hover); }
+/* Inverted against the theme so the recommended path reads first on dark and light alike. */
+.google-signin { border: 1px solid transparent; background: var(--text); color: var(--bg); }
+.google-signin:hover:not(:disabled) { filter: brightness(.92); }
+.google-mark { flex: none; padding: 2px; border-radius: 50%; background: #fff; box-sizing: content-box; }
+.onboarding-start-buttons button:disabled { opacity: .45; cursor: default; }
+.onboarding-error { margin: 0; color: var(--danger, #f87171); font-size: 12px; }
 @media (max-width: 480px) {
   /* Fit the 13x13 grid to the phone width instead of scrolling sideways. */
   .matrix { min-width: 0; gap: 1px; }
   .matrix button { padding: 0; border-radius: 2px; font-size: 8.5px; letter-spacing: -.02em; }
   .matrix small { display: none; }
 }
-@media (max-width: 480px) { .onboarding-card { padding: 20px; } .level-option { grid-template-columns: 1fr; } .level-name { grid-row: auto; } }
+@media (max-width: 480px) { .onboarding-card { padding: 20px; } .level-option { grid-template-columns: 1fr; } .level-name { grid-row: auto; } .onboarding-start-buttons { grid-template-columns: 1fr; } .google-signin { order: -1; } }
 
 /* ---- Motion ---- */
 :root { --ease-out: cubic-bezier(.22, 1, .36, 1); --ease-spring: cubic-bezier(.34, 1.56, .64, 1); }

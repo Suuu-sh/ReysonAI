@@ -58,7 +58,7 @@ const COPY = {
   
   "元のプリフロップレンジに含まれないか、このボードで組み合わせがありません。": "This hand is absent from the preflop range or has no combinations on this board.",
   "ターン・リバーの公開用方針はまだありません。": "No public turn or river policy is available yet.",
-  "レンジ分析": "Range analysis", "解析": "Analyze", "学習": "Learn", "トレーナー": "Trainer", "セッション": "Sessions", "プレー分析": "Player analysis", "弱点": "Weaknesses",
+  "レンジ分析": "Range analysis", "解析": "Analyze", "学習": "Learn", "スタッツ": "Stats", "トレーナー": "Trainer", "セッション": "Sessions", "プレー分析": "Player analysis", "弱点": "Weaknesses",
   "参加中のレンジ": "Active players' ranges", "のアクションに戻り、レンジ表を表示": " — return to this action and show its range", "のレンジ": "'s range", "上限": "cap ", "プロフィール": "Profile", "サイドバー": "sidebar", "言語": "Language", "日本語": "Japanese",
   "初級": "Beginner", "中級": "Intermediate", "上級": "Advanced", "レベル": "Level", "レベルを変更": "Change level", "ニックネーム（任意）": "Nickname (optional)", "例：たろう": "e.g. Alex", "ゲスト": "Guest", "キャンセル": "Cancel", "はじめる": "Get started", "保存する": "Save",
   "推定レンジ": "Estimated ranges", "推定レンジ準備中": "Estimated range pending", "レンジ表を準備中": "Range table pending", "データなし": "No data", "読み込み中…": "Loading…", "読み込み中": "Loading", "詳細を閉じる": "Close details", "詳細": "Details", "AIの考え方": "AI reasoning", "理由を読み込めませんでした。": "Could not load the explanation.",

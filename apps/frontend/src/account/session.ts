@@ -23,6 +23,13 @@ export async function accountRequest(path, body) {
   if (!response.ok) throw new Error(response.status === 503 ? "disabled" : response.status === 409 ? "conflict" : response.status === 401 ? "session" : response.status === 403 ? "verification" : "request");
   return result;
 }
+// Leaves the app for Google; the callback lands back on the front page.
+export async function startGoogleSignIn() {
+  const { url } = await accountRequest("google/start", {});
+  const target = new URL(url);
+  if (target.origin !== "https://accounts.google.com") throw new Error("oauth_url");
+  window.location.assign(target.href);
+}
 export function refreshAccount() {
   // React StrictMode must not start two competing session/data loads.
   if (refreshing) return refreshing;
