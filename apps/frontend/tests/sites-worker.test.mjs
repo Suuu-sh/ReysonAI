@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { access } from "node:fs/promises";
 import test from "node:test";
-import worker, { isRetiredJapanesePath } from "../worker/index.js";
+import worker, { isRetiredAdminPath, isRetiredJapanesePath } from "../worker/index.js";
 
 test("retired Japanese paths return 404 before static assets or app fallback", async () => {
   assert.equal(isRetiredJapanesePath("/ja"), true);
@@ -17,6 +17,22 @@ test("retired Japanese paths return 404 before static assets or app fallback", a
     assert.equal(response.status, 404);
     assert.equal(await response.text(), "Not Found");
     assert.equal(assetCalls, 0);
+  }
+});
+
+test("retired Admin paths return 404 before static assets or app fallback", async () => {
+  assert.equal(isRetiredAdminPath("/administrator"), false);
+  for (const host of ["reysonai.com", "app.reysonai.com"]) {
+    for (const path of ["/admin", "/admin/", "/admin/coverage", "/%61dmin", "/ADMIN"]) {
+      assert.equal(isRetiredAdminPath(path), true);
+      let assetCalls = 0;
+      const response = await worker.fetch(new Request(`https://${host}${path}`, { headers: { accept: "text/html" } }), {
+        ASSETS: { fetch: async () => { assetCalls += 1; return new Response("app"); } },
+      });
+      assert.equal(response.status, 404);
+      assert.equal(await response.text(), "Not Found");
+      assert.equal(assetCalls, 0);
+    }
   }
 });
 

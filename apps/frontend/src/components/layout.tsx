@@ -1,5 +1,5 @@
 import { BrandIcon } from "./BrandIcon.tsx";
-import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GearSix, GraduationCap, SquaresFour } from "@phosphor-icons/react";
+import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GraduationCap, SquaresFour } from "@phosphor-icons/react";
 import { useState } from "react";
 import { ACCOUNT_SECTION, AccountMenu } from "../account/AccountMenu.tsx";
 import "../account/preferences.ts";
@@ -99,15 +99,6 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
             </div>
           </div>
         ))}
-        <div className="header-nav-group">
-          <span className="header-nav-group-label">{productLocale() === "ja" ? "管理" : "Manage"}</span>
-          <div className="header-nav-items">
-            <a href="/admin" aria-label={productLocale() === "ja" ? "管理画面" : "Admin dashboard"} title={productLocale() === "ja" ? "管理画面" : "Admin dashboard"}>
-              <GearSix size={18} />
-              <span>{productLocale() === "ja" ? "管理画面" : "Admin"}</span>
-            </a>
-          </div>
-        </div>
       </nav>
       <div className="app-language-switch" role="group" aria-label="Language / 言語">
         <button type="button" aria-pressed={productLocale() === "en"} onClick={() => selectProductLocale("en")}>EN</button>
