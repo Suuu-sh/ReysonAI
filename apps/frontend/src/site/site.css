@@ -504,36 +504,37 @@
 .has-motion .site-compare-table[data-shown] tbody tr { opacity: 1; transform: none; }
 .site-compare-note { max-width: 760px; margin-top: 22px; color: #6a6a72; font-size: 12.5px; }
 
-/* Desktop comparison is a single readable screen; scroll moves the emphasis, not the table. */
+/* Desktop comparison is a single readable screen; scroll reveals the rows while the stage stays still. */
 .site-compare-stage { width: 100%; }
 @media (min-width: 961px) {
   .site-section.site-compare { padding-block: 24px; }
   .site-compare .site-wrap { display: grid; gap: 16px; }
   .site-compare .site-section-head { gap: 40px; align-items: center; }
-  .site-compare h2 { font-size: clamp(28px, 2.5vw, 38px); }
-  .site-compare .site-section-head p { max-width: none; font-size: clamp(15px, 1.2vw, 18px); line-height: 1.5; }
+  .site-compare h2 { font-size: clamp(28px, 3vw, 46px); }
+  .site-compare .site-section-head p { max-width: none; font-size: clamp(15px, 1.3vw, 19px); line-height: 1.5; }
   .site-compare-table { margin-top: 0; }
-  .site-compare table { table-layout: fixed; font-size: clamp(13px, 1.05vw, 16px); }
+  .site-compare table { table-layout: fixed; font-size: clamp(13px, 1.2vw, 18px); }
   .site-compare thead td { width: 22%; }
   .site-compare thead th { padding: 12px 16px; font-size: 15px; }
   .site-compare thead th small { font-size: 12px; }
-  .site-compare tbody th { padding: 10px 16px 10px 0; font-size: 13px; }
+  .site-compare tbody th { padding: 10px 16px 10px 0; font-size: clamp(12px, 1.05vw, 15px); }
   .site-compare tbody td { padding: 10px 16px; }
   .site-compare-note { max-width: none; margin-top: 0; font-size: 11.5px; line-height: 1.5; }
   .site-section.site-compare.is-scrolly { display: block; height: 240vh; padding-block: 0; }
   .site-compare.is-scrolly .site-compare-stage { position: sticky; top: 64px; display: flex; align-items: center; height: calc(100vh - 64px); padding-block: 24px; }
-  .has-motion .site-compare.is-scrolly [data-reveal], .has-motion .site-compare.is-scrolly .site-compare-table tbody tr { opacity: 1; transform: none; }
-  .has-motion .site-compare.is-scrolly tbody th, .has-motion .site-compare.is-scrolly tbody td { transition: background-color .35s ease, color .35s ease, box-shadow .35s ease; }
-  .site-compare.is-scrolly tbody tr.is-current th { color: var(--paper-ink); }
-  .site-compare.is-scrolly tbody tr.is-current td:not(.is-us) { background: #1414160a; }
-  .site-compare.is-scrolly tbody tr.is-current td.is-us { background: #232328; box-shadow: inset 3px 0 var(--pink); }
+  .site-compare.is-scrolly .site-wrap { height: 100%; grid-template-rows: auto minmax(0, 1fr) auto; }
+  .site-compare.is-scrolly .site-compare-table, .site-compare.is-scrolly table { height: 100%; }
+  .site-compare.is-scrolly tbody th, .site-compare.is-scrolly tbody td { vertical-align: middle; }
+  .has-motion .site-compare.is-scrolly [data-reveal] { opacity: 1; transform: none; }
+  .has-motion .site-compare.is-scrolly .site-compare-table tbody tr { opacity: 0; transform: translateY(14px); transition: opacity .35s ease, transform .45s var(--ease); transition-delay: 0s; }
+  .has-motion .site-compare.is-scrolly .site-compare-table tbody tr.is-revealed { opacity: 1; transform: none; }
 }
 @media (min-width: 961px) and (max-height: 740px) {
   .site-compare .site-wrap { gap: 12px; }
   .site-compare .site-section-head { gap: 28px; }
-  .site-compare h2 { font-size: 28px; }
-  .site-compare .site-section-head p { font-size: 14px; }
-  .site-compare table { font-size: 12.5px; }
+  .site-compare h2 { font-size: clamp(28px, 4.4vh, 34px); }
+  .site-compare .site-section-head p { font-size: clamp(14px, 2.2vh, 16px); }
+  .site-compare table { font-size: clamp(13px, 2.2vh, 16px); }
   .site-compare thead th { padding: 10px 12px; font-size: 14px; }
   .site-compare tbody th { padding: 8px 12px 8px 0; font-size: 12px; }
   .site-compare tbody td { padding: 8px 12px; }

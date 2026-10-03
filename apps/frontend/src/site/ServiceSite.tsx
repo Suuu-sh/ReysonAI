@@ -727,10 +727,10 @@ function Analysis() {
 const comparisonRowIds = ["strategy", "explanation", "detail", "practice", "feedback", "precision", "audience"];
 
 function Compare() {
-  const { copy: c, motion } = useSite();
+  const { copy: c, motion, locale } = useSite();
   const ref = useRef<HTMLElement>(null);
   const [scrolly, setScrolly] = useState(false);
-  const [activeRow, setActiveRow] = useState(0);
+  const [visibleRows, setVisibleRows] = useState(1);
   const rowCount = c.compare.rows.length;
   useEffect(() => {
     if (!motion) { setScrolly(false); return; }
@@ -740,9 +740,10 @@ function Compare() {
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
   }, [motion]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a locale switch reflows the surrounding sections and changes the scroll position.
   useEffect(() => {
     const node = ref.current;
-    if (!scrolly || !node) { setActiveRow(0); return; }
+    if (!scrolly || !node) { setVisibleRows(1); return; }
     let frame = 0;
     const update = () => {
       frame = 0;
@@ -751,7 +752,7 @@ function Compare() {
       const distance = rect.height - (window.innerHeight - 64);
       if (distance <= 0) return;
       const progress = Math.min(Math.max((64 - rect.top) / distance, 0), 1);
-      setActiveRow(Math.min(Math.floor(progress * rowCount), rowCount - 1));
+      setVisibleRows(Math.min(Math.floor(progress * rowCount) + 1, rowCount));
     };
     const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
@@ -762,7 +763,7 @@ function Compare() {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [scrolly, rowCount]);
+  }, [scrolly, rowCount, locale]);
   return <section className={`site-section site-compare${scrolly ? " is-scrolly" : ""}`} id="compare" ref={ref} aria-labelledby="site-compare-title">
     <div className="site-compare-stage">
       <div className="site-wrap">
@@ -770,7 +771,7 @@ function Compare() {
         <div className="site-compare-table" data-reveal>
           <table>
             <thead><tr><td /><th scope="col" className="is-us"><BrandIcon size={18} style={{ display: "inline-block", margin: "0 8px -3px 0" }} />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
-            <tbody>{c.compare.rows.map((row, index) => <tr key={comparisonRowIds[index]} className={scrolly && index === activeRow ? "is-current" : undefined} style={{ "--i": index } as CSSProperties}>
+            <tbody>{c.compare.rows.map((row, index) => <tr key={comparisonRowIds[index]} className={scrolly && index < visibleRows ? "is-revealed" : undefined} style={{ "--i": index } as CSSProperties}>
               <th scope="row">{row.label}</th>
               <td className="is-us">{row.us}</td>
               <td>{row.them}</td>

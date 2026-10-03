@@ -69,6 +69,24 @@ test("mobile scenes grow with their explanation and cards instead of clipping a 
     "Training/Ranked pinning remains wide-screen-only");
 });
 
+test("comparison pins a full readable desktop stage and reveals rows from scroll, not highlighting", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const compare = source.split("function Compare() {")[1].split("function Pricing()")[0];
+  assert.match(compare, /if \(!motion\) \{ setScrolly\(false\)/);
+  assert.match(compare, /matchMedia\("\(min-width: 961px\) and \(min-height: 600px\)"\)/);
+  assert.match(compare, /Math\.min\(Math\.floor\(progress \* rowCount\) \+ 1, rowCount\)/);
+  assert.match(compare, /index < visibleRows \? "is-revealed"/);
+  assert.match(compare, /key=\{comparisonRowIds\[index\]\}/);
+  assert.doesNotMatch(compare, /key=\{row.label\}|is-current|activeRow/);
+  assert.match(compare, /cancelAnimationFrame\(frame\)/);
+  assert.match(css, /\.site-compare\.is-scrolly \.site-compare-stage\s*\{[^}]*position: sticky; top: 64px;[^}]*height: calc\(100vh - 64px\); padding-block: 24px/);
+  assert.match(css, /\.site-compare\.is-scrolly \.site-wrap\s*\{[^}]*height: 100%; grid-template-rows: auto minmax\(0, 1fr\) auto/);
+  assert.match(css, /\.has-motion \.site-compare\.is-scrolly \.site-compare-table tbody tr\s*\{[^}]*opacity: 0/);
+  assert.match(css, /\.has-motion \.site-compare\.is-scrolly \.site-compare-table tbody tr\.is-revealed\s*\{[^}]*opacity: 1/);
+  assert.doesNotMatch(css, /site-compare[^}]*is-current/);
+});
+
 test("mobile comparison pairs columns with one visible sticky heading instead of repeated labels", () => {
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
   const mobile = css.split("@media (max-width: 720px)")[1].split("@media (max-width: 560px)")[0];
@@ -84,6 +102,9 @@ for (const locale of ["en", "ja"]) {
     const comparison = render(locale).match(/<section class="site-section site-compare"[\s\S]*?<\/section>/)?.[0];
     assert.ok(comparison);
     assert.match(comparison, /<table>/);
+    assert.match(comparison, /id="compare"[^>]*>[\s\S]*class="site-compare-stage"/);
+    assert.equal((comparison.match(/id="compare"/g) ?? []).length, 1);
+    assert.doesNotMatch(comparison, /is-scrolly|is-revealed|<tr[^>]*aria-hidden/);
     assert.equal((comparison.match(/scope="col"/g) ?? []).length, 2);
     assert.equal((comparison.match(/scope="row"/g) ?? []).length, 7);
     assert.doesNotMatch(comparison, /data-label=/);
