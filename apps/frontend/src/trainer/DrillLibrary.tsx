@@ -89,7 +89,7 @@ function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
 export function TrainerHome({ drills, history = [], reviewCount, drafts = {}, onOpenDrills, onCreate, onStartReview, onResume, rank, onStartRanked, onOpenRanking, onStartAgent = null }) {
   const pulse = practicePulse(history);
   // Only drafts that can still be opened: ranked, review, or a drill that still exists.
-  const resumable = Object.values(drafts).filter(draft => draft && (draft.key === "ranked" || draft.key === "review" || drills.some(drill => drill.id === draft.key)))
+  const resumable = Object.values(drafts).filter(draft => draft && ((RANKED_ENABLED && draft.key === "ranked") || draft.key === "review" || (draft.key !== "ranked" && drills.some(drill => drill.id === draft.key))))
     .sort((a, b) => (b.savedAt ?? 0) - (a.savedAt ?? 0));
   return <div className="drill-library trainer-home">
     <header className="trainer-home-head">
@@ -115,7 +115,7 @@ export function TrainerHome({ drills, history = [], reviewCount, drafts = {}, on
       </li>)}</ul>
     </section>}
     <div className="mode-stack">
-      {rank && RANKED_ENABLED && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} />}
+      {RANKED_ENABLED ? rank && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} /> : <RankedComingSoon />}
       {onStartAgent && <AgentEntry onStart={onStartAgent} />}
       <DrillsBlock drills={drills} reviewCount={reviewCount} drafts={drafts} onOpen={onOpenDrills} onCreate={onCreate} onStartReview={onStartReview} />
     </div>
@@ -218,6 +218,15 @@ function RankedEmblem({ rank, tier }) {
   </div>;
 }
 
+function RankedComingSoon() {
+  return <ModeBlock theme="#b7a0db" className="is-ranked is-coming-soon" visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
+    visual={<Trophy size={64} weight="duotone" aria-hidden="true" />}
+    eyebrow="RANKED"
+    title={localized("Ranked matches", "ランク戦")}
+    status={localized("Coming soon", "近日公開")}
+    actions={<button type="button" className="mode-primary" disabled>{localized("Coming soon", "近日公開")}</button>} />;
+}
+
 function RankedCard({ rank, draft, onStart, onOpenRanking }) {
   const tier = tierFor(rank.rating);
   const left = Math.max(0, RANKED_DAILY_LIMIT - playedToday(rank));
@@ -257,6 +266,7 @@ function AgentEntry({ onStart }) {
       <AgentAvatar id={agent.id} color={agent.color} size={52} /><small>{agent.name.en}</small></span>)}
     eyebrow={`REYSON AGENT · ${table.name.en}`}
     title={localized("Agent table", "Agent戦")}
+    status={localized("Beta", "β版")}
     description={localized("A 6-max table where every Agent plays the Reyson solver estimate. Fold any time, then watch the rest or skip.", "全員がReyson solver（AI推定）通りに打つ6人卓。降りたら続きを観戦することも、スキップすることもできます。")}
     actions={<>
       <button type="button" className="mode-primary" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
