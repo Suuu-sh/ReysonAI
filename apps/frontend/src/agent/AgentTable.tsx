@@ -179,7 +179,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   // Spectating: deal the next hand by itself after a short pause.
   useEffect(() => {
     if (!done) return;
-    const timer = window.setTimeout(nextHand, speed === "fast" ? 1400 : 2600);
+    const timer = window.setTimeout(nextHand, speed === "fast" ? 300 : 600);
     return () => window.clearTimeout(timer);
   }, [done, nextHand, speed]);
 
