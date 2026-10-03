@@ -2,7 +2,6 @@ import { accountStorage } from "../account/session.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
 import { hands } from "../data.ts";
 import { RANGE_SECTION, Sidebar } from "../components/layout.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
@@ -12,8 +11,8 @@ import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.ts";
 import { LIMP_FOUR_BET_RESPONSE_ID, findLimpDeepResponseSpot, limpFourBetMatrixModel, validateLimpDeepResponses } from "./limp-deep-responses.ts";
 import { LIMP_RERAISE_RESPONSE_ID, findLimpResponseSpot, limpResponsesMatrixModel, validateLimpResponses } from "./limp-responses.ts";
-import { extendedBreakdown, extendedModel, extendedUnreachableReason, findExtendedSpot, multiwayContext, useExtendedDatasets } from "./extended-ranges.ts";
-import { limpActionTransition, nextActorsAfterRaise, responseActionTransition, rewindActionBlockTransition } from "./action-path.ts";
+import { extendedBreakdown, extendedModel, extendedUnreachableReason, findExtendedSpot, useExtendedDatasets } from "./extended-ranges.ts";
+import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "./action-path.ts";
 import { displayModes } from "./display-mode.ts";
 import { displayModeKey } from "../profile.ts";
 import { useDetailedReasons } from "./detailed-reasons.ts";
@@ -31,6 +30,8 @@ import { ArrowCounterClockwise, CaretDown, DotsThreeVertical, GearSix } from "@p
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
 import { nextPendingStreetCardDialog } from "./street-card-dialog-state.ts";
+import { buildActionBlocks, encodeRangeUrl, multiwayContext, readRangeUrl, replaceRangeUrl } from "./range-url.ts";
+export { buildActionBlocks } from "./range-url.ts";
 import { PreflopCallEvBars } from "./PreflopCallEvBars.tsx";
 import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, laterStart, recognizedFlop } from "./postflop-trial.ts";
 import { defaultFormat, formatLabel, isBuilt } from "./game-formats.ts";
@@ -229,236 +230,12 @@ function InlineGenerationControl({ description, status, error, onGenerate }) {
   </>;
 }
 
-const startingContribution = { SB: 0.5, BB: 1 };
 const formatBb = value => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
-// An uncalled bet is returned, so the largest contribution only counts up to the next largest.
-const potLabel = contribution => {
-  const values = Object.values(contribution).sort((a, b) => b - a);
-  const counted = values.length > 1 ? [Math.min(values[0], values[1]), ...values.slice(1)] : values;
-  return `ポット ${formatBb(counted.reduce((sum, value) => sum + value, 0))}bb`;
-};
-
-function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction = null, limpFourBetAction = null }) {
-  const contribution = { ...startingContribution };
-  const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
-  const blocks = [];
-  for (const position of positions.slice(0, positions.indexOf("SB"))) {
-    blocks.push({ key: position, position, stack: stackOf(position), active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "seat", rangeRef: { kind: "opening", position } });
-  }
-  contribution.SB = sbCompleteToBb;
-  blocks.push({ key: "SB", position: "SB", stack: stackOf("SB"), active: false, chosen: "call", stage: "limp-opening", options: [{ action: "call", label: `Call ${formatBb(sbCompleteToBb)}` }], kind: "seat", rangeRef: { kind: "opening", position: "SB" } });
-
-  const pot = () => {
-    const values = Object.values(contribution).sort((a, b) => b - a);
-    const counted = values.length > 1 ? [Math.min(values[0], values[1]), ...values.slice(1)] : values;
-    return `ポット ${formatBb(counted.reduce((sum, value) => sum + value, 0))}bb`;
-  };
-  const end = (result) => blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result, pot: pot() });
-
-  if (!limpAction) {
-    blocks.push({ key: "limp-BB", position: "BB", stack: stackOf("BB"), active: true, chosen: null, stage: "limp-bb", options: [
-      { action: "check", label: "Check" }, { action: "raise", label: `Raise ${formatBb(isoVsLimpToBb)}` },
-    ], kind: "seat", rangeRef: { kind: "limp_bb", position: "BB" } });
-    return blocks;
-  }
-
-  if (limpAction === "check") {
-    blocks.push({ key: "limp-BB", position: "BB", stack: stackOf("BB"), active: false, chosen: "check", stage: "limp-bb", options: [
-      { action: "check", label: "Check" }, { action: "raise", label: `Raise ${formatBb(isoVsLimpToBb)}` },
-    ], kind: "seat", rangeRef: { kind: "limp_bb", position: "BB" } });
-    end("2人でフロップへ");
-    return blocks;
-  }
-
-  contribution.BB = isoVsLimpToBb;
-  blocks.push({ key: "limp-BB", position: "BB", stack: stackOf("BB"), active: false, chosen: "raise", stage: "limp-bb", options: [
-    { action: "check", label: "Check" }, { action: "raise", label: `Raise ${formatBb(isoVsLimpToBb)}` },
-  ], kind: "seat", rangeRef: { kind: "limp_bb", position: "BB" } });
-  contribution.SB = limpResponseAction === "call" ? isoVsLimpToBb : limpResponseAction === "raise" ? limpReraiseToBb : sbCompleteToBb;
-  blocks.push({ key: "limp-SB-response", position: "SB", stack: stackOf("SB"), active: limpResponseAction === null, chosen: limpResponseAction, stage: "limp-sb-response", options: [
-    { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(isoVsLimpToBb)}` }, { action: "raise", label: `Raise ${formatBb(limpReraiseToBb)}` },
-  ], kind: "seat", rangeRef: { kind: "limp_sb", position: "SB" } });
-
-  if (limpResponseAction === "fold") end("BBの勝ち");
-  else if (limpResponseAction === "call") end("2人でフロップへ");
-  else if (limpResponseAction === "raise") {
-    const fourBetSizeBb = fourBetToSize("BB", "SB");
-    blocks.push({ key: "limp-BB-reraise-response", position: "BB", stack: stackOf("BB"), active: !limpReraiseAction, chosen: limpReraiseAction, stage: "limp-bb-reraise", options: [
-      { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(limpReraiseToBb)}` }, { action: "raise", label: `Raise ${formatBb(fourBetSizeBb)}` },
-    ], kind: "seat", rangeRef: { kind: "limp_reraise", position: "BB" } });
-    if (limpReraiseAction === "fold") end("SBの勝ち");
-    else if (limpReraiseAction === "call") { contribution.BB = limpReraiseToBb; end("2人でフロップへ"); }
-    else if (limpReraiseAction === "raise") {
-      contribution.BB = fourBetSizeBb;
-      blocks.push({ key: "limp-SB-four-bet-response", position: "SB", stack: stackOf("SB"), active: !limpFourBetAction, chosen: limpFourBetAction, stage: "limp-sb-four-bet", options: [
-        { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(fourBetSizeBb)}` }, { action: "all_in", label: "All-in 100" },
-      ], kind: "seat", rangeRef: { kind: "limp_four_bet", position: "SB" } });
-      if (limpFourBetAction === "fold") end("BBの勝ち");
-      else if (limpFourBetAction === "call") { contribution.SB = fourBetSizeBb; end("2人でフロップへ"); }
-      else if (limpFourBetAction === "all_in") { contribution.SB = 100; end("オールイン"); }
-    }
-  }
-  return blocks;
-}
-
-// Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], raiseSizeFor = () => null }) {
-  if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
-  const opening = rangeType === "open";
-  const openerIndex = positions.indexOf(opener);
-  const heroIndex = opening ? openerIndex : positions.indexOf(hero);
-  const reraised = rangeType === "three_bet" || rangeType === "four_bet";
-  const threeBetSizeBb = reraised ? spot?.three_bet_size_bb : raiseSizeFor(hero);
-  const contribution = { ...startingContribution };
-  const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
-  const blocks = [];
-  const lastIndex = opening ? openerIndex : positions.length - 1;
-  for (let index = 0; index <= lastIndex; index += 1) {
-    const position = positions[index];
-    const stack = stackOf(position);
-    if (index <= openerIndex) {
-      const acting = opening && index === openerIndex;
-      const chosen = acting ? null : index === openerIndex ? "raise" : "fold";
-      const options = [
-        { action: "fold", label: "Fold", disabled: positions[index + 1] === "BB" },
-        ...(acting && position === "SB" ? [{ action: "call", label: `Call ${formatBb(sbCompleteToBb)}` }] : []),
-        { action: "raise", label: `Raise ${formatBb(openSizeFor(position))}`, disabled: position === "BB" },
-      ];
-      if (index === openerIndex && !acting) contribution[position] = openSizeFor(position);
-      blocks.push({ key: position, position, stack, active: acting, chosen, options, kind: "seat", rangeRef: { kind: "opening", position } });
-      continue;
-    }
-    const earlierCallers = callers.filter(caller => positions.indexOf(caller) < index);
-    // Squeeze sizes are fixed by the sizing rules (base + per additional caller).
-    const raiseLabel = earlierCallers.length
-      ? `Raise ${formatBb(threeBetToSize(opener, position, earlierCallers.length))}`
-      : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
-    const options = [{ action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(openSizeFor(opener))}` }, { action: "raise", label: raiseLabel }];
-    // Seats behind the 3-bettor still act before the opener: fold, cold call or cold 4bet
-    // (saved cold-three-bet ranges). What follows a cold call / cold 4bet has no data yet.
-    if (rangeType === "three_bet" && index > heroIndex) {
-      const coldIndex = coldAction ? positions.indexOf(coldAction.position) : -1;
-      if (coldAction && index > coldIndex) continue;
-      const chosen = coldAction?.position === position ? coldAction.action : coldAction || continuationAction ? "fold" : null;
-      blocks.push({ key: position, position, stack, active: false, chosen, kind: "cold", rangeRef: { kind: "cold", position, threeBettor: hero }, options: [
-        { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(threeBetSizeBb)}` }, { action: "raise", label: `Raise ${formatBb(fourBetToSize(position, hero))}` },
-      ] });
-      continue;
-    }
-    if (index > heroIndex && (reraised || pendingRaise === "squeeze")) {
-      blocks.push({ key: position, position, stack, active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "forced", rangeRef: { kind: "pending", position, reason: reraised ? "3bet後の応答データはまだ保存されていません。" : "スクイーズ後の応答データはまだ保存されていません。" } });
-      continue;
-    }
-    let chosen = null;
-    if (callers.includes(position)) { chosen = "call"; contribution[position] = openSizeFor(opener); }
-    else if (index < heroIndex || foldedHero) chosen = "fold";
-    else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = earlierCallers.length ? threeBetToSize(opener, position, earlierCallers.length) : raiseToBb ?? threeBetSizeBb ?? 0; }
-    const hasEarlierCaller = callers.some(caller => positions.indexOf(caller) < index);
-    const multiway = hasEarlierCaller ? multiwayContext(opener, callers, position) : null;
-    const rangeRef = multiway
-      ? { kind: "multiway", position, caller: multiway.caller }
-      : hasEarlierCaller || (pendingRaise === "squeeze" && index === heroIndex)
-      ? { kind: "pending", position, reason: pendingRaise === "squeeze" ? "スクイーズ後の応答データはまだ保存されていません。" : "このマルチウェイ局面の応答データはまだ保存されていません。" }
-      : reraised && index > heroIndex
-        ? { kind: "pending", position, reason: "3bet後の応答データはまだ保存されていません。" }
-        : { kind: "response", position };
-    blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat", rangeRef });
-  }
-  if (coldAction) {
-    blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${coldAction.position}の${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}以降の推定レンジはまだありません。` });
-    return blocks;
-  }
-  if (reraised) {
-    const fourBetSizeBb = spot?.four_bet_size_bb;
-    const openerChosen = rangeType === "four_bet" ? "raise" : continuationAction;
-    blocks.push({ key: `continuation-${opener}`, position: opener, stack: stackOf(opener), kind: "continuation", rangeRef: { kind: "three_bet", position: opener, opponent: hero }, active: rangeType === "three_bet" && !continuationAction, chosen: openerChosen, options: [
-      { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(threeBetSizeBb)}` }, { action: "raise", label: `Raise ${formatBb(fourBetSizeBb)}` },
-    ] });
-    if (rangeType === "four_bet") {
-      contribution[opener] = fourBetSizeBb ?? 0;
-      blocks.push({ key: `continuation-${hero}`, position: hero, stack: stackOf(hero), kind: "continuation", rangeRef: { kind: "four_bet", position: hero, opponent: opener }, active: !continuationAction && !pendingRaise, chosen: pendingRaise === "all_in" ? "all_in" : continuationAction, options: [
-        { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(fourBetSizeBb)}` }, { action: "all_in", label: "Allin 100" },
-      ] });
-      if (pendingRaise === "all_in") contribution[hero] = 100;
-    }
-  }
-  // The opener's call/fold vs the 5bet all-in is a saved range, so it is a normal acting block.
-  if (pendingRaise === "all_in") {
-    blocks.push({ key: `shove-response-${opener}`, position: opener, stack: stackOf(opener), kind: "shove-response", rangeRef: { kind: "five_bet", position: opener, opponent: hero }, active: !shoveResponse, chosen: shoveResponse, options: [
-      { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(100 - (contribution[opener] ?? 0))}` },
-    ] });
-    if (shoveResponse === "call") contribution[opener] = 100;
-  }
-  const end = handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, contribution, threeBetSizeBb, spot });
-  if (end) blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], ...end });
-  const squeeze = pendingRaise === "squeeze" && callers.length === 1 ? multiwayContext(opener, callers, hero) : null;
-  if (squeeze) return appendSqueezeResponses(blocks, { opener, caller: squeeze.caller, squeezer: hero, squeezeResponse, contribution, stackOf });
-  const pendingActors = pendingRaise === "squeeze" ? nextActorsAfterRaise(hero, [opener, ...callers]) : [];
-  for (const position of pendingActors) {
-    blocks.push({ key: `pending-${position}`, position, stack: stackOf(position), kind: "pending", rangeRef: { kind: "pending", position, reason: "スクイーズ後の応答データはまだ保存されていません。" }, active: true, chosen: null, options: [
-      { action: "fold", label: "Fold", disabled: true }, { action: "call", label: "Call", disabled: true },
-    ] });
-  }
-  return blocks;
-}
-
-// After SB/BB squeezes an open plus one caller: the opener responds (caller still
-// behind), then the caller responds to the opener's fold or call. A 4bet ends the
-// saved data.
-function appendSqueezeResponses(blocks, { opener, caller, squeezer, squeezeResponse, contribution, stackOf }) {
-  const size = threeBetToSize(opener, squeezer, 1);
-  const [openerAction = null, callerAction = null] = squeezeResponse;
-  const options = position => [
-    { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(size)}` }, { action: "raise", label: `Raise ${formatBb(fourBetToSize(position, squeezer))}` },
-  ];
-  const noData = position => blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${position}の4bet後の応答レンジはまだありません。` });
-  blocks.push({ key: `squeeze-${opener}`, position: opener, stack: stackOf(opener), kind: "squeeze-response", role: "opener", active: !openerAction, chosen: openerAction,
-    rangeRef: { kind: "squeeze", position: opener, caller, squeezer, priorAction: null }, options: options(opener) });
-  if (!openerAction) return blocks;
-  if (openerAction === "raise") { noData(opener); return blocks; }
-  if (openerAction === "call") contribution[opener] = size;
-  blocks.push({ key: `squeeze-${caller}`, position: caller, stack: stackOf(caller), kind: "squeeze-response", role: "caller", active: !callerAction, chosen: callerAction,
-    rangeRef: { kind: "squeeze", position: caller, caller, squeezer, priorAction: openerAction }, options: options(caller) });
-  if (!callerAction) return blocks;
-  if (callerAction === "raise") { noData(caller); return blocks; }
-  if (callerAction === "call") contribution[caller] = size;
-  const players = [squeezer, ...(openerAction === "call" ? [opener] : []), ...(callerAction === "call" ? [caller] : [])];
-  blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [],
-    result: players.length > 1 ? `${players.length}人でフロップへ` : `${squeezer}の勝ち`, pot: potLabel(contribution) });
-  return blocks;
-}
 
 export function prioritizeParticipantRanges(rangeEntries, selectedActionEntries) {
   if (!selectedActionEntries) return rangeEntries;
   const prioritizedPositions = new Set(selectedActionEntries.map(entry => entry.position));
   return [...selectedActionEntries, ...rangeEntries.filter(entry => !prioritizedPositions.has(entry.position))];
-}
-
-// The hand's outcome once the last decision closes the action, with the final pot.
-function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, contribution, threeBetSizeBb, spot }) {
-  // An uncalled bet is returned, so the largest contribution only counts up to the next largest.
-  const pot = () => {
-    const values = Object.values(contribution).sort((x, y) => y - x);
-    const counted = values.length > 1 ? [Math.min(values[0], values[1]), ...values.slice(1)] : values;
-    return `ポット ${formatBb(counted.reduce((acc, value) => acc + value, 0))}bb`;
-  };
-  if (pendingRaise === "all_in") {
-    if (!shoveResponse) return null;
-    return shoveResponse === "call" ? { result: "オールイン・ショウダウン", pot: pot() } : { result: `${hero}の勝ち`, pot: pot() };
-  }
-  if (rangeType === "three_bet" && continuationAction) {
-    if (continuationAction === "call") { contribution[opener] = threeBetSizeBb ?? 0; return { result: "2人でフロップへ", pot: pot() }; }
-    return { result: `${hero}の勝ち`, pot: pot() };
-  }
-  if (rangeType === "four_bet" && continuationAction) {
-    if (continuationAction === "call") { contribution[hero] = spot?.four_bet_size_bb ?? 0; return { result: "2人でフロップへ", pot: pot() }; }
-    return { result: `${opener}の勝ち`, pot: pot() };
-  }
-  if (rangeType === "response" && foldedHero && hero === "BB") {
-    const players = [opener, ...callers];
-    return players.length > 1 ? { result: `${players.length}人でフロップへ`, pot: pot() } : { result: `${opener}の勝ち`, pot: pot() };
-  }
-  return null;
 }
 
 function ActionDropdown({ position, options, onSelect }) {
@@ -548,23 +325,33 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
 }
 
 export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }) {
+  const [initialUrlState] = useState(() => readRangeUrl());
+  const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [showFlop, setShowFlop] = useState(false);
+  const [showFlop, setShowFlop] = useState(initialUrlState?.showFlop ?? false);
   const [flopDialogOpen, setFlopDialogOpen] = useState(false);
   const [streetCardDialog, setStreetCardDialog] = useState(null);
-  const [flopCards, setFlopCards] = useState(["", "", ""]);
-  const [flopActions, setFlopActions] = useState([]);
-  const [turnCard, setTurnCard] = useState("");
-  const [turnActions, setTurnActions] = useState([]);
-  const [riverCard, setRiverCard] = useState("");
-  const [riverActions, setRiverActions] = useState([]);
+  const [flopCards, setFlopCards] = useState(initialUrlState?.flopCards ?? ["", "", ""]);
+  const [flopActions, setFlopActions] = useState(initialUrlState?.flopActions ?? []);
+  const [turnCard, setTurnCard] = useState(initialUrlState?.turnCard ?? "");
+  const [turnActions, setTurnActions] = useState(initialUrlState?.turnActions ?? []);
+  const [riverCard, setRiverCard] = useState(initialUrlState?.riverCard ?? "");
+  const [riverActions, setRiverActions] = useState(initialUrlState?.riverActions ?? []);
+  // Compare inputs rather than skipping one effect: StrictMode replays mount effects.
+  const previousFlopState = useRef({ cards: flopCards, actions: flopActions });
+  const flopChanged = previousFlopState.current.cards !== flopCards || previousFlopState.current.actions !== flopActions;
+  const previousTurnState = useRef({ card: turnCard, actions: turnActions });
+  const turnChanged = previousTurnState.current.card !== turnCard || previousTurnState.current.actions !== turnActions;
   useEffect(() => {
+    if (!flopChanged) return;
+    previousFlopState.current = { cards: flopCards, actions: flopActions };
     setTurnCard(""); setTurnActions([]); setRiverCard(""); setRiverActions([]);
   }, [flopCards, flopActions]);
   useEffect(() => {
+    if (!turnChanged) return;
+    previousTurnState.current = { card: turnCard, actions: turnActions };
     setRiverCard(""); setRiverActions([]);
   }, [turnCard, turnActions]);
-  const [initialSelection] = useState(() => restoredSelection(initialRangeType));
   const [rangeType, setRangeType] = useState(initialSelection.rangeType);
   const isOpening = rangeType === "open";
   const isLimp = rangeType === "limp";
@@ -582,17 +369,19 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [shoveResponse, setShoveResponse] = useState(initialSelection.shoveResponse);
   const [limpAction, setLimpAction] = useState(initialSelection.limpAction);
   const [limpResponseAction, setLimpResponseAction] = useState(initialSelection.limpResponseAction);
-  const [coldAction, setColdAction] = useState(null);
+  const [coldAction, setColdAction] = useState(initialSelection.coldAction ?? null);
   const [limpReraiseAction, setLimpReraiseAction] = useState(initialSelection.limpReraiseAction);
   const [limpFourBetAction, setLimpFourBetAction] = useState(initialSelection.limpFourBetAction);
   const [squeezeResponse, setSqueezeResponse] = useState(initialSelection.squeezeResponse);
   const [format, setFormat] = useState(() => {
+    if (initialUrlState) return initialUrlState.format;
     try {
       const saved = JSON.parse(window.localStorage.getItem(formatStorageKey));
       return saved && isBuilt(saved) ? saved : defaultFormat;
     } catch { return defaultFormat; }
   });
   const [tableProfile, setTableProfile] = useState(() => {
+    if (initialUrlState) return initialUrlState.tableProfile;
     try { return normalizeProfile(JSON.parse(window.localStorage.getItem(tableProfileStorageKey)) ?? DEFAULT_PROFILE); } catch { return DEFAULT_PROFILE; }
   });
   const [formatOpen, setFormatOpen] = useState(false);
@@ -827,6 +616,17 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
     callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
+  useEffect(() => {
+    // Wait for dependent street resets before serializing a changed upstream path.
+    if (flopChanged || turnChanged) return;
+    replaceRangeUrl(encodeRangeUrl({ rangeType, opener, hero, callers, foldedHero, pendingRaise,
+      continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction,
+      limpFourBetAction, squeezeResponse, selected, format, tableProfile, showFlop: flopActive,
+      flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, actionBlocks));
+  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse,
+    coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse,
+    selected, format, tableProfile, flopActive, flopCards, flopActions, turnCard, turnActions,
+    riverCard, riverActions, flopChanged, turnChanged, actionBlocks]);
   const flopBoard = recognizedFlop(flopCards);
   const canEnterLaterStreets = Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
   const laterBlocks = canEnterLaterStreets
