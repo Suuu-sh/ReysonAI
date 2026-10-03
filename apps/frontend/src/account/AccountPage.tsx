@@ -1,7 +1,9 @@
-import { Check, CreditCard, DownloadSimple, Lock, Palette, SignOut, Sparkle, Translate, UserCircle } from "@phosphor-icons/react";
+import { AuthPanel } from "./AuthPanel.tsx";
+import { accountSnapshot } from "./session.ts";
+import { Check, CreditCard, DownloadSimple, Palette, SignOut, Sparkle, Translate, UserCircle } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Sidebar } from "../components/layout.tsx";
-import { levels, saveProfile } from "../profile.ts";
+import { levels, loadProfile, saveProfile } from "../profile.ts";
 import { localized, productLocale, selectProductLocale } from "../i18n.ts";
 import { en as siteEn } from "../site/content.ts";
 import { ja as siteJa } from "../site/content-ja.ts";
@@ -65,12 +67,7 @@ function AccountTab({ profile, onProfileSaved }) {
         <button type="button" className="account-primary" disabled={!dirty} onClick={() => { onProfileSaved(saveProfile({ nickname, level })); setSaved(true); }}>{t("保存", "Save")}</button>
       </footer>
     </section>
-    <section className="account-card">
-      <header><h2>{t("ログイン", "Sign-in")}</h2><span className="account-pill">{t("準備中", "Planned")}</span></header>
-      <SettingRow title={t("ゲストとして利用中", "Using as a guest")} description={t("プロフィールと練習データはこのブラウザだけに保存されます。アカウント登録と端末間の同期は準備中です。", "Profile and practice data stay in this browser. Accounts and sync are planned.")}>
-        <button type="button" className="account-secondary" disabled><Lock size={14} />{t("アカウントを作成", "Create account")}</button>
-      </SettingRow>
-    </section>
+    <AuthPanel onChanged={() => onProfileSaved(loadProfile())} />
     <section className="account-card">
       <header><h2>{t("練習データ", "Practice data")}</h2></header>
       <SettingRow title={t("データを書き出す", "Export data")} description={t(`ドリル・セッション・回答履歴（${keys.length}項目）をJSONで保存します`, `Save drills, sessions and answers (${keys.length} items) as JSON`)}>
@@ -155,11 +152,11 @@ export function LogoutDialog({ onCancel, onConfirm }) {
     <div className="modal account-logout" role="dialog" aria-modal="true" aria-labelledby="logout-title">
       <span className="account-logout-icon"><SignOut size={20} /></span>
       <h2 id="logout-title">{t("ログアウトしますか？", "Log out?")}</h2>
-      <p>{t("アカウント機能はまだないため、この端末のプロフィールを削除して最初の画面に戻ります。", "Accounts are not available yet, so this removes the profile from this browser and returns to the start screen.")}</p>
-      <label className="account-check">
+      <p>{t("アカウントからログアウトします。ゲストのプロフィールと練習記録はこのブラウザに残ります。", "Sign out of your account. Guest profile and practice records remain in this browser.")}</p>
+      {!accountSnapshot().user && <label className="account-check">
         <input type="checkbox" checked={clearData} onChange={event => setClearData(event.target.checked)} />
         <span>{t("練習データ（ドリル・セッション・回答履歴）も削除する", "Also delete practice data (drills, sessions, answers)")}</span>
-      </label>
+      </label>}
       <div className="account-dialog-actions">
         <button type="button" className="account-secondary" onClick={onCancel}>{t("キャンセル", "Cancel")}</button>
         <button type="button" className="account-danger" onClick={() => onConfirm({ clearData })}>{t("ログアウト", "Log out")}</button>

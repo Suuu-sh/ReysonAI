@@ -1,6 +1,7 @@
+import { accountStorage } from "./account/session.ts";
 import { defaultModeForLevel } from "./estimated/display-mode.ts";
 
-// Local profile until real accounts exist; nothing here is a credential.
+// Guest-local or authenticated profile; nothing here is a credential.
 const profileKey = "reysonai:profile:v1";
 export const displayModeKey = "reysonai:display-mode:v1";
 
@@ -10,7 +11,7 @@ export const levels = [
 ];
 
 const storage = () => {
-  try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; }
+  try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; }
 };
 
 export function loadProfile() {
@@ -35,7 +36,7 @@ export function saveProfile({ nickname = "", level }) {
 
 export const levelLabel = level => levels.find(item => item.value === level)?.label ?? "";
 
-// "Log out" while accounts do not exist: forget this browser's local profile.
+// Guest logout forgets only the browser profile.
 export function clearProfile() {
   try { storage()?.removeItem(profileKey); } catch {}
 }

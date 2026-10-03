@@ -1,4 +1,5 @@
-// Completed attempts and their exact answer logs stay in this browser.
+import { accountStorage } from "../account/session.ts";
+// Completed attempts and exact answer logs use guest-local or account storage.
 // Named drill attempts live with their drill; review attempts are separate.
 const REVIEW_KEY = "reysonai.trainer.review-sessions.v1";
 const SESSION_LIMIT = 50;
@@ -28,14 +29,14 @@ export function newSessionRecord(log, durationMs, at = Date.now()) {
 
 export function loadReviewSessions() {
   try {
-    const saved = JSON.parse(window.localStorage.getItem(REVIEW_KEY) ?? "[]");
+    const saved = JSON.parse(accountStorage().getItem(REVIEW_KEY) ?? "[]");
     return Array.isArray(saved) ? saved.map(validSession).filter(Boolean).slice(-SESSION_LIMIT) : [];
   } catch { return []; }
 }
 
 export function recordReviewSession(sessions, session) {
   const next = [...sessions, session].slice(-SESSION_LIMIT);
-  try { window.localStorage.setItem(REVIEW_KEY, JSON.stringify(next)); } catch {}
+  try { accountStorage().setItem(REVIEW_KEY, JSON.stringify(next)); } catch {}
   return next;
 }
 

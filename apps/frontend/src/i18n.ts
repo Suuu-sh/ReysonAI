@@ -9,7 +9,7 @@ const COPY = {
   "ランク戦": "Ranked match", "ランキング": "Leaderboard", "週間": "Weekly", "通算": "All time", "順位": "Place", "プレイヤー": "Player", "試合": "Matches", "増減": "Change", "今週の増減": "This week", "日時": "Date", "自分の試合履歴": "Your match history", "今週はまだランク戦をプレイしていません。": "No ranked matches this week yet.", "まだランク戦をプレイしていません。": "No ranked matches yet.", "ランク戦に挑む": "Play ranked", "ランク": "Rank", "レート": "Rating", "最高": "Peak", "昇格": "Promoted", "降格": "Demoted", "また明日": "Come back tomorrow", "最高ランクです": "Top rank reached", "ブロンズ": "Bronze", "シルバー": "Silver", "ゴールド": "Gold", "プラチナ": "Platinum", "ダイヤモンド": "Diamond", "マスター": "Master",
   "はじめに、あなたのレベルを教えてください": "First, tell us your experience level",
   "レベルに合わせて、レンジ表の見せ方を変えます。あとからいつでも変更できます。": "We tailor the range display to your level. You can change it any time.",
-  "設定はこの端末のブラウザに保存されます。アカウント登録は今後対応予定です。": "Settings are saved in this browser. Accounts are planned for later.",
+  "ゲストの設定はこのブラウザに保存されます。ログイン中の設定はアカウントに同期されます。": "Guest settings are saved in this browser. Signed-in settings sync to your account.",
   "レンジの基本を覚えたい": "Learn the range basics",
   "よく出る局面で、どのハンドで参加するかを一目で覚えたい。混合頻度は単純化して表示します。": "Learn which hands to play in common spots. Mixed frequencies are simplified.",
   "混合頻度も理解したい": "Understand mixed frequencies",

@@ -1,3 +1,4 @@
+import { accountStorage } from "../account/session.ts";
 // Answer history kept in this browser only. Everything here must survive storage being unavailable.
 import { CATEGORY_LABELS, handCategory, spotById, spotTitle } from "./trainer-data.ts";
 
@@ -6,17 +7,17 @@ const LIMIT = 500;
 
 export function loadHistory() {
   try {
-    const parsed = JSON.parse(window.localStorage.getItem(KEY) ?? "[]");
+    const parsed = JSON.parse(accountStorage().getItem(KEY) ?? "[]");
     return Array.isArray(parsed) ? parsed.filter(item => spotById.has(item?.spotId)) : [];
   } catch { return []; }
 }
 
 export function saveHistory(history) {
-  try { window.localStorage.setItem(KEY, JSON.stringify(history.slice(-LIMIT))); } catch {}
+  try { accountStorage().setItem(KEY, JSON.stringify(history.slice(-LIMIT))); } catch {}
 }
 
 export function clearHistory() {
-  try { window.localStorage.removeItem(KEY); } catch {}
+  try { accountStorage().removeItem(KEY); } catch {}
 }
 
 function bucket(map, key, label, entry) {

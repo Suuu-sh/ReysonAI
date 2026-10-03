@@ -1,10 +1,11 @@
+import { accountStorage, accountSnapshot, exportAccountData } from "./session.ts";
 // Local appearance preferences, applied to <html> data attributes so any page can style from them.
 import { displayModeKey } from "../profile.ts";
 
 const KEY = "reysonai:appearance:v1";
 export const DEFAULT_APPEARANCE = Object.freeze({ cards: "four", motion: "standard" });
 
-const storage = () => { try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; } };
+const storage = () => { try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; } };
 
 export function loadAppearance() {
   try {
@@ -45,6 +46,7 @@ export function practiceKeys() {
 }
 
 export function exportLocalData() {
+  if (accountSnapshot().user) return exportAccountData();
   const store = storage();
   const data = {};
   for (const key of practiceKeys()) { try { data[key] = JSON.parse(store.getItem(key)); } catch { data[key] = store.getItem(key); } }

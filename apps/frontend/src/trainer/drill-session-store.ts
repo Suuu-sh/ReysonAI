@@ -1,3 +1,4 @@
+import { accountStorage } from "../account/session.ts";
 // In-progress drills are separate from completed attempts and answer history.
 // They are stored in this browser so a learner can leave and resume later.
 import { grade, normalizeSettings, randomSuits, spotById, spotsForSettings } from "./trainer-data.ts";
@@ -76,14 +77,14 @@ export function restoreDrillDraft(draft) {
 
 export function loadDrillDrafts() {
   try {
-    const stored = JSON.parse(window.localStorage.getItem(KEY) ?? "{}");
+    const stored = JSON.parse(accountStorage().getItem(KEY) ?? "{}");
     if (!stored || typeof stored !== "object" || Array.isArray(stored)) return {};
     return Object.fromEntries(Object.entries(stored).map(([key, value]) => [key, validateDraft(key, value)]).filter(([, value]) => value));
   } catch { return {}; }
 }
 
 function persist(drafts) {
-  try { window.localStorage.setItem(KEY, JSON.stringify(drafts)); } catch {}
+  try { accountStorage().setItem(KEY, JSON.stringify(drafts)); } catch {}
 }
 
 export function saveDrillDraft(drafts, draft) {

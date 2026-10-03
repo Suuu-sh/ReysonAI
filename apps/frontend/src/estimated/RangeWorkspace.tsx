@@ -1,3 +1,4 @@
+import { accountStorage } from "../account/session.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -617,11 +618,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   // `hero` is the later seat selector: the 3-bettor when the opener acts again.
   const [selected, setSelected] = useState(initialSelection.selected);
   const [displayMode, setDisplayMode] = useState(() => {
-    try { return window.localStorage.getItem(displayModeStorageKey) === "simple" ? "simple" : "standard"; } catch { return "standard"; }
+    try { return accountStorage()?.getItem(displayModeStorageKey) === "simple" ? "simple" : "standard"; } catch { return "standard"; }
   });
   function changeDisplayMode(value) {
     setDisplayMode(value);
-    try { window.localStorage.setItem(displayModeStorageKey, value); } catch {}
+    try { accountStorage()?.setItem(displayModeStorageKey, value); } catch {}
   }
   const currentError = isFourBet ? fourBet.error : isOpening ? openingDataError : isLimp ? limpDataError : isThreeBet ? threeBetDataError : dataError || openingDataError;
   const openerSpot = useMemo(() => openingSpotFor(opener), [opener, tableProfile]);

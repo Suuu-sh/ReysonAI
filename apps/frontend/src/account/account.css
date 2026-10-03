@@ -123,3 +123,10 @@
   .account-tabs button { flex: 0 0 auto; }
   .account-plans { grid-template-columns: minmax(0, 1fr); }
 }
+
+.account-auth { max-width: 680px; margin: 16px auto; padding: 20px; }
+.account-auth form { display: grid; gap: 16px; margin: 16px 0; }
+.account-auth p { line-height: 1.6; overflow-wrap: anywhere; }
+.account-auth .account-dialog-actions { flex-wrap: wrap; }
+.account-auth > button { margin: 8px 8px 0 0; }
+.account-sync-error { position: sticky; top: 0; z-index: 100; background: #29232a; padding: 12px; margin: 0; }

@@ -28,7 +28,7 @@ test("settings page has account, subscription, appearance and language tabs", ()
   const html = renderToStaticMarkup(createElement(AccountPage, { profile, tab: "account", onSectionChange() {}, onProfileSaved() {} }));
   for (const label of ["アカウント", "サブスクリプション", "外観", "言語"]) assert.match(html, new RegExp(`</svg>${label}</button>`));
   assert.match(html, /value="Yu"/);
-  assert.match(html, /アカウントを作成/); // sign-in stays a disabled, planned control
+  assert.match(html, /Googleでログイン/); // account creation is gated until the backend is configured
 });
 
 test("subscription shows the ¥580 Plus plan without a live purchase", () => {

@@ -1,3 +1,4 @@
+import { routeAccount, type AccountEnv } from "./account.ts";
 import { routePostflop, type D1Database } from "./postflop.ts";
 import { routePreflopDatasets } from "./preflop-datasets.ts";
 
@@ -53,7 +54,7 @@ type Manifest = {
   edge?: EdgeManifest;
 };
 type R2Bucket = { get(key: string): Promise<{ text(): Promise<string> } | null> };
-type Env = { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
+type Env = AccountEnv & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
 type PublishedData = {
   summary: Solution;
   nodesIndex: NodeSummary[];
@@ -78,7 +79,7 @@ export default {
     } catch (error: unknown) {
       const status = error instanceof HttpError ? error.status : 500;
       return withCors(
-        errorResponse(status, error instanceof Error ? error.message : "internal error"),
+        errorResponse(status, new URL(request.url).pathname.startsWith("/v1/account/") ? "account_service_unavailable" : error instanceof Error ? error.message : "internal error"),
         request,
         env,
       );
@@ -92,6 +93,7 @@ function notModified(request: Request, response: Response): Response | null {
 }
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
+  if (url.pathname.startsWith("/v1/account/")) return routeAccount(request, env);
   if (url.pathname === "/health" && request.method === "GET") {
     return json({ status: "ok", service: "reysonai-api" });
   }
@@ -474,6 +476,14 @@ function withCors(response: Response, request: Request, env: Env): Response {
   const requestOrigin = request.headers.get("origin");
   if (configured.includes("*")) headers.set("access-control-allow-origin", "*");
   else if (requestOrigin && configured.includes(requestOrigin)) headers.set("access-control-allow-origin", requestOrigin);
+  if (new URL(request.url).pathname.startsWith("/v1/account/")) {
+    headers.delete("access-control-allow-origin");
+    if (requestOrigin && configured.filter(value => value !== "*").includes(requestOrigin)) {
+      headers.set("access-control-allow-origin", requestOrigin);
+      headers.set("access-control-allow-credentials", "true");
+    }
+    headers.set("cache-control", "no-store");
+  }
   headers.set("access-control-allow-methods", "GET, POST, OPTIONS");
   headers.set("access-control-allow-headers", "content-type");
   headers.set("vary", [...new Set(["Origin", ...(response.headers.get("vary") ?? "").split(",").map(item => item.trim()).filter(Boolean)])].join(", "));
