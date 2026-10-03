@@ -292,7 +292,11 @@ function TableScene() {
     <div className="site-table">
       <div className="site-table-felt"><span className="site-table-pot">{c.how.pot}</span><span className="site-chip" /></div>
       {seats.map((seat, index) => <div className={`site-seat is-${seat.toLowerCase()}`} key={seat} style={{ "--i": index } as CSSProperties}>
-        <span className="site-seat-name">{seat}</span>
+        <span className="site-seat-plate">
+          <span className="site-seat-avatar">{seat === "BB" ? "YOU" : seat}</span>
+          {seat === "BB" && <span className="site-seat-name">{seat}</span>}
+          {seat === "BTN" && <span className="site-seat-dealer">D</span>}
+        </span>
         <span className={`site-seat-act${seat === "BTN" ? " is-raise" : seat === "BB" ? " is-turn" : ""}`}>{seat === "BTN" ? c.how.openSize : seat === "BB" ? c.how.toAct : c.common.fold}</span>
       </div>)}
     </div>
