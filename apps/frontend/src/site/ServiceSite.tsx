@@ -724,22 +724,61 @@ function Analysis() {
   </section>;
 }
 
+const comparisonRowIds = ["strategy", "explanation", "detail", "practice", "feedback", "precision", "audience"];
+
 function Compare() {
-  const { copy: c } = useSite();
-  return <section className="site-section site-compare" id="compare" aria-labelledby="site-compare-title">
-    <div className="site-wrap">
-      <SectionHead id="site-compare-title" title1={c.compare.title1} title2={c.compare.title2}><p>{c.compare.description}</p></SectionHead>
-      <div className="site-compare-table" data-reveal>
-        <table>
-          <thead><tr><td /><th scope="col" className="is-us"><BrandIcon size={18} style={{ display: "inline-block", margin: "0 8px -3px 0" }} />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
-          <tbody>{c.compare.rows.map((row, index) => <tr key={row.label} style={{ "--i": index } as CSSProperties}>
-            <th scope="row">{row.label}</th>
-            <td className="is-us">{row.us}</td>
-            <td>{row.them}</td>
-          </tr>)}</tbody>
-        </table>
+  const { copy: c, motion } = useSite();
+  const ref = useRef<HTMLElement>(null);
+  const [scrolly, setScrolly] = useState(false);
+  const [activeRow, setActiveRow] = useState(0);
+  const rowCount = c.compare.rows.length;
+  useEffect(() => {
+    if (!motion) { setScrolly(false); return; }
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 600px)");
+    const sync = () => setScrolly(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, [motion]);
+  useEffect(() => {
+    const node = ref.current;
+    if (!scrolly || !node) { setActiveRow(0); return; }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = node.getBoundingClientRect();
+      // The pinned stage starts below the header and releases at the track's bottom.
+      const distance = rect.height - (window.innerHeight - 64);
+      if (distance <= 0) return;
+      const progress = Math.min(Math.max((64 - rect.top) / distance, 0), 1);
+      setActiveRow(Math.min(Math.floor(progress * rowCount), rowCount - 1));
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [scrolly, rowCount]);
+  return <section className={`site-section site-compare${scrolly ? " is-scrolly" : ""}`} id="compare" ref={ref} aria-labelledby="site-compare-title">
+    <div className="site-compare-stage">
+      <div className="site-wrap">
+        <SectionHead id="site-compare-title" title1={c.compare.title1} title2={c.compare.title2}><p>{c.compare.description}</p></SectionHead>
+        <div className="site-compare-table" data-reveal>
+          <table>
+            <thead><tr><td /><th scope="col" className="is-us"><BrandIcon size={18} style={{ display: "inline-block", margin: "0 8px -3px 0" }} />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
+            <tbody>{c.compare.rows.map((row, index) => <tr key={comparisonRowIds[index]} className={scrolly && index === activeRow ? "is-current" : undefined} style={{ "--i": index } as CSSProperties}>
+              <th scope="row">{row.label}</th>
+              <td className="is-us">{row.us}</td>
+              <td>{row.them}</td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+        <p className="site-compare-note">{c.compare.note}</p>
       </div>
-      <p className="site-compare-note">{c.compare.note}</p>
     </div>
   </section>;
 }
