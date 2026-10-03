@@ -556,7 +556,8 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onCreate={() => { setEditing({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true }); setPhase("edit"); }}
             onEdit={drill => { setEditing({ drill, isNew: false }); setPhase("edit"); }}
             onDelete={drill => { if (window.confirm(`「${drill.name}」と記録を削除しますか？`)) { commitDrills(drills.filter(item => item.id !== drill.id)); discardProgress(drill.id); } }} />
-        : <TrainerHome drills={drills} reviewCount={reviewCount} drafts={drafts} onOpenDrills={() => setPhase("drills")}
+        : <TrainerHome drills={drills} history={history} reviewCount={reviewCount} drafts={drafts} onOpenDrills={() => setPhase("drills")}
+            onResume={key => key === "ranked" ? start(RANKED_DRILL) : key === "review" ? start(reviewDrill, true) : start(drills.find(drill => drill.id === key) ?? drills[0])}
             onCreate={() => { setEditing({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true }); setPhase("edit"); }} onStartReview={() => start(reviewDrill, true)}
             onStartAgent={(tableId, watch) => { setAgentTable({ tableId, watch }); setPhase("agent"); }}
             rank={rankState} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")} />}
