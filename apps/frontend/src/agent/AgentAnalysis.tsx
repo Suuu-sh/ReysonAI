@@ -44,7 +44,6 @@ const STAT_HINTS: Record<string, [string, string]> = {
 export function AgentAnalysis() {
   const hands = useMemo(loadAgentHands, []);
   const s = useMemo(() => summarizeAgentHands(hands), [hands]);
-  const recent = hands.slice(-6).reverse();
   const net = toPoints(s.netBb);
   return <section className="analysis-card agent-analysis" aria-label={localized("Agent games", "Agent戦")}>
     <header className="agent-analysis-head">
@@ -71,18 +70,6 @@ export function AgentAnalysis() {
             <small>{localized(STAT_HINTS[key][0], STAT_HINTS[key][1])}</small>
           </div>)}
       </dl>
-      <div>
-        <h3 className="agent-analysis-subhead">{localized("Recent hands", "最近のハンド")}</h3>
-        <ul className="agent-analysis-recent">{recent.map((hand, index) => {
-          const points = toPoints(hand.returnBb);
-          return <li key={`${hand.at}-${index}`}>
-            <span className="pos">{hand.pos}</span>
-            <span className="name">{hand.showdown ? localized("Showdown", "ショーダウン") : hand.sawFlop ? localized("Saw the flop", "フロップまで") : localized("Preflop", "プリフロップ")}
-              <small>{new Date(hand.at).toLocaleString(undefined, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</small></span>
-            <b className={toneOf(points)}>{signed(points)}</b>
-          </li>;
-        })}</ul>
-      </div>
       <p className="agent-analysis-note">{localized("Small samples swing a lot, and results include rake. Agents play the saved AI estimate (not GTO).", "ハンド数が少ないうちは大きくぶれます。収支はレーキ込みです。AgentはAI推定通りに打っており、GTOではありません。")}</p>
     </>}
   </section>;
