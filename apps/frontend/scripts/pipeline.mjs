@@ -10,7 +10,7 @@ import { isBlockingAuditFinding } from "../src/estimated/audit.ts";
 import { diffDatasets, isUnchanged, parseFindings, summarizeFindings } from "./lib/estimate-diff.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses"];
+const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses"];
 const arg = process.argv.indexOf("--max-iterations");
 const maxIterations = arg > 0 ? Number(process.argv[arg + 1]) : 3;
 if (!Number.isInteger(maxIterations) || maxIterations < 1) throw new Error("--max-iterations must be a positive integer");

@@ -19,6 +19,12 @@ export function squeezeFoldThreshold(spot) {
 
 // SB limp-reraise break-even. SB's limp-reraise bluff risks everything beyond its 1BB limp (10.5 − 1 = 9.5)
 // to win the pot before the reraise (limp 1 + iso 3.5 = 4.5): 9.5 ÷ 14 = 67.9%.
+export function coldFourBetFoldThreshold(spot) {
+  const risk = spot.four_bet_size_bb - (blind[spot.four_bettor] ?? 0);
+  const pot = spot.open_size_bb + spot.three_bet_size_bb + 1.5 - (blind[spot.opener] ?? 0) - (blind[spot.three_bettor] ?? 0);
+  return risk / (risk + pot);
+}
+
 export function limpReraiseFoldThreshold(spot) {
   const risk = spot.limp_reraise_size_bb - spot.open_size_bb;
   return risk / (risk + spot.open_size_bb + spot.iso_size_bb);
@@ -41,17 +47,17 @@ export function limpFiveBetFoldThreshold(spot) {
 // possibly more seats behind them: the cold-call EQR discounts apply to their calls.
 export const isColdCaller = hero => Object.hasOwn(COLD_CALL_SQUEEZE_EQR, seatsBehind(hero));
 
-export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets, limpDeep }) {
+export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets, limpDeep, multiway2, coldFourBets }) {
   const opens = new Map(opening.spots.map(s => [s.hero, s]));
   const response = (opener, hero) => responses.spots.find(s => s.opener === opener && s.hero === hero);
   const contexts = [];
-  function add(type, spot, opponents, cost, pot, ranges, reach = () => 1, toSize, { bbBehind = false, callerBehind = false, openerBehind = false, coldCallBehind = false } = {}) {
+  function add(type, spot, opponents, cost, pot, ranges, reach = () => 1, toSize, { bbBehind = false, callerBehind = false, openerBehind = false, coldCallBehind = false, threeBettorBehind = false } = {}) {
     const hero = spot.hero;
     const allIn = toSize >= spot.effective_stack_bb;
     // bb_behind / caller_behind / opener_behind / cold_call_behind are recorded only when true, so older inputs keep their fingerprint.
     const input = { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn,
       ...(bbBehind ? { bb_behind: true } : {}), ...(callerBehind ? { caller_behind: true } : {}),
-      ...(openerBehind ? { opener_behind: true } : {}), ...(coldCallBehind ? { cold_call_behind: true } : {}), ranges };
+      ...(threeBettorBehind ? { three_bettor_behind: true } : {}), ...(openerBehind ? { opener_behind: true } : {}), ...(coldCallBehind ? { cold_call_behind: true } : {}), ranges };
     contexts.push({ type, spot, input, reach });
   }
   for (const spot of responses?.spots ?? []) {
@@ -82,12 +88,24 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
     // BB (1BB) or SB (0.5BB) calls the 2.5BB open after one cold call: 1.5BB into 8BB,
     // or 2BB into 8.5BB with BB's blind dead money and BB still to act behind SB.
     const size = spot.open_size_bb;
+    if (spot.callers.some(p => !response(spot.opener, p).hands.some(row => row.call > 0))) continue;
     const participants = [spot.hero, spot.opener, ...spot.callers];
     const dead = 1.5 - participants.reduce((n, p) => n + (blind[p] ?? 0), 0);
     add("multiway", spot, [spot.opener, ...spot.callers], size - (blind[spot.hero] ?? 0),
       participants.length * size + dead,
       [range(opens.get(spot.opener), row => row.open / 100), ...spot.callers.map(p => range(response(spot.opener, p), row => row.call / 100))],
-      undefined, size, { bbBehind: spot.hero === "SB" && !participants.includes("BB") });
+      undefined, size, { bbBehind: spot.hero === "SB" && !participants.includes("BB"), coldCallBehind: isColdCaller(spot.hero) });
+  }
+  for (const spot of multiway2?.spots ?? []) {
+    const [c1, c2] = spot.callers;
+    const second = multiway.spots.find(s => s.id === `${c2}_vs_${spot.opener}_${c1}call`);
+    if (!second) throw new Error(`Missing second-caller source: ${spot.id}`);
+    const ranges = [range(opens.get(spot.opener), r => r.open / 100), range(response(spot.opener, c1), r => r.call / 100), range(second, r => r.call / 100)];
+    if (ranges.some(r => !r.length)) continue;
+    const participants = [spot.opener, c1, c2, spot.hero], size = spot.open_size_bb;
+    const dead = 1.5 - participants.reduce((n, p) => n + (blind[p] ?? 0), 0);
+    add("multiway2", spot, [spot.opener, c1, c2], size - (blind[spot.hero] ?? 0), 4 * size + dead, ranges,
+      undefined, size, { bbBehind: spot.hero === "SB", coldCallBehind: isColdCaller(spot.hero) });
   }
   for (const spot of limp?.spots.filter(s => s.id === "SB_vs_BB_iso") ?? []) {
     const open = byHand(opens.get("SB"));
@@ -123,9 +141,10 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
   //   prior "call": caller after the opener called — three-way vs S and the opener's calls
   for (const spot of squeezes?.spots ?? []) {
     const source = multiway.spots.find(s => s.id === spot.source_squeeze_id);
+    if (!source.hands.some(row => row.squeeze > 0)) continue;
     const squeezeRange = range(source, row => row.squeeze / 100);
     const size = spot.squeeze_size_bb, open = spot.open_size_bb;
-    const deadBlind = 1.5 - (blind[spot.squeezer] ?? 0);
+    const deadBlind = 1.5 - [spot.squeezer, spot.opener, spot.caller].reduce((n, p) => n + (blind[p] ?? 0), 0);
     const cost = size - open;
     if (spot.prior_action === null) {
       const openRows = byHand(opens.get(spot.opener));
@@ -156,6 +175,18 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
     add("cold_three_bet", spot, [spot.three_bettor], size - (blind[spot.hero] ?? 0), 2 * size + spot.open_size_bb + dead,
       [range(source, row => row.three_bet / 100)], undefined, size, { openerBehind: true });
   }
+  for (const spot of coldFourBets?.spots ?? []) {
+    const source = coldThreeBets.spots.find(s => s.id === spot.source_cold_three_bet_id);
+    if (!source) throw new Error(`Missing cold-4bet source: ${spot.id}`);
+    const opener = spot.hero === spot.opener;
+    const predecessor = byHand(opener ? opens.get(spot.opener) : response(spot.opener, spot.three_bettor));
+    const size = spot.four_bet_size_bb;
+    const dead = 1.5 - [spot.opener, spot.three_bettor, spot.four_bettor].reduce((n, p) => n + (blind[p] ?? 0), 0);
+    add("cold_four_bet", spot, [spot.four_bettor], size - (opener ? spot.open_size_bb : spot.three_bet_size_bb),
+      2 * size + (opener ? spot.three_bet_size_bb : spot.open_size_bb) + dead,
+      [range(source, row => row.four_bet / 100)], hand => (opener ? predecessor.get(hand).open : predecessor.get(hand).three_bet) / 100,
+      size, { threeBettorBehind: opener });
+  }
   return contexts;
 }
 
@@ -168,8 +199,8 @@ export function validCallEquities(table, context) {
 export function callFacts(context, hand, equity) {
   if (!Number.isFinite(equity) || equity < 0 || equity > 1) throw new Error(`Invalid equity: ${hand}`);
   const { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn, bb_behind: bbBehind = false,
-    caller_behind: callerBehind = false, opener_behind: openerBehind = false, cold_call_behind: coldCallBehind = false } = context.input;
-  const eqr = equityRealization(hand, hero, opponents, { allIn, bbBehind, callerBehind, openerBehind, coldCallBehind });
+    caller_behind: callerBehind = false, opener_behind: openerBehind = false, cold_call_behind: coldCallBehind = false, three_bettor_behind: threeBettorBehind = false } = context.input;
+  const eqr = equityRealization(hand, hero, opponents, { allIn, bbBehind, callerBehind, openerBehind, coldCallBehind, threeBettorBehind });
   return { eqr, realized_equity_pct: equity * eqr * 100, call_ev_bb: equity * eqr * raked(pot) - cost };
 }
 export function allowedCall(call, ev) {

@@ -5,7 +5,7 @@
 //   npm run range -- check [spot ...]          dry-run build: mix before→after, changed hands, audit, benchmark
 // check never publishes; run `npm run pipeline` (or build:estimates) once it is clean.
 import { spawnSync } from "node:child_process";
-import { readFileSync, rmSync } from "node:fs";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { comboCount } from "./lib/equity.mjs";
@@ -54,6 +54,7 @@ function check(ids) {
   const out = `${run.stdout ?? ""}${run.stderr ?? ""}`;
   const staging = out.match(/staging: (\S+)/)?.[1];
   const findings = parseFindings(out);
+  if (run.status !== 0) writeFileSync(join(root, ".local/range-check-failure.log"), out);
   if (!staging) { console.log(out.split("\n").slice(-25).join("\n")); process.exit(1); }
   const before = published(), after = loadDir(staging);
   const beforeBy = new Map(before.map(s => [s.id, s]));
@@ -80,8 +81,10 @@ function check(ids) {
   const bench = compareToReferences(after, loadReferences(new URL(`file://${root}/`))).filter(r => r.ours !== null && (!ids.length || ids.includes(r.spot_id)));
   const off = bench.filter(r => Math.abs(r.diff) > 3);
   if (bench.length) lines.push(`benchmark ±3pt: ${off.length ? off.map(r => `${r.spot_id} ${r.action} ${r.diff > 0 ? "+" : ""}${r.diff.toFixed(1)}`).join(", ") : "all within"}`);
+  if (run.status !== 0 && !findings.some(isBlockingAuditFinding)) lines.push(...out.split("\n").filter(Boolean).slice(-15));
   console.log(lines.join("\n"));
-  rmSync(staging, { recursive: true, force: true });
+  if (process.env.RANGE_KEEP_STAGING === "1") console.log(`staging: ${staging}`);
+  else rmSync(staging, { recursive: true, force: true });
   process.exitCode = run.status === 0 ? 0 : 1;
 }
 

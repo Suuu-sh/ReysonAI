@@ -33,6 +33,8 @@ export const CALLER_BEHIND_EQR = 0.90;
 // calls realize less (×~0.95). The extra margin to 0.85 covers seats behind the
 // cold caller that can still wake up, and the cold caller's capped-looking flat.
 export const OPENER_BEHIND_EQR = 0.85;
+// Original 3bettor may back-raise or overcall after the opener flats a cold 4bet.
+export const THREE_BETTOR_BEHIND_EQR = 0.85;
 // A non-blind seat (HJ / CO / BTN) cold-calling an open with every later seat
 // still to act. Assumed discounts, not solver output; the heads-up EQR table
 // alone ignores the seats behind and overstates cold calls.
@@ -62,23 +64,24 @@ export function eqrCategory(hand) {
   if (broadway) return "offsuit_broadway";
   return gap <= 1 ? "offsuit_connected" : "offsuit_other";
 }
-export function equityRealization(hand, hero, opponents, { allIn = false, bbBehind = false, callerBehind = false, openerBehind = false, coldCallBehind = false } = {}) {
+export function equityRealization(hand, hero, opponents, { allIn = false, bbBehind = false, callerBehind = false, openerBehind = false, coldCallBehind = false, threeBettorBehind = false } = {}) {
   const category = eqrCategory(hand);
-  if (!positions.includes(hero) || !Array.isArray(opponents) || ![1, 2].includes(opponents.length) ||
+  if (!positions.includes(hero) || !Array.isArray(opponents) || ![1, 2, 3].includes(opponents.length) ||
       new Set([hero, ...opponents]).size !== opponents.length + 1 || opponents.some(p => !positions.includes(p))) {
-    throw new Error("EQR requires two or three distinct valid positions");
+    throw new Error("EQR requires two to four distinct valid positions");
   }
   if (bbBehind && (hero !== "SB" || opponents.includes("BB"))) throw new Error("BB behind applies only to SB before BB acts");
   if (callerBehind && (bbBehind || opponents.length !== 1)) throw new Error("Caller behind applies only to a heads-up squeeze response");
   if (openerBehind && (bbBehind || callerBehind || opponents.length !== 1)) throw new Error("Opener behind applies only to a heads-up cold call of a 3bet");
-  if (coldCallBehind && (bbBehind || callerBehind || openerBehind || opponents.length !== 1 ||
-      !Object.hasOwn(COLD_CALL_SQUEEZE_EQR, seatsBehind(hero)) || positions.indexOf(opponents[0]) > positions.indexOf(hero))) {
-    throw new Error("Cold call behind applies only to HJ / CO / BTN calling an earlier open heads-up");
+  if (coldCallBehind && (bbBehind || callerBehind || openerBehind || ![1, 2, 3].includes(opponents.length) ||
+      !Object.hasOwn(COLD_CALL_SQUEEZE_EQR, seatsBehind(hero)) || opponents.some(p => positions.indexOf(p) > positions.indexOf(hero)))) {
+    throw new Error("Cold call behind applies only to HJ / CO / BTN calling earlier open / calls");
   }
+  if (threeBettorBehind && (bbBehind || callerBehind || openerBehind || coldCallBehind || opponents.length !== 1)) throw new Error("3bettor behind applies only to the opener facing a cold 4bet");
   if (allIn) return 1;
   const ip = opponents.every(opponent => isInPosition(hero, opponent));
-  return EQR[category][ip ? 0 : 1] * (opponents.length === 2 ? MULTIWAY_EQR : 1) * (bbBehind ? BB_BEHIND_EQR : 1) *
-    (callerBehind ? CALLER_BEHIND_EQR : 1) * (openerBehind ? OPENER_BEHIND_EQR : 1) *
+  return EQR[category][ip ? 0 : 1] * (MULTIWAY_EQR ** (opponents.length - 1)) * (bbBehind ? BB_BEHIND_EQR : 1) *
+    (callerBehind ? CALLER_BEHIND_EQR : 1) * (openerBehind ? OPENER_BEHIND_EQR : 1) * (threeBettorBehind ? THREE_BETTOR_BEHIND_EQR : 1) *
     (coldCallBehind ? COLD_CALL_SQUEEZE_EQR[seatsBehind(hero)] : 1) *
     (coldCallBehind && category.startsWith("offsuit") ? COLD_CALL_OFFSUIT_EQR : 1);
 }

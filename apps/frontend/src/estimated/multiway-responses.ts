@@ -8,9 +8,14 @@ export const multiwayMatchups = [
 ];
 // Stored order: the six BB spots, then the six SB spots (SB acts with BB still behind).
 export const multiwayHeroes = ["BB", "SB"];
-export const multiwaySpots = multiwayHeroes.flatMap(hero => multiwayMatchups.map(([opener, caller]) => ({ hero, opener, caller })));
+export const multiwaySpots = [
+  ...multiwayHeroes.flatMap(hero => multiwayMatchups.map(([opener, caller]) => ({ hero, opener, caller }))),
+  { hero: "CO", opener: "UTG", caller: "HJ" },
+  ...[["UTG", "HJ"], ["UTG", "CO"], ["HJ", "CO"]].map(([opener, caller]) => ({ hero: "BTN", opener, caller })),
+  ...["UTG", "HJ", "CO", "BTN"].map(opener => ({ hero: "BB", opener, caller: "SB" })),
+];
 
-export function validateMultiwayDataset(data) {
+export function validateMultiwayDataset(data, responses?) {
   const fail = detail => { throw new Error(`マルチウェイ応答データが不正です: ${detail}`); };
   if (data?.metadata?.schema_version !== "1.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
@@ -32,13 +37,17 @@ export function validateMultiwayDataset(data) {
         spot.hero !== hero || spot.open_size_bb !== openSizeBb ||
         spot.squeeze_size_bb !== size || spot.effective_stack_bb !== effectiveStackBb ||
         !Array.isArray(spot.hands) || spot.hands.length !== hands.length) fail(`局面・サイズ: ${spot?.id ?? i}`);
+    const source = responses?.spots?.find(s => s.hero === caller && s.opener === opener);
+    if (responses && !source) fail(`前段のコール元がありません: ${spot.id}`);
+    const unreachable = source ? !source.hands.some(row => row.call > 0) : spot.unreachable === true;
+    if (source && (spot.unreachable === true) !== unreachable) fail(`履歴の到達可否: ${spot.id}`);
     for (let j = 0; j < hands.length; j += 1) {
       const row = spot.hands[j];
       if (row?.hand !== hands[j] ||
           Object.keys(row).length !== 5 ||
           !["hand", "fold", "call", "squeeze", "squeeze_size_bb"].every(key => Object.hasOwn(row, key)) ||
           ![row.fold, row.call, row.squeeze].every(value => Number.isInteger(value) && value >= 0 && value <= 100) ||
-          row.fold + row.call + row.squeeze !== 100 ||
+          row.fold + row.call + row.squeeze !== 100 || (unreachable && row.fold !== 100) ||
           row.squeeze_size_bb !== (row.squeeze > 0 ? size : null)) fail(`${spot.id} / ${hands[j]}`);
     }
   }

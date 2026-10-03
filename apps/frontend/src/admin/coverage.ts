@@ -15,6 +15,8 @@ const fiveBets = dataset("five-bet-responses");
 const limp = dataset("limp-responses");
 const coldThreeBets = dataset("cold-three-bet-responses");
 const multiway = dataset("multiway-responses");
+const multiway2 = dataset("multiway2-responses");
+const coldFourBets = dataset("cold-four-bet-responses");
 const squeezes = dataset("squeeze-responses");
 const limpDeep = dataset("limp-deep-responses");
 
@@ -71,11 +73,11 @@ const CATEGORIES = [
       { id: `${caller}_vs_${squeezer}_squeeze_${opener}fold`, hero: caller, path: `… ${squeezer} squeeze → ${opener} fold → ${caller}` },
       { id: `${caller}_vs_${squeezer}_squeeze_${opener}call`, hero: caller, path: `… ${squeezer} squeeze → ${opener} call → ${caller}` },
     ])) },
-  // Not yet modelled by any dataset: listed so the backlog shows the real remaining size.
-  { key: "multiway_two_callers", label: "コーラー2人以上のマルチウェイ応答", file: null, data: null,
+  // Stage 1b persisted branches; UI action-path integration is a separate task.
+  { key: "multiway_two_callers", label: "コーラー2人のマルチウェイ応答", file: "multiway2-responses.json", data: multiway2,
     expected: RFI.slice(0, 3).flatMap(opener => triples(after(opener)).map(([c1, c2, hero]) =>
       ({ id: `${hero}_vs_${opener}_${c1}call_${c2}call`, hero, path: `${opener} open → ${c1} call → ${c2} call → ${hero}` }))) },
-  { key: "cold_four_bet", label: "コールド4betへの応答", file: null, data: null,
+  { key: "cold_four_bet", label: "コールド4betへの応答", file: "cold-four-bet-responses.json", data: coldFourBets,
     expected: coldThreeBetSpots.flatMap(spot => [
       { id: `${spot.opener}_vs_${spot.hero}_cold4bet_${spot.three_bettor}3bet`, hero: spot.opener, path: `${spot.opener} open → ${spot.three_bettor} 3bet → ${spot.hero} 4bet → ${spot.opener}` },
       { id: `${spot.three_bettor}_vs_${spot.hero}_cold4bet_${spot.opener}open`, hero: spot.three_bettor, path: `… ${spot.hero} 4bet → ${spot.opener} fold → ${spot.three_bettor}` },

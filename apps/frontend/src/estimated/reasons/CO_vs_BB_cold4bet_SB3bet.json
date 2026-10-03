@@ -1,0 +1,1752 @@
+{
+  "spot_id": "CO_vs_BB_cold4bet_SB3bet",
+  "type": "cold_four_bet",
+  "source_fingerprint": "d489d1f554edc8d9c5b859c4f3a939956f78b1eccafdc7549862fdcda47ce653",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_cold_four_bet_pct",
+      "label": "勝率（対コールド4bet）",
+      "scope": "hand"
+    },
+    {
+      "key": "realized_equity_pct",
+      "label": "実現後の勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "call_ev_bb",
+      "label": "コールのEV",
+      "scope": "hand",
+      "unit": "bb"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "combined_fold_pct",
+      "label": "オープナーと3bettorの両方が降りる率",
+      "scope": "spot"
+    },
+    {
+      "key": "blocked_cold_four_bet_pct",
+      "label": "コールド4betレンジのブロック",
+      "scope": "hand"
+    }
+  ],
+  "spot_facts": {
+    "opener": "CO",
+    "three_bettor": "SB",
+    "four_bettor": "BB",
+    "hero": "CO",
+    "prior_action": null,
+    "position": "IP",
+    "open_size_bb": 2.5,
+    "three_bet_size_bb": 12,
+    "four_bet_size_bb": 26,
+    "all_in_size_bb": 100,
+    "call_break_even_equity_pct": 38.5,
+    "four_bet_range_combos": 25.5,
+    "source_cold_three_bet_id": "BB_vs_SB_3bet_COopen",
+    "combined_fold_pct": 60.8,
+    "cold_four_bet_break_even_pct": 61.7,
+    "three_bettor_behind": true,
+    "cost_to_call_bb": 23.5,
+    "total_pot_after_call_bb": 64
+  },
+  "hands": {
+    "22": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率30.6%で、コールのEVは−4.86bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 34.2,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.8925,
+        "realized_equity_pct": 30.55325,
+        "call_ev_bb": -4.862517500000003
+      }
+    },
+    "33": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率30.8%で、コールのEVは−4.69bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 34.5,
+        "blocked_cold_four_bet_pct": 0.8,
+        "eqr": 0.8925,
+        "realized_equity_pct": 30.828437499999993,
+        "call_ev_bb": -4.694653125000002
+      }
+    },
+    "44": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率31.5%で、コールのEVは−4.28bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 35.3,
+        "blocked_cold_four_bet_pct": 1.6,
+        "eqr": 0.8925,
+        "realized_equity_pct": 31.508968749999994,
+        "call_ev_bb": -4.2795290625000035
+      }
+    },
+    "55": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率32.7%で、コールのEVは−3.56bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 36.6,
+        "blocked_cold_four_bet_pct": 2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 32.684093749999995,
+        "call_ev_bb": -3.5627028124999995
+      }
+    },
+    "66": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率33.0%で、コールのEVは−3.39bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 36.9,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.8925,
+        "realized_equity_pct": 32.96671875,
+        "call_ev_bb": -3.3903015624999995
+      }
+    },
+    "77": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率33.0%で、コールのEVは−3.39bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 36.9,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.8925,
+        "realized_equity_pct": 32.9704375,
+        "call_ev_bb": -3.3880331249999998
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率32.6%で、コールのEVは−3.63bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 36.5,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.8925,
+        "realized_equity_pct": 32.5688125,
+        "call_ev_bb": -3.6330243750000015
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率32.7%で、コールのEVは−3.53bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 36.7,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.8925,
+        "realized_equity_pct": 32.74359375,
+        "call_ev_bb": -3.5264078125000005
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。保存された5bet 100BBの配分を使います。対コールド4betの勝率は83.7%、コールした場合のEVは+22.05bbです。配分はオールイン 75%・コール 25%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 83.7,
+        "blocked_cold_four_bet_pct": 39.2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 74.6650625,
+        "call_ev_bb": 22.045688124999998
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率42.8%で、コールのEVは+2.61bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は5bet 100BBへ配分します。配分はコール 55%・オールイン 45%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 45.8,
+        "blocked_cold_four_bet_pct": 35.3,
+        "eqr": 0.935,
+        "realized_equity_pct": 42.80741666666667,
+        "call_ev_bb": 2.6125241666666703
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率33.0%で、コールのEVは−3.36bb。コールでは投資を回収できない見積もりのため、フォールドします。一部は5bet 100BBへ配分します。配分はフォールド 95%・オールイン 5%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 35.3,
+        "blocked_cold_four_bet_pct": 27.1,
+        "eqr": 0.935,
+        "realized_equity_pct": 33.02108333333334,
+        "call_ev_bb": -3.3571391666666663
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率29.8%で、コールのEVは−5.33bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 32.4,
+        "blocked_cold_four_bet_pct": 24.1,
+        "eqr": 0.918,
+        "realized_equity_pct": 29.781450000000003,
+        "call_ev_bb": -5.333315499999998
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率29.0%で、コールのEVは−5.79bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 31.6,
+        "blocked_cold_four_bet_pct": 21.8,
+        "eqr": 0.918,
+        "realized_equity_pct": 29.027925,
+        "call_ev_bb": -5.7929657500000005
+      }
+    },
+    "A9s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率28.1%で、コールのEVは−6.35bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 31.5,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 28.117468749999997,
+        "call_ev_bb": -6.348344062500001
+      }
+    },
+    "A8s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率28.2%で、コールのEVは−6.32bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 31.6,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 28.16209375,
+        "call_ev_bb": -6.3211228125000005
+      }
+    },
+    "A7s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率28.5%で、コールのEVは−6.13bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 31.9,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 28.478187499999997,
+        "call_ev_bb": -6.128305625000003
+      }
+    },
+    "A6s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.9%で、コールのEVは−6.50bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 31.2,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 27.872031250000003,
+        "call_ev_bb": -6.4980609375
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率28.8%で、コールのEVは−5.91bb。コールでは投資を回収できない見積もりのため、フォールドします。一部は5bet 100BBへ配分します。配分はフォールド 95%・オールイン 5%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 32.3,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 28.842624999999998,
+        "call_ev_bb": -5.905998750000002
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.1%で、コールのEVは−6.94bb。コールでは投資を回収できない見積もりのため、フォールドします。一部は5bet 100BBへ配分します。配分はフォールド 95%・オールイン 5%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.4,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 27.139437499999996,
+        "call_ev_bb": -6.944943125000002
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率26.9%で、コールのEVは−7.09bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.1,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 26.894000000000002,
+        "call_ev_bb": -7.0946599999999975
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率26.8%で、コールのEVは−7.13bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.1,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.8925,
+        "realized_equity_pct": 26.83821875,
+        "call_ev_bb": -7.1286865625
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。保存された5bet 100BBの配分を使います。対コールド4betの勝率は43.6%、コールした場合のEVは+0.23bbです。配分はオールイン 55%・コール 45%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 43.6,
+        "blocked_cold_four_bet_pct": 35.7,
+        "eqr": 0.8925,
+        "realized_equity_pct": 38.898125,
+        "call_ev_bb": 0.22785624999999854
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。保存された5bet 100BBの配分を使います。対コールド4betの勝率は57.8%、コールした場合のEVは+7.98bbです。配分はオールイン 65%・コール 35%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 57.8,
+        "blocked_cold_four_bet_pct": 29.6,
+        "eqr": 0.8925,
+        "realized_equity_pct": 51.605093749999995,
+        "call_ev_bb": 7.979107187499999
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率25.9%で、コールのEVは−7.69bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.7,
+        "blocked_cold_four_bet_pct": 22.9,
+        "eqr": 0.935,
+        "realized_equity_pct": 25.918979166666666,
+        "call_ev_bb": -7.689422708333334
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率26.1%で、コールのEVは−7.58bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.9,
+        "blocked_cold_four_bet_pct": 19.4,
+        "eqr": 0.935,
+        "realized_equity_pct": 26.09429166666667,
+        "call_ev_bb": -7.582482083333332
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率26.2%で、コールのEVは−7.52bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.5,
+        "blocked_cold_four_bet_pct": 16.9,
+        "eqr": 0.918,
+        "realized_equity_pct": 26.189774999999997,
+        "call_ev_bb": -7.5242372500000005
+      }
+    },
+    "K9s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.9%で、コールのEVは−9.50bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27,
+        "blocked_cold_four_bet_pct": 16.3,
+        "eqr": 0.85,
+        "realized_equity_pct": 22.946458333333332,
+        "call_ev_bb": -9.502660416666666
+      }
+    },
+    "K8s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.8%で、コールのEVは−9.59bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 26.8,
+        "blocked_cold_four_bet_pct": 16.3,
+        "eqr": 0.85,
+        "realized_equity_pct": 22.80833333333333,
+        "call_ev_bb": -9.586916666666669
+      }
+    },
+    "K7s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.1%で、コールのEVは−9.41bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.2,
+        "blocked_cold_four_bet_pct": 16.3,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.091666666666665,
+        "call_ev_bb": -9.414083333333334
+      }
+    },
+    "K6s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.4%で、コールのEVは−9.84bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 26.3,
+        "blocked_cold_four_bet_pct": 16.3,
+        "eqr": 0.85,
+        "realized_equity_pct": 22.386875,
+        "call_ev_bb": -9.84400625
+      }
+    },
+    "K5s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.2%で、コールのEVは−9.97bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 26.1,
+        "blocked_cold_four_bet_pct": 17.3,
+        "eqr": 0.85,
+        "realized_equity_pct": 22.174375,
+        "call_ev_bb": -9.973631249999999
+      }
+    },
+    "K4s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.0%で、コールのEVは−10.09bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 25.9,
+        "blocked_cold_four_bet_pct": 17.1,
+        "eqr": 0.85,
+        "realized_equity_pct": 21.983124999999998,
+        "call_ev_bb": -10.09029375
+      }
+    },
+    "K3s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率21.9%で、コールのEVは−10.12bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 25.8,
+        "blocked_cold_four_bet_pct": 16.7,
+        "eqr": 0.85,
+        "realized_equity_pct": 21.933541666666667,
+        "call_ev_bb": -10.120539583333333
+      }
+    },
+    "K2s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率21.5%で、コールのEVは−10.36bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 25.3,
+        "blocked_cold_four_bet_pct": 16.3,
+        "eqr": 0.85,
+        "realized_equity_pct": 21.533333333333335,
+        "call_ev_bb": -10.364666666666666
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率28.1%で、コールのEVは−6.39bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 31.4,
+        "blocked_cold_four_bet_pct": 27.5,
+        "eqr": 0.8925,
+        "realized_equity_pct": 28.05053125,
+        "call_ev_bb": -6.389175937499999
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率21.4%で、コールのEVは−10.46bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 24,
+        "blocked_cold_four_bet_pct": 22.9,
+        "eqr": 0.8925,
+        "realized_equity_pct": 21.37909375,
+        "call_ev_bb": -10.4587528125
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率39.1%で、コールのEVは+0.37bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は5bet 100BBへ配分します。配分はコール 60%・オールイン 30%・フォールド 10%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 43.8,
+        "blocked_cold_four_bet_pct": 11.8,
+        "eqr": 0.8925,
+        "realized_equity_pct": 39.13240625,
+        "call_ev_bb": 0.37076781250000224
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.3%で、コールのEVは−6.87bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.2,
+        "blocked_cold_four_bet_pct": 9.8,
+        "eqr": 0.935,
+        "realized_equity_pct": 27.255249999999997,
+        "call_ev_bb": -6.874297500000001
+      }
+    },
+    "QTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.6%で、コールのEVは−6.64bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.6,
+        "blocked_cold_four_bet_pct": 7.3,
+        "eqr": 0.935,
+        "realized_equity_pct": 27.640937500000007,
+        "call_ev_bb": -6.639028124999996
+      }
+    },
+    "Q9s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.7%で、コールのEVは−9.03bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.9,
+        "blocked_cold_four_bet_pct": 6.7,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.718541666666667,
+        "call_ev_bb": -9.031689583333332
+      }
+    },
+    "Q8s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.4%で、コールのEVは−9.22bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.5,
+        "blocked_cold_four_bet_pct": 6.7,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.410416666666663,
+        "call_ev_bb": -9.219645833333335
+      }
+    },
+    "Q7s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.2%で、コールのEVは−9.94bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 26.2,
+        "blocked_cold_four_bet_pct": 6.7,
+        "eqr": 0.85,
+        "realized_equity_pct": 22.234583333333333,
+        "call_ev_bb": -9.936904166666666
+      }
+    },
+    "Q6s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.1%で、コールのEVは−9.43bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.1,
+        "blocked_cold_four_bet_pct": 6.7,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.066874999999996,
+        "call_ev_bb": -9.429206250000002
+      }
+    },
+    "Q5s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率21.8%で、コールのEVは−10.18bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 25.7,
+        "blocked_cold_four_bet_pct": 7.6,
+        "eqr": 0.85,
+        "realized_equity_pct": 21.830833333333334,
+        "call_ev_bb": -10.183191666666666
+      }
+    },
+    "Q4s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q3s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q2s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率25.6%で、コールのEVは−7.90bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.7,
+        "blocked_cold_four_bet_pct": 24.3,
+        "eqr": 0.8925,
+        "realized_equity_pct": 25.58128125,
+        "call_ev_bb": -7.8954184375
+      }
+    },
+    "KJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.0%で、コールのEVは−10.06bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 24.7,
+        "blocked_cold_four_bet_pct": 19.4,
+        "eqr": 0.8925,
+        "realized_equity_pct": 22.033593749999998,
+        "call_ev_bb": -10.0595078125
+      }
+    },
+    "QJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.8%で、コールのEVは−9.60bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 25.5,
+        "blocked_cold_four_bet_pct": 9.8,
+        "eqr": 0.8925,
+        "realized_equity_pct": 22.7885,
+        "call_ev_bb": -9.599015
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率34.9%で、コールのEVは−2.20bb。コールでは投資を回収できない見積もりのため、フォールドします。一部は5bet 100BBへ配分します。配分はフォールド 90%・オールイン 10%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 39.1,
+        "blocked_cold_four_bet_pct": 5.3,
+        "eqr": 0.8925,
+        "realized_equity_pct": 34.919062499999995,
+        "call_ev_bb": -2.1993718750000006
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.7%で、コールのEVは−6.58bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.7,
+        "blocked_cold_four_bet_pct": 3.7,
+        "eqr": 0.935,
+        "realized_equity_pct": 27.738333333333337,
+        "call_ev_bb": -6.579616666666663
+      }
+    },
+    "J9s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率26.6%で、コールのEVは−7.25bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.5,
+        "blocked_cold_four_bet_pct": 3.1,
+        "eqr": 0.935,
+        "realized_equity_pct": 26.639708333333335,
+        "call_ev_bb": -7.249777916666666
+      }
+    },
+    "J8s": {
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.9%で、コールのEVは−8.89bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.2,
+        "blocked_cold_four_bet_pct": 3.1,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.94875,
+        "call_ev_bb": -8.8912625
+      }
+    },
+    "J7s": {
+      "reason": "キッカーは弱いが、Jハイのフラッシュが狙えるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.8%で、コールのEVは−8.98bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28,
+        "blocked_cold_four_bet_pct": 3.1,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.79645833333333,
+        "call_ev_bb": -8.984160416666668
+      }
+    },
+    "J6s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J5s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J4s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J3s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J2s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率24.7%で、コールのEVは−8.44bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.7,
+        "blocked_cold_four_bet_pct": 21.8,
+        "eqr": 0.8925,
+        "realized_equity_pct": 24.688781249999998,
+        "call_ev_bb": -8.4398434375
+      }
+    },
+    "KTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.5%で、コールのEVは−9.76bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 25.2,
+        "blocked_cold_four_bet_pct": 16.9,
+        "eqr": 0.8925,
+        "realized_equity_pct": 22.52446875,
+        "call_ev_bb": -9.7600740625
+      }
+    },
+    "QTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.3%で、コールのEVは−9.28bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 26.1,
+        "blocked_cold_four_bet_pct": 7.3,
+        "eqr": 0.8925,
+        "realized_equity_pct": 23.3165625,
+        "call_ev_bb": -9.276896875
+      }
+    },
+    "JTo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.9%で、コールのEVは−8.93bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 26.8,
+        "blocked_cold_four_bet_pct": 3.7,
+        "eqr": 0.8925,
+        "realized_equity_pct": 23.8818125,
+        "call_ev_bb": -8.932094375
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率33.5%で、コールのEVは−3.06bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 37.5,
+        "blocked_cold_four_bet_pct": 1,
+        "eqr": 0.8925,
+        "realized_equity_pct": 33.502218750000004,
+        "call_ev_bb": -3.0636465625000007
+      }
+    },
+    "T9s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率28.0%で、コールのEVは−6.41bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30,
+        "blocked_cold_four_bet_pct": 0.6,
+        "eqr": 0.935,
+        "realized_equity_pct": 28.0149375,
+        "call_ev_bb": -6.410888125
+      }
+    },
+    "T8s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.2%で、コールのEVは−6.88bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.1,
+        "blocked_cold_four_bet_pct": 0.6,
+        "eqr": 0.935,
+        "realized_equity_pct": 27.247458333333334,
+        "call_ev_bb": -6.879050416666665
+      }
+    },
+    "T7s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率24.3%で、コールのEVは−8.66bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.6,
+        "blocked_cold_four_bet_pct": 0.6,
+        "eqr": 0.85,
+        "realized_equity_pct": 24.334791666666668,
+        "call_ev_bb": -8.655777083333334
+      }
+    },
+    "T6s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T5s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T4s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T3s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T2s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A9o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率22.3%で、コールのEVは−9.90bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.5,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.782,
+        "realized_equity_pct": 22.300033333333335,
+        "call_ev_bb": -9.896979666666665
+      }
+    },
+    "K9o": {
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率18.4%で、コールのEVは−12.29bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 23.5,
+        "blocked_cold_four_bet_pct": 16.3,
+        "eqr": 0.782,
+        "realized_equity_pct": 18.38351666666667,
+        "call_ev_bb": -12.286054833333331
+      }
+    },
+    "Q9o": {
+      "reason": "ストレートもフラッシュも作りにくいオフスートです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率19.2%で、コールのEVは−11.80bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 24.5,
+        "blocked_cold_four_bet_pct": 6.7,
+        "eqr": 0.782,
+        "realized_equity_pct": 19.181808333333333,
+        "call_ev_bb": -11.799096916666667
+      }
+    },
+    "J9o": {
+      "reason": "ストレートの可能性はあるがフラッシュは作れない、つながったオフスートです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率19.5%で、コールのEVは−11.63bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 24.9,
+        "blocked_cold_four_bet_pct": 3.1,
+        "eqr": 0.782,
+        "realized_equity_pct": 19.462025,
+        "call_ev_bb": -11.628164749999998
+      }
+    },
+    "T9o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "98s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率28.6%で、コールのEVは−6.08bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.5,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.935,
+        "realized_equity_pct": 28.5525625,
+        "call_ev_bb": -6.0829368750000015
+      }
+    },
+    "97s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.0%で、コールのEVは−7.05bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.8,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.935,
+        "realized_equity_pct": 26.97085416666667,
+        "call_ev_bb": -7.047778958333332
+      }
+    },
+    "96s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.7%で、コールのEVは−9.03bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.9,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.725625,
+        "call_ev_bb": -9.027368749999999
+      }
+    },
+    "95s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "94s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "93s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "92s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A8o": {
+      "reason": "キッカーが弱く、Aがヒットしても強いAに負けやすいオフスートAです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率21.9%で、コールのEVは−10.13bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28,
+        "blocked_cold_four_bet_pct": 21.2,
+        "eqr": 0.782,
+        "realized_equity_pct": 21.925324999999997,
+        "call_ev_bb": -10.125551750000001
+      }
+    },
+    "K8o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q8o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J8o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T8o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "98o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "87s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率29.5%で、コールのEVは−5.48bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 31.6,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.935,
+        "realized_equity_pct": 29.546,
+        "call_ev_bb": -5.476939999999999
+      }
+    },
+    "86s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率28.0%で、コールのEVは−6.40bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.935,
+        "realized_equity_pct": 28.03441666666667,
+        "call_ev_bb": -6.399005833333334
+      }
+    },
+    "85s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.6%で、コールのEVは−9.12bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.7,
+        "blocked_cold_four_bet_pct": 1,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.57333333333333,
+        "call_ev_bb": -9.120266666666668
+      }
+    },
+    "84s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "83s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "82s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A7o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K7o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q7o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J7o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T7o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "97o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "87o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "76s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率29.1%で、コールのEVは−5.72bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 31.2,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.935,
+        "realized_equity_pct": 29.148625000000006,
+        "call_ev_bb": -5.719338749999995
+      }
+    },
+    "75s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率28.3%で、コールのEVは−6.26bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.2,
+        "blocked_cold_four_bet_pct": 1,
+        "eqr": 0.935,
+        "realized_equity_pct": 28.264270833333338,
+        "call_ev_bb": -6.258794791666663
+      }
+    },
+    "74s": {
+      "reason": "つながりが弱く伸びしろが限られるスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率23.9%で、コールのEVは−8.93bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.1,
+        "blocked_cold_four_bet_pct": 0.8,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.877916666666664,
+        "call_ev_bb": -8.934470833333334
+      }
+    },
+    "73s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "72s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A6o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K6o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q6o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J6o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T6o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "96o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "86o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "76o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "65s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率29.1%で、コールのEVは−5.73bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 31.2,
+        "blocked_cold_four_bet_pct": 1,
+        "eqr": 0.935,
+        "realized_equity_pct": 29.12525,
+        "call_ev_bb": -5.733597499999998
+      }
+    },
+    "64s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.4%で、コールのEVは−6.81bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.3,
+        "blocked_cold_four_bet_pct": 0.8,
+        "eqr": 0.935,
+        "realized_equity_pct": 27.36822916666667,
+        "call_ev_bb": -6.805380208333332
+      }
+    },
+    "63s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "62s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A5o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K5o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q5o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J5o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T5o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "95o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "85o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "75o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "65o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "54s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.8%で、コールのEVは−6.56bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.7,
+        "blocked_cold_four_bet_pct": 1.8,
+        "eqr": 0.935,
+        "realized_equity_pct": 27.76560416666667,
+        "call_ev_bb": -6.562981458333333
+      }
+    },
+    "53s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。後ろに元の3bettor SBが残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。仮定のEQRを加味した実現後の勝率27.1%で、コールのEVは−6.96bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29,
+        "blocked_cold_four_bet_pct": 1.4,
+        "eqr": 0.935,
+        "realized_equity_pct": 27.122791666666668,
+        "call_ev_bb": -6.955097083333332
+      }
+    },
+    "52s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A4o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K4o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q4o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J4o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T4o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "94o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "84o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "74o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "64o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "54o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "43s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "42s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A3o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K3o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q3o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J3o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T3o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "93o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "83o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "73o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "63o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "53o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "43o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "32s": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A2o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K2o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q2o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J2o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T2o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "92o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "82o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "72o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "62o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "52o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "42o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "32o": {
+      "reason": "COの保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    }
+  }
+}

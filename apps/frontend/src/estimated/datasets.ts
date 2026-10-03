@@ -13,7 +13,7 @@ const pending = new Map<string, Promise<unknown>>();
 export const APP_DATASETS = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses",
   "limp-responses", "limp-deep-responses", "table-profile-adjustments"];
 export const ADMIN_DATASETS = [...APP_DATASETS, "five-bet-responses", "cold-three-bet-responses",
-  "multiway-responses", "squeeze-responses"];
+  "multiway-responses", "squeeze-responses", "multiway2-responses", "cold-four-bet-responses"];
 
 const apiBase = (): string => String((import.meta as any).env?.VITE_API_BASE ?? "").replace(/\/$/, "");
 // Kept in a variable: Vite would bundle every JSON file matched by `new URL(..., import.meta.url)`.

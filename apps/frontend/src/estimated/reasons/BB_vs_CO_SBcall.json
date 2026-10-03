@@ -1,0 +1,1390 @@
+{
+  "spot_id": "BB_vs_CO_SBcall",
+  "type": "multiway",
+  "source_fingerprint": "d489d1f554edc8d9c5b859c4f3a939956f78b1eccafdc7549862fdcda47ce653",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
+  "fact_labels": [
+    {
+      "key": "equity_3way_pct",
+      "label": "勝率（3人ポット）",
+      "scope": "hand"
+    },
+    {
+      "key": "realized_equity_pct",
+      "label": "実現後の勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "call_ev_bb",
+      "label": "コールのEV",
+      "scope": "hand",
+      "unit": "bb"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    }
+  ],
+  "spot_facts": {
+    "opener": "CO",
+    "caller": "SB",
+    "hero": "BB",
+    "unreachable": true
+  },
+  "hands": {
+    "22": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "33": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "44": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "55": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "66": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "77": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "88": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "99": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "AA": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "AKs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "AQs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "AJs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "ATs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A9s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A8s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A7s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A6s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A5s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A4s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A3s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A2s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "AKo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "KK": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "KQs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "KJs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "KTs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K9s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K8s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K7s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K6s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K5s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K4s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K3s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K2s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "AQo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "KQo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "QQ": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "QJs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "QTs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q9s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q8s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q7s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q6s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q5s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q4s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q3s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q2s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "AJo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "KJo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "QJo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "JJ": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "JTs": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J9s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J8s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J7s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J6s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J5s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J4s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J3s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J2s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "ATo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "KTo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "QTo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "JTo": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "TT": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T9s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T8s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T7s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T6s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T5s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T4s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T3s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T2s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A9o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K9o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q9o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J9o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T9o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "98s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "97s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "96s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "95s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "94s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "93s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "92s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A8o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K8o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q8o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J8o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T8o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "98o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "87s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "86s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "85s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "84s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "83s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "82s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A7o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K7o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q7o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J7o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T7o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "97o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "87o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "76s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "75s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "74s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "73s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "72s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A6o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K6o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q6o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J6o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T6o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "96o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "86o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "76o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "65s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "64s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "63s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "62s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A5o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K5o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q5o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J5o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T5o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "95o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "85o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "75o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "65o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "54s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "53s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "52s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A4o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K4o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q4o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J4o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T4o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "94o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "84o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "74o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "64o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "54o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "43s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "42s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A3o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K3o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q3o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J3o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T3o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "93o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "83o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "73o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "63o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "53o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "43o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "32s": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "A2o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "K2o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "Q2o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "J2o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "T2o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "92o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "82o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "72o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "62o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "52o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "42o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    },
+    "32o": {
+      "reason": "SBの対COの既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。",
+      "facts": {
+        "equity_3way_pct": null,
+        "equity_vs_caller_pct": null,
+        "blocked_caller_pct": null
+      }
+    }
+  }
+}
