@@ -7,6 +7,15 @@
 /packages/reysonai-sdk-ts/node_modules/
 /apps/frontend/node_modules/
 /apps/frontend/dist/
-/apps/frontend/.local/
+# Keep generated caches/private local data ignored; only the five approved RFI
+# aggregate benchmark JSON files may be versioned (2026-10-03 user request).
+/apps/frontend/.local/*
+!/apps/frontend/.local/benchmarks/
+/apps/frontend/.local/benchmarks/*
+!/apps/frontend/.local/benchmarks/UTG_open.json
+!/apps/frontend/.local/benchmarks/HJ_open.json
+!/apps/frontend/.local/benchmarks/CO_open.json
+!/apps/frontend/.local/benchmarks/BTN_open.json
+!/apps/frontend/.local/benchmarks/SB_open.json
 .DS_Store
 __pycache__/
