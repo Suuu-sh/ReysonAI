@@ -1,62 +1,115 @@
-import { RankBadge, RankLadder } from "./RankBadge.tsx";
+import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
 import { useState } from "react";
 import { ArrowLeft, Trophy } from "@phosphor-icons/react";
 import { LEADERBOARD_MIN_MATCHES, TIER_EN, leaderboardRows, playerSummary, tierFor } from "./rank-store.ts";
+import { demoPlayers, showDemoPlayers } from "./leaderboard-demo.ts";
 import { localized } from "../i18n.ts";
 
 const pct = value => `${Math.round(value * 100)}%`;
-const PERIODS = [{ value: "week", label: "週間" }, { value: "all", label: "通算" }];
+const PERIODS = [{ value: "week", label: ["Weekly", "週間"] }, { value: "all", label: ["All time", "通算"] }];
 const tierLabel = rating => localized(TIER_EN[tierFor(rating).name], tierFor(rating).name);
 const dateLabel = at => new Date(at).toLocaleString(undefined, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+const signed = value => `${value >= 0 ? "+" : "−"}${Math.abs(value)}`;
+const initial = name => [...String(name)][0]?.toUpperCase() ?? "?";
 
-// Only this browser's player is known until accounts sync ranked results to the server.
-export function Leaderboard({ rank, profile, onBack, others = [] }) {
+function Podium({ rows }) {
+  // 2nd · 1st · 3rd
+  const order = [rows[1], rows[0], rows[2]].filter(Boolean);
+  return <ol className="lb-podium" aria-label={localized("Top three", "上位3人")}>
+    {order.map(row => {
+      const tier = tierFor(row.rating).name;
+      return <li key={row.name} className={`place-${row.place}${row.self ? " self" : ""}`} style={{ "--tier": tierColor(tier) }}>
+        <span className="lb-podium-place">{row.place}</span>
+        <RankBadge name={tier} size={row.place === 1 ? 76 : 60} />
+        <strong>{row.name}{row.self && <small>{localized("You", "あなた")}</small>}</strong>
+        <span className="lb-podium-tier">{tierLabel(row.rating)}</span>
+        <b>{row.rating.toLocaleString()}</b>
+        <small className={row.gain >= 0 ? "up" : "down"}>{signed(row.gain)}</small>
+      </li>;
+    })}
+  </ol>;
+}
+
+// Only this browser's player is known until accounts sync ranked results to the server. The local
+// dev server adds dummy players (leaderboard-demo.ts) so the board can be designed with data.
+export function Leaderboard({ rank, profile, onBack, others = null }) {
   const [period, setPeriod] = useState("week");
   const me = playerSummary(rank, period);
   const name = profile?.nickname || localized("You", "あなた");
-  const rows = leaderboardRows([...others, ...(me ? [{ ...me, name, self: true }] : [])]);
+  const demo = others == null && showDemoPlayers();
+  const field = others ?? (demo ? demoPlayers(period) : []);
+  const rows = leaderboardRows([...field, ...(me ? [{ ...me, name, self: true }] : [])]);
+  const placed = rows.filter(row => row.place != null);
+  const podium = placed.length >= 3 ? placed.slice(0, 3) : [];
+  const listed = podium.length ? rows.filter(row => !podium.includes(row)) : rows;
   const recent = [...rank.matches].reverse().slice(0, 20);
+  const tier = tierFor(rank.rating);
+  const myRow = rows.find(row => row.self);
+  const toGo = Math.max(0, LEADERBOARD_MIN_MATCHES - (me?.matches ?? 0));
   return <div className="leaderboard">
     <div className="library-head">
       <div>
-        <h1><Trophy size={24} weight="fill" /> ランキング</h1>
-        <p>{localized(`Ranked by rating. Players need ${LEADERBOARD_MIN_MATCHES} ranked matches in the period to be placed.`,
+        <h1><Trophy size={24} weight="fill" /> {localized("Leaderboard", "ランキング")}</h1>
+        <p>{localized(`Ranked by rating. Play ${LEADERBOARD_MIN_MATCHES} ranked matches in the period to be placed.`,
           `ランク戦のレート順です。期間内に${LEADERBOARD_MIN_MATCHES}試合以上プレイすると順位が付きます。`)}</p>
       </div>
-      <button type="button" className="config-edit" onClick={onBack}><ArrowLeft size={14} />一覧</button>
+      <button type="button" className="config-edit" onClick={onBack}><ArrowLeft size={14} />{localized("Back", "一覧")}</button>
     </div>
-    <section className="leaderboard-summary">
-      <div className="ranked-identity"><RankBadge name={tierFor(rank.rating).name} size={80} /><div><small>{localized("Your standing", "あなたの記録")}</small><h2>{name}</h2><span>{tierLabel(rank.rating)}</span></div></div>
-      <dl className="ranked-metrics"><div><dt>{localized("Rating", "レート")}</dt><dd>{rank.rating.toLocaleString()}</dd></div><div><dt>{localized("Matches in period", "期間内の試合")}</dt><dd>{me?.matches ?? 0}<small> / {LEADERBOARD_MIN_MATCHES}</small></dd></div><div><dt>{localized("Place", "順位")}</dt><dd>{rows.find(row => row.self)?.place ?? "—"}</dd></div></dl>
-      <p>{!me || me.matches < LEADERBOARD_MIN_MATCHES ? localized(`${Math.max(0, LEADERBOARD_MIN_MATCHES - (me?.matches ?? 0))} more matches to establish your position.`, `あと${Math.max(0, LEADERBOARD_MIN_MATCHES - (me?.matches ?? 0))}試合で順位が確定します。`) : localized("Your position is established for this period.", "この期間の順位が確定しています。")}</p>
-    </section>
-    <div className="leaderboard-tabs" role="group" aria-label={localized("Ranking period", "ランキング期間")}>
 
-      {PERIODS.map(item => <button key={item.value} type="button" aria-pressed={period === item.value}
-        className={period === item.value ? "on" : ""} onClick={() => setPeriod(item.value)}>{item.label}</button>)}
-    </div>
-    {rows.length ? <div className="sessions-table-scroll"><table className="leaderboard-table">
-      <thead><tr><th>順位</th><th>プレイヤー</th><th>ランク</th><th>レート</th><th>{period === "week" ? "今週の増減" : "増減"}</th><th>試合</th><th>正答率</th></tr></thead>
-      <tbody>{rows.map((row, index) => <tr key={index} className={row.self ? "self" : ""}>
-        <td className="place">{row.place ?? "—"}</td>
-        <td><span className="leaderboard-player">{row.name}{row.self && <small>{localized("You", "あなた")}</small>}</span></td>
-        <td><span className="leaderboard-rank"><RankBadge name={tierFor(row.rating).name} size={36} />{tierLabel(row.rating)}</span></td>
-        <td><b>{row.rating}</b></td>
-        <td className={row.gain >= 0 ? "up" : "down"}>{row.gain >= 0 ? "+" : "−"}{Math.abs(row.gain)}</td>
-        <td>{row.matches}</td>
-        <td>{pct(row.accuracy)}</td>
-      </tr>)}</tbody>
-    </table></div>
-      : <section className="leaderboard-empty"><Trophy size={40} /><h2>{localized("Your climb starts here", "最初の一歩を踏み出そう")}</h2><p>{period === "week" ? localized("No ranked matches this week yet.", "今週はまだランク戦をプレイしていません。") : localized("No ranked matches yet.", "まだランク戦をプレイしていません。")}</p><button type="button" className="setup-secondary" onClick={onBack}>{localized("Back to ranked arena", "ランクアリーナへ")}</button></section>}
-    <p className="leaderboard-note">{localized("Other players will appear here once accounts are available.", "アカウント機能の公開後、ほかのプレイヤーもここに並びます。")}</p>
-    <RankLadder rating={rank.rating} />
-    {recent.length > 0 && <section className="leaderboard-history">
-      <h2>自分の試合履歴</h2>
+    <section className="mode-block is-ranked leaderboard-summary" style={{ "--mode-theme": tierColor(tier.name) }}>
+      <div className="mode-visual ranked-visual">
+        <RankBadge name={tier.name} size={84} />
+        <span className="ranked-tier-name">{tierLabel(rank.rating)}</span>
+      </div>
+      <div className="mode-body">
+        <span className="mode-eyebrow">{localized("YOUR STANDING", "あなたの記録")}</span>
+        <h3>{name}</h3>
+        <div className="ranked-stats">
+          <div><span>{localized("Rating", "レート")}</span><strong>{rank.rating.toLocaleString()}</strong></div>
+          <div><span>{localized("Place", "順位")}</span><strong>{myRow?.place ?? "—"}</strong></div>
+          <div><span>{localized("Matches in period", "期間内の試合")}</span><strong>{me?.matches ?? 0}<small> / {LEADERBOARD_MIN_MATCHES}</small></strong></div>
+        </div>
+        <p>{toGo ? localized(`${toGo} more matches to be placed.`, `あと${toGo}試合で順位が確定します。`) : localized("Your position is established for this period.", "この期間の順位が確定しています。")}</p>
+      </div>
+      <div className="mode-actions">
+        <div className="lb-period" role="group" aria-label={localized("Ranking period", "ランキング期間")}>
+          {PERIODS.map(item => <button key={item.value} type="button" aria-pressed={period === item.value}
+            className={period === item.value ? "on" : ""} onClick={() => setPeriod(item.value)}>{localized(item.label[0], item.label[1])}</button>)}
+        </div>
+        {demo && <small className="lb-demo-flag">{localized("Local dev: dummy players", "ローカル開発用のダミー")}</small>}
+      </div>
+    </section>
+
+    {rows.length ? <>
+      {podium.length > 0 && <Podium rows={podium} />}
       <div className="sessions-table-scroll"><table className="leaderboard-table">
-        <thead><tr><th>日時</th><th>正答率</th><th>レート</th><th>増減</th></tr></thead>
+        <thead><tr><th>{localized("Place", "順位")}</th><th>{localized("Player", "プレイヤー")}</th><th>{localized("Rank", "ランク")}</th><th>{localized("Rating", "レート")}</th>
+          <th>{period === "week" ? localized("This week", "今週の増減") : localized("Change", "増減")}</th><th>{localized("Matches", "試合")}</th><th>{localized("Accuracy", "正答率")}</th></tr></thead>
+        <tbody>{listed.map((row, index) => {
+          const rowTier = tierFor(row.rating).name;
+          return <tr key={`${row.name}-${index}`} className={row.self ? "self" : ""} style={{ "--tier": tierColor(rowTier) }}>
+            <td className="place">{row.place ?? "—"}</td>
+            <td><span className="leaderboard-player"><span className="lb-avatar" aria-hidden="true">{initial(row.name)}</span>{row.name}{row.self && <small>{localized("You", "あなた")}</small>}</span></td>
+            <td><span className="leaderboard-rank"><RankBadge name={rowTier} size={26} />{tierLabel(row.rating)}</span></td>
+            <td><b>{row.rating.toLocaleString()}</b></td>
+            <td className={row.gain >= 0 ? "up" : "down"}>{signed(row.gain)}</td>
+            <td>{row.matches}{row.place == null && <small className="lb-unplaced">{localized(" · unplaced", " · 順位なし")}</small>}</td>
+            <td>{pct(row.accuracy)}</td>
+          </tr>;
+        })}</tbody>
+      </table></div>
+    </> : <section className="leaderboard-empty"><Trophy size={40} /><h2>{localized("Your climb starts here", "最初の一歩を踏み出そう")}</h2><p>{period === "week" ? localized("No ranked matches this week yet.", "今週はまだランク戦をプレイしていません。") : localized("No ranked matches yet.", "まだランク戦をプレイしていません。")}</p><button type="button" className="setup-secondary" onClick={onBack}>{localized("Back to ranked arena", "ランクアリーナへ")}</button></section>}
+    <p className="leaderboard-note">{demo
+      ? localized("Dummy players are shown only on the local dev server. Real players will appear once accounts are available.", "ダミーのプレイヤーはローカル開発サーバーでだけ表示されます。アカウント機能の公開後、実際のプレイヤーが並びます。")
+      : localized("Other players will appear here once accounts are available.", "アカウント機能の公開後、ほかのプレイヤーもここに並びます。")}</p>
+    <section className="lb-ladder"><RankLadder rating={rank.rating} /></section>
+    {recent.length > 0 && <section className="leaderboard-history">
+      <h2>{localized("Your match history", "自分の試合履歴")}</h2>
+      <div className="sessions-table-scroll"><table className="leaderboard-table">
+        <thead><tr><th>{localized("Date", "日時")}</th><th>{localized("Accuracy", "正答率")}</th><th>{localized("Rating", "レート")}</th><th>{localized("Change", "増減")}</th></tr></thead>
         <tbody>{recent.map(match => <tr key={match.at}>
           <td>{dateLabel(match.at)}</td><td>{pct(match.accuracy)}</td><td>{match.after}</td>
-          <td className={match.after >= match.before ? "up" : "down"}>{match.after >= match.before ? "+" : "−"}{Math.abs(match.after - match.before)}</td>
+          <td className={match.after >= match.before ? "up" : "down"}>{signed(match.after - match.before)}</td>
         </tr>)}</tbody>
       </table></div>
     </section>}

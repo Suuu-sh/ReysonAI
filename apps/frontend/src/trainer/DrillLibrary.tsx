@@ -52,9 +52,11 @@ export function HistoryChart({ values, highlightLast = true }) {
 function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
   const stats = drillStats(drill);
   const spots = spotsForSettings(drill.settings).length;
+  const kind = drill.settings.kinds.length === 2 ? "MIX" : drill.settings.kinds[0] === "open" ? "OPEN" : "VS OPEN";
   return <article className={`drill-card${draft ? " in-progress" : ""}`}>
     <header>
       <div>
+        <span className="drill-eyebrow">DRILL · {kind}</span>
         <h3>{drill.name}</h3>
         <ul className="drill-tags">{settingsSummary(drill.settings).map(tag => <li key={tag}>{tag}</li>)}</ul>
       </div>
@@ -104,7 +106,7 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
     </div>
     <div className="drill-grid">
       {(reviewCount > 0 || drafts.review) && <article className={`drill-card review${drafts.review ? " in-progress" : ""}`}>
-        <header><div><h3>復習ドリル</h3><ul className="drill-tags"><li>以前ミスしたハンドだけ</li></ul></div></header>
+        <header><div><span className="drill-eyebrow">DRILL · REVIEW</span><h3>復習ドリル</h3><ul className="drill-tags"><li>以前ミスしたハンドだけ</li></ul></div></header>
         <p className="review-count"><strong>{drafts.review?.session.answered ?? reviewCount}</strong>{drafts.review ? "問を回答済み" : "ハンドが復習待ち"}</p>
         <footer><small>{drafts.review ? "途中保存されています" : "正解すると復習待ちから外れます"}</small>
           <button type="button" className={`drill-start${drafts.review ? " resume" : ""}`} onClick={onStartReview}>

@@ -32,3 +32,11 @@ test('populated leaderboard shows real tiers, self marker, placement and history
   assert.ok(html.includes('leaderboard-history'));
   assert.ok(html.includes('この期間の順位が確定しています。'));
 });
+test('dummy leaderboard players exist only for the local dev server', async () => {
+  const { demoPlayers, showDemoPlayers } = await import('../src/trainer/leaderboard-demo.ts');
+  assert.equal(showDemoPlayers(), false);
+  assert.deepEqual(demoPlayers('week'), demoPlayers('week'));
+  assert.ok(demoPlayers('all').every(player => player.demo && player.matches >= 1 && player.rating >= 800));
+  const html = renderToStaticMarkup(React.createElement(Leaderboard, { rank: emptyRankState(), onBack() {} }));
+  assert.ok(!html.includes('Kaito') && !html.includes('lb-podium'));
+});
