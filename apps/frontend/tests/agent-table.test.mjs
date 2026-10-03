@@ -134,3 +134,23 @@ test("hand classes", () => {
   assert.equal(handClass([8 * 4, 7 * 4 + 1]), "T9o");
   assert.equal(handClass([5 * 4, 5 * 4 + 2]), "77");
 });
+
+test("agent-game stats: flags per hand and summary", async () => {
+  const { handRecord, summarizeAgentHands } = await import("../src/agent/agent-stats.ts");
+  const result = { status: "done", holeCards: {}, board: ["Ah", "Kd", "2c", "3s", "4h"], showdown: true, winners: ["BTN"], returns: { BTN: 9.5, BB: -10 }, rake: 0.5,
+    log: [
+      { street: "preflop", pos: "UTG", action: "fold" }, { street: "preflop", pos: "HJ", action: "fold" }, { street: "preflop", pos: "CO", action: "fold" },
+      { street: "preflop", pos: "BTN", action: "open" }, { street: "preflop", pos: "SB", action: "fold" }, { street: "preflop", pos: "BB", action: "three_bet" },
+      { street: "preflop", pos: "BTN", action: "call" }, { street: "flop", pos: "BB", action: "check" }, { street: "flop", pos: "BTN", action: "check" },
+    ] };
+  const btn = handRecord(result, "mochi-forest", "BTN", 1);
+  assert.deepEqual({ vpip: btn.vpip, pfr: btn.pfr, threeBetOpp: btn.threeBetOpp, facedThreeBet: btn.facedThreeBet, foldedToThreeBet: btn.foldedToThreeBet, sawFlop: btn.sawFlop, showdown: btn.showdown, wonShowdown: btn.wonShowdown },
+    { vpip: true, pfr: true, threeBetOpp: false, facedThreeBet: true, foldedToThreeBet: false, sawFlop: true, showdown: true, wonShowdown: true });
+  const bb = handRecord(result, "mochi-forest", "BB", 2);
+  assert.equal(bb.threeBetOpp, true); assert.equal(bb.threeBet, true); assert.equal(bb.wonShowdown, false);
+  const summary = summarizeAgentHands([btn, bb]);
+  assert.equal(summary.hands, 2);
+  assert.equal(summary.threeBet, 1);
+  assert.equal(summary.wsd, 0.5);
+  assert.deepEqual(summary.trend, [9.5, -0.5]);
+});

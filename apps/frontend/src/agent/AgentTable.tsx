@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, FastForward, Eye, Play } from "@phosphor-icons/react";
 import { preloadDatasets } from "../estimated/datasets.ts";
 import { loadPostflopDatasets, loadPostflopSpot } from "../estimated/postflop-browser.ts";
@@ -9,6 +9,7 @@ import { playHand, type HandResult, type LogEntry } from "./hand.ts";
 import { Monster } from "./Monster.tsx";
 import { createAgent, makePostflopKit, type PostflopKit } from "./policy.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints, type Session } from "./session.ts";
+import { handRecord, saveAgentHand } from "./agent-stats.ts";
 import "./agent.css";
 
 export const AGENT_DATASETS = ["five-bet-responses", "cold-three-bet-responses", "multiway-responses", "squeeze-responses", "limp-deep-responses"];
@@ -114,6 +115,13 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
     const character = seat?.kind === "agent" ? characterFor(seat.agentId) : null;
     return character ? localized(character.name.en, character.name.ja) : localized("You", "あなた");
   };
+  // Record the human's finished hand once (Agent戦 in プレー分析).
+  const recorded = useRef(-1);
+  useEffect(() => {
+    if (!done || !humanPos || recorded.current === session.handNo) return;
+    recorded.current = session.handNo;
+    saveAgentHand(handRecord(result!, tableId, humanPos));
+  }, [done, humanPos, session.handNo, result, tableId]);
   const act = (key: string) => setHumanActions(current => [...current, key]);
   const nextHand = () => {
     if (!result || result.status !== "done") return;

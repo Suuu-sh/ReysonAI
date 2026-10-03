@@ -1,0 +1,81 @@
+// Agent戦 results for プレー分析: one record per hand the human played at an Evion Agent table,
+// kept only in this browser. Separate from the drill answer history on purpose.
+import type { HandResult } from "./hand.ts";
+
+const KEY = "evionai:agent-hands:v1";
+const LIMIT = 3000;
+const RAISES = new Set(["open", "raise", "three_bet", "squeeze", "four_bet", "all_in"]);
+
+export type AgentHandRecord = {
+  at: number; tableId: string; pos: string; returnBb: number;
+  vpip: boolean; pfr: boolean;
+  threeBetOpp: boolean; threeBet: boolean;
+  facedThreeBet: boolean; foldedToThreeBet: boolean;
+  sawFlop: boolean; showdown: boolean; wonShowdown: boolean;
+};
+
+const storage = () => { try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; } };
+
+export function loadAgentHands(): AgentHandRecord[] {
+  try { const value = JSON.parse(storage()?.getItem(KEY) ?? "[]"); return Array.isArray(value) ? value : []; } catch { return []; }
+}
+
+export function saveAgentHand(record: AgentHandRecord) {
+  const next = [...loadAgentHands(), record].slice(-LIMIT);
+  try { storage()?.setItem(KEY, JSON.stringify(next)); } catch { /* storage full or blocked */ }
+  return next;
+}
+
+// The human's flags for one finished hand.
+export function handRecord(result: HandResult, tableId: string, pos: string, at = Date.now()): AgentHandRecord {
+  const preflop = result.log.filter(entry => entry.street === "preflop");
+  const mine = preflop.filter(entry => entry.pos === pos);
+  const firstIndex = preflop.findIndex(entry => entry.pos === pos);
+  const raisesBefore = preflop.slice(0, Math.max(0, firstIndex)).filter(entry => RAISES.has(entry.action)).length;
+  const first = mine[0]?.action;
+  const opened = mine.some(entry => entry.action === "open");
+  const openIndex = preflop.findIndex(entry => entry.pos === pos && entry.action === "open");
+  const reraised = openIndex >= 0 && preflop.slice(openIndex + 1).some(entry => entry.pos !== pos && (entry.action === "three_bet" || entry.action === "squeeze"));
+  const afterReraise = reraised ? mine.slice(1)[0]?.action : undefined;
+  const foldedPreflop = mine.some(entry => entry.action === "fold");
+  const folded = result.log.some(entry => entry.pos === pos && entry.action === "fold");
+  const showdown = Boolean(result.showdown) && !folded;
+  return {
+    at, tableId, pos, returnBb: result.returns?.[pos] ?? 0,
+    vpip: mine.some(entry => entry.action !== "fold" && entry.action !== "check"),
+    pfr: mine.some(entry => RAISES.has(entry.action)),
+    threeBetOpp: raisesBefore === 1 && first !== undefined,
+    threeBet: raisesBefore === 1 && (first === "three_bet" || first === "squeeze"),
+    facedThreeBet: opened && reraised && afterReraise !== undefined,
+    foldedToThreeBet: opened && reraised && afterReraise === "fold",
+    sawFlop: !foldedPreflop && result.board.length >= 3 && preflop.length > 0 && (result.log.some(entry => entry.street !== "preflop") || Boolean(result.showdown)),
+    showdown, wonShowdown: showdown && Boolean(result.winners?.includes(pos as any)),
+  };
+}
+
+const rate = (hit: number, total: number) => total ? hit / total : null;
+
+export function summarizeAgentHands(hands: AgentHandRecord[]) {
+  const count = (pick: (hand: AgentHandRecord) => boolean) => hands.filter(pick).length;
+  const net = hands.reduce((sum, hand) => sum + hand.returnBb, 0);
+  const tables = new Map<string, { hands: number; net: number }>();
+  for (const hand of hands) {
+    const row = tables.get(hand.tableId) ?? { hands: 0, net: 0 };
+    row.hands++; row.net += hand.returnBb;
+    tables.set(hand.tableId, row);
+  }
+  // Cumulative result in BB, hand by hand (for the trend line).
+  let running = 0;
+  const trend = hands.map(hand => (running += hand.returnBb));
+  return {
+    hands: hands.length, netBb: net, bbPer100: hands.length ? net / hands.length * 100 : null,
+    vpip: rate(count(h => h.vpip), hands.length),
+    pfr: rate(count(h => h.pfr), hands.length),
+    threeBet: rate(count(h => h.threeBet), count(h => h.threeBetOpp)),
+    foldToThreeBet: rate(count(h => h.foldedToThreeBet), count(h => h.facedThreeBet)),
+    wtsd: rate(count(h => h.showdown), count(h => h.sawFlop)),
+    wsd: rate(count(h => h.wonShowdown), count(h => h.showdown)),
+    tables: [...tables.entries()].map(([tableId, row]) => ({ tableId, ...row, bbPer100: row.net / row.hands * 100 })),
+    trend,
+  };
+}

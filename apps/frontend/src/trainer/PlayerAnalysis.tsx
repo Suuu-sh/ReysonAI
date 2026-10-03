@@ -1,4 +1,6 @@
 import { ArrowRight, ChartBar, Info, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
+import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
+import "../agent/agent.css";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { analyzePlayer, scoreProgress } from "./player-analysis.ts";
 import { practiceHighlights, summarize } from "./trainer-store.ts";
@@ -229,6 +231,8 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
         </section>
       </div>
     </>}
+
+    <AgentAnalysis />
 
     <p className="analysis-footnote">
       練習問題での選択傾向です（強み・弱点は5問以上で80%以上／60%以下、3〜4問は暫定）。回答はこのブラウザ内だけに保存されます。
