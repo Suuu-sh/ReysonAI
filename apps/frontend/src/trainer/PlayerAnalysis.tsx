@@ -1,5 +1,8 @@
 import { ArrowRight, ChartBar, Info, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
 import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
+import { PlayStyleDashboard } from "../agent/PlayStyleDashboard.tsx";
+import { playerRead } from "../agent/player-read.ts";
+import { loadAgentHands } from "../agent/agent-stats.ts";
 import "../agent/agent.css";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { analyzePlayer, scoreProgress } from "./player-analysis.ts";
@@ -185,15 +188,29 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
   const { metrics } = analysis;
   const scoreDelta = progress.series.length > progress.windowSize ? progress.current - progress.series.at(-1 - progress.windowSize) : null;
   const styleProgress = Math.min(1, analysis.samples / STYLE_SAMPLE_TARGET);
+  const [view, setView] = useState("drills");
+  const agentRead = useMemo(() => view === "agent" ? playerRead(loadAgentHands()) : null, [view]);
 
   return <div className="player-analysis">
-    <header className="analysis-heading">
+    <header className="trainer-home-head analysis-heading">
       <div>
-        <span className="analysis-eyebrow"><ChartBar size={14} />PRACTICE INSIGHTS</span>
+        <span className="trainer-home-eyebrow"><ChartBar size={12} /> ANALYSIS</span>
         <h1>プレー分析</h1>
+        <p>{view === "agent" ? "Agent卓での収支と、Agentが読んでいるあなたの打ち方を振り返ります。" : "ドリルやランク戦での選び方を、保存済みレンジと比べて振り返ります。"}</p>
       </div>
-      <button type="button" className="analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
+      <div className="analysis-head-tools">
+        <div className="lb-period analysis-view" role="group" aria-label="分析の対象">
+          {[["drills", "ドリル練習"], ["agent", "Agent戦"]].map(([value, label]) =>
+            <button key={value} type="button" className={view === value ? "on" : ""} aria-pressed={view === value} onClick={() => setView(value)}>{label}</button>)}
+        </div>
+        <button type="button" className="mode-primary analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
+      </div>
     </header>
+
+    {view === "agent" ? <div className="analysis-agent">
+      <AgentAnalysis />
+      {agentRead && <div className="analysis-card analysis-agent-read"><PlayStyleDashboard read={agentRead} /></div>}
+    </div> : <>
 
     <div className="analysis-kpis">
       <Kpi label="ReysonAI Score" accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
@@ -232,7 +249,7 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
       </div>
     </>}
 
-    <AgentAnalysis />
+    </>}
 
     <p className="analysis-footnote">
       練習問題での選択傾向です（強み・弱点は5問以上で80%以上／60%以下、3〜4問は暫定）。回答はこのブラウザ内だけに保存されます。
