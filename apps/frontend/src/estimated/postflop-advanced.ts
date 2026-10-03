@@ -15,6 +15,8 @@ export type AdvancedInput = {
   // averaged hand class, its combos (the most common combo class is described).
   // Per-decision labels with real amounts (decisionOptions); falls back to the plain labels.
   labels?: Record<string, string>;
+  // The raise option is an all-in at this decision (its stack caps it).
+  raiseAllIn?: boolean;
   board?: string; cards?: string; combos?: { cards: string; weight: number }[];
 };
 export type AdvancedBlock = { action: string; label: string; frequency: number; text: string };
@@ -298,7 +300,7 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
   for (const a of Object.keys(input.actionMix)) kinds[a] = sizeKind(rf?.sizes?.[a]?.tiers);
   const st = strengthOf(ctx);
   const hc: HC = { en, o: opp, street, ip: ipNode, st: st ? { level: st.level, place: st.place, blocker: st.blocker, mix: st.mix, bluffCapped: st.bluffCapped } : null,
-    bettorMix: st?.mix ?? null };
+    bettorMix: st?.mix ?? null, raiseAllIn: input.raiseAllIn };
   const roleOf = (action: string): { role: string; sub: string } => features
     ? roleFromFeatures(features, { action, equity, facingBet: facing })
     : { role: handRole(equity, input.tiers, action), sub: "" };

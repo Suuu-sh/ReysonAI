@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -69,8 +70,8 @@ test("standard matrix keeps a dominant solid cell and puts only mixed frequencie
 
 test("primary navigation is accessible in a collapsible sidebar", () => {
   const html = renderToStaticMarkup(createElement(Sidebar, { activeSection: "レンジ分析", onSectionChange() {} }));
-  assert.match(html, /<aside class="app-sidebar" aria-label="EvionAI サイドバー">/);
-  assert.match(html, /Evion<span>AI<\/span>/);
+  assert.match(html, /<aside class="app-sidebar" aria-label="ReysonAI サイドバー">/);
+  assert.match(html, /Reyson<span>AI<\/span>/);
   assert.match(html, /aria-label="サイドバーを折りたたむ" aria-expanded="true" aria-controls="main-navigation"/);
   assert.match(html, /<nav id="main-navigation" class="header-nav" aria-label="メインナビゲーション">/);
   assert.match(html, /aria-current="page" aria-label="レンジ分析"/);
@@ -143,7 +144,18 @@ test("SB can limp and BB can check or iso-raise from the saved limp response", (
   const bbCalled = limpActionTransition({ ...reraised, position: "BB", action: "call" });
   assert.equal(bbCalled.limpReraiseAction, "call");
   assert.deepEqual([buildActionBlocks(bbCalled).at(-1).result, buildActionBlocks(bbCalled).at(-1).pot], ["2人でフロップへ", "ポット 21bb"]);
-  assert.equal(buildActionBlocks(limpActionTransition({ ...reraised, position: "BB", action: "raise" })).at(-1).result, "データなし");
+  const fourBet = limpActionTransition({ ...reraised, position: "BB", action: "raise" });
+  const fourBetBlock = buildActionBlocks(fourBet).at(-1);
+  assert.equal(fourBetBlock.stage, "limp-sb-four-bet"); // SB's saved response to BB's 26BB 4bet
+  assert.deepEqual(fourBetBlock.rangeRef, { kind: "limp_four_bet", position: "SB" });
+  assert.deepEqual(fourBetBlock.options.map(option => option.label), ["Fold", "Call 26", "All-in 100"]);
+  for (const [action, result, pot] of [["fold", "BBの勝ち", "ポット 21bb"], ["call", "2人でフロップへ", "ポット 52bb"], ["all_in", "オールイン", "ポット 52bb"]]) {
+    const next = limpActionTransition({ ...fourBet, position: "SB", action });
+    assert.equal(next.limpFourBetAction, action);
+    assert.deepEqual([buildActionBlocks(next).at(-1).result, buildActionBlocks(next).at(-1).pot], [result, pot]);
+    const back = rewindActionBlockTransition({ ...next, block: fourBetBlock });
+    assert.deepEqual([back.limpReraiseAction, back.limpFourBetAction, back.hero], ["raise", null, "SB"]);
+  }
   const backToBb = rewindActionBlockTransition({ ...bbCalled, block: reraiseBlock });
   assert.deepEqual([backToBb.limpResponseAction, backToBb.limpReraiseAction], ["raise", null]);
 
@@ -358,10 +370,10 @@ test("local generation controls are embedded in the missing range slot", () => {
   }
 });
 
-test("saved action paths survive the EvionAI storage-key migration", () => {
+test("saved action paths survive the ReysonAI storage-key migration", () => {
   const originalWindow = globalThis.window;
   const selection = { rangeType: "four_bet", opener: "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: "all_in", continuationAction: null, selected: "AA" };
-  globalThis.window = { matchMedia: () => ({ matches: false }), sessionStorage: { getItem: key => key.includes("solveagto") ? JSON.stringify(selection) : null, setItem() {} } };
+  globalThis.window = { matchMedia: () => ({ matches: false }), sessionStorage: { getItem: key => key.includes("reysonai-legacy") ? JSON.stringify(selection) : null, setItem() {} } };
   try {
     const html = renderToStaticMarkup(createElement(EstimatedRanges));
     assert.match(html, /class="action-path expanded"/);
@@ -376,19 +388,19 @@ test("saved action paths survive the EvionAI storage-key migration", () => {
 
 test("estimated view always shows the expanded six-seat action path", () => {
   const html = renderToStaticMarkup(createElement(EstimatedRanges));
-  assert.doesNotMatch(html, /<footer class="app-footer">|EvionAI v0\.1/);
+  assert.doesNotMatch(html, /<footer class="app-footer">|ReysonAI v0\.1/);
   assert.doesNotMatch(html, /class="estimate-context"|全15局面|全5ポジション/);
   assert.match(html, /class="results estimate-results participant-results/);
   assert.match(html, /<strong>Cash<\/strong><span>100bb<\/span><\/button>/);
   assert.doesNotMatch(html, /<strong>推定レンジ<\/strong>/);
-  assert.match(html, /class="format-edit settings-change-button"><svg[\s\S]*?<\/svg>変更<\/button><button[^>]*aria-label="アクションをリセット"[^>]*><svg[\s\S]*?<\/svg><\/button>/);
+  assert.match(html, /class="format-edit settings-icon-button" aria-label="ゲーム設定を変更"[^>]*><svg[\s\S]*?<\/svg><\/button><button[^>]*aria-label="アクションをリセット"[^>]*><svg[\s\S]*?<\/svg><\/button>/);
   assert.match(html, /aria-label="アクション履歴"/);
   assert.doesNotMatch(html, /path-toggle|アクション選択を(開|閉じ)る/);
   assert.match(html, /action-path expanded/);
   assert.match(html, /BTN[\s\S]*aria-pressed="true"[^>]*>Raise 2\.5<[\s\S]*SB[\s\S]*aria-pressed="true"[^>]*>Fold<[\s\S]*action-seat-seat active[\s\S]*BB/);
   assert.doesNotMatch(html, /Take action/);
   assert.doesNotMatch(html, /次のアクションノード|aria-label="局面"|aria-label="有効スタック"|aria-label="オープンサイズ"/);
-  assert.match(html, /action-seat-info[\s\S]*Cash[\s\S]*100bb[\s\S]*6max · Open 2\.5BB[\s\S]*変更[\s\S]*aria-label="アクションをリセット"[\s\S]*aria-label="UTGのアクションに戻り、レンジ表を表示"/);
+  assert.match(html, /action-seat-info[\s\S]*Cash[\s\S]*100bb[\s\S]*6max · Open 2\.5BB[\s\S]*aria-label="ゲーム設定を変更"[\s\S]*aria-label="アクションをリセット"[\s\S]*aria-label="UTGのアクションに戻り、レンジ表を表示"/);
   assert.doesNotMatch(html, /Open 2\.5BB · アンティなし/);
   assert.doesNotMatch(html, /表示アクション|すべてのアクション/);
   assert.match(html, /レイズ 2\.5 BB.*フォールド/s);
@@ -404,4 +416,13 @@ test("missing and invalid saved JSON render errors without matrix or substitute 
     assert.doesNotMatch(html, /class="bars"/);
     assert.match(html, /aria-label="アクション履歴"/); // Can recover by choosing another path.
   }
+});
+
+
+test("selected-hand details omit redundant open-size and total-frequency rows", () => {
+  const workspace = readFileSync(new URL("../src/estimated/RangeWorkspace.tsx", import.meta.url), "utf8");
+  const details = workspace.slice(workspace.indexOf("function HandBreakdown("), workspace.indexOf("function InlineGenerationControl("));
+  assert.doesNotMatch(details, /オープンサイズ（合計）|頻度合計|totalFrequency/);
+  assert.match(details, /PreflopCallEvBars/);
+  assert.match(details, /受ける4bet（合計）/);
 });

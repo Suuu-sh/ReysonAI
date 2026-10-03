@@ -28,14 +28,15 @@ test("settings page has account, subscription, appearance and language tabs", ()
   const html = renderToStaticMarkup(createElement(AccountPage, { profile, tab: "account", onSectionChange() {}, onProfileSaved() {} }));
   for (const label of ["アカウント", "サブスクリプション", "外観", "言語"]) assert.match(html, new RegExp(`</svg>${label}</button>`));
   assert.match(html, /value="Yu"/);
-  assert.match(html, /アカウントを作成/); // sign-in stays a disabled, planned control
+  assert.match(html, /Googleでログイン/); // account creation is gated until the backend is configured
 });
 
-test("subscription shows the provisional Plus plan from the site pricing and no live purchase", () => {
+test("subscription shows the ¥580 Plus plan without a live purchase", () => {
   const html = renderToStaticMarkup(createElement(AccountPage, { profile, tab: "subscription", onSectionChange() {}, onProfileSaved() {} }));
   assert.match(html, /Free/);
-  assert.match(html, /¥680/);
-  assert.match(html, /仮案|provisional/);
+  assert.match(html, /¥580/);
+  assert.match(html, /Planned|予定/);
+  assert.doesNotMatch(html, /¥680|provisional|仮案/);
   assert.doesNotMatch(html, /<button[^>]*class="account-primary"(?![^>]*disabled)/);
 });
 
@@ -44,4 +45,63 @@ test("appearance preferences normalise unknown values and log-out offers keeping
   const html = renderToStaticMarkup(createElement(LogoutDialog, { onCancel() {}, onConfirm() {} }));
   assert.match(html, /練習データ（ドリル・セッション・回答履歴）も削除する/);
   assert.doesNotMatch(html, /checked=""/);
+});
+
+function withLocalStorage(run) {
+  const previous = globalThis.window;
+  const values = new Map();
+  const localStorage = {
+    get length() { return values.size; },
+    key: index => [...values.keys()][index] ?? null,
+    getItem: key => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, String(value)),
+    removeItem: key => values.delete(key),
+  };
+  globalThis.window = { localStorage };
+  try { run(localStorage); } finally {
+    if (previous === undefined) delete globalThis.window;
+    else globalThis.window = previous;
+  }
+}
+
+test("practice export and cleanup preserve profile, appearance and unrelated data", () => {
+  withLocalStorage(store => {
+    store.setItem("reysonai.trainer.answers", JSON.stringify([{ hand: "AA" }]));
+    store.setItem("reysonai.trainer.draft", "legacy draft");
+    store.setItem("reysonai:profile:v1", "profile");
+    store.setItem("reysonai:appearance:v1", "appearance");
+    store.setItem("other-app", "untouched");
+    assert.deepEqual(prefs.exportLocalData().data, {
+      "reysonai.trainer.answers": [{ hand: "AA" }], "reysonai.trainer.draft": "legacy draft",
+    });
+    prefs.clearPracticeData();
+    assert.deepEqual(prefs.practiceKeys(), []);
+    assert.equal(store.getItem("reysonai:profile:v1"), "profile");
+    assert.equal(store.getItem("reysonai:appearance:v1"), "appearance");
+    assert.equal(store.getItem("other-app"), "untouched");
+  });
+});
+
+test("appearance and range mode persist with invalid appearance values normalised", () => {
+  withLocalStorage(store => {
+    prefs.saveAppearance({ cards: "two", motion: "reduce" });
+    assert.deepEqual(prefs.loadAppearance(), { cards: "two", motion: "reduce" });
+    store.setItem("reysonai:appearance:v1", JSON.stringify({ cards: "bad", motion: "bad" }));
+    assert.deepEqual(prefs.loadAppearance(), { cards: "four", motion: "standard" });
+    prefs.saveDisplayMode("simple");
+    assert.equal(prefs.loadDisplayMode(), "simple");
+    prefs.saveDisplayMode("bad");
+    assert.equal(prefs.loadDisplayMode(), "standard");
+  });
+});
+
+test("local logout removes only the profile by default", async () => {
+  const { clearProfile } = await server.ssrLoadModule("/src/profile.ts");
+  withLocalStorage(store => {
+    store.setItem("reysonai:profile:v1", "profile");
+    store.setItem("reysonai.trainer.answers", "[]");
+    clearProfile();
+    assert.equal(store.getItem("reysonai:profile:v1"), null);
+    assert.equal(store.getItem("reysonai.trainer.answers"), "[]");
+  });
 });

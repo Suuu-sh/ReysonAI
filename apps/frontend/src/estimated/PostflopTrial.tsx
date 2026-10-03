@@ -17,6 +17,7 @@ const baseLabels = () => productLocale() === "en"
   ? { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise" }
   : { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ" };
 export const labelsFor = (node, decisionLabels = null) => ({ ...baseLabels(), ...(decisionLabels ?? {}) });
+const raiseAllInOf = d => Boolean(d?.options?.find(option => option.action === "raise")?.allIn);
 const decisionLabelsOf = d => d ? (productLocale() === "en" ? d.labels : d.labelsJa) : null;
 // btn_* nodes are the in-position player's decisions, bb_* the out-of-position player's.
 export const nodeTitle = (node, { ip, oop }) => (productLocale() === "en" ? {
@@ -92,11 +93,11 @@ const tablePct = (value: number | null) => value === null ? "—" : `${Math.roun
 
 // Per-action comparison at a betting decision; scrolls sideways inside its own wrapper on narrow screens.
 
-function HandReasons({ node, hand, texture, explain, loading, error, positions, boardCards }: any) {
+function HandReasons({ node, hand, texture, explain, loading, error, positions, boardCards, labels, raiseAllIn }: any) {
   if (!hand?.tiers) return null;
   const english = productLocale() === "en";
   const plain = buildAdvancedExplanation({ locale: english ? "en" : "ja", node, hand: hand.hand, actionMix: hand.actions,
-    tiers: hand.tiers, texture, explain, positions, board: boardCards,
+    tiers: hand.tiers, texture, explain, positions, board: boardCards, labels, raiseAllIn,
     ...(hand.combo ? { cards: hand.combo.cards } : { combos: (hand.combos ?? []).map((item: any) => ({ cards: item.cards, weight: item.weight ?? item.reachWeight ?? 0 })) }) });
   return <div className="postflop-reasons postflop-reasons-structured">
     <GlossaryText className="postflop-reason-headline" text={plain.headline} locale={english ? "en" : "ja"} />
@@ -553,7 +554,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                     <h3 className="postflop-view-title">{view.combo ? <>{view.combo.cards.match(/../g).map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                     </div>
                 <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
-                <HandReasons node={decision.node} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data.texture} explain={explain} boardCards={board}
+                <HandReasons node={decision.node} labels={labels} raiseAllIn={raiseAllInOf(decision)} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data.texture} explain={explain} boardCards={board}
                   loading={Boolean(explainLoading)} error={Boolean(explainError)}
                   positions={{ ip: context.ip, oop: context.oop }} />
               </>}
@@ -585,7 +586,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
                   <ComboPicker hand={selectedHand} combos={laterChosen.combos} actions={laterActions} selected={selectedLaterCombo} onSelect={setSelectedLaterCombo} labels={laterLabels}
                     missingReason={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しない"}
                     missingTitle={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しません"} />
-                  <HandReasons node={laterCurrent.node} hand={laterView.combo ? { ...laterView, hand: laterView.combo.cards } : laterView} texture={laterCurrent.texture} explain={laterExplain.data}
+                  <HandReasons node={laterCurrent.node} labels={laterLabels} raiseAllIn={raiseAllInOf(later)} hand={laterView.combo ? { ...laterView, hand: laterView.combo.cards } : laterView} texture={laterCurrent.texture} explain={laterExplain.data}
                     boardCards={`${board}${turnCard ?? ""}${laterCurrent.street === "river" ? riverCard ?? "" : ""}`}
                     loading={Boolean(laterExplain.loading)} error={Boolean(laterExplain.error)}
                     positions={{ ip: context.ip, oop: context.oop }} />

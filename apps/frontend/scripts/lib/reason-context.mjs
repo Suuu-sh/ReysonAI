@@ -4,7 +4,7 @@ import { rakeConfig } from "../../src/estimated/rake.ts";
 
 // Facts must belong to the exact current strategy, not merely the same spot id.
 export function reasonSourceFingerprint(load) {
-  const sources = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "cold-three-bet-responses", "call-equities"];
+  const sources = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "call-equities"];
   return createHash("sha256").update(JSON.stringify({ version: 1, EQR, MULTIWAY_EQR, BB_BEHIND_EQR, CALLER_BEHIND_EQR, OPENER_BEHIND_EQR, COLD_CALL_SQUEEZE_EQR, COLD_CALL_OFFSUIT_EQR, rakeConfig,
     data: sources.map(name => load(name)),
   })).digest("hex");

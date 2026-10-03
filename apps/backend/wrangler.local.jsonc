@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "reysonai-api-local",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-22",
+  "workers_dev": false,
+  "routes": [],
+  "dev": { "ip": "127.0.0.1", "port": 8787, "local_protocol": "http" },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "reysonai-local",
+    "database_id": "00000000-0000-0000-0000-000000000007",
+    "migrations_dir": "migrations"
+  }],
+  "vars": {
+    "AUTH_ENABLED": "true",
+    "AUTH_LOCAL_DEV": "true",
+    "AUTH_APP_URL": "http://localhost:5173",
+    "ALLOWED_ORIGIN": "http://localhost:5173",
+    "GOOGLE_REDIRECT_URI": "http://localhost:8787/v1/account/google/callback"
+  }
+}

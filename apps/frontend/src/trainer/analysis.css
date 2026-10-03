@@ -132,7 +132,7 @@
 .analysis-link:hover { color: var(--accent-bright); }
 .analysis-guidance { border-top: 2px solid var(--accent); }
 .analysis-guidance h2 svg { color: var(--accent-bright); }
-.analysis-guidance li { padding: 6px 9px; border-left: 2px solid var(--accent); border-radius: 0 7px 7px 0; background: var(--surface-raised); color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.analysis-guidance li { padding: 6px 9px; border-radius: 7px; background: var(--surface-raised); color: var(--text-muted); font-size: 12px; line-height: 1.5; }
 
 .analysis-welcome { display: grid; align-content: center; justify-items: start; gap: 8px; }
 .analysis-welcome h2 { margin: 0; font-size: 15px; }
@@ -204,3 +204,24 @@
   .analysis-kpi > strong { white-space: normal; }
   .analysis-caption { flex-basis: 100%; order: 3; }
 }
+
+/* Unified with the trainer pages: heading, view switch, tiles and cards */
+.player-analysis { gap: 12px; padding-top: 8px; }
+.analysis-heading { align-items: flex-end; }
+.analysis-heading .trainer-home-eyebrow { display: inline-flex; align-items: center; gap: 5px; }
+.analysis-heading h1 { margin: 2px 0 4px; font-size: 24px; }
+.analysis-head-tools { display: flex; align-items: center; gap: 10px; }
+.analysis-view { min-width: 220px; }
+.analysis-start.mode-primary { padding: 9px 16px; font-size: 13px; }
+.analysis-kpis { gap: 10px; }
+.analysis-kpi { padding: 12px 14px; border-radius: 14px; }
+.analysis-kpi > span { color: var(--text-subtle); font-size: 10px; letter-spacing: .04em; }
+.analysis-main, .analysis-bottom { gap: 10px; }
+.analysis-card { padding: 14px 16px; border-radius: 14px; }
+.analysis-card:hover { border-color: var(--line-strong); }
+.analysis-card-head h2 { color: var(--text-muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.analysis-agent { display: grid; gap: 12px; }
+.analysis-agent .agent-analysis { margin-top: 0; }
+.analysis-agent-read { padding: 0; }
+.analysis-agent-read .style-dash { padding: 18px; }
+@media (max-width: 720px) { .analysis-head-tools { width: 100%; } .analysis-view { flex: 1; min-width: 0; } }

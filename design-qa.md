@@ -9,7 +9,7 @@
 - Browser verification at `http://127.0.0.1:5174/app`: opened an interrupted one-answer session, saw its saved Q5o hand and verdict, resumed it, finished it, and confirmed the completed hand history remained after reloading. The narrow viewport stayed readable with horizontal scrolling for the table.
 - All UI tests, typecheck, production build, Sites tests, and lint passed. The existing Vite large-chunk warning remains.
 
-## Solvea AI Score trend (2026-09-27)
+## ReysonAI Score trend (2026-09-27)
 - Added a compact policy-alignment card below the existing four-quadrant map. Each practice answer is compared with the saved AI estimate for the same preflop spot/hand; a 10-answer rolling mean makes progress visible without calling it a GTO score or EV loss.
 - Checked the running `/app` at the current narrow viewport with 31 locally saved answers: the card showed 91%, its trend line and explanatory limits without horizontal overflow. Targeted and full UI tests, typecheck, production build, and Sites tests passed. The existing large-chunk warning remains.
 
@@ -34,7 +34,7 @@
 - The AI reason remains visible below the action bars without repeating the call-EV fact. RFI and missing-EV paths retain frequency-only bars; no policy-average or best-action claim was added.
 - Verification: 177 UI/data tests, typecheck, production build, and 4 Sites tests passed. The existing large-chunk build warning remains.
 
-## SolveaAI brand rename (2026-09-23)
+## ReysonAI brand rename (2026-09-23)
 - Updated the UI wordmark/title, SDK exports and package paths, Rust crate/binary identifiers, environment-variable prefix, storage/queue keys, deployment resources, scripts, tests and documentation.
 - Kept GTO terminology where it describes poker methodology or validation status. The project folder, Git remote and externally provisioned resources were not renamed or migrated.
 - Verification: 47 UI tests, production build, 4 Sites tests, 8 SDK tests, 5 Edge API tests, Rust workspace tests and API-job / solution-promotion E2E checks passed. The build still reports the existing large-bundle warning.
@@ -63,7 +63,7 @@
 - The non-GTO status remains visible. Unsupported paths stay pending; generated local data never overwrites saved heads-up estimates.
 
 ## Unified selection panel update (2026-09-23)
-- Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable SolveaAI panel rather than exact screenshot replication.
+- Source: user screenshot showing two disconnected selection surfaces; intended change is one cohesive, expandable ReysonAI panel rather than exact screenshot replication.
 - The compact six-seat path remains visible; the top control expands seat choices. Fixed conditions are in metadata, without a duplicate dropdown row.
 - Inspected the rendered compact state in the local browser and corrected a narrow-screen toggle overflow. The responsive path remains horizontally scrollable.
 - Final result: passed for the requested unified selection surface.
@@ -135,7 +135,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 ## In-panel local AI estimate button (2026-09-23)
 - Moved the multiway local-generation control into Hero's missing-range panel and added the same explicit-click control to the original opener's missing response panel after a 100BB 5bet all-in. The separate banner above the matrices is gone.
 - The all-in response uses only call/fold for the opener and carries the exact saved open/3bet/4bet sizes into its cache identity. Validated all 169 canonical rows, integer frequencies, legal action set, and scenario identity; generated estimates remain in ignored local cache and never update persisted range JSON.
-- Rebranded session-storage keys migrate from the previous SolveaGTO key, so an in-progress selection survives the app rename and reload.
+- Rebranded session-storage keys migrate from the previous SolveaGTO-era key, so an in-progress selection survives the app rename and reload.
 - Verification: 51 UI/data tests passed; production build passed; Sites tests passed (4). The local preview and read-only local estimate-status endpoint are reachable at `http://127.0.0.1:5173/`. No Codex estimate was initiated during verification. Existing Vite large-bundle warning remains.
 
 ## Vertically organized position/action selector (2026-09-23)
@@ -154,7 +154,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Verification: `node --test tests/*.test.mjs` passed (64 tests), `npm run build` passed, and `npm run test:sites` passed (4 tests). Vite still reports a large-chunk warning.
 
 ## Remove bottom footer labels (2026-09-24)
-- Removed the footer strip and its “SolveaAI v0.1” / “AI生成ソリューション” labels from both app shells. The separate estimate context/status row was removed in a later iteration to enlarge the range tables.
+- Removed the footer strip and its “ReysonAI v0.1” / “AI生成ソリューション” labels from both app shells. The separate estimate context/status row was removed in a later iteration to enlarge the range tables.
 - Browser verification at `http://localhost:5173/` shows the range tables ending without the footer labels.
 - Verification: `node --test tests/*.test.mjs` passed, `npm run build` passed, and `npm run test:sites` passed. Vite still reports its existing large-chunk warning.
 
@@ -200,7 +200,7 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - Verification: `npm run build:estimates` passed with the two advisory warnings; `npm test` passed (105/105); `npm run benchmark` reports zero deviations beyond ±3pt for all five opens; `npm run build` passed with the existing large-chunk warning.
 - Review packets now include SB limp and both limp-response nodes. Full audit and handoff: `apps/frontend/.local/review/range-balance-2026-09-24.{md,json}`; packet canary answers remain separate.
 
-## Solvea service site (2026-09-25)
+## Reyson service site (2026-09-25)
 - Added a separate service site at `/`, retaining the existing estimated-range workspace at `/app`. The landing preview shows an interactive 13×13 matrix and K7s decision from the saved BTN-open and BB-vs-BTN data. A small generated projection keeps the marketing bundle independent of the larger app datasets.
 - Desktop (1280px), tablet (768px), and mobile (390px) were visually checked in the local browser. The mobile document stays within its viewport; the matrix remains readable with horizontal overflow available where needed. Spot switching changed K7s to BB-vs-BTN Call 85%, the mobile menu navigated to Pricing, and the free CTA opened the existing onboarding at `/app` with Japanese document language.
 - Planned natural-language adjustments, advanced training, accounts, paid features, and provisional ¥680 pricing are explicitly identified as unavailable. The mixed-frequency comparison is labeled illustrative rather than competitor data.
@@ -300,3 +300,114 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 ## Exact per-hand EV (2026-10-01)
 - Replaced the sampled per-hand action EV with an exact expectation over opponent combos, later-street mixes and runouts; the EV panel and explanations now say "expected value when both players follow the shown strategy" and no longer mention samples or self-play. Repeated and precomputed vs on-demand requests are identical.
 - Validated against high-sample Monte Carlo (3 river, 3 turn, 2 flop decisions) and an independent enumeration; the 12-board BTN_open_BB_call hand-EV regenerated in 61 s (was 43m50s). Turn and flop on-demand budgets are not met (1.5 s and 4.8 s cold); details in apps/frontend/docs/postflop-flop-base.md.
+
+## Content-preserving service-site polish (2026-10-03)
+- Scope: `/` only. The existing marketing copy, EN/日本語 translations, section order, prices, persisted preview data and `/app` behaviour are unchanged. Removed the obsolete sharp hero styling rather than layering new overrides over it.
+- Balanced the hero typography/column widths; restored consistent rounded panels and controls; increased small-label/fold-hand contrast; tightened comparison spacing; grouped FAQ rows; aligned pricing cards/actions while keeping Plus visibly provisional and unavailable.
+- Fixed two existing UI regressions: `#drill` now targets the outer scroll track so returning from Ranked resets to Training, and the matrix minimum width now wins over the fieldset reset (316px chart in a 266px scroll container at 320px viewport).
+- In-app browser QA: English and Japanese hero at 1440×900, Japanese at 1280×900, mobile at 390×844 and 320×720; no document-level horizontal overflow. Verified preview Standard BB/A5s = 3bet 60%, call 40%, fold 0%; menu navigation; comparison, analysis and pricing; FAQ opening; Training navigation from the Ranked slide and J9o raise feedback = 75%/fold 25%. Reset the temporary viewport after QA. All existing reduced-motion gates remain intact; OS reduced-motion was not changed.
+- Verification: configured typecheck and lint passed; production build and 5 Sites tests passed; 8 focused site tests passed (including 5 new regressions). The existing full suite ran 381 tests: 380 passed, one local HTTP-listener check was blocked by sandbox `EPERM`. That exact test passed when rerun with local listening permitted. Existing large-chunk build warning remains.
+- Concurrent postflop source edits in the working tree were neither reverted nor staged as part of this UI change.
+
+## Sharp service-site treatment (2026-10-03)
+- Supersedes the rounded visual treatment above, following the user's request for a cooler rather than cute-looking service site. Scope remains `/` only: copy, translations, section order, prices, preview strategy data and product logic are unchanged.
+- Introduced shared 4px panel / 2px control-and-badge geometry throughout desktop and mobile layouts; flat charcoal surfaces, fine neutral borders, heavier Inter headings, monochrome primary CTAs and a cooler comparison background. Pink remains a small brand/interaction accent; data colours still convey the original actions. Removed soft panel shadows and reduced the matrix entrance/hover scaling instead of layering a second theme on top.
+- Preserved app-matching playing cards, oval poker tables, circular seats/chips, the scroll scenes and reduced-motion gates. Replaced the outdated rounded-style instruction in the frontend SSoT.
+- In-app browser QA: English hero, pricing and analysis at 1440×900; Japanese hero, menu and Training at 390×844; chart at 320×720. No document horizontal overflow. At 320px the chart remains 316px wide inside its 266px scrolling container. J9o Raise feedback still shows Raise 75% / Fold 25%, with Next enabled. Reset the temporary viewport and restored English after checks; the local preview remains running.
+- Verification: configured typecheck and lint passed; final production build and all 5 Sites packaging tests passed; focused locale, preview and surface tests passed 9/9, including the new geometry/physical-card regression. Existing large-chunk build warning remains.
+- Full frontend suite completed: 387 tests, 386 passed, one unrelated offline postflop timing assertion exceeded its 2s budget (9.87s) during concurrent heavy test runs. That exact narrow-4bet test passed alone in 1.02s; no solver code or timing threshold was changed. The full run is not recorded as an all-pass result.
+
+## Mobile service-site audit and fixes (2026-10-03)
+- Scope: the existing service site `/`, following the user's screenshot of the cropped "Know why" preview. Keep the sharp styling, all marketing copy, translations, frequencies, physical poker objects and product logic unchanged. Browser evidence was captured in this run, not inferred from the previous hero-only check.
+- Confirmed issue: the mobile How-it-works frame was fixed at 340px. At 390px, the cards extended 42–49px above it and the explanation card 46px below it. Replaced the fixed height with content-driven scenes and 28px/20px padding. At 320px the final English scene is 510px tall; Japanese is 692px, allowing the full explanation to be read by normal page scrolling. All three scenes' card, seat, chart and legend bounds fit their frames.
+- Confirmed issue: the persona section used desktop pinning on tall phones and hid inactive tabs. Pinning now uses the same ≥961px / ≥600px rule as Training/Ranked. Mobile visitors can select all three tabs, and only the active preview contributes height. Removed the obsolete pinned-mobile CSS; constrained long persona labels to their content column.
+- Confirmed issue: narrow analysis KPIs clipped/ellipsized labels such as ReysonAI Score and Play-style map. At ≤560px, KPIs use two columns with a full-width play-style card; captions wrap without ellipsis. Small header/preview/CTA controls are at least 44px high across the mobile/tablet breakpoint.
+- Confirmed issue: at 844×320 landscape, the menu extended below the viewport (bottom 374px). It now has a dynamic-viewport height limit and internal scrolling; final bottom is 320px, client height 255px / content 309px. Selected the final Pricing item successfully and confirmed the menu closes.
+
+### Checked steps
+1. Header and hero — healthy after touch-target fixes. Menu/language/spot/display controls work; Standard BB/A5s remains 3bet 60%, Call 40%, Fold 0%. At 320px the 316px matrix scrolls inside its 266px container, not the document.
+2. Personas — healthy after desktop-only pinning and active-panel sizing. Tested reason/free tabs, complete long reasons and benefit labels, and the existing `/app` link.
+3. How-it-works — fixed cropped cards and explanations; table seats and colour legends also checked. Both languages can show the complete A5s reason.
+4. Training and Ranked preview — healthy in the stacked mobile layout. J9o Raise feedback remains Raise 75% / Fold 25%, with Next enabled. No practice data or ranking logic changed by this task.
+5. Analysis — fixed KPI label clipping; map, tendencies and sample labelling remain visible.
+6. Comparison and pricing — healthy as mobile stacked rows/cards, with all text retained, Free available and Plus still planned/disabled.
+7. FAQ, final CTA and footer — healthy; expanded the first FAQ and verified the existing final app link and disclaimer layout.
+
+### Verification and limits
+- Browser viewport matrix: EN and 日本語 at 320×720, 375×667, 390×844, 430×932, 768×1024 and 960×720. Measured document width equals viewport width throughout; no visible prose/heading/label clipping, inline-scene overflow or KPI horizontal text overflow. Intentionally collapsed inactive persona details and horizontally scrolling chart cells were excluded from clipping findings. Also checked 844×320 landscape and 1440×900 desktop scroll scenes.
+- Internal evidence: `/tmp/reyson-mobile-audit/01-en-why-before.png`, `02-en-why-after-320.png`, `03-en-analysis-after-320.png`, `04-ja-why-after-390.png` and `measurements.json`. Saved screenshots were kept internal per user preference.
+- Configured typecheck and lint, final production build, 5 Sites packaging tests and 10 focused site tests passed. Added a regression for growing mobile scenes, desktop-only pinning, wrapping KPIs, scrollable landscape menu and 44px controls. Existing large-chunk build warning remains.
+- Full frontend run completed: 388 tests, 387 passed, one existing offline narrow-4bet timing assertion took 2.35s against its 2s budget. The exact test passed alone in 1.49s; no solver source or thresholds were modified. This full run is not an all-pass result. The viewport override was reset, English restored and the corrected Why preview left open in the running local app.
+- This is a browser responsive-layout check, not a claim of complete accessibility compliance or real-device Safari/Android testing. OS text enlargement and reduced-motion settings were not changed; existing reduced-motion gates remain intact.
+- Concurrent trainer/rank-badge source and assets in the working tree are unrelated and are not staged as part of this service-site fix.
+
+## Compact mobile comparison (2026-10-03)
+- User request: make the mobile comparison section shorter while retaining its content. No edits to either marketing-copy source, prices, comparison claims, disclaimers or strategy data.
+- Replaced the repeated branded cards at ≤720px with paired comparison columns and a shared row title above each pair. Both service names appear once in the sticky table header, which stays at 64px below the site header while the rows scroll. All seven rows and the full approach/trademark note remain visible; nothing is collapsed, abbreviated or hidden. Removed obsolete per-cell `data-label` attributes and generated repeated labels rather than keeping a second rendering mode.
+- Tightened only mobile section/description/table spacing and typography; native desktop table styling is unchanged. At 390px English, table height fell from 1409px to 871px (~38%); entire section from 1859px to 1231px (~34%), with all text retained.
+- Browser QA: English and Japanese at 320×720, 375×667, 390×844, 430×932 and 720×900. All seven rows remain present, document width equals viewport width, and no header/data-cell text overflows its column. Scrolled to the final rows and verified the sticky header stays at top 64px, with disclaimer visible below. At 1440×900 the original three-column `table-row` layout remains, and the browser exposes the native table. This is browser layout testing, not real-device or full screen-reader certification.
+- Added regressions for the compact mobile columns/shared row headings/sticky header and exact preservation of every English/Japanese comparison string and disclaimer.
+- Verification: configured typecheck/lint, production build, all 5 Sites packaging tests and all 13 focused site tests passed. Full frontend run: 395 tests, 394 passed; the existing offline narrow-4bet timing assertion took 7.15s against its 2s budget during parallel testing. It passed alone in 0.96s; no solver code or thresholds were changed. The full run is not an all-pass result. Existing bundle-size warning remains. Viewport override reset, English restored and the compact comparison left open in the local app.
+
+## 2026-10-03 — Remove redundant selected-hand rows
+- Removed Open size (total) and Total frequency from preflop selected-hand details, including local-estimate frequency totals; saved datasets, action bars, call EV and other sizes are unchanged.
+- Removed unused total calculation and avoid an empty stats block for opening/limp details.
+- Verification: estimated UI tests 16/16; production build passed; Sites tests 5/5; diff whitespace check passed. Full suite was started before fixing a test-source variable and is not used as a passing result.
+- Browser: localhost:5173/app, BTN AKo Standard detail shows action percentages and saved reasoning without either removed row. App left open.
+
+## 2026-10-03 — Approved ReysonAI abstract brand icon
+- Adopted the user's selected non-letter abstract pink symbol via a shared BrandIcon for the app sidebar/onboarding and service-site header/footer/comparison. Playing-card suits remain unchanged.
+- Related tests passed 29/29; Sites tests passed 5/5; production build passed (existing bundle-size warning only).
+- Browser verified the app icon loads at 30px and all three service-site symbols load at 24/18/24px. Visually checked both pages; app remains open at localhost:5173/app.
+
+## Expanded service-site canvas (2026-10-03)
+- User request: give content more prominence across every section instead of leaving large margins. Layout work does not rewrite marketing claims, pricing, saved strategy data, or product behavior. Concurrent approved ReysonAI naming/concept/icon work was retained and committed separately during this work; no older branding was restored.
+- Shared responsive gutters now use a 1520px canvas (previously 1280px). Ordinary sections are content-driven rather than forced to a full viewport; desktop section spacing is 64px and mobile/tablet spacing 48px (previously 88/96px). Larger desktop headings and lead copy, closer two-column gaps, expanded How scenes and trainer objects, full-width pricing cards, and reduced final-CTA spacing keep the existing sharp treatment.
+- At 1440×900, Training preview grows from 649×439px to 730×571px (~30% taller), while its heading grows from 34px to 40px in Japanese. Pricing expands from its former 1000px cap to 1368px. Dedicated Training/Ranked scroll transitions remain; poker-table sizing is height-aware on short desktops. Persona pinning now requires ≥961px wide and ≥840px tall: shorter desktops use an ordinary interactive section so the longest translated preview cannot become trapped below the viewport. Removed obsolete short-screen pinning styles.
+- Browser geometry checks covered all sections in EN/日本語 at 320×740, 390×844, 961×600 and 1440×900; additional Japanese checks at 768×1024, 1137×721, 1280×600/800 and 961×741/800/840. Document width equals viewport width; final section checks have no horizontal overflow. Found and fixed the narrow ranked preview's intrinsic-width overflow via wrapping rank KPIs and min-width:0 on the shared mock/copy. At 961×840 the pinned persona wrapper fits exactly; at 1280×800 it is unpinned. Training and Ranked both fit the 1280×600 pinned stage.
+- Visually inspected hero, trainer/table controls, Ranked transition, full Why explanation/card at 320px Japanese and 390px English, analysis, comparison and pricing. Mobile How scenes have identical scroll/client heights in all three steps; comparison retains all seven paired rows and one sticky service-name header. Trainer Fold displayed the saved 25/75% mix and Next advanced; Sample and planned/estimate disclaimers remain. Screenshots are internal, not attached to the reply.
+- Verification: configured typecheck/lint, production build, all 5 Sites packaging tests and all 12 focused site/preview tests passed. Added shared-canvas/content-driven sizing regression and updated persona-height and narrow-rank wrapping checks. Full frontend run during the work: 395 tests, 393 passed, 2 failed (localhost listen blocked by sandbox; existing offline narrow-4bet timing budget exceeded under parallel load). Both exact failures passed in an isolated run with localhost access. The full run is not an all-pass result; solver sources/thresholds are unchanged. Existing bundle-size warning remains.
+- Browser responsive-layout testing is not real-device Safari/Android or full accessibility certification. Reduced-motion guards remain unchanged. Local preview stays running; temporary viewport overrides are reset after verification.
+
+## Pinned comparison with scroll-driven row reveal (2026-10-03)
+- User feedback: fit this comparison in one desktop screen, remove the large gap above its heading, and reveal each row as the visitor scrolls rather than highlight the current row. Scope is comparison layout/animation only; its seven claims, translations, native table semantics and complete disclaimer are retained. Concurrent pricing/branding/storage edits are not part of this change.
+- With motion enabled at ≥961px wide / ≥600px tall, the stage pins 64px below the header on a 240vh track. Content starts 24px below that header; the table fills the remaining height between heading and note. Scroll cumulatively reveals rows 1 through 7 with a small upward fade; reverse scrolling reverses the reveal. Returning through #compare resets the sequence. Locale changes re-evaluate scroll position and retain stable row keys. Removed the rejected row-highlight styling instead of layering over it.
+- Browser QA: EN/日本語 at 961×600, 1137×721 and 1440×900; EN/日本語 at 320×740; EN at 390×844. No document or cell text horizontal overflow. At 961×600 the disclaimer ends at y=576; at 1440×900 it ends at y=876. At 1137×721 the visible row counts advanced 1,2,3,4,5,6,7 while the stage stayed at y=64 and the note stayed in view. Inspected the full seven-row final stage and both desktop locales. At 320/390px the ordinary paired mobile table keeps all seven rows readable without desktop scroll-driven hiding; the sticky mobile heading remains at y=64.
+- Added regressions for motion/media guards, cumulative row reveal, RAF cleanup, stable keys, full-stage sizing and preservation of every comparison string in both locales. Configured typecheck/lint and focused site/preview/locale tests passed 15/15; production build and all 5 Sites tests passed. Existing large-chunk warning remains.
+- Full frontend run completed: 398 tests, 397 passed, one offline board-worker deterministic-file equality assertion failed. That exact test passed alone (1/1); the full run is not recorded as all-pass. No generator, solver source, saved strategy data or test threshold was changed by this UI task.
+- Internal evidence saved in /tmp/reyson-comparison-qa/desktop-first-row.png and desktop-all-rows.png. These screenshots are not attached to the reply. Reduced-motion behavior checked through source guards and non-animated server-rendered fallback, not by changing OS settings; browser checks are not real-device or full accessibility certification.
+- Later working-tree recheck encountered concurrent pricing/copy/storage tests: 18 tests, 15 passed and 3 failed outside the comparison assertions (Japanese hero expectation and the storage-key rename). Comparison-specific tests passed separately; the earlier 15/15 result predates those concurrent edits. Unrelated changes are preserved, not reverted or included in this comparison commit. The local server responds on port 4173; the previously errored browser tab was replaced with a fresh working preview, and temporary viewport overrides were reset.
+
+## Live decision-studio hero — selected concept 3 (2026-10-03)
+
+**Findings**
+- No actionable P0/P1/P2 differences remain after the short-viewport fix below. The English-first headline, Japanese supporting copy, asymmetrical chart layout, saved-range colors, dealt trainer cards, selected-hand frequencies and full-width explanation rail align with the selected visual target and user feedback.
+- No focused-region comparison was needed: at the matched viewport the complete hero, including the fine chart labels, cards, action frequencies and CTA, was legible in the full-view side-by-side comparison.
+
+**Open Questions**
+- None for this request. Native OS reduced-motion settings were not changed; the existing reduced-motion logic and responsive behavior are covered by source tests, but a real-device Safari/Android pass was not part of this hero change.
+
+**Implementation Checklist**
+- [x] Match selected design 3 while retaining the existing brand icon and persisted range strategies.
+- [x] Use “Don't just play. Understand why.” in both locales; descriptions, controls and disclosures remain localized.
+- [x] Start on A5o; retain the 169-cell interactive matrix, simple/standard frequencies and both range modes.
+- [x] Add a localized pause/resume control; manual chart/mode interaction takes over and pauses the tour. Automatic hand changes are not sent to a live region.
+- [x] Verify desktop, short desktop and narrow mobile layouts; retain the 316px horizontally scrollable matrix on the narrowest screens.
+- [x] Production build, configured typecheck, configured lint, focused site tests (24/24), and Sites packaging tests (5/5) passed. Existing >500KB product-app bundle warning remains.
+- [x] Production-preview console check returned no errors.
+
+**Comparison evidence**
+- Source visual truth: `/Users/yota/.codex/generated_images/01a100c6-6973-7f23-8d59-c23df8cba55a/exec-baf06d67-6224-4f39-82e1-21ec32741ac4.png` (1487 × 1058 px). This is the selected concept 3 with the user's English-headline revision.
+- Implementation: `/private/tmp/reyson-hero-qa/implementation-ja-1488x1056-final.png` (1488 × 1056 px, browser-rendered screenshot, CSS viewport 1488 × 1056, devicePixelRatio 1). Reference normalization for the side-by-side composite was a negligible 1px width / 2px height rescale; no content crop or browser chrome was included.
+- Full-view comparison: `/private/tmp/reyson-hero-qa/comparison-ja-1488x1056.jpg` (source and implementation side by side; selected state: Japanese locale, BTN Open, Simple, A5o, autoplay paused). Full screenshot uses the same 1488 × 1056 CSS viewport; source raster is at its native 1487 × 1058 px.
+- Short-height check: `/private/tmp/reyson-hero-qa/implementation-ja-1280x720.jpg` (1280 × 720 px; CSS viewport 1280 × 720; DPR 1). The hero detail rail ends at y=707 and playback controls at y=706, within the 720px viewport; no document-level horizontal overflow.
+- Interaction state: Japanese explanatory copy/controls with the explicitly requested English headline; BTN Open / Simple / A5o; saved strategy gives Raise 100% / Fold 0%; hand tour is paused after manual selection. The prior production browser pass also checked Standard, BB-vs-BTN frequencies, pause/resume, locale persistence and the existing app/how-it-works links.
+- Typography: Inter-based bold headline with the same three-line hierarchy and English phrase; Japanese paragraph/control text wraps cleanly. Spacing/layout: two-column hero, 13 × 13 matrix and full-width lower detail rail preserve the reference's composition. Colors/tokens: charcoal/black surfaces, white copy and restrained pink raise accent remain consistent; saved action colors are unchanged. Image/asset fidelity: product trainer cards and existing brand mark are reused, not approximated with replacement artwork. Copy/content: only the requested hero title is English on the Japanese page; the remaining visible hero text is Japanese.
+
+**Comparison history**
+- First short-height comparison at 1280 × 720 found a P2: the detail/playback rail ended at y=733, placing the lower playback control partly below the viewport. Changed the short-height `.site-hero-main` vertical padding from 16px to 8px, rebuilt, and recaptured. Post-fix evidence shows the rail ending at y=707 and playback at y=706; the controls fit fully in the 720px viewport. No other P0/P1/P2 issue was found in the final matched-size comparison.
+
+**Follow-up Polish**
+- No remaining P3 items identified for the selected hero.
+
+**final result: passed**

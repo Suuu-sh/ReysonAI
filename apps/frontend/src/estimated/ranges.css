@@ -21,7 +21,7 @@
 .action-seat-main { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .action-seat-pct { flex: none; font-variant-numeric: tabular-nums; }
 .action-seat-options button:hover:not(:disabled) { background: var(--surface-hover); color: var(--text); }
-.action-seat-options button.chosen { background: #ffffff0f; color: var(--text); font-weight: 600; box-shadow: inset 2px 0 0 var(--accent); border-radius: 0 5px 5px 0; }
+.action-seat-options button.chosen { background: #ffffff0f; color: var(--text); font-weight: 600; border-radius: 5px; }
 .action-seat-options button:disabled { opacity: 1; cursor: default; }
 .action-seat-forced { opacity: .45; }
 .action-path-pending { margin-top: 3px; padding: 0 6px; color: var(--accent-soft); font-size: 10px; white-space: normal; }
@@ -61,7 +61,7 @@
 .display-mode-toggle button { padding: 4px 10px; border: 0; border-radius: 5px; background: transparent; color: var(--text-muted); font-size: 12px; }
 .display-mode-toggle button[aria-pressed="true"] { background: var(--surface-hover); color: var(--text); font-weight: 600; }
 .mix-summary { margin: 0 0 12px; font-size: 15px; font-weight: 600; line-height: 1.5; }
-.ai-reason { margin: 0 0 14px; padding: 10px 12px; border-left: 2px solid var(--accent); border-radius: 0 6px 6px 0; background: var(--surface-raised); }
+.ai-reason { margin: 0 0 14px; padding: 10px 12px; border-radius: 6px; background: var(--surface-raised); }
 .ai-reason span { color: var(--accent-soft); font-size: 11px; font-weight: 600; }
 .ai-reason p { margin: 4px 0 0; font-size: 13px; line-height: 1.7; }
 .action-seat-info { position: sticky; left: 0; z-index: 2; flex: 0 0 188px; display: flex; flex-direction: column; gap: 6px; border-color: var(--surface-raised); background: var(--surface-raised); box-shadow: 6px 0 0 0 var(--surface), 14px 0 12px -6px var(--surface); }
@@ -115,10 +115,6 @@
 .flop-card-slots .postflop-card:disabled { cursor: default; }
 .flop-card-slots .postflop-card small { position: absolute; top: 0; right: 2px; color: #555; font-size: 10px; }
 .flop-card-count { color: var(--text-subtle); font-size: 11px; font-variant-numeric: tabular-nums; }
-.flop-quick-picks { display: grid; gap: 8px; padding-top: 2px; border-top: 1px solid var(--line); }
-.flop-quick-picks h3 { margin: 8px 0 0; color: var(--text-muted); font-size: 12px; font-weight: 650; }
-.flop-quick-picks .postflop-board-options { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
-.flop-quick-picks .postflop-board-options button { padding: 8px 4px; }
 .modal.street-card-dialog { width: min(100%, 710px); gap: 12px; }
 .street-card-dialog .modal-heading h2 { font-size: 19px; letter-spacing: -.02em; }
 .street-card-board { display: flex; align-items: center; gap: 12px; min-height: 36px; }
@@ -142,8 +138,6 @@
   .flop-card-board > span:first-child { display: none; }
   .flop-card-slots .postflop-card { min-width: 29px; height: 35px; font-size: 13px; }
   .flop-apply-button { margin-left: auto; min-height: 30px; padding: 4px 8px; font-size: 11px; }
-  .flop-quick-picks .postflop-board-options { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-  .flop-quick-picks .postflop-card { min-width: 24px; height: 31px; font-size: 13px; }
   .modal.street-card-dialog { padding: 16px; }
   .street-suit-row { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
   .street-suit-label { grid-column: 1 / -1; justify-self: start; padding-left: 4px; font-size: 21px; }
@@ -187,7 +181,7 @@
 .matrix button.adjusted-add::after, .matrix button.adjusted-drop::after { content: ""; position: absolute; inset: 1px; border-radius: inherit; pointer-events: none; z-index: 1; }
 .matrix button.adjusted-add::after { border: 2px solid var(--accent-bright); }
 .matrix button.adjusted-drop::after { border: 2px dashed var(--text-muted); }
-.adjustment-reason { margin: 0 0 8px; padding: 8px 10px; border-left: 3px solid var(--accent-bright); background: var(--surface-accent); font-size: 13px; line-height: 1.5; }
+.adjustment-reason { margin: 0 0 8px; padding: 8px 10px; border-radius: 6px; background: var(--surface-accent); font-size: 13px; line-height: 1.5; }
 .table-profile-summary { color: var(--accent-soft); }
 .reason-facts dd.fact-positive { color: #6fd08c; }
 .reason-facts dd.fact-negative { color: #ff8a9a; }
@@ -213,7 +207,7 @@
 .postflop-reason-action > summary::after { content: ""; flex: none; width: 6px; height: 6px; margin: 0 2px 2px 4px; border-right: 1.5px solid var(--text-muted); border-bottom: 1.5px solid var(--text-muted); transform: rotate(45deg); opacity: .7; transition: transform .2s, opacity .2s; }
 .postflop-reason-action[open] { background: rgba(255, 255, 255, .03); }
 .postflop-reason-action[open] > summary::after { transform: rotate(-135deg); margin-bottom: -2px; opacity: 1; }
-.postflop-reason-action > .postflop-glossary-text { margin: 0 10px 0 20px; padding: 2px 4px 12px 12px; border-left: 2px solid var(--action-color, rgba(255, 255, 255, .1)); color: var(--text-muted); line-height: 1.75; }
+.postflop-reason-action > .postflop-glossary-text { margin: 0 10px 0 20px; padding: 2px 4px 12px 12px; border-left: 1px solid var(--line); color: var(--text-muted); line-height: 1.75; }
 .postflop-reason-action + .postflop-reason-action { margin-top: 2px; }
 .postflop-reason-action > summary::-webkit-details-marker { display: none; }
 .postflop-reason-action > summary i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
@@ -338,7 +332,7 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .postflop-term { display: inline; padding: 0 1px; border: 0; background: none; color: var(--accent-soft, #f19ac2); font: inherit; cursor: pointer; }
 .postflop-term:hover, .postflop-term.active { color: var(--accent-bright, #ff7fbf); background: rgba(255, 127, 191, .1); border-radius: 2px; }
 .postflop-term:focus-visible { outline: 2px solid var(--accent-bright, #ff7fbf); outline-offset: 1px; }
-.postflop-term-definition { margin: 6px 0 0; padding: 7px 9px; border-left: 2px solid var(--accent, #e0559a); border-radius: 4px; background: var(--surface-raised, rgba(255,255,255,.04)); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
+.postflop-term-definition { margin: 6px 0 0; padding: 7px 9px; border-radius: 4px; background: var(--surface-raised, rgba(255,255,255,.04)); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 .postflop-term-definition strong { color: var(--text); }
 
 .action-seat-info { gap: 8px; padding: 10px 12px; }

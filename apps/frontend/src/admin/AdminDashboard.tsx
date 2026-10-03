@@ -45,11 +45,11 @@ export default function AdminDashboard() {
     <div className="admin">
       <header className="admin-header">
         <div>
-          <p className="admin-eyebrow">EvionAI · Admin</p>
+          <p className="admin-eyebrow">ReysonAI · Admin</p>
           <h1>カバレッジと TODO</h1>
           <p className="admin-sub">Cash · 6max · 100BB · 2.5BB オープン（作成済みフォーマット）のプリフロップツリーと、ヘッズアップのフロップ〜リバー AI方針</p>
         </div>
-        <a className="admin-back" href="/app">アプリへ戻る</a>
+        <a className="admin-back" href="/analyze/ranges">アプリへ戻る</a>
       </header>
 
       <section className="admin-kpis">

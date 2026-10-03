@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { access } from "node:fs/promises";
 import test from "node:test";
 import worker, { isRetiredJapanesePath } from "../worker/index.js";
@@ -32,6 +33,23 @@ test("serves existing static assets without a fallback", async () => {
 
   assert.equal(response.status, 200);
   assert.deepEqual(calls, ["/assets/app.js"]);
+});
+
+test("app host serves the shared app shell at its root", async () => {
+  const calls = [];
+  const response = await worker.fetch(new Request("https://app.reysonai.com/", {
+    headers: { accept: "text/html" },
+  }), {
+    ASSETS: { fetch: async request => {
+      calls.push(new URL(request.url).pathname);
+      return new Response("shared app shell");
+    } },
+  });
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(calls, ["/"]);
+  const config = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
+  assert.match(config, /"pattern": "app\.reysonai\.com", "custom_domain": true/);
 });
 
 test("falls back to index.html for an unknown app route", async () => {

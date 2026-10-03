@@ -1,15 +1,22 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // EvionAI web app: the built client (npm run build) served as static assets. The worker
-  // only adds the SPA fallback for /app and /admin and rejects the retired /ja paths.
-  "name": "evionai",
+  // ReysonAI web app: the built client (npm run build) served as static assets. The worker
+  // only adds the SPA fallback for the app pages (/ranges, /trainer, …) and /admin and rejects the retired /ja paths.
+  "name": "reysonai",
   "main": "worker/index.js",
   "compatibility_date": "2026-09-22",
+  "workers_dev": false,
+  // The same Worker serves the service site on the apex and the ProductApp on its own host.
+  "routes": [
+    { "pattern": "reysonai.com", "custom_domain": true },
+    { "pattern": "www.reysonai.com", "custom_domain": true },
+    { "pattern": "app.reysonai.com", "custom_domain": true }
+  ],
   "assets": {
     "directory": "dist/client",
     "binding": "ASSETS",
     // worker/index.js falls back to /index.html; the default "auto-trailing-slash" handling
-    // would redirect that request to "/" and bounce every /app and /admin load to the site.
+    // would redirect that request to "/" and bounce every app and /admin load to the site.
     "html_handling": "none"
   }
 }

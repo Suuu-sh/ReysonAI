@@ -1,6 +1,6 @@
 // Preflop datasets (the JSON files in this directory, e.g. "opening-ranges" or
 // "reasons/BB_vs_BTN"). The files stay the source of truth for generation and audits; the app
-// reads the published copy from the evionai-api worker (`VITE_API_BASE`), or from the Vite dev
+// reads the published copy from the reysonai-api worker (`VITE_API_BASE`), or from the Vite dev
 // server's same-shaped /v1/preflop/datasets route when no base is set.
 //
 // Modules read datasets synchronously with dataset(name). The browser entry preloads what a
@@ -11,9 +11,9 @@ const pending = new Map<string, Promise<unknown>>();
 
 // Needed synchronously by the app and the admin dashboard; everything else loads on demand.
 export const APP_DATASETS = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses",
-  "limp-responses", "table-profile-adjustments"];
+  "limp-responses", "limp-deep-responses", "table-profile-adjustments"];
 export const ADMIN_DATASETS = [...APP_DATASETS, "five-bet-responses", "cold-three-bet-responses",
-  "multiway-responses", "squeeze-responses", "limp-deep-responses"];
+  "multiway-responses", "squeeze-responses"];
 
 const apiBase = (): string => String((import.meta as any).env?.VITE_API_BASE ?? "").replace(/\/$/, "");
 // Kept in a variable: Vite would bundle every JSON file matched by `new URL(..., import.meta.url)`.

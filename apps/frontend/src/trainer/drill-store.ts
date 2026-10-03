@@ -1,9 +1,10 @@
+import { accountStorage } from "../account/session.ts";
 // Saved drills (named settings) and their session records, kept in this browser only.
 import { POSITIONS, normalizeSettings } from "./trainer-data.ts";
 import { validSession } from "./practice-sessions.ts";
 import { productLocale } from "../locale.ts";
 
-const KEY = "solveaai.trainer.drills.v1";
+const KEY = "reysonai.trainer.drills.v1";
 const SESSION_LIMIT = 50;
 
 export const PRESET_DRILLS = Object.freeze([
@@ -39,14 +40,14 @@ function validDrill(drill, level) {
 
 export function loadDrills(level = null) {
   try {
-    const saved = JSON.parse(window.localStorage.getItem(KEY) ?? "null");
+    const saved = JSON.parse(accountStorage().getItem(KEY) ?? "null");
     if (Array.isArray(saved)) return saved.map(drill => validDrill(drill, level)).filter(Boolean);
   } catch {}
   return presetDrills(level);
 }
 
 export function saveDrills(drills) {
-  try { window.localStorage.setItem(KEY, JSON.stringify(drills)); } catch {}
+  try { accountStorage().setItem(KEY, JSON.stringify(drills)); } catch {}
 }
 
 export function newDrillId() {

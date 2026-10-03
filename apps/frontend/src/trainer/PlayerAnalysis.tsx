@@ -1,4 +1,9 @@
 import { ArrowRight, ChartBar, Info, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
+import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
+import { PlayStyleDashboard } from "../agent/PlayStyleDashboard.tsx";
+import { playerRead } from "../agent/player-read.ts";
+import { loadAgentHands } from "../agent/agent-stats.ts";
+import "../agent/agent.css";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { analyzePlayer, scoreProgress } from "./player-analysis.ts";
 import { practiceHighlights, summarize } from "./trainer-store.ts";
@@ -134,14 +139,14 @@ function ScoreChart({ progress }) {
   const line = progress.series.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
   return <section className="analysis-card analysis-score" aria-labelledby="analysis-score-title">
     <header className="analysis-card-head">
-      <h2 id="analysis-score-title">EvionAI Score の推移</h2>
+      <h2 id="analysis-score-title">ReysonAI Score の推移</h2>
       <span className="analysis-caption">保存済みレンジとの一致度</span>
       <InfoTip label="スコアの計算方法">
         <p>各回答を同じ局面・ハンドの推定頻度と比べ、「選んだ行動の頻度 ÷ 最頻行動の頻度」で採点します。線は直近10回答の移動平均です（復習の再回答も含む）。推定方針が更新されると過去分も再計算されます。</p>
       </InfoTip>
     </header>
     <svg className="analysis-score-chart" viewBox="0 0 720 112" preserveAspectRatio="none" role="img"
-      aria-label={localized(`EvionAI Score over time. ${progress.answered} answers; average of the last ${progress.recentCount} answers: ${pct(progress.current)}.`, `EvionAI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${pct(progress.current)}。`)}>
+      aria-label={localized(`ReysonAI Score over time. ${progress.answered} answers; average of the last ${progress.recentCount} answers: ${pct(progress.current)}.`, `ReysonAI Score の推移。${progress.answered}回答、直近${progress.recentCount}回答の平均は${pct(progress.current)}。`)}>
       <defs><linearGradient id="score-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="var(--accent)" stopOpacity=".28" /><stop offset="1" stopColor="var(--accent)" stopOpacity="0" /></linearGradient></defs>
       {[1, 0.5, 0].map(level => <g key={level}><line className="grid" x1={left} x2={right} y1={y(level)} y2={y(level)} /><text x="0" y={y(level) + 3.5}>{level * 100}</text></g>)}
       {progress.series.length > 1 && <polygon className="area" points={`${left},${bottom} ${line} ${x(progress.series.length - 1)},${bottom}`} />}
@@ -183,18 +188,32 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
   const { metrics } = analysis;
   const scoreDelta = progress.series.length > progress.windowSize ? progress.current - progress.series.at(-1 - progress.windowSize) : null;
   const styleProgress = Math.min(1, analysis.samples / STYLE_SAMPLE_TARGET);
+  const [view, setView] = useState("drills");
+  const agentRead = useMemo(() => view === "agent" ? playerRead(loadAgentHands()) : null, [view]);
 
   return <div className="player-analysis">
-    <header className="analysis-heading">
+    <header className="trainer-home-head analysis-heading">
       <div>
-        <span className="analysis-eyebrow"><ChartBar size={14} />PRACTICE INSIGHTS</span>
+        <span className="trainer-home-eyebrow"><ChartBar size={12} /> ANALYSIS</span>
         <h1>プレー分析</h1>
+        <p>{view === "agent" ? "Agent卓での収支と、Agentが読んでいるあなたの打ち方を振り返ります。" : "ドリルやランク戦での選び方を、保存済みレンジと比べて振り返ります。"}</p>
       </div>
-      <button type="button" className="analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
+      <div className="analysis-head-tools">
+        <div className="lb-period analysis-view" role="group" aria-label="分析の対象">
+          {[["drills", "ドリル練習"], ["agent", "Agent戦"]].map(([value, label]) =>
+            <button key={value} type="button" className={view === value ? "on" : ""} aria-pressed={view === value} onClick={() => setView(value)}>{label}</button>)}
+        </div>
+        <button type="button" className="mode-primary analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
+      </div>
     </header>
 
+    {view === "agent" ? <div className="analysis-agent">
+      <AgentAnalysis />
+      {agentRead && <div className="analysis-card analysis-agent-read"><PlayStyleDashboard read={agentRead} /></div>}
+    </div> : <>
+
     <div className="analysis-kpis">
-      <Kpi label="EvionAI Score" accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
+      <Kpi label="ReysonAI Score" accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
         sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)} · 10回答前比</span>}>
         <ScoreRing value={progress.current} />
       </Kpi>
@@ -228,6 +247,8 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
           <ul>{guidanceNotes(metrics).map((note, index) => <li key={note} style={{ "--i": index }}>{note}</li>)}</ul>
         </section>
       </div>
+    </>}
+
     </>}
 
     <p className="analysis-footnote">

@@ -6,6 +6,7 @@ import { ja } from "./site/content-ja.ts";
 import "./styles.css";
 import "./site/site.css";
 import { productLocale, rememberLocale } from "./locale.ts";
+import { isProductAppRoute } from "./route.ts";
 import { ADMIN_DATASETS, APP_DATASETS, datasetNames, preloadDatasets } from "./estimated/datasets.ts";
 
 // The app and the admin read preflop datasets synchronously, so each route preloads them
@@ -14,11 +15,11 @@ const withDatasets = (names, load) => () => Promise.all([preloadDatasets(names),
 const ProductApp = lazy(withDatasets(APP_DATASETS, () => import("./ProductApp.tsx")));
 const AdminDashboard = lazy(withDatasets(ADMIN_DATASETS, () => import("./admin/AdminDashboard.tsx")));
 const isAdminRoute = window.location.pathname === "/admin" || window.location.pathname.startsWith("/admin/");
-const isProductRoute = window.location.pathname === "/app" || window.location.pathname.startsWith("/app/");
+const isProductRoute = isProductAppRoute(window.location.pathname, window.location.hostname);
 const initialSiteLocale = productLocale();
 const copy = initialSiteLocale === "ja" ? ja : en;
 document.documentElement.lang = isAdminRoute ? "en" : isProductRoute ? productLocale() : initialSiteLocale;
-document.title = isAdminRoute ? "EvionAI · Admin" : isProductRoute ? (productLocale() === "ja" ? "EvionAI · レンジ分析" : "EvionAI · Range Analysis") : copy.title;
+document.title = isAdminRoute ? "ReysonAI · Admin" : isProductRoute ? (productLocale() === "ja" ? "ReysonAI · レンジ分析" : "ReysonAI · Range Analysis") : copy.title;
 if (!isProductRoute) document.querySelector('meta[name="description"]')?.setAttribute("content", copy.description);
 
 function MarketingSite() {
@@ -42,7 +43,7 @@ createRoot(document.getElementById("root")).render(
     {isAdminRoute
       ? <Suspense fallback={<div className="site-loading">Opening admin…</div>}><AdminDashboard /></Suspense>
       : isProductRoute
-      ? <Suspense fallback={<div className="site-loading">Opening EvionAI…</div>}><ProductApp /></Suspense>
+      ? <Suspense fallback={<div className="site-loading">Opening ReysonAI…</div>}><ProductApp /></Suspense>
       : <MarketingSite />}
   </React.StrictMode>,
 );

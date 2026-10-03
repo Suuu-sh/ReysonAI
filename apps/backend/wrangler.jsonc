@@ -1,23 +1,31 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "evionai-api",
+  "name": "reysonai-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-09-22",
+  "workers_dev": false,
+  "routes": [{ "pattern": "api.reysonai.com", "custom_domain": true }],
   "r2_buckets": [
     {
       "binding": "SOLUTIONS",
-      "bucket_name": "solveaai-solutions"
+      "bucket_name": "reysonai-solutions"
     }
   ],
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "evionai",
-      "database_id": "ee3182f6-6bbd-46a7-bcdd-08134b27161e",
+      "database_name": "reysonai",
+      "database_id": "5f3bd3a1-21c2-4367-9345-011990574b9d",
       "migrations_dir": "migrations"
     }
   ],
   "vars": {
-    "ALLOWED_ORIGIN": "https://evionai.suuu-sh.workers.dev"
+    // Comma-separated list of origins allowed by CORS.
+    "ALLOWED_ORIGIN": "https://app.reysonai.com",
+    // Google OAuth configured; live sign-in validation follows API deployment.
+    "AUTH_ENABLED": "true",
+    "AUTH_APP_URL": "https://app.reysonai.com",
+    "GOOGLE_REDIRECT_URI": "https://api.reysonai.com/v1/account/google/callback",
+    "GOOGLE_CLIENT_ID": "371026940937-n07f7kfnjqdljjrg8phqgidadas875n3.apps.googleusercontent.com"
   }
 }

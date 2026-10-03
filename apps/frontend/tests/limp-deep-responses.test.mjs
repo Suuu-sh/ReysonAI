@@ -130,3 +130,14 @@ test("validator rejects wrong sizes, frequencies and reachability", () => {
   assert.throws(broken(d => { d.spots.reverse(); }), /局面/);
   assert.throws(broken(d => { d.metadata.legal_actions.BB_vs_SB_limp_five_bet = ["fold", "call", "all_in"]; }), /メタデータ/);
 });
+
+test("every five-bet and limp-deep spot has a reasons file covering all 169 hands", () => {
+  const ids = [...load("five-bet-responses").spots.map(s => s.id), ...data.spots.map(s => s.id)];
+  assert.equal(ids.length, 17);
+  for (const id of ids) {
+    const file = load(`reasons/${id}`);
+    assert.equal(file.spot_id, id);
+    assert.deepEqual(Object.keys(file.hands).sort(), [...hands].sort());
+    for (const hand of hands) assert.ok(file.hands[hand].reason.length > 20, `${id}/${hand}`);
+  }
+});

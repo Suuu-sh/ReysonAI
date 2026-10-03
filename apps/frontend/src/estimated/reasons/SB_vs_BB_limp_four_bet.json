@@ -1,0 +1,1745 @@
+{
+  "spot_id": "SB_vs_BB_limp_four_bet",
+  "type": "limp_four_bet",
+  "source_fingerprint": "91973e1de320ffa4274d295d93138335d4c030656f3a8ee5395a2a3d538cbc25",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_bb_four_bet_pct",
+      "label": "勝率（対BBの4betレンジ）",
+      "scope": "hand"
+    },
+    {
+      "key": "realized_equity_pct",
+      "label": "実現後の勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "call_ev_bb",
+      "label": "コールのEV",
+      "scope": "hand",
+      "unit": "bb"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "bb_fold_to_shove_pct",
+      "label": "オールインにBBが降りる率",
+      "scope": "spot"
+    },
+    {
+      "key": "blocked_bb_four_bet_pct",
+      "label": "BBの4betレンジのブロック",
+      "scope": "hand"
+    }
+  ],
+  "spot_facts": {
+    "hero": "SB",
+    "opponent": "BB",
+    "position": "OOP",
+    "limp_reraise_size_bb": 10.5,
+    "four_bet_size_bb": 26,
+    "all_in_size_bb": 100,
+    "call_break_even_equity_pct": 31.4,
+    "bb_four_bet_range_combos": 10.5,
+    "bb_fold_to_shove_pct": 54,
+    "cost_to_call_bb": 15.5,
+    "total_pot_after_call_bb": 52
+  },
+  "hands": {
+    "22": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "33": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "44": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "55": {
+      "reason": "主な勝ち筋がフロップのセット（約12%）になるスモールペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率34.7%、必要31.4%）。仮定のEQRを加味した実現後の勝率31.2%で、コールのEVは−0.07bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 34.7,
+        "blocked_bb_four_bet_pct": 2,
+        "eqr": 0.9,
+        "realized_equity_pct": 31.229999999999997,
+        "call_ev_bb": -0.07238000000000255
+      }
+    },
+    "66": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率36.5%、必要31.4%）。仮定のEQRを加味した実現後の勝率32.8%で、コールのEVは+0.72bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 36.5,
+        "blocked_bb_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 32.83125,
+        "call_ev_bb": 0.7186374999999998
+      }
+    },
+    "77": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率35.3%、必要31.4%）。仮定のEQRを加味した実現後の勝率31.8%で、コールのEVは+0.19bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 35.3,
+        "blocked_bb_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 31.7625,
+        "call_ev_bb": 0.19067499999999882
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率35.7%、必要31.4%）。仮定のEQRを加味した実現後の勝率32.2%で、コールのEVは+0.39bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 35.7,
+        "blocked_bb_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 32.15625,
+        "call_ev_bb": 0.3851875000000007
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率35.4%、必要31.4%）。仮定のEQRを加味した実現後の勝率31.8%で、コールのEVは+0.23bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 35.4,
+        "blocked_bb_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 31.837500000000002,
+        "call_ev_bb": 0.2277250000000013
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率83.1%、必要31.4%）。仮定のEQRを加味したコールのEVは+21.46bb。オールインを中心にします。BBはオールインに54.0%降りるうえ、相手の強いハンドを39.0%ブロックできます。配分はオールイン 70%・コール 30%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 83.1,
+        "blocked_bb_four_bet_pct": 39,
+        "eqr": 0.9,
+        "realized_equity_pct": 74.8125,
+        "call_ev_bb": 21.457375
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率45.3%、必要31.4%）。仮定のEQRを加味したコールのEVは+5.11bb。コールと半々で、オールインにも配分します。BBはオールインに54.0%降りるうえ、相手の強いハンドを34.2%ブロックできます。配分はオールイン 50%・コール 50%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 45.3,
+        "blocked_bb_four_bet_pct": 34.2,
+        "eqr": 0.92,
+        "realized_equity_pct": 41.714333333333336,
+        "call_ev_bb": 5.106880666666669
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率34.4%、必要31.4%）。仮定のEQRを加味した実現後の勝率31.7%で、コールのEVは+0.15bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 34.4,
+        "blocked_bb_four_bet_pct": 27,
+        "eqr": 0.92,
+        "realized_equity_pct": 31.674833333333336,
+        "call_ev_bb": 0.14736766666666767
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率31.5%、必要31.4%）。仮定のEQRを加味した実現後の勝率29.0%で、コールのEVは−1.18bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 31.5,
+        "blocked_bb_four_bet_pct": 24,
+        "eqr": 0.92,
+        "realized_equity_pct": 28.995333333333335,
+        "call_ev_bb": -1.1763053333333335
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率31.3%、必要31.4%）。仮定のEQRを加味した実現後の勝率28.8%で、コールのEVは−1.27bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 31.3,
+        "blocked_bb_four_bet_pct": 23,
+        "eqr": 0.92,
+        "realized_equity_pct": 28.8075,
+        "call_ev_bb": -1.2690949999999983
+      }
+    },
+    "A9s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率30.4%、必要31.4%）。仮定のEQRを加味した実現後の勝率26.7%で、コールのEVは−2.30bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 30.4,
+        "blocked_bb_four_bet_pct": 21.2,
+        "eqr": 0.88,
+        "realized_equity_pct": 26.726333333333336,
+        "call_ev_bb": -2.2971913333333323
+      }
+    },
+    "A8s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率30.8%、必要31.4%）。仮定のEQRを加味した実現後の勝率27.1%で、コールのEVは−2.11bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 30.8,
+        "blocked_bb_four_bet_pct": 21.2,
+        "eqr": 0.88,
+        "realized_equity_pct": 27.115000000000002,
+        "call_ev_bb": -2.1051900000000003
+      }
+    },
+    "A7s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率31.5%、必要31.4%）。仮定のEQRを加味した実現後の勝率27.7%で、コールのEVは−1.83bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 31.5,
+        "blocked_bb_four_bet_pct": 21.2,
+        "eqr": 0.88,
+        "realized_equity_pct": 27.676000000000002,
+        "call_ev_bb": -1.8280560000000001
+      }
+    },
+    "A6s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率30.4%、必要31.4%）。仮定のEQRを加味した実現後の勝率26.8%で、コールのEVは−2.28bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 30.4,
+        "blocked_bb_four_bet_pct": 21.2,
+        "eqr": 0.88,
+        "realized_equity_pct": 26.752,
+        "call_ev_bb": -2.284512000000001
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率31.7%、必要31.4%）。仮定のEQRを加味した実現後の勝率27.9%で、コールのEVは−1.73bb。コールでは投資を回収できない見積もりのため、フォールドが中心です。一部は100BBのオールインに回します。BBはオールインに54.0%降り、相手の強いハンドを21.2%ブロックできるためです。配分はフォールド 85%・オールイン 15%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 31.7,
+        "blocked_bb_four_bet_pct": 21.2,
+        "eqr": 0.88,
+        "realized_equity_pct": 27.877666666666666,
+        "call_ev_bb": -1.7284326666666665
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率30.7%、必要31.4%）。仮定のEQRを加味した実現後の勝率27.0%で、コールのEVは−2.14bb。コールでは投資を回収できない見積もりのため、フォールドします。一部は100BBのオールインに回します。BBはオールインに54.0%降り、相手の強いハンドを21.2%ブロックできるためです。配分はフォールド 90%・オールイン 10%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 30.7,
+        "blocked_bb_four_bet_pct": 21.2,
+        "eqr": 0.88,
+        "realized_equity_pct": 27.041666666666668,
+        "call_ev_bb": -2.1414166666666663
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率29.3%、必要31.4%）。仮定のEQRを加味した実現後の勝率25.8%で、コールのEVは−2.76bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 29.3,
+        "blocked_bb_four_bet_pct": 21.2,
+        "eqr": 0.88,
+        "realized_equity_pct": 25.78033333333333,
+        "call_ev_bb": -2.7645153333333337
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率29.5%、必要31.4%）。仮定のEQRを加味した実現後の勝率25.9%で、コールのEVは−2.70bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 29.5,
+        "blocked_bb_four_bet_pct": 21.2,
+        "eqr": 0.88,
+        "realized_equity_pct": 25.919666666666664,
+        "call_ev_bb": -2.6956846666666685
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率42.7%、必要31.4%）。仮定のEQRを加味したコールのEVは+2.43bb。コールと半々で、オールインにも配分します。BBはオールインに54.0%降りるうえ、相手の強いハンドを35.5%ブロックできます。配分はオールイン 55%・コール 35%・フォールド 10%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 42.7,
+        "blocked_bb_four_bet_pct": 35.5,
+        "eqr": 0.85,
+        "realized_equity_pct": 36.295,
+        "call_ev_bb": 2.4297299999999993
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率56.7%、必要31.4%）。仮定のEQRを加味したコールのEVは+9.69bb。コールと半々で、オールインにも配分します。BBはオールインに54.0%降りるうえ、相手の強いハンドを28.4%ブロックできます。配分はオールイン 65%・コール 35%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 56.7,
+        "blocked_bb_four_bet_pct": 28.4,
+        "eqr": 0.9,
+        "realized_equity_pct": 50.98875,
+        "call_ev_bb": 9.6884425
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率27.0%、必要31.4%）。仮定のEQRを加味した実現後の勝率24.9%で、コールのEVは−3.22bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 27,
+        "blocked_bb_four_bet_pct": 22.5,
+        "eqr": 0.92,
+        "realized_equity_pct": 24.8515,
+        "call_ev_bb": -3.2233590000000003
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率28.6%、必要31.4%）。仮定のEQRを加味した実現後の勝率26.3%で、コールのEVは−2.50bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 28.6,
+        "blocked_bb_four_bet_pct": 18.5,
+        "eqr": 0.92,
+        "realized_equity_pct": 26.31966666666667,
+        "call_ev_bb": -2.4980846666666654
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率28.0%、必要31.4%）。仮定のEQRを加味した実現後の勝率25.7%で、コールのEVは−2.79bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 28,
+        "blocked_bb_four_bet_pct": 17.6,
+        "eqr": 0.92,
+        "realized_equity_pct": 25.72166666666667,
+        "call_ev_bb": -2.7934966666666643
+      }
+    },
+    "K9s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K8s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K7s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K6s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K5s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K4s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K3s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K2s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率31.0%、必要31.4%）。仮定のEQRを加味した実現後の勝率26.4%で、コールのEVは−2.48bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 31,
+        "blocked_bb_four_bet_pct": 27.4,
+        "eqr": 0.85,
+        "realized_equity_pct": 26.353541666666665,
+        "call_ev_bb": -2.4813504166666682
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率23.3%、必要31.4%）。仮定のEQRを加味した実現後の勝率19.8%で、コールのEVは−5.73bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 23.3,
+        "blocked_bb_four_bet_pct": 22.5,
+        "eqr": 0.85,
+        "realized_equity_pct": 19.78729166666667,
+        "call_ev_bb": -5.725077916666667
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率44.4%、必要31.4%）。仮定のEQRを加味した実現後の勝率39.9%で、コールのEVは+4.23bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。一部は100BBのオールインに回します。BBはオールインに54.0%降り、相手の強いハンドを12.3%ブロックできるためです。配分はコール 75%・フォールド 15%・オールイン 10%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 44.4,
+        "blocked_bb_four_bet_pct": 12.3,
+        "eqr": 0.9,
+        "realized_equity_pct": 39.93,
+        "call_ev_bb": 4.22542
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率29.6%、必要31.4%）。仮定のEQRを加味した実現後の勝率27.3%で、コールのEVは−2.03bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 29.6,
+        "blocked_bb_four_bet_pct": 9.6,
+        "eqr": 0.92,
+        "realized_equity_pct": 27.274166666666666,
+        "call_ev_bb": -2.0265616666666677
+      }
+    },
+    "QTs": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q9s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q8s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q7s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q6s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q5s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q4s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q3s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q2s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率28.3%、必要31.4%）。仮定のEQRを加味した実現後の勝率24.1%で、コールのEVは−3.60bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 28.3,
+        "blocked_bb_four_bet_pct": 24,
+        "eqr": 0.85,
+        "realized_equity_pct": 24.090416666666663,
+        "call_ev_bb": -3.5993341666666687
+      }
+    },
+    "KJo": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "QJo": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率40.0%、必要31.4%）。仮定のEQRを加味した実現後の勝率36.0%で、コールのEVは+2.29bb。このモデルではコールでプラスのEVが見込めるため、コールを中心に継続します。配分はコール 50%・フォールド 50%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 40,
+        "blocked_bb_four_bet_pct": 4.7,
+        "eqr": 0.9,
+        "realized_equity_pct": 36.0075,
+        "call_ev_bb": 2.2877050000000025
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率30.3%、必要31.4%）。仮定のEQRを加味した実現後の勝率27.8%で、コールのEVは−1.75bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 30.3,
+        "blocked_bb_four_bet_pct": 4.7,
+        "eqr": 0.92,
+        "realized_equity_pct": 27.841499999999996,
+        "call_ev_bb": -1.7462990000000023
+      }
+    },
+    "J9s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J8s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J7s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J6s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J5s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J4s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J3s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J2s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率27.8%、必要31.4%）。仮定のEQRを加味した実現後の勝率23.6%で、コールのEVは−3.84bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 27.8,
+        "blocked_bb_four_bet_pct": 23,
+        "eqr": 0.85,
+        "realized_equity_pct": 23.598125,
+        "call_ev_bb": -3.8425262500000006
+      }
+    },
+    "KTo": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "QTo": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "JTo": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。SBはリンプ・リレイズに対しBBから26BBの4betを受けており、OOPです。コールは15.5BBを払って52BBのポットに参加します。BBの4betレンジは大半がバリューです（勝率36.2%、必要31.4%）。仮定のEQRを加味した実現後の勝率32.6%で、コールのEVは+0.59bb。コール自体はプラスの見積もりですが、既存配分の拡張は行わず、フォールドが中心です。配分はフォールド 60%・コール 40%。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": 36.2,
+        "blocked_bb_four_bet_pct": 3.1,
+        "eqr": 0.9,
+        "realized_equity_pct": 32.58,
+        "call_ev_bb": 0.5945199999999993
+      }
+    },
+    "T9s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T8s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T7s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T6s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T5s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T4s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T3s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T2s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A9o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K9o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q9o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J9o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T9o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "98s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "97s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "96s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "95s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "94s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "93s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "92s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A8o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K8o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q8o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J8o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T8o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "98o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "87s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "86s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "85s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "84s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "83s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "82s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A7o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K7o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q7o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J7o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T7o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "97o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "87o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "76s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "75s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "74s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "73s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "72s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A6o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K6o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q6o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J6o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T6o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "96o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "86o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "76o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "65s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "64s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "63s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "62s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A5o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K5o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q5o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J5o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T5o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "95o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "85o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "75o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "65o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "54s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "53s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "52s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A4o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K4o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q4o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J4o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T4o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "94o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "84o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "74o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "64o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "54o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "43s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "42s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A3o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K3o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q3o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J3o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T3o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "93o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "83o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "73o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "63o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "53o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "43o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "32s": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A2o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K2o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q2o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J2o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T2o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "92o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "82o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "72o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "62o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "52o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "42o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "32o": {
+      "reason": "SBの既存リンプ・リレイズ頻度が0%（リンプまたはアイソへのリレイズが0%）のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_bb_four_bet_pct": null,
+        "blocked_bb_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    }
+  }
+}

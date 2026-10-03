@@ -1,4 +1,4 @@
-# EvionAI Edge API
+# ReysonAI Edge API
 
 Cloudflare Worker上で動作するTypeScriptの読み取り専用APIです。
 
@@ -24,10 +24,10 @@ solutions/<solutionId>/nodes/index.json
 solutions/<solutionId>/nodes/<nodeId>.json
 ```
 
-ローカルで `solveaai-promote` を実行した後、リリース成果物を公開します。
+ローカルで `reysonai-promote` を実行した後、リリース成果物を公開します。
 
 ```bash
-bash scripts/publish-solution-r2.sh release/solveaai solveaai-solutions
+bash scripts/publish-solution-r2.sh release/reysonai reysonai-solutions
 ```
 
 成果物を先に、`manifest.json`を最後にアップロードします。Workerが未配置の
@@ -38,7 +38,7 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
 
 ## プリフロップのデータセット（D1）
 
-`apps/frontend/src/estimated/**/*.json` が正本で、D1 `evionai` はその配信用の写しです。アプリは同梱せず、
+`apps/frontend/src/estimated/**/*.json` が正本で、D1 `reysonai` はその配信用の写しです。アプリは同梱せず、
 `VITE_API_BASE` の Worker から先読みします（未設定なら Vite の同じ形のローカル経路）。
 
 - `GET /v1/preflop/datasets` データセット名とハッシュの一覧
@@ -46,7 +46,7 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
 
 ## ポストフロップAI方針（D1）
 
-Worker は D1 `evionai` を読んで返すだけです。表示の計算（盤面・ターン/リバー・根拠・
+Worker は D1 `reysonai` を読んで返すだけです。表示の計算（盤面・ターン/リバー・根拠・
 手ごとのEV）はブラウザで行います。計算は1回17〜63msかかり、Workers Free の CPU 上限 10ms を超えるためです。
 
 - `GET /v1/postflop/spots` 公開中のスポットと方針ハッシュ
@@ -60,12 +60,12 @@ Worker は D1 `evionai` を読んで返すだけです。表示の計算（盤�
 公開手順（1・3行目は apps/backend、2行目は apps/frontend で実行）:
 
 ```bash
-npx wrangler d1 migrations apply evionai --remote
+npx wrangler d1 migrations apply reysonai --remote
 npm run publish:d1 -- --execute remote
 npx wrangler deploy
 ```
 
-`--execute` を付けなければ `apps/frontend/.local/evionai-d1.sql` を作るだけです。`--execute local` と
+`--execute` を付けなければ `apps/frontend/.local/reysonai-d1.sql` を作るだけです。`--execute local` と
 `npx wrangler dev --local` でローカル確認できます。ハンド別EVは D1 の1文100KB制限に収めるため
 盤面×履歴ごとの行に分けて保存し、Worker で元のファイル形に戻します。
 アプリ側は `VITE_API_BASE=https://<worker>` を付けてビルドすると Worker を使います。
@@ -79,7 +79,7 @@ npx wrangler deploy
   "r2_buckets": [
     {
       "binding": "SOLUTIONS",
-      "bucket_name": "solveaai-solutions"
+      "bucket_name": "reysonai-solutions"
     }
   ],
   "vars": {

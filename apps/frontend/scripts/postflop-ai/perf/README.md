@@ -7,8 +7,8 @@ before golden.
 ## Capture / comparison
 
 ```sh
-node scripts/postflop-ai/perf/equality.mjs capture /private/tmp/solvea-w1-before
-node scripts/postflop-ai/perf/equality.mjs compare /private/tmp/solvea-w1-before
+node scripts/postflop-ai/perf/equality.mjs capture /private/tmp/reyson-w1-before
+node scripts/postflop-ai/perf/equality.mjs compare /private/tmp/reyson-w1-before
 ```
 
 This covers the 400-deal simulation, all hand classes/histories of As7d2c and the any-flop KhTh4s
@@ -33,7 +33,7 @@ counts, wall timings, target budget and result equality; it does not hide an exc
 ## Explicit full CLI measurements
 
 ```sh
-node scripts/postflop-ai/perf/measure.mjs /private/tmp/solvea-w1-before /private/tmp/solvea-w1-after
+node scripts/postflop-ai/perf/measure.mjs /private/tmp/reyson-w1-before /private/tmp/reyson-w1-after
 ```
 
 This runs the real default `simulate` → `audit` → `hand-ev` commands for **BTN_open_BB_call only**.
@@ -45,8 +45,8 @@ records wall timings and command logs, and checks the entire simulation and all 
 ## Profile and baseline (this machine)
 
 Apple M5, Node v25.8.1, `availableParallelism() = 10`, 24 GiB memory. Before files, the original defence and
-existing 2,000-sample hand-EV were copied to `/private/tmp/solvea-w1-before`. CPU profiles are in
-`/private/tmp/solvea-w1-profile`.
+existing 2,000-sample hand-EV were copied to `/private/tmp/reyson-w1-before`. CPU profiles are in
+`/private/tmp/reyson-w1-profile`.
 
 The initial 160-sample profile spent roughly 60% inclusive in `floorOf`, with multi-board
 `equityIndexed` and rank binary searches dominating self time. Floors recomputed a whole defence
@@ -95,8 +95,8 @@ flop / turn / river, and returned deep-equal results. The old default flop count
 The explicit W1 requirement supersedes the older 160-sample description in the already-modified
 `src/estimated/AGENTS.md`; that other-session file was preserved.
 
-Timing logs and original comparisons are in `/private/tmp/solvea-w1-after`; untouched before
-goldens and the original full hand-EV are in `/private/tmp/solvea-w1-before`.
+Timing logs and original comparisons are in `/private/tmp/reyson-w1-after`; untouched before
+goldens and the original full hand-EV are in `/private/tmp/reyson-w1-before`.
 
 ## Exactness and validation
 

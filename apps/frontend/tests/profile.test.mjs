@@ -25,15 +25,20 @@ test("saving a level stores the profile and that level's default display mode", 
     profile.saveProfile({ nickname: "  yota  ", level: "beginner" });
     assert.equal(profile.loadProfile().nickname, "yota");
     assert.equal(store.get(profile.displayModeKey), "simple");
-    profile.saveProfile({ level: "advanced" });
+    store.set(profile.displayModeKey, "standard");
+    profile.saveProfile({ nickname: "yota2", level: "beginner" });
     assert.equal(store.get(profile.displayModeKey), "standard");
-    assert.throws(() => profile.saveProfile({ level: "pro" }), /レベル/);
+    store.set(profile.displayModeKey, "simple");
+    profile.saveProfile({ nickname: "yota2", level: "intermediate" });
+    assert.equal(store.get(profile.displayModeKey), "standard");
+    assert.throws(() => profile.saveProfile({ level: "advanced" }), /レベル/);
   });
 });
 
-test("onboarding offers the three levels and requires one before starting", () => {
+test("onboarding offers the two levels and requires one before starting", () => {
   const html = renderToStaticMarkup(createElement(Onboarding, { onComplete() {} }));
-  for (const label of ["初級", "中級", "上級"]) assert.match(html, new RegExp(label));
+  for (const label of ["初級", "中級"]) assert.match(html, new RegExp(label));
+  assert.doesNotMatch(html, /上級/);
   assert.match(html, /<button type="submit" class="primary" disabled="">はじめる<\/button>/);
   assert.doesNotMatch(html, /type="password"/);
   const editing = renderToStaticMarkup(createElement(Onboarding, { initial: { level: "intermediate", nickname: "y" }, onComplete() {}, onCancel() {} }));

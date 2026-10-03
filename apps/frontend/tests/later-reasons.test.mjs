@@ -83,7 +83,7 @@ test("reasons switch between Japanese and English", () => {
   const previousWindow = globalThis.window;
   const hadWindow = Object.hasOwn(globalThis, "window");
   let savedLocale = "en";
-  globalThis.window = { localStorage: { getItem: key => key === "solveaai:locale:v1" ? savedLocale : null } };
+  globalThis.window = { localStorage: { getItem: key => key === "reysonai:locale:v1" ? savedLocale : null } };
   try {
     assert.equal(laterActionReason(args), english);
     savedLocale = "ja";

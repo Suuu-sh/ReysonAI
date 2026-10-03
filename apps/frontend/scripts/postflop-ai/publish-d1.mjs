@@ -1,4 +1,4 @@
-// SQL for the canonical local postflop artifacts in the evionai D1 database (schema:
+// SQL for the canonical local postflop artifacts in the reysonai D1 database (schema:
 // apps/backend/migrations). Spots whose flop policy or report is missing or stale are
 // skipped. Run through scripts/publish-d1.mjs.
 import { createHash } from "node:crypto";

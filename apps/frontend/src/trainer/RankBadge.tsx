@@ -1,0 +1,20 @@
+import { TIER_COLORS, TierEmblem, tierColor } from "./RankEmblem.tsx";
+import { TIERS, TIER_EN, tierFor } from "./rank-store.ts";
+import { localized } from "../locale.ts";
+
+export { TIER_COLORS, tierColor };
+
+export function RankBadge({ name, size = 48 }) {
+  const level = Math.max(0, TIERS.findIndex(tier => tier.name === name));
+  return <TierEmblem level={level} name={name} size={size} tier={TIER_EN[name]?.toLowerCase()} label={localized(`${TIER_EN[name]} rank`, `${name}ランク`)} />;
+}
+
+export function RankLadder({ rating }) {
+  const current = tierFor(rating);
+  return <ol className="rank-ladder" aria-label={localized("Rank tiers and rating thresholds", "ランクと昇格レート")}>
+    {TIERS.map(tier => <li key={tier.name} className={tier.name === current.name ? "current" : rating >= tier.min ? "reached" : ""} aria-current={tier.name === current.name ? "step" : undefined}
+      style={{ "--tier": tierColor(tier.name) }}>
+      <RankBadge name={tier.name} size={34} /><span>{localized(TIER_EN[tier.name], tier.name)}</span><small>{tier.min.toLocaleString()}+</small>
+    </li>)}
+  </ol>;
+}

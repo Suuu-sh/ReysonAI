@@ -108,12 +108,12 @@ export type SolveJobResponse = {
   error: string | null;
 };
 
-export type SolveaAIClientOptions = {
+export type ReysonAIClientOptions = {
   baseUrl: string;
   fetch?: typeof fetch;
 };
 
-export class SolveaAIClient {
+export class ReysonAIClient {
   private readonly baseUrl: string;
   private readonly fetcher: typeof fetch;
 
@@ -129,7 +129,7 @@ export class SolveaAIClient {
     getJob: (jobId: string) => Promise<SolveJobResponse>;
   };
 
-  constructor(options: SolveaAIClientOptions) {
+  constructor(options: ReysonAIClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, "");
     this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis);
     this.preflop = {
@@ -176,7 +176,7 @@ export class SolveaAIClient {
     const response = await this.fetcher(`${this.baseUrl}${path}`, init);
     if (!response.ok) {
       const body = await response.text();
-      throw new SolveaAIApiError(response.status, body);
+      throw new ReysonAIApiError(response.status, body);
     }
     return (await response.json()) as T;
   }
@@ -184,9 +184,9 @@ export class SolveaAIClient {
 
 export type NodeSummary = Omit<SolutionNode, "combos" | "handAggregates"> & { hasStrategy: boolean };
 
-export class SolveaAIApiError extends Error {
+export class ReysonAIApiError extends Error {
   constructor(public readonly status: number, public readonly body: string) {
-    super(`SolveaAI API ${status}: ${body}`);
-    this.name = "SolveaAIApiError";
+    super(`ReysonAI API ${status}: ${body}`);
+    this.name = "ReysonAIApiError";
   }
 }

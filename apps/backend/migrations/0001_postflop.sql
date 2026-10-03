@@ -1,4 +1,4 @@
--- Heads-up postflop AI policies (AI estimates, not GTO) served by evionai-api.
+-- Heads-up postflop AI policies (AI estimates, not GTO) served by reysonai-api.
 -- Rows are replaced wholesale by apps/frontend/scripts/postflop-ai/publish-d1.mjs; the
 -- dataset_versions row records which local artifacts a publish came from.
 CREATE TABLE IF NOT EXISTS postflop_spots (
