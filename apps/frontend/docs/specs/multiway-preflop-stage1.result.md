@@ -4,9 +4,11 @@
 
 Implemented and locally published by exactly one final pipeline execution. No merge or production deployment.
 
+For this task, the user's latest direction excludes the existing opening benchmarks from both reference use and acceptance criteria. The result is an Astra-authored estimate assessed for consistency with the existing saved ranges, action reach, fixed sizes, shared call-EV policy and saved reasons; it is not a solver-quality guarantee.
+
 - Branch: `feat/multiway-preflop-stage1`
 - Original remote development baseline: `c39e03651f32e575bc593680a7b6be64dd1ff0a1` (2026-10-03 19:26:53 UTC)
-- Remote prerequisite commits: `b4090cab0e7952a7faa5504000be28cf036a3957` (.gitignore only) and `e02b40ab894b9d7e73395d2672a395ba35702d72` (five user-supplied opening benchmarks). Preserve both when publishing this implementation.
+- Implementation commit: `f15f10333bb3d451fd541ddd8f9fb2c0c0048fae`. Its prerequisites are `b4090cab0e7952a7faa5504000be28cf036a3957` (.gitignore only) and `e02b40ab894b9d7e73395d2672a395ba35702d72` (five user-supplied opening benchmarks). Those files remain intact; their values are excluded from this task's reference use and acceptance criteria.
 - One checkout, working in apps/frontend. Source blob, tree and initial commit IDs were verified through the authorized GitHub connector; no credentials were extracted.
 - User-approved model exception: Astra authoring and independent Astra review were used for this task. All other range-author instructions were followed.
 
@@ -19,7 +21,7 @@ Implemented and locally published by exactly one final pipeline execution. No me
 | multiway_two_callers | 15/15, missing 0 |
 | cold_four_bet | 40/40, missing 0 |
 | Audit | 0 findings; range-capped 0, over-segregated 0, EV/order/flow/overfold violations 0 |
-| External open benchmark | 5 reference files / 11 action comparisons, beyond ±3pt: 0; maximum absolute difference 2.756pt |
+| Existing-range consistency | Incoming saved-action ranges, unreachable placeholders, fixed legal sizes, shared call-EV decisions and saved-frequency reasons checked |
 | Final pipeline | changed; 1/1 iteration, existing changed spots 0, new spots 87 |
 | Protected frequencies | Eight existing HU/limp/cold-3bet datasets unchanged against original development |
 | TypeScript | npm run typecheck passed |
@@ -50,7 +52,7 @@ The pipeline's `changed` state means new datasets/spots were added on its single
 
 ## Authoring decisions and assumptions
 
-- Fixed 6max / 100BB / no ante / rake 5% capped at 3BB, no flop no drop. Sizes never vary by hand. Generators author candidate hand-group frequencies; the shared EV policy and consistency reconciliation select calls. These are AI estimates, not solver equilibria. External references are used only for opening aggregates.
+- Fixed 6max / 100BB / no ante / rake 5% capped at 3BB, no flop no drop. Sizes never vary by hand. Generators author candidate hand-group frequencies; the shared EV policy and consistency reconciliation select calls. These are AI estimates, not solver equilibria. The 87 new spots were not tuned to external benchmark values.
 - Stage 1a was completed before stage 1b. Nonblind overcalls use existing seats-behind cold-call squeeze risk and offsuit EQR discounts. All seats behind a squeezer are assumed to fold before reopened responses.
 - Four first-caller-SB histories and their twelve squeeze responses are unreachable while saved SB versus-open calls are zero. They retain fold100 placeholders and explicit unreachable reasons with null hand facts; no empty-range equity is invented.
 - The approved exception sets the response to a CO/BTN 12BB squeeze to a fixed 26BB 4bet. Existing HU OOP 20BB would be below the 21.5BB legal minimum in those histories. Existing HU and blind-squeeze sizes are unchanged; the validator and tests enforce the minimum raise.
@@ -60,6 +62,14 @@ The pipeline's `changed` state means new datasets/spots were added on its single
 - Four-bet pots do not receive automatic positive-EV fill; only legal positive-EV calls may be added minimally to meet the joint fold-rate audit. A candidate premium flat can disappear under the EV model: e.g. UTG_vs_CO_cold4bet_HJ3bet KK has call EV −1.0566BB and therefore call0 / all-in65 / fold35. No negative-EV call was restored to force a preferred premium shape.
 - UI files and runtime action-path integration were not changed. The new persisted datasets are registered for generation, audits, reasons, fingerprints, admin coverage and dataset loading.
 - Only the five approved opening benchmark JSON paths were unignored. Other .local caches and private data remain ignored. Their actual files were supplied from the user's existing repository and verified against the remote blobs.
+
+## Task-specific benchmark exclusion (2026-10-03)
+
+The earlier comparison of existing opening aggregates was a reference check that is not adopted for this task and is not a quality guarantee. It is not used to judge or justify the new ranges.
+
+The four stage-1 generators read saved predecessor ranges, sizing configuration and the shared call policy, not benchmark files. `scripts/lib/benchmark.mjs` compares aggregate actions only for an exact reference spot ID and does not write frequencies. The five reference IDs are existing opening spots (`UTG_open`, `HJ_open`, `CO_open`, `BTN_open`, `SB_open`); none overlaps the 87 additions recorded by the final pipeline. The build/pipeline generation and audit path does not import the benchmark comparison. The completed authoring work did not adjust any new frequency to match those values.
+
+This clarification changes only this result document. All previously published implementation/data files still match their recorded blob hashes. No frequency regeneration, test rerun or additional pipeline execution was needed. Existing saved ranges remain the source of incoming action reach and consistency checks. The general benchmark tooling and the five existing reference files have not been removed or disabled.
 
 ## Per-spot combo-weighted actions
 
