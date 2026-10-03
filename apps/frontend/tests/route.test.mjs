@@ -20,19 +20,21 @@ test("every trainer route round-trips through its /learn path", () => {
   assert.equal(trainerPath({ phase: "drill", key: "d-1" }), "/learn/trainer/drills/d-1/play");
 });
 
-test("sections map to /solutions and /learn", () => {
-  assert.equal(pathOfSection("レンジ分析"), "/solutions");
+test("sections map to /analyze and /learn", () => {
+  assert.equal(pathOfSection("レンジ分析"), "/analyze/ranges");
   assert.equal(pathOfSection("セッション"), "/learn/sessions");
   assert.equal(pathOfSection("プレー分析"), "/learn/analysis");
   assert.equal(pathOfSection("弱点"), "/learn/weakness");
   assert.equal(pathOfSection("アカウント#language"), "/account/language");
   assert.equal(sectionOfPath("/learn/analysis"), "プレー分析");
-  assert.equal(sectionOfPath("/solutions"), "レンジ分析");
+  assert.equal(sectionOfPath("/analyze/ranges"), "レンジ分析");
 });
 
 test("old addresses move to the current ones", () => {
-  assert.equal(canonicalPath("/app"), "/solutions");
-  assert.equal(canonicalPath("/ranges"), "/solutions");
+  assert.equal(canonicalPath("/app"), "/analyze/ranges");
+  assert.equal(canonicalPath("/ranges"), "/analyze/ranges");
+  assert.equal(canonicalPath("/solutions"), "/analyze/ranges");
+  assert.equal(canonicalPath("/analyze"), "/analyze/ranges");
   assert.equal(canonicalPath("/trainer"), "/learn/trainer");
   assert.equal(canonicalPath("/trainer/play/ranked"), "/learn/trainer/ranked/play");
   assert.equal(canonicalPath("/trainer/play/d-1/result"), "/learn/trainer/drills/d-1/play/result");
@@ -40,6 +42,6 @@ test("old addresses move to the current ones", () => {
   assert.equal(canonicalPath("/trainer/agent/reyson-01/watch"), "/learn/agent/reyson-01/watch");
   assert.equal(canonicalPath("/sessions"), "/learn/sessions");
   assert.equal(canonicalPath("/learn"), "/learn/trainer");
-  for (const path of ["/solutions", "/learn/trainer", "/account/language", "/app", "/trainer/drills"]) assert.ok(isAppPath(path), path);
+  for (const path of ["/analyze/ranges", "/solutions", "/learn/trainer", "/account/language", "/app", "/trainer/drills"]) assert.ok(isAppPath(path), path);
   for (const path of ["/", "/ja", "/admin", "/learning"]) assert.ok(!isAppPath(path), path);
 });

@@ -230,7 +230,7 @@ for (const locale of ["en", "ja"]) {
     assert.match(html, /class="site-hand" aria-live="polite"/);
     assert.match(html, /class="site-plan is-planned"/);
     assert.match(html, /class="site-button is-disabled" aria-disabled="true"/);
-    assert.match(html, /href="\/solutions"/);
+    assert.match(html, /href="\/analyze\/ranges"/);
     assert.match(html, locale === "en" ? /Not a GTO solution/ : /GTOソリューションではありません/);
   });
 }

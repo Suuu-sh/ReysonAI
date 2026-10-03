@@ -46,7 +46,7 @@ export async function routeAccount(request:Request,env:AccountEnv):Promise<Respo
   if(env.AUTH_ENABLED!=='true') return reply({error:'accounts_not_enabled'},503);
   if(!env.DB || !env.AUTH_APP_URL || !env.AUTH_RATE_LIMIT_KEY || !env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_REDIRECT_URI) return reply({error:'accounts_not_configured'},503);
   const url=new URL(request.url);
-  const app=new URL('/solutions',env.AUTH_APP_URL);
+  const app=new URL('/analyze/ranges',env.AUTH_APP_URL);
   const redirectURI=new URL(env.GOOGLE_REDIRECT_URI);
   const origins=(env.ALLOWED_ORIGIN||'').split(',').map(s=>s.trim()).filter(s=>s && s!=='*');
   if(app.protocol!=='https:' || !origins.includes(app.origin) || redirectURI.protocol!=='https:' || redirectURI.origin!==url.origin || redirectURI.pathname!=='/v1/account/google/callback' || redirectURI.search || redirectURI.hash) return reply({error:'accounts_not_configured'},503);

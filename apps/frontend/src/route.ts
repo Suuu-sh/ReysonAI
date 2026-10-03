@@ -1,6 +1,6 @@
 // App URLs. Every page has its own path so a reload stays where you were.
 //
-//   /solutions                               range analysis (the app's front page; the spot lives in the query)
+//   /analyze/ranges                          range analysis (the app's front page; the spot lives in the query)
 //   /learn/trainer                           trainer home
 //   /learn/trainer/drills                    drill library
 //   /learn/trainer/drills/new                new drill
@@ -13,17 +13,17 @@
 //   /learn/sessions  /learn/analysis  /learn/weakness
 //   /account/:tab
 //
-// Older addresses (/app, /ranges, /trainer/…, /sessions, /analysis, /weakness) are rewritten by canonicalPath.
+// Older addresses (/app, /ranges, /solutions, /trainer/…, /sessions, /analysis, /weakness) are rewritten by canonicalPath.
 // Section names match RANGE_SECTION (components/layout.tsx) and ACCOUNT_SECTION (account/AccountMenu.tsx);
 // they are spelled out here so the marketing site can import this file without pulling in the app.
 const RANGE_SECTION = "レンジ分析";
 const ACCOUNT_SECTION = "アカウント";
 const TRAINER_SECTION = "トレーナー";
 
-export const HOME_PATH = "/solutions";
+export const HOME_PATH = "/analyze/ranges";
 
 const SECTIONS: [string, string][] = [
-  [RANGE_SECTION, "/solutions"],
+  [RANGE_SECTION, "/analyze/ranges"],
   [TRAINER_SECTION, "/learn/trainer"],
   ["セッション", "/learn/sessions"],
   ["プレー分析", "/learn/analysis"],
@@ -36,13 +36,13 @@ const under = (path: string, base: string) => path === base || path.startsWith(`
 // Paths the app (not the marketing site) answers, including the old ones it redirects.
 export function isAppPath(pathname: string) {
   const path = clean(pathname);
-  return ["/app", "/ranges", "/trainer", "/sessions", "/analysis", "/weakness", "/account", "/learn", "/solutions"].some(base => under(path, base));
+  return ["/app", "/ranges", "/trainer", "/sessions", "/analysis", "/weakness", "/account", "/learn", "/analyze", "/solutions"].some(base => under(path, base));
 }
 
 // The current address for an old one; anything else is returned cleaned.
 export function canonicalPath(pathname: string) {
   const path = clean(pathname);
-  if (under(path, "/app") || under(path, "/ranges")) return HOME_PATH;
+  if (under(path, "/app") || under(path, "/ranges") || under(path, "/solutions") || path === "/analyze") return HOME_PATH;
   if (under(path, "/trainer")) return trainerPath(legacyTrainerRoute(path));
   for (const name of ["sessions", "analysis", "weakness"]) if (under(path, `/${name}`)) return `/learn/${name}`;
   if (path === "/learn") return "/learn/trainer";

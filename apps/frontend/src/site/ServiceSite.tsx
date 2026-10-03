@@ -198,7 +198,7 @@ function Explorer() {
           </div>
           <div className="site-hero-reason">
             <p className="site-hand-why"><span>{c.preview.why}</span>{explanation}</p>
-            <a className="site-hand-link" href="/solutions">{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
+            <a className="site-hand-link" href="/analyze/ranges">{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
           </div>
         </div>
         <div className="site-hero-playback">
@@ -237,7 +237,7 @@ function Header() {
       </nav>
       <div className="site-header-actions">
         <button type="button" className="site-lang" onClick={onLocaleChange} aria-label={c.common.languageLabel}>{c.common.language}</button>
-        <a className="site-button is-small" href="/solutions">{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
+        <a className="site-button is-small" href="/analyze/ranges">{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
         <button type="button" className="site-menu" onClick={() => setOpen(!open)} aria-label={open ? c.common.menuClose : c.common.menuOpen} aria-expanded={open}>{open ? <X size={22} /> : <List size={22} />}</button>
       </div>
     </div>
@@ -250,7 +250,7 @@ function HeroCopy({ children }: { children?: ReactNode }) {
     <h1 id="site-hero-title" lang="en"><span className="site-line site-hero-opening"><span>{c.hero.title1}</span></span><span className="site-line"><span className="site-hero-mark">{c.hero.title2}</span></span></h1>
     <p className="site-hero-lead">{c.hero.lead}</p>
     <div className="site-hero-actions">
-      <a className="site-button" href="/solutions">{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
+      <a className="site-button" href="/analyze/ranges">{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
       <a className="site-hero-secondary" href="#how">{c.hero.secondary}<ArrowRight size={17} aria-hidden="true" /></a>
     </div>
     <p className="site-hero-note">{c.hero.note}</p>
@@ -577,7 +577,7 @@ function Audience() {
               <p className="site-persona-price"><strong>{free.price}</strong><small>{free.cadence}</small></p>
               <span className="site-persona-pill">{c.audience.freeNote}</span>
               <ul>{c.audience.freeList.map((feature, index) => <li key={feature} style={{ "--i": index } as CSSProperties}><Check size={16} weight="bold" aria-hidden="true" />{feature}</li>)}</ul>
-              <a className="site-button is-small" href="/solutions" tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
+              <a className="site-button is-small" href="/analyze/ranges" tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
               <div className="site-persona-plus">
                 <p><strong>{plus.name}</strong><span>{plus.price}</span><small>{plus.cadence}</small></p>
                 <small>{plus.status}</small>
@@ -873,7 +873,7 @@ function FinalCta() {
       <div className="site-fan" data-reveal aria-hidden="true">{fan.map(([rank, suit], index) => <PlayingCard key={rank} rank={rank} suit={suit} index={index - 2} />)}</div>
       <h2 id="site-final-title" data-reveal>{c.final.title1}<span>{c.final.title2}</span></h2>
       <p data-reveal>{c.final.description}</p>
-      <a className="site-button is-large" href="/solutions" data-reveal>{c.final.action}<ArrowRight size={18} weight="bold" aria-hidden="true" /></a>
+      <a className="site-button is-large" href="/analyze/ranges" data-reveal>{c.final.action}<ArrowRight size={18} weight="bold" aria-hidden="true" /></a>
       <small>{c.final.note}</small>
     </div>
   </section>;
@@ -886,7 +886,7 @@ function Footer() {
       <div className="site-footer-top">
         <div><Brand /><p>{c.footer.tagline}</p></div>
         <div className="site-footer-links">
-          <div><span>{c.footer.product}</span><a href="/solutions">{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
+          <div><span>{c.footer.product}</span><a href="/analyze/ranges">{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
           <div><span>ReysonAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
           <div><span>{c.footer.legal}</span><span className="is-muted">{c.footer.privacy}</span><span className="is-muted">{c.footer.terms}</span></div>
         </div>
