@@ -18,6 +18,9 @@ test('every rank has an inline emblem and ladder uses canonical thresholds', () 
 });
 test('empty leaderboard is honest and offers a path back', () => {
   const html = renderToStaticMarkup(React.createElement(Leaderboard, { rank: emptyRankState(), onBack() {} }));
+  assert.match(html, /<h1 class="trainer-home-eyebrow">[\s\S]*LEADERBOARD<\/h1>/);
+  assert.doesNotMatch(html, /<h1>ランキング<\/h1>/);
+  assert.match(html, /ランク戦のレート順です/);
   assert.ok(html.includes('最初の一歩を踏み出そう'));
   assert.ok(html.includes('あと3試合'));
   assert.ok(!html.includes('<tbody>'));

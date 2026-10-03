@@ -1,5 +1,6 @@
 /* Sessions: same language as the trainer home (heading + pulse tiles, segmented filter, card rows). */
 .sessions-page, .sessions-detail { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 1100px; min-width: 0; margin: 0 auto; padding: 8px 4px 32px; }
+.sessions-page > .sessions-page-head { align-items: flex-start; }
 .sessions-detail-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
 .sessions-detail-head h1 { margin: 2px 0 4px; font-size: 24px; letter-spacing: -.01em; }
 .sessions-detail-head p, .sessions-history-head p { margin: 0; color: var(--text-muted); font-size: 13px; }
