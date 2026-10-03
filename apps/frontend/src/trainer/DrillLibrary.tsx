@@ -157,7 +157,7 @@ function AgentEntry({ onStart }) {
       <h3>{localized("Play a 6-max table against the Agents", "Agentたちと6人卓で対戦")}</h3>
       <p>{localized("Every Agent plays the Evion solver estimate. Fold any time, then watch the rest or skip.", "全員がEvion solver（AI推定）通りに打ちます。降りたら続きを観戦することも、スキップすることもできます。")}</p>
       <ul className="agent-entry-facts">
-        <li>6-max · 100BB</li><li>{localized("1BB = 100 pts", "1BB = 100点")}</li><li>{localized("Heads-up flops", "フロップはHUのみ")}</li>
+        <li>6-max · 100BB</li><li>{localized("1BB = 100 pts", "1BB = 100点")}</li><li>{localized("Beta · heads-up flops only", "β版 · フロップはHUのみ")}</li>
         <li className="agent-entry-record">{record.hands
           ? <>{localized(`${record.hands} hands`, `${record.hands}ハンド`)} · <b className={points > 0 ? "up" : points < 0 ? "down" : ""}>{points > 0 ? "+" : ""}{points.toLocaleString()}</b></>
           : localized("Not played yet", "まだ対戦していません")}</li>

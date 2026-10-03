@@ -45,7 +45,7 @@ export function actionLabel(entry: { action: string; to?: number }) {
   if (action === "limp") return localized("Limp", "リンプ");
   if (action === "open") return `${localized("Raise", "レイズ")}${amount}`;
   if (action === "three_bet") return `3bet${amount}`;
-  if (action === "squeeze") return `${localized("Squeeze", "スクイーズ")}${amount}`;
+  if (action === "squeeze") return `${localized("Raise", "レイズ")}${amount}`;
   if (action === "four_bet") return `4bet${amount}`;
   if (action === "all_in" || action === "allin") return localized("All-in", "オールイン");
   if (action === "raise") return `${localized("Raise", "レイズ")}${amount}`;
@@ -214,9 +214,9 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
         </div>
         {watch && <button type="button" className={`agent-toggle${autoNext ? " is-on" : ""}`} aria-pressed={autoNext}
           onClick={() => { setAutoNext(!autoNext); writePref("evionai:agent-auto-next", !autoNext); }}><Repeat size={13} weight="bold" />{localized("Auto next", "自動で次へ")}</button>}
-        <span className="agent-rule" tabIndex={0}><Info size={13} />{localized("Heads-up flops", "フロップはHUのみ")}
-          <span className="agent-rule-tip" role="tooltip">{localized("A call that would bring a third player to the flop is not offered; agents fold that share instead. Lines without saved data fold.",
-            "3人目としてフロップへ行くコールは選べません（Agentはその頻度をフォールドに回します）。保存データのない場面はフォールドです。")}</span></span>
+        <span className="agent-rule" tabIndex={0}><Info size={13} />{localized("Beta · heads-up flops", "β版 · フロップはHUのみ")}
+          <span className="agent-rule-tip" role="tooltip">{localized("Evion Agent is in beta and multiway pots aren't supported yet. A call that would bring a third player to the flop isn't offered (agents fold that share instead), and lines without saved data fold.",
+            "Evion Agentはβ版で、まだマルチウェイに対応していません。3人目としてフロップへ行くコールは選べず（Agentはその頻度をフォールドに回します）、保存データのない場面はフォールドになります。")}</span></span>
       </div>
     </header>
 
@@ -287,7 +287,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
               <div className="agent-turn">
                 <b>{localized("Your turn", "あなたの番")}</b>
                 <small>{pending.toCall ? localized(`To call ${bb(pending.toCall)}BB`, `コール額 ${bb(pending.toCall)}BB`) : localized("You can check", "チェックできます")} · {localized("pot", "ポット")} {bb(pending.pot)}BB</small>
-                {pending.notice === "no_multiway" && <small className="agent-turn-note">{localized("A call here would make the flop three-way, so it is not offered.", "ここでのコールは3人目になるため選べません")}</small>}
+                {pending.notice === "no_multiway" && <small className="agent-turn-note">{localized("Beta: multiway pots aren't supported yet, so a call that would make the flop three-way isn't offered.", "β版のため、まだマルチウェイ（3人以上でのフロップ）に対応していません。ここでのコールは3人目になるため選べません。")}</small>}
               </div>
               <div className="agent-buttons">{pending.options.map((option, index) => <button type="button" key={option.key} className={`agent-act tone-${tone(option.key)}`} onClick={() => act(option.key)}>
                 <kbd>{index + 1}</kbd><span>{actionLabel({ action: option.key, to: option.key === "call" ? pending.toCall : option.to })}</span>
