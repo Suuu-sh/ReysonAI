@@ -11,7 +11,7 @@ import {
 import { clearHistory, loadHistory, saveHistory, summarize } from "./trainer-store.ts";
 import { displayDrillName, drillStats, loadDrills, newDrillId, recordSession, saveDrills, upsertDrill } from "./drill-store.ts";
 import { loadDrillDrafts, removeDrillDraft, restoreDrillDraft, saveDrillDraft } from "./drill-session-store.ts";
-import { DrillLibrary, HistoryChart } from "./DrillLibrary.tsx";
+import { DrillLibrary, HistoryChart, TrainerHome } from "./DrillLibrary.tsx";
 import { AgentTablePage } from "../agent/AgentTable.tsx";
 import { PlayerAnalysis } from "./PlayerAnalysis.tsx";
 import { SessionPage } from "./SessionPage.tsx";
@@ -538,22 +538,24 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
         : section === "セッション" ? <SessionPage drills={drills} reviews={reviewSessions} drafts={drafts}
             onResume={session => start(session.kind === "review" ? reviewDrill : drills.find(drill => drill.id === session.drillId), session.kind === "review")} />
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
-            onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("library")}
-            onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("library"); }} />
+            onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("drills")}
+            onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("drills"); }} />
         : phase === "agent" && agentTable ? <AgentTablePage key={`${agentTable.tableId}-${agentTable.watch}`} tableId={agentTable.tableId} watch={agentTable.watch} onExit={() => setPhase("library")} />
         : phase === "ranking" && RANKED_ENABLED ? <Leaderboard rank={rankState} profile={profile} onBack={() => setPhase("library")} />
         : phase === "result" && result ? <SessionResult log={result.log} record={result.record} rank={result.rank} settings={current.settings} drill={active.review ? null : current}
-            onRestart={active.ranked && (playedToday(rankState) >= RANKED_DAILY_LIMIT) ? null : () => start(current, active.review)} onLibrary={() => setPhase("library")} />
+            onRestart={active.ranked && (playedToday(rankState) >= RANKED_DAILY_LIMIT) ? null : () => start(current, active.review)} onLibrary={() => setPhase(active.ranked ? "library" : "drills")} />
         : phase === "drill" && current ? <Drill key={run} history={history} onAnswer={onAnswer} settings={current.settings} drillName={current.name} reviewOnly={active.review}
             draftKey={activeDraftKey} initialDraft={activeDraft} onProgress={onProgress}
-            onOpenSetup={() => setPhase("library")} onFinish={onFinish} length={active.ranked ? RANKED_LENGTH : undefined} />
-        : <DrillLibrary drills={drills} reviewCount={reviewCount} drafts={drafts}
-            onStartAgent={(tableId, watch) => { setAgentTable({ tableId, watch }); setPhase("agent"); }}
-            rank={rankState} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")}
+            onOpenSetup={() => setPhase(active.ranked ? "library" : "drills")} onFinish={onFinish} length={active.ranked ? RANKED_LENGTH : undefined} />
+        : phase === "drills" ? <DrillLibrary drills={drills} reviewCount={reviewCount} drafts={drafts} onBack={() => setPhase("library")}
             onStart={drill => start(drill)} onStartReview={() => start(reviewDrill, true)}
             onCreate={() => { setEditing({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true }); setPhase("edit"); }}
             onEdit={drill => { setEditing({ drill, isNew: false }); setPhase("edit"); }}
-            onDelete={drill => { if (window.confirm(`「${drill.name}」と記録を削除しますか？`)) { commitDrills(drills.filter(item => item.id !== drill.id)); discardProgress(drill.id); } }} />}
+            onDelete={drill => { if (window.confirm(`「${drill.name}」と記録を削除しますか？`)) { commitDrills(drills.filter(item => item.id !== drill.id)); discardProgress(drill.id); } }} />
+        : <TrainerHome drills={drills} reviewCount={reviewCount} drafts={drafts} onOpenDrills={() => setPhase("drills")}
+            onCreate={() => { setEditing({ drill: { id: newDrillId(), name: "", settings: normalizeSettings({}, profile?.level), sessions: [], createdAt: Date.now() }, isNew: true }); setPhase("edit"); }} onStartReview={() => start(reviewDrill, true)}
+            onStartAgent={(tableId, watch) => { setAgentTable({ tableId, watch }); setPhase("agent"); }}
+            rank={rankState} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")} />}
     </main>
   </div>;
 }
