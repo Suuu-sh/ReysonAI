@@ -232,13 +232,7 @@ Percentages below are conditional on each spot's incoming saved range: hand comb
 
 ## Changed files against original development
 
-- `.gitignore`
-- `apps/frontend/.local/benchmarks/BTN_open.json`
-- `apps/frontend/.local/benchmarks/CO_open.json`
-- `apps/frontend/.local/benchmarks/HJ_open.json`
-- `apps/frontend/.local/benchmarks/SB_open.json`
-- `apps/frontend/.local/benchmarks/UTG_open.json`
-- `apps/frontend/benchmarks/README.md`
+（レビューで削除：`.gitignore` の変更、`.local/benchmarks/*_open.json` の追加、`benchmarks/README.md` の変更。外部ベンチマークは引き続き Git 管理しない。）
 - `apps/frontend/docs/specs/multiway-preflop-stage1.result.md`
 - `apps/frontend/scripts/apply-call-ev.mjs`
 - `apps/frontend/scripts/audit-estimates.mjs`
