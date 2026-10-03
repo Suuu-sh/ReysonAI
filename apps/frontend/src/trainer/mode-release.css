@@ -1,0 +1,20 @@
+.mode-body h3:has(.mode-release-status) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-release-status {
+  padding: 4px 9px;
+  border: 1px solid color-mix(in srgb, var(--mode-theme) 45%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--mode-theme) 12%, transparent);
+  color: var(--mode-theme);
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.is-coming-soon .ranked-visual { color: var(--mode-theme); }
