@@ -128,6 +128,46 @@ test("action blocks are generated in order from the chosen actions", () => {
   assert.match(compactAllIn, /Allin 100/);
 });
 
+test("the flop CTA stays in the compact End card without driving the action row height", async () => {
+  const props = { expanded: true, rangeType: "response", opener: "BTN", hero: "BB", raiseSizeFor: () => 12 };
+  const { translateProductCopy } = await server.ssrLoadModule("/src/i18n.ts");
+  const previousWindow = globalThis.window;
+  try {
+    for (const locale of ["en", "ja"]) {
+      globalThis.window = { localStorage: { getItem: () => locale }, matchMedia: () => ({ matches: false }) };
+      const decision = renderToStaticMarkup(createElement(ActionPath, props));
+      assert.doesNotMatch(decision, /action-seat-end|enter-postflop/);
+      const completed = renderToStaticMarkup(createElement(ActionPath, {
+        ...props, callers: ["BB"], foldedHero: true, onEnterPostflop() {},
+      }));
+      // Apply the same text translation used by the live product surface.
+      const localized = completed.replace(/>([^<>]+)</g, (_, value) => `>${translateProductCopy(value)}<`);
+      assert.match(localized, /action-seat-end[\s\S]*action-seat-heading[\s\S]*action-seat-result/);
+      assert.match(localized, locale === "en"
+        ? /2 players to the flop[\s\S]*Pot 5\.5bb[\s\S]*<button type="button" class="enter-postflop">Continue to flop →<\/button>/
+        : /2人でフロップへ[\s\S]*ポット 5\.5bb[\s\S]*<button type="button" class="enter-postflop">フロップへ進む →<\/button>/);
+      const withoutContinuation = renderToStaticMarkup(createElement(ActionPath, {
+        ...props, callers: ["BB"], foldedHero: true,
+      }));
+      assert.match(withoutContinuation, /action-seat-end/);
+      assert.doesNotMatch(withoutContinuation, /enter-postflop/);
+    }
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+
+  // Source contracts supplement the markup checks; pixel geometry needs browser QA.
+  const css = readFileSync(new URL("../src/estimated/ranges.css", import.meta.url), "utf8");
+  assert.match(css, /@media \(min-width: 761px\) \{[\s\S]*?\.action-path\.expanded \.action-path-seats \{ min-height: 120px;/);
+  assert.match(css, /\.action-path\.expanded \.action-seat-end \{\s*contain: size;\s*display: grid;/);
+  assert.match(css, /\.action-path\.expanded \.action-seat-end small \{[^}]*grid-row: 1;/);
+  assert.match(css, /\.action-path\.expanded \.enter-postflop \{[^}]*min-height: 32px;[^}]*white-space: normal;/);
+  assert.match(css, /@media \(max-width: 760px\) \{[\s\S]*?\.action-path-seats \{ align-items: stretch; min-height: 44px;/);
+  assert.match(css, /\.enter-postflop \{ min-height: 34px; margin: 0;[^}]*white-space: nowrap;/);
+  assert.doesNotMatch(css, /\.action-seat-end[^{}]*\{[^}]*(?:overflow:\s*hidden|max-height:)/);
+});
+
 test("SB can limp and BB can check or iso-raise from the saved limp response", () => {
   const open = buildActionBlocks({ rangeType: "open", opener: "SB", hero: "BB" });
   const sbOpen = open.find(block => block.position === "SB");
