@@ -1,6 +1,20 @@
-import test from "node:test";
+import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
+import { fileURLToPath } from "node:url";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { createServer } from "vite";
 import { practicePulse } from "../src/trainer/trainer-pulse.ts";
+
+let server;
+let TrainerHome;
+let SessionPage;
+before(async () => {
+  server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
+  ({ TrainerHome } = await server.ssrLoadModule("/src/trainer/DrillLibrary.tsx"));
+  ({ SessionPage } = await server.ssrLoadModule("/src/trainer/SessionPage.tsx"));
+});
+after(async () => { await server?.close(); });
 
 test("today's practice: answers today, recent accuracy and the day streak", () => {
   const now = new Date(2026, 9, 4, 15).getTime();
@@ -20,4 +34,22 @@ test("today's practice: answers today, recent accuracy and the day streak", () =
   assert.equal(practicePulse(history.slice(0, 3), now).streak, 2);
   assert.deepEqual(practicePulse([], now), { today: 0, accuracy: null, recentCount: 0, streak: 0 });
   void day;
+});
+
+test("trainer landing keeps its pink eyebrow without a duplicate page title", () => {
+  const html = renderToStaticMarkup(createElement(TrainerHome, {
+    drills: [], reviewCount: 0, onOpenDrills() {}, onCreate() {}, onStartReview() {}, onResume() {},
+  }));
+  assert.match(html, /<h1 class="trainer-home-eyebrow">TRAINER<\/h1>/);
+  assert.doesNotMatch(html, /<h1>練習モードを選ぶ<\/h1>/);
+  assert.match(html, /ランク戦で実力を測り、Agent戦で実戦の感覚をつかみ/);
+  assert.doesNotMatch(html, /trainer-pulse|今日の回答|直近\d+問の正答率|連続練習/);
+});
+
+test("sessions page keeps its session-total stats", () => {
+  const html = renderToStaticMarkup(createElement(SessionPage, { drills: [], reviews: [], drafts: {}, onResume() {} }));
+  assert.match(html, /class="trainer-pulse" aria-label="セッションの合計"/);
+  assert.match(html, /セッション/);
+  assert.match(html, /正答率/);
+  assert.match(html, /練習時間/);
 });

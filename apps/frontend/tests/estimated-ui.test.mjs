@@ -81,6 +81,23 @@ test("primary navigation is accessible in a collapsible sidebar", () => {
   assert.doesNotMatch(html, /aria-label="ポストフロップ/);
 });
 
+test("English sidebar navigation uses concise Range and Stats labels", () => {
+  const previousWindow = globalThis.window;
+  globalThis.window = {
+    localStorage: { getItem: () => null },
+    matchMedia: () => ({ matches: false }),
+  };
+  try {
+    const html = renderToStaticMarkup(createElement(Sidebar, { activeSection: "レンジ分析", onSectionChange() {} }));
+    assert.match(html, /aria-label="Range" title="Range"/);
+    assert.match(html, /aria-label="Stats" title="Stats"/);
+    assert.match(html, /<span>Range<\/span>/);
+    assert.match(html, /<span>Stats<\/span>/);
+  } finally {
+    globalThis.window = previousWindow;
+  }
+});
+
 test("action blocks are generated in order from the chosen actions", () => {
   const props = { expanded: true, opener: "BTN", hero: "SB", callers: [], foldedHero: false, raiseSizeFor: position => ({ SB: 11, BB: 12 })[position] ?? null };
   const response = renderToStaticMarkup(createElement(ActionPath, { ...props, rangeType: "response" }));

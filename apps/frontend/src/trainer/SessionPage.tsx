@@ -73,8 +73,7 @@ export function SessionPage({ drills, reviews, drafts, onResume }) {
   const time = sessions.reduce((sum, session) => sum + (Number.isFinite(session.durationMs) ? session.durationMs : 0), 0);
   return <div className="sessions-page">
     <header className="trainer-home-head sessions-page-head">
-      <div><span className="trainer-home-eyebrow">SESSIONS</span>
-        <h1>練習セッション</h1>
+      <div><h1 className="trainer-home-eyebrow">SESSIONS</h1>
         <p>途中の練習も完了した練習も、回答したハンドごとに振り返れます。</p></div>
       <dl className="trainer-pulse" aria-label={localized("Session totals", "セッションの合計")}>
         <div><dt>{localized("Sessions", "セッション")}</dt><dd>{sessions.length}<small>{localized("", "件")}</small></dd></div>
