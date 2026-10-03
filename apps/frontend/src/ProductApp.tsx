@@ -1,13 +1,13 @@
 import { LearningAccess, isLearningSection, learningAllowed, readLearningIntent, rememberLearningIntent } from "./account/LearningAccess.tsx";
 import { AuthPanel, useAccount } from "./account/AuthPanel.tsx";
-import { accountSnapshot, logoutAccount, refreshAccount, revalidateAccountSession } from "./account/session.ts";
+import { accountSnapshot, logoutAccount, refreshAccount, revalidateAccountSession, startGoogleSignIn } from "./account/session.ts";
 import { applyAppearance } from "./account/preferences.ts";
 import { localized } from "./locale.ts";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Onboarding } from "./components/Onboarding.tsx";
 import { RangeWorkspace } from "./estimated/RangeWorkspace.tsx";
 import { TrainerPage } from "./trainer/TrainerPage.tsx";
-import { clearProfile, loadProfile, saveProfile } from "./profile.ts";
+import { adoptOnboardingDraft, clearProfile, loadProfile, saveProfile, stashOnboardingDraft } from "./profile.ts";
 import { AccountPage, LogoutDialog } from "./account/AccountPage.tsx";
 import { ACCOUNT_SECTION } from "./account/AccountMenu.tsx";
 import { clearPracticeData } from "./account/preferences.ts";
@@ -53,12 +53,14 @@ export default function ProductApp() {
   const section = sectionOfPath(path);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  const reloadProfile = () => { setProfile(loadProfile()); applyAppearance(); };
+  const reloadProfile = () => { adoptOnboardingDraft(); setProfile(loadProfile()); applyAppearance(); };
   useEffect(() => { if (account.ready) reloadProfile(); }, [account.ready, account.user?.id, account.user?.verified]);
   if (!account.ready) return <div className="site-loading">{localized("Opening account…", "アカウントを確認中…")}</div>;
   if (authOpen) return <main className="account-page"><AuthPanel onChanged={reloadProfile} onGuest={async () => { if (accountSnapshot().user) { try { await logoutAccount(); } catch { return; } } rememberLearningIntent(null); go(HOME_PATH); setAuthOpen(false); reloadProfile(); }} />{account.user?.verified && <button className="account-primary" onClick={() => { setAuthOpen(false); reloadProfile(); }}>{localized("Continue", "続ける")}</button>}</main>;
   if (!profile || editing) {
-    return <><button type="button" className="account-secondary" onClick={() => setAuthOpen(true)}>{account.user ? localized("Account", "アカウント") : localized("Sign in with Google", "Googleでログイン")}</button><Onboarding initial={editing ? profile : null} onCancel={() => setEditing(false)} onComplete={values => { setProfile(saveProfile(values)); setEditing(false); }} /></>;
+    return <Onboarding initial={editing ? profile : null} account={account} onAccount={() => setAuthOpen(true)}
+      onSignIn={async draft => { stashOnboardingDraft(draft); await startGoogleSignIn(); }}
+      onCancel={() => setEditing(false)} onComplete={values => { setProfile(saveProfile(values)); setEditing(false); }} />;
   }
 
   const navigate = name => {

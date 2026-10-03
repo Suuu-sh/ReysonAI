@@ -45,3 +45,16 @@ test("onboarding offers the two levels and requires one before starting", () => 
   assert.match(editing, /レベルを変更/);
   assert.match(editing, /<input(?=[^>]*value="intermediate")(?=[^>]*checked="")[^>]*>/);
 });
+
+test("onboarding offers Google sign-in alongside starting as a guest", () => {
+  const guest = renderToStaticMarkup(createElement(Onboarding, { onComplete() {}, onSignIn() {}, account: { user: null, available: true } }));
+  assert.match(guest, /<button type="submit" class="onboarding-guest" disabled="">ゲストではじめる<\/button>/);
+  assert.match(guest, /<button type="button" class="google-signin">.*Googleで続ける<\/button>/);
+  const unavailable = renderToStaticMarkup(createElement(Onboarding, { onComplete() {}, onSignIn() {}, account: { user: null, available: false } }));
+  assert.doesNotMatch(unavailable, /google-signin/);
+  const signedIn = renderToStaticMarkup(createElement(Onboarding, { onComplete() {}, onSignIn() {}, account: { user: { email: "a@example.com" }, available: true } }));
+  assert.doesNotMatch(signedIn, /google-signin/);
+  assert.match(signedIn, /a@example\.com/);
+  const editing = renderToStaticMarkup(createElement(Onboarding, { initial: { level: "beginner" }, onComplete() {}, onCancel() {}, onSignIn() {}, account: { user: null, available: true } }));
+  assert.doesNotMatch(editing, /google-signin/);
+});

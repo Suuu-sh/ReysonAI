@@ -1,4 +1,5 @@
-import { accountStorage } from "./account/session.ts";
+import { accountSnapshot, accountStorage } from "./account/session.ts";
+import { LOCALE_KEY, productLocale, selectProductLocale } from "./locale.ts";
 import { defaultModeForLevel } from "./estimated/display-mode.ts";
 
 // Guest-local or authenticated profile; nothing here is a credential.
@@ -41,4 +42,23 @@ export const levelLabel = level => levels.find(item => item.value === level)?.la
 // Guest logout forgets only the browser profile.
 export function clearProfile() {
   try { storage()?.removeItem(profileKey); } catch {}
+}
+
+// Onboarding answers picked before "Continue with Google" survive the OAuth round trip in this
+// tab, then become the new account's profile. An account that already has a profile keeps it.
+const draftKey = "reysonai:onboarding-draft:v1";
+const session = () => { try { return window.sessionStorage; } catch { return null; } };
+
+export function stashOnboardingDraft({ nickname = "", level = "" }) {
+  try { session()?.setItem(draftKey, JSON.stringify({ nickname, level, locale: productLocale() })); } catch {}
+}
+
+export function adoptOnboardingDraft() {
+  if (typeof window === "undefined" || !accountSnapshot().user?.verified) return;
+  let draft = null;
+  try { draft = JSON.parse(session()?.getItem(draftKey) ?? "null"); session()?.removeItem(draftKey); } catch {}
+  if (!draft) return;
+  if (!loadProfile() && levels.some(item => item.value === draft.level)) saveProfile(draft);
+  // A brand-new account has no language yet; keep the one chosen on the onboarding screen.
+  if (storage()?.getItem(LOCALE_KEY) === null && draft.locale === "ja") selectProductLocale("ja");
 }
