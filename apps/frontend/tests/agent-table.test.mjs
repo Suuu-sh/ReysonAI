@@ -101,6 +101,31 @@ test("without a postflop policy the pot is checked down", () => {
   assert.ok(found > 0);
 });
 
+test("a human in a pot without a postflop policy checks each street instead of skipping", () => {
+  let checked = 0;
+  for (let i = 0; i < 400 && checked < 3; i++) {
+    const seed = `bbcheck-${i}`, actions = [];
+    let hand = playHand({ seed, human: "BB", agents, postflop: noPostflop });
+    while (hand.status === "awaiting" && hand.pending.street === "preflop") {
+      const pick = hand.pending.options.find(o => o.key === "call") ?? hand.pending.options.find(o => o.key === "check");
+      if (!pick) break;
+      actions.push(pick.key);
+      hand = playHand({ seed, human: "BB", agents, postflop: noPostflop, humanActions: actions });
+    }
+    if (hand.status !== "awaiting" || hand.pending.street !== "flop") continue;
+    for (const street of ["flop", "turn", "river"]) {
+      assert.equal(hand.pending.street, street);
+      assert.deepEqual(hand.pending.options.map(o => o.key), ["check"]);
+      actions.push("check");
+      hand = playHand({ seed, human: "BB", agents, postflop: noPostflop, humanActions: actions });
+    }
+    assert.equal(hand.status, "done");
+    assert.equal(hand.board.length, 5);
+    checked++;
+  }
+  assert.ok(checked > 0);
+});
+
 test("the human is asked and the replay continues with the answer", () => {
   let hand, seed;
   for (let i = 0; i < 50; i++) {

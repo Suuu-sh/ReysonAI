@@ -143,7 +143,23 @@ export function playHand(setup: HandSetup): HandResult {
   };
 
   if (!spot || !kit || Math.abs(spot.potBb - pot) > 0.01 || ![spot.ip, spot.oop].every(pos => alive.includes(pos))) {
-    // All-in preflop, or no saved postflop policy: deal it out (checked down).
+    // All-in preflop, or no saved postflop policy: deal it out (checked down). A human still in the
+    // pot gets each street with check as the only option instead of the board jumping to showdown.
+    if (!allIn && setup.human && alive.includes(setup.human)) {
+      const POSTFLOP_ORDER: Position[] = ["SB", "BB", "UTG", "HJ", "CO", "BTN"];
+      const order = POSTFLOP_ORDER.filter(pos => alive.includes(pos));
+      for (const [street, cards] of [["flop", 3], ["turn", 4], ["river", 5]] as const) {
+        for (const pos of order) {
+          if (pos === setup.human) {
+            if (!humanQueue.length) return result({ status: "awaiting", spotId: spot?.id ?? null, board: board.slice(0, cards).map(cardText),
+              pending: { street, pos, options: [{ key: "check" }], pot, board: board.slice(0, cards).map(cardText), toCall: 0, notice: "no_data" } });
+            const key = humanQueue.shift()!;
+            if (key !== "check") throw new Error(`Illegal ${street} action ${key} for ${pos}`);
+          }
+          log.push({ street, pos, action: "check", pot, bets: {} });
+        }
+      }
+    }
     return showdownOf(board, invested, pot, { spotId: spot?.id ?? null, policyMissing: !allIn });
   }
 
