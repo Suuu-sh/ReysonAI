@@ -162,7 +162,7 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
   </div>;
 }
 
-// Emblem inside a ring that fills toward the next tier, the tier name, and the last five matches.
+// Emblem inside a ring that fills toward the next tier, beside the tier name and the last five matches.
 function RankedEmblem({ rank, tier }) {
   const radius = 54, length = 2 * Math.PI * radius;
   const recent = rank.matches.slice(-5);
@@ -174,18 +174,20 @@ function RankedEmblem({ rank, tier }) {
         <circle cx="64" cy="64" r={radius} className="arc" strokeDasharray={`${length * tier.progress} ${length}`} />
         {Array.from({ length: 24 }, (_, i) => <line key={i} x1="64" y1="3" x2="64" y2={i % 6 === 0 ? 9 : 6} transform={`rotate(${i * 15} 64 64)`} className="tick" />)}
       </svg>
-      <RankBadge name={tier.name} size={78} />
+      <RankBadge name={tier.name} size={56} />
     </div>
-    <span className="ranked-tier-name">{localized(TIER_EN[tier.name], tier.name)}</span>
-    <span className="ranked-rating-line">{rank.rating.toLocaleString()}{last && <b className={last.after >= last.before ? "up" : "down"}>{last.after >= last.before ? "▲" : "▼"}{Math.abs(last.after - last.before)}</b>}</span>
-    <ol className="ranked-pips" aria-label={localized("Last five ranked matches", "直近5試合")}>
-      {Array.from({ length: 5 }, (_, i) => {
-        const match = recent[i - (5 - recent.length)];
-        const up = match ? match.after >= match.before : null;
-        return <li key={i} className={match ? (up ? "up" : "down") : "empty"}
-          title={match ? `${up ? "+" : "−"}${Math.abs(match.after - match.before)}` : localized("No match", "試合なし")} />;
-      })}
-    </ol>
+    <div className="ranked-emblem-info">
+      <span className="ranked-tier-name">{localized(TIER_EN[tier.name], tier.name)}</span>
+      <small>{last ? <>{localized("Last match", "前回")} <b className={last.after >= last.before ? "up" : "down"}>{last.after >= last.before ? "▲" : "▼"}{Math.abs(last.after - last.before)}</b></> : localized("No matches yet", "まだ試合なし")}</small>
+      <ol className="ranked-pips" aria-label={localized("Last five ranked matches", "直近5試合")}>
+        {Array.from({ length: 5 }, (_, i) => {
+          const match = recent[i - (5 - recent.length)];
+          const up = match ? match.after >= match.before : null;
+          return <li key={i} className={match ? (up ? "up" : "down") : "empty"}
+            title={match ? `${up ? "+" : "−"}${Math.abs(match.after - match.before)}` : localized("No match", "試合なし")} />;
+        })}
+      </ol>
+    </div>
   </div>;
 }
 
