@@ -1,4 +1,4 @@
-import { boardTexture, handTier, TEXTURES, TIERS } from "./model.mjs";
+import { flopTextureKeys, handTier, TEXTURES, TIERS } from "./model.mjs";
 
 import { LATER_NODES } from "./later-tree.mjs";
 import { DEFAULT_TREE, FLOP_BETS, NODES, TREES, nodeRole, raiseDepth, treeNodes } from "./tree.mjs";
@@ -40,9 +40,9 @@ export function validatePolicy(policy, tree = DEFAULT_TREE) {
 }
 
 export function policyMix(policy, node, hole, flop) {
-  const tier = handTier(hole, flop), texture = boardTexture(flop);
-  const rule = policy.rules.find(item => item.node === node && item.tier === tier && item.texture === texture) ??
-    policy.rules.find(item => item.node === node && item.tier === tier && item.texture === "any");
+  const tier = handTier(hole, flop), keys = flopTextureKeys(flop), texture = keys[0];
+  let rule;
+  for (const key of keys) if ((rule = policy.rules.find(item => item.node === node && item.tier === tier && item.texture === key))) break;
   if (!rule) {
     // Nodes added after a policy was saved (re-raises) use the reference mixes.
     if (raiseDepth(node) < 2 || policy === referenceAll) throw new Error(`Uncovered policy node: ${node}/${texture}/${tier}`);

@@ -2,7 +2,7 @@
 // These checks describe balance heuristics, not solver targets or GTO requirements.
 import { seedFor, seededRandom } from "../lib/equity.mjs";
 import { boards, comboRange, config, seatRange } from "./inputs.mjs";
-import { boardTexture, handTier, runoutTexture } from "./model.mjs";
+import { flopTextureKeys, handTier, runoutTexture } from "./model.mjs";
 import { LATER_NODES, betFraction, laterNodeRole, streetHistories, streetState } from "./later-tree.mjs";
 import { referenceLaterTierMix, validateLaterPolicy } from "./later-policy.mjs";
 import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.mjs";
@@ -59,7 +59,7 @@ function makeTierReader() {
 function makeFlopMixReader(policy, tierFor) {
   const cache = new Map();
   return (node, combo, flop) => {
-    const tier = tierFor(combo, flop), texture = boardTexture(flop);
+    const tier = tierFor(combo, flop), texture = flopTextureKeys(flop)[0];
     const key = `${node}|${texture}|${tier}`;
     if (!cache.has(key)) cache.set(key, policyMix(policy, node, combo, flop));
     return cache.get(key);

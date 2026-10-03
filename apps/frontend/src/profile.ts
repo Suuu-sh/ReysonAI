@@ -33,3 +33,8 @@ export function saveProfile({ nickname = "", level }) {
 }
 
 export const levelLabel = level => levels.find(item => item.value === level)?.label ?? "";
+
+// "Log out" while accounts do not exist: forget this browser's local profile.
+export function clearProfile() {
+  try { storage()?.removeItem(profileKey); } catch {}
+}

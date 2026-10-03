@@ -24,7 +24,7 @@ import { packEquities, packWeights, unpackWeights } from "./cached-values.mjs";
 // Pure and dependency-free (no node:*), so it runs in the browser worker, the edge worker and Node.
 import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
 import { comboRange } from "./browser-inputs.mjs";
-import { boardTexture, handTier, runoutTexture, TIERS } from "./model.mjs";
+import { flopTextureKeys, handTier, runoutTexture, TIERS } from "./model.mjs";
 import { NODES, effectiveMix, referenceMix, withRaise } from "./policy.mjs";
 import { LATER_NODES } from "./later-tree.mjs";
 import { referenceLaterTierMix } from "./later-policy.mjs";
@@ -62,7 +62,8 @@ const round4 = value => Math.round(value * 1e4) / 1e4;
 
 const textures = new Map();
 const textureOf = (street, board) => {
-  if (street === "flop") return boardTexture(board);
+  // Flop: the most specific key ("dry_low"); policyRule falls back through flopTextureKeys.
+  if (street === "flop") return flopTextureKeys(board)[0];
   const key = board.join(",");
   let value = textures.get(key);
   if (value === undefined) {
@@ -329,8 +330,11 @@ class Defence {
     let tier = TIERS[tierIndex];
     if (flop) {
       const rules = this.flopPolicy.rules;
-      mix = (rules.find(rule => rule.node === entry.node && rule.tier === tier && rule.texture === texture) ??
-        rules.find(rule => rule.node === entry.node && rule.tier === tier && rule.texture === "any"))?.mix;
+      const [shape, height] = texture.split("_");
+      for (const key of [texture, shape, height, "any"]) {
+        const rule = rules.find(item => item.node === entry.node && item.tier === tier && item.texture === key);
+        if (rule) { mix = rule.mix; break; }
+      }
     } else {
       if (entry.street === "river" && tier === "draw") tier = "medium";
       const rules = this.laterPolicy.streets[entry.street].rules;

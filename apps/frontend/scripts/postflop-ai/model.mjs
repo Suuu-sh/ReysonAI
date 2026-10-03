@@ -4,7 +4,13 @@ import { evaluate } from "../lib/equity.mjs";
 const ranks = "23456789TJQKA";
 const suits = "cdhs";
 export const TIERS = ["monster", "strong", "draw", "medium", "air"];
-export const TEXTURES = ["dry", "wet", "monotone", "paired"];
+export const SHAPES = ["dry", "wet", "monotone", "paired"];
+// Board height by the top card: high = A/K/Q, mid = J/T/9, low = 8 or lower. It lets a flop policy
+// treat a high board (good for the preflop raiser's range) differently from a low one.
+export const HEIGHTS = ["high", "mid", "low"];
+// Flop rule textures: a shape, a height, or both ("dry_low"). Lookup goes from the most specific
+// key to "any" (flopTextureKeys), so policies written with shapes only behave as before.
+export const TEXTURES = [...SHAPES, ...HEIGHTS, ...SHAPES.flatMap(shape => HEIGHTS.map(height => `${shape}_${height}`))];
 export const RUNOUT_TEXTURES = ["blank", "over", "pair", "straight", "flush"];
 const cardText = card => ranks[card >> 2] + suits[card & 3];
 // From the acting player's perspective on the immediately previous completed street.
@@ -38,6 +44,17 @@ export function boardTexture(board) {
   const sorted = [...rs].sort((a, b) => a - b);
   if (new Set(ss).size === 2 || sorted[2] - sorted[0] <= 4) return "wet";
   return "dry";
+}
+
+export function boardHeight(board) {
+  const top = Math.max(...board.map(card => card >> 2));
+  return top >= 10 ? "high" : top >= 7 ? "mid" : "low";
+}
+
+// The flop texture keys a rule may use for this board, most specific first, ending in "any".
+export function flopTextureKeys(board) {
+  const shape = boardTexture(board), height = boardHeight(board);
+  return [`${shape}_${height}`, shape, height, "any"];
 }
 
 // Only the newly dealt (last) card can trigger a runout feature. Priority is intentional.
