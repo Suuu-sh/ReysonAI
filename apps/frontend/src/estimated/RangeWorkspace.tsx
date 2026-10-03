@@ -1,3 +1,4 @@
+import { accountStorage } from "../account/session.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -9,6 +10,7 @@ import { ActionBars, Panel, SectionHeading, StatList, StatusState } from "../com
 import { findFourBetSpot, fourBetMatrixModel, loadFourBetDataset } from "./four-bet-responses.ts";
 import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "./three-bet-responses.ts";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.ts";
+import { LIMP_FOUR_BET_RESPONSE_ID, findLimpDeepResponseSpot, limpFourBetMatrixModel, validateLimpDeepResponses } from "./limp-deep-responses.ts";
 import { LIMP_RERAISE_RESPONSE_ID, findLimpResponseSpot, limpResponsesMatrixModel, validateLimpResponses } from "./limp-responses.ts";
 import { extendedBreakdown, extendedModel, extendedUnreachableReason, findExtendedSpot, multiwayContext, useExtendedDatasets } from "./extended-ranges.ts";
 import { limpActionTransition, nextActorsAfterRaise, responseActionTransition, rewindActionBlockTransition } from "./action-path.ts";
@@ -39,6 +41,7 @@ import "./ranges.css";
 const source = publishedDataset("preflop-ranges");
 const openingSource = publishedDataset("opening-ranges");
 const limpSource = publishedDataset("limp-responses");
+const limpDeepSource = publishedDataset("limp-deep-responses");
 const threeBetSource = publishedDataset("three-bet-responses");
 const tableAdjustments = publishedDataset("table-profile-adjustments");
 
@@ -54,6 +57,8 @@ try {
   if (openingDataError) throw new Error(openingDataError);
   limpDataset = validateLimpResponses(limpSource, openingDataset);
 } catch (error) { limpDataError = error.message; }
+let limpDeepDataset;
+try { if (limpDataset) limpDeepDataset = validateLimpDeepResponses(limpDeepSource, openingDataset, limpDataset); } catch { limpDeepDataset = null; }
 let threeBetDataset;
 let threeBetDataError;
 try {
@@ -65,10 +70,10 @@ try {
 const fourBetRaw = (() => { try { return JSON.stringify(publishedDataset("four-bet-responses")); } catch { return undefined; } })();
 const fourBetState = loadFourBetDataset(fourBetRaw, dataset, threeBetDataset, openingDataset);
 
-const selectionStorageKey = "solveaai:estimated-selection:v1";
+const selectionStorageKey = "reysonai:estimated-selection:v1";
 const displayModeStorageKey = displayModeKey;
-const formatStorageKey = "solveaai:game-format:v1";
-const tableProfileStorageKey = "solveaai:table-profile:v1";
+const formatStorageKey = "reysonai:game-format:v1";
+const tableProfileStorageKey = "reysonai:table-profile:v1";
 const openingModelFor = spot => markAdjustedModel(openingMatrixModel(spot), spot);
 // Postflop labels end in "(33%)"; show that part right-aligned so the amounts line up.
 function OptionLabel({ label }: { label: string }) {
@@ -79,9 +84,9 @@ function OptionLabel({ label }: { label: string }) {
 export function selectedHandForRangeEntry(entry, selected) {
   return entry.spot?.hands.find(row => row.hand === selected) ?? entry.hand;
 }
-const legacySelectionStorageKey = "solveagto:estimated-selection:v1";
+const legacySelectionStorageKey = "reysonai-legacy:estimated-selection:v1";
 function restoredSelection(initialRangeType) {
-  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, squeezeResponse: [], selected: "AKo" };
+  const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], selected: "AKo" };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
@@ -98,10 +103,11 @@ function restoredSelection(initialRangeType) {
     const limpAction = limpSelection && ["check", "raise"].includes(saved.limpAction) ? saved.limpAction : null;
     const limpResponseAction = limpSelection && limpAction === "raise" && ["fold", "call", "raise"].includes(saved.limpResponseAction) ? saved.limpResponseAction : null;
     const limpReraiseAction = limpResponseAction === "raise" && ["fold", "call", "raise"].includes(saved.limpReraiseAction) ? saved.limpReraiseAction : null;
+    const limpFourBetAction = limpReraiseAction === "raise" && ["fold", "call", "all_in"].includes(saved.limpFourBetAction) ? saved.limpFourBetAction : null;
     const squeezeActions = ["fold", "call", "raise"];
     const squeezeResponse = pendingRaise === "squeeze" && Array.isArray(saved.squeezeResponse) && saved.squeezeResponse.length <= 2 &&
       saved.squeezeResponse.every(action => squeezeActions.includes(action)) && !(saved.squeezeResponse[0] === "raise" && saved.squeezeResponse.length > 1) ? saved.squeezeResponse : [];
-    return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, squeezeResponse, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
+    return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
   } catch { return fallback; }
 }
 
@@ -232,7 +238,7 @@ const potLabel = contribution => {
   return `ポット ${formatBb(counted.reduce((sum, value) => sum + value, 0))}bb`;
 };
 
-function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction = null }) {
+function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction = null, limpFourBetAction = null }) {
   const contribution = { ...startingContribution };
   const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
   const blocks = [];
@@ -282,14 +288,22 @@ function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseActi
     ], kind: "seat", rangeRef: { kind: "limp_reraise", position: "BB" } });
     if (limpReraiseAction === "fold") end("SBの勝ち");
     else if (limpReraiseAction === "call") { contribution.BB = limpReraiseToBb; end("2人でフロップへ"); }
-    else if (limpReraiseAction === "raise") blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: "BBの4bet後のSBの応答レンジはまだありません。" });
+    else if (limpReraiseAction === "raise") {
+      contribution.BB = fourBetSizeBb;
+      blocks.push({ key: "limp-SB-four-bet-response", position: "SB", stack: stackOf("SB"), active: !limpFourBetAction, chosen: limpFourBetAction, stage: "limp-sb-four-bet", options: [
+        { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(fourBetSizeBb)}` }, { action: "all_in", label: "All-in 100" },
+      ], kind: "seat", rangeRef: { kind: "limp_four_bet", position: "SB" } });
+      if (limpFourBetAction === "fold") end("BBの勝ち");
+      else if (limpFourBetAction === "call") { contribution.SB = fourBetSizeBb; end("2人でフロップへ"); }
+      else if (limpFourBetAction === "all_in") { contribution.SB = 100; end("オールイン"); }
+    }
   }
   return blocks;
 }
 
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, squeezeResponse = [], raiseSizeFor = () => null }) {
-  if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction });
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], raiseSizeFor = () => null }) {
+  if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -477,7 +491,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
   const select = (block, action) => {
     if (block.kind === "flop" && block.street) onLaterAction(block, action);
     else if (block.kind === "flop") onFlopAction(block, action);
-    else if (block.stage === "limp-bb" || block.stage === "limp-sb-response" || block.stage === "limp-bb-reraise") onAct(block.position, action);
+    else if (block.stage === "limp-bb" || block.stage === "limp-sb-response" || block.stage === "limp-bb-reraise" || block.stage === "limp-sb-four-bet") onAct(block.position, action);
     else if (block.kind === "squeeze-response") onSqueezeResponse(block.role, action);
     else if (block.kind === "seat") onAct(block.position, action);
     else if (block.kind === "cold") onColdAction(action === "fold" ? null : { position: block.position, action });
@@ -570,6 +584,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [limpResponseAction, setLimpResponseAction] = useState(initialSelection.limpResponseAction);
   const [coldAction, setColdAction] = useState(null);
   const [limpReraiseAction, setLimpReraiseAction] = useState(initialSelection.limpReraiseAction);
+  const [limpFourBetAction, setLimpFourBetAction] = useState(initialSelection.limpFourBetAction);
   const [squeezeResponse, setSqueezeResponse] = useState(initialSelection.squeezeResponse);
   const [format, setFormat] = useState(() => {
     try {
@@ -603,11 +618,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   // `hero` is the later seat selector: the 3-bettor when the opener acts again.
   const [selected, setSelected] = useState(initialSelection.selected);
   const [displayMode, setDisplayMode] = useState(() => {
-    try { return window.localStorage.getItem(displayModeStorageKey) === "simple" ? "simple" : "standard"; } catch { return "standard"; }
+    try { return accountStorage()?.getItem(displayModeStorageKey) === "simple" ? "simple" : "standard"; } catch { return "standard"; }
   });
   function changeDisplayMode(value) {
     setDisplayMode(value);
-    try { window.localStorage.setItem(displayModeStorageKey, value); } catch {}
+    try { accountStorage()?.setItem(displayModeStorageKey, value); } catch {}
   }
   const currentError = isFourBet ? fourBet.error : isOpening ? openingDataError : isLimp ? limpDataError : isThreeBet ? threeBetDataError : dataError || openingDataError;
   const openerSpot = useMemo(() => openingSpotFor(opener), [opener, tableProfile]);
@@ -627,7 +642,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setCallers([]);
     setFoldedHero(false);
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -642,7 +657,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setOpener(value);
     setRangeType("open");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -656,9 +671,9 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const index = positions.indexOf(position);
     const next = positions[index + 1];
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setFocusedRange(null);
-    const limpTransition = limpActionTransition({ rangeType, opener, hero, limpAction, limpResponseAction, position, action });
+    const limpTransition = limpActionTransition({ rangeType, opener, hero, limpAction, limpResponseAction, limpReraiseAction, position, action });
     if (limpTransition) {
       setSelectedRangeBlock(null);
       setRangeType(limpTransition.rangeType);
@@ -669,6 +684,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       setLimpAction(limpTransition.limpAction);
       setLimpResponseAction(limpTransition.limpResponseAction);
       setLimpReraiseAction(limpTransition.limpReraiseAction ?? null);
+      setLimpFourBetAction(limpTransition.limpFourBetAction ?? null);
       return;
     }
     if (isLimp) return;
@@ -727,6 +743,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setLimpAction(transition.limpAction ?? null);
     setLimpResponseAction(transition.limpResponseAction ?? null);
     setLimpReraiseAction(transition.limpReraiseAction ?? null);
+    setLimpFourBetAction(transition.limpFourBetAction ?? null);
     setSqueezeResponse(transition.squeezeResponse ?? []);
   }
 
@@ -734,7 +751,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
     setRangeType("four_bet");
     setPendingRaise(null);
-    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null);
+    setContinuationAction(null); setShoveResponse(null); setColdAction(null); setSqueezeResponse([]); setLimpReraiseAction(null); setLimpFourBetAction(null);
     setLimpAction(null); setLimpResponseAction(null);
     setFocusedRange(null);
     setSelectedRangeBlock(null);
@@ -763,8 +780,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const currentRequestKey = useRef(requestKey);
   currentRequestKey.current = requestKey;
   useEffect(() => {
-    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, squeezeResponse, selected }));
-  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, squeezeResponse, selected]);
+    window.sessionStorage.setItem(selectionStorageKey, JSON.stringify({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, selected }));
+  }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, selected]);
   useEffect(() => { setLocalEstimate(null); setLocalEstimateRequestKey(null); setLocalStatus(activeGenerationRequest ? "checking" : "idle"); setLocalError(""); }, [requestKey]);
   useEffect(() => {
     if (!activeGenerationRequest || !requestKey) return;
@@ -805,10 +822,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     const candidate = dataset && positions.indexOf(position) > positions.indexOf(opener) ? findSpot(dataset, opener, position) : null;
     return candidate?.hands.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb ?? null;
   };
-  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, squeezeResponse, raiseSizeFor };
+  const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, raiseSizeFor };
   const actionBlocks = buildActionBlocks(actionState);
   const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero,
-    callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction }) : null;
+    callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
   const flopBoard = recognizedFlop(flopCards);
   const canEnterLaterStreets = Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));
@@ -853,7 +870,12 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   } else if (isLimp) {
     const bbLimpSpot = limpDataset ? findLimpResponseSpot(limpDataset, "BB_vs_SB_limp") : null;
     const bbLimpModel = bbLimpSpot ? limpResponsesMatrixModel(bbLimpSpot, openingDataset) : null;
-    if (limpAction === "raise" && limpResponseAction === "raise") {
+    if (limpAction === "raise" && limpResponseAction === "raise" && limpReraiseAction === "raise") {
+      const reraiseSpot = limpDataset ? findLimpResponseSpot(limpDataset, LIMP_RERAISE_RESPONSE_ID) : null;
+      const fourBetSpot = limpDeepDataset ? findLimpDeepResponseSpot(limpDeepDataset, LIMP_FOUR_BET_RESPONSE_ID) : null;
+      addSaved("BB", "limp_reraise", reraiseSpot, reraiseSpot ? limpResponsesMatrixModel(reraiseSpot, openingDataset, limpDataset) : null, "BB · リンプ・リレイズへの応答（履歴）");
+      addSaved("SB", "limp_four_bet", fourBetSpot, fourBetSpot ? limpFourBetMatrixModel(fourBetSpot, limpDataset) : null, "SB · BBの4betへの応答");
+    } else if (limpAction === "raise" && limpResponseAction === "raise") {
       const sbIsoSpot = limpDataset ? findLimpResponseSpot(limpDataset, "SB_vs_BB_iso") : null;
       const reraiseSpot = limpDataset ? findLimpResponseSpot(limpDataset, LIMP_RERAISE_RESPONSE_ID) : null;
       addSaved("SB", "limp_response", sbIsoSpot, sbIsoSpot ? limpResponsesMatrixModel(sbIsoSpot, openingDataset) : null, "SB · アイソレイズへの応答（履歴）");
@@ -940,6 +962,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       return savedSpot ? withContext({ position: ref.position, kind: "opening", spot: savedSpot, model: openingModelFor(savedSpot), title: openingTitle(ref.position) }) : missing("オープンレンジ");
     }
     if (ref.kind === "multiway" || ref.kind === "squeeze" || ref.kind === "cold") return withContext(extendedEntry(ref, extendedTitle(ref)));
+    if (ref.kind === "limp_four_bet") {
+      const savedSpot = limpDeepDataset ? findLimpDeepResponseSpot(limpDeepDataset, LIMP_FOUR_BET_RESPONSE_ID) : null;
+      return savedSpot ? withContext({ position: ref.position, kind: "limp_four_bet", spot: savedSpot, model: limpFourBetMatrixModel(savedSpot, limpDataset), title: "SB · BBの4betへの応答" }) : missing("BBの4betへの応答");
+    }
     if (ref.kind === "limp_reraise") {
       const savedSpot = limpDataset ? findLimpResponseSpot(limpDataset, LIMP_RERAISE_RESPONSE_ID) : null;
       return savedSpot ? withContext({ position: ref.position, kind: "limp_reraise", spot: savedSpot, model: limpResponsesMatrixModel(savedSpot, openingDataset, limpDataset), title: "BB · リンプ・リレイズへの応答" }) : missing("リンプ・リレイズへの応答");

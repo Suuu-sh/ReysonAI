@@ -20,7 +20,7 @@ const round = value => Math.round(value * 100) / 100;
 // The saved heads-up flop spot a completed preflop path reaches, or null (scripts/postflop-ai/spots.mjs):
 // single-raised pots (O opens, exactly one later seat C calls), 3bet pots (O opens, X 3bets, O calls),
 // 4bet pots (… O 4bets, X calls) and SB's limped pots; everyone else folds.
-function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction }) {
+function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) {
   if (rangeType === "response") return foldedHero && callers.length === 1 ? spotFor(opener, callers[0]) : null;
   if (rangeType === "three_bet") return callers.length === 0 ? threeBetSpotFor(opener, hero) : null;
   if (rangeType === "four_bet") return callers.length === 0 ? fourBetSpotFor(opener, hero) : null;
@@ -28,18 +28,19 @@ function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction,
     if (limpAction === "check") return limpSpotFor("SB_limp_BB_check");
     if (limpAction === "raise" && limpResponseAction === "call") return limpSpotFor("SB_limp_BB_iso_call");
     if (limpAction === "raise" && limpResponseAction === "raise" && limpReraiseAction === "call") return limpSpotFor("SB_limp_BB_iso_SB_reraise_call");
+    if (limpAction === "raise" && limpResponseAction === "raise" && limpReraiseAction === "raise" && limpFourBetAction === "call") return limpSpotFor("SB_limp_BB_iso_SB_reraise_BB_4bet_call");
   }
   return null;
 }
 
-export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, limpAction = null, limpResponseAction = null, limpReraiseAction = null }) {
+export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null }) {
   const end = actionBlocks.find(block => block.kind === "end");
   if (!end || !/^\d+人でフロップへ$/.test(end.result)) return null;
   const potBb = Number(/^ポット ([\d.]+)bb$/.exec(end.pot)?.[1]);
   if (!Number.isFinite(potBb)) return null;
   const players = rangeType === "limp" ? ["SB", "BB"]
     : rangeType === "response" ? [opener, ...callers] : [opener, hero];
-  const spot = flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction });
+  const spot = flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
   const pilotAvailable = Boolean(spot?.reachable) && potBb === spot.potBb && Boolean(isDefaultTable);
   return {
     players, potBb, pilotAvailable,

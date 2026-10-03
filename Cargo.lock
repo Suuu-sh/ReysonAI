@@ -245,6 +245,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "reysonai-job-queue"
+version = "0.1.0"
+dependencies = [
+ "preflop-tree",
+ "redis",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "reysonai-worker"
+version = "0.1.0"
+dependencies = [
+ "continuation",
+ "preflop-tree",
+ "reysonai-job-queue",
+ "serde_json",
+ "solution",
+ "solver-core",
+]
+
+[[package]]
 name = "ryu"
 version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -318,28 +340,6 @@ dependencies = [
  "preflop-tree",
  "serde",
  "serde_json",
- "solver-core",
-]
-
-[[package]]
-name = "solveaai-job-queue"
-version = "0.1.0"
-dependencies = [
- "preflop-tree",
- "redis",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "solveaai-worker"
-version = "0.1.0"
-dependencies = [
- "continuation",
- "preflop-tree",
- "serde_json",
- "solution",
- "solveaai-job-queue",
  "solver-core",
 ]
 

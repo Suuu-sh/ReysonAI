@@ -130,7 +130,7 @@ function runCodex(request) {
       if (msg.method === 'turn/completed') { if (msg.params?.turn?.status !== 'completed') return fail(new Error(msg.params?.turn?.error?.message ?? 'Codexの生成に失敗しました。')); finish(); }
     } });
     child.stderr.on('data', () => {});
-    send({ id: 1, method: 'initialize', params: { clientInfo: { name: 'solveaai_local_estimates', title: 'SolveaAI local estimates', version: '0.1.0' }, capabilities: {} } });
+    send({ id: 1, method: 'initialize', params: { clientInfo: { name: 'reysonai_local_estimates', title: 'ReysonAI local estimates', version: '0.1.0' }, capabilities: {} } });
   });
 }
 

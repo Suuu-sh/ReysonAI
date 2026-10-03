@@ -1,10 +1,11 @@
+import { accountStorage, accountSnapshot, exportAccountData } from "./session.ts";
 // Local appearance preferences, applied to <html> data attributes so any page can style from them.
 import { displayModeKey } from "../profile.ts";
 
-const KEY = "solveaai:appearance:v1";
+const KEY = "reysonai:appearance:v1";
 export const DEFAULT_APPEARANCE = Object.freeze({ cards: "four", motion: "standard" });
 
-const storage = () => { try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; } };
+const storage = () => { try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; } };
 
 export function loadAppearance() {
   try {
@@ -36,7 +37,7 @@ export function saveDisplayMode(mode) {
 }
 
 // Practice data lives under one prefix; used by data export and by log-out cleanup.
-const PRACTICE_PREFIX = "solveaai.trainer.";
+const PRACTICE_PREFIX = "reysonai.trainer.";
 
 export function practiceKeys() {
   const store = storage();
@@ -45,10 +46,11 @@ export function practiceKeys() {
 }
 
 export function exportLocalData() {
+  if (accountSnapshot().user) return exportAccountData();
   const store = storage();
   const data = {};
   for (const key of practiceKeys()) { try { data[key] = JSON.parse(store.getItem(key)); } catch { data[key] = store.getItem(key); } }
-  return { app: "SolveaAI", exportedAt: new Date().toISOString(), data };
+  return { app: "ReysonAI", exportedAt: new Date().toISOString(), data };
 }
 
 export function clearPracticeData() {

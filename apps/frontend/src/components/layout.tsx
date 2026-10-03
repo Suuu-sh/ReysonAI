@@ -25,7 +25,7 @@ const navigationGroups = [
   },
 ];
 
-const COLLAPSE_KEY = "solveaai.sidebar.collapsed";
+const COLLAPSE_KEY = "reysonai.sidebar.collapsed";
 
 function readInitialCollapsed() {
   if (typeof window === "undefined") return false;

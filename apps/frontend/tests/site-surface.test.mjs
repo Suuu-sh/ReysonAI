@@ -16,6 +16,63 @@ before(async () => {
 });
 after(async () => { await server?.close(); });
 const render = locale => renderToStaticMarkup(createElement(ServiceSite, { locale, onLocaleChange() {} }));
+const escapeText = value => renderToStaticMarkup(createElement("span", null, value)).slice(6, -7);
+const preview = JSON.parse(readFileSync(new URL("../src/site/range-preview.json", import.meta.url), "utf8"));
+
+function renderWithDisplayPreference(locale, displayMode) {
+  const previousWindow = globalThis.window;
+  const reads = [];
+  globalThis.window = {
+    localStorage: {
+      getItem(key) {
+        reads.push(key);
+        return key === "reysonai:site-preview-display-mode:v1" ? displayMode : null;
+      },
+    },
+  };
+  try {
+    return { html: render(locale), reads };
+  } finally {
+    globalThis.window = previousWindow;
+  }
+}
+
+function renderWithMotionPreference(locale, reducedMotion) {
+  const previousWindow = globalThis.window;
+  const previousObserver = globalThis.IntersectionObserver;
+  globalThis.window = {
+    matchMedia: () => ({ matches: reducedMotion }),
+    localStorage: { getItem: () => null },
+  };
+  globalThis.IntersectionObserver = class {};
+  try {
+    return render(locale);
+  } finally {
+    globalThis.window = previousWindow;
+    globalThis.IntersectionObserver = previousObserver;
+  }
+}
+
+test("the hand tour pauses offscreen, yields to interaction, and keeps playback intentional", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  const explorer = source.split("function Explorer() {")[1].split("function Header()")[0];
+  assert.match(explorer, /const isTouring = touring && motion/);
+  assert.match(explorer, /if \(!isTouring \|\| !visible\) return/);
+  assert.match(explorer, /window\.clearInterval\(timer\)/);
+  for (const event of ["pointerdown", "keydown"]) {
+    assert.ok(explorer.includes(`addEventListener("${event}", stop)`));
+    assert.ok(explorer.includes(`removeEventListener("${event}", stop)`));
+  }
+  assert.match(explorer, /closest\("\[data-tour-toggle\]"\)\) return/);
+  assert.match(explorer, /onSelect=\{hand => \{ setTouring\(false\); setSelected\(hand\); \}\}/);
+  assert.match(explorer, /function chooseMode\([^)]*\) \{\s*setTouring\(false\)/);
+  assert.match(explorer, /function chooseDisplayMode\([^)]*\) \{\s*setTouring\(false\)/);
+  assert.match(explorer, /setTouring\(current => !current\)/);
+  assert.match(explorer, /data-tour-running=\{isTouring && visible\}/);
+  assert.match(explorer, /window\.localStorage\.setItem\(displayModeKey, next\)/);
+  assert.match(explorer, /aria-live=\{isTouring \? "off" : "polite"\}/,
+    "automatic hands must not repeatedly interrupt a screen reader");
+});
 
 test("the chart minimum width wins over the fieldset reset and preserves mobile scrolling", () => {
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
@@ -98,6 +155,64 @@ test("mobile comparison pairs columns with one visible sticky heading instead of
 });
 
 for (const locale of ["en", "ja"]) {
+  test(`${locale}: the live decision studio keeps its English heading and full-width hand detail after the chart`, () => {
+    const html = render(locale);
+    const heading = html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/)?.[0];
+    assert.ok(heading);
+    assert.match(heading, /id="site-hero-title"/);
+    assert.match(heading, /lang="en"/);
+    for (const title of ["Don't just play.", "Understand why."]) assert.ok(heading.includes(escapeText(title)));
+    assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
+    const main = html.indexOf('class="site-wrap site-hero-main"');
+    const range = html.indexOf('class="site-hero-range"');
+    const detail = html.indexOf('class="site-hero-detail"');
+    const playback = html.indexOf('class="site-hero-playback"');
+    assert.ok(main > 0 && range > main && detail > range && playback > detail);
+    assert.match(html, /class="site-hero-deal"[\s\S]*?class="site-hero-summary"[\s\S]*?class="site-hero-reason"/);
+    assert.match(html, /class="site-hand" aria-live="polite" aria-atomic="true"/);
+    assert.ok(html.includes(escapeText(copies[locale].hero.lead)));
+    assert.match(html, /class="site-hero-secondary" href="#how"/);
+    assert.doesNotMatch(html, /class="site-explorer-body"|class="site-hero-product"/);
+  });
+
+  test(`${locale}: reduced motion exposes the complete manual preview without a nonfunctional playback button`, () => {
+    const html = renderWithMotionPreference(locale, true);
+    assert.doesNotMatch(html, /has-motion|class="site-tour-toggle"/);
+    assert.match(html, /data-tour-running="false"/);
+    assert.match(html, /class="site-hand" aria-live="polite" aria-atomic="true"/);
+    assert.equal((html.match(/class="site-cell /g) ?? []).length, 169);
+    assert.ok(html.includes(escapeText(copies[locale].preview.manual)));
+    assert.ok(html.includes(escapeText(copies[locale].preview.notGto)));
+
+    const animated = renderWithMotionPreference(locale, false);
+    assert.match(animated, /has-motion/);
+    assert.match(animated, /class="site-hand" aria-live="off" aria-atomic="true"/);
+    const playback = animated.match(/<button\b[^>]*class="site-tour-toggle"[^>]*>/)?.[0];
+    assert.ok(playback);
+    assert.ok(playback.includes(`aria-label="${escapeText(copies[locale].preview.pauseTour)}"`));
+  });
+
+  test(`${locale}: Simple and restored Standard preserve every saved opening frequency in accessible chart labels`, () => {
+    const { preview: copy, common } = copies[locale];
+    for (const displayMode of ["simple", "standard"]) {
+      const { html, reads } = renderWithDisplayPreference(locale, displayMode);
+      assert.ok(reads.includes("reysonai:site-preview-display-mode:v1"));
+      const cells = html.match(/<button\b[^>]*class="site-cell [^"]*"[^>]*>[\s\S]*?<\/button>/g) ?? [];
+      assert.equal(cells.length, 169);
+      assert.equal(cells.filter(cell => cell.includes('aria-pressed="true"')).length, 1);
+      for (const [hand, values] of Object.entries(preview.opening)) {
+        const breakdown = [[common.raise, values.open], [common.fold, values.fold]]
+          .filter(([, frequency]) => frequency > 0)
+          .map(([action, frequency]) => `${action} ${frequency}%`).join(" / ");
+        assert.ok(cells.some(cell => cell.includes(`aria-label="${escapeText(`${hand}: ${breakdown}`)}"`)), `${displayMode}: ${hand} retains its saved frequencies`);
+      }
+      const modeName = displayMode === "standard" ? copy.standardMode : copy.simpleMode;
+      assert.ok(html.includes(`aria-pressed="true">${escapeText(modeName)}</button>`));
+      if (displayMode === "standard") assert.match(html, /class="site-cell-mix" aria-hidden="true"/);
+      else assert.doesNotMatch(html, /class="site-cell-mix"/);
+    }
+  });
+
   test(`${locale}: compact comparison retains every original claim and disclaimer`, () => {
     const comparison = render(locale).match(/<section class="site-section site-compare"[\s\S]*?<\/section>/)?.[0];
     assert.ok(comparison);

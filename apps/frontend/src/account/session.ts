@@ -1,0 +1,102 @@
+// Guest records stay local; account records live in memory and use an HttpOnly cookie.
+export const accountKeys = ["reysonai:profile:v1", "reysonai:appearance:v1", "reysonai:display-mode:v1", "reysonai:locale:v1", "reysonai.trainer.history.v1", "reysonai.trainer.drills.v1", "reysonai.trainer.drafts.v1", "reysonai.trainer.review-sessions.v1"];
+let user = null;
+let data = {};
+let version = 0;
+let ready = false;
+let available = false;
+let error = "";
+let timer;
+let pending = Promise.resolve();
+let refreshing;
+let dirty = false;
+let transitioning = false;
+const listeners = new Set();
+const emit = () => listeners.forEach(listener => listener());
+export const accountSnapshot = () => ({ user, ready, available, error });
+export const subscribeAccount = listener => { listeners.add(listener); return () => listeners.delete(listener); };
+export async function accountRequest(path, body) {
+  const base = String(import.meta.env?.VITE_API_BASE || (typeof window !== "undefined" && window.location.hostname.endsWith("reysonai.com") ? "https://api.reysonai.com" : "")).replace(/\/$/, "");
+  const response = await fetch(`${base}/v1/account/${path}`, { credentials: "include", ...(body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }) });
+  const result = await response.json();
+  if (!response.ok) throw new Error(response.status === 503 ? "disabled" : response.status === 409 ? "conflict" : response.status === 401 ? "session" : response.status === 403 ? "verification" : "request");
+  return result;
+}
+export function refreshAccount() {
+  // React StrictMode must not start two competing session/data loads.
+  if (refreshing) return refreshing;
+  refreshing = (async () => {
+    transitioning = true;
+    clearTimeout(timer);
+    await pending;
+    try {
+      const result = await accountRequest("session");
+      if (user?.id !== result.user?.id) { data = {}; version = 0; dirty = false; }
+      user = result.user;
+      available = true;
+      if (user?.verified) {
+        const saved = await accountRequest("data");
+        data = Object.fromEntries(Object.entries(saved.data ?? {}).filter(([key]) => accountKeys.includes(key)));
+        version = saved.version;
+      } else data = {};
+      dirty = false; error = "";
+    } catch (cause) { available = false; error = cause.message === "disabled" ? "" : "request"; }
+    ready = true; transitioning = false; emit();
+  })().finally(() => { refreshing = null; });
+  return refreshing;
+}
+export function accountStorage() {
+  if (!user) { try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; } }
+  return {
+    get length() { return Object.keys(data).length; },
+    key: index => Object.keys(data)[index] ?? null,
+    getItem: key => accountKeys.includes(key) && key in data ? (typeof data[key] === "string" ? data[key] : JSON.stringify(data[key])) : null,
+    setItem: (key, value) => { if (!accountKeys.includes(key) || transitioning) return; try { data[key] = JSON.parse(value); } catch { data[key] = value; } dirty = true; queueSave(); },
+    removeItem: key => { if (accountKeys.includes(key) && !transitioning) { delete data[key]; dirty = true; queueSave(); } },
+  };
+}
+function queueSave() {
+  if (!user?.verified || error) return;
+  clearTimeout(timer);
+  timer = setTimeout(() => { saveAccountData(); }, 350);
+}
+export function saveAccountData(extra = {}) {
+  clearTimeout(timer);
+  pending = pending.then(async () => {
+    if (!user?.verified || error || !dirty) return;
+    const snapshot = JSON.parse(JSON.stringify(data));
+    dirty = false;
+    try { const result = await accountRequest("data", { data: snapshot, version, ...extra }); version = result.version; }
+    catch (cause) { dirty = true; error = cause.message; emit(); }
+  });
+  return pending;
+}
+export async function importGuestData(consent = false) {
+  if (consent !== true || !user?.verified || error) throw new Error("consent");
+  clearTimeout(timer);
+  await pending;
+  if (error) throw new Error(error);
+  const imported = {};
+  for (const key of accountKeys) {
+    const value = window.localStorage.getItem(key);
+    if (value !== null) { try { imported[key] = JSON.parse(value); } catch { imported[key] = value; } }
+  }
+  // Explicit replacement, never an ambiguous history merge.
+  data = imported; dirty = true;
+  await saveAccountData({ importLocal: true, consent: true });
+  if (error) throw new Error(error);
+  emit();
+}
+export async function logoutAccount() {
+  transitioning = true;
+  try {
+    await saveAccountData();
+    // Do not discard unsaved authenticated records after a save failure.
+    if (error && user?.verified && dirty) throw new Error(error);
+    await accountRequest("logout", {});
+    user = null; data = {}; dirty = false; error = ""; emit();
+  } finally { transitioning = false; }
+}
+export function exportAccountData() {
+  return { app: "ReysonAI", exportedAt: new Date().toISOString(), data: JSON.parse(JSON.stringify(data)), rankedAuthoritative: false };
+}

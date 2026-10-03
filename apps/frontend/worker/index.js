@@ -7,6 +7,11 @@ export function isRetiredJapanesePath(pathname) {
 
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+    if (url.hostname === "www.reysonai.com") {
+      url.hostname = "reysonai.com";
+      return Response.redirect(url.toString(), 301);
+    }
     if (isRetiredJapanesePath(new URL(request.url).pathname)) {
       return new Response("Not Found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
     }

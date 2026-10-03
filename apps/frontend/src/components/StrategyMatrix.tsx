@@ -15,9 +15,18 @@ const adjustedLabel = { add: "卓に合わせてオープンに追加", drop: "�
 // Mix strips read from the most aggressive action on the left to the most passive on the right
 // (all-in, larger bets/raises, smaller bets, call, check, fold).
 const AGGRESSION = ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"];
+// Sized raises (raise_2_5, raise_12, raise_ai, …) sit with "raise", larger sizes first.
+const rankOf = action => {
+  if (action.startsWith("raise_")) {
+    const size = Number(action.slice("raise_".length).replace("_", "."));
+    return [AGGRESSION.indexOf("raise"), Number.isFinite(size) ? -size : 0];
+  }
+  const index = AGGRESSION.indexOf(action);
+  return [index < 0 ? AGGRESSION.length : index, 0];
+};
 const stripOrder = actions => [...actions].sort((a, b) => {
-  const rank = action => { const index = AGGRESSION.indexOf(action); return index < 0 ? AGGRESSION.length : index; };
-  return rank(a) - rank(b);
+  const [ra, sa] = rankOf(a), [rb, sb] = rankOf(b);
+  return ra - rb || sa - sb;
 });
 
 export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, title, ariaLabel, footer, actionLabels = {}, simplified = false, unreachableReason = "既存3bet頻度0%、推奨なし" }) {

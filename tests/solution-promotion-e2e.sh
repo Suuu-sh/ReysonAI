@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/solveaai-promotion-e2e.XXXXXX")
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/reysonai-promotion-e2e.XXXXXX")
 
 cleanup() {
   rm -rf "$TMP_DIR"
@@ -21,9 +21,9 @@ with open(sys.argv[2], "w", encoding="utf-8") as destination:
     json.dump(config, destination)
 PY
 
-cargo run --quiet --bin solveaai-worker -- \
+cargo run --quiet --bin reysonai-worker -- \
   solve "$CONFIG_PATH" "$TMP_DIR/generated" >/dev/null
-cargo run --quiet --bin solveaai-promote -- \
+cargo run --quiet --bin reysonai-promote -- \
   "$CONFIG_PATH" \
   "$TMP_DIR/generated/cash-6max-100bb-v1.json" \
   "$TMP_DIR/release" >/dev/null
@@ -48,7 +48,7 @@ with open(sys.argv[4], encoding="utf-8") as source:
 print("solution promotion passed")
 PY
 
-if cargo run --quiet --bin solveaai-promote -- \
+if cargo run --quiet --bin reysonai-promote -- \
   "$ROOT_DIR/configs/cash-6max-100bb.json" \
   "$TMP_DIR/generated/cash-6max-100bb-v1.json" \
   "$TMP_DIR/invalid-release" >/dev/null 2>&1; then

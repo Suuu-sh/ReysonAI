@@ -33,7 +33,7 @@ export function Onboarding({ initial, onComplete, onCancel }) {
         {editing && <button type="button" className="onboarding-cancel" onClick={onCancel}>キャンセル</button>}
         <button type="submit" className="primary" disabled={!level}>{editing ? "保存する" : "はじめる"}</button>
       </div>
-      <small className="onboarding-note">設定はこの端末のブラウザに保存されます。アカウント登録は今後対応予定です。</small>
+      <small className="onboarding-note">ゲストの設定はこのブラウザに保存されます。ログイン中の設定はアカウントに同期されます。</small>
     </form>
   </main>;
 }

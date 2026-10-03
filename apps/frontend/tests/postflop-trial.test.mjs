@@ -533,7 +533,8 @@ test("any flop can be selected in the card picker, with a random pick and no rep
   assert.deepEqual([fourBetContext.spotId, fourBetContext.potBb, fourBetContext.stackBb, fourBetContext.tree], ["BTN_open_BB_4bp_call", 52.5, 74, "oop_checks"]);
   // SB's limped pots: limp → check, limp → iso → call, limp → iso → limp-reraise → call.
   for (const [actions, id, pot] of [[{ limpAction: "check" }, "SB_limp_BB_check", 2], [{ limpAction: "raise", limpResponseAction: "call" }, "SB_limp_BB_iso_call", 7],
-    [{ limpAction: "raise", limpResponseAction: "raise", limpReraiseAction: "call" }, "SB_limp_BB_iso_SB_reraise_call", 21]]) {
+    [{ limpAction: "raise", limpResponseAction: "raise", limpReraiseAction: "call" }, "SB_limp_BB_iso_SB_reraise_call", 21],
+    [{ limpAction: "raise", limpResponseAction: "raise", limpReraiseAction: "raise", limpFourBetAction: "call" }, "SB_limp_BB_iso_SB_reraise_BB_4bet_call", 52]]) {
     const limpBlocks = buildActionBlocks({ rangeType: "limp", opener: "SB", hero: "BB", callers: [], ...actions });
     const limpContext = completedFlopContext({ actionBlocks: limpBlocks, rangeType: "limp", opener: "SB", hero: "BB", callers: [], isDefaultTable: true, ...actions });
     assert.deepEqual([limpContext.spotId, limpContext.potBb], [id, pot]);
@@ -560,7 +561,7 @@ test("single-card street picker blocks used cards and localizes later node headi
 
   const previousWindow = globalThis.window;
   const hadWindow = Object.hasOwn(globalThis, "window");
-  globalThis.window = { localStorage: { getItem: key => key === "solveaai:locale:v1" ? "en" : null } };
+  globalThis.window = { localStorage: { getItem: key => key === "reysonai:locale:v1" ? "en" : null } };
   try {
     assert.equal(laterNodeTitle("turn_oop_first", { ip: "BTN", oop: "BB" }, "turn"), "BB · Turn · first decision");
     assert.equal(laterNodeTitle("river_ip_vs_allin", { ip: "BTN", oop: "BB" }, "river"), "BTN · River · facing an all-in");
@@ -581,7 +582,7 @@ test("125% flop bets use the shared size list, localized labels, and facing-node
 
   const previousWindow = globalThis.window;
   const hadWindow = Object.hasOwn(globalThis, "window");
-  globalThis.window = { localStorage: { getItem: key => key === "solveaai:locale:v1" ? "en" : null } };
+  globalThis.window = { localStorage: { getItem: key => key === "reysonai:locale:v1" ? "en" : null } };
   try {
     assert.equal(nodeTitle("bb_vs_125", context), "BB · facing a 125% bet");
     assert.equal(nodeTitle("ip_vs_125", context), "BTN · facing a 125% bet");

@@ -34,7 +34,7 @@ test("an interrupted drill is saved and restored with its answer, score, and cur
   assert.equal(restored.answer.action, "open");
   assert.equal(restored.session.score, 1);
   assert.equal(restored.elapsedMs, 45_000);
-  assert.ok(JSON.parse(storage.getItem("solveaai.trainer.drafts.v1"))["preset-open"]);
+  assert.ok(JSON.parse(storage.getItem("reysonai.trainer.drafts.v1"))["preset-open"]);
 });
 
 test("invalid or out-of-scope draft questions are ignored, and finished sessions can be removed", () => {

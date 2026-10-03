@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 RELEASE_DIR=${1:?"usage: scripts/publish-solution-r2.sh <release_dir> [bucket]"}
-BUCKET=${2:-solveaai-solutions}
+BUCKET=${2:-reysonai-solutions}
 MANIFEST="$RELEASE_DIR/manifest.json"
 
 if [[ ! -f "$MANIFEST" ]]; then
@@ -11,7 +11,7 @@ if [[ ! -f "$MANIFEST" ]]; then
   exit 1
 fi
 
-UPLOAD_LIST=$(mktemp "${TMPDIR:-/tmp}/solveaai-r2-upload.XXXXXX")
+UPLOAD_LIST=$(mktemp "${TMPDIR:-/tmp}/reysonai-r2-upload.XXXXXX")
 cleanup() {
   rm -f "$UPLOAD_LIST"
 }

@@ -244,6 +244,8 @@ export type HC = {
   en: boolean; o: string; street: "flop" | "turn" | "river"; ip: boolean;
   st: { level: "comfortable" | "borderline" | "short"; place: string | null; blocker: string | null; mix: string | null; bluffCapped: boolean } | null;
   bettorMix: string | null;
+  // The raise is capped by the stack, so it is offered (and described) as an all-in.
+  raiseAllIn?: boolean;
 };
 const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
 type Role = { role: string; sub: string };
@@ -437,6 +439,18 @@ export function facingHandSentences(d: Desc, action: string, role: Role, c: HC):
     return out.filter(Boolean);
   }
   // raise
+  if (c.raiseAllIn) {
+    if (role.role === "value") out.push(e(`${d.name} has ${d.made}, well ahead of the bettor's range, so it shoves and gets the stacks in against ${d.worse}.`, `${d.name}は${d.made}で相手のレンジを大きく上回り、${d.worse}を相手にスタックを入れきるオールインです。`));
+    else if (role.role === "semi-bluff") {
+      out.push(e(`${d.name} has ${d.draw || d.over}${d.draw && d.over ? ` plus ${d.over}` : ""}, so the all-in is a semi-bluff: it wins when ${o} folds and still has outs when called.`, `${d.name}は${d.draw || d.over}${d.draw && d.over ? `と${d.over}` : ""}を持ち、相手が降りれば勝ち、コールされてもアウツが残るセミブラフのオールインです。`));
+      out.push(improveLine(d, c));
+    } else if (role.role === "protection") out.push(e(`${d.name} has ${d.made}; the all-in is a minor option that turns a bluff-catcher into a bluff and folds out ${o}'s worse pairs.`, `${d.name}は${d.made}で、オールインはブラフキャッチャーをブラフに変える小さな選択肢で、相手の劣るペアを降ろします。`));
+    else {
+      out.push(e(`${d.name} has ${d.has} and cannot call profitably, so it is a bluff all-in candidate that folds out hands that beat it.`, `${d.name}は${d.has}でコールでは採算が合わず、勝っている手を降ろすためのブラフのオールイン候補です。`));
+      out.push(blockerLine(d, c, ", exactly what a bluff all-in wants", "ので、ブラフのオールインに求められる条件を満たします") || (d.unblock ? cap(d.unblock) + (c.en ? "." : "。") : ""));
+    }
+    return out.filter(Boolean);
+  }
   if (role.role === "value") {
     out.push(e(`${d.name} has ${d.made}, well ahead of the bettor's range, so raising gets paid by ${d.worse}.`, `${d.name}は${d.made}で相手のレンジを大きく上回り、${d.worse}から払ってもらえるレイズです。`));
     out.push(d.vulnerable && d.boardDraws
@@ -468,7 +482,7 @@ export function handHeadline(d: Desc, main: string, role: Role, facing: boolean,
   if (facing) {
     plan = main === "call" ? ((d.m === "nuts" || d.m === "strong") ? e("mostly calls for value", "主にバリューコール") : d.dr !== "none" ? e("mostly calls with its draw", "主にドローでコール") : e("mostly calls as a bluff-catcher", "主にブラフキャッチャーとしてコール"))
       : main === "fold" ? e("mostly folds", "基本はフォールド")
-      : e(`mostly raises ${rl}`, `${rl}レイズが中心`);
+      : c.raiseAllIn ? e(`mostly shoves ${rl}`, `${rl}オールインが中心`) : e(`mostly raises ${rl}`, `${rl}レイズが中心`);
   } else if (main === "check") plan = e("mostly checks", "チェック中心");
   else if (main === "allin") plan = e(`shoves ${rl}`, `${rl}オールイン`);
   else plan = e(`mostly makes ${betEn} ${rl}`, `${rl}${main === "bet33" ? "小さく" : main === "bet75" ? "大きく" : main === "bet125" ? "オーバーベットで" : ""}ベットが中心`);

@@ -5,6 +5,12 @@
   "name": "reysonai",
   "main": "worker/index.js",
   "compatibility_date": "2026-09-22",
+  "workers_dev": false,
+  // www.reysonai.com is redirected to the apex in worker/index.js.
+  "routes": [
+    { "pattern": "reysonai.com", "custom_domain": true },
+    { "pattern": "www.reysonai.com", "custom_domain": true }
+  ],
   "assets": {
     "directory": "dist/client",
     "binding": "ASSETS",

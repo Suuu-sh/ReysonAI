@@ -8,7 +8,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 fn main() {
     if let Err(error) = run() {
-        eprintln!("solveaai-promote: {error}");
+        eprintln!("reysonai-promote: {error}");
         std::process::exit(1);
     }
 }
@@ -17,7 +17,7 @@ fn run() -> Result<(), String> {
     let args = env::args().collect::<Vec<_>>();
     if args.len() != 4 {
         return Err(
-            "usage: solveaai-promote <config.json> <solution.json> <release_dir>".to_string(),
+            "usage: reysonai-promote <config.json> <solution.json> <release_dir>".to_string(),
         );
     }
     let config_path = Path::new(&args[1]);
