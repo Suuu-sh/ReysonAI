@@ -220,7 +220,7 @@ function RankedEmblem({ rank, tier }) {
 
 function RankedComingSoon() {
   return <ModeBlock theme="#b7a0db" className="is-ranked is-coming-soon" visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
-    visual={<Trophy size={64} weight="duotone" aria-hidden="true" />}
+    visual={<RankBadge name="マスター" size={64} />}
     eyebrow="RANKED"
     title={localized("Ranked matches", "ランク戦")}
     status={localized("Coming soon", "近日公開")}
