@@ -651,3 +651,25 @@
 .mode-block.is-ranked .rank-ladder li { grid-template-columns: auto auto 1fr; grid-template-rows: auto; column-gap: 6px; padding: 3px 8px; }
 .mode-block.is-ranked .rank-ladder li .rank-badge { grid-row: auto; width: 20px; height: 20px; }
 .mode-block.is-ranked .rank-ladder li small { justify-self: start; }
+
+/* Leaderboard: your standing as one compact row */
+.lb-me { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; padding: 12px 18px; overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--mode-theme) 32%, var(--line-strong)); border-radius: 12px;
+  background: radial-gradient(60% 200% at 0% 50%, color-mix(in srgb, var(--mode-theme) 16%, transparent), transparent 60%), var(--surface); }
+.lb-me::before { position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--mode-theme); content: ""; opacity: .8; }
+.lb-me-id { display: flex; align-items: center; gap: 10px; min-width: 150px; }
+.lb-me-id .rank-badge { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--mode-theme) 45%, transparent)); }
+.lb-me-id div { display: grid; line-height: 1.25; }
+.lb-me-id strong { font-size: 15px; }
+.lb-me-id span { color: var(--mode-theme); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.lb-me-stats { display: flex; gap: 24px; margin: 0; }
+.lb-me-stats div { display: grid; line-height: 1.2; }
+.lb-me-stats dt { color: var(--text-subtle); font-size: 10px; }
+.lb-me-stats dd { margin: 0; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.lb-me-stats dd small { color: var(--text-subtle); font-size: 12px; font-weight: 500; }
+.lb-me-note { color: var(--text-muted); font-size: 12px; }
+.lb-me-tools { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.lb-me .lb-period { min-width: 170px; }
+.lb-me .lb-period button { padding: 5px 10px; }
+.lb-me .lb-demo-flag { white-space: nowrap; }
+@media (max-width: 720px) { .lb-me-tools { width: 100%; margin-left: 0; justify-content: space-between; } }
