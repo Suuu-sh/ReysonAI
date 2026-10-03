@@ -25,7 +25,11 @@ test("saving a level stores the profile and that level's default display mode", 
     profile.saveProfile({ nickname: "  yota  ", level: "beginner" });
     assert.equal(profile.loadProfile().nickname, "yota");
     assert.equal(store.get(profile.displayModeKey), "simple");
-    profile.saveProfile({ level: "intermediate" });
+    store.set(profile.displayModeKey, "standard");
+    profile.saveProfile({ nickname: "yota2", level: "beginner" });
+    assert.equal(store.get(profile.displayModeKey), "standard");
+    store.set(profile.displayModeKey, "simple");
+    profile.saveProfile({ nickname: "yota2", level: "intermediate" });
     assert.equal(store.get(profile.displayModeKey), "standard");
     assert.throws(() => profile.saveProfile({ level: "advanced" }), /レベル/);
   });

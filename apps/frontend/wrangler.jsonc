@@ -6,10 +6,11 @@
   "main": "worker/index.js",
   "compatibility_date": "2026-09-22",
   "workers_dev": false,
-  // www.reysonai.com is redirected to the apex in worker/index.js.
+  // The same Worker serves the service site on the apex and the ProductApp on its own host.
   "routes": [
     { "pattern": "reysonai.com", "custom_domain": true },
-    { "pattern": "www.reysonai.com", "custom_domain": true }
+    { "pattern": "www.reysonai.com", "custom_domain": true },
+    { "pattern": "app.reysonai.com", "custom_domain": true }
   ],
   "assets": {
     "directory": "dist/client",

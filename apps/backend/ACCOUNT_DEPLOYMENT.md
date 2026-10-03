@@ -14,7 +14,7 @@ Google's stable `sub`, **never email**; matching emails do not merge accounts.
 It replaced the earlier **unapplied** password-auth draft before application; never
 use the rewritten draft to alter an existing password schema. Google Cloud Web application OAuth client:
 
-- Authorized JavaScript origin: `https://reysonai.com`.
+- Authorized JavaScript origin: `https://app.reysonai.com`.
 - Exact authorized redirect URI:
   `https://api.reysonai.com/v1/account/google/callback`.
 - Consent screen supports external Google accounts, scopes `openid email` only.
@@ -32,7 +32,7 @@ Non-secret Worker vars:
 
 - `GOOGLE_CLIENT_ID`: same web application OAuth client's ID.
 - `GOOGLE_REDIRECT_URI`: exact callback URL above.
-- `AUTH_APP_URL`: `https://reysonai.com`.
+- `AUTH_APP_URL`: `https://app.reysonai.com`.
 - `ALLOWED_ORIGIN`: exact approved frontend origins, comma separated; no wildcard.
 - `AUTH_ENABLED`: `true` for configured live validation; `false` disables accounts.
 

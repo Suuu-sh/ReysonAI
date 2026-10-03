@@ -23,13 +23,15 @@ export function loadProfile() {
   } catch { return null; }
 }
 
-// Saving a level also resets the display mode to that level's default.
 export function saveProfile({ nickname = "", level }) {
   if (!levels.some(item => item.value === level)) throw new Error("レベルを選んでください。");
+  const previousProfile = loadProfile();
   const profile = { nickname: nickname.trim().slice(0, 20), level, updatedAt: new Date().toISOString() };
   try {
     storage()?.setItem(profileKey, JSON.stringify(profile));
-    storage()?.setItem(displayModeKey, defaultModeForLevel(level));
+    if (!previousProfile || previousProfile.level !== level) {
+      storage()?.setItem(displayModeKey, defaultModeForLevel(level));
+    }
   } catch {}
   return profile;
 }

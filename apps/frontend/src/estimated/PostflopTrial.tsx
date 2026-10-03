@@ -5,7 +5,7 @@ import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { tierLabels } from "./postflop-reasons.ts";
 import { buildAdvancedExplanation } from "./postflop-advanced.ts";
 import { glossaryPieces } from "./poker-glossary.ts";
-import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater } from "./postflop-trial.ts";
+import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
@@ -204,6 +204,7 @@ export function randomFlop(random = Math.random) {
 }
 
 export function FlopCardDialog({ cards, onApply, onClose }) {
+  const current = recognizedFlop(cards);
   const english = productLocale() === "en";
   const [draft, setDraft] = useState(() => [...cards]);
   const dialogRef = useRef(null);
@@ -260,6 +261,18 @@ export function FlopCardDialog({ cards, onApply, onClose }) {
         <SuitCardPicker selectedCards={selected} disabledCards={count === 3
           ? new Set(deck.filter(card => !selected.has(card))) : undefined}
           ariaLabel={english ? "Available flop cards by suit" : "スート別のフロップカード一覧"} onSelect={chooseCard} />
+      </div>
+      <div className="flop-quick-picks">
+        <h3>{english ? "Quick picks · 12 representative flops" : "クイック選択 · 代表12ボード"}</h3>
+        <div className="postflop-board-options">
+        {representativeFlops.map(board => {
+          const boardCards = board.match(/../g);
+          return <button type="button" key={board} className={board === current ? "selected" : ""} aria-pressed={board === current}
+            aria-label={`${english ? "Flop" : "フロップ"} ${boardCards.map(card => card[0] + suitLabels[card[1]]).join(" ")}`} onClick={() => apply(boardCards)}>
+            <BoardCards cards={boardCards} />
+          </button>;
+        })}
+        </div>
       </div>
     </div>
   </div>;

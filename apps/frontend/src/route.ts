@@ -21,6 +21,11 @@ const ACCOUNT_SECTION = "アカウント";
 const TRAINER_SECTION = "トレーナー";
 
 export const HOME_PATH = "/analyze/ranges";
+export const PRODUCTION_APP_URL = "https://app.reysonai.com";
+
+export function appEntryHref(hostname: string) {
+  return hostname === "reysonai.com" ? PRODUCTION_APP_URL : HOME_PATH;
+}
 
 const SECTIONS: [string, string][] = [
   [RANGE_SECTION, "/analyze/ranges"],
@@ -37,6 +42,10 @@ const under = (path: string, base: string) => path === base || path.startsWith(`
 export function isAppPath(pathname: string) {
   const path = clean(pathname);
   return ["/app", "/ranges", "/trainer", "/sessions", "/analysis", "/weakness", "/account", "/learn", "/analyze", "/solutions"].some(base => under(path, base));
+}
+
+export function isProductAppRoute(pathname: string, hostname: string) {
+  return hostname === "app.reysonai.com" || isAppPath(pathname);
 }
 
 // The current address for an old one; anything else is returned cleaned.

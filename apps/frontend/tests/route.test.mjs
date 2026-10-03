@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { canonicalPath, isAppPath, pathOfSection, sectionOfPath, trainerPath, trainerRouteOf } from "../src/route.ts";
+import { appEntryHref, canonicalPath, isAppPath, isProductAppRoute, pathOfSection, sectionOfPath, trainerPath, trainerRouteOf } from "../src/route.ts";
 
 test("every trainer route round-trips through its /learn path", () => {
   const routes = [
@@ -44,4 +44,12 @@ test("old addresses move to the current ones", () => {
   assert.equal(canonicalPath("/learn"), "/learn/trainer");
   for (const path of ["/analyze/ranges", "/solutions", "/learn/trainer", "/account/language", "/app", "/trainer/drills"]) assert.ok(isAppPath(path), path);
   for (const path of ["/", "/ja", "/admin", "/learning"]) assert.ok(!isAppPath(path), path);
+});
+
+test("production app host opens ProductApp at root while local and preview routes stay unchanged", () => {
+  assert.equal(isProductAppRoute("/", "app.reysonai.com"), true);
+  assert.equal(isProductAppRoute("/app", "localhost"), true);
+  assert.equal(isProductAppRoute("/", "localhost"), false);
+  assert.equal(appEntryHref("reysonai.com"), "https://app.reysonai.com");
+  assert.equal(appEntryHref("preview.local"), "/analyze/ranges");
 });

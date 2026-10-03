@@ -100,7 +100,7 @@ test("focus session validation preserves dirty records without data reload or le
     const checking = session.revalidateAccountSession();
     assert.equal(session.accountSnapshot().ready, true);
     await checking;
-    assert.deepEqual(paths, ["/v1/account/session"]);
+    assert.deepEqual(paths, ["http://localhost:8787/v1/account/session"]);
     assert.deepEqual(session.exportAccountData().data["reysonai.trainer.history.v1"], [{ hand: "KK" }]);
     assert.equal(access.learningAllowed(session.accountSnapshot()), true);
     await session.saveAccountData();

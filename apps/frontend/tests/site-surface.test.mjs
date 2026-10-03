@@ -16,6 +16,16 @@ before(async () => {
 });
 after(async () => { await server?.close(); });
 const render = locale => renderToStaticMarkup(createElement(ServiceSite, { locale, onLocaleChange() {} }));
+function renderAtHostname(locale, hostname) {
+  const previousWindow = globalThis.window;
+  globalThis.window = { location: { hostname } };
+  try {
+    return render(locale);
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+}
 const escapeText = value => renderToStaticMarkup(createElement("span", null, value)).slice(6, -7);
 const preview = JSON.parse(readFileSync(new URL("../src/site/range-preview.json", import.meta.url), "utf8"));
 
@@ -57,6 +67,16 @@ test("the hand tour alternates spots, pauses offscreen, yields to interaction, a
   assert.match(explorer, /data-tour-running=\{isTouring && visible\}/);
   assert.match(explorer, /aria-live=\{isTouring \? "off" : "polite"\}/,
     "automatic hands must not repeatedly interrupt a screen reader");
+});
+
+test("production service-site app CTAs use the app host while previews keep their existing path", () => {
+  const production = renderAtHostname("en", "reysonai.com");
+  assert.equal((production.match(/href="https:\/\/app\.reysonai\.com"/g) ?? []).length, 7);
+  assert.doesNotMatch(production, /href="\/analyze\/ranges"/);
+
+  const previewSite = renderAtHostname("ja", "preview.local");
+  assert.equal((previewSite.match(/href="\/analyze\/ranges"/g) ?? []).length, 7);
+  assert.doesNotMatch(previewSite, /href="https:\/\/app\.reysonai\.com"/);
 });
 
 test("the chart minimum width wins over the fieldset reset and preserves mobile scrolling", () => {

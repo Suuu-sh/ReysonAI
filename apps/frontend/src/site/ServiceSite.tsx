@@ -6,8 +6,9 @@ import agentTableImage from "./assets/agent-table.webp";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
+import { appEntryHref } from "../route.ts";
 
-const SiteContext = createContext<{ locale: SiteLocale; copy: SiteCopy; onLocaleChange: () => void; motion: boolean }>({ locale: "en", copy: en, onLocaleChange: () => {}, motion: false });
+const SiteContext = createContext<{ locale: SiteLocale; copy: SiteCopy; onLocaleChange: () => void; motion: boolean; appHref: string }>({ locale: "en", copy: en, onLocaleChange: () => {}, motion: false, appHref: "/analyze/ranges" });
 const useSite = () => useContext(SiteContext);
 
 type Action = "raise" | "call" | "fold";
@@ -134,7 +135,7 @@ const tourHands: Record<RangeMode, string[]> = {
 };
 
 function Explorer() {
-  const { copy: c, motion } = useSite();
+  const { copy: c, motion, appHref } = useSite();
   const [mode, setMode] = useState<RangeMode>("opening");
   const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
@@ -197,7 +198,7 @@ function Explorer() {
           </div>
           <div className="site-hero-reason">
             <p className="site-hand-why"><span>{c.preview.why}</span>{explanation}</p>
-            <a className="site-hand-link" href="/analyze/ranges">{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
+            <a className="site-hand-link" href={appHref}>{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
           </div>
         </div>
         <div className="site-hero-playback">
@@ -214,7 +215,7 @@ function Explorer() {
 }
 
 function Header() {
-  const { copy: c, onLocaleChange } = useSite();
+  const { copy: c, onLocaleChange, appHref } = useSite();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -236,7 +237,7 @@ function Header() {
       </nav>
       <div className="site-header-actions">
         <button type="button" className="site-lang" onClick={onLocaleChange} aria-label={c.common.languageLabel}>{c.common.language}</button>
-        <a className="site-button is-small" href="/analyze/ranges">{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
+        <a className="site-button is-small" href={appHref}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
         <button type="button" className="site-menu" onClick={() => setOpen(!open)} aria-label={open ? c.common.menuClose : c.common.menuOpen} aria-expanded={open}>{open ? <X size={22} /> : <List size={22} />}</button>
       </div>
     </div>
@@ -244,12 +245,12 @@ function Header() {
 }
 
 function HeroCopy({ children }: { children?: ReactNode }) {
-  const { copy: c } = useSite();
+  const { copy: c, appHref } = useSite();
   return <div className="site-hero-copy">
     <h1 id="site-hero-title" lang="en"><span className="site-line site-hero-opening"><span>{c.hero.title1}</span></span><span className="site-line"><span className="site-hero-mark">{c.hero.title2}</span></span></h1>
     <p className="site-hero-lead">{c.hero.lead}</p>
     <div className="site-hero-actions">
-      <a className="site-button" href="/analyze/ranges">{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
+      <a className="site-button" href={appHref}>{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
       <a className="site-hero-secondary" href="#how">{c.hero.secondary}<ArrowRight size={17} aria-hidden="true" /></a>
     </div>
     <p className="site-hero-note">{c.hero.note}</p>
@@ -474,7 +475,7 @@ function MiniMatrix({ mode, selected }: { mode: RangeMode; selected: string }) {
 }
 
 function Audience() {
-  const { copy: c, motion } = useSite();
+  const { copy: c, motion, appHref } = useSite();
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(true);
   const [ref, visible] = useInView<HTMLElement>("-25% 0px", false);
@@ -576,7 +577,7 @@ function Audience() {
               <p className="site-persona-price"><strong>{free.price}</strong><small>{free.cadence}</small></p>
               <span className="site-persona-pill">{c.audience.freeNote}</span>
               <ul>{c.audience.freeList.map((feature, index) => <li key={feature} style={{ "--i": index } as CSSProperties}><Check size={16} weight="bold" aria-hidden="true" />{feature}</li>)}</ul>
-              <a className="site-button is-small" href="/analyze/ranges" tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
+              <a className="site-button is-small" href={appHref} tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
               <div className="site-persona-plus">
                 <p><strong>{plus.name}</strong><span>{plus.price}</span><small>{plus.cadence}</small></p>
                 <small>{plus.status}</small>
@@ -818,7 +819,7 @@ function Compare() {
 }
 
 function Pricing() {
-  const { copy: c } = useSite();
+  const { copy: c, appHref } = useSite();
   return <section className="site-section site-pricing" id="pricing" aria-labelledby="site-pricing-title">
     <div className="site-wrap">
       <div className="site-pricing-head" data-reveal><h2 id="site-pricing-title">{c.pricing.title1}<span>{c.pricing.title2}</span></h2>{c.pricing.description && <p>{c.pricing.description}</p>}</div>
@@ -827,7 +828,7 @@ function Pricing() {
         <p className="site-plan-price"><strong>{plan.price}</strong><small>{plan.cadence}</small></p>
         <p>{plan.description}</p>
         <ul>{plan.features.map(feature => <li key={feature}><Check size={16} weight="bold" aria-hidden="true" />{feature}</li>)}</ul>
-        {plan.href ? <a className="site-button" href={plan.href}>{plan.action}<ArrowRight size={16} weight="bold" aria-hidden="true" /></a> : <span className="site-button is-disabled" aria-disabled="true">{plan.action}</span>}
+        {plan.href ? <a className="site-button" href={appHref}>{plan.action}<ArrowRight size={16} weight="bold" aria-hidden="true" /></a> : <span className="site-button is-disabled" aria-disabled="true">{plan.action}</span>}
       </article>)}</div>
       <p className="site-pricing-note">{c.pricing.note}</p>
     </div>
@@ -847,26 +848,26 @@ function Faq() {
 const fan: [string, Suit][] = [["A", "s"], ["K", "h"], ["Q", "c"], ["J", "d"], ["T", "s"]];
 
 function FinalCta() {
-  const { copy: c } = useSite();
+  const { copy: c, appHref } = useSite();
   return <section className="site-final" aria-labelledby="site-final-title">
     <div className="site-wrap site-final-inner">
       <div className="site-fan" data-reveal aria-hidden="true">{fan.map(([rank, suit], index) => <PlayingCard key={rank} rank={rank} suit={suit} index={index - 2} />)}</div>
       <h2 id="site-final-title" data-reveal>{c.final.title1}<span>{c.final.title2}</span></h2>
       <p data-reveal>{c.final.description}</p>
-      <a className="site-button is-large" href="/analyze/ranges" data-reveal>{c.final.action}<ArrowRight size={18} weight="bold" aria-hidden="true" /></a>
+      <a className="site-button is-large" href={appHref} data-reveal>{c.final.action}<ArrowRight size={18} weight="bold" aria-hidden="true" /></a>
       <small>{c.final.note}</small>
     </div>
   </section>;
 }
 
 function Footer() {
-  const { copy: c } = useSite();
+  const { copy: c, appHref } = useSite();
   return <footer className="site-footer">
     <div className="site-wrap">
       <div className="site-footer-top">
         <div><Brand /><p>{c.footer.tagline}</p></div>
         <div className="site-footer-links">
-          <div><span>{c.footer.product}</span><a href="/analyze/ranges">{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
+          <div><span>{c.footer.product}</span><a href={appHref}>{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
           <div><span>ReysonAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
           <div><span>{c.footer.legal}</span><span className="is-muted">{c.footer.privacy}</span><span className="is-muted">{c.footer.terms}</span></div>
         </div>
@@ -897,6 +898,7 @@ function Reveal({ children }: { children: ReactNode }) {
 
 export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; onLocaleChange: () => void }) {
   const copy = locale === "ja" ? ja : en;
+  const appHref = appEntryHref(typeof window === "undefined" ? "" : window.location?.hostname ?? "");
   const [motion, setMotion] = useState(() => typeof IntersectionObserver !== "undefined" && !prefersReducedMotion());
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -904,7 +906,7 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
     preference.addEventListener("change", update);
     return () => preference.removeEventListener("change", update);
   }, []);
-  return <SiteContext.Provider value={{ locale, copy, onLocaleChange, motion }}>
+  return <SiteContext.Provider value={{ locale, copy, onLocaleChange, motion, appHref }}>
     <div className={`site site-${locale}${motion ? " has-motion" : ""}`}>
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
       <Header />

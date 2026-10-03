@@ -4,7 +4,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {readFileSync} from 'node:fs';
 import worker from '../src/index.ts';
 import {allowedData,digest,routeAccount,verifyGoogleToken} from '../src/account.ts';
-const env={AUTH_ENABLED:'true',DB:{},GOOGLE_CLIENT_ID:'test-client',GOOGLE_CLIENT_SECRET:'test-only',GOOGLE_REDIRECT_URI:'https://api.reysonai.com/v1/account/google/callback',AUTH_APP_URL:'https://reysonai.com',AUTH_RATE_LIMIT_KEY:'test-only',ALLOWED_ORIGIN:'https://reysonai.com'};
+const env={AUTH_ENABLED:'true',DB:{},GOOGLE_CLIENT_ID:'test-client',GOOGLE_CLIENT_SECRET:'test-only',GOOGLE_REDIRECT_URI:'https://api.reysonai.com/v1/account/google/callback',AUTH_APP_URL:'https://app.reysonai.com',AUTH_RATE_LIMIT_KEY:'test-only',ALLOWED_ORIGIN:'https://app.reysonai.com'};
 test('disabled/origin/method gates and exact credentialed CORS',async()=>{
  assert.equal((await routeAccount(new Request('https://api.reysonai.com/v1/account/session'),{})).status,503);
  for(const origin of [undefined,'https://evil.invalid']) {
@@ -45,7 +45,7 @@ test('Google signed identity, PKCE/state replay, owned snapshots and logout',asy
  const finish=({auth,stateCookie},cookies=stateCookie)=>call(`google/callback?state=${auth.searchParams.get('state')}&code=test-code`,undefined,cookies);
  try {
   const attempt=await start();const wrong=await finish(attempt,'');assert.ok(wrong.headers.get('location').endsWith('#account-error=google'));
-  const logged=await finish(attempt);assert.ok(logged.headers.get('location').endsWith('#account-signed-in'));
+  const logged=await finish(attempt);assert.ok(logged.headers.get('location').startsWith('https://app.reysonai.com/analyze/ranges#account-signed-in'));
   sessionCookie=logged.headers.getSetCookie().find(c=>c.startsWith('__Host-reysonai=')).split(';')[0];
   assert.ok(logged.headers.getSetCookie().some(c=>c.includes('HttpOnly; Secure; SameSite=Lax')));
   assert.equal(b64(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(tokenExchange.get('code_verifier')))),attempt.auth.searchParams.get('code_challenge'));

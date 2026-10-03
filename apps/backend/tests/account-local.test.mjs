@@ -11,7 +11,7 @@ test('explicit same-host loopback guard and separate HTTP dev cookies',()=>{
  for(const host of ['api.reysonai.com','localhost.evil.invalid','192.168.1.10']) assert.equal(accountTransport(url(`http://${host}:8787`),url(`http://${host}:5173`),url(`http://${host}:8787/v1/account/google/callback`),[`http://${host}:5173`],'true'),null);
  assert.equal(accountTransport(url('http://localhost:8787'),url('http://localhost:5173'),url('http://127.0.0.1:8787/v1/account/google/callback'),['http://localhost:5173'],'true'),null);
  assert.equal(accountTransport(url('http://localhost:8787'),url('http://localhost:5173'),url('http://localhost:8787/v1/account/google/callback'),['http://localhost:5173','https://evil.invalid'],'true'),null);
- const prod=[url('https://api.reysonai.com'),url('https://reysonai.com/app'),url('https://api.reysonai.com/v1/account/google/callback'),['https://reysonai.com']];
+ const prod=[url('https://api.reysonai.com'),url('https://app.reysonai.com'),url('https://api.reysonai.com/v1/account/google/callback'),['https://app.reysonai.com']];
  assert.equal(accountTransport(...prod,'true'),null);
  assert.equal(accountTransport(...prod,undefined).cookie('__Host-reysonai','example').includes('HttpOnly; Secure; SameSite=Lax'),true);
 });
