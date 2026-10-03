@@ -16,6 +16,8 @@ const responses = dataset("preflop-ranges");
 const threeBetResponses = dataset("three-bet-responses");
 const openingRanges = dataset("opening-ranges");
 const limpResponses = dataset("limp-responses");
+// The 4bet size comes from limp-responses; limp-deep-responses loads lazily (checked in inputs.mjs).
+const limpFourBetBb = limpResponses.spots.find(item => item.id === "BB_vs_SB_limp_reraise")?.four_bet_size_bb;
 
 export const DEFAULT_SPOT_ID = "BTN_open_BB_call";
 const BLINDS = { SB: 0.5, BB: 1 };
@@ -88,6 +90,10 @@ const LIMPS = [
   { id: "SB_limp_BB_iso_SB_reraise_call", caller: "BB", aggressor: "SB", sizeBb: limpReraiseToBb, slug: "sb-bb-limp-reraise-v1", responseId: "BB_vs_SB_limp_reraise",
     ranges: { SB: [["opening-ranges", "SB_open", "limp"], ["limp-responses", "SB_vs_BB_iso", "raise"]],
       BB: [["limp-responses", "BB_vs_SB_limp", "raise"], ["limp-responses", "BB_vs_SB_limp_reraise", "call"]] } },
+  // BB 4bets the limp-reraise and SB calls; the 5bet line is all-in, so it has no postflop.
+  { id: "SB_limp_BB_iso_SB_reraise_BB_4bet_call", caller: "SB", aggressor: "BB", sizeBb: limpFourBetBb, slug: "sb-bb-limp-4bp-v1", responseId: "SB_vs_BB_limp_four_bet",
+    ranges: { SB: [["opening-ranges", "SB_open", "limp"], ["limp-responses", "SB_vs_BB_iso", "raise"], ["limp-deep-responses", "SB_vs_BB_limp_four_bet", "call"]],
+      BB: [["limp-responses", "BB_vs_SB_limp", "raise"], ["limp-responses", "BB_vs_SB_limp_reraise", "four_bet"]] } },
 ];
 const limpFiles = { "opening-ranges": openingRanges, "limp-responses": limpResponses };
 
@@ -99,7 +105,8 @@ export function describeLimpSpot(definition) {
     return [...maps[0].keys()].map(hand => maps.reduce((product, map) => product * (map.get(hand) ?? 0) / 100, 1));
   };
   return geometry({ id, kind: "limp", opener: "SB", caller, aggressor, sizeBb, slug, lead, openBb: sbCompleteToBb,
-    reachable: Object.values(ranges).every(factors => weights(factors).some(weight => weight > 0)),
+    // Factors from lazily loaded files (SB's 4bet call) are checked when the inputs load.
+    reachable: Object.values(ranges).every(factors => weights(factors.filter(([file]) => limpFiles[file])).some(weight => weight > 0)),
     sources: { openingId: "SB_open", responseId },
     extra: { ranges } });
 }

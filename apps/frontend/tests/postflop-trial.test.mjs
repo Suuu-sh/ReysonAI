@@ -61,7 +61,7 @@ test("only complete paths can enter the next street, with unsupported paths mark
 });
 
 test("every saved open response and 3bet response becomes a heads-up flop spot", () => {
-  assert.equal(POSTFLOP_SPOTS.length, 48);
+  assert.equal(POSTFLOP_SPOTS.length, 49);
   const srp = POSTFLOP_SPOTS.filter(spot => spot.kind === "srp"), threeBet = POSTFLOP_SPOTS.filter(spot => spot.kind === "3bp");
   assert.deepEqual(srp.map(spot => spot.responseId).sort(), preflopRanges.spots.map(spot => spot.id).sort());
   assert.deepEqual(threeBet.map(spot => spot.responseId).sort(), threeBetResponses.spots.map(spot => spot.id).sort());
@@ -144,6 +144,7 @@ test("4bet pots and SB's limped pots: seats, pot, stacks and tree", () => {
     SB_limp_BB_check: ["BB", "SB", 2, 99, "oop_leads"],
     SB_limp_BB_iso_call: ["BB", "SB", 7, 96.5, "oop_checks"],
     SB_limp_BB_iso_SB_reraise_call: ["BB", "SB", 21, 89.5, "oop_leads"],
+    SB_limp_BB_iso_SB_reraise_BB_4bet_call: ["BB", "SB", 52, 74, "oop_checks"],
   });
   assert.equal(fourBetSpotFor("SB", "BB").slug, "sb-bb-4bp-v1");
   // Ranges: O = open × 4bet, X = 3bet × call versus the 4bet; limped pots multiply their saved steps.

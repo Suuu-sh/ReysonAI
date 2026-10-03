@@ -133,7 +133,12 @@ export function buildInputs(spotId = DEFAULT_SPOT_ID, datasets = {}) {
         iso.iso_size_bb !== 3.5 || iso.raise_to_bb !== 10.5 || reraise.iso_size_bb !== 3.5 || reraise.limp_reraise_size_bb !== 10.5) {
       throw new Error(`${spot.id} source geometry changed`);
     }
-    const files = { "opening-ranges": { spots: [opening] }, "limp-responses": limp };
+    const deep = getDataset(datasets, "limpDeep", "limpDeepResponses", "limp-deep-responses");
+    const fourBet = findSpot(deep, "SB_vs_BB_limp_four_bet");
+    if (spot.responseId === "SB_vs_BB_limp_four_bet" && (!fourBet || fourBet.limp_reraise_size_bb !== 10.5 || reraise.four_bet_size_bb !== fourBet.four_bet_size_bb)) {
+      throw new Error(`${spot.id} source geometry changed`);
+    }
+    const files = { "opening-ranges": { spots: [opening] }, "limp-responses": limp, "limp-deep-responses": deep ?? { spots: [] } };
     const sources = {};
     const seatRows = Object.fromEntries(Object.entries(spot.ranges).map(([seat, factors]) => [seat, productRows(factors.map(([file, id, action]) => {
       const source = files[file].spots.find(item => item.id === id);
