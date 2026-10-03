@@ -745,7 +745,7 @@ function Analysis() {
       <div className="site-feature-copy" data-reveal>
         <h2 id="site-analysis-title">{c.analysis.title1}<span>{c.analysis.title2}</span></h2>
         <p>{c.analysis.description}</p>
-        <dl className="site-point-grid">{c.analysis.points.map(point => <div key={point.title}><dt>{point.title}</dt><dd>{point.body}</dd></div>)}</dl>
+        <ul className="site-points">{c.analysis.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
         <p className="site-feature-note">{c.analysis.note}</p>
       </div>
       <div className={`site-mock site-dash${inView ? " is-live" : ""}`} ref={ref} data-reveal aria-hidden="true">

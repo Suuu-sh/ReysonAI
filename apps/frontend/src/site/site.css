@@ -352,9 +352,6 @@
 .site-points { display: grid; gap: 12px; margin-top: 28px; }
 .site-points li { display: flex; gap: 10px; font-size: 15px; }
 .site-points svg { flex: 0 0 auto; margin-top: 4px; color: var(--pink); }
-.site-point-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 28px; margin-top: 32px; }
-.site-point-grid dt { font-size: 15px; font-weight: 700; }
-.site-point-grid dd { margin-top: 4px; color: var(--muted); font-size: 14px; line-height: 1.55; }
 .site-mock { min-width: 0; position: relative; padding: 20px; border: 1px solid var(--line-strong); border-radius: var(--panel-radius); background: var(--surface); box-shadow: none; }
 .site-sample { position: absolute; top: -11px; right: 18px; padding: 2px 9px; border: 1px solid var(--line-strong); border-radius: var(--badge-radius); background: var(--bg); color: var(--subtle); font-size: 11px; font-weight: 600; }
 
@@ -469,6 +466,10 @@
 
 /* Analysis (sample UI) */
 .site-analysis { border-top: 1px solid var(--line); }
+/* Wide screens: the analysis section is exactly one screen below the header, content centred. */
+@media (min-width: 961px) and (min-height: 600px) {
+  .site-analysis { display: grid; align-items: center; min-height: calc(100dvh - 64px); padding-block: 32px; }
+}
 .site-dash-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .site-dash-kpis > div { position: relative; display: grid; gap: 2px; min-width: 0; padding: 12px 14px; overflow: hidden; border: 1px solid var(--line-strong); border-radius: var(--panel-radius); background: var(--raised); }
 .site-dash-kpis > div.is-accent { border-color: #686875; background: var(--raised); }
@@ -483,8 +484,8 @@
 .site-dash-body { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 10px; margin-top: 10px; }
 .site-dash-map, .site-dash-tend { padding: 14px; border: 1px solid var(--line-strong); border-radius: var(--panel-radius); background: var(--raised); }
 .site-dash-map > span, .site-dash-tend > span { display: block; margin-bottom: 10px; font-size: 12.5px; font-weight: 700; }
-.site-style-map { position: relative; display: grid; grid-template-columns: 1fr 1fr; aspect-ratio: 1.1; overflow: hidden; border: 1px solid var(--line-strong); border-radius: var(--panel-radius); }
-.site-style-map b { display: flex; padding: 7px 8px; color: var(--subtle); font-size: 10.5px; font-weight: 700; }
+.site-style-map { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); aspect-ratio: 1.1; overflow: hidden; border: 1px solid var(--line-strong); border-radius: var(--panel-radius); }
+.site-style-map b { display: flex; padding: 7px 8px; color: var(--subtle); font-size: 10px; font-weight: 700; white-space: nowrap; }
 .site-style-map b:nth-child(1) { background: #12201b; }
 .site-style-map b:nth-child(2) { justify-content: flex-end; background: #1d1420; }
 .site-style-map b:nth-child(3) { align-items: flex-end; background: #13161f; }
@@ -505,9 +506,10 @@
 .site .site-tend-bar.is-more i { left: 50%; background: var(--raise); transform-origin: left; }
 .site .site-tend-bar.is-less i { right: 50%; background: var(--call); transform-origin: right; }
 .has-motion .site-dash:not(.is-live) .site-tend-bar i { transform: scaleX(0); }
-.site-dash-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.site-dash-notes { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
 .site-dash-notes span { display: block; color: var(--muted); font-size: 11px; }
-.site-dash-notes b { font-size: 13px; }
+.site-dash-notes b { font-size: 13px; white-space: nowrap; }
+.site-dash-notes > div { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 
 /* Compare (paper) */
 .site-compare { background: var(--paper); color: var(--paper-ink); }
@@ -742,7 +744,7 @@
   .site-hand > :not(.site-hand-cards):not(.site-hand-title) { grid-column: 1 / -1; }
   .site-hand-label { grid-column: 1 / -1; }
   .site-hand-title { flex-direction: column; align-items: flex-start; justify-content: center; }
-  .site-plans, .site-point-grid, .site-dash-body { grid-template-columns: 1fr; }
+  .site-plans, .site-dash-body { grid-template-columns: 1fr; }
   .site-tiers { grid-template-columns: repeat(3, 1fr); }
   .site-dash-kpis strong { font-size: 21px; }
   .site-dash-kpis svg { display: none; }
