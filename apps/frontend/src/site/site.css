@@ -372,7 +372,7 @@
 .site-persona-more > span { display: grid; gap: 12px; min-height: 0; overflow: hidden; }
 .site .site-persona.is-active .site-persona-more { grid-template-rows: 1fr; }
 .site-persona-body { color: var(--muted); font-size: 15px; line-height: 1.6; }
-.site-persona-gets { justify-self: start; padding: 4px 10px; border-radius: var(--badge-radius); border: 1px solid var(--line-strong); background: var(--raised); color: var(--muted); font-size: 12px; font-weight: 650; }
+.site-persona-gets { justify-self: start; min-width: 0; max-width: 100%; padding: 4px 10px; border-radius: var(--badge-radius); border: 1px solid var(--line-strong); background: var(--raised); color: var(--muted); font-size: 12px; font-weight: 650; }
 .site-persona-timer { position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: var(--pink); transform-origin: left; animation: site-tour 6.5s linear both; }
 .site-persona-stage { padding: 0; }
 .site-persona-views { display: grid; overflow: hidden; border-radius: var(--panel-radius); }
@@ -604,11 +604,12 @@
 }
 @media (max-width: 960px) {
   .site-section { padding: 96px 0; }
-  .site-nav { position: fixed; top: 64px; right: 0; left: 0; display: none; flex-direction: column; gap: 0; padding: 8px 24px 20px; border-bottom: 1px solid var(--line); background: var(--bg); box-shadow: 0 30px 60px -20px #000; }
+  .site-nav { position: fixed; top: 64px; right: 0; left: 0; display: none; flex-direction: column; gap: 0; max-height: calc(100dvh - 64px); padding: 8px 24px 20px; overflow-y: auto; border-bottom: 1px solid var(--line); background: var(--bg); box-shadow: 0 30px 60px -20px #000; }
   .site-header.is-open .site-nav { display: flex; }
-  .site-nav a { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 17px; }
+  .site-nav a { flex: 0 0 auto; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 17px; }
   .site-nav a::after { display: none; }
   .site .site-menu { display: grid; width: 44px; height: 44px; border: 1px solid var(--line); }
+  .site .site-lang, .site .site-button.is-small, .site .site-segment button { min-height: 44px; }
   .site-how-grid { grid-template-columns: 1fr; gap: 0; }
   .site-how-stage { display: none; }
   .site-how h2 { position: static; }
@@ -617,18 +618,13 @@
   .site-how-steps li > :not(.site-how-inline) { opacity: 1; }
   .site-how-steps { display: grid; gap: 64px; }
   .site-how-steps li, .site-how-steps li:first-child { min-height: 0; padding-top: 0; opacity: 1; }
-  .site-how-inline { position: relative; display: block; height: 340px; margin-top: 28px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--panel-radius); background: var(--surface); }
+  .site-how-inline { position: relative; display: block; min-height: 340px; margin-top: 28px; padding: 28px 20px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--panel-radius); background: var(--surface); }
+  .site-how-inline .site-scene { height: auto; min-height: 282px; }
   .site-drill-inner, .site-section-head, .site-pricing-head, .site-faq-inner, .site-feature, .site-feature.is-reversed { grid-template-columns: 1fr; gap: 28px; }
   .site-feature { gap: 56px; }
   .site-audience-grid { grid-template-columns: 1fr; gap: 24px; }
-  .site-audience.is-scrolly > .site-wrap { padding-top: 84px; padding-bottom: 24px; }
-  .site-audience.is-scrolly .site-audience-grid { gap: 12px; margin-top: 16px; }
-  .site-audience.is-scrolly .site-persona:not(.is-active), .site-audience.is-scrolly .site-persona-more { display: none; }
-  .site-audience.is-scrolly .site-persona { padding: 14px 18px; }
-  .site-audience.is-scrolly .site-persona-view { padding: 18px 18px; }
-  .site-audience.is-scrolly .site-persona-view .site-mini-matrix { width: min(100%, 220px); }
-  .site-audience.is-scrolly .site-persona-view.is-simple { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: 16px; }
-  .site-persona-view { align-content: start; min-height: 0; padding: 26px 20px; }
+  .site-persona-view { display: none; align-content: start; min-height: 0; padding: 26px 20px; }
+  .site-persona-view.is-active { display: grid; }
   .site-persona-view.is-simple { grid-template-columns: 1fr; }
   .site-persona-view .site-mini-matrix { width: min(100%, 300px); }
   .site-drill-inner { gap: 48px; }
@@ -638,12 +634,10 @@
   .site-header-actions .site-button { display: none; }
   .site-header-inner { gap: 16px; }
   .site-header-actions { gap: 8px; }
-  .site .site-lang { min-height: 44px; }
   .site-hero { padding: 32px 0 80px; }
   .site-hero-lead { font-size: 17px; }
   .site-explorer-body { grid-template-columns: 1fr; padding: 0 10px 10px; }
   .site-explorer-bar { padding: 12px; }
-  .site .site-segment button { min-height: 40px; }
   .site .site-cell { font-size: clamp(9px, 1.7vw, 12px); }
   .site-faq-list { padding-inline: 18px; }
   .site-audience-note { margin-top: 16px; font-size: 12px; }
@@ -659,8 +653,8 @@
   .site-rank-top dd { font-size: 21px; }
   .site-rank-row { grid-template-columns: 1fr; }
   .site-dash-kpis > div { padding: 10px; }
-  .site-dash-kpis span { font-size: 10.5px; white-space: nowrap; }
-  .site-dash-kpis > div > small { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+  .site-dash-kpis span { font-size: 12px; }
+  .site-dash-kpis > div > small { font-size: 11px; }
   .site-compare thead { display: none; }
   .site-compare table, .site-compare tbody, .site-compare tr, .site-compare th, .site-compare td { display: block; width: auto; }
   .site-compare tbody tr { padding: 16px 0; border-top: 1px solid #14141622; }
@@ -673,12 +667,14 @@
   .site-plan { padding: 24px; }
   .site-why-scene { grid-template-columns: 1fr; gap: 20px; justify-items: center; }
   .site-why-scene .site-hand-cards.is-large .site-card { --card-w: 60px; }
-  .site-why-card { width: min(280px, 90%); }
+  .site-why-card { width: min(360px, 100%); }
   .site-seat-name { padding: 4px 8px; font-size: 12px; }
   .site-fan .site-card { transform: translateX(calc(var(--i) * 36px)) translateY(calc(var(--i) * var(--i) * 4px)) rotate(calc(var(--i) * 8deg)); }
   .site-final p { font-size: 16px; }
 }
 @media (max-width: 560px) {
+  .site-dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .site-dash-kpis > div:last-child { grid-column: 1 / -1; }
   .site-trainer { padding: 12px; }
   .site-trainer-stage { padding: 30px 14px 40px; }
   .site-poker-disc { width: 40px; height: 40px; }

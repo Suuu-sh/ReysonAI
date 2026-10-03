@@ -30,6 +30,23 @@ test("the sharp geometry is shared by controls and panels without reshaping poke
   assert.match(css, /\.site-poker-disc\s*\{[^}]*border-radius: 50%/);
 });
 
+test("mobile scenes grow with their explanation and cards instead of clipping a fixed height", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const tablet = css.split("@media (max-width: 960px)")[1].split("@media (max-width: 720px)")[0];
+  assert.match(tablet, /\.site-how-inline\s*\{[^}]*min-height: 340px;[^}]*padding: 28px 20px/);
+  assert.doesNotMatch(tablet, /(?<!min-)height: 340px/);
+  assert.match(tablet, /\.site-how-inline \.site-scene\s*\{[^}]*height: auto/);
+  assert.match(tablet, /\.site-persona-view\s*\{[^}]*display: none/);
+  assert.match(tablet, /\.site-persona-view\.is-active\s*\{[^}]*display: grid/);
+  assert.match(tablet, /\.site-nav\s*\{[^}]*max-height: calc\(100dvh - 64px\);[^}]*overflow-y: auto/);
+  assert.match(tablet, /\.site \.site-lang, \.site \.site-button\.is-small, \.site \.site-segment button\s*\{[^}]*min-height: 44px/);
+  assert.match(css, /\.site-dash-kpis\s*\{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.doesNotMatch(css, /\.site-dash-kpis[^}]*text-overflow: ellipsis/);
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.equal((source.match(/matchMedia\("\(min-width: 961px\) and \(min-height: 600px\)"\)/g) ?? []).length, 2,
+    "both persona pinning and Training/Ranked pinning are wide-screen-only");
+});
+
 for (const locale of ["en", "ja"]) {
   test(`${locale}: Training links target the outer track, never the pinned slide`, () => {
     const html = render(locale);
