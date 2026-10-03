@@ -422,7 +422,7 @@ function Drill() {
     return () => window.removeEventListener("keydown", onKey);
   }, [inView]);
 
-  return <section className="site-section site-drill" id="drill" ref={ref} aria-labelledby="site-drill-title">
+  return <section className="site-section site-drill" ref={ref} aria-labelledby="site-drill-title">
     <div className="site-wrap site-drill-inner">
       <div className="site-drill-copy" data-reveal>
         <h2 id="site-drill-title">{c.drill.title1}<span>{c.drill.title2}</span></h2>
@@ -627,7 +627,8 @@ function TrainingTrack() {
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [scrolly]);
-  return <div className={`site-train${scrolly ? " is-scrolly" : ""}`} ref={ref}>
+  // Anchor the scroll track, not its sticky child: #drill must rewind the slide to Training.
+  return <div className={`site-train${scrolly ? " is-scrolly" : ""}`} id="drill" ref={ref}>
     <div className="site-train-stage">
       <div className="site-train-rail" style={scrolly ? { transform: `translateX(${-shift * 50}%)` } : undefined}><Drill /><Ranked /></div>
     </div>
