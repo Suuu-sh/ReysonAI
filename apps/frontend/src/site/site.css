@@ -355,7 +355,7 @@
 .site-persona-list { display: grid; gap: 8px; }
 .site .site-persona { position: relative; display: grid; gap: 10px; width: 100%; padding: 22px 24px; overflow: hidden; border: 1px solid transparent; border-radius: var(--panel-radius); text-align: left; transition: background .3s ease, border-color .3s ease; }
 .site .site-persona:hover { background: var(--surface); }
-.site .site-persona.is-active { border-color: var(--line-strong); border-left-color: var(--pink); background: var(--surface); box-shadow: inset 2px 0 var(--pink); }
+.site .site-persona.is-active { border-color: var(--line-strong); background: var(--surface); }
 .site-persona-level { display: inline-flex; align-items: center; gap: 9px; color: var(--muted); font-size: 13px; font-weight: 700; }
 .site .site-persona-level i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--badge-radius); background: var(--raised); color: var(--muted); font-size: 12px; transition: background .3s ease, color .3s ease; }
 .site .site-persona.is-active .site-persona-level i { background: var(--ink); color: var(--bg); }
