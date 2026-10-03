@@ -4,10 +4,10 @@ import { preloadDatasets } from "../estimated/datasets.ts";
 import { loadPostflopDatasets, loadPostflopSpot } from "../estimated/postflop-browser.ts";
 import { spotById } from "../../scripts/postflop-ai/spots.mjs";
 import { localized } from "../i18n.ts";
-import { AGENT_TABLES, GUEST_AGENT, agentTableById } from "./characters.ts";
+import { AGENT_TABLE, GUEST_AGENT, agentTableById } from "./characters.ts";
 import { categoryName, playHand, type HandResult, type LogEntry } from "./hand.ts";
 import { productLocale } from "../locale.ts";
-import { Monster } from "./Monster.tsx";
+import { AgentAvatar } from "./AgentAvatar.tsx";
 import { createAgent, makePostflopKit, type PostflopKit } from "./policy.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints, type Session } from "./session.ts";
 import { handRecord, saveAgentHand } from "./agent-stats.ts";
@@ -64,8 +64,7 @@ function asDisplayed(entries: LogEntry[], entry: LogEntry) {
 const tone = (action: string) => action === "fold" ? "fold" : action === "check" ? "check" : action === "call" || action === "limp" ? "call" : "raise";
 
 function characterFor(agentId: string | null) {
-  for (const table of AGENT_TABLES) { const found = table.agents.find(agent => agent.id === agentId); if (found) return found; }
-  return agentId === GUEST_AGENT.id ? GUEST_AGENT : null;
+  return AGENT_TABLE.agents.find(agent => agent.id === agentId) ?? (agentId === GUEST_AGENT.id ? GUEST_AGENT : null);
 }
 
 // Chips in front of each seat on `street`, and each seat's total committed so far.
@@ -265,11 +264,11 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
                 <div className="agent-hole">{(result?.holeCards[pos] ?? []).map((card, i) => <Card key={`${session.handNo}-${i}`} card={card} hidden={!showCards} size={isHuman ? "is-hero" : ""} />)}</div>
                 <div className="agent-plate">
                   <div className="agent-avatar">
-                    {character ? <Monster id={character.id} color={character.color} size={50} mood={won ? "win" : folded ? "fold" : "idle"} /> : <span className="agent-you">YOU</span>}
+                    {character ? <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : <span className="agent-you">YOU</span>}
                     {actingPos === pos && !isHuman && <span className="agent-dots" aria-hidden="true"><i /><i /><i /></span>}
                   </div>
                   <div className="agent-meta">
-                    <b>{character ? localized(character.name.en, character.name.ja) : localized("You", "あなた")}</b>
+                    <b>{character ? character.name.en : localized("You", "あなた")}</b>
                     <small>{pts(stack)}</small>
                   </div>
                   <span className="agent-pos">{pos}</span>
@@ -313,7 +312,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
           <ol className="agent-standings">{standings.map(({ seat, index }) => {
             const character = seat.kind === "agent" ? characterFor(seat.agentId) : null;
             return <li key={index} className={seat.kind === "human" ? "is-human" : ""}>
-              <span className="agent-mini">{character ? <Monster id={character.id} color={character.color} size={22} /> : <i>YOU</i>}</span>
+              <span className="agent-mini">{character ? <AgentAvatar id={character.id} color={character.color} size={22} /> : <i>YOU</i>}</span>
               <span>{character ? localized(character.name.en, character.name.ja) : localized("You", "あなた")}</span>
               <b className={seat.points > 0 ? "up" : seat.points < 0 ? "down" : ""}>{signed(seat.points)}</b>
             </li>;

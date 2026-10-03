@@ -1,7 +1,7 @@
 import { RankBadge, RankLadder } from "./RankBadge.tsx";
 import { ArrowClockwise, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
-import { AGENT_TABLES } from "../agent/characters.ts";
-import { Monster } from "../agent/Monster.tsx";
+import { AGENT_TABLE } from "../agent/characters.ts";
+import { AgentAvatar } from "../agent/AgentAvatar.tsx";
 import { loadAgentHands, summarizeAgentHands } from "../agent/agent-stats.ts";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.ts";
 import { drillStats } from "./drill-store.ts";
@@ -142,37 +142,30 @@ function RankedCard({ rank, draft, onStart, onOpenRanking }) {
   </article>;
 }
 
-// Evion Agent: six-handed tables against monster agents that play the Evion solver estimate.
+// Evion Agent: a six-handed table against agents that play the Evion solver estimate.
 function AgentEntry({ onStart }) {
-  const byTable = summarizeAgentHands(loadAgentHands()).tables;
-  return <section className="agent-entry">
-    <header>
-      <div>
-        <h3>Evion Agent</h3>
-        <p>{localized("Sit at a 6-max table with agents that play the Evion solver estimate. Fold any time, then watch or skip.", "Evion solver（AI推定）通りに打つAgentと6人卓で対戦。降りたら観戦もスキップもできます。")}</p>
-      </div>
-      <ul className="agent-entry-facts"><li>6-max · 100BB</li><li>{localized("1BB = 100 pts", "1BB = 100点")}</li><li>{localized("Heads-up flops", "フロップはHUのみ")}</li></ul>
-    </header>
-    <div className="agent-tables">{AGENT_TABLES.map(table => {
-      const record = byTable.find(row => row.tableId === table.id);
-      const points = record ? Math.round(record.net * 100) : 0;
-      return <article key={table.id} className="agent-table-card" style={{ "--table-theme": table.theme }}>
-        <div className="agent-table-scene">
-          {table.agents.map((agent, index) => <span key={agent.id} className="agent-table-face" style={{ "--i": index }} title={localized(agent.name.en, agent.name.ja)}>
-            <Monster id={agent.id} color={agent.color} size={46} /></span>)}
-        </div>
-        <div className="agent-table-body">
-          <strong>{localized(table.name.en, table.name.ja)}</strong>
-          <small>{localized(table.tagline.en, table.tagline.ja)}</small>
-          <p className="agent-table-record">{record
-            ? <>{localized(`${record.hands} hands`, `${record.hands}ハンド`)} · <b className={points > 0 ? "up" : points < 0 ? "down" : ""}>{points > 0 ? "+" : ""}{points.toLocaleString()}</b></>
-            : localized("Not played yet", "まだ対戦していません")}</p>
-        </div>
-        <footer>
-          <button type="button" className="agent-sit" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
-          <button type="button" className="agent-watch" onClick={() => onStart(table.id, true)} aria-label={localized(`Watch ${table.name.en}`, `${table.name.ja}を観戦`)}><Eye size={15} />{localized("Watch", "観戦")}</button>
-        </footer>
-      </article>;
-    })}</div>
+  const table = AGENT_TABLE;
+  const record = summarizeAgentHands(loadAgentHands());
+  const points = Math.round(record.netBb * 100);
+  return <section className="agent-entry" style={{ "--table-theme": table.theme }}>
+    <div className="agent-entry-scene" aria-hidden="true">
+      {table.agents.map((agent, index) => <span key={agent.id} className="agent-table-face" style={{ "--i": index }}>
+        <AgentAvatar id={agent.id} color={agent.color} size={56} /><small>{agent.name.en}</small></span>)}
+    </div>
+    <div className="agent-entry-body">
+      <span className="agent-entry-eyebrow">EVION AGENT · {table.name.en}</span>
+      <h3>{localized("Play a 6-max table against the Agents", "Agentたちと6人卓で対戦")}</h3>
+      <p>{localized("Every Agent plays the Evion solver estimate. Fold any time, then watch the rest or skip.", "全員がEvion solver（AI推定）通りに打ちます。降りたら続きを観戦することも、スキップすることもできます。")}</p>
+      <ul className="agent-entry-facts">
+        <li>6-max · 100BB</li><li>{localized("1BB = 100 pts", "1BB = 100点")}</li><li>{localized("Heads-up flops", "フロップはHUのみ")}</li>
+        <li className="agent-entry-record">{record.hands
+          ? <>{localized(`${record.hands} hands`, `${record.hands}ハンド`)} · <b className={points > 0 ? "up" : points < 0 ? "down" : ""}>{points > 0 ? "+" : ""}{points.toLocaleString()}</b></>
+          : localized("Not played yet", "まだ対戦していません")}</li>
+      </ul>
+    </div>
+    <div className="agent-entry-actions">
+      <button type="button" className="agent-sit" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
+      <button type="button" className="agent-watch" onClick={() => onStart(table.id, true)}><Eye size={15} />{localized("Watch", "観戦")}</button>
+    </div>
   </section>;
 }

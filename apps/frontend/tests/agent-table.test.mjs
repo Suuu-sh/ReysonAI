@@ -126,7 +126,7 @@ test("session: button moves each hand and points use 1BB = 100", () => {
   assert.equal(session.seats[0].points, 150);
   assert.equal(seatPositions(session)[1], "BTN");
   assert.notEqual(handSeed(session), "s|hand|0");
-  const watch = createSession({ tableId: AGENT_TABLES[1].id, seed: "w", humanSeat: null });
+  const watch = createSession({ tableId: AGENT_TABLES[0].id, seed: "w", humanSeat: null });
   assert.equal(new Set(watch.seats.map(seat => seat.agentId)).size, 6);
 });
 

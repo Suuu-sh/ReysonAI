@@ -58,12 +58,6 @@ const rate = (hit: number, total: number) => total ? hit / total : null;
 export function summarizeAgentHands(hands: AgentHandRecord[]) {
   const count = (pick: (hand: AgentHandRecord) => boolean) => hands.filter(pick).length;
   const net = hands.reduce((sum, hand) => sum + hand.returnBb, 0);
-  const tables = new Map<string, { hands: number; net: number }>();
-  for (const hand of hands) {
-    const row = tables.get(hand.tableId) ?? { hands: 0, net: 0 };
-    row.hands++; row.net += hand.returnBb;
-    tables.set(hand.tableId, row);
-  }
   // Cumulative result in BB, hand by hand (for the trend line).
   let running = 0;
   const trend = hands.map(hand => (running += hand.returnBb));
@@ -75,7 +69,6 @@ export function summarizeAgentHands(hands: AgentHandRecord[]) {
     foldToThreeBet: rate(count(h => h.foldedToThreeBet), count(h => h.facedThreeBet)),
     wtsd: rate(count(h => h.showdown), count(h => h.sawFlop)),
     wsd: rate(count(h => h.wonShowdown), count(h => h.showdown)),
-    tables: [...tables.entries()].map(([tableId, row]) => ({ tableId, ...row, bbPer100: row.net / row.hands * 100 })),
     trend,
   };
 }

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { localized } from "../i18n.ts";
-import { AGENT_TABLES, agentTableById } from "./characters.ts";
+import { AGENT_TABLE } from "./characters.ts";
 import { loadAgentHands, summarizeAgentHands } from "./agent-stats.ts";
-import { Monster } from "./Monster.tsx";
+import { AgentAvatar } from "./AgentAvatar.tsx";
 import { toPoints } from "./session.ts";
 
 const pct = (value: number | null) => value == null ? "—" : `${Math.round(value * 100)}%`;
@@ -50,9 +50,9 @@ export function AgentAnalysis() {
     <header className="agent-analysis-head">
       <div>
         <h2>{localized("Agent games", "Agent戦")}</h2>
-        <small>{localized("Your hands at Evion Agent tables · counted separately from drills", "Evion Agent卓でのあなたのハンド · ドリルとは別に集計")}</small>
+        <small>{localized("Your hands at the Evion Agent table · counted separately from drills", "Evion Agent卓でのあなたのハンド · ドリルとは別に集計")}</small>
       </div>
-      <span className="agent-analysis-faces" aria-hidden="true">{AGENT_TABLES.map(table => <Monster key={table.id} id={table.agents[0].id} color={table.agents[0].color} size={30} />)}</span>
+      <span className="agent-analysis-faces" aria-hidden="true">{AGENT_TABLE.agents.map(agent => <AgentAvatar key={agent.id} id={agent.id} color={agent.color} size={30} />)}</span>
     </header>
     {!s.hands ? <div className="agent-analysis-empty">
         <p>{localized("No Agent games yet. Sit down at an Evion Agent table in the trainer to see your results here.", "まだAgent戦の記録がありません。トレーナーのEvion Agent卓で対戦すると、ここに成績が表示されます。")}</p>
@@ -71,32 +71,17 @@ export function AgentAnalysis() {
             <small>{localized(STAT_HINTS[key][0], STAT_HINTS[key][1])}</small>
           </div>)}
       </dl>
-      <div className="agent-analysis-split">
-        <div>
-          <h3>{localized("By table", "テーブル別")}</h3>
-          <ul className="agent-analysis-tables">{s.tables.map(row => {
-            const table = agentTableById(row.tableId);
-            const points = toPoints(row.net);
-            return <li key={row.tableId} style={{ "--table-theme": table?.theme } as any}>
-              <span className="dot" aria-hidden="true" />
-              <span className="name">{table ? localized(table.name.en, table.name.ja) : row.tableId}<small>{localized(`${row.hands} hands`, `${row.hands}ハンド`)}</small></span>
-              <b className={toneOf(points)}>{signed(points)}</b>
-              <small className="rate">{row.bbPer100 > 0 ? "+" : ""}{row.bbPer100.toFixed(1)} BB/100</small>
-            </li>;
-          })}</ul>
-        </div>
-        <div>
-          <h3>{localized("Recent hands", "最近のハンド")}</h3>
-          <ul className="agent-analysis-recent">{recent.map((hand, index) => {
-            const table = agentTableById(hand.tableId);
-            const points = toPoints(hand.returnBb);
-            return <li key={`${hand.at}-${index}`}>
-              <span className="pos">{hand.pos}</span>
-              <span className="name">{table ? localized(table.name.en, table.name.ja) : hand.tableId}<small>{hand.showdown ? localized("showdown", "ショーダウン") : hand.sawFlop ? localized("saw flop", "フロップまで") : localized("preflop", "プリフロップ")}</small></span>
-              <b className={toneOf(points)}>{signed(points)}</b>
-            </li>;
-          })}</ul>
-        </div>
+      <div>
+        <h3 className="agent-analysis-subhead">{localized("Recent hands", "最近のハンド")}</h3>
+        <ul className="agent-analysis-recent">{recent.map((hand, index) => {
+          const points = toPoints(hand.returnBb);
+          return <li key={`${hand.at}-${index}`}>
+            <span className="pos">{hand.pos}</span>
+            <span className="name">{hand.showdown ? localized("Showdown", "ショーダウン") : hand.sawFlop ? localized("Saw the flop", "フロップまで") : localized("Preflop", "プリフロップ")}
+              <small>{new Date(hand.at).toLocaleString(undefined, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</small></span>
+            <b className={toneOf(points)}>{signed(points)}</b>
+          </li>;
+        })}</ul>
       </div>
       <p className="agent-analysis-note">{localized("Small samples swing a lot, and results include rake. Agents play the saved AI estimate (not GTO).", "ハンド数が少ないうちは大きくぶれます。収支はレーキ込みです。AgentはAI推定通りに打っており、GTOではありません。")}</p>
     </>}
