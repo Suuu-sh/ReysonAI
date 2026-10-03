@@ -1,4 +1,4 @@
-import { RankBadge, RankLadder } from "./RankBadge.tsx";
+import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
 import { ArrowClockwise, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { AGENT_TABLE } from "../agent/characters.ts";
 import { AgentAvatar } from "../agent/AgentAvatar.tsx";
@@ -98,8 +98,10 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
         {bestDrill && <div><dt><Trophy size={12} weight="fill" />ベスト</dt><dd>{pct(bestDrill.best)}<small>{bestDrill.drill.name}</small></dd></div>}
       </dl>
     </div>
-    {onStartAgent && <AgentEntry onStart={onStartAgent} />}
-    {rank && RANKED_ENABLED && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} />}
+    <div className="mode-stack">
+      {onStartAgent && <AgentEntry onStart={onStartAgent} />}
+      {rank && RANKED_ENABLED && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} />}
+    </div>
     <div className="drill-grid">
       {(reviewCount > 0 || drafts.review) && <article className={`drill-card review${drafts.review ? " in-progress" : ""}`}>
         <header><div><h3>復習ドリル</h3><ul className="drill-tags"><li>以前ミスしたハンドだけ</li></ul></div></header>
@@ -119,27 +121,35 @@ function RankedCard({ rank, draft, onStart, onOpenRanking }) {
   const tier = tierFor(rank.rating);
   const left = Math.max(0, RANKED_DAILY_LIMIT - playedToday(rank));
   const canStart = Boolean(draft) || left > 0;
-  return <article className={`ranked-card${draft ? " in-progress" : ""}`}>
-    <header className="ranked-heading"><span>{localized("Ranked arena", "ランクアリーナ")}</span><small>{localized("Local progress", "このブラウザの記録")}</small></header>
-    <div className="ranked-overview">
-      <div className="ranked-identity"><RankBadge name={tier.name} size={108} /><div><small>{localized("Your rank", "現在のランク")}</small><h2>{localized(TIER_EN[tier.name], tier.name)}</h2></div></div>
-      <dl className="ranked-metrics"><div><dt>{localized("Rating", "レート")}</dt><dd>{rank.rating.toLocaleString()}</dd></div><div><dt>{localized("Personal best", "自己最高")}</dt><dd>{rank.peak.toLocaleString()}</dd></div></dl>
-      <div className="ranked-progress">
-        <div><strong>{tier.next ? localized(`Next: ${TIER_EN[tier.next.name]}`, `次のランク：${tier.next.name}`) : localized("Top rank reached", "最高ランクです")}</strong><small>{tier.next ? localized(`${tier.next.min - rank.rating} points to go`, `あと${tier.next.min - rank.rating}ポイント`) : localized("Master", "マスター")}</small></div>
-        <progress max={1} value={tier.progress} aria-label={localized("Progress to next rank", "次のランクへの進捗")} />
-        <div className="ranked-range"><small>{tier.min.toLocaleString()}</small><small>{tier.next?.min.toLocaleString() ?? "—"}</small></div>
+  const color = tierColor(tier.name);
+  return <section className={`mode-block is-ranked${draft ? " in-progress" : ""}`} style={{ "--mode-theme": color }}>
+    <div className="mode-visual ranked-visual">
+      <RankBadge name={tier.name} size={96} />
+      <span className="ranked-tier-name">{localized(TIER_EN[tier.name], tier.name)}</span>
+    </div>
+    <div className="mode-body">
+      <span className="mode-eyebrow">RANKED · {localized("Local progress", "このブラウザの記録")}</span>
+      <h3>{localized("Ranked matches", "ランク戦")}</h3>
+      <p>{localized(`All spots · standard difficulty · ${RANKED_LENGTH} questions. Harder hands move your rating more.`, `全局面・標準難易度・${RANKED_LENGTH}問。難しいハンドほどレートが大きく動きます。`)}</p>
+      <div className="ranked-stats">
+        <div><span>{localized("Rating", "レート")}</span><strong>{rank.rating.toLocaleString()}</strong></div>
+        <div><span>{localized("Best", "自己最高")}</span><strong>{rank.peak.toLocaleString()}</strong></div>
+        <div className="ranked-next">
+          <span>{tier.next ? localized(`To ${TIER_EN[tier.next.name]}`, `${tier.next.name}まで`) : localized("Top rank", "最高ランク")}</span>
+          <strong>{tier.next ? localized(`${tier.next.min - rank.rating} pts`, `あと${tier.next.min - rank.rating}`) : "—"}</strong>
+          <span className="ranked-bar" aria-hidden="true"><b style={{ width: `${Math.round(tier.progress * 100)}%` }} /></span>
+        </div>
       </div>
     </div>
-    <RankLadder rating={rank.rating} />
-    <footer>
-      <p><b>ランク戦</b> {localized(`All spots · standard difficulty · ${RANKED_LENGTH} questions. Harder hands move your rating more.`, `全局面・標準難易度・${RANKED_LENGTH}問。難しいハンドほどレートが大きく動きます。`)}</p>
-      <small className="ranked-quota">{draft ? localized(`${draft.session.answered} answered`, `${draft.session.answered}問 回答済み`) : localized(`${left} / ${RANKED_DAILY_LIMIT} left today`, `今日の残り ${left} / ${RANKED_DAILY_LIMIT}回`)}</small>
-      <button type="button" className="setup-secondary" onClick={onOpenRanking}>ランキング</button>
-      <button type="button" className={`drill-start${draft ? " resume" : ""}`} disabled={!canStart} onClick={onStart}>
-        <Play size={14} weight="fill" />{draft ? "続きから" : canStart ? "ランク戦に挑む" : "また明日"}
+    <div className="mode-actions">
+      <button type="button" className="mode-primary" disabled={!canStart} onClick={onStart}>
+        <Play size={14} weight="fill" />{draft ? localized("Resume", "続きから") : canStart ? localized("Play ranked", "ランク戦に挑む") : localized("Back tomorrow", "また明日")}
       </button>
-    </footer>
-  </article>;
+      <button type="button" className="mode-secondary" onClick={onOpenRanking}><Trophy size={15} />{localized("Leaderboard", "ランキング")}</button>
+      <small className="mode-quota">{draft ? localized(`${draft.session.answered} answered`, `${draft.session.answered}問 回答済み`) : localized(`${left} / ${RANKED_DAILY_LIMIT} left today`, `今日の残り ${left} / ${RANKED_DAILY_LIMIT}回`)}</small>
+    </div>
+    <div className="mode-foot"><RankLadder rating={rank.rating} /></div>
+  </section>;
 }
 
 // Evion Agent: a six-handed table against agents that play the Evion solver estimate.
@@ -147,25 +157,25 @@ function AgentEntry({ onStart }) {
   const table = AGENT_TABLE;
   const record = summarizeAgentHands(loadAgentHands());
   const points = Math.round(record.netBb * 100);
-  return <section className="agent-entry" style={{ "--table-theme": table.theme }}>
-    <div className="agent-entry-scene" aria-hidden="true">
+  return <section className="mode-block is-agent" style={{ "--mode-theme": table.theme }}>
+    <div className="mode-visual agent-lineup" aria-hidden="true">
       {table.agents.map((agent, index) => <span key={agent.id} className="agent-table-face" style={{ "--i": index }}>
-        <AgentAvatar id={agent.id} color={agent.color} size={56} /><small>{agent.name.en}</small></span>)}
+        <AgentAvatar id={agent.id} color={agent.color} size={52} /><small>{agent.name.en}</small></span>)}
     </div>
-    <div className="agent-entry-body">
-      <span className="agent-entry-eyebrow">EVION AGENT · {table.name.en}</span>
-      <h3>{localized("Play a 6-max table against the Agents", "Agentたちと6人卓で対戦")}</h3>
-      <p>{localized("Every Agent plays the Evion solver estimate. Fold any time, then watch the rest or skip.", "全員がEvion solver（AI推定）通りに打ちます。降りたら続きを観戦することも、スキップすることもできます。")}</p>
-      <ul className="agent-entry-facts">
+    <div className="mode-body">
+      <span className="mode-eyebrow">EVION AGENT · {table.name.en}</span>
+      <h3>{localized("Agent table", "Agent戦")}</h3>
+      <p>{localized("A 6-max table where every Agent plays the Evion solver estimate. Fold any time, then watch the rest or skip.", "全員がEvion solver（AI推定）通りに打つ6人卓。降りたら続きを観戦することも、スキップすることもできます。")}</p>
+      <ul className="mode-facts">
         <li>6-max · 100BB</li><li>{localized("1BB = 100 pts", "1BB = 100点")}</li><li>{localized("Beta · heads-up flops only", "β版 · フロップはHUのみ")}</li>
-        <li className="agent-entry-record">{record.hands
+        <li className="mode-record">{record.hands
           ? <>{localized(`${record.hands} hands`, `${record.hands}ハンド`)} · <b className={points > 0 ? "up" : points < 0 ? "down" : ""}>{points > 0 ? "+" : ""}{points.toLocaleString()}</b></>
           : localized("Not played yet", "まだ対戦していません")}</li>
       </ul>
     </div>
-    <div className="agent-entry-actions">
-      <button type="button" className="agent-sit" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
-      <button type="button" className="agent-watch" onClick={() => onStart(table.id, true)}><Eye size={15} />{localized("Watch", "観戦")}</button>
+    <div className="mode-actions">
+      <button type="button" className="mode-primary" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
+      <button type="button" className="mode-secondary" onClick={() => onStart(table.id, true)}><Eye size={15} />{localized("Watch", "観戦")}</button>
     </div>
   </section>;
 }

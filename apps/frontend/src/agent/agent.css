@@ -1,9 +1,9 @@
 /* Evion Agent: library entry, table page and the Agent戦 analysis card.
    Cards reuse .trainer-card (trainer.css); colours follow the app palette (styles.css). */
 
-.agent-page .up, .agent-entry .up, .agent-analysis .up { color: #6fdc8c; }
-.agent-page .down, .agent-entry .down, .agent-analysis .down { color: #ff7a7a; }
-.agent-page kbd, .agent-entry kbd { padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; font: 600 10px/1.5 Inter, sans-serif; opacity: .5; }
+.agent-page .up, .agent-analysis .up { color: #6fdc8c; }
+.agent-page .down, .agent-analysis .down { color: #ff7a7a; }
+.agent-page kbd { padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; font: 600 10px/1.5 Inter, sans-serif; opacity: .5; }
 
 /* ── Agent avatars ────────────────────────────────── */
 .agent-unit { display: block; }
@@ -13,35 +13,12 @@
 .agent-unit.is-fold { opacity: .75; }
 @keyframes agent-visor { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
 
-/* ── Library entry (one table) ───────────────────────── */
-.agent-entry { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 22px; margin-bottom: 18px; padding: 18px 22px; overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--table-theme) 35%, var(--line-strong)); border-radius: 14px;
-  background: radial-gradient(70% 160% at 0% 100%, color-mix(in srgb, var(--table-theme) 22%, transparent), transparent 60%),
-    radial-gradient(60% 120% at 100% 0%, rgb(240 96 158 / 9%), transparent 60%), var(--surface); }
-.agent-entry-scene { display: flex; align-items: flex-end; padding: 4px 0 0; }
-.agent-entry-scene { gap: 10px; }
-.agent-table-face { --i: 0; display: grid; justify-items: center; gap: 4px; transition: transform .2s ease; }
-.agent-table-face small { color: var(--text-subtle); font-size: 9px; font-weight: 800; letter-spacing: .14em; }
-.agent-entry:hover .agent-table-face { transform: translateY(-2px); }
-.agent-entry-body { display: grid; gap: 6px; min-width: 0; }
-.agent-entry-eyebrow { color: var(--table-theme); font-size: 10px; font-weight: 800; letter-spacing: .18em; }
-.agent-entry h3 { margin: 0; font-size: 18px; letter-spacing: -.01em; }
-.agent-entry p { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.6; }
-.agent-entry-facts { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 0; padding: 0; list-style: none; }
-.agent-entry-facts li { padding: 3px 9px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text-muted); font-size: 11px; white-space: nowrap; }
-.agent-entry-facts .agent-entry-record { border-color: transparent; background: var(--surface-hover); color: var(--text); font-variant-numeric: tabular-nums; }
-.agent-entry-actions { display: grid; gap: 8px; min-width: 150px; }
-.agent-sit, .agent-watch, .agent-next, .agent-skip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 14px; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; }
-.agent-sit, .agent-next { border: 0; background: var(--accent); color: #1a0b12; }
-.agent-sit { padding: 11px 18px; font-size: 14px; }
-.agent-sit:hover, .agent-next:hover { filter: brightness(1.1); }
-.agent-watch, .agent-skip { border: 1px solid var(--line-strong); background: transparent; color: var(--text); }
-.agent-watch:hover, .agent-skip:hover { border-color: var(--text-subtle); background: var(--surface-hover); }
-@media (max-width: 860px) {
-  .agent-entry { grid-template-columns: 1fr; gap: 14px; }
-  .agent-entry-scene { justify-content: center; }
-  .agent-entry-actions { grid-template-columns: 2fr 1fr; }
-}
+/* ── Buttons shared by the table page ──────────────── */
+.agent-next, .agent-skip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 14px; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.agent-next { border: 0; background: var(--accent); color: #1a0b12; }
+.agent-next:hover { filter: brightness(1.1); }
+.agent-skip { border: 1px solid var(--line-strong); background: transparent; color: var(--text); }
+.agent-skip:hover { border-color: var(--text-subtle); background: var(--surface-hover); }
 
 /* ── Table page ───────────────────────────────────────── */
 .agent-page { display: grid; grid-template-rows: auto 1fr; gap: 12px; width: 100%; max-width: 1280px; min-height: calc(100dvh - 32px); margin: 0 auto; padding: 4px 4px 16px; }
