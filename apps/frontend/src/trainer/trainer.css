@@ -628,3 +628,22 @@
 .drills-visual-card small { color: var(--text-subtle); font-size: 10px; }
 .drills-back { margin-bottom: 10px; }
 .trainer-home .mode-stack { margin-bottom: 0; }
+
+/* Ranked emblem: progress ring, rating and the last five matches */
+.ranked-emblem-wrap { display: grid; justify-items: center; gap: 6px; }
+.ranked-emblem { position: relative; display: grid; place-items: center; width: 128px; height: 128px; }
+.ranked-emblem .rank-badge { position: relative; filter: drop-shadow(0 0 18px color-mix(in srgb, var(--mode-theme) 50%, transparent)); }
+.ranked-emblem::before { position: absolute; inset: 22px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--mode-theme) 22%, transparent), transparent 70%); content: ""; }
+.ranked-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.ranked-ring circle { fill: none; stroke-width: 4; }
+.ranked-ring .track { stroke: rgb(255 255 255 / 7%); }
+.ranked-ring .arc { stroke: var(--mode-theme); stroke-linecap: round; filter: drop-shadow(0 0 6px color-mix(in srgb, var(--mode-theme) 70%, transparent)); transition: stroke-dasharray .8s cubic-bezier(.16, 1, .3, 1); }
+.ranked-ring .tick { stroke: rgb(255 255 255 / 16%); stroke-width: 1.2; }
+.ranked-rating-line { display: inline-flex; align-items: baseline; gap: 6px; color: var(--text-muted); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ranked-rating-line b { font-size: 11px; }
+.ranked-rating-line .up { color: #6fdc8c; } .ranked-rating-line .down { color: #ff7a7a; }
+.ranked-pips { display: flex; gap: 5px; margin: 2px 0 0; padding: 0; list-style: none; }
+.ranked-pips li { width: 18px; height: 5px; border-radius: 2px; background: rgb(255 255 255 / 8%); }
+.ranked-pips li.up { background: #6fdc8c; box-shadow: 0 0 6px rgb(111 220 140 / 50%); }
+.ranked-pips li.down { background: #ff7a7a; box-shadow: 0 0 6px rgb(255 122 122 / 45%); }
+.mode-block.is-ranked .mode-visual { min-height: 190px; }

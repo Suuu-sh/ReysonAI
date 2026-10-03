@@ -88,9 +88,9 @@ function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
 export function TrainerHome({ drills, reviewCount, drafts = {}, onOpenDrills, onCreate, onStartReview, rank, onStartRanked, onOpenRanking, onStartAgent = null }) {
   return <div className="drill-library trainer-home">
     <div className="mode-stack">
-      <DrillsBlock drills={drills} reviewCount={reviewCount} drafts={drafts} onOpen={onOpenDrills} onCreate={onCreate} onStartReview={onStartReview} />
       {rank && RANKED_ENABLED && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} />}
       {onStartAgent && <AgentEntry onStart={onStartAgent} />}
+      <DrillsBlock drills={drills} reviewCount={reviewCount} drafts={drafts} onOpen={onOpenDrills} onCreate={onCreate} onStartReview={onStartReview} />
     </div>
   </div>;
 }
@@ -162,12 +162,39 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
   </div>;
 }
 
+// Emblem inside a ring that fills toward the next tier, the tier name, and the last five matches.
+function RankedEmblem({ rank, tier }) {
+  const radius = 54, length = 2 * Math.PI * radius;
+  const recent = rank.matches.slice(-5);
+  const last = rank.matches.at(-1);
+  return <div className="ranked-emblem-wrap">
+    <div className="ranked-emblem">
+      <svg className="ranked-ring" viewBox="0 0 128 128" aria-hidden="true">
+        <circle cx="64" cy="64" r={radius} className="track" />
+        <circle cx="64" cy="64" r={radius} className="arc" strokeDasharray={`${length * tier.progress} ${length}`} />
+        {Array.from({ length: 24 }, (_, i) => <line key={i} x1="64" y1="3" x2="64" y2={i % 6 === 0 ? 9 : 6} transform={`rotate(${i * 15} 64 64)`} className="tick" />)}
+      </svg>
+      <RankBadge name={tier.name} size={78} />
+    </div>
+    <span className="ranked-tier-name">{localized(TIER_EN[tier.name], tier.name)}</span>
+    <span className="ranked-rating-line">{rank.rating.toLocaleString()}{last && <b className={last.after >= last.before ? "up" : "down"}>{last.after >= last.before ? "▲" : "▼"}{Math.abs(last.after - last.before)}</b>}</span>
+    <ol className="ranked-pips" aria-label={localized("Last five ranked matches", "直近5試合")}>
+      {Array.from({ length: 5 }, (_, i) => {
+        const match = recent[i - (5 - recent.length)];
+        const up = match ? match.after >= match.before : null;
+        return <li key={i} className={match ? (up ? "up" : "down") : "empty"}
+          title={match ? `${up ? "+" : "−"}${Math.abs(match.after - match.before)}` : localized("No match", "試合なし")} />;
+      })}
+    </ol>
+  </div>;
+}
+
 function RankedCard({ rank, draft, onStart, onOpenRanking }) {
   const tier = tierFor(rank.rating);
   const left = Math.max(0, RANKED_DAILY_LIMIT - playedToday(rank));
   const canStart = Boolean(draft) || left > 0;
   return <ModeBlock theme={tierColor(tier.name)} className={`is-ranked${draft ? " in-progress" : ""}`} visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
-    visual={<><RankBadge name={tier.name} size={96} /><span className="ranked-tier-name">{localized(TIER_EN[tier.name], tier.name)}</span></>}
+    visual={<RankedEmblem rank={rank} tier={tier} />}
     eyebrow={`RANKED · ${localized("Local progress", "このブラウザの記録")}`}
     title={localized("Ranked matches", "ランク戦")}
     description={localized(`All spots · standard difficulty · ${RANKED_LENGTH} questions. Harder hands move your rating more.`, `全局面・標準難易度・${RANKED_LENGTH}問。難しいハンドほどレートが大きく動きます。`)}
