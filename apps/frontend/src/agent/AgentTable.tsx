@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning, Play, Repeat } from "@phosphor-icons/react";
+import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning } from "@phosphor-icons/react";
 import { preloadDatasets } from "../estimated/datasets.ts";
 import { loadPostflopDatasets, loadPostflopSpot } from "../estimated/postflop-browser.ts";
 import { spotById } from "../../scripts/postflop-ai/spots.mjs";
@@ -89,7 +89,6 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   const [shown, setShown] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [speed, setSpeed] = useState<Speed>(() => readPref("evionai:agent-speed", "normal"));
-  const [autoNext, setAutoNext] = useState<boolean>(() => watch && readPref("evionai:agent-auto-next", true));
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [styleOpen, setStyleOpen] = useState(false);
 
@@ -179,10 +178,10 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
 
   // Spectating: deal the next hand by itself after a short pause.
   useEffect(() => {
-    if (!done || !autoNext) return;
+    if (!done) return;
     const timer = window.setTimeout(nextHand, speed === "fast" ? 1400 : 2600);
     return () => window.clearTimeout(timer);
-  }, [done, autoNext, nextHand, speed]);
+  }, [done, nextHand, speed]);
 
   // Keyboard: 1-9 pick an action, Enter / Space deal the next hand, S skips.
   useEffect(() => {
@@ -227,8 +226,6 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
             onClick={() => { setSpeed(value); writePref("evionai:agent-speed", value); }}>
             {value === "fast" && <Lightning size={12} weight="fill" />}{value === "fast" ? localized("Fast", "速い") : localized("Normal", "ふつう")}</button>)}
         </div>
-        {watch && <button type="button" className={`agent-toggle${autoNext ? " is-on" : ""}`} aria-pressed={autoNext}
-          onClick={() => { setAutoNext(!autoNext); writePref("evionai:agent-auto-next", !autoNext); }}><Repeat size={13} weight="bold" />{localized("Auto next", "自動で次へ")}</button>}
         {liveRead && <button type="button" className="agent-toggle" onClick={() => setStyleOpen(true)}><ChartBar size={13} weight="bold" />{localized("Play style", "プレイスタイル")}</button>}
         <span className="agent-rule" tabIndex={0}><Info size={13} />{localized("Beta · heads-up flops", "β版 · フロップはHUのみ")}
           <span className="agent-rule-tip" role="tooltip">{localized("Evion Agent is in beta and multiway pots aren't supported yet. A call that would bring a third player to the flop isn't offered (agents fold that share instead), and lines without saved data fold.",
@@ -311,7 +308,6 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
             </>
             : done ? <>
               <p className="agent-summary">{myDelta == null ? winnerLine : <>{localized("This hand", "このハンド")} <b className={myDelta > 0 ? "up" : myDelta < 0 ? "down" : ""}>{signed(myDelta)}</b></>}</p>
-              <button key="next" type="button" className="agent-next" onClick={nextHand}><Play size={14} weight="fill" />{localized("Next hand", "次のハンド")}<kbd>Enter</kbd></button>
             </>
             : <>
               <p className="agent-summary">{humanFolded ? localized("You folded — watch the rest or skip.", "降りました。続きを観戦するか、スキップできます。")
