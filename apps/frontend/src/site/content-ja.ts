@@ -47,8 +47,7 @@ export const ja: SiteCopy = {
     status: "β版", title1: "Agent戦で、", title2: "実戦の中で確かめる。",
     description: "AI推定どおりに打つ5体のAgentと6人卓で対戦します。覚えたレンジを、配られたハンドで実際に使ってみましょう。降りたら続きを観戦することも、スキップすることもできます。",
     points: ["全員がReyson solver（AI推定）どおりに打つ6人卓", "100BBのキャッシュゲーム、収支はポイントで記録", "直近1000ハンドからあなたのプレイスタイルを読み取り", "フロップ以降は今のところヘッズアップのみ（β版）"],
-    sample: "表示例", you: "あなた", toAct: "あなたの番", pot: "ポット", raise: "レイズ 2.5", fold: "フォールド",
-    actions: ["フォールド", "コール 2.5", "3bet 8"], read: "Agentの読み", readStyle: "タイト・アグレッシブ", hands: "312ハンド",
+    sample: "表示例",
   },
   analysis: {
     title1: "自分のクセが、", title2: "数字で見える。",

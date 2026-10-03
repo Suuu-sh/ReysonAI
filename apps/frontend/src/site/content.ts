@@ -47,8 +47,7 @@ export const en = {
     status: "Beta", title1: "Agent table.", title2: "Put it to work in real hands.",
     description: "Sit at a 6-max table with five Agents that play the Reyson AI estimate. Use the ranges you studied on the hands you are dealt. Fold any time, then watch the rest or skip ahead.",
     points: ["Every Agent plays the Reyson solver (AI estimate)", "100BB cash game, results kept in points", "Your play style read from your latest 1,000 hands", "Heads-up after the flop for now (beta)"],
-    sample: "Sample", you: "You", toAct: "Your turn", pot: "Pot", raise: "Raise 2.5", fold: "Fold",
-    actions: ["Fold", "Call 2.5", "3bet 8"], read: "Agent read", readStyle: "Tight-aggressive", hands: "312 hands",
+    sample: "Sample",
   },
   analysis: {
     title1: "See how you", title2: "actually play.",

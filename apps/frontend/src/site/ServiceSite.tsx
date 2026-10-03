@@ -2,8 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState, type CSSPropert
 import { BrandIcon } from "../components/BrandIcon.tsx";
 import { ArrowRight, ArrowUpRight, Check, List, Pause, Play, X } from "@phosphor-icons/react";
 import { TierEmblem, tierColor } from "../trainer/RankEmblem.tsx";
-import { AgentAvatar } from "../agent/AgentAvatar.tsx";
-import { AGENT_TABLE } from "../agent/characters.ts";
+import agentTableImage from "./assets/agent-table.webp";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { ja } from "./content-ja";
@@ -691,12 +690,8 @@ function Ranked() {
   </section>;
 }
 
-// Agent table: the same felt and seats as the app's Reyson Agent table, frozen on the human's turn.
-const AGENT_SEAT_SLOTS = ["is-left", "is-top-left", "is-top", "is-top-right", "is-right"];
-
 function AgentFeature() {
   const { copy: c } = useSite();
-  const table = AGENT_TABLE;
   return <section className="site-section site-agent" id="agent" aria-labelledby="site-agent-title">
     <div className="site-wrap site-feature">
       <div className="site-feature-copy" data-reveal>
@@ -707,22 +702,7 @@ function AgentFeature() {
       </div>
       <div className="site-mock site-agent-mock" data-reveal aria-hidden="true">
         <span className="site-sample">{c.agent.sample}</span>
-        <div className="site-agent-table">
-          <div className="site-agent-felt"><span className="site-agent-logo">ReysonAI</span><span className="site-agent-pot">{c.agent.pot} <b>4.0BB</b></span></div>
-          {table.agents.map((agent, index) => <div key={agent.id} className={`site-agent-seat ${AGENT_SEAT_SLOTS[index]}${index === 1 ? "" : index === 2 ? " is-raised" : " is-folded"}`} style={{ "--i": index } as CSSProperties}>
-            <span className="site-agent-plate"><AgentAvatar id={agent.id} color={agent.color} size={38} state={index === 1 || index === 2 ? "idle" : "fold"} /><b>{agent.name.en}</b></span>
-            {index === 2 ? <span className="site-agent-bubble is-raise">{c.agent.raise}</span> : index !== 1 && <span className="site-agent-bubble">{c.agent.fold}</span>}
-          </div>)}
-          <div className="site-agent-seat is-hero">
-            <span className="site-agent-cards"><span className="site-agent-card is-heart">A<i>♥</i></span><span className="site-agent-card is-spade">Q<i>♠</i></span></span>
-            <span className="site-agent-plate is-you"><span className="site-agent-you">YOU</span><b>{c.agent.you}</b></span>
-          </div>
-        </div>
-        <div className="site-agent-turn">
-          <span>{c.agent.toAct}</span>
-          <div className="site-agent-actions">{c.agent.actions.map((label, index) => <span key={label} className={`site-agent-act is-${["fold", "call", "raise"][index]}`}><kbd>{index + 1}</kbd>{label}</span>)}</div>
-        </div>
-        <div className="site-agent-read"><span>{c.agent.read}</span><b>{c.agent.readStyle}</b><small>VPIP 24% · PFR 19% · 3bet 8%</small><small>{c.agent.hands}</small></div>
+        <img className="site-agent-image" src={agentTableImage} alt="" width={1600} height={1000} decoding="async" />
       </div>
     </div>
   </section>;
