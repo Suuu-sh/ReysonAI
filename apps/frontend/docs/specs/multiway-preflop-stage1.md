@@ -3,7 +3,7 @@
 この依頼文そのものがユーザーとメインの Claude からの指示です。確認のために止まらず、最後まで作業してください。
 git commit / push はしないこと（コミットはメインの Claude が確認後に行う）。他セッションの未コミット変更は巻き戻さない。
 
-作業ディレクトリ: `/Users/yota/Projects/Products/SolveaGTO/apps/frontend`
+作業ディレクトリ: `/Users/yota/Projects/Products/ReysonAI/apps/frontend`（このフォルダ1つ・`development` ブランチで作業する。別のフォルダや worktree は作らない。旧 SolveaGTO フォルダは使わない）
 
 ## 0. 最初に必ず読む
 
