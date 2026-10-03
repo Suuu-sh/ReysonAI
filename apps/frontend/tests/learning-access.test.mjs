@@ -36,9 +36,10 @@ test("OAuth intent allowlist persists only section names and guest back clears i
 test("ProductApp routes every learning destination through the guard and guest continuation resets ranges", async () => {
   const source = await readFile(new URL("../src/ProductApp.tsx", import.meta.url), "utf8");
   assert.ok(source.includes('isLearningSection(section) ? <LearningAccess account={account}'));
-  assert.ok(source.includes('<TrainerPage {...shared} section={section} /></LearningAccess>'));
-  assert.match(source, /useState\(\(\) => readLearningIntent\(\) \?\? RANGE_SECTION\)/);
-  assert.match(source, /onGuest=.*rememberLearningIntent\(null\); setSection\(RANGE_SECTION\)/s);
+  assert.ok(source.includes('<TrainerPage {...shared} section={section} path={path} onNavigate={go} /></LearningAccess>'));
+  // Pages are URLs now: a saved intent reopens its learning page when sign-in lands on the front page.
+  assert.match(source, /const intent = current === HOME_PATH \? readLearningIntent\(\) : null;/);
+  assert.match(source, /onGuest=.*rememberLearningIntent\(null\); go\(HOME_PATH\)/s);
   assert.match(source, /onBack=\{\(\) => navigate\(RANGE_SECTION\)\}/);
 });
 test("save 401 blocks learning and preserves unsaved account records for export", async () => {
