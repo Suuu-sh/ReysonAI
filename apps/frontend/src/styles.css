@@ -56,10 +56,10 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
   top: 0;
   align-self: flex-start;
   display: flex;
-  flex: 0 0 224px;
+  flex: 0 0 196px;
   flex-direction: column;
   gap: 22px;
-  width: 224px;
+  width: 196px;
   height: 100dvh;
   min-height: 0;
   padding: 14px 11px 12px;
@@ -278,7 +278,7 @@ th small { display: block; }
 
 @media (max-width: 650px) {
   .app-sidebar.is-collapsed { flex-basis: 52px; width: 52px; padding: 10px 4px; }
-  .app-sidebar:not(.is-collapsed) { position: fixed; z-index: 20; top: 0; left: 0; flex-basis: min(224px, 82vw); width: min(224px, 82vw); height: 100dvh; box-shadow: 12px 0 32px rgb(0 0 0 / 38%); }
+  .app-sidebar:not(.is-collapsed) { position: fixed; z-index: 20; top: 0; left: 0; flex-basis: min(196px, 82vw); width: min(196px, 82vw); height: 100dvh; box-shadow: 12px 0 32px rgb(0 0 0 / 38%); }
   main { padding: 10px; }
   .settings { grid-template-columns: 1fr; gap: 8px; }
   .settings > div + div { padding-left: 0; border-left: 0; }

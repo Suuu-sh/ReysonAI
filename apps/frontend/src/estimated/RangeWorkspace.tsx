@@ -18,6 +18,7 @@ import { displayModeKey } from "../profile.ts";
 import { useDetailedReasons } from "./detailed-reasons.ts";
 import { englishEquityNote, englishFactLabels, englishPreflopReason } from "./english-reasons.ts";
 import { productLocale } from "../i18n.ts";
+import { localized } from "../locale.ts";
 import { fiveBetMatrixModel, useFiveBetSpot } from "./five-bet-responses.ts";
 import {
   findSpot,
@@ -29,6 +30,9 @@ import {
 import { ArrowCounterClockwise, CaretDown, DotsThreeVertical, GearSix } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
+import { useAccount } from "../account/AuthPanel.tsx";
+import { LearningGate, learningAllowed } from "../account/LearningAccess.tsx";
+import { Cards, ChatText, Path } from "@phosphor-icons/react";
 import { nextPendingStreetCardDialog } from "./street-card-dialog-state.ts";
 import { buildActionBlocks, encodeRangeUrl, multiwayContext, readRangeUrl, replaceRangeUrl } from "./range-url.ts";
 export { buildActionBlocks } from "./range-url.ts";
@@ -324,11 +328,26 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
   </div>;
 }
 
+function PostflopSignIn({ account, onBack }) {
+  return <div className="learning-gate postflop-gate"><LearningGate account={account} onBack={onBack}
+    title={localized("Sign in to play the flop to the river", "ログインしてフロップ以降を見る")}
+    lead={localized("Postflop ranges and hand explanations are available after Google sign-in.", "フロップからリバーまでのAI推定レンジと解説は、Googleログインで使えます。")}
+    features={[
+      [Cards, localized("Any flop, turn and river", "好きなフロップ・ターン・リバー"), localized("Pick the board and follow the hand to the river", "ボードを選んでリバーまで追える")],
+      [Path, localized("Every action branch", "すべてのアクション分岐"), localized("Bets, raises and calls on each street", "各ストリートのベット・レイズ・コール")],
+      [ChatText, localized("Hand-by-hand reasons", "ハンドごとの解説"), localized("Why each hand bets, checks or folds", "なぜベット・チェック・フォールドするか")],
+    ]}
+    backLabel={localized("Back to preflop ranges", "プリフロップのレンジに戻る")} /></div>;
+}
+
 export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }) {
   const [initialUrlState] = useState(() => readRangeUrl());
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showFlop, setShowFlop] = useState(initialUrlState?.showFlop ?? false);
+  // Postflop (flop to river) requires Google sign-in; preflop ranges stay open to guests.
+  const account = useAccount();
+  const postflopAllowed = learningAllowed(account);
   const [flopDialogOpen, setFlopDialogOpen] = useState(false);
   const [streetCardDialog, setStreetCardDialog] = useState(null);
   const [flopCards, setFlopCards] = useState(initialUrlState?.flopCards ?? ["", "", ""]);
@@ -835,9 +854,9 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           selectedRangeBlock={selectedRangeBlock}
           {...actionState}
           onRewindActionBlock={rewindToActionBlock}
-          onEnterPostflop={flopContext ? () => { setShowFlop(true); setFlopDialogOpen(true); setSelectedRangeBlock(null); } : null}
-          onOpenFlopCards={() => setFlopDialogOpen(true)}
-          onOpenLaterCard={street => setStreetCardDialog(street)}
+          onEnterPostflop={flopContext ? () => { setShowFlop(true); setFlopDialogOpen(postflopAllowed); setSelectedRangeBlock(null); } : null}
+          onOpenFlopCards={() => setFlopDialogOpen(postflopAllowed)}
+          onOpenLaterCard={street => setStreetCardDialog(postflopAllowed ? street : null)}
           onFlopAction={(block, action) => { setFlopActions(current => [...current.slice(0, block.flopIndex), action]); setSelectedRangeBlock(null); }}
           onLaterAction={(block, action) => {
             if (block.street === "turn") setTurnActions(current => [...current.slice(0, block.laterIndex), action]);
@@ -853,7 +872,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        {flopActive && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}

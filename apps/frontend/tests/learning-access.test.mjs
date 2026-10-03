@@ -19,8 +19,8 @@ test("all Learn sections are protected, ranges and settings are public", () => {
 });
 test("loading, guest, unverified and expired accounts never render learning children", () => {
   for (const account of [{ ...signed, ready: false }, { ...signed, user: null }, { ...signed, user: { verified: false } }, { ...signed, available: false }, { ...signed, error: "session" }, { ...signed, error: "verification" }]) assert.doesNotMatch(render(account), /PRIVATE_TRAINER/);
-  assert.match(render({ ...signed, user: null }), /Googleログインが必要です/);
-  assert.match(render({ ...signed, user: null }), /レンジ分析に戻る/);
+  assert.match(render({ ...signed, user: null }), /ログインして学習をはじめる/);
+  assert.match(render({ ...signed, user: null }), /レンジ分析はログインなしで使えます/);
   assert.match(render(signed), /PRIVATE_TRAINER/);
   assert.match(render({ ...signed, error: "conflict" }), /PRIVATE_TRAINER/, "save conflicts do not revoke verified sessions");
 });
@@ -105,4 +105,12 @@ test("focus session validation preserves dirty records without data reload or le
     assert.equal(access.learningAllowed(session.accountSnapshot()), true);
     await session.saveAccountData();
   } finally { globalThis.window = priorWindow; globalThis.fetch = priorFetch; }
+});
+
+test("postflop (flop to river) is behind Google sign-in for guests", async () => {
+  const { readFileSync } = await import("node:fs");
+  const source = readFileSync(new URL("../src/estimated/RangeWorkspace.tsx", import.meta.url), "utf8");
+  assert.match(source, /flopActive && !postflopAllowed \? <PostflopSignIn/);
+  assert.match(source, /setFlopDialogOpen\(postflopAllowed\)/);
+  assert.match(source, /setStreetCardDialog\(postflopAllowed \? street : null\)/);
 });
