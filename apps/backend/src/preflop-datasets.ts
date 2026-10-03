@@ -1,4 +1,4 @@
-// Preflop datasets read from the evionai D1 database (AI estimates, not GTO). Each dataset is
+// Preflop datasets read from the reysonai D1 database (AI estimates, not GTO). Each dataset is
 // the published copy of one JSON file under apps/frontend/src/estimated, e.g. "opening-ranges"
 // or "reasons/BB_vs_BTN"; its parts are concatenated as text, never parsed here.
 import type { D1Database } from "./postflop.ts";

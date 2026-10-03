@@ -1,4 +1,4 @@
-// Publish the delivery copy of ReysonAI data to the evionai D1 database (schema:
+// Publish the delivery copy of ReysonAI data to the reysonai D1 database (schema:
 // apps/backend/migrations): every preflop dataset under src/estimated (the JSON files stay
 // the source of truth) and the canonical local postflop artifacts. Generates SQL; runs
 // wrangler only with --execute local|remote.

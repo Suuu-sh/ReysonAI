@@ -1,5 +1,5 @@
 import { isCanonicalFlopKey } from "../../frontend/scripts/postflop-ai/flop-isomorphism.mjs";
-// Heads-up postflop AI policies (AI estimates, not GTO) read from the evionai D1
+// Heads-up postflop AI policies (AI estimates, not GTO) read from the reysonai D1
 // database. The worker only reads: canonical flop bases and policies are stored data;
 // missing flop bases and later-street views are computed in the browser.
 // Stored JSON is passed through as text so a request never parses a whole policy.

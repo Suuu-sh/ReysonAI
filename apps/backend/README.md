@@ -38,7 +38,7 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
 
 ## プリフロップのデータセット（D1）
 
-`apps/frontend/src/estimated/**/*.json` が正本で、D1 `evionai` はその配信用の写しです。アプリは同梱せず、
+`apps/frontend/src/estimated/**/*.json` が正本で、D1 `reysonai` はその配信用の写しです。アプリは同梱せず、
 `VITE_API_BASE` の Worker から先読みします（未設定なら Vite の同じ形のローカル経路）。
 
 - `GET /v1/preflop/datasets` データセット名とハッシュの一覧
@@ -46,7 +46,7 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
 
 ## ポストフロップAI方針（D1）
 
-Worker は D1 `evionai` を読んで返すだけです。表示の計算（盤面・ターン/リバー・根拠・
+Worker は D1 `reysonai` を読んで返すだけです。表示の計算（盤面・ターン/リバー・根拠・
 手ごとのEV）はブラウザで行います。計算は1回17〜63msかかり、Workers Free の CPU 上限 10ms を超えるためです。
 
 - `GET /v1/postflop/spots` 公開中のスポットと方針ハッシュ
@@ -60,7 +60,7 @@ Worker は D1 `evionai` を読んで返すだけです。表示の計算（盤�
 公開手順（1・3行目は apps/backend、2行目は apps/frontend で実行）:
 
 ```bash
-npx wrangler d1 migrations apply evionai --remote
+npx wrangler d1 migrations apply reysonai --remote
 npm run publish:d1 -- --execute remote
 npx wrangler deploy
 ```
