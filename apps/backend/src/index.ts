@@ -470,10 +470,10 @@ function errorResponse(status: number, message: string): Response {
 
 function withCors(response: Response, request: Request, env: Env): Response {
   const headers = new Headers(response.headers);
-  const configuredOrigin = env.ALLOWED_ORIGIN || "*";
+  const configured = (env.ALLOWED_ORIGIN || "*").split(",").map(item => item.trim()).filter(Boolean);
   const requestOrigin = request.headers.get("origin");
-  const allowed = configuredOrigin === "*" || configuredOrigin === requestOrigin;
-  if (allowed) headers.set("access-control-allow-origin", configuredOrigin === "*" ? "*" : requestOrigin ?? configuredOrigin);
+  if (configured.includes("*")) headers.set("access-control-allow-origin", "*");
+  else if (requestOrigin && configured.includes(requestOrigin)) headers.set("access-control-allow-origin", requestOrigin);
   headers.set("access-control-allow-methods", "GET, POST, OPTIONS");
   headers.set("access-control-allow-headers", "content-type");
   headers.set("vary", [...new Set(["Origin", ...(response.headers.get("vary") ?? "").split(",").map(item => item.trim()).filter(Boolean)])].join(", "));

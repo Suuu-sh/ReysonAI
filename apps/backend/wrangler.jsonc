@@ -3,6 +3,8 @@
   "name": "reysonai-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-09-22",
+  "workers_dev": true,
+  "routes": [{ "pattern": "api.reysonai.com", "custom_domain": true }],
   "r2_buckets": [
     {
       "binding": "SOLUTIONS",
@@ -18,6 +20,7 @@
     }
   ],
   "vars": {
-    "ALLOWED_ORIGIN": "https://reysonai.suuu-sh.workers.dev"
+    // Comma-separated list of origins allowed by CORS.
+    "ALLOWED_ORIGIN": "https://reysonai.com,https://reysonai.suuu-sh.workers.dev"
   }
 }
