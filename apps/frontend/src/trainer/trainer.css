@@ -726,6 +726,6 @@
 .drill-deck-card:nth-child(3) { z-index: 3; } .drill-deck-card:nth-child(2) { z-index: 2; }
 .mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card { transform: translate(calc(-50% + var(--k) * 70px), -50%) rotate(calc(var(--k) * 10deg)) translateY(calc(var(--k) * var(--k) * 8px)) scale(1); }
 /* Agent names show only when the lineup spreads out. */
-.agent-lineup .agent-table-face small { opacity: 0; transition: opacity .25s ease; }
+.agent-lineup .agent-table-face small { position: absolute; top: calc(100% + 4px); left: 50%; opacity: 0; transform: translateX(-50%); white-space: nowrap; transition: opacity .25s ease; }
 .mode-block.is-agent:is(:hover, :focus-within) .agent-table-face small { opacity: 1; transition-delay: .2s; }
 @media (prefers-reduced-motion: reduce) { .drill-deck-card { transition: none; } }
