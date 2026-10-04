@@ -6,7 +6,7 @@ import { AgentAvatar } from "../agent/AgentAvatar.tsx";
 import { loadAgentHands, summarizeAgentHands } from "../agent/agent-stats.ts";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.ts";
 import { drillStats } from "./drill-store.ts";
-import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIERS, TIER_EN, playedToday, tierFor } from "./rank-store.ts";
+import { LEGEND, RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIERS, TIER_EN, playedToday, tierFor } from "./rank-store.ts";
 import { localized } from "../locale.ts";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
@@ -205,15 +205,16 @@ function RankedEmblem({ rank, tier }) {
   </div>;
 }
 
-// Master stays in the middle; on hover the other tiers slide out from behind it, strongest first,
-// alternating right and left (diamond right, platinum left, gold right, ...).
+// Legend stays in the middle; on hover the other tiers slide out from behind it, strongest first,
+// alternating right and left (master right, diamond left, platinum right, ...), balanced 3 + 3.
 const fanOffset = strength => strength === 0 ? 0 : strength % 2 ? (strength + 1) / 2 : -strength / 2;
 function RankFan() {
-  const last = TIERS.length - 1;
+  const names = [...TIERS.map(tier => tier.name), LEGEND];
+  const last = names.length - 1;
   return <div className="rank-fan" aria-hidden="true">
-    {TIERS.map((tier, index) => <span key={tier.name} className={`rank-fan-item${index === last ? " is-front" : ""}`}
+    {names.map((name, index) => <span key={name} className={`rank-fan-item${index === last ? " is-front" : ""}`}
       style={{ "--k": fanOffset(last - index), "--d": last - index, zIndex: index + 1 }}>
-      <RankBadge name={tier.name} size={64} />
+      <RankBadge name={name} size={64} />
     </span>)}
   </div>;
 }
