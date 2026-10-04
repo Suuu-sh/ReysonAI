@@ -1,5 +1,6 @@
 // Consistency audit for persisted estimated ranges. Shared by the CLI, tests and the build pipeline.
 import { dataset } from "./datasets.ts";
+import { auditContinuationEstimates } from "./continuation-audit.ts";
 import { openSizeFor } from "./sizing.ts";
 import { coldFourBetFoldThreshold, callContexts, callFacts, validCallEquities, callDefenseCapacity, limpFiveBetFoldThreshold, limpFourBetFoldThreshold, limpReraiseFoldThreshold, squeezeFoldThreshold } from "./call-ev.ts";
 
@@ -14,14 +15,13 @@ const combos = hand => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
 const rows = spot => new Map(spot.hands.map(row => [row.hand, row]));
 export const pct = value => `${(value * 100).toFixed(1)}%`;
 
-export const BALANCE_CHECKS = Object.freeze(["range-capped", "over-segregated"]);
-const ADVISORY_CHECKS = [...BALANCE_CHECKS, "cross-strength-inversion", "negative-ev-call", "ev-capacity-conflict"];
+import { BALANCE_CHECKS, isBlockingAuditFinding } from "./audit-policy.ts";
+export { BALANCE_CHECKS, isBlockingAuditFinding };
 const PASSIVE_ACTIONS = ["limp", "call", "check"];
 const AGGRESSIVE_ACTIONS = ["open", "three_bet", "four_bet", "squeeze", "raise", "all_in"];
 const ACTIONS = [...PASSIVE_ACTIONS, ...AGGRESSIVE_ACTIONS, "fold"];
 // Preserve ordinary consistency failures; expose proven, fully defended EV-capacity conflicts separately.
 // Balance and cross-family strength warnings are advisory, not publication blockers.
-export const isBlockingAuditFinding = finding => finding.severity === "error" || !ADVISORY_CHECKS.includes(finding.check);
 
 export function checkCrossStrengthInversion(spot, weight = () => 1) {
   const live = spot.hands.filter(row => row.hand.length === 3 && weight(row.hand) > 0)
@@ -154,7 +154,7 @@ function weightedFold(spot, weight = () => 1) {
   return total ? folded / total : 0;
 }
 
-export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, limpDeep, coldThreeBets, multiway2, coldFourBets, callEquities = callEquitiesTable }) {
+export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, limpDeep, coldThreeBets, multiway2, coldFourBets, continuations, continuationEquities, callEquities = callEquitiesTable }) {
   const findings = [];
   const add = (check, severity, spot, detail) => findings.push({ check, severity, spot, detail });
   const openBy = new Map(opening.spots.map(spot => [spot.hero, rows(spot)]));
@@ -544,6 +544,21 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
     // Facing the all-in, only equity and price decide call/fold (same exemption as five-bet-responses).
     if (reach) inspectRange(spot, reach, spot.id === "BB_vs_SB_limp_five_bet" ? "5bet all-in response" : null);
   }
+  // Stage-two continuations use their own source-pinned equity table. Legacy
+  // call inputs and frequencies remain unchanged.
+  const continuationReport = continuations ? auditContinuationEstimates(continuations, {
+    "opening-ranges": opening, "preflop-ranges": responses, "multiway-responses": multiway,
+    "multiway2-responses": multiway2, "squeeze-responses": squeezes,
+    "cold-three-bet-responses": coldThreeBets, "cold-four-bet-responses": coldFourBets,
+  }, continuationEquities, { checkRangeBalance, checkCrossStrengthInversion }) : { findings: [], rangeBalance: [], defense: [] };
+  findings.push(...continuationReport.findings);
+  rangeBalance.push(...continuationReport.rangeBalance);
+  const continuationConflicts = new Set(continuationReport.findings.filter(finding => finding.check === "ev-capacity-conflict").map(finding => finding.spot));
+  capacityConflicts.push(...continuationReport.defense.filter(item => continuationConflicts.has(item.spot)).map(item => ({
+    spot: item.spot, context_type: "continuation", minimumFoldRate: item.minimumFoldRate,
+    maximumContinuationPct: (1 - item.minimumFoldRate) * 100, requiredContinuationPct: (1 - item.threshold) * 100,
+    foldConfidence: item.foldConfidence, capacityConfidence: item.capacityConfidence, samples: item.samples, method: item.method,
+  })));
   const balanceSummary = Object.fromEntries(BALANCE_CHECKS.map(check => {
     const matches = findings.filter(f => f.check === check);
     return [check, { count: matches.length, spots: [...new Set(matches.map(f => f.spot))].sort() }];
@@ -573,5 +588,5 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
 
   // Range widths for a sanity read.
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
-  return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, limpReraiseDefense, limpDeepDefense, coldThreeBetDefense, coldFourBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
+  return { findings, capacityConflicts, continuationDefense: continuationReport.defense, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, limpReraiseDefense, limpDeepDefense, coldThreeBetDefense, coldFourBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
 }

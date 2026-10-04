@@ -3,6 +3,7 @@
 // the source of truth) and the canonical local postflop artifacts. Generates SQL; runs
 // wrangler only with --execute local|remote.
 //   node scripts/publish-d1.mjs [--only preflop|postflop|flop-base] [--out file] [--execute local|remote]
+import { assertContinuationPublication } from "./lib/continuation-publication.mjs";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { closeSync, openSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -52,6 +53,8 @@ function main(argv) {
   const out = resolve(arg("--out") ?? join(root, ".local/reysonai-d1.sql"));
   let sql = "";
   if (!only || only === "preflop") {
+    const stage2 = assertContinuationPublication(ESTIMATED_DIR, { allowLegacyOnly: argv.includes("--allow-legacy-only") });
+    if (stage2.status === "legacy-only") console.warn("Explicit legacy-only snapshot: executing this SQL removes any previously published Stage 2 datasets.");
     const datasets = preflopDatasets();
     sql += buildPreflopSql(datasets);
     console.log(`${Object.keys(datasets).length} preflop datasets`);

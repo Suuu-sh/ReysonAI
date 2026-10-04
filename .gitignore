@@ -10,3 +10,11 @@
 /apps/frontend/.local/
 .DS_Store
 __pycache__/
+# Stage 2 generated publication artifacts. Rebuild with scripts/build-continuations.mjs.
+/apps/frontend/src/estimated/continuation-responses.json
+/apps/frontend/src/estimated/continuation-call-equities.json
+/apps/frontend/src/estimated/continuation-audit-report.json
+/apps/frontend/src/estimated/reasons/sq_*.json
+/apps/frontend/src/estimated/reasons/sq2_*.json
+/apps/frontend/src/estimated/reasons/cc_*.json
+/apps/frontend/src/estimated/reasons/c4_*.json

@@ -1,3 +1,4 @@
+import { composeContinuationReasons } from "./lib/continuation-reasons.mjs";
 // Composes detailed per-hand reasons from computed facts (.local/reason-facts) and saved frequencies.
 // Usage: node scripts/compose-reasons.mjs [spot_id ...]   (no ids = every spot with facts)
 // All supported spots use the same EV-aware composer, including BB_vs_BTN.
@@ -441,3 +442,11 @@ for (const [type, dataset] of Object.entries(datasets)) {
   }
 }
 console.log(`${written} spot reason files written`);
+
+if (existsSync(new URL("continuation-responses.json", dataDir))) {
+  const continuationCount = composeContinuationReasons({
+    data: load("continuation-responses"), equities: load("continuation-call-equities"), factDir, reasonDir, wanted,
+    datasets: Object.fromEntries(["opening-ranges", "preflop-ranges", "multiway-responses", "multiway2-responses", "squeeze-responses", "cold-three-bet-responses", "cold-four-bet-responses"].map(name => [name, load(name)])),
+  });
+  console.log(`${continuationCount} continuation reason files written`);
+}

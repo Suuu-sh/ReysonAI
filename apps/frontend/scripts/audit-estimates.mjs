@@ -1,14 +1,19 @@
 // Audits persisted estimates. Balance/cross-strength warnings are advisory, not an exit-1 gate.
 // Usage: node scripts/audit-estimates.mjs [--dir <estimates dir>] [--json]
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { auditEstimates, BALANCE_CHECKS, isBlockingAuditFinding, pct } from "../src/estimated/audit.ts";
 
 const dirFlag = process.argv.indexOf("--dir");
 const dir = dirFlag > 0 ? resolve(process.argv[dirFlag + 1]) : new URL("../src/estimated/", import.meta.url).pathname;
 const load = name => JSON.parse(readFileSync(`${dir}/${name}.json`, "utf8"));
+const continuationArtifacts = existsSync(`${dir}/continuation-responses.json`);
+if (!continuationArtifacts && existsSync(`${dir}/continuation-call-equities.json`)) throw new Error("Partial Stage 2 artifacts: continuation strategy is missing");
 const report = auditEstimates({
   callEquities: load("call-equities"),
+  ...(continuationArtifacts ? {
+    continuations: load("continuation-responses"), continuationEquities: load("continuation-call-equities"),
+  } : {}),
   opening: load("opening-ranges"),
   responses: load("preflop-ranges"),
   threeBets: load("three-bet-responses"),
@@ -21,6 +26,7 @@ const report = auditEstimates({
   limp: load("limp-responses"),
   limpDeep: load("limp-deep-responses"),
 });
+report.continuationArtifacts = continuationArtifacts ? "audited" : "not-generated";
 const { findings, autoProfit, threeBetDefense, fourBetDefense, widths } = report;
 
 if (process.argv.includes("--json")) {
@@ -28,6 +34,7 @@ if (process.argv.includes("--json")) {
 } else {
   const count = (check, severity) => findings.filter(f => f.check === check && (!severity || f.severity === severity)).length;
   console.log("# 推定レンジ検証レポート\n");
+  if (!continuationArtifacts) console.log("Stage 2 artifacts are not generated; this run audits legacy data only. Run node scripts/build-continuations.mjs --install to validate Stage 2.\n");
   console.log("| チェック | 件数 |\n|---|---|");
   for (const check of ["ev-capacity-conflict", "negative-ev-call", "boundary-ev-call", "call-equity-source", "range-flow", "auto-profit", "strength-order", "suited-vs-offsuit", "position-nesting", "defense-nesting", "squeeze-width", "cold-width", "cross-strength-inversion", ...BALANCE_CHECKS]) console.log(`| ${check} | ${count(check)} |`);
   console.log("\n## 系列をまたいだ強さの逆転（警告のみ）");

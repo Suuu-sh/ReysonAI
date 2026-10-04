@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { auditEstimates, BALANCE_CHECKS, checkRangeBalance, isBlockingAuditFinding } from "../src/estimated/audit.ts";
 import handStrength from "../src/estimated/hand-strength.json" with { type: "json" };
@@ -19,7 +19,7 @@ test("persisted estimates pass the consistency audit", () => {
 
 test("CLI reports balance counts and spot lists but does not fail for their warnings", () => {
   const result = spawnSync(process.execPath, ["scripts/audit-estimates.mjs", "--json"], {
-    cwd: new URL("..", import.meta.url), encoding: "utf8",
+    cwd: new URL("..", import.meta.url), encoding: "utf8", maxBuffer: 16 << 20,
   });
   assert.equal(result.status, 0, result.stderr);
   const report = JSON.parse(result.stdout);
@@ -28,7 +28,8 @@ test("CLI reports balance counts and spot lists but does not fail for their warn
     assert.equal(report.balanceSummary[check].count, matches.length);
     assert.deepEqual(report.balanceSummary[check].spots, [...new Set(matches.map(f => f.spot))].sort());
   }
-  assert.equal(report.rangeBalance.length, Object.values(datasets()).reduce((sum, data) => sum + data.spots.length, 0)); // +36 squeeze-response spots, +1 BB vs SB limp-reraise, +20 cold 3bet responses, +2 limp 4bet / all-in responses
+  assert.equal(report.rangeBalance.length, Object.values(datasets()).reduce((sum, data) => sum + data.spots.length, 0) + (existsSync(new URL("../src/estimated/continuation-responses.json", import.meta.url)) ? load("continuation-responses").spots.length : 0));
+  assert.equal(report.continuationDefense.length, (existsSync(new URL("../src/estimated/continuation-call-equities.json", import.meta.url)) ? Object.keys(load("continuation-call-equities").joint_defense).length : 0));
 });
 
 test("audit rejects an overfolding 4bet response", () => {
