@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "strategy_type": "ai_estimate_not_gto",
+  "opponent_profile": "maniac",
+  "role": "villain",
+  "name": {
+    "ja": "マニアック",
+    "en": "Maniac"
+  },
+  "description": {
+    "ja": "極端に広く参加し、弱い手でもレイズやオールインを多用する。大きなレイズにも広く継続する。",
+    "en": "Enters very wide, overuses raises and all-ins with weak hands, and continues too widely against large raises."
+  },
+  "datasets": {
+    "opening-ranges": {
+      "ja": "席ごとの参加幅とSBのリンプを手札群別に指定する。 極端に広く参加し、弱い手でもレイズやオールインを多用する。大きなレイズにも広く継続する。",
+      "en": "Authored seat-specific opening widths and a separate SB limp strategy. Enters very wide, overuses raises and all-ins with weak hands, and continues too widely against large raises."
+    },
+    "preflop-ranges": {
+      "ja": "BB対BTNを基準に、早いオープンと後続席がいるときの参加を抑える。 極端に広く参加し、弱い手でもレイズやオールインを多用する。大きなレイズにも広く継続する。",
+      "en": "The BB-versus-BTN family mixes contract versus early opens and with seats behind. Enters very wide, overuses raises and all-ins with weak hands, and continues too widely against large raises."
+    },
+    "three-bet-responses": {
+      "ja": "自分がオープンした手だけで、相手像ごとのコールと4betを使う。 極端に広く参加し、弱い手でもレイズやオールインを多用する。大きなレイズにも広く継続する。",
+      "en": "Calls and 4bets follow the archetype, conditional on its own opening range. Enters very wide, overuses raises and all-ins with weak hands, and continues too widely against large raises."
+    },
+    "four-bet-responses": {
+      "ja": "自分の3betレンジの中でコール・100BBオールイン・フォールドを分ける。 極端に広く参加し、弱い手でもレイズやオールインを多用する。大きなレイズにも広く継続する。",
+      "en": "Calls, 100BB shoves and folds are conditional on the archetype’s own 3bet range. Enters very wide, overuses raises and all-ins with weak hands, and continues too widely against large raises."
+    },
+    "five-bet-responses": {
+      "ja": "自分が4betした手だけでオールインへのコールを判断する。EVでは頻度を変更しない。 極端に広く参加し、弱い手でもレイズやオールインを多用する。大きなレイズにも広く継続する。",
+      "en": "Authored calls versus a shove are conditional on its own 4bet; EV never adjusts them. Enters very wide, overuses raises and all-ins with weak hands, and continues too widely against large raises."
+    },
+    "limp-responses": {
+      "ja": "SBリンプ、BBアイソ、SBリンプレイズを別々の自分の履歴として扱う。 極端に広く参加し、弱い手でもレイズやオールインを多用する。大きなレイズにも広く継続する。",
+      "en": "SB limps, BB isolation raises and SB limp-reraises retain their distinct own-action histories. Enters very wide, overuses raises and all-ins with weak hands, and continues too widely against large raises."
+    },
+    "limp-deep-responses": {
+      "ja": "リンプレイズ後の4bet・5betも同じ相手像を保ち、前段の到達を掛け合わせる。 極端に広く参加し、弱い手でもレイズやオールインを多用する。大きなレイズにも広く継続する。",
+      "en": "Deep limp branches retain the same archetype and multiply its own preceding action reach. Enters very wide, overuses raises and all-ins with weak hands, and continues too widely against large raises."
+    }
+  },
+  "author": "Astra",
+  "generator": "scripts/generate-opponent-profiles.py",
+  "frequency_policy": "authored_only_no_call_ev",
+  "audit_policy": "structural_errors_strength_warnings",
+  "balanced_source_sha256": {
+    "opening-ranges": "236225dbae1c8aa2e2e7af8a449555f27ef80fed878114408c0e7338b89d0f0b",
+    "preflop-ranges": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55",
+    "three-bet-responses": "e46bbb59dc55df01240a73602b0cb214a652e5c2346f84a791178b938df40973",
+    "four-bet-responses": "70c6302ea11c6f725702030f8980883ef1ec66fb630c3d90f6c1395c4e76add5",
+    "five-bet-responses": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+    "limp-responses": "370d4b30a08394c2f6919cbbd5dec6f5531af41cfeddde3ece22f90922b34f77",
+    "limp-deep-responses": "e815907ad05b1a24f733acf9fe06cb06c2f89c41039a7226cefb420d7956e53e"
+  }
+}

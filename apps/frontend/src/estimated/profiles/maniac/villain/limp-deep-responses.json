@@ -1,0 +1,2274 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "strategy_type": "ai_estimate_not_gto",
+    "game": "6max Cash / No-Limit Texas Holdem",
+    "effective_stack_bb": 100,
+    "open_size_bb": 2.5,
+    "ante_bb": 0,
+    "legal_actions": {
+      "SB_vs_BB_limp_four_bet": [
+        "fold",
+        "call",
+        "all_in"
+      ],
+      "BB_vs_SB_limp_five_bet": [
+        "fold",
+        "call"
+      ]
+    },
+    "rake": {
+      "rate": 0.05,
+      "cap_bb": 3,
+      "no_flop_no_drop": true,
+      "calibrated": false
+    },
+    "opponent_profile": "maniac",
+    "role": "villain",
+    "source_of_truth": "scripts/generate-opponent-profiles.py",
+    "method": "Explicit AI-authored hand-family frequencies; no EV gate, autofill or equilibrium claim.",
+    "frequency_semantics": "Conditional percentages at this decision; multiply own preceding action frequencies to obtain reach.",
+    "unreachable_hands": "Zero own-action reach uses fold=100 placeholders, never a recommendation.",
+    "warning": "Behavioural archetype assumption, not measured player statistics, optimal play, or GTO.",
+    "equity_status": "not_computed; null equity/shove metrics must not be presented as zero or reused from standard data."
+  },
+  "spot_count": 2,
+  "hand_classes_per_spot": 169,
+  "entry_count": 338,
+  "spots": [
+    {
+      "id": "SB_vs_BB_limp_four_bet",
+      "hero": "SB",
+      "opponent": "BB",
+      "source_opening_id": "SB_open",
+      "source_limp_response_id": "BB_vs_SB_limp",
+      "source_iso_response_id": "SB_vs_BB_iso",
+      "source_limp_reraise_response_id": "BB_vs_SB_limp_reraise",
+      "open_size_bb": 1,
+      "iso_size_bb": 3.5,
+      "limp_reraise_size_bb": 10.5,
+      "four_bet_size_bb": 26,
+      "all_in_size_bb": 100,
+      "effective_stack_bb": 100,
+      "hands": [
+        {
+          "hand": "AA",
+          "call": 10,
+          "all_in": 90,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "AKs",
+          "call": 20,
+          "all_in": 80,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "AQs",
+          "call": 35,
+          "all_in": 65,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "AJs",
+          "call": 40,
+          "all_in": 55,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "ATs",
+          "call": 40,
+          "all_in": 55,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A9s",
+          "call": 40,
+          "all_in": 50,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A8s",
+          "call": 40,
+          "all_in": 50,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A7s",
+          "call": 40,
+          "all_in": 50,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A6s",
+          "call": 40,
+          "all_in": 50,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A5s",
+          "call": 25,
+          "all_in": 70,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A4s",
+          "call": 25,
+          "all_in": 70,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A3s",
+          "call": 25,
+          "all_in": 70,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A2s",
+          "call": 25,
+          "all_in": 70,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "AKo",
+          "call": 20,
+          "all_in": 80,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "KK",
+          "call": 15,
+          "all_in": 85,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "KQs",
+          "call": 45,
+          "all_in": 50,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "KJs",
+          "call": 45,
+          "all_in": 50,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "KTs",
+          "call": 45,
+          "all_in": 50,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K9s",
+          "call": 45,
+          "all_in": 45,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K8s",
+          "call": 45,
+          "all_in": 45,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K7s",
+          "call": 45,
+          "all_in": 45,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K6s",
+          "call": 45,
+          "all_in": 45,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K5s",
+          "call": 40,
+          "all_in": 45,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K4s",
+          "call": 40,
+          "all_in": 45,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K3s",
+          "call": 40,
+          "all_in": 45,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K2s",
+          "call": 40,
+          "all_in": 45,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "AQo",
+          "call": 35,
+          "all_in": 65,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "KQo",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "QQ",
+          "call": 25,
+          "all_in": 75,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "QJs",
+          "call": 45,
+          "all_in": 50,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "QTs",
+          "call": 45,
+          "all_in": 50,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q9s",
+          "call": 50,
+          "all_in": 35,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q8s",
+          "call": 50,
+          "all_in": 35,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q7s",
+          "call": 50,
+          "all_in": 35,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q6s",
+          "call": 50,
+          "all_in": 35,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q5s",
+          "call": 40,
+          "all_in": 40,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q4s",
+          "call": 40,
+          "all_in": 40,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q3s",
+          "call": 40,
+          "all_in": 40,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q2s",
+          "call": 40,
+          "all_in": 40,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "AJo",
+          "call": 45,
+          "all_in": 50,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "KJo",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "QJo",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "JJ",
+          "call": 35,
+          "all_in": 65,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "JTs",
+          "call": 45,
+          "all_in": 50,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J9s",
+          "call": 50,
+          "all_in": 35,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J8s",
+          "call": 50,
+          "all_in": 35,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J7s",
+          "call": 50,
+          "all_in": 35,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J6s",
+          "call": 50,
+          "all_in": 35,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J5s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J4s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J3s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J2s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "ATo",
+          "call": 45,
+          "all_in": 50,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "KTo",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "QTo",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "JTo",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "TT",
+          "call": 35,
+          "all_in": 65,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T9s",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T8s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T7s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T6s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T5s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T4s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T3s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T2s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A9o",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K9o",
+          "call": 45,
+          "all_in": 35,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q9o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J9o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T9o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "99",
+          "call": 45,
+          "all_in": 55,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "98s",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "97s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "96s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "95s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "94s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "93s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "92s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A8o",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K8o",
+          "call": 45,
+          "all_in": 35,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q8o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J8o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T8o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "98o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "88",
+          "call": 45,
+          "all_in": 55,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "87s",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "86s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "85s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "84s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "83s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "82s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A7o",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K7o",
+          "call": 45,
+          "all_in": 35,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q7o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J7o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T7o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "97o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "87o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "77",
+          "call": 45,
+          "all_in": 55,
+          "fold": 0,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "76s",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "75s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "74s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "73s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "72s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A6o",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K6o",
+          "call": 45,
+          "all_in": 35,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q6o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J6o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T6o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "96o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "86o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "76o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "66",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "65s",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "64s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "63s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "62s",
+          "call": 40,
+          "all_in": 35,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A5o",
+          "call": 35,
+          "all_in": 55,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K5o",
+          "call": 45,
+          "all_in": 35,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q5o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J5o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T5o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "95o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "85o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "75o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "65o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "55",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "54s",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "53s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "52s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A4o",
+          "call": 35,
+          "all_in": 55,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K4o",
+          "call": 45,
+          "all_in": 35,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q4o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J4o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T4o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "94o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "84o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "74o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "64o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "54o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "44",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "43s",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "42s",
+          "call": 45,
+          "all_in": 40,
+          "fold": 15,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A3o",
+          "call": 35,
+          "all_in": 55,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K3o",
+          "call": 45,
+          "all_in": 35,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q3o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J3o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T3o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "93o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "83o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "73o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "63o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "53o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "43o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "33",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "32s",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "A2o",
+          "call": 35,
+          "all_in": 55,
+          "fold": 10,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "K2o",
+          "call": 45,
+          "all_in": 35,
+          "fold": 20,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "Q2o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "J2o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "T2o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "92o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "82o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "72o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "62o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "52o",
+          "call": 40,
+          "all_in": 25,
+          "fold": 35,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "42o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "32o",
+          "call": 45,
+          "all_in": 30,
+          "fold": 25,
+          "all_in_size_bb": 100
+        },
+        {
+          "hand": "22",
+          "call": 50,
+          "all_in": 45,
+          "fold": 5,
+          "all_in_size_bb": 100
+        }
+      ]
+    },
+    {
+      "id": "BB_vs_SB_limp_five_bet",
+      "hero": "BB",
+      "opponent": "SB",
+      "source_opening_id": "SB_open",
+      "source_limp_response_id": "BB_vs_SB_limp",
+      "source_iso_response_id": "SB_vs_BB_iso",
+      "source_limp_reraise_response_id": "BB_vs_SB_limp_reraise",
+      "open_size_bb": 1,
+      "iso_size_bb": 3.5,
+      "limp_reraise_size_bb": 10.5,
+      "four_bet_size_bb": 26,
+      "all_in_size_bb": 100,
+      "effective_stack_bb": 100,
+      "source_four_bet_response_id": "SB_vs_BB_limp_four_bet",
+      "call_break_even_equity_pct": 37.6,
+      "shove_range_combos": null,
+      "hands": [
+        {
+          "hand": "AA",
+          "call": 100,
+          "fold": 0,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "AKs",
+          "call": 100,
+          "fold": 0,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "AQs",
+          "call": 100,
+          "fold": 0,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "AJs",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "ATs",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A9s",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A8s",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A7s",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A6s",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A5s",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A4s",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A3s",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A2s",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "AKo",
+          "call": 100,
+          "fold": 0,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "KK",
+          "call": 100,
+          "fold": 0,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "KQs",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "KJs",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "KTs",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K9s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K8s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K7s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K6s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K5s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K4s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K3s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K2s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "AQo",
+          "call": 100,
+          "fold": 0,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "KQo",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "QQ",
+          "call": 100,
+          "fold": 0,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "QJs",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "QTs",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q9s",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q8s",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q7s",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q6s",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q5s",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q4s",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q3s",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q2s",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "AJo",
+          "call": 90,
+          "fold": 10,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "KJo",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "QJo",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "JJ",
+          "call": 100,
+          "fold": 0,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "JTs",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J9s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J8s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J7s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J6s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J5s",
+          "call": 60,
+          "fold": 40,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J4s",
+          "call": 60,
+          "fold": 40,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J3s",
+          "call": 60,
+          "fold": 40,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J2s",
+          "call": 60,
+          "fold": 40,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "ATo",
+          "call": 90,
+          "fold": 10,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "KTo",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "QTo",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "JTo",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "TT",
+          "call": 100,
+          "fold": 0,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T9s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T8s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T7s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T6s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T5s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T4s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T3s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T2s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A9o",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K9o",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q9o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J9o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T9o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "99",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "98s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "97s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "96s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "95s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "94s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "93s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "92s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A8o",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K8o",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q8o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J8o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T8o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "98o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "88",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "87s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "86s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "85s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "84s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "83s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "82s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A7o",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K7o",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q7o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J7o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T7o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "97o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "87o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "77",
+          "call": 95,
+          "fold": 5,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "76s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "75s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "74s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "73s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "72s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A6o",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K6o",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q6o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J6o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T6o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "96o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "86o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "76o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "66",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "65s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "64s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "63s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "62s",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A5o",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K5o",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q5o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J5o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T5o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "95o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "85o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "75o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "65o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "55",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "54s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "53s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "52s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A4o",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K4o",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q4o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J4o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T4o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "94o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "84o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "74o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "64o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "54o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "44",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "43s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "42s",
+          "call": 70,
+          "fold": 30,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A3o",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K3o",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q3o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J3o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T3o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "93o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "83o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "73o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "63o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "53o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "43o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "33",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "32s",
+          "call": 80,
+          "fold": 20,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "A2o",
+          "call": 75,
+          "fold": 25,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "K2o",
+          "call": 65,
+          "fold": 35,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "Q2o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "J2o",
+          "call": 50,
+          "fold": 50,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "T2o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "92o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "82o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "72o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "62o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "52o",
+          "call": 40,
+          "fold": 60,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "42o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "32o",
+          "call": 55,
+          "fold": 45,
+          "equity_vs_shove_pct": null
+        },
+        {
+          "hand": "22",
+          "call": 85,
+          "fold": 15,
+          "equity_vs_shove_pct": null
+        }
+      ]
+    }
+  ]
+}
