@@ -45,6 +45,7 @@ export function preflopPriority(category, id) {
 }
 
 export function postflopPriority(spot) {
+  if (spot.history) return 4;
   return spot.opener === "BTN" && spot.ip === "BTN" && spot.oop === "BB" ? 1 : 2;
 }
 
@@ -149,7 +150,8 @@ export function formatBacklog(treeSize) {
 // policy, so it stays TODO ("copy") unless the spot is in `authoredIds` (the original).
 // Each reachable spot needs a flop policy (<slug>-policy.json) and a turn/river policy
 // (<slug>-later-policy.json); spots whose preflop range never reaches the flop are skipped.
-const POT_KINDS = [["srp", "シングルレイズポット"], ["3bp", "3betポット"], ["4bp", "4betポット"], ["limp", "リンプポット"]];
+const POT_KINDS = [["srp", "シングルレイズポット"], ["3bp", "3betポット"], ["4bp", "4betポット"], ["limp", "リンプポット"],
+  ["sqp", "スクイーズ後のヘッズアップ"], ["ccp", "コールドコール後のヘッズアップ"], ["c4bp", "コールド4bet後のヘッズアップ"]];
 const STAGES = [
   { street: "flop", label: "フロップ", suffix: "-policy.json" },
   { street: "turn_river", label: "ターン/リバー", suffix: "-later-policy.json" },

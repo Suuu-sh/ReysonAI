@@ -1,3 +1,4 @@
+import { hasPostflopDeal } from "./range-support.mjs";
 import { boards, config, laterSizingHash, seatRange } from "./inputs.mjs";
 import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePolicy } from "./policy.mjs";
 import { PROFILES, SIMULATION_VERSION, simulate } from "./simulation.mjs";
@@ -20,8 +21,12 @@ export function auditExperiment(inputs, candidate, report, laterCandidate = null
       report.samples_per_board_profile_seat !== config.samples_per_board_profile_seat || report.seed !== config.seed) {
     throw new Error("Candidate or simulation report is stale/incomplete");
   }
+  const reachableBoards = boards().filter(board => !spot.history || hasPostflopDeal(inputs, board.cards));
+  if (spot.history && JSON.stringify(report.unreachable_boards ?? []) !== JSON.stringify(boards().filter(board => !hasPostflopDeal(inputs, board.cards)).map(board => board.id))) {
+    throw new Error("Unreachable board proof differs from saved source ranges");
+  }
   let checked = 0;
-  for (const board of boards()) {
+  for (const board of reachableBoards) {
     const seats = { [spot.ip]: seatRange(inputs, spot.ip, board.cards), [spot.oop]: seatRange(inputs, spot.oop, board.cards) };
     for (const node of treeNodes(spot.tree)) {
       const actions = NODES[node];
@@ -35,13 +40,13 @@ export function auditExperiment(inputs, candidate, report, laterCandidate = null
     }
   }
   const splitByBoard = new Map(boards().map(board => [board.id, board.split]));
-  const expected = new Set(boards().flatMap(board => PROFILES.flatMap(profile => [spot.ip, spot.oop].map(hero =>
+  const expected = new Set(reachableBoards.flatMap(board => PROFILES.flatMap(profile => [spot.ip, spot.oop].map(hero =>
     `${board.id}|${profile}|${hero}`))));
   if (!Array.isArray(report.results) || report.results.length !== expected.size) throw new Error("Simulation results are incomplete");
   const warnings = [];
   const balanceFindings = [
-    ...checkFlopBalance(inputs, policy).findings,
-    ...(laterPolicy ? checkLaterBalance(inputs, policy, laterPolicy).findings : []),
+    ...checkFlopBalance(inputs, policy, { boardList: reachableBoards }).findings,
+    ...(laterPolicy ? checkLaterBalance(inputs, policy, laterPolicy, { boardList: reachableBoards }).findings : []),
   ];
   for (const finding of balanceFindings) {
     if (finding.severity === "error") throw new Error(`Balance audit failed [${finding.check}] ${finding.node}: ${finding.detail}`);

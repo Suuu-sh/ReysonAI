@@ -1,3 +1,4 @@
+import { hasPostflopDeal } from "./range-support.mjs";
 // Explicit, local-only Codex generation of compact AI policy rules.
 // It never writes a published strategy or silently regenerates an existing candidate.
 import { spawn } from "node:child_process";
@@ -57,16 +58,20 @@ function spotContext(inputs) {
     return TIERS.map(tier => `${tier}:${Math.round(weighted[tier] / total * 100)}`).join("/");
   };
   const design = boards().filter(board => board.split === "design").map(board =>
+    spot.history && !hasPostflopDeal(inputs, board.cards) ? `${board.id}(unreachable from the two saved live ranges)` :
     `${board.id}(${boardTexture(board.cards)};${spot.ip} ${distribution(spot.ip, board.cards)};${spot.oop} ${distribution(spot.oop, board.cards)})`);
   // Extra boards that show how the two ranges hit high, middle and low flops.
   const heights = ["AsKd7c", "Qh8s3d", "Jc9d4h", "Ts8c6d", "8h5c2d", "7c6d4s", "6s3h2c"].map(text => {
     const cards = parseCards(text, 3);
+    if (spot.history && !hasPostflopDeal(inputs, cards)) return `${text}(unreachable from the two saved live ranges)`;
     return `${text}(${boardHeight(cards)} ${boardTexture(cards)};${spot.ip} ${distribution(spot.ip, cards)};${spot.oop} ${distribution(spot.oop, cards)})`;
   });
   const raiser = seat => !spot.aggressor ? (seat === "SB" ? "limper" : "checked the limp")
     : seat === spot.aggressor ? ({ "3bp": "preflop 3bettor", "4bp": "preflop 4bettor", limp: "preflop last raiser" }[spot.kind] ?? "preflop raiser")
       : "preflop caller";
-  const preflop = {
+  const preflop = spot.history
+    ? `${spot.history.map(step => `${step.seat} ${step.action}${step.to_size_bb === null ? "" : ` to ${step.to_size_bb}BB`}`).join(", ")}; the other seats fold. The folded participants left ${spot.potBb - 2 * (100 - spot.stackBb)}BB of dead chips (including folded blinds); their unknown cards are not removed. Heads-up ${spot.kind} pot, SPR ${(spot.stackBb / spot.potBb).toFixed(3)} (low SPR means stacks constrain sizes and commitment),`
+    : {
     "3bp": `${spot.opener} opens ${spot.openBb}BB, ${spot.threeBettor} 3bets to ${spot.threeBetBb}BB, ${spot.opener} calls, every other seat folds; heads-up 3bet pot,`,
     "4bp": `${spot.opener} opens ${spot.openBb}BB, ${spot.threeBettor} 3bets to ${spot.threeBetBb}BB, ${spot.opener} 4bets to ${spot.fourBetBb}BB, ${spot.threeBettor} calls, every other seat folds; heads-up 4bet pot (low stack-to-pot ratio),`,
     limp: {
@@ -102,7 +107,7 @@ export function promptFor(inputs) {
     `Nodes/actions: ${JSON.stringify(Object.fromEntries(nodes.map(node => [node, NODES[node]])))}. Tiers: ${TIERS.join(", ")}.`,
     "Board height decides range advantage: compare the two ranges on the height boards above. On every *_first node write a shape_height rule for every one of the 12 shape x height pairs (dry/wet/monotone/paired x high/mid/low) for the air, medium and draw tiers (a shape-only rule such as paired would otherwise hide the height), plus height rules for the other tiers: where the bettor's range is weaker on that height (e.g. a preflop raiser on low boards), check more and bet air much less often, so a bet range never carries more air than its size supports; where it is stronger (e.g. the raiser on high boards), bet more often and smaller. Facing nodes may also use heights.",
     "Add texture overrides where the board changes the strategy (e.g. bet smaller and more often on dry boards, check more on monotone and wet boards out of position); the out-of-position player checks and leads less than the in-position player; keep some monsters in checking ranges; raises must include some draws or bluffs, not only monsters; keep bluffs proportional to the bet size. The opponent is not a fixed bot; do not exploit an opponent that folds too often.",
-    `Output exactly {version:1,kind:'ai_estimate_not_gto',rules:[{node,texture,tier,mix},...]}. Mix keys must be exactly the legal actions for that node, integer 0..100, summing to 100. Include the ${nodes.length * 5} mandatory fallback rules and no more than ${nodes.length * 20} overrides; no rationale, code, private opponent cards, or other properties.`,
+    `Output exactly {version:1,kind:'ai_estimate_not_gto',rules:[{node,texture,tier,mix},...]}. Mix keys must be exactly the legal actions for that node, integer 0..100, summing to 100. Include the ${nodes.filter(node => raiseDepth(node) < 2).length * 5} mandatory fallback rules and no more than ${nodes.length * 20} overrides; no rationale, code, private opponent cards, or other properties.`,
   ].join("\n");
 }
 
@@ -217,7 +222,7 @@ export function promptForLater(inputs) {
     `Cash 6-max 100BB no ante, ${preflop} flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB. The flop is played by a separate saved flop policy (bets 33/75/125% pot, up to 4 3x raises); you author only the turn and river.`,
     `${spot.ip} (${raiser(spot.ip)}) is in position; ${spot.oop} (${raiser(spot.oop)}) is out of position.`,
     "Preflop range summaries on example flops (weighted two-card combos; tiers in monster/strong/draw/medium/air %): " + design.join(", ") + ". Ranges narrow on later streets according to earlier actions; never infer the opponent's hidden cards.",
-    `Street trees (the same shape on turn and river; one raise per street; any wager committing at least two thirds of the remaining stack becomes all-in): ${street("turn")} ${street("river")}`,
+    `Street trees (the same shape on turn and river; up to four raises per street; any wager committing at least two thirds of the remaining stack becomes all-in): ${street("turn")} ${street("river")}`,
     `Features: tier = the acting player's hand on the current board (monster two pair+, strong top pair/overpair, draw flush/straight draw (turn only), medium other pair, air). texture = what the newest card did: ${RUNOUT_TEXTURES.join("/")} (flush = completes/extends a suit, pair = pairs the board, straight = new 3-to-a-straight, over = new highest card, blank = none). line = the acting player's result on the previous street: ${LINES.join("/")} (aggressor = they made the last called bet/raise, defender = the opponent did, checked = it checked through).`,
     `Nodes/actions: ${JSON.stringify(LATER_NODES)}. River tiers exclude draw.`,
     `Output exactly {version:1,kind:'ai_estimate_not_gto',streets:{turn:{rules:[...]},river:{rules:[...]}}} where each rule is {node,line,texture,tier,mix}; line is 'any' or one of ${LINES.join("/")}, texture is 'any' or one of ${RUNOUT_TEXTURES.join("/")}. Every node x tier MUST have one line='any',texture='any' fallback (${fallbacks} in total); at most 20 other rules per node. Mix keys must be exactly the node's legal actions, integers 0..100 summing to 100. No rationale, code or other properties.`,

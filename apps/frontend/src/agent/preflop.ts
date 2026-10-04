@@ -1,3 +1,4 @@
+import { continuationDecisionForEvents } from "../estimated/continuation-history.ts";
 // Six-handed preflop for the Reyson Agent table. Every decision is looked up in a saved preflop
 // dataset (opening, responses, 3bet/4bet/5bet, squeeze, cold 3bet, limp lines); nothing else
 // is invented. Two table rules keep every flop heads-up (the only postflop data we have):
@@ -111,6 +112,17 @@ export function situation(s: PreflopState, pos: Position): Situation {
       return of("multiway-responses", id, { fold, call, squeeze: raise("squeeze", size(spot, "squeeze_size_bb", 13)) });
     }
     return { source: null, rows: null, map: {} };
+  }
+
+  // The bounded multiway catalog owns these histories, including cold-4bet
+  // and squeeze continuations. No original-opener HU response is reused here.
+  const continuation = continuationDecisionForEvents(s.events);
+  if (continuation && continuation.hero === pos) {
+    const map: Record<string, PreflopAction> = { fold, call };
+    for (const key of continuation.legal_actions) if (key === "four_bet" || key === "all_in") {
+      map[key] = raise(key, continuation.action_sizes_bb[key]!);
+    }
+    return of(continuation.dataset, continuation.id, map);
   }
 
   if (second.kind === "squeeze") {

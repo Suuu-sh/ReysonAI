@@ -1,0 +1,683 @@
+# Independent review: first HU-after-multiway postflop policy
+
+Reviewed 2026-10-04, against the **initial** representative policy pair below. This is an independent task review of an AI estimate, not a solver/GTO validation. No policy, source code, preflop dataset, or production state was changed by this reviewer.
+
+## Verdict
+
+**The authoring/input/provenance structure is a suitable foundation for individual per-spot generation. The current representative is not yet release-ready, and its numeric tables should not be copied across spots.** Resolve the P1 consumer inconsistency and the P2 monotone coverage finding, correct the contradictory prompt, and re-review the changed hashes before using this pair as an approved example. The river finding needs an explicit calibration response, not a claim that structural validation proves balance.
+
+The current pair has correct saved-source products, geometry, hashes, height coverage, distinct position/line behavior, non-value raise shares and complete restrained defender donks. However, a real view/simulation mismatch occurs when a sized bet becomes an all-in, precisely the situation made common by this spot's low SPR. The structural author's `quality-review.json` does not test this behavior or the actual weighted bluff ratios.
+
+Completed simulations, fixed-seed replay/audit, the 1,755-flop audit, UI testing and legacy artifact validation remain separate acceptance gates. **None is certified by this review.** At report time no representative simulation report or all-board result existed. The author reported that its single-worker simulation exhausted its 384 MiB heap after earlier concurrent jobs had exited 137. This review did not start heavy simulations or full-board audits.
+
+## Reviewed identities
+
+Spot: `UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call`.
+
+- Source hash: `a446af2ae12f4d68aa5810cd88912ebd95642462a8cf8e5e472df6c66d22e975`
+- Flop policy hash: `b4b05cd0fcc3900866e6a6e0d743e1c1bc556250a72302fa7bd5705f1d03b417`
+- Later policy hash: `011bdfd07f429d7828cc1ba924285ee9f06a40da6537a11479e4519f8d897331`
+- Flop complete-file SHA-256: `1fd5d27c84e59467560ed7c4981eb5c18fbc5684c49108cf82553c8c849afc5f`
+- Later complete-file SHA-256: `f10a18b557f8de4d92fdaba4859afe06e1eae34cf0d0315aec2d0704fe7d42bd`
+- Flop prompt hash: `260a3ef2fb20564f26f4f6e558d5894d754140855e9aa156559403ae646f1175`
+- Later prompt hash: `b157437e4d5aaa88086a4a5e04bfce83ad036ff2c2ca42d688ffe050cda74800`
+
+Both JSON artifacts are under `.local/postflop-ai/utg-open-hj-call-bb-squeeze-utg-fold-hj-call-hu-v1-{policy,later-policy}.json`. The saved policy hashes were recomputed from the actual policy objects, input freshness was checked by the normal loaders, and both prompt hashes matched freshly built prompts. There are 134 flop, 90 turn and 88 river rules.
+
+Metadata accurately says `generator_route: native-astra-subagent`, `model: gpt-6-astra`, `reasoning_effort: xhigh`, and explains the failed Codex SQLite initialization. The CLI failure logs agree. The native authoring table and draft are inspectable, and the saved artifact does not pretend to be an app-server-generated transcript. Model selection is the parent-confirmed native task selection, not an independently authenticated CLI model attestation. This is separate-task review within the same model/vendor; it should not be represented as cross-vendor review.
+
+## Findings
+
+### P1 — A merged all-in gets an impossible raise in the range view, but different computed defence in simulation
+
+**Evidence:** `scripts/postflop-ai/views.mjs:107-110` passes raw `laterPolicyMix(...)` to `defence.mix(...)`. In contrast, `simulation.mjs:78-79` uses `defence.baseMix(...)`, whose `policyRule` applies `effectiveMix(..., entry.canRaise)` at `defence.mjs:350`. `defence.mix` itself does not normalize its externally supplied base.
+
+Exact saved-policy reproduction:
+
+- Board: `As7d2cJh`.
+- Path: flop `["bet75","call"]`, turn `["bet75"]`.
+- Flop started at pot 29 / stack 87. After the flop call: pot 72.5 / stacks 65.25.
+- BB's turn 75% bet is merged to its 65.25BB all-in. Pending node is `turn_ip_vs_75`, HJ, `line=defender`, `canRaise=false`, pot 137.75.
+- HJ `KhQh` is a reachable draw. Raw policy: fold 40 / call 51 / raise 9.
+- Actual `laterMixRows` output for **every KQs combo**: fold 91 / call 0 / raise 9.
+- `defence.baseMix` followed by `defence.mix`, as simulation uses: fold 100 / call 0 / raise 0.
+- Required equity is 32.625%; this combo's model equity is approximately 9.99%, realized 9.49%. Converting the already-defended impossible raise to a call afterwards would incorrectly force a 9% continue and still not match simulation.
+
+This is an existing shared-consumer defect exposed by the new low-SPR policy, not invalid authored frequencies. Flop views and other callers passing a raw policy mix deserve the same check. It matters even if a higher UI layer hides the raise button, because the underlying probabilities then differ from simulation and from the context used to compute defence facts.
+
+**Correction:** Normalize impossible raises **before** the computed call/fold split, preferably once at the common defence entry point or consistently by using `baseMix` for every replayable consumer. Audit `facts` and explanation consumers as well as views. Do not zero out authored raises to conceal the problem. Add a regression using this exact board/history and assert view, simulation and explanation mix equality, no positive illegal raise, and normalized totals. Also cover flop/turn sized-bet all-in merges and a legal raise control case.
+
+**Acceptance:** This blocks claiming that the representative behaves consistently from policy through product. Re-run affected tests and acceptance checks after the fix.
+
+### P2 — Flop monster/strong tiers have no monotone shape response
+
+**Evidence:** All first-node monster/strong overrides in `author-representative-native-astra.mjs:60-65` are height-only. The 12 shape×height rules cover only draw/medium/air. Thus a matching `low/strong` rule gives HJ the identical mix on `8s7d6c` and `8h7h6h`: check 25 / bet33 32 / bet75 38 / bet125 5. BB's high strong similarly bets 75% in every shape, including high monotone flops. This is not caught by `quality-review.mjs:21-27`, which checks only that the height fallbacks exist for these tiers.
+
+A direct probe on `8h7h6h`, after BB checks, confirms that the non-all-in flop cap leaves this HJ strong mix unchanged. On this board the whole HJ range bets 60.95%, with 38.42 percentage points in bet75+bet125. The same coarse rule also assigns identical frequencies to `JcJd` and `JhJc` even though their estimated equities versus the reached BB checking range differ (approximately 50.12% vs 61.24%). The latter within-tier blocker limitation belongs to the existing representation; this review does not request a new private-card feature or claim a solved optimal frequency.
+
+**Correction:** Add explicit `monotone_high`, `monotone_mid` and `monotone_low` strong/monster rules for both first nodes, keeping the existing height fallbacks. Reassess checking and smaller sizes against this spot's saved ranges. Use shape×height rather than one blanket shape override that hides height. Check paired/wet strong-hand treatment deliberately too; no blanket frequency is prescribed. The author agreed this needs revision.
+
+**Acceptance:** Review the new effective mixes and weighted summaries, then invalidate/re-run any policy-dependent reports. This is a strategic heuristic coverage defect, not proof of a specific GTO error.
+
+### P2 advisory — Checked-line river large bets rely heavily on the bluff cap
+
+**Evidence:** On `As7d2cJh9d`, with both flop and turn `["check","check"]`, the BB `river_oop_first`, line `checked`, is at pot 29 / stacks 87. Exact river `bettingFacts` using the actual saved pair gives:
+
+| Action | Equity-defined bluff share before cap | After cap / alpha | Bluff frequency multiplier |
+| --- | ---: | ---: | ---: |
+| bet33 | 25.10% | 20.93% | 0.7896 |
+| bet75 | 46.83% | 31.29% | 0.5172 |
+| bet125 | 67.44% | 36.80% | 0.2811 |
+
+The raw BB checked-line air row is check 72 / bet33 11 / bet75 11 / bet125 4 / allin 2 (`author-representative-native-astra.mjs:98`). At SPR 3, the river all-in share correctly transfers into bet125. For `KhQh`, the effective mix becomes approximately check 83.938902 / bet33 8.685506 / bet75 5.688886 / bet125 1.686706 / allin 0. The cap is working; the authored large-bet bluff allocation is materially reduced by it.
+
+These figures use the defence model's equity-based value/bluff definition, not the tier-based `air` ratio from the simple balance warning. They are not interchangeable. A static tier policy cannot attain every board-conditioned target, and the cap remains necessary.
+
+**Correction:** Reassess the checked-through river large-size air allocations against several reached ranges, including this exact counterexample, and document any intentional remaining cap reliance. Extend authoring review beyond checking rule existence: report pre/post-cap shares or reduction factors for representative reached river lines. Do not disable the cap, force all boards to a claimed equilibrium target, or fix this by blindly increasing air. The author has been asked to inspect/reduce unsupported larger-size bluffs.
+
+**Acceptance:** This is a calibration warning, not an effective overbluff or a standalone release blocker while the cap is active. It prevents treating “zero errors/warnings” from the structural harness as strategic certification.
+
+### P3 — The later authoring prompt contradicts the actual raise tree
+
+**Evidence:** `scripts/postflop-ai/generate.mjs:222` says “one raise per street”, but its own subsequent node list, `max_raises_per_street: 4`, and the engine allow up to four. The phrase “two thirds” is also approximate; the actual all-in merge setting is 0.67.
+
+**Correction:** Generate this wording from the configured maximum raise depth and merge ratio, while retaining the instruction that raise2+ rules come from the reference policy. Refresh the saved prompt/provenance honestly for any newly authored/revised candidate; do not retroactively claim that unchanged old artifacts were generated from a new prompt.
+
+## Checks that passed independently
+
+### Source products and geometry
+
+Every one of the **338 live-seat hand-class rows** was recomputed directly from the referenced saved JSON frequencies. Differences: **0**.
+
+- HJ = `HJ_vs_UTG.call × HJ_vs_BB_squeeze_UTGfold.call / 100`.
+- BB = `BB_vs_UTG_HJcall.squeeze`.
+- Examples: HJ AA 10×25/100 = 2.5%; AKs 10×40/100 = 4%; AQs 30×90/100 = 27%; JJ 45×80/100 = 36%; 77 85×100/100 = 85%; A5s, 76s and 22 remain 0. BB AA = 100%, AKs = 75%, A5s = 25%, 77 = 0.
+- Contributions are UTG 2.5 + HJ 13 + SB 0.5 + BB 13 = **29BB**. Both live players retain **87BB**, SPR **3**. BB is OOP and last aggressor, so `oop_leads` is correct.
+- The folded UTG source contributes history/freshness, but its unknown cards are not removed from the HU postflop deck, matching the requested assumption. No opponent private cards appear in the policy features.
+
+Engine probes confirmed flop 33/75/125% bet-call leaves respectively pot/stack 48.14/77.43, 72.5/65.25 and 101.5/50.75. A subsequent 75% turn bet becomes all-in in the latter two cases. The policy's low-SPR context is therefore real, not merely a prompt label.
+
+### Board height and positional behavior
+
+Saved tiers match independently recomputed prompt summaries. Example raw first-action total betting frequencies:
+
+| Board | BB OOP first | HJ IP after check |
+| --- | ---: | ---: |
+| As7d2c, high dry | 49.71% | 34.23% |
+| Jc9d4h, mid dry | 31.26% | 37.75% |
+| 8h5c2d, low dry | 25.75% | 48.50% |
+| 7c6d4s, low wet | 26.17% | 58.80% |
+
+This reflects BB's high-card/overpair strength and HJ's middle/low-pair concentration. OOP must not mechanically bet less than IP on every board regardless of range advantage; the high-board exception is explainable. HJ's number is its own saved range's conditional first-node mix, not a solver comparison or a joint-history frequency.
+
+All first nodes cover the requested 12 shape×height combinations for draw/medium/air and high/mid/low for monster/strong. Monsters retain checks. First raises have explicit raise keys and positive draw/air support; deeper raises are deliberately left to the existing reference policy. Positive tier support is not proof of weighted bluff balance on every board.
+
+### Later lines, donks and computed defence
+
+All **135** street×line×texture×tier comparisons between OOP and IP first nodes differ; there is no copied OOP/IP effective table. Across all five runout textures, the effective OOP defender bet totals are:
+
+- Turn: monster 20%, strong 15%, draw 15%, medium 4%, air 3%.
+- River: monster 20%, strong 15%, medium 3%, air 5%.
+
+No missing defender tier or texture-specific bypass was found.
+
+A cheap exact-river defence probe on the checked-through `As7d2cJh9d` board confirmed current **DEFENCE_VERSION 6**, not the older version statements still present in documentation. HJ facing BB bet33 has required equity 20.93%, MDF 75.19% and overall computed defence 65.27%, within the configured MDF−10 floor. For `KhQh`, fallback fold96/call2/raise2 becomes fold64/call34/raise2. The river cap and SPR rerouting work. The merged-all-in raw-base inconsistency above is the specific exception that must be corrected.
+
+## Re-review and rollout gates
+
+1. Fix the P1 shared consumer inconsistency with exact-path tests; revise the representative's monotone rules and address the river advisory; correct future prompts.
+2. Record new hashes and re-review the changed pair. Do not overwrite this report's initial identity without an explicit revision section.
+3. Generate each remaining spot independently from its own saved ranges, action history, pot, effective stack, role mapping and input fingerprint. This approval does not authorize cloning this numeric table or substituting a HU range for a multiway-history range.
+4. Complete full-sample simulation, fixed-seed audit and all-board checks sequentially within the memory budget. Report warnings by origin (policy, calculated defence, coarse tier heuristic), and distinguish the 1,755 flop enumeration from sampled later runouts.
+5. Verify source/model/provenance and exact artifacts for every generated pair. Legacy byte preservation, existing audits and UI/build/test requirements are owned by the main implementation acceptance process and were not silently waived here.
+
+## Revision check at 2026-10-04 08:42 UTC
+
+The author and implementation owner made changes after the initial findings. The reviewer performed another cheap runtime check before ending this review turn; no full audit was run.
+
+- Revised flop hash: `9070ca5074b6600eaeb1f1a20a03ce4bb2b40ecea457f8cd578fcec43e8a513a` (146 rules).
+- Revised later hash: `d3c5bb66c53545f8a707056bbbe0bfee67c6a76c6397a3294c546b4e411eca45`.
+- Normal candidate loaders pass and both revised prompt hashes match current prompts. The initial pair was archived by the author under `representative-revisions/initial`.
+- **P2 monotone revision confirmed:** the author added the 12 monster/strong shape×height rules; the direct HJ `JcJd` / `8h7h6h` probe now gives check55 / bet33 32 / bet75 12 / bet125 1. This addresses the concrete shape-blindness finding. It is not a full all-board quality result.
+- **River calibration improved:** in the exact checked-through counterexample, BB raw equity-defined bluff shares are now 23.52% at bet33, 28.59% at bet75 and 40.85% at bet125. The bet75 cap no longer activates; bet125 multiplier improves from 0.2811 to 0.8434 and reaches the same 36.80% cap. Residual dynamic cap reliance is expected and remains an advisory, not an effective overbluff.
+- **P3 prompt correction confirmed by current prompt identity:** the owner removed the contradictory one-raise wording.
+- **P1 view subcase fixed:** `laterMixRows` now gives all four KQs combos fold100/call0/raise0, equal to simulation on the exact merged-all-in example.
+- **P1 shared-consumer closure remains pending:** raw-base callers are still present in `explain-later.mjs` response details and hero `defence.facts`, `explain.mjs`, `range-facts.mjs`, and `balance.mjs`. A view-only correction does not establish explanation/audit consistency. Normalize before splitting at the common `defence.mix` and `defence.facts` boundary, or fix and test every replayable caller. The owner has been notified. Permanent regression tests and their results remain pending.
+
+**Updated foundation verdict:** the revised policy pair is suitable as the structural/heuristic reference for **independent per-spot authoring**, with residual river cap dependence disclosed. Do not call the integration release-ready or all-board/audit-approved until the remaining P1 consumer checks and the still-missing acceptance runs pass. This verdict never authorizes copying the numeric table to other spots.
+
+### Exact permanent regression fixture
+
+Use the following existing public function arguments; no generation or full simulation is required:
+
+```js
+const inputs = loadInputs('UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call');
+const flop = loadCandidate(inputs);
+const later = loadLaterCandidate(inputs, flop);
+const board = parseCards('As7d2cJh', 4);
+const combo = parseCards('KhQh', 2);
+const paths = { flop: ['bet75', 'call'], turn: ['bet75'] };
+const table = replayDecision(inputs, board, paths);
+const entry = table.log.at(-1);
+const defence = defenceFor(inputs, flop.policy, later.policy);
+const rows = laterMixRows({
+  actor: 'HJ', role: 'ip', board, node: entry.node, line: entry.line,
+  inputs, flopPolicy: flop.policy, laterPolicy: later.policy, paths,
+});
+```
+
+Assert `entry.node === 'turn_ip_vs_75'`, `entry.canRaise === false`, `table.stacks.BB === 0`, `table.stacks.HJ === 65.25`, and `table.pot === 137.75`. For `rows.find(r => r.hand === 'KQs')`, the class and all four exact combos must be `{fold: 1, call: 0, raise: 0}`. Compare these with `defence.mix(table, board, entry.node, combo, defence.baseMix(table, board, entry.node, combo)) / 100`. Compare `defence.facts(..., base).mix` and explanatory response continuations too, explicitly using a raw `laterPolicyMix` base to catch bypasses at the shared boundary. Keep a legal-raise control case. If artifacts are unavailable in clean CI, construct a minimal saved-source/geometry fixture and the few necessary rules, rather than making the test silently skip.
+
+## Broader correction/data-path review, 2026-10-04 09:00 UTC
+
+Scope: the revised representative, shared defence normalization, bounded simulation/worker lifecycle, exact board support, catalog/input projection, and spot-scoped SQL. The concurrent continuation UI work was excluded. There was no staged diff at the start of this pass, so the review inspected the current working-tree changes directly. No code or artifacts were edited by this reviewer, and no heavy simulation/all-board job was started.
+
+### Independently confirmed
+
+- `tests/postflop-low-spr-consumers.test.mjs`: **2/2 PASS**, no skips, approximately 0.33 seconds. The fixtures use actual saved input geometry and test-only reference policy rules; they do not depend on optional authored `.local` artifacts. They cover the exact merged-turn-all-in case, raw/shared/view/simulation/explanation/facts agreement, a flop merge and a legal-raise control.
+- The original P1 mix/facts inconsistency is corrected centrally: `defence.mix` and `defence.facts` apply `effectiveMix` before computing the call/fold split. Normalization is idempotent for callers already using `baseMix`.
+- All **407** new input projections have equal Node/browser fingerprints and live-seat range products. Every catalog item resolves to a current two-live-player flop terminal, with matching pot and equal remaining IP/OOP stacks. Problems found by this independent scan: **0**.
+- All **45** legacy input fingerprints still equal the preserved fixture. This does not certify legacy simulation reports: the recovered BTN/BB report is defence version 5, while this checkout uses version 6.
+- The new support predicate is an exact positive-support existence test over the two live ranges. It correctly excludes folded hands from postflop card removal. Excluding proven-impossible boards from simulation/audit rather than calling them clean is sound. Later coverage counts separately distinguish sampled and impossible runouts.
+- Worker retirement waits for the successful result **and exit**, preserving original board order; cache resets do not alter seeds or sample counts. The bounded/unbounded and serial/parallel performance regression tests were read, but not re-run during this pass because the author owns expensive compute. No full-sample memory-success claim is made.
+
+### New findings and corrective requirements
+
+#### P1 — The publication gate admitted a known stale legacy report
+
+At first inspection, `spotArtifacts(spotById('BTN_open_BB_call'))` returned `publishable: true` for `report.defence_version === 5` with current `DEFENCE_VERSION === 6`. The gate checked source/flop identity and simulation version only. It also omitted later-policy identity, later sizing, seed/sample count and exact result coverage.
+
+Spot-scoped SQL protects *omitted* old rows, but this stale recovered row was not omitted and could therefore be selected for replacement. No publication was performed.
+
+**Required correction:** Use a shared cheap freshness/completeness predicate that pins current defence and simulation identity, both policies, sizing, seed, configured samples, expected board/profile/seat keys, metrics, and exact proven-unreachable board IDs. Keep full audit/replay as a separate mandatory acceptance stage. Add mutation tests and prove the recovered DEF5 artifact is skipped. The implementation owner began adding `isFreshSimulationReport` during this review; closure should be based on the final checks below, not the original failure.
+
+#### P1 — Valid reduced-board reports cannot load through the local route
+
+`local-view.mjs` still required `report.results.length === 72` after new simulations began omitting proven-impossible flops. AA-only/AA-only spots legitimately have fewer than twelve available representative boards. Their correctly filtered report would therefore be rejected by `/local-postflop-spot`, blocking local Range/Agent loading despite successful simulation and audit.
+
+**Required correction:** Replace fixed 72 with the same exact reachable-board × profile × seat completeness check used by publication. Add a local-route fixture with a valid reduced-board report, plus missing/duplicate result and incorrect unreachable-proof controls. This is a data-route change, not a UI redesign.
+
+#### P1 — An impossible turn still returned a reachable strategy
+
+Concrete current catalog spot:
+
+`CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_fold_SB_4bet_BB_fold_CO_call`
+
+Both live seats, SB and CO, have exact AA-only saved support. Independent predicates give:
+
+- `hasPostflopDeal(inputs, parseCards('Ks7d2c', 3)) === true`
+- `hasPostflopDeal(inputs, parseCards('Ks7d2cAs', 4)) === false`
+
+Nevertheless, calling `buildLaterView({flop:'Ks7d2c', flopActions:'check,check', turn:'As'}, inputs, testFlopEnvelope, testLaterEnvelope)` with test-only reference policies returned SB AA as `reachable:true`, three combos, and a positive mix (check20 / bet33 18 / bet75 35 / bet125 27). The reference policies were constructed only in memory; no strategy was generated or persisted. This is enough to demonstrate the missing guard, regardless of which valid policy is later authored.
+
+**Required correction:** Validate the complete selected board at shared later view, explanation and range-facts boundaries, both browser and local. Add both impossible-turn and impossible-river tests and a reachable control. Return `POSTFLOP_BOARD_UNREACHABLE` rather than zero-equity or policy fallbacks. Guarding only the initial flop or filtering offline audits is insufficient.
+
+#### P2 — New input loading accepted source sizes inconsistent with catalog geometry
+
+In an in-memory copy of the representative's saved datasets, changing `BB_vs_UTG_HJcall.squeeze_size_bb` and its positive squeeze rows from 13BB to 14BB still allowed `buildInputs` to return the old squeeze13 history, pot29 and stack87. `multiwayInputData` checked frequency bounds, row counts and stack metadata but not source seat/action/sizing consistency.
+
+Old candidate hashes would correctly become stale. However, a **freshly authored** candidate could then hash the inconsistent source and wrong frozen geometry together, falsely legitimizing them. The currently saved real representative sizes are correct.
+
+**Required correction:** Before returning new inputs, validate the referenced source roles, recorded action sizes and terminal geometry, or reject a catalog whose exact generating source identity changed. Add this size-mutation regression for Node and browser paths, plus role mismatch. Do not change any saved frequencies to make a malformed context fit. The owner began adding validation during this pass.
+
+#### P2 — A touched-spots-only dataset token can resurrect stale edge cache entries
+
+The scoped publisher originally calculated `dataset_versions.content_hash` from only the supplied spot hashes. Two `buildSql([A1], differentPublishedAt)` calls emitted the same token. Sequence **publish A1 → publish B2 → publish A1 again** therefore returns to the original A1 token while retaining B2 in the database. `apps/backend/src/index.ts` keys all postflop edge responses by that global token, so a B1 response cached during the first A1 publication could be reused.
+
+**Required correction:** Use a unique publication revision/nonce, or derive a token from the full resulting catalog. Preserve idempotent row changes and all unmentioned spots. Test A→B→A token invalidation. The owner began adding a publication revision during this review. If identical old SQL may be replayed after intervening publications, ensure that execution also cannot restore an obsolete token.
+
+#### P2 — Corrected persisted view semantics need a new base identity
+
+`flop-base-core.mjs` builds saved strategies through `flopHistoryViews`, the view path affected by the P1 normalization. Its `FLOP_BASE_VERSION` and `DEFENCE_VERSION` were both still 6 during inspection. A pre-fix version-6 base with unchanged source/policy metadata would pass `isFreshFlopBase` and bypass corrected live computation.
+
+**Required correction:** Bump the appropriate stored-base/view generator identity (or defence identity), with a test proving old metadata is rejected. This does not require generating new bases, modifying legacy policy bytes, or changing their source fingerprints. Existing stale bases should use the already-supported live calculation fallback.
+
+### Scope of the foundation decision
+
+The revised policy remains a reasonable **authoring foundation for independently generated per-spot policies**. None of these findings is permission to clone its numbers across the catalog, alter preflop frequencies, lower simulation samples, or count unreachable boards as audited clean. Integration acceptance remains blocked by any unresolved P1 above and by the outstanding full-sample simulation/audit/all-board requirements. The legacy baseline is explicitly incomplete.
+
+### Correction checkpoint at 2026-10-04 09:02 UTC
+
+The owner made further corrections while this pass was in progress. Independent, non-mutating reproductions now show:
+
+- `spotArtifacts(BTN_open_BB_call)` skips the recovered DEF5 report as `report missing, stale or incomplete`.
+- Two fresh SQL generations for the same touched spot and same supplied timestamp produce different publication tokens via the new publication revision. This verifies fresh-generation cache invalidation; replaying identical old SQL after intervening publications was not tested.
+- The 13→14BB saved-squeeze-size mutation is rejected with `source action size changed`.
+- The exact AA/AA impossible-turn example now throws `POSTFLOP_BOARD_UNREACHABLE` through `buildLaterView`, with the guard placed in shared views/later explanation context.
+- All **407** real new input contexts pass the strengthened geometry validator (0 errors).
+
+The original central P1 normalization regression remains independently passed 2/2. These cheap reproductions close the specific observed failures above; permanent broader regression coverage should accompany the changes. **Last-observed outstanding items in this review turn:** local-view's fixed 72-row report gate and persisted flop-base identity invalidation. Final application-wide tests, all-board results and full-sample memory-safe simulation remain outside this pass and are still required. The independent report must not be summarized as complete release approval.
+
+### Final focused closure at 2026-10-04 09:04 UTC
+
+The two last-observed gaps above are now corrected and independently checked:
+
+1. `local-view.mjs` loads the matching later candidate and calls shared `isFreshSimulationReport`; the fixed 72-row requirement is gone. The reduced-board local-route regression passes.
+2. `FLOP_BASE_VERSION` is now **7**. A base with previous generator version 6 is rejected while the current identity passes. `DEFENCE_VERSION`, saved policy hashes and preflop source hashes are unchanged by this cache migration. No new bases were generated.
+
+Independent command:
+
+```sh
+node --max-old-space-size=256 --test --test-concurrency=1 tests/postflop-report-contract.test.mjs tests/postflop-publish-d1.test.mjs
+```
+
+Result: **9/9 PASS, 0 failed, 0 skipped**, approximately 1.19 seconds. Coverage includes stale defence/later/sizing/seed/sample identities, missing/duplicate comparison rows, reduced-board local loading, impossible turn/river rejection in local/browser views and browser explanation, old base identity rejection, scoped/empty SQL safety, statement budget, and distinct fresh A→B→A publication revisions. This was a focused test run, not a simulation or all-board audit.
+
+**Closure:** All concrete blocking failures found in this focused review have a checked correction. The source-size mutation fix and all 407 valid contexts were also independently exercised in the preceding checkpoint; the owner is adding permanent size/actor mutation regressions. No further blocking defect was found within the inspected scope. The residual river-cap advisory remains documented. Fresh-publication nonce behavior is verified; replaying identical old SQL after an intervening unrelated publication was not part of the tested workflow.
+
+**Acceptance boundary is unchanged:** the revised representative may guide independent per-spot authoring. This is **not release approval**. Full configured-sample simulation, fixed-seed audit, all-board checks, final application-wide tests/UI evidence and the explicitly incomplete legacy baseline remain outstanding responsibilities of the implementation acceptance process. Numeric policies must still be authored individually, never cloned from the representative.
+
+## Four additional individually authored Stage A pairs, 2026-10-04 09:25 UTC
+
+This pass inspected the actual saved pairs, their current input/prompt identities, and literal authoring tables/receipts under `.local/postflop-ai/native-next-four`. It did not generate policies, run full simulations or run full-board audits.
+
+### Verification common to all four
+
+- All **1,352** live-seat hand-class products match their exact saved preflop factors.
+- Source hashes, current prompt hashes, saved context text, seat-row receipt hashes, decision-table hashes and model/effort metadata match. Provenance accurately identifies the native Astra/xhigh route.
+- The reviewer captured each literal table in an isolated in-memory context with `install` replaced by a capture-only callback, then independently expanded its betting totals/size weights and facing tuples. **All 1,349 saved rules** matched the independent expansion exactly before the cold-four-bet revision described below.
+- No authoring script imports the representative's numeric policy. Exact comparison against that representative found only 0–2 coincident first-node flop rows per pair; later first-node coincidences were 0–2. Literal tables, shape totals, sizing distributions and facing tuples differ. This supports individual authoring, not a claim about unobservable thought processes. Sharing the schema/rounding expander is appropriate; copying numeric strategies across spots would not be.
+- First nodes include every height/shape combination, including explicit strong/monster monotone slowdown. All effective later OOP/IP line×texture×tier comparisons differ. No missing defender donk tier or texture-specific bypass was found.
+- Checks use only the acting hand, board and saved public history/ranges. Unknown folded hands are not removed from the postflop deck.
+
+### A. CO open, BTN call, BB squeeze, CO call, BTN fold
+
+ID: `CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold`.
+
+- Source: `5d10469bb026a6ac8d6013030f6c850f3ed298521f1cc8d91fcec9457f484ebf`
+- Flop: `1c48ec56a17827f7df7c7bff56b9ac5ef7e48e94af7884ebd0af72a6ebc0232b`
+- Later: `cb28d0cb8eedf5b135f46ff78225bb36a419afac5560a4dda30fe9261402460b`
+
+Pot29 / stack87 / SPR3, `oop_leads`, BB OOP and CO IP. Dead money is BTN2.5 + SB0.5. BB uses its own squeeze range (40 supported classes); CO uses RFI × squeeze-call (17). This is correctly different from the original-caller HJ representative.
+
+Weighted flop betting totals BB/CO: As7d2c 44.64%/32.13%; Jc9d4h 27.05%/33.81%; 8h5c2d 18.24%/40.52%; 8h7h6h 13.56%/38.90%. The high-card versus middle/low-pair asymmetry and monotone slowdown match the saved range rationale.
+
+OOP defender bet totals across every runout texture: turn monster/strong/draw/medium/air = 19/13/14/3/2%; river monster/strong/medium/air = 19/13/3/4%.
+
+**Verdict:** suitable individually as a provisional authoring foundation. No blocking policy defect found by these checks. The river cap advisory below remains; full simulation/audits are not yet certified.
+
+### B. BTN open, SB 3bet, BB cold 4bet, BTN fold, SB call
+
+ID: `BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call`.
+
+Initial reviewed identities:
+
+- Source: `3f31ad8f0801750d5c576b5f5809c0526797bb5904fede5b8f59459b6d7618c6`
+- Flop: `7e964e680e71b47aff651c9738864cd19b5649a3ce144945a53eac9e8e1508d5`
+- Later: `8b947cf4e9c3d3331883346393dc68a310037bc89d51a0ea36000abd2ae7f210`
+
+Pot54.5 / stack74 / SPR1.357798, `oop_checks`, SB OOP and BB IP. BB's cold-4bet range has 16 supported classes. SB's 43-class range is its original 3bet × saved cold-4bet-call. BTN contributes 2.5BB dead money; both blinds are already included in the live 26BB contributions.
+
+Weighted BB flop betting totals: As7d2c63.96%, Jc9d4h35.53%, 8h5c2d39.37%, 8h7h6h24.58%. SB correctly has no flop leading node in this tree; later positions are distinct. OOP defender totals are turn18/12/13/2/2%, river18/12/2/3%.
+
+#### P2 requiring revision — value-only merged flop shove interacts badly with the MDF floor
+
+On As7d2c, the initial bet125 action becomes **74BB all-in**, not a 68.125BB ordinary bet. Pending response is `bb_vs_125`, `canRaise=false`, pot128.5; call74 makes final pot202.5 less 3BB rake, required equity **37.0927%**.
+
+The entire positive initial BB shove range is AA (weight0.8 per available combo) and A2s (weight0.1), each shoving6%. No draw or air tier has positive support there. Computed facts classify it as **100% value / 0% bluff**. The MDF floor consequently forces SB KcQc to **call100%** despite model equity **6.61%**, realized equity **4.30%**, and an almost-zero logistic call share. Overall defence is32.41%, exactly MDF−10. This is the defined defence-floor behavior reacting to an excessively value-only authored branch, not the already-fixed impossible-raise inconsistency.
+
+**Correction requested:** for this pair, remove the optional oversized flop branch where it cannot carry a sensible betting range, or author meaningful proportional bluff support from the actual available ranges. Do not change shared defence to hide the finding. The author agreed to suppress flop bet125 across this pair's tiers/textures and move its sizing weight into bet75 while preserving check frequencies and the legal tree. Subsequent revision identities and the exact probe must be checked before this pair is approved as a foundation.
+
+**Initial verdict:** held pending the individual revision. This does not block the other three pairs.
+
+### C. BTN open, SB 3bet, BB cold call, BTN fold
+
+ID: `BTN_open_SB_3bet_BB_call_BTN_fold`.
+
+- Source: `56a5911b08804bacd3bb4f1560beb697248b8dfd36d92270c20209c796e64adc`
+- Flop: `88d5eb1338d9af2a8509ea03587a46519df199ab0868841fa0c2f9ce8fb0e9e7`
+- Later: `b0017d5e8c0455590d1ab4ed835adce0c1bf73d4eb9f3a75eb03de6792f74f75`
+
+Pot26.5 / stack88 / SPR3.320755, `oop_leads`, SB OOP and BB IP. SB retains its 75-class 3bet range; BB uses its own 17-class cold-call response, not a generic blind-vs-open range. BTN's2.5BB is dead money.
+
+The factual high-board rationale checks out: on As7d2c, SB has30.1% strong hands, BB47.1%. Weighted SB/BB betting totals are27.74%/50.95% there, 35.13%/39.57% on Jc9d4h, 16.69%/27.55% on 8h5c2d and22.65%/24.02% on 8h7h6h. The preflop aggressor is not mechanically granted the range advantage on every high board.
+
+OOP defender totals: turn18/12/15/3/2%, river18/12/2/4%.
+
+**Verdict:** suitable individually as a provisional authoring foundation. No blocking policy defect found by these checks. The river advisory applies; full simulation/audits remain pending.
+
+### D. HJ open, CO and BTN call, BB squeeze, HJ/CO fold, BTN call
+
+ID: `HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_call`.
+
+- Source: `1328e3df0d57d2c1268daa60c6c478966622caef36f818e932e62552bfe6339c`
+- Flop: `69a084e4fe5f5907647f6a694c1fc78d82f0b2dd77ad30e2a6a65e9e99f71724`
+- Later: `dadab781583d917708f45625960902ac04e490f4f4a128bb67595b0d7d73b70c`
+
+Pot36.5 / stack84.5 / SPR2.315068, `oop_leads`, BB OOP and BTN IP. Dead money5.5BB = HJ2.5 + CO2.5 + SB0.5. BB uses its **two-caller** squeeze range (21 classes). BTN's 13-class range multiplies its saved `BTN_vs_HJ_COcall` call with the exact continuation call; no heads-up flat substitutes for the second caller's source.
+
+Saved-summary claims are accurate: BTN has28.9% monsters on Th9h8c and75.5% strong hands on6h5h2d. BB/BTN weighted betting totals are50.16%/24.95% on As7d2c,29.33%/35.55% on Jc9d4h,19.72%/55.42% on8h5c2d and11.45%/44.23% on8h7h6h. This differs materially from both one-caller squeeze pairs.
+
+OOP defender totals: turn17/11/12/2/2%, river17/11/2/3%.
+
+**Verdict:** suitable individually as a provisional authoring foundation. No blocking policy defect found by these checks. The river advisory and pending full checks remain.
+
+### Non-blocking shared advisory: large small-bet cap adjustments
+
+Exact river probes used As7d2cJh9d, with both earlier streets checked through and, for the IP probe, OOP also checking river. The existing dynamic cap works, but equity-defined raw bluff shares can greatly exceed the small-bet target:
+
+| Pair / actor | bet33 raw bluff share | Capped share | Multiplier |
+| --- | ---: | ---: | ---: |
+| A / CO IP |65.08%|20.93%|0.1420|
+| C / SB OOP |42.40%|20.93%|0.3597|
+| C / BB IP |27.60%|20.93%|0.6945|
+| D / BTN IP |60.20%|20.92%|0.1749|
+
+These are equity-defined bluffs, often weak made hands in a checked-through range, not necessarily `air`. The saved strategy's small-bet frequencies therefore should not be described as quantitatively balanced before the cap. Review cap reliance and value-only action warnings during each full audit; do not “repair” these figures by blindly changing only air. These effective capped probes do not show a standalone effective-overbluff defect.
+
+### Authoring helper provenance caution
+
+The initial `expand-authored.mjs` called `generate`/`generateLater` (which reuse existing files) and then unconditionally assigned newly supplied provenance. If a literal table changes without first archiving old candidates, it could attach a new `decision_table_hash` to old reused policy bytes. **No such mismatch was found in the four current pairs:** every saved rule matches its literal table. Before revising or retrying changed tables, archive both candidates or reject any reused candidate not equal to the independently expanded object before changing metadata. This was sent to the author before the cold-four-bet revision.
+
+### Representative validation status update
+
+The original revised representative now has a saved report matching its reviewed flop/later/source hashes, defence version6,72 result rows and10,000 samples per board/profile/seat. The implementation owner reports a completed fixed-seed audit of19,936 combo decisions /72 comparisons /720,000 paired deals with20 advisory findings. This review inspected report identities but did **not** independently re-run that expensive replay. Its all-board audit remains pending; none of that representative evidence transfers to these four individually authored policies.
+
+### Cold-four-bet revision closure, 2026-10-04 09:27 UTC
+
+The author archived both original cold-four-bet artifacts under `native-next-four/revisions/cold-four-bet-r1` and installed an individual revision.
+
+- Revised flop hash: `82e9187899fe5cc4747e3b71e4434ed127f32cc4d92065ed6539f5791b7ecbb1`.
+- Later numeric hash remains `8b947cf4e9c3d3331883346393dc68a310037bc89d51a0ea36000abd2ae7f210`; its `flop_policy_hash` now correctly binds the revised flop.
+- Source hash is unchanged. Current prompt hashes, receipt identities and both decision-table metadata hashes match the revised literal table.
+- All **71** `btn_first` fallback/height/shape rules have `bet125:0`, with check totals unchanged. On the exact As7d2c reproduction, both raw bet125 range mass and effective bettor reach are **0**. The previously observed value-only shove is therefore removed from candidate play, not disguised by editing defender frequencies. The legal tree still includes the action; a manually forced zero-probability branch is not evidence of a played strategy.
+- The remaining flop sizes are not all-in at initial pot54.5/stack74: the 75% bet is below the configured 67%-of-stack merge threshold. Future-street merges and raise chains remain subject to the shared legal-action/defence logic.
+- `expand-authored.mjs` now checks existing policy content against the freshly expanded expected policy and rejects a later candidate bound to a different flop **before** calling generation or changing provenance. This closes the helper caution for changed-table reuse. This review inspected the guard without running authoring or modifying artifacts.
+
+**Final individual foundation verdicts:** A, B (revised hash above), C and D are each suitable as provisional, individually authored foundations. No unresolved blocking policy finding remains from this focused pass. River cap dependence is explicitly recorded, and it remains important to inspect quantitative warnings rather than describing structural validation as balance proof.
+
+**Still not release-approved:** none of these four pairs has a completed full simulation/fixed-seed/all-board result established by this review. The representative's validation cannot be reused for them. Keep every spot's own source, prompt, literal table, policy hashes, validation evidence and final delivery identity; do not clone the representative or another pair's numeric rules.
+
+
+## Representative all-board warning review, 2026-10-04 10:27 UTC
+
+**Verdict: the completed all-board run is valid coverage evidence, but the representative still needs an individual river-policy refinement before strategic acceptance.** Most warning counts are explained by coarse tiers, unreachable deep histories or nominal sizing. A focused probe nevertheless found a real, reachable value-only river overbet that makes the shared MDF floor call hands with exactly zero equity. This is a P2 policy/model interaction, separate from the previously closed illegal-raise bug. Do not approve the final archive receipt from this review; the official fixed-seed replay with complete dependency binding remains pending.
+
+No policy or executable code was changed. The reviewer first inspected saved evidence without numerical work, then used the implementation owner's allocated window for bounded probes: five individual balance boards, selected effective contexts, and the 48 sampled river contexts for one diagnostic flop. No simulation or all-board job was restarted. The compute slot was returned to the memory-test worker after the probes exited successfully.
+
+### Evidence identity and actual coverage
+
+The policy objects remain the reviewed revision 2:
+
+- Flop: `9070ca5074b6600eaeb1f1a20a03ce4bb2b40ecea457f8cd578fcec43e8a513a`.
+- Later: `d3c5bb66c53545f8a707056bbbe0bfee67c6a76c6397a3294c546b4e411eca45`.
+- Source: `a446af2ae12f4d68aa5810cd88912ebd95642462a8cf8e5e472df6c66d22e975`.
+- All-board identity: `534359089c8cdf1100260143b71100ab2780c37408424f60d73d47ad9b003118`.
+- Summary file SHA-256: `c0a5c85519798f48571de0073271680cdf799611f57344420c50167f2c774aed`.
+- Companion SHA-256: `f9e8bb374af26d51049a06fd9d9a0ae8a01c4327402c2a44da4fdd12645eda14`.
+
+The reviewer recomputed both policy hashes, the companion and summary hashes, the companion's summary binding, every one of its 1,755 row hashes, and warning aggregates. There are 1,755 distinct flop IDs with no duplicates; all 22 code files listed in the stored audit identity still matched their recorded bytes at review time. This does not substitute for the separate complete-dependency/archive verifier.
+
+Every checkpoint reports one reachable flop, four reachable sampled turns and twelve reachable sampled rivers. Totals are **1,755 evaluated flops, 7,020 sampled turns, 21,060 sampled river runouts, zero unreachable and zero error findings**. All twelve shape-by-height regions are represented:
+
+| Shape | High | Mid | Low |
+| --- | ---: | ---: | ---: |
+| Dry |148|67|13|
+| Wet |516|273|127|
+| Monotone |166|85|35|
+| Paired/trips |135|99|91|
+
+These are canonical-class counts, not probabilities of being dealt those boards. The later check samples only the selected check-through and called-bet paths. It does not enumerate all turn/river cards or every action history; in particular, `checkLaterBalance` excludes river raise-response nodes from its river check set. Coverage must be described accordingly.
+
+### P2 — Reachable river overbet has no equity-defined bluff support and triggers zero-equity calls
+
+**Exact current-policy reproduction:**
+
+- Board `7c5d5hTsQd`, one of the saved audit's seeded river runouts.
+- Flop `["check","check"]`; turn `["check","check"]`; river `["check","bet125"]`.
+- HJ is the river bettor after BB checks. Pot before the bet is29BB; bet36.25BB; required calling equity is **36.8020%**. This bet itself is not all-in.
+- HJ chooses bet125 at **11.5231% of its reached range**. Its actual equity-defined bettor range is **100% value / 0% bluff**. This is not merely `air=0` in the coarse warning.
+- BB `AcKc` has **exactly zero equity** against that betting range, but its effective mix is **fold71 / call29 / raise0**. The context's defence floor is active at equity threshold0, fraction0.28896949; its unconstrained equity calculation would fold this hand.
+- Total computed BB defence is34.5395%, around MDF−10 points. **27.0551% of the entire reached defending range** is called with equity more than five percentage points below the requirement.
+
+The same check-through line has the defect on several other sampled runouts of this flop:
+
+| River board | HJ bet125 frequency | Actual bluff share | Zero-equity AcKc call | Defender range called at >5pt negative margin |
+| --- | ---: | ---: | ---: | ---: |
+|7c5d5h3c8s|2.1760%|0%|32%|31.1020%|
+|7c5d5hTs6h|2.6891%|0%|31%|30.7661%|
+|7c5d5hJh3h|5.3939%|0%|30%|28.3743%|
+|7c5d5hTsQd|11.5231%|0%|29%|27.0551%|
+
+The current `river_ip_first / checked / medium` mix is check80/bet33=19/bet75=1/bet125=0/allin=0. On a paired board, available weak holdings can be `medium` because the board itself supplies the pair; the `air` rule cannot supply all the needed bluff candidates. The cap only removes excessive bluffs and cannot repair a value-only action. The deliberate shared MDF floor then creates the bad calls above. Zero aggregate overfold warnings therefore do not demonstrate adequate authored bluff support.
+
+**Minimal correction:** revise this spot's reached river size allocation using its actual saved ranges. Either support the oversized action with a considered allocation of available weak made hands, letting the existing cap enforce the upper bound, or suppress unsupported larger branches and redistribute their value weight into appropriate smaller sizes/checks. Inspect the resulting bet75 and bet125 branches together so the defect is not merely moved. Do not blindly increase `air`, copy another spot's numbers, or change the common defence floor to hide this authored-range problem. If the existing tier/line/texture representation cannot distinguish the required cases, report that limitation explicitly before proposing a broader shared-model change.
+
+**Recheck required:** run the exact four boards/paths above through `defence.bettingFacts`, `defence.context`/`facts` and effective mixes; show the supported betting frequencies and actual value/bluff weights, plus the resulting AcKc response and floor dependence. Check an unpaired high-board control and a monotone/flush control to catch regressions. A policy hash change invalidates this pair's simulation/fixed-seed/all-board evidence for final acceptance; the completed run remains historical evidence for the old hashes.
+
+### Why most warning counts do not call for mechanical policy edits
+
+The complete 15,214 occurrences recompute as:
+
+| Heuristic | Occurrences | Distinct affected flops |
+| --- | ---: | ---: |
+|River air-ratio under|8,092|1,755|
+|Tier-based value-only raise|5,694|1,406|
+|Overcall|1,428|691|
+
+There are35 node/type categories, zero clean flops, and no over-bluff, overfold or capped-check findings. IP river under warnings are4,595 occurrences on1,754 flops; OOP are3,497 on1,725. These counts are neither error counts nor exploitability estimates.
+
+**River air warnings:** `balance.mjs` counts only `handTier === "air"`; the actual cap classifies by equity against the reached defender range. On a paired board there may be no air-tier hands at all, and on trips every hand is `monster`. A direct example is `2c2d2hAs9d` after both streets check through: air range share is0% for both positions, yet HJ's raw equity-defined bluff share is70.70% in all three bet sizes. The cap reduces it to20.93%/31.29%/36.80%, with frequency multipliers0.1097/0.1888/0.2413. BB's corresponding actual bluff share is17.34%, not0%. Thus the reported under warning can coexist with a strong raw over-bluff correction.
+
+On the sampled unpaired control `Ac7d2h9hJd`, the same checked line gives BB effective bluff shares20.93%/22.80%/28.94%. HJ gives20.93%/23.71%/16.88%; its small-bet cap multiplier is0.0676. These are meaningful calibration facts and substantial cap reliance, but they do not support turning every coarse under warning into a demand for more air. The value-only counterexamples above were found using the actual equity definition instead.
+
+**Raise warnings:**3,627 occurrences are the four depth-3 categories. At pot29/stack87, the smallest flop chain starts9.57 → raise-to28.71 → an87BB merged all-in. A third raise cannot occur. Both saved flop depth-3 histories returned `null` under `replayOrNull`; the audited turn paths have the same or lower available SPR. `balance.mjs` falls back to raw reference mixes when replay fails, so these warnings describe unreachable reference branches. The906 first-raise flop warnings are exclusively on paired/trips boards, where a tier-based non-monster measure is especially misleading. On `2c2d2h`, every hand is monster, but the effective bettor ranges in the checked bet125 and lead bet33 probes contain98.24% and57.36% equity-defined bluffs respectively. Those bettor figures illustrate the tier/equity distinction; they are not measurements of the subsequent raise branch. A `value-only-raise` label must not be equated with100% equity-defined value without inspecting that branch itself.
+
+**Ordinary flop/turn overcall:** these use computed defence, but MDF is a heuristic benchmark and uncapped non-all-in bets deliberately have no MDF ceiling. On `9c8c7d` versus BB bet125, HJ defends56.27% against MDF44.44%; only0.174% of its range is called at more than a five-point negative margin, the floor is inactive and6.86% of the range raises. On `AcKc4c` versus HJ bet75, BB defends67.97% versus57.14%, with0.216% called at that negative margin threshold. On the turn `AcKc4c6s` after check-through, BB versus HJ bet75 defends98.28%, with zero such negative-margin calls and no floor: the opposing betting range contains61.27% equity-defined bluffs. These are model/policy calibration advisories, not evidence of stale saved call/fold placeholders or another illegal-action bug.
+
+**The one river overcall warning:** on `7c5d5h`, the audit compares every bet125 path against nominal MDF44.44%, although actual sampled geometries give MDF38.34%,44.44%,52.63% or74.44%. Across its48 sampled contexts, the correct reach-weighted MDF is46.7453%, monster share45.8873%, and total defence49.4826%. Its reported non-monster defence is6.6440%; the actual required non-monster share is1.5855%, making the existing allowance8.1711%. The aggregate warning disappears with the actual sizing benchmark. That removes this warning's nominal-MDF interpretation, but does **not** excuse the distinct zero-equity floor calls uncovered inside those contexts.
+
+### Audit follow-up and acceptance boundary
+
+A future audit improvement should distinguish geometrically unreachable histories instead of interpreting their raw reference fallbacks as played strategy, derive MDF/bluff targets from actual merged wagers and rake, and retain action/runout identifiers plus diagnostic values for warnings. Preserve the present receipts and label their existing semantics; do not silently rewrite their counts.
+
+The review therefore supports the coverage and identity claims above, preserves the provisional authoring-foundation approval, and **holds strategic/final acceptance of this representative pending the P2 river refinement and fresh hash-bound evidence**. The previous fixed-seed PASS is historical, and no archive or production release is approved by this report. Evidence for this one spot still does not transfer to the other four authored candidates or to bulk generation.
+
+
+## Revision 3 proposal review, 2026-10-04 10:50 UTC
+
+**Disposition: approve the literal revision3 draft as a revised representative foundation for installation and fresh numerical validation. No further numeric policy edit is required before those checks.** The known value-only large-bet/zero-equity-call counterexamples are removed in the recorded seven-board diagnostic. The residual small-bet negative-margin calls on `7c5d5hTs6h` remain material and explicitly unresolved under the existing shared defence model. This is not final strategic, archive or release approval.
+
+At this review, the hot later artifact was still revision2. The reviewer made no policy/code changes and ran no Node jobs during the owner's build. This pass independently inspected the literal diff, the full diagnostic script and all14 recorded comparison rows, verified hashes, and compared the old-policy rows with the independently reproduced counterexamples from the preceding review. It did not re-execute the draft's numerical diagnostic.
+
+### Exact reviewed draft and scope
+
+- Draft: `.local/postflop-ai/policy-revisions/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call/v3-proposal/later-policy-draft.json`.
+- Draft policy hash: `c37c4091096867f53e9ec531220f5ff99c7f2a5364d7bc56283afaeca17333d6`.
+- Diagnostic: the same directory's `checked-river-preflight.json`, complete-file SHA-256 `e8de67c367491e2ae778eb9a8f2bc61d09774ab6d0570f9ec5e8e66d3cbb1722`.
+- Diagnostic script: `.local/postflop-ai/preflight-checked-river.mjs`, SHA-256 `8b9e04e9f7959535d79c31602d5a0886cb034f3f4bfbe448fb4310fd3768e736`.
+- The preserved baseline hashes, source fingerprint and unchanged flop hash match the preceding revision2 review. The script validates both policies, applies the common cap and defence to actual reached ranges, measures all four bet branches, rejects inconsistent zero-reach contexts and verifies its source identity at start/end.
+
+Exactly five existing rules change, all `river_ip_first`, `line=checked`. Their check/bet33 allocations are monster30/70, strong45/55, medium80/20 and air75/25; the checked+flush strong override is63/37. Every larger-size frequency in those rules is zero. Rule counts remain90 turn /88 river, and the complete turn object is identical. Other river lines and OOP decisions are unchanged.
+
+This is a deliberate simplification of one decision class. It trades away large sizing choices on the checked-IP river line because the present tier/line/texture representation cannot reliably distinguish a weak board-pair holding from every unpaired medium hand. It does not claim that a single small size is optimal. It retains positional/line differences and meaningful checking; it is not a blanket policy clone or a change to the shared MDF rule.
+
+### Effective result and remaining limitation
+
+The preflight uses flop/turn check-check and OOP river check. In all seven cases, **bet75/bet125/all-in have zero actual policy reach**. Only bet33 remains, with actual equity-defined bluff share20.3367%–20.9258%; zero-equity call mass is0 in every played branch.
+
+| Board | Draft effective bet33 frequency | Draft call mass at >5pt negative margin |
+| --- | ---: | ---: |
+|7c5d5hTsQd|43.0463%|0.0450%|
+|7c5d5h3c8s|9.7447%|0.6777%|
+|7c5d5hTs6h|11.8397%|7.4876%|
+|7c5d5hJh3h|21.4211%|0.3496%|
+|Ac7d2h9hJd|12.3181%|0%|
+|2c2d2hAs9d|25.9386%|0%|
+|AcKc4c6s9c|38.5826%|0.2734%|
+
+The third column is conditional on the corresponding reached defending range, not a percentage of all deals or an EV estimate. The flush control also exposed a revision2 value-only bet125 branch with21.7449% zero-equity call mass; it is removed by the draft. The preserved baseline reproduces the earlier independently measured large-bet findings.
+
+**The Ts6h residual is not solved:**
+
+- Bet33 bluff share is20.9258%, already at the exact cap; required equity is20.9258%.
+- The MDF floor remains active at equity threshold **14.9050%**, fraction0.29905675, and total defence is65.1516%.
+- **7.4876% of the reached defending range** is called with equity more than five points below break-even, compared with7.5466% for revision2's small-bet branch.
+- Small-bet frequency increases from **4.9225% to11.8397%**. Thus the almost unchanged conditional residual must not be presented as eliminated or as an unqualified reduction in that branch's exposure.
+- The previously used diagnostic hand `AcKc` is no longer a losing call here: its equity is24.99% and its effective call share100%. Other holdings remain below the requirement; the saved examples include AQ combinations at approximately13.61%–13.75% equity calling3% from the logistic tail, and the active floor accounts for additional below-threshold calling. The saved first-four examples are not a complete ranking of contributors.
+
+A global equity-defined bluff share does not guarantee each defender hand's conditional break-even: blockers and the strength of the hands labelled as bluffs affect those equities. The shared policy deliberately imposes a defence floor, and its logistic split also allows small negative-margin call frequencies. Eliminating every negative-margin call is therefore a different objective from repairing an authored100%-value overbet. Blindly increasing medium/air frequencies to erase one statistic is not justified when the cap already binds. A more granular blocker/tier model or a revised defence objective would need a separately scoped shared-model review; neither is required or approved here.
+
+The residual is accepted as an explicit **model-calibration advisory for proceeding to full validation**, not as proof of good strategy and not as grounds to hide the number. If the fresh all-board review finds the same issue broadly worsened, or discovers new value-only branches with forced zero-equity calls outside this checked-IP line, reassess the policy before final acceptance.
+
+### Next acceptance boundary
+
+The author and implementation owner were notified of this disposition. Install only with honest updated provenance and a binding to the unchanged flop hash, then perform fresh simulation, official fixed-seed replay and all-board validation for the new later hash. Review the resulting effective warnings again. Revision2 results must stay historical.
+
+The diagnostic's47 recorded source files and12 input files are present. At this read, two evidence/packaging sources (`audit-identity.mjs` and `reviewed-postflop-archive.mjs`) had changed since the diagnostic; the numerical source files and inputs remained matched. The record is a bounded preflight, not a current final archive receipt. Fresh final evidence must bind the final source graph and artifacts after these concurrent implementation changes settle.
+
+
+## Revision 3 final numerical-evidence review, 2026-10-04 11:46 UTC
+
+**Final disposition: numerical execution and evidence checks pass, but strategic/final acceptance of this exact revision3 pair is withheld.** The seven corrected IP-checked probes reproduce the intended improvement. Broader, independently executed river probes find the same pure-value/zero-equity-call defect in OOP checked and IP called-bet lines. These are reachable authored branches with an active MDF floor, not merely coarse air-tier warnings or the previously acknowledged nonzero-equity Ts6h residual. Further individual policy refinement is required before acceptance; no archive/release approval is granted.
+
+### Exact verified execution identity
+
+Current source/flop/later policy hashes are respectively:
+
+- `a446af2ae12f4d68aa5810cd88912ebd95642462a8cf8e5e472df6c66d22e975`
+- `9070ca5074b6600eaeb1f1a20a03ce4bb2b40ecea457f8cd578fcec43e8a513a`
+- `c37c4091096867f53e9ec531220f5ff99c7f2a5364d7bc56283afaeca17333d6`
+
+The installed later object equals the reviewed literal draft. Complete candidate/later/report file SHA-256 values are `c985e881ae3baab9f0cc54a164f7bb5b9b65802307bceaa4d91b90fb650113ed`, `317462f34ae7f451dcc9458b28a762b8aa1a51db0774028f9772983ce832b105` and `f46f16717c144053c8480905783883572c19d38083992ec9acc8729d3ef16139`. All match the official execution receipts. Preserve these bytes; recording a future review disposition does not authorize rewriting artifact metadata under these receipts.
+
+The official CLI proof is `.local/postflop-ai/audit-evidence/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call-replay-1791112414692.json`, SHA-256 `8f4f946b917b90397b543b2f749a63c0c46b4e9844a47f12b9c8817f21e14e17`. It records exit0 from11:13:34.692 to11:23:15.047 UTC,19,936 expanded decisions,72 comparisons and18 advisories. Start/end identities are identical, identity hash `fc44c7533c0db459590a5ad650fa6c4eeea54c78d0e7b013b7bd7853327672cd`; all47 recorded source and12 input files were independently compared with current bytes and matched. The log hash also matches. The report has12 configured boards ×3 profiles ×2 seats,10,000 samples each, simulation version3 and defence version6. This review verified the saved execution proof; it did not repeat the expensive720,000-deal replay.
+
+All-board output base is `UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call--fc4bd404df9637bad4b7fc3f334c33e4dc32333f87c4c1ab6d92e66e387e0aed`:
+
+- Summary under `.local/postflop-ai/all-boards-audit/`, suffix `.json`, SHA-256 `ff73c9d4da70d84297deff8e9c15a550aeb9351f7788988426e1bd84091f9a25`.
+- Companion in the same directory, suffix `.checkpoints.json`, SHA-256 `0e8fe19f741523833302c21f52b36c73b171fc2a63648d03a246624c0507192f`.
+- Execution proof under `.local/postflop-ai/audit-evidence/`, suffix `-all-boards.json`, SHA-256 `5965cf14bbf54ea3a42ded61bf940430e8b0356ab1abc01f87694aacca81714c`.
+
+The run started with0 reused checkpoints and completed11:23:25.807–11:41:26.997 UTC,1,081.190 seconds, exit0. The reviewer independently invoked `assertAllBoardCompanion` against the live saved inputs and exact identity. It verified all1,755 canonical rows, per-row hashes, actual live-deal support, deterministic runout coverage and recomputed aggregates. All29 code records in the all-board proof, its identity/code hashes, the saved log and its embedded log hash also match.
+
+Coverage is1,755 evaluated flops,7,020 sampled turns,21,060 sampled rivers,0 unreachable,0 errors and1 clean flop (`6c3d2h`). The preceding review's action-history/runout limitations still apply.
+
+### Warning and simulation limitations remain visible
+
+| Warning family | Revision2 occurrences | Revision3 occurrences | Revision3 distinct flops |
+| --- | ---: | ---: | ---: |
+|River air-ratio under|8,092|6,780|1,754|
+|Tier-based value-only raise|5,694|5,694|1,406|
+|Overcall|1,428|1,927|958|
+|Total|15,214|14,401|—|
+
+There are36 categories. IP air-under declines4,595→3,283 occurrences (now1,737 flops); OOP remains3,497 on1,725. River `oop_vs_125` overcall increases1→496 flops and `oop_vs_75` adds4. Do not describe the lower total as uniform strategic improvement. Suppressing some checked-line actions changes which histories contribute to an aggregate, and nominal-MDF/all-in mismatches remain in this heuristic. The direct findings below are independently established using actual chip sizes and actual equity, so they do not depend on accepting those warning labels literally.
+
+Twelve of the18 official-audit advisories are below-reference simulation rows: BB on `AhKh4h`, `KcKd4h`, `8c8d2h` and `5s5d4c`, for all three reference profiles. The largest difference is `KcKd4h/aggressive`: **candidate +44.1495BB versus reference +60.2958BB**, delta **−16.1463BB**,95% interval[−17.2075,−15.0852]. This is a comparative deficit, not a16BB absolute candidate loss. It predates the revision: the prior delta was−16.1468BB. Across those12 rows, v3−v2 changes range−0.0497 to+0.3485BB.
+
+The simulation applies computed defence/caps to the candidate only, while the opponent and baseline use fixed tier references. Its inferred opponent ranges come from candidate policies, rather than adapting to the actual reference profile. These are substantial comparator limitations; paired-board tier behavior can also be unusually crude. They do not establish which node causes the performance difference, prove superiority/GTO, or excuse a concrete effective-strategy defect. The numbers remain part of the assessment.
+
+### P2 — Value-only river bets with forced zero-equity calls remain in other positions/lines
+
+After the owner returned the compute slot, the reviewer ran one bounded read-only Node process, then returned the slot immediately. It checked **70 river first-node decisions**: the same seven previous boards ×both positions ×five prior paths. Of280 offered size branches,231 had positive effective action reach and49 had zero reach. The condition inspected was positive action reach, zero equity-defined bluff weight and positive called mass from defenders with exact equity0.
+
+**Twenty-one action labels matched**, spanning five of the seven boards. Several labels merge to the same all-in, so these represent15 distinct board/history/role/effective-wager cases, not21 independent strategic regions. No bet33 branch matched in this bounded set. No sampled OOP aggressor/defender branch matched; this is not an exhaustive claim about those lines.
+
+Path keys used below:
+
+- **CC:** flop `[check,check]`, turn `[check,check]`.
+- **FC:** flop `[bet33,call]`, turn `[check,check]`.
+- **OC:** flop `[check,check]`, turn `[bet75,call]` (OOP was the turn aggressor).
+- **IC:** flop `[check,check]`, turn `[check,bet75,call]` (IP was the turn aggressor).
+- The fifth sampled control was flop `[bet33,call]`, turn `[bet75,call]`; it produced no matching branch in these seven boards.
+
+For OOP the pending river history is `[]`; for IP it is `[check]`. Append the listed action to reach the facing decision. Frequencies are conditional on the actor's reached range; zero-equity call mass is conditional on the defender's reached range. All listed betting ranges have actual bluff weight0.
+
+| Board | Prior path | River actor/line | Action | Action frequency | Defender zero-equity call mass |
+| --- | --- | --- | --- | ---: | ---: |
+|7c5d5hTsQd|CC|BB checked|bet75|8.4732%|2.7682%|
+|7c5d5hTsQd|IC|HJ aggressor|bet125|24.9650%|8.5287%|
+|7c5d5hTsQd|IC|HJ aggressor|allin|17.5680%|8.5287%|
+|7c5d5h3c8s|CC|BB checked|bet75|4.9727%|38.3444%|
+|7c5d5h3c8s|CC|BB checked|bet125|2.4153%|25.5629%|
+|7c5d5h3c8s|FC|BB checked|bet75|12.6168%|13.1901%|
+|7c5d5h3c8s|OC|HJ defender|bet75|19.1221%|18.0497%|
+|7c5d5h3c8s|OC|HJ defender|bet125|7.5482%|18.0497%|
+|7c5d5h3c8s|OC|HJ defender|allin|2.5161%|18.0497%|
+|7c5d5h3c8s|IC|HJ aggressor|bet125|16.4789%|19.2390%|
+|7c5d5h3c8s|IC|HJ aggressor|allin|11.5963%|19.2390%|
+|7c5d5hTs6h|CC|BB checked|bet75|4.9530%|36.6750%|
+|7c5d5hTs6h|CC|BB checked|bet125|2.4058%|24.1526%|
+|7c5d5hTs6h|FC|BB checked|bet75|11.7770%|10.7979%|
+|7c5d5hTs6h|IC|HJ aggressor|bet125|23.1751%|15.1970%|
+|7c5d5hTs6h|IC|HJ aggressor|allin|16.3084%|15.1970%|
+|7c5d5hJh3h|CC|BB checked|bet75|7.8259%|25.8800%|
+|7c5d5hJh3h|CC|BB checked|bet125|3.8012%|12.5479%|
+|7c5d5hJh3h|IC|HJ aggressor|bet125|16.2116%|6.3705%|
+|7c5d5hJh3h|IC|HJ aggressor|allin|8.1058%|6.3705%|
+|AcKc4c6s9c|CC|BB checked|bet75|13.1862%|1.6278%|
+
+Two concrete reproductions show why the finding is more than an advisory count:
+
+1. **OOP checked:** `7c5d5h3c8s`, CC, BB river bet75. Pot29, wager21.75, required equity31.2950%. BB bets this size4.9727%, with value weight0.786058 and bluff weight0. HJ `Ad9d` has exact equity0 but calls42%. The floor threshold is0, fraction0.42103655. Total defence47.0482%;38.3444% of the whole reached defending range calls with equity0, and44.1592% calls at more than a five-point negative margin.
+2. **IP after calling turn:** the same board, OC, BB river check, HJ bet75. Pot72.5, remaining stack65.25; the nominal75% bet becomes a65.25BB all-in. Its action frequency is19.1221%, value weight0.86228094 and bluff weight0. Required equity32.6250%, raises correctly unavailable. BB `Ac2c` has exact equity0 but calls24%; the floor threshold is0, fraction0.23719367. Zero-equity call mass is18.0497%. This is not a recurrence of the illegal-raise bug.
+
+The IP-aggressor IC branches expose the same problem after the opposite turn betting direction. The fixed all-board later sampler did not cover that exact IP-turn-bet history. An error-free canonical-flop run therefore could not establish that these lines were sound.
+
+### Correction scope and recheck
+
+The owner has been notified that this exact revision3 cannot receive final acceptance. The author received all affected classes and exact path definitions before report completion. Review the representative's river first-node allocations **together**, including both positions and checked/aggressor/defender lines. Support any retained large/merged action with appropriate available weak holdings, or suppress the unsupported branch and reconsider its redistribution. Preserve the shared defence model, saved preflop ranges and the45 legacy policies. Do not patch one line and immediately start another full acceptance cycle.
+
+Before installing a new revision, repeat the70-decision bounded matrix above and additionally test flop `[bet75,call]`/turnCC and flop `[bet125,call]`/turnCC for both river actors. The flop125-call geometry is a useful near-threshold non-all-in control: pot101.5/stack50.75 gives rounded bet33=33.50, below0.67×50.75=34.0025. The reviewer initially misstated this arithmetic; the author identified the error before further execution, and this report corrects it. In the flop33-call/turn75-call geometry, pot120.36/stack41.32, bet33 really does merge all-in: changing a nominal label does not necessarily remove an unsupported shove. Retain the seven-board controls and the existing low-SPR flop33-call/turn75-call case. Inspect actual value/bluff weights, effective size, supported action frequency and exact zero/negative-equity called mass, rather than only tier ratios. Check all-tier OOP defender donk limits after any redistribution.
+
+The original IP-checked revision3 fix still reproduces exactly: its only positive size on all seven boards is bet33, zero-equity call mass remains0, and Ts6h negative-margin call mass remains7.4876% at11.8397% betting frequency. That narrow closure does not extend to the newly failing lines.
+
+**Acceptance remains held.** The execution proofs above truthfully document successful calculations for these exact bytes and remain useful historical evidence after a policy change. Any replacement policy needs its own preserved provenance, independent preflight disposition and fresh hash-bound numerical gates. The representative's evidence never certifies another spot, bulk generation, GTO quality, or production release.
+
+
+## Revision 4 draft: support versus MDF-floor diagnosis, 2026-10-04 12:03 UTC
+
+**Disposition: do not install or start another full numerical cycle for the current draft solely because its pure-value counter is zero.** The remaining zero-equity calls expose a limitation of the common defence objective and, in one branch, a narrower authored-selection issue. The smallest defensible next decision is whether the new HU family should explicitly exempt exact-zero-equity river calls from MDF-floor promotion. That is a model change requiring the implementation owner's decision and correct version/cache binding; this reviewer has not changed or authorized shared code or the45 legacy policies.
+
+### Draft and diagnostic identity
+
+- Uninstalled later draft hash: `901e2f2589aeffd1534ef3854ad4a8c7da942ccd48d35e31835960c3ed208698`.
+- Draft path: `.local/postflop-ai/policy-revisions/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call/v4-proposal/later-policy-draft.json`.
+- Broad diagnostic in the same directory: `wide-river-preflight.json`, SHA-256 `9fff481bb98a29f346430404c6b461962df311fd3283315eeca01551d5490d0f`.
+- Diagnostic script `.local/postflop-ai/preflight-wide-river.mjs`, SHA-256 `84917ae24aa02cd927c4e545c227a1918de12e10a09f506607a6474d929a28da`.
+
+The reviewer recomputed the draft/script/diagnostic hashes, inspected the complete comparison script and20 changed river rules, and confirmed all recorded source/input bytes still matched. The complete turn object is unchanged. The changes jointly simplify OOP checked and IP defender/aggressor betting to check/bet33, including their texture overrides; the previous IP-checked correction is retained. This avoids merely shifting a failed75% branch into125%.
+
+The diagnostic covers98 decisions/392 offered sizes for each of v3 and the draft. Positive effective branches fall301→161. Pure-value-plus-zero-call findings fall22→0, but the broader **any zero-equity call** condition falls26→4, not0. The broader condition is necessary: an aggregate equity-defined bluff can still beat a particular defender every time.
+
+### Four residuals, including increased branch exposure
+
+All four residuals are OOP betting into HJ. Frequencies and call masses are conditional reached-range measures, not whole-deal probabilities or EV.
+
+| Board and prior line | River action | v3 → draft action frequency | Draft actual bluff share | Draft zero-equity call mass |
+| --- | --- | ---: | ---: | ---: |
+|Ac7d2h9hJd; flop125/call, turnCC|bet33|30.3800% →56.0214%|7.6320%|3.4495%|
+|AcKc4c6s9c; flopCC, turnCC|bet33|15.1401% →33.2121%|10.4693%|7.6687%|
+|AcKc4c6s9c; flop33/call, turn75/call|allin|2.4617% →2.4617%|20.6600%|12.4552%|
+|AcKc4c6s9c; flop125/call, turnCC|bet33|5.7069% →16.8613%|20.2417%|6.7404%|
+
+The first two are below the global bluff cap, and their bluff shares decline from10.1329% and15.8995% respectively as value weight is concentrated into the smaller size. The latter two already saturate their caps. Conditional zero-equity calling is nearly or exactly unchanged, while three branch frequencies increase materially. None of those facts permits reporting the problem as solved.
+
+### Independent exact support probe
+
+In an allocated compute window, the reviewer ran a bounded read-only four-context probe, then returned the slot. It evaluated **every compatible BB hand available before the river action**, not just the hands selected to bet, against selected zero-equity defenders. This tests whether river literal reweighting could create any winning/tied matchup for those hands. It also compared the actual mix with the same capped base passed through `applyEquity(..., raw=true)`, which omits the floor/ceiling adjustment without changing policies or sources.
+
+| Context / selected HJ hand | Compatible BB weight before betting | Weight HJ beats or ties | Actual HJ call | Call before floor |
+| --- | ---: | ---: | ---: | ---: |
+|A-high flop125-call line /8c8d|0.06736|0|9%|0%|
+|Four-club check-through /7d7h|7.83113|0|18%|0%|
+|Four-club flop33-call/turn75-call shove /AdTd|1.49400|0.12136 beaten,0 tied|26%|0%|
+|Four-club flop125-call line /AdTd|0.07040|0|16.190762%|0%|
+
+The first context's available BB support consists of0.02704 monster weight and0.04032 strong weight. None of it loses or ties to88. The check-through flush context includes monster/strong/medium support, but none loses or ties to77. In the last context, all available compatible BB weight is monster:0.0408 two-pair and0.0296 trips. It contains no available hand that no-club AT can beat. Earlier shorthand describing these capped “bluffs” as weak flushes was too narrow; here the weaker equity-defined betting hands include two-pair/sets that still always beat top pair.
+
+Consequently, adding a river `air`/`medium` frequency cannot manufacture a missing losing hand in those three contexts. Altering upstream policy to make currently absent hands reach the river would be a separate, much broader calibration exercise. Suppressing every bet simply to make the diagnostic empty would hide the incompatible objectives rather than establish a good value-betting policy.
+
+The OOP-aggressor shove has a distinguishable authored-selection component for **AT**: available weaker hands include Ah5h/As5s, Ah3h/As3s, Ah2h/As2s and small KQ/KJ weights, all assigned zero to the explicit all-in branch. A considered reallocation can change AT's equity. However, that same context also forces lower pocket pairs such as77. The saved BB support consists only of A/K-containing nonpairs or TT-and-higher pairs; on the four-club A-K-9-6-4 board,77 cannot beat those holdings even before river selection. Generic extra “bluff” mass is therefore not a guarantee against zero-equity calls across the defender range.
+
+For all four contexts, **the entire zero-equity call mass comes from the MDF floor**. The pre-floor mix calls0 for these hands. The current positive-equity defender shares are61.6715%,57.3959%,52.0954% and58.2008%, while their MDF−10 targets are65.1852%,65.1880%,64.4433% and65.1852%. The floor fills the remaining quota with equity0 hands. Omitting only those calls would give total continue rates61.6776%,57.3959%,52.0954% and58.4007%; differences from the positive-equity shares include retained authored bluff raises. This is the deliberate floor behavior meeting a target that the current range cannot meet using positive-equity calls alone.
+
+### Smallest defensible next decision
+
+1. **Retain the distinction between betting calibration and dominated calling.** The draft fixes unsupported pure-value large branches in the examined matrix, but its small-bet redistribution still needs ordinary range/size judgement. It is not justified to keep increasing or suppressing betting just to satisfy an impossible caller-floor target.
+2. **Consider a narrowly scoped exact-river-zero-equity exception to floor promotion.** At a facing decision with a positive call cost and exact river equity0, leave the already calculated non-raise fold/call split unchanged instead of moving fold mass into call to satisfy MDF. Preserve authored/capped raises: a zero-showdown-equity raise can be a bluff, and the last probe has a legal0.726236% raise that should not be indiscriminately erased. Positive-equity hands, normal cap behavior and nonriver realization estimates are a separate question. The floor must explicitly be allowed to remain below its nominal target when eligible calls are insufficient.
+3. **Get the implementation owner's scope/versioning decision before code changes.** To preserve the45 legacy strategies, an approved new-family treatment needs explicit family/model identity across consumers, caches, reports and receipts. Do not silently alter global defence behavior under unchanged evidence identities. This review proposes the bounded semantic change; it does not approve its implementation or a versioning shortcut.
+4. **Test actual consumer agreement and keep all residuals visible.** Use the four exact contexts above, the prior98-decision matrix, a positive-equity floor control, a legal zero-equity bluff-raise control and an unchanged legacy control. Confirm shared view/explanation/simulation/facts behavior, zero calls at exact equity0 and honest achieved defence below MDF where necessary. Keep the existing Ts6h nonzero-equity negative-margin residual separate; a zero-equity exception would not solve it. Any accepted model/policy change then needs fresh version-bound simulation, official replay and all-board evidence.
+
+The current draft remains **uninstalled and not finally accepted**. The implementation owner and author received the support findings and this model-decision recommendation immediately after the probe. No code, policy, preflop input or production state was modified by this reviewer.

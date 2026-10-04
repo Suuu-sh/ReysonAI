@@ -1,3 +1,4 @@
+import { assertPostflopDeal } from "./range-support.mjs";
 // Only the numeric facts consumed by postflop-explanation.ts. No obsolete evidence groups
 // or independent 120-runout equity simulation: UI equity already comes from defence/betting.
 // Direct and stored paths use this same projection in canonical suit coordinates.
@@ -54,6 +55,7 @@ function contextFor(inputs, policy, board, node, history) {
 }
 
 export function flopUiComboFactsCanonical({ boardCards, node, cards, history, prev = "bet33", inputs, policy }) {
+  if (inputs.spot.history) assertPostflopDeal(inputs, boardCards);
   history ??= historyFor(inputs.spot.tree, node, prev);
   if (flopState(inputs.spot.tree, history).node !== node) throw new Error("Flop explanation history does not reach the node");
   const hero = cardIds(cards, 2);
@@ -92,6 +94,7 @@ function finalTables(board) {
 // continues (1 - fold) after each aggressive action, and against the whole range for a check. Computed
 // from the same contexts as the fold shares, so nothing about the stored flop base changes.
 export function flopBetTableCanonical({ boardCards, node, cards, history, prev = "bet33", inputs, policy }) {
+  if (inputs.spot.history) assertPostflopDeal(inputs, boardCards);
   const betting = node.endsWith("_first") || NODES[node]?.includes("raise");
   if (!betting) return {};
   history ??= historyFor(inputs.spot.tree, node, prev);

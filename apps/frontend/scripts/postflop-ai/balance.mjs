@@ -1,3 +1,4 @@
+import { hasPostflopDeal } from "./range-support.mjs";
 // Deterministic range-weighted sanity checks for the locally authored postflop policies.
 // These checks describe balance heuristics, not solver targets or GTO requirements.
 import { seedFor, seededRandom } from "../lib/equity.mjs";
@@ -346,7 +347,7 @@ export function checkFlopBalance(inputs, flopPolicy, { boardList = boards() } = 
   const tierFor = makeTierReader(), mixFor = makeFlopMixReader(policy, tierFor), collection = new Map();
   // Facing nodes are judged on the computed defence (defence.mjs), not the tier mixes of the policy.
   const defence = defenceFor(inputs, policy, null);
-  for (const board of boardList) for (const node of nodes) {
+  for (const board of boardList.filter(board => !inputs.spot.history || hasPostflopDeal(inputs, board.cards))) for (const node of nodes) {
     const history = histories.get(node);
     if (!history) throw new Error(`No representative history for flop node: ${node}`);
     const state = flopState(inputs.spot.tree, history);
@@ -406,9 +407,18 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
   const turnCheckNodes = turnNodes.filter(node => node.endsWith("_first") || LATER_NODES[node].includes("raise") || isLaterFacingNode(node));
   const riverCheckNodes = riverNodes.filter(node => node.endsWith("_first") || isLaterFacingNode(node));
 
+  const coverage = { flops: boardList.length, reachable_flops: 0, turn_boards: 0, unreachable_turn_boards: 0, river_runouts: 0, unreachable_river_runouts: 0 };
   for (const flopBoard of boardList) {
-    const runouts = representativeRunouts(flopBoard);
-    const turnBoards = [...new Map(runouts.map(runout => [runout.turn, runout.turnBoard])).values()];
+    if (inputs.spot.history && !hasPostflopDeal(inputs, flopBoard.cards)) continue;
+    coverage.reachable_flops++;
+    const sampledRunouts = representativeRunouts(flopBoard);
+    const sampledTurns = [...new Map(sampledRunouts.map(runout => [runout.turn, runout.turnBoard])).values()];
+    const turnBoards = sampledTurns.filter(board => !inputs.spot.history || hasPostflopDeal(inputs, board));
+    const runouts = sampledRunouts.filter(runout => !inputs.spot.history || hasPostflopDeal(inputs, runout.riverBoard));
+    coverage.turn_boards += turnBoards.length;
+    coverage.unreachable_turn_boards += sampledTurns.length - turnBoards.length;
+    coverage.river_runouts += runouts.length;
+    coverage.unreachable_river_runouts += sampledRunouts.length - runouts.length;
     for (const turnBoard of turnBoards) for (const flopPath of flopPaths) for (const node of turnCheckNodes) {
       const history = turnHistoryByNode.get(node);
       const state = streetState("turn", history);
@@ -468,5 +478,5 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
   findings.push(...cappedCheckFindings(collection, laterNodes), ...raiseFindings(collection, turnNodes),
     ...bluffFindings(collection, riverNodes), ...overfoldFindings(collection, laterNodes),
     ...overcallFindings(collection, laterNodes));
-  return { findings };
+  return { findings, ...(inputs.spot.history ? { coverage } : {}) };
 }

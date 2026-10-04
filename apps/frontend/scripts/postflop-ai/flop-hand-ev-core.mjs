@@ -210,6 +210,11 @@ export function computeNodeExact({ board, history, inputs, flopPolicy, laterPoli
   if (!state.node) return { node: null, actor: null, pot_bb: null, rows: {}, unreachable: true };
   const actor = spot[state.role];
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
+  // Exact traversal is a known large job. Its per-runout river eviction can
+  // prevent the adaptive 4,096-context threshold from ever being reached.
+  // Select the existing exact packed-cache representation before cold queries
+  // retain hundreds of turn/flop prefix tables. No hands/actions/runouts change.
+  defence.largeRun = true;
   const setup = nodeSetup(history, inputs, flopPolicy, board.cards, spot.tree, defence);
   const actions = NODES[state.node];
   const oppItems = setup.villain.filter(item => item.weight > 0);
@@ -250,12 +255,19 @@ export function handEvForBoard(board, inputs, policy, samples = FLOP_HAND_EV_DEF
   const selected = parseFlopBoard(board.id);
   const validatedFlop = validatePolicy(policy, inputs.spot.tree);
   const validatedLater = validateLaterPolicy(laterPolicy);
-  return Object.fromEntries(Object.entries(treeHistories(inputs.spot.tree)).map(([key]) => {
-    const history = key ? key.split(",") : [];
-    const result = computeNode({ board: selected, history, inputs, flopPolicy: validatedFlop,
-      laterPolicy: validatedLater, samples, uncertainty: method === "monte-carlo" && uncertainty, method });
-    return [key, result];
-  }));
+  const defence = defenceFor(inputs, validatedFlop, validatedLater);
+  try {
+    return Object.fromEntries(Object.entries(treeHistories(inputs.spot.tree)).map(([key]) => {
+      const history = key ? key.split(",") : [];
+      const result = computeNode({ board: selected, history, inputs, flopPolicy: validatedFlop,
+        laterPolicy: validatedLater, samples, uncertainty: method === "monte-carlo" && uncertainty, method });
+      return [key, result];
+    }));
+  } finally {
+    // The completed result owns plain numeric rows. Keep reuse across every
+    // hand/history, then release its board graphs before the next offline board.
+    if (method !== "monte-carlo") defence.releaseBoardCaches();
+  }
 }
 
 // Pure, deterministic on-demand EV for the current flop decision and one hand class.

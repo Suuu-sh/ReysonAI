@@ -15,7 +15,7 @@ import { playerRead } from "./player-read.ts";
 import { PlayStyleCard, PlayStyleDashboard } from "./PlayStyleDashboard.tsx";
 import "./agent.css";
 
-export const AGENT_DATASETS = ["five-bet-responses", "cold-three-bet-responses", "multiway-responses", "squeeze-responses", "limp-deep-responses"];
+export const AGENT_DATASETS = ["five-bet-responses", "cold-three-bet-responses", "multiway-responses", "squeeze-responses", "limp-deep-responses", "cold-four-bet-responses", "multiway2-responses", "continuation-responses"];
 const SUITS: Record<string, string> = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const STREETS = ["preflop", "flop", "turn", "river"];
 const CARDS: Record<string, number> = { preflop: 0, flop: 3, turn: 4, river: 5 };

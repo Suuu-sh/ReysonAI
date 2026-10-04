@@ -1,7 +1,9 @@
 import { hands } from "../data.ts";
 import { positions, fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
 import { limpActionTransition, nextActorsAfterRaise, responseActionTransition } from "./action-path.ts";
-import { multiwayMatchups } from "./multiway-responses.ts";
+import { multiwaySpots } from "./multiway-responses.ts";
+import { appendContinuationBlocks, chooseContinuationAction, continuationRootForSelection } from "./continuation-flow.ts";
+import { multiway2Spots } from "./multiway2-responses.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { defaultFormat, formatOptions } from "./game-formats.ts";
 import { completedFlopContext, flopDecision, laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
@@ -9,22 +11,14 @@ import { completedFlopContext, flopDecision, laterDecision, laterStart, replayLa
 // The recorded-matchup lookup is identical to extended-ranges.ts, isolated here
 // so the shared action strip and URL codec do not depend on React hooks.
 export function multiwayContext(opener, callers, position) {
-  if (!["SB", "BB"].includes(position)) return null;
   const earlier = callers.filter(caller => positions.indexOf(caller) < positions.indexOf(position));
   if (earlier.length !== 1) return null;
   const [caller] = earlier;
-  return multiwayMatchups.some(([o, c]) => o === opener && c === caller) ? { opener, caller } : null;
+  return multiwaySpots.some(spot => spot.opener === opener && spot.caller === caller && spot.hero === position) ? { opener, caller } : null;
 }
 
 const startingContribution = { SB: 0.5, BB: 1 };
 const formatBb = value => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
-// An uncalled bet is returned, so the largest contribution only counts up to the next largest.
-const potLabel = contribution => {
-  const values = Object.values(contribution).sort((a, b) => b - a);
-  const counted = values.length > 1 ? [Math.min(values[0], values[1]), ...values.slice(1)] : values;
-  return `ポット ${formatBb(counted.reduce((sum, value) => sum + value, 0))}bb`;
-};
-
 function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction = null, limpFourBetAction = null }) {
   const contribution = { ...startingContribution };
   const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
@@ -89,8 +83,10 @@ function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseActi
 }
 
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], raiseSizeFor = () => null }) {
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], raiseSizeFor = () => null }) {
   if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
+  const boundedState = { rangeType, opener, hero, callers, pendingRaise, coldAction, squeezeResponse, continuationActions };
+  const boundedRoot = continuationRootForSelection(boundedState);
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -122,10 +118,11 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
       : `Raise ${formatBb(index === heroIndex ? threeBetSizeBb : raiseSizeFor(position))}`;
     const options = [{ action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(openSizeFor(opener))}` }, { action: "raise", label: raiseLabel }];
     // Seats behind the 3-bettor still act before the opener: fold, cold call or cold 4bet
-    // (saved cold-three-bet ranges). What follows a cold call / cold 4bet has no data yet.
+    // (saved cold-three-bet ranges). Supported cold actions enter the exact
+    // bounded catalog after the remaining outside seats explicitly fold.
     if (rangeType === "three_bet" && index > heroIndex) {
       const coldIndex = coldAction ? positions.indexOf(coldAction.position) : -1;
-      if (coldAction && index > coldIndex) continue;
+      if (coldAction && index > coldIndex && !boundedRoot) continue;
       const chosen = coldAction?.position === position ? coldAction.action : coldAction || continuationAction ? "fold" : null;
       blocks.push({ key: position, position, stack, active: false, chosen, kind: "cold", rangeRef: { kind: "cold", position, threeBettor: hero }, options: [
         { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(threeBetSizeBb)}` }, { action: "raise", label: `Raise ${formatBb(fourBetToSize(position, hero))}` },
@@ -142,7 +139,10 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
     else if (reraised || pendingRaise === "squeeze") { chosen = "raise"; contribution[position] = earlierCallers.length ? threeBetToSize(opener, position, earlierCallers.length) : raiseToBb ?? threeBetSizeBb ?? 0; }
     const hasEarlierCaller = callers.some(caller => positions.indexOf(caller) < index);
     const multiway = hasEarlierCaller ? multiwayContext(opener, callers, position) : null;
-    const rangeRef = multiway
+    const multiway2 = multiway2Spots.find(item => item.opener === opener && item.hero === position && JSON.stringify(item.callers) === JSON.stringify(earlierCallers));
+    const rangeRef = multiway2
+      ? { kind: "saved-source", position, dataset: "multiway2-responses", id: multiway2.id }
+      : multiway
       ? { kind: "multiway", position, caller: multiway.caller }
       : hasEarlierCaller || (pendingRaise === "squeeze" && index === heroIndex)
       ? { kind: "pending", position, reason: pendingRaise === "squeeze" ? "スクイーズ後の応答データはまだ保存されていません。" : "このマルチウェイ局面の応答データはまだ保存されていません。" }
@@ -151,6 +151,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
         : { kind: "response", position };
     blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat", rangeRef });
   }
+  if (boundedRoot) return appendContinuationBlocks(blocks, boundedRoot, boundedState);
   if (coldAction) {
     blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${coldAction.position}の${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}以降の推定レンジはまだありません。` });
     return blocks;
@@ -178,40 +179,12 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
   }
   const end = handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, contribution, threeBetSizeBb, spot });
   if (end) blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], ...end });
-  const squeeze = pendingRaise === "squeeze" && callers.length === 1 ? multiwayContext(opener, callers, hero) : null;
-  if (squeeze) return appendSqueezeResponses(blocks, { opener, caller: squeeze.caller, squeezer: hero, squeezeResponse, contribution, stackOf });
   const pendingActors = pendingRaise === "squeeze" ? nextActorsAfterRaise(hero, [opener, ...callers]) : [];
   for (const position of pendingActors) {
     blocks.push({ key: `pending-${position}`, position, stack: stackOf(position), kind: "pending", rangeRef: { kind: "pending", position, reason: "スクイーズ後の応答データはまだ保存されていません。" }, active: true, chosen: null, options: [
       { action: "fold", label: "Fold", disabled: true }, { action: "call", label: "Call", disabled: true },
     ] });
   }
-  return blocks;
-}
-
-// After SB/BB squeezes an open plus one caller: the opener responds (caller still
-// behind), then the caller responds to the opener's fold or call. A 4bet ends the
-// saved data.
-function appendSqueezeResponses(blocks, { opener, caller, squeezer, squeezeResponse, contribution, stackOf }) {
-  const size = threeBetToSize(opener, squeezer, 1);
-  const [openerAction = null, callerAction = null] = squeezeResponse;
-  const options = position => [
-    { action: "fold", label: "Fold" }, { action: "call", label: `Call ${formatBb(size)}` }, { action: "raise", label: `Raise ${formatBb(fourBetToSize(position, squeezer))}` },
-  ];
-  const noData = position => blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${position}の4bet後の応答レンジはまだありません。` });
-  blocks.push({ key: `squeeze-${opener}`, position: opener, stack: stackOf(opener), kind: "squeeze-response", role: "opener", active: !openerAction, chosen: openerAction,
-    rangeRef: { kind: "squeeze", position: opener, caller, squeezer, priorAction: null }, options: options(opener) });
-  if (!openerAction) return blocks;
-  if (openerAction === "raise") { noData(opener); return blocks; }
-  if (openerAction === "call") contribution[opener] = size;
-  blocks.push({ key: `squeeze-${caller}`, position: caller, stack: stackOf(caller), kind: "squeeze-response", role: "caller", active: !callerAction, chosen: callerAction,
-    rangeRef: { kind: "squeeze", position: caller, caller, squeezer, priorAction: openerAction }, options: options(caller) });
-  if (!callerAction) return blocks;
-  if (callerAction === "raise") { noData(caller); return blocks; }
-  if (callerAction === "call") contribution[caller] = size;
-  const players = [squeezer, ...(openerAction === "call" ? [opener] : []), ...(callerAction === "call" ? [caller] : [])];
-  blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [],
-    result: players.length > 1 ? `${players.length}人でフロップへ` : `${squeezer}の勝ち`, pot: potLabel(contribution) });
   return blocks;
 }
 
@@ -248,7 +221,7 @@ export type RangeUrlSelection = {
   foldedHero: boolean; pendingRaise: string | null; continuationAction: string | null;
   shoveResponse: string | null; coldAction: { position: string; action: string } | null;
   limpAction: string | null; limpResponseAction: string | null; limpReraiseAction: string | null;
-  limpFourBetAction: string | null; squeezeResponse: string[]; selected: string;
+  limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; selected: string;
 };
 export type RangeUrlState = RangeUrlSelection & {
   format: typeof defaultFormat; tableProfile: { call: string; three_bet: string };
@@ -261,12 +234,12 @@ export const defaultRangeSelection: RangeUrlSelection = {
   rangeType: "open", opener: "UTG", hero: "HJ", callers: [], foldedHero: false,
   pendingRaise: null, continuationAction: null, shoveResponse: null, coldAction: null,
   limpAction: null, limpResponseAction: null, limpReraiseAction: null,
-  limpFourBetAction: null, squeezeResponse: [], selected: "AKo",
+  limpFourBetAction: null, squeezeResponse: [], continuationActions: [], selected: "AKo",
 };
 const emptyPostflop = () => ({ showFlop: false, flopCards: ["", "", ""], flopActions: [], turnCard: "", turnActions: [], riverCard: "", riverActions: [] });
 const validHand = hand => hands.includes(hand) ? hand : "AKo";
 const profileLevel = value => ["low", "normal", "high"].includes(value) ? value : "normal";
-const copySelection = () => ({ ...defaultRangeSelection, callers: [], squeezeResponse: [] });
+const copySelection = () => ({ ...defaultRangeSelection, callers: [], squeezeResponse: [], continuationActions: [] });
 
 function availableDataset(name) {
   try { return publishedDataset(name); } catch { return null; }
@@ -331,6 +304,8 @@ function replayPreflop(value) {
       if (action !== "fold") state = { ...state, coldAction: { position: block.position, action }, continuationAction: null };
     } else if (block.kind === "forced") {
       if (action !== "fold") break;
+    } else if (block.continuationNode) {
+      state = { ...state, ...chooseContinuationAction(state, block, action) };
     } else if (block.kind === "squeeze-response") {
       state = { ...state, squeezeResponse: block.role === "opener" ? [action] : [state.squeezeResponse[0], action] };
     } else if (block.kind === "shove-response") {
@@ -345,7 +320,7 @@ function replayPreflop(value) {
       const limp = limpActionTransition({ ...state, position: block.position, action });
       if (limp) {
         state = { ...state, ...limp, callers: [], foldedHero: false, pendingRaise: null,
-          continuationAction: null, shoveResponse: null, coldAction: null, squeezeResponse: [],
+          continuationAction: null, shoveResponse: null, coldAction: null, squeezeResponse: [], continuationActions: [],
           limpReraiseAction: limp.limpReraiseAction ?? null, limpFourBetAction: limp.limpFourBetAction ?? null };
       } else if (state.rangeType === "open") {
         const next = positions[positions.indexOf(block.position) + 1];
@@ -356,7 +331,7 @@ function replayPreflop(value) {
         const transition = responseActionTransition({ ...state, position: block.position, action });
         if (!transition) break;
         state = { ...state, ...transition, continuationAction: null, shoveResponse: null,
-          coldAction: null, squeezeResponse: [], limpReraiseAction: null, limpFourBetAction: null };
+          coldAction: null, squeezeResponse: [], continuationActions: [], limpReraiseAction: null, limpFourBetAction: null };
       }
     }
     index += 1;

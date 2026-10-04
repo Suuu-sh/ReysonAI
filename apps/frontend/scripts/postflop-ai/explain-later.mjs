@@ -1,3 +1,4 @@
+import { assertPostflopDeal } from "./range-support.mjs";
 // Evidence for one private combo on the saved AI-estimated turn/river policy.
 // This is a range-weighted estimate, not a solver or GTO result.
 import { evaluate } from "../lib/equity.mjs";
@@ -69,6 +70,7 @@ export function laterExplainContext({ flop, flopActions = "", turn, turnActions 
     throw new Error("リバーはターンの判断が終わってから指定してください。");
   }
 
+  if (inputs.spot.history) assertPostflopDeal(inputs, board);
   const flopReplay = flopState(inputs.spot.tree, flopPath);
   if (flopReplay.end && !["check", "call", "raise-call"].includes(flopReplay.end.type)) {
     throw new Error("フロップのアクションが後続ストリートへ進める状態ではありません。");

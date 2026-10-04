@@ -27,7 +27,15 @@ test("postflop backlog lists flop and turn/river policies for every reachable sp
   }, ["BTN_open_BB_call"]);
   const byKey = Object.fromEntries(catalog.categories.map(c => [c.key, c]));
   const reachable = POSTFLOP_SPOTS.filter(spot => spot.reachable).length;
-  assert.equal(byKey.flop_srp.total + byKey.flop_3bp.total + byKey.flop_4bp.total + byKey.flop_limp.total, reachable);
+  assert.equal(catalog.categories.filter(category => category.street === "flop" && category.modelled).reduce((sum,category)=>sum+category.total,0), reachable);
+  for (const kind of ["sqp", "ccp", "c4bp"]) {
+    const expected=POSTFLOP_SPOTS.filter(spot=>spot.reachable&&spot.kind===kind).map(spot=>spot.id).sort();
+    for (const street of ["flop", "turn_river"]) {
+      const category=byKey[`${street}_${kind}`];
+      assert.deepEqual(category.rows.map(row=>row.id).sort(),expected);
+      assert.ok(category.rows.every(row=>row.status==="todo"&&row.priority===4));
+    }
+  }
   // BTN is the authored original, UTG has its own policy, CO/HJ are copies of BTN's.
   assert.equal(byKey.flop_srp.done, 2);
   assert.equal(byKey.flop_srp.rows.filter(row => row.status === "copy").length, 2);

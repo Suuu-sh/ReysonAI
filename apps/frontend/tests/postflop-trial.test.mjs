@@ -61,7 +61,7 @@ test("only complete paths can enter the next street, with unsupported paths mark
 });
 
 test("every saved open response and 3bet response becomes a heads-up flop spot", () => {
-  assert.equal(POSTFLOP_SPOTS.length, 49);
+  assert.equal(POSTFLOP_SPOTS.filter(spot => !spot.history).length, 49);
   const srp = POSTFLOP_SPOTS.filter(spot => spot.kind === "srp"), threeBet = POSTFLOP_SPOTS.filter(spot => spot.kind === "3bp");
   assert.deepEqual(srp.map(spot => spot.responseId).sort(), preflopRanges.spots.map(spot => spot.id).sort());
   assert.deepEqual(threeBet.map(spot => spot.responseId).sort(), threeBetResponses.spots.map(spot => spot.id).sort());
@@ -94,7 +94,7 @@ test("every saved open response and 3bet response becomes a heads-up flop spot",
   // SB is saved as 3bet-or-fold, so the four SB-call single-raised pots are listed but unreachable.
   assert.deepEqual(POSTFLOP_SPOTS.filter(spot => !spot.reachable).map(spot => spot.id),
     ["UTG_open_SB_call", "HJ_open_SB_call", "CO_open_SB_call", "BTN_open_SB_call"]);
-  for (const spot of POSTFLOP_SPOTS) {
+  for (const spot of POSTFLOP_SPOTS.filter(spot => !spot.history)) {
     if (!spot.reachable) { assert.throws(() => loadInputs(spot.id), /unreachable/); continue; }
     const inputs = loadInputs(spot.id);
     assert.equal(inputs.opening.id, `${spot.opener}_open`);

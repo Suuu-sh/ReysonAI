@@ -10,9 +10,10 @@ import { packFrame, packView, unpackFrameRow, unpackView, compactFlopBase, hydra
 import { FLOP_BETS, historyFor, treeNodes } from "./tree.mjs";
 import { referenceLaterPolicy } from "./later-policy.mjs";
 
-// Version 6: the base stores strategies and explanation facts only. Postflop EV is not part of the
-// product (decision 2026-10-01), so any base that still carries EV (version 5) is stale.
-export const FLOP_BASE_VERSION = 6;
+// Version 7 normalizes impossible raises before computing defence in every
+// view/facts consumer. Older cached rows must not bypass the corrected live path.
+// No new bases are authored by this migration; stale bases use live computation.
+export const FLOP_BASE_VERSION = 7;
 const laterSizingHash = config => sha(Object.fromEntries(["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"].map(key => [key, config[key]])));
 
 export function flopBaseIdentity(inputs, candidate, laterCandidate) {

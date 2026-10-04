@@ -1,3 +1,4 @@
+import { assertPostflopDeal } from "./range-support.mjs";
 // Range-level facts of one decision (both players' reach ranges by hand tier, the bettor's composition per bet
 // size, SPR and how the last card shifted the ranges). Hero independent, cheap (one pass over each range) and
 // never stored: the stored flop base keeps its format. Used only by the advanced-style per-action explanations.
@@ -30,6 +31,7 @@ const strongOf = t => (t.monster ?? 0) + (t.strong ?? 0);
 
 // { board, table, node, role, laterLine (null on the flop) } -> facts, or null when the line has no table.
 export function rangeFactsFor({ inputs, flopPolicy, laterPolicy = null, board, table, node, role, line = null }) {
+  if (inputs.spot.history) assertPostflopDeal(inputs, board);
   if (!table) return null;
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
   const heroSeat = inputs.spot[role], oppSeat = inputs.spot[role === "ip" ? "oop" : "ip"];

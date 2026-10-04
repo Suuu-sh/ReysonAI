@@ -11,7 +11,7 @@ import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from 
 import { NODES, choose } from "../../scripts/postflop-ai/policy.mjs";
 import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.mjs";
 import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
-import { fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
+import { multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
 import { type Decider, type PostflopKit } from "./policy.ts";
 
@@ -73,7 +73,10 @@ export function deal(seed: string) {
 
 // The postflop spot a heads-up preflop line reached, or null when no spot describes it.
 export function postflopSpotFor(events: { pos: Position; type: string; key: string }[]) {
+  const extended = multiwaySpotFor(events);
+  if (extended) return extended;
   const voluntary = events.filter(e => e.type !== "fold" && e.type !== "check");
+  if (new Set(voluntary.map(event => event.pos)).size > 2) return null;
   const keys = voluntary.map(e => e.key);
   const raisers = voluntary.filter(e => e.type === "raise");
   const sig = keys.join(",");
@@ -83,7 +86,7 @@ export function postflopSpotFor(events: { pos: Position; type: string; key: stri
   if (sig === "open,call") return spotFor(raisers[0].pos, voluntary[1].pos);
   if (sig === "open,three_bet,call") return threeBetSpotFor(raisers[0].pos, raisers[1].pos);
   if (sig === "open,three_bet,four_bet,call") return fourBetSpotFor(raisers[0].pos, raisers[1].pos);
-  return null;
+  return multiwaySpotFor(events);
 }
 
 export function playHand(setup: HandSetup): HandResult {

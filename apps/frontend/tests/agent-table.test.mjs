@@ -85,7 +85,7 @@ test("a heads-up line maps to its postflop spot", () => {
   assert.equal(postflopSpotFor(events(["BTN", "raise", "open"], ["SB", "fold", "fold"], ["BB", "call", "call"])).id, "BTN_open_BB_call");
   assert.equal(postflopSpotFor(events(["CO", "raise", "open"], ["BTN", "raise", "three_bet"], ["SB", "fold", "fold"], ["BB", "fold", "fold"], ["CO", "call", "call"])).id, "CO_open_BTN_3bet_call");
   assert.equal(postflopSpotFor(events(["SB", "call", "limp"], ["BB", "check", "check"])).id, "SB_limp_BB_check");
-  assert.equal(postflopSpotFor(events(["UTG", "raise", "open"], ["HJ", "call", "call"], ["BB", "raise", "squeeze"], ["UTG", "fold", "fold"], ["HJ", "call", "call"])), null);
+  assert.equal(postflopSpotFor(events(["UTG", "raise", "open"], ["HJ", "call", "call"], ["BB", "raise", "squeeze"], ["UTG", "fold", "fold"], ["HJ", "call", "call"])).id, "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call");
 });
 
 test("without a postflop policy the pot is checked down", () => {

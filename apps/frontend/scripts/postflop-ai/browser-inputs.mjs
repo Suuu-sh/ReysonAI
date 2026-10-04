@@ -1,3 +1,4 @@
+import { multiwayInputData } from "./multiway-inputs.mjs";
 import { combosOf } from "../lib/equity.mjs";
 import { gameConfig } from "../../src/estimated/sizing.ts";
 import { parseCards } from "./model.mjs";
@@ -82,6 +83,12 @@ function productRows(factors) {
 export function buildInputs(spotId = DEFAULT_SPOT_ID, datasets = {}) {
   const spot = spotById(spotId);
   if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
+
+  if (spot.history) {
+    const { sources, seatRows } = multiwayInputData(spot, file => datasets[file]);
+    const fingerprint = sha({ spot, sources, gameConfig, config: flopConfig() });
+    return { spot, sources, config: pilotConfig, fingerprint, seatRows };
+  }
 
   const openingData = getDataset(datasets, "opening", "openingRanges", "opening-ranges");
   const responseData = getDataset(datasets, "responses", "preflopRanges", "preflop-ranges");

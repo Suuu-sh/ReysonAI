@@ -1,3 +1,4 @@
+import { assertPostflopDeal } from "./range-support.mjs";
 // Range-weighted mix tables of the read-only postflop views. Pure and shared by the Node view
 // (local-view.mjs) and the browser compute layer (src/estimated/postflop-compute.ts) so both build
 // exactly the same rows. Facing decisions use the computed defence (defence.mjs); every other
@@ -34,6 +35,7 @@ export function flopNodes(inputs, policy, boardCards, history = null) {
 
 // The raw canonical-coordinate implementation is also used by the offline base generator.
 export function flopNodesCanonical(inputs, policy, boardCards, history = null) {
+  if (inputs.spot.history) assertPostflopDeal(inputs, boardCards);
   const { spot } = inputs;
   const defence = defenceFor(inputs, policy, null);
   return Object.fromEntries(treeNodes(spot.tree).map(node => {
@@ -45,7 +47,7 @@ export function flopNodesCanonical(inputs, policy, boardCards, history = null) {
     const reach = table ? defence.rangeOf(table, boardCards, seat) : null;
     const mixOf = combo => {
       const base = policyMix(policy, node, combo, boardCards);
-      return table ? defence.mix(table, boardCards, node, combo, base) : base;
+      return table ? defence.mix(table, boardCards, node, combo, defence.baseMix(table, boardCards, node, combo)) : base;
     };
     const rows = inputs.seatRows[seat].map(row => {
       const combos = comboRange([row], "freq", boardCards);
@@ -82,6 +84,7 @@ export function flopHistoryViews(inputs, policy, boardCards) {
 // its street, complete for earlier streets); the acting seat's own earlier actions narrow its combos.
 export function laterMixRows({ actor, role, board, node, line, inputs, flopPolicy, laterPolicy, flopSteps, turnSteps, riverSteps,
   turnBoard, riverBoard, turnPreviousAggressor, riverPreviousAggressor, paths }) {
+  if (inputs.spot.history) assertPostflopDeal(inputs, board);
   const actions = LATER_NODES[node];
   const rows = inputs.seatRows[actor];
   if (!rows) throw new Error(`Missing saved range for ${actor}`);
@@ -106,7 +109,7 @@ export function laterMixRows({ actor, role, board, node, line, inputs, flopPolic
       const rawTier = handTier(item.combo, board);
       const tier = rawTier === "draw" && node.startsWith("river_") ? "medium" : rawTier;
       let mix = laterPolicyMix(laterPolicy, node, item.combo, board, line);
-      if (table) mix = defence.mix(table, board, node, item.combo, mix);
+      if (table) mix = defence.mix(table, board, node, item.combo, defence.baseMix(table, board, node, item.combo));
       detail.push({ cards: item.combo.map(cardText).join(""), tier, weight: item.weight,
         mix: Object.fromEntries(actions.map(action => [action, mix[action] / 100])) });
       weightTotal += item.weight;

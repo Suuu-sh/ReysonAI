@@ -1,3 +1,5 @@
+import { isFreshSimulationReport } from "./publish-d1.mjs";
+import { assertPostflopDeal } from "./range-support.mjs";
 // Read-only local preview of the audited pilot. Never generates or publishes a policy.
 import { loadInputs, readArtifact, requireArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
@@ -14,6 +16,7 @@ import { flopNodes, laterMixRows } from "./views.mjs";
 
 export function buildLocalBoard(boardId, inputs, candidate) {
   const board = parseFlopBoard(boardId);
+  if (inputs.spot.history) assertPostflopDeal(inputs, board.cards);
   const policy = validatePolicy(candidate.policy, inputs.spot.tree);
   if (candidate.metadata?.source_hash !== inputs.fingerprint || candidate.metadata.policy_hash !== sha(policy)) {
     throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
@@ -26,6 +29,7 @@ export function buildLocalBoard(boardId, inputs, candidate) {
 
 export function explainLocalCombo(params, inputs, candidate) {
   const board = parseFlopBoard(params.get("board"));
+  if (inputs.spot.history) assertPostflopDeal(inputs, board.cards);
   const prev = FLOP_BETS.includes(params.get("prev")) ? params.get("prev") : FLOP_BETS[0];
   const options = { boardCards: board.cards, node: params.get("node"), prev,
     inputs, policy: validatePolicy(candidate.policy, inputs.spot.tree) };
@@ -136,21 +140,28 @@ export function postflopResponse(pathname, params) {
     const inputs = loadInputs(params.get("spot") || DEFAULT_SPOT_ID);
     const candidate = loadCandidate(inputs);
     const laterRoute = ["/local-postflop-later", "/local-postflop-later-explain"].includes(pathname);
-    const laterCandidate = laterRoute ? loadLaterCandidate(inputs, candidate) : null;
-    if (laterRoute && !laterCandidate) {
+    const laterCandidate = loadLaterCandidate(inputs, candidate);
+    if ((laterRoute || inputs.spot.history) && !laterCandidate) {
       const error = new Error("ターン・リバーのAI方針がありません。");
       error.code = "LATER_POLICY_MISSING";
       throw error;
     }
     const report = requireArtifact(inputs.spot, "report");
-    if (report.source_hash !== inputs.fingerprint || report.policy_hash !== candidate.metadata.policy_hash ||
-        report.simulation_version !== SIMULATION_VERSION || report.spot !== inputs.spot.id || report.results?.length !== 72) {
+    const currentReport = isFreshSimulationReport(inputs, candidate, laterCandidate, report);
+    // Preserve the existing read-only legacy preview contract. Its recovered
+    // defence-5 report is historical evidence, not current acceptance. New HU
+    // histories always require the strict gate; publication uses it for all spots.
+    const preservedLegacyReport = !inputs.spot.history && report.source_hash === inputs.fingerprint &&
+      report.policy_hash === candidate.metadata.policy_hash && report.simulation_version === SIMULATION_VERSION &&
+      report.spot === inputs.spot.id && report.results?.length === 72;
+    if (!currentReport && !preservedLegacyReport) {
       throw new Error("候補に対応する最新の監査レポートがありません。");
     }
     if (pathname === "/local-postflop-spot") {
       // Same body as the worker's /v1/postflop/spot: the artifacts the browser computes from.
       return { status: 200, body: { kind: "ai_estimate_not_gto", spot: inputs.spot, candidate,
-        laterCandidate: readArtifact(inputs.spot, "laterCandidate"), report } };
+        laterCandidate: readArtifact(inputs.spot, "laterCandidate"), report,
+        report_status: currentReport ? "current" : "preserved-historical" } };
     }
     let data;
     if (pathname === "/local-postflop-explain") data = explainLocalCombo(params, inputs, candidate);

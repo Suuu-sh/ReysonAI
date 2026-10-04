@@ -8,6 +8,7 @@
 //
 // The flop tree depends on who made the last preflop raise: if that player is out of
 // position the tree is "oop_leads", otherwise "oop_checks" (the first pilot's tree; tree.mjs).
+import multiwayCatalog from "../data/hu-after-multiway-spots.json" with { type: "json" };
 import { dataset } from "../../src/estimated/datasets.ts";
 import { gameConfig, isInPosition, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb } from "../../src/estimated/sizing.ts";
 
@@ -116,6 +117,7 @@ export const POSTFLOP_SPOTS = Object.freeze([
   ...threeBetResponses.spots.map(spot => describeThreeBetSpot(spot.opener, spot.three_bettor, spot)),
   ...threeBetResponses.spots.map(spot => describeFourBetSpot(spot.opener, spot.three_bettor, spot)),
   ...LIMPS.map(describeLimpSpot),
+  ...multiwayCatalog.spots.map(spot => Object.freeze(spot)),
 ]);
 
 export function spotById(id = DEFAULT_SPOT_ID) {
@@ -137,3 +139,16 @@ export const limpSpotFor = id => POSTFLOP_SPOTS.find(item => item.kind === "limp
 export function threeBetSpotFor(opener, threeBettor) {
   return POSTFLOP_SPOTS.find(item => item.kind === "3bp" && item.opener === opener && item.threeBettor === threeBettor) ?? null;
 }
+
+// Match every voluntary action AND observed participant fold. Outside forced
+// folds may be omitted by UI selectors, but never an involved player's fold.
+export function multiwaySpotFor(events) {
+  const involved = new Set(events.filter(e => !["fold", "check"].includes(e.action ?? e.key)).map(e => e.seat ?? e.pos));
+  const normalized = events.filter(e => involved.has(e.seat ?? e.pos)).map(e => ({
+    seat: e.seat ?? e.pos, action: e.action ?? e.key, size: e.to_size_bb ?? e.to,
+  }));
+  return POSTFLOP_SPOTS.find(spot => spot.history && spot.history.length === normalized.length && spot.history.every((step, i) =>
+    step.seat === normalized[i].seat && step.action === normalized[i].action &&
+    (normalized[i].size === undefined || step.action === "fold" || step.to_size_bb === normalized[i].size))) ?? null;
+}
+export const MULTIWAY_POSTFLOP_CATALOG = multiwayCatalog;

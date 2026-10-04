@@ -1,5 +1,6 @@
+import { openSizeFor, threeBetToSize } from "./sizing.ts";
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
-import { DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
+import { multiwaySpotFor, DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
 import { NODES, flopBetFraction, flopState, isFlopBet, raiseDepth } from "../../scripts/postflop-ai/tree.mjs";
 import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.mjs";
 import { parseFlopBoard } from "../../scripts/postflop-ai/model.mjs";
@@ -20,7 +21,18 @@ const round = value => Math.round(value * 100) / 100;
 // The saved heads-up flop spot a completed preflop path reaches, or null (scripts/postflop-ai/spots.mjs):
 // single-raised pots (O opens, exactly one later seat C calls), 3bet pots (O opens, X 3bets, O calls),
 // 4bet pots (… O 4bets, X calls) and SB's limped pots; everyone else folds.
-function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) {
+export function flopSpotFor({ actionBlocks = [], rangeType, opener, hero, callers = [], foldedHero, pendingRaise = null, squeezeResponse = [], limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) {
+  const savedEvents = actionBlocks.find(block => block.kind === "end")?.postflopEvents;
+  if (savedEvents) return multiwaySpotFor(savedEvents);
+  if (pendingRaise === "squeeze" && callers.length === 1 && squeezeResponse.length === 2) {
+    const [caller] = callers, size = threeBetToSize(opener, hero, 1);
+    return multiwaySpotFor([
+      { seat: opener, action: "open", to_size_bb: openSizeFor(opener) },
+      { seat: caller, action: "call", to_size_bb: openSizeFor(opener) },
+      { seat: hero, action: "squeeze", to_size_bb: size },
+      ...[opener, caller].map((seat, i) => ({ seat, action: squeezeResponse[i], to_size_bb: squeezeResponse[i] === "call" ? size : null })),
+    ]);
+  }
   if (rangeType === "response") return foldedHero && callers.length === 1 ? spotFor(opener, callers[0]) : null;
   if (rangeType === "three_bet") return callers.length === 0 ? threeBetSpotFor(opener, hero) : null;
   if (rangeType === "four_bet") return callers.length === 0 ? fourBetSpotFor(opener, hero) : null;
@@ -33,14 +45,15 @@ function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction,
   return null;
 }
 
-export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null }) {
+export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, pendingRaise = null, squeezeResponse = [], limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null }) {
   const end = actionBlocks.find(block => block.kind === "end");
-  if (!end || !/^\d+人でフロップへ$/.test(end.result)) return null;
+  if (!end || end.continuationAvailable === false || !/^\d+人でフロップへ$/.test(end.result)) return null;
   const potBb = Number(/^ポット ([\d.]+)bb$/.exec(end.pot)?.[1]);
   if (!Number.isFinite(potBb)) return null;
-  const players = rangeType === "limp" ? ["SB", "BB"]
-    : rangeType === "response" ? [opener, ...callers] : [opener, hero];
-  const spot = flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
+  let players = end.continuationTerminal?.live_participants ?? (rangeType === "limp" ? ["SB", "BB"]
+    : rangeType === "response" ? [opener, ...callers] : [opener, hero]);
+  const spot = flopSpotFor({ actionBlocks, rangeType, opener, hero, callers, foldedHero, pendingRaise, squeezeResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
+  if (spot?.history) players = [spot.oop, spot.ip];
   const pilotAvailable = Boolean(spot?.reachable) && potBb === spot.potBb && Boolean(isDefaultTable);
   return {
     players, potBb, pilotAvailable,

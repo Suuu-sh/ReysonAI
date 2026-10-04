@@ -1,3 +1,4 @@
+import { assertPostflopDeal } from "../../scripts/postflop-ai/range-support.mjs";
 import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.mjs";
 import { flopBetTable, flopUiFacts } from "../../scripts/postflop-ai/flop-ui-facts.mjs";
 import { explainLaterCombo, explainLaterCombos, laterExplainContext } from "../../scripts/postflop-ai/explain-later.mjs";
@@ -32,6 +33,7 @@ function policyForLater(inputs, candidate, laterCandidate) {
 export function computeBoard({ spotId, board, history = null, datasets, flopCandidate, laterCandidate, flopBase }) {
   const inputs = buildInputs(spotId, datasets);
   const selected = parseFlopBoard(board);
+  if (inputs.spot.history) assertPostflopDeal(inputs, selected.cards);
   const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
   if (flopCandidate.metadata?.source_hash !== inputs.fingerprint || flopCandidate.metadata.policy_hash !== sha(policy)) {
     throw new Error("ローカル候補の入力または方針ハッシュが一致しません。");
@@ -51,6 +53,7 @@ export function computeBoard({ spotId, board, history = null, datasets, flopCand
 export function computeExplain({ spotId, board, node, cards, combos, prev, history, datasets, flopCandidate, laterCandidate, flopBase }) {
   const inputs = buildInputs(spotId, datasets);
   const selected = parseFlopBoard(board);
+  if (inputs.spot.history) assertPostflopDeal(inputs, selected.cards);
   const previous = FLOP_BETS.includes(prev) ? prev : FLOP_BETS[0];
   const policy = validatePolicy(flopCandidate.policy, inputs.spot.tree);
   if (flopCandidate.metadata?.source_hash !== inputs.fingerprint || flopCandidate.metadata.policy_hash !== sha(policy)) {

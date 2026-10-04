@@ -775,6 +775,10 @@ class Defence {
   // The defended mix of `combo` at the pending decision of `table`; `base` is the AI policy mix,
   // returned unchanged when the node is not a facing decision or no context can be built.
   mix(table, board, node, combo, base) {
+    // Every consumer may pass a raw saved tier mix. Normalize impossible raises
+    // before computing call/fold, exactly as the engine's policyRule does.
+    const entry = table.log.at(-1);
+    base = effectiveMix(base, entry?.node === node ? entry.canRaise : true);
     if (!isFacingNode(node)) {
       const cap = isBettingNode(node) ? this.betting(table, board, node) : null;
       return cap ? cap.applyCombo(base, combo) : base;
@@ -837,6 +841,8 @@ class Defence {
   // Facts for explanations / UI about one defender combo at the pending decision (null when the
   // node is not a facing decision or no context exists).
   facts(table, board, node, combo, base = null) {
+    const entry = table.log.at(-1);
+    if (base) base = effectiveMix(base, entry?.node === node ? entry.canRaise : true);
     const context = this.context(table, board, node);
     if (!context) return null;
     const equity = this.equity(context, combo);
