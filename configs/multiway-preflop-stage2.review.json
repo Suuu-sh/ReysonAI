@@ -9474,8 +9474,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 7658,
-      "sha256": "eedd04d46ef7340a7197367b04296cf561f7ac4e18df85259e71b33210d31211"
+      "bytes": 7723,
+      "sha256": "1fe32dd2df0fe57e714bcbdfd977a4ac3972acbe8e0f53b0c8a947fc74431300"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -9898,11 +9898,45 @@
       "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
     }
   ],
-  "content_sha256": "ef9962af4b9a40b7e68a35cfc578723ceaec024ae158a2895eca732b0bcc9b8a",
+  "content_sha256": "ff19908347e3465f24b47f5e26dfa520006aa2520450c321004217507ec5c9bf",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
     "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
     "format": "ustar+gzip"
-  }
+  },
+  "delivery_review_amendments": [
+    {
+      "date": "2026-10-04",
+      "reviewer": "Independent PR35 delivery-source review",
+      "source_commit": "a18365fbeaef70f970a7a374b3d201885e6b05df",
+      "scope": "Only the inherited Actions artifact naming and overwrite change in .github/workflows/deploy-worker.yml. This amendment does not re-author or re-approve strategy quality; the original independent strategy review, findings, advisories and limitations above remain unchanged.",
+      "before": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 7658,
+        "sha256": "eedd04d46ef7340a7197367b04296cf561f7ac4e18df85259e71b33210d31211"
+      },
+      "after": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 7723,
+        "sha256": "1fe32dd2df0fe57e714bcbdfd977a4ac3972acbe8e0f53b0c8a947fc74431300"
+      },
+      "rationale": "Removing github.run_attempt from the matching upload/download name lets a failed deploy-only rerun reuse the verified artifact from the same workflow run. The pinned download-artifact action has no github-token, repository, run-id, pattern or merge-multiple override and defaults to the current repository/current run. GitHub reruns retain the original GITHUB_SHA and GITHUB_REF, and the artifact name still binds github.sha. overwrite:true replaces that run-scoped artifact only when the verify job reruns and all its prior checks pass.",
+      "preserved_gates": "Deployment still requires verify, is main-only and excludes pull_request. Restore validates every source and archive hash. The deployment checkout recomputes the delivery and --check-bundle compares the complete SQL and manifest before deployment/import. No source exclusion, fallback, generation command, credential/permission expansion or validation bypass was added.",
+      "verified_unchanged": {
+        "other_source_records": 85,
+        "artifact_records": 1888,
+        "archive_entries": 1614,
+        "archive_bytes": 1747857,
+        "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
+      },
+      "references": [
+        "https://github.com/Suuu-sh/ReysonAI/commit/a18365fbeaef70f970a7a374b3d201885e6b05df",
+        "https://github.com/actions/download-artifact/blob/d3f86a106a0bac45b974a628896c90dbdf5c8093/README.md#inputs",
+        "https://github.com/actions/upload-artifact/blob/ea165f8d65b6e75b540449e92b4886f43607fa02/README.md#overwriting-an-artifact",
+        "https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs"
+      ]
+    }
+  ]
 }
