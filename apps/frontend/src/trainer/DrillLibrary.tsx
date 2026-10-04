@@ -211,7 +211,7 @@ function RankedEmblem({ rank, tier }) {
 // alternating right and left (master right, diamond left, platinum right, ...), balanced 3 + 3.
 const fanOffset = strength => strength === 0 ? 0 : strength % 2 ? (strength + 1) / 2 : -strength / 2;
 function RankFan() {
-  const names = [...TIERS.map(tier => tier.name), LEGEND];
+  const names = [...TIERS.slice(-2).map(tier => tier.name), LEGEND];
   const last = names.length - 1;
   return <div className="rank-fan" aria-hidden="true">
     {names.map((name, index) => <span key={name} className={`rank-fan-item${index === last ? " is-front" : ""}`}
