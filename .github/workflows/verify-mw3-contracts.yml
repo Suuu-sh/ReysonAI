@@ -6,6 +6,10 @@ on:
       - 'apps/frontend/scripts/postflop-ai/mw3-*.mjs'
       - 'apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs'
       - 'apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.mjs'
+      - 'apps/frontend/scripts/postflop-ai/materialize-mw3-authored.mjs'
+      - 'apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs'
+      - 'apps/frontend/scripts/data/mw3-authored/**'
+      - 'apps/shared/mw3-approved.ts'
       - 'apps/frontend/scripts/postflop-ai/model.mjs'
       - 'apps/frontend/scripts/data/mw3-*.mjs'
       - 'apps/frontend/scripts/lib/continuation-evaluator.mjs'
@@ -37,6 +41,8 @@ jobs:
         run: |
           node --check apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs
           node --check apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.mjs
+          node --check apps/frontend/scripts/postflop-ai/materialize-mw3-authored.mjs
+          node --check apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs
       - name: Test isolated three-player engine, classifier, codecs and adapters
         run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs
       - name: Test unpublished, fail-closed three-player delivery boundary

@@ -213,3 +213,17 @@ Mw3のinputs、browser inputs、runtime、simulation、audit、policy、artifact
 5. Range/Agent接続・最終共有HU audit/照合・全tests/build・ブラウザQA・LFS実体/receipt/本番承認という既定のrelease gateは省略しない。
 
 このaddendum作成中に使用したのはPython・Git・静的読取りのみ。Node/probe/compile/gate/simulationは起動していない。
+
+## 残15経路の作者設計・静的独立review（2026-10-04 20:25 UTC）
+
+独立Astra reviewerによる判定は、**全15経路の候補compileへ進める設計GO**。実policy生成・schema実行・全量品質gate・品質受入れ・公開承認のGOではない。quality acceptanceは引き続き代表V4の1/16だけである。
+
+- 独立Pythonで全15の実source positive-support行、weighted combos、source fingerprint再構成、8/8.5/9BB geometry、45 original rolesの全anchorを照合PASS。
+- 最初2経路HJ→BTN→BB/HJ→CO→BBに加え、残13のspecial/response/later anchorsも確認。BB/SB/nonblindの意味は分離され、nonblind firstはopener。SB最狭17.9 weighted combos/8handも実sourceと一致した。
+- 共通emitはoriginal role、3→2、7selector、geometry別witness、9tier、nuts/board-safe分岐を維持。戦略設計上の阻害欠陥や頻度修正要求なし。
+- generic CLIはpilot拒否、spot固有JSON＋context/emit/registryの4-file recipe pin、source/meaning/verification pin、両candidate保存前検証、既存byte保全、構造error/gapで以降phaseを止めるfail-fastが静的に整合。
+- 「suited connectors皆無」の説明は、JTs以下の非broadway SCを指すと修正した。KQs、一部QJsには支持がある。頻度変更はしていない。
+- review時の最初2recipe SHA: `6ed2c1b57e8db6a86a5b25ece5211aa118c03e5282ac78747b5ac4df5db6ebd2`、`ca64537c3042dfc07605e82c48abeaea06dbb4f3d1a801e6c07bf54508e0e4e7`。
+- 受入れpilotのrecipeと保存2候補はSHA不変。新15のsaved policyはまだ生成していない。
+
+各spotの実gate後は、保存candidateとgateのpolicy hash一致、tight sourceのjoint overfold、少数handへの集中を再評価して品質受入れを別途判定する。このreviewはPython/Git/静的読取りのみで、Node/probe/compile/gate/simulationは未実行。

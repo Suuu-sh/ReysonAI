@@ -1,5 +1,5 @@
-// Prepared read-only route, intentionally NOT registered in index.ts. The default
-// registry is empty. Publishing requires a separately reviewed hash-pinned build
+// Dedicated read-only route; index.ts supplies the empty shared build registry.
+// Publishing requires a separately reviewed hash-pinned build
 // config; D1 rows or caller-provided query strings cannot grant approval.
 import type { D1Database } from './postflop.ts';
 

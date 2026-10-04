@@ -4,6 +4,8 @@ import { routeAccount, type AccountEnv } from "./account.ts";
 import { routePostflop, type D1Database } from "./postflop.ts";
 import { routePreflopDatasets } from "./preflop-datasets.ts";
 import { POSTFLOP_RUNTIME_CONFIG_PATH, routePostflopRuntimeConfig } from "./postflop-runtime-config.ts";
+import { routeMw3Transport } from "./mw3-transport.ts";
+import { MW3_APPROVED_POLICIES } from "../../shared/mw3-approved.ts";
 
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"] as const;
 
@@ -100,6 +102,12 @@ function notModified(request: Request, response: Response): Response | null {
 }
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
+  // Dedicated three-player bytes have a build-pinned approval boundary. Keep
+  // this separate from HU caches/dataset versions, and never infer approval
+  // from a database row, preflop path, query parameter or existing HU policy.
+  if (url.pathname === "/v1/mw3" || url.pathname.startsWith("/v1/mw3/")) {
+    return routeMw3Transport(request, env.DB, MW3_APPROVED_POLICIES);
+  }
   if (url.pathname.startsWith("/v1/ranked/")) return routeRanked(request, env);
   if (isNativeAccountRequest(url)) return routeNativeAccount(request, env);
   if (url.pathname.startsWith("/v1/account/")) return routeAccount(request, env);
@@ -520,4 +528,3 @@ class HttpError extends Error {
 function isRecord(value: unknown): value is JsonRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
-
