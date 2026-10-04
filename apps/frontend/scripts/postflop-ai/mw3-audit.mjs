@@ -1,8 +1,8 @@
 // Structural all-board coverage and transparent, advisory policy diagnostics.
 // Finite contexts collapse only policy-equivalent states, never joint reach probabilities.
 import { combosOf } from '../lib/equity.mjs';
-import { evaluateContinuation } from '../lib/continuation-evaluator.mjs';
-import { handTier, runoutTexture, TIERS } from './model.mjs';
+import { runoutTexture } from './model.mjs';
+import { MW3_TIERS as TIERS, mw3HandTier } from './mw3-hand-features.mjs';
 import { canonicalFlops } from './flop-isomorphism.mjs';
 import { selectMw3Rule, validateMw3Policy } from './mw3-policy.mjs';
 import { probeMw3Hand } from './mw3-tree.mjs';
@@ -11,7 +11,7 @@ export function mw3BoardRanges(inputs, board) {
   const blocked = new Set(board);
   return Object.fromEntries(inputs.spot.seats.map(seat => [seat, inputs.seatRows[seat].filter(row => row.freq > 0).flatMap(row =>
     combosOf(row.hand).filter(combo => combo.every(card => !blocked.has(card))).map(combo => ({
-      hand: row.hand, combo, weight: row.freq / 100, tier: handTier(combo, board, evaluateContinuation([...combo, ...board])) }))) ]));
+      hand: row.hand, combo, weight: row.freq / 100, tier: mw3HandTier(combo, board) }))) ]));
 }
 
 const selectorCoverage = (decision, rule) => ({
@@ -43,6 +43,9 @@ export function auditMw3Board(inputs, policies, board, contexts) {
         if (weight > 0 && tier === 'monster' && (rule.mix.fold ?? 0) >= 90) warnings.push({ type: 'monster_nearly_folds', context: key, tier, frequency: rule.mix.fold });
         const aggressive = Object.entries(rule.mix).filter(([action]) => action === 'raise' || action === 'allin' || action.startsWith('bet')).reduce((a, [, n]) => a + n, 0);
         if (weight > 0 && tier === 'air' && aggressive > (decision.players === 3 ? 25 : 40)) warnings.push({ type: 'raw_air_aggression', context: key, tier, frequency: aggressive });
+        if (weight > 0 && tier === 'board_locked' && (aggressive > 0 || (rule.mix.fold ?? 0) > 0)) warnings.push({ type: 'locked_board_policy_mismatch', context: key, tier, mix: rule.mix });
+        if (weight > 0 && tier === 'nuts' && street === 'river' && (rule.mix.fold ?? 0) > 0) warnings.push({ type: 'river_nuts_folds', context: key, tier, frequency: rule.mix.fold });
+        if (weight > 0 && tier === 'board_shared' && aggressive > 0) warnings.push({ type: 'shared_board_aggression', context: key, tier, frequency: aggressive });
       } catch (error) { errors.push({ context: key, tier, message: error.message }); }
     }
     coverage[key] = checks;

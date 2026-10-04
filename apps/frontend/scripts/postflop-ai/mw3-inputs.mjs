@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { buildMw3Catalog, MW3_VERSION } from './mw3-spots.mjs';
+import { MW3_HAND_CLASSIFIER_VERSION, MW3_TIERS } from './mw3-hand-features.mjs';
 import { MW3_SIZING } from './mw3-engine.mjs';
 export const mw3Root = fileURLToPath(new URL('../..', import.meta.url));
 export const mw3Sha = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -28,6 +29,7 @@ export function loadMw3Inputs(id) {
     secondCaller: spot.secondCaller, potBb: spot.potBb, stackBb: spot.stackBb, openBb: spot.openBb };
   const fingerprint = mw3Sha({ version: MW3_VERSION, geometry, sourceSpots, sizing: MW3_SIZING,
     rake: { rate: 0.05, capBb: 3, noFlopNoDrop: true }, evaluator: 'continuation-best-five-v1',
+    classifier: { version: MW3_HAND_CLASSIFIER_VERSION, tiers: MW3_TIERS },
     sourceScope: 'three_live_ranges_forced_fold_holecards_unmodeled' });
   return { spot, seatRows: spot.seatRows, sourceSpots, fingerprint, sizing: MW3_SIZING };
 }

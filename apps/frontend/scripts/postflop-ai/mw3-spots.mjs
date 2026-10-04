@@ -38,6 +38,34 @@ export function hasCompatibleMw3Hands(seatRows, board = []) {
   return ranges.length === 3 && search(0);
 }
 
+// Exact three-seat action probability under a uniform legal deal, with card removal.
+// The other three forced-fold seats remain unmodeled, so this is NOT the probability
+// of the entire six-seat terminal history. No Monte Carlo or marginal-product shortcut.
+export function mw3JointActionShare(seatRows) {
+  const ranges = Object.values(seatRows).map(rows => rows.filter(row => row.freq > 0).flatMap(row =>
+    combosOf(row.hand).map(combo => ({ combo, weight: row.freq / 100 }))));
+  if (ranges.length !== 3) throw new Error('Joint action share requires exactly three ranges');
+  // Sum C's compatible mass by inclusion-exclusion over the four blocked cards.
+  const cards = new Float64Array(52), pairs = new Float64Array(52 * 52);
+  let total = 0;
+  for (const { combo: [a, b], weight } of ranges[2]) { total += weight; cards[a] += weight; cards[b] += weight; pairs[a * 52 + b] += weight; pairs[b * 52 + a] += weight; }
+  let weightedTuples = 0, compensation = 0;
+  for (const a of ranges[0]) for (const b of ranges[1]) {
+    const [a0, a1] = a.combo, [b0, b1] = b.combo;
+    if (a0 === b0 || a0 === b1 || a1 === b0 || a1 === b1) continue;
+    const blocked = [a0, a1, b0, b1];
+    let compatible = total;
+    for (const card of blocked) compatible -= cards[card];
+    for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) compatible += pairs[blocked[i] * 52 + blocked[j]];
+    if (compatible < -1e-9) throw new Error('Invalid joint action normalization');
+    const value = a.weight * b.weight * Math.max(0, compatible) - compensation;
+    const next = weightedTuples + value; compensation = (next - weightedTuples) - value; weightedTuples = next;
+  }
+  const legalDeals = 1326 * 1225 * 1128;
+  return { method: 'exact_card_conditioned_three_active_action_share_forced_folds_unmodeled',
+    weightedLegalTuples: weightedTuples, uniformLegalDeals: legalDeals, probability: weightedTuples / legalDeals };
+}
+
 export function buildMw3Catalog({ opening, responses, multiway }) {
   validateOpeningDataset(opening);
   validateDataset(responses);
@@ -76,7 +104,7 @@ export function buildMw3Catalog({ opening, responses, multiway }) {
       seats, roles: Object.fromEntries(seats.map((seat, i) => [seat, ["first", "middle", "last"][i]])),
       openBb: 2.5, potBb: 7.5 + deadBlindBb, stackBb: 97.5, deadBlindBb,
       sources: { openingId: open.id, firstResponseId: first.id, multiwayResponseId: second.id },
-      seatRows, reachable,
+      seatRows, reachable, jointActionShare: mw3JointActionShare(seatRows),
       unavailableReason: reachable ? null : emptySeats.length ? `zero_saved_call_support:${emptySeats.join(",")}` : "no_compatible_holecard_tuple",
       // Priority only. This omits forced-fold probabilities and card dependence, and MUST NOT
       // be displayed as the probability of this terminal history or used as an acceptance gate.
@@ -84,7 +112,7 @@ export function buildMw3Catalog({ opening, responses, multiway }) {
         score: participants.reduce((product, seat) => product * marginalActionShare[seat], 1) },
       policyStatus: "not_generated",
     });
-  }).sort((a, b) => b.reachPriority.score - a.reachPriority.score || a.id.localeCompare(b.id));
+  }).sort((a, b) => b.jointActionShare.probability - a.jointActionShare.probability || a.id.localeCompare(b.id));
 }
 
 export function mw3SpotFor(catalog, { opener, callers, raised = false, activeSeats }) {
@@ -92,4 +120,19 @@ export function mw3SpotFor(catalog, { opener, callers, raised = false, activeSea
       new Set(activeSeats).size !== 3) return null;
   return catalog.find(spot => spot.opener === opener && spot.firstCaller === callers[0] && spot.secondCaller === callers[1] &&
     spot.seats.every(seat => activeSeats.includes(seat))) ?? null;
+}
+
+
+// Agent/preflop adapters must match the real event sequence, not just count players.
+// Exactly one open and two calls are supported. Any squeeze/limp/3bet continuation
+// remains unavailable even when it happens to end with three live participants.
+export function mw3SpotForEvents(catalog, events) {
+  if (!Array.isArray(events) || events.some(event => !event || !PREFLOP_ORDER.includes(event.pos))) return null;
+  const voluntary = events.filter(event => event.type !== 'fold' && event.type !== 'check');
+  if (voluntary.map(event => event.key).join() !== 'open,call,call' || voluntary[0].type !== 'raise' ||
+      voluntary.slice(1).some(event => event.type !== 'call')) return null;
+  const [open, first, second] = voluntary;
+  const participants = [open.pos, first.pos, second.pos];
+  if (events.some(event => event.type === 'fold' && participants.includes(event.pos))) return null;
+  return mw3SpotFor(catalog, { opener: open.pos, callers: [first.pos, second.pos], activeSeats: participants });
 }

@@ -1,9 +1,9 @@
 // Dedicated saved three-player-origin policies. No HU defence, reference mixes, EV
 // optimizer, frequency rescaling or missing/stale-artifact fallback is permitted.
-import { evaluateContinuation } from '../lib/continuation-evaluator.mjs';
-import { flopTextureKeys, handTier, LINES, RUNOUT_TEXTURES, runoutTexture, TEXTURES, TIERS } from './model.mjs';
+import { flopTextureKeys, LINES, RUNOUT_TEXTURES, runoutTexture, TEXTURES } from './model.mjs';
+import { MW3_TIERS as TIERS, mw3HandTier } from './mw3-hand-features.mjs';
 import { describeMw3Node } from './mw3-tree.mjs';
-export const MW3_POLICY_SCHEMA = 1;
+export const MW3_POLICY_SCHEMA = 2;
 export const MW3_SELECTOR_KEYS = Object.freeze(['line', 'texture', 'players', 'position', 'response', 'price', 'spr']);
 export const MW3_SELECTORS = Object.freeze({ line: ['any', ...LINES], texture: ['any', ...TEXTURES, ...RUNOUT_TEXTURES],
   players: ['any', 2, 3], position: ['any', 'first', 'middle', 'last'], response: ['any', 'none', 'cold', 'invested'],
@@ -64,6 +64,7 @@ export function validateMw3Policy(policy, { spotId, nodes } = {}) {
 }
 
 const indexed = new WeakMap();
+const selectedRules = new WeakMap(); // Validated saved policies are immutable by contract.
 function rulesFor(policy, node, tier) {
   let byKey = indexed.get(policy);
   if (!byKey) {
@@ -84,15 +85,23 @@ export function selectMw3Rule(policy, decision, tier, board) {
   const textures = decision.street === 'flop' ? flopTextureKeys(board) : [runoutTexture(board), 'any'];
   const context = { line: decision.line, players: decision.players, position: decision.activePosition,
     response: decision.responseType, price: decision.priceBand, spr: decision.sprBand };
-  const matches = rulesFor(policy, decision.node, tier).filter(rule => MW3_SELECTOR_KEYS.every(key =>
-    key === 'texture' ? textures.includes(rule.when.texture) : rule.when[key] === 'any' || rule.when[key] === context[key]));
-  if (!matches.length) throw new Error(`Uncovered mw3 policy context: ${decision.node}/${tier}`);
-  if (matches[1]?.priority === matches[0].priority) throw new Error('Ambiguous selected mw3 rule');
-  const rule = matches[0];
+  let cache = selectedRules.get(policy);
+  if (!cache) { cache = new Map(); selectedRules.set(policy, cache); }
+  const cacheKey = [decision.node, tier, ...Object.values(context), textures.join(',')].join('|');
+  let rule = cache.get(cacheKey);
+  if (!rule) {
+    const matches = rulesFor(policy, decision.node, tier).filter(item => MW3_SELECTOR_KEYS.every(key =>
+      key === 'texture' ? textures.includes(item.when.texture) : item.when[key] === 'any' || item.when[key] === context[key]));
+    if (!matches.length) throw new Error(`Uncovered mw3 policy context: ${decision.node}/${tier}`);
+    if (matches[1]?.priority === matches[0].priority) throw new Error('Ambiguous selected mw3 rule');
+    rule = matches[0];
+    if (cache.size >= 60000) cache.delete(cache.keys().next().value);
+    cache.set(cacheKey, rule);
+  }
   if (!sameActions(rule.mix, decision.actions)) throw new Error('Saved mw3 policy disagrees with legal actions');
   return rule;
 }
 export function mw3PolicyMix(policy, decision, hole, board) {
-  const tier = handTier(hole, board, evaluateContinuation([...hole, ...board]));
+  const tier = mw3HandTier(hole, board);
   return { ...selectMw3Rule(policy, decision, tier, board).mix };
 }

@@ -82,6 +82,7 @@ export function diagnoseMw3JointFold(inputs, policies, { board, paths, action, s
   return { spot: inputs.spot.id, board, paths, action, observableAliases: groups.find(group => group.actions.includes(action)).actions,
     sourceHash: inputs.fingerprint, samples, seed, tupleMethod: 'whole_tuple_rejection_with_folded_participant_blockers',
     forcedFoldOutsideSeats: 'unmodeled', probabilityMethod: 'mean_of_sequential_fold_products_within_joint_tuple',
+    mdfDefinition: 'rake_agnostic_P_over_P_plus_new_wager_advisory_only',
     allFoldProbability: mean, continuation, mdf, difference: continuation - mdf,
     continuationInterval: [Math.max(0, continuation - radius), Math.min(1, continuation + radius)],
     sampleVariance: m2 / (samples - 1), intervalMethod: 'fixed_sample_hoeffding_99.9pct',

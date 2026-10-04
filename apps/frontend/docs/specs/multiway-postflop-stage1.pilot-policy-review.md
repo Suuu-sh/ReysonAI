@@ -144,3 +144,113 @@ const inputs = loadMw3Inputs('CO_open_BTN_call_BB_call');
 const probe = probeMw3Hand(inputs.spot);
 const { flop, later } = buildMw3PilotPolicies(inputs, probe);
 ```
+
+---
+
+# V2 authoring review: private contribution / current nuts / shared board
+
+更新: 2026-10-04。上記V1の根拠・数値・hashは履歴として保存し、本節以降が8-tier候補の記録である。V1保存artifactは親側の`archive-v1`に保全されている。V2も未公開・独立quality review前の候補。
+
+## 新しい契約と根拠
+
+- source fingerprint: `6adc8a5f853d488f68edd4dbae4cdfbeb9d459a234dca8584f078f46652edd9d`。
+- policy schema 2、classifier version 2。
+- tier順: `nuts, monster, strong, draw, medium, air, board_shared, board_locked`。
+- classifierは親が実装した`mw3-hand-features.mjs`。既存HUの`handTier` / `hand-features.mjs`は変更していない。
+- 私有札のmade-hand寄与を確認し、paired boardに付いた弱いpocket pairや共有tripsをmonsterから外す。最高unpaired side-cardに対するpair、および実際のbest-fiveへ入る最高private kickerをstrong/mediumへ分ける。
+- 公開boardごとに全合法2枚のbest-five scoreを一度評価し、score降順・同scoreはcard昇順でcacheする。Heroの2枚と重ならない先頭pairが実際に可能なopponentの最大score。Hero scoreがそれ以上なら**現時点の**blocker-conditioned nuts。equity、EV、相手range、相手の実際の伏せ札を見ない。
+- public upper-bound一致の`guaranteedPrivateNuts` factはpositive-onlyのまま保持。tierはより厳密な`blockerConditionedNuts`を使うので、4-flushの一枚nut flushや`AAKK2 / AK`の既知false-negativeを解消する。
+- 分類の優先順はboard_locked → board_shared → nuts → residual 5 tiers。`playsBoard`はriverの全categoryで判定する。
+- board_lockedは全合法holdingが公開boardと同点になることを厳密確認する。公開royal、3-flushのないBroadway straight、quads＋最高可能kicker等。private nutsと混同しない。
+
+## V2の実際のauthor判断
+
+追加3tierはV1のmonsterをコピーしていない。authoring sourceの`NUTS_FLOP_BET` / `NUTS_LATER_BET` / `NUTS_SIZES` / `NUTS_RESPONSE` / `BOARD_SHARED_CALL`で専用判断を明示した。8tierに展開した完成mixを保存し、consumerはその頻度を直接使う。
+
+### Nuts
+
+- BBはnutsでもチェックを十分残し、CO c-betとBTN stabは別のbet頻度・サイズを持つ。
+- turn/riverはlive人数・現在OOP/IP・前streetのlineごとに独立profile。previous defenderから先頭leadを無条件100%にしない。
+- river facingは全node/context/textureでfold0。raiseが合法ならcall/raiseを混ぜ、後ろにもう1人残るとovercallを受けるためcallを増やす。raise不可ならcall100。
+- flop/turnのcurrent nutsは最終勝利を保証しない。現候補は普通の33/75/125%betへfold0、expensive raise/allinの一部に少量foldを残す。実到達contextでの最大foldはflop5%、turn8%。先頭betもcheckを残し、現在nutsだからすべてのサイズをjamにしない。
+- 安全な共有boardと異なり、私有nutsのbetを一律checkへ抑えない。現在のnut flushがflush runoutだから旧monsterの大きな減速を受ける、という誤りを避けた。
+
+### Board locked
+
+- 全合法action keyを保存したうえで、firstはcheck100、facingはcall100、raise0。
+- 誰も上回れない共有役での誤foldと、不必要なpot/rake拡大を避ける。
+- flop/turnでは実カード上このtierは発生しないが、schemaの全node × tier coverageとして同じ明示mixを保存する。
+
+### Board shared
+
+- firstはcheck100、raise0。私有札が一切改善していない共有役を強いvalue handとしてbet/raiseする挙動を止めた。
+- riverのcallはfaced action × live人数 × priceを専用表で判断。3人closingは既に他の1人が続行しているため、2人closingとは区別する。cold/investedと前streetのlineも小さく考慮。
+- 2人・33%・standard価格の基準call45%、3人では30%。より大きいbet/raiseやexpensive価格ほど絞る。これは共同MDFを満たすための機械的補正ではない。
+- ただし共有high-cardから共有fullhouseまで同じtierに入るため、専用化だけで防御の品質を解決したとは扱わない。詳細は残限界節。
+- flop/turnでは実カード上発生しない。schema上のfirst check100、facing fold100は不可能classに対する明示行であり、実handへimplicit fallbackとして使わない。
+
+### Residual 5 tiersの再判断
+
+- 小pocket pairやboard-owned tripsが外れたpaired monsterは、V1よりprivate valueとしてbet/raiseをやや増やした。例CO paired-high monster bet48→57%、配分は旧33/75=82/18から65/35へ。
+- strongにはpaired-boardのgood bluff-catcherも入るため、CO paired-high strong bet42→34%、BTN50→44%へ抑えた。BBはcheck中心を維持する。
+- paired textureでのmonster continue減点を−10→−4、raise減点を−12→−6。共有役をmonsterと誤認していたことへの過大な一律減速を一部戻した。
+- later pair-runoutのmonster bet減点はturn−15→−8、river−20→−12。flush/straight threat、strong/mediumの脆さ、後続responseのリスクは継続する。
+- low-SPRでは新nutsもcheck/shove、または33/shoveの明示配分。sourceで実行時equity補正を追加していない。
+
+## V1 → V2の具体例
+
+以下はCO、3人、checked line、firstはdeep、facingは75% / standard / 後続responseありの同一context比較。値は保存mixそのもの。
+
+| Board / hand | Tier V1 → V2 | First bet V1 → V2 | Facing V2 fold / call / raise |
+|---|---|---:|---|
+| KhKd7s / QcQd | monster → strong | 48 → 34% | 34 / 65 / 1 |
+| KhKd7s / 2c2d | monster → medium | 48 → 12% | 100 / 0 / 0 |
+| KhKd2s / AhKs | monster → monster | 48 → 57% | 5 / 57 / 38 |
+| KhKd2s / Kc2d | monster → nuts | 48 → 66% | 0 / 58 / 42 |
+| QsQhQd / 7c6c | monster → medium | 48 → 12% | 100 / 0 / 0 |
+| QsQhQd / AhKc | monster → strong | 48 → 34% | 34 / 65 / 1 |
+| AhKh8h3h2c / QhJd | monster → nuts | 28 → 76% | 0 / 32 / 68 |
+| AsAdKcKdJh / 7c6c | monster → board_shared | 28 → 0% | 88 / 12 / 0 |
+| AcKdQhJsTc / 7c6c | monster → board_locked | 28 → 0% | 0 / 100 / 0 |
+
+上位private kickerを残すことで、QQQ上のAKまで弱いairに落として全foldする逆方向のgross errorを避ける。一方、同じQQQ上の76は高いprivate kickerやpocket pairに負けやすく、75%への3人cold responseを大きく減らした。
+
+### Raw own-preflop weighted first-action比較
+
+前節と同じく他人のcheckを条件付けていない診断値。joint reachではない。
+
+| Board | BB V1 → V2 bet | CO V1 → V2 bet | BTN V1 → V2 bet |
+|---|---:|---:|---:|
+| As7d2c | 3.62 → 3.62% | 26.16 → 26.30% | 34.54 → 34.58% |
+| 8h7h6c | 14.95 → 15.14% | 22.90 → 23.08% | 32.95 → 33.23% |
+| KhKd2s | 6.19 → 5.19% | 24.45 → 22.87% | 34.94 → 32.16% |
+| QsQhQd | 16.00 → 9.95% | 48.00 → 32.14% | 58.00 → 45.42% |
+| AsAdKcKd2h | 32.00 → 13.30% | 45.00 → 22.57% | 68.00 → 36.97% |
+| AsAdKcKdJh | 15.00 → 5.48% | 28.00 → 13.57% | 51.00 → 23.57% |
+
+V1のriver `AAKK2`では全rangeがmonsterだった。V2ではprivate A/Kによる本物のfullhouse、Q kicker、低いprivate kicker等に分かれるため、raw全range betも低下する。`AAKKJ`の真のboard_shared質量はBB57.63%、CO46.73%、BTN50.35%で、この質量のfirst betは0。
+
+## V2自己点検
+
+- `node --check` PASS、`validateMw3Policy`両street envelope PASS。
+- 117 nodes / 1,209 contextsを維持。
+- flop: 33 × 8 defaults + 96 × 12 × 8 overrides = **9,480 rules**。
+- later: 84 × 8 defaults + 1,113 × 5 × 8 overrides = **45,192 rules**。各envelopeの50,000上限内。
+- 実board代表12 flop textures、turn/river各5 runout featuresで全**53,736 override**を実選択。全件priority100、fallback選択0、action order/key一致、整数sum100。
+- board_lockedの**6,717** selector選択でcheck100/call100を確認。
+- river nuts facingの**2,785** selector選択でfold0を確認。
+- board_sharedの**6,717** selector選択でfirst check100 / raise0を確認。
+- 上記にはschemaの直積としてcard上発生しないtierも含む。全53,736に実hand supportがあるという意味ではない。
+- 同一inputs/probeでの再生成JSON一致。
+- 確定policy SHA-256:
+  - flop: `890bbb589b5e0186c3669862543ddc9cd38984be82a36e6199b5511cafcbcccf`
+  - later: `de5a744fbb011e2bb7d2a03b11f8050c75bcd7768f762fde8f54d45da3693d1a`
+- V2候補保存・全1,755 gate・後段board点検・20,000 tuple joint診断・独立reviewは親が担当する。この自己点検をそれらの代わりにはしない。
+
+## V2の残限界 / 独立reviewで止めずに見逃してはいけない点
+
+1. **Current nutsと将来lockの区別不足**。少量foldを残した現在nuts tierには、私有royal flushも入る。実例`AhKhQh / JhTh`、`mw3_flop_middle_vs_raise2_behind`、expensiveではfold3 / call97。turn `AhKhQhJc / JhTh`、同等raise2/expensiveではfold8 / call92。どちらもroyalは将来負けないため、このfoldは不適切。flop/turnを無条件stack-offにしない要件と8tierの粒度が衝突している。private future-lockの追加区分か、current nutsの全facing fold0を別の戦略判断として採用する必要があり、親へ先に報告した。riverのnuts誤foldは解消済みだが、全streetの絶対nuts誤foldを解消したとは言わない。
+2. **board_shared内の強弱差**。`playsBoard`が共有high-card、pair、straight、flush、fullhouse等を一つにまとめる一方、policyは新しいriver1枚のfeatureしか見ない。call表は透明な暫定判断であり、共有fullhouseの過剰foldと共有high-cardの過剰callを同時に精密修正できない。first check100は共有役valuebetの誤認を止めるが、共有役をbluffへ回す戦略も抑えるため、under-bluffは別途診断する。
+3. nutsは唯一勝つhandとは限らず、opponentとtieするnutsも含む。nutsを強いvalueとしてbet/raiseする一律頻度は、split-pot構造の細部を捉えない。
+4. fullhouseの上下、低い一枚flush、nut draw / weak draw、top-pair kicker、bettor identityと詳細historyの合流は依然coarse。exact current rank classifierの導入はequityや均衡戦略の導入ではない。
+5. 正規化・選択・合法性PASSと、共同防御の妥当性・全board品質・公開承認は別である。既知の限界を警告0という理由だけで解決済みにしない。

@@ -76,3 +76,17 @@
 - `mw3-joint-defence.mjs`: 最低20,000のwhole-tuple rejection sampling。同じ合法tuple内で、3→2人になる逐次foldの確率を掛けてから平均。既fold参加者のblockerも残す。公開gateの最適性証明には使わず警告診断。
 - `mw3-runtime.mjs`: 3人のRange用データとseeded Agentのpause/resume/river精算の共有adapter。現在actorだけ現在戦略、他席は過去行動によるreachと明記。HU/既存画面には未接続。
 - `gate-mw3-pilot.mjs`: 明示指定時のみ全1,755flop・代表後段runout・joint防御を検査するローカルgate。AI呼出し、D1/import、配信はしない。
+
+## V2 の確認済み段階（2026-10-04 16:10 UTC）
+
+- 3人専用classifierを追加し、board側だけの役・私有pair/実kicker・正確な現在nuts・board共有/公開lockedを区別。既存HU classifierは変更なし。
+- nutsはboard別の全合法2枚rankを一度sort/cacheし、Hero2枚と非重複の最上位を読む。range equity/EVではなく、現在のmade rankの厳密比較。flop/turnの将来勝利保証ではない。
+- source identity `6adc8a5f853d488f68edd4dbae4cdfbeb9d459a234dca8584f078f46652edd9d`、schema2。旧5tier候補はarchive-v1へ保存し、無言の流用を拒否。
+- Astra v2: flop 9,480 / later 45,192 rules。policy hashes `890bbb589b5e0186c3669862543ddc9cd38984be82a36e6199b5511cafcbcccf` / `de5a744fbb011e2bb7d2a03b11f8050c75bcd7768f762fde8f54d45da3693d1a`。
+- 全1,755flop、57,253,626 source combo-context: 構造error 0、明示selector欠損0、raw tier警告0。
+- 代表12flopからrunout textureを網羅する236 actual turn/river boards: error 0、明示selector欠損0。
+- 90 betting event × 20,000合法joint tuple。18 eventは保存policyでbet支持0。警告39（joint overfold38/overcontinue1）。最悪はcombined continuation 12.50%に対しrake非考慮の参考MDF44.44%。警告をcall頻度の機械補充で消さない。共同率の計算は同一tuple内の逐次fold積で、周辺率積ではない。
+- heap256MB上限の単一Nodeで完走、最終RSS322MB。これ以降の重いphaseは他作業と排他調整後に行う。
+- 新classifier/codec/deliveryに対する独立reviewで発見された、実kicker誤表示、共有boardだけの偽draw、型coercionでのkeyOrder/street一致を修正。独立7件＋既存9件の16回帰PASS。追加nuts cacheは全相手再列挙一致の自前回帰PASS、最終独立reviewが必要。
+- transportは同じauthored JSON/hashを厳密復元するdictionary codecとUTF-8整合chunk。v1 later6.71MB→771KB、flop1.42MB→217KB。D1の[2MB行／100KB statement制限](https://developers.cloudflare.com/d1/platform/limits/)を確認し、partは最大48KB UTF-8に分割する。これは未配信のadapter。
+- まだ戦略品質GOではない。flop/turnのcurrent-nutsと私有royalの将来lockが同じtierなので、後者の少量foldが残る。次の最小修正はroyal限定absolute_nutsの専用tier。v2成果は履歴として保全し、最終gateの代用にしない。

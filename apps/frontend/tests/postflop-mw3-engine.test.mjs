@@ -179,3 +179,24 @@ test('identical low-SPR wagers aggregate their saved policy probabilities as one
   assert.equal(mw3ObservedProbability(groups, mix, 'allin'), effective.allin / 100);
   assert.equal(Object.values(effective).reduce((a, b) => a + b, 0), 100);
 });
+
+test('source ordering uses exact joint card removal while excluding unmodeled forced-fold probabilities', async () => {
+  const { mw3JointActionShare } = await import('../scripts/postflop-ai/mw3-spots.mjs');
+  const aa = [{ hand: 'AA', freq: 100 }], kk = [{ hand: 'KK', freq: 100 }];
+  assert.equal(mw3JointActionShare({ A: aa, B: aa, C: aa }).weightedLegalTuples, 0);
+  assert.equal(mw3JointActionShare({ A: aa, B: aa, C: kk }).weightedLegalTuples, 36);
+  for (const [i, item] of catalog.entries()) {
+    assert.equal(item.jointActionShare.method, 'exact_card_conditioned_three_active_action_share_forced_folds_unmodeled');
+    if (i) assert.ok(catalog[i - 1].jointActionShare.probability >= item.jointActionShare.probability);
+  }
+});
+
+test('Agent preflop history mapping requires one exact open plus two calls', async () => {
+  const { mw3SpotForEvents } = await import('../scripts/postflop-ai/mw3-spots.mjs');
+  const events = [{ pos: 'UTG', type: 'fold', key: 'fold' }, { pos: 'HJ', type: 'fold', key: 'fold' },
+    { pos: 'CO', type: 'raise', key: 'open' }, { pos: 'BTN', type: 'call', key: 'call' },
+    { pos: 'SB', type: 'fold', key: 'fold' }, { pos: 'BB', type: 'call', key: 'call' }];
+  assert.equal(mw3SpotForEvents(catalog, events), spot);
+  assert.equal(mw3SpotForEvents(catalog, events.map(event => event.pos === 'BTN' ? { ...event, type: 'raise', key: 'three_bet' } : event)), null);
+  assert.equal(mw3SpotForEvents(catalog, [...events, { pos: 'CO', type: 'fold', key: 'fold' }]), null);
+});

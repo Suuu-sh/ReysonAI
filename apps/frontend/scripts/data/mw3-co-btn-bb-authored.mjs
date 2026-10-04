@@ -2,20 +2,27 @@
 // This file is an OFFLINE authoring recipe: consumers use only the resulting saved
 // rules. It imports no HU strategy, computed defence, equity, EV or optimizer.
 // Values are judgmental percentage-point profiles, not fitted acceptance targets.
-import { TIERS } from '../postflop-ai/model.mjs';
+import { MW3_TIERS as TIERS } from '../postflop-ai/mw3-hand-features.mjs';
 import { describeMw3Node, mw3PolicyContextKey } from '../postflop-ai/mw3-tree.mjs';
 import { mw3AnySelector, validateMw3Policy } from '../postflop-ai/mw3-policy.mjs';
 
 export const MW3_PILOT_AUTHORSHIP = Object.freeze({
-  spotId: 'CO_open_BTN_call_BB_call', version: 1, model: 'gpt-6-astra',
-  sourceFingerprint: 'c9828f0e54b8156bf64c12929efc2dfe55774b3339c980a009805271206a9117',
-  status: 'first_candidate_requires_independent_review_not_publishable',
-  tierOrder: ['monster', 'strong', 'draw', 'medium', 'air'],
+  spotId: 'CO_open_BTN_call_BB_call', version: 2, model: 'gpt-6-astra',
+  sourceFingerprint: '6adc8a5f853d488f68edd4dbae4cdfbeb9d459a234dca8584f078f46652edd9d',
+  status: 'eight_tier_candidate_requires_independent_review_not_publishable',
+  tierOrder: [...TIERS],
 });
 const FLOP_TEXTURES = ['dry', 'wet', 'monotone', 'paired'].flatMap(shape =>
   ['high', 'mid', 'low'].map(height => `${shape}_${height}`));
 const LATER_TEXTURES = ['blank', 'over', 'pair', 'straight', 'flush'];
-const at = (values, tier) => values[TIERS.indexOf(tier)];
+// These five-column profiles are the re-reviewed residual made/draw classes.
+// The three new classes have independent profiles below; never index them here.
+const BASE_TIERS = ['monster', 'strong', 'draw', 'medium', 'air'];
+const at = (values, tier) => {
+  const index = BASE_TIERS.indexOf(tier);
+  if (index < 0 || values.length !== BASE_TIERS.length) throw new Error('Invalid residual-tier profile');
+  return values[index];
+};
 const bounded = value => Math.max(0, Math.min(100, Math.round(value)));
 
 // Percent betting, separately authored for BB lead, CO c-bet after BB check,
@@ -27,30 +34,31 @@ const FLOP_BET = {
     dry_high: [24, 7, 8, 2, 1], dry_mid: [28, 9, 11, 2, 1], dry_low: [34, 12, 14, 3, 1],
     wet_high: [34, 8, 13, 2, 1], wet_mid: [39, 10, 17, 2, 1], wet_low: [44, 12, 19, 3, 1],
     monotone_high: [17, 4, 6, 1, 1], monotone_mid: [19, 5, 8, 1, 1], monotone_low: [22, 6, 9, 1, 1],
-    paired_high: [16, 5, 4, 1, 1], paired_mid: [19, 7, 5, 2, 1], paired_low: [23, 9, 6, 2, 1],
+    paired_high: [26, 6, 4, 1, 1], paired_mid: [29, 8, 5, 2, 1], paired_low: [32, 10, 6, 2, 1],
   },
   middle: {
     dry_high: [62, 58, 28, 18, 12], dry_mid: [60, 52, 25, 12, 8], dry_low: [53, 40, 22, 9, 6],
     wet_high: [65, 46, 28, 7, 4], wet_mid: [67, 41, 29, 6, 4], wet_low: [64, 35, 27, 5, 3],
     monotone_high: [39, 27, 17, 5, 3], monotone_mid: [37, 23, 17, 4, 2], monotone_low: [34, 20, 16, 3, 2],
-    paired_high: [48, 42, 13, 12, 7], paired_mid: [44, 36, 12, 9, 5], paired_low: [40, 31, 11, 7, 4],
+    paired_high: [57, 34, 13, 12, 7], paired_mid: [54, 30, 12, 9, 5], paired_low: [50, 26, 11, 7, 4],
   },
   last: {
     dry_high: [72, 64, 38, 25, 20], dry_mid: [75, 64, 41, 23, 19], dry_low: [72, 58, 39, 20, 16],
     wet_high: [73, 56, 38, 12, 9], wet_mid: [77, 56, 43, 11, 10], wet_low: [74, 53, 40, 10, 9],
     monotone_high: [48, 37, 23, 9, 6], monotone_mid: [50, 37, 25, 8, 6], monotone_low: [47, 34, 24, 7, 5],
-    paired_high: [58, 50, 22, 19, 13], paired_mid: [59, 48, 24, 17, 12], paired_low: [55, 44, 22, 15, 10],
+    paired_high: [67, 44, 22, 19, 13], paired_mid: [68, 42, 24, 17, 12], paired_low: [64, 38, 22, 15, 10],
   },
 };
 
 // Conditional size allocation within the authored betting share: 33 / 75 / 125.
-// Monotone/paired textures stay small because the five-tier abstraction lacks
-// nut-suit / private-made-hand distinctions. Wet unpaired boards use more 75%.
+// Residual monotone hands still include weak flushes and paired-board strong
+// includes bluff-catchers. True private monsters get more 75% on paired boards
+// now that board-owned/pocket-pair pseudo-monsters are removed; nuts is separate.
 const FLOP_SIZES = {
   dry:      [[30, 58, 12], [72, 28, 0], [55, 42, 3], [95, 5, 0], [75, 23, 2]],
   wet:      [[16, 72, 12], [40, 60, 0], [38, 59, 3], [90, 10, 0], [58, 40, 2]],
   monotone: [[75, 25, 0], [92, 8, 0], [88, 12, 0], [100, 0, 0], [90, 10, 0]],
-  paired:   [[82, 18, 0], [90, 10, 0], [90, 10, 0], [100, 0, 0], [95, 5, 0]],
+  paired:   [[65, 35, 0], [92, 8, 0], [90, 10, 0], [100, 0, 0], [95, 5, 0]],
 };
 
 // Later-street betting totals. Keys are CURRENT live position, not original role.
@@ -84,11 +92,11 @@ const LATER_BET = {
 };
 const RUNOUT_BET_DELTA = {
   turn: {
-    blank: [0, 0, 0, 0, 0], over: [0, -5, 0, -3, 0], pair: [-15, -7, -9, -4, -3],
+    blank: [0, 0, 0, 0, 0], over: [0, -5, 0, -3, 0], pair: [-8, -7, -9, -4, -3],
     straight: [-12, -10, -5, -4, -3], flush: [-22, -17, -12, -6, -5],
   },
   river: {
-    blank: [0, 0, 0, 0, 0], over: [-2, -7, 0, -4, 0], pair: [-20, -10, 0, -5, -3],
+    blank: [0, 0, 0, 0, 0], over: [-2, -7, 0, -4, 0], pair: [-12, -10, 0, -5, -3],
     straight: [-17, -13, 0, -5, -4], flush: [-26, -18, 0, -7, -6],
   },
 };
@@ -135,20 +143,20 @@ const FLOP_RESPONSE_DELTA = {
   dry: [[0, 5, 0, 4, 1], [0, 1, 0, 0, 0]],
   wet: [[-2, -7, 8, -4, -1], [6, -1, 3, 0, 0]],
   monotone: [[-12, -18, -4, -10, -2], [-12, -2, -3, 0, 0]],
-  paired: [[-10, 0, -7, -6, -1], [-12, -1, -4, 0, 0]],
+  paired: [[-4, -6, -7, -6, -1], [-6, -2, -4, 0, 0]],
 };
 const RUNOUT_RESPONSE_DELTA = {
   turn: {
     blank: [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]],
     over: [[0, -7, 0, -5, -1], [0, -1, 0, 0, 0]],
-    pair: [[-14, -5, -8, -6, -1], [-12, -2, -3, 0, 0]],
+    pair: [[-8, -5, -8, -6, -1], [-8, -2, -3, 0, 0]],
     straight: [[-10, -11, -3, -6, -1], [-8, -2, -2, 0, 0]],
     flush: [[-20, -19, -9, -10, -2], [-16, -3, -4, 0, 0]],
   },
   river: {
     blank: [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]],
     over: [[-2, -9, 0, -7, -1], [-2, -1, 0, 0, 0]],
-    pair: [[-18, -8, 0, -8, -1], [-14, -2, 0, 0, 0]],
+    pair: [[-10, -8, 0, -8, -1], [-9, -2, 0, 0, 0]],
     straight: [[-14, -15, 0, -9, -1], [-11, -2, 0, 0, 0]],
     flush: [[-24, -23, 0, -13, -2], [-18, -3, 0, 0, 0]],
   },
@@ -165,7 +173,7 @@ function allocate(total, shares) {
 }
 
 function firstMix(d, tier, texture) {
-  const descriptor = describeMw3Node(d.node), index = TIERS.indexOf(tier);
+  const descriptor = describeMw3Node(d.node), index = BASE_TIERS.indexOf(tier);
   let total, shares;
   if (d.street === 'flop') {
     total = at(FLOP_BET[descriptor.role][texture], tier);
@@ -267,7 +275,121 @@ function responseMix(d, tier, texture) {
   if (n.actions.includes('raise')) mix.raise = raised;
   return mix;
 }
-const authoredMix = (d, tier, texture) => d.facing ? responseMix(d, tier, texture) : firstMix(d, tier, texture);
+// The nut classifier compares current best-five ranks against every compatible
+// private holding. On flop/turn this is NOT runout equity or a future win lock.
+const NUTS_FLOP_BET = {
+  first:  { dry: [36, 40, 44], wet: [48, 53, 57], monotone: [35, 38, 41], paired: [33, 36, 39] },
+  middle: { dry: [78, 76, 73], wet: [80, 82, 80], monotone: [71, 70, 68], paired: [66, 64, 61] },
+  last:   { dry: [88, 90, 87], wet: [90, 92, 90], monotone: [83, 85, 82], paired: [79, 80, 77] },
+};
+const NUTS_LATER_BET = {
+  turn: {
+    3: { checked: { first: 50, middle: 65, last: 86 }, aggressor: { first: 85, middle: 90, last: 94 }, defender: { first: 26, middle: 32, last: 78 } },
+    2: { checked: { first: 65, last: 93 }, aggressor: { first: 91, last: 97 }, defender: { first: 30, last: 86 } },
+  },
+  river: {
+    3: { checked: { first: 65, middle: 76, last: 93 }, aggressor: { first: 90, middle: 94, last: 98 }, defender: { first: 25, middle: 30, last: 84 } },
+    2: { checked: { first: 78, last: 97 }, aggressor: { first: 95, last: 99 }, defender: { first: 30, last: 90 } },
+  },
+};
+const NUTS_SIZES = {
+  flop: { dry: [25, 60, 15], wet: [10, 70, 20], monotone: [45, 50, 5], paired: [65, 35, 0] },
+  turn: { blank: [20, 60, 20], over: [20, 65, 15], pair: [45, 50, 5], straight: [20, 65, 15], flush: [20, 65, 15] },
+  river: { blank: [10, 65, 25], over: [15, 65, 20], pair: [40, 50, 10], straight: [20, 65, 15], flush: [20, 65, 15] },
+};
+// Each response row is [continue at cheap, standard, expensive; raise anchor].
+// Small ordinary bets never fold current nuts. Rare folds in expensive raised /
+// all-in pots on earlier streets reflect redraw/freeroll exposure, not a claim
+// that this currently best rank is beaten. River nuts ALWAYS has fold zero.
+const NUTS_RESPONSE = {
+  flop: {
+    33: [[100, 100, 100], 55], 75: [[100, 100, 100], 62], 125: [[100, 100, 100], 67],
+    raise1: [[100, 100, 98], 52], raise2: [[100, 99, 97], 0], allin: [[100, 99, 97], 0],
+  },
+  turn: {
+    33: [[100, 100, 100], 58], 75: [[100, 100, 100], 66], 125: [[100, 100, 100], 72],
+    raise1: [[100, 99, 96], 60], raise2: [[100, 97, 94], 0], allin: [[100, 97, 94], 0],
+  },
+  river: {
+    33: [[100, 100, 100], 72], 75: [[100, 100, 100], 80], 125: [[100, 100, 100], 88],
+    raise1: [[100, 100, 100], 85], raise2: [[100, 100, 100], 0], allin: [[100, 100, 100], 0],
+  },
+};
+const PRICE_ORDER = ['cheap', 'standard', 'expensive'];
+function nutsMix(d, texture) {
+  const n = describeMw3Node(d.node), mix = Object.fromEntries(n.actions.map(action => [action, 0]));
+  const feature = d.street === 'flop' ? texture.split('_')[0] : texture;
+  if (!d.facing) {
+    let total = d.street === 'flop' ? NUTS_FLOP_BET[n.role][feature][['high', 'mid', 'low'].indexOf(texture.split('_')[1])]
+      : NUTS_LATER_BET[d.street][d.players][d.line][d.activePosition];
+    if (d.street !== 'flop' && d.sprBand === 'shallow') total += 3;
+    if (d.street !== 'flop' && feature === 'pair') total -= 3; // protect checks; current nuts is NOT downgraded as a weak shared hand
+    total = bounded(total); mix.check = 100 - total;
+    if (n.actions.includes('allin')) {
+      if (d.sprBand === 'shallow') mix.allin = total;
+      else [mix.bet33, mix.allin] = allocate(total, d.players === 3 ? [30, 70] : [22, 78]);
+    } else {
+      const shares = [...NUTS_SIZES[d.street][feature]];
+      if (d.street === 'flop' && n.role === 'first' || d.street !== 'flop' && d.line === 'defender' && d.activePosition !== 'last') {
+        shares[1] += shares[2]; shares[2] = 0;
+      }
+      [mix.bet33, mix.bet75, mix.bet125] = allocate(total, shares);
+    }
+    return mix;
+  }
+  const [continueByPrice, raiseAnchor] = NUTS_RESPONSE[d.street][n.facing];
+  let continued = continueByPrice[PRICE_ORDER.indexOf(d.priceBand)], raised = raiseAnchor;
+  if (d.street !== 'river' && d.priceBand === 'expensive' && d.players === 3 && n.pendingBehind &&
+      ['raise1', 'raise2', 'allin'].includes(n.facing) && ['wet', 'straight'].includes(feature)) continued -= 2;
+  if (d.players === 3) raised -= n.pendingBehind ? 12 : 5; // allow the other player to continue with worse
+  else raised += 4;
+  if (d.activePosition === 'last') raised += 3;
+  if (d.responseType === 'invested') raised += 5;
+  if (d.sprBand === 'shallow') raised += 8;
+  if (['paired', 'pair'].includes(feature)) raised -= 8;
+  if (feature === 'monotone') raised -= 5;
+  raised = n.actions.includes('raise') ? Math.min(continued, bounded(raised)) : 0;
+  mix.fold = 100 - continued; mix.call = continued - raised;
+  if (n.actions.includes('raise')) mix.raise = raised;
+  return mix;
+}
+
+// Publicly locked boards: every compatible holding ties. Avoid rake-building
+// aggression and never fold the guaranteed share of the existing pot.
+function boardLockedMix(d) {
+  const actions = describeMw3Node(d.node).actions, mix = Object.fromEntries(actions.map(action => [action, 0]));
+  mix[d.facing ? 'call' : 'check'] = 100;
+  return mix;
+}
+// Unlocked river boards played without private improvement are NOT value hands.
+// These direct call rates are conservative bluff-catching judgments. They cannot
+// distinguish a shared high-card from a shared full house under the present
+// one-runout-feature schema; that material quality limitation remains explicit.
+const BOARD_SHARED_CALL = {
+  2: { 33: [67, 45, 30], 75: [49, 27, 17], 125: [32, 13, 5], raise1: [27, 11, 3], raise2: [20, 6, 1], allin: [34, 14, 5] },
+  3: { 33: [48, 30, 16], 75: [30, 14, 6], 125: [18, 6, 1], raise1: [15, 5, 1], raise2: [10, 2, 0], allin: [22, 7, 1] },
+};
+function boardSharedMix(d, texture) {
+  const n = describeMw3Node(d.node), mix = Object.fromEntries(n.actions.map(action => [action, 0]));
+  if (!d.facing) { mix.check = 100; return mix; }
+  // The class cannot occur before the river; retain explicit safe schema rows.
+  if (d.street !== 'river') { mix.fold = 100; return mix; }
+  let call = BOARD_SHARED_CALL[d.players][n.facing][PRICE_ORDER.indexOf(d.priceBand)];
+  if (d.players === 3 && !n.pendingBehind) call -= 4; // another live player has already continued
+  if (d.responseType === 'invested') call += 3;
+  if (d.line === 'defender') call -= 2;
+  if (d.line === 'aggressor') call += 2;
+  if (texture === 'flush') call -= 3;
+  if (texture === 'straight') call -= 2;
+  mix.call = bounded(call); mix.fold = 100 - mix.call;
+  return mix;
+}
+function authoredMix(d, tier, texture) {
+  if (tier === 'board_locked') return boardLockedMix(d);
+  if (tier === 'board_shared') return boardSharedMix(d, texture);
+  if (tier === 'nuts') return nutsMix(d, texture);
+  return d.facing ? responseMix(d, tier, texture) : firstMix(d, tier, texture);
+}
 
 // Defaults are explicit schema safety coverage, not a runtime strategy substitute.
 // The exhaustive current-geometry exact-context overrides below are selected in
@@ -288,8 +410,8 @@ export function buildMw3PilotPolicies(inputs, probe) {
   if (!probe?.nodes || !probe.contexts || Object.keys(probe.nodes).length !== 117 || Object.keys(probe.contexts).length !== 1209) {
     throw new Error('MW3 pilot authoring requires the complete reviewed 117-node / 1209-context probe');
   }
-  const flop = { version: 1, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets: ['flop'], rules: [] };
-  const later = { version: 1, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets: ['turn', 'river'], rules: [] };
+  const flop = { version: 2, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets: ['flop'], rules: [] };
+  const later = { version: 2, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets: ['turn', 'river'], rules: [] };
   for (const node of Object.keys(probe.nodes).sort()) {
     const d = fallbackDecision(node), policy = d.street === 'flop' ? flop : later;
     for (const tier of TIERS) policy.rules.push({ node, tier, when: mw3AnySelector(), priority: 0,
