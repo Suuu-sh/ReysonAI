@@ -36,7 +36,7 @@ export function gradeRanked(questions:Question[], actions:unknown) {
   if(!Array.isArray(actions)||actions.length!==RANKED_LENGTH||questions.length!==RANKED_LENGTH) throw new Error('complete_match_required');
   return questions.map((q,index)=>{
     const action=actions[index];
-    if(typeof action!=='string'||!(action in q.mix)) throw new Error('invalid_action');
+    if(typeof action!=='string'||!Object.hasOwn(q.mix,action)) throw new Error('invalid_action');
     const top=Math.max(...Object.values(q.mix)),freq=q.mix[action];
     return {mix:q.mix,score:freq>=top-.05?1:freq>=.2?.5:0};
   });
