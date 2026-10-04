@@ -853,9 +853,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
               <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {formatLabel("rake", format.rake)}</li></ul>
               <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
               <div className="settings-actions">
-                {/* Table conditions sit in a chip (full text on hover) so the card never grows taller. */}
-                {!isDefaultProfile(tableProfile) && <button type="button" className="table-profile-chip" title={`卓: ${describeProfile(tableProfile)}`} aria-label={`卓の傾向: ${describeProfile(tableProfile)}`} onClick={() => setFormatOpen(true)}>卓</button>}
-                <button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を変更" title="ゲーム設定を変更" onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" /></button>
+                {/* Non-default table conditions show as a dot on the settings button (full text in its tooltip), so the card keeps its size. */}
+                <button type="button" className={`format-edit settings-icon-button${isDefaultProfile(tableProfile) ? "" : " has-table-profile"}`} aria-label={isDefaultProfile(tableProfile) ? "ゲーム設定を変更" : `ゲーム設定を変更（卓: ${describeProfile(tableProfile)}）`} title={isDefaultProfile(tableProfile) ? "ゲーム設定を変更" : `卓: ${describeProfile(tableProfile)}`} onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" /></button>
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
               </div>
             </div>
