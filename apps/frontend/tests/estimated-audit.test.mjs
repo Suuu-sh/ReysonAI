@@ -19,7 +19,7 @@ test("persisted estimates pass the consistency audit", () => {
 
 test("CLI reports balance counts and spot lists but does not fail for their warnings", () => {
   const result = spawnSync(process.execPath, ["scripts/audit-estimates.mjs", "--json"], {
-    cwd: new URL("..", import.meta.url), encoding: "utf8",
+    cwd: new URL("..", import.meta.url), encoding: "utf8", maxBuffer: 16 << 20,
   });
   assert.equal(result.status, 0, result.stderr);
   const report = JSON.parse(result.stdout);
@@ -28,7 +28,8 @@ test("CLI reports balance counts and spot lists but does not fail for their warn
     assert.equal(report.balanceSummary[check].count, matches.length);
     assert.deepEqual(report.balanceSummary[check].spots, [...new Set(matches.map(f => f.spot))].sort());
   }
-  assert.equal(report.rangeBalance.length, Object.values(datasets()).reduce((sum, data) => sum + data.spots.length, 0)); // +36 squeeze-response spots, +1 BB vs SB limp-reraise, +20 cold 3bet responses, +2 limp 4bet / all-in responses
+  assert.equal(report.rangeBalance.length, Object.values(datasets()).reduce((sum, data) => sum + data.spots.length, 0) + load("continuation-responses").spots.length);
+  assert.equal(report.continuationDefense.length, Object.keys(load("continuation-call-equities").joint_defense).length);
 });
 
 test("audit rejects an overfolding 4bet response", () => {

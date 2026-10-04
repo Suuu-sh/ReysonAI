@@ -54,6 +54,11 @@ def two_caller_squeeze_to(opener, hero):
     return three_bet_to(opener, hero, caller_count=2)
 
 
+def two_caller_squeeze_four_bet_to():
+    """Approved fixed response size for new two-caller squeeze branches only."""
+    return cap_raise_to(FIXED['four_bet_after_two_caller_squeeze'])
+
+
 def four_bet_to(four_bettor, three_bettor):
     if four_bettor == 'SB' and three_bettor == 'BB':
         return cap_raise_to(FIXED['four_bet_vs_bb_three_bet_from_sb'])

@@ -4,24 +4,12 @@ import { execFileSync } from "node:child_process";
 import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.ts";
-import { validateDataset } from "../src/estimated/ranges.ts";
-import { validateOpeningDataset } from "../src/estimated/opening-ranges.ts";
-import { validateThreeBetDataset } from "../src/estimated/three-bet-responses.ts";
-import { validateFourBetDataset } from "../src/estimated/four-bet-responses.ts";
-import { validateFiveBetDataset } from "../src/estimated/five-bet-dataset.ts";
-import { validateMultiwayDataset } from "../src/estimated/multiway-responses.ts";
-import { validateLimpResponses } from "../src/estimated/limp-responses.ts";
-import { validateLimpDeepResponses } from "../src/estimated/limp-deep-responses.ts";
-import { validateSqueezeDataset } from "../src/estimated/squeeze-responses.ts";
-import { validateColdThreeBetDataset } from "../src/estimated/cold-three-bet-responses.ts";
+import { isBlockingAuditFinding } from "../src/estimated/audit-policy.ts";
 
-import { validateMultiway2Dataset } from "../src/estimated/multiway2-responses.ts";
-import { validateColdFourBetDataset } from "../src/estimated/cold-four-bet-responses.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const published = join(root, "src/estimated");
-const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses"];
+const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses", "continuation-responses"];
 // Order matters: each generator reads the previous stages from the staging dir.
 const generators = [
   ["python3", "generate-opening-ranges.py"],
@@ -36,6 +24,7 @@ const generators = [
   ["node", "generate-limp-deep-responses.mjs"],
   ["python3", "generate-cold-three-bet-responses.py"],
   ["python3", "generate-cold-four-bet-responses.py"],
+  ["node", "generate-continuation-responses.mjs"],
 ];
 // Keep even transient generated data in this worktree.
 mkdirSync(join(root, ".local"), { recursive: true });
@@ -49,33 +38,12 @@ try {
   // geometry, sample count and seed; an empty .local rebuild computes it afresh.
   if (existsSync(equityCache)) copyFileSync(equityCache, join(staging, "call-equities.json"));
   for (const [runtime, script] of generators) {
-    execFileSync(runtime, [join(root, "scripts", script)], { cwd: root, stdio: "inherit", env: { ...process.env, ESTIMATES_DIR: staging, CALL_EQUITIES_CACHE: equityCache } });
+    const args = [...(runtime === "node" ? ["--max-old-space-size=192", "--max-semi-space-size=1"] : []), join(root, "scripts", script)];
+    execFileSync(runtime, args, { cwd: root, stdio: "inherit", env: { ...process.env, ESTIMATES_DIR: staging, CALL_EQUITIES_CACHE: equityCache } });
   }
-  const load = name => JSON.parse(readFileSync(join(staging, `${name}.json`), "utf8"));
-  const opening = load("opening-ranges");
-  const responses = load("preflop-ranges");
-  const threeBets = load("three-bet-responses");
-  const fourBets = load("four-bet-responses");
-  const fiveBets = load("five-bet-responses");
-  const multiway = load("multiway-responses");
-  const squeezes = load("squeeze-responses");
-  const limp = load("limp-responses");
-  const limpDeep = load("limp-deep-responses");
-  const coldThreeBets = load("cold-three-bet-responses");
-  const multiway2 = load("multiway2-responses"), coldFourBets = load("cold-four-bet-responses");
-  validateOpeningDataset(opening);
-  validateDataset(responses);
-  validateThreeBetDataset(threeBets, responses, opening);
-  validateFourBetDataset(fourBets, responses, threeBets, opening);
-  validateFiveBetDataset(fiveBets);
-  validateMultiwayDataset(multiway, responses);
-  validateSqueezeDataset(squeezes, multiway, responses, opening);
-  validateLimpResponses(limp, opening);
-  validateLimpDeepResponses(limpDeep, opening, limp);
-  validateColdThreeBetDataset(coldThreeBets, responses);
-  validateMultiway2Dataset(multiway2, multiway, responses, opening);
-  validateColdFourBetDataset(coldFourBets, coldThreeBets, responses, opening);
-  const { findings } = auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, limpDeep, coldThreeBets, multiway2, coldFourBets, callEquities: load("call-equities") });
+  const { findings } = JSON.parse(execFileSync("node", ["--max-old-space-size=384", "--max-semi-space-size=1", join(root, "scripts/validate-estimates.mjs"), staging], {
+    cwd: root, encoding: "utf8", maxBuffer: 8 << 20, env: process.env,
+  }));
   for (const f of findings) console.error(`- [${f.severity}] ${f.check} · ${f.spot}: ${f.detail}`);
   const blocking = findings.filter(isBlockingAuditFinding);
   if (blocking.length) {
@@ -86,12 +54,12 @@ try {
   } else {
     // Compose against the audited staged strategy, never old .local facts.
     for (const script of ["reason-facts.mjs", "compose-reasons.mjs"]) {
-      execFileSync("node", [join(root, "scripts", script)], { cwd: root, stdio: "inherit",
+      execFileSync("node", ["--max-old-space-size=384", "--max-semi-space-size=1", join(root, "scripts", script)], { cwd: root, stdio: "inherit",
         env: { ...process.env, ESTIMATES_DIR: staging, REASON_FACTS_DIR: join(staging, "reason-facts") } });
     }
     cpSync(join(staging, "reason-facts"), join(root, ".local/reason-facts"), { recursive: true });
     cpSync(join(staging, "reasons"), join(published, "reasons"), { recursive: true });
-    for (const name of [...files, "call-equities", "call-ev-report"]) copyFileSync(join(staging, `${name}.json`), join(published, `${name}.json`));
+    for (const name of [...files, "call-equities", "call-ev-report", "continuation-call-equities", "continuation-audit-report"]) copyFileSync(join(staging, `${name}.json`), join(published, `${name}.json`));
     console.log(`検証を通過したため src/estimated に保存しました。（助言警告 ${findings.length}件、公開を妨げません）`);
   }
 } catch (error) {

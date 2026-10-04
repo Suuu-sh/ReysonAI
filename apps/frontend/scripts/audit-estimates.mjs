@@ -9,6 +9,7 @@ const dir = dirFlag > 0 ? resolve(process.argv[dirFlag + 1]) : new URL("../src/e
 const load = name => JSON.parse(readFileSync(`${dir}/${name}.json`, "utf8"));
 const report = auditEstimates({
   callEquities: load("call-equities"),
+  continuations: load("continuation-responses"), continuationEquities: load("continuation-call-equities"),
   opening: load("opening-ranges"),
   responses: load("preflop-ranges"),
   threeBets: load("three-bet-responses"),

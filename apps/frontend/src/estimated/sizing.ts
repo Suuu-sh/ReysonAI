@@ -41,6 +41,10 @@ export function twoCallerSqueezeToSize(opener, hero) {
   return threeBetToSize(opener, hero, 2);
 }
 
+// User-approved exception for these new branches only: 26BB is below the
+// 26.5/28.5BB minimum after a 14.5/15.5BB two-caller squeeze.
+export const twoCallerSqueezeFourBetToBb = cappedRaiseTo(fixed.four_bet_after_two_caller_squeeze);
+
 export function fourBetToSize(fourBettor, threeBettor) {
   if (![threeBettor, fourBettor].every(position => positions.includes(position)) || fourBettor === threeBettor) {
     throw new Error("4betの位置が不正です。");

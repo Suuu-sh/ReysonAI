@@ -9,16 +9,31 @@ import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { comboCount } from "./lib/equity.mjs";
-import { DATASET_NAMES, compareToReferences, loadReferences } from "./lib/benchmark.mjs";
+import { DATASET_NAMES as LEGACY_DATASET_NAMES, compareToReferences, loadReferences } from "./lib/benchmark.mjs";
 import { diffSpot, parseFindings, summarizeFindings } from "./lib/estimate-diff.mjs";
-import { isBlockingAuditFinding } from "../src/estimated/audit.ts";
+import { isBlockingAuditFinding } from "../src/estimated/audit-policy.ts";
+import { createContinuationModel, continuationMix } from "../src/estimated/continuation-model.ts";
+const DATASET_NAMES = [...LEGACY_DATASET_NAMES, "continuation-responses"];
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const RANKS = "AKQJT98765432";
 const NON_ACTION = /_(bb|pct|combos)$/;
 const LETTER = { open: "O", limp: "L", call: "C", check: "X", fold: ".", three_bet: "3", four_bet: "4", all_in: "A", squeeze: "S", raise: "R" };
 
-const loadDir = dir => DATASET_NAMES.flatMap(name => { try { return JSON.parse(readFileSync(join(dir, `${name}.json`), "utf8")).spots; } catch { return []; } });
+const directoryData = new Map(), continuationModels = new Map();
+const loadDir = dir => {
+  if (!directoryData.has(dir)) directoryData.set(dir, Object.fromEntries(DATASET_NAMES.flatMap(name => {
+    try { return [[name, JSON.parse(readFileSync(join(dir, `${name}.json`), "utf8"))]]; } catch { return []; }
+  })));
+  return Object.values(directoryData.get(dir)).flatMap(data => data.spots);
+};
+function displayedMix(spot, dir = join(root, "src/estimated")) {
+  if (spot.dataset !== "continuation-responses") return mix(spot);
+  loadDir(dir);
+  if (!continuationModels.has(dir)) continuationModels.set(dir, createContinuationModel(directoryData.get(dir)));
+  const context = continuationModels.get(dir).context(spot, spot), weighted = continuationMix(spot, context);
+  return Object.fromEntries(spot.legal_actions.map(action => [action, weighted[action]]));
+}
 const published = () => loadDir(join(root, "src/estimated"));
 const actionsOf = spot => Object.keys(spot.hands[0]).filter(k => k !== "hand" && typeof spot.hands[0][k] === "number" && !NON_ACTION.test(k));
 const handAt = (r, c) => r === c ? RANKS[r] + RANKS[c] : r < c ? RANKS[r] + RANKS[c] + "s" : RANKS[c] + RANKS[r] + "o";
@@ -32,7 +47,7 @@ export function mix(spot) {
   for (const h of spot.hands) { const c = comboCount(h.hand); w += c; for (const a of acts) totals[a] += c * (h[a] ?? 0); }
   return Object.fromEntries(acts.map(a => [a, totals[a] / w]));
 }
-const fmtMix = m => Object.entries(m).map(([a, v]) => `${a} ${v.toFixed(1)}`).join(" / ");
+const fmtMix = m => Object.entries(m).map(([a, v]) => `${a} ${v === null ? "unreachable" : v.toFixed(1)}`).join(" / ");
 
 function grid(spot, action) {
   const rows = new Map(spot.hands.map(h => [h.hand, h]));
@@ -63,10 +78,10 @@ function check(ids) {
   const lines = [`build: ${run.status === 0 ? "pass" : "BLOCKED"} · changed spots ${changed.length}${ids.length ? ` · focus ${focus.length}` : ""}`];
   for (const s of focus.slice(0, 15)) {
     const b = beforeBy.get(s.id);
-    if (!b) { lines.push(`+ ${s.id}: ${fmtMix(mix(s))}`); continue; }
-    const d = diffSpot(b, s), mb = mix(b), ma = mix(s);
+    if (!b) { lines.push(`+ ${s.id}: ${fmtMix(displayedMix(s, staging))}`); continue; }
+    const d = diffSpot(b, s), mb = displayedMix(b), ma = displayedMix(s, staging);
     lines.push(`${s.id}: ${d.changedHands} hands changed`);
-    lines.push(`  mix ${Object.keys(ma).map(a => `${a} ${(mb[a] ?? 0).toFixed(1)}→${ma[a].toFixed(1)}`).join(" / ")}`);
+    lines.push(`  mix ${Object.keys(ma).map(a => `${a} ${mb[a] === null ? "unreachable" : (mb[a] ?? 0).toFixed(1)}→${ma[a] === null ? "unreachable" : ma[a].toFixed(1)}`).join(" / ")}`);
     if (d.changedHands) {
       const hs = s.hands.filter(h => diffSpot({ hands: b.hands.filter(x => x.hand === h.hand) }, { hands: [h] }).changedHands).map(h => h.hand);
       lines.push(`  hands ${hs.slice(0, 20).join(" ")}${hs.length > 20 ? ` …+${hs.length - 20}` : ""}`);
@@ -89,7 +104,7 @@ function check(ids) {
 }
 
 const [cmd, ...args] = process.argv.slice(2);
-if (cmd === "list") for (const s of published().filter(s => !args[0] || s.id.includes(args[0]))) console.log(`${s.id}: ${fmtMix(mix(s))}`);
-else if (cmd === "view") { const s = find(published(), args[0]); console.log(`${s.id} · ${fmtMix(mix(s))}\n${grid(s, args[1])}`); }
+if (cmd === "list") for (const s of published().filter(s => !args[0] || s.id.includes(args[0]))) console.log(`${s.id}: ${fmtMix(displayedMix(s))}`);
+else if (cmd === "view") { const s = find(published(), args[0]); console.log(`${s.id} · ${fmtMix(displayedMix(s))}\n${grid(s, args[1])}`); }
 else if (cmd === "check") check(args);
 else fail("usage: range list [filter] | view <spot> [action] | check [spot ...]");

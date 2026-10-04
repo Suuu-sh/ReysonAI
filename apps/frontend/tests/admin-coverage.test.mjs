@@ -76,3 +76,17 @@ test("stage 1 preflop categories enumerate and store every expected history", ()
     assert.equal(new Set(category.rows.map(r => r.id)).size, count, key);
   }
 });
+
+
+test("stage 2 coverage enumerates all 3,115 continuation decisions separately from source decisions", () => {
+  const catalog = coverageCatalog();
+  const counts = { squeeze: 440, cold_four_bet: 160, two_caller_squeeze: 2295, three_bet_cold_call: 220 };
+  for (const [family, count] of Object.entries(counts)) {
+    const category = catalog.categories.find(c => c.key === `continuation_${family}`);
+    assert.equal(category.total, count);
+    assert.equal(category.done, count);
+    assert.equal(category.todo, 0);
+    assert.ok(category.rows.every(row => row.priority === 4 && row.hands === 169));
+  }
+  assert.equal(catalog.total, 3340);
+});

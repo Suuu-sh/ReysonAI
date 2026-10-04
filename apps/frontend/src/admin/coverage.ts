@@ -3,6 +3,7 @@
 // Pure data (no React) so tests and scripts can reuse it.
 import { dataset } from "../estimated/datasets.ts";
 import { positions } from "../estimated/sizing.ts";
+import { continuationFamilies, continuationSpots } from "../estimated/continuation-tree.ts";
 import { coldThreeBetSpots } from "../estimated/cold-three-bet-responses.ts";
 import { BUILT, formatOptions } from "../estimated/game-formats.ts";
 
@@ -19,6 +20,7 @@ const multiway2 = dataset("multiway2-responses");
 const coldFourBets = dataset("cold-four-bet-responses");
 const squeezes = dataset("squeeze-responses");
 const limpDeep = dataset("limp-deep-responses");
+const continuations = dataset("continuation-responses");
 
 const RFI = positions.slice(0, 5); // UTG..SB
 const after = seat => positions.slice(positions.indexOf(seat) + 1);
@@ -46,6 +48,13 @@ export function postflopPriority(spot) {
 
 // Every category lists its full expected spot set; ids match the persisted datasets.
 const CATEGORIES = [
+  ...continuationFamilies.map(family => ({
+    key: `continuation_${family}`, label: `継続分岐: ${family}`, file: "continuation-responses.json",
+    data: { spots: continuations.spots.filter(spot => spot.family === family) },
+    expected: continuationSpots.filter(spot => spot.family === family).map(spot => ({
+      id: spot.id, hero: spot.hero, path: spot.history.map(action => `${action.seat} ${action.action}${action.to_size_bb === null ? "" : ` ${action.to_size_bb}`}`).join(" → ") + ` → ${spot.hero}`,
+    })),
+  })),
   { key: "open", label: "オープン（RFI）", file: "opening-ranges.json", data: opening,
     expected: RFI.map(hero => ({ id: `${hero}_open`, hero, path: `${hero} open` })) },
   { key: "response", label: "オープンへの応答", file: "preflop-ranges.json", data: responses,
