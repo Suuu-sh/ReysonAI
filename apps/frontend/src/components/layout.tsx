@@ -58,7 +58,6 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
           <BrandIcon size={30} />
           <div className="brand-copy">
             Reyson<span>AI</span>
-            <small>Play Closer to Perfect</small>
           </div>
         </div>
         <button
