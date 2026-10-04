@@ -1,12 +1,12 @@
 import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
-import { ArrowClockwise, ArrowLeft, Barbell, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
+import { ArrowClockwise, ArrowLeft, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { ModeBlock } from "./ModeBlock.tsx";
 import { AGENT_TABLE } from "../agent/characters.ts";
 import { AgentAvatar } from "../agent/AgentAvatar.tsx";
 import { loadAgentHands, summarizeAgentHands } from "../agent/agent-stats.ts";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.ts";
 import { drillStats } from "./drill-store.ts";
-import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIERS, TIER_EN, playedToday, tierFor } from "./rank-store.ts";
+import { LEGEND, RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIERS, TIER_EN, playedToday, tierFor } from "./rank-store.ts";
 import { localized } from "../locale.ts";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
@@ -120,9 +120,10 @@ function DrillsBlock({ drills, reviewCount, drafts, onOpen, onCreate, onStartRev
   const answered = totals.reduce((sum, item) => sum + item.answered, 0);
   const inProgress = drills.filter(drill => drafts[drill.id]).length;
   return <ModeBlock theme="#f0609e" className="is-drills" visualClass="drills-visual" label={localized("Drills", "ドリル")}
-    visual={<div className="drills-visual-card drills-visual-icon">
-      <Barbell size={64} weight="duotone" aria-hidden="true" />
-      <small>{localized(`${drills.length} saved drills`, `保存ドリル ${drills.length}個`)}</small>
+    visual={<div className="drill-deck" aria-hidden="true">
+      {["76s", "QQ", "AKs"].map((hand, index) => <span key={hand} className="drill-deck-card" style={{ "--k": index - 1 }}>
+        <b>{hand}</b><i />
+      </span>)}
     </div>}
     eyebrow={`DRILLS · ${localized(`${drills.length} saved`, `${drills.length}個`)}`}
     title={localized("Drills", "ドリル")}
@@ -205,13 +206,16 @@ function RankedEmblem({ rank, tier }) {
   </div>;
 }
 
-// Master in front; on hover every tier slides out from behind it into one row (bronze → master).
+// Legend stays in the middle; on hover the other tiers slide out from behind it, strongest first,
+// alternating right and left (master right, diamond left, platinum right, ...), balanced 3 + 3.
+const fanOffset = strength => strength === 0 ? 0 : strength % 2 ? (strength + 1) / 2 : -strength / 2;
 function RankFan() {
-  const last = TIERS.length - 1;
+  const names = [...TIERS.map(tier => tier.name), LEGEND];
+  const last = names.length - 1;
   return <div className="rank-fan" aria-hidden="true">
-    {TIERS.map((tier, index) => <span key={tier.name} className={`rank-fan-item${index === last ? " is-front" : ""}`}
-      style={{ "--k": index - last / 2, "--d": last - index, zIndex: index + 1 }}>
-      <RankBadge name={tier.name} size={64} />
+    {names.map((name, index) => <span key={name} className={`rank-fan-item${index === last ? " is-front" : ""}`}
+      style={{ "--k": fanOffset(last - index), "--d": last - index, zIndex: index + 1 }}>
+      <RankBadge name={name} size={64} />
     </span>)}
   </div>;
 }

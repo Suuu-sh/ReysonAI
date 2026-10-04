@@ -12,12 +12,16 @@ export const TIER_COLORS: Record<string, [string, string]> = {
   プラチナ: ["#7ff0dc", "#1f8f86"],
   ダイヤモンド: ["#c3a8ff", "#6a43e8"],
   マスター: ["#ff7ab2", "#a3124f"],
+  レジェンド: ["#ffe9a6", "#e2477e"],
 };
 export const tierColor = (name: string) => TIER_COLORS[name]?.[0] ?? "#f0609e";
 
 function Emblem({ level, fill }: { level: number; fill: string }) {
   const wing = (side: 1 | -1) => <path d={`M${50 + side * 14} 42 L${50 + side * 40} 32 L${50 + side * 31} 49 L${50 + side * 40} 58 L${50 + side * 14} 60 Z`} fill={fill} opacity=".8" />;
   return <>
+    {/* Legend: a halo and long upper wings behind the master emblem. */}
+    {level >= 6 && <><circle cx="50" cy="50" r="44" fill="none" stroke={fill} strokeWidth="3" opacity=".55" />
+      <path d="M58 36 L94 14 L80 40 Z" fill={fill} opacity=".5" /><path d="M42 36 L6 14 L20 40 Z" fill={fill} opacity=".5" /></>}
     {level >= 3 && <>{wing(1)}{wing(-1)}</>}
     {level >= 4 && <><path d="M64 64 L86 70 L66 76 Z" fill={fill} opacity=".6" /><path d="M36 64 L14 70 L34 76 Z" fill={fill} opacity=".6" /></>}
     {level >= 5 && <path d="M37 21 L44 29 L50 15 L56 29 L63 21 L61 32 L39 32 Z" fill={fill} />}
@@ -31,7 +35,7 @@ function Emblem({ level, fill }: { level: number; fill: string }) {
   </>;
 }
 
-// `level` is the tier index (0 Bronze … 5 Master); `name` picks the colours (Japanese tier name).
+// `level` is the tier index (0 Bronze … 5 Master, 6 Legend); `name` picks the colours (Japanese tier name).
 export function TierEmblem({ level, name, size = 48, label, tier }: { level: number; name: string; size?: number; label?: string; tier?: string }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const [light, dark] = TIER_COLORS[name] ?? TIER_COLORS["ブロンズ"];
