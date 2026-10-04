@@ -3,7 +3,7 @@ import type { SiteCopy } from "./content";
 export const ja: SiteCopy = {
   title: "ReysonAI — Don't just play. Understand why.",
   description: "AIが推定したプリフロップレンジを読みやすい13×13の表で確認し、ハンドごとの理由を知り、ドリルで身につける。学習のための推定であり、GTOソルバーではありません。",
-  common: { home: "ReysonAI ホーム", open: "アプリを開く", menuOpen: "メニューを開く", menuClose: "メニューを閉じる", menuLabel: "メインメニュー", skip: "本文へスキップ", language: "EN", languageLabel: "Switch to English", raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド", available: "提供中", planned: "予定", experimental: "試験運用" },
+  common: { home: "ReysonAI ホーム", open: "アプリを開く", menuOpen: "メニューを開く", menuClose: "メニューを閉じる", menuLabel: "メインメニュー", skip: "本文へスキップ", language: "言語", languageLabel: "言語を選択", you: "あなた", raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド", available: "提供中", planned: "予定", experimental: "試験運用" },
   nav: [
     { label: "使い方", href: "#how" },
     { label: "トレーニング", href: "#drill" },
@@ -45,7 +45,7 @@ export const ja: SiteCopy = {
   },
   agent: {
     status: "β版", title1: "Agent戦で、", title2: "実戦の中で確かめる。",
-    description: "AI推定どおりに打つ5体のAgentと6人卓で対戦します。覚えたレンジを、配られたハンドで実際に使ってみましょう。降りたら続きを観戦することも、スキップすることもできます。",
+    description: "AI推定どおりに打つ5体のAgentと6人卓で対戦します。覚えたレンジを、配られたハンドで実際に使ってみましょう。",
     points: ["全員がReyson solver（AI推定）どおりに打つ6人卓", "100BBのキャッシュゲーム、収支はポイントで記録", "直近1000ハンドからあなたのプレイスタイルを読み取り", "フロップ以降は今のところヘッズアップのみ（β版）"],
     sample: "表示例",
   },

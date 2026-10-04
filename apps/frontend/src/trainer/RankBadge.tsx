@@ -6,7 +6,7 @@ export { TIER_COLORS, tierColor };
 
 export function RankBadge({ name, size = 48 }) {
   const level = name === LEGEND ? TIERS.length : Math.max(0, TIERS.findIndex(tier => tier.name === name));
-  return <TierEmblem level={level} name={name} size={size} tier={TIER_EN[name]?.toLowerCase()} label={localized(`${TIER_EN[name]} rank`, `${name}ランク`)} />;
+  return <TierEmblem level={level} name={name} size={size} tier={TIER_EN[name]?.toLowerCase()} label={localized(`${localized(TIER_EN[name], name)} rank`, `${name}ランク`)} />;
 }
 
 export function RankLadder({ rating }) {

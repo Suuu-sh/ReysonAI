@@ -13,7 +13,8 @@ export const AGENT_BASELINE = baseline;
 
 type Text = { ja: string; en: string };
 export type StyleId = "collecting" | "balanced" | "nit" | "tag" | "tight_passive" | "lag" | "station" | "passive" | "aggressive";
-export type PlayStyle = { id: StyleId; name: Text; summary: Text };
+// `mascot` and `color` drive the style character (StyleAvatar.tsx).
+export type PlayStyle = { id: StyleId; name: Text; summary: Text; mascot: Text; color: string };
 export type Tendency = { id: string; stat: string; label: Text; target: Text; you: number; base: number; gap: number };
 export type PlayerRead = {
   window: number; hands: number; confidence: "collecting" | "provisional" | "settled";
@@ -24,16 +25,16 @@ export type PlayerRead = {
   exploitReady: false;
 };
 
-const STYLES: Record<StyleId, PlayStyle> = {
-  collecting: { id: "collecting", name: { ja: "読み取り中", en: "Reading" }, summary: { ja: `${READ_MIN_HANDS}ハンドを超えると傾向を判定します。`, en: `A style appears after ${READ_MIN_HANDS} hands.` } },
-  balanced: { id: "balanced", name: { ja: "バランス型", en: "Balanced" }, summary: { ja: "参加率もレイズ率もAgentの基準に近い打ち方です。", en: "Close to the agents' own entry and raise rates." } },
-  nit: { id: "nit", name: { ja: "NIT", en: "Nit" }, summary: { ja: "参加がかなり少なく、強いハンドに絞っています。", en: "Plays far fewer hands, mostly strong ones." } },
-  tag: { id: "tag", name: { ja: "TAG", en: "TAG" }, summary: { ja: "参加は絞りつつ、入るときはレイズで入ります。", en: "Selective, and raises when it enters." } },
-  tight_passive: { id: "tight_passive", name: { ja: "タイト・パッシブ", en: "Tight-passive" }, summary: { ja: "参加が少なく、入るときもコールが多めです。", en: "Plays few hands and often just calls." } },
-  lag: { id: "lag", name: { ja: "LAG", en: "LAG" }, summary: { ja: "広く参加し、レイズで主導権を取りにいきます。", en: "Plays many hands and raises them." } },
-  station: { id: "station", name: { ja: "コーリングステーション", en: "Calling station" }, summary: { ja: "広く参加し、レイズよりコールが多めです。", en: "Plays many hands and calls more than it raises." } },
-  passive: { id: "passive", name: { ja: "パッシブ寄り", en: "Passive-leaning" }, summary: { ja: "参加率は基準並みで、レイズが少なめです。", en: "Normal entry rate, fewer raises." } },
-  aggressive: { id: "aggressive", name: { ja: "アグレッシブ寄り", en: "Aggressive-leaning" }, summary: { ja: "参加率は基準並みで、レイズが多めです。", en: "Normal entry rate, more raises." } },
+export const STYLES: Record<StyleId, PlayStyle> = {
+  collecting: { id: "collecting", name: { ja: "読み取り中", en: "Reading" }, summary: { ja: `${READ_MIN_HANDS}ハンドを超えると傾向を判定します。`, en: `A style appears after ${READ_MIN_HANDS} hands.` }, mascot: { ja: "？", en: "?" }, color: "#8a8f9c" },
+  balanced: { id: "balanced", name: { ja: "バランス型", en: "Balanced" }, summary: { ja: "参加率もレイズ率もAgentの基準に近い打ち方です。", en: "Close to the agents' own entry and raise rates." }, mascot: { ja: "フクロウ", en: "Owl" }, color: "#b7a6ff" },
+  nit: { id: "nit", name: { ja: "NIT", en: "Nit" }, summary: { ja: "参加がかなり少なく、強いハンドに絞っています。", en: "Plays far fewer hands, mostly strong ones." }, mascot: { ja: "カメ", en: "Turtle" }, color: "#7fc8a9" },
+  tag: { id: "tag", name: { ja: "TAG", en: "TAG" }, summary: { ja: "参加は絞りつつ、入るときはレイズで入ります。", en: "Selective, and raises when it enters." }, mascot: { ja: "オオカミ", en: "Wolf" }, color: "#6ea8ff" },
+  tight_passive: { id: "tight_passive", name: { ja: "タイト・パッシブ", en: "Tight-passive" }, summary: { ja: "参加が少なく、入るときもコールが多めです。", en: "Plays few hands and often just calls." }, mascot: { ja: "ネズミ", en: "Mouse" }, color: "#c9b48f" },
+  lag: { id: "lag", name: { ja: "LAG", en: "LAG" }, summary: { ja: "広く参加し、レイズで主導権を取りにいきます。", en: "Plays many hands and raises them." }, mascot: { ja: "サメ", en: "Shark" }, color: "#ff8a5c" },
+  station: { id: "station", name: { ja: "コーリングステーション", en: "Calling station" }, summary: { ja: "広く参加し、レイズよりコールが多めです。", en: "Plays many hands and calls more than it raises." }, mascot: { ja: "サカナ", en: "Fish" }, color: "#5fd0e0" },
+  passive: { id: "passive", name: { ja: "パッシブ寄り", en: "Passive-leaning" }, summary: { ja: "参加率は基準並みで、レイズが少なめです。", en: "Normal entry rate, fewer raises." }, mascot: { ja: "ネコ", en: "Cat" }, color: "#e3a6ec" },
+  aggressive: { id: "aggressive", name: { ja: "アグレッシブ寄り", en: "Aggressive-leaning" }, summary: { ja: "参加率は基準並みで、レイズが多めです。", en: "Normal entry rate, more raises." }, mascot: { ja: "オウシ", en: "Bull" }, color: "#ff5f6d" },
 };
 
 const clamp = (value: number, limit = 1) => Math.max(-limit, Math.min(limit, value));

@@ -1,4 +1,5 @@
 import config from "../../../../configs/cash-6max-100bb.json" with { type: "json" };
+import continuationConfig from "../../../../configs/multiway-preflop-stage2.json" with { type: "json" };
 
 export const gameConfig = config;
 export const positions = config.positions;
@@ -40,6 +41,12 @@ export function threeBetToSize(opener, raiser, callerCount = 0) {
 export function twoCallerSqueezeToSize(opener, hero) {
   return threeBetToSize(opener, hero, 2);
 }
+
+// User-approved exception for these new branches only: 26BB is below the
+// 26.5/28.5BB minimum after a 14.5/15.5BB two-caller squeeze.
+// Keep it outside gameConfig/sizing: saved HU postflop policies fingerprint
+// the complete legacy configuration, even fields their geometry never uses.
+export const twoCallerSqueezeFourBetToBb = cappedRaiseTo(continuationConfig.fixed_raise_to_bb.four_bet_after_two_caller_squeeze);
 
 export function fourBetToSize(fourBettor, threeBettor) {
   if (![threeBettor, fourBettor].every(position => positions.includes(position)) || fourBettor === threeBettor) {

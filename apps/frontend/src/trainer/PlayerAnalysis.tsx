@@ -272,7 +272,7 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness })
 
     <div className="analysis-kpis">
       <Kpi label="ReysonAI Score" icon={ChartLineUp} accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
-        sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)} · 10回答前比</span>}>
+        sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)}{localized(" · versus 10 answers ago", " · 10回答前比")}</span>}>
       </Kpi>
       <Kpi label="正答率" icon={Crosshair} value={stats.answered ? <><CountUp value={Math.round(stats.rate * 100)} /><small>%</small></> : "—"} sub={`${stats.answered}回答`} />
       <Kpi label="プレイスタイル" icon={Target} value={analysis.ready ? analysis.style.label : "判定中"} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>

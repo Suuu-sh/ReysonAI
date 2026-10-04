@@ -4,6 +4,12 @@
 - `/app` is English-first on a fresh browser. Keep Japanese available through the language selector, persist the choice locally, and set the document language accordingly. The service site lives only at `/`; its language choice shares the browser preference but not the product route.
 - Localize all user-facing product copy, including onboarding, navigation, practice/session/analysis screens, status messages, accessible labels, and preflop/postflop/trainer explanations. Do not translate persisted strategy identifiers, saved frequencies/EV/facts, or practice records; English explanations must describe those recorded facts without presenting estimates as solver GTO.
 
+## Product UI updates (2026-10-04)
+- The responsive web product supports English, Japanese, Simplified Chinese (`zh-CN`) and Spanish (`es`) with the existing shared locale persistence and routes. Keep language controls out of the sidebar and account popover; Settings → Language provides all four native names. A compact selector remains available in first-run onboarding and the service-site header.
+- At smartphone widths (≤650px), replace the sidebar with bottom tabs for Range, Trainer, Sessions, Stats and Settings. Retain safe-area/content clearance, keyboard focus and active-route labels; desktop/tablet keep their sidebar. This instruction does not change the separate native app.
+- The flop-card dialog no longer shows the quick-selection grid of 12 representative boards. Keep manual three-card selection, random flop and the underlying representative-board authoring/audit data.
+- Presentation localization must be idempotent for already-localized Chinese text. Do not infer Japanese from CJK characters or rewrite arbitrary Chinese substrings. Preserve user-authored names with `translate="no"`; localize owned preset/review titles before that boundary. Body portals must explicitly localize their own labels and cannot depend on the root observer.
+
 ## Service site (2026-09-25)
 - The marketing site lives at `/`; the existing preflop workspace and its local onboarding remain at `/app`. Keep these routes separate so landing-page work does not replace or alter persisted strategy behavior.
 - The service site uses an EN/日本語 switch in the header on `/`, switching language in place and remembering the choice in the shared browser locale preference. Do not maintain a separate Japanese-language route: `/ja` and its descendants must return 404 in both local preview and Sites, not redirect or fall back to the service site. Keep both languages structurally identical, localize every user-facing section and product-preview explanation, and set the document language and metadata by the selected language.
@@ -87,3 +93,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json` and `scripts/prepare-sites-b
 
 ## Brand symbol (2026-10-03)
 The user approved the abstract pink symbol, not the R draft or a plain spade, for both app and service-site branding. Use the shared `BrandIcon` and saved `src/assets/brand/reysonai-symbol.png` in the sidebar, onboarding, site header/footer and comparison header. Playing-card suits remain unchanged.
+
+## Languages and mobile navigation (2026-10-04)
+- The user removed the sidebar language selector. Keep locale selection under Settings → Language; onboarding and the service-site header may expose a compact native-language selector. Support English, Japanese, Simplified Chinese (`zh-CN`) and Spanish (`es`), with the existing English browser default and shared account/browser persistence. Translate presentation copy, never stored identifiers, hand notation, frequencies, EV/facts, user names or user-authored drill titles.
+- At smartphone widths (650px and below), the user wants bottom tabs instead of a sidebar. Keep Range, Trainer, Sessions, Stats and Settings accessible with the active route marked, keyboard focus, sufficient tap areas and safe-area/content clearance. Learning sign-in gates retain navigation. Desktop/tablet sidebar behavior stays unchanged.

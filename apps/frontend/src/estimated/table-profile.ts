@@ -130,7 +130,7 @@ export function adjustmentReason(row, profile) {
   if (!row?.adjusted) return null;
   const { call, three_bet } = normalizeProfile(profile);
   const adds = row.adjusted === "add";
-  if (productLocale() === "en") {
+  if (productLocale() !== "ja") {
     const causes = [
       three_bet === "low" && adds && "fewer opponents 3-bet",
       three_bet === "high" && !adds && "more opponents 3-bet",

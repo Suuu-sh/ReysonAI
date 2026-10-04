@@ -1,9 +1,11 @@
-export type SiteLocale = "en" | "ja";
+import type { ProductLocale } from "../locale-metadata.ts";
+
+export type SiteLocale = ProductLocale;
 
 export const en = {
   title: "ReysonAI — Don't just play. Understand why.",
   description: "Read AI-estimated preflop ranges on a clear 13×13 chart, see why each hand plays the way it does, and drill it. An estimate for learning, not a GTO solver.",
-  common: { home: "ReysonAI home", open: "Open the app", menuOpen: "Open menu", menuClose: "Close menu", menuLabel: "Main navigation", skip: "Skip to content", language: "日本語", languageLabel: "日本語に切り替える", raise: "Raise", threeBet: "3bet", call: "Call", fold: "Fold", available: "Available", planned: "Planned", experimental: "Experimental" },
+  common: { home: "ReysonAI home", open: "Open the app", menuOpen: "Open menu", menuClose: "Close menu", menuLabel: "Main navigation", skip: "Skip to content", language: "Language", languageLabel: "Select language", you: "YOU", raise: "Raise", threeBet: "3bet", call: "Call", fold: "Fold", available: "Available", planned: "Planned", experimental: "Experimental" },
   nav: [
     { label: "How it works", href: "#how" },
     { label: "Training", href: "#drill" },
@@ -45,7 +47,7 @@ export const en = {
   },
   agent: {
     status: "Beta", title1: "Agent table.", title2: "Put it to work in real hands.",
-    description: "Sit at a 6-max table with five Agents that play the Reyson AI estimate. Use the ranges you studied on the hands you are dealt. Fold any time, then watch the rest or skip ahead.",
+    description: "Sit at a 6-max table with five Agents that play the Reyson AI estimate. Use the ranges you studied on the hands you are dealt.",
     points: ["Every Agent plays the Reyson solver (AI estimate)", "100BB cash game, results kept in points", "Your play style read from your latest 1,000 hands", "Heads-up after the flop for now (beta)"],
     sample: "Sample",
   },

@@ -4,17 +4,16 @@ import { Check, CreditCard, DownloadSimple, Palette, SignOut, Sparkle, Translate
 import { useState } from "react";
 import { Sidebar } from "../components/layout.tsx";
 import { levels, loadProfile, saveProfile } from "../profile.ts";
-import { localized, productLocale, selectProductLocale } from "../i18n.ts";
-import { en as siteEn } from "../site/content.ts";
-import { ja as siteJa } from "../site/content-ja.ts";
+import { localized, productLocale, LOCALES, selectProductLocale } from "../i18n.ts";
+import { SITE_COPY } from "../site/locales.ts";
 import { exportLocalData, loadAppearance, loadDisplayMode, practiceKeys, saveAppearance, saveDisplayMode } from "./preferences.ts";
-import { ACCOUNT_SECTION, initialOf } from "./AccountMenu.tsx";
+import { ACCOUNT_SECTION } from "./AccountMenu.tsx";
 
 
 const t = (ja, en) => localized(en, ja);
 export const ACCOUNT_TABS = [
   { value: "account", Icon: UserCircle, ja: "アカウント", en: "Account" },
-  { value: "subscription", Icon: CreditCard, ja: "サブスクリプション", en: "Subscription" },
+  { value: "subscription", Icon: CreditCard, ja: "サブスクリプション", en: "Subscription", shortJa: "プラン", shortEn: "Plan" },
   { value: "appearance", Icon: Palette, ja: "外観", en: "Appearance" },
   { value: "language", Icon: Translate, ja: "言語", en: "Language" },
 ];
@@ -23,7 +22,7 @@ function Choice({ options, value, onChange, label }) {
   return <div className="account-choice" role="radiogroup" aria-label={label}>
     {options.map(option => <button type="button" role="radio" key={option.value} aria-checked={value === option.value}
       disabled={option.disabled} className={value === option.value ? "on" : ""} onClick={() => onChange(option.value)}>
-      {option.preview}<strong translate={option.native ? "no" : undefined}>{option.label}</strong>{option.hint && <small>{option.hint}</small>}
+      {option.preview}<strong translate={option.native ? "no" : undefined} lang={option.native ? option.value : undefined}>{option.label}</strong>{option.hint && <small>{option.hint}</small>}
     </button>)}
   </div>;
 }
@@ -52,7 +51,6 @@ function AccountTab({ profile, onProfileSaved }) {
     <section className="account-card">
       <header><h2>{t("プロフィール", "Profile")}</h2></header>
       <div className="account-profile">
-        <span className="account-avatar xl">{initialOf({ nickname })}</span>
         <label className="account-field">
           <span>{t("ニックネーム", "Nickname")}</span>
           <input value={nickname} maxLength={20} placeholder={t("ゲスト", "Guest")} onChange={event => { setNickname(event.target.value); setSaved(false); }} />
@@ -78,7 +76,7 @@ function AccountTab({ profile, onProfileSaved }) {
 }
 
 function SubscriptionTab() {
-  const pricing = (productLocale() === "ja" ? siteJa : siteEn).pricing;
+  const pricing = SITE_COPY[productLocale()].pricing;
   return <>
     <section className="account-card account-plan-current">
       <div>
@@ -141,7 +139,7 @@ function LanguageTab() {
     <header><h2>{t("言語", "Language")}</h2></header>
     <SettingRow title={t("表示言語", "Display language")} description={t("切り替えるとページを再読み込みします。戦略データや保存した記録は翻訳されません。", "Switching reloads the page. Strategy data and saved records are not translated.")}>
       <Choice label={t("表示言語", "Display language")} value={locale} onChange={value => value !== locale && selectProductLocale(value)}
-        options={[{ value: "en", label: "English", native: true }, { value: "ja", label: "日本語", native: true }]} />
+        options={LOCALES.map(item => ({ ...item, native: true }))} />
     </SettingRow>
   </section>;
 }
@@ -173,8 +171,11 @@ export function AccountPage({ profile, tab = "account", onSectionChange, onEditP
       <div className="account-layout">
         <header className="account-heading"><h1>{t("設定", "Settings")}</h1></header>
         <nav className="account-tabs" aria-label={t("設定の項目", "Settings sections")}>
-          {ACCOUNT_TABS.map(({ value, Icon, ja, en }) => <button type="button" key={value} aria-current={active === value ? "page" : undefined}
-            className={active === value ? "on" : ""} onClick={() => onSectionChange(`${ACCOUNT_SECTION}#${value}`)}><Icon size={17} />{t(ja, en)}</button>)}
+          {ACCOUNT_TABS.map(({ value, Icon, ja, en, shortJa, shortEn }) => <button type="button" key={value} aria-current={active === value ? "page" : undefined} aria-label={t(ja, en)}
+            className={active === value ? "on" : ""} onClick={() => onSectionChange(`${ACCOUNT_SECTION}#${value}`)}>
+            <Icon size={17} weight={active === value ? "fill" : "regular"} />
+            {shortJa ? <><span className="account-tab-full">{t(ja, en)}</span><span className="account-tab-short" aria-hidden="true">{t(shortJa, shortEn)}</span></> : t(ja, en)}
+          </button>)}
         </nav>
         <div className="account-content">
           {active === "account" ? <AccountTab key={profile?.updatedAt} profile={profile} onProfileSaved={onProfileSaved} />

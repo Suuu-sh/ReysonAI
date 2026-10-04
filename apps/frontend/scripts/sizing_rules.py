@@ -1,9 +1,10 @@
-"""Sizing functions sourced from configs/cash-6max-100bb.json."""
+"""Legacy shared sizing and isolated stage-two continuation sizing."""
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 CONFIG = json.loads((ROOT / 'configs/cash-6max-100bb.json').read_text())
+CONTINUATION_CONFIG = json.loads((ROOT / 'configs/multiway-preflop-stage2.json').read_text())
 SIZING = CONFIG['sizing']
 STACK_BB = CONFIG['stack_bb']
 RAKE_CONFIG = CONFIG['rake']
@@ -52,6 +53,11 @@ def two_caller_squeeze_to(opener, hero):
     if opener not in CONFIG['positions'] or hero not in CONFIG['positions'] or opener == hero:
         raise ValueError('Invalid two-caller squeeze positions')
     return three_bet_to(opener, hero, caller_count=2)
+
+
+def two_caller_squeeze_four_bet_to():
+    """Approved fixed response size for new two-caller squeeze branches only."""
+    return cap_raise_to(CONTINUATION_CONFIG['fixed_raise_to_bb']['four_bet_after_two_caller_squeeze'])
 
 
 def four_bet_to(four_bettor, three_bettor):

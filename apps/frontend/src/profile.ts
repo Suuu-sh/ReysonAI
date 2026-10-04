@@ -1,5 +1,5 @@
 import { accountSnapshot, accountStorage } from "./account/session.ts";
-import { LOCALE_KEY, productLocale, selectProductLocale } from "./locale.ts";
+import { LOCALE_KEY, productLocale, selectProductLocale, isProductLocale } from "./locale.ts";
 import { defaultModeForLevel } from "./estimated/display-mode.ts";
 
 // Guest-local or authenticated profile; nothing here is a credential.
@@ -60,5 +60,5 @@ export function adoptOnboardingDraft() {
   if (!draft) return;
   if (!loadProfile() && levels.some(item => item.value === draft.level)) saveProfile(draft);
   // A brand-new account has no language yet; keep the one chosen on the onboarding screen.
-  if (storage()?.getItem(LOCALE_KEY) === null && draft.locale === "ja") selectProductLocale("ja");
+  if (storage()?.getItem(LOCALE_KEY) === null && isProductLocale(draft.locale)) selectProductLocale(draft.locale);
 }
