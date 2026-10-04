@@ -44,6 +44,30 @@ Solution全体JSONは互換用に残しますが、通常のリクエストご�
 - `GET /v1/preflop/datasets` データセット名とハッシュの一覧
 - `GET /v1/preflop/datasets/<name>` JSON 本文（例: `opening-ranges`, `reasons/BB_vs_BTN`）。ETag 付き
 
+## 公開ポストフロップ計算設定（version 1）
+
+`GET /v1/postflop/runtime-config?version=1` は、公開 Web が既に使用している計算設定と固定参照表のみを返します。
+保存済みのスポット方針・ハンドレンジは引き続き既存 D1 API から取得します。この endpoint は新しい戦略を生成しません。
+
+- 本文は `JSON.stringify({ schemaVersion: 1, kind: "ai_estimate_not_gto", modelVersion: "reysonai-postflop-runtime-v1", configs: { game, stage2, pilot }, references: { flop: { oop_checks, oop_leads }, later } })`。
+- `game` / `stage2` / `pilot` はそれぞれ既存の `configs/cash-6max-100bb.json`、`configs/multiway-preflop-stage2.json`、`apps/frontend/scripts/data/postflop-ai-pilot.json`。
+- `oop_checks` / `oop_leads` は Web 共有 `policy.mjs` の `referencePolicyFor`、`later` は `later-policy.mjs` の `referenceLaterPolicy` の既存出力。そのまま参照し、設定・頻度・計算式を再作成しません。
+- UTF-8 本文は **30,221 bytes**、SHA256 は **`26beae01badcf7010c43376b0b394e06868361813f88817cee7c5bfa7611ef0b`**。ETag はこのハッシュを二重引用符で囲んだ値です。
+- 成功と `304` は `Cache-Control: public, max-age=300, s-maxage=3600, must-revalidate`。条件付き GET は strong / weak / list / `*` の `If-None-Match` に対応します。
+- GET 以外（HEAD / OPTIONS を含む）は `405` / `Allow: GET`。version の省略・重複・未対応値や追加の query key は `400`。エラーは `no-store`。固定ハッシュが変わった場合は `503` で停止します。
+- 環境変数・アカウント・D1・R2・既存の dataset cache へアクセスしません。ファイル名、ユーザー、spot を受け取る経路はなく、認証情報を必要としない公開 CORS (`*`, credentials なし) の読み取り専用 API です。ブラウザから独自ヘッダーを送る preflight は提供しません。
+
+Native は本文の schema / model version / SHA256 と形を検証した後で計算を初期化してください。
+未配信、取得失敗、ハッシュ不一致では明示的に停止し、別の設定や参照戦略へ fallback しません。
+参照表は保存済み candidate の代用品ではなく、既存 Web の計算で使う比較・再 raise 参照です。
+
+この v1 の本文は byte-stable な契約です。将来入力や参照関数を変える場合は新しい契約 version と
+対応クライアントを独立にレビューし、既存 v1 利用者を黙って別モデルへ移行させないでください。
+本番 API の配信と exact body / ETag の確認が完了するまで、依存する Mobile を配信しないでください。
+PR の作成は本番配信を意味しません。この endpoint 自体に migration、D1 書込み、新サービスは不要です。
+
+契約・分離テスト: `npm run test:runtime-config`。CI は既存の Web/native 認証テストも再実行します。
+
 ## ポストフロップAI方針（D1）
 
 Worker は D1 `reysonai` を読んで返すだけです。表示の計算（盤面・ターン/リバー・根拠・
