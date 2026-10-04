@@ -13,6 +13,9 @@ import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.mjs";
 import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
 import { multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
+import { mw3OriginForEvents } from "../estimated/mw3-context.ts";
+import { isVerifiedMw3Kit, type Mw3Kit } from "../estimated/mw3-browser.ts";
+import { playMw3AgentHand } from "./mw3-hand.ts";
 import { type Decider, type PostflopKit } from "./policy.ts";
 
 const round = (value: number) => Math.round(value * 100) / 100;
@@ -25,15 +28,18 @@ export type HandSetup = {
   humanActions?: HumanAction[];
   agents: Decider; // decides for every non-human seat
   postflop: (spotId: string) => PostflopKit | null | undefined; // undefined: not loaded yet
+  mw3?: { supportsSpot: (spotId: string) => boolean; kit: (spotId: string) => Mw3Kit | null | undefined };
 };
 
 // `to`: the street total the action makes (BB); `toCall`: chips the human owes now.
-export type Pending = { street: "preflop" | "flop" | "turn" | "river"; pos: Position; options: { key: string; to?: number; allIn?: boolean }[]; pot: number; board: string[]; toCall?: number; notice?: "no_multiway" | "no_data" | null };
+export type Pending = { street: "preflop" | "flop" | "turn" | "river"; pos: Position; options: { key: string; to?: number; amountBb?: number; allIn?: boolean; aliases?: string[] }[]; pot: number; board: string[]; toCall?: number; notice?: "no_multiway" | "no_data" | null };
 // `pot` is the pot after the action; `bets` the street totals in front of each seat after it.
-export type LogEntry = { street: string; pos: Position; action: string; to?: number; allIn?: boolean; pot: number; bets?: Record<string, number>; source?: string; tableRule?: string | null };
+export type LogEntry = { street: string; pos: Position; action: string; to?: number; allIn?: boolean; pot: number; bets?: Record<string, number>; source?: string; tableRule?: string | null; amountBb?: number; originalRole?: string };
 
 export type HandResult = {
-  status: "awaiting" | "needs_postflop" | "done";
+  status: "awaiting" | "needs_postflop" | "unavailable" | "done";
+  postflopKind?: "mw3_srp";
+  unavailableReason?: string;
   pending?: Pending;
   spotId?: string | null;
   holeCards: Record<string, string[]>;
@@ -71,8 +77,11 @@ export function deal(seed: string) {
   return { hole, board: deck.slice(12, 17) };
 }
 
-// The postflop spot a heads-up preflop line reached, or null when no spot describes it.
+// Route the actual origin. Dedicated three-player SRPs are separate from the
+// older multiway catalog entries whose terminal flop is heads-up.
 export function postflopSpotFor(events: { pos: Position; type: string; key: string }[]) {
+  const dedicated = mw3OriginForEvents(events);
+  if (dedicated) return dedicated;
   const extended = multiwaySpotFor(events);
   if (extended) return extended;
   const voluntary = events.filter(e => e.type !== "fold" && e.type !== "check");
@@ -102,7 +111,7 @@ export function playHand(setup: HandSetup): HandResult {
   let state = startPreflop();
   for (let pos = nextActor(state); pos; pos = nextActor(state)) {
     const hand = handClass(hole[pos]);
-    const offered = preflopOptions(state, pos, hand);
+    const offered = preflopOptions(state, pos, hand, { allowThreePlayer: setup.mw3?.supportsSpot });
     let action: PreflopAction, source = offered.source ?? undefined, tableRule: string | null = null;
     if (pos === setup.human) {
       const options = humanPreflopOptions(state, pos, offered);
@@ -128,6 +137,23 @@ export function playHand(setup: HandSetup): HandResult {
     const winner = alive[0];
     const returns = Object.fromEntries(POSITIONS.map(pos => [pos, round((pos === winner ? pot : 0) - invested[pos])]));
     return result({ winners: [winner], showdown: false, returns, rake: 0, pot });
+  }
+  if (alive.length >= 3) {
+    // Never reduce a multiway deal to the first two seats or check it down.
+    const origin = alive.length === 3 ? mw3OriginForEvents(state.events) : null;
+    if (!origin || !origin.seats.every(seat => alive.includes(seat))) return result({ status: "unavailable", unavailableReason: "unsupported_multiway_origin" });
+    const mw3Kit = setup.mw3?.kit(origin.id);
+    if (setup.mw3?.supportsSpot(origin.id) && mw3Kit === undefined) return result({ status: "needs_postflop", postflopKind: "mw3_srp", spotId: origin.id });
+    if (!mw3Kit || !isVerifiedMw3Kit(mw3Kit) || mw3Kit.spotId !== origin.id) return result({ status: "unavailable", postflopKind: "mw3_srp", spotId: origin.id, unavailableReason: "missing_or_unapproved_mw3_policy" });
+    try {
+      const played = playMw3AgentHand({ kit: mw3Kit, state, hole, board, human: setup.human, humanActions: humanQueue, random: drawFor });
+      return result({ ...played, log: [...log, ...played.log] });
+    } catch (error) {
+      // Illegal human choices remain programmer errors; a malformed/stale kit
+      // stops the hand without inventing actions or settling session points.
+      if (error instanceof Error && /human|Unexpected mw3/.test(error.message)) throw error;
+      return result({ status: "unavailable", postflopKind: "mw3_srp", spotId: origin.id, unavailableReason: "invalid_mw3_state" });
+    }
   }
   const [a, b] = alive;
   const allIn = alive.some(pos => (state.committed[pos] ?? 0) >= STACK_BB);

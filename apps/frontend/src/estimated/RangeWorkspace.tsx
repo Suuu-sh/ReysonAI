@@ -32,6 +32,8 @@ import {
 } from "./ranges.ts";
 import { ArrowCounterClockwise, CaretDown, DotsThreeVertical, GearSix } from "@phosphor-icons/react";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
+import { Mw3PostflopTrial, useMw3RangeSession } from "./Mw3PostflopTrial.tsx";
+import { mw3DeliveryClient } from "./mw3-browser.ts";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
 import { useAccount } from "../account/AuthPanel.tsx";
 import { LearningGate, learningAllowed } from "../account/LearningAccess.tsx";
@@ -360,7 +362,7 @@ export function EstimatedRanges(props) {
   return <EstimatedRangeSession key={navigation} {...props} />;
 }
 
-function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }) {
+function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange, mw3Client = mw3DeliveryClient }) {
   const [initialUrlState] = useState(() => readRangeUrl());
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -668,6 +670,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero, pendingRaise, squeezeResponse,
     callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
+  const mw3Session = useMw3RangeSession(flopContext, { flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, mw3Client, showFlop && postflopAllowed);
   // Temporary loading/missing policy data is not proof that an otherwise valid
   // board/history is invalid. Persist the validated selection, not whether its
   // strategy can be rendered in this particular async frame. Exact zero support
@@ -694,7 +697,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
-  const pendingStreetCard = flopActive ? laterBlocks.find(block => block.kind === "board" && block.pending)?.street ?? null : null;
+  const pendingStreetCard = flopActive ? (flopContext?.kind === "mw3_srp" ? mw3Session.navigation?.pendingStreet : laterBlocks.find(block => block.kind === "board" && block.pending)?.street) ?? null : null;
   const previousPendingStreetCard = useRef(null);
   useEffect(() => {
     const nextDialog = nextPendingStreetCardDialog(pendingStreetCard, previousPendingStreetCard.current);
@@ -703,9 +706,11 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   }, [pendingStreetCard]);
   const combinedBlocks = flopActive
     ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop", potBb: flopContext.potBb },
-      ...(flopContext.pilotAvailable && flopBoard
-        ? [...buildFlopActionBlocks(flopActions, flopContext).filter(block => !(canEnterLaterStreets && block.kind === "end")), ...laterBlocks]
-        : [])]
+      ...(flopContext.kind === "mw3_srp"
+        ? mw3Session.navigation?.blocks ?? []
+        : flopContext.pilotAvailable && flopBoard
+          ? [...buildFlopActionBlocks(flopActions, flopContext).filter(block => !(canEnterLaterStreets && block.kind === "end")), ...laterBlocks]
+          : [])]
     : actionBlocks;
   const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
@@ -961,7 +966,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        {flopActive ? (flopContext.kind === "mw3_srp" || flopContext.kind === "multiway_unavailable" ? <Mw3PostflopTrial context={flopContext} session={mw3Session} cards={flopCards} displayMode={displayMode} /> : <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} />) : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {entry.retryContinuation && <button type="button" onClick={continuationRuntime.retry}>{continuationCopy("retry")}</button>}

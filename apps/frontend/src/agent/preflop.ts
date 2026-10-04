@@ -1,9 +1,9 @@
+import { mw3OriginForEvents } from "../estimated/mw3-context.ts";
 import { continuationDecisionForEvents } from "../estimated/continuation-history.ts";
 // Six-handed preflop for the Reyson Agent table. Every decision is looked up in a saved preflop
 // dataset (opening, responses, 3bet/4bet/5bet, squeeze, cold 3bet, limp lines); nothing else
-// is invented. Two table rules keep every flop heads-up (the only postflop data we have):
-//   - a call that would put a third player into the pot is not offered (agents move that
-//     frequency to fold, flagged `tableRule: "no_multiway"`);
+// is invented. A third-player call requires an approved dedicated SRP delivery.
+// Calls into unsupported 3bet/squeeze or 4+ pots remain blocked (`no_multiway`);
 //   - a situation without saved data offers only fold / check (agents fold, flagged `"no_data"`).
 // Everyone starts each hand with 100BB, the depth every dataset assumes.
 import { dataset } from "../estimated/datasets.ts";
@@ -111,6 +111,13 @@ export function situation(s: PreflopState, pos: Position): Situation {
       const spot = find("multiway-responses", id);
       return of("multiway-responses", id, { fold, call, squeeze: raise("squeeze", size(spot, "squeeze_size_bb", 13)) });
     }
+    if (s.callers.length === 2) {
+      // Remaining seats face the saved Stage 3 two-caller decision. Merely
+      // changing the call limit would make these players fold from missing data.
+      const id = `${pos}_vs_${opener}_${s.callers[0]}call_${s.callers[1]}call`;
+      const spot = find("multiway2-responses", id);
+      return of("multiway2-responses", id, { fold, call, squeeze: raise("squeeze", size(spot, "squeeze_size_bb", bet * 3)) });
+    }
     return { source: null, rows: null, map: {} };
   }
 
@@ -174,12 +181,15 @@ function contendersAfterCall(s: PreflopState, pos: Position) {
 export type Choice = { action: PreflopAction; freq: number };
 
 // The offered actions for `pos` with their saved frequency for `hand`, after the table rules.
-export function preflopOptions(s: PreflopState, pos: Position, hand: string) {
+export function preflopOptions(s: PreflopState, pos: Position, hand: string, { allowThreePlayer }: { allowThreePlayer?: (spotId: string) => boolean } = {}) {
   const sit = situation(s, pos);
   const row = sit.rows?.hands?.find((item: any) => item.hand === hand) ?? null;
   const bet = currentBet(s);
   const facing = bet > contribution(s, pos);
-  const callBlocked = facing && contendersAfterCall(s, pos) > 2;
+  const contenders = contendersAfterCall(s, pos);
+  const origin = contenders === 3 && s.raises.length === 1 && s.callers.length === 1
+    ? mw3OriginForEvents([...s.events, { pos, type: "call", key: "call", to: bet }]) : null;
+  const callBlocked = facing && contenders > 2 && !(origin && allowThreePlayer?.(origin.id));
   if (!row) {
     // No saved data: fold (or check when nothing is owed).
     const action: PreflopAction = facing ? { type: "fold", key: "fold" } : { type: "check", key: "check" };

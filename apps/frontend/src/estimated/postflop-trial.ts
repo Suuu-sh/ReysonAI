@@ -1,3 +1,4 @@
+import { mw3OriginForSelection } from "./mw3-context.ts";
 import { openSizeFor, threeBetToSize } from "./sizing.ts";
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 import { multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
@@ -53,6 +54,15 @@ export function completedFlopContext({ actionBlocks, rangeType, opener, hero, ca
   if (!Number.isFinite(potBb)) return null;
   let players = end.continuationTerminal?.live_participants ?? (rangeType === "limp" ? ["SB", "BB"]
     : rangeType === "response" ? [opener, ...callers] : [opener, hero]);
+  // Three live players have a dedicated origin. Existing multiwaySpotFor
+  // entries describe HU-origin cold/squeeze paths and must not dispatch here.
+  if (players.length >= 3) {
+    const mw3 = mw3OriginForSelection({ rangeType, opener, callers, pendingRaise });
+    const geometryMatches = Boolean(mw3 && potBb === mw3.potBb);
+    return { players, potBb, pilotAvailable: false, kind: geometryMatches ? "mw3_srp" : "multiway_unavailable",
+      spotId: geometryMatches ? mw3.id : null, mw3Spot: geometryMatches ? mw3 : null,
+      mw3Available: geometryMatches && Boolean(isDefaultTable) };
+  }
   const spot = flopSpotFor({ actionBlocks, rangeType, opener, hero, callers, foldedHero, pendingRaise, squeezeResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
   if (spot?.history) players = [spot.oop, spot.ip];
   const pilotAvailable = Boolean(spot?.reachable) && potBb === spot.potBb && Boolean(isDefaultTable);

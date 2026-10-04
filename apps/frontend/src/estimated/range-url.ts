@@ -1,3 +1,4 @@
+import { canonicalMw3RangeSelection } from "./mw3-range-state.ts";
 import { hands } from "../data.ts";
 import { positions, fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
 import { limpActionTransition, nextActorsAfterRaise, responseActionTransition } from "./action-path.ts";
@@ -409,7 +410,10 @@ export function encodeRangeUrl(state, actionBlocks = buildRangeUrlActionBlocks(s
   const context = completedFlopContext({ ...state, actionBlocks,
     isDefaultTable: Object.keys(defaultFormat).every(key => format[key] === defaultFormat[key])
       && profileLevel(state.tableProfile?.call) === "normal" && profileLevel(state.tableProfile?.three_bet) === "normal" });
-  if (context && hasObservablePostflopActions(context) && state.showFlop !== false) {
+  if (context?.kind === "mw3_srp" && state.showFlop !== false && Array.isArray(state.flopCards)) {
+    state = { ...state, ...canonicalMw3RangeSelection(context.mw3Spot, state) };
+  }
+  if (context && context.kind !== "mw3_srp" && context.kind !== "multiway_unavailable" && hasObservablePostflopActions(context) && state.showFlop !== false) {
     state = { ...state, flopActions: canonicalStreetActions("flop", state.flopActions ?? [], undefined, context) };
     const turnStart = laterStart(state.flopActions, context);
     if (turnStart && state.turnCard) {
@@ -463,6 +467,14 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
   // without a pilot still has an active read-only placeholder in the workspace.
   if (!context) return state;
   state.showFlop = true; state.flopCards = flop;
+  if (context.kind === "mw3_srp") {
+    const turn = boardCards(params.get("turn"), 1, flop);
+    const river = turn ? boardCards(params.get("river"), 1, [...flop, ...turn]) : null;
+    return { ...state, ...canonicalMw3RangeSelection(context.mw3Spot, { flopCards: flop,
+      flopActions: parsePostflopActions(params.get("flop_actions")), turnCard: turn?.[0] ?? "",
+      turnActions: parsePostflopActions(params.get("turn_actions")), riverCard: river?.[0] ?? "",
+      riverActions: parsePostflopActions(params.get("river_actions")) }) };
+  }
   if (!context.pilotAvailable) {
     state.flopActions = parsePostflopActions(params.get("flop_actions"));
     const turn = boardCards(params.get("turn"), 1, flop);
