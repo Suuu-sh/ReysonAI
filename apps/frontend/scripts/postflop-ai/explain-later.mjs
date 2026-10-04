@@ -1,3 +1,4 @@
+import { assertPostflopDeal } from "./range-support.mjs";
 // Evidence for one private combo on the saved AI-estimated turn/river policy.
 // This is a range-weighted estimate, not a solver or GTO result.
 import { evaluate } from "../lib/equity.mjs";
@@ -7,8 +8,9 @@ import { scaleByPath, validatePolicy } from "./policy.mjs";
 import { LATER_NODES, laterNodeRole } from "./later-tree.mjs";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
 import { flopState } from "./tree.mjs";
-import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
+import { laterDecisionState as laterDecision, laterStart, replayLater } from "./street-state.mjs";
 import { defenceFor, isFacingNode, replayOrNull } from "./defence.mjs";
+import { canonicalPostflopPath } from "./observable-actions.mjs";
 import { averageExplanationFacts } from "./explain-aggregate.mjs";
 
 const RANKS = "23456789TJQKA";
@@ -37,9 +39,9 @@ function singleCard(value, label, used, required = false) {
 
 export function laterExplainContext({ flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "" }, inputs) {
   const flopBoard = parseFlopBoard(flop);
-  const flopPath = parsePath(flopActions, "フロップ");
-  const turnPath = parsePath(turnActions, "ターン");
-  const riverPath = parsePath(riverActions, "リバー");
+  const paths = canonicalPostflopPath(inputs.spot, { flop: parsePath(flopActions, "フロップ"),
+    turn: parsePath(turnActions, "ターン"), river: parsePath(riverActions, "リバー") }, inputs.config);
+  const { flop: flopPath, turn: turnPath, river: riverPath } = paths;
   const used = new Set(flopBoard.cards);
   const turnCard = singleCard(turn, "ターン", used, true);
   const turnBoard = [...flopBoard.cards, turnCard];
@@ -69,6 +71,7 @@ export function laterExplainContext({ flop, flopActions = "", turn, turnActions 
     throw new Error("リバーはターンの判断が終わってから指定してください。");
   }
 
+  if (inputs.spot.history) assertPostflopDeal(inputs, board);
   const flopReplay = flopState(inputs.spot.tree, flopPath);
   if (flopReplay.end && !["check", "call", "raise-call"].includes(flopReplay.end.type)) {
     throw new Error("フロップのアクションが後続ストリートへ進める状態ではありません。");
@@ -94,6 +97,7 @@ export function laterOpponentRange({ context, inputs, hero, flopPolicy, laterPol
   // Reach weights with the bluff cap from the engine table at the hero's decision.
   const table = replayOrNull(inputs, board, { flop: context.flopPath, turn: context.turnPath, river: context.street === "river" ? context.riverPath : [] });
   if (table) return defenceFor(inputs, flopPolicy, laterPolicy).rangeItems(table, board, seat).filter(item => !item.combo.some(card => hero.includes(card)));
+  if (spot.history) throw new Error("New-HU explanation has no observable pending decision");
   let items = seatRange(inputs, seat, board).filter(item => !item.combo.some(card => hero.includes(card)));
   items = scaleByPath(items, role, context.flopSteps, flopPolicy, context.flopBoard.cards);
   items = scaleLaterPath(items, role, context.turnReplay.state.steps, laterPolicy, context.turnBoard, context.start.lastAggressor);
@@ -165,6 +169,8 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
   const actions = {}, betTable = {};
   const responseDetail = (responseNode, lineRole, action) => {
     const computed = defenceOf(action);
+    if (spot.history && !computed) return;
+    if (spot.history) responseNode = computed.table.log.at(-1).node;
     const response = evaluated.map(item => {
       let mix = laterPolicyMix(policy, responseNode, item.combo, board, lineFor(decision.previousAggressor, lineRole));
       if (computed) mix = computed.defence.mix(computed.table, board, responseNode, item.combo, mix);
@@ -185,7 +191,7 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
   const node = decision.node;
   if (node.endsWith("_first")) {
     const actorRole = laterNodeRole(node);
-    for (const bet of LATER_NODES[node].filter(action => action !== "check")) {
+    for (const bet of (spot.history ? decision.options.map(option => option.action) : LATER_NODES[node]).filter(action => action !== "check")) {
       const responderRole = otherRole(actorRole);
       const size = bet === "allin" ? "allin" : bet.slice(3);
       responseDetail(`${decision.street}_${responderRole}_vs_${size}`, responderRole, bet);
@@ -205,7 +211,7 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
     const caught = { groups: [group("ahead", ahead, total), group("behind", behind, total)], required };
     actions.call = caught;
     actions.fold = caught;
-    if (LATER_NODES[node].includes("raise")) {
+    if ((spot.history ? decision.options.map(option => option.action) : LATER_NODES[node]).includes("raise")) {
       const bettorRole = other;
       // The answer to this raise: the other seat at raise depth + 1 (turn_oop_vs_raise, turn_ip_vs_raise2 ...).
       const depth = /_vs_raise(\d*)$/.exec(node), next = depth ? Number(depth[1] || 1) + 1 : 1;
@@ -236,6 +242,7 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
   const heroTable = replayOrNull(inputs, board, {
     flop: boardContext.flopPath, turn: boardContext.turnPath, river: street === "river" ? boardContext.riverPath : [],
   });
+  if (inputs.spot.history && !heroTable) throw new Error("New-HU explanation has no observable pending decision");
   const heroDefence = heroTable && { requirement: defence.requirement(heroTable, board, boardContext.decision.node),
     facts: defence.facts(heroTable, board, boardContext.decision.node, hero,
       laterPolicyMix(laterRules, boardContext.decision.node, hero, board, boardContext.decision.line)) };

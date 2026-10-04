@@ -5,6 +5,7 @@ import { evaluate } from "../lib/equity.mjs";
 import { gameConfig } from "../../src/estimated/sizing.ts";
 import { LATER_NODES, STREETS, betFraction, streetState } from "./later-tree.mjs";
 import { NODES, facingNode, flopBetFraction, raiseNode } from "./tree.mjs";
+import { actionProjection, usesObservableActions } from "./observable-actions.mjs";
 
 const round = value => Math.round(value * 100) / 100;
 export const rake = pot => Math.min(pot * gameConfig.rake.rate, gameConfig.rake.cap_bb);
@@ -46,10 +47,15 @@ export function playFlop(table, tree, decide, config) {
   const canRaise = seat => table.stacks[table.other(seat)] > 0 && table.invested[seat] + cap(seat) > table.invested[table.other(seat)];
   const ask = (seat, node) => {
     const entry = { seat, node, street: "flop", boardLen: 3, line: null, pot: table.pot, index: table.path.flop.length, action: null, canRaise: canRaise(seat) };
+    if (usesObservableActions(table.spot)) entry.observation = actionProjection({ street: "flop", node,
+      role: seat === ip ? "ip" : "oop", pot: table.pot, tree, config,
+      stacks: { ip: table.stacks[ip], oop: table.stacks[oop] },
+      committed: { ip: table.invested[ip], oop: table.invested[oop] } });
     table.log.push(entry);
     let action = decide(seat, node, step++);
     if (!NODES[node].includes(action)) throw new Error(`Illegal flop action at ${node}`);
-    if (action === "raise" && !entry.canRaise) action = "call";
+    if (entry.observation) action = entry.observation.byAction[action].action;
+    else if (action === "raise" && !entry.canRaise) action = "call";
     entry.action = action;
     table.path.flop.push(action);
     return action;
@@ -135,11 +141,16 @@ export function playLaterStreetsWithPolicy(table, flop, runout, decide, config, 
       table.log.push(entry);
       // Raising needs an opponent who is not all-in and chips beyond the call.
       entry.canRaise = table.stacks[other] > 0 && committed[seat] + cap(seat) > committed[other];
+      if (usesObservableActions(table.spot)) entry.observation = actionProjection({ street, node: state.node,
+        role: state.role, pot: table.pot, tree: table.spot.tree, config,
+        stacks: { ip: table.stacks[ip], oop: table.stacks[oop] },
+        committed: { ip: committed[ip], oop: committed[oop] } });
       let action = decide(seat, state.node, board, line);
       if (!LATER_NODES[state.node].includes(action)) throw new Error(`Illegal later action at ${state.node}`);
       // A fixed rule table still has a raise key when facing a capped all-in. Collapse
       // that choice into call: it cannot reopen action or let an all-in player fold.
-      if (action === "raise" && !entry.canRaise) action = "call";
+      if (entry.observation) action = entry.observation.byAction[action].action;
+      else if (action === "raise" && !entry.canRaise) action = "call";
       if (action === "allin" || action.startsWith("bet")) {
         wager(seat, action === "allin" ? cap(seat) : round(table.pot * betFraction(street, action)));
         aggressor = seat;

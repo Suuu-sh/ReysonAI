@@ -1,3 +1,4 @@
+import { canonicalPostflopPath, usesObservableActions } from "./observable-actions.mjs";
 // The pure core of the turn/river per-hand action EV (no node:*): shared by the Node scripts
 // (later-hand-ev.mjs) and the browser worker (src/estimated/postflop-compute.ts), so both compute
 // exactly the same numbers. Values are sampled by AI-policy self-play with the computed defence at
@@ -11,7 +12,7 @@ import { flopState } from "./tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
 import { defenceFor, replayDecision } from "./defence.mjs";
 import { exactActionEv } from "./exact-ev.mjs";
-import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
+import { laterDecisionState as laterDecision, laterStart, replayLater } from "./street-state.mjs";
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 export const LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES = 600;
@@ -80,6 +81,14 @@ function compatiblePair(pickActor, pickVillain, random) {
 
 function playFromLaterNode({ hands, flopBoard, runout, flopActions, turnActions, street, streetActions, node, forced,
   laterMix, defence, spot, random }) {
+  if (usesObservableActions(spot)) {
+    const path = canonicalPostflopPath(spot, { flop: flopActions,
+      turn: street === 'turn' ? [...streetActions, forced] : turnActions,
+      river: street === 'river' ? [...streetActions, forced] : [] }, config);
+    flopActions = path.flop;
+    if (street === 'turn') { forced = path.turn.at(-1); streetActions = path.turn.slice(0, -1); turnActions = streetActions; }
+    else { turnActions = path.turn; forced = path.river.at(-1); streetActions = path.river.slice(0, -1); }
+  }
   const table = createTable(spot);
   let flopIndex = 0, atNode = null;
   playFlop(table, spot.tree, () => flopActions[flopIndex++], config);
@@ -139,7 +148,7 @@ function computeNodeMonteCarloRaw({ key, street, history, turnHistory = [], expe
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
   const nodeTable = replayDecision(inputs, currentBoard, { flop: flopPath.actions,
     turn: street === "river" ? turnHistory : history, river: street === "river" ? history : [] });
-  const mixAtNode = combo => defence.mix(nodeTable, currentBoard, decision.node, combo, laterMix(decision.node, combo, currentBoard, decision.line));
+  const mixAtNode = combo => defence.observableMix(nodeTable, currentBoard, decision.node, combo, laterMix(decision.node, combo, currentBoard, decision.line));
   const ranges = {};
   for (const seat of [actor, opponent]) ranges[seat] = defence.rangeItems(nodeTable, currentBoard, seat);
   const actorRange = ranges[actor];
@@ -161,7 +170,7 @@ function computeNodeMonteCarloRaw({ key, street, history, turnHistory = [], expe
     nodeMix.get(hand).push({ item, mix });
     comboMix.set(item.combo.join(","), mix);
   }
-  const actions = LATER_NODES[decision.node];
+  const actions = nodeTable.log.at(-1)?.observation?.classes.map(group => group.action) ?? LATER_NODES[decision.node];
   const rows = {};
   let validClasses = 0;
   for (const [hand, combos] of grouped) {
@@ -183,7 +192,8 @@ function computeNodeMonteCarloRaw({ key, street, history, turnHistory = [], expe
     // compatiblePair also needs the arrays only for its rare deterministic fallback.
     pickActor.items = combos;
     if (pickVillain) pickVillain.items = villainRange;
-    const random = rng(sampleSeed ?? seedFor(`${config.seed}|later-hand-ev|${key}|${decision.node}|${hand}`));
+    const samplingKey = usesObservableActions(spot) ? `${currentBoard}|${nodeTable.path.flop}|${nodeTable.path.turn}|${nodeTable.path.river}` : key;
+    const random = rng(sampleSeed ?? seedFor(`${config.seed}|later-hand-ev|${samplingKey}|${decision.node}|${hand}`));
     const sums = Object.fromEntries(actions.map(action => [action, 0]));
     let wins = 0, mixedEv = 0, completed = 0;
     const allowedCombos = onlyHand ? new Set(sampleCombos) : null;
@@ -278,7 +288,7 @@ function computeNodeExactRaw({ key, street, history, turnHistory = [], expectedN
     if (!groups.has(hand)) groups.set(hand, []);
     groups.get(hand).push(item);
   }
-  const actions = LATER_NODES[decision.node];
+  const actions = nodeTable.log.at(-1)?.observation?.classes.map(group => group.action) ?? LATER_NODES[decision.node];
   const finals = [];
   if (street === "turn") {
     for (let card = 0; card < 52; card++) if (!runout.turnBoard.includes(card)) finals.push([...runout.turnBoard, card]);
@@ -288,13 +298,14 @@ function computeNodeExactRaw({ key, street, history, turnHistory = [], expectedN
     const result = exactActionEv({ spot, defence, expectedNode: decision.node, finals, oppItems: villainRange,
       rootPath: { flop: flopPath.actions, turn: street === "river" ? turnHistory : history, river: street === "river" ? history : [] },
       heroGroups: [...groups].map(([group, items]) => ({ key: group, items })) });
+    const exactActions = usesObservableActions(spot) ? result.actions : actions;
     for (const [hand, row] of result.rows) {
-      const mix = Object.fromEntries(actions.map((action, k) => [action, round(row.mix[k])]));
+      const mix = Object.fromEntries(exactActions.map((action, k) => [action, round(row.mix[k])]));
       const mixSum = Object.values(mix).reduce((sum, value) => sum + value, 0);
-      if (actions.length) mix[actions.at(-1)] = round(mix[actions.at(-1)] + 100 - mixSum);
+      if (exactActions.length) mix[exactActions.at(-1)] = round(mix[exactActions.at(-1)] + 100 - mixSum);
       rows[hand] = {
         equity_pct: round(row.equity * 100),
-        ev_bb: Object.fromEntries(actions.map((action, k) => [action, round(row.ev[k])])),
+        ev_bb: Object.fromEntries(exactActions.map((action, k) => [action, round(row.ev[k])])),
         mix_ev_bb: round(row.mixEv),
         eqr: row.equity > 0.02 ? round(row.mixEv / (row.equity * (decision.potBb - rake(decision.potBb)))) : null,
         mix,
@@ -308,7 +319,7 @@ export const computeNode = args => args.method === "monte-carlo" ? computeNodeMo
 
 // A history can list actions after a raise the engine had to play as a call (the raiser had no chips
 // to raise with); that line never happens, so its node is unreachable rather than an error.
-const effectivelyCalled = error => /effectively called/.test(error?.message ?? "");
+const effectivelyCalled = error => /effectively called|effectively ended|Action history continues after a pending or completed hand/.test(error?.message ?? "");
 const unreachableNode = ({ key, expectedNode, expectedRole, inputs }) =>
   [key, { node: expectedNode, actor: inputs.spot[expectedRole], pot_bb: null, rows: {}, unreachable: true }];
 export function computeNodeMonteCarlo(args) {
@@ -342,6 +353,10 @@ export function laterHandEvForHand({ flop, flopActions = [], turn, turnActions =
   const boardCards = [...flopCards, turnCard, ...(riverCard == null ? [] : [riverCard])];
   if (new Set(boardCards).size !== boardCards.length) throw new Error("Duplicate board cards");
   const street = riverCard == null ? "turn" : "river";
+  if (usesObservableActions(inputs.spot)) {
+    const path = canonicalPostflopPath(inputs.spot, { flop: flopActions, turn: turnActions, river: riverActions }, config);
+    flopActions = path.flop; turnActions = path.turn; riverActions = path.river;
+  }
   const history = street === "turn" ? turnActions : riverActions;
   const spot = inputs.spot;
   const flopStateAtPath = flopState(spot.tree, flopActions);

@@ -1,1 +1,5 @@
 artifacts/preflop/stage2-reviewed.tar.gz filter=lfs diff=lfs merge=lfs -text
+
+# Hash-verified local postflop snapshots; expanded policy JSON stays ignored.
+artifacts/postflop/*.tar.gz filter=lfs diff=lfs merge=lfs -text
+artifacts/postflop/legacy-hu45-source.zip filter=lfs diff=lfs merge=lfs -text

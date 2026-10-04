@@ -87,6 +87,11 @@ export function rewindActionBlockTransition({ rangeType, opener, hero, callers =
     return { rangeType: "response", opener, hero, callers, foldedHero: false, pendingRaise: "squeeze", continuationAction: null, shoveResponse: null, squeezeResponse: block.role === "caller" ? squeezeResponse.slice(0, 1) : [] };
   }
 
+  if (block.kind === "cold") {
+    return { rangeType: "three_bet", opener, hero, callers: [], foldedHero: false, pendingRaise: null,
+      continuationAction: null, shoveResponse: null, coldAction: null, squeezeResponse: [], continuationActions: [] };
+  }
+
   if (block.kind === "seat") {
     const positionIndex = positions.indexOf(block.position);
     const openerIndex = positions.indexOf(opener);

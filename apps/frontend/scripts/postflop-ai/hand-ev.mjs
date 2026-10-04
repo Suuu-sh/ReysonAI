@@ -1,3 +1,4 @@
+import { actionModelIdentity, hasCurrentActionModel } from "./observable-actions.mjs";
 // OFFLINE RESEARCH TOOL ONLY (decision 2026-10-01): postflop EV is not part of the product. Not imported by the app bundle,
 // the backend or the Vite dev server; the middleware below is no longer registered.
 // Per-hand action EV and equity realization (EQR) for the local heads-up flop pilot (any
@@ -12,7 +13,7 @@ import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { parseFlopBoard } from "./model.mjs";
 import { FLOP_EV_RUNOUTS, FLOP_HAND_EV_DEFAULT_SAMPLES, HISTORIES, handEvForBoard as handEvForBoardCore, historiesFor,
   playFromNode } from "./flop-hand-ev-core.mjs";
-import { DEFENCE_VERSION } from "./defence.mjs";
+import { defenceVersionFor } from "./defence.mjs";
 import { computeBoardBatch } from "./board-batch.mjs";
 
 export { playFromNode };
@@ -42,7 +43,7 @@ export async function generateHandEv({ spotId = DEFAULT_SPOT_ID, samples = DEFAU
   const candidate = loadCandidate(inputs);
   const laterCandidate = loadLaterCandidate(inputs, candidate);
   const laterPolicy = laterCandidate?.policy ?? referenceLater;
-  const result = { kind: "ai_estimate_not_gto", version: HAND_EV_VERSION, defence_version: DEFENCE_VERSION, source_hash: inputs.fingerprint,
+  const result = { kind: "ai_estimate_not_gto", version: HAND_EV_VERSION, ...actionModelIdentity(inputs.spot), defence_version: defenceVersionFor(inputs), source_hash: inputs.fingerprint,
     later_policy_hash: sha(laterPolicy), later_sizing_hash: laterSizingHash(),
     policy_hash: candidate.metadata.policy_hash, method: "exact_expectation", runouts: FLOP_EV_RUNOUTS, seed: config.seed,
     note: "両者が表示中の戦略（ターン・リバーは保存済み方針、未保存時は固定参照方針。ベットに対するコール／フォールドはエクイティと必要勝率の計算）に最後まで従った場合の期待値。GTO・ソルバーのEVではない。", boards: {} };
@@ -58,7 +59,7 @@ export function loadHandEv(inputs, candidate, laterCandidate = loadLaterCandidat
 }
 
 const matchesHandEv = (data, inputs, candidate, laterCandidate) => data?.kind === "ai_estimate_not_gto" &&
-  data.version === HAND_EV_VERSION && data.defence_version === DEFENCE_VERSION && data.source_hash === inputs.fingerprint && data.policy_hash === candidate.metadata.policy_hash &&
+  data.version === HAND_EV_VERSION && hasCurrentActionModel(inputs.spot, data) && data.defence_version === defenceVersionFor(inputs) && data.source_hash === inputs.fingerprint && data.policy_hash === candidate.metadata.policy_hash &&
   data.later_policy_hash === sha(laterCandidate?.policy ?? referenceLater) && data.later_sizing_hash === laterSizingHash();
 
 // GET /local-postflop-hand-ev?spot=BTN_open_BB_call&board=As7d2c&history=bet33,raise&hand=AKo

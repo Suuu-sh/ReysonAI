@@ -267,7 +267,7 @@ function AgentEntry({ onStart }) {
   return <ModeBlock theme={table.theme} className="is-agent" visualClass="agent-lineup" label={localized("Agent table", "Agent戦")}
     visual={table.agents.map((agent, index) => {
       const middle = (table.agents.length - 1) / 2;
-      return <span key={agent.id} className={`agent-table-face${index === Math.round(middle) ? " is-front" : Math.abs(index - middle) === 1 ? " is-near" : ""}`}
+      return <span key={agent.id} className={`agent-table-face${index === Math.round(middle) ? " is-front" : ""}`}
         style={{ "--k": index - middle, "--d": Math.abs(index - middle), zIndex: 10 - Math.abs(index - middle) }} aria-hidden="true">
         <AgentAvatar id={agent.id} color={agent.color} size={52} /><small>{agent.name.en}</small></span>;
     })}

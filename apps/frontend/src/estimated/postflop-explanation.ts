@@ -1,6 +1,7 @@
 // Structured, fact-led postflop explanations. This module is pure: callers supply the selected
 // locale, policy mix, board classifier and computed defence facts. It never states an EV: the strategy is the answer.
 
+import { actionForCopy } from "./postflop-action-copy.ts";
 import { roleFromFeatures } from "../../scripts/postflop-ai/hand-role.mjs";
 import { featuresFromText } from "../../scripts/postflop-ai/hand-features.mjs";
 
@@ -50,8 +51,8 @@ const fraction = (value: number | null | undefined) => Number.isFinite(value) ? 
 const isAggressive = (action: string) => action.startsWith("bet") || action === "allin" || action === "raise";
 const MATERIAL_MIX = 0.05 - 1e-9;
 
-function actionLabel(action: string, locale: ExplanationLocale): string {
-  return ACTION_LABELS[locale][action] ?? action;
+function actionLabel(action: string, locale: ExplanationLocale, explain?: any): string {
+  return ACTION_LABELS[locale][actionForCopy(action, explain)] ?? action;
 }
 
 function tierDescription(tiers: NumericMap | undefined, hand: string, locale: ExplanationLocale): string {
@@ -72,7 +73,8 @@ function actingRole(node: string): "ip" | "oop" {
   return "oop";
 }
 
-function facingDescription(node: string, opponent: string, locale: ExplanationLocale): string {
+function facingDescription(node: string, opponent: string, locale: ExplanationLocale, explain?: any): string {
+  if (explain?.defence?.faced_action?.allIn) return locale === "en" ? `${opponent}'s all-in` : `${opponent}のオールイン`;
   const action = node.split("_vs_")[1] ?? "bet";
   if (locale === "en") {
     if (action === "raise") return `${opponent}'s raise`;
@@ -97,12 +99,14 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
   if (!facts) return undefined;
   const english = locale === "en";
   const actorRole = actingRole(node), opponent = positions?.[actorRole === "ip" ? "oop" : "ip"] ?? (english ? "the opponent" : "相手");
-  const faced = facingDescription(node, opponent, locale);
+  const faced = facingDescription(node, opponent, locale, explain);
   const equity = fraction(facts.equity), realized = fraction(facts.realized_equity);
   const required = fraction(facts.required_equity);
   const potToWin = Math.max(0, facts.pot_before_bb + facts.bet_bb - facts.rake_bb);
   const top = Math.max(0, Math.min(100, 100 - (facts.percentile ?? 0) * 100));
   const bettorRange = facts.bettor_range ?? {};
+  const facedAction = facts.faced_action;
+  const observableCap = Array.isArray(facedAction?.aliases) || typeof facedAction?.wasReduced === "boolean";
   const blockers = facts.blockers ?? {};
   const valueRemoved = blockers.value_removed_pct ?? 0;
   const bluffRemoved = blockers.bluff_removed_pct ?? 0;
@@ -145,8 +149,8 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
     {
       label: english ? "Bettor range" : "ベット側の内訳",
       value: english
-        ? `${pctNumber(bettorRange.value_pct ?? 0)} value / ${pctNumber(bettorRange.bluff_pct ?? 0)} bluffs${facts.faced_action?.capped ? ` · bluff share capped at ${pct(fraction(facts.faced_action.alpha))}` : ""}`
-        : `バリュー${pctNumber(bettorRange.value_pct ?? 0)}／ブラフ${pctNumber(bettorRange.bluff_pct ?? 0)}${facts.faced_action?.capped ? ` · ブラフ比率は損益分岐の${pct(fraction(facts.faced_action.alpha))}に制限` : ""}`,
+        ? `${pctNumber(bettorRange.value_pct ?? 0)} value / ${pctNumber(bettorRange.bluff_pct ?? 0)} bluffs${facedAction?.capped && !observableCap ? ` · bluff share capped at ${pct(fraction(facedAction.alpha))}` : ""}`
+        : `バリュー${pctNumber(bettorRange.value_pct ?? 0)}／ブラフ${pctNumber(bettorRange.bluff_pct ?? 0)}${facedAction?.capped && !observableCap ? ` · ブラフ比率は損益分岐の${pct(fraction(facedAction.alpha))}に制限` : ""}`,
       tooltip: english ? "Value hands have at least 50% equity against your whole range; the rest are classified as bluffs." : "自分のレンジ全体に対して勝率50%以上の手をバリュー、それ以外をブラフとして数えています。",
     },
     {
@@ -155,8 +159,22 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
       tooltip: english ? "Shows which share of the bettor's value and bluff combos your two cards remove." : "手札の2枚が、相手のバリューとブラフのコンボをそれぞれ何%減らすかを示します。",
     },
   ];
-  const capped = facts.faced_action?.capped;
-  if (capped) {
+  if (observableCap) {
+    const capShare = facedAction.bluff_share_after_pct;
+    if (Number.isFinite(capShare)) rows[5].value += english
+      ? ` · pooled bluff share ${pctNumber(capShare)} after component caps`
+      : ` · 個別上限の適用後、統合したブラフ比率${pctNumber(capShare)}`;
+    // A reduced component does not imply that the pooled action saturates its cap.
+    if (facedAction.wasReduced ?? facedAction.capped) rows[5].tooltip += english
+      ? " Component caps reduced bluff weight before equivalent actions were pooled."
+      : " 同じ結果になるアクションを統合する前に、個別の上限によってブラフの重みが減りました。";
+    else if (facedAction.wasReduced === false) rows[5].tooltip += english
+      ? " No component cap reduced bluff weight; the pooled share reflects the saved mix."
+      : " 個別の上限によるブラフの削減はなく、統合後の比率は保存された配分を反映しています。";
+    if (Number.isFinite(facedAction.alpha)) rows[5].tooltip += english
+      ? ` The pooled share can remain below the caller's break-even α (${pct(facedAction.alpha)}).`
+      : ` 統合後の比率は、コール側の損益分岐α（${pct(facedAction.alpha)}）を下回ることがあります。`;
+  } else if (facts.faced_action?.capped) {
     const capShare = facts.faced_action.bluff_share_after_pct;
     rows[5].tooltip += english
       ? ` This action's bluff share is held at the caller's break-even α (${pct(facts.faced_action.alpha)}).`
@@ -239,7 +257,7 @@ function buildActionTable({ locale, actionMix, explain }: ExplanationInput, rawE
     const fold = aggressive ? explain?.actions?.[action]?.foldShare : null;
     // Folding has no showdown; calling is judged against the range that bet, the rest against the range that continues.
     const called = aggressive || action === "check" ? bet[action]?.calledEquity : action === "call" ? (explain?.defence ? rawEquity : null) : null;
-    return { action, label: actionLabel(action, locale), frequency: fraction(actionMix[action]),
+    return { action, label: actionLabel(action, locale, explain), frequency: fraction(actionMix[action]),
       foldShare: finite(fold) ? fold : null, calledEquity: finite(called) ? called : null };
   });
   return {
@@ -283,7 +301,7 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
   const english = locale === "en";
   const selected = recommendation(actionMix, locale);
   const main = selected[0]?.[0] ?? "check";
-  const headlineActions = selected.map(([action, frequency]) => `${actionLabel(action, locale)} ${pct(frequency)}`).join(english ? " / " : "・");
+  const headlineActions = selected.map(([action, frequency]) => `${actionLabel(action, locale, explain)} ${pct(frequency)}`).join(english ? " / " : "・");
   const facingFacts = explain?.defence;
   const actingRoleKey = actingRole(node);
   const opponent = input.positions?.[actingRoleKey === "ip" ? "oop" : "ip"] ?? (english ? "the opponent" : "相手");
@@ -296,7 +314,7 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
   if (facingFacts && Number.isFinite(facingFacts.required_equity)) {
     const realized = fraction(facingFacts.realized_equity);
     const required = fraction(facingFacts.required_equity);
-    const faced = facingDescription(node, opponent, locale);
+    const faced = facingDescription(node, opponent, locale, explain);
     const above = realized >= required;
     const exactCombo = /^([2-9TJQKA][cdhs]){2}$/.test(hand);
     const className = exactCombo ? hand : english ? `${hand} hand class (${classStrength})` : `${hand}のハンドクラス（${classStrength}）`;
@@ -341,11 +359,11 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
           : `At ${pct(roleEquity)} equity against the defender's range, the policy checks more often while keeping a ${roleLabel} bet in the mix.`
         : sizeMix
           ? `相手レンジへの勝率${pct(roleEquity)}を理由に、チェックを中心にしながら${roleLabel}のベットサイズを混ぜています。`
-          : `相手レンジへの勝率${pct(roleEquity)}を理由に、チェックを中心にしながら${roleLabel}の${actionLabel(roleAction, locale)}も混ぜています。`;
+          : `相手レンジへの勝率${pct(roleEquity)}を理由に、チェックを中心にしながら${roleLabel}の${actionLabel(roleAction, locale, explain)}も混ぜています。`;
       // This headline already gives the reason for using both the check and bet branches.
       mixRationale = undefined;
     } else {
-      mainReason = bettingCopy({ locale, role, main: roleAction, equity: roleEquity, tiers });
+      mainReason = bettingCopy({ locale, role, main: actionForCopy(roleAction, explain), equity: roleEquity, tiers });
     }
     if (main === "check" && mixedSizes.length) {
       // Explained in the headline above without repeating the same action mix below it.
@@ -353,8 +371,8 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
       ? "The saved policy mixes bet sizes for this hand instead of choosing one size every time."
       : "毎回同じサイズに固定せず、ベットサイズを混ぜる方針です。";
     else if (selected.length > 1 && selected.some(([action]) => action === "check") && mixedSizes.length) mixRationale = english
-      ? `The policy keeps both a check and a ${actionLabel(mixedSizes[0][0], locale)} branch for this ${role} hand.`
-      : `この${({ value: "バリュー", "semi-bluff": "セミブラフ", protection: "プロテクション", bluff: "ブラフ", "pot-control": "ポットコントロール" } as Record<string, string>)[role]}候補は、チェックと${actionLabel(mixedSizes[0][0], locale)}の両方を使います。`;
+      ? `The policy keeps both a check and a ${actionLabel(mixedSizes[0][0], locale, explain)} branch for this ${role} hand.`
+      : `この${({ value: "バリュー", "semi-bluff": "セミブラフ", protection: "プロテクション", bluff: "ブラフ", "pot-control": "ポットコントロール" } as Record<string, string>)[role]}候補は、チェックと${actionLabel(mixedSizes[0][0], locale, explain)}の両方を使います。`;
     else if (selected.length > 1) mixRationale = english
       ? "The saved policy keeps both a continue and a fold branch for this hand."
       : "この手には続行とフォールドの両方を残す方針です。";

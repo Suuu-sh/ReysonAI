@@ -718,14 +718,8 @@
 .agent-lineup .agent-table-face { position: absolute; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.7);
   transition: transform .5s var(--ease-out) calc(var(--d) * 50ms), opacity .3s ease calc(var(--d) * 50ms); }
 /* Resting emblems share one size: ranked 64px × 2.2 ≈ 140px; Agent 52px × 2.7; drill cards 102px × 1.37. */
-/* Agent lineup, like the ranked fan (2026-10-05). Rest: NOVA in front with VEGA and ATLAS beside it.
-   Hover: ORION and LYRA slide out from behind, the sides lean outward, NOVA lifts, glows and floats. */
-.agent-lineup .agent-table-face.is-near { opacity: 1; transform: translate(calc(-50% + var(--k) * min(78px, 26cqi)), -50%) scale(1.45); }
-.agent-lineup .agent-table-face.is-front { opacity: 1; transform: translate(-50%, -50%) scale(2.05); }
-.agent-lineup .agent-table-face .agent-avatar, .agent-lineup .agent-table-face svg { transition: filter .4s ease; }
-.mode-block.is-agent:is(:hover, :focus-within) .agent-table-face { opacity: 1; transform: translate(calc(-50% + var(--k) * min(74px, 23cqi)), calc(-50% + 6px)) rotate(calc(var(--k) * 6deg)) scale(1.05); }
-.mode-block.is-agent:is(:hover, :focus-within) .agent-table-face.is-front { transform: translate(-50%, calc(-50% - 10px)) scale(1.55); }
-.mode-block.is-agent:is(:hover, :focus-within) .agent-table-face.is-front > :first-child { filter: drop-shadow(0 0 18px color-mix(in srgb, var(--mode-theme) 75%, transparent)); animation: rank-float 2.4s ease-in-out .5s infinite; }
+.agent-lineup .agent-table-face.is-front { opacity: 1; transform: translate(-50%, -50%) scale(2.7); }
+.mode-block.is-agent:is(:hover, :focus-within) .agent-table-face { opacity: 1; transform: translate(calc(-50% + var(--k) * min(66px, 20cqi)), -50%) scale(.9); }
 .mode-block.is-drills:is(:hover, :focus-within) @media (prefers-reduced-motion: reduce) {
   .rank-fan-item, .agent-lineup .agent-table-face { transition: none; }
   .mode-block.is-drills:is(:hover, :focus-within) }

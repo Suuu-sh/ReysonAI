@@ -11,7 +11,7 @@ import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from 
 import { NODES, choose } from "../../scripts/postflop-ai/policy.mjs";
 import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.mjs";
 import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
-import { fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
+import { multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
 import { type Decider, type PostflopKit } from "./policy.ts";
 
@@ -28,9 +28,9 @@ export type HandSetup = {
 };
 
 // `to`: the street total the action makes (BB); `toCall`: chips the human owes now.
-export type Pending = { street: "preflop" | "flop" | "turn" | "river"; pos: Position; options: { key: string; to?: number }[]; pot: number; board: string[]; toCall?: number; notice?: "no_multiway" | "no_data" | null };
+export type Pending = { street: "preflop" | "flop" | "turn" | "river"; pos: Position; options: { key: string; to?: number; allIn?: boolean }[]; pot: number; board: string[]; toCall?: number; notice?: "no_multiway" | "no_data" | null };
 // `pot` is the pot after the action; `bets` the street totals in front of each seat after it.
-export type LogEntry = { street: string; pos: Position; action: string; to?: number; pot: number; bets?: Record<string, number>; source?: string; tableRule?: string | null };
+export type LogEntry = { street: string; pos: Position; action: string; to?: number; allIn?: boolean; pot: number; bets?: Record<string, number>; source?: string; tableRule?: string | null };
 
 export type HandResult = {
   status: "awaiting" | "needs_postflop" | "done";
@@ -73,7 +73,10 @@ export function deal(seed: string) {
 
 // The postflop spot a heads-up preflop line reached, or null when no spot describes it.
 export function postflopSpotFor(events: { pos: Position; type: string; key: string }[]) {
+  const extended = multiwaySpotFor(events);
+  if (extended) return extended;
   const voluntary = events.filter(e => e.type !== "fold" && e.type !== "check");
+  if (new Set(voluntary.map(event => event.pos)).size > 2) return null;
   const keys = voluntary.map(e => e.key);
   const raisers = voluntary.filter(e => e.type === "raise");
   const sig = keys.join(",");
@@ -83,7 +86,7 @@ export function postflopSpotFor(events: { pos: Position; type: string; key: stri
   if (sig === "open,call") return spotFor(raisers[0].pos, voluntary[1].pos);
   if (sig === "open,three_bet,call") return threeBetSpotFor(raisers[0].pos, raisers[1].pos);
   if (sig === "open,three_bet,four_bet,call") return fourBetSpotFor(raisers[0].pos, raisers[1].pos);
-  return null;
+  return multiwaySpotFor(events);
 }
 
 export function playHand(setup: HandSetup): HandResult {
@@ -185,18 +188,26 @@ export function playHand(setup: HandSetup): HandResult {
     if (street !== currentStreet) { currentStreet = street; streetBase = { ...table.invested }; }
     const entry = table.log.at(-1);
     const actions: string[] = (street === "flop" ? NODES : LATER_NODES)[node].filter((act: string) => act !== "raise" || entry?.canRaise);
+    const observation = entry?.observation;
+    const publicOptions = observation?.classes.map(group => ({ key: group.action,
+      to: group.family === "check" || group.family === "fold" ? undefined : group.amountBb, allIn: group.allIn }));
     const bets = streetBets();
     let action: string;
     if (seat === setup.human) {
       const toCall = round(Math.max(...Object.values(bets)) - (bets[seat] ?? 0));
-      if (!humanQueue.length) throw new Await({ street, pos: seat, options: actions.map(key => ({ key, to: key === "fold" || key === "check" ? undefined : sizeOf(street, key, bets, seat) })),
+      if (!humanQueue.length) throw new Await({ street, pos: seat, options: publicOptions ?? actions.map(key => ({ key, to: key === "fold" || key === "check" ? undefined : sizeOf(street, key, bets, seat) })),
         pot: round(table.pot), board: boardSoFar(cards.length), toCall });
       action = humanQueue.shift()!;
       if (!actions.includes(action)) throw new Error(`Illegal ${street} action ${action} for ${seat}`);
     } else {
       action = setup.agents.postflop({ kit, table, street, seat, node, board: cards, hole: hole[seat], line, actions, random: drawFor() }).action;
     }
-    pendingEntry = { street, pos: seat, action, to: action === "fold" || action === "check" ? undefined : sizeOf(street, action, bets, seat), pot: table.pot };
+    const observed = observation?.byAction[action];
+    pendingEntry = observed
+      ? { street, pos: seat, action: observed.action,
+        to: observed.family === "check" || observed.family === "fold" ? undefined : observed.amountBb,
+        allIn: observed.allIn, pot: table.pot }
+      : { street, pos: seat, action, to: action === "fold" || action === "check" ? undefined : sizeOf(street, action, bets, seat), pot: table.pot };
     log.push(pendingEntry);
     return action;
   };

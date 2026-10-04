@@ -12,7 +12,8 @@ import { referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
 import { simulate } from "../scripts/postflop-ai/simulation.mjs";
 import { simulateParallel } from "../scripts/postflop-ai/simulation-parallel.mjs";
-import { boardWorkOrder, computeBoardBatch } from "../scripts/postflop-ai/board-batch.mjs";
+import { boardWorkOrder } from "../scripts/postflop-ai/board-batch.mjs";
+import { isolatedBoardBatch } from "./helpers/isolated-board-batch.mjs";
 import { handEvForBoard } from "../scripts/postflop-ai/flop-hand-ev-core.mjs";
 import { packEquities, packWeights, unpackWeights } from "../scripts/postflop-ai/cached-values.mjs";
 
@@ -156,11 +157,33 @@ test("hand-EV board workers use exactly the shared browser core despite reordere
   // Deliberately put the short board first in the input and use one worker: it
   // must process the reverse work order, but restore the input object order.
   const boardList = [parseFlopBoard("KcKd4h"), board];
-  const expected = Object.fromEntries(boardList.map(item => [item.id, handEvForBoard(item, inputs, policy, 1, later)]));
-  const actual = await computeBoardBatch({ kind: "hand-ev", inputs, policy, laterCandidate: later,
+  // Retire the worker process before the direct full-board calculations grow
+  // this test's heap; the same reordered boards and exact comparisons remain.
+  const actual = await isolatedBoardBatch({ kind: "hand-ev", inputs, policy, laterCandidate: later,
     samples: 1, boardList, parallelism: 1 });
+  const expected = Object.fromEntries(boardList.map(item => {
+    const result = handEvForBoard(item, inputs, policy, 1, later);
+    const cache = defenceFor(inputs, policy, later);
+    assert.equal(cache.largeRun, true, "exact boards select packed storage before traversal");
+    assert.equal(cache.stages.size, 0, "completed board reach graphs are released");
+    for (const group of [cache.contexts, cache.bets, cache.bettingFactRanges]) {
+      for (const values of Object.values(group)) assert.equal(values.size, 0);
+    }
+    return [item.id, result];
+  }));
   assert.deepEqual(actual, expected);
   assert.deepEqual(Object.keys(actual), boardList.map(item => item.id));
-  await assert.rejects(computeBoardBatch({ kind: "invalid", inputs, policy, samples: 1,
+  await assert.rejects(isolatedBoardBatch({ kind: "invalid", inputs, policy, samples: 1,
     boardList: [board], parallelism: 1 }), /Unknown board task/);
+});
+
+test("bounded simulation caches preserve seeded reports exactly", () => {
+  const boardList = [parseFlopBoard("As7d2c"), parseFlopBoard("KhTh4s")].map(board => ({ ...board, split: "design" }));
+  for (const spot of ["BTN_open_BB_call", "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call"]) {
+    const a = loadInputs(spot), b = loadInputs(spot);
+    const policy = referencePolicyFor(a.spot.tree), later = referenceLaterPolicy();
+    const expected = simulate(a, policy, 4, later, { boardList, cacheBatchSize: 0 });
+    const actual = simulate(b, policy, 4, later, { boardList, cacheBatchSize: 1 });
+    assert.deepEqual(actual, expected, spot);
+  }
 });

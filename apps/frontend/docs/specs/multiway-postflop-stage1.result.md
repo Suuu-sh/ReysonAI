@@ -1,6 +1,6 @@
 # 3人SRP・段階1 実装記録（未完了）
 
-更新: 2026-10-04。これは専用実行基盤の段階的な実装記録です。代表1経路の第一候補は保存済みですが分類上の品質問題で保留。全経路の方針生成、全ボード戦略監査、画面、Agent戦、本番配信はまだ完了していません。対応済みの戦略として公開してはいけません。
+更新: 2026-10-04 19:47 UTC。代表CO→BTN→BBのV4候補は、分類の独立semantic review、全1,755flop/later236構造監査、joint診断、120,000hand自己対戦と全量deterministic replayまで完了。代表V4は39共同防御警告を残した限定AI推定として独立受入れ済みです。到達可能16経路のうち生成済み1・代表品質受入れ1/16・公開承認済み0。共通基盤の独立差分確認と62契約は完了。残り15のauthor、画面/Agent戦/API接続、実LFS配信、全体release gateは未完了で、対応済み戦略として公開してはいけません。
 
 ## 仕様と基点
 
@@ -21,9 +21,9 @@
 - `mw3-audit.mjs`: 全1,755flopに対する幾何学context×保存source combo tierの構造coverage runner。これは共同防御率・実際のpolicy history到達率とは別の検査。共同防御の診断は合法3人tupleを同時に条件付けて行う必要があり、周辺fold率の積で代用しない。
 - `probe-mw3.mjs`: 読み取り専用catalog/flop幾何probe。戦略生成・公開はしない。
 
-## 列挙経路（author順の優先proxy）
+## 対象16経路（識別子一覧）
 
-この順は各席の保存action shareの周辺積による優先指標です。外側席のfold確率とcard dependenceを含まないので、終端履歴の真の到達確率とは表記しません。forced-fold席のholecardは未モデル化です。
+下記は識別子の一覧です。現在のcatalogの生成優先順位は、合法なactive3人tupleでcard依存も含めたaction-product平均（jointActionShare.probability）の降順です。外側3席のfold条件は未モデル化なので、6人卓の終端履歴の真の到達確率ではありません。初期の周辺積proxyは補助情報として残し、joint reachと呼びません。
 
 1. CO_open_BTN_call_BB_call
 2. HJ_open_BTN_call_BB_call
@@ -60,8 +60,8 @@
 
 ## 未完了・公開gate
 
-1. 代表CO→BTN→BBのAstra専用方針author、実到達context明示coverage、全1,755flop構造監査、turn/river runout監査。
-2. 合法joint tupleの逐次fold経路による共同防御の診断。MDF逸脱・monster fold・air攻撃は警告として件数と例を報告する。
+1. 代表V4は限定受入れ済み（`multiway-postflop-stage1.independent-review.md`）。39警告を残存弱点として保持し、共通祖先のexact差分確認後に残り15を個別author/reviewする。
+2. frozen snapshotから共通HU基盤へ統合した際のsource/implementation差分を独立確認し、staleを保持して最終artifact/receiptを確定する。
 3. 代表の独立品質reviewを通してから残り15経路をauthor。16経路の専用artifactをhash付きLFS archiveへ保存し、Actionsはrestore/verifyのみとする。
 4. 共通HU/Stage3基盤の統合後、Rangeの3表/行動ブロック、Agent戦、説明、read-only artifact delivery/publish対象をつなぐ。欠損は未収録とする。
 5. 全tests/typecheck/build、既存HU auditと照合不変、3人フロップ→リバーのブラウザQA後に統合・公開の判断へ渡す。
@@ -109,3 +109,54 @@
 独立Astraがfuture upper / exact blocker cache / board共有優先 / river既存profile / 117node coverage / 未公開deliveryの承認境界をPASS。新規修正必須事項なし。軽量確認14件PASSで、strategy全体の品質GOではない。別実装のpure simulation report validatorを追加し、12board順序・split・seed、最低10,000件、期待source/policy hash、勝敗・terminal・street action上限、レーキ上限と全体chip総和を検証する。
 
 `gate-mw3-pilot.mjs --simulate --replay`を準備。replayは同一engineのdeterministic再実行で、独立アルゴリズムとは呼ばない。reportはsource / implementation / verification hashごとのディレクトリに保存し、相違する既存reportは上書きしない。materialize・重い実gateは引き続き排他枠待ち。
+
+## V4 実gate完了（2026-10-04 18:44 UTC、独立戦略品質判断待ち）
+
+固定source code checkpoint: PR44 `6ea71e39eff2e7d13cf6339f584e58d8b9d98afb`（local `a5171ed7d4eccb57a2cb433b07387deec14d2231`）。Node v24.19.0、各Nodeはheap256MB、他の重い処理とphase単位で排他実行。
+
+| Phase | Scope | Result | Wall time |
+|---|---|---|---|
+| Materialize | Astra-authored代表のflop/later 2本 | 保存・identity検証PASS、頻度はV3から不変 | 9.065秒 |
+| Structural | 全1,755flop、57,253,626combo-context、later236boards | errors0、明示selector欠損0、raw警告0 | 34.185秒 |
+| Joint | 90 betting events × 20,000合法3人tuple | 39 advisory warnings、18 eventはbet支持0 | 6.968秒 |
+| Self-play | 12代表boards × 10,000hands | 全120,000完走、独立会計validator PASS | 208.807秒 |
+| Replay | 同じ全120,000hands | report完全一致、独立会計validator PASS | 212.560秒 |
+| Delivery check | 実保存2本＋全5report、実サイズcodec/browser復元 | source/meaning/policy整合、同一JSON bytesへ復元PASS | 8.884秒 |
+
+- Joint警告はoverfold38 / overcontinue1。最大負側差はJs8s5d、2check後BTN125%で共同続行12.8289%、rake非考慮の参考MDF44.4444%。これは最適性の判定ではなく、floorを自動追加して消さない。
+- Self-playはBB31,041勝 / CO39,834勝 / BTN46,208勝 / tie2,917、fold終端61,919、all-in経験2,857。foldとall-inは重複し得る。各boardの勝敗数・合法action上限・レーキ上限・全席chip総和を別実装validatorで検証済み。EV推薦や均衡証明ではない。
+- Self-play最終RSS383MB、replay379MB。サンプル/boardは減らしていない。
+- Replayは同じengineのdeterministic再実行。独立性は別実装のreport accounting validatorとAstra reviewにあり、独立solverとの照合とは呼ばない。
+- 実保存artifactはflop2,588,625B / later12,187,418B。lossless codecは315,306B / 1,241,712B、20 / 78 parts（今回のASCII本文は最大16,000B/part）へ変換。全117nodeを要求するbrowser verifierまで通し、元の保存policy JSON/hashへ完全復元した。まだAPIへ接続・配信していない。
+- 既存npm typecheckのtsconfig対象はsite/backendであり、Range/Agent全体の型検査ではない。未接続Mw3RangeViewは別の明示browser bundleで検証済み。既存locale JSONの重複key警告1件あり。実Range/AgentのブラウザQAは残る。
+
+### 固定identity
+
+- Source: `9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3`
+- Implementation: `4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113`
+- Verification sources: `0f35a9371c0220d1a41587c51f6d90698f9294d3f0706c841b58b31bed4d19d6`
+- Authored recipe SHA256: `ae196be62d212769fb27a1b1f6619ffd4c7f6488f5d0c3c132efd13eade42798`
+- Flop policy: `3682c70f1cd131a825d67dc564bb45706d5b8885c0de4ef6bfe8493fe13fef06`
+- Later policy: `d840d8174ff3ad1fe983e5fbd0696b9c28296f5e4d8af394b12d76e070b18582`
+- Raw flop file SHA256: `660ed0e712cce29d863a0bceecc59b5e94d4334e2be2b0261251ab3c80578718`
+- Raw later file SHA256: `0db36c711160d8e2f818818edc9812ba192c73aed2c636f4b9f85229739d14a9`
+- Report directory: `.local/postflop-ai/mw3/pilot-gate/v4-9826ec09f4b8-4ec6b527f8e2-0f35a9371c02/`
+- 全report/file/delivery hash inventory: `.local/postflop-ai/mw3/v4-proof-inventory.json`
+
+Materializeは`materialize-mw3-pilot.mjs --spot CO_open_BTN_call_BB_call --model gpt-6-astra --source-hash <上記source>`で明示実行する。新規AI呼出しではなく既著者sourceの展開で、他spotの代用・承認・公開はできない。両出力preflight、既存pending/recipe/policy完全一致の時だけ再利用、wx保存。途中I/O失敗で片側だけ保存されても、同一identityの再実行で補完する。Actionsからは実行しない。
+
+## 固定代表の受入れ記録（2026-10-04 19:00 UTC）
+
+独立AstraがCO→BTN→BBのV4を、残存する39共同防御警告を明記したAI推定の代表候補として受け入れた。再author必須blockerなし。実保存policy/全5report/source material/meaning/verification/recipeを独立再計算し、全61,506ruleの整数範囲・sum100・合法action・fallback、重要tier profile、会計/replay整合を確認した。詳細は独立review文書。
+
+受入れはこの固定snapshotの1/16で、公開承認は0。旧snapshotのraw artifactとreportは保全し、共有HU祖先取り込み時に差分と必要再検証を明示する。他15の方針はまだ生成していない。準備用の役割差・source差・優先順は `multiway-postflop-stage1.authoring-plan.md`。
+
+候補保全用archiveは `.local/postflop-ai/mw3/candidate-v4-checkpoint.tar.gz`、373,784B、SHA256 `d18d9ddd157a9433f3512249db0ae1690739f51d515f08a99b42c7513de32e6a`。作成時点のpending状態で固定した10-member checkpointであり、独立受入れ後も既存bytesを変更しない。release receipt・公開用bundle・LFS upload完了を意味しない。
+
+## 共有祖先統合の確認（2026-10-04 19:47 UTC）
+
+- HU共有祖先: remote `1031287c24c9a42d9da35c8e42e027852c2d221f`、local `3ab7ad54822d77d2a59821d24878eb47d19e4a76`、tree `0ef7e64db3717349b66d4bfa2adf4bba2dd1539f`。
+- Mw3統合local `c7a04b7de45845018aa1e78dec19cfa68d3f998d`、tree `1c4d39e9ac6bf9f13125e8ebaf381953db533e3b`。共有847blob＋既存Mw3追加45blobを完全保持。履歴が異なる初期materializeを盲目的mergeせず、正確なcomposed treeを検証した。
+- 独立Astraが数値/author/gate/browser-inputの推移依存37ファイルを比較し変更0。implementation/verificationと保存2候補・5report hash一致。HU dispatch/defenceへの混入なし。V4数値証拠の再利用を承認し、統合だけを理由にした再author/MC再走は不要と判断。旧snapshot実行の記録は書き換えない。
+- 統合後Node検証: frontend58＋backend4＝62/62 PASS、skip0、`npm run typecheck` PASS（設定対象はsite/backendで、Range/Agent全体の型検証ではない）。19:46:44 UTC終了。Nodeの現source fingerprintとimplementation hashも旧V4値と一致。ログは `.local/postflop-ai/mw3/shared-integration-checks.log`。
+- 対象browser再bundleと最終UI接続QAは後続gate。共有sourceの意味が変わった場合はstale判定と差分独立reviewを保ち、影響する品質gateを再計算する。残15の個別authorはこの安定baseで再開し、未生成/未受入れの公開は引き続き不可。

@@ -8,6 +8,23 @@ const ACTIONS = {
 };
 
 export const englishFactLabels = {
+  equity_pct: "Equity versus all live players’ current ranges",
+  reach_pct: "Hero reach for this history",
+  cost_to_call_bb: "Additional amount to call",
+  total_pot_after_call_bb: "Actual pot after Hero calls",
+  dead_money_bb: "Chips from folded players",
+  weighted_fold_pct: "Fold frequency weighted by own reach combos",
+  weighted_call_pct: "Call frequency weighted by own reach combos",
+  weighted_four_bet_pct: "4-bet frequency weighted by own reach combos",
+  weighted_all_in_pct: "All-in frequency weighted by own reach combos",
+  equity_margin_pct: "Equity margin above the call threshold",
+  all_in_target_call_pct: "All-in target call frequency",
+  fold_pct: "Saved fold frequency",
+  call_pct: "Saved call frequency",
+  four_bet_pct: "Saved 4-bet frequency",
+  all_in_pct: "Saved all-in frequency",
+  raise_to_size_bb: "Raise-to size (total)",
+
   equity_vs_defend_pct: "Equity versus defending range",
   equity_vs_open_pct: "Equity versus opening range",
   equity_vs_continue_pct: "Equity versus continuing range",
