@@ -411,3 +411,15 @@ This report supersedes the historical API Explorer/mock-data checks. The current
 - No remaining P3 items identified for the selected hero.
 
 **final result: passed**
+
+## Action-path height stability — 2026-10-04
+
+- Compared both supplied screenshots: the requested target is the shorter pre-action row, about 120 CSS px tall. The completed path must not stretch every card when the pink Continue to flop button appears.
+- Desktop expanded paths now keep that 120px baseline. The End card uses size containment so its label/button cannot determine the row height; End and the pot share a compact first line, with the complete result and wrapping button below. Longer settings and postflop action lists can still grow naturally. Narrow layouts retain horizontal scrolling with a stable 44px baseline and a non-wrapping CTA without the old top margin.
+- No range values, action transitions, localization strings, button handlers, or focus styles changed. Added an English/Japanese markup/CSS regression using the product copy translator for completed and incomplete paths, with and without the continuation callback.
+- Passed: focused action-path/UI tests (23/23), configured typecheck, production build, and Sites packaging tests (7/7). Build retains the existing large-product-chunk warning.
+- Configured lint still reports seven errors in unchanged `ProductApp.tsx` and `site/ServiceSite.tsx` (hook dependencies, button type, SVG title and array-index keys). This is not recorded as a clean lint pass.
+- Browser verification is blocked: offline Chromium could not launch in the available shell sandbox, and its supported escalated runner failed during environment mounting. No localhost proxy or tunnel was used. EN/日本語 component fixtures were generated, but no rendered screenshots or measured end/no-end desktop/mobile geometry are claimed. Final visual acceptance remains unverified.
+- The first concurrent build was terminated (exit 137); the build passed on a standalone retry. The serial aggregate run completed with 456 tests: 444 passed, 4 failed test files, and 8 skipped. The failed files were `postflop-hand-ev`, `postflop-later-hand-ev-ondemand`, `postflop-performance`, and `postflop-trial`; the runner reported `test failed` for these child processes without individual assertion details. A standalone diagnostic rerun of `postflop-trial` passed all 26 tests. The aggregate is not recorded as all-pass, and the remaining three failures were not changed or waived for this CSS task.
+
+**Status: implementation and focused checks complete; rendered visual acceptance blocked and aggregate failures remain.**
