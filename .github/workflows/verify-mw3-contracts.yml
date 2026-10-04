@@ -4,9 +4,12 @@ on:
     branches: [development, main]
     paths:
       - 'apps/frontend/scripts/postflop-ai/mw3-*.mjs'
+      - 'apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs'
+      - 'apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.mjs'
       - 'apps/frontend/scripts/postflop-ai/model.mjs'
       - 'apps/frontend/scripts/data/mw3-*.mjs'
       - 'apps/frontend/scripts/lib/continuation-evaluator.mjs'
+      - 'apps/frontend/scripts/lib/equity.mjs'
       - 'apps/frontend/src/estimated/**'
       - 'apps/frontend/tests/postflop-mw3-*.test.mjs'
       - 'apps/backend/src/mw3-*.ts'
@@ -30,6 +33,10 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22.20.0'
+      - name: Check offline command syntax without executing generation
+        run: |
+          node --check apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs
+          node --check apps/frontend/scripts/postflop-ai/materialize-mw3-pilot.mjs
       - name: Test isolated three-player engine, classifier, codecs and adapters
         run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs
       - name: Test unpublished, fail-closed three-player delivery boundary
