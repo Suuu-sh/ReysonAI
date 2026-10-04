@@ -1,3 +1,4 @@
+import { isNativeAccountRequest, routeNativeAccount } from "./native-account.ts";
 import { routeAccount, type AccountEnv } from "./account.ts";
 import { routePostflop, type D1Database } from "./postflop.ts";
 import { routePreflopDatasets } from "./preflop-datasets.ts";
@@ -54,7 +55,7 @@ type Manifest = {
   edge?: EdgeManifest;
 };
 type R2Bucket = { get(key: string): Promise<{ text(): Promise<string> } | null> };
-type Env = AccountEnv & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
+type Env = AccountEnv & { AUTH_NATIVE_ENABLED?: string } & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
 type PublishedData = {
   summary: Solution;
   nodesIndex: NodeSummary[];
@@ -93,6 +94,7 @@ function notModified(request: Request, response: Response): Response | null {
 }
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
+  if (isNativeAccountRequest(url)) return routeNativeAccount(request, env);
   if (url.pathname.startsWith("/v1/account/")) return routeAccount(request, env);
   if (url.pathname === "/health" && request.method === "GET") {
     return json({ status: "ok", service: "reysonai-api" });
@@ -484,6 +486,13 @@ function withCors(response: Response, request: Request, env: Env): Response {
     }
     headers.set("cache-control", "no-store");
   }
+  // Native endpoints have no browser CORS exemption or credentialed transport.
+  if (isNativeAccountRequest(new URL(request.url))) {
+    headers.delete("access-control-allow-origin");
+    headers.delete("access-control-allow-credentials");
+    headers.set("referrer-policy", "no-referrer");
+    headers.set("cache-control", "no-store");
+  }
   headers.set("access-control-allow-methods", "GET, POST, OPTIONS");
   headers.set("access-control-allow-headers", "content-type");
   headers.set("vary", [...new Set(["Origin", ...(response.headers.get("vary") ?? "").split(",").map(item => item.trim()).filter(Boolean)])].join(", "));
@@ -504,3 +513,4 @@ class HttpError extends Error {
 function isRecord(value: unknown): value is JsonRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+
