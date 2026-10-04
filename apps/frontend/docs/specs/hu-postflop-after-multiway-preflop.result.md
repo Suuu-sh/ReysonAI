@@ -754,3 +754,162 @@ The separate isolated Mac UI-only session has been authorized and started from a
 - Official Stage2 restore returned1614 exact LFS files. Official verify and check-bundle passed against the independently amended receipt; the complete SQL remains byte-identical to the original. Receipt tests9/9 passed. Original strategy fields and both upstream delivery amendments remain unchanged.
 - Backend32/32 passed after a test-only correction distinguishing preserved historical preview data from publication eligibility; runtime API bytes remain unchanged. The upstream runtime-config imports also needed a narrow compile-time declaration bridge; no runtime body/config or strict compiler setting changed. Typecheck, build, Sites7/7 and Python serial-runner31/31 pass.
 - The user has now authorized the scoped new-HU river exact-zero-equity floor exception. No implementation of that refinement is included in the preceding numerical evidence. Current v3 source/input bytes were preserved in full (47 source +12 input records). Its known strategic failure remains recorded, and all changed numerical evidence will be rerun after the refinement.
+
+
+## 2026-10-04 18:36 UTC — exact model10 representative acceptance and delivery checks
+
+This is a reviewed **1/407 subset**, not complete catalog coverage or production
+release. Five policy pairs have been authored. The other four require model10
+validation and independent acceptance; 402 pairs have not yet been authored.
+Stage A remains incomplete (136 remaining), with Stage B's 270 following A.
+Existing Agent no-multiway restrictions remain: catalog mapping of 407 is not
+a claim that all 407 have been played through the Agent UI.
+
+### Frozen accepted snapshot
+
+- Spot: `UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call`, representative v3.
+- Published source checkpoint: `791123af5324402764b0cc07d9b8cb73f2f237bc`,
+  tree `5f54326afe3c716f3d13ff215ac160747d976f58`; exact local tree-equivalent
+  checkpoint `7de20604e4bae57cb1c14cd25e5534c196fe7759`.
+- Immutable run: `run-20261004T165546Z-fd2f72cb6fea4683b604402e48ce653d`.
+  Its pin binds 57 runtime source files, 12 inputs and 25 handoff files.
+- Full simulation: 1,016.581 seconds; separate full fixed-seed replay: 1,040.699
+  seconds; all-board audit: 1,277.910 seconds. Each representative run retains
+  72 comparisons × 10,000 paired deals. Total numerical phases: 55.5865 minutes.
+- All 1,755 canonical flops were evaluated, none unreachable, zero errors;
+  7,020 turn and 21,060 river evaluations follow the configured four seeded
+  turns × three rivers per flop. This is not every legal turn/river runout.
+- There are 20,642 advisories and zero clean boards: air-tier 7,100, MDF
+  under-defence 10,019, raise-tier 2,067 and overcall 1,456. These remain visible
+  in the accepted evidence; no numerical rule or warning was waived silently.
+
+Independent Astra policy review examined the actual saved policies and observed
+range/action semantics, then a separate Astra archive reviewer independently
+verified all artifacts, source/input records, original phase logs/receipts,
+1,755 checkpoint hashes/canonical classes and preserved legacy bytes. The
+acceptance is a scoped AI estimate. Raw negative-EV calls, coarse board-made
+tiers, below-reference results and reduced defence against unmodelled extra
+bluffs remain limitations. It does not assert GTO, optimal response or uniform
+quality across the remaining spots. See the bound independent review for the
+full substantive findings and the 12/72 below-reference cases.
+
+### Exact archive and independent receipt
+
+The original DEF6 representative report was first preserved under its raw
+SHA-256 in the ignored versioned policy-revisions directory. The exact DEF10
+report and four audit/summary/companion files were then copied from the immutable
+run using exclusive destinations. The run, both policies and legacy artifacts
+were unchanged.
+
+- `artifacts/postflop/hu-after-multiway.tar.gz`: 106,912 bytes; SHA-256
+  `5fd7f87575a9509d9fa2667ff7f13bf556cdf69a31184c932c1a819849e88c04`.
+- `artifacts/postflop/hu-after-multiway.manifest.json`: 128,033 bytes; SHA-256
+  `8825c4338362d6f79b36f922f5f20eddbe117541ac3561bd59c26b971a76bfa7`.
+  Seven artifact files, 80 reviewed source files and 12 inputs; its packaging
+  approval remains explicitly unapproved, as required by the storage contract.
+- `configs/hu-postflop-after-multiway.review.json`: 129,396 bytes; SHA-256
+  `0cfd4476194ddbd511d2b3108fddb49c9cac83ba5ce4d73bb00c540a7a7c931d`.
+  The independent receipt accepts precisely this one spot and names all 406
+  deferred spots. Historical old-45 and five-pair foundation archives are separate.
+- Official packaging plus complete proof/companion verification passed in 1.547
+  seconds. The separate final official receipt verifier passed in 1.413 seconds,
+  exit 0, reporting `independently-reviewed-subset-verified`. An unavailable
+  `/usr/bin/time` wrapper had exited 127 before Node ran; the subsequent recorded
+  Python timing wrapper ran the exact verifier successfully.
+- The exact archive is preserved in the user's Library. LFS upload and empty
+  storage re-download verification are pending, so the new pointer/manifest/receipt
+  are not yet part of the published source checkpoint.
+
+### Local D1 and required CI
+
+`verify-local-d1.mjs` passed against installed Miniflare 4.20260515.0/workerd in
+an isolated credential/proxy-free process and disposable persistent local D1,
+2.540 seconds, exit 0, measured maximum child RSS 205,688 KiB. It applied all
+current backend migrations and checked real sentinels in all 18 tables, including
+Native auth and Ranked. All 45 historical policy/report sets and unrelated rows
+were preserved. The actual API returned the exact selected spot/policies/report;
+identical retry was idempotent; the deliberately invalid final NOT NULL insertion
+caused full-batch rollback; restart retained the committed database and API result.
+No production database was read or modified.
+
+The selected delivery SQL is 63,685 bytes, SHA-256
+`113b0e997ec08e5708dff2bed9239104990db226fb187a0cbd350a3664e40385`.
+The execution/log and result are retained under `.local/hu-model10-first-tests/`
+and `.local/hu-postflop-d1-JuVmPO/`. Log SHA-256:
+`d3782737e1c60e93e7bf4b16efb55f4a8eaeff4fa908c3d6d1144a94ff13e3fe`.
+
+The exact published source head's [required CI run](https://github.com/Suuu-sh/ReysonAI/actions/runs/37224378189)
+passed, including preflop receipt/LFS/full SQL verification, strict preflop local
+D1 roundtrip/idempotency/isolation/rollback, typecheck and build. Separate account
+authentication and runtime-config workflows also passed. Deployment was skipped.
+These required workflows are distinct from a final all-frontend test run.
+
+### Remaining work and sequencing
+
+Before validating hundreds of policies, a separately implemented minimal
+`street-state` extraction will remove the genuine offline hand-EV dependency on
+UI presentation code while retaining the UI wrapper as an explicit final review
+source. Existing datasets/sizing/numerical rules remain byte-fixed. The current
+accepted snapshot is preserved as history. The extraction must pass exact old/new
+path, chip, legal-option, label/history and source-identity parity plus independent
+review. It needs a fresh representative simulation/replay/new pin. The official
+all-board gate may reuse immutable checkpoints only if the complete all-board
+source/input/policy/config identity is exactly unchanged; otherwise it must
+recompute all 1,755 boards.
+
+The already-authored other four pairs are next in saved reach-frequency order,
+then remaining Stage A, then Stage B. A simple 55.5865-minute-per-spot extrapolation
+is about 126 serial hours for the 136 remaining Stage A spots or 376 hours for all
+406 remaining spots. This is a resource scenario, not a completion estimate: it
+excludes spot-dependent cost, authoring, review, revisions and the shared queue.
+Final full frontend tests, shared-source integration, model10 real-browser QA,
+LFS delivery, all remaining policy gates and release approval are still outstanding.
+
+At 19:10 UTC, the independent delivery reviewer confirmed a two-field,
+meaning-preserving author/reviewer display-label correction. All evidence and
+acceptance scope remained unchanged; the original 009f0211 receipt is preserved.
+The corrected receipt passed the same official verifier in 1.457 seconds, exit 0.
+Its Library version is 1; the archive and manifest bytes did not change.
+
+
+## 2026-10-04 19:14 UTC — shared numerical/UI extraction checkpoint
+
+The minimal street-state extraction passed independent implementation review.
+The final nine-file patch SHA-256 is
+`3a81c54f7610c90d08e5bbba6cd2ca977a5b46a21e44dbbac1f41e8b734e7332`.
+Only shared chip/path/ordered-option facts move into `street-state.mjs`; offline
+later-hand EV and later explanations import it directly. UI labels/history and
+intent remain in `postflop-trial.ts`, which is an explicit publication-review
+source root. Source-capture filters and gates are unchanged. Stage3's live-seat
+UI addition can remain outside the numerical graph.
+
+A zero-stack river display discrepancy found during independent review was
+recorded as a real before-fix failure, then corrected to preserve the exact old
+output. The final oracle validates the immutable prior module and dependencies;
+its private replay is exposed only in a separate exact-copy fixture with a
+45-byte export suffix, leaving the original untouched. Exact comparisons cover
+all 452 inputs (407 new plus 45 legacy), 246 geometries, 7,064 flop paths, 43,254
+turn paths, 135,604 river paths, 188,852 old later action-block outputs, 19,002 raw
+alias cases, 143,527 illegal-action cases and 654 boundary cases. Full oracle
+passed in 105.787 seconds, peak RSS 283.2 MiB; nine new contract tests also passed.
+
+The focused existing consumer suite has 215 passing assertions and zero skips,
+including old45 actual goldens, Agent/Range, hydration, all407 Node/browser inputs,
+source identities and archive contracts. The initial run had 199 passing tests
+and two file-level failures because the historical foundation archive was only
+a Git LFS pointer in the isolated checkout. Materializing the exact already-known
+127,590-byte object resolved the setup; those 16 tests passed on a recorded rerun.
+No implementation/test assertion was changed to waive that failure. Both logs
+are retained. Configured typecheck and production build passed. Existing CSS
+minification and large-chunk warnings remain; all 11 CSS files match the baseline.
+
+Independent review verified the final patch, actual logs, oracle provenance and
+unchanged 31-file all-board graph, 54 protected runtime sources, 12 inputs and
+92 Stage2 receipt sources. This is a GO for pure extraction/parity and shared
+source integration, **not new numerical or production acceptance**. The prior
+one-spot archive remains an immutable historical accepted snapshot, additionally
+copied with its exact 95 source/input/archive/manifest/receipt files into a
+separate historical repository and successfully checked by the official verifier.
+The current source needs a new pin, fresh representative simulation/replay and
+the unchanged official full1755 gate. Checkpoint reuse is allowed only by that
+existing gate under exactly equal full numerical identity; no proof is relabelled.

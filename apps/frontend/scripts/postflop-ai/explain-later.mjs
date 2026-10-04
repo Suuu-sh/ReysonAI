@@ -8,7 +8,7 @@ import { scaleByPath, validatePolicy } from "./policy.mjs";
 import { LATER_NODES, laterNodeRole } from "./later-tree.mjs";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
 import { flopState } from "./tree.mjs";
-import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
+import { laterDecisionState as laterDecision, laterStart, replayLater } from "./street-state.mjs";
 import { defenceFor, isFacingNode, replayOrNull } from "./defence.mjs";
 import { canonicalPostflopPath } from "./observable-actions.mjs";
 import { averageExplanationFacts } from "./explain-aggregate.mjs";

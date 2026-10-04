@@ -12,7 +12,7 @@ import { flopState } from "./tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
 import { defenceFor, replayDecision } from "./defence.mjs";
 import { exactActionEv } from "./exact-ev.mjs";
-import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
+import { laterDecisionState as laterDecision, laterStart, replayLater } from "./street-state.mjs";
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 export const LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES = 600;

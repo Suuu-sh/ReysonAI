@@ -22,6 +22,9 @@ const inputNames = ['opening-ranges', 'preflop-ranges', 'three-bet-responses', '
   'multiway-responses', 'multiway2-responses', 'squeeze-responses', 'cold-three-bet-responses', 'cold-four-bet-responses', 'continuation-responses'];
 const sourceRoots = ['cli.mjs', 'audit-all-boards.mjs', 'board-worker.mjs', 'browser-inputs.mjs', 'publish-d1.mjs', 'build-multiway-spots.mjs',
   'package-all-board-companion.mjs', 'package-reviewed-postflop.mjs', 'restore-reviewed-postflop.mjs', 'verify-reviewed-postflop.mjs', 'preserve-legacy-postflop.py'].map(name => `${FRONTEND}scripts/postflop-ai/${name}`);
+// Consumer provenance remains bound by the publication review even when it is
+// no longer an incidental dependency of the numerical execution graph.
+const consumerRoots = [`${FRONTEND}src/estimated/postflop-trial.ts`];
 export function reviewedSourcePaths(root = REPOSITORY) {
   const found = new Set();
   function visit(path) {
@@ -36,7 +39,7 @@ export function reviewedSourcePaths(root = REPOSITORY) {
       if (name.startsWith('.')) visit(relative(root, resolve(root, dirname(path), name)).replaceAll('\\', '/'));
     }
   }
-  [...sourceRoots, '.gitattributes', `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`,
+  [...sourceRoots, ...consumerRoots, '.gitattributes', `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`,
     `${FRONTEND}docs/postflop-policy-knowledge.md`,
     ...['.md', '.storage.md', '.independent-review.md', '.policy-review.md', '.observable-actions.md'].map(suffix => `${FRONTEND}docs/specs/hu-postflop-after-multiway-preflop${suffix}`)].forEach(visit);
   return [...found].filter(path => !inputNames.some(name => path === `${FRONTEND}src/estimated/${name}.json`)).sort(compare);
