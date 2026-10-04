@@ -160,7 +160,7 @@ const STAGES = [
 export const RELEASE_TASKS = Object.freeze([
   { id: "release_d1", hero: "—", path: "Cloudflare D1 に方針・理由文を入れ、reysonai-api から本番配信（ローカル専用 middleware を置き換え）", done: true },
   { id: "release_no_gto_ui", hero: "—", path: "「GTOではない / AI推定」表示をUIから外し、利用規約だけに残す", done: true },
-  { id: "release_terms", hero: "—", path: "利用規約ページを用意し、「AIの推定であり GTO・数学的最適性を保証しない」旨をそこに書く（今はサイトのフッターに「準備中」のリンクと注意書きがあるだけ）", done: false },
+  { id: "release_terms", hero: "—", path: "利用規約・プライバシーポリシーを4言語で公開し、AIの推定であり GTO・数学的最適性を保証しない旨を記載（/terms・/privacy）。運営上の法務確認は別途継続", done: true },
   { id: "release_turn_river_reasons", hero: "—", path: "ターン・リバーの精密な理由文（ノード×アクション×手の強さ×落ちたカード×前のストリートの文面を日英で用意し、相手レンジへの勝率・降ろせる割合・必要勝率の数字を根拠に添える）", done: true },
   { id: "release_turn_river_ev", hero: "—", path: "【見送り・2026-10-01 決定】ターン・リバーの手ごとのEV。EVは両者の想定戦略に依存し、相手のコールレンジがGTOと違うと正確でないため、ポストフロップのEVは出さない", done: true },
 ]);
