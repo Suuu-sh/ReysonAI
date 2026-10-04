@@ -67,7 +67,8 @@ class SerialValidationTests(unittest.TestCase):
         self.frontend.mkdir(parents=True)
         self.id = "A_spot_0"
         rows = [{"id": f"{stage}_spot_{index}", "slug": f"{stage.lower()}-spot-{index}-hu-v1", "stage": stage,
-                 "reachable": True, "history": [{"seat": "BTN", "action": "open"}], "reach": (index + 1) / 10000}
+                 "reachable": True, "history": [{"seat": "BTN", "action": "open"}],
+                 "reach": {"probability": (index + 1) / 10000, "samples": 32768, "compatible_samples": 10000}}
                 for stage, count in (("A", 137), ("B", 270)) for index in range(count)]
         rows.append({"id": "BTN_open_BB_call", "reachable": True, "history": None})
         runner.exclusive(self.frontend, runner.CATALOG, runner.body({"spots": rows}))
@@ -89,6 +90,26 @@ class SerialValidationTests(unittest.TestCase):
     def test_four_id_bound_and_stage_b_frequency_order(self):
         ids, _ = runner.selections(self.frontend, ["B_spot_0", "A_spot_4", "B_spot_269", "A_spot_0"])
         self.assertEqual(ids, ["A_spot_0", "A_spot_4", "B_spot_269", "B_spot_0"])
+
+    def test_real_catalog_stage_b_probability_order_and_prerequisite_gate(self):
+        actual = runner.read_json(FRONTEND, runner.CATALOG)
+        rows = [row for row in actual["spots"] if row.get("reachable") and row.get("stage") == "B"]
+        expected = sorted(rows, key=lambda row: (-row["reach"]["probability"], row["id"]))
+        selected = [row["id"] for row in reversed(expected[:4])]
+        (self.frontend / runner.CATALOG).write_bytes(runner.body(actual))
+        ids, catalog = runner.selections(self.frontend, selected)
+        self.assertEqual(ids, [row["id"] for row in expected[:4]])
+        with self.assertRaises(runner.Refusal):
+            runner.stage_b_gate(self.frontend, ids, catalog, FakeBoundary())
+
+    def test_stage_b_reach_requires_actual_finite_probability_schema(self):
+        self.assertEqual(runner.reach_probability({"reach": {"probability": 0}}), 0)
+        self.assertEqual(runner.reach_probability({"reach": {"probability": 1}}), 1)
+        for value in (None, {}, 0.1, {"probability": True}, {"probability": "0.1"},
+                      {"probability": -1}, {"probability": 1.1}, {"probability": float("nan")},
+                      {"probability": float("inf")}):
+            with self.subTest(value=value), self.assertRaises(runner.Refusal):
+                runner.reach_probability({"reach": value})
 
     def test_manifest_is_exact_bounded_and_disjoint(self):
         runner.exclusive(self.frontend, "batch.json", runner.body({"schema_version": 1, "spot_ids": [self.id]}))

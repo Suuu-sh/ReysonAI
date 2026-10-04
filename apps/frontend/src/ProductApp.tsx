@@ -32,7 +32,16 @@ export default function ProductApp() {
     window.addEventListener("focus", recheck);
     return () => window.removeEventListener("focus", recheck);
   }, []);
-  const [profile, setProfile] = useState(loadProfile);
+  // Account data becomes readable with account.ready. A guest-local profile
+  // read before that boundary cannot decide authenticated onboarding/routing.
+  const profileOwner = JSON.stringify([account.user?.id ?? null, account.user?.verified === true]);
+  const [profileState, setProfileState] = useState<{ owner: string | null; value: ReturnType<typeof loadProfile> }>({ owner: null, value: null });
+  const profileReady = account.ready && profileState.owner === profileOwner;
+  const profile = profileReady ? profileState.value : null;
+  const setProfile = (value: ReturnType<typeof loadProfile>) => {
+    const current = accountSnapshot();
+    setProfileState({ owner: JSON.stringify([current.user?.id ?? null, current.user?.verified === true]), value });
+  };
   const [editing, setEditing] = useState(false);
   // The URL is the page (see route.ts).
   const [path, setPath] = useState(() => {
@@ -60,15 +69,29 @@ export default function ProductApp() {
   const [loggingOut, setLoggingOut] = useState(false);
 
   const reloadProfile = () => { adoptOnboardingDraft(); setProfile(loadProfile()); applyAppearance(); };
-  useEffect(() => { if (account.ready) reloadProfile(); }, [account.ready, account.user?.id, account.user?.verified]);
-  // First-run onboarding is its own address; finishing it returns to the page it stood in front of.
-  const welcoming = account.ready && !profile && !authOpen;
-  const [returnTo] = useState(() => window.location.search + window.location.hash);
+  // A fast refresh can batch ready=false away. Each account notification still
+  // publishes a new snapshot, even when the same owner's data becomes readable.
   useEffect(() => {
+    if (account.ready) reloadProfile();
+    else setProfileState(current => current.owner === null ? current : { ...current, owner: null });
+  }, [account]);
+  // First-run onboarding is its own address; finishing it returns to the page it stood in front of.
+  const welcoming = profileReady && !profile && !authOpen;
+  const [returnTo] = useState(() => window.location.search + window.location.hash);
+  const [, routeCommitted] = useState(0);
+  const visiblePath = welcoming ? WELCOME_PATH : path;
+  const routeReady = profileReady && window.location.pathname === visiblePath;
+  useLayoutEffect(() => {
+    if (!profileReady) return;
     const target = welcoming ? WELCOME_PATH : path + (window.location.pathname === WELCOME_PATH ? returnTo : window.location.search + window.location.hash);
-    if (window.location.pathname !== (welcoming ? WELCOME_PATH : path)) window.history.replaceState(null, "", target);
-  }, [welcoming, path]);
-  if (!account.ready) return <div className="site-loading">{localized("Opening account…", "アカウントを確認中…")}</div>;
+    if (window.location.pathname !== visiblePath) {
+      window.history.replaceState(null, "", target);
+      routeCommitted(value => value + 1);
+    }
+  }, [profileReady, welcoming, path, visiblePath, returnTo]);
+  // Child state reads the URL on mount. Commit the route before mounting it,
+  // including the return from genuine onboarding at /welcome.
+  if (!account.ready || !profileReady || !routeReady) return <div className="site-loading">{localized("Opening account…", "アカウントを確認中…")}</div>;
   if (authOpen) return <main className="account-page"><AuthPanel onChanged={reloadProfile} onGuest={async () => { if (accountSnapshot().user) { try { await logoutAccount(); } catch { return; } } rememberLearningIntent(null); go(HOME_PATH); setAuthOpen(false); reloadProfile(); }} />{account.user?.verified && <button className="account-primary" onClick={() => { setAuthOpen(false); reloadProfile(); }}>{localized("Continue", "続ける")}</button>}</main>;
   if (!profile || editing) {
     return <Onboarding initial={editing ? profile : null} account={account} onAccount={() => setAuthOpen(true)}

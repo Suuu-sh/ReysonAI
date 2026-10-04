@@ -15,6 +15,23 @@
       "files": 32,
       "source_commit": "6e59fe9fbd5ecd946010be1f893d9ee6e04f98a5",
       "scope": "Exact development bytes from merged, reviewed PR28; structural/source tests passed. No profile or Stage2 data changed."
+    },
+    "renewal": {
+      "date": "2026-10-04",
+      "reviewer": "Independent read-only release/configuration and ranked-preservation review",
+      "scope": "Source/configuration only: ece9ca0 workflow and backend config delta, plus ranked player/match sentinel inserts in the local D1 verifier. No renewed strategy-quality or Astra data approval; original data review remains unchanged.",
+      "report": "apps/frontend/docs/specs/multiway-preflop-stage2.result.md",
+      "blocking_findings": 0,
+      "verification": {
+        "ranked_backend_tests": "5 passed",
+        "ranked_workflow_tests": "2 passed",
+        "localization_tests": "10 passed, including Spanish ranked labels",
+        "local_d1_tests": "10 passed using pinned Wrangler 4.147.0; strict small fixture imports twice and failed-file rollback preserve all 16 unrelated tables; bounded small-fixture diagnostic also passed",
+        "artifact_and_archive_identity": "All 1888 delivered artifact records and the LFS archive are unchanged",
+        "source_identity": "3 bound sources reviewed; other 83 source records unchanged",
+        "source_fingerprint": "Recomputed continuation policy/reason fingerprint unchanged"
+      },
+      "limitations": "Small-fixture local D1 evidence is not full 1888-dataset whole-file rollback proof. Exact-head strict full delivery Actions verification and production deployment/readiness remain pending. Original full-suite and lint limitations remain."
     }
   },
   "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
@@ -9474,8 +9491,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 7723,
-      "sha256": "1fe32dd2df0fe57e714bcbdfd977a4ac3972acbe8e0f53b0c8a947fc74431300"
+      "bytes": 9937,
+      "sha256": "370f35ffd6028cb5a3570dff827071ee86f3484cc03808b6383cb334538c709e"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -9484,8 +9501,8 @@
     },
     {
       "path": "apps/backend/wrangler.jsonc",
-      "bytes": 1006,
-      "sha256": "2766036336b8c07bae2a48d1187ad5d6155407ceaa01578dbd58b957c4baf51a"
+      "bytes": 1072,
+      "sha256": "1aeff1e9cd31d57680620f9749965e14e2163aa671d8479bcf793c6df5d2decb"
     },
     {
       "path": "apps/frontend/package-lock.json",
@@ -9614,8 +9631,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
-      "bytes": 50978,
-      "sha256": "cbb1bddfcae6a559019e22a1f60f275b1a116f0e5ba738c6243a3e0fe2216055"
+      "bytes": 52863,
+      "sha256": "225fe6b4c9bd9c017e8db3c601eb79d8032957b4cdfa045d8c17bc7833202fb8"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
@@ -9639,8 +9656,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-base-core.mjs",
-      "bytes": 7109,
-      "sha256": "814ea435044a80b9d4e43cc5d13c016a16021dd64c918218eb6782da08716ec9"
+      "bytes": 7121,
+      "sha256": "c7bb4e8fd95a7e0bd7dd0163a5b4e89fb19104c662df4830a3064cdbeb9dd906"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-base-d1.mjs",
@@ -9699,8 +9716,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
-      "bytes": 6843,
-      "sha256": "0c6cb8d907b4819581b62bd869751ff2cf0f1483b2fc00c181a6028852ae8926"
+      "bytes": 6846,
+      "sha256": "b77b8e4d905aee5ce34e7758cca6ec46ad216341015ef85f0b0a73c7829f916c"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
@@ -9714,8 +9731,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
-      "bytes": 9169,
-      "sha256": "fa8ce240d5701e2f2251338d6369dd97a1a5d2d8cb36232e400efb6b23b980b7"
+      "bytes": 9181,
+      "sha256": "f755e5659f81bc87d73a32a109a2acbf06c7ed9ceeff1bac88005f1527783c75"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
@@ -9749,8 +9766,8 @@
     },
     {
       "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
-      "bytes": 21071,
-      "sha256": "3d4719abf77f16f0c8b07ce640542612f416365122b3cc9c1052c8c18f3f377e"
+      "bytes": 21454,
+      "sha256": "f3f812617e6f288341efdcaeffd24a7ee6ade6ffad36b00b5a707a6c841c4527"
     },
     {
       "path": "apps/frontend/scripts/verify-reviewed-preflop.mjs",
@@ -9913,7 +9930,7 @@
       "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
     }
   ],
-  "content_sha256": "55fbf1ad3b00b21a35497de41ce06b9ae7bcd676dffa55cc223ecf2731ec479f",
+  "content_sha256": "2d9ba370302f7b206b5b9079163e76e80b277dc19c1de0f5d294e036e225516e",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -10213,6 +10230,167 @@
         },
         "local_log_sha256": "fe28ce26f8bff2f098da2cb4c95239b6a69716e98ab60c157c616f9fdc44f041",
         "limitations": "These are source-compatibility preapproval checks, not a replacement for post-amendment official restore/verify/tests or strict whole-file D1 rollback validation. The original historical full-suite and delivery limitations remain unchanged. No merge, production import or deployment was performed."
+      }
+    },
+    {
+      "date": "2026-10-04",
+      "reviewer": "Independent new-HU model8 preflop source-compatibility review",
+      "scope": "Source-only compatibility for unchanged reviewed preflop bytes after the new-HU river-floor support correction and direct reconciliation of the overlapping upstream release receipt. This is not renewed strategy-quality approval, new postflop policy acceptance, or proof that the unapproved postflop foundation is fresh. Original strategy review, upstream review.renewal and all three prior delivery amendments are preserved.",
+      "upstream_renewal": {
+        "commit_prefix": "b5e20e47",
+        "tree": "8c3ac21ab3eebd8bb5dbbb7d0324e150c16870a1",
+        "receipt_git_blob": "9f51396a2b584053c0d1c54952d3fa3858dcbc31",
+        "receipt_sha256": "347f4139286c3589a5bd1ec32e98c23b79a241c752727d657fdc3175572e4a15",
+        "content_sha256": "8da2d19455009d74f5fbb9a452569dbb9d3faac0e191f0d34cbb9744f203bd0a",
+        "preserved_verbatim": "review.renewal, both original delivery amendments and all original strategy/artifact/archive/count/fingerprint records"
+      },
+      "before_content_sha256": "55fbf1ad3b00b21a35497de41ce06b9ae7bcd676dffa55cc223ecf2731ec479f",
+      "after_content_sha256": "2d9ba370302f7b206b5b9079163e76e80b277dc19c1de0f5d294e036e225516e",
+      "before_sources_sha256": "269669b7a3acfbd31342eae58a3f06fd1cb620c5d7ac7d57566317b7d6b8e586",
+      "after_sources_sha256": "cd35c3c62209137bd97ee0e17ca196a015f95a2441d8de1dfb2679b4e4a44b14",
+      "source_counts": {
+        "previous": 89,
+        "proposed": 89,
+        "unchanged": 82,
+        "changed": 7,
+        "added": 0,
+        "removed": 0
+      },
+      "source_changes": [
+        {
+          "path": ".github/workflows/deploy-worker.yml",
+          "previous": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 7723,
+            "sha256": "1fe32dd2df0fe57e714bcbdfd977a4ac3972acbe8e0f53b0c8a947fc74431300"
+          },
+          "current": {
+            "path": ".github/workflows/deploy-worker.yml",
+            "bytes": 9937,
+            "sha256": "370f35ffd6028cb5a3570dff827071ee86f3484cc03808b6383cb334538c709e"
+          }
+        },
+        {
+          "path": "apps/backend/wrangler.jsonc",
+          "previous": {
+            "path": "apps/backend/wrangler.jsonc",
+            "bytes": 1006,
+            "sha256": "2766036336b8c07bae2a48d1187ad5d6155407ceaa01578dbd58b957c4baf51a"
+          },
+          "current": {
+            "path": "apps/backend/wrangler.jsonc",
+            "bytes": 1072,
+            "sha256": "1aeff1e9cd31d57680620f9749965e14e2163aa671d8479bcf793c6df5d2decb"
+          }
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+          "previous": {
+            "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+            "bytes": 50978,
+            "sha256": "cbb1bddfcae6a559019e22a1f60f275b1a116f0e5ba738c6243a3e0fe2216055"
+          },
+          "current": {
+            "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+            "bytes": 52863,
+            "sha256": "225fe6b4c9bd9c017e8db3c601eb79d8032957b4cdfa045d8c17bc7833202fb8"
+          }
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/flop-base-core.mjs",
+          "previous": {
+            "path": "apps/frontend/scripts/postflop-ai/flop-base-core.mjs",
+            "bytes": 7109,
+            "sha256": "814ea435044a80b9d4e43cc5d13c016a16021dd64c918218eb6782da08716ec9"
+          },
+          "current": {
+            "path": "apps/frontend/scripts/postflop-ai/flop-base-core.mjs",
+            "bytes": 7121,
+            "sha256": "c7bb4e8fd95a7e0bd7dd0163a5b4e89fb19104c662df4830a3064cdbeb9dd906"
+          }
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
+          "previous": {
+            "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
+            "bytes": 6843,
+            "sha256": "0c6cb8d907b4819581b62bd869751ff2cf0f1483b2fc00c181a6028852ae8926"
+          },
+          "current": {
+            "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
+            "bytes": 6846,
+            "sha256": "b77b8e4d905aee5ce34e7758cca6ec46ad216341015ef85f0b0a73c7829f916c"
+          }
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
+          "previous": {
+            "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
+            "bytes": 9169,
+            "sha256": "fa8ce240d5701e2f2251338d6369dd97a1a5d2d8cb36232e400efb6b23b980b7"
+          },
+          "current": {
+            "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
+            "bytes": 9181,
+            "sha256": "f755e5659f81bc87d73a32a109a2acbf06c7ed9ceeff1bac88005f1527783c75"
+          }
+        },
+        {
+          "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+          "previous": {
+            "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+            "bytes": 21071,
+            "sha256": "3d4719abf77f16f0c8b07ce640542612f416365122b3cc9c1052c8c18f3f377e"
+          },
+          "current": {
+            "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+            "bytes": 21454,
+            "sha256": "f3f812617e6f288341efdcaeffd24a7ee6ade6ffad36b00b5a707a6c841c4527"
+          }
+        }
+      ],
+      "rationale": "Four already-bound postflop modules now use the scoped defenceVersionFor identity: new HU histories use model8 and legacy spots retain model6. Only new-HU river decisions with a positive call and proposed floor promotion exclude mathematically losing hands, proved from nonempty compatible positive-weight integer-rank support with no win or tie. Raw logistic calls, legal/capped raises and the existing floor allocation are preserved without redistribution. The remaining three changed records exactly match the independently renewed upstream workflow, backend configuration and local-D1 ranked sentinel verifier. No preflop generation, sampler/evaluator, shared configuration, reason encoder, publication audit or SQL serialization code changed.",
+      "preserved_gates": "Every source/artifact/archive comparison and complete continuation/profile gate remains. New-HU model6/7 reports and derived caches remain stale under model8; this preflop receipt does not authorize their publication. The upstream main-only verified workflow and scoped ranked migration are preserved unchanged, not executed. All current unrelated tables must contain constraint-valid preservation sentinels. No source exclusion, sampling reduction, data regeneration, repackaging, workflow edit or validation waiver was introduced by this reconciliation.",
+      "verified_unchanged": {
+        "artifact_records": 1888,
+        "archive_entries": 1614,
+        "archive_bytes": 1747857,
+        "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+        "counts": {
+          "catalog": 3115,
+          "saved": 1611,
+          "unreachable": 1504,
+          "hands": 272259
+        },
+        "prior_delivery_amendments": 3,
+        "preflop_sql_bytes": 68705643,
+        "preflop_sql_sha256": "b0bb41c1bf47106654ebadf30f0eba40de4252aca195e73fcbcd9236c6e6e77c"
+      },
+      "canonical_validation": {
+        "status": "pass",
+        "execution": "Five fresh local Node processes with 512 MiB V8 heaps, complete inputs and original canonical assertions. All 89 source records and the complete artifact/archive bytes were rechecked before and after these phases and immediately before writing.",
+        "source_and_artifact_identity": "reviewedFiles/assertReviewRecord passed for all 1888 artifacts, the original archive, 89 sources, and an in-memory candidate preserving the upstream renewal and existing amendments.",
+        "continuation_publication": {
+          "status": "complete",
+          "spots": 1611,
+          "catalog": 3115
+        },
+        "opponent_profiles": {
+          "blocking_findings": 0,
+          "advisory_findings": 0
+        },
+        "fingerprint_and_counts": "Exact original continuationReasonFingerprint and all four saved counts preserved.",
+        "sql_identity": "The complete canonical preflopDatasets/buildPreflopSql result plus unchanged migration 0003 is identical to the original 68705643-byte reviewed SQL.",
+        "phase_peak_rss_kib": {
+          "files": 223092,
+          "continuation": 423544,
+          "profiles": 120368,
+          "fingerprint": 322868,
+          "sql": 684228
+        },
+        "local_log_sha256": "7fd678126e6d75b9825c9d6fa0e147a338edfa03bc0e863becddf0d9cab60da8",
+        "limitations": "Canonical source compatibility is not full-delivery D1 rollback proof or strategic acceptance. Exact-head strict full-delivery Actions verification, original historical full-suite/lint/delivery limitations and production readiness remain separate. No merge, push, production import or deployment is part of this review."
       }
     }
   ]

@@ -1,4 +1,4 @@
-import { DEFENCE_VERSION } from "./defence.mjs";
+import { defenceVersionFor } from "./defence.mjs";
 import { hasPostflopDeal } from "./range-support.mjs";
 // SQL for the canonical local postflop artifacts in the reysonai D1 database (schema:
 // apps/backend/migrations). Spots whose flop policy or report is missing or stale are
@@ -41,7 +41,7 @@ export function spotArtifacts(spot) {
 export function isFreshSimulationReport(inputs, candidate, laterCandidate, report) {
   if (!report || report.kind !== "ai_estimate_not_gto" || report.version !== 1 || report.spot !== inputs.spot.id ||
       report.policy_hash !== candidate.metadata.policy_hash || report.source_hash !== inputs.fingerprint ||
-      report.simulation_version !== SIMULATION_VERSION || report.defence_version !== DEFENCE_VERSION ||
+      report.simulation_version !== SIMULATION_VERSION || report.defence_version !== defenceVersionFor(inputs) ||
       report.later_sizing_hash !== laterSizingHash() || report.seed !== config.seed ||
       report.samples_per_board_profile_seat !== config.samples_per_board_profile_seat ||
       (report.later_policy_hash ?? null) !== (laterCandidate?.metadata.policy_hash ?? null)) return false;
@@ -67,7 +67,7 @@ export function buildSql(published, publishedAt = new Date().toISOString(), publ
   // Missing local artifacts must never erase an unrelated published spot.
   if (!published.length) return "-- No publishable postflop artifacts; no database changes.\n";
   if (new Set(published.map(item => item.spot.id)).size !== published.length) throw new Error("Duplicate published postflop spot");
-  const lines = ["-- Reviewed spot-scoped postflop upsert; preserves every unmentioned spot."];
+  const lines = ["-- spot-scoped postflop upsert; preserves every unmentioned spot."];
   for (const { spot, candidate, laterCandidate, report } of published) {
     const id = quote(spot.id);
     for (const table of ["postflop_policies", "postflop_reports", "postflop_reasons", "postflop_spots"]) {

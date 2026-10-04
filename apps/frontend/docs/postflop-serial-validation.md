@@ -20,8 +20,9 @@ frontend-relative regular file, containing exactly:
 {"schema_version":1,"spot_ids":["UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call"]}
 ```
 
-Stage A precedes Stage B. Stage B is sorted by recorded descending reach, with
-ID tie-breaks. Before starting any B batch, the runner requires current reverified
+Stage A precedes Stage B. Stage B is sorted by the catalog's recorded
+`reach.probability` in descending order, with ID tie-breaks. Missing, nonnumeric,
+nonfinite or out-of-range probabilities are rejected. Before starting any B batch, the runner requires current reverified
 full saved proofs for all 137 A spots and every earlier B spot outside the batch.
 It does not interpret a status flag or aggregate summary as proof.
 
@@ -168,6 +169,12 @@ identical official 47-source/12-input audit identity, 54 numerical-source record
 24 separately pinned packaging-only files, 35,198,172 copied bytes and zero
 symlinks. These smoke checks started no simulation or audit workload. A real
 end-to-end numerical batch remains unrun.
+
+The subsequent catalog-shape regression is covered by 33 passing Python tests:
+selection and Stage-B prerequisite ordering both read the actual nested
+`reach.probability` field. A real407-entry catalog check confirms the first four
+B selections and refusal while Stage A proofs are absent. This fixes orchestration
+only; no numerical command, sample, policy or prerequisite gate was reduced.
 
 ### Short text ready to append to the batch plan after the active audit
 

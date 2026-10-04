@@ -144,6 +144,21 @@ caller's break-even, so its bluff-catchers are indifferent and the logistic spli
 them: river 33% bets were defended near 54% against an MDF of 75% on almost every one of the 1,755 flops.
 Capped actions are now defended between MDF − 10 points (floor) and MDF (ceiling).
 
+2026-10-04 (new HU-after-multiway model version 8; legacy model remains version 6):
+only canonical history-bearing spots, on the river with a positive call cost and actual
+floor promotion, retain their pre-floor logistic call/fold split when exact integer ranks
+prove nonempty positive-weight bettor support compatible with the hero and board, and every
+compatible opponent beats the hero. Any win or tie preserves normal promotion, even if the
+cached float is zero. Empty support or invalid ranks do not prove zero. This replaces the
+provisional version-7 float-zero test, which missed three TT combinations with a tiny positive
+prefix-subtraction residue despite no winning/tied outcome. No epsilon or equity-kernel change
+is used. Authored/capped legal raises remain intact. The floor's
+allocation is unchanged, so removed promotion is not redistributed to positive-equity
+hands; achieved defence may honestly remain below MDF − 10 points. This is not an epsilon
+cutoff or a change to pre-floor calls, ceilings, bluff caps, flop/turn behaviour or the
+45 legacy spots. `defenceVersionFor(inputs)` binds the scoped model to reports, flop bases
+and offline hand-EV freshness; version-6/7 new-HU outputs require fresh execution.
+
 The three candidate hashes are unchanged (`defence_realization` is excluded from the flop
 fingerprint and from `later_sizing_hash`); simulation reports carry `defence_version`.
 

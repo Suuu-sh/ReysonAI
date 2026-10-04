@@ -35,6 +35,11 @@ import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 // Best-five showdown ranking: older derived defence/base artifacts are stale.
 export const DEFENCE_VERSION = 6;
+// HU-after-multiway alone excludes mathematically zero river floor promotion.
+// Legacy spots retain their numerical model and derived-artifact identities.
+// 7 used float === 0; 8 proves zero by integer-rank compatible support instead.
+export const NEW_HU_DEFENCE_VERSION = 8;
+export const defenceVersionFor = inputs => inputs.spot.history ? NEW_HU_DEFENCE_VERSION : DEFENCE_VERSION;
 // Sampled turn+river runouts per flop decision (seeded by the flop, shared by every node of it).
 export const FLOP_RUNOUTS = 300;
 // call share = logistic(margin / LOGISTIC_SCALE): +-4pt of margin is about 88 / 12.
@@ -661,6 +666,27 @@ class Defence {
     return factors[tiers[comboId(combo[0], combo[1])]] ?? 1;
   }
 
+  // River equity is mathematically zero only with nonempty compatible positive
+  // support and no win OR tie. Prefix/blocker subtraction may leave a tiny
+  // float residue (or round a genuine outcome to zero), so never test its size.
+  onlyLosingRiverSupport(context, combo) {
+    if (context.board?.length !== 5 || combo[0] === combo[1] ||
+        context.board.includes(combo[0]) || context.board.includes(combo[1])) return false;
+    const score = this.tablesOf(context)[0]?.score, own = score?.[comboId(combo[0], combo[1])];
+    if (!Number.isInteger(own) || own < 0) return false;
+    const { ids, lo, hi, w } = context.bettorRange;
+    let compatible = false;
+    for (let i = 0; i < ids.length; i++) {
+      if (!(w[i] > 0)) continue;
+      if (lo[i] === combo[0] || lo[i] === combo[1] || hi[i] === combo[0] || hi[i] === combo[1] ||
+          context.board.includes(lo[i]) || context.board.includes(hi[i])) continue;
+      const other = score[ids[i]];
+      if (!Number.isInteger(other) || other < 0 || other <= own) return false;
+      compatible = true;
+    }
+    return compatible;
+  }
+
   applyEquity(context, base, equity, combo, raw = false) {
     const realized = equity * this.realizationFor(context, combo), margin = realized - context.required;
     const mix = splitMix(base, logistic(margin / LOGISTIC_SCALE));
@@ -669,6 +695,11 @@ class Defence {
       const factor = realized > floor.threshold + 1e-9 ? 1 : realized >= floor.threshold - 1e-9 ? floor.fraction : 0;
       if (!(factor > 0) || !(mix.fold > 0)) return mix;
       const moved = Number.isInteger(mix.fold) && Number.isInteger(mix.call) ? Math.round(mix.fold * factor) : round6(mix.fold * factor);
+      // Keep the original allocation: never redistribute removed promotion.
+      // Raw logistic calls and legal/capped raises are preserved, allowing
+      // honest below-target defence when no compatible win/tie is available.
+      if (moved > 0 && this.inputs.spot.history && context.street === "river" && context.call > 0 &&
+          this.onlyLosingRiverSupport(context, combo)) return mix;
       return { ...mix, fold: round6(mix.fold - moved), call: round6(mix.call + moved) };
     }
     const ceiling = raw ? null : this.ceilingOf(context);

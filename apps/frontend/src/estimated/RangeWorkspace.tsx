@@ -347,7 +347,20 @@ function PostflopSignIn({ account, onBack }) {
     backLabel={localized("Back to preflop ranges", "プリフロップのレンジに戻る")} /></div>;
 }
 
-export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }) {
+// Query navigation is a fresh, validated range selection. Remounting the
+// session atomically restores all streets and cancels the old session's async
+// effects, so a late source response cannot write over Back/Forward navigation.
+export function EstimatedRanges(props) {
+  const [navigation, setNavigation] = useState(0);
+  useEffect(() => {
+    const restore = () => { if (window.location.pathname === "/analyze/ranges") setNavigation(value => value + 1); };
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
+  return <EstimatedRangeSession key={navigation} {...props} />;
+}
+
+function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }) {
   const [initialUrlState] = useState(() => readRangeUrl());
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -649,21 +662,32 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   };
   const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions, raiseSizeFor };
   const continuationRuntime = useContinuationUiRuntime(Boolean(boundedSelection) || callers.length >= 2);
-  const actionBlocks = withContinuationAvailability(buildActionBlocks(actionState), continuationRuntime.runtime, continuationRuntime.error);
+  const structuralActionBlocks = buildActionBlocks(actionState);
+  const actionBlocks = withContinuationAvailability(structuralActionBlocks, continuationRuntime.runtime, continuationRuntime.error);
   const liveContinuationSeats = continuationLiveSeats(actionBlocks);
   const flopContext = !currentError ? completedFlopContext({ actionBlocks, rangeType, opener, hero, pendingRaise, squeezeResponse,
     callers, foldedHero, isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format), limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) : null;
   const flopActive = showFlop && Boolean(flopContext);
+  // Temporary loading/missing policy data is not proof that an otherwise valid
+  // board/history is invalid. Persist the validated selection, not whether its
+  // strategy can be rendered in this particular async frame. Exact zero support
+  // is different: only a proved unreachable terminal invalidates that intent.
+  const sourceProvesUnreachable = actionBlocks.at(-1)?.continuationStatus === "unreachable";
+  const urlFlopContext = !currentError && !sourceProvesUnreachable ? completedFlopContext({
+    ...actionState, actionBlocks: structuralActionBlocks,
+    isDefaultTable: isDefaultProfile(tableProfile) && isBuilt(format),
+  }) : null;
+  const persistFlop = showFlop && Boolean(urlFlopContext);
   useEffect(() => {
     // Wait for dependent street resets before serializing a changed upstream path.
-    if (flopChanged || turnChanged || boundedSelection && !continuationRuntime.runtime) return;
+    if (flopChanged || turnChanged) return;
     replaceRangeUrl(encodeRangeUrl({ rangeType, opener, hero, callers, foldedHero, pendingRaise,
       continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction,
-      limpFourBetAction, squeezeResponse, continuationActions, selected, format, tableProfile, showFlop: flopActive,
+      limpFourBetAction, squeezeResponse, continuationActions, selected, format, tableProfile, showFlop: persistFlop,
       flopCards, flopActions, turnCard, turnActions, riverCard, riverActions }, actionBlocks));
   }, [rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse,
     coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, continuationActions,
-    selected, format, tableProfile, flopActive, flopCards, flopActions, turnCard, turnActions,
+    selected, format, tableProfile, persistFlop, flopCards, flopActions, turnCard, turnActions,
     riverCard, riverActions, flopChanged, turnChanged, actionBlocks]);
   const flopBoard = recognizedFlop(flopCards);
   const canEnterLaterStreets = Boolean(flopContext?.pilotAvailable && flopBoard && laterStart(flopActions, flopContext));

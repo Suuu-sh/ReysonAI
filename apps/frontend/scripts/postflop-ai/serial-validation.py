@@ -12,6 +12,7 @@ import datetime as dt
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -131,6 +132,14 @@ def assert_record(root, record, limit=MAX_FILE):
         raise Refusal("Saved file/proof bytes do not match their actual hash/size")
 
 
+def reach_probability(row):
+    reach = row.get("reach")
+    value = reach.get("probability") if isinstance(reach, dict) else None
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not 0 <= value <= 1:
+        raise Refusal("Catalog reach.probability must be a finite number between 0 and 1")
+    return value
+
+
 def selections(root, ids, manifest=None):
     catalog = read_json(root, CATALOG)
     rows = catalog.get("spots", [])
@@ -152,7 +161,7 @@ def selections(root, ids, manifest=None):
         raise Refusal("Unknown, unreachable or legacy IDs are rejected")
     # Deterministic order: all selected A first; B always by saved descending reach.
     order = {row["id"]: index for index, row in enumerate(rows)}
-    ids = sorted(ids, key=lambda id: (reachable[id]["stage"], order[id] if reachable[id]["stage"] == "A" else -reachable[id]["reach"], id))
+    ids = sorted(ids, key=lambda id: (reachable[id]["stage"], order[id] if reachable[id]["stage"] == "A" else -reach_probability(reachable[id]), id))
     return ids, reachable
 
 
@@ -496,7 +505,7 @@ def export_manifest(repository, pin, token, completions):
 def stage_b_gate(frontend, selected, catalog, boundary, *, storage_budget=8192 * 1024 * 1024, run_budget=1024 * 1024 * 1024):
     if not any(catalog[id]["stage"] == "B" for id in selected):
         return Guard([])
-    b_order = sorted([row for row in catalog.values() if row["stage"] == "B"], key=lambda row: (-row["reach"], row["id"]))
+    b_order = sorted([row for row in catalog.values() if row["stage"] == "B"], key=lambda row: (-reach_probability(row), row["id"]))
     needed = {id for id, row in catalog.items() if row["stage"] == "A"}
     last = max(index for index, row in enumerate(b_order) if row["id"] in selected)
     needed.update(row["id"] for row in b_order[:last] if row["id"] not in selected)

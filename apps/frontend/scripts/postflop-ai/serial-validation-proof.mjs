@@ -10,7 +10,7 @@ import { loadCandidate, loadLaterCandidate, sha } from './generate.mjs';
 import { POSTFLOP_SPOTS } from './spots.mjs';
 import { isFreshSimulationReport } from './publish-d1.mjs';
 import { SIMULATION_VERSION } from './simulation.mjs';
-import { DEFENCE_VERSION } from './defence.mjs';
+import { defenceVersionFor } from './defence.mjs';
 import { allBoardIdentity, writeImmutableAllBoardOutput } from './all-board-checkpoints.mjs';
 import { packageAllBoardCompanion } from './package-all-board-companion.mjs';
 import { summaryPathFor } from './all-board-companion.mjs';
@@ -41,6 +41,7 @@ function pair(id) {
     }
   }
   return { inputs, flop, later, value: { id, slug: spot.slug, stage: spot.stage, reach: spot.reach,
+    defence_version: defenceVersionFor(inputs),
     source_fingerprint: inputs.fingerprint, flop_policy_hash: flop.metadata.policy_hash, later_policy_hash: later.metadata.policy_hash,
     artifacts, report_path: localPath(paths.report), all_board_identity_hash: sha(allBoardIdentity(inputs, flop, later, 'all')) } };
 }
@@ -58,9 +59,10 @@ export function snapshot(ids) {
   // independent-review document must not invalidate prior numerical policies.
   const handoff_files = reviewedSourcePaths().filter(path => !sourceMap.has(path))
     .map(path => auditFileRecord(AUDIT_REPOSITORY, path));
+  const spots = ids.map(id => pair(id).value);
   return { schema_version: 1, kind: 'local-serial-validation-pin', sources, inputs: audit_identity.inputs, audit_identity,
-    handoff_files, config, simulation_version: SIMULATION_VERSION, defence_version: DEFENCE_VERSION,
-    spots: ids.map(id => pair(id).value) };
+    handoff_files, config, simulation_version: SIMULATION_VERSION, defence_version: spots[0].defence_version,
+    spots };
 }
 
 function current(request) {

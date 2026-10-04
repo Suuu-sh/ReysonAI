@@ -8,7 +8,7 @@ import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterP
 import { LATER_NODES } from "./later-tree.mjs";
 import { boards, config, laterSizingHash, makeSampler, samplePair, seatRange } from "./inputs.mjs";
 import { spotById } from "./spots.mjs";
-import { DEFENCE_VERSION, defenceFor } from "./defence.mjs";
+import { defenceVersionFor, defenceFor } from "./defence.mjs";
 
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const round = value => Math.round(value * 100) / 100;
@@ -148,6 +148,6 @@ export function simulationReport(inputs, candidate, samples, laterCandidate, res
     ...(unreachable.length ? { unreachable_boards: unreachable } : {}),
     later_sizing_hash: laterSizingHash(),
     ...(laterCandidate ? { later_policy_hash: sha(laterPolicy) } : {}),
-    ...(computedDefence ? { defence_version: DEFENCE_VERSION } : {}),
+    ...(computedDefence ? { defence_version: defenceVersionFor(inputs) } : {}),
     policy_hash: sha(candidate), samples_per_board_profile_seat: samples, seed: config.seed, results };
 }

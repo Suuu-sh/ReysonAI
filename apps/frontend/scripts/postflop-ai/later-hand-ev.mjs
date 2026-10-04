@@ -13,6 +13,7 @@ import { validateLaterPolicy } from "./later-policy.mjs";
 import { streetHistories } from "./later-tree.mjs";
 import { FLOP_BETS, flopState } from "./tree.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
+import { defenceVersionFor } from "./defence.mjs";
 import { LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, computeNode, laterHandEvForHand, laterHandEvKey, makeLaterMixReader } from "./later-hand-ev-core.mjs";
 
 // The on-demand one-hand entry point lives in the pure core (shared with the browser worker).
@@ -98,6 +99,7 @@ function artifactPath(inputs) {
 
 function matchesLaterHandEv(data, inputs, candidate, laterCandidate) {
   return Boolean(laterCandidate) && data?.kind === "ai_estimate_not_gto" && data.version === LATER_HAND_EV_VERSION &&
+    (!inputs.spot.history || data.defence_version === defenceVersionFor(inputs)) &&
     data.source_hash === inputs.fingerprint && data.policy_hash === candidate?.metadata?.policy_hash &&
     data.later_policy_hash === sha(laterCandidate.policy) && data.method === "exact_expectation" &&
     data.seed === config.seed;
@@ -152,6 +154,7 @@ export async function generateLaterHandEv({ spotId = DEFAULT_SPOT_ID, samples = 
   const flopPolicy = validatePolicy(candidate.policy, inputs.spot.tree);
   const laterPolicy = validateLaterPolicy(laterCandidate.policy);
   const result = { kind: "ai_estimate_not_gto", version: LATER_HAND_EV_VERSION, source_hash: inputs.fingerprint,
+    ...(inputs.spot.history ? { defence_version: defenceVersionFor(inputs) } : {}),
     policy_hash: candidate.metadata.policy_hash, later_policy_hash: sha(laterPolicy), method: "exact_expectation", seed: config.seed, boards: {} };
   result.boards = await generateBoardBatch(spotId, samples, onBoard);
   const path = artifactPath(inputs);

@@ -8,6 +8,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { build } from 'esbuild';
 import { sqlStatements } from '../verify-preflop-local-d1.mjs';
+import { backendMigrationStatements } from '../lib/backend-migration-sql.mjs';
 import { buildSql, spotArtifacts, quote } from './publish-d1.mjs';
 import { spotById } from './spots.mjs';
 import { artifactPaths } from './inputs.mjs';
@@ -43,8 +44,11 @@ export async function verifyPostflopLocalD1({miniflare,spotId}) {
   try {
     let db=await mf.getD1Database('DB');
     const execute=async text=>db.batch((await statements(text)).map(sql=>db.prepare(sql)));
-    for(const name of readdirSync(join(BACKEND,'migrations')).filter(name=>/^\d+.*\.sql$/.test(name)).sort())
-      await execute(readFileSync(join(BACKEND,'migrations',name),'utf8'));
+    for(const name of readdirSync(join(BACKEND,'migrations')).filter(name=>/^\d+.*\.sql$/.test(name)).sort()) {
+      const migration=[];
+      for await(const sql of backendMigrationStatements(join(BACKEND,'migrations',name)))if(sql.trim())migration.push(db.prepare(sql));
+      await db.batch(migration);
+    }
     const legacyManifest=JSON.parse(readFileSync(join(FRONTEND,'.local/postflop-ai/legacy-source/manifest.json'),'utf8'));
     assert.equal(legacyManifest.records.length,45);
     const legacy=legacyManifest.records.map(record=>{
@@ -66,7 +70,9 @@ INSERT INTO account_rate_limits VALUES ('local-bucket',1,1);
 INSERT INTO account_data VALUES ('local-user','{"preserve":true}',1);
 INSERT INTO account_native_attempts (attempt_hash, code_challenge, app_state, redirect_id, status, oauth_state_hash, user_id, expires_at) VALUES ('local-native-attempt','local-native-challenge','local-native-app-state','reysonai-mobile','authorizing','local-native-state','local-user',1);
 INSERT INTO account_native_oauth_states VALUES ('local-native-state','local-native-attempt','local-native-verifier','local-native-nonce',1);
-INSERT INTO account_native_sessions VALUES ('local-native-session','local-user','native','local-native-session-attempt',1);`);
+INSERT INTO account_native_sessions VALUES ('local-native-session','local-user','native','local-native-session-attempt',1);
+INSERT INTO ranked_players (user_id, public_name, rating, peak, matches) VALUES ('local-user','Local ranked sentinel',1200,1250,1);
+INSERT INTO ranked_matches (id, user_id, day, slot, started_at, expires_at, status, questions_json, actions_json, completed_at, before_rating, after_rating, score) VALUES ('local-ranked-match','local-user','2000-01-01',1,1,2,'complete','[{"preserve":true}]','["fold"]',2,1180,1200,1);`);
     const tables=(await db.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' ORDER BY name").all()).results.map(row=>row.name);
     const snapshot=async preserveOnly=>Object.fromEntries(await Promise.all(tables.map(async table=>{
       assert.match(table,/^[a-z_]+$/);

@@ -2,7 +2,7 @@
 // Offline authoring and browser fallback share this code; loading never authors a policy.
 import { sha } from "./browser-inputs.mjs";
 import { EVALUATOR_VERSION } from "../lib/equity.mjs";
-import { DEFENCE_VERSION, FLOP_RUNOUTS } from "./defence.mjs";
+import { defenceVersionFor, FLOP_RUNOUTS } from "./defence.mjs";
 import { canonicalFlop, ISOMORPHISM_VERSION, comboKey, remapFlopNode } from "./flop-isomorphism.mjs";
 import { flopHistoryViews } from "./views.mjs";
 import { flopUiComboFactsCanonical, averageFlopUiFacts, flopBlockerPredictors } from "./flop-ui-facts.mjs";
@@ -21,7 +21,7 @@ export function flopBaseIdentity(inputs, candidate, laterCandidate) {
     evaluator_version: EVALUATOR_VERSION,
     source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash,
     later_policy_hash: sha(laterCandidate?.policy ?? referenceLaterPolicy()),
-    later_sizing_hash: laterSizingHash(inputs.config), defence_version: DEFENCE_VERSION,
+    later_sizing_hash: laterSizingHash(inputs.config), defence_version: defenceVersionFor(inputs),
     defence_config_hash: sha(inputs.config.defence_realization), seed: inputs.config.seed,
     explanation_precision: 4,
     samples: { defence_runouts: FLOP_RUNOUTS } };

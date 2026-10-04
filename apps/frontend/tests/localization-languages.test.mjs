@@ -53,6 +53,16 @@ test("every legacy product key has authored Chinese and Spanish copy with intact
   }
 });
 
+test("Spanish ranked explanations use the same rating and tier labels as the product", () => {
+  const explanation = productCopy["Server-confirmed matches only · weekly means the last 7 days. Legend: Master rating and a global top-10 placement in this period. AI-estimate alignment, not GTO or win rate."][1];
+  assert.ok(explanation.includes(productCopy.Legend[1]));
+  assert.ok(explanation.includes(productCopy.Master[1]));
+  assert.match(explanation, /puntuación de Maestro/);
+  assert.match(explanation, /servidor.*últimos 7 días.*10 primeros.*no GTO ni tasa de victorias/);
+  assert.doesNotMatch(explanation, /\b(?:Legend|Master)\b/);
+  assert.match(productCopy["All spots · standard difficulty · {0} questions. Harder hands move your rating more."][1], /puntuación/);
+});
+
 test("interface copy is localized but dynamic user text and poker facts stay verbatim", () => {
   for (const locale of ["zh-CN", "es"]) {
     useLocale(locale);
