@@ -215,6 +215,8 @@ INSERT INTO account_data VALUES ('local-user', '{"keep":true}', 1);
 INSERT INTO account_native_attempts (attempt_hash, code_challenge, app_state, redirect_id, status, oauth_state_hash, user_id, expires_at) VALUES ('local-native-attempt', 'local-native-challenge', 'local-native-app-state', 'reysonai-mobile', 'authorizing', 'local-native-state', 'local-user', 1);
 INSERT INTO account_native_oauth_states VALUES ('local-native-state', 'local-native-attempt', 'local-native-verifier', 'local-native-nonce', 1);
 INSERT INTO account_native_sessions VALUES ('local-native-session', 'local-user', 'native', 'local-native-session-attempt', 1);
+INSERT INTO ranked_players VALUES ('local-user', 'Local ranked sentinel', 1200, 1250, 1);
+INSERT INTO ranked_matches (id, user_id, day, slot, started_at, expires_at, status, questions_json, actions_json, completed_at, before_rating, after_rating, score) VALUES ('local-ranked-match', 'local-user', '2000-01-01', 1, 1, 2, 'complete', '[{"keep":true}]', '["fold"]', 2, 1180, 1200, 1);
 `;
 
 function sentinelInsert(name) {
