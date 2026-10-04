@@ -1,0 +1,271 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
+import { WRANGLER_VERSION, RUNTIME_PINS, UNRELATED_TABLES, parseArguments, localConfig, validateLocalConfig, validateRuntimePackages, readRuntimePins,
+  completedJson, assertFinishedSqlFailure, assertReviewedSql, assertDeliveryRows, databaseSnapshot, preservationSeed,
+  conflictSetup, localWorkerSource, loadReviewedDelivery, capturePinnedFiles, writeCapturedSources, assertCapturedSources,
+  SUPERVISOR_SOURCE, runSupervisedCommand } from '../scripts/verify-mw3-local-d1.mjs';
+import { localEnvironment } from '../scripts/verify-preflop-local-d1.mjs';
+import { prepareMw3SnapshotDeliveries, mw3DeliveryPins, buildMw3DeliverySql } from '../scripts/postflop-ai/mw3-reviewed-delivery.mjs';
+import { sha256, jsonBytes } from '../scripts/postflop-ai/mw3-reviewed-archive.mjs';
+import { verifyMw3Snapshot } from '../scripts/postflop-ai/mw3-reviewed-snapshot.mjs';
+import { MW3_TIERS } from '../scripts/postflop-ai/mw3-hand-features.mjs';
+
+// Synthetic transport/receipt contract fixtures only. They contain no actual
+// authoring evidence, cannot pass verifyMw3Snapshot, and grant no real approval.
+async function syntheticFixture() {
+  const id = 'HJ_open_BTN_call_BB_call', source = 'a'.repeat(64), implementation = 'b'.repeat(64);
+  const authorTask = 'synthetic-local-d1-fixture-author-never-a-real-policy', candidates = {};
+  for (const [kind, streets] of [['candidate', ['flop']], ['laterCandidate', ['turn', 'river']]]) {
+    const policy = { version: 3, kind: 'ai_estimate_not_gto', spot_id: id, streets, rules: streets.flatMap(street => MW3_TIERS.map(tier => ({
+      node: `mw3_${street}_first_first`, tier, priority: 0,
+      when: { line: 'any', texture: 'any', players: 'any', position: 'any', response: 'any', price: 'any', spr: 'any' },
+      mix: { check: 100, bet33: 0, bet75: 0, bet125: 0 },
+    }))) };
+    candidates[kind] = { policy, metadata: { spot: id, source_hash: source, implementation_hash: implementation,
+      policy_hash: sha256(JSON.stringify(policy)), author_task: authorTask, synthetic_fixture: "Unicode 雪 ; ' 🂡" } };
+  }
+  const manifest = { source_tree: 'a'.repeat(40), spot: { id, source_hash: source, implementation_hash: implementation,
+    flop_policy_hash: candidates.candidate.metadata.policy_hash, later_policy_hash: candidates.laterCandidate.metadata.policy_hash },
+    archive: { sha256: 'c'.repeat(64) }, content_sha256: 'd'.repeat(64), sources_sha256: 'e'.repeat(64), inputs_sha256: 'f'.repeat(64) };
+  const evidence = { status: 'complete_evidence_not_acceptance', limitations: ['synthetic fixture only, not real acceptance'] };
+  const snapshot = { manifest, manifestBytes: jsonBytes(manifest), candidates, evidence }, deliveries = await prepareMw3SnapshotDeliveries(snapshot);
+  const receipt = { schema_version: 1, kind: 'mw3-independent-acceptance', status: 'independently-reviewed', strategy_type: 'ai_estimate_not_gto',
+    author_model: 'gpt-6-astra', reviewer_model: 'gpt-6-astra', reviewer_task: 'synthetic-local-d1-fixture-reviewer', author_task: authorTask,
+    source_tree: manifest.source_tree, scope: 'unit fixture only; no publishable evidence', manifest_sha256: sha256(snapshot.manifestBytes),
+    archive_sha256: manifest.archive.sha256, content_sha256: manifest.content_sha256, sources_sha256: manifest.sources_sha256,
+    inputs_sha256: manifest.inputs_sha256, spot: id, deliveries: mw3DeliveryPins(snapshot, deliveries), evidence, accepted_limitations: evidence.limitations };
+  const sql = buildMw3DeliverySql(snapshot, receipt, deliveries);
+  return { snapshot, receipt, deliveries, sql };
+}
+function seededDatabase() {
+  const db = new DatabaseSync(':memory:');
+  db.exec('PRAGMA foreign_keys=ON');
+  const migrations = new URL('../../backend/migrations/', import.meta.url);
+  for (const name of readdirSync(migrations).filter(name => /^\d+.*\.sql$/.test(name)).sort()) db.exec(readFileSync(new URL(name, migrations), 'utf8'));
+  db.exec(readFileSync(new URL('../../backend/scripts/sql/mw3-schema.sql', import.meta.url), 'utf8'));
+  db.exec(preservationSeed()); return db;
+}
+test('strict CLI requires every saved input and a pinned existing runtime, refusing reduced or remote coverage', () => {
+  const args = ['--manifest', 'a', '--archive', 'b', '--receipt', 'c', '--sql', 'd', '--wrangler', 'e'];
+  assert.deepEqual(parseArguments(args), { manifest: 'a', archive: 'b', receipt: 'c', sql: 'd', wrangler: 'e' });
+  for (const input of [[], args.slice(0, -2), [...args, '--remote'], [...args, '--bounded-local'], [...args, '--miniflare', 'e'],
+    [...args, '--config', 'production.json'], [...args, '--sql', 'again'], [...args.slice(0, -1)]]) assert.throws(() => parseArguments(input));
+});
+test('runtime metadata pins actual Wrangler and its exact installed dependencies', () => {
+  assert.equal(WRANGLER_VERSION, '4.147.0');
+  const packages = () => [{ name: 'wrangler', version: WRANGLER_VERSION, dependencies: { miniflare: RUNTIME_PINS.miniflare, workerd: RUNTIME_PINS.workerd, esbuild: RUNTIME_PINS.esbuild } },
+    { name: 'miniflare', version: RUNTIME_PINS.miniflare }, { name: 'workerd', version: RUNTIME_PINS.workerd }, { name: 'esbuild', version: RUNTIME_PINS.esbuild }];
+  assert.deepEqual(validateRuntimePackages(...packages()), RUNTIME_PINS);
+  for (const change of [p => { p[0].version = '4.146.0'; }, p => { p[1].version = '4.20260515.0'; },
+    p => { p[2].version = '1.20260901.0'; }, p => { p[0].dependencies.miniflare = 'latest'; }, p => { p[1].name = 'substitute'; }, p => { p[3].version = '0.25.12'; }]) {
+    const p = packages(); change(p); assert.throws(() => validateRuntimePackages(...p));
+  }
+  assert.throws(() => validateRuntimePackages());
+});
+test('local config and environment exclude credentials, remote resources, assets and production settings', () => {
+  const config = localConfig(); assert.deepEqual(validateLocalConfig(config), config);
+  for (const extra of [{ account_id: 'real-account' }, { ai: { binding: 'AI' } }, { assets: { directory: '.' } },
+    { d1_databases: [{ ...config.d1_databases[0], remote: true }] }, { dev: { ...config.dev, ip: '0.0.0.0' } }, { no_bundle: false }]) {
+    assert.throws(() => validateLocalConfig({ ...config, ...extra }));
+  }
+  const env = localEnvironment('/isolated-local-test');
+  for (const key of ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'NODE_OPTIONS', 'HTTP_PROXY', 'HTTPS_PROXY']) assert.equal(env[key], undefined);
+  assert.equal(env.CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV, 'false'); assert.equal(env.WRANGLER_SEND_METRICS, 'false');
+});
+test('zero launcher status, empty/partial output and failed JSON cannot masquerade as successful import', () => {
+  assert.equal(completedJson('[{"success":true}]').length, 1);
+  for (const text of ['', '[]', '{}', '[{"success":false}]', '[{"success":true},{}]', 'Wrangler stopped', '[{"success":true}']) assert.throws(() => completedJson(text));
+});
+test('rollback evidence uses original child status and owned-group completion, even when SQL error text precedes SIGKILL', () => {
+  const id = 'synthetic-command-1', group = 456;
+  const resource = { command_id: id, group_id: group, exit_status: 1, wrapper_exit_status: 1, timed_out: false, interrupted_signal: null, group_cleanup_complete: true };
+  const cleanup = { command_id: id, group_id: group, group_cleanup_complete: true, live_members: [] };
+  const valid = { status: 1, signal: null, stdout: '', stderr: 'NOT NULL constraint failed: mw3_policy_parts.body',
+    command_id: id, command_resource: resource, command_group_cleanup: cleanup };
+  assertFinishedSqlFailure(valid, /mw3_policy_parts\.body/);
+  for (const error of [null, { ...valid, status: 0 }, { ...valid, status: null }, { ...valid, status: 124 },
+    { ...valid, signal: 'SIGKILL' }, { ...valid, stderr: 'out of memory' }, { ...valid, command_resource: null },
+    { ...valid, command_resource: { ...resource, exit_status: -9, wrapper_exit_status: 137 }, status: 137 },
+    { ...valid, command_resource: { ...resource, exit_status: -9 } },
+    { ...valid, command_resource: { ...resource, timed_out: true } },
+    { ...valid, command_resource: { ...resource, interrupted_signal: 15 } },
+    { ...valid, command_resource: { ...resource, command_id: 'other-command' } },
+    { ...valid, command_resource: { ...resource, group_cleanup_complete: false } },
+    { ...valid, command_group_cleanup: { ...cleanup, live_members: [789] } },
+    { ...valid, command_group_cleanup: { ...cleanup, group_id: group + 1 } }]) {
+    assert.throws(() => assertFinishedSqlFailure(error, /mw3_policy_parts\.body/));
+  }
+});
+test('existing migrations get a preservation sentinel in every one of the 18 application tables', () => {
+  const db = seededDatabase();
+  try {
+    const snapshot = databaseSnapshot(db, { excludeMw3: true });
+    assert.deepEqual(Object.keys(snapshot.rows).sort(), UNRELATED_TABLES);
+    for (const [name, rows] of Object.entries(snapshot.rows)) assert.equal(rows.length, 1, `${name}: missing preservation row`);
+    assert.deepEqual(db.prepare('PRAGMA foreign_key_check').all(), []);
+    assert.equal(databaseSnapshot(db).rows.mw3_policy_deliveries.length, 1);
+  } finally { db.close(); }
+});
+test('synthetic contract fixture: SQL comparison covers exact raw bytes and matching receipt identity', async () => {
+  const f = await syntheticFixture(), body = Buffer.from(f.sql);
+  assert.deepEqual(assertReviewedSql(body, f.snapshot, f.receipt, f.deliveries), { bytes: body.length, sha256: sha256(body) });
+  for (const sql of [Buffer.from(f.sql + '\n'), Buffer.from('\ufeff' + f.sql), Buffer.from(f.sql.replace(/\n/g, '\r\n')), Buffer.from(f.sql.replace('Immutable', 'Changed'))]) {
+    assert.throws(() => assertReviewedSql(sql, f.snapshot, f.receipt, f.deliveries), /exact independently reviewed delivery bytes/);
+  }
+  assert.throws(() => assertReviewedSql(body, f.snapshot, null, f.deliveries), /receipt required/);
+  const bad = structuredClone(f.receipt); bad.manifest_sha256 = '0'.repeat(64);
+  assert.throws(() => assertReviewedSql(body, f.snapshot, bad, f.deliveries), /receipt required/);
+});
+test('synthetic SQLite reference: headers, ordered chunk hashes and full payload hashes match with exact retry', async () => {
+  const f = await syntheticFixture(), db = seededDatabase();
+  try {
+    const before = databaseSnapshot(db, { excludeMw3: true });
+    db.exec(f.sql); const first = databaseSnapshot(db); db.exec(f.sql);
+    assert.deepEqual(databaseSnapshot(db), first); assert.deepEqual(databaseSnapshot(db, { excludeMw3: true }), before);
+    const ledger = assertDeliveryRows(db, f.deliveries);
+    assert.deepEqual(ledger.map(row => row.stage), ['flop', 'later']);
+    for (const [i, row] of ledger.entries()) assert.equal(row.payload_sha256, f.deliveries[i].header.manifest.payloadHash);
+  } finally { db.close(); }
+});
+test('synthetic SQLite reference: missing, reordered, corrupt and extra chunks fail exact equality', async () => {
+  const f = await syntheticFixture();
+  const hash = f.deliveries[0].deliveryHash;
+  for (const sql of [
+    `UPDATE mw3_policy_parts SET body=body||'x' WHERE delivery_hash='${hash}'`,
+    `DELETE FROM mw3_policy_parts WHERE delivery_hash='${hash}' AND part=0`,
+    `UPDATE mw3_policy_parts SET part=part+10 WHERE delivery_hash='${hash}'`,
+    `INSERT INTO mw3_policy_parts VALUES ('${hash}',999,'extra')`,
+    `UPDATE mw3_policy_deliveries SET header_json='{}' WHERE delivery_hash='${hash}'`,
+  ]) {
+    const db = seededDatabase();
+    try { db.exec(f.sql); db.exec(sql); assert.throws(() => assertDeliveryRows(db, f.deliveries)); } finally { db.close(); }
+  }
+});
+test('synthetic SQLite reference: late immutable part and header conflicts expose whole-file rollback', async () => {
+  const f = await syntheticFixture();
+  for (const kind of ['part', 'header']) {
+    const db = seededDatabase();
+    try {
+      db.exec(f.sql); db.exec(conflictSetup(f.deliveries, kind)); const before = databaseSnapshot(db);
+      assert.equal(db.prepare('SELECT COUNT(*) AS n FROM mw3_policy_deliveries WHERE delivery_hash=?').get(f.deliveries[0].deliveryHash).n, 0);
+      db.exec('BEGIN');
+      try { assert.throws(() => db.exec(f.sql), /NOT NULL constraint failed/); } finally { db.exec('ROLLBACK'); }
+      assert.deepEqual(databaseSnapshot(db), before);
+    } finally { db.close(); }
+  }
+});
+test('database value ledger includes unrelated schema, binary and Unicode row changes', () => {
+  for (const sql of ["UPDATE preflop_dataset_parts SET body='雪 changed'", "UPDATE postflop_flop_base_br SET body=X'0002FF'",
+    'CREATE INDEX local_extra_index ON account_users(email)', 'DELETE FROM ranked_matches']) {
+    const db = seededDatabase();
+    try { const before = databaseSnapshot(db); db.exec(sql); assert.notDeepEqual(databaseSnapshot(db), before); } finally { db.close(); }
+  }
+});
+test('ephemeral actual-route worker keeps the build registry empty and pins only a labelled localhost proof namespace', async () => {
+  const f = await syntheticFixture(), worker = localWorkerSource(f.deliveries);
+  assert.match(worker, /apps\/backend\/src\/mw3-transport\.ts/); assert.match(worker, /apps\/shared\/mw3-approved\.ts/);
+  assert.match(worker, /MW3_APPROVED_POLICIES.length !== 0/); assert.match(worker, /__mw3_local_oracle/);
+  assert.match(worker, /proof \? LOCAL_ORACLE_PINS : MW3_APPROVED_POLICIES/);
+  assert.doesNotMatch(worker, /UPDATE|INSERT|fetch\(.*https:|process\.env/);
+});
+test('synthetic receipts cannot pass real saved snapshot preflight; outside inputs are rejected before runtime execution', async () => {
+  const fixture = await syntheticFixture();
+  assert.throws(() => verifyMw3Snapshot(fixture.snapshot.manifestBytes, Buffer.alloc(0)));
+  await assert.rejects(() => loadReviewedDelivery({ manifest: '/outside/manifest.json', archive: 'missing', receipt: 'missing', sql: 'missing' }), /inside this repository/);
+});
+
+test('captured reviewed source bytes survive later checkout mutation; isolated mutation fails closed', () => {
+  const root = mkdtempSync(join(tmpdir(), 'mw3-capture-source-')), isolated = mkdtempSync(join(tmpdir(), 'mw3-capture-isolated-'));
+  const path = 'apps/backend/src/synthetic-route.ts', source = Buffer.from("export const fixture = '雪;🂡';\n");
+  const records = [{ path, bytes: source.length, sha256: sha256(source), provenance: 'synthetic_capture_fixture_only' }];
+  try {
+    mkdirSync(dirname(join(root, path)), { recursive: true }); writeFileSync(join(root, path), source);
+    const files = capturePinnedFiles(root, records);
+    writeFileSync(join(root, path), 'changed live checkout');
+    assert.throws(() => capturePinnedFiles(root, records));
+    writeCapturedSources(isolated, { files, records }); assertCapturedSources(isolated, { files, records });
+    assert.deepEqual(readFileSync(join(isolated, 'captured-source', path)), source);
+    rmSync(join(isolated, 'captured-source', path)); writeFileSync(join(isolated, 'captured-source', path), 'changed captured source');
+    assert.throws(() => assertCapturedSources(isolated, { files, records }));
+  } finally { rmSync(root, { recursive: true, force: true }); rmSync(isolated, { recursive: true, force: true }); }
+});
+test('schema snapshot excludes only literal internal prefixes, never SQL LIKE wildcard matches', () => {
+  const db = seededDatabase();
+  try {
+    db.exec("CREATE TABLE xcfa_user_data (body TEXT); INSERT INTO xcfa_user_data VALUES ('preserve'); CREATE TABLE _cf_internal_fixture (body TEXT);");
+    const snapshot = databaseSnapshot(db);
+    assert.equal(snapshot.rows.xcfa_user_data.length, 1); assert.equal(snapshot.rows._cf_internal_fixture, undefined);
+  } finally { db.close(); }
+});
+test('supervisor contains signal/finally cleanup and captures both child streams directly to evidence files', () => {
+  assert.match(SUPERVISOR_SOURCE, /signal\.signal\(signal\.SIGTERM,interrupt\)/); assert.match(SUPERVISOR_SOURCE, /signal\.signal\(signal\.SIGINT,interrupt\)/);
+  assert.match(SUPERVISOR_SOURCE, /finally:/); assert.match(SUPERVISOR_SOURCE, /start_new_session=True,stdout=out,stderr=err/);
+  assert.match(SUPERVISOR_SOURCE, /cleanup_complete=clean_group\(child\.pid,group_birth\)/); assert.match(SUPERVISOR_SOURCE, /status=child\.wait/);
+  assert.match(SUPERVISOR_SOURCE, /'exit_status':status/); assert.match(SUPERVISOR_SOURCE, /'group_cleanup_complete':cleanup_complete/);
+});
+test('synthetic process fixture: supervisor retains successful stdout and stderr without discarding warnings', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'mw3-supervisor-success-'));
+  try {
+    const result = runSupervisedCommand({ directory, commandId: 'synthetic-success', command: 'python3',
+      args: ['-c', "import sys;sys.stdout.write('雪 stdout');sys.stderr.write('warning: synthetic fixture stderr')"], timeoutSeconds: 5 });
+    assert.equal(result.stdout, '雪 stdout'); assert.equal(result.stderr, 'warning: synthetic fixture stderr');
+    assert.equal(result.measurement.exit_status, 0); assert.deepEqual(result.cleanup.live_members, []);
+    assert.equal(readFileSync(join(directory, 'synthetic-success.stderr.log'), 'utf8'), result.stderr);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+test('synthetic process fixtures: NOT NULL text before killed, timed-out or interrupted children is never completed SQL proof', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'mw3-supervisor-failure-'));
+  const prefix = "import os,signal,sys,time;sys.stderr.write('NOT NULL constraint failed: mw3_policy_parts.body\\n');sys.stderr.flush();";
+  try {
+    const cases = [
+      { id: 'synthetic-killed', code: prefix + 'os.kill(os.getpid(),signal.SIGKILL)', seconds: 5 },
+      { id: 'synthetic-timeout', code: prefix + 'time.sleep(5)', seconds: 0.15 },
+      { id: 'synthetic-interrupted', code: prefix + 'os.kill(os.getppid(),signal.SIGTERM);time.sleep(5)', seconds: 5 },
+    ];
+    for (const row of cases) {
+      let failure;
+      try { runSupervisedCommand({ directory, commandId: row.id, command: 'python3', args: ['-c', row.code], timeoutSeconds: row.seconds }); }
+      catch (error) { failure = error; }
+      assert.ok(failure); assert.match(failure.stderr, /NOT NULL constraint failed/);
+      assert.throws(() => assertFinishedSqlFailure(failure, /mw3_policy_parts\.body/));
+      assert.equal(failure.command_group_cleanup.group_cleanup_complete, true); assert.deepEqual(failure.command_group_cleanup.live_members, []);
+      if (row.id === 'synthetic-killed') assert.equal(failure.command_resource.exit_status, -9);
+      if (row.id === 'synthetic-timeout') assert.equal(failure.command_resource.timed_out, true);
+      if (row.id === 'synthetic-interrupted') assert.equal(failure.command_resource.interrupted_signal, 15);
+    }
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('runtime pins follow wrangler-dist and Miniflare dependency resolution rather than sibling guesses', () => {
+  // Distinct roots avoid Node's path-resolution cache masking a dependency
+  // inserted after an earlier lookup in the same synthetic package tree.
+  for (const scenario of ['valid', 'nested-cli', 'nested-miniflare', 'different-copy']) {
+    const temporary = mkdtempSync(join(tmpdir(), 'mw3-runtime-resolution-'));
+    const root = join(temporary, 'wrangler');
+    const packageAt = (directory, name, version, extra = {}) => {
+      mkdirSync(directory, { recursive: true });
+      writeFileSync(join(directory, 'package.json'), JSON.stringify({ name, version, main: 'index.js', ...extra }));
+      writeFileSync(join(directory, 'index.js'), '// Synthetic resolution fixture. Never executed.\n');
+    };
+    try {
+      packageAt(root, 'wrangler', WRANGLER_VERSION, { dependencies: { miniflare: RUNTIME_PINS.miniflare, workerd: RUNTIME_PINS.workerd, esbuild: RUNTIME_PINS.esbuild } });
+      mkdirSync(join(root, 'bin')); mkdirSync(join(root, 'wrangler-dist'));
+      const entry = join(root, 'bin', 'wrangler.js'); writeFileSync(entry, '// Synthetic launcher. Never executed.\n');
+      writeFileSync(join(root, 'wrangler-dist', 'cli.js'), '// Synthetic runtime entry. Never executed.\n');
+      for (const name of ['miniflare', 'workerd', 'esbuild']) packageAt(join(root, 'node_modules', name), name, RUNTIME_PINS[name]);
+      if (scenario === 'nested-cli') packageAt(join(root, 'wrangler-dist', 'node_modules', 'miniflare'), 'miniflare', '0.0.0-wrong-runtime');
+      if (scenario === 'nested-miniflare' || scenario === 'different-copy') packageAt(join(root, 'node_modules', 'miniflare', 'node_modules', 'workerd'), 'workerd',
+        scenario === 'nested-miniflare' ? '0.0.0-wrong-runtime' : RUNTIME_PINS.workerd);
+      if (scenario === 'valid') {
+        const pinned = readRuntimePins(entry); assert.equal(pinned.cli_entry, join(root, 'wrangler-dist', 'cli.js'));
+        assert.equal(pinned.dependency_resolution.miniflare_workerd.entry, pinned.dependency_resolution.workerd.entry);
+        packageAt(join(root, 'wrangler-dist', 'node_modules', 'miniflare'), 'miniflare', '0.0.0-inserted-after-first-check');
+        assert.throws(() => readRuntimePins(entry), /pinned miniflare/, 'fresh check must observe a package added after the first lookup');
+      } else assert.throws(() => readRuntimePins(entry), scenario === 'nested-cli' ? /pinned miniflare/ : scenario === 'nested-miniflare' ? /workerd version/ : /same pinned workerd entry/);
+    } finally { rmSync(temporary, { recursive: true, force: true }); }
+  }
+});

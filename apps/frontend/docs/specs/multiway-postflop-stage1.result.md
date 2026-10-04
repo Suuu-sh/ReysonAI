@@ -1,6 +1,16 @@
 # 3人SRP・段階1 実装記録（未完了）
 
-更新: 2026-10-04 19:47 UTC。代表CO→BTN→BBのV4候補は、分類の独立semantic review、全1,755flop/later236構造監査、joint診断、120,000hand自己対戦と全量deterministic replayまで完了。代表V4は39共同防御警告を残した限定AI推定として独立受入れ済みです。到達可能16経路のうち生成済み1・代表品質受入れ1/16・公開承認済み0。共通基盤の独立差分確認と62契約は完了。残り15のauthor、画面/Agent戦/API接続、実LFS配信、全体release gateは未完了で、対応済み戦略として公開してはいけません。
+更新: 2026-10-04 21:40 UTC。到達可能16経路のうち、生成済み・独立品質受入れ済みは3/16（CO→BTN→BB、HJ→BTN→BB、HJ→CO→BB）、公開承認済み0。全16の個別Astra author profileと共通数値基盤の独立reviewは完了し、残13は個別compile・同じ全量gate待ちです。Range/Agent/APIの専用consumerは実装・静的review・focused testsまで完了し、実browser QAを準備中です。正式archive/receipt、実strictD1、LFS配送、全体release gateは未完了です。下の時刻付き記録は各時点の履歴であり、現在の公開可否はこの冒頭と次節を優先してください。
+
+## 現在の検証済み範囲
+
+- 新2経路は各1,755flop・236later構造監査でerror/gap0、90 joint event×20,000合法tuple（18 eventはbet支持0）、自己対戦120,000手と全量replay一致。独立Astraによる候補4本/report10本のbytes・source・全117node/61,506 rules・accounting照合を経て限定AI estimateとして受入れた。37/39共同防御警告は残存し、Ks8d3cの2check後33%への継続は参考MDFより32–33pt低い。詳細は `multiway-postflop-stage1.remaining-quality-review.md`。
+- 専用consumerは元3席の役割、3→2後のMw3 dispatch、全action履歴/到達combo、欠損/未承認/stale停止、stream/hash/codec検証、abort・retry・LRUを実装。共有承認registryは空のまま。
+- Range側の文字列card→整数変換にあったsuit順違いを、共有 `cardIds` の利用に修正。全52cardとflop/turn/river exact blocker回帰を追加した。保存候補/数値gateは元からcanonical cdhsなので変更なし。
+- PR44 head `7d42785779de92ab24ac9123a9289780865b007f`（tree `bede706c1afd98037935a2be305fa0b3f187596e`）の4CIがPASS。Mw3/consumer112＋backend6の118/118、skip0。設定済みtypecheck/buildもPASS、deployは実行していない。これはfrontend全suiteや実browser操作を意味しない。
+- 実V4保存物の2manifest/98partsを現clientで読み、全117nodes・flop/later policy bytes/hash一致を確認。信頼されたQA注入による読取であり、公開承認や実D1配送ではない。
+- strict-local D1 helperは独立Astraの静的GO。synthetic19/19・skip0、syntaxと実installed Wrangler4.147/Miniflare5/workerd/esbuild pin解決をPASS。正式snapshot/receipt/SQLによる実D1はまだ未実行。`../mw3-local-d1-independent-review.md` を参照。
+- 専用D1の空registry証明を、そのまま将来の公開registryに対する証明としない。公開pinを変更した時点でsource/manifest/receiptと実API検証の再照合が必要。
 
 ## 仕様と基点
 
@@ -60,12 +70,11 @@
 
 ## 未完了・公開gate
 
-1. 代表V4は限定受入れ済み（`multiway-postflop-stage1.independent-review.md`）。39警告を残存弱点として保持し、共通祖先のexact差分確認後に残り15を個別author/reviewする。
-2. frozen snapshotから共通HU基盤へ統合した際のsource/implementation差分を独立確認し、staleを保持して最終artifact/receiptを確定する。
-3. 代表の独立品質reviewを通してから残り15経路をauthor。16経路の専用artifactをhash付きLFS archiveへ保存し、Actionsはrestore/verifyのみとする。
-4. 共通HU/Stage3基盤の統合後、Rangeの3表/行動ブロック、Agent戦、説明、read-only artifact delivery/publish対象をつなぐ。欠損は未収録とする。
-5. 全tests/typecheck/build、既存HU auditと照合不変、3人フロップ→リバーのブラウザQA後に統合・公開の判断へ渡す。
-
+1. 残13を個別author profileからcompileし、既存と同じ全量gateと独立Astra品質reviewを閉じる。警告・支持0・未計測条件を保存する。
+2. 実browserで3表・exact combo・3→2・全street・rewind/reset/失敗retryとAgent精算を確認し、既存HUの表示回帰を確認する。
+3. 最終sourceを固定後、各経路のhash付きarchive/manifest・独立receipt・一致SQLを作る。全量strict local D1で保存/API/再起動/rollback/既存データ保全を確認する。
+4. 実Git LFS uploadとfresh fetch/hash確認を行い、Actionsはrestore/verifyのみとする。pointerのみを配送完了としない。
+5. 最終統合の全tests/typecheck/buildと既存HU互換を確認し、親の統合順・本番判断へ渡す。公開registry変更時のsource/receipt/API gateも改めて閉じる。
 
 ## 代表第一候補と追加adapter（2026-10-04）
 

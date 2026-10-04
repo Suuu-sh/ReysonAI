@@ -17,6 +17,8 @@ on:
       - 'apps/frontend/src/estimated/**'
       - 'apps/frontend/src/agent/**'
       - 'apps/frontend/tests/mw3-consumer-*.test.mjs'
+      - 'apps/frontend/tests/mw3-local-d1.test.mjs'
+      - 'apps/frontend/scripts/verify-mw3-local-d1.mjs'
       - 'apps/frontend/tests/helpers/mw3-consumer-fixture.mjs'
       - 'apps/frontend/tests/postflop-mw3-*.test.mjs'
       - 'apps/backend/src/mw3-*.ts'
@@ -57,8 +59,9 @@ jobs:
           node --check apps/frontend/scripts/postflop-ai/materialize-mw3-authored.mjs
           node --check apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs
           node --check apps/frontend/scripts/postflop-ai/mw3-snapshot-cli.mjs
+          node --check apps/frontend/scripts/verify-mw3-local-d1.mjs
       - name: Test isolated three-player engine, classifier, codecs and adapters
-        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs
+        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs apps/frontend/tests/mw3-local-d1.test.mjs
       - name: Test unpublished, fail-closed three-player delivery boundary
         run: node --experimental-strip-types --test apps/backend/tests/mw3-*.test.mjs
       # This workflow never compiles/authors saved candidates, runs the pilot gate,
