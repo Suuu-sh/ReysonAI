@@ -1,3 +1,4 @@
+import { narrative, translateExplanationCopy } from "../locales/reason-copy.ts";
 // Plain-language reasons for the AI-estimated flop policy. The policy picks a mix from
 // (hand tier × board texture), so reasons are written per node, action and tier.
 import { productLocale } from "../i18n.ts";
@@ -143,9 +144,11 @@ const aliases = { oop_first: "btn_first", ip_vs_33: "bb_vs_33", ip_vs_75: "bb_vs
   ip_vs_raise2: "btn_vs_raise", oop_vs_raise3: "btn_vs_raise", ip_vs_raise4: "btn_vs_raise" };
 
 export function actionReason(node, action, tier) {
-  if (productLocale() === "en") {
-    const reason = englishPostflopReasons[aliases[node] ?? node]?.[action]?.[tier] ?? "This action is part of the saved policy.";
-    return aliases[node] ? reason.replaceAll("check-raise", "raise") : reason;
+  const en = productLocale();
+  if (en !== "ja") {
+    const reason = englishPostflopReasons[aliases[node] ?? node]?.[action]?.[tier] ?? narrative("This action is part of the saved policy.", [], en);
+    const translated = translateExplanationCopy(reason, en);
+    return aliases[node] ? translated.replaceAll(narrative("check-raise", [], en), en === "es" ? "subida" : "raise").replaceAll("过牌加注", "加注") : translated;
   }
   if (aliases[node]) return (reasons[aliases[node]]?.[action]?.[tier] ?? "").replaceAll("チェックレイズ", "レイズ");
   return reasons[node]?.[action]?.[tier] ?? "";
@@ -154,16 +157,17 @@ export function actionReason(node, action, tier) {
 // Data-driven reason for one combo, built from the opponent-range explanation
 // (`/local-postflop-explain`), so the headline never contradicts the numbers.
 export function evidenceReason(action, detail, equity) {
+  const en = productLocale();
   if (!detail || !Number.isFinite(equity)) return null;
   const pct = value => `${Math.round(value * 100)}%`;
   const share = key => detail.groups?.find(group => group.key === key)?.share ?? 0;
-  if (productLocale() === "en") {
+  if (en !== "ja") {
     if (detail.required != null) {
-      const relation = equity >= detail.required ? "above" : "below";
-      return `Equity against the modeled opponent range is ${pct(equity)}, ${relation} the ${pct(detail.required)} required to call. The saved policy's ${action} frequency is shown above.`;
+      const relation = equity >= detail.required ? narrative("above", [], en) : narrative("below", [], en);
+      return narrative("Equity against the modeled opponent range is {0}, {1} the {2} required to call. The saved policy's {3} frequency is shown above.", [pct(equity), relation, pct(detail.required), action], en);
     }
-    if (detail.foldShare != null) return `The model expects the opponent to fold ${pct(detail.foldShare)} of the time; ${pct(share("value"))} of their range calls with hands this combo beats, and ${pct(share("foldBetter"))} of stronger hands fold.`;
-    return `Equity against the modeled opponent range is ${pct(equity)}; this combo is ahead of ${pct(share("ahead"))} of that range.`;
+    if (detail.foldShare != null) return narrative("The model expects the opponent to fold {0} of the time; {1} of their range calls with hands this combo beats, and {2} of stronger hands fold.", [pct(detail.foldShare), pct(share("value")), pct(share("foldBetter"))], en);
+    return narrative("Equity against the modeled opponent range is {0}; this combo is ahead of {1} of that range.", [pct(equity), pct(share("ahead"))], en);
   }
   if (detail.required != null) {
     const enough = equity >= detail.required;

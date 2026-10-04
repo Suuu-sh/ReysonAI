@@ -69,6 +69,6 @@ test("sessions tab renders a drill attempt with a hand-history entry point", () 
   assert.match(html, /途中の練習も完了した練習も/);
   assert.match(html, /UTG練習/);
   assert.match(html, /1<\/td>/);
-  assert.match(html, /UTG練習のハンド履歴を見る/);
+  assert.match(html, /aria-label="View hand history for UTG練習" translate="no"/);
   assert.doesNotMatch(html, /EV loss|GTOW Score/);
 });

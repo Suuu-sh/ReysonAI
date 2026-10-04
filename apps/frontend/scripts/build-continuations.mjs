@@ -1,5 +1,6 @@
 // Stage 2 only: copy immutable legacy prerequisites, generate/audit, then optionally
-// install the ignored delivery artifacts. Never regenerate or rewrite legacy data.
+// install a LOCAL review candidate. Never regenerate or rewrite legacy data.
+// CI consumes reviewed, committed artifacts and must never invoke this authoring command.
 // Usage: node scripts/build-continuations.mjs [--install]
 import { execFileSync } from "node:child_process";
 import { copyFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, existsSync, rmSync } from "node:fs";
@@ -35,6 +36,6 @@ if (process.argv.includes("--install")) {
     if (existsSync(file)) rmSync(file);
   }
   cpSync(join(staging, "reasons"), join(published, "reasons"), { recursive: true });
-  console.log("Installed ignored local Stage 2 delivery artifacts; no remote publication performed.");
+  console.log("Installed local Stage 2 review candidate; independent review is required before commit/publication.");
 }
 console.log(`${data.spot_count} saved histories; ${data.omitted_unreachable_count} proved impossible histories omitted. Staging retained: ${staging}`);

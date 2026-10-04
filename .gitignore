@@ -10,7 +10,8 @@
 /apps/frontend/.local/
 .DS_Store
 __pycache__/
-# Stage 2 generated publication artifacts. Rebuild with scripts/build-continuations.mjs.
+# Reviewed Stage 2 bytes are stored in the Git LFS archive. Restore locally;
+# staging, caches and expanded authoring facts remain under ignored .local/.
 /apps/frontend/src/estimated/continuation-responses.json
 /apps/frontend/src/estimated/continuation-call-equities.json
 /apps/frontend/src/estimated/continuation-audit-report.json

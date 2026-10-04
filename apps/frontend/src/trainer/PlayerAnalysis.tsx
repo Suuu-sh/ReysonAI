@@ -244,27 +244,26 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness })
   const agentRead = useMemo(() => view === "agent" ? playerRead(loadAgentHands()) : null, [view]);
 
   return <div className="player-analysis">
-    <header className="stats-head">
-      <div className="stats-title">
-        <h1 className="trainer-home-eyebrow stats-h1">Stats</h1>
-        <div className="stats-icon-seg" role="group" aria-label="分析の対象">
-          {[["drills", "ドリル練習", Barbell], ["agent", "Agent戦", Robot]].map(([value, label, Icon]) =>
-            <button key={value} type="button" className={view === value ? "on" : ""} aria-pressed={view === value} aria-label={label} title={label} onClick={() => setView(value)}><Icon size={18} /></button>)}
-        </div>
-        <span className="stats-view-label">{view === "agent" ? "Agent戦" : "ドリル練習"}</span>
-      </div>
-      <div className="stats-head-tools">
-        {view === "drills" && <div className="stats-period" role="group" aria-label="期間">
-          <CalendarBlank size={16} aria-hidden="true" />
-          {PERIODS.map(([value, label]) => <button key={value} type="button" className={period === value ? "on" : ""} aria-pressed={period === value} onClick={() => setPeriod(value)}>{label}</button>)}
-        </div>}
-        <button type="button" className="mode-primary analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
-      </div>
+    <header className="trainer-home-head stats-page-head">
+      <div><h1 className="trainer-home-eyebrow">STATS</h1>
+        <p>{view === "agent" ? "Agent卓での収支と、Agentが読んでいるあなたの打ち方を振り返ります。" : "ドリルやランク戦での選び方を、保存済みレンジと比べて振り返ります。"}</p></div>
+      <button type="button" className="mode-primary analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
     </header>
-    {view === "drills" && <div className="stats-filters" role="group" aria-label="絞り込み">
-      <span>絞り込み</span>
-      {KINDS.map(([value, label]) => <button key={value} type="button" className={kind === value ? "on" : ""} aria-pressed={kind === value} onClick={() => setKind(value)}>{label}</button>)}
-    </div>}
+    <div className="stats-toolbar">
+      <div className="stats-seg" role="group" aria-label="分析の対象">
+        {[["drills", "ドリル練習", Barbell], ["agent", "Agent戦", Robot]].map(([value, label, Icon]) =>
+          <button key={value} type="button" className={view === value ? "on" : ""} aria-pressed={view === value} onClick={() => setView(value)}><Icon size={15} />{label}</button>)}
+      </div>
+      {view === "drills" && <>
+        <div className="stats-seg" role="group" aria-label="絞り込み">
+          {KINDS.map(([value, label]) => <button key={value} type="button" className={kind === value ? "on" : ""} aria-pressed={kind === value} onClick={() => setKind(value)}>{label}</button>)}
+        </div>
+        <div className="stats-seg stats-seg-period" role="group" aria-label="期間">
+          <CalendarBlank size={15} aria-hidden="true" />
+          {PERIODS.map(([value, label]) => <button key={value} type="button" className={period === value ? "on" : ""} aria-pressed={period === value} onClick={() => setPeriod(value)}>{label}</button>)}
+        </div>
+      </>}
+    </div>
 
     {view === "agent" ? <div className="analysis-agent">
       <AgentAnalysis />
@@ -273,7 +272,7 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness })
 
     <div className="analysis-kpis">
       <Kpi label="ReysonAI Score" icon={ChartLineUp} accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
-        sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)} · 10回答前比</span>}>
+        sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)}{localized(" · versus 10 answers ago", " · 10回答前比")}</span>}>
       </Kpi>
       <Kpi label="正答率" icon={Crosshair} value={stats.answered ? <><CountUp value={Math.round(stats.rate * 100)} /><small>%</small></> : "—"} sub={`${stats.answered}回答`} />
       <Kpi label="プレイスタイル" icon={Target} value={analysis.ready ? analysis.style.label : "判定中"} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>

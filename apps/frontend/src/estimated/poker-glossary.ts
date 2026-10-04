@@ -1,3 +1,5 @@
+import { translateExplanationCopy } from "../locales/reason-copy.ts";
+import type { ProductLocale } from "../locale-metadata.ts";
 // Poker terms used in the postflop explanations, with short definitions. Explanation text is
 // generated at runtime, so terms are found in it here and rendered as tappable chips.
 type Entry = { ja: string[]; en: string[]; defJa: string; defEn: string };
@@ -39,16 +41,16 @@ const ENTRIES: Entry[] = [
   { ja: ["ナッツ"], en: ["nuts"], defJa: "その時点で最も強い手。", defEn: "The best possible hand at that moment." },
 ];
 
-const lists = (locale: "ja" | "en") => ENTRIES.flatMap(entry => (locale === "ja" ? entry.ja : entry.en).map(term => ({ term, entry })))
+const lists = (locale: ProductLocale) => ENTRIES.flatMap(entry => (locale === "ja" ? entry.ja : entry.en.map(term => translateExplanationCopy(term, locale))).map(term => ({ term, entry })))
   .sort((a, b) => b.term.length - a.term.length);
 const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const patterns = new Map<string, { regex: RegExp; byTerm: Map<string, Entry> }>();
 
-function patternFor(locale: "ja" | "en") {
+function patternFor(locale: ProductLocale) {
   if (!patterns.has(locale)) {
     const items = lists(locale);
     const body = items.map(item => escape(item.term)).join("|");
-    const regex = locale === "en" ? new RegExp(`\\b(${body})\\b`, "gi") : new RegExp(`(${body})`, "g");
+    const regex = (locale === "en" || locale === "es") ? new RegExp(`\\b(${body})\\b`, "gi") : new RegExp(`(${body})`, "g");
     patterns.set(locale, { regex, byTerm: new Map(items.map(item => [item.term.toLowerCase(), item.entry])) });
   }
   return patterns.get(locale)!;
@@ -57,7 +59,7 @@ function patternFor(locale: "ja" | "en") {
 export type GlossaryPiece = { text: string; term?: string; definition?: string };
 
 // Split text into plain pieces and glossary terms (longest match first).
-export function glossaryPieces(text: string, locale: "ja" | "en"): GlossaryPiece[] {
+export function glossaryPieces(text: string, locale: ProductLocale): GlossaryPiece[] {
   const { regex, byTerm } = patternFor(locale);
   const pieces: GlossaryPiece[] = [];
   let last = 0;
@@ -65,7 +67,7 @@ export function glossaryPieces(text: string, locale: "ja" | "en"): GlossaryPiece
     const index = match.index ?? 0;
     if (index > last) pieces.push({ text: text.slice(last, index) });
     const entry = byTerm.get(match[0].toLowerCase()) as Entry | undefined;
-    pieces.push({ text: match[0], term: match[0], definition: entry ? (locale === "ja" ? entry.defJa : entry.defEn) : undefined });
+    pieces.push({ text: match[0], term: match[0], definition: entry ? (locale === "ja" ? entry.defJa : translateExplanationCopy(entry.defEn, locale)) : undefined });
     last = index + match[0].length;
   }
   if (last < text.length) pieces.push({ text: text.slice(last) });

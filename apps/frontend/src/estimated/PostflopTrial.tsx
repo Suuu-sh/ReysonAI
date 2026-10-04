@@ -5,7 +5,7 @@ import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { tierLabels } from "./postflop-reasons.ts";
 import { buildAdvancedExplanation } from "./postflop-advanced.ts";
 import { glossaryPieces } from "./poker-glossary.ts";
-import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater, representativeFlops } from "./postflop-trial.ts";
+import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater } from "./postflop-trial.ts";
 import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
@@ -13,14 +13,14 @@ import { productLocale } from "../i18n.ts";
 
 // Action labels with real amounts come from the replay (decisionOptions in postflop-trial.ts); these
 // plain labels are only the fallback (amount-free) for actions a decision does not carry.
-const baseLabels = () => productLocale() === "en"
+const baseLabels = () => productLocale() !== "ja"
   ? { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise" }
   : { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ" };
 export const labelsFor = (node, decisionLabels = null) => ({ ...baseLabels(), ...(decisionLabels ?? {}) });
 const raiseAllInOf = d => Boolean(d?.options?.find(option => option.action === "raise")?.allIn);
-const decisionLabelsOf = d => d ? (productLocale() === "en" ? d.labels : d.labelsJa) : null;
+const decisionLabelsOf = d => d ? (productLocale() !== "ja" ? d.labels : d.labelsJa) : null;
 // btn_* nodes are the in-position player's decisions, bb_* the out-of-position player's.
-export const nodeTitle = (node, { ip, oop }) => (productLocale() === "en" ? {
+export const nodeTitle = (node, { ip, oop }) => (productLocale() !== "ja" ? {
   btn_first: `${ip} · facing ${oop}'s check`, bb_vs_33: `${oop} · facing a 33% bet`,
   bb_vs_75: `${oop} · facing a 75% bet`, bb_vs_125: `${oop} · facing a 125% bet`, btn_vs_raise: `${ip} · facing a check-raise`,
   oop_first: `${oop} · first decision`, ip_vs_33: `${ip} · facing a 33% bet`,
@@ -35,12 +35,12 @@ function raiseTitle(node, { ip, oop }) {
   const match = /^(btn|bb|ip|oop)_vs_raise(\d+)$/.exec(node ?? "");
   if (!match) return undefined;
   const actor = match[1] === "btn" || match[1] === "ip" ? ip : oop;
-  return `${actor} · ${productLocale() === "en" ? "facing a re-raise" : "再レイズへの応答"}`;
+  return `${actor} · ${productLocale() !== "ja" ? "facing a re-raise" : "再レイズへの応答"}`;
 }
 export function laterNodeTitle(node, { ip, oop }, street) {
   const role = node?.split("_")[1];
   const actor = role === "ip" ? ip : oop;
-  const english = productLocale() === "en";
+  const english = productLocale() !== "ja";
   const streetName = english ? (street === "turn" ? "Turn" : "River") : (street === "turn" ? "ターン" : "リバー");
   let action = english ? "first decision" : "最初の判断";
   const depth = /_vs_raise(\d*)$/.exec(node ?? "");
@@ -74,7 +74,7 @@ function BoardCards({ cards }) {
 }
 
 function SuitCardPicker({ selectedCards = new Set(), disabledCards = new Set(), onSelect, ariaLabel }) {
-  const english = productLocale() === "en";
+  const english = productLocale() !== "ja";
   return <div className="street-card-options" role="group" aria-label={ariaLabel}>
     {suitOrder.map(suit => <div className={`street-suit-row suit-${suit}`} key={suit} role="group" aria-label={suitNames[english ? "en" : "ja"][suit]}>
       <span className="street-suit-label" aria-hidden="true">{suitLabels[suit]}</span>
@@ -95,12 +95,12 @@ const tablePct = (value: number | null) => value === null ? "—" : `${Math.roun
 
 function HandReasons({ node, hand, texture, explain, loading, error, positions, boardCards, labels, raiseAllIn }: any) {
   if (!hand?.tiers) return null;
-  const english = productLocale() === "en";
-  const plain = buildAdvancedExplanation({ locale: english ? "en" : "ja", node, hand: hand.hand, actionMix: hand.actions,
+  const english = productLocale() !== "ja";
+  const plain = buildAdvancedExplanation({ locale: productLocale(), node, hand: hand.hand, actionMix: hand.actions,
     tiers: hand.tiers, texture, explain, positions, board: boardCards, labels, raiseAllIn,
     ...(hand.combo ? { cards: hand.combo.cards } : { combos: (hand.combos ?? []).map((item: any) => ({ cards: item.cards, weight: item.weight ?? item.reachWeight ?? 0 })) }) });
   return <div className="postflop-reasons postflop-reasons-structured">
-    <GlossaryText className="postflop-reason-headline" text={plain.headline} locale={english ? "en" : "ja"} />
+    <GlossaryText className="postflop-reason-headline" text={plain.headline} locale={productLocale()} />
     {plain.blocks.map(block => <details className="postflop-reason-section postflop-reason-action" key={block.action} style={{ "--action-color": barColor(block.action) } as any}>
       <summary>
         <span className="postflop-reason-action-name"><i style={{ background: barColor(block.action) }} aria-hidden="true" />{block.label}</span>
@@ -109,9 +109,9 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions, 
           <strong>{Math.round(block.frequency * 100)}%</strong>
         </span>
       </summary>
-      <GlossaryText text={block.text} locale={english ? "en" : "ja"} />
+      <GlossaryText text={block.text} locale={productLocale()} />
     </details>)}
-    {plain.texture && <GlossaryText className="postflop-reason-texture" text={plain.texture} locale={english ? "en" : "ja"} />}
+    {plain.texture && <GlossaryText className="postflop-reason-texture" text={plain.texture} locale={productLocale()} />}
     {loading && <small className="postflop-reason-general">{english ? "Loading explanation…" : "説明を計算中…"}</small>}
     {error && <small className="postflop-reason-general">{english ? "Part of the explanation is unavailable." : "説明の一部を読み込めませんでした。"}</small>}
   </div>;
@@ -133,7 +133,7 @@ function mixGradient(mix, actions) {
 
 function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missingReason, missingTitle }) {
   if (!combos?.length) return null;
-  const english = productLocale() === "en";
+  const english = productLocale() !== "ja";
   const missing = missingReason ?? (english ? "Overlaps the board" : "ボードと重複");
   const missingDescription = missingTitle ?? (english ? "Unavailable because the cards overlap the board" : "ボードのカードと重なるため存在しません");
   const tierName = tier => english
@@ -205,7 +205,7 @@ export function randomFlop(random = Math.random) {
 
 export function FlopCardDialog({ cards, onApply, onClose }) {
   const current = recognizedFlop(cards);
-  const english = productLocale() === "en";
+  const english = productLocale() !== "ja";
   const [draft, setDraft] = useState(() => [...cards]);
   const dialogRef = useRef(null);
   useEffect(() => {
@@ -262,25 +262,13 @@ export function FlopCardDialog({ cards, onApply, onClose }) {
           ? new Set(deck.filter(card => !selected.has(card))) : undefined}
           ariaLabel={english ? "Available flop cards by suit" : "スート別のフロップカード一覧"} onSelect={chooseCard} />
       </div>
-      <div className="flop-quick-picks">
-        <h3>{english ? "Quick picks · 12 representative flops" : "クイック選択 · 代表12ボード"}</h3>
-        <div className="postflop-board-options">
-        {representativeFlops.map(board => {
-          const boardCards = board.match(/../g);
-          return <button type="button" key={board} className={board === current ? "selected" : ""} aria-pressed={board === current}
-            aria-label={`${english ? "Flop" : "フロップ"} ${boardCards.map(card => card[0] + suitLabels[card[1]]).join(" ")}`} onClick={() => apply(boardCards)}>
-            <BoardCards cards={boardCards} />
-          </button>;
-        })}
-        </div>
-      </div>
     </div>
   </div>;
 }
 
 export function StreetCardDialog({ usedCards = [], street, currentCard = "", onApply, onClose }) {
   const dialogRef = useRef(null);
-  const english = productLocale() === "en";
+  const english = productLocale() !== "ja";
   const title = street === "turn" ? (english ? "Select turn" : "ターンを選択") : (english ? "Select river" : "リバーを選択");
   const unavailable = new Set(usedCards);
   useEffect(() => {
@@ -507,7 +495,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
       .then(body => {
         if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.street !== laterCurrent?.street ||
             body.node !== laterCurrent?.node || body.line !== laterCurrent?.line || !body.actions || !Number.isFinite(body.equity)) {
-          throw new Error(productLocale() === "en" ? "Explanation does not match this decision." : "説明の局面が選択中の判断と一致しません。");
+          throw new Error(productLocale() !== "ja" ? "Explanation does not match this decision." : "説明の局面が選択中の判断と一致しません。");
         }
         return body;
       })
@@ -519,7 +507,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   }, [laterCurrent?.line, laterCurrent?.node, laterCurrent?.street, laterExplainKey,
     postflopDatasets, postflopSource, sourceError, spotId]);
   const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
-  const english = productLocale() === "en";
+  const english = productLocale() !== "ja";
   return <div className="postflop-trial" aria-label={english ? "Postflop estimate" : "ポストフロップ試作"}>
     {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title={english ? "Select a flop" : "フロップを選択してください"}>{english ? "Open the flop cards in the action path and choose any three cards." : "上のアクション列にあるフロップカードを押して、任意の3枚を選んでください。"}</StatusState></Panel>

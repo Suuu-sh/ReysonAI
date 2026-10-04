@@ -2,7 +2,7 @@ import { accountStorage } from "../account/session.ts";
 // Saved drills (named settings) and their session records, kept in this browser only.
 import { POSITIONS, normalizeSettings } from "./trainer-data.ts";
 import { validSession } from "./practice-sessions.ts";
-import { productLocale } from "../locale.ts";
+import { localized, productLocale } from "../locale.ts";
 
 const KEY = "reysonai.trainer.drills.v1";
 const SESSION_LIMIT = 50;
@@ -22,9 +22,9 @@ const ENGLISH_PRESET_NAMES = {
 
 // Keep the persisted name untouched; only a stock preset gets a localized view.
 export function displayDrillName(drill) {
-  if (productLocale() !== "en") return drill.name;
+  if (productLocale() === "ja") return drill.name;
   const preset = PRESET_DRILLS.find(item => item.id === drill.id);
-  return preset && preset.name === drill.name ? ENGLISH_PRESET_NAMES[drill.id] : drill.name;
+  return preset && preset.name === drill.name ? localized(ENGLISH_PRESET_NAMES[drill.id], preset.name) : drill.name;
 }
 
 function presetDrills(level) {

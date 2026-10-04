@@ -4,8 +4,8 @@
 
 Complete bounded preflop continuation authoring, generated from explicit profiles and audited saved sources. These are independent AI estimates; they are not a jointly solved strategy or a GTO-quality guarantee.
 
-- Clean source-only branch: `feat/multiway-preflop-stage2-source-only`
-- Publication base: current development `116561aac40e06902bf168d7e00a4f27cc912637`; all 28 upstream-changed paths are retained, with both AGENTS additions reconciled.
+- Clean-history branch: `feat/multiway-preflop-stage2-source-only` (the historical branch name is retained; reviewed compact artifacts are now included via Git LFS at the user's request).
+- Publication reconciliation: development `6e59fe9fbd5ecd946010be1f893d9ee6e04f98a5` is merged normally into PR32. Its eight new commits, including opponent profiles and localization, are preserved: 97 changed paths are byte-identical and five shared authoring/audit/AGENTS files retain both sets of changes. The original PR32 parent was `116561aac40e06902bf168d7e00a4f27cc912637`.
 - Verified development baseline: `9a787954ecd49546d119e80c226afce8347c141a`
 - Dedicated cloud checkout: `reysonai-stage2`; the previous stage-one checkout was preserved.
 - Scope: 75 starting histories; 100 existing decisions reused; 3,115 new decisions; 526,435 structural hand slots; 272,259 persisted hand rows; 4,200 structural terminal histories.
@@ -31,7 +31,7 @@ The count is structural coverage, not a count of playable recommendations. Other
 - Restored shared cash config byte-for-byte and moved the approved 30BB exception into `configs/multiway-preflop-stage2.json`. Baseline-pinned regressions reproduce the stale-policy failure before the fix and preserve all 45 currently catalogued reachable HU fingerprints afterward (including the historical 44).
 - Reachable-only schema 1.1 stores 1,611 histories and proves all 1,504 omitted histories impossible from authoritative source actions. Missing reachable ancestors/strategies stay errors or unavailable, never invented zero-reach policies.
 - Compact reason templates plus exact facts preserve every rendered reason and numeric fact across all 272,259 retained hand entries. All 1,611 strategy histories preserve their previous frequencies and geometry.
-- Generated strategy/equity/audit/reason outputs are ignored, with stage2-only generation and guarded full-snapshot publication documented in [storage and publication](multiway-preflop-stage2.storage.md). Existing Git history is not rewritten.
+- The initial source-only delivery was superseded by the user's 2026-10-04 correction: generated data must undergo local AI verification/review before being committed. The 43,276,102-byte compact artifact set is retained byte-for-byte in a deterministic 1,747,857-byte Git LFS archive; Actions validates the recorded hashes and imports only this reviewed preflop snapshot, without authoring new estimates. See [storage and publication](multiway-preflop-stage2.storage.md). Existing Git history is not rewritten.
 - Coverage distinguishes unreachable histories from missing work, including a stored descendant whose required ancestor is missing. The publisher blocks absent/partial Stage 2 snapshots unless a legacy-only replacement is explicitly selected.
 - Final independent Astra code review reports no remaining findings. No protected visual/action-path sources were changed.
 
@@ -42,12 +42,12 @@ The count is structural coverage, not a count of playable recommendations. Other
 - Final combined continuation/coverage/audit/reason checks: 87 passed, one explicit private-policy-artifact skip (including 24 sparse/compact unit tests). Publication and coverage review regressions passed, including missing-ancestor and destructive-snapshot guards. The actual detailed-reason loader also passes its compact-payload integration test.
 - Published data/reason checks: passed, including strict sources/flow/EV/joint defense and complete reason fingerprints. Independent dense-versus-expanded reason comparison is exact apart from refreshed provenance.
 - Full serial suite: 533 passed, nine explicit optional skips, two test-file SIGKILL failures in `postflop-hand-ev` and `postflop-performance`; Isolating every case in those two files gives ten passes and three further SIGKILLs. The SB hand-EV failure was also reproduced with a fresh git archive of untouched development `9a787954`, with the same SIGKILL; the broader assertion coverage remains unverified. These process failures are not treated as a passing full suite or presumed baseline assertion failures. The known `postflop-flop-base` determinism test passed in this run.
-- Final clean-checkout targeted checks: 27 passed, six explicit generated-artifact skips. Missing generated data is labeled not-generated/unavailable. Its production build and seven Sites tests also pass; a real clean-checkout publication CLI probe exits before creating SQL.
+- The earlier source-only clean-checkout targeted checks were 27 passed, six explicit generated-artifact skips. That check established the runtime's missing-data behavior, not delivery readiness. The corrected Actions path requires the complete reviewed artifact set and fails before delivery if any file/source identity differs.
 - Production build passed with a 768MB Node heap after resource-constrained attempts failed. Typecheck and seven Sites tests passed. Existing large-chunk warnings remain.
 - Lint reports seven findings in unchanged `ProductApp.tsx` / `site/ServiceSite.tsx`; no blanket lint-pass claim.
-- The correction pass does not merge, deploy, mark ready or rewrite history. The clean source-only Draft PR is created separately from PR29, which remains unchanged for comparison.
+- The correction pass does not merge, deploy, mark ready or rewrite history. The clean-history Draft PR32 is separate from PR29, which remains unchanged for comparison.
 
-Final regenerated delivery size is 43,276,102 bytes, down from 341,870,219 bytes (87.34%). Reasons shrink from 272,965,675 to 5,722,499 bytes. The complete per-history compositions and advisory details are reproducible from the ignored datasets/audit and the range CLI; they are no longer duplicated as a large Markdown table in Git.
+Final compact delivery size is 43,276,102 bytes, down from 341,870,219 bytes (87.34%). Reasons shrink from 272,965,675 to 5,722,499 bytes. The complete per-history compositions and advisory details are in the reviewed compact datasets/audit and accessible through the range CLI; they are not duplicated as a large Markdown table.
 
 ## Independent-review corrections
 
@@ -75,3 +75,17 @@ Final regenerated delivery size is 43,276,102 bytes, down from 341,870,219 bytes
 Development advanced by 18 commits after the original validation base. The clean source-only branch preserves its evaluator/runtime fixes, user UI changes and every unchanged remote blob. Only `src/estimated/AGENTS.md` overlaps the source-only patch; its upstream UI instruction and all Stage 2 instructions are retained. The artifact-free reconciliation reruns the targeted continuation, legacy, audit, evaluator and call-EV checks, plus typecheck/build/Sites. Earlier full-suite/SIGKILL results above are explicitly from the original validation checkout, not a claim that the new base has had a fully passing complete suite.
 
 Reconciliation results: 107 targeted tests passed with seven explicit generated/private-artifact skips; typecheck, production build and seven Sites tests passed. The later sidebar-language-switch change is inherited unchanged from the final parent commit.
+
+## Reviewed Git LFS delivery checks (2026-10-04)
+
+- Development reconciliation: all prior 1,856 delivered JSON bytes remain identical, and exactly 32 already-reviewed profile files are added. The delivery receipt now binds 1,888 JSON files and 86 source/configuration files. Profile/legacy/continuation checks pass 34 tests with one private-policy-artifact skip; the profiles-only dry-run passes without changing published data.
+- Exact local artifact set: 1,614 files / 43,276,102 bytes. Deterministic USTAR+gzip LFS object: 1,747,857 bytes, SHA-256 `b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a`. The tracked local packager reproduces the same bytes. No strategy was regenerated for this delivery change.
+- Review/source/file guards and archive attack probes passed; independent Astra delivery code review has no blocking findings. CI never writes an approval receipt or generates strategies.
+- Earlier pre-reconciliation local payload diagnostic: all 1,856 delivered datasets / 3,454 parts / 64,542,160 JSON payload bytes matched SHA-256 twice. All 11 unrelated postflop/account sentinel tables and schemas were preserved. A separate failed local transaction preserved all preceding rows. The diagnostic used 32 exact-content groups per pass and took about 94.7 seconds. Nine focused local-D1 tests passed, including small strict and bounded pinned-Wrangler integrations.
+- The full 65,374,389-byte local SQL import was not established: workerd exited by SIGKILL (-9), observed after 6.78 seconds at 685,696 KiB maximum RSS, and Wrangler reported ECONNRESET. No kernel OOM evidence was available; this is not labeled a confirmed OOM or a remote D1 size limit. The bounded diagnostic does not establish full-delivery rollback. Actions deliberately retains the strict whole-file default, and its exact-head result is still required.
+- Typecheck, production build and seven Sites tests pass with the restored artifacts. The earlier full-suite/lint limitations above remain; these checks do not replace a full-suite pass.
+- Production D1 access/quota and remote import behavior have not been exercised. No production run, merge, history rewrite or readiness change occurred. The Git LFS object must be uploaded and freshly fetched/hashed before publication can be reported complete.
+
+Latest integrated targeted checks: 85 passed, two explicit optional skips (private HU artifact and opt-in small Wrangler fixture); no failures. The full local-D1 pipeline has its own strict Actions step. Typecheck, production build and seven Sites tests also pass after upstream reconciliation.
+
+The final reconciled bounded-local D1 diagnostic passes all 1,888 datasets / 3,582 parts / 67,852,874 payload bytes twice, including all 32 nested profile files. All 11 unrelated table schemas/sentinels remain intact, and the separate failed transaction rolls back. It uses 34 exact-content groups per pass; wall time is 99.668 seconds, largest observed process RSS 346,412 KiB (not aggregate memory). Final SQL is 68,705,643 bytes, SHA-256 `b0bb41c1bf47106654ebadf30f0eba40de4252aca195e73fcbcd9236c6e6e77c`. Strict whole-file Actions validation and remote deployment remain pending.

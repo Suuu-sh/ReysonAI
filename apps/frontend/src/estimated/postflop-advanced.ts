@@ -1,3 +1,4 @@
+import { narrative, translateExplanationCopy, type NarrativeLanguage } from "../locales/reason-copy.ts";
 // Advanced, jargon-rich postflop explanations: one short paragraph per action, in the vocabulary of experienced
 // players (range/nut advantage, polarised vs merged, capped, bluff-catcher, blockers, SPR, geometric sizing...).
 // Pure and numberless. Every claim is chosen by qualitative thresholds over computed facts: the per-hand facts
@@ -6,7 +7,7 @@
 import { handRole } from "./postflop-explanation.ts";
 import { betSentences, checkSentences, describeHand, displayName, facingHandSentences, featuresForInput, handHeadline, roleFromFeatures, type HC } from "./postflop-hand-copy.ts";
 
-export type AdvancedLocale = "en" | "ja";
+export type AdvancedLocale = "en" | "ja" | "zh-CN" | "es";
 type NumericMap = Record<string, number | undefined>;
 export type AdvancedInput = {
   locale: AdvancedLocale; node: string; hand: string; actionMix: NumericMap; tiers?: NumericMap;
@@ -66,7 +67,7 @@ export function advantages(rf: any): { range: Advantage; nuts: Advantage; heroCa
 }
 
 type Ctx = {
-  en: boolean; node: string; hand: string; tier: string; street: "flop" | "turn" | "river"; ip: boolean; facing: boolean;
+  en: NarrativeLanguage; node: string; hand: string; tier: string; street: "flop" | "turn" | "river"; ip: boolean; facing: boolean;
   rf: any; adv: ReturnType<typeof advantages>; line?: string; texture?: string; explain: any; opp: string; equity: number;
 };
 
@@ -76,30 +77,30 @@ function advantageSentence(c: Ctx): string {
   if (!a) return "";
   if (c.facing) {
     if (a.heroCapped) return c.en
-      ? "Your range is capped on this line: it holds almost no monsters, so the bettor can lean on you with polarised bets and your continuing hands are mostly bluff-catchers."
+      ? narrative("Your range is capped on this line: it holds almost no monsters, so the bettor can lean on you with polarised bets and your continuing hands are mostly bluff-catchers.", [], c.en)
       : "このラインではあなたのレンジはキャップされています。モンスターがほとんどなく、相手はポラライズしたベットで圧力をかけられ、続行する手の大半はブラフキャッチャーになります。";
     if (a.oppCapped) return c.en
-      ? `${cap(c.opp)}'s range is capped here, so the nuts are not a worry and you can defend wide with your bluff-catchers.`
+      ? narrative("{0}'s range is capped here, so the nuts are not a worry and you can defend wide with your bluff-catchers.", [cap(c.opp)], c.en)
       : "相手のレンジはここでキャップされていて、ナッツを恐れる必要が薄く、ブラフキャッチャーも広く守れます。";
     if (a.range === "opp") return c.en
-      ? "The bettor holds the range advantage on this texture, so your defence has to be disciplined about which hands continue."
+      ? narrative("The bettor holds the range advantage on this texture, so your defence has to be disciplined about which hands continue.", [], c.en)
       : "このテクスチャでは相手にレンジアドバンテージがあり、どの手で続行するかを厳密に選ぶ必要があります。";
     if (a.range === "hero") return c.en
-      ? "Your range is the stronger one on this texture, so you can defend comfortably and still keep raises in the mix."
+      ? narrative("Your range is the stronger one on this texture, so you can defend comfortably and still keep raises in the mix.", [], c.en)
       : "このテクスチャではあなたのレンジのほうが強く、無理なく守りつつレイズも混ぜられます。";
     return "";
   }
   if (a.range === "hero" && a.nuts === "hero") return c.en
-    ? "You hold both the range advantage and the nut advantage on this texture, so the whole range can apply pressure."
+    ? narrative("You hold both the range advantage and the nut advantage on this texture, so the whole range can apply pressure.", [], c.en)
     : "このテクスチャではレンジアドバンテージとナッツアドバンテージの両方があり、レンジ全体でプレッシャーをかけられます。";
   if (a.range === "hero") return c.en
-    ? "You hold the range advantage without a clear nut advantage, so the pressure comes from frequency rather than from polarised sizing."
+    ? narrative("You hold the range advantage without a clear nut advantage, so the pressure comes from frequency rather than from polarised sizing.", [], c.en)
     : "レンジアドバンテージはあってもナッツアドバンテージは明確でなく、圧力はポラライズしたサイズではなく高い頻度でかけます。";
   if (a.nuts === "hero") return c.en
-    ? "Your range is not ahead overall, but it owns more of the nuts, and that is what supports a polarised line."
+    ? narrative("Your range is not ahead overall, but it owns more of the nuts, and that is what supports a polarised line.", [], c.en)
     : "レンジ全体では優位ではないものの、ナッツはあなたのほうが多く、それがポラライズしたラインを支えます。";
   if (a.range === "opp") return c.en
-    ? "The opponent's range is ahead on this texture, so checking dominates and only the hands that clearly want to bet do so."
+    ? narrative("The opponent's range is ahead on this texture, so checking dominates and only the hands that clearly want to bet do so.", [], c.en)
     : "このテクスチャでは相手のレンジが優位なので、チェックが中心になり、はっきり打ちたい手だけがベットします。";
   return "";
 }
@@ -108,7 +109,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 function sprNote(c: Ctx): string {
   const spr = c.rf?.spr;
   if (!finite(spr)) return "";
-  if (spr < 2) return c.en ? "With the SPR this low, the stacks are close to committed already, so hand strength matters more than polarisation."
+  if (spr < 2) return c.en ? narrative("With the SPR this low, the stacks are close to committed already, so hand strength matters more than polarisation.", [], c.en)
     : "SPRがここまで低いと、スタックはほぼコミット済みで、ポラライズよりも手の強さが重要になります。";
   return "";
 }
@@ -119,10 +120,10 @@ function bettorSentence(c: Ctx): string {
   if (!c.facing || !kind) return "";
   const o = c.opp;
   return ({
-    polar: c.en ? `${cap(o)}'s bet comes from a polarised range, strong value plus air, so the hands in the middle are under pressure.` : "この相手のベットは強いバリューとエアに分かれたポラライズしたレンジから来ていて、中間の強さの手は圧力を受けます。",
-    merged: c.en ? `${cap(o)}'s bet comes from a merged range of strong and medium hands, so there are fewer pure bluffs behind it.` : "相手のベットは強い手と中程度の手がマージしたレンジから来ていて、純粋なブラフは多くありません。",
-    value: c.en ? `${cap(o)}'s bet comes from an almost pure value range, so bluff-catching is rarely rewarded.` : "相手のベットはほぼバリューだけのレンジから来ていて、ブラフキャッチが報われる場面は多くありません。",
-    wide: c.en ? `${cap(o)}'s bet comes from a wide range that mixes value, medium hands and bluffs.` : "相手のベットはバリュー、中程度の手、ブラフが幅広く混ざったレンジから来ています。",
+    polar: c.en ? narrative("{0}'s bet comes from a polarised range, strong value plus air, so the hands in the middle are under pressure.", [cap(o)], c.en) : "この相手のベットは強いバリューとエアに分かれたポラライズしたレンジから来ていて、中間の強さの手は圧力を受けます。",
+    merged: c.en ? narrative("{0}'s bet comes from a merged range of strong and medium hands, so there are fewer pure bluffs behind it.", [cap(o)], c.en) : "相手のベットは強い手と中程度の手がマージしたレンジから来ていて、純粋なブラフは多くありません。",
+    value: c.en ? narrative("{0}'s bet comes from an almost pure value range, so bluff-catching is rarely rewarded.", [cap(o)], c.en) : "相手のベットはほぼバリューだけのレンジから来ていて、ブラフキャッチが報われる場面は多くありません。",
+    wide: c.en ? narrative("{0}'s bet comes from a wide range that mixes value, medium hands and bluffs.", [cap(o)], c.en) : "相手のベットはバリュー、中程度の手、ブラフが幅広く混ざったレンジから来ています。",
   } as Record<string, string>)[kind] ?? "";
 }
 
@@ -133,50 +134,50 @@ function sizeSentence(a: string, kind: SizeKind | null, c: Ctx): string {
   if (a === "allin") {
     const spr = c.rf?.spr, h = c.hand, tier = c.tier, value = tier === "monster" || tier === "strong";
     if (finite(spr) && spr < 3) {
-      if (value) return en ? `${h} is strong enough to stack off: at this low SPR the shove just commits the stacks, so raw hand strength outweighs polarisation.`
+      if (value) return en ? narrative("{0} is strong enough to stack off: at this low SPR the shove just commits the stacks, so raw hand strength outweighs polarisation.", [h], en)
         : `${h}はスタックを入れきれる強さです。SPRが低いのでオールインは単にスタックをコミットするだけで、ポラライズよりも手の強さが重みを持ちます。`;
-      return en ? `${h} shoves as a bluff that the capped value range supports, and at this low SPR the shove is close to the natural geometric size.`
+      return en ? narrative("{0} shoves as a bluff that the capped value range supports, and at this low SPR the shove is close to the natural geometric size.", [h], en)
         : `${h}はブラフとしてのオールインです。SPRが低くオールインが自然なジオメトリックサイズに近いため、バリューとのバランスの範囲で成立します。`;
     }
-    if (value) return en ? `${h} shoves with the remaining stack, a geometric-size bet where only the strongest hands and a few bluffs can go all-in.`
+    if (value) return en ? narrative("{0} shoves with the remaining stack, a geometric-size bet where only the strongest hands and a few bluffs can go all-in.", [h], en)
       : `${h}は残りスタックをすべて入れるオールインです。ジオメトリックサイズの賭けなので、最強クラスの手と少数のブラフだけが成立します。`;
-    return en ? `${h} shoves as a bluff, and only a small share of the range can do so while keeping the value-to-bluff balance.`
+    return en ? narrative("{0} shoves as a bluff, and only a small share of the range can do so while keeping the value-to-bluff balance.", [h], en)
       : `${h}はブラフとしてのオールインで、バリューとのバランスを保てる範囲の少数のハンドだけが選びます。`;
   }
   if (a === "bet33") switch (kind) {
     case "merged": return c.street === "river"
-      ? (en ? "This small size is a linear range of strong and medium hands going for thin value, with few bluffs."
+      ? (en ? narrative("This small size is a linear range of strong and medium hands going for thin value, with few bluffs.", [], en)
         : "この小さいサイズは、強い手と中程度の手がシンバリューを取りに行くリニアなレンジで、ブラフは少なめです。")
-      : (en ? "This small size is a linear range of strong and medium hands betting for value and protection with few bluffs."
+      : (en ? narrative("This small size is a linear range of strong and medium hands betting for value and protection with few bluffs.", [], en)
         : "この小さいサイズは、強い手と中程度の手がバリューとプロテクションで打つリニアなレンジで、ブラフは少なめです。");
-    case "value": return en ? "Even at a small size the range is almost all value, built to keep worse hands calling."
+    case "value": return en ? narrative("Even at a small size the range is almost all value, built to keep worse hands calling.", [], en)
       : "小さいサイズでもレンジはほぼバリューで、劣る手にコールを続けさせるための構成です。";
-    case "polar": return en ? "Even at a small size this range is polarised: a few strong hands plus air that can bluff cheaply."
+    case "polar": return en ? narrative("Even at a small size this range is polarised: a few strong hands plus air that can bluff cheaply.", [], en)
       : "小さいサイズでも、このレンジは強い手とエアだけのポラライズで、安くブラフできる形です。";
-    default: return en ? "The small size suits a wide, merged range: it taxes the weakest holdings, takes thin value from worse pairs and denies equity cheaply."
+    default: return en ? narrative("The small size suits a wide, merged range: it taxes the weakest holdings, takes thin value from worse pairs and denies equity cheaply.", [], en)
       : "小さいサイズは広くマージしたレンジに向いていて、弱い手に課税し、劣るペアからシンバリューを取り、安くエクイティデニアルを効かせます。";
   }
   if (a === "bet75") switch (kind) {
-    case "polar": return en ? "The large bet is polarised, strong value and air with little in between, which forces the opponent to find calls with bluff-catchers."
+    case "polar": return en ? narrative("The large bet is polarised, strong value and air with little in between, which forces the opponent to find calls with bluff-catchers.", [], en)
       : "大きなベットはポラライズされていて、強いバリューとエアが中心で中間の手が少なく、相手はブラフキャッチャーでコールを探すことになります。";
     case "merged": return c.street === "river"
-      ? (en ? "The large bet stays merged: strong and good medium hands bet for thin-to-solid value while few pure bluffs join them."
+      ? (en ? narrative("The large bet stays merged: strong and good medium hands bet for thin-to-solid value while few pure bluffs join them.", [], en)
         : "大きなベットでもマージを保ち、強い手と良い中程度の手がバリューで打ち、純粋なブラフはわずかです。")
-      : (en ? "The large bet stays merged: strong and good medium hands bet for value and protection while few pure bluffs join them."
+      : (en ? narrative("The large bet stays merged: strong and good medium hands bet for value and protection while few pure bluffs join them.", [], en)
       : "大きなベットですがレンジはマージ寄りで、強い手と良い中程度の手がバリューとプロテクションで打ち、純粋なブラフは少なめです。");
-    case "value": return en ? "This size is almost pure value, built to extract from the opponent's calling range."
+    case "value": return en ? narrative("This size is almost pure value, built to extract from the opponent's calling range.", [], en)
       : "このサイズはほぼバリューだけで、相手のコールレンジから最大限に取るための構成です。";
-    default: return en ? "The large bet carries a wide mix of value, medium hands and bluffs, so no single hand type gives it away."
+    default: return en ? narrative("The large bet carries a wide mix of value, medium hands and bluffs, so no single hand type gives it away.", [], en)
       : "大きなベットにはバリュー、中程度の手、ブラフが幅広く混ざっていて、特定の手の種類が透けて見えません。";
   }
   if (a === "bet125") switch (kind) {
-    case "polar": return en ? (nuts ? "An overbet needs a polarised range backed by a nut advantage, which you have here, and it puts bluff-catchers under maximum pressure."
-      : "The overbet is polarised, strong hands plus air, and it puts the opponent's bluff-catchers under maximum pressure.")
+    case "polar": return en ? (nuts ? narrative("An overbet needs a polarised range backed by a nut advantage, which you have here, and it puts bluff-catchers under maximum pressure.", [], en)
+      : narrative("The overbet is polarised, strong hands plus air, and it puts the opponent's bluff-catchers under maximum pressure.", [], en))
       : (nuts ? "オーバーベットにはナッツアドバンテージに支えられたポラライズが必要で、ここではそれがあり、ブラフキャッチャーを最大限に追い込めます。"
       : "オーバーベットは強い手とエアのポラライズで、相手のブラフキャッチャーを最大限に追い込みます。");
-    case "value": return en ? "The overbet is almost pure value, the nuts squeezing the opponent's strongest calling hands."
+    case "value": return en ? narrative("The overbet is almost pure value, the nuts squeezing the opponent's strongest calling hands.", [], en)
       : "オーバーベットはほぼバリューだけで、ナッツで相手の強いコールレンジを絞り取ります。";
-    default: return en ? "The overbet is a rare size, kept for the top of the range together with the best bluffs."
+    default: return en ? narrative("The overbet is a rare size, kept for the top of the range together with the best bluffs.", [], en)
       : "オーバーベットは稀なサイズで、レンジの上位と最良のブラフに限って使われます。";
   }
   return "";
@@ -186,21 +187,21 @@ function responseSentence(f: Level | null, cl: Called | null, c: Ctx, tag = ""):
   const base = responseBase(f, cl, c);
   if (!base || !tag) return base;
   const lower = (t: string) => /^[A-Z](?![A-Z])/.test(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t;
-  return c.en ? `From ${tag}, ${lower(base)}` : `${tag}から見ると、${base}`;
+  return c.en ? narrative("From {0}, {1}", [tag, lower(base)], c.en) : `${tag}から見ると、${base}`;
 }
 function responseBase(f: Level | null, cl: Called | null, c: Ctx): string {
   if (!f && !cl) return "";
   const en = c.en, o = c.opp;
   const foldGood = f === "most" || f === "many";
-  const foldText = f ? (en ? { most: `most of ${o}'s range gives up`, many: `a large part of ${o}'s range folds`, some: `only part of ${o}'s range folds`, few: `hardly any of ${o}'s range folds` }[f]
+  const foldText = f ? (en ? { most: narrative("most of {0}'s range gives up", [o], en), many: narrative("a large part of {0}'s range folds", [o], en), some: narrative("only part of {0}'s range folds", [o], en), few: narrative("hardly any of {0}'s range folds", [o], en) }[f]
     : { most: `${o}のレンジの大半は降り`, many: `${o}のレンジの多くが降り`, some: `${o}のレンジのうち降りるのは一部で`, few: `${o}のレンジはほとんど降りず` }[f]) : "";
-  const calledText = cl ? (en ? { better: "what continues is mostly ahead of you", similar: "what continues is close to you in strength", weaker: "what continues is mostly behind you" }[cl]
+  const calledText = cl ? (en ? { better: narrative("what continues is mostly ahead of you", [], en), similar: narrative("what continues is close to you in strength", [], en), weaker: narrative("what continues is mostly behind you", [], en) }[cl]
     : { better: "続行する手は主に自分より強く", similar: "続行する手は自分と同程度で", weaker: "続行する手は主に自分より弱くなります" }[cl]) : "";
   if (en) {
     if (!f) return cap(calledText) + ".";
     if (!cl) return cap(foldText) + ".";
-    const calledGood = cl === "weaker", conj = foldGood === calledGood || cl === "similar" ? "and" : "but";
-    return `${cap(foldText)}, ${conj} ${calledText}.`;
+    const calledGood = cl === "weaker", conj = foldGood === calledGood || cl === "similar" ? narrative("and", [], en) : narrative("but", [], en);
+    return narrative("{0}, {1} {2}.", [cap(foldText), conj, calledText], en);
   }
   const jaCalled = cl ? { better: "続行する手は主に自分より強いです", similar: "続行する手は自分と同程度です", weaker: "続行する手は主に自分より弱いです" }[cl] : "";
   const jaFold = f ? { most: `${o}のレンジの大半は降りますが、`, many: `${o}のレンジの多くが降りますが、`, some: `降りるのは${o}のレンジの一部だけで、`, few: `${o}のレンジはほとんど降りず、` }[f] : "";
@@ -213,14 +214,14 @@ function responseBase(f: Level | null, cl: Called | null, c: Ctx): string {
 
 function streetSentence(a: string, role: string, c: Ctx): string {
   const en = c.en, shift = c.rf?.runout_shift;
-  if (c.street === "river") return en ? "No draws are left on the river, so this bet is either value or a bluff."
+  if (c.street === "river") return en ? narrative("No draws are left on the river, so this bet is either value or a bluff.", [], en)
     : "リバーにはもうドローが残っていないので、このベットはバリューかブラフのどちらかです。";
   if (c.street === "turn") {
-    if (c.line === "aggressor") return en ? "Continuing from the flop makes this a turn barrel, and the story stays consistent with the earlier bet."
+    if (c.line === "aggressor") return en ? narrative("Continuing from the flop makes this a turn barrel, and the story stays consistent with the earlier bet.", [], en)
       : "フロップからの続きなのでターンバレルで、先のベットとストーリーが一貫します。";
-    if (c.line === "checked" && c.ip && c.rf?.pfr === "ip") return en ? "Betting after the flop checked through is a delayed c-bet, which punishes the capped checking range."
+    if (c.line === "checked" && c.ip && c.rf?.pfr === "ip") return en ? narrative("Betting after the flop checked through is a delayed c-bet, which punishes the capped checking range.", [], en)
       : "フロップがチェックで流れたあとのベットはディレイドCベットで、キャップされたチェックレンジを突きます。";
-    if (c.line === "defender" && !c.ip) return en ? `A lead from the defender is a donk bet${finite(shift?.hero) && finite(shift?.opp) && shift.hero - shift.opp >= 0.03 ? ", which works here because the card favours your range" : ", a rare line that needs the card to favour your range"}.`
+    if (c.line === "defender" && !c.ip) return en ? narrative("A lead from the defender is a donk bet{0}.", [finite(shift?.hero) && finite(shift?.opp) && shift.hero - shift.opp >= 0.03 ? narrative(", which works here because the card favours your range", [], en) : narrative(", a rare line that needs the card to favour your range", [], en)], en)
       : `ディフェンダーからのリードはドンクで、${finite(shift?.hero) && finite(shift?.opp) && shift.hero - shift.opp >= 0.03 ? "このカードがあなたのレンジに有利なので成立します" : "このカードが自分のレンジに有利なときだけ使う稀なラインです"}。`;
   }
   void a; void role;
@@ -248,31 +249,31 @@ function strengthOf(c: Ctx) {
 function textureNotes(c: Ctx): string[] {
   const en = c.en, t = c.texture ?? "", shift = c.rf?.runout_shift;
   const base: Record<string, [string, string]> = {
-    dry: ["Dry board: few draws, so equity realises stably and the range advantage tends to persist, which favours small, frequent bets.",
+    dry: [narrative("Dry board: few draws, so equity realises stably and the range advantage tends to persist, which favours small, frequent bets.", [], en),
       "ドライなボード：ドローが少なくエクイティが安定して実現され、レンジアドバンテージが残りやすいので、小さく高頻度のベットが向きます。"],
-    wet: ["Wet board: many draws and a shifting nut hand make equity dynamic, so protection matters and sizing goes up.",
+    wet: [narrative("Wet board: many draws and a shifting nut hand make equity dynamic, so protection matters and sizing goes up.", [], en),
       "ウェットなボード：ドローが多くナッツが入れ替わるためエクイティが動的で、プロテクションが重要になりサイズも大きくなります。"],
-    paired: ["Paired board: trips and full houses are rare, ranges are condensed, and small bets with a wide range are common.",
+    paired: [narrative("Paired board: trips and full houses are rare, ranges are condensed, and small bets with a wide range are common.", [], en),
       "ペアボード：トリップスやフルハウスは少なくレンジが凝縮されていて、広いレンジでの小さいベットが多くなります。"],
-    monotone: ["Monotone board: flush made hands dominate the nuts, range advantage is muted, and the nut flush blocker gains value.",
+    monotone: [narrative("Monotone board: flush made hands dominate the nuts, range advantage is muted, and the nut flush blocker gains value.", [], en),
       "モノトーンのボード：フラッシュがナッツを支配し、レンジアドバンテージは薄れ、ナッツフラッシュのブロッカーの価値が上がります。"],
-    flush: ["The runout puts a third suited card out, so flushes become possible, equity realisation shifts toward the made flush, and weak showdown hands lose value.",
+    flush: [narrative("The runout puts a third suited card out, so flushes become possible, equity realisation shifts toward the made flush, and weak showdown hands lose value.", [], en),
       "ランアウトで同じスートが3枚になり、フラッシュが成立しうるため、エクイティはメイドフラッシュに寄り、弱いショーダウンバリューは価値を失います。"],
-    straight: ["The runout connects the board, so straights become possible and the nuts can change hands.",
+    straight: [narrative("The runout connects the board, so straights become possible and the nuts can change hands.", [], en),
       "ランアウトでボードがつながり、ストレートが成立しうるため、ナッツが入れ替わる可能性があります。"],
-    over: ["An overcard on the runout shifts the range advantage toward the side holding more high cards and devalues the middle pairs.",
+    over: [narrative("An overcard on the runout shifts the range advantage toward the side holding more high cards and devalues the middle pairs.", [], en),
       "ランアウトのオーバーカードは高いカードを多く持つ側にレンジアドバンテージを寄せ、中位のペアの価値を下げます。"],
-    pair: ["The runout pairs the board, so full houses are possible and one pair loses value.",
+    pair: [narrative("The runout pairs the board, so full houses are possible and one pair loses value.", [], en),
       "ランアウトでボードがペアになり、フルハウスが成立しうるため、ワンペアの価値が下がります。"],
-    blank: ["The runout is a blank, so ranges barely change and the previous plan carries over.",
+    blank: [narrative("The runout is a blank, so ranges barely change and the previous plan carries over.", [], en),
       "ランアウトはブランクで、レンジはほとんど変わらず、前のストリートの方針がそのまま続きます。"],
   };
   const parts: string[] = [];
   if (base[t]) parts.push(base[t][en ? 0 : 1]);
   if (finite(shift?.hero) && finite(shift?.opp)) {
     const diff = shift.hero - shift.opp;
-    if (diff >= 0.04) parts.push(en ? "This card helps your range more than the opponent's, so more of your range can keep betting." : "このカードはあなたのレンジに有利に働き、より多くの手がベットを続けられます。");
-    else if (diff <= -0.04) parts.push(en ? "This card helps the opponent's range more than yours, so expect fewer barrels and more checking." : "このカードは相手のレンジに有利に働き、バレルは減ってチェックが増えます。");
+    if (diff >= 0.04) parts.push(en ? narrative("This card helps your range more than the opponent's, so more of your range can keep betting.", [], en) : "このカードはあなたのレンジに有利に働き、より多くの手がベットを続けられます。");
+    else if (diff <= -0.04) parts.push(en ? narrative("This card helps the opponent's range more than yours, so expect fewer barrels and more checking.", [], en) : "このカードは相手のレンジに有利に働き、バレルは減ってチェックが増えます。");
   }
   return parts;
 }
@@ -280,7 +281,7 @@ function textureNotes(c: Ctx): string[] {
 const hashOf = (text: string) => { let h = 2166136261; for (const ch of text) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
 
 export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanation {
-  const en = input.locale === "en";
+  const en = input.locale === "ja" ? false : input.locale;
   const facing = !!input.explain?.defence || Object.keys(input.actionMix).some(a => a === "fold" || a === "call");
   const rf = input.explain?.range_facts ?? null;
   const entries = Object.entries(input.actionMix).filter(([, f]) => finite(f) && f! > 0)
@@ -291,7 +292,7 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
   const equity = finite(input.explain?.betting?.equity_vs_defender) ? input.explain.betting.equity_vs_defender : (finite(input.explain?.equity) ? input.explain.equity : 0);
   const street: Ctx["street"] = input.node.startsWith("turn_") ? "turn" : input.node.startsWith("river_") ? "river" : "flop";
   const ipNode = input.node.startsWith("btn_") || input.node.startsWith("ip_") || /^(turn|river)_ip_/.test(input.node);
-  const opp = input.positions?.[ipNode ? "oop" : "ip"] ?? (en ? "the opponent" : "相手");
+  const opp = input.positions?.[ipNode ? "oop" : "ip"] ?? (en ? narrative("the opponent", [], en) : "相手");
   const features = featuresForInput(input.board, input.cards, input.combos);
   const desc = describeHand(features, displayName(input.cards ?? input.hand), en, mainTier(input.tiers), opp);
   const ctx: Ctx = { en, node: input.node, hand: desc.name, tier: mainTier(input.tiers), street, ip: ipNode, facing, rf,
@@ -329,7 +330,7 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
       const cl = calledLevel(input.explain?.bet_table?.actions?.[action]?.calledEquity);
       sentences.push(...betSentences(desc, action, roleOf(action), hc), responseSentence(f, cl, ctx, desc.tag));
     }
-    blocks.push({ action, label: input.labels?.[action] ?? LABELS[input.locale][action] ?? action, frequency, text: "" });
+    blocks.push({ action, label: input.labels?.[action] ?? LABELS[en ? "en" : "ja"][action] ?? action, frequency, text: "" });
     (blocks[blocks.length - 1] as any)._s = sentences;
   }
   // The single range-level sentence of the explanation: one of the available range statements (advantage, texture,
@@ -351,17 +352,17 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
   }
   const d = input.explain?.defence;
   if (facing && d && (input.actionMix.call ?? 0) === 0 && (input.actionMix.fold ?? 0) >= 0.95 && finite(d.realized_equity) && finite(d.required_equity) && d.realized_equity >= d.required_equity) {
-    blocks.push({ action: "call", label: LABELS[input.locale].call, frequency: 0, text: finish([en
-      ? `${desc.name} has ${desc.short}, enough to continue, but it sits near the bottom of the continuing range, so the plan folds it and keeps the defence on better hands.`
+    blocks.push({ action: "call", label: LABELS[en ? "en" : "ja"].call, frequency: 0, text: finish([en
+      ? narrative("{0} has {1}, enough to continue, but it sits near the bottom of the continuing range, so the plan folds it and keeps the defence on better hands.", [desc.name, desc.short], en)
       : `${desc.name}は${desc.short}で続行できる強さがありますが、続行レンジの下のほうなので、より良い手で守る方針でフォールドを選びます。`]) });
   } else if (!facing && !names.some(aggressive) && desc.m === "nuts" && Object.keys(input.actionMix).some(aggressive)) {
-    blocks.push({ action: "bet75", label: LABELS[input.locale].bet75, frequency: 0, text: finish([en
-      ? `${desc.name} has ${desc.made || desc.short}, so a bet is not used: slowplaying keeps worse hands in and the checking range uncapped.`
+    blocks.push({ action: "bet75", label: LABELS[en ? "en" : "ja"].bet75, frequency: 0, text: finish([en
+      ? narrative("{0} has {1}, so a bet is not used: slowplaying keeps worse hands in and the checking range uncapped.", [desc.name, desc.made || desc.short], en)
       : `${desc.name}は${desc.made || desc.short}で、ベットは使いません。スロープレイで劣る手を残し、チェックレンジのキャップを防ぎます。`]) });
   }
   const main = names[0] ?? "check";
   const headline = handHeadline(desc, main, roleOf(main), facing, hc);
-  return { headline, blocks, ...(pick?.texture ? { texture: pick.text } : {}) };
+  return { headline, blocks: blocks.map(block => ({ ...block, label: translateExplanationCopy(block.label, input.locale) })), ...(pick?.texture ? { texture: pick.text } : {}) };
 }
 
 export function renderAdvancedPlainText(e: AdvancedExplanation): string {

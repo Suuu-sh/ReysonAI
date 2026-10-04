@@ -1,11 +1,13 @@
 // Product copy is localized at the presentation boundary. Strategy data, stored
 // sessions, and their stable identifiers are deliberately never translated.
+import { translateLocaleCopy } from "./locales/copy.ts";
+import { reasonCopy, translateExplanationCopy } from "./locales/reason-copy.ts";
 import { productLocale } from "./locale.ts";
-export { LOCALE_KEY, productLocale, selectProductLocale, localized } from "./locale.ts";
+export { LOCALE_KEY, productLocale, selectProductLocale, localized, LOCALES, localeTag, isProductLocale } from "./locale.ts";
 
 // Longest phrases are applied first so a specific instruction is not damaged by
 // a shorter navigation label. These are view-copy translations only, not data.
-const COPY = {
+export const COPY = {
   "ランク戦": "Ranked match", "ランキング": "Leaderboard", "週間": "Weekly", "通算": "All time", "順位": "Place", "プレイヤー": "Player", "試合": "Matches", "増減": "Change", "今週の増減": "This week", "日時": "Date", "自分の試合履歴": "Your match history", "今週はまだランク戦をプレイしていません。": "No ranked matches this week yet.", "まだランク戦をプレイしていません。": "No ranked matches yet.", "ランク戦に挑む": "Play ranked", "ランク": "Rank", "レート": "Rating", "最高": "Peak", "昇格": "Promoted", "降格": "Demoted", "また明日": "Come back tomorrow", "最高ランクです": "Top rank reached", "ブロンズ": "Bronze", "シルバー": "Silver", "ゴールド": "Gold", "プラチナ": "Platinum", "ダイヤモンド": "Diamond", "マスター": "Master",
   "はじめに、あなたのレベルを教えてください": "First, tell us your experience level",
   "レベルに合わせて、レンジ表の見せ方を変えます。あとからいつでも変更できます。": "We tailor the range display to your level. You can change it any time.",
@@ -89,42 +91,87 @@ const COPY = {
 };
 
 const replacements = Object.entries(COPY).sort((a, b) => b[0].length - a[0].length);
-const japanese = /[\u3040-\u30ff\u3400-\u9fff]/;
+const kana = /[\u3040-\u30ff]/;
+const cjk = /[\u3400-\u9fff]/;
+const escapePattern = value => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// A single source-token pass never feeds translated Chinese back through the
+// Japanese dictionary (e.g. 回答, 分 and 人 also occur in Chinese prose).
+const unitSource = "回答|問|局面|ハンド|回|秒|分|人";
+const sourceTokens = new RegExp(`\\d+(?:${unitSource})|${replacements.map(([source]) => escapePattern(source)).join("|")}|(?:${unitSource})|[・＋（）。、]`, "g");
+const targetCopy = {
+  "zh-CN": new Set(Object.values(reasonCopy).map(values => values[0].trim())),
+  es: new Set(Object.values(reasonCopy).map(values => values[1].trim())),
+};
+const units = { 回答: ["answer", "answers"], 問: ["question", "questions"], 局面: ["spot", "spots"], ハンド: ["hand", "hands"], 回: ["time", "times"], 秒: ["sec", "sec"], 分: ["min", "min"], 人: ["player", "players"] };
 
-export function translateProductCopy(value) {
-  if (productLocale() === "ja" || !japanese.test(value)) return value;
-  if (COPY[value]) return COPY[value];
-  let translated = value
-    .replace(/(\d+)回答/g, (_, n) => `${n} ${Number(n) === 1 ? "answer" : "answers"}`)
-    .replace(/(\d+)問/g, (_, n) => `${n} ${Number(n) === 1 ? "question" : "questions"}`)
-    .replace(/(\d+)局面/g, (_, n) => `${n} ${Number(n) === 1 ? "spot" : "spots"}`)
-    .replace(/(\d+)ハンド/g, (_, n) => `${n} ${Number(n) === 1 ? "hand" : "hands"}`)
-    .replace(/(\d+)回/g, (_, n) => `${n} ${Number(n) === 1 ? "time" : "times"}`);
-  for (const [original, english] of replacements) translated = translated.replaceAll(original, english);
-  translated = translated.replaceAll("・", " · ").replaceAll("＋", " + ").replaceAll("（", " (").replaceAll("）", ")").replaceAll("。", ".").replaceAll("、", ", ").replaceAll("問", " questions").replaceAll("回", " times").replaceAll("秒", " sec").replaceAll("分", " min").replaceAll("人", " players");
-  translated = translated.replace(/(\d)(spots|questions|times|Hand|Hands)/g, "$1 $2");
-  return translated;
+function translateSourceCount(value, locale) {
+  const count = /^(\d+)(回答|問|局面|ハンド|回|秒|分|人)$/.exec(value);
+  if (!count) return null;
+  // Chinese uses these same units, including 分 for a rating score. Do not
+  // reinterpret them as Japanese duration/player labels on an observer replay.
+  if (locale === "zh-CN" && ["秒", "分", "人"].includes(count[2])) return value;
+  return translateLocaleCopy(`${count[1]} ${units[count[2]][Number(count[1]) === 1 ? 0 : 1]}`, locale);
 }
 
-export function localizeProductSurface(root) {
-  if (!root || productLocale() === "ja") return () => {};
+export function translateProductCopy(value, locale = productLocale()) {
+  if (locale === "ja" || typeof value !== "string" || !value) return value;
+  // React already renders much of the product with localized(). The initial
+  // observer scan and any later scan must accept that target-language copy.
+  if (targetCopy[locale]?.has(value.trim())) return value;
+  if (Object.hasOwn(COPY, value)) return translateLocaleCopy(COPY[value], locale);
+  const direct = translateLocaleCopy(value, locale);
+  if (direct !== value) return direct;
+  const count = translateSourceCount(value, locale);
+  if (count !== null) return count;
+  if (!kana.test(value)) {
+    // CJK characters alone are not evidence of Japanese. In particular, never
+    // replace a Japanese substring inside an authored Chinese sentence.
+    if (cjk.test(value)) {
+      // Legacy JSX can split an authored label into "問 · " or " · 判定".
+      // Accept only complete known-source sequences, never partial matches in
+      // unknown CJK prose. Every CJK character must be consumed as source copy.
+      if (cjk.test(value.replace(sourceTokens, ""))) return value;
+      return translateLegacyTokens(value, locale);
+    }
+    const action = /^(Check|Fold|Call|Raise|Bet|All-in|Allin|Limp)(?=\s|$)(.*)$/.exec(value);
+    if (action) return translateLocaleCopy(action[1] === "Allin" ? "All-in" : action[1], locale) + action[2];
+    return translateExplanationCopy(value, locale);
+  }
+  // Only legacy authored Japanese copy reaches this compatibility path. User
+  // content is excluded by translate="no" at its presentation boundary.
+  return translateLegacyTokens(value, locale);
+}
+
+function translateLegacyTokens(value, locale) {
+  const punctuation = locale === "zh-CN"
+    ? { "・": " · ", "＋": " + ", "（": "（", "）": "）", "。": "。", "、": "、" }
+    : { "・": " · ", "＋": " + ", "（": " (", "）": ")", "。": ".", "、": ", " };
+  const translated = value.replace(sourceTokens, source => translateSourceCount(source, locale)
+    ?? (targetCopy[locale]?.has(source.trim()) ? source
+      : Object.hasOwn(COPY, source) ? translateLocaleCopy(COPY[source], locale)
+      : units[source] ? translateLocaleCopy(` ${units[source][1]}`, locale) : punctuation[source]));
+  return translateExplanationCopy(translated, locale);
+}
+
+export function localizeProductSurface(root, locale = productLocale()) {
+  if (!root || locale === "ja") return () => {};
   const translatedNodes = new WeakMap();
   const translatedAttributes = new WeakMap();
   const convertText = node => {
-    if (!japanese.test(node.nodeValue ?? "")) return;
-    if (node.parentElement?.closest('[translate="no"]')) return; // e.g. native language names
-    const translated = translateProductCopy(node.nodeValue);
+    if (!node.nodeValue?.trim()) return;
+    if (node.parentElement?.closest('[translate="no"], script, style, textarea, code, pre')) return; // e.g. native language names
+    const translated = translateProductCopy(node.nodeValue, locale);
     if (translated !== node.nodeValue) {
       translatedNodes.set(node, translated);
       node.nodeValue = translated;
     }
   };
   const convertElement = element => {
-    if (!(element instanceof Element)) return;
+    if (!(element instanceof Element) || element.closest('[translate="no"]')) return;
     for (const name of ["aria-label", "title", "placeholder"]) {
       const value = element.getAttribute(name);
-      if (!value || !japanese.test(value)) continue;
-      const translated = translateProductCopy(value);
+      if (!value) continue;
+      const translated = translateProductCopy(value, locale);
       if (translated !== value) {
         translatedAttributes.set(element, { ...(translatedAttributes.get(element) ?? {}), [name]: translated });
         element.setAttribute(name, translated);

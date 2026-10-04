@@ -15,7 +15,7 @@ const combos = hand => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
 const rows = spot => new Map(spot.hands.map(row => [row.hand, row]));
 export const pct = value => `${(value * 100).toFixed(1)}%`;
 
-import { BALANCE_CHECKS, isBlockingAuditFinding } from "./audit-policy.ts";
+import { BALANCE_CHECKS, isBlockingAuditFinding } from "./profile-audit-policy.ts";
 export { BALANCE_CHECKS, isBlockingAuditFinding };
 const PASSIVE_ACTIONS = ["limp", "call", "check"];
 const AGGRESSIVE_ACTIONS = ["open", "three_bet", "four_bet", "squeeze", "raise", "all_in"];
@@ -590,3 +590,6 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
   return { findings, capacityConflicts, continuationDefense: continuationReport.defense, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, limpReraiseDefense, limpDeepDefense, coldThreeBetDefense, coldFourBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
 }
+
+// Archetypes deliberately bypass ordinary economic/balance gates.
+export { auditOpponentProfiles } from "./opponent-profiles.ts";

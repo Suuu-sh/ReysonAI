@@ -41,11 +41,15 @@ if (!staging) throw new Error("A staging directory is required");
   validateColdThreeBetDataset(coldThreeBets, responses);
   validateMultiway2Dataset(multiway2, multiway, responses, opening);
   validateColdFourBetDataset(coldFourBets, coldThreeBets, responses, opening);
+  let continuationInputs = {};
+  if (!process.argv.includes("--without-continuations")) {
   const continuations = load("continuation-responses"), continuationEquities = load("continuation-call-equities");
   validateContinuationDataset(continuations, {
     "opening-ranges": opening, "preflop-ranges": responses, "multiway-responses": multiway,
     "multiway2-responses": multiway2, "squeeze-responses": squeezes,
     "cold-three-bet-responses": coldThreeBets, "cold-four-bet-responses": coldFourBets,
   });
-  const { findings } = auditEstimates({ continuations, continuationEquities, opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, limpDeep, coldThreeBets, multiway2, coldFourBets, callEquities: load("call-equities") });
+  continuationInputs = { continuations, continuationEquities };
+  }
+  const { findings } = auditEstimates({ ...continuationInputs, opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, limpDeep, coldThreeBets, multiway2, coldFourBets, callEquities: load("call-equities") });
 console.log(JSON.stringify({ findings }));

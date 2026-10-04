@@ -3,7 +3,7 @@ import type { SiteCopy } from "./content";
 export const ja: SiteCopy = {
   title: "ReysonAI — Don't just play. Understand why.",
   description: "AIが推定したプリフロップレンジを読みやすい13×13の表で確認し、ハンドごとの理由を知り、ドリルで身につける。学習のための推定であり、GTOソルバーではありません。",
-  common: { home: "ReysonAI ホーム", open: "アプリを開く", menuOpen: "メニューを開く", menuClose: "メニューを閉じる", menuLabel: "メインメニュー", skip: "本文へスキップ", language: "EN", languageLabel: "Switch to English", raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド", available: "提供中", planned: "予定", experimental: "試験運用" },
+  common: { home: "ReysonAI ホーム", open: "アプリを開く", menuOpen: "メニューを開く", menuClose: "メニューを閉じる", menuLabel: "メインメニュー", skip: "本文へスキップ", language: "言語", languageLabel: "言語を選択", you: "あなた", raise: "レイズ", threeBet: "3ベット", call: "コール", fold: "フォールド", available: "提供中", planned: "予定", experimental: "試験運用" },
   nav: [
     { label: "使い方", href: "#how" },
     { label: "トレーニング", href: "#drill" },
