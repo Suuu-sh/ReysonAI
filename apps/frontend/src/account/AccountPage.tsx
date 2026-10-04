@@ -7,7 +7,7 @@ import { levels, loadProfile, saveProfile } from "../profile.ts";
 import { localized, productLocale, LOCALES, selectProductLocale } from "../i18n.ts";
 import { SITE_COPY } from "../site/locales.ts";
 import { exportLocalData, loadAppearance, loadDisplayMode, practiceKeys, saveAppearance, saveDisplayMode } from "./preferences.ts";
-import { ACCOUNT_SECTION, initialOf } from "./AccountMenu.tsx";
+import { ACCOUNT_SECTION } from "./AccountMenu.tsx";
 
 
 const t = (ja, en) => localized(en, ja);
@@ -51,7 +51,6 @@ function AccountTab({ profile, onProfileSaved }) {
     <section className="account-card">
       <header><h2>{t("プロフィール", "Profile")}</h2></header>
       <div className="account-profile">
-        <span className="account-avatar xl">{initialOf({ nickname })}</span>
         <label className="account-field">
           <span>{t("ニックネーム", "Nickname")}</span>
           <input value={nickname} maxLength={20} placeholder={t("ゲスト", "Guest")} onChange={event => { setNickname(event.target.value); setSaved(false); }} />
