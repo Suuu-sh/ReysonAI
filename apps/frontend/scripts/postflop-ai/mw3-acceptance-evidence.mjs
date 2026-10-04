@@ -68,5 +68,9 @@ export function verifyMw3Evidence(inputs, reports, { sourceHash, implementationH
     jointEvents: joint.results.length, zeroSupportEvents: joint.unreachable.length, jointWarningCount: joint.results.filter(row => row.warning).length,
     structuralWarningCount: flop.warnings.length + later.results.reduce((sum, row) => sum + row.warnings.length, 0),
     simulationHands: 12 * simulation.samplesPerBoard, replayHands: 12 * replay.samplesPerBoard,
-    limitations: ['AI estimate, not equilibrium/GTO proof', 'Joint MDF deviations are advisory', 'Zero-support reasons require independent source/policy review', 'Replay uses the same engine, not an independent solver'] };
+    limitations: ['AI estimate, not equilibrium/GTO proof', 'Joint MDF deviations are advisory',
+      'Zero-support reasons require independent source/policy review', 'Replay uses the same engine, not an independent solver',
+      'Structural coverage is geometric context/source-combo tier coverage, not joint policy reach',
+      'Fold conditions of seats outside the active three are unmodeled',
+      'After 3-to-2, context buckets can merge different surviving opponent identities'] };
 }

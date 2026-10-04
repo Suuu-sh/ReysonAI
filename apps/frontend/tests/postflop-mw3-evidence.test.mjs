@@ -35,6 +35,14 @@ test('saved-evidence validator accepts complete synthetic shape without generati
   const f = fixture(), result = verifyMw3Evidence(f.inputs, f.reports, f.expected);
   assert.equal(result.status, 'complete_evidence_not_acceptance'); assert.equal(result.jointEvents, 108); assert.equal(result.simulationHands, 120000);
 });
+test('acceptance evidence keeps structural, outside-seat and opponent-identity abstractions explicit', () => {
+  const f = fixture(), result = verifyMw3Evidence(f.inputs, f.reports, f.expected);
+  assert.deepEqual(result.limitations.slice(-3), [
+    'Structural coverage is geometric context/source-combo tier coverage, not joint policy reach',
+    'Fold conditions of seats outside the active three are unmodeled',
+    'After 3-to-2, context buckets can merge different surviving opponent identities',
+  ]);
+});
 test('all phases must have current source/recipe identities and full board/event coverage', () => {
   for (const mutate of [
     r => { r['all-flops'].boards = 1754; }, r => { r['all-flops'].errors = [{}]; }, r => { r['all-flops'].uncoveredExplicitSelectors = [{}]; },
