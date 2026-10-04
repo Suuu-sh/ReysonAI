@@ -1,0 +1,1867 @@
+{
+  "schema_version": 1,
+  "status": "complete_matrix_research_reviewed",
+  "kind": "offline_policy_conditional_mc_not_gto",
+  "baseline_main_commit": "2064a41011f0e91685e592c6e5f4c07f07ba7570",
+  "fixed_cases": 7,
+  "samples_per_case": 8192,
+  "family_error_budget_nominal": 0.01,
+  "independent_review": "research-conclusions-reviewed-with-limitations",
+  "completed_cases": [
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "hero": "KcQh",
+      "node": "bb_vs_75",
+      "actor": "BB",
+      "bettor": "BTN",
+      "history": [
+        "bet75"
+      ],
+      "samples": 8192,
+      "seed": "low-flop-validation-v1",
+      "delta": 0.0014285714285714286,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "source_graph_sha256": "2409bc39d7664a51bb20085406e8b45c49e5c458655bd5fdfb719e77cfba8394",
+      "reach": {
+        "hero_weight": 0.6,
+        "compatible_opponent_combos": 621,
+        "compatible_opponent_weight": 60.049999999999955
+      },
+      "initial": {
+        "tier": "medium",
+        "raw_equity": 0.24145812536798064,
+        "realization": 0.78,
+        "realized_equity": 0.1883373377870249,
+        "required": 0.3159424724602204,
+        "base": {
+          "fold": 35,
+          "call": 63,
+          "raise": 2
+        },
+        "raw": {
+          "fold": 98,
+          "call": 0,
+          "raise": 2
+        },
+        "actual": {
+          "fold": 0,
+          "call": 98,
+          "raise": 2
+        },
+        "call_bb": 4.13,
+        "pot_before_bb": 5.5
+      },
+      "rollout": {
+        "forced_action": "call",
+        "fold_incremental_payoff_bb": 0,
+        "mean_call_bb": -4.75476391601564,
+        "sample_variance_bb2": 557.3385169861325,
+        "se_bb": 0.26083421350885655,
+        "normal_95_percent_interval": [
+          -5.265998974492999,
+          -4.243528857538281
+        ],
+        "empirical_bernstein": {
+          "lower": -6.247356430013996,
+          "upper": -3.2621714020172843,
+          "radius": 1.4925925139983556,
+          "delta": 0.0014285714285714286,
+          "bound_range_bb": 200.5,
+          "formula": "sqrt(2*s2*log(4/delta)/n)+7*range*log(4/delta)/(3*(n-1))",
+          "source": "https://www.cs.mcgill.ca/~colt2009/papers/012.pdf",
+          "independence_assumption": "Nominal statistical coverage under IID Monte Carlo draws; deterministic seeded PRNG approximation is not a formal random-source guarantee."
+        },
+        "min_observed_bb": -97.5,
+        "max_observed_bb": 100,
+        "positive_payoff_samples": 1401
+      },
+      "limits": [
+        "Continuation uses the complete legacy runtime policy, including saved rules, computed defence and inherited reference-tier deep-raise fallbacks; play is not optimized.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic.",
+        "The original run wording was clarified after independent review; no numerical result or source identity was changed."
+      ],
+      "case_index": 1,
+      "raw_report_sha256": "9868957593e47c3c7cfdb2d0c3e9ecaf35d3813a9d7b0eea9d94113170487570",
+      "source_graph": [
+        {
+          "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+          "bytes": 1554,
+          "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+        },
+        {
+          "path": "apps/frontend/scripts/lib/equity.mjs",
+          "bytes": 8026,
+          "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+          "bytes": 3843,
+          "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+          "bytes": 11997,
+          "sha256": "f0373760d3c01b5f0f943f245d85342c699b12e3bd43468075c3f99f30bfc76e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/cached-values.mjs",
+          "bytes": 2594,
+          "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+          "bytes": 50585,
+          "sha256": "b1c55b4978c5e4d600dddb47365b5de43d5677bfae4d949b5ca206ccfb1b7491"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
+          "bytes": 9827,
+          "sha256": "486b455017f6bc8dfd16f081527f766b1af7bf9bf187f5865be1968fece62524"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+          "bytes": 9601,
+          "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+          "bytes": 18884,
+          "sha256": "d3e17dc724743c7b4f0fbb1d75c450b96e037a38257279c1e6010e68c2b9a63e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+          "bytes": 15988,
+          "sha256": "8ae8a3d7c0f240b60d90c71762e5a5195bc7e0cf36d5640e205910cf375390f4"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+          "bytes": 22705,
+          "sha256": "9c54bdbc039be543a80b0e5b900774fc149008aee1cd4a0e7a89a2db1c621bd1"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+          "bytes": 12377,
+          "sha256": "ad09f46517bc923a245d7392f8bd79dae687ad311f39ab2a127d6d7321bcb445"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
+          "bytes": 7489,
+          "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
+          "bytes": 5417,
+          "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+          "bytes": 6991,
+          "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
+          "bytes": 9434,
+          "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
+          "bytes": 17176,
+          "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "bytes": 8331,
+          "sha256": "7640c57f8940e853bd037a8e4a2033e506335b004a60e91ea10027f3b47baaab"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
+          "bytes": 9714,
+          "sha256": "501c1311708643fc60bb0124c5224a2d447a4709ff29b87355bf730f9ab49b08"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
+          "bytes": 6876,
+          "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+        },
+        {
+          "path": "apps/frontend/src/estimated/datasets.ts",
+          "bytes": 3726,
+          "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+        },
+        {
+          "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+          "bytes": 9482,
+          "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+        },
+        {
+          "path": "apps/frontend/src/estimated/sizing.ts",
+          "bytes": 3392,
+          "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+        },
+        {
+          "path": "configs/cash-6max-100bb.json",
+          "bytes": 918,
+          "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+        },
+        {
+          "path": "configs/multiway-preflop-stage2.json",
+          "bytes": 95,
+          "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+        }
+      ],
+      "policy_artifacts": [
+        {
+          "filename": "btn-bb-srp-v1-policy.json",
+          "bytes": 19585,
+          "sha256": "b6199a5e950ab80853885c434e708c3e5d552b31d6d8e3b19b963f0891bf0409"
+        },
+        {
+          "filename": "btn-bb-srp-v1-later-policy.json",
+          "bytes": 46352,
+          "sha256": "019072f903a8cef2c2583dcf1a7ea30a593cfe7ee1e114b8e82542d912f060a9"
+        }
+      ],
+      "resources": {
+        "case_index": 1,
+        "case": [
+          "BTN_open_BB_call",
+          "8c8d2h",
+          "KcQh",
+          "bet75",
+          "ip"
+        ],
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "BTN_open_BB_call",
+          "8c8d2h",
+          "KcQh",
+          "bet75",
+          "ip",
+          "8192",
+          "low-flop-validation-v1",
+          "0.0014285714285714286"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 33.56698131561279,
+        "max_rss_kib": 331560
+      },
+      "floor_added_model_value_bb": {
+        "fraction": 0.98,
+        "mean": -4.659668637695327,
+        "nominal_interval": [
+          -6.1224093014137155,
+          -3.1969279739769387
+        ]
+      },
+      "bounded_sign": "negative",
+      "recorded_run_limits": [
+        "Continuation uses the existing saved strategy and current computed defence, not optimized play.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic."
+      ]
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "hero": "KcQh",
+      "node": "bb_vs_125",
+      "actor": "BB",
+      "bettor": "BTN",
+      "history": [
+        "bet125"
+      ],
+      "samples": 8192,
+      "seed": "low-flop-validation-v1",
+      "delta": 0.0014285714285714286,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "source_graph_sha256": "2409bc39d7664a51bb20085406e8b45c49e5c458655bd5fdfb719e77cfba8394",
+      "reach": {
+        "hero_weight": 0.6,
+        "compatible_opponent_combos": 154,
+        "compatible_opponent_weight": 23.149999999999963
+      },
+      "initial": {
+        "tier": "medium",
+        "raw_equity": 0.15051093779078623,
+        "realization": 0.78,
+        "realized_equity": 0.11739853147681326,
+        "required": 0.3760179264360278,
+        "base": {
+          "fold": 68,
+          "call": 31,
+          "raise": 1
+        },
+        "raw": {
+          "fold": 99,
+          "call": 0,
+          "raise": 1
+        },
+        "actual": {
+          "fold": 0,
+          "call": 99,
+          "raise": 1
+        },
+        "call_bb": 6.88,
+        "pot_before_bb": 5.5
+      },
+      "rollout": {
+        "forced_action": "call",
+        "fold_incremental_payoff_bb": 0,
+        "mean_call_bb": -9.072558410644518,
+        "sample_variance_bb2": 869.9418561649138,
+        "se_bb": 0.3258743227670463,
+        "normal_95_percent_interval": [
+          -9.711272083267929,
+          -8.433844738021108
+        ],
+        "empirical_bernstein": {
+          "lower": -10.824291071852823,
+          "upper": -7.320825749436214,
+          "radius": 1.7517326612083042,
+          "delta": 0.0014285714285714286,
+          "bound_range_bb": 200.5,
+          "formula": "sqrt(2*s2*log(4/delta)/n)+7*range*log(4/delta)/(3*(n-1))",
+          "source": "https://www.cs.mcgill.ca/~colt2009/papers/012.pdf",
+          "independence_assumption": "Nominal statistical coverage under IID Monte Carlo draws; deterministic seeded PRNG approximation is not a formal random-source guarantee."
+        },
+        "min_observed_bb": -97.5,
+        "max_observed_bb": 100,
+        "positive_payoff_samples": 899
+      },
+      "limits": [
+        "Continuation uses the complete legacy runtime policy, including saved rules, computed defence and inherited reference-tier deep-raise fallbacks; play is not optimized.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic.",
+        "The original run wording was clarified after independent review; no numerical result or source identity was changed."
+      ],
+      "case_index": 2,
+      "raw_report_sha256": "8edffbc6bd4174e1ad12b4329112f287a27dc0cda4420dc4e481e72d90a896ee",
+      "source_graph": [
+        {
+          "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+          "bytes": 1554,
+          "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+        },
+        {
+          "path": "apps/frontend/scripts/lib/equity.mjs",
+          "bytes": 8026,
+          "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+          "bytes": 3843,
+          "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+          "bytes": 11997,
+          "sha256": "f0373760d3c01b5f0f943f245d85342c699b12e3bd43468075c3f99f30bfc76e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/cached-values.mjs",
+          "bytes": 2594,
+          "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+          "bytes": 50585,
+          "sha256": "b1c55b4978c5e4d600dddb47365b5de43d5677bfae4d949b5ca206ccfb1b7491"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
+          "bytes": 9827,
+          "sha256": "486b455017f6bc8dfd16f081527f766b1af7bf9bf187f5865be1968fece62524"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+          "bytes": 9601,
+          "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+          "bytes": 18884,
+          "sha256": "d3e17dc724743c7b4f0fbb1d75c450b96e037a38257279c1e6010e68c2b9a63e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+          "bytes": 15988,
+          "sha256": "8ae8a3d7c0f240b60d90c71762e5a5195bc7e0cf36d5640e205910cf375390f4"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+          "bytes": 22705,
+          "sha256": "9c54bdbc039be543a80b0e5b900774fc149008aee1cd4a0e7a89a2db1c621bd1"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+          "bytes": 12377,
+          "sha256": "ad09f46517bc923a245d7392f8bd79dae687ad311f39ab2a127d6d7321bcb445"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
+          "bytes": 7489,
+          "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
+          "bytes": 5417,
+          "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+          "bytes": 6991,
+          "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
+          "bytes": 9434,
+          "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
+          "bytes": 17176,
+          "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "bytes": 8331,
+          "sha256": "7640c57f8940e853bd037a8e4a2033e506335b004a60e91ea10027f3b47baaab"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
+          "bytes": 9714,
+          "sha256": "501c1311708643fc60bb0124c5224a2d447a4709ff29b87355bf730f9ab49b08"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
+          "bytes": 6876,
+          "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+        },
+        {
+          "path": "apps/frontend/src/estimated/datasets.ts",
+          "bytes": 3726,
+          "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+        },
+        {
+          "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+          "bytes": 9482,
+          "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+        },
+        {
+          "path": "apps/frontend/src/estimated/sizing.ts",
+          "bytes": 3392,
+          "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+        },
+        {
+          "path": "configs/cash-6max-100bb.json",
+          "bytes": 918,
+          "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+        },
+        {
+          "path": "configs/multiway-preflop-stage2.json",
+          "bytes": 95,
+          "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+        }
+      ],
+      "policy_artifacts": [
+        {
+          "filename": "btn-bb-srp-v1-policy.json",
+          "bytes": 19585,
+          "sha256": "b6199a5e950ab80853885c434e708c3e5d552b31d6d8e3b19b963f0891bf0409"
+        },
+        {
+          "filename": "btn-bb-srp-v1-later-policy.json",
+          "bytes": 46352,
+          "sha256": "019072f903a8cef2c2583dcf1a7ea30a593cfe7ee1e114b8e82542d912f060a9"
+        }
+      ],
+      "resources": {
+        "case_index": 2,
+        "case": [
+          "BTN_open_BB_call",
+          "8c8d2h",
+          "KcQh",
+          "bet125",
+          "ip"
+        ],
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "BTN_open_BB_call",
+          "8c8d2h",
+          "KcQh",
+          "bet125",
+          "ip",
+          "8192",
+          "low-flop-validation-v1",
+          "0.0014285714285714286"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 20.228811740875244,
+        "max_rss_kib": 343832
+      },
+      "floor_added_model_value_bb": {
+        "fraction": 0.99,
+        "mean": -8.981832826538072,
+        "nominal_interval": [
+          -10.716048161134294,
+          -7.247617491941852
+        ]
+      },
+      "bounded_sign": "negative",
+      "recorded_run_limits": [
+        "Continuation uses the existing saved strategy and current computed defence, not optimized play.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic."
+      ]
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "5s5d4c",
+      "hero": "AcJh",
+      "node": "bb_vs_75",
+      "actor": "BB",
+      "bettor": "BTN",
+      "history": [
+        "bet75"
+      ],
+      "samples": 8192,
+      "seed": "low-flop-validation-v1",
+      "delta": 0.0014285714285714286,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "source_graph_sha256": "2409bc39d7664a51bb20085406e8b45c49e5c458655bd5fdfb719e77cfba8394",
+      "reach": {
+        "hero_weight": 0.6,
+        "compatible_opponent_combos": 632,
+        "compatible_opponent_weight": 59.759999999999664
+      },
+      "initial": {
+        "tier": "medium",
+        "raw_equity": 0.33000888088824704,
+        "realization": 0.78,
+        "realized_equity": 0.2574069270928327,
+        "required": 0.3159424724602204,
+        "base": {
+          "fold": 35,
+          "call": 63,
+          "raise": 2
+        },
+        "raw": {
+          "fold": 93,
+          "call": 5,
+          "raise": 2
+        },
+        "actual": {
+          "fold": 0,
+          "call": 98,
+          "raise": 2
+        },
+        "call_bb": 4.13,
+        "pot_before_bb": 5.5
+      },
+      "rollout": {
+        "forced_action": "call",
+        "fold_incremental_payoff_bb": 0,
+        "mean_call_bb": -5.6046444702148355,
+        "sample_variance_bb2": 975.8306427493924,
+        "se_bb": 0.3451375834467962,
+        "normal_95_percent_interval": [
+          -6.281114133770556,
+          -4.928174806659115
+        ],
+        "empirical_bernstein": {
+          "lower": -7.433127989704722,
+          "upper": -3.7761609507249485,
+          "radius": 1.8284835194898872,
+          "delta": 0.0014285714285714286,
+          "bound_range_bb": 200.5,
+          "formula": "sqrt(2*s2*log(4/delta)/n)+7*range*log(4/delta)/(3*(n-1))",
+          "source": "https://www.cs.mcgill.ca/~colt2009/papers/012.pdf",
+          "independence_assumption": "Nominal statistical coverage under IID Monte Carlo draws; deterministic seeded PRNG approximation is not a formal random-source guarantee."
+        },
+        "min_observed_bb": -97.5,
+        "max_observed_bb": 100,
+        "positive_payoff_samples": 2437
+      },
+      "limits": [
+        "Continuation uses the complete legacy runtime policy, including saved rules, computed defence and inherited reference-tier deep-raise fallbacks; play is not optimized.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic.",
+        "The original run wording was clarified after independent review; no numerical result or source identity was changed."
+      ],
+      "case_index": 3,
+      "raw_report_sha256": "ff17233125b79082bf12ccfc3bf62e6436129d09f801ca6aba542abf67863e24",
+      "source_graph": [
+        {
+          "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+          "bytes": 1554,
+          "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+        },
+        {
+          "path": "apps/frontend/scripts/lib/equity.mjs",
+          "bytes": 8026,
+          "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+          "bytes": 3843,
+          "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+          "bytes": 11997,
+          "sha256": "f0373760d3c01b5f0f943f245d85342c699b12e3bd43468075c3f99f30bfc76e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/cached-values.mjs",
+          "bytes": 2594,
+          "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+          "bytes": 50585,
+          "sha256": "b1c55b4978c5e4d600dddb47365b5de43d5677bfae4d949b5ca206ccfb1b7491"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
+          "bytes": 9827,
+          "sha256": "486b455017f6bc8dfd16f081527f766b1af7bf9bf187f5865be1968fece62524"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+          "bytes": 9601,
+          "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+          "bytes": 18884,
+          "sha256": "d3e17dc724743c7b4f0fbb1d75c450b96e037a38257279c1e6010e68c2b9a63e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+          "bytes": 15988,
+          "sha256": "8ae8a3d7c0f240b60d90c71762e5a5195bc7e0cf36d5640e205910cf375390f4"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+          "bytes": 22705,
+          "sha256": "9c54bdbc039be543a80b0e5b900774fc149008aee1cd4a0e7a89a2db1c621bd1"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+          "bytes": 12377,
+          "sha256": "ad09f46517bc923a245d7392f8bd79dae687ad311f39ab2a127d6d7321bcb445"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
+          "bytes": 7489,
+          "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
+          "bytes": 5417,
+          "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+          "bytes": 6991,
+          "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
+          "bytes": 9434,
+          "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
+          "bytes": 17176,
+          "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "bytes": 8331,
+          "sha256": "7640c57f8940e853bd037a8e4a2033e506335b004a60e91ea10027f3b47baaab"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
+          "bytes": 9714,
+          "sha256": "501c1311708643fc60bb0124c5224a2d447a4709ff29b87355bf730f9ab49b08"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
+          "bytes": 6876,
+          "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+        },
+        {
+          "path": "apps/frontend/src/estimated/datasets.ts",
+          "bytes": 3726,
+          "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+        },
+        {
+          "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+          "bytes": 9482,
+          "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+        },
+        {
+          "path": "apps/frontend/src/estimated/sizing.ts",
+          "bytes": 3392,
+          "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+        },
+        {
+          "path": "configs/cash-6max-100bb.json",
+          "bytes": 918,
+          "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+        },
+        {
+          "path": "configs/multiway-preflop-stage2.json",
+          "bytes": 95,
+          "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+        }
+      ],
+      "policy_artifacts": [
+        {
+          "filename": "btn-bb-srp-v1-policy.json",
+          "bytes": 19585,
+          "sha256": "b6199a5e950ab80853885c434e708c3e5d552b31d6d8e3b19b963f0891bf0409"
+        },
+        {
+          "filename": "btn-bb-srp-v1-later-policy.json",
+          "bytes": 46352,
+          "sha256": "019072f903a8cef2c2583dcf1a7ea30a593cfe7ee1e114b8e82542d912f060a9"
+        }
+      ],
+      "resources": {
+        "case_index": 3,
+        "case": [
+          "BTN_open_BB_call",
+          "5s5d4c",
+          "AcJh",
+          "bet75",
+          "ip"
+        ],
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "BTN_open_BB_call",
+          "5s5d4c",
+          "AcJh",
+          "bet75",
+          "ip",
+          "8192",
+          "low-flop-validation-v1",
+          "0.0014285714285714286"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 36.98441743850708,
+        "max_rss_kib": 345756
+      },
+      "floor_added_model_value_bb": {
+        "fraction": 0.93,
+        "mean": -5.212319357299798,
+        "nominal_interval": [
+          -6.912809030425392,
+          -3.5118296841742023
+        ]
+      },
+      "bounded_sign": "negative",
+      "recorded_run_limits": [
+        "Continuation uses the existing saved strategy and current computed defence, not optimized play.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic."
+      ]
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8s5d2c",
+      "hero": "7c7d",
+      "node": "ip_vs_75",
+      "actor": "BTN",
+      "bettor": "UTG",
+      "history": [
+        "bet75"
+      ],
+      "samples": 8192,
+      "seed": "low-flop-validation-v1",
+      "delta": 0.0014285714285714286,
+      "source_fingerprint": "9f5dcda767159e2e27611335f8028e298e1f8b7357ec45a5e874bbdc3e37ce44",
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6",
+      "source_graph_sha256": "2409bc39d7664a51bb20085406e8b45c49e5c458655bd5fdfb719e77cfba8394",
+      "reach": {
+        "hero_weight": 0.85,
+        "compatible_opponent_combos": 248,
+        "compatible_opponent_weight": 18.389999999999976
+      },
+      "initial": {
+        "tier": "medium",
+        "raw_equity": 0.31375018323805065,
+        "realization": 0.85,
+        "realized_equity": 0.26668765575234304,
+        "required": 0.3159189486631709,
+        "base": {
+          "fold": 55,
+          "call": 45,
+          "raise": 0
+        },
+        "raw": {
+          "fold": 92,
+          "call": 8,
+          "raise": 0
+        },
+        "actual": {
+          "fold": 0,
+          "call": 100,
+          "raise": 0
+        },
+        "call_bb": 4.88,
+        "pot_before_bb": 6.5
+      },
+      "rollout": {
+        "forced_action": "call",
+        "fold_incremental_payoff_bb": 0,
+        "mean_call_bb": -3.2648557128906224,
+        "sample_variance_bb2": 458.9659765155576,
+        "se_bb": 0.236698373843425,
+        "normal_95_percent_interval": [
+          -3.7287845256237353,
+          -2.8009269001575094
+        ],
+        "empirical_bernstein": {
+          "lower": -4.663544573466549,
+          "upper": -1.866166852314696,
+          "radius": 1.3986888605759265,
+          "delta": 0.0014285714285714286,
+          "bound_range_bb": 201.5,
+          "formula": "sqrt(2*s2*log(4/delta)/n)+7*range*log(4/delta)/(3*(n-1))",
+          "source": "https://www.cs.mcgill.ca/~colt2009/papers/012.pdf",
+          "independence_assumption": "Nominal statistical coverage under IID Monte Carlo draws; deterministic seeded PRNG approximation is not a formal random-source guarantee."
+        },
+        "min_observed_bb": -97.5,
+        "max_observed_bb": 101,
+        "positive_payoff_samples": 2261
+      },
+      "limits": [
+        "Continuation uses the complete legacy runtime policy, including saved rules, computed defence and inherited reference-tier deep-raise fallbacks; play is not optimized.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic.",
+        "The original run wording was clarified after independent review; no numerical result or source identity was changed."
+      ],
+      "case_index": 4,
+      "raw_report_sha256": "46ce6a7683cd12e0743a0021268737d75d37142c2ce32be8aa6f6893026a76db",
+      "source_graph": [
+        {
+          "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+          "bytes": 1554,
+          "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+        },
+        {
+          "path": "apps/frontend/scripts/lib/equity.mjs",
+          "bytes": 8026,
+          "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+          "bytes": 3843,
+          "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+          "bytes": 11997,
+          "sha256": "f0373760d3c01b5f0f943f245d85342c699b12e3bd43468075c3f99f30bfc76e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/cached-values.mjs",
+          "bytes": 2594,
+          "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+          "bytes": 50585,
+          "sha256": "b1c55b4978c5e4d600dddb47365b5de43d5677bfae4d949b5ca206ccfb1b7491"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
+          "bytes": 9827,
+          "sha256": "486b455017f6bc8dfd16f081527f766b1af7bf9bf187f5865be1968fece62524"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+          "bytes": 9601,
+          "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+          "bytes": 18884,
+          "sha256": "d3e17dc724743c7b4f0fbb1d75c450b96e037a38257279c1e6010e68c2b9a63e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+          "bytes": 15988,
+          "sha256": "8ae8a3d7c0f240b60d90c71762e5a5195bc7e0cf36d5640e205910cf375390f4"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+          "bytes": 22705,
+          "sha256": "9c54bdbc039be543a80b0e5b900774fc149008aee1cd4a0e7a89a2db1c621bd1"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+          "bytes": 12377,
+          "sha256": "ad09f46517bc923a245d7392f8bd79dae687ad311f39ab2a127d6d7321bcb445"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
+          "bytes": 7489,
+          "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
+          "bytes": 5417,
+          "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+          "bytes": 6991,
+          "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
+          "bytes": 9434,
+          "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
+          "bytes": 17176,
+          "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "bytes": 8331,
+          "sha256": "7640c57f8940e853bd037a8e4a2033e506335b004a60e91ea10027f3b47baaab"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
+          "bytes": 9714,
+          "sha256": "501c1311708643fc60bb0124c5224a2d447a4709ff29b87355bf730f9ab49b08"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
+          "bytes": 6876,
+          "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+        },
+        {
+          "path": "apps/frontend/src/estimated/datasets.ts",
+          "bytes": 3726,
+          "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+        },
+        {
+          "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+          "bytes": 9482,
+          "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+        },
+        {
+          "path": "apps/frontend/src/estimated/sizing.ts",
+          "bytes": 3392,
+          "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+        },
+        {
+          "path": "configs/cash-6max-100bb.json",
+          "bytes": 918,
+          "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+        },
+        {
+          "path": "configs/multiway-preflop-stage2.json",
+          "bytes": 95,
+          "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+        }
+      ],
+      "policy_artifacts": [
+        {
+          "filename": "utg-btn-srp-v1-policy.json",
+          "bytes": 35145,
+          "sha256": "0f2828e22e1df77ee1df3e81c6aa618093a62af66c19371660080b67b726d4dd"
+        },
+        {
+          "filename": "utg-btn-srp-v1-later-policy.json",
+          "bytes": 43025,
+          "sha256": "9c2d62ec2271e9e8f8ae4611c8b64f8869edc752ae041968853bc1649eea3550"
+        }
+      ],
+      "resources": {
+        "case_index": 4,
+        "case": [
+          "UTG_open_BTN_call",
+          "8s5d2c",
+          "7c7d",
+          "bet75",
+          "oop"
+        ],
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "UTG_open_BTN_call",
+          "8s5d2c",
+          "7c7d",
+          "bet75",
+          "oop",
+          "8192",
+          "low-flop-validation-v1",
+          "0.0014285714285714286"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 12.513516902923584,
+        "max_rss_kib": 334828
+      },
+      "floor_added_model_value_bb": {
+        "fraction": 0.92,
+        "mean": -3.003667255859373,
+        "nominal_interval": [
+          -4.290461007589225,
+          -1.7168735041295202
+        ]
+      },
+      "bounded_sign": "negative",
+      "recorded_run_limits": [
+        "Continuation uses the existing saved strategy and current computed defence, not optimized play.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic."
+      ]
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s5d2c",
+      "hero": "Ac4d",
+      "node": "bb_vs_125",
+      "actor": "BB",
+      "bettor": "BTN",
+      "history": [
+        "bet125"
+      ],
+      "samples": 8192,
+      "seed": "low-flop-validation-v1",
+      "delta": 0.0014285714285714286,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "source_graph_sha256": "2409bc39d7664a51bb20085406e8b45c49e5c458655bd5fdfb719e77cfba8394",
+      "reach": {
+        "hero_weight": 0.95,
+        "compatible_opponent_combos": 549,
+        "compatible_opponent_weight": 14.542500000000011
+      },
+      "initial": {
+        "tier": "draw",
+        "raw_equity": 0.4743349295349245,
+        "realization": 0.88,
+        "realized_equity": 0.4174147379907336,
+        "required": 0.3760179264360278,
+        "base": {
+          "fold": 38,
+          "call": 47,
+          "raise": 15
+        },
+        "raw": {
+          "fold": 10,
+          "call": 75,
+          "raise": 15
+        },
+        "actual": {
+          "fold": 0,
+          "call": 85,
+          "raise": 15
+        },
+        "call_bb": 6.88,
+        "pot_before_bb": 5.5
+      },
+      "rollout": {
+        "forced_action": "call",
+        "fold_incremental_payoff_bb": 0,
+        "mean_call_bb": -1.1114169921875023,
+        "sample_variance_bb2": 920.5640139446397,
+        "se_bb": 0.33522162349478074,
+        "normal_95_percent_interval": [
+          -1.7684513742372725,
+          -0.45438261013773207
+        ],
+        "empirical_bernstein": {
+          "lower": -2.9003922243912688,
+          "upper": 0.6775582400162641,
+          "radius": 1.7889752322037664,
+          "delta": 0.0014285714285714286,
+          "bound_range_bb": 200.5,
+          "formula": "sqrt(2*s2*log(4/delta)/n)+7*range*log(4/delta)/(3*(n-1))",
+          "source": "https://www.cs.mcgill.ca/~colt2009/papers/012.pdf",
+          "independence_assumption": "Nominal statistical coverage under IID Monte Carlo draws; deterministic seeded PRNG approximation is not a formal random-source guarantee."
+        },
+        "min_observed_bb": -97.5,
+        "max_observed_bb": 100,
+        "positive_payoff_samples": 3298
+      },
+      "limits": [
+        "Continuation uses the complete legacy runtime policy, including saved rules, computed defence and inherited reference-tier deep-raise fallbacks; play is not optimized.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic.",
+        "The original run wording was clarified after independent review; no numerical result or source identity was changed."
+      ],
+      "case_index": 5,
+      "raw_report_sha256": "fdcf1c88412152e4d89e7738956a659619dc539a4f0665552f32c6cfcb698a2b",
+      "source_graph": [
+        {
+          "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+          "bytes": 1554,
+          "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+        },
+        {
+          "path": "apps/frontend/scripts/lib/equity.mjs",
+          "bytes": 8026,
+          "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+          "bytes": 3843,
+          "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+          "bytes": 11997,
+          "sha256": "f0373760d3c01b5f0f943f245d85342c699b12e3bd43468075c3f99f30bfc76e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/cached-values.mjs",
+          "bytes": 2594,
+          "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+          "bytes": 50585,
+          "sha256": "b1c55b4978c5e4d600dddb47365b5de43d5677bfae4d949b5ca206ccfb1b7491"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
+          "bytes": 9827,
+          "sha256": "486b455017f6bc8dfd16f081527f766b1af7bf9bf187f5865be1968fece62524"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+          "bytes": 9601,
+          "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+          "bytes": 18884,
+          "sha256": "d3e17dc724743c7b4f0fbb1d75c450b96e037a38257279c1e6010e68c2b9a63e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+          "bytes": 15988,
+          "sha256": "8ae8a3d7c0f240b60d90c71762e5a5195bc7e0cf36d5640e205910cf375390f4"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+          "bytes": 22705,
+          "sha256": "9c54bdbc039be543a80b0e5b900774fc149008aee1cd4a0e7a89a2db1c621bd1"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+          "bytes": 12377,
+          "sha256": "ad09f46517bc923a245d7392f8bd79dae687ad311f39ab2a127d6d7321bcb445"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
+          "bytes": 7489,
+          "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
+          "bytes": 5417,
+          "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+          "bytes": 6991,
+          "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
+          "bytes": 9434,
+          "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
+          "bytes": 17176,
+          "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "bytes": 8331,
+          "sha256": "7640c57f8940e853bd037a8e4a2033e506335b004a60e91ea10027f3b47baaab"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
+          "bytes": 9714,
+          "sha256": "501c1311708643fc60bb0124c5224a2d447a4709ff29b87355bf730f9ab49b08"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
+          "bytes": 6876,
+          "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+        },
+        {
+          "path": "apps/frontend/src/estimated/datasets.ts",
+          "bytes": 3726,
+          "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+        },
+        {
+          "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+          "bytes": 9482,
+          "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+        },
+        {
+          "path": "apps/frontend/src/estimated/sizing.ts",
+          "bytes": 3392,
+          "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+        },
+        {
+          "path": "configs/cash-6max-100bb.json",
+          "bytes": 918,
+          "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+        },
+        {
+          "path": "configs/multiway-preflop-stage2.json",
+          "bytes": 95,
+          "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+        }
+      ],
+      "policy_artifacts": [
+        {
+          "filename": "btn-bb-srp-v1-policy.json",
+          "bytes": 19585,
+          "sha256": "b6199a5e950ab80853885c434e708c3e5d552b31d6d8e3b19b963f0891bf0409"
+        },
+        {
+          "filename": "btn-bb-srp-v1-later-policy.json",
+          "bytes": 46352,
+          "sha256": "019072f903a8cef2c2583dcf1a7ea30a593cfe7ee1e114b8e82542d912f060a9"
+        }
+      ],
+      "resources": {
+        "case_index": 5,
+        "case": [
+          "BTN_open_BB_call",
+          "8s5d2c",
+          "Ac4d",
+          "bet125",
+          "ip"
+        ],
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "BTN_open_BB_call",
+          "8s5d2c",
+          "Ac4d",
+          "bet125",
+          "ip",
+          "8192",
+          "low-flop-validation-v1",
+          "0.0014285714285714286"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 34.87553381919861,
+        "max_rss_kib": 334704
+      },
+      "floor_added_model_value_bb": {
+        "fraction": 0.1,
+        "mean": -0.11114169921875024,
+        "nominal_interval": [
+          -0.2900392224391269,
+          0.06775582400162641
+        ]
+      },
+      "bounded_sign": "inconclusive",
+      "recorded_run_limits": [
+        "Continuation uses the existing saved strategy and current computed defence, not optimized play.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic."
+      ]
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s5d2c",
+      "hero": "2d2h",
+      "node": "bb_vs_75",
+      "actor": "BB",
+      "bettor": "BTN",
+      "history": [
+        "bet75"
+      ],
+      "samples": 8192,
+      "seed": "low-flop-validation-v1",
+      "delta": 0.0014285714285714286,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "source_graph_sha256": "2409bc39d7664a51bb20085406e8b45c49e5c458655bd5fdfb719e77cfba8394",
+      "reach": {
+        "hero_weight": 0.95,
+        "compatible_opponent_combos": 681,
+        "compatible_opponent_weight": 77.92500000000028
+      },
+      "initial": {
+        "tier": "monster",
+        "raw_equity": 0.8992556800057985,
+        "realization": 1,
+        "realized_equity": 0.8992556800057985,
+        "required": 0.3159424724602204,
+        "base": {
+          "fold": 0,
+          "call": 65,
+          "raise": 35
+        },
+        "raw": {
+          "fold": 0,
+          "call": 65,
+          "raise": 35
+        },
+        "actual": {
+          "fold": 0,
+          "call": 65,
+          "raise": 35
+        },
+        "call_bb": 4.13,
+        "pot_before_bb": 5.5
+      },
+      "rollout": {
+        "forced_action": "call",
+        "fold_incremental_payoff_bb": 0,
+        "mean_call_bb": 20.99933544921877,
+        "sample_variance_bb2": 1508.193116587983,
+        "se_bb": 0.42907529065683103,
+        "normal_95_percent_interval": [
+          20.15834787953138,
+          21.840323018906158
+        ],
+        "empirical_bernstein": {
+          "lower": 18.83641783896611,
+          "upper": 23.16225305947143,
+          "radius": 2.1629176102526584,
+          "delta": 0.0014285714285714286,
+          "bound_range_bb": 200.5,
+          "formula": "sqrt(2*s2*log(4/delta)/n)+7*range*log(4/delta)/(3*(n-1))",
+          "source": "https://www.cs.mcgill.ca/~colt2009/papers/012.pdf",
+          "independence_assumption": "Nominal statistical coverage under IID Monte Carlo draws; deterministic seeded PRNG approximation is not a formal random-source guarantee."
+        },
+        "min_observed_bb": -97.5,
+        "max_observed_bb": 100,
+        "positive_payoff_samples": 7402
+      },
+      "limits": [
+        "Continuation uses the complete legacy runtime policy, including saved rules, computed defence and inherited reference-tier deep-raise fallbacks; play is not optimized.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic.",
+        "The original run wording was clarified after independent review; no numerical result or source identity was changed."
+      ],
+      "case_index": 6,
+      "raw_report_sha256": "63c54bf38dc45f33f5f3f7f44e43da89e18e73d96e26d9f6f8001aa8a110b557",
+      "source_graph": [
+        {
+          "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+          "bytes": 1554,
+          "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+        },
+        {
+          "path": "apps/frontend/scripts/lib/equity.mjs",
+          "bytes": 8026,
+          "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+          "bytes": 3843,
+          "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+          "bytes": 11997,
+          "sha256": "f0373760d3c01b5f0f943f245d85342c699b12e3bd43468075c3f99f30bfc76e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/cached-values.mjs",
+          "bytes": 2594,
+          "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+          "bytes": 50585,
+          "sha256": "b1c55b4978c5e4d600dddb47365b5de43d5677bfae4d949b5ca206ccfb1b7491"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
+          "bytes": 9827,
+          "sha256": "486b455017f6bc8dfd16f081527f766b1af7bf9bf187f5865be1968fece62524"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+          "bytes": 9601,
+          "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+          "bytes": 18884,
+          "sha256": "d3e17dc724743c7b4f0fbb1d75c450b96e037a38257279c1e6010e68c2b9a63e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+          "bytes": 15988,
+          "sha256": "8ae8a3d7c0f240b60d90c71762e5a5195bc7e0cf36d5640e205910cf375390f4"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+          "bytes": 22705,
+          "sha256": "9c54bdbc039be543a80b0e5b900774fc149008aee1cd4a0e7a89a2db1c621bd1"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+          "bytes": 12377,
+          "sha256": "ad09f46517bc923a245d7392f8bd79dae687ad311f39ab2a127d6d7321bcb445"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
+          "bytes": 7489,
+          "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
+          "bytes": 5417,
+          "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+          "bytes": 6991,
+          "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
+          "bytes": 9434,
+          "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
+          "bytes": 17176,
+          "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "bytes": 8331,
+          "sha256": "7640c57f8940e853bd037a8e4a2033e506335b004a60e91ea10027f3b47baaab"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
+          "bytes": 9714,
+          "sha256": "501c1311708643fc60bb0124c5224a2d447a4709ff29b87355bf730f9ab49b08"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
+          "bytes": 6876,
+          "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+        },
+        {
+          "path": "apps/frontend/src/estimated/datasets.ts",
+          "bytes": 3726,
+          "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+        },
+        {
+          "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+          "bytes": 9482,
+          "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+        },
+        {
+          "path": "apps/frontend/src/estimated/sizing.ts",
+          "bytes": 3392,
+          "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+        },
+        {
+          "path": "configs/cash-6max-100bb.json",
+          "bytes": 918,
+          "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+        },
+        {
+          "path": "configs/multiway-preflop-stage2.json",
+          "bytes": 95,
+          "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+        }
+      ],
+      "policy_artifacts": [
+        {
+          "filename": "btn-bb-srp-v1-policy.json",
+          "bytes": 19585,
+          "sha256": "b6199a5e950ab80853885c434e708c3e5d552b31d6d8e3b19b963f0891bf0409"
+        },
+        {
+          "filename": "btn-bb-srp-v1-later-policy.json",
+          "bytes": 46352,
+          "sha256": "019072f903a8cef2c2583dcf1a7ea30a593cfe7ee1e114b8e82542d912f060a9"
+        }
+      ],
+      "resources": {
+        "case_index": 6,
+        "case": [
+          "BTN_open_BB_call",
+          "8s5d2c",
+          "2d2h",
+          "bet75",
+          "ip"
+        ],
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "BTN_open_BB_call",
+          "8s5d2c",
+          "2d2h",
+          "bet75",
+          "ip",
+          "8192",
+          "low-flop-validation-v1",
+          "0.0014285714285714286"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 38.87623858451843,
+        "max_rss_kib": 349164
+      },
+      "floor_added_model_value_bb": {
+        "fraction": 0.0,
+        "mean": 0.0,
+        "nominal_interval": [
+          0.0,
+          0.0
+        ]
+      },
+      "bounded_sign": "positive",
+      "recorded_run_limits": [
+        "Continuation uses the existing saved strategy and current computed defence, not optimized play.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic."
+      ]
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s5d2c",
+      "hero": "AcKh",
+      "node": "bb_vs_75",
+      "actor": "BB",
+      "bettor": "BTN",
+      "history": [
+        "bet75"
+      ],
+      "samples": 8192,
+      "seed": "low-flop-validation-v1",
+      "delta": 0.0014285714285714286,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "source_graph_sha256": "2409bc39d7664a51bb20085406e8b45c49e5c458655bd5fdfb719e77cfba8394",
+      "reach": {
+        "hero_weight": 0.25,
+        "compatible_opponent_combos": 618,
+        "compatible_opponent_weight": 69.53000000000024
+      },
+      "initial": {
+        "tier": "air",
+        "raw_equity": 0.47776486660718004,
+        "realization": 0.65,
+        "realized_equity": 0.31054716329466703,
+        "required": 0.3159424724602204,
+        "base": {
+          "fold": 82,
+          "call": 8,
+          "raise": 10
+        },
+        "raw": {
+          "fold": 51,
+          "call": 39,
+          "raise": 10
+        },
+        "actual": {
+          "fold": 51,
+          "call": 39,
+          "raise": 10
+        },
+        "call_bb": 4.13,
+        "pot_before_bb": 5.5
+      },
+      "rollout": {
+        "forced_action": "call",
+        "fold_incremental_payoff_bb": 0,
+        "mean_call_bb": -0.6491607055664051,
+        "sample_variance_bb2": 376.442757131691,
+        "se_bb": 0.2143653073643847,
+        "normal_95_percent_interval": [
+          -1.0693167080005992,
+          -0.22900470313221116
+        ],
+        "empirical_bernstein": {
+          "lower": -1.9566065567391995,
+          "upper": 0.6582851456063893,
+          "radius": 1.3074458511727944,
+          "delta": 0.0014285714285714286,
+          "bound_range_bb": 200.5,
+          "formula": "sqrt(2*s2*log(4/delta)/n)+7*range*log(4/delta)/(3*(n-1))",
+          "source": "https://www.cs.mcgill.ca/~colt2009/papers/012.pdf",
+          "independence_assumption": "Nominal statistical coverage under IID Monte Carlo draws; deterministic seeded PRNG approximation is not a formal random-source guarantee."
+        },
+        "min_observed_bb": -97.5,
+        "max_observed_bb": 100,
+        "positive_payoff_samples": 2876
+      },
+      "limits": [
+        "Continuation uses the complete legacy runtime policy, including saved rules, computed defence and inherited reference-tier deep-raise fallbacks; play is not optimized.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic.",
+        "The original run wording was clarified after independent review; no numerical result or source identity was changed."
+      ],
+      "case_index": 7,
+      "raw_report_sha256": "b7300e60e28845306baaa3e1d9d76c878f189d739af0f2ded282f9fc623ba8d3",
+      "source_graph": [
+        {
+          "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+          "bytes": 1554,
+          "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+        },
+        {
+          "path": "apps/frontend/scripts/lib/equity.mjs",
+          "bytes": 8026,
+          "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+          "bytes": 3843,
+          "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+          "bytes": 11997,
+          "sha256": "f0373760d3c01b5f0f943f245d85342c699b12e3bd43468075c3f99f30bfc76e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/cached-values.mjs",
+          "bytes": 2594,
+          "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+          "bytes": 50585,
+          "sha256": "b1c55b4978c5e4d600dddb47365b5de43d5677bfae4d949b5ca206ccfb1b7491"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
+          "bytes": 9827,
+          "sha256": "486b455017f6bc8dfd16f081527f766b1af7bf9bf187f5865be1968fece62524"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+          "bytes": 9601,
+          "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+          "bytes": 18884,
+          "sha256": "d3e17dc724743c7b4f0fbb1d75c450b96e037a38257279c1e6010e68c2b9a63e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+          "bytes": 15988,
+          "sha256": "8ae8a3d7c0f240b60d90c71762e5a5195bc7e0cf36d5640e205910cf375390f4"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
+          "bytes": 22705,
+          "sha256": "9c54bdbc039be543a80b0e5b900774fc149008aee1cd4a0e7a89a2db1c621bd1"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+          "bytes": 12377,
+          "sha256": "ad09f46517bc923a245d7392f8bd79dae687ad311f39ab2a127d6d7321bcb445"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
+          "bytes": 7489,
+          "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
+          "bytes": 5417,
+          "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+          "bytes": 6991,
+          "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
+          "bytes": 9434,
+          "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
+          "bytes": 17176,
+          "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "bytes": 8331,
+          "sha256": "7640c57f8940e853bd037a8e4a2033e506335b004a60e91ea10027f3b47baaab"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
+          "bytes": 9714,
+          "sha256": "501c1311708643fc60bb0124c5224a2d447a4709ff29b87355bf730f9ab49b08"
+        },
+        {
+          "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
+          "bytes": 6876,
+          "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+        },
+        {
+          "path": "apps/frontend/src/estimated/datasets.ts",
+          "bytes": 3726,
+          "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+        },
+        {
+          "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+          "bytes": 9482,
+          "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+        },
+        {
+          "path": "apps/frontend/src/estimated/sizing.ts",
+          "bytes": 3392,
+          "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+        },
+        {
+          "path": "configs/cash-6max-100bb.json",
+          "bytes": 918,
+          "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+        },
+        {
+          "path": "configs/multiway-preflop-stage2.json",
+          "bytes": 95,
+          "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+        }
+      ],
+      "policy_artifacts": [
+        {
+          "filename": "btn-bb-srp-v1-policy.json",
+          "bytes": 19585,
+          "sha256": "b6199a5e950ab80853885c434e708c3e5d552b31d6d8e3b19b963f0891bf0409"
+        },
+        {
+          "filename": "btn-bb-srp-v1-later-policy.json",
+          "bytes": 46352,
+          "sha256": "019072f903a8cef2c2583dcf1a7ea30a593cfe7ee1e114b8e82542d912f060a9"
+        }
+      ],
+      "resources": {
+        "case_index": 7,
+        "case": [
+          "BTN_open_BB_call",
+          "8s5d2c",
+          "AcKh",
+          "bet75",
+          "ip"
+        ],
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "BTN_open_BB_call",
+          "8s5d2c",
+          "AcKh",
+          "bet75",
+          "ip",
+          "8192",
+          "low-flop-validation-v1",
+          "0.0014285714285714286"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 30.507928133010864,
+        "max_rss_kib": 333012
+      },
+      "floor_added_model_value_bb": {
+        "fraction": 0.0,
+        "mean": -0.0,
+        "nominal_interval": [
+          -0.0,
+          0.0
+        ]
+      },
+      "bounded_sign": "inconclusive",
+      "recorded_run_limits": [
+        "Continuation uses the existing saved strategy and current computed defence, not optimized play.",
+        "Hero exact combo is fixed; opponent range is saved own-action reach conditioned on the observed bet and card removal.",
+        "No equilibrium or external-population validity claim.",
+        "Legacy same-amount all-in action labels condition different ranges; that known model limitation is preserved.",
+        "An initial floor-only ablation cannot change forced-call continuation because calling completes the flop.",
+        "The normal interval is descriptive; the conservative empirical-Bernstein interval is the bounded fixed-sample diagnostic."
+      ]
+    }
+  ],
+  "pending_case_indices": [],
+  "independent_review_scope_correction": "Continuation includes saved rules, computed defence and referenceLaterTierMix fallbacks for uncovered later-street raiseDepth>=2 nodes. Requiring a saved later artifact excludes whole-artifact substitution, not these inherited deep-node fallbacks. Raw reports and the executed snapshot are unchanged.",
+  "review_artifact": {
+    "path": "apps/frontend/docs/specs/low-flop-overcall.independent-review.md",
+    "sha256": "3493dc80ff5caa0f11e5e5c94d07fa9f7891d592c1a24ade7d2e3dd11a17686b",
+    "scope": "research-only; no implementation, model-version or publication approval"
+  }
+}

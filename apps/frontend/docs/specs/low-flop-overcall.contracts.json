@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "status": "research-contracts-passed-implementation-not-approved",
+  "checked_at_utc": "2026-10-04T18:02:24.233191+00:00",
+  "baseline_main_commit": "2064a41011f0e91685e592c6e5f4c07f07ba7570",
+  "contracts": {
+    "pass": 27,
+    "fail": 0,
+    "skip": 0,
+    "require_pinned_fixtures": true,
+    "initial_attempt": "pass1 preserved: Welford strict binary64 mean equality failed; assertion corrected to 1e-14, numerical algorithm unchanged",
+    "successful_process_records": [
+      {
+        "name": "postflop-low-flop-diagnostics",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "tests/postflop-low-flop-diagnostics.test.mjs"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.1644890308380127,
+        "max_rss_kib": 73556
+      },
+      {
+        "name": "postflop-flop-promotion-veto",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "tests/postflop-flop-promotion-veto.test.mjs"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.11438608169555664,
+        "max_rss_kib": 73556
+      },
+      {
+        "name": "postflop-rollout-contract",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "tests/postflop-rollout-contract.test.mjs"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.515852689743042,
+        "max_rss_kib": 111664
+      },
+      {
+        "name": "postflop-veto-builder",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "tests/postflop-veto-builder.test.mjs"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.7659962177276611,
+        "max_rss_kib": 111664
+      },
+      {
+        "name": "harness-parity",
+        "command": [
+          "python",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/run-contract-parity.py"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 2.1697490215301514,
+        "max_rss_kib": 147580
+      },
+      {
+        "name": "veto-replay-case1",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-main-case1-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-plan.json"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.31487512588500977,
+        "max_rss_kib": 147580
+      },
+      {
+        "name": "veto-replay-case2",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-main-case2-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-plan.json"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.26481056213378906,
+        "max_rss_kib": 147580
+      },
+      {
+        "name": "veto-replay-case3",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-main-case3-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-plan.json"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.3150603771209717,
+        "max_rss_kib": 147580
+      },
+      {
+        "name": "veto-replay-case4",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-main-case4-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-plan.json"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.26474905014038086,
+        "max_rss_kib": 147580
+      },
+      {
+        "name": "veto-replay-case5",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-main-case5-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-plan.json"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.3149373531341553,
+        "max_rss_kib": 147580
+      },
+      {
+        "name": "veto-replay-case6",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-main-case6-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-plan.json"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.3152279853820801,
+        "max_rss_kib": 147580
+      },
+      {
+        "name": "veto-replay-case7",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-main-case7-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-research/validation-plan.json"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.2647709846496582,
+        "max_rss_kib": 147580
+      }
+    ],
+    "elapsed_s": 5.784904479980469,
+    "max_rss_kib": 147580,
+    "rss_note": "Python child-process cumulative high-water mark, not per-process RSS"
+  },
+  "parity": {
+    "samples": 128,
+    "seed": "low-flop-contract-parity-v1",
+    "scope": "single uncapped root; exact reach, initial, rollout, policy/input identities",
+    "files": [
+      {
+        "name": "contract-parity-main-baseline.json",
+        "sha256": "8afe4c7f49a7b699f597885e11666334e83fa68cab81ddf58ca0f01f2bcaaf68"
+      },
+      {
+        "name": "contract-parity-main-contract-v2.json",
+        "sha256": "548e41c8892cf72364737b06619b5af08a8dad434862af500de951dd8cf691a4"
+      }
+    ]
+  },
+  "seven_binding_replays": [
+    {
+      "case": 1,
+      "raw_report_sha256": "9868957593e47c3c7cfdb2d0c3e9ecaf35d3813a9d7b0eea9d94113170487570",
+      "replay_sha256": "d3d93716ea0fb2eb5bf87f08683da90149212e68606e5c2ba75251b9854fe9e2",
+      "classification": "negative",
+      "default_applied": false,
+      "preview_applied": true,
+      "removed_call_pp": 98,
+      "raw": {
+        "fold": 98,
+        "call": 0,
+        "raise": 2
+      },
+      "legacy": {
+        "fold": 0,
+        "call": 98,
+        "raise": 2
+      },
+      "preview": {
+        "fold": 98,
+        "call": 0,
+        "raise": 2
+      }
+    },
+    {
+      "case": 2,
+      "raw_report_sha256": "8edffbc6bd4174e1ad12b4329112f287a27dc0cda4420dc4e481e72d90a896ee",
+      "replay_sha256": "a1481a161f00c56abd09139918c7550d7eba611ef924336581ba19b0ef74caeb",
+      "classification": "negative",
+      "default_applied": false,
+      "preview_applied": true,
+      "removed_call_pp": 99,
+      "raw": {
+        "fold": 99,
+        "call": 0,
+        "raise": 1
+      },
+      "legacy": {
+        "fold": 0,
+        "call": 99,
+        "raise": 1
+      },
+      "preview": {
+        "fold": 99,
+        "call": 0,
+        "raise": 1
+      }
+    },
+    {
+      "case": 3,
+      "raw_report_sha256": "ff17233125b79082bf12ccfc3bf62e6436129d09f801ca6aba542abf67863e24",
+      "replay_sha256": "9ffe533cfb83d92a934ee376a4bea23f324f9576ccb4a3ba858893b744edf9b4",
+      "classification": "negative",
+      "default_applied": false,
+      "preview_applied": true,
+      "removed_call_pp": 93,
+      "raw": {
+        "fold": 93,
+        "call": 5,
+        "raise": 2
+      },
+      "legacy": {
+        "fold": 0,
+        "call": 98,
+        "raise": 2
+      },
+      "preview": {
+        "fold": 93,
+        "call": 5,
+        "raise": 2
+      }
+    },
+    {
+      "case": 4,
+      "raw_report_sha256": "46ce6a7683cd12e0743a0021268737d75d37142c2ce32be8aa6f6893026a76db",
+      "replay_sha256": "6f0f09945e0793d33c419e6123e599f5533e7f1ea47fe8a500ff01acc452a40d",
+      "classification": "negative",
+      "default_applied": false,
+      "preview_applied": true,
+      "removed_call_pp": 92,
+      "raw": {
+        "fold": 92,
+        "call": 8,
+        "raise": 0
+      },
+      "legacy": {
+        "fold": 0,
+        "call": 100,
+        "raise": 0
+      },
+      "preview": {
+        "fold": 92,
+        "call": 8,
+        "raise": 0
+      }
+    },
+    {
+      "case": 5,
+      "raw_report_sha256": "fdcf1c88412152e4d89e7738956a659619dc539a4f0665552f32c6cfcb698a2b",
+      "replay_sha256": "f59ea396b65340e509d6d19e16655c8a8b53e81822da01b3e5928a3fca79378f",
+      "classification": "inconclusive",
+      "default_applied": false,
+      "preview_applied": false,
+      "removed_call_pp": 0,
+      "raw": {
+        "fold": 10,
+        "call": 75,
+        "raise": 15
+      },
+      "legacy": {
+        "fold": 0,
+        "call": 85,
+        "raise": 15
+      },
+      "preview": {
+        "fold": 0,
+        "call": 85,
+        "raise": 15
+      }
+    },
+    {
+      "case": 6,
+      "raw_report_sha256": "63c54bf38dc45f33f5f3f7f44e43da89e18e73d96e26d9f6f8001aa8a110b557",
+      "replay_sha256": "675ac9c7d4330bab2e8f9792ae5c8f052611ca13c686aaa402580c3fb587b572",
+      "classification": "positive",
+      "default_applied": false,
+      "preview_applied": false,
+      "removed_call_pp": 0,
+      "raw": {
+        "fold": 0,
+        "call": 65,
+        "raise": 35
+      },
+      "legacy": {
+        "fold": 0,
+        "call": 65,
+        "raise": 35
+      },
+      "preview": {
+        "fold": 0,
+        "call": 65,
+        "raise": 35
+      }
+    },
+    {
+      "case": 7,
+      "raw_report_sha256": "b7300e60e28845306baaa3e1d9d76c878f189d739af0f2ded282f9fc623ba8d3",
+      "replay_sha256": "a7582ec996ceeef6a2234fed14eb77cd58da45092d0fa01dd0bfa22b8da08e35",
+      "classification": "inconclusive",
+      "default_applied": false,
+      "preview_applied": false,
+      "removed_call_pp": 0,
+      "raw": {
+        "fold": 51,
+        "call": 39,
+        "raise": 10
+      },
+      "legacy": {
+        "fold": 51,
+        "call": 39,
+        "raise": 10
+      },
+      "preview": {
+        "fold": 51,
+        "call": 39,
+        "raise": 10
+      }
+    }
+  ],
+  "checked_source_inputs": 31,
+  "preserved_policy_copies_per_snapshot": 90,
+  "preserved_archive_sha256": "5f5dd88540c00ce7426146b91b1fd9c0cc10974b146ba02a175cc067395e7b0a",
+  "source_test_identities": [
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-promotion-veto.mjs",
+      "sha256": "6c7049b10f3a41630aefc26363438ae7f3a19a78b33aa3cc133ecf04be6c3b67"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/build-flop-promotion-veto.mjs",
+      "sha256": "a98b9832acbfda4e244e63a8e6034d0fa3a5b6e3d18f7e28b0dc22347a720741"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/rollout-diagnostic-contract.mjs",
+      "sha256": "c85cca9f28d05a794a5149177b9dff3f1188ec619dc4481f63ecc494d25b72f2"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+      "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+    },
+    {
+      "path": "apps/frontend/tests/postflop-low-flop-diagnostics.test.mjs",
+      "sha256": "96b28276a70045df90ac55a2ab8cafa800d017fda563f8eb1248a0ffb0f25d90"
+    },
+    {
+      "path": "apps/frontend/tests/postflop-flop-promotion-veto.test.mjs",
+      "sha256": "33e47e44325c7a08d47af7f49c87de9fdd9809e4b1ec819392dded298cd8c7d5"
+    },
+    {
+      "path": "apps/frontend/tests/postflop-rollout-contract.test.mjs",
+      "sha256": "70ad7354b6f29b92ffed63c2a3867bcd911adce5105af99e8c64e1da1b747116"
+    },
+    {
+      "path": "apps/frontend/tests/postflop-veto-builder.test.mjs",
+      "sha256": "e1a2312801953e0e5b7a048228c973e8c5728ea4a07dbf06a95052b9798ae834"
+    }
+  ],
+  "gate_source_sha256": "6c7049b10f3a41630aefc26363438ae7f3a19a78b33aa3cc133ecf04be6c3b67",
+  "builder_dependency_closure_sha256": "6a0d29aeb2549fcbf84c04959b76b8c4b1daad3a0e70c517477921caa934ffcc",
+  "remaining": [
+    "eight predeclared additional controls",
+    "independent code review",
+    "dedicated research-fixture delivery and mandatory gate",
+    "all-combo runtime impact audit and candidate-wide approval budget"
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "status": "offline-table-substitution-not-runtime-impact-acceptance",
+  "scope": "Original 48 facing nodes, exact four negative board/hero contexts only; no suit-isomorphic generalization, no certificate approval",
+  "source_diagnostics": [
+    {
+      "file": "main--BTN_open_BB_call--4s4d4c.json",
+      "sha256": "70b9b3c8b1069c24fed8c134289dd07c58dc17e7c6f13ea2ac0d3c5f0f91c270"
+    },
+    {
+      "file": "main--BTN_open_BB_call--5s5d4c.json",
+      "sha256": "26503318f0f8fef2adc0b36b3686b05c40f8f5e4e7c028bc084bf6350f1a103f"
+    },
+    {
+      "file": "main--BTN_open_BB_call--6h5h2d.json",
+      "sha256": "a40095d88626cdc1340898cd080b9fa93b145f11049c218ca87b7489463854f5"
+    },
+    {
+      "file": "main--BTN_open_BB_call--7s4d2c.json",
+      "sha256": "2b86a673f079365762a7b665cda2192904d44e7cd5c66e386bfcee1d1eb51752"
+    },
+    {
+      "file": "main--BTN_open_BB_call--8c8d2h.json",
+      "sha256": "e926f7757fc68aadae931a614af0dfaec204e67f721b8af228f96b31c0ef37e3"
+    },
+    {
+      "file": "main--BTN_open_BB_call--8s5d2c.json",
+      "sha256": "d93dde614e820c514a8d719b3fdb8844787e18691b8183fced7da0a63e6c4882"
+    },
+    {
+      "file": "main--BTN_open_BB_call--8s7d6c.json",
+      "sha256": "dcf297d767c603a7b5ae232430e822f3c3ad772bdd4c25afa15fed3c1e2dff0c"
+    },
+    {
+      "file": "main--BTN_open_BB_call--As7d2c.json",
+      "sha256": "ccdd89d531d888cb5655445a7f450ed2a9d54eacaf0c7cb0d918ed6e70bbfa36"
+    },
+    {
+      "file": "main--UTG_open_BTN_call--4s4d4c.json",
+      "sha256": "b7a1ca855b524ceeb4ad1ce2f2139f03ed56b754c0797ad09cc440636557110e"
+    },
+    {
+      "file": "main--UTG_open_BTN_call--5s5d4c.json",
+      "sha256": "9f47c58987436127385c35c60aa635314ec7825664f7e5f4d7d706bda470a925"
+    },
+    {
+      "file": "main--UTG_open_BTN_call--6h5h2d.json",
+      "sha256": "96255aa6174f53898f304c265ab18365eeea7fea14c7893be00d4992fdb28a86"
+    },
+    {
+      "file": "main--UTG_open_BTN_call--7s4d2c.json",
+      "sha256": "b3807dc4d4dbfe2564625369e2606b7bfb5ce9c9a2f9b6221dafe0664f742d28"
+    },
+    {
+      "file": "main--UTG_open_BTN_call--8c8d2h.json",
+      "sha256": "8a6cd336913e0fd016f47899478be430cb01b7b2c35fc521530b84520a220669"
+    },
+    {
+      "file": "main--UTG_open_BTN_call--8s5d2c.json",
+      "sha256": "5bdb03cbc5f7049f10e9972be17bdcc586e3f495c693a9ec827f0f057a4a18ce"
+    },
+    {
+      "file": "main--UTG_open_BTN_call--8s7d6c.json",
+      "sha256": "0c8d1634159e5d077a1178ae693b0aa90127f8bfb77dfd83b96d0c33ad79ff7b"
+    },
+    {
+      "file": "main--UTG_open_BTN_call--As7d2c.json",
+      "sha256": "bf921218ba148c32aa23898b8d4124388ff4a606a134f5006441d12c85d5c6d1"
+    }
+  ],
+  "rows": [
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "5s5d4c",
+      "node": "bb_vs_75",
+      "combos": 716,
+      "changed_combos": 1,
+      "changes": [
+        {
+          "case": 3,
+          "hero": "AcJh",
+          "weight": 0.6,
+          "call_removed_pp": 93
+        }
+      ],
+      "weighted_before": {
+        "fold": 52.88715415019757,
+        "call": 36.59940711462451,
+        "raise": 10.513438735177868
+      },
+      "weighted_preview": {
+        "fold": 52.99743083003946,
+        "call": 36.489130434782616,
+        "raise": 10.513438735177868
+      },
+      "call_delta_pp": -0.11027667984189549,
+      "floor_and_ceiling_recomputed": false
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "node": "bb_vs_75",
+      "combos": 697,
+      "changed_combos": 1,
+      "changes": [
+        {
+          "case": 1,
+          "hero": "KcQh",
+          "weight": 0.6,
+          "call_removed_pp": 98
+        }
+      ],
+      "weighted_before": {
+        "fold": 52.8871583601286,
+        "call": 38.12288987138253,
+        "raise": 8.98995176848875
+      },
+      "weighted_preview": {
+        "fold": 53.005325562700946,
+        "call": 38.00472266881019,
+        "raise": 8.98995176848875
+      },
+      "call_delta_pp": -0.11816720257234437,
+      "floor_and_ceiling_recomputed": false
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "node": "bb_vs_125",
+      "combos": 697,
+      "changed_combos": 1,
+      "changes": [
+        {
+          "case": 2,
+          "hero": "KcQh",
+          "weight": 0.6,
+          "call_removed_pp": 99
+        }
+      ],
+      "weighted_before": {
+        "fold": 65.57305064308687,
+        "call": 26.225180868167243,
+        "raise": 8.201768488745943
+      },
+      "weighted_preview": {
+        "fold": 65.69242363344058,
+        "call": 26.105807877813547,
+        "raise": 8.201768488745943
+      },
+      "call_delta_pp": -0.1193729903536962,
+      "floor_and_ceiling_recomputed": false
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8s5d2c",
+      "node": "ip_vs_75",
+      "combos": 196,
+      "changed_combos": 1,
+      "changes": [
+        {
+          "case": 4,
+          "hero": "7c7d",
+          "weight": 0.85,
+          "call_removed_pp": 92
+        }
+      ],
+      "weighted_before": {
+        "fold": 52.88442211055272,
+        "call": 39.20714684533782,
+        "raise": 7.908431044109429
+      },
+      "weighted_preview": {
+        "fold": 53.75767727526517,
+        "call": 38.333891680625364,
+        "raise": 7.908431044109429
+      },
+      "call_delta_pp": -0.8732551647124538,
+      "floor_and_ceiling_recomputed": false
+    }
+  ],
+  "total_node_combo_rows": 21546,
+  "changed_rows": 4,
+  "unchanged_rows": 21542,
+  "unknown_contexts": "unchanged by exact-key substitution; gate mismatch behavior separately covered by contracts",
+  "caveats": [
+    "This uses already produced gate-preview outputs and archived diagnostic tables; it is not an integrated runtime recomputation or independent gate evaluation for every combo",
+    "These four exact exceptions do not address all overcalls, raw logistic effects, saved range assumptions, or classifier errors",
+    "No MDF refill or ceiling recalculation was simulated"
+  ]
+}

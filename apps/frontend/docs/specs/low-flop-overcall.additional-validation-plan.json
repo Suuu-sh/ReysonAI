@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "predeclared_additional_research",
+  "samples_per_case": 8192,
+  "seed": "low-flop-controls-validation-v1",
+  "family_error_budget_nominal": 0.01,
+  "per_case_delta": 0.00125,
+  "source_snapshot": "main-baseline (original validated sampler; not contract-v2)",
+  "note": "Cases selected by independent reviewer from frequency diagnostics before any new rollout outcomes. Separate family from original seven cases.",
+  "cases": [
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "AsAd2h",
+      "hero": "KcQh",
+      "action": "bet75",
+      "bettor_role": "ip",
+      "case": 1
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "KsKd4c",
+      "hero": "AcJh",
+      "action": "bet75",
+      "bettor_role": "ip",
+      "case": 2
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "QsQd2h",
+      "hero": "AcJh",
+      "action": "bet75",
+      "bettor_role": "ip",
+      "case": 3
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "9s5d2c",
+      "hero": "7c7d",
+      "action": "bet125",
+      "bettor_role": "oop",
+      "case": 4
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s5d2c",
+      "hero": "Ad3d",
+      "action": "bet125",
+      "bettor_role": "ip",
+      "case": 5
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "9s5d2c",
+      "hero": "Ac4c",
+      "action": "bet125",
+      "bettor_role": "oop",
+      "case": 6
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "AsAd2h",
+      "hero": "4c3c",
+      "action": "bet75",
+      "bettor_role": "ip",
+      "case": 7
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "6h5h2d",
+      "hero": "QhJh",
+      "action": "bet75",
+      "bettor_role": "ip",
+      "case": 8
+    }
+  ]
+}

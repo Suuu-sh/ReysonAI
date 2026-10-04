@@ -1,0 +1,415 @@
+{
+  "schema_version": 2,
+  "status": "closed-runtime-v2-mandatory-gate-passed-independent-review-pending",
+  "source_checkpoint": "3934012",
+  "production_eligible": false,
+  "approval": "none",
+  "complete_gate_summary": {
+    "schema_version": 2,
+    "status": "closed-runtime-research-gate-passed-not-approved",
+    "production_eligible": false,
+    "approval": "none",
+    "required_contracts": 35,
+    "required_runtime_contracts": 8,
+    "environment": {
+      "python": "3.12.14",
+      "python_implementation": "CPython",
+      "zlib_compile": "1.3.2",
+      "zlib_runtime": "1.3.2",
+      "node_process": {
+        "node": "v24.19.0",
+        "versions": {
+          "node": "24.19.0",
+          "acorn": "8.17.0",
+          "ada": "3.4.4",
+          "amaro": "1.1.10",
+          "ares": "1.34.6",
+          "brotli": "1.2.0",
+          "cldr": "48.0",
+          "icu": "78.3",
+          "llhttp": "9.4.3",
+          "merve": "1.2.2",
+          "modules": "137",
+          "napi": "10",
+          "nbytes": "0.1.4",
+          "ncrypto": "0.0.1",
+          "nghttp2": "1.69.0",
+          "nghttp3": "",
+          "ngtcp2": "",
+          "openssl": "3.5.7",
+          "simdjson": "4.6.4",
+          "simdutf": "6.4.0",
+          "sqlite": "3.53.3",
+          "tz": "2026b",
+          "undici": "7.29.0",
+          "unicode": "17.0",
+          "uv": "1.52.1",
+          "uvwasi": "0.0.23",
+          "v8": "13.6.233.17-node.51",
+          "zlib": "1.3.2.1-motley-3246f1b",
+          "zstd": "1.5.7"
+        }
+      }
+    },
+    "fixture_manifest_sha256": "357e151671d6c9abf99014ce38f13d985066ecfc66f06b8587f54eb2baf87261",
+    "runtime_process": {
+      "command": [
+        "node",
+        "--max-old-space-size=384",
+        "--test-reporter=tap",
+        "tests/postflop-experimental-flop-veto-runtime.test.mjs"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 3.2731335569988005,
+      "cumulative_child_max_rss_kib": 254404
+    },
+    "contracts_passed": 35,
+    "runtime_contracts_passed": 8,
+    "skipped": 0,
+    "core_summary_sha256": "c4f4a3e2d80cc3484a816ec06a0257a1f3efc3544cdbccc7e9fa7166e16dba95",
+    "runtime_sources_sha256": "a70a76e6b806be975614231d999030090af684cc963a689ae33ec4013acec7dc",
+    "runtime_stdout_sha256": "78a71bbe8435cbaeaaba0b81b80c3a16323b17993905c689bdb077189f0b849f"
+  },
+  "core_gate_summary": {
+    "schema_version": 1,
+    "status": "research-gate-passed-not-approved",
+    "production_eligible": false,
+    "fixture_manifest_sha256": "357e151671d6c9abf99014ce38f13d985066ecfc66f06b8587f54eb2baf87261",
+    "fixture_archive_sha256": "31294eff5249b46fd737cfa97d0809c103381b80fc7e419eb89261f166b0adfa",
+    "candidate_mode": "current-checkout-source",
+    "processes": [
+      {
+        "name": "postflop-low-flop-diagnostics",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "--test-reporter=tap",
+          "tests/postflop-low-flop-diagnostics.test.mjs"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.16489329999603797,
+        "cumulative_child_max_rss_kib": 75844
+      },
+      {
+        "name": "postflop-flop-promotion-veto",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "--test-reporter=tap",
+          "tests/postflop-flop-promotion-veto.test.mjs"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.11434624998946674,
+        "cumulative_child_max_rss_kib": 75844
+      },
+      {
+        "name": "postflop-rollout-contract",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "--test-reporter=tap",
+          "tests/postflop-rollout-contract.test.mjs"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.6159944709943375,
+        "cumulative_child_max_rss_kib": 111284
+      },
+      {
+        "name": "postflop-veto-builder",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "--test-reporter=tap",
+          "tests/postflop-veto-builder.test.mjs"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.8164529490022687,
+        "cumulative_child_max_rss_kib": 111284
+      },
+      {
+        "name": "parity-main-baseline",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "BTN_open_BB_call",
+          "8c8d2h",
+          "KcQh",
+          "bet75",
+          "ip",
+          "128",
+          "low-flop-contract-parity-v1",
+          "0.01"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/main-baseline/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 1.1172304729989264,
+        "cumulative_child_max_rss_kib": 138780
+      },
+      {
+        "name": "parity-main-contract-v2",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/rollout-low-flop-defence.mjs",
+          "BTN_open_BB_call",
+          "8c8d2h",
+          "KcQh",
+          "bet75",
+          "ip",
+          "128",
+          "low-flop-contract-parity-v1",
+          "0.01"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/main-contract-v2/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 1.1173290699953213,
+        "cumulative_child_max_rss_kib": 146508
+      },
+      {
+        "name": "veto-replay-case1",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-main-case1-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-plan.json"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.26485219900496304,
+        "cumulative_child_max_rss_kib": 146508
+      },
+      {
+        "name": "veto-replay-case2",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-main-case2-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-plan.json"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.2648756999988109,
+        "cumulative_child_max_rss_kib": 146508
+      },
+      {
+        "name": "veto-replay-case3",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-main-case3-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-plan.json"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.31488721100322437,
+        "cumulative_child_max_rss_kib": 146508
+      },
+      {
+        "name": "veto-replay-case4",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-main-case4-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-plan.json"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.2651190169999609,
+        "cumulative_child_max_rss_kib": 146508
+      },
+      {
+        "name": "veto-replay-case5",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-main-case5-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-plan.json"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.26469501700194087,
+        "cumulative_child_max_rss_kib": 146508
+      },
+      {
+        "name": "veto-replay-case6",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-main-case6-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-plan.json"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.2646461249969434,
+        "cumulative_child_max_rss_kib": 146508
+      },
+      {
+        "name": "veto-replay-case7",
+        "command": [
+          "node",
+          "--max-old-space-size=384",
+          "scripts/postflop-ai/build-flop-promotion-veto.mjs",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/main-baseline",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-main-case7-n8192.json",
+          "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-restored-v2/validation-plan.json"
+        ],
+        "cwd": "/workspace/scratch/08c72b2d7549/reysonai-low-flop-overcalls/.local/low-flop-closed-runtime-gate-v2/core/candidate/apps/frontend",
+        "status": "pass",
+        "exit_code": 0,
+        "elapsed_s": 0.26465245499275625,
+        "cumulative_child_max_rss_kib": 146508
+      }
+    ],
+    "required_contracts": 27,
+    "required_parity_samples": 128,
+    "required_replays": 7,
+    "remaining": [
+      "independent delivery review",
+      "all-combo integrated runtime impact audit",
+      "candidate-wide statistical budget and trusted approval receipts"
+    ],
+    "parity_matched": [
+      "reach",
+      "initial",
+      "rollout",
+      "source_fingerprint",
+      "flop_policy_hash",
+      "later_policy_hash"
+    ],
+    "contracts_passed": 27,
+    "skipped": 0,
+    "uncapped_parity_passed": true,
+    "replays_passed": 7
+  },
+  "resource_totals": {
+    "process_elapsed_s": 9.123107793973759,
+    "cumulative_child_peak_rss_kib": 254404
+  },
+  "scope": {
+    "mandatory_contracts": 35,
+    "runtime_contracts": 8,
+    "skipped": 0,
+    "matrix_nodes": 48,
+    "combo_rows": 21546,
+    "changed_rows": 4,
+    "unchanged_rows": 21542,
+    "evidence_family": "original seven only, nominal .01; new eight not activated",
+    "closed_driver": "Private pinned replayDecision and playFromNode; no returned engine, strategy, table or Defence; only declared data parameters"
+  },
+  "python_validation": {
+    "pass": 26,
+    "log_sha256": "87a682f0a22aec4850ed664d6372221489730a7ab6b601bb046fbac91752b4c8"
+  },
+  "repack": {
+    "result": {
+      "path": "low-flop-repacked-immutable-v1.tar.gz",
+      "bytes": 1911780,
+      "sha256": "31294eff5249b46fd737cfa97d0809c103381b80fc7e419eb89261f166b0adfa"
+    },
+    "environment": {
+      "python": "3.12.14",
+      "implementation": "CPython",
+      "zlib_compile": "1.3.2",
+      "zlib_runtime": "1.3.2",
+      "platform": "Linux-6.18.44-x86_64-with-glibc2.41"
+    },
+    "original_archive_unchanged": true,
+    "remote_lfs_materialization": "not yet verified"
+  },
+  "logs": [
+    {
+      "path": ".local/low-flop-closed-runtime-gate-v2/summary.json",
+      "sha256": "e7d6675f9b0451daee9f8f25dd081969020865379cdbcec1123b42f45041e716"
+    },
+    {
+      "path": ".local/low-flop-closed-runtime-gate-v2/core/summary.json",
+      "sha256": "c4f4a3e2d80cc3484a816ec06a0257a1f3efc3544cdbccc7e9fa7166e16dba95"
+    },
+    {
+      "path": ".local/low-flop-closed-runtime-gate-v2/runtime.stdout",
+      "sha256": "78a71bbe8435cbaeaaba0b81b80c3a16323b17993905c689bdb077189f0b849f"
+    },
+    {
+      "path": ".local/low-flop-closed-runtime-gate-v2/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/low-flop-closed-runtime-gate-v2/runtime-sources.json",
+      "sha256": "a70a76e6b806be975614231d999030090af684cc963a689ae33ec4013acec7dc"
+    },
+    {
+      "path": ".local/low-flop-closed-runtime-gate-v2/core/candidate-inputs.json",
+      "sha256": "eb1628d5e7d1f438a19488cd3bfe309a34e65c5e3d8a267dda4471d424db013a"
+    }
+  ],
+  "sources": [
+    {
+      "path": "apps/frontend/scripts/postflop-ai/experimental-flop-veto-runtime.mjs",
+      "sha256": "a646391736147e8f651caef71aeddf2ad6c7bdbed7e3f270658c29f18329deda"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/experimental-flop-veto-pins.json",
+      "sha256": "597b1ad1f041e87b7f8b4f6240a42ca597c783ae49247586f44e42e5ed2b7e7a"
+    },
+    {
+      "path": "apps/frontend/tests/postflop-experimental-flop-veto-runtime.test.mjs",
+      "sha256": "e3370b8665bd5274fa1bbd2e12dd386dca0fbc1ed4aa13da25620871dc90df93"
+    },
+    {
+      "path": "scripts/research/low_flop_runtime_gate.py",
+      "sha256": "b3bf29bab314d9ed533015635290caf926a06819aa8df053ffca644bb99315c8"
+    },
+    {
+      "path": "scripts/research/low_flop_gate.py",
+      "sha256": "bb2b0f6eddf0ef23f0b7af6a4a754aa2c7b6626ec3313eb341ba131823ab75bd"
+    },
+    {
+      "path": "scripts/research/low_flop_fixture.py",
+      "sha256": "996762532f443166a1f7c70e57e4dfbaca5818ec950481c3f8634754a8dfb2e3"
+    },
+    {
+      "path": "tests/research/test_low_flop_runtime_gate.py",
+      "sha256": "e81c18748445d928da81cc618b22aead818155e4699505902376f557f5ecb6c5"
+    },
+    {
+      "path": "tests/research/test_low_flop_fixture.py",
+      "sha256": "14082885b566414efb77b3ed350746559a2efce1acf4eeb5a78569c76f067345"
+    }
+  ],
+  "remaining": [
+    "independent closed-driver and mandatory-gate review",
+    "remote delivery/clean materialization proof",
+    "fresh-main revalidation before integration",
+    "quality fix beyond four exact contexts",
+    "trusted actual receipt path and separate production approval"
+  ]
+}

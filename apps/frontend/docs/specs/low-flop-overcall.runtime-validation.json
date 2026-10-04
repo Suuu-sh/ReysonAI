@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "status": "restored-gate-and-experimental-runtime-tests-passed-awaiting-independent-review",
+  "candidate_source_checkpoint": "0f0987d35ef7e46e18ab38dfc50d6c5dc6b4d7d0",
+  "production_eligible": false,
+  "approval": "none",
+  "fixed_evidence_scope": "original four exact contexts only; new eight-case outcomes do not expand activation",
+  "statistics": "original seven-case family budget .01; original plus additional eight remains nominal .02, but new family is not used by this adapter",
+  "resource_records": [
+    {
+      "name": "restored-gate",
+      "exit_code": 0,
+      "elapsed_s": 6.439564465996227,
+      "cumulative_child_max_rss_kib": 139032
+    },
+    {
+      "name": "runtime-eight-tests",
+      "exit_code": 0,
+      "elapsed_s": 3.4258002519927686,
+      "cumulative_child_max_rss_kib": 247488
+    }
+  ],
+  "total_elapsed_s": 9.865364717988996,
+  "cumulative_child_peak_rss_kib": 247488,
+  "archive": {
+    "path": "low-flop-research-v1.tar.gz",
+    "bytes": 1911780,
+    "sha256": "31294eff5249b46fd737cfa97d0809c103381b80fc7e419eb89261f166b0adfa"
+  },
+  "archive_manifest_sha256": "357e151671d6c9abf99014ce38f13d985066ecfc66f06b8587f54eb2baf87261",
+  "restored_gate": {
+    "status": "research-gate-passed-not-approved",
+    "contracts": 27,
+    "skipped": 0,
+    "parity_samples_per_snapshot": 128,
+    "replays": 7,
+    "summary_sha256": "58ae8863ace5d78141c02a42576b087ca57217ecfd0f2c55011eb0e69e6a8595",
+    "candidate_inputs_sha256": "eb1628d5e7d1f438a19488cd3bfe309a34e65c5e3d8a267dda4471d424db013a"
+  },
+  "runtime_tests": {
+    "pass": 8,
+    "fail": 0,
+    "skip": 0,
+    "stdout_sha256": "7c9f79cdfe12c71b3fa02a93d377522f003ae31a5653f973ac89fafbeb59a7f0",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual_adapter_combo_rows": 21546,
+    "changed_rows": 4,
+    "unchanged_rows": 21542,
+    "real_engine_action_path": {
+      "legacy": "call",
+      "unapproved_preview": "fold"
+    },
+    "tests": [
+      "missing and unknown context fail-closed",
+      "default unchanged with no receipt",
+      "four-exact-context preview only",
+      "base code/input/evidence/protocol mutation rejected",
+      "loaded input drift rejected",
+      "real engine action path",
+      "warm-cache live table geometry mismatch rejected",
+      "48-node all-combo actual adapter audit"
+    ]
+  },
+  "source_identities": [
+    {
+      "path": "apps/frontend/scripts/postflop-ai/experimental-flop-veto-runtime.mjs",
+      "sha256": "e1a28fa154b915ba7a1abbfdff076a70d7e35fde1cf7f66a0f525c1104927a04"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/experimental-flop-veto-pins.json",
+      "sha256": "597b1ad1f041e87b7f8b4f6240a42ca597c783ae49247586f44e42e5ed2b7e7a"
+    },
+    {
+      "path": "apps/frontend/tests/postflop-experimental-flop-veto-runtime.test.mjs",
+      "sha256": "850f7ffc42301c24f45c489d4582c88b02dcb91282041d4609857dca5aedaee5"
+    },
+    {
+      "path": "scripts/research/low_flop_fixture.py",
+      "sha256": "5f9cee833cf8aef6e2f98e348846cc6420a1768cf172a659a903e555fde38aea"
+    },
+    {
+      "path": "scripts/research/low_flop_gate.py",
+      "sha256": "bb2b0f6eddf0ef23f0b7af6a4a754aa2c7b6626ec3313eb341ba131823ab75bd"
+    }
+  ],
+  "remaining": [
+    "independent archive/restore/gate and runtime code/impact review",
+    "trusted actual approval supply path before non-preview activation",
+    "fresh source revalidation before latest-main integration",
+    "general overcalling fix beyond these four exact contexts",
+    "separate production decision"
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "scope": "four-exact-contexts-unapproved-runtime-preview-only",
+  "production_eligible": false,
+  "sample_source_graph_sha256": "2409bc39d7664a51bb20085406e8b45c49e5c458655bd5fdfb719e77cfba8394",
+  "plan_file": "validation-plan.json",
+  "plan_sha256": "f3045505f517b64ce2ac6cdb91af93ca72da101e3fcf2a0106428555c8709757",
+  "gate_source_sha256": "6c7049b10f3a41630aefc26363438ae7f3a19a78b33aa3cc133ecf04be6c3b67",
+  "builder_closure_sha256": "6a0d29aeb2549fcbf84c04959b76b8c4b1daad3a0e70c517477921caa934ffcc",
+  "original_policy_archive_sha256": "5f5dd88540c00ce7426146b91b1fd9c0cc10974b146ba02a175cc067395e7b0a",
+  "saved_input_records": [
+    {
+      "path": "apps/frontend/src/estimated/opening-ranges.json",
+      "bytes": 113403,
+      "sha256": "236225dbae1c8aa2e2e7af8a449555f27ef80fed878114408c0e7338b89d0f0b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/preflop-ranges.json",
+      "bytes": 391641,
+      "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55"
+    },
+    {
+      "path": "apps/frontend/src/estimated/three-bet-responses.json",
+      "bytes": 387728,
+      "sha256": "e46bbb59dc55df01240a73602b0cb214a652e5c2346f84a791178b938df40973"
+    },
+    {
+      "path": "apps/frontend/src/estimated/four-bet-responses.json",
+      "bytes": 379467,
+      "sha256": "70c6302ea11c6f725702030f8980883ef1ec66fb630c3d90f6c1395c4e76add5"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-responses.json",
+      "bytes": 74768,
+      "sha256": "370d4b30a08394c2f6919cbbd5dec6f5531af41cfeddde3ece22f90922b34f77"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-deep-responses.json",
+      "bytes": 50652,
+      "sha256": "e815907ad05b1a24f733acf9fe06cb06c2f89c41039a7226cefb420d7956e53e"
+    }
+  ],
+  "reviews": [
+    {
+      "path": "apps/frontend/docs/specs/low-flop-overcall.independent-review.md",
+      "sha256": "3493dc80ff5caa0f11e5e5c94d07fa9f7891d592c1a24ade7d2e3dd11a17686b"
+    },
+    {
+      "path": "apps/frontend/docs/specs/low-flop-overcall.veto-independent-review.md",
+      "sha256": "227ed8367984ed99db177a0dddd19433d203db3821b2a800a888fab99209a421"
+    }
+  ],
+  "family_cases": 7,
+  "family_error_budget_nominal": 0.01,
+  "cases": [
+    {
+      "case": 1,
+      "report_file": "validation-main-case1-n8192.json",
+      "raw_report_sha256": "9868957593e47c3c7cfdb2d0c3e9ecaf35d3813a9d7b0eea9d94113170487570",
+      "binding_sha256": "0ff6e467681ab23d0e388d73ddc6d523e4f0089901cd27aa130b6ee6c31cc1e7",
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "hero": "KcQh",
+      "node": "bb_vs_75",
+      "history": [
+        "bet75"
+      ]
+    },
+    {
+      "case": 2,
+      "report_file": "validation-main-case2-n8192.json",
+      "raw_report_sha256": "8edffbc6bd4174e1ad12b4329112f287a27dc0cda4420dc4e481e72d90a896ee",
+      "binding_sha256": "78f5488732d636883e1dc11cd23d64a1975bfdf8d4af7b1b67b5c2c80047d2e2",
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "hero": "KcQh",
+      "node": "bb_vs_125",
+      "history": [
+        "bet125"
+      ]
+    },
+    {
+      "case": 3,
+      "report_file": "validation-main-case3-n8192.json",
+      "raw_report_sha256": "ff17233125b79082bf12ccfc3bf62e6436129d09f801ca6aba542abf67863e24",
+      "binding_sha256": "9a1f39ac0854e5f3b8fb0e9fb1455868c857a353f0362d4db3f96883cb9837ff",
+      "spot": "BTN_open_BB_call",
+      "board": "5s5d4c",
+      "hero": "AcJh",
+      "node": "bb_vs_75",
+      "history": [
+        "bet75"
+      ]
+    },
+    {
+      "case": 4,
+      "report_file": "validation-main-case4-n8192.json",
+      "raw_report_sha256": "46ce6a7683cd12e0743a0021268737d75d37142c2ce32be8aa6f6893026a76db",
+      "binding_sha256": "16686a8d46ac125f9099aadf352412326a6e40cce1febf71dd9e33b9a5dbd0ad",
+      "spot": "UTG_open_BTN_call",
+      "board": "8s5d2c",
+      "hero": "7c7d",
+      "node": "ip_vs_75",
+      "history": [
+        "bet75"
+      ]
+    }
+  ]
+}

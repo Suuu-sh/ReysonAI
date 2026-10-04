@@ -1,0 +1,1528 @@
+{
+  "schema_version": 1,
+  "kind": "historical_diagnostic_not_acceptance",
+  "baseline_main_commit": "2064a41011f0e91685e592c6e5f4c07f07ba7570",
+  "baseline_development_commit": "506b1235689189ec634f6dc5d7d3832d88ad0da8",
+  "baseline_defence_blob_sha": "2d11b3ea3dcb20a2071867bf82c544e201e858d2",
+  "baseline_defence_version": 6,
+  "note": "Raw means the existing logistic mix before floor/ceiling; it is a counterfactual attribution, not a recommended strategy or GTO result.",
+  "nodes": [
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "4s4d4c",
+      "node": "bb_vs_33",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 1.82,
+      "required_equity": 0.20960497523897273,
+      "mdf": 0.7513661202185792,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 0.83719326,
+        "call": 59.16280674,
+        "raise": 40
+      },
+      "actual": {
+        "fold": 0.83719326,
+        "call": 59.16280674,
+        "raise": 40
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "4s4d4c",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "required_equity": 0.3159424724602204,
+      "mdf": 0.5711318795430945,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 15.00413915,
+        "call": 49.99586085,
+        "raise": 35
+      },
+      "actual": {
+        "fold": 15.00413915,
+        "call": 49.99586085,
+        "raise": 35
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "4s4d4c",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "required_equity": 0.3760179264360278,
+      "mdf": 0.44426494345718903,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 23.03488716,
+        "call": 41.96511284,
+        "raise": 35
+      },
+      "actual": {
+        "fold": 23.03488716,
+        "call": 41.96511284,
+        "raise": 35
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "5s5d4c",
+      "node": "bb_vs_33",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 1.82,
+      "required_equity": 0.20960497523897273,
+      "mdf": 0.7513661202185792,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 7.62470356,
+        "call": 80.20889328,
+        "raise": 12.16640316
+      },
+      "actual": {
+        "fold": 7.62470356,
+        "call": 80.20889328,
+        "raise": 12.16640316
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "5s5d4c",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "required_equity": 0.3159424724602204,
+      "mdf": 0.5711318795430945,
+      "floor": {
+        "threshold": 0.25190247208438565,
+        "fraction": 0.5137075333454659
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 71.80810277,
+        "call": 17.6784585,
+        "raise": 10.51343874
+      },
+      "actual": {
+        "fold": 52.88715415,
+        "call": 36.59940711,
+        "raise": 10.51343874
+      },
+      "floor_added_call_pp": 18.92094861,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "5s5d4c",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "required_equity": 0.3760179264360278,
+      "mdf": 0.44426494345718903,
+      "floor": {
+        "threshold": 0.18090376582901796,
+        "fraction": 0.48772322035706234
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 85.01007905,
+        "call": 5.94960474,
+        "raise": 9.04031621
+      },
+      "actual": {
+        "fold": 65.57401186,
+        "call": 25.38567194,
+        "raise": 9.04031621
+      },
+      "floor_added_call_pp": 19.4360672,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "6h5h2d",
+      "node": "bb_vs_33",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 1.82,
+      "required_equity": 0.20960497523897273,
+      "mdf": 0.7513661202185792,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 28.88417522,
+        "call": 55.44830308,
+        "raise": 15.6675217
+      },
+      "actual": {
+        "fold": 28.88417522,
+        "call": 55.44830308,
+        "raise": 15.6675217
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "6h5h2d",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "required_equity": 0.3159424724602204,
+      "mdf": 0.5711318795430945,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 42.8601026,
+        "call": 40.04804657,
+        "raise": 17.09185083
+      },
+      "actual": {
+        "fold": 42.8601026,
+        "call": 40.04804657,
+        "raise": 17.09185083
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "6h5h2d",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "required_equity": 0.3760179264360278,
+      "mdf": 0.44426494345718903,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 56.51785714,
+        "call": 32.98835833,
+        "raise": 10.49378453
+      },
+      "actual": {
+        "fold": 56.51785714,
+        "call": 32.98835833,
+        "raise": 10.49378453
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "7s4d2c",
+      "node": "bb_vs_33",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 1.82,
+      "required_equity": 0.20960497523897273,
+      "mdf": 0.7513661202185792,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 28.60272203,
+        "call": 58.14017485,
+        "raise": 13.25710312
+      },
+      "actual": {
+        "fold": 28.60272203,
+        "call": 58.14017485,
+        "raise": 13.25710312
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "7s4d2c",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "required_equity": 0.3159424724602204,
+      "mdf": 0.5711318795430945,
+      "floor": {
+        "threshold": 0.3205162829811272,
+        "fraction": 0.8167185877437533
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 53.79525134,
+        "call": 36.26574608,
+        "raise": 9.93900258
+      },
+      "actual": {
+        "fold": 52.88654878,
+        "call": 37.17444864,
+        "raise": 9.93900258
+      },
+      "floor_added_call_pp": 0.90870256,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "7s4d2c",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "required_equity": 0.3760179264360278,
+      "mdf": 0.44426494345718903,
+      "floor": {
+        "threshold": 0.4030714405055316,
+        "fraction": 0.6846627625337914
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 66.32505464,
+        "call": 26.82614743,
+        "raise": 6.84879793
+      },
+      "actual": {
+        "fold": 65.57301808,
+        "call": 27.57818399,
+        "raise": 6.84879793
+      },
+      "floor_added_call_pp": 0.75203656,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "node": "bb_vs_33",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 1.82,
+      "required_equity": 0.20960497523897273,
+      "mdf": 0.7513661202185792,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 11.46282154,
+        "call": 77.69995981,
+        "raise": 10.83721865
+      },
+      "actual": {
+        "fold": 11.46282154,
+        "call": 77.69995981,
+        "raise": 10.83721865
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "required_equity": 0.3159424724602204,
+      "mdf": 0.5711318795430945,
+      "floor": {
+        "threshold": 0.177050729083597,
+        "fraction": 0.13472180149338125
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 80.83952974,
+        "call": 10.17051849,
+        "raise": 8.98995177
+      },
+      "actual": {
+        "fold": 52.88715836,
+        "call": 38.12288987,
+        "raise": 8.98995177
+      },
+      "floor_added_call_pp": 27.95237138,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "required_equity": 0.3760179264360278,
+      "mdf": 0.44426494345718903,
+      "floor": {
+        "threshold": 0.11479198011935161,
+        "fraction": 0.522845150768325
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 85.54200161,
+        "call": 6.2562299,
+        "raise": 8.20176849
+      },
+      "actual": {
+        "fold": 65.57305064,
+        "call": 26.22518087,
+        "raise": 8.20176849
+      },
+      "floor_added_call_pp": 19.96895097,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s5d2c",
+      "node": "bb_vs_33",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 1.82,
+      "required_equity": 0.20960497523897273,
+      "mdf": 0.7513661202185792,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 31.04247488,
+        "call": 55.74017706,
+        "raise": 13.21734806
+      },
+      "actual": {
+        "fold": 31.04247488,
+        "call": 55.74017706,
+        "raise": 13.21734806
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s5d2c",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "required_equity": 0.3159424724602204,
+      "mdf": 0.5711318795430945,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 51.811698,
+        "call": 38.30866408,
+        "raise": 9.87963792
+      },
+      "actual": {
+        "fold": 51.811698,
+        "call": 38.30866408,
+        "raise": 9.87963792
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s5d2c",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "required_equity": 0.3760179264360278,
+      "mdf": 0.44426494345718903,
+      "floor": {
+        "threshold": 0.4027030546868392,
+        "fraction": 0.42265396934286875
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 66.3327365,
+        "call": 26.74057495,
+        "raise": 6.92668855
+      },
+      "actual": {
+        "fold": 65.57276435,
+        "call": 27.5005471,
+        "raise": 6.92668855
+      },
+      "floor_added_call_pp": 0.75997215,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s7d6c",
+      "node": "bb_vs_33",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 1.82,
+      "required_equity": 0.20960497523897273,
+      "mdf": 0.7513661202185792,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 20.96435804,
+        "call": 61.23926691,
+        "raise": 17.79637505
+      },
+      "actual": {
+        "fold": 20.96435804,
+        "call": 61.23926691,
+        "raise": 17.79637505
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s7d6c",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "required_equity": 0.3159424724602204,
+      "mdf": 0.5711318795430945,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 29.73167274,
+        "call": 50.33687728,
+        "raise": 19.93144998
+      },
+      "actual": {
+        "fold": 29.73167274,
+        "call": 50.33687728,
+        "raise": 19.93144998
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s7d6c",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "required_equity": 0.3760179264360278,
+      "mdf": 0.44426494345718903,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 51.66464156,
+        "call": 34.31328473,
+        "raise": 14.02207371
+      },
+      "actual": {
+        "fold": 51.66464156,
+        "call": 34.31328473,
+        "raise": 14.02207371
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "As7d2c",
+      "node": "bb_vs_33",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 1.82,
+      "required_equity": 0.20960497523897273,
+      "mdf": 0.7513661202185792,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 34.17757009,
+        "call": 55.25336346,
+        "raise": 10.56906645
+      },
+      "actual": {
+        "fold": 34.17757009,
+        "call": 55.25336346,
+        "raise": 10.56906645
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "As7d2c",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "required_equity": 0.3159424724602204,
+      "mdf": 0.5711318795430945,
+      "floor": {
+        "threshold": 0.28055255583089467,
+        "fraction": 0.33152325257581
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 58.87840197,
+        "call": 31.11369005,
+        "raise": 10.00790798
+      },
+      "actual": {
+        "fold": 52.88651535,
+        "call": 37.10557667,
+        "raise": 10.00790798
+      },
+      "floor_added_call_pp": 5.99188662,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "As7d2c",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "required_equity": 0.3760179264360278,
+      "mdf": 0.44426494345718903,
+      "floor": {
+        "threshold": 0.33224794477671404,
+        "fraction": 0.8412263346095304
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 72.26240115,
+        "call": 20.88928828,
+        "raise": 6.84831057
+      },
+      "actual": {
+        "fold": 65.57327719,
+        "call": 27.57841224,
+        "raise": 6.84831057
+      },
+      "floor_added_call_pp": 6.68912396,
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "4s4d4c",
+      "node": "ip_vs_33",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 2.15,
+      "required_equity": 0.20955165692007793,
+      "mdf": 0.7514450867052023,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 0.96566757,
+        "call": 54.03433243,
+        "raise": 45
+      },
+      "actual": {
+        "fold": 0.96566757,
+        "call": 54.03433243,
+        "raise": 45
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "4s4d4c",
+      "node": "ip_vs_75",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 4.88,
+      "required_equity": 0.3159189486631709,
+      "mdf": 0.5711775043936732,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 7.94168937,
+        "call": 52.05831063,
+        "raise": 40
+      },
+      "actual": {
+        "fold": 7.94168937,
+        "call": 52.05831063,
+        "raise": 40
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "4s4d4c",
+      "node": "ip_vs_125",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 8.13,
+      "required_equity": 0.37600591989640186,
+      "mdf": 0.4442925495557074,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 12.64196185,
+        "call": 47.35803815,
+        "raise": 40
+      },
+      "actual": {
+        "fold": 12.64196185,
+        "call": 47.35803815,
+        "raise": 40
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "5s5d4c",
+      "node": "ip_vs_33",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 2.15,
+      "required_equity": 0.20955165692007793,
+      "mdf": 0.7514450867052023,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 8.06146179,
+        "call": 73.98615725,
+        "raise": 17.95238095
+      },
+      "actual": {
+        "fold": 8.06146179,
+        "call": 73.98615725,
+        "raise": 17.95238095
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "5s5d4c",
+      "node": "ip_vs_75",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 4.88,
+      "required_equity": 0.3159189486631709,
+      "mdf": 0.5711775043936732,
+      "floor": {
+        "threshold": 0.20651698760288184,
+        "fraction": 0.8693145869949248
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 69.11683278,
+        "call": 16.04374308,
+        "raise": 14.83942414
+      },
+      "actual": {
+        "fold": 52.8820598,
+        "call": 32.27851606,
+        "raise": 14.83942414
+      },
+      "floor_added_call_pp": 16.23477298,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "5s5d4c",
+      "node": "ip_vs_125",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 8.13,
+      "required_equity": 0.37600591989640186,
+      "mdf": 0.4442925495557074,
+      "floor": {
+        "threshold": 0.21547584075204645,
+        "fraction": 0.9012102448635577
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 73.71207087,
+        "call": 11.44850498,
+        "raise": 14.83942414
+      },
+      "actual": {
+        "fold": 65.57142857,
+        "call": 19.58914729,
+        "raise": 14.83942414
+      },
+      "floor_added_call_pp": 8.14064231,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "6h5h2d",
+      "node": "ip_vs_33",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 2.15,
+      "required_equity": 0.20955165692007793,
+      "mdf": 0.7514450867052023,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 30.04243439,
+        "call": 55.10161921,
+        "raise": 14.8559464
+      },
+      "actual": {
+        "fold": 30.04243439,
+        "call": 55.10161921,
+        "raise": 14.8559464
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "6h5h2d",
+      "node": "ip_vs_75",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 4.88,
+      "required_equity": 0.3159189486631709,
+      "mdf": 0.5711775043936732,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 46.65661642,
+        "call": 38.88777219,
+        "raise": 14.45561139
+      },
+      "actual": {
+        "fold": 46.65661642,
+        "call": 38.88777219,
+        "raise": 14.45561139
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "6h5h2d",
+      "node": "ip_vs_125",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 8.13,
+      "required_equity": 0.37600591989640186,
+      "mdf": 0.4442925495557074,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 62.67504188,
+        "call": 28.9078727,
+        "raise": 8.41708543
+      },
+      "actual": {
+        "fold": 62.67504188,
+        "call": 28.9078727,
+        "raise": 8.41708543
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "7s4d2c",
+      "node": "ip_vs_33",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 2.15,
+      "required_equity": 0.20955165692007793,
+      "mdf": 0.7514450867052023,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 17.22444444,
+        "call": 71.01388889,
+        "raise": 11.76166667
+      },
+      "actual": {
+        "fold": 17.22444444,
+        "call": 71.01388889,
+        "raise": 11.76166667
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "7s4d2c",
+      "node": "ip_vs_75",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 4.88,
+      "required_equity": 0.3159189486631709,
+      "mdf": 0.5711775043936732,
+      "floor": {
+        "threshold": 0.26210320779271357,
+        "fraction": 0.5087301569845948
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 65.74611111,
+        "call": 25.94277778,
+        "raise": 8.31111111
+      },
+      "actual": {
+        "fold": 52.88055556,
+        "call": 38.80833333,
+        "raise": 8.31111111
+      },
+      "floor_added_call_pp": 12.86555555,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "7s4d2c",
+      "node": "ip_vs_125",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 8.13,
+      "required_equity": 0.37600591989640186,
+      "mdf": 0.4442925495557074,
+      "floor": {
+        "threshold": 0.19131366660571347,
+        "fraction": 0.8161240421629289
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 83,
+        "call": 11.14444444,
+        "raise": 5.85555556
+      },
+      "actual": {
+        "fold": 65.56944444,
+        "call": 28.575,
+        "raise": 5.85555556
+      },
+      "floor_added_call_pp": 17.43055556,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8d8c2h",
+      "node": "ip_vs_33",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 2.15,
+      "required_equity": 0.20955165692007793,
+      "mdf": 0.7514450867052023,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 5.55443322,
+        "call": 76.56790123,
+        "raise": 17.87766554
+      },
+      "actual": {
+        "fold": 5.55443322,
+        "call": 76.56790123,
+        "raise": 17.87766554
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8d8c2h",
+      "node": "ip_vs_75",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 4.88,
+      "required_equity": 0.3159189486631709,
+      "mdf": 0.5711775043936732,
+      "floor": {
+        "threshold": 0.18824305594709867,
+        "fraction": 0.31702234496619197
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 70.71099888,
+        "call": 14.51907969,
+        "raise": 14.76992144
+      },
+      "actual": {
+        "fold": 52.87991021,
+        "call": 32.35016835,
+        "raise": 14.76992144
+      },
+      "floor_added_call_pp": 17.83108866,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8d8c2h",
+      "node": "ip_vs_125",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 8.13,
+      "required_equity": 0.37600591989640186,
+      "mdf": 0.4442925495557074,
+      "floor": {
+        "threshold": 0.20069677801937147,
+        "fraction": 0.8661654135339258
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 73.99551066,
+        "call": 11.2345679,
+        "raise": 14.76992144
+      },
+      "actual": {
+        "fold": 65.56902357,
+        "call": 19.66105499,
+        "raise": 14.76992144
+      },
+      "floor_added_call_pp": 8.42648709,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8s5d2c",
+      "node": "ip_vs_33",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 2.15,
+      "required_equity": 0.20955165692007793,
+      "mdf": 0.7514450867052023,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 21.98994975,
+        "call": 66.79564489,
+        "raise": 11.21440536
+      },
+      "actual": {
+        "fold": 21.98994975,
+        "call": 66.79564489,
+        "raise": 11.21440536
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8s5d2c",
+      "node": "ip_vs_75",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 4.88,
+      "required_equity": 0.3159189486631709,
+      "mdf": 0.5711775043936732,
+      "floor": {
+        "threshold": 0.26583338502574255,
+        "fraction": 0.8538643887687378
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 69.24064768,
+        "call": 22.85092127,
+        "raise": 7.90843104
+      },
+      "actual": {
+        "fold": 52.88442211,
+        "call": 39.20714685,
+        "raise": 7.90843104
+      },
+      "floor_added_call_pp": 16.35622558,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8s5d2c",
+      "node": "ip_vs_125",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 8.13,
+      "required_equity": 0.37600591989640186,
+      "mdf": 0.4442925495557074,
+      "floor": {
+        "threshold": 0.17980146718796,
+        "fraction": 0.12240272588517208
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 85.30653266,
+        "call": 8.97040759,
+        "raise": 5.72305974
+      },
+      "actual": {
+        "fold": 65.5678392,
+        "call": 28.70910106,
+        "raise": 5.72305974
+      },
+      "floor_added_call_pp": 19.73869347,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8s7d6c",
+      "node": "ip_vs_33",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 2.15,
+      "required_equity": 0.20955165692007793,
+      "mdf": 0.7514450867052023,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 28.73933372,
+        "call": 52.53477499,
+        "raise": 18.72589129
+      },
+      "actual": {
+        "fold": 28.73933372,
+        "call": 52.53477499,
+        "raise": 18.72589129
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8s7d6c",
+      "node": "ip_vs_75",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 4.88,
+      "required_equity": 0.3159189486631709,
+      "mdf": 0.5711775043936732,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 43.32086499,
+        "call": 36.80187025,
+        "raise": 19.87726476
+      },
+      "actual": {
+        "fold": 43.32086499,
+        "call": 36.80187025,
+        "raise": 19.87726476
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8s7d6c",
+      "node": "ip_vs_125",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 8.13,
+      "required_equity": 0.37600591989640186,
+      "mdf": 0.4442925495557074,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 59.82115722,
+        "call": 27.3383986,
+        "raise": 12.84044418
+      },
+      "actual": {
+        "fold": 59.82115722,
+        "call": 27.3383986,
+        "raise": 12.84044418
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "As7d2c",
+      "node": "ip_vs_33",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 2.15,
+      "required_equity": 0.20955165692007793,
+      "mdf": 0.7514450867052023,
+      "floor": null,
+      "ceiling": null,
+      "raw": {
+        "fold": 23.82540638,
+        "call": 66.28597231,
+        "raise": 9.88862131
+      },
+      "actual": {
+        "fold": 23.82540638,
+        "call": 66.28597231,
+        "raise": 9.88862131
+      },
+      "floor_added_call_pp": 0.0,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "As7d2c",
+      "node": "ip_vs_75",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 4.88,
+      "required_equity": 0.3159189486631709,
+      "mdf": 0.5711775043936732,
+      "floor": {
+        "threshold": 0.2370998697545158,
+        "fraction": 0.4175170947114256
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 65.59422035,
+        "call": 27.75436484,
+        "raise": 6.65141481
+      },
+      "actual": {
+        "fold": 52.88139675,
+        "call": 40.46718844,
+        "raise": 6.65141481
+      },
+      "floor_added_call_pp": 12.7128236,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "As7d2c",
+      "node": "ip_vs_125",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 8.13,
+      "required_equity": 0.37600591989640186,
+      "mdf": 0.4442925495557074,
+      "floor": {
+        "threshold": 0.2358407988776828,
+        "fraction": 0.6063568010937337
+      },
+      "ceiling": null,
+      "raw": {
+        "fold": 68.56652619,
+        "call": 26.743528,
+        "raise": 4.68994582
+      },
+      "actual": {
+        "fold": 65.56833233,
+        "call": 29.74172185,
+        "raise": 4.68994582
+      },
+      "floor_added_call_pp": 2.99819385,
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6"
+    }
+  ],
+  "regression_cases": [
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "4s4d4c",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "cards": "JcTh",
+      "tier": "monster",
+      "weight": 0.85,
+      "equity": 0.30714511,
+      "realization": 1,
+      "realized": 0.30714511,
+      "required": 0.37601793,
+      "base": {
+        "fold": 0,
+        "call": 65,
+        "raise": 35
+      },
+      "raw": {
+        "fold": 63,
+        "call": 2,
+        "raise": 35
+      },
+      "actual": {
+        "fold": 63,
+        "call": 2,
+        "raise": 35
+      },
+      "floor_added_call_pp": 0
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "5s5d4c",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "cards": "AcJh",
+      "tier": "medium",
+      "weight": 0.6,
+      "equity": 0.33000888,
+      "realization": 0.78,
+      "realized": 0.25740693,
+      "required": 0.31594247,
+      "base": {
+        "fold": 35,
+        "call": 63,
+        "raise": 2
+      },
+      "raw": {
+        "fold": 93,
+        "call": 5,
+        "raise": 2
+      },
+      "actual": {
+        "fold": 0,
+        "call": 98,
+        "raise": 2
+      },
+      "floor_added_call_pp": 93
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "cards": "KcQh",
+      "tier": "medium",
+      "weight": 0.6,
+      "equity": 0.24145813,
+      "realization": 0.78,
+      "realized": 0.18833734,
+      "required": 0.31594247,
+      "base": {
+        "fold": 35,
+        "call": 63,
+        "raise": 2
+      },
+      "raw": {
+        "fold": 98,
+        "call": 0,
+        "raise": 2
+      },
+      "actual": {
+        "fold": 0,
+        "call": 98,
+        "raise": 2
+      },
+      "floor_added_call_pp": 98
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8d8c2h",
+      "node": "bb_vs_125",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 6.88,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "cards": "KcQh",
+      "tier": "medium",
+      "weight": 0.6,
+      "equity": 0.15051094,
+      "realization": 0.78,
+      "realized": 0.11739853,
+      "required": 0.37601793,
+      "base": {
+        "fold": 68,
+        "call": 31,
+        "raise": 1
+      },
+      "raw": {
+        "fold": 99,
+        "call": 0,
+        "raise": 1
+      },
+      "actual": {
+        "fold": 0,
+        "call": 99,
+        "raise": 1
+      },
+      "floor_added_call_pp": 99
+    },
+    {
+      "spot": "BTN_open_BB_call",
+      "board": "8s5d2c",
+      "node": "bb_vs_75",
+      "bettor": "BTN",
+      "defender": "BB",
+      "pot_before_bb": 5.5,
+      "bet_bb": 4.13,
+      "source_fingerprint": "6f7770d0f4a86b73547353bff838d4dc8e83d91920671d96634224a00ee51d66",
+      "flop_policy_hash": "219d6c3451cfa4bb129867bfa98ed1223cea3b957b9b1ed67ee79f329f11ace1",
+      "later_policy_hash": "654c027d085010583abe149c3375908756ed05ef4dc87c1ee86718843cb51bf3",
+      "cards": "AcKh",
+      "tier": "air",
+      "weight": 0.25,
+      "equity": 0.47776487,
+      "realization": 0.65,
+      "realized": 0.31054716,
+      "required": 0.31594247,
+      "base": {
+        "fold": 82,
+        "call": 8,
+        "raise": 10
+      },
+      "raw": {
+        "fold": 51,
+        "call": 39,
+        "raise": 10
+      },
+      "actual": {
+        "fold": 51,
+        "call": 39,
+        "raise": 10
+      },
+      "floor_added_call_pp": 0
+    },
+    {
+      "spot": "UTG_open_BTN_call",
+      "board": "8s5d2c",
+      "node": "ip_vs_75",
+      "bettor": "UTG",
+      "defender": "BTN",
+      "pot_before_bb": 6.5,
+      "bet_bb": 4.88,
+      "source_fingerprint": "9f5dcda767159e2e27611335f8028e298e1f8b7357ec45a5e874bbdc3e37ce44",
+      "flop_policy_hash": "ac700a869707bd1230d26a910591ed79866f95ff353d84578f9b6b7df96653eb",
+      "later_policy_hash": "75354adf8ad7f31507b5c48b42050cf377d66e5b7228dd7d073f087bb65cc5f6",
+      "cards": "7c7d",
+      "tier": "medium",
+      "weight": 0.85,
+      "equity": 0.31375018,
+      "realization": 0.85,
+      "realized": 0.26668766,
+      "required": 0.31591895,
+      "base": {
+        "fold": 55,
+        "call": 45,
+        "raise": 0
+      },
+      "raw": {
+        "fold": 92,
+        "call": 8,
+        "raise": 0
+      },
+      "actual": {
+        "fold": 0,
+        "call": 100,
+        "raise": 0
+      },
+      "floor_added_call_pp": 92
+    }
+  ]
+}
