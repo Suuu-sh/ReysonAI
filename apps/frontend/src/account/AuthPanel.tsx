@@ -23,7 +23,7 @@ export function AuthPanel({ onChanged = () => {}, onGuest }) {
   return <section className="account-card account-auth">
     <header><h2>{t("Account", "アカウント")}</h2></header>
     {user ? <>
-      <p>{user.email}</p>
+      <p translate="no">{user.email}</p>
       <p>{t("Signed in with Google. Profile, preferences and practice records are saved to your account. Ranked results are not imported or treated as authoritative.", "Googleでログイン中。プロフィール・設定・練習記録はアカウントに保存されます。ローカルのランク記録は移行せず、公式成績として扱いません。")}</p>
       <p>{t("Guest data stays on this browser unless you explicitly import it. Import replaces your account profile, settings and practice history with this browser's guest data; it does not merge them. Export your account data first if needed.", "ゲストデータは明示的に移行しない限りこのブラウザに残ります。移行するとアカウントのプロフィール・設定・練習記録を、このブラウザのゲストデータで置き換えます。統合はしません。必要なら先にアカウントデータを書き出してください。")}</p>
       <label className="account-check"><input type="checkbox" checked={consent} onChange={event => setConsent(event.target.checked)} />{t("I consent to uploading guest data and replacing account data.", "ゲストデータのアップロードとアカウントデータの置き換えに同意します。")}</label>

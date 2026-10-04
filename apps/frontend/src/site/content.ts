@@ -1,9 +1,11 @@
-export type SiteLocale = "en" | "ja";
+import type { ProductLocale } from "../locale-metadata.ts";
+
+export type SiteLocale = ProductLocale;
 
 export const en = {
   title: "ReysonAI — Don't just play. Understand why.",
   description: "Read AI-estimated preflop ranges on a clear 13×13 chart, see why each hand plays the way it does, and drill it. An estimate for learning, not a GTO solver.",
-  common: { home: "ReysonAI home", open: "Open the app", menuOpen: "Open menu", menuClose: "Close menu", menuLabel: "Main navigation", skip: "Skip to content", language: "日本語", languageLabel: "日本語に切り替える", raise: "Raise", threeBet: "3bet", call: "Call", fold: "Fold", available: "Available", planned: "Planned", experimental: "Experimental" },
+  common: { home: "ReysonAI home", open: "Open the app", menuOpen: "Open menu", menuClose: "Close menu", menuLabel: "Main navigation", skip: "Skip to content", language: "Language", languageLabel: "Select language", you: "YOU", raise: "Raise", threeBet: "3bet", call: "Call", fold: "Fold", available: "Available", planned: "Planned", experimental: "Experimental" },
   nav: [
     { label: "How it works", href: "#how" },
     { label: "Training", href: "#drill" },

@@ -1,0 +1,1278 @@
+{
+  "go all-in": [
+    "全下",
+    "ir all-in"
+  ],
+  "Equity versus defending range": [
+    "对防守范围的胜率",
+    "Equity contra el rango de defensa"
+  ],
+  "Equity versus opening range": [
+    "对开池范围的胜率",
+    "Equity contra el rango de apertura"
+  ],
+  "Equity versus continuing range": [
+    "对继续范围的胜率",
+    "Equity contra el rango que continúa"
+  ],
+  "Equity versus shoving range": [
+    "对全下范围的胜率",
+    "Equity contra el rango de shove"
+  ],
+  "Equity versus calling range": [
+    "对跟注范围的胜率",
+    "Equity contra el rango de pago"
+  ],
+  "Equity versus 3-bet range": [
+    "对3bet范围的胜率",
+    "Equity contra el rango de 3-bet"
+  ],
+  "Equity versus 4-bet range": [
+    "对4bet范围的胜率",
+    "Equity contra el rango de 4-bet"
+  ],
+  "Equity versus shove-calling range": [
+    "对跟全下范围的胜率",
+    "Equity contra el rango que paga el all-in"
+  ],
+  "Equity in three-way pot": [
+    "三人底池胜率",
+    "Equity en bote de tres jugadores"
+  ],
+  "Equity versus SB limp range": [
+    "对SB溜入范围的胜率",
+    "Equity contra el rango de limp de SB"
+  ],
+  "Equity versus SB limp-reraise range": [
+    "对SB溜入再加注范围的胜率",
+    "Equity contra el rango de limp-reraise de SB"
+  ],
+  "Equity versus squeeze range": [
+    "对挤压加注范围的胜率",
+    "Equity contra el rango de squeeze"
+  ],
+  "Equity versus BB iso-raise range": [
+    "对BB隔离加注范围的胜率",
+    "Equity contra el rango de aislamiento de BB"
+  ],
+  "Realized equity (estimated)": [
+    "实现场面胜率（估计）",
+    "Equity realizada (estimada)"
+  ],
+  "Estimated call EV": [
+    "估计跟注EV",
+    "EV estimado del pago"
+  ],
+  "Required equity to call": [
+    "跟注所需胜率",
+    "Equity necesaria para pagar"
+  ],
+  "Assumed EQR": [
+    "假设EQR",
+    "EQR supuesto"
+  ],
+  "Chance all players behind fold": [
+    "后方玩家全部弃牌的概率",
+    "Probabilidad de que se retiren todos los jugadores posteriores"
+  ],
+  "Blocked 3-bet range": [
+    "阻断的3bet范围",
+    "Rango de 3-bet bloqueado"
+  ],
+  "Blocked opening range": [
+    "阻断的开池范围",
+    "Rango de apertura bloqueado"
+  ],
+  "Blocked 4-bet range": [
+    "阻断的4bet范围",
+    "Rango de 4-bet bloqueado"
+  ],
+  "Blocked 5-bet range": [
+    "阻断的5bet范围",
+    "Rango de 5-bet bloqueado"
+  ],
+  "Chance both you and opener fold to 3-bet": [
+    "你与开池者均面对3bet弃牌的概率",
+    "Probabilidad de que tú y quien abrió os retiréis ante un 3-bet"
+  ],
+  "Chance opener folds to shove": [
+    "开池者面对全下弃牌的概率",
+    "Probabilidad de que quien abrió se retire ante un all-in"
+  ],
+  "Chance BB folds (weighted for iso-raise)": [
+    "BB弃牌概率（按隔离加注加权）",
+    "Probabilidad de retirada de BB (ponderada por aislamiento)"
+  ],
+  "SB limp-reraise break-even point": [
+    "SB溜入再加注盈亏平衡点",
+    "Umbral de equilibrio del limp-reraise de SB"
+  ],
+  "Blocked limp-reraise range": [
+    "阻断的溜入再加注范围",
+    "Rango de limp-reraise bloqueado"
+  ],
+  "Chance both players fold to squeeze": [
+    "两位玩家均面对挤压加注弃牌的概率",
+    "Probabilidad de que ambos jugadores se retiren ante un squeeze"
+  ],
+  "Blocked squeeze range": [
+    "阻断的挤压加注范围",
+    "Rango de squeeze bloqueado"
+  ],
+  "Chance 3-bettor folds to 4-bet": [
+    "3bet者面对4bet弃牌的概率",
+    "Probabilidad de que quien hizo 3-bet se retire ante el 4-bet"
+  ],
+  "Raw equity estimates showdown chances. Realized equity uses an assumed equity-realization factor (EQR), which may exceed 1. Call EV does not fully model future investments or opponent strategy changes.": [
+    "原始胜率估计摊牌获胜机会。实现胜率使用假设的胜率实现系数EQR，可能超过1。跟注EV并未完整模拟未来投入或对手策略的变化。",
+    "La equity bruta estima las posibilidades de ganar al showdown. La equity realizada usa un factor supuesto de realización (EQR), que puede superar 1. El EV del pago no modela por completo las inversiones futuras ni los cambios de estrategia del rival."
+  ],
+  "Checking some very strong hands leaves room for the opponent to bet.": [
+    "用部分很强的牌过牌，为对手下注留下空间。",
+    "Pasar con algunas manos muy fuertes deja espacio para que el rival apueste."
+  ],
+  "Checking controls the pot and protects the checking range with strong hands.": [
+    "过牌控制底池，同时让强牌保护过牌范围。",
+    "Pasar controla el bote y protege el rango de check con manos fuertes."
+  ],
+  "Checking takes a free turn card to try to complete the draw.": [
+    "过牌可免费查看转牌，尝试完成听牌。",
+    "Pasar permite ver gratis el turn e intentar completar el proyecto."
+  ],
+  "This hand has showdown value, so checking avoids building a large pot.": [
+    "此牌有摊牌价值，过牌可避免做大底池。",
+    "Esta mano tiene valor de showdown, por lo que pasar evita crear un bote grande."
+  ],
+  "With little equity and few better hands likely to fold, checking gives up cheaply.": [
+    "胜率低且很少能让更强的牌弃牌，过牌可低成本放弃。",
+    "Con poca equity y pocas manos mejores dispuestas a retirarse, pasar permite abandonar a bajo coste."
+  ],
+  "A small bet can still be called by weaker hands.": [
+    "较弱的牌仍可能跟小注。",
+    "Las manos más débiles aún pueden pagar una apuesta pequeña."
+  ],
+  "This is a thin value bet targeting weaker pairs and draws.": [
+    "这是针对较弱对子和听牌的薄价值下注。",
+    "Es una apuesta de valor fino dirigida a parejas más débiles y proyectos."
+  ],
+  "A small semi-bluff can win now or improve after a call.": [
+    "小额半诈唬可以立即获胜，也可在被跟注后改善。",
+    "Un semifarol pequeño puede ganar ahora o mejorar tras recibir un pago."
+  ],
+  "A small bet protects the hand at lower cost and may fold out weaker hands.": [
+    "小注以较低成本保护手牌，也可能让较弱手牌弃牌。",
+    "Una apuesta pequeña protege la mano a menor coste y puede hacer que se retiren manos débiles."
+  ],
+  "When the opponent has many unmade hands, a small bet can seek folds at low cost.": [
+    "对手有较多未成牌时，小注可低成本争取弃牌。",
+    "Si el rival tiene muchas manos sin completar, una apuesta pequeña busca retiradas a bajo coste."
+  ],
+  "A large bet builds the pot with a very strong hand.": [
+    "用很强的牌下大注，做大底池。",
+    "Una apuesta grande construye el bote con una mano muy fuerte."
+  ],
+  "A large bet charges draws while seeking value.": [
+    "大注在获取价值的同时让听牌付出代价。",
+    "Una apuesta grande cobra a los proyectos mientras busca valor."
+  ],
+  "A strong draw can use a large bet for fold pressure and upside when completed.": [
+    "强听牌可用大注施压，并保留完成后的收益空间。",
+    "Un proyecto fuerte puede apostar grande para presionar y conservar potencial si se completa."
+  ],
+  "Large bets with marginal hands are rare because mostly stronger hands continue.": [
+    "边缘牌很少下大注，因为继续的多为更强手牌。",
+    "Las apuestas grandes con manos marginales son raras porque suelen continuar manos mejores."
+  ],
+  "Large bluffs are risky, so they appear only at low frequency.": [
+    "大额诈唬风险较高，因此仅低频出现。",
+    "Los faroles grandes son arriesgados y aparecen con poca frecuencia."
+  ],
+  "An overbet bigger than the pot maximizes value with a very strong hand.": [
+    "超过底池的超池下注可用很强的牌获取最大价值。",
+    "Una apuesta superior al bote maximiza el valor de una mano muy fuerte."
+  ],
+  "This size is too large for a top pair and is rarely used.": [
+    "此大小对顶对来说过大，很少使用。",
+    "Este tamaño es demasiado grande para top pair y se usa rara vez."
+  ],
+  "Some strong draws use the larger size to put pressure on the opponent.": [
+    "部分强听牌使用更大下注来向对手施压。",
+    "Algunos proyectos fuertes usan un tamaño mayor para presionar al rival."
+  ],
+  "There is little reason to overbet with a weak pair, so this size is not used.": [
+    "弱对子几乎没有理由超池下注，因此不使用此大小。",
+    "Hay pocos motivos para hacer overbet con una pareja débil, así que no se usa este tamaño."
+  ],
+  "A small number of bluffs are mixed with strong-hand overbets.": [
+    "强牌超池下注中混入少量诈唬。",
+    "Se mezclan unos pocos faroles con los overbets de manos fuertes."
+  ],
+  "Very strong hands almost never fold here.": [
+    "很强的牌在这里几乎不会弃牌。",
+    "Las manos muy fuertes casi nunca se retiran aquí."
+  ],
+  "Strong made hands almost never fold here.": [
+    "强成牌在这里几乎不会弃牌。",
+    "Las manos hechas fuertes casi nunca se retiran aquí."
+  ],
+  "Weak draws sometimes fold even against a small bet.": [
+    "弱听牌有时连面对小注也会弃牌。",
+    "Los proyectos débiles a veces se retiran incluso ante una apuesta pequeña."
+  ],
+  "Some weak pairs fold when the opponent bets this board frequently.": [
+    "对手在此牌面高频下注时，部分弱对子会弃牌。",
+    "Algunas parejas débiles se retiran cuando el rival apuesta mucho en este board."
+  ],
+  "With very little equity, continuing has little justification.": [
+    "胜率非常低，继续的依据不足。",
+    "Con muy poca equity, hay poca justificación para continuar."
+  ],
+  "Calling lets the opponent keep bluffing and preserves value for later streets.": [
+    "跟注让对手继续诈唬，并保留后续街的价值。",
+    "Pagar deja que el rival siga faroleando y conserva valor para calles posteriores."
+  ],
+  "Against a small bet, calling has sufficient value.": [
+    "面对小注，跟注有足够价值。",
+    "Frente a una apuesta pequeña, pagar tiene suficiente valor."
+  ],
+  "The required equity is relatively low (about 20%), so this draw can continue.": [
+    "所需胜率较低（约20%），因此此听牌可继续。",
+    "La equity necesaria es relativamente baja (alrededor del 20%), así que el proyecto puede continuar."
+  ],
+  "The small bet and low required equity allow a showdown-oriented call.": [
+    "小注和较低的所需胜率支持以摊牌为目标的跟注。",
+    "La apuesta pequeña y la baja equity necesaria permiten pagar buscando el showdown."
+  ],
+  "Only the limited chance to improve, such as with overcards, supports continuing.": [
+    "仅有高张等有限的改善机会支持继续。",
+    "Solo las posibilidades limitadas de mejorar, como con overcards, justifican continuar."
+  ],
+  "A check-raise builds the pot for value.": [
+    "过牌加注做大底池以获取价值。",
+    "Un check-raise construye el bote por valor."
+  ],
+  "Some strong hands check-raise to charge draws.": [
+    "部分强牌通过过牌加注让听牌付出代价。",
+    "Algunas manos fuertes hacen check-raise para cobrar a los proyectos."
+  ],
+  "A semi-bluff raise can make the opponent fold now.": [
+    "半诈唬加注可让对手立即弃牌。",
+    "Una subida de semifarol puede hacer que el rival se retire ahora."
+  ],
+  "Raising is rarely useful when mostly stronger hands continue.": [
+    "继续的多为更强手牌时，加注通常意义不大。",
+    "Subir suele aportar poco si continúan principalmente manos mejores."
+  ],
+  "Bluff raises are used only sparingly.": [
+    "诈唬加注仅少量使用。",
+    "Las subidas de farol se usan con mucha moderación."
+  ],
+  "Some top pairs with weak kickers fold against the larger bet.": [
+    "部分弱踢脚顶对会面对大注弃牌。",
+    "Algunas top pairs con kicker débil se retiran ante una apuesta mayor."
+  ],
+  "The higher required equity (about 30%) makes weak draws fold.": [
+    "较高的所需胜率（约30%）使弱听牌弃牌。",
+    "La mayor equity necesaria (alrededor del 30%) hace que se retiren los proyectos débiles."
+  ],
+  "Calling a large bet with a weak pair is often not worthwhile.": [
+    "用弱对子跟大注通常不划算。",
+    "Pagar una apuesta grande con una pareja débil suele ser poco rentable."
+  ],
+  "Calling controls the pot and lets the opponent keep bluffing.": [
+    "跟注控制底池，并让对手继续诈唬。",
+    "Pagar controla el bote y permite que el rival siga faroleando."
+  ],
+  "This hand can continue against much of the opponent's value range.": [
+    "此牌可对抗对手价值范围中的相当一部分。",
+    "Esta mano puede continuar contra gran parte del rango de valor del rival."
+  ],
+  "Strong draws retain upside when they complete.": [
+    "强听牌保留完成后的收益空间。",
+    "Los proyectos fuertes conservan potencial cuando se completan."
+  ],
+  "Some calls remain to catch bluffs.": [
+    "保留部分跟注以抓诈唬。",
+    "Se mantienen algunos pagos para atrapar faroles."
+  ],
+  "Most unmade hands fold; only some with backdoor improvement potential continue.": [
+    "大多数未成牌弃牌，仅少量具备后门改善潜力的手牌继续。",
+    "La mayoría de las manos sin completar se retiran; solo continúan algunas con potencial de mejora backdoor."
+  ],
+  "Raising a large pot seeks more value with a very strong hand.": [
+    "在大底池中，用很强的牌加注以获取更多价值。",
+    "Subir en un bote grande busca más valor con una mano muy fuerte."
+  ],
+  "Some strong hands raise to charge draws.": [
+    "部分强牌加注，让听牌付出代价。",
+    "Algunas manos fuertes suben para cobrar a los proyectos."
+  ],
+  "Some strong draws raise as semi-bluffs.": [
+    "部分强听牌以半诈唬加注。",
+    "Algunos proyectos fuertes suben como semifarol."
+  ],
+  "This hand is generally unsuitable for a raise.": [
+    "此牌通常不适合加注。",
+    "Esta mano normalmente no es adecuada para subir."
+  ],
+  "Very strong hands do not fold.": [
+    "很强的牌不会弃牌。",
+    "Las manos muy fuertes no se retiran."
+  ],
+  "Against an overbet, some top pairs with weak kickers fold.": [
+    "面对超池下注，部分弱踢脚顶对会弃牌。",
+    "Ante un overbet, algunas top pairs con kicker débil se retiran."
+  ],
+  "The required equity is high (about 36%), so draws with little chance to improve fold.": [
+    "所需胜率较高（约36%），因此改善机会少的听牌弃牌。",
+    "La equity necesaria es alta (alrededor del 36%), así que se retiran los proyectos con pocas posibilidades de mejorar."
+  ],
+  "Weak pairs have difficulty continuing against a large bet, so most fold.": [
+    "弱对子难以继续面对大注，因此大多弃牌。",
+    "Las parejas débiles tienen dificultades para continuar ante una apuesta grande y suelen retirarse."
+  ],
+  "There is no reason to continue.": [
+    "没有继续的理由。",
+    "No hay motivos para continuar."
+  ],
+  "Calling keeps the opponent's bluffs in and leaves room to win more later.": [
+    "跟注保留对手的诈唬，并留下后续赢取更多筹码的空间。",
+    "Pagar mantiene los faroles del rival y deja espacio para ganar más después."
+  ],
+  "Strong top pairs and better continue by calling even against a large bet.": [
+    "强顶对及以上即使面对大注也以跟注继续。",
+    "Las top pairs fuertes y manos mejores continúan pagando incluso ante una apuesta grande."
+  ],
+  "Strong draws continue because they can win a large pot when completed.": [
+    "强听牌完成后可赢取大底池，因此继续。",
+    "Los proyectos fuertes continúan porque pueden ganar un bote grande al completarse."
+  ],
+  "Only a very small portion continues to catch the opponent's bluffs.": [
+    "只有极少部分继续抓对手的诈唬。",
+    "Solo una porción muy pequeña continúa para atrapar los faroles del rival."
+  ],
+  "These hands do not continue.": [
+    "这些手牌不继续。",
+    "Estas manos no continúan."
+  ],
+  "With stacks nearing an all-in, raising takes the remaining value.": [
+    "筹码已接近全下，通过加注获取剩余价值。",
+    "Con los stacks cerca del all-in, subir extrae el valor restante."
+  ],
+  "Raises are used only rarely.": [
+    "仅极少使用加注。",
+    "Las subidas se usan muy rara vez."
+  ],
+  "This hand does not raise.": [
+    "此牌不加注。",
+    "Esta mano no sube."
+  ],
+  "Very strong hands do not fold here.": [
+    "很强的牌在这里不弃牌。",
+    "Las manos muy fuertes no se retiran aquí."
+  ],
+  "Because check-raises skew strong, some top pairs fold.": [
+    "过牌加注通常偏强，因此部分顶对弃牌。",
+    "Como los check-raises suelen ser fuertes, algunas top pairs se retiran."
+  ],
+  "Draws without sufficient odds fold to the raise.": [
+    "赔率不足的听牌面对加注弃牌。",
+    "Los proyectos sin odds suficientes se retiran ante la subida."
+  ],
+  "Weak pairs are usually behind once raised.": [
+    "遭遇加注后，弱对子通常落后。",
+    "Las parejas débiles suelen ir por detrás tras recibir una subida."
+  ],
+  "There is little reason to continue.": [
+    "继续的理由很少。",
+    "Hay pocos motivos para continuar."
+  ],
+  "Calling keeps strong hands in and preserves value for later streets.": [
+    "跟注保留强牌，并保存后续街的价值。",
+    "Pagar mantiene manos fuertes y conserva valor para calles posteriores."
+  ],
+  "Calling continues against the opponent's possible semi-bluffs.": [
+    "跟注可继续对抗对手可能的半诈唬。",
+    "Pagar permite continuar contra los posibles semifaroles del rival."
+  ],
+  "Draws with enough upside can continue.": [
+    "完成后收益足够的听牌可继续。",
+    "Los proyectos con suficiente potencial pueden continuar."
+  ],
+  "Unmade hands almost never continue.": [
+    "未成牌几乎不会继续。",
+    "Las manos sin completar casi nunca continúan."
+  ],
+  "{0} is {1}": [
+    "{0}是{1}",
+    "{0} es {1}"
+  ],
+  "a high pocket pair with strong showdown potential": [
+    "摊牌潜力很强的高口袋对子",
+    "una pareja de mano alta con gran potencial de showdown"
+  ],
+  "a pocket pair that can improve to a set": [
+    "可改善为暗三条的口袋对子",
+    "una pareja de mano que puede mejorar a set"
+  ],
+  "{0} is a suited ace with flush potential and an ace blocker": [
+    "{0}是具有同花潜力和A阻断效应的同花A",
+    "{0} es un as suited con potencial de color y bloqueador de as"
+  ],
+  "{0} is a suited hand with flush potential": [
+    "{0}是具有同花潜力的同花手牌",
+    "{0} es una mano suited con potencial de color"
+  ],
+  "{0} is an offsuit hand": [
+    "{0}是非同花手牌",
+    "{0} es una mano offsuit"
+  ],
+  "No hand-specific explanation is recorded for this spot.": [
+    "尚未记录此局面的逐手解释。",
+    "No hay una explicación por mano registrada para esta situación."
+  ],
+  "The preceding action has zero recorded frequency for this hand, so this branch is unreachable. A saved 100% fold here is a data placeholder, not a recommendation.": [
+    "此牌的前一行动记录频率为零，因此无法到达此分支。此处保存的100%弃牌只是数据占位值，并非推荐行动。",
+    "La acción anterior tiene frecuencia registrada cero para esta mano, por lo que esta rama es inalcanzable. El 100% de fold guardado es un marcador de datos, no una recomendación."
+  ],
+  "{0} in this saved spot.": [
+    "在此已保存局面中，{0}。",
+    "En esta situación guardada, {0}."
+  ],
+  "{0} is {1}%.": [
+    "{0}为{1}%。",
+    "{0} es del {1}%."
+  ],
+  "Raw equity": [
+    "原始胜率",
+    "Equity bruta"
+  ],
+  "Under the recorded EQR assumption, the model's call EV is {0}{1} bb.": [
+    "按已记录的EQR假设，模型跟注EV为{0}{1} bb。",
+    "Con el EQR supuesto registrado, el EV del pago del modelo es {0}{1} bb."
+  ],
+  "Estimated realized equity ({0}%) is {1} the {2}% call threshold.": [
+    "估计实现胜率（{0}%）{1}跟注门槛{2}%。",
+    "La equity realizada estimada ({0}%) está {1} del umbral de pago del {2}%."
+  ],
+  "The estimated chance that all players behind fold is {0}%.": [
+    "估计后方玩家全部弃牌的概率为{0}%。",
+    "La probabilidad estimada de que se retiren todos los jugadores posteriores es del {0}%."
+  ],
+  "The saved blocker measure for this hand is {0}% ({1}).": [
+    "此牌已保存的阻断指标为{0}%（{1}）。",
+    "La medida de bloqueo guardada para esta mano es del {0}% ({1})."
+  ],
+  "opponent range": [
+    "对手范围",
+    "rango rival"
+  ],
+  "{0} {1}%": [
+    "{0} {1}%",
+    "{0} {1}%"
+  ],
+  "Saved action mix: {0}.": [
+    "已保存行动配比：{0}。",
+    "Mezcla de acciones guardada: {0}."
+  ],
+  "The recorded action mix is shown above.": [
+    "已记录的行动配比显示在上方。",
+    "La mezcla de acciones registrada se muestra arriba."
+  ],
+  "Check": [
+    "过牌",
+    "Pasar"
+  ],
+  "Bet 33%": [
+    "下注33%",
+    "Apostar 33%"
+  ],
+  "Bet 75%": [
+    "下注75%",
+    "Apostar 75%"
+  ],
+  "Bet 125%": [
+    "下注125%",
+    "Apostar 125%"
+  ],
+  "All-in": [
+    "全下",
+    "All-in"
+  ],
+  "Fold": [
+    "弃牌",
+    "Retirarse"
+  ],
+  "Call": [
+    "跟注",
+    "Pagar"
+  ],
+  "Raise": [
+    "加注",
+    "Subir"
+  ],
+  "Your range is capped on this line: it holds almost no monsters, so the bettor can lean on you with polarised bets and your continuing hands are mostly bluff-catchers.": [
+    "此路径中你的范围封顶：几乎没有超强牌，因此下注者可用两极化下注施压，你继续的手牌主要是抓诈唬牌。",
+    "Tu rango está limitado en esta línea: casi no contiene manos monstruo, así que quien apuesta puede presionarte con apuestas polarizadas y tus manos que continúan son principalmente cazafaroles."
+  ],
+  "{0}'s range is capped here, so the nuts are not a worry and you can defend wide with your bluff-catchers.": [
+    "{0}的范围在这里封顶，因此不必担忧坚果牌，可用抓诈唬牌宽幅防守。",
+    "El rango de {0} está limitado aquí, por lo que no preocupan las nuts y puedes defender ampliamente con tus cazafaroles."
+  ],
+  "The bettor holds the range advantage on this texture, so your defence has to be disciplined about which hands continue.": [
+    "下注者在此牌面拥有范围优势，因此防守时需严格筛选继续的手牌。",
+    "Quien apuesta tiene ventaja de rango en este board, por lo que debes seleccionar con disciplina las manos con las que continúas."
+  ],
+  "Your range is the stronger one on this texture, so you can defend comfortably and still keep raises in the mix.": [
+    "你在此牌面的范围更强，可以较轻松地防守并保留部分加注。",
+    "Tu rango es más fuerte en este board, así que puedes defender cómodamente y mantener subidas en la mezcla."
+  ],
+  "You hold both the range advantage and the nut advantage on this texture, so the whole range can apply pressure.": [
+    "你在此牌面同时拥有范围优势和坚果优势，整个范围都可以施压。",
+    "Tienes ventaja de rango y de nuts en este board, por lo que todo el rango puede presionar."
+  ],
+  "You hold the range advantage without a clear nut advantage, so the pressure comes from frequency rather than from polarised sizing.": [
+    "你拥有范围优势但没有明显坚果优势，因此压力主要来自频率，而非两极化下注大小。",
+    "Tienes ventaja de rango sin una clara ventaja de nuts, así que la presión procede de la frecuencia y no de tamaños polarizados."
+  ],
+  "Your range is not ahead overall, but it owns more of the nuts, and that is what supports a polarised line.": [
+    "你的整体范围并不领先，但拥有更多坚果牌，这支持两极化路线。",
+    "Tu rango no va por delante en conjunto, pero contiene más nuts, lo que permite una línea polarizada."
+  ],
+  "The opponent's range is ahead on this texture, so checking dominates and only the hands that clearly want to bet do so.": [
+    "对手范围在此牌面领先，因此主要过牌，仅有明确下注需求的手牌下注。",
+    "El rango rival va por delante en este board, así que predomina pasar y solo apuestan las manos que claramente lo necesitan."
+  ],
+  "With the SPR this low, the stacks are close to committed already, so hand strength matters more than polarisation.": [
+    "SPR如此低时，筹码已接近投入完毕，牌力比两极化更重要。",
+    "Con un SPR tan bajo, los stacks están casi comprometidos y la fuerza de la mano importa más que la polarización."
+  ],
+  "{0}'s bet comes from a polarised range, strong value plus air, so the hands in the middle are under pressure.": [
+    "{0}的下注来自两极化范围，即强价值牌加空气牌，中间牌力因此承压。",
+    "La apuesta de {0} procede de un rango polarizado, valor fuerte y aire, por lo que las manos intermedias quedan bajo presión."
+  ],
+  "{0}'s bet comes from a merged range of strong and medium hands, so there are fewer pure bluffs behind it.": [
+    "{0}的下注来自强牌与中等牌混合的范围，因此纯诈唬较少。",
+    "La apuesta de {0} procede de un rango combinado de manos fuertes y medias, con menos faroles puros."
+  ],
+  "{0}'s bet comes from an almost pure value range, so bluff-catching is rarely rewarded.": [
+    "{0}的下注范围几乎全是价值牌，因此抓诈唬很少有回报。",
+    "La apuesta de {0} procede de un rango casi puro de valor, por lo que atrapar faroles rara vez se recompensa."
+  ],
+  "{0}'s bet comes from a wide range that mixes value, medium hands and bluffs.": [
+    "{0}的下注来自包含价值牌、中等牌和诈唬的宽范围。",
+    "La apuesta de {0} procede de un rango amplio que mezcla valor, manos medias y faroles."
+  ],
+  "{0} is strong enough to stack off: at this low SPR the shove just commits the stacks, so raw hand strength outweighs polarisation.": [
+    "{0}足够强，可以投入全部筹码：低SPR下的全下主要是完成筹码投入，因此原始牌力比两极化更重要。",
+    "{0} tiene fuerza suficiente para jugarse el stack: con este SPR bajo, el shove compromete las fichas y la fuerza de la mano pesa más que la polarización."
+  ],
+  "{0} shoves as a bluff that the capped value range supports, and at this low SPR the shove is close to the natural geometric size.": [
+    "{0}以受封顶价值范围支撑的诈唬全下；低SPR下，全下接近自然的几何下注大小。",
+    "{0} hace shove de farol respaldado por el rango de valor limitado y, con este SPR bajo, se acerca al tamaño geométrico natural."
+  ],
+  "{0} shoves with the remaining stack, a geometric-size bet where only the strongest hands and a few bluffs can go all-in.": [
+    "{0}用剩余筹码全下，这是几何下注大小，仅最强手牌与少量诈唬可以全下。",
+    "{0} empuja el stack restante con un tamaño geométrico en el que solo las manos más fuertes y unos pocos faroles pueden ir all-in."
+  ],
+  "{0} shoves as a bluff, and only a small share of the range can do so while keeping the value-to-bluff balance.": [
+    "{0}以诈唬全下。为维持价值与诈唬平衡，仅很小一部分范围可以如此行动。",
+    "{0} hace shove de farol; solo una pequeña parte del rango puede hacerlo manteniendo el equilibrio entre valor y faroles."
+  ],
+  "This small size is a linear range of strong and medium hands going for thin value, with few bluffs.": [
+    "此小额下注使用强牌和中等牌组成的线性范围，以薄价值为目标，诈唬很少。",
+    "Este tamaño pequeño usa un rango lineal de manos fuertes y medias que busca valor fino, con pocos faroles."
+  ],
+  "This small size is a linear range of strong and medium hands betting for value and protection with few bluffs.": [
+    "此小额下注使用强牌和中等牌组成的线性范围，追求价值与保护，诈唬很少。",
+    "Este tamaño pequeño usa un rango lineal de manos fuertes y medias que apuesta por valor y protección, con pocos faroles."
+  ],
+  "Even at a small size the range is almost all value, built to keep worse hands calling.": [
+    "即使是小注，范围也几乎全是价值牌，目的是让较弱手牌继续跟注。",
+    "Incluso con un tamaño pequeño, el rango es casi todo valor y busca mantener los pagos de manos peores."
+  ],
+  "Even at a small size this range is polarised: a few strong hands plus air that can bluff cheaply.": [
+    "即使是小注，此范围仍然两极化：少量强牌加可低成本诈唬的空气牌。",
+    "Incluso con un tamaño pequeño, este rango está polarizado: unas pocas manos fuertes y aire que puede farolear barato."
+  ],
+  "The small size suits a wide, merged range: it taxes the weakest holdings, takes thin value from worse pairs and denies equity cheaply.": [
+    "小注适合宽幅混合范围：向最弱手牌收费，从较弱对子获取薄价值，并低成本剥夺胜率。",
+    "El tamaño pequeño encaja con un rango amplio y combinado: cobra a las manos más débiles, obtiene valor fino de parejas peores y niega equity a bajo coste."
+  ],
+  "The large bet is polarised, strong value and air with little in between, which forces the opponent to find calls with bluff-catchers.": [
+    "大注范围两极化，包含强价值牌和空气牌，几乎没有中等牌，迫使对手用抓诈唬牌寻找跟注。",
+    "La apuesta grande está polarizada, con valor fuerte y aire y pocas manos intermedias, obligando al rival a buscar pagos con cazafaroles."
+  ],
+  "The large bet stays merged: strong and good medium hands bet for thin-to-solid value while few pure bluffs join them.": [
+    "大注仍采用混合范围：强牌和较好的中等牌获取薄到扎实的价值，纯诈唬很少。",
+    "La apuesta grande sigue combinada: manos fuertes y buenas manos medias apuestan por valor fino o sólido, con pocos faroles puros."
+  ],
+  "The large bet stays merged: strong and good medium hands bet for value and protection while few pure bluffs join them.": [
+    "大注仍采用混合范围：强牌和较好的中等牌下注以获取价值和保护，纯诈唬很少。",
+    "La apuesta grande sigue combinada: manos fuertes y buenas manos medias apuestan por valor y protección, con pocos faroles puros."
+  ],
+  "This size is almost pure value, built to extract from the opponent's calling range.": [
+    "此大小几乎全是价值下注，旨在从对手跟注范围中获取筹码。",
+    "Este tamaño es casi puro valor y busca extraer fichas del rango de pago rival."
+  ],
+  "The large bet carries a wide mix of value, medium hands and bluffs, so no single hand type gives it away.": [
+    "大注包含价值牌、中等牌和诈唬的宽幅混合，不会被某一牌型暴露。",
+    "La apuesta grande contiene una mezcla amplia de valor, manos medias y faroles, sin que un solo tipo de mano la delate."
+  ],
+  "An overbet needs a polarised range backed by a nut advantage, which you have here, and it puts bluff-catchers under maximum pressure.": [
+    "超池下注需要坚果优势支撑的两极化范围，而你在此具备这些条件，可对抓诈唬牌施加最大压力。",
+    "Un overbet necesita un rango polarizado respaldado por ventaja de nuts, que tienes aquí, y somete a los cazafaroles a la máxima presión."
+  ],
+  "The overbet is polarised, strong hands plus air, and it puts the opponent's bluff-catchers under maximum pressure.": [
+    "超池下注两极化，由强牌和空气牌组成，给对手抓诈唬牌最大压力。",
+    "El overbet está polarizado, con manos fuertes y aire, y somete a los cazafaroles del rival a la máxima presión."
+  ],
+  "The overbet is almost pure value, the nuts squeezing the opponent's strongest calling hands.": [
+    "超池下注几乎全为价值，坚果牌向对手最强跟注手牌榨取价值。",
+    "El overbet es casi puro valor: las nuts extraen fichas de las manos más fuertes que pagan."
+  ],
+  "The overbet is a rare size, kept for the top of the range together with the best bluffs.": [
+    "超池下注很少使用，留给范围顶端和最佳诈唬牌。",
+    "El overbet es un tamaño poco frecuente, reservado para la parte alta del rango y los mejores faroles."
+  ],
+  "From {0}, {1}": [
+    "对于{0}，{1}",
+    "Con {0}, {1}"
+  ],
+  "most of {0}'s range gives up": [
+    "{0}的大部分范围放弃",
+    "la mayor parte del rango de {0} abandona"
+  ],
+  "a large part of {0}'s range folds": [
+    "{0}的很大一部分范围弃牌",
+    "una gran parte del rango de {0} se retira"
+  ],
+  "only part of {0}'s range folds": [
+    "{0}仅部分范围弃牌",
+    "solo parte del rango de {0} se retira"
+  ],
+  "hardly any of {0}'s range folds": [
+    "{0}几乎没有范围弃牌",
+    "casi ninguna mano del rango de {0} se retira"
+  ],
+  "what continues is mostly ahead of you": [
+    "继续的手牌大多领先你",
+    "lo que continúa suele ir por delante de ti"
+  ],
+  "what continues is close to you in strength": [
+    "继续的手牌与你的牌力接近",
+    "lo que continúa tiene una fuerza similar a la tuya"
+  ],
+  "what continues is mostly behind you": [
+    "继续的手牌大多落后于你",
+    "lo que continúa suele ir por detrás de ti"
+  ],
+  "{0}, {1} {2}.": [
+    "{0}，{1} {2}。",
+    "{0}, {1} {2}."
+  ],
+  "No draws are left on the river, so this bet is either value or a bluff.": [
+    "河牌已无听牌，因此此下注要么是价值，要么是诈唬。",
+    "En el river ya no quedan proyectos, así que esta apuesta es de valor o de farol."
+  ],
+  "Continuing from the flop makes this a turn barrel, and the story stays consistent with the earlier bet.": [
+    "从翻牌继续下注构成转牌二次开火，与先前下注表达的牌力一致。",
+    "Continuar desde el flop convierte esta apuesta en un barrel de turn, coherente con la apuesta anterior."
+  ],
+  "Betting after the flop checked through is a delayed c-bet, which punishes the capped checking range.": [
+    "翻牌双方过牌后下注是延迟持续下注，可惩罚封顶的过牌范围。",
+    "Apostar tras un flop pasado por ambos es una c-bet retrasada que castiga el rango de check limitado."
+  ],
+  "A lead from the defender is a donk bet{0}.": [
+    "防守者主动下注是领先下注{0}。",
+    "Una apuesta de cara del defensor es una donk bet{0}."
+  ],
+  ", which works here because the card favours your range": [
+    "，此处有效是因为此牌更有利于你的范围",
+    ", que funciona aquí porque esta carta favorece a tu rango"
+  ],
+  ", a rare line that needs the card to favour your range": [
+    "，这条少见路线需要该牌有利于你的范围",
+    ", una línea rara que necesita que la carta favorezca tu rango"
+  ],
+  "Dry board: few draws, so equity realises stably and the range advantage tends to persist, which favours small, frequent bets.": [
+    "干燥牌面：听牌少，胜率实现较稳定，范围优势通常延续，适合高频小注。",
+    "Board seco: hay pocos proyectos, la equity se realiza de forma estable y la ventaja de rango suele mantenerse, favoreciendo apuestas pequeñas y frecuentes."
+  ],
+  "Wet board: many draws and a shifting nut hand make equity dynamic, so protection matters and sizing goes up.": [
+    "湿润牌面：听牌多，坚果牌不断变化，胜率较动态，因此保护更重要，下注大小增大。",
+    "Board conectado: los muchos proyectos y las nuts cambiantes hacen dinámica la equity; importa la protección y aumentan los tamaños."
+  ],
+  "Paired board: trips and full houses are rare, ranges are condensed, and small bets with a wide range are common.": [
+    "成对牌面：三条和葫芦较少，范围压缩，宽范围小注较常见。",
+    "Board emparejado: los tríos y fulls son raros, los rangos se condensan y son comunes las apuestas pequeñas con un rango amplio."
+  ],
+  "Monotone board: flush made hands dominate the nuts, range advantage is muted, and the nut flush blocker gains value.": [
+    "单花色牌面：成同花占据坚果牌位置，范围优势减弱，坚果同花阻断牌价值提高。",
+    "Board monocolor: los colores hechos dominan las nuts, la ventaja de rango se atenúa y gana valor el bloqueador del color máximo."
+  ],
+  "The runout puts a third suited card out, so flushes become possible, equity realisation shifts toward the made flush, and weak showdown hands lose value.": [
+    "后续牌带来第三张同花色牌，使同花成为可能，胜率实现倾向于成同花，弱摊牌手牌贬值。",
+    "La siguiente carta añade un tercer palo igual: permite colores, desplaza la realización de equity hacia el color hecho y reduce el valor de las manos débiles de showdown."
+  ],
+  "The runout connects the board, so straights become possible and the nuts can change hands.": [
+    "后续牌连接了牌面，使顺子成为可能，坚果牌可能易手。",
+    "La siguiente carta conecta el board, permite escaleras y puede cambiar las nuts."
+  ],
+  "An overcard on the runout shifts the range advantage toward the side holding more high cards and devalues the middle pairs.": [
+    "后续高张把范围优势推向持有更多高牌的一方，并降低中间对子的价值。",
+    "Una overcard en la siguiente calle favorece al rango con más cartas altas y devalúa las parejas medias."
+  ],
+  "The runout pairs the board, so full houses are possible and one pair loses value.": [
+    "后续牌使牌面成对，因此可能出现葫芦，一对的价值下降。",
+    "La siguiente carta empareja el board: permite fulls y reduce el valor de una pareja."
+  ],
+  "The runout is a blank, so ranges barely change and the previous plan carries over.": [
+    "后续牌是空白牌，范围几乎不变，原计划得以延续。",
+    "La siguiente carta es irrelevante: los rangos apenas cambian y se mantiene el plan anterior."
+  ],
+  "This card helps your range more than the opponent's, so more of your range can keep betting.": [
+    "此牌比起对手更有利于你的范围，因此更多手牌可以继续下注。",
+    "Esta carta ayuda más a tu rango que al del rival, así que una mayor parte puede seguir apostando."
+  ],
+  "This card helps the opponent's range more than yours, so expect fewer barrels and more checking.": [
+    "此牌更有利于对手范围，因此应减少连续下注、增加过牌。",
+    "Esta carta ayuda más al rango rival, así que cabe esperar menos barrels y más checks."
+  ],
+  "the opponent": [
+    "对手",
+    "tu rival"
+  ],
+  "{0} has {1}, enough to continue, but it sits near the bottom of the continuing range, so the plan folds it and keeps the defence on better hands.": [
+    "{0}持有{1}，足以继续，但处于继续范围底端附近，因此策略将其弃掉，用更强手牌防守。",
+    "{0} tiene {1}, suficiente para continuar, pero está cerca del fondo del rango de continuación; por eso la estrategia la retira y defiende con manos mejores."
+  ],
+  "{0} has {1}, so a bet is not used: slowplaying keeps worse hands in and the checking range uncapped.": [
+    "{0}持有{1}，因此不下注：慢打可留住较弱手牌，并让过牌范围不封顶。",
+    "{0} tiene {1}, por lo que no apuesta: el slowplay mantiene manos peores y evita limitar el rango de check."
+  ],
+  "{0}: {1}": [
+    "{0}：{1}",
+    "{0}: {1}"
+  ],
+  "{0} and {1}": [
+    "{0}和{1}",
+    "{0} y {1}"
+  ],
+  "a very strong made hand": [
+    "很强的成牌",
+    "una mano hecha muy fuerte"
+  ],
+  "a strong pair": [
+    "强对子",
+    "una pareja fuerte"
+  ],
+  "a weak pair": [
+    "弱对子",
+    "una pareja débil"
+  ],
+  "a draw": [
+    "听牌",
+    "un proyecto"
+  ],
+  "no made hand": [
+    "没有成牌",
+    "ninguna mano hecha"
+  ],
+  "weaker pairs and draws": [
+    "较弱对子和听牌",
+    "parejas más débiles y proyectos"
+  ],
+  "{0} {1}": [
+    "{0} {1}",
+    "{0} {1}"
+  ],
+  "full house": [
+    "葫芦",
+    "full"
+  ],
+  "straight flush": [
+    "同花顺",
+    "escalera de color"
+  ],
+  "only the board's {0} (a split)": [
+    "仅公共牌的{0}（平分）",
+    "solo {0} del board (empate)"
+  ],
+  "an overpair (pocket {0})": [
+    "超对（口袋{0}）",
+    "una overpair ({0} de mano)"
+  ],
+  "an underpair (pocket {0})": [
+    "低对（口袋{0}）",
+    "una underpair ({0} de mano)"
+  ],
+  "top pair ({0}) with {1} kicker": [
+    "顶对（{0}），{1}踢脚",
+    "top pair ({0}) con kicker {1}"
+  ],
+  "second pair ({0}) with {1} kicker": [
+    "第二对（{0}），{1}踢脚",
+    "segunda pareja ({0}) con kicker {1}"
+  ],
+  "bottom pair ({0}) with {1} kicker": [
+    "底对（{0}），{1}踢脚",
+    "pareja baja ({0}) con kicker {1}"
+  ],
+  "only the board's pair of {0}": [
+    "仅公共牌的一对{0}",
+    "solo la pareja de {0} del board"
+  ],
+  "top two pair ({0} and {1})": [
+    "顶两对（{0}和{1}）",
+    "las dos parejas más altas ({0} y {1})"
+  ],
+  "two pair with the top pair": [
+    "包含顶对的两对",
+    "dobles parejas que incluyen la pareja más alta"
+  ],
+  "the lower two pair": [
+    "较低的两对",
+    "las dos parejas inferiores"
+  ],
+  "two pair from a pocket pair and the board pair": [
+    "由口袋对子与公共牌对子组成的两对",
+    "dobles parejas de una pareja de mano y la del board"
+  ],
+  "two pair that leans on the board pair": [
+    "依赖公共牌对子的两对",
+    "dobles parejas apoyadas en la pareja del board"
+  ],
+  "only the two pair on the board": [
+    "仅公共牌的两对",
+    "solo las dobles parejas del board"
+  ],
+  "a set of {0}": [
+    "{0}暗三条",
+    "un set de {0}"
+  ],
+  "trips ({0}, with a pair on the board)": [
+    "三条（{0}，公共牌有一对）",
+    "un trío ({0}, con pareja en el board)"
+  ],
+  "only the trips on the board": [
+    "仅公共牌的三条",
+    "solo el trío del board"
+  ],
+  "the nut straight": [
+    "坚果顺子",
+    "la escalera máxima"
+  ],
+  "a straight that is not the nuts": [
+    "非坚果顺子",
+    "una escalera que no es la máxima"
+  ],
+  "the nut flush": [
+    "坚果同花",
+    "el color máximo"
+  ],
+  "the second-nut flush": [
+    "第二大同花",
+    "el segundo mejor color"
+  ],
+  "a low flush": [
+    "较小同花",
+    "un color bajo"
+  ],
+  "a full house": [
+    "葫芦",
+    "un full"
+  ],
+  "a straight flush": [
+    "同花顺",
+    "una escalera de color"
+  ],
+  " ({0} completes it)": [
+    "（{0}即可完成）",
+    " ({0} lo completa)"
+  ],
+  "the nut flush draw ({0})": [
+    "坚果同花听牌（{0}）",
+    "el proyecto de color máximo ({0})"
+  ],
+  "a flush draw that is not to the nuts ({0})": [
+    "非坚果同花听牌（{0}）",
+    "un proyecto de color no máximo ({0})"
+  ],
+  "a low flush draw ({0})": [
+    "较小同花听牌（{0}）",
+    "un proyecto de color bajo ({0})"
+  ],
+  "a gutshot{0}": [
+    "卡顺听牌{0}",
+    "un proyecto de escalera interna{0}"
+  ],
+  "an open-ended straight draw{0}": [
+    "两头顺听牌{0}",
+    "un proyecto de escalera abierta{0}"
+  ],
+  "a double-gutter straight draw{0}": [
+    "双卡顺听牌{0}",
+    "un proyecto de doble escalera interna{0}"
+  ],
+  "a combo draw of {0}": [
+    "{0}的组合听牌",
+    "un proyecto combinado de {0}"
+  ],
+  "a backdoor flush draw{0}": [
+    "后门同花听牌{0}",
+    "un proyecto de color backdoor{0}"
+  ],
+  " to the nuts": [
+    "，通向坚果牌",
+    " a las nuts"
+  ],
+  "a backdoor straight draw": [
+    "后门顺子听牌",
+    "un proyecto de escalera backdoor"
+  ],
+  "an overcard (the {0})": [
+    "一张高张（{0}）",
+    "una overcard ({0})"
+  ],
+  "two overcards (the {0} and the {1})": [
+    "两张高张（{0}和{1}）",
+    "dos overcards ({0} y {1})"
+  ],
+  "{0}-high with {1}": [
+    "{0}高牌，{1}",
+    "{0} alto con {1}"
+  ],
+  "only the board's cards": [
+    "仅公共牌",
+    "solo las cartas del board"
+  ],
+  "only {0}": [
+    "仅{0}",
+    "solo {0}"
+  ],
+  "one-pair hands": [
+    "一对牌型",
+    "manos de una pareja"
+  ],
+  "weaker two pair": [
+    "较弱两对",
+    "dobles parejas más débiles"
+  ],
+  "weaker straights": [
+    "较弱顺子",
+    "escaleras más débiles"
+  ],
+  "lower flushes": [
+    "较小同花",
+    "colores inferiores"
+  ],
+  "lower full houses": [
+    "较小葫芦",
+    "fulls inferiores"
+  ],
+  "lower quads": [
+    "较小四条",
+    "póqueres inferiores"
+  ],
+  "weaker hands": [
+    "较弱手牌",
+    "manos más débiles"
+  ],
+  "weaker pairs and ace-high": [
+    "较弱对子和A高牌",
+    "parejas más débiles y as alto"
+  ],
+  "top pair": [
+    "顶对",
+    "top pair"
+  ],
+  "top pair with a worse kicker": [
+    "踢脚更弱的顶对",
+    "top pair con peor kicker"
+  ],
+  "second pair and lower pairs": [
+    "第二对与更低对子",
+    "segundas parejas y parejas inferiores"
+  ],
+  "lower pairs": [
+    "更低对子",
+    "parejas inferiores"
+  ],
+  "weak draws": [
+    "弱听牌",
+    "proyectos débiles"
+  ],
+  "{0} makes the straight": [
+    "{0}可完成顺子",
+    "{0} completa la escalera"
+  ],
+  "any {0} makes the nut flush": [
+    "任意{0}可完成坚果同花",
+    "cualquier {0} completa el color máximo"
+  ],
+  "any {0} makes a flush, though not the nuts": [
+    "任意{0}可完成同花，但不是坚果牌",
+    "cualquier {0} completa un color, aunque no el máximo"
+  ],
+  "pairing the {0} gives top pair": [
+    "{0}成对即可得到顶对",
+    "emparejar el {0} da top pair"
+  ],
+  "pairing an overcard gives top pair": [
+    "高张成对即可得到顶对",
+    "emparejar una overcard da top pair"
+  ],
+  "the {0} blocks the nut flush": [
+    "{0}阻断坚果同花",
+    "el {0} bloquea el color máximo"
+  ],
+  "the {0} blocks the second-nut flush": [
+    "{0}阻断第二大同花",
+    "el {0} bloquea el segundo mejor color"
+  ],
+  "it holds a card that blocks the nut straight": [
+    "持有阻断坚果顺子的牌",
+    "contiene una carta que bloquea la escalera máxima"
+  ],
+  "the ace removes the top-pair-top-kicker and overpair combos": [
+    "A减少了顶对顶踢脚与超对的组合",
+    "el as elimina combos de top pair con mejor kicker y de overpair"
+  ],
+  "neither the {0} nor the {1} matches the board, so it leaves the weak pairs {2} would fold in the range": [
+    "{0}与{1}都不与公共牌点数重合，因此保留了{2}会弃掉的弱对子",
+    "ni el {0} ni el {1} coinciden con el board, por lo que no eliminan las parejas débiles que {2} retiraría"
+  ],
+  "flush and straight draws": [
+    "同花和顺子听牌",
+    "proyectos de color y escalera"
+  ],
+  "flush draws": [
+    "同花听牌",
+    "proyectos de color"
+  ],
+  "straight draws": [
+    "顺子听牌",
+    "proyectos de escalera"
+  ],
+  "an overpair": [
+    "超对",
+    "una overpair"
+  ],
+  "an underpair": [
+    "低对",
+    "una underpair"
+  ],
+  "second pair": [
+    "第二对",
+    "segunda pareja"
+  ],
+  "bottom pair": [
+    "底对",
+    "pareja baja"
+  ],
+  "two pair": [
+    "两对",
+    "dobles parejas"
+  ],
+  "a set": [
+    "暗三条",
+    "un set"
+  ],
+  "a straight": [
+    "顺子",
+    "una escalera"
+  ],
+  "a flush": [
+    "同花",
+    "un color"
+  ],
+  "a gutshot": [
+    "卡顺听牌",
+    "un proyecto de escalera interna"
+  ],
+  "an open-ended draw": [
+    "两头顺听牌",
+    "un proyecto de escalera abierta"
+  ],
+  "a double-gutter draw": [
+    "双卡顺听牌",
+    "un proyecto de doble escalera interna"
+  ],
+  "{0} ({1} with {2} kicker)": [
+    "{0}（{1}，{2}踢脚）",
+    "{0} ({1} con kicker {2})"
+  ],
+  "an overpair ({0})": [
+    "超对（{0}）",
+    "una overpair ({0})"
+  ],
+  "an underpair ({0})": [
+    "低对（{0}）",
+    "una underpair ({0})"
+  ],
+  "two pair ({0} and {1})": [
+    "两对（{0}和{1}）",
+    "dobles parejas ({0} y {1})"
+  ],
+  "a combo draw": [
+    "组合听牌",
+    "un proyecto combinado"
+  ],
+  "the nut flush draw": [
+    "坚果同花听牌",
+    "el proyecto de color máximo"
+  ],
+  "a flush draw": [
+    "同花听牌",
+    "un proyecto de color"
+  ],
+  "the board's cards": [
+    "公共牌的牌",
+    "las cartas del board"
+  ],
+  "ahead of nearly every holding": [
+    "领先几乎所有手牌",
+    "por delante de casi todas las manos"
+  ],
+  "{0} players to the flop": [
+    "{0}位玩家进入翻牌",
+    "{0} jugadores al flop"
+  ],
+  "{0} wins": [
+    "{0}获胜",
+    "{0} gana"
+  ],
+  "{0} folded. {1} wins.": [
+    "{0}弃牌。{1}获胜。",
+    "{0} se retiró. {1} gana."
+  ],
+  "Showdown": [
+    "摊牌",
+    "Showdown"
+  ],
+  "All-in showdown": [
+    "全下摊牌",
+    "Showdown all-in"
+  ],
+  "{0} card {1}": [
+    "{0}第{1}张牌",
+    "Carta {1} del {0}"
+  ],
+  "Pot at the start of the street": [
+    "本街开始时的底池",
+    "Bote al inicio de la calle"
+  ],
+  "· Open": [
+    "· 开池",
+    "· Apertura"
+  ],
+  "fewer opponents 3-bet": [
+    "更少对手3bet",
+    "menos rivales hacen 3-bet"
+  ],
+  "more opponents 3-bet": [
+    "更多对手3bet",
+    "más rivales hacen 3-bet"
+  ],
+  "the blinds fold more often": [
+    "盲注位更常弃牌",
+    "las ciegas se retiran más a menudo"
+  ],
+  "calls more often create unfavorable pots": [
+    "跟注更容易形成不利底池",
+    "los pagos crean botes desfavorables más a menudo"
+  ],
+  "With this table profile, {0}. The approximation changes EV by {1}{2} BB, so this hand is {3} the opening range (saved baseline: {4}% open).": [
+    "在此牌桌倾向下，{0}。近似计算使EV变化{1}{2} BB，因此此手牌{3}开池范围（已保存基准：开池{4}%）。",
+    "Con este perfil de mesa, {0}. La aproximación cambia el EV en {1}{2} BB, por lo que esta mano se {3} al rango de apertura (referencia guardada: {4}% de apertura)."
+  ],
+  "opponent responses change": [
+    "对手的应对发生变化",
+    "cambian las respuestas del rival"
+  ],
+  "added to": [
+    "加入",
+    "añade"
+  ],
+  "removed from": [
+    "移出",
+    "elimina"
+  ],
+  "{0} folded. You are {1}.": [
+    "{0}弃牌。你位于{1}。",
+    "{0} se retiró. Estás en {1}."
+  ],
+  "You are first to act in {0}.": [
+    "你在{0}首先行动。",
+    "Eres el primero en actuar en {0}."
+  ],
+  "{0} opened to {1} BB. You are {2}.": [
+    "{0}开池到{1} BB。你位于{2}。",
+    "{0} abrió a {1} BB. Estás en {2}."
+  ],
+  "a high pocket pair": [
+    "高口袋对子",
+    "una pareja de mano alta"
+  ],
+  "a small or middle pocket pair": [
+    "中小口袋对子",
+    "una pareja de mano pequeña o media"
+  ],
+  "a suited ace": [
+    "同花A",
+    "un as suited"
+  ],
+  "a suited broadway hand": [
+    "同花大牌",
+    "una mano broadway suited"
+  ],
+  "a suited connector": [
+    "同花连牌",
+    "un conector suited"
+  ],
+  "a suited hand": [
+    "同花手牌",
+    "una mano suited"
+  ],
+  "an offsuit broadway hand": [
+    "非同花大牌",
+    "una mano broadway offsuit"
+  ],
+  "an offsuit ace": [
+    "非同花A",
+    "un as offsuit"
+  ],
+  "an offsuit hand": [
+    "非同花手牌",
+    "una mano offsuit"
+  ],
+  "Opening {0} is part of the saved estimate for {1}. Earlier positions generally require a tighter range because more players remain to act.": [
+    "用{0}开池是{1}已保存估计策略的一部分。前位之后尚有更多玩家行动，因此通常需要更紧的范围。",
+    "Abrir con {0} forma parte de la estimación guardada para {1}. Las posiciones anteriores suelen necesitar un rango más conservador porque quedan más jugadores por actuar."
+  ],
+  "this position": [
+    "此位置",
+    "esta posición"
+  ],
+  "Calling keeps {0} in the pot without enlarging the bet. Its value depends on position, pot odds, and how well the hand realizes equity after the flop.": [
+    "跟注让{0}继续参与底池而不提高下注大小。其价值取决于位置、底池赔率，以及翻后实现胜率的能力。",
+    "Pagar mantiene {0} en el bote sin aumentar la apuesta. Su valor depende de la posición, las pot odds y la capacidad de realizar equity después del flop."
+  ],
+  "The saved estimate assigns a 3-bet frequency to {0} in this spot. The displayed frequency—not this general note—is the recorded recommendation.": [
+    "已保存估计策略为此局面的{0}分配了3bet频率。显示的频率才是记录的推荐，而非这段通用说明。",
+    "La estimación guardada asigna una frecuencia de 3-bet a {0} en esta situación. La recomendación registrada es la frecuencia mostrada, no esta nota general."
+  ],
+  "Folding {0} avoids committing more chips when this spot's saved estimate prefers not to continue.": [
+    "此局面已保存估计策略倾向于不继续时，弃掉{0}可避免投入更多筹码。",
+    "Retirar {0} evita comprometer más fichas cuando la estimación guardada prefiere no continuar."
+  ],
+  "This action is part of the saved action mix.": [
+    "此行动是已保存行动配比的一部分。",
+    "Esta acción forma parte de la mezcla de acciones guardada."
+  ],
+  "{0}.": [
+    "{0}。",
+    "{0}."
+  ]
+}

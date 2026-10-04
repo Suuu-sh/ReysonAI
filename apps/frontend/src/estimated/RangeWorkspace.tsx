@@ -16,7 +16,7 @@ import { limpActionTransition, responseActionTransition, rewindActionBlockTransi
 import { displayModes } from "./display-mode.ts";
 import { displayModeKey } from "../profile.ts";
 import { useDetailedReasons } from "./detailed-reasons.ts";
-import { englishEquityNote, englishFactLabels, englishPreflopReason } from "./english-reasons.ts";
+import { localizedPreflopReason, localizedFactLabel, localizedEquityNote } from "./english-reasons.ts";
 import { productLocale } from "../i18n.ts";
 import { localized } from "../locale.ts";
 import { fiveBetMatrixModel, useFiveBetSpot } from "./five-bet-responses.ts";
@@ -132,23 +132,23 @@ const formatFact = ({ value, unit }) => unit === "bb"
 function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }) {
   const { data, loading, error } = reasonState;
   const detailed = data?.hands[hand.hand];
-  const english = productLocale() === "en";
+  const english = productLocale() !== "ja";
   const facts = detailed
-    ? data.fact_labels.map(({ key, label, scope, unit }) => ({ key, label: english ? englishFactLabels[key] ?? label : label, unit, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
+    ? data.fact_labels.map(({ key, label, scope, unit }) => ({ key, label: english ? localizedFactLabel(key) ?? label : label, unit, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
     : inlineFacts ?? [];
   const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined && !(hideCallEv && fact.key === "call_ev_bb"));
   return <div className="ai-reason">
     <span>AIの考え方</span>
-    <p>{english ? (detailed ? englishPreflopReason(hand, detailed, data) : loading ? "Loading…" : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (loading ? "読み込み中…" : error ? "理由を読み込めませんでした。" : hand.reason)}</p>
+    <p>{english ? (detailed ? localizedPreflopReason(hand, detailed, data) : loading ? "Loading…" : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (loading ? "読み込み中…" : error ? "理由を読み込めませんでした。" : hand.reason)}</p>
     {shown.length > 0 && <dl className="reason-facts">
       {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd className={fact.unit === "bb" ? (fact.value >= 0 ? "fact-positive" : "fact-negative") : undefined}>{formatFact(fact)}</dd></div>)}
     </dl>}
-    {detailed && <small className="reason-note">{english ? englishEquityNote : data.equity_note}</small>}
+    {detailed && <small className="reason-note">{english ? localizedEquityNote() : data.equity_note}</small>}
   </div>;
 }
 
 function endResultLabel(result) {
-  if (productLocale() !== "en") return result;
+  if (productLocale() === "ja") return result;
   const players = /^(\d+)人でフロップへ$/.exec(result);
   if (players) return `${players[1]} players to the flop`;
   const winner = /^(.+)の勝ち$/.exec(result);
@@ -244,7 +244,7 @@ export function prioritizeParticipantRanges(rangeEntries, selectedActionEntries)
 
 function ActionDropdown({ position, options, onSelect }) {
   const [menu, setMenu] = useState(null);
-  const english = productLocale() === "en";
+  const english = productLocale() !== "ja";
   const toggle = event => {
     event.stopPropagation();
     if (menu) { setMenu(null); return; }
@@ -292,7 +292,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
           const title = isFlop ? "Flop" : street === "turn" ? "Turn" : "River";
           const label = isFlop ? "フロップ" : street === "turn" ? "ターン" : "リバー";
           const selected = block.cards.some(Boolean);
-          const english = productLocale() === "en";
+          const english = productLocale() !== "ja";
           return <button type="button" className={`action-seat action-seat-board${isFlop ? "" : " action-seat-board-later"}`} key={block.key}
             onClick={isFlop ? onOpenFlopCards : () => onOpenLaterCard(street)}
             aria-label={english ? `${title} card ${selected ? "change" : "select"}` : `${label}カードを${selected ? "変更" : "選択"}`}>

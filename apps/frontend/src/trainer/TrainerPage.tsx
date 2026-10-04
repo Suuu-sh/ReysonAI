@@ -234,7 +234,7 @@ function SessionResult({ log, settings, drill, record, rank, onRestart, onLibrar
       <div className="session-ring large" style={{ "--rate": answered ? score / answered : 0 }}><strong>{answered ? pct(score / answered) : "—"}</strong><small>正答率</small></div>
       <div>
         <h1>{answered ? score / answered >= 0.8 ? "よくできました" : score / answered >= 0.6 ? "もう一歩" : "復習しましょう" : "おつかれさまでした"}</h1>
-        <p>{drill ? <b className="result-drill">{drill.name}</b> : "復習ドリル"} · {answered}問 · {DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label} · 判定{STRICTNESS_OPTIONS.find(item => item.value === settings.strictness).label}</p>
+        <p>{drill ? <b className="result-drill" translate="no">{displayDrillName(drill)}</b> : "復習ドリル"} · {answered}問 · {DIFFICULTY_OPTIONS.find(item => item.value === settings.difficulty).label} · 判定{STRICTNESS_OPTIONS.find(item => item.value === settings.strictness).label}</p>
         <ul className="result-counts">
           <li className="result-best"><CheckCircle size={16} weight="fill" />正解 {counts.best}</li>
           <li className="result-mixed"><WarningCircle size={16} weight="fill" />混合で可 {counts.mixed}</li>
@@ -285,7 +285,7 @@ function RankResult({ rank }) {
     <div><small>レート</small><strong>{rank.after}</strong>
       <span className={delta >= 0 ? "up" : "down"}>{delta >= 0 ? "▲" : "▼"}{Math.abs(delta)}</span></div>
     <div><small>ランク</small><strong>{tier.name}</strong>{promoted && <span className={delta >= 0 ? "up" : "down"}>{delta >= 0 ? "昇格" : "降格"}</span>}</div>
-    <p>{tier.next ? localized(`${tier.next.min - rank.after} to ${TIER_EN[tier.next.name]}`, `${tier.next.name}まで あと${tier.next.min - rank.after}`) : "最高ランクです"}</p>
+    <p>{tier.next ? localized(`${tier.next.min - rank.after} to ${localized(TIER_EN[tier.next.name], tier.next.name)}`, `${tier.next.name}まで あと${tier.next.min - rank.after}`) : "最高ランクです"}</p>
   </section>;
 }
 
@@ -364,7 +364,7 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
   return <div className="trainer-layout">
     <header className="trainer-topbar">
       <div className="trainer-config">
-        <strong className="config-name">{reviewOnly ? "復習ドリル" : drillName}</strong>
+        <strong className="config-name" translate="no">{reviewOnly ? localized("Review drill", "復習ドリル") : displayDrillName({ id: draftKey, name: drillName })}</strong>
         {reviewOnly ? null : <>
           <span className="config-chip">{settings.kinds.length === 2 ? "オープン＋vs オープン" : KIND_OPTIONS.find(item => item.value === settings.kinds[0]).label}</span>
           <span className="config-chip">{settings.positions.length === POSITIONS.length ? "全席" : settings.positions.join("・")}</span>
@@ -565,7 +565,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
         ? <Weakness history={history}
             onStart={() => { setPhase("library"); }}
             onStartReview={() => start(reviewDrill, true)}
-            onClear={() => { if (window.confirm("回答履歴をすべて消しますか？")) { clearHistory(); setHistory([]); } }} />
+            onClear={() => { if (window.confirm(localized("Clear all answer history?", "回答履歴をすべて消しますか？"))) { clearHistory(); setHistory([]); } }} />
         : section === "プレー分析" ? <PlayerAnalysis history={history} onStart={() => { setPhase("library"); }} onOpenWeakness={() => onSectionChange("弱点")} />
         : section === "セッション" ? <SessionPage drills={drills} reviews={reviewSessions} drafts={drafts}
             onResume={session => start(session.kind === "review" ? reviewDrill : drills.find(drill => drill.id === session.drillId), session.kind === "review")} />
@@ -583,7 +583,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onStart={drill => start(drill)} onStartReview={() => start(reviewDrill, true)}
             onCreate={() => { setEditing(newDrill()); onNavigate(trainerPath({ phase: "new" })); }}
             onEdit={drill => { setEditing({ drill, isNew: false }); onNavigate(trainerPath({ phase: "edit", id: drill.id })); }}
-            onDelete={drill => { if (window.confirm(`「${drill.name}」と記録を削除しますか？`)) { commitDrills(drills.filter(item => item.id !== drill.id)); discardProgress(drill.id); } }} />
+            onDelete={drill => { if (window.confirm(localized(`Delete “${drill.name}” and its records?`, `「${drill.name}」と記録を削除しますか？`))) { commitDrills(drills.filter(item => item.id !== drill.id)); discardProgress(drill.id); } }} />
         : <TrainerHome drills={drills} history={history} reviewCount={reviewCount} drafts={drafts} onOpenDrills={() => setPhase("drills")}
             onResume={key => key === "ranked" ? start(RANKED_DRILL) : key === "review" ? start(reviewDrill, true) : start(drills.find(drill => drill.id === key) ?? drills[0])}
             onCreate={() => { setEditing(newDrill()); onNavigate(trainerPath({ phase: "new" })); }} onStartReview={() => start(reviewDrill, true)}

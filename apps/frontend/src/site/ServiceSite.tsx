@@ -5,10 +5,11 @@ import { TierEmblem, tierColor } from "../trainer/RankEmblem.tsx";
 import agentTableImage from "./assets/agent-table.webp";
 import previewRanges from "./range-preview.json";
 import { en, type SiteCopy, type SiteLocale } from "./content";
-import { ja } from "./content-ja";
+import { SITE_COPY } from "./locales";
+import { LOCALES } from "../locale-metadata.ts";
 import { appEntryHref } from "../route.ts";
 
-const SiteContext = createContext<{ locale: SiteLocale; copy: SiteCopy; onLocaleChange: () => void; motion: boolean; appHref: string }>({ locale: "en", copy: en, onLocaleChange: () => {}, motion: false, appHref: "/analyze/ranges" });
+const SiteContext = createContext<{ locale: SiteLocale; copy: SiteCopy; onLocaleChange: (locale: SiteLocale) => void; motion: boolean; appHref: string }>({ locale: "en", copy: en, onLocaleChange: () => {}, motion: false, appHref: "/analyze/ranges" });
 const useSite = () => useContext(SiteContext);
 
 type Action = "raise" | "call" | "fold";
@@ -215,7 +216,7 @@ function Explorer() {
 }
 
 function Header() {
-  const { copy: c, onLocaleChange, appHref } = useSite();
+  const { copy: c, locale, onLocaleChange, appHref } = useSite();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -236,7 +237,9 @@ function Header() {
         {c.nav.map(item => <a key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</a>)}
       </nav>
       <div className="site-header-actions">
-        <button type="button" className="site-lang" onClick={onLocaleChange} aria-label={c.common.languageLabel}>{c.common.language}</button>
+        <select className="site-lang" value={locale} onChange={event => onLocaleChange(event.target.value as SiteLocale)} aria-label={c.common.languageLabel}>
+          {LOCALES.map(option => <option key={option.value} value={option.value} lang={option.value}>{option.label}</option>)}
+        </select>
         <a className="site-button is-small" href={appHref}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
         <button type="button" className="site-menu" onClick={() => setOpen(!open)} aria-label={open ? c.common.menuClose : c.common.menuOpen} aria-expanded={open}>{open ? <X size={22} /> : <List size={22} />}</button>
       </div>
@@ -291,7 +294,7 @@ function TableScene() {
       <div className="site-table-felt"><span className="site-table-pot">{c.how.pot}</span><span className="site-chip" /></div>
       {seats.map((seat, index) => <div className={`site-seat is-${seat.toLowerCase()}`} key={seat} style={{ "--i": index } as CSSProperties}>
         <span className="site-seat-plate">
-          <span className="site-seat-avatar">{seat === "BB" ? "YOU" : seat}</span>
+          <span className="site-seat-avatar">{seat === "BB" ? c.common.you : seat}</span>
           {seat === "BB" && <span className="site-seat-name">{seat}</span>}
           {seat === "BTN" && <span className="site-seat-dealer">D</span>}
         </span>
@@ -896,8 +899,8 @@ function Reveal({ children }: { children: ReactNode }) {
   return <div ref={root}>{children}</div>;
 }
 
-export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; onLocaleChange: () => void }) {
-  const copy = locale === "ja" ? ja : en;
+export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; onLocaleChange: (locale: SiteLocale) => void }) {
+  const copy = SITE_COPY[locale];
   const appHref = appEntryHref(typeof window === "undefined" ? "" : window.location?.hostname ?? "");
   const [motion, setMotion] = useState(() => typeof IntersectionObserver !== "undefined" && !prefersReducedMotion());
   useEffect(() => {

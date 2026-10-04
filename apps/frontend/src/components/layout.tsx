@@ -1,9 +1,9 @@
 import { BrandIcon } from "./BrandIcon.tsx";
-import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GraduationCap, SquaresFour } from "@phosphor-icons/react";
+import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GraduationCap, SquaresFour, GearSix } from "@phosphor-icons/react";
 import { useState } from "react";
 import { ACCOUNT_SECTION, AccountMenu } from "../account/AccountMenu.tsx";
 import "../account/preferences.ts";
-import { productLocale, selectProductLocale, localized } from "../i18n.ts";
+import { localized } from "../i18n.ts";
 
 export const RANGE_SECTION = "レンジ分析";
 export const LOGOUT_SECTION = "ログアウト";
@@ -100,10 +100,6 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
           </div>
         ))}
       </nav>
-      <div className="app-language-switch" role="group" aria-label="Language / 言語">
-        <button type="button" aria-pressed={productLocale() === "en"} onClick={() => selectProductLocale("en")}>EN</button>
-        <button type="button" aria-pressed={productLocale() === "ja"} onClick={() => selectProductLocale("ja")}>日本語</button>
-      </div>
       {profile ? <AccountMenu profile={profile} collapsed={collapsed}
         onNavigate={tab => onSectionChange(`${ACCOUNT_SECTION}#${tab}`)} onLogout={() => onSectionChange(LOGOUT_SECTION)} /> : (
         <div className="header-meta">
@@ -112,6 +108,20 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
         </div>
       )}
     </aside>
+    <nav className="mobile-tab-bar" aria-label={localized("Main navigation", "メインナビゲーション")}>
+      {[
+        { name: RANGE_SECTION, label: localized("Range", "レンジ"), Icon: SquaresFour },
+        { name: "トレーナー", label: localized("Trainer", "トレーナー"), Icon: GraduationCap },
+        { name: "セッション", label: localized("Sessions", "セッション"), Icon: ClockCounterClockwise },
+        { name: "プレー分析", label: localized("Stats", "スタッツ"), Icon: ChartBar },
+        { name: ACCOUNT_SECTION, label: localized("Settings", "設定"), Icon: GearSix },
+      ].map(({ name, label, Icon }) => {
+        const active = activeSection.split("#")[0] === name || name === "プレー分析" && activeSection === "弱点";
+        return <button key={name} type="button" aria-current={active ? "page" : undefined} onClick={() => onSectionChange(name)}>
+          <Icon size={21} weight={active ? "fill" : "regular"} aria-hidden="true" /><span>{label}</span>
+        </button>;
+      })}
+    </nav>
     </>
   );
 }

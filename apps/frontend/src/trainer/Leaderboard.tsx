@@ -21,7 +21,7 @@ function Podium({ rows }) {
       return <li key={row.name} className={`place-${row.place}${row.self ? " self" : ""}`} style={{ "--tier": tierColor(tier) }}>
         <span className="lb-podium-place">{row.place}</span>
         <RankBadge name={tier} size={row.place === 1 ? 76 : 60} />
-        <strong>{row.name}{row.self && <small>{localized("You", "あなた")}</small>}</strong>
+        <strong><span translate="no">{row.name}</span>{row.self && <small>{localized("You", "あなた")}</small>}</strong>
         <span className="lb-podium-tier">{tierLabel(row.rating)}</span>
         <b>{row.rating.toLocaleString()}</b>
         <small className={row.gain >= 0 ? "up" : "down"}>{signed(row.gain)}</small>
@@ -66,7 +66,7 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
     <section className="lb-me" style={{ "--mode-theme": tierColor(tier.name) }} aria-label={localized("Your standing", "あなたの記録")}>
       <div className="lb-me-id">
         <RankBadge name={tier.name} size={44} />
-        <div><strong>{name}</strong><span>{tierLabel(rank.rating)}</span></div>
+        <div><strong translate="no">{name}</strong><span>{tierLabel(rank.rating)}</span></div>
       </div>
       <dl className="lb-me-stats">
         <div><dt>{localized("Rating", "レート")}</dt><dd>{rank.rating.toLocaleString()}</dd></div>
@@ -85,7 +85,7 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
           const rowTier = tierFor(row.rating).name;
           return <tr key={`${row.name}-${index}`} className={row.self ? "self" : ""} style={{ "--tier": tierColor(rowTier) }}>
             <td className="place">{row.place ?? "—"}</td>
-            <td><span className="leaderboard-player"><span className="lb-avatar" aria-hidden="true">{initial(row.name)}</span>{row.name}{row.self && <small>{localized("You", "あなた")}</small>}</span></td>
+            <td><span className="leaderboard-player"><span className="lb-avatar" aria-hidden="true">{initial(row.name)}</span><span translate="no">{row.name}</span>{row.self && <small>{localized("You", "あなた")}</small>}</span></td>
             <td><span className="leaderboard-rank"><RankBadge name={rowTier} size={26} />{tierLabel(row.rating)}</span></td>
             <td><b>{row.rating.toLocaleString()}</b></td>
             <td className={row.gain >= 0 ? "up" : "down"}>{signed(row.gain)}</td>

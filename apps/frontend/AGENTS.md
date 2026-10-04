@@ -87,3 +87,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json` and `scripts/prepare-sites-b
 
 ## Brand symbol (2026-10-03)
 The user approved the abstract pink symbol, not the R draft or a plain spade, for both app and service-site branding. Use the shared `BrandIcon` and saved `src/assets/brand/reysonai-symbol.png` in the sidebar, onboarding, site header/footer and comparison header. Playing-card suits remain unchanged.
+
+## Languages and mobile navigation (2026-10-04)
+- The user removed the sidebar language selector. Keep locale selection under Settings → Language; onboarding and the service-site header may expose a compact native-language selector. Support English, Japanese, Simplified Chinese (`zh-CN`) and Spanish (`es`), with the existing English browser default and shared account/browser persistence. Translate presentation copy, never stored identifiers, hand notation, frequencies, EV/facts, user names or user-authored drill titles.
+- At smartphone widths (650px and below), the user wants bottom tabs instead of a sidebar. Keep Range, Trainer, Sessions, Stats and Settings accessible with the active route marked, keyboard focus, sufficient tap areas and safe-area/content clearance. Learning sign-in gates retain navigation. Desktop/tablet sidebar behavior stays unchanged.

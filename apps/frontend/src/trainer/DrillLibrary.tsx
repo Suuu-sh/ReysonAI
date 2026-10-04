@@ -1,3 +1,4 @@
+import { displayDrillName } from "./drill-store.ts";
 import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
 import { ArrowClockwise, ArrowLeft, Barbell, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { ModeBlock } from "./ModeBlock.tsx";
@@ -58,12 +59,12 @@ function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
     <header>
       <div>
         <span className="drill-eyebrow">DRILL · {kind}</span>
-        <h3>{drill.name}</h3>
+        <h3 translate="no">{displayDrillName(drill)}</h3>
         <ul className="drill-tags">{settingsSummary(drill.settings).map(tag => <li key={tag}>{tag}</li>)}</ul>
       </div>
       <div className="drill-card-tools">
-        <button type="button" onClick={onEdit} aria-label={`${drill.name}を編集`} title="編集"><PencilSimple size={15} /></button>
-        <button type="button" onClick={onDelete} aria-label={`${drill.name}を削除`} title="削除"><Trash size={15} /></button>
+        <button type="button" onClick={onEdit} aria-label={localized(`Edit ${drill.name}`, `${drill.name}を編集`)} translate="no" title={localized("Edit", "編集")}><PencilSimple size={15} /></button>
+        <button type="button" onClick={onDelete} aria-label={localized(`Delete ${drill.name}`, `${drill.name}を削除`)} translate="no" title={localized("Delete", "削除")}><Trash size={15} /></button>
       </div>
     </header>
     <div className="drill-card-stats">
@@ -100,7 +101,7 @@ export function TrainerHome({ drills, reviewCount, drafts = {}, onOpenDrills, on
       <span className="trainer-resume-label"><ArrowClockwise size={14} weight="bold" />{localized("In progress", "途中のセッション")}</span>
       <ul>{resumable.slice(0, 3).map(draft => <li key={draft.key}>
         <button type="button" onClick={() => onResume(draft.key)}>
-          <b>{draft.key === "ranked" ? localized("Ranked match", "ランク戦") : draft.key === "review" ? localized("Review drill", "復習ドリル") : draft.drillName}</b>
+          <b translate="no">{draft.key === "ranked" ? localized("Ranked match", "ランク戦") : draft.key === "review" ? localized("Review drill", "復習ドリル") : displayDrillName({ id: draft.key, name: draft.drillName })}</b>
           <small>{localized(`${draft.session?.answered ?? 0} answered`, `${draft.session?.answered ?? 0}問 回答済み`)}</small>
           <span>{localized("Resume", "続きから")} →</span>
         </button>
@@ -158,7 +159,7 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
       <dl className="library-totals">
         <div><dt>{localized("Attempts", "挑戦")}</dt><dd>{attempts}<small>{localized(attempts === 1 ? " time" : " times", "回")}</small></dd></div>
         <div><dt>{localized("Answers", "回答")}</dt><dd>{answered}<small>{localized(answered === 1 ? " question" : " questions", "問")}</small></dd></div>
-        {bestDrill && <div><dt><Trophy size={12} weight="fill" />{localized("Best", "ベスト")}</dt><dd>{pct(bestDrill.best)}<small>{bestDrill.drill.name}</small></dd></div>}
+        {bestDrill && <div><dt><Trophy size={12} weight="fill" />{localized("Best", "ベスト")}</dt><dd>{pct(bestDrill.best)}<small translate="no">{displayDrillName(bestDrill.drill)}</small></dd></div>}
       </dl>
     </div>
     <div className="drill-grid">
@@ -246,7 +247,7 @@ function RankedCard({ rank, draft, onStart, onOpenRanking }) {
       <div><span>{localized("Rating", "レート")}</span><strong>{rank.rating.toLocaleString()}</strong></div>
       <div><span>{localized("Best", "自己最高")}</span><strong>{rank.peak.toLocaleString()}</strong></div>
       <div className="ranked-next">
-        <span>{tier.next ? localized(`To ${TIER_EN[tier.next.name]}`, `${tier.next.name}まで`) : localized("Top rank", "最高ランク")}</span>
+        <span>{tier.next ? localized(`To ${localized(TIER_EN[tier.next.name], tier.next.name)}`, `${tier.next.name}まで`) : localized("Top rank", "最高ランク")}</span>
         <strong>{tier.next ? localized(`${tier.next.min - rank.rating} pts`, `あと${tier.next.min - rank.rating}`) : "—"}</strong>
         <span className="ranked-bar" aria-hidden="true"><b style={{ width: `${Math.round(tier.progress * 100)}%` }} /></span>
       </div>

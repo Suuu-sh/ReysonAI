@@ -3,7 +3,7 @@ import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning } from "@phospho
 import { preloadDatasets } from "../estimated/datasets.ts";
 import { loadPostflopDatasets, loadPostflopSpot } from "../estimated/postflop-browser.ts";
 import { spotById } from "../../scripts/postflop-ai/spots.mjs";
-import { localized } from "../i18n.ts";
+import { localized, translateProductCopy } from "../i18n.ts";
 import { AGENT_TABLE, GUEST_AGENT, agentTableById } from "./characters.ts";
 import { categoryName, playHand, type HandResult, type LogEntry } from "./hand.ts";
 import { productLocale } from "../locale.ts";
@@ -370,7 +370,7 @@ function HandLog({ entries, nameOf, board }: { entries: LogEntry[]; nameOf: (pos
   </div>;
 }
 
-const handName = (category: number) => categoryName(category, productLocale() === "ja" ? "ja" : "en");
+const handName = (category: number) => translateProductCopy(categoryName(category, productLocale() === "ja" ? "ja" : "en"));
 
 function resultLine(result: HandResult, nameOf: (pos: string) => string) {
   const winners = result.winners ?? [];

@@ -483,13 +483,13 @@ test("completed preflop end block extends the same action path", () => {
   assert.doesNotMatch(navigation, /aria-label="ポストフロップ/);
 });
 
-test("any flop can be selected in the card picker, with random and representative quick picks", () => {
+test("any flop can be selected manually or randomly without representative quick picks", () => {
   const dialog = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["As", "", ""], onApply() {}, onClose() {} }));
   assert.match(dialog, /role="dialog" aria-modal="true"/);
   assert.equal((dialog.match(/<select/g) ?? []).length, 0);
-  assert.equal((dialog.match(/aria-label="フロップ /g) ?? []).length, 12);
-  assert.equal((dialog.match(/class="flop-quick-picks"/g) ?? []).length, 1);
-  assert.match(dialog, /クイック選択 · 代表12ボード/);
+  assert.equal((dialog.match(/aria-label="フロップ /g) ?? []).length, 0);
+  assert.equal((dialog.match(/class="flop-quick-picks"/g) ?? []).length, 0);
+  assert.doesNotMatch(dialog, /Quick picks|代表12ボード/);
   assert.equal((dialog.match(/class="street-card-option suit-/g) ?? []).length, 52);
   assert.match(dialog, /ランダムなフロップ/);
   assert.match(dialog, /好きなカードを3枚選べます/);
@@ -502,13 +502,13 @@ test("any flop can be selected in the card picker, with random and representativ
     const english = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["As", "", ""], onApply() {}, onClose() {} }));
     assert.match(english, /Select flop/);
     assert.match(english, /Random flop/);
-    assert.match(english, /Quick picks · 12 representative flops/);
+    assert.doesNotMatch(english, /Quick picks|representative flops|flop-quick-picks/);
   } finally {
     if (previousWindow === undefined) delete globalThis.window;
     else globalThis.window = previousWindow;
   }
   const complete = renderToStaticMarkup(createElement(FlopCardDialog, { cards: ["2c", "As", "7d"], onApply() {}, onClose() {} }));
-  assert.match(complete, /class="postflop-board-options"[\s\S]*?class="selected" aria-pressed="true" aria-label="フロップ A♠ 7♦ 2♣"/);
+  assert.doesNotMatch(complete, /postflop-board-options|flop-quick-picks/);
   assert.match(complete, /class="flop-apply-button"[^>]*>このフロップを使う/);
   assert.doesNotMatch(complete, /GTO|solver/i);
   const html = renderToStaticMarkup(createElement(PostflopTrial, { context: { players: ["SB", "BB"], potBb: 2, pilotAvailable: false }, cards: ["", "", ""] }));

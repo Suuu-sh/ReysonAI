@@ -1,11 +1,13 @@
 // Product copy is localized at the presentation boundary. Strategy data, stored
 // sessions, and their stable identifiers are deliberately never translated.
+import { translateLocaleCopy } from "./locales/copy.ts";
+import { translateExplanationCopy } from "./locales/reason-copy.ts";
 import { productLocale } from "./locale.ts";
-export { LOCALE_KEY, productLocale, selectProductLocale, localized } from "./locale.ts";
+export { LOCALE_KEY, productLocale, selectProductLocale, localized, LOCALES, localeTag, isProductLocale } from "./locale.ts";
 
 // Longest phrases are applied first so a specific instruction is not damaged by
 // a shorter navigation label. These are view-copy translations only, not data.
-const COPY = {
+export const COPY = {
   "ランク戦": "Ranked match", "ランキング": "Leaderboard", "週間": "Weekly", "通算": "All time", "順位": "Place", "プレイヤー": "Player", "試合": "Matches", "増減": "Change", "今週の増減": "This week", "日時": "Date", "自分の試合履歴": "Your match history", "今週はまだランク戦をプレイしていません。": "No ranked matches this week yet.", "まだランク戦をプレイしていません。": "No ranked matches yet.", "ランク戦に挑む": "Play ranked", "ランク": "Rank", "レート": "Rating", "最高": "Peak", "昇格": "Promoted", "降格": "Demoted", "また明日": "Come back tomorrow", "最高ランクです": "Top rank reached", "ブロンズ": "Bronze", "シルバー": "Silver", "ゴールド": "Gold", "プラチナ": "Platinum", "ダイヤモンド": "Diamond", "マスター": "Master",
   "はじめに、あなたのレベルを教えてください": "First, tell us your experience level",
   "レベルに合わせて、レンジ表の見せ方を変えます。あとからいつでも変更できます。": "We tailor the range display to your level. You can change it any time.",
@@ -92,27 +94,33 @@ const replacements = Object.entries(COPY).sort((a, b) => b[0].length - a[0].leng
 const japanese = /[\u3040-\u30ff\u3400-\u9fff]/;
 
 export function translateProductCopy(value) {
-  if (productLocale() === "ja" || !japanese.test(value)) return value;
-  if (COPY[value]) return COPY[value];
+  const locale = productLocale();
+  if (locale === "ja") return value;
+  if (!japanese.test(value)) {
+    const action = /^(Check|Fold|Call|Raise|Bet|All-in|Limp)(?=\s|$)(.*)$/.exec(value);
+    if (action) return translateLocaleCopy(action[1], locale) + action[2];
+    return translateExplanationCopy(value, locale);
+  }
+  if (COPY[value]) return translateLocaleCopy(COPY[value], locale);
   let translated = value
     .replace(/(\d+)回答/g, (_, n) => `${n} ${Number(n) === 1 ? "answer" : "answers"}`)
     .replace(/(\d+)問/g, (_, n) => `${n} ${Number(n) === 1 ? "question" : "questions"}`)
     .replace(/(\d+)局面/g, (_, n) => `${n} ${Number(n) === 1 ? "spot" : "spots"}`)
     .replace(/(\d+)ハンド/g, (_, n) => `${n} ${Number(n) === 1 ? "hand" : "hands"}`)
     .replace(/(\d+)回/g, (_, n) => `${n} ${Number(n) === 1 ? "time" : "times"}`);
-  for (const [original, english] of replacements) translated = translated.replaceAll(original, english);
+  for (const [original, english] of replacements) translated = translated.replaceAll(original, translateLocaleCopy(english, locale));
   translated = translated.replaceAll("・", " · ").replaceAll("＋", " + ").replaceAll("（", " (").replaceAll("）", ")").replaceAll("。", ".").replaceAll("、", ", ").replaceAll("問", " questions").replaceAll("回", " times").replaceAll("秒", " sec").replaceAll("分", " min").replaceAll("人", " players");
   translated = translated.replace(/(\d)(spots|questions|times|Hand|Hands)/g, "$1 $2");
-  return translated;
+  return translateExplanationCopy(translated, locale);
 }
 
-export function localizeProductSurface(root) {
-  if (!root || productLocale() === "ja") return () => {};
+export function localizeProductSurface(root, locale = productLocale()) {
+  if (!root || locale === "ja") return () => {};
   const translatedNodes = new WeakMap();
   const translatedAttributes = new WeakMap();
   const convertText = node => {
-    if (!japanese.test(node.nodeValue ?? "")) return;
-    if (node.parentElement?.closest('[translate="no"]')) return; // e.g. native language names
+    if (!node.nodeValue?.trim()) return;
+    if (node.parentElement?.closest('[translate="no"], script, style, textarea, code, pre')) return; // e.g. native language names
     const translated = translateProductCopy(node.nodeValue);
     if (translated !== node.nodeValue) {
       translatedNodes.set(node, translated);
@@ -120,10 +128,10 @@ export function localizeProductSurface(root) {
     }
   };
   const convertElement = element => {
-    if (!(element instanceof Element)) return;
+    if (!(element instanceof Element) || element.closest('[translate="no"]')) return;
     for (const name of ["aria-label", "title", "placeholder"]) {
       const value = element.getAttribute(name);
-      if (!value || !japanese.test(value)) continue;
+      if (!value) continue;
       const translated = translateProductCopy(value);
       if (translated !== value) {
         translatedAttributes.set(element, { ...(translatedAttributes.get(element) ?? {}), [name]: translated });
