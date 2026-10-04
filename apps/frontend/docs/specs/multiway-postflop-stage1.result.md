@@ -1,8 +1,11 @@
 # 3人SRP・段階1 実装記録（未完了）
 
-更新: 2026-10-04 23:10 UTC。到達可能16経路のうち、独立品質受入れ済みは9/16、fullgate完了10、公開承認済み0。全16の個別Astra author profileと共通数値基盤の独立reviewは完了。残7は保存物品質の受入れ待ちで、そのうちHJ→CO→SBはfullgate完了、UTG→BTN→SBを検証中です。Range/Agent/APIの専用consumerは実装・静的review・focused testsまで完了し、実browser QAはcloudのURL security policyで停止。専用Mac QA archiveを準備済みです。正式archive/receipt、実strictD1、LFS配送、全体release gateは未完了です。下の時刻付き記録は履歴であり、現在の公開可否は冒頭と次節を優先してください。
+更新: 2026-10-04 23:38 UTC。到達可能16経路のうち、独立品質受入れ済みは11/16、fullgate完了11、公開承認済み0。全16の個別Astra author profileと共通数値基盤の独立reviewは完了。残5は保存物品質の受入れ待ちで、UTG→CO→BTNを検証中です。Range/Agent/APIの専用consumerは実装・静的review・focused testsまで完了し、実browser QAはcloudのURL security policyで停止。専用Mac QA archiveを準備済みです。正式archive/receipt、実strictD1、LFS配送、全体release gateは未完了です。下の時刻付き記録は履歴であり、現在の公開可否は冒頭と次節を優先してください。
 
 ## 現在の検証済み範囲
+
+- HJ→CO→SB / UTG→BTN→SBを追加の限定受入れ。独立Astraが14現物・121,968 rules・計240k handsとreplay参照を照合。SB sourceは26.5 / 24.1 weighted combos、12 / 10classesと狭く、99/88下限などを実支持で個別確認した。共同警告30 / 29を保持し、2check後125%への継続は約18% / 16%と大きな不足が残る。詳細は `multiway-postflop-stage1.small-blind-quality-review.md`。
+- 新D1 owned-process adapterの独立reviewは2件のNO-GOを検出。API workerの最終終了状態の検証と、親oracleが実評価したESM bytesへのsource拘束を修正中。旧synthetic PASSをこの境界の証明にしない。実strictD1は未実行。
 
 - HJ→BTN→SB / HJ→CO→BTNを追加の限定受入れ。独立Astraが14files・120,411 rules・計240k handsとreplay参照を確認。初のnonblind-onlyはpot9BB、83 flop / 1,098 later contexts、99 positive joint events / 9支持0であり、blind-firstの90/18へ揃えない。詳細は `multiway-postflop-stage1.role-quality-review.md`。
 - 3→2後の生存seat/source保持と、保存ruleが区別する状態を分ける。7-selector contextは相手の元MIDDLE/LAST identityを直接持たず、幾何が同じ履歴をまとめる場合がある。構造監査≠joint policy reach、外側fold条件未モデル化、相手identity抽象化の3条件を正式なevidence/receiptのlimitationsにも追加した。これは数値/元候補を変えず、今後の受入れ範囲を明確にする変更。
@@ -82,7 +85,7 @@
 
 ## 未完了・公開gate
 
-1. 残7の個別compile、既存と同じ全量gate、独立Astra品質reviewを閉じる。警告・支持0・未計測条件を保存する。
+1. 残5の個別compile、既存と同じ全量gate、独立Astra品質reviewを閉じる。警告・支持0・未計測条件を保存する。
 2. 実browserで3表・exact combo・3→2・全street・rewind/reset/失敗retryとAgent精算を確認し、既存HUの表示回帰を確認する。
 3. 最終sourceを固定後、各経路のhash付きarchive/manifest・独立receipt・一致SQLを作る。全量strict local D1で保存/API/再起動/rollback/既存データ保全を確認する。
 4. 実Git LFS uploadとfresh fetch/hash確認を行い、Actionsはrestore/verifyのみとする。pointerのみを配送完了としない。
