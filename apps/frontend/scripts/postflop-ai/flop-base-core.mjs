@@ -1,6 +1,7 @@
 // Shared balanced-mode base data: deterministic strategies and the exact UI fact projection.
 // Offline authoring and browser fallback share this code; loading never authors a policy.
 import { sha } from "./browser-inputs.mjs";
+import { EVALUATOR_VERSION } from "../lib/equity.mjs";
 import { DEFENCE_VERSION, FLOP_RUNOUTS } from "./defence.mjs";
 import { canonicalFlop, ISOMORPHISM_VERSION, comboKey, remapFlopNode } from "./flop-isomorphism.mjs";
 import { flopHistoryViews } from "./views.mjs";
@@ -16,6 +17,7 @@ const laterSizingHash = config => sha(Object.fromEntries(["later_streets", "late
 
 export function flopBaseIdentity(inputs, candidate, laterCandidate) {
   return { generator_version: FLOP_BASE_VERSION, isomorphism_version: ISOMORPHISM_VERSION,
+    evaluator_version: EVALUATOR_VERSION,
     source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash,
     later_policy_hash: sha(laterCandidate?.policy ?? referenceLaterPolicy()),
     later_sizing_hash: laterSizingHash(inputs.config), defence_version: DEFENCE_VERSION,

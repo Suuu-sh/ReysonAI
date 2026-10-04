@@ -33,7 +33,8 @@ import { flopBetFraction, raiseDepth } from "./tree.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-export const DEFENCE_VERSION = 5;
+// Best-five showdown ranking: older derived defence/base artifacts are stale.
+export const DEFENCE_VERSION = 6;
 // Sampled turn+river runouts per flop decision (seeded by the flop, shared by every node of it).
 export const FLOP_RUNOUTS = 300;
 // call share = logistic(margin / LOGISTIC_SCALE): +-4pt of margin is about 88 / 12.
