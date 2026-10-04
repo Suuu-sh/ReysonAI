@@ -36,6 +36,11 @@ export function threeBetToSize(opener, raiser, callerCount = 0) {
     : fixed.three_bet[side]);
 }
 
+// Open plus exactly two calls. Keep heads-up and one-caller sizes unchanged.
+export function twoCallerSqueezeToSize(opener, hero) {
+  return threeBetToSize(opener, hero, 2);
+}
+
 export function fourBetToSize(fourBettor, threeBettor) {
   if (![threeBettor, fourBettor].every(position => positions.includes(position)) || fourBettor === threeBettor) {
     throw new Error("4betの位置が不正です。");
@@ -44,6 +49,14 @@ export function fourBetToSize(fourBettor, threeBettor) {
     return cappedRaiseTo(fixed.four_bet_vs_bb_three_bet_from_sb);
   }
   return cappedRaiseTo(fixed.four_bet[isInPosition(fourBettor, threeBettor) ? "ip" : "oop"]);
+}
+
+export function squeezeFourBetToSize(fourBettor, squeezer) {
+  // A CO/BTN squeeze to 12BB raises the 2.5BB open by 9.5BB, so the
+  // ordinary OOP 20BB 4bet is below the full-raise minimum. Use the approved
+  // fixed 26BB size only here; keep heads-up and blind-squeeze sizes intact.
+  const standard = fourBetToSize(fourBettor, squeezer);
+  return ["CO", "BTN"].includes(squeezer) ? cappedRaiseTo(fixed.four_bet.ip) : standard;
 }
 
 export function fiveBetToSize() {

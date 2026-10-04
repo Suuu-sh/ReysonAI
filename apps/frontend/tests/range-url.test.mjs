@@ -114,8 +114,9 @@ test("stored cold-call and cold-4bet decisions retain their actor rather than be
   }
 });
 
-test("every one-caller persisted squeeze and opener/caller continuation round-trips", () => {
-  const entries = squeezes.spots.filter(spot => spot.prior_action === null);
+test("UI-supported one-caller squeezes and opener/caller continuations round-trip", () => {
+  // Stage 1 expands the data catalog; action-path UI integration is deliberately separate.
+  const entries = squeezes.spots.filter(spot => spot.prior_action === null && ["BB", "SB"].includes(spot.squeezer) && spot.caller !== "SB");
   assert.equal(entries.length, 12);
   const branches = [[], ["raise"], ["fold"], ["call"],
     ...["fold", "call"].flatMap(first => ["fold", "call", "raise"].map(second => [first, second]))];

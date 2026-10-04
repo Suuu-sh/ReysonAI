@@ -1,0 +1,1751 @@
+{
+  "spot_id": "CO_vs_BTN_cold4bet_UTGopen",
+  "type": "cold_four_bet",
+  "source_fingerprint": "d489d1f554edc8d9c5b859c4f3a939956f78b1eccafdc7549862fdcda47ce653",
+  "method": "ハンドごとの勝率（モンテカルロ・シード固定）・ブロッカー・価格・相手の降りる率を計算し、その数値とハンドの特徴からAIが設計した文型で理由を記述。数値は計算結果から自動で差し込み。",
+  "equity_note": "素の勝率はショウダウンまでの推定。実現後の勝率=勝率×仮定EQR（1を超える場合もあります）。EQRはソルバー実装後に置換予定。コールEVは将来の追加投資や相手の戦略変化を厳密にはモデル化していません。",
+  "fact_labels": [
+    {
+      "key": "equity_vs_cold_four_bet_pct",
+      "label": "勝率（対コールド4bet）",
+      "scope": "hand"
+    },
+    {
+      "key": "realized_equity_pct",
+      "label": "実現後の勝率",
+      "scope": "hand"
+    },
+    {
+      "key": "call_ev_bb",
+      "label": "コールのEV",
+      "scope": "hand",
+      "unit": "bb"
+    },
+    {
+      "key": "call_break_even_equity_pct",
+      "label": "コールに必要な勝率",
+      "scope": "spot"
+    },
+    {
+      "key": "combined_fold_pct",
+      "label": "オープナーと3bettorの両方が降りる率",
+      "scope": "spot"
+    },
+    {
+      "key": "blocked_cold_four_bet_pct",
+      "label": "コールド4betレンジのブロック",
+      "scope": "hand"
+    }
+  ],
+  "spot_facts": {
+    "opener": "UTG",
+    "three_bettor": "CO",
+    "four_bettor": "BTN",
+    "hero": "CO",
+    "prior_action": "fold",
+    "position": "OOP",
+    "open_size_bb": 2.5,
+    "three_bet_size_bb": 8,
+    "four_bet_size_bb": 26,
+    "all_in_size_bb": 100,
+    "call_break_even_equity_pct": 33.8,
+    "four_bet_range_combos": 19.7,
+    "source_cold_three_bet_id": "BTN_vs_CO_3bet_UTGopen",
+    "combined_fold_pct": 63.4,
+    "cold_four_bet_break_even_pct": 68.4,
+    "cost_to_call_bb": 18,
+    "total_pot_after_call_bb": 56
+  },
+  "hands": {
+    "22": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "33": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "44": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "55": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "66": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率30.6%で、コールのEVは−1.74bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 34,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 30.55875,
+        "call_ev_bb": -1.7427449999999993
+      }
+    },
+    "77": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率30.3%で、コールのEVは−1.88bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 33.7,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 30.3,
+        "call_ev_bb": -1.880399999999998
+      }
+    },
+    "88": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率31.0%で、コールのEVは−1.53bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 34.4,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 30.956249999999997,
+        "call_ev_bb": -1.5312750000000008
+      }
+    },
+    "99": {
+      "reason": "オーバーカードが出やすいのが弱点のミドルペアです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率30.9%で、コールのEVは−1.54bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 34.4,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 30.941249999999997,
+        "call_ev_bb": -1.5392550000000007
+      }
+    },
+    "AA": {
+      "reason": "最上位クラスのポケットペアです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。保存された5bet 100BBの配分を使います。対コールド4betの勝率は82.6%、コールした場合のEVは+21.57bbです。配分はオールイン 75%・コール 25%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 82.6,
+        "blocked_cold_four_bet_pct": 40.6,
+        "eqr": 0.9,
+        "realized_equity_pct": 74.37750000000001,
+        "call_ev_bb": 21.568830000000005
+      }
+    },
+    "AKs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。保存された5bet 100BBの配分を使います。対コールド4betの勝率は40.3%、コールした場合のEVは+1.74bbです。配分はオールイン 50%・コール 50%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 40.3,
+        "blocked_cold_four_bet_pct": 39.8,
+        "eqr": 0.92,
+        "realized_equity_pct": 37.1105,
+        "call_ev_bb": 1.7427860000000024
+      }
+    },
+    "AQs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率27.9%で、コールのEVは−3.14bb。コールでは投資を回収できない見積もりのため、フォールドします。一部は5bet 100BBへ配分します。配分はフォールド 95%・オールイン 5%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.4,
+        "blocked_cold_four_bet_pct": 27.7,
+        "eqr": 0.92,
+        "realized_equity_pct": 27.929666666666662,
+        "call_ev_bb": -3.141417333333335
+      }
+    },
+    "AJs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率28.2%で、コールのEVは−3.01bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.6,
+        "blocked_cold_four_bet_pct": 23.1,
+        "eqr": 0.92,
+        "realized_equity_pct": 28.171166666666668,
+        "call_ev_bb": -3.012939333333332
+      }
+    },
+    "ATs": {
+      "reason": "Aのブロッカーとナッツフラッシュの可能性を持つ強いスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率28.3%で、コールのEVは−2.95bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.7,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.92,
+        "realized_equity_pct": 28.286166666666666,
+        "call_ev_bb": -2.9517593333333316
+      }
+    },
+    "A9s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率26.4%で、コールのEVは−3.93bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.1,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.88,
+        "realized_equity_pct": 26.444000000000003,
+        "call_ev_bb": -3.931791999999998
+      }
+    },
+    "A8s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率26.0%で、コールのEVは−4.15bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.6,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.88,
+        "realized_equity_pct": 26.029666666666667,
+        "call_ev_bb": -4.152217333333333
+      }
+    },
+    "A7s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率26.5%で、コールのEVは−3.88bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 30.2,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.88,
+        "realized_equity_pct": 26.543,
+        "call_ev_bb": -3.879123999999999
+      }
+    },
+    "A6s": {
+      "reason": "キッカーは中程度だが、ナッツフラッシュを狙えるスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率25.3%で、コールのEVは−4.53bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.8,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.88,
+        "realized_equity_pct": 25.32566666666667,
+        "call_ev_bb": -4.526745333333331
+      }
+    },
+    "A5s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率26.1%で、コールのEVは−4.13bb。コールでは投資を回収できない見積もりのため、フォールドします。一部は5bet 100BBへ配分します。配分はフォールド 95%・オールイン 5%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.6,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.88,
+        "realized_equity_pct": 26.073666666666668,
+        "call_ev_bb": -4.128809333333333
+      }
+    },
+    "A4s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率26.1%で、コールのEVは−4.10bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.7,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.88,
+        "realized_equity_pct": 26.128666666666668,
+        "call_ev_bb": -4.099549333333332
+      }
+    },
+    "A3s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率25.6%で、コールのEVは−4.40bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.1,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.88,
+        "realized_equity_pct": 25.563999999999997,
+        "call_ev_bb": -4.399952000000001
+      }
+    },
+    "A2s": {
+      "reason": "Aのブロッカーとホイール（A〜5のストレート）の可能性を持つスーテッドAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率25.0%で、コールのEVは−4.71bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.4,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.88,
+        "realized_equity_pct": 24.984666666666666,
+        "call_ev_bb": -4.708157333333332
+      }
+    },
+    "AKo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。保存された5bet 100BBの配分を使います。対コールド4betの勝率は37.2%、コールした場合のEVは−1.16bbです。配分はオールイン 60%・フォールド 40%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 37.2,
+        "blocked_cold_four_bet_pct": 40.6,
+        "eqr": 0.85,
+        "realized_equity_pct": 31.65895833333333,
+        "call_ev_bb": -1.1574341666666683
+      }
+    },
+    "KK": {
+      "reason": "最上位クラスのポケットペアです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。保存された5bet 100BBの配分を使います。対コールド4betの勝率は49.4%、コールした場合のEVは+5.67bbです。配分はオールイン 70%・コール 30%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 49.4,
+        "blocked_cold_four_bet_pct": 36.8,
+        "eqr": 0.9,
+        "realized_equity_pct": 44.4975,
+        "call_ev_bb": 5.67267
+      }
+    },
+    "KQs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率22.5%で、コールのEVは−6.01bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 24.5,
+        "blocked_cold_four_bet_pct": 25.6,
+        "eqr": 0.92,
+        "realized_equity_pct": 22.540000000000003,
+        "call_ev_bb": -6.0087199999999985
+      }
+    },
+    "KJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率22.5%で、コールのEVは−6.04bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 24.4,
+        "blocked_cold_four_bet_pct": 21.1,
+        "eqr": 0.92,
+        "realized_equity_pct": 22.474833333333333,
+        "call_ev_bb": -6.043388666666667
+      }
+    },
+    "KTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率22.6%で、コールのEVは−5.98bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 24.6,
+        "blocked_cold_four_bet_pct": 20.3,
+        "eqr": 0.92,
+        "realized_equity_pct": 22.5975,
+        "call_ev_bb": -5.978129999999998
+      }
+    },
+    "K9s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率19.5%で、コールのEVは−7.61bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 24.4,
+        "blocked_cold_four_bet_pct": 20.3,
+        "eqr": 0.8,
+        "realized_equity_pct": 19.523333333333333,
+        "call_ev_bb": -7.6135866666666665
+      }
+    },
+    "K8s": {
+      "reason": "キッカーは弱いが、Kハイのフラッシュが狙えるスーテッドです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率18.7%で、コールのEVは−8.07bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 23.3,
+        "blocked_cold_four_bet_pct": 20.3,
+        "eqr": 0.8,
+        "realized_equity_pct": 18.656666666666666,
+        "call_ev_bb": -8.074653333333334
+      }
+    },
+    "K7s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K6s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K5s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K4s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K3s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K2s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "AQo": {
+      "reason": "Aのブロッカーも持つ上位のオフスートAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率23.0%で、コールのEVは−5.79bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27,
+        "blocked_cold_four_bet_pct": 27.7,
+        "eqr": 0.85,
+        "realized_equity_pct": 22.957083333333333,
+        "call_ev_bb": -5.786831666666666
+      }
+    },
+    "KQo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率17.9%で、コールのEVは−8.49bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 21,
+        "blocked_cold_four_bet_pct": 25.6,
+        "eqr": 0.85,
+        "realized_equity_pct": 17.87125,
+        "call_ev_bb": -8.492495
+      }
+    },
+    "QQ": {
+      "reason": "最上位クラスのポケットペアです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率33.6%で、コールのEVは−0.15bb。コールでは投資を回収できない見積もりのため、フォールドが中心です。一部は5bet 100BBへ配分します。配分はフォールド 65%・オールイン 35%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 37.3,
+        "blocked_cold_four_bet_pct": 8.9,
+        "eqr": 0.9,
+        "realized_equity_pct": 33.555,
+        "call_ev_bb": -0.14873999999999654
+      }
+    },
+    "QJs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率25.4%で、コールのEVは−4.50bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.6,
+        "blocked_cold_four_bet_pct": 6.1,
+        "eqr": 0.92,
+        "realized_equity_pct": 25.369000000000003,
+        "call_ev_bb": -4.503691999999997
+      }
+    },
+    "QTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率26.3%で、コールのEVは−4.03bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.5,
+        "blocked_cold_four_bet_pct": 5.3,
+        "eqr": 0.92,
+        "realized_equity_pct": 26.258333333333333,
+        "call_ev_bb": -4.030566666666665
+      }
+    },
+    "Q9s": {
+      "reason": "キッカーは弱いが、Qハイのフラッシュが狙えるスーテッドです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率21.8%で、コールのEVは−6.39bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.3,
+        "blocked_cold_four_bet_pct": 5.3,
+        "eqr": 0.8,
+        "realized_equity_pct": 21.823333333333334,
+        "call_ev_bb": -6.389986666666665
+      }
+    },
+    "Q8s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q7s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q6s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q5s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q4s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q3s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q2s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "AJo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率22.1%で、コールのEVは−6.26bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 26,
+        "blocked_cold_four_bet_pct": 23.1,
+        "eqr": 0.85,
+        "realized_equity_pct": 22.075208333333332,
+        "call_ev_bb": -6.255989166666666
+      }
+    },
+    "KJo": {
+      "reason": "トップペアは作りやすいがドローは弱い、高いカード同士のオフスートです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率17.7%で、コールのEVは−8.57bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 20.8,
+        "blocked_cold_four_bet_pct": 21.1,
+        "eqr": 0.85,
+        "realized_equity_pct": 17.718958333333333,
+        "call_ev_bb": -8.573514166666667
+      }
+    },
+    "QJo": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "JJ": {
+      "reason": "強いポケットペアです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率30.8%で、コールのEVは−1.64bb。コールでは投資を回収できない見積もりのため、フォールドします。一部は5bet 100BBへ配分します。配分はフォールド 95%・オールイン 5%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 34.2,
+        "blocked_cold_four_bet_pct": 1.3,
+        "eqr": 0.9,
+        "realized_equity_pct": 30.753750000000004,
+        "call_ev_bb": -1.6390049999999974
+      }
+    },
+    "JTs": {
+      "reason": "ストレートとフラッシュの両方を狙えるスーテッドブロードウェイです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率26.4%で、コールのEVは−3.95bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.7,
+        "blocked_cold_four_bet_pct": 0.8,
+        "eqr": 0.92,
+        "realized_equity_pct": 26.404,
+        "call_ev_bb": -3.953071999999999
+      }
+    },
+    "J9s": {
+      "reason": "ストレートとフラッシュの可能性がある1つ飛びのスーテッドです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率25.4%で、コールのEVは−4.47bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 27.6,
+        "blocked_cold_four_bet_pct": 0.8,
+        "eqr": 0.92,
+        "realized_equity_pct": 25.430333333333333,
+        "call_ev_bb": -4.471062666666667
+      }
+    },
+    "J8s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J7s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J6s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J5s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J4s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J3s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J2s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "ATo": {
+      "reason": "Aのブロッカーを持つが、AQ・AKには支配されやすいオフスートAです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率22.6%で、コールのEVは−5.99bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 26.6,
+        "blocked_cold_four_bet_pct": 22.3,
+        "eqr": 0.85,
+        "realized_equity_pct": 22.578125,
+        "call_ev_bb": -5.9884375
+      }
+    },
+    "KTo": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "QTo": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "JTo": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "TT": {
+      "reason": "強いポケットペアです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率31.7%で、コールのEVは−1.13bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 35.2,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.9,
+        "realized_equity_pct": 31.706250000000004,
+        "call_ev_bb": -1.1322749999999964
+      }
+    },
+    "T9s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率26.1%で、コールのEVは−4.09bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 28.4,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.92,
+        "realized_equity_pct": 26.147166666666667,
+        "call_ev_bb": -4.089707333333333
+      }
+    },
+    "T8s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T7s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T6s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T5s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T4s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T3s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T2s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A9o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K9o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q9o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J9o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T9o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "98s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率27.0%で、コールのEVは−3.64bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.3,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.92,
+        "realized_equity_pct": 26.98666666666667,
+        "call_ev_bb": -3.643093333333331
+      }
+    },
+    "97s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "96s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "95s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "94s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "93s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "92s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A8o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K8o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q8o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J8o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T8o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "98o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "87s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率27.5%で、コールのEVは−3.38bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.9,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.92,
+        "realized_equity_pct": 27.488833333333336,
+        "call_ev_bb": -3.375940666666665
+      }
+    },
+    "86s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "85s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "84s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "83s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "82s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A7o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K7o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q7o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J7o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T7o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "97o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "87o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "76s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率27.0%で、コールのEVは−3.65bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.3,
+        "blocked_cold_four_bet_pct": 0,
+        "eqr": 0.92,
+        "realized_equity_pct": 26.967500000000005,
+        "call_ev_bb": -3.6532899999999966
+      }
+    },
+    "75s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "74s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "73s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "72s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A6o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K6o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q6o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J6o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T6o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "96o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "86o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "76o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "65s": {
+      "reason": "ストレートとフラッシュを作りやすいスーテッドコネクターです。UTGがフォールドした後、元の3bettorがBTNのコールド4betに応答します。仮定のEQRを加味した実現後の勝率27.0%で、コールのEVは−3.63bb。コールでは投資を回収できない見積もりのため、フォールドします。配分はフォールド 100%。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": 29.4,
+        "blocked_cold_four_bet_pct": 0.8,
+        "eqr": 0.92,
+        "realized_equity_pct": 27.0135,
+        "call_ev_bb": -3.628817999999999
+      }
+    },
+    "64s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "63s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "62s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A5o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K5o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q5o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J5o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T5o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "95o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "85o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "75o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "65o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "54s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "53s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "52s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A4o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K4o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q4o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J4o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T4o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "94o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "84o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "74o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "64o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "54o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "43s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "42s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A3o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K3o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q3o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J3o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T3o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "93o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "83o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "73o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "63o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "53o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "43o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "32s": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "A2o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "K2o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "Q2o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "J2o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "T2o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "92o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "82o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "72o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "62o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "52o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "42o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    },
+    "32o": {
+      "reason": "COの対UTGの保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。",
+      "facts": {
+        "equity_vs_cold_four_bet_pct": null,
+        "blocked_cold_four_bet_pct": null,
+        "eqr": null,
+        "realized_equity_pct": null,
+        "call_ev_bb": null
+      }
+    }
+  }
+}

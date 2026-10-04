@@ -17,7 +17,7 @@ after(async () => { await server?.close(); });
 
 test("player analysis opens with the style map, without the redundant summary card", () => {
   const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], onStart() {} }));
-  assert.match(html, /<h1 class="trainer-home-eyebrow">[\s\S]*STATS<\/h1>/);
+  assert.match(html, /<h1 class="trainer-home-eyebrow stats-h1">Stats<\/h1>/);
   assert.doesNotMatch(html, /<h1>プレー分析<\/h1>/);
   assert.match(html, /プレイスタイルマップ/);
   assert.match(html, /まずは練習から/);

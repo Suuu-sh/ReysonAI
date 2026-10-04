@@ -17,6 +17,7 @@ const report = auditEstimates({
   multiway: load("multiway-responses"),
   squeezes: load("squeeze-responses"),
   coldThreeBets: load("cold-three-bet-responses"),
+  multiway2: load("multiway2-responses"), coldFourBets: load("cold-four-bet-responses"),
   limp: load("limp-responses"),
   limpDeep: load("limp-deep-responses"),
 });

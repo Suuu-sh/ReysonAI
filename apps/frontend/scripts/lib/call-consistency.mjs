@@ -1,6 +1,6 @@
 // Constrained call-only reconciliation after the EV gate. Never changes raises,
 // admits a negative-EV call, or weakens the existing consistency audit.
-import { allowedCall, callFacts, limpFourBetFoldThreshold, limpReraiseFoldThreshold, squeezeFoldThreshold } from "../../src/estimated/call-ev.ts";
+import { coldFourBetFoldThreshold, allowedCall, callFacts, limpFourBetFoldThreshold, limpReraiseFoldThreshold, squeezeFoldThreshold } from "../../src/estimated/call-ev.ts";
 import { comboCount } from "./equity.mjs";
 import { openSizeFor } from "../../src/estimated/sizing.ts";
 const ranks = "AKQJT98765432", blind = { SB: 0.5, BB: 1 };
@@ -107,6 +107,10 @@ export function reconcileCalls(contexts, table) {
   for (const c of contexts.filter(c => c.type === "squeeze" && c.spot.prior_action === null)) {
     const partner = contexts.find(d => d.type === "squeeze" && d.spot.prior_action === "fold" && d.spot.source_squeeze_id === c.spot.source_squeeze_id);
     if (partner) defend([c, partner], squeezeFoldThreshold(c.spot), `${c.spot.source_squeeze_id} squeeze`);
+  }
+  for (const c of contexts.filter(c => c.type === "cold_four_bet" && c.spot.prior_action === null)) {
+    const partner = contexts.find(d => d.type === "cold_four_bet" && d.spot.prior_action === "fold" && d.spot.source_cold_three_bet_id === c.spot.source_cold_three_bet_id);
+    if (partner) defend([c, partner], coldFourBetFoldThreshold(c.spot), `${c.spot.source_cold_three_bet_id} cold4bet`);
   }
   // BB facing SB's limp-reraise: SB's reraise auto-profits when BB folds more than its break-even.
   for (const c of contexts.filter(c => c.type === "limp_reraise")) defend([c], limpReraiseFoldThreshold(c.spot), c.spot.id);

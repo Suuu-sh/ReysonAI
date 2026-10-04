@@ -84,13 +84,29 @@
 .hand-header span { color: var(--text-muted); font-size: 12px; }
 .hand-header .hand-close { align-self: center; margin-left: auto; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--text-muted); font-size: 18px; line-height: 1; }
 .hand-header .hand-close:hover:not(:disabled) { background: var(--surface-hover); color: var(--text); }
-.action-seat-end { display: flex; flex-direction: column; gap: 4px; border: 1px dashed var(--line-strong); background: transparent; }
+.action-seat-end { flex-basis: 140px; display: flex; flex-direction: column; gap: 2px; border: 1px dashed var(--line-strong); background: transparent; }
 .action-seat-end .action-seat-heading { color: var(--text-muted); }
-.action-seat-result { margin: 4px 6px 0; font-size: 13px; font-weight: 600; line-height: 1.4; }
+.action-seat-result { margin: 4px 6px 0; font-size: 12.5px; font-weight: 600; line-height: 1.35; }
 .action-seat-end small { padding: 0 6px; font-variant-numeric: tabular-nums; }
-.enter-postflop { margin: 6px 4px 2px; padding: 7px 6px; border: 0; border-radius: 6px; background: var(--accent); color: #1a0b12; font-size: 11px; font-weight: 700; line-height: 1.3; cursor: pointer; }
+.enter-postflop { margin: 4px 4px 0; padding: 5px 8px; white-space: nowrap; border: 0; border-radius: 6px; background: var(--accent); color: #1a0b12; font-size: 11px; font-weight: 700; line-height: 1.3; cursor: pointer; }
 .enter-postflop:hover { filter: brightness(1.12); }
 .enter-postflop:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+@media (min-width: 761px) {
+  /* Keep the compact, pre-action height when the flop CTA appears. Other seats
+     can still grow for longer settings or postflop action lists. */
+  .action-path.expanded .action-path-seats { min-height: 120px; }
+  .action-path.expanded .action-seat-end {
+    contain: size;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: min-content min-content 1fr;
+    gap: 4px 0;
+  }
+  .action-path.expanded .action-seat-end .action-seat-heading { grid-column: 1; grid-row: 1; }
+  .action-path.expanded .action-seat-end small { grid-column: 2; grid-row: 1; align-self: center; text-align: right; font-size: 11px; line-height: 1.3; }
+  .action-path.expanded .action-seat-result { grid-column: 1 / -1; margin-top: 0; }
+  .action-path.expanded .enter-postflop { grid-column: 1 / -1; align-self: end; min-height: 32px; margin-top: 0; white-space: normal; }
+}
 .postflop-trial { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; flex: 1; }
 .estimate-settings + .postflop-trial, .estimate-settings + .results, .estimate-settings + .postflop-gate { margin-top: 10px; }
 .postflop-board-cards { display: flex; gap: 4px; }
@@ -349,7 +365,7 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .settings-body .settings-icon-button { border: 0; background: var(--surface-hover); }
 @media (max-width: 760px) {
   .action-seat-info { flex: 0 0 auto; width: auto; padding: 0; justify-content: center; }
-  .action-path-seats { align-items: stretch; }
+  .action-path-seats { align-items: stretch; min-height: 44px; }
   .action-seat:not(.action-seat-info) { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; padding: 4px 4px 4px 8px; }
   .action-seat:not(.action-seat-info) .action-seat-heading { padding: 0; gap: 6px; }
   .action-seat-options { flex-direction: row; gap: 2px; margin-top: 0; }
@@ -361,7 +377,7 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
   .action-seat-end .action-seat-heading { display: none; }
   .action-seat-result { margin: 0; font-size: 12px; white-space: nowrap; }
   .action-seat-end small { white-space: nowrap; }
-  .enter-postflop { padding: 4px 10px; white-space: nowrap; }
+  .enter-postflop { min-height: 34px; margin: 0; padding: 4px 10px; white-space: nowrap; }
   .action-seat-board-pot, .action-seat-board-edit { display: none; }
   .action-seat-board { flex-direction: row; gap: 6px; }
   .action-seat-board-cards { gap: 2px; padding: 0; }

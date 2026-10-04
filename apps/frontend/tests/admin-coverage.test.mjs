@@ -64,3 +64,15 @@ test("postflop hand-EV is not tracked as a coverage stage (dropped 2026-10-01)",
   assert.equal(postflopCatalog([spot], {}).categories.some(category => category.street === "hand_ev"), false);
   assert.match(RELEASE_TASKS.find(task => task.id === "release_turn_river_ev").path, /見送り/);
 });
+
+test("stage 1 preflop categories enumerate and store every expected history", () => {
+  const catalog = coverageCatalog();
+  for (const [key, count] of Object.entries({ multiway: 20, squeeze: 60, multiway_two_callers: 15, cold_four_bet: 40 })) {
+    const category = catalog.categories.find(c => c.key === key);
+    assert.equal(category.total, count, key);
+    assert.equal(category.done, count, key);
+    assert.equal(category.todo, 0, key);
+    assert.ok(category.modelled, key);
+    assert.equal(new Set(category.rows.map(r => r.id)).size, count, key);
+  }
+});

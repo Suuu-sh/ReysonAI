@@ -1,4 +1,4 @@
-import { ArrowRight, ChartBar, Info, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
+import { ArrowRight, Barbell, CalendarBlank, ChartLineUp, Cards, Crosshair, Info, Robot, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
 import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
 import { PlayStyleDashboard } from "../agent/PlayStyleDashboard.tsx";
 import { playerRead } from "../agent/player-read.ts";
@@ -7,6 +7,7 @@ import "../agent/agent.css";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { analyzePlayer, scoreProgress } from "./player-analysis.ts";
 import { practiceHighlights, summarize } from "./trainer-store.ts";
+import { CATEGORY_LABELS, handCategory, spotById } from "./trainer-data.ts";
 import "./analysis.css";
 import { localized } from "../i18n.ts";
 
@@ -36,13 +37,6 @@ function CountUp({ value, duration = 900 }) {
   return <>{shown}</>;
 }
 
-function ScoreRing({ value }) {
-  return <svg className="analysis-kpi-ring" viewBox="0 0 36 36" aria-hidden="true">
-    <circle className="track" cx="18" cy="18" r="15" />
-    <circle className="fill" cx="18" cy="18" r="15" pathLength="1" style={{ "--ring": value ?? 0 }} />
-  </svg>;
-}
-
 // Long method notes stay available but out of the way.
 function InfoTip({ label = "説明", children }) {
   return <details className="analysis-info">
@@ -51,9 +45,9 @@ function InfoTip({ label = "説明", children }) {
   </details>;
 }
 
-function Kpi({ label, value, sub, accent, children }) {
-  return <div className={`analysis-kpi${accent ? " accent" : ""}`}>
-    <span>{label}</span>
+function Kpi({ label, icon: Icon, value, sub, accent, compact, children }) {
+  return <div className={`analysis-kpi${accent ? " accent" : ""}${compact ? " compact" : ""}`}>
+    <span className="analysis-kpi-label">{Icon && <i aria-hidden="true"><Icon size={16} /></i>}{label}</span>
     <strong>{value}</strong>
     {sub && <small>{sub}</small>}
     {children}
@@ -169,6 +163,56 @@ function HighlightCard({ title, items, empty, tone, children }) {
   </section>;
 }
 
+const PERIODS = [["all", "全期間", null], ["30d", "30日", 30], ["7d", "7日", 7]];
+const KINDS = [["all", "すべて"], ["open", "オープン"], ["response", "vs オープン"]];
+const BREAKDOWNS = [["spot", "局面"], ["position", "ポジション"], ["category", "ハンド種類"]];
+
+// Answers grouped by spot, the hero's position or hand category, with the best / mixed / miss split.
+function breakdownRows(history, by) {
+  const rows = new Map();
+  for (const entry of history) {
+    const spot = spotById.get(entry.spotId);
+    if (!spot) continue;
+    const key = by === "position" ? spot.hero : by === "category" ? handCategory(entry.hand) : spot.id;
+    const label = by === "position" ? spot.hero : by === "category" ? CATEGORY_LABELS[key] : spot.kind === "open" ? `${spot.hero} オープン` : `${spot.hero} vs ${spot.opener}`;
+    const row = rows.get(key) ?? { key, label, total: 0, best: 0, mixed: 0, miss: 0, score: 0 };
+    row.total++; row[entry.result] = (row[entry.result] ?? 0) + 1; row.score += entry.score;
+    rows.set(key, row);
+  }
+  return [...rows.values()].sort((a, b) => b.total - a.total);
+}
+
+function Breakdown({ history }) {
+  const [by, setBy] = useState("spot");
+  const rows = useMemo(() => breakdownRows(history, by), [history, by]);
+  const all = useMemo(() => breakdownRows(history, "all"), [history]);
+  const share = (row, key) => row.total ? Math.round(row[key] / row.total * 1000) / 10 : 0;
+  const line = (row, label, strong) => <tr key={row.key ?? label} className={strong ? "is-total" : ""}>
+    <th scope="row">{label}</th>
+    <td>{row.total}</td>
+    <td className="tone-best">{share(row, "best")}</td>
+    <td className="tone-mixed">{share(row, "mixed")}</td>
+    <td className="tone-miss">{share(row, "miss")}</td>
+    <td>{row.total ? Math.round(row.score / row.total * 100) : 0}</td>
+  </tr>;
+  const total = all.reduce((sum, row) => ({ total: sum.total + row.total, best: sum.best + row.best, mixed: sum.mixed + row.mixed, miss: sum.miss + row.miss, score: sum.score + row.score }), { total: 0, best: 0, mixed: 0, miss: 0, score: 0 });
+  return <section className="analysis-card stats-breakdown" aria-labelledby="stats-breakdown-title">
+    <h2 id="stats-breakdown-title" className="stats-sr">回答の内訳</h2>
+    <div className="stats-tabs" role="tablist" aria-label="内訳の切り口">
+      {BREAKDOWNS.map(([value, label]) => <button key={value} type="button" role="tab" aria-selected={by === value} className={by === value ? "on" : ""} onClick={() => setBy(value)}>{label}</button>)}
+    </div>
+    <div className="stats-table-wrap">
+      <table className="stats-table">
+        <thead><tr><th scope="col" /><th scope="col">回答</th><th scope="col" className="tone-best">ベスト %</th><th scope="col" className="tone-mixed">混合で可 %</th><th scope="col" className="tone-miss">ミス %</th><th scope="col">スコア</th></tr></thead>
+        <tbody>
+          {line(total, "すべて", true)}
+          {rows.map(row => line(row, row.label))}
+        </tbody>
+      </table>
+    </div>
+  </section>;
+}
+
 function guidanceNotes(metrics) {
   const notes = [];
   if (metrics.fold.delta >= 0.10) notes.push(localized("You fold more often than the estimate. Review borderline hands that can open or call in the range table.", "フォールドが多め。オープン・コールを選べる境界のハンドをレンジ表で確認。"));
@@ -180,7 +224,15 @@ function guidanceNotes(metrics) {
   return notes.slice(0, 3);
 }
 
-export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
+export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness }) {
+  const [period, setPeriod] = useState("all");
+  const [kind, setKind] = useState("all");
+  const history = useMemo(() => {
+    const days = PERIODS.find(([value]) => value === period)?.[2];
+    const since = days ? Date.now() - days * 86400000 : null;
+    return allHistory.filter(entry => (since == null || (entry.at ?? 0) >= since) &&
+      (kind === "all" || spotById.get(entry.spotId)?.kind === kind));
+  }, [allHistory, period, kind]);
   const analysis = useMemo(() => analyzePlayer(history), [history]);
   const progress = useMemo(() => scoreProgress(history), [history]);
   const stats = useMemo(() => summarize(history), [history]);
@@ -192,19 +244,27 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
   const agentRead = useMemo(() => view === "agent" ? playerRead(loadAgentHands()) : null, [view]);
 
   return <div className="player-analysis">
-    <header className="trainer-home-head analysis-heading">
-      <div>
-        <h1 className="trainer-home-eyebrow"><ChartBar size={12} /> STATS</h1>
-        <p>{view === "agent" ? "Agent卓での収支と、Agentが読んでいるあなたの打ち方を振り返ります。" : "ドリルやランク戦での選び方を、保存済みレンジと比べて振り返ります。"}</p>
-      </div>
-      <div className="analysis-head-tools">
-        <div className="lb-period analysis-view" role="group" aria-label="分析の対象">
-          {[["drills", "ドリル練習"], ["agent", "Agent戦"]].map(([value, label]) =>
-            <button key={value} type="button" className={view === value ? "on" : ""} aria-pressed={view === value} onClick={() => setView(value)}>{label}</button>)}
+    <header className="stats-head">
+      <div className="stats-title">
+        <h1 className="trainer-home-eyebrow stats-h1">Stats</h1>
+        <div className="stats-icon-seg" role="group" aria-label="分析の対象">
+          {[["drills", "ドリル練習", Barbell], ["agent", "Agent戦", Robot]].map(([value, label, Icon]) =>
+            <button key={value} type="button" className={view === value ? "on" : ""} aria-pressed={view === value} aria-label={label} title={label} onClick={() => setView(value)}><Icon size={18} /></button>)}
         </div>
+        <span className="stats-view-label">{view === "agent" ? "Agent戦" : "ドリル練習"}</span>
+      </div>
+      <div className="stats-head-tools">
+        {view === "drills" && <div className="stats-period" role="group" aria-label="期間">
+          <CalendarBlank size={16} aria-hidden="true" />
+          {PERIODS.map(([value, label]) => <button key={value} type="button" className={period === value ? "on" : ""} aria-pressed={period === value} onClick={() => setPeriod(value)}>{label}</button>)}
+        </div>}
         <button type="button" className="mode-primary analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
       </div>
     </header>
+    {view === "drills" && <div className="stats-filters" role="group" aria-label="絞り込み">
+      <span>絞り込み</span>
+      {KINDS.map(([value, label]) => <button key={value} type="button" className={kind === value ? "on" : ""} aria-pressed={kind === value} onClick={() => setKind(value)}>{label}</button>)}
+    </div>}
 
     {view === "agent" ? <div className="analysis-agent">
       <AgentAnalysis />
@@ -212,17 +272,18 @@ export function PlayerAnalysis({ history, onStart, onOpenWeakness }) {
     </div> : <>
 
     <div className="analysis-kpis">
-      <Kpi label="ReysonAI Score" accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
+      <Kpi label="ReysonAI Score" icon={ChartLineUp} accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
         sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)} · 10回答前比</span>}>
-        <ScoreRing value={progress.current} />
       </Kpi>
-      <Kpi label="正答率" value={stats.answered ? <><CountUp value={Math.round(stats.rate * 100)} /><small>%</small></> : "—"} sub={`${stats.answered}回答`} />
-      <Kpi label="プレイスタイル" value={analysis.ready ? analysis.style.label : "判定中"} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>
+      <Kpi label="正答率" icon={Crosshair} value={stats.answered ? <><CountUp value={Math.round(stats.rate * 100)} /><small>%</small></> : "—"} sub={`${stats.answered}回答`} />
+      <Kpi label="プレイスタイル" icon={Target} value={analysis.ready ? analysis.style.label : "判定中"} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>
         {!analysis.ready && <span className="analysis-kpi-bar" aria-hidden="true"><i style={{ width: `${styleProgress * 100}%` }} /></span>}
       </Kpi>
-      <Kpi label="出題の内訳" value={<><CountUp value={analysis.openSamples} /><small>オープン</small> <CountUp value={analysis.responseSamples} /><small>vs オープン</small></>}
+      <Kpi label="出題の内訳" icon={Cards} compact value={<><CountUp value={analysis.openSamples} /><small>オープン</small> <CountUp value={analysis.responseSamples} /><small>vs オープン</small></>}
         sub={analysis.ready ? `${analysis.distinctSpots}局面` : "判定には各10問・3局面以上"} />
     </div>
+
+    {history.length > 0 && <Breakdown history={history} />}
 
     <div className="analysis-main">
       <StyleMap analysis={analysis} />

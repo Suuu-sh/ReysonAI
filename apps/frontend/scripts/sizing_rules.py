@@ -47,7 +47,23 @@ def three_bet_to(opener, raiser, caller_count=0):
     return cap_raise_to(FIXED['three_bet'][side])
 
 
+def two_caller_squeeze_to(opener, hero):
+    """Open plus exactly two calls, using the existing fixed sizing policy."""
+    if opener not in CONFIG['positions'] or hero not in CONFIG['positions'] or opener == hero:
+        raise ValueError('Invalid two-caller squeeze positions')
+    return three_bet_to(opener, hero, caller_count=2)
+
+
 def four_bet_to(four_bettor, three_bettor):
     if four_bettor == 'SB' and three_bettor == 'BB':
         return cap_raise_to(FIXED['four_bet_vs_bb_three_bet_from_sb'])
     return cap_raise_to(FIXED['four_bet']['ip' if in_position(four_bettor, three_bettor) else 'oop'])
+
+
+def squeeze_four_bet_to(four_bettor, squeezer):
+    # Stage1a: a CO/BTN squeeze to 12BB raises the 2.5BB open by 9.5BB,
+    # so the ordinary OOP 20BB 4bet would be below the full-raise minimum.
+    # Use the user-approved existing 26BB fixed size for this branch only.
+    # Heads-up four_bet_to and the existing blind-squeeze sizes stay unchanged.
+    standard = four_bet_to(four_bettor, squeezer)
+    return cap_raise_to(FIXED['four_bet']['ip']) if squeezer in ('CO', 'BTN') else standard

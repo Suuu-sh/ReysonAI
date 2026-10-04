@@ -18,6 +18,8 @@ const datasets = {
   three_bet: load("three-bet-responses"),
   four_bet: load("four-bet-responses"),
   multiway: load("multiway-responses"),
+  multiway2: load("multiway2-responses"),
+  cold_four_bet: load("cold-four-bet-responses"),
   squeeze: load("squeeze-responses"),
   cold_three_bet: load("cold-three-bet-responses"),
   iso_response: { spots: load("limp-responses").spots.filter(s => s.id === "SB_vs_BB_iso") },
@@ -31,6 +33,11 @@ const f1 = value => Number(value).toFixed(1);
 
 // Unreachable rows are fold=100 placeholders; the wording matches the historical saved text.
 function unreachableReason(type, spot) {
+  if (spot.unreachable && ["multiway", "squeeze"].includes(type)) return `${spot.caller ?? spot.callers?.[0]}の対${spot.opener}の既存コールレンジが空のため、この履歴は到達不能で対象外です。全ハンドを形式上フォールド100%とし、実際の推奨ではありません。`;
+  if (type === "multiway2") return "保存されたオープン・1人目のコール・2人目の条件付きコールの履歴が到達不能なため対象外です。形式上フォールド100%であり、実際の推奨ではありません。";
+  if (type === "cold_four_bet") return spot.hero === spot.opener
+    ? `${spot.hero}の保存オープン頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。`
+    : `${spot.hero}の対${spot.opener}の保存3bet頻度が0%のため対象外です。形式上フォールド100%であり、実際の推奨ではありません。`;
   if (type === "three_bet") return `${spot.opener}の既存オープン頻度が0%のため、この経路では対象外。形式上フォールド100%としています。`;
   if (type === "four_bet") return `${spot.hero}の対${spot.opener}の既存3bet頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。`;
   if (type === "iso_response") return "SBの既存リンプ頻度が0%のため、この経路では対象外。形式上フォールド100%であり、実際の推奨ではありません。";
@@ -50,6 +57,8 @@ const ACTIONS = {
   three_bet: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
   four_bet: [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]],
   multiway: [["squeeze", "スクイーズ"], ["call", "コール"], ["fold", "フォールド"]],
+  multiway2: [["squeeze", "スクイーズ"], ["call", "コール"], ["fold", "フォールド"]],
+  cold_four_bet: [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]],
   squeeze: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
   cold_three_bet: [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]],
   iso_response: [["raise", "リレイズ"], ["call", "コール"], ["fold", "フォールド"]],
@@ -59,7 +68,7 @@ const ACTIONS = {
   limp_four_bet: [["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]],
   limp_five_bet: [["call", "コール"], ["fold", "フォールド"]],
 };
-const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", squeeze: "four_bet", cold_three_bet: "four_bet", iso_response: "raise", limp_response: "raise", limp_reraise: "four_bet", limp_four_bet: "all_in" };
+const RAISE_KEY = { open: "open", response: "three_bet", three_bet: "four_bet", four_bet: "all_in", multiway: "squeeze", multiway2: "squeeze", cold_four_bet: "all_in", squeeze: "four_bet", cold_three_bet: "four_bet", iso_response: "raise", limp_response: "raise", limp_reraise: "four_bet", limp_four_bet: "all_in" };
 
 const FACT_LABELS = {
   open: [
@@ -94,6 +103,16 @@ const CALL_FACT_LABELS = [
 FACT_LABELS.multiway = [
   { key: "equity_3way_pct", label: "勝率（3人ポット）", scope: "hand" },
   { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+];
+FACT_LABELS.multiway2 = [
+  { key: "equity_4way_pct", label: "勝率（4人ポット）", scope: "hand" },
+  { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+];
+FACT_LABELS.cold_four_bet = [
+  { key: "equity_vs_cold_four_bet_pct", label: "勝率（対コールド4bet）", scope: "hand" },
+  { key: "call_break_even_equity_pct", label: "コールに必要な勝率", scope: "spot" },
+  { key: "combined_fold_pct", label: "オープナーと3bettorの両方が降りる率", scope: "spot" },
+  { key: "blocked_cold_four_bet_pct", label: "コールド4betレンジのブロック", scope: "hand" },
 ];
 FACT_LABELS.iso_response = [
   { key: "equity_vs_bb_iso_pct", label: "勝率（対BBアイソ）", scope: "hand" },
@@ -134,7 +153,7 @@ FACT_LABELS.cold_three_bet = [
   { key: "blocked_three_bet_pct", label: "3betレンジのブロック", scope: "hand" },
 ];
 FACT_LABELS.limp_response = [{ key: "equity_vs_sb_limp_pct", label: "勝率（対SBリンプ）", scope: "hand" }];
-for (const type of ["response", "three_bet", "four_bet", "multiway", "iso_response", "limp_reraise", "cold_three_bet", "limp_four_bet"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
+for (const type of ["response", "three_bet", "four_bet", "multiway", "multiway2", "cold_four_bet", "iso_response", "limp_reraise", "cold_three_bet", "limp_four_bet"]) FACT_LABELS[type].splice(1, 0, ...CALL_FACT_LABELS);
 function factLabels(type, spot) {
   if (type !== "squeeze") return FACT_LABELS[type];
   const equity = spot.prior_action === "call"
@@ -219,10 +238,10 @@ function compose(type, row, facts, spot) {
   if (type === "limp_response") {
     return `${lead}SBの保護されたリンプレンジへの勝率は${f1(facts.equity_vs_sb_limp_pct)}%です。${row.raise > 0 ? "バリューや限定的なブロッカーのアイソレイズを混ぜます。" : "追加投資なしでフロップへ進めるため、チェックします。"}${mixText(type, row)}。`;
   }
-  if (type === "multiway" || type === "iso_response") {
-    const raiseName = type === "multiway" ? "スクイーズ" : "リレイズ";
+  if (["multiway", "multiway2", "iso_response"].includes(type)) {
+    const raiseName = type !== "iso_response" ? "スクイーズ" : "リレイズ";
     // SB acts with BB still behind: its realization carries the extra BB-behind discount.
-    const behind = spot.bb_behind ? "後ろにBBが残り、スクイーズや4人のポットでコールの価値が下がるため、実現率を追加で割り引いています。" : "";
+    const behind = spot.bb_behind ? `後ろにBBが残り、スクイーズや${type === "multiway2" ? 5 : 4}人のポットでコールの価値が下がるため、実現率を追加で割り引いています。` : spot.cold_call_behind ? "後続プレイヤーのスクイーズとオーバーコールを考慮し、実現率を追加で割り引いています。" : "";
     const body = main === raiseKey
       ? `実現後の勝率${f1(facts.realized_equity_pct)}%、コールのEVは${evText(facts.call_ev_bb)}です。既存の${raiseName}配分を維持し、強いハンドと一部のブロッカーをレイズへ配分します。`
       : callDecision(row, facts);
@@ -306,6 +325,15 @@ function compose(type, row, facts, spot) {
       if (row.call > 0) body += "一部はコールで継続します。";
     }
     return `${lead}${situation}${body}${mixText(type, row)}。`;
+  }
+  if (type === "cold_four_bet") {
+    const situation = spot.prior_action === null
+      ? `後ろに元の3bettor ${spot.three_bettor}が残り、再レイズやオーバーコールを考慮して実現率を追加で割り引いています。`
+      : `${spot.opener}がフォールドした後、元の3bettorが${spot.four_bettor}のコールド4betに応答します。`;
+    const body = main === "all_in"
+      ? `保存された5bet 100BBの配分を使います。対コールド4betの勝率は${f1(facts.equity_vs_cold_four_bet_pct)}%、コールした場合のEVは${evText(facts.call_ev_bb)}です。`
+      : callDecision(row, facts);
+    return `${lead}${situation}${body}${row.all_in > 0 && main !== "all_in" ? "一部は5bet 100BBへ配分します。" : ""}${mixText(type, row)}。`;
   }
   if (type === "cold_three_bet") {
     const size = `4bet（${spot.four_bet_size_bb}BB）`;

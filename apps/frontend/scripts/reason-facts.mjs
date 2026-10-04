@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
 import { raked } from "../src/estimated/rake.ts";
 import { reasonSourceFingerprint } from "./lib/reason-context.mjs";
-import { callContexts, callFacts, isColdCaller, limpReraiseFoldThreshold, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.ts";
+import { coldFourBetFoldThreshold, callContexts, callFacts, isColdCaller, limpReraiseFoldThreshold, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.ts";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { isInPosition, openSizeFor } from "../src/estimated/sizing.ts";
@@ -22,15 +22,17 @@ const fourBets = load("four-bet-responses");
 const fiveBets = load("five-bet-responses");
 const limpResponses = existsSync(new URL("limp-responses.json", dataDir)) ? load("limp-responses") : { spots: [] };
 const multiway = existsSync(new URL("multiway-responses.json", dataDir)) ? load("multiway-responses") : { spots: [] };
+const multiway2 = existsSync(new URL("multiway2-responses.json", dataDir)) ? load("multiway2-responses") : { spots: [] };
+const coldFourBets = existsSync(new URL("cold-four-bet-responses.json", dataDir)) ? load("cold-four-bet-responses") : { spots: [] };
 const squeezes = existsSync(new URL("squeeze-responses.json", dataDir)) ? load("squeeze-responses") : { spots: [] };
 const limpDeep = existsSync(new URL("limp-deep-responses.json", dataDir)) ? load("limp-deep-responses") : { spots: [] };
 const coldThreeBets = existsSync(new URL("cold-three-bet-responses.json", dataDir)) ? load("cold-three-bet-responses") : { spots: [] };
 const outDir = process.env.REASON_FACTS_DIR ? pathToFileURL(resolve(process.env.REASON_FACTS_DIR) + "/") : new URL("../.local/reason-facts/", import.meta.url);
 const sourceFingerprint = reasonSourceFingerprint(load);
 const callEquities = load("call-equities");
-const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses, squeezes, coldThreeBets, limpDeep }).map(c => [c.spot.id, c]));
+const contexts = new Map(callContexts({ opening, responses, threeBets, fourBets, multiway, limp: limpResponses, squeezes, coldThreeBets, limpDeep, multiway2, coldFourBets }).map(c => [c.spot.id, c]));
 for (const context of contexts.values()) if (!validCallEquities(callEquities, context)) throw new Error(`Stale call equity: ${context.spot.id}`);
-const primaryEquityKeys = new Set(["equity_vs_open_pct", "equity_vs_three_bet_pct", "equity_vs_four_bet_pct", "equity_vs_bb_iso_pct", "equity_vs_limp_reraise_pct", "equity_vs_bb_four_bet_pct"]);
+const primaryEquityKeys = new Set(["equity_vs_open_pct", "equity_vs_three_bet_pct", "equity_vs_four_bet_pct", "equity_vs_bb_iso_pct", "equity_vs_limp_reraise_pct", "equity_vs_bb_four_bet_pct", "equity_vs_cold_four_bet_pct"]);
 mkdirSync(outDir, { recursive: true });
 
 const round1 = value => value === null ? null : Math.round(value * 1000) / 10;
@@ -151,16 +153,19 @@ function multiwayFacts(spot) {
   const { opener, callers: [caller], hero } = spot;
   const open = rangeFrom(opening.spots.find(s => s.hero === opener), row => row.open / 100);
   const called = rangeFrom(responseOf(opener, caller), row => row.call / 100);
+  if (!called.length) return { type: "multiway", spot: { opener, caller, hero, unreachable: true },
+    hands: spot.hands.map(row => ({ hand: row.hand, equity_3way_pct: null, equity_vs_caller_pct: null, blocked_caller_pct: null })) };
   const random = seededRandom(seedFor(spot.id));
   const participants = [hero, opener, caller];
   const toCall = spot.open_size_bb - (blind[hero] ?? 0);
   const totalPotAfterCall = participants.length * spot.open_size_bb + 1.5 - participants.reduce((n, p) => n + (blind[p] ?? 0), 0);
   return {
     type: "multiway",
-    spot: { opener, caller, hero, position: "OOP", squeeze_size_bb: spot.squeeze_size_bb,
+    spot: { opener, caller, hero, position: [opener, caller].every(p => isInPosition(hero, p)) ? "IP" : "OOP", squeeze_size_bb: spot.squeeze_size_bb,
       call_break_even_equity_pct: round1(need(toCall, totalPotAfterCall)), fair_share_pct: round1(1 / 3),
       caller_range_combos: Math.round(totalWeight(called)),
-      ...(hero === "SB" ? { bb_behind: true } : {}) },
+      ...(hero === "SB" ? { bb_behind: true } : {}),
+      ...(isColdCaller(hero) ? { cold_call_behind: true } : {}) },
     hands: spot.hands.map(row => ({ hand: row.hand,
       equity_3way_pct: round1(callEquities.spots[spot.id].equities[row.hand]),
       equity_vs_caller_pct: round1(equityVsRange(row.hand, called, SAMPLES, random)),
@@ -174,6 +179,11 @@ function squeezeFacts(spot) {
   const { opener, caller, squeezer, hero, prior_action: prior } = spot;
   const context = contexts.get(spot.id);
   const source = multiway.spots.find(s => s.id === spot.source_squeeze_id);
+  if (!context) {
+    if (source.hands.some(row => row.squeeze > 0)) throw new Error(`Missing reachable squeeze context: ${spot.id}`);
+    return { type: "squeeze", spot: { opener, caller, squeezer, hero, prior_action: prior, unreachable: true },
+      hands: spot.hands.map(row => ({ hand: row.hand, equity_vs_squeeze_pct: null, blocked_squeeze_pct: null })) };
+  }
   const squeezeRange = rangeFrom(source, row => row.squeeze / 100);
   const branch = action => squeezes.spots.find(s => s.source_squeeze_id === spot.source_squeeze_id && s.prior_action === action);
   const foldOf = action => { const c = contexts.get(branch(action).id); return weightedFold(c.spot, row => c.reach(row.hand)); };
@@ -182,7 +192,7 @@ function squeezeFacts(spot) {
   const openerCall = prior === "call" ? context.input.ranges[1].reduce((n, [hand, w]) => n + comboCount(hand) * w, 0) : null;
   return {
     type: "squeeze",
-    spot: { opener, caller, squeezer, hero, prior_action: prior, position: "IP",
+    spot: { opener, caller, squeezer, hero, prior_action: prior, position: context.input.opponents.every(p => isInPosition(hero, p)) ? "IP" : "OOP",
       squeeze_size_bb: spot.squeeze_size_bb, four_bet_size_bb: spot.four_bet_size_bb,
       call_break_even_equity_pct: round1(need(context.input.cost_to_call, context.input.total_pot_after_call)),
       squeeze_range_combos: Math.round(totalWeight(squeezeRange)),
@@ -200,6 +210,36 @@ function squeezeFacts(spot) {
 // 3bet range; the opener and any later seats are still to act (OPENER_BEHIND_EQR).
 // The 3bet's immediate win needs both the hero and the opener to fold; their
 // combined fold rate is a reference number only (other seats behind are ignored).
+function multiway2Facts(spot) {
+  const context = contexts.get(spot.id);
+  const { opener, callers, hero } = spot;
+  if (!context) return { type: "multiway2", spot: { opener, callers, hero, unreachable: true },
+    hands: spot.hands.map(row => ({ hand: row.hand, equity_4way_pct: null })) };
+  return { type: "multiway2", spot: { opener, callers, hero, position: context.input.opponents.every(p => isInPosition(hero, p)) ? "IP" : "OOP",
+    squeeze_size_bb: spot.squeeze_size_bb, call_break_even_equity_pct: round1(need(context.input.cost_to_call, context.input.total_pot_after_call)),
+    fair_share_pct: 25, source_caller_ids: spot.source_caller_ids,
+    opponent_range_combos: context.input.ranges.map(r => Math.round(r.reduce((n, [h, w]) => n + comboCount(h) * w, 0) * 10) / 10),
+    ...(context.input.bb_behind ? { bb_behind: true } : {}), ...(context.input.cold_call_behind ? { cold_call_behind: true } : {}) },
+    hands: spot.hands.map(row => ({ hand: row.hand, equity_4way_pct: round1(callEquities.spots[spot.id].equities[row.hand]) })) };
+}
+
+function coldFourBetFacts(spot) {
+  const context = contexts.get(spot.id);
+  const source = coldThreeBets.spots.find(s => s.id === spot.source_cold_three_bet_id);
+  const range = rangeFrom(source, row => row.four_bet / 100);
+  const branch = prior => coldFourBets.spots.find(s => s.source_cold_three_bet_id === spot.source_cold_three_bet_id && s.prior_action === prior);
+  const foldOf = prior => { const c = contexts.get(branch(prior).id); return weightedFold(c.spot, row => c.reach(row.hand)); };
+  return { type: "cold_four_bet", spot: { opener: spot.opener, three_bettor: spot.three_bettor, four_bettor: spot.four_bettor, hero: spot.hero,
+    prior_action: spot.prior_action, position: isInPosition(spot.hero, spot.four_bettor) ? "IP" : "OOP",
+    open_size_bb: spot.open_size_bb, three_bet_size_bb: spot.three_bet_size_bb, four_bet_size_bb: spot.four_bet_size_bb, all_in_size_bb: 100,
+    call_break_even_equity_pct: round1(need(context.input.cost_to_call, context.input.total_pot_after_call)),
+    four_bet_range_combos: Math.round(totalWeight(range) * 10) / 10, source_cold_three_bet_id: spot.source_cold_three_bet_id,
+    combined_fold_pct: round1(foldOf(null) * foldOf("fold")), cold_four_bet_break_even_pct: round1(coldFourBetFoldThreshold(spot)),
+    ...(spot.prior_action === null ? { three_bettor_behind: true } : {}) },
+    hands: handFacts(spot.id, spot, hand => context.reach(hand) > 0,
+      { equity_vs_cold_four_bet_pct: range, blocked_cold_four_bet_pct: range }) };
+}
+
 function coldThreeBetFacts(spot) {
   const { opener, three_bettor: bettor, hero } = spot;
   const context = contexts.get(spot.id);
@@ -327,6 +367,8 @@ const builders = [
   ...fourBets.spots.map(spot => [spot.id, () => fourBetFacts(spot)]),
   ...multiway.spots.map(spot => [spot.id, () => multiwayFacts(spot)]),
   ...squeezes.spots.map(spot => [spot.id, () => squeezeFacts(spot)]),
+  ...multiway2.spots.map(spot => [spot.id, () => multiway2Facts(spot)]),
+  ...coldFourBets.spots.map(spot => [spot.id, () => coldFourBetFacts(spot)]),
   ...coldThreeBets.spots.map(spot => [spot.id, () => coldThreeBetFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "BB_vs_SB_limp").map(spot => [spot.id, () => limpFacts(spot)]),
   ...limpResponses.spots.filter(spot => spot.id === "SB_vs_BB_iso").map(spot => [spot.id, () => isoFacts(spot)]),
