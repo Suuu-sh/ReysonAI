@@ -1,8 +1,11 @@
 // Range coverage catalog for the admin dashboard: which spots are persisted,
 // and which spots of the preflop tree still need an authored range.
 // Pure data (no React) so tests and scripts can reuse it.
-import { dataset } from "../estimated/datasets.ts";
+import { dataset, hasDataset } from "../estimated/datasets.ts";
 import { positions } from "../estimated/sizing.ts";
+import { continuationAvailability } from "../estimated/continuation-responses.ts";
+import { createContinuationModel } from "../estimated/continuation-model.ts";
+import { continuationFamilies, continuationSpots } from "../estimated/continuation-tree.ts";
 import { coldThreeBetSpots } from "../estimated/cold-three-bet-responses.ts";
 import { BUILT, formatOptions } from "../estimated/game-formats.ts";
 
@@ -19,6 +22,7 @@ const multiway2 = dataset("multiway2-responses");
 const coldFourBets = dataset("cold-four-bet-responses");
 const squeezes = dataset("squeeze-responses");
 const limpDeep = dataset("limp-deep-responses");
+const continuations = hasDataset("continuation-responses") ? dataset("continuation-responses") : null;
 
 const RFI = positions.slice(0, 5); // UTG..SB
 const after = seat => positions.slice(positions.indexOf(seat) + 1);
@@ -46,6 +50,13 @@ export function postflopPriority(spot) {
 
 // Every category lists its full expected spot set; ids match the persisted datasets.
 const CATEGORIES = [
+  ...continuationFamilies.map(family => ({
+    key: `continuation_${family}`, label: `継続分岐: ${family}`, file: "continuation-responses.json",
+    data: { spots: (continuations?.spots ?? []).filter(spot => spot.family === family) },
+    expected: continuationSpots.filter(spot => spot.family === family).map(spot => ({
+      id: spot.id, hero: spot.hero, path: spot.history.map(action => `${action.seat} ${action.action}${action.to_size_bb === null ? "" : ` ${action.to_size_bb}`}`).join(" → ") + ` → ${spot.hero}`,
+    })),
+  })),
   { key: "open", label: "オープン（RFI）", file: "opening-ranges.json", data: opening,
     expected: RFI.map(hero => ({ id: `${hero}_open`, hero, path: `${hero} open` })) },
   { key: "response", label: "オープンへの応答", file: "preflop-ranges.json", data: responses,
@@ -93,24 +104,32 @@ function spotsOf(data) {
   return data?.spots ?? [];
 }
 
-export function coverageCatalog() {
+export function coverageCatalog({ continuationData = continuations } = {}) {
+  const sources = { "opening-ranges": opening, "preflop-ranges": responses, "multiway-responses": multiway,
+    "multiway2-responses": multiway2, "squeeze-responses": squeezes, "cold-three-bet-responses": coldThreeBets, "cold-four-bet-responses": coldFourBets };
+  const model = createContinuationModel({ ...sources, "continuation-responses": continuationData });
   const categories = CATEGORIES.map(category => {
-    const saved = spotsOf(category.data);
+    const isContinuation = category.key.startsWith("continuation_");
+    const saved = isContinuation ? (continuationData?.spots ?? []).filter(spot => `continuation_${spot.family}` === category.key) : spotsOf(category.data);
     const expectedIds = new Set(category.expected.map(spot => spot.id));
     const rows = category.expected.map(spot => {
       const record = saved.find(item => item.id === spot.id);
-      return { ...spot, category: category.key, priority: preflopPriority(category.key, spot.id), status: record ? "done" : "todo", hands: record?.hands?.length ?? 0 };
+      const availability = isContinuation ? continuationAvailability(continuationData, sources, spot.id, model) : null;
+      return { ...spot, category: category.key, priority: preflopPriority(category.key, spot.id),
+        status: availability ? availability.status === "unreachable" ? "unreachable" : availability.status === "saved" ? "done" : "todo" : record ? "done" : "todo", hands: record?.hands?.length ?? 0 };
     });
     // Persisted spots outside the enumerated tree are still shown so nothing is hidden.
     for (const spot of saved) {
       if (!expectedIds.has(spot.id)) rows.push({ id: spot.id, hero: spot.hero, path: "（ツリー外の保存スポット）", category: category.key, priority: preflopPriority(category.key, spot.id), status: "done", hands: spot.hands?.length ?? 0 });
     }
     const done = rows.filter(row => row.status === "done").length;
-    return { key: category.key, label: category.label, file: category.file, modelled: Boolean(category.file), rows, done, total: rows.length, todo: rows.length - done };
+    const unreachable = rows.filter(row => row.status === "unreachable").length;
+    return { key: category.key, label: category.label, file: category.file, modelled: Boolean(category.file), rows, done, unreachable, total: rows.length, todo: rows.length - done - unreachable };
   });
   const done = categories.reduce((sum, c) => sum + c.done, 0);
   const total = categories.reduce((sum, c) => sum + c.total, 0);
-  return { categories, done, total, todo: total - done };
+  const unreachable = categories.reduce((sum, category) => sum + category.unreachable, 0);
+  return { categories, done, unreachable, total, todo: total - done - unreachable };
 }
 
 // Every combination of format options; only BUILT ones have ranges. Each unbuilt format
@@ -172,7 +191,7 @@ export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
     priority: 3, status: task.done ? "done" : "todo", street: "release" }));
   categories.push({ key: "release_tasks", label: "リリース作業", file: null, street: "release", modelled: true,
     rows: releaseRows, done: releaseRows.filter(row => row.status === "done").length, total: releaseRows.length,
-    todo: releaseRows.filter(row => row.status !== "done").length });
+    todo: releaseRows.filter(row => row.status !== "done" && row.status !== "unreachable").length });
   categories.push({ key: "postflop_multiway", label: "マルチウェイ・ポストフロップ", file: null, street: "flop", modelled: false,
     rows: multiwayRows, done: 0, total: multiwayRows.length, todo: multiwayRows.length });
   const done = categories.reduce((sum, c) => sum + c.done, 0);
@@ -184,6 +203,6 @@ export function priorityBacklog(preflopCatalog, postflopCatalog) {
   const rows = [...preflopCatalog.categories, ...postflopCatalog.categories].flatMap(category => category.rows);
   return PRIORITIES.map(priority => {
     const assigned = rows.filter(row => row.priority === priority.value);
-    return { ...priority, total: assigned.length, todo: assigned.filter(row => row.status !== "done").length };
+    return { ...priority, total: assigned.length, todo: assigned.filter(row => row.status !== "done" && row.status !== "unreachable").length };
   });
 }

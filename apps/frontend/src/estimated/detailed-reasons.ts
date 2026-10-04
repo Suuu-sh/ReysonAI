@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { expandContinuationReasons } from "./continuation-reason-format.ts";
 import { hasDataset, loadDataset } from "./datasets.ts";
 
 // Each spot's detailed reasons are a separate dataset, fetched only when a hand's details open.
@@ -11,7 +12,7 @@ export function hasDetailedReasons(spotId) {
 
 export function loadDetailedReasons(spotId) {
   if (!hasDetailedReasons(spotId)) return Promise.resolve(null);
-  if (!cache.has(spotId)) cache.set(spotId, loadDataset(`reasons/${spotId}`).catch(error => { cache.delete(spotId); throw error; }));
+  if (!cache.has(spotId)) cache.set(spotId, loadDataset(`reasons/${spotId}`).then(expandContinuationReasons).catch(error => { cache.delete(spotId); throw error; }));
   return cache.get(spotId);
 }
 

@@ -1,11 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { expandContinuationReasons } from "../src/estimated/continuation-reason-format.ts";
 import { hands } from "../src/data.ts";
 
 const dir = new URL("../src/estimated/reasons/", import.meta.url);
 const load = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
 const sources = [
+  [existsSync(new URL("../src/estimated/continuation-responses.json", import.meta.url)) ? load("continuation-responses") : { spots: [] }, [["four_bet", "4bet"], ["all_in", "オールイン"], ["call", "コール"], ["fold", "フォールド"]]],
   [load("opening-ranges"), [["open", "オープン"], ["limp", "リンプ"], ["fold", "フォールド"]]],
   [load("preflop-ranges"), [["three_bet", "3bet"], ["call", "コール"], ["fold", "フォールド"]]],
   [load("three-bet-responses"), [["four_bet", "4bet"], ["call", "コール"], ["fold", "フォールド"]]],
@@ -26,7 +28,7 @@ test("every detailed-reason file covers all 169 hands of an existing spot and qu
   const files = readdirSync(dir).filter(name => name.endsWith(".json"));
   assert.ok(files.length >= 1);
   for (const file of files) {
-    const data = JSON.parse(readFileSync(new URL(file, dir)));
+    const data = expandContinuationReasons(JSON.parse(readFileSync(new URL(file, dir))));
     const match = sources.map(([dataset, actions]) => [dataset.spots.find(s => s.id === data.spot_id), actions]).find(([spot]) => spot);
     assert.ok(match, `${file}: unknown spot ${data.spot_id}`);
     const [spot, actions] = match;

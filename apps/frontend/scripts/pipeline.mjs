@@ -6,13 +6,13 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { isBlockingAuditFinding } from "../src/estimated/audit.ts";
+import { isBlockingAuditFinding } from "../src/estimated/profile-audit-policy.ts";
 import { diffDatasets, isUnchanged, parseFindings, summarizeFindings } from "./lib/estimate-diff.mjs";
 
 import { opponentProfileFiles } from "./lib/opponent-profile-build.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses", ...opponentProfileFiles];
+const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses", "continuation-responses", ...opponentProfileFiles];
 const arg = process.argv.indexOf("--max-iterations");
 const maxIterations = arg > 0 ? Number(process.argv[arg + 1]) : 3;
 if (!Number.isInteger(maxIterations) || maxIterations < 1) throw new Error("--max-iterations must be a positive integer");
@@ -53,7 +53,7 @@ const summary = { status, iterations, maxIterations, changedSpots: spots.length,
 const fmt = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}`;
 const lines = [
   `status: ${status} (iterations ${iterations}/${maxIterations})`,
-  `changed spots: ${spots.length}${structural.length ? `, structural: ${structural.join(", ")}` : ""}`,
+  `changed spots: ${spots.length}${structural.length ? `, structural: ${structural.length} additions/removals` : ""}`,
   ...spots.slice(0, 10).map(s => `  ${s.id}: ${s.changedHands} hands, max ${s.max.hand} ${s.max.action} ${fmt(s.max.delta)}pt`),
   ...(spots.length > 10 ? [`  … ${spots.length - 10} more`] : []),
   `findings: ${counts.total} (${Object.entries(counts.bySeverity).map(([k, v]) => `${k} ${v}`).join(", ") || "none"})`,
