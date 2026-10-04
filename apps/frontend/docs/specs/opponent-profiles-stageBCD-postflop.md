@@ -5,7 +5,11 @@
 
 リポジトリ: `Suuu-sh/ReysonAI`（作業はフロントエンドの `apps/frontend` が中心）。
 
-前提：段階A（`docs/specs/opponent-profiles-stageA-preflop.md`：相手像ごとの相手側プリフロップデータ `src/estimated/profiles/<profile>/villain/*.json`）がマージ済みであること。未マージなら止めずに、段階A のデータが無い場合はテスト用の仮データで実装し、その旨を結果報告に書く。
+前提：段階A（相手像ごとの相手側プリフロップデータ `src/estimated/profiles/<profile>/villain/*.json`）はマージ済み・本番配信済み（PR #28）。
+
+対象局面（2026-10-04 更新）：
+- 均衡型でポストフロップ方針がある全局面（`scripts/postflop-ai/spots.mjs` の到達可能な局面。44＋リンプ4bet、`hu-postflop-after-multiway-preflop.md` がマージされていればスクイーズ・コールド4bet後の局面も含む）。
+- 相手像では SB がオープンにフラットコールするため、均衡型では到達しない「SB がコールしたシングルレイズドポット」が到達可能になる（段階A の PR で列挙49・標準到達45と報告済み）。これらも相手像モードの局面として作る。均衡型の画面には出さない。
 
 ## 0. 最初に必ず読む
 
