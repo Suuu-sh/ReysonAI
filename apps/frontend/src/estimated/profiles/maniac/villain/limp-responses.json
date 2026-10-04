@@ -1,0 +1,3464 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "strategy_type": "ai_estimate_not_gto",
+    "game": "6max Cash / No-Limit Texas Holdem",
+    "effective_stack_bb": 100,
+    "open_size_bb": 2.5,
+    "ante_bb": 0,
+    "legal_actions": {
+      "BB_vs_SB_limp": [
+        "check",
+        "raise"
+      ],
+      "SB_vs_BB_iso": [
+        "fold",
+        "call",
+        "raise"
+      ],
+      "BB_vs_SB_limp_reraise": [
+        "fold",
+        "call",
+        "four_bet"
+      ]
+    },
+    "rake": {
+      "rate": 0.05,
+      "cap_bb": 3,
+      "no_flop_no_drop": true,
+      "calibrated": false
+    },
+    "opponent_profile": "maniac",
+    "role": "villain",
+    "source_of_truth": "scripts/generate-opponent-profiles.py",
+    "method": "Explicit AI-authored hand-family frequencies; no EV gate, autofill or equilibrium claim.",
+    "frequency_semantics": "Conditional percentages at this decision; multiply own preceding action frequencies to obtain reach.",
+    "unreachable_hands": "Zero own-action reach uses fold=100 placeholders, never a recommendation.",
+    "warning": "Behavioural archetype assumption, not measured player statistics, optimal play, or GTO.",
+    "equity_status": "not_computed; null equity/shove metrics must not be presented as zero or reused from standard data."
+  },
+  "spot_count": 3,
+  "hand_classes_per_spot": 169,
+  "entry_count": 507,
+  "spots": [
+    {
+      "id": "BB_vs_SB_limp",
+      "hero": "BB",
+      "opponent": "SB",
+      "source_opening_id": "SB_open",
+      "open_size_bb": 1,
+      "effective_stack_bb": 100,
+      "raise_size_bb": 3.5,
+      "hands": [
+        {
+          "hand": "AA",
+          "raise": 95,
+          "check": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "AKs",
+          "raise": 95,
+          "check": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "AQs",
+          "raise": 90,
+          "check": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "AJs",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "ATs",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A9s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A8s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A7s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A6s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A5s",
+          "raise": 90,
+          "check": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A4s",
+          "raise": 90,
+          "check": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A3s",
+          "raise": 90,
+          "check": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A2s",
+          "raise": 90,
+          "check": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "AKo",
+          "raise": 95,
+          "check": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KK",
+          "raise": 95,
+          "check": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KQs",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KJs",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KTs",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K9s",
+          "raise": 65,
+          "check": 35,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K8s",
+          "raise": 65,
+          "check": 35,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K7s",
+          "raise": 65,
+          "check": 35,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K6s",
+          "raise": 65,
+          "check": 35,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K5s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K4s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K3s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K2s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "AQo",
+          "raise": 90,
+          "check": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KQo",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "QQ",
+          "raise": 95,
+          "check": 5,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "QJs",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "QTs",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q9s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q8s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q7s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q6s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q5s",
+          "raise": 55,
+          "check": 45,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q4s",
+          "raise": 55,
+          "check": 45,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q3s",
+          "raise": 55,
+          "check": 45,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q2s",
+          "raise": 55,
+          "check": 45,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "AJo",
+          "raise": 80,
+          "check": 20,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KJo",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "QJo",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "JJ",
+          "raise": 90,
+          "check": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "JTs",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J9s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J8s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J7s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J6s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J5s",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J4s",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J3s",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J2s",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "ATo",
+          "raise": 80,
+          "check": 20,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "KTo",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "QTo",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "JTo",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "TT",
+          "raise": 90,
+          "check": 10,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T9s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T8s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T7s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T6s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T5s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T4s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T3s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T2s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A9o",
+          "raise": 65,
+          "check": 35,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K9o",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q9o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J9o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T9o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "99",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "98s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "97s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "96s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "95s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "94s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "93s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "92s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A8o",
+          "raise": 65,
+          "check": 35,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K8o",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q8o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J8o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T8o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "98o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "88",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "87s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "86s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "85s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "84s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "83s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "82s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A7o",
+          "raise": 65,
+          "check": 35,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K7o",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q7o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J7o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T7o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "97o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "87o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "77",
+          "raise": 85,
+          "check": 15,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "76s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "75s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "74s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "73s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "72s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A6o",
+          "raise": 65,
+          "check": 35,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K6o",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q6o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J6o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T6o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "96o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "86o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "76o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "66",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "65s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "64s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "63s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "62s",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A5o",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K5o",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q5o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J5o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T5o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "95o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "85o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "75o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "65o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "55",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "54s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "53s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "52s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A4o",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K4o",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q4o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J4o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T4o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "94o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "84o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "74o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "64o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "54o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "44",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "43s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "42s",
+          "raise": 60,
+          "check": 40,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A3o",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K3o",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q3o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J3o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T3o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "93o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "83o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "73o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "63o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "53o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "43o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "33",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "32s",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "A2o",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "K2o",
+          "raise": 50,
+          "check": 50,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "Q2o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "J2o",
+          "raise": 40,
+          "check": 60,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "T2o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "92o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "82o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "72o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "62o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "52o",
+          "raise": 30,
+          "check": 70,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "42o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "32o",
+          "raise": 45,
+          "check": 55,
+          "raise_size_bb": 3.5
+        },
+        {
+          "hand": "22",
+          "raise": 75,
+          "check": 25,
+          "raise_size_bb": 3.5
+        }
+      ]
+    },
+    {
+      "id": "SB_vs_BB_iso",
+      "hero": "SB",
+      "opponent": "BB",
+      "source_opening_id": "SB_open",
+      "source_limp_response_id": "BB_vs_SB_limp",
+      "open_size_bb": 1,
+      "effective_stack_bb": 100,
+      "iso_size_bb": 3.5,
+      "raise_to_bb": 10.5,
+      "hands": [
+        {
+          "hand": "AA",
+          "call": 15,
+          "raise": 85,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "AKs",
+          "call": 25,
+          "raise": 75,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "AQs",
+          "call": 40,
+          "raise": 60,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "AJs",
+          "call": 45,
+          "raise": 55,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "ATs",
+          "call": 45,
+          "raise": 55,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A9s",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A8s",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A7s",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A6s",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A5s",
+          "call": 30,
+          "raise": 70,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A4s",
+          "call": 30,
+          "raise": 70,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A3s",
+          "call": 30,
+          "raise": 70,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A2s",
+          "call": 30,
+          "raise": 70,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "AKo",
+          "call": 25,
+          "raise": 75,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "KK",
+          "call": 20,
+          "raise": 80,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "KQs",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "KJs",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "KTs",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K9s",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K8s",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K7s",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K6s",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K5s",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K4s",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K3s",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K2s",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "AQo",
+          "call": 40,
+          "raise": 60,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "KQo",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "QQ",
+          "call": 30,
+          "raise": 70,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "QJs",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "QTs",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q9s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q8s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q7s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q6s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q5s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q4s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q3s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q2s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "AJo",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "KJo",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "QJo",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "JJ",
+          "call": 45,
+          "raise": 55,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "JTs",
+          "call": 50,
+          "raise": 50,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J9s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J8s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J7s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J6s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J5s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J4s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J3s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J2s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "ATo",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "KTo",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "QTo",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "JTo",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "TT",
+          "call": 45,
+          "raise": 55,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T9s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T8s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T7s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T6s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T5s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T4s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T3s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T2s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A9o",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K9o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q9o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J9o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T9o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "99",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "98s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "97s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "96s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "95s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "94s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "93s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "92s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A8o",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K8o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q8o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J8o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T8o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "98o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "88",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "87s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "86s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "85s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "84s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "83s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "82s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A7o",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K7o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q7o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J7o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T7o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "97o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "87o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "77",
+          "call": 55,
+          "raise": 45,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "76s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "75s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "74s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "73s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "72s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A6o",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K6o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q6o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J6o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T6o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "96o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "86o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "76o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "66",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "65s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "64s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "63s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "62s",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A5o",
+          "call": 45,
+          "raise": 55,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K5o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q5o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J5o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T5o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "95o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "85o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "75o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "65o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "55",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "54s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "53s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "52s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A4o",
+          "call": 45,
+          "raise": 55,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K4o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q4o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J4o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T4o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "94o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "84o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "74o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "64o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "54o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "44",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "43s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "42s",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A3o",
+          "call": 45,
+          "raise": 55,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K3o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q3o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J3o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T3o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "93o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "83o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "73o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "63o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "53o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "43o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "33",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "32s",
+          "call": 60,
+          "raise": 40,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "A2o",
+          "call": 45,
+          "raise": 55,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "K2o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "Q2o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "J2o",
+          "call": 65,
+          "raise": 30,
+          "fold": 5,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "T2o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "92o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "82o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "72o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "62o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "52o",
+          "call": 60,
+          "raise": 30,
+          "fold": 10,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "42o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "32o",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        },
+        {
+          "hand": "22",
+          "call": 65,
+          "raise": 35,
+          "fold": 0,
+          "raise_size_bb": 10.5
+        }
+      ]
+    },
+    {
+      "id": "BB_vs_SB_limp_reraise",
+      "hero": "BB",
+      "opponent": "SB",
+      "source_opening_id": "SB_open",
+      "source_limp_response_id": "BB_vs_SB_limp",
+      "source_iso_response_id": "SB_vs_BB_iso",
+      "open_size_bb": 1,
+      "effective_stack_bb": 100,
+      "iso_size_bb": 3.5,
+      "limp_reraise_size_bb": 10.5,
+      "four_bet_size_bb": 26,
+      "hands": [
+        {
+          "hand": "AA",
+          "call": 10,
+          "four_bet": 90,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "AKs",
+          "call": 20,
+          "four_bet": 80,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "AQs",
+          "call": 35,
+          "four_bet": 65,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "AJs",
+          "call": 40,
+          "four_bet": 60,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "ATs",
+          "call": 40,
+          "four_bet": 60,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A9s",
+          "call": 45,
+          "four_bet": 50,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A8s",
+          "call": 45,
+          "four_bet": 50,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A7s",
+          "call": 45,
+          "four_bet": 50,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A6s",
+          "call": 45,
+          "four_bet": 50,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A5s",
+          "call": 25,
+          "four_bet": 70,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A4s",
+          "call": 25,
+          "four_bet": 70,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A3s",
+          "call": 25,
+          "four_bet": 70,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A2s",
+          "call": 25,
+          "four_bet": 70,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "AKo",
+          "call": 20,
+          "four_bet": 80,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "KK",
+          "call": 15,
+          "four_bet": 85,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "KQs",
+          "call": 50,
+          "four_bet": 50,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "KJs",
+          "call": 50,
+          "four_bet": 50,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "KTs",
+          "call": 50,
+          "four_bet": 50,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K9s",
+          "call": 50,
+          "four_bet": 45,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K8s",
+          "call": 50,
+          "four_bet": 45,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K7s",
+          "call": 50,
+          "four_bet": 45,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K6s",
+          "call": 50,
+          "four_bet": 45,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K5s",
+          "call": 40,
+          "four_bet": 50,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K4s",
+          "call": 40,
+          "four_bet": 50,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K3s",
+          "call": 40,
+          "four_bet": 50,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K2s",
+          "call": 40,
+          "four_bet": 50,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "AQo",
+          "call": 35,
+          "four_bet": 65,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "KQo",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "QQ",
+          "call": 25,
+          "four_bet": 75,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "QJs",
+          "call": 50,
+          "four_bet": 50,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "QTs",
+          "call": 50,
+          "four_bet": 50,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q9s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q8s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q7s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q6s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q5s",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q4s",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q3s",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q2s",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "AJo",
+          "call": 45,
+          "four_bet": 50,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "KJo",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "QJo",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "JJ",
+          "call": 45,
+          "four_bet": 55,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "JTs",
+          "call": 50,
+          "four_bet": 50,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J9s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J8s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J7s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J6s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J5s",
+          "call": 50,
+          "four_bet": 35,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J4s",
+          "call": 50,
+          "four_bet": 35,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J3s",
+          "call": 50,
+          "four_bet": 35,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J2s",
+          "call": 50,
+          "four_bet": 35,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "ATo",
+          "call": 45,
+          "four_bet": 50,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "KTo",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "QTo",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "JTo",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "TT",
+          "call": 45,
+          "four_bet": 55,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T9s",
+          "call": 55,
+          "four_bet": 40,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T8s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T7s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T6s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T5s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T4s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T3s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T2s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A9o",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K9o",
+          "call": 55,
+          "four_bet": 30,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q9o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J9o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T9o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "99",
+          "call": 55,
+          "four_bet": 45,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "98s",
+          "call": 55,
+          "four_bet": 40,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "97s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "96s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "95s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "94s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "93s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "92s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A8o",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K8o",
+          "call": 55,
+          "four_bet": 30,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q8o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J8o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T8o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "98o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "88",
+          "call": 55,
+          "four_bet": 45,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "87s",
+          "call": 55,
+          "four_bet": 40,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "86s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "85s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "84s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "83s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "82s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A7o",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K7o",
+          "call": 55,
+          "four_bet": 30,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q7o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J7o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T7o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "97o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "87o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "77",
+          "call": 55,
+          "four_bet": 45,
+          "fold": 0,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "76s",
+          "call": 55,
+          "four_bet": 40,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "75s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "74s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "73s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "72s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A6o",
+          "call": 50,
+          "four_bet": 40,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K6o",
+          "call": 55,
+          "four_bet": 30,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q6o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J6o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T6o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "96o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "86o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "76o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "66",
+          "call": 60,
+          "four_bet": 35,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "65s",
+          "call": 55,
+          "four_bet": 40,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "64s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "63s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "62s",
+          "call": 50,
+          "four_bet": 30,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A5o",
+          "call": 40,
+          "four_bet": 50,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K5o",
+          "call": 55,
+          "four_bet": 30,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q5o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J5o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T5o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "95o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "85o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "75o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "65o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "55",
+          "call": 60,
+          "four_bet": 35,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "54s",
+          "call": 55,
+          "four_bet": 40,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "53s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "52s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A4o",
+          "call": 40,
+          "four_bet": 50,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K4o",
+          "call": 55,
+          "four_bet": 30,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q4o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J4o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T4o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "94o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "84o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "74o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "64o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "54o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "44",
+          "call": 60,
+          "four_bet": 35,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "43s",
+          "call": 55,
+          "four_bet": 40,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "42s",
+          "call": 55,
+          "four_bet": 35,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A3o",
+          "call": 40,
+          "four_bet": 50,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K3o",
+          "call": 55,
+          "four_bet": 30,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q3o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J3o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T3o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "93o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "83o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "73o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "63o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "53o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "43o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "33",
+          "call": 60,
+          "four_bet": 35,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "32s",
+          "call": 55,
+          "four_bet": 40,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "A2o",
+          "call": 40,
+          "four_bet": 50,
+          "fold": 10,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "K2o",
+          "call": 55,
+          "four_bet": 30,
+          "fold": 15,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "Q2o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "J2o",
+          "call": 50,
+          "four_bet": 25,
+          "fold": 25,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "T2o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "92o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "82o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "72o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "62o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "52o",
+          "call": 45,
+          "four_bet": 20,
+          "fold": 35,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "42o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "32o",
+          "call": 55,
+          "four_bet": 25,
+          "fold": 20,
+          "four_bet_size_bb": 26
+        },
+        {
+          "hand": "22",
+          "call": 60,
+          "four_bet": 35,
+          "fold": 5,
+          "four_bet_size_bb": 26
+        }
+      ]
+    }
+  ]
+}

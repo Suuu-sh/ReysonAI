@@ -15,7 +15,7 @@ const rows = spot => new Map(spot.hands.map(row => [row.hand, row]));
 export const pct = value => `${(value * 100).toFixed(1)}%`;
 
 export const BALANCE_CHECKS = Object.freeze(["range-capped", "over-segregated"]);
-const ADVISORY_CHECKS = [...BALANCE_CHECKS, "cross-strength-inversion", "negative-ev-call", "ev-capacity-conflict"];
+const ADVISORY_CHECKS = [...BALANCE_CHECKS, "profile-strength-order", "cross-strength-inversion", "negative-ev-call", "ev-capacity-conflict"];
 const PASSIVE_ACTIONS = ["limp", "call", "check"];
 const AGGRESSIVE_ACTIONS = ["open", "three_bet", "four_bet", "squeeze", "raise", "all_in"];
 const ACTIONS = [...PASSIVE_ACTIONS, ...AGGRESSIVE_ACTIONS, "fold"];
@@ -575,3 +575,6 @@ export function auditEstimates({ opening, responses, threeBets, fourBets, fiveBe
   const widths = opening.spots.map(spot => ({ spot: `${spot.hero} open`, width: 1 - weightedFold(spot) }));
   return { findings, capacityConflicts, autoProfit, threeBetDefense, fourBetDefense, fiveBetDefense, squeezeDefense, limpReraiseDefense, limpDeepDefense, coldThreeBetDefense, coldFourBetDefense, widths, rangeBalance, balanceSummary, crossStrengthSummary };
 }
+
+// Archetypes deliberately bypass ordinary economic/balance gates.
+export { auditOpponentProfiles } from "./opponent-profiles.ts";
