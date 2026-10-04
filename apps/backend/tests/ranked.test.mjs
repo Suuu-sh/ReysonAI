@@ -66,3 +66,42 @@ test('invalid/unpublished datasets fail closed and grading cannot use a client m
  assert.throws(()=>questionPool({spots:[{id:'bad',hands:[{hand:'AKs',fold:NaN,open:100}]}]},'open'));
  const questions=Array.from({length:20},()=>({mix:{fold:.8,open:.2}}));assert.equal(gradeRanked(questions,Array(20).fill('open'))[0].score,.5);
 }));
+
+test('prototype names are not offered ranked actions and never finalize a match',withFixture(async f=>{
+ const {match}=await (await f.call('matches',{consent:true})).json();
+ for(const action of ['constructor','toString','__proto__','hasOwnProperty']) {
+  assert.throws(()=>gradeRanked(match.questions,Array(20).fill(action)),/invalid_action/);
+  const response=await f.call(`matches/${match.id}/finish`,{actions:Array(20).fill(action)});
+  assert.equal(response.status,400,action);
+  assert.equal((await response.json()).error,'invalid_action');
+ }
+ assert.equal(f.sqlite.prepare('SELECT status FROM ranked_matches WHERE id=?').get(match.id).status,'active');
+ assert.equal(f.sqlite.prepare('SELECT matches FROM ranked_players').get().matches,0);
+}));
+
+test('other accounts and expired sessions cannot read or submit a reserved match',withFixture(async f=>{
+ const {match}=await (await f.call('matches',{consent:true})).json();
+ const actions=match.questions.map(q=>Object.keys(q.mix)[0]);
+ const otherToken='b'.repeat(64);
+ f.sqlite.prepare('INSERT INTO account_users VALUES (?,?,?,?)').run('other','other-google','other@example.invalid',0);
+ f.sqlite.prepare('INSERT INTO account_sessions VALUES (?,?,?)').run(await digest(otherToken),'other',Date.now()/1000+3600);
+ const otherHeaders={cookie:`__Host-reysonai=${otherToken}`};
+ const profile=await (await f.call('profile',undefined,otherHeaders)).json();
+ assert.equal(profile.state.active,null);
+ assert.equal(profile.state.totalMatches,0);
+ assert.equal((await f.call(`matches/${match.id}/finish`,{actions},otherHeaders)).status,404);
+ f.sqlite.prepare('UPDATE account_sessions SET expires_at=0 WHERE user_id=?').run('user');
+ assert.equal((await f.call('profile')).status,401);
+ assert.equal((await f.call(`matches/${match.id}/finish`,{actions})).status,401);
+ assert.equal(f.sqlite.prepare('SELECT status FROM ranked_matches WHERE id=?').get(match.id).status,'active');
+}));
+
+test('expired matches cannot update ratings and malformed submissions cannot finish',withFixture(async f=>{
+ const {match}=await (await f.call('matches',{consent:true})).json();
+ const actions=match.questions.map(q=>Object.keys(q.mix)[0]);
+ assert.equal((await f.call(`matches/${match.id}/finish`,{actions},{'content-type':'text/plain'})).status,403);
+ assert.equal((await f.call(`matches/${match.id}/finish`,{actions:Array(20).fill('x'.repeat(1000))})).status,400);
+ f.sqlite.prepare('UPDATE ranked_matches SET expires_at=0 WHERE id=?').run(match.id);
+ assert.equal((await f.call(`matches/${match.id}/finish`,{actions})).status,409);
+ assert.equal(f.sqlite.prepare('SELECT matches FROM ranked_players').get().matches,0);
+}));

@@ -1,7 +1,24 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { dataset, hasDataset } from "../src/estimated/datasets.ts";
-import { coverageCatalog, formatBacklog, postflopCatalog, priorityBacklog } from "../src/admin/coverage.ts";
+import { coverageCatalog, formatBacklog, postflopCatalog, priorityBacklog, RELEASE_TASKS } from "../src/admin/coverage.ts";
+import { LEGAL_COPY } from "../src/site/legal-content.ts";
+import { legalDocumentOf } from "../src/route.ts";
+
+test("legal-page release is complete without claiming operational legal review is complete", () => {
+  const task = RELEASE_TASKS.find(item => item.id === "release_terms");
+  assert.equal(task.done, true);
+  assert.match(task.path, /\/terms.*\/privacy/);
+  assert.match(task.path, /法務確認.*継続/);
+  assert.doesNotMatch(task.path, /準備中/);
+  for (const document of ["terms", "privacy"]) {
+    assert.equal(legalDocumentOf(`/${document}`), document);
+    for (const copy of Object.values(LEGAL_COPY)) assert.equal(copy[document].sections.length, 7);
+  }
+  assert.match(JSON.stringify(LEGAL_COPY.ja.terms), /GTO.*数学的な最適性/);
+  const release = postflopCatalog([]).categories.find(category => category.key === "release_tasks");
+  assert.equal(release.rows.find(row => row.id === "release_terms").status, "done");
+});
 
 test("every persisted spot maps onto the enumerated preflop tree", () => {
   const catalog = coverageCatalog();
