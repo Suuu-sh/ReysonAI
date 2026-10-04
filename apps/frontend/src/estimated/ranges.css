@@ -198,7 +198,8 @@
 .matrix button.adjusted-add::after { border: 2px solid var(--accent-bright); }
 .matrix button.adjusted-drop::after { border: 2px dashed var(--text-muted); }
 .adjustment-reason { margin: 0 0 8px; padding: 8px 10px; border-radius: 6px; background: var(--surface-accent); font-size: 13px; line-height: 1.5; }
-.table-profile-summary { color: var(--accent-soft); }
+.table-profile-chip { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 999px; background: var(--surface-accent); color: var(--accent-bright); font-size: 11px; font-weight: 700; cursor: pointer; }
+.table-profile-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 .reason-facts dd.fact-positive { color: #6fd08c; }
 .reason-facts dd.fact-negative { color: #ff8a9a; }
 .postflop-board-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; }

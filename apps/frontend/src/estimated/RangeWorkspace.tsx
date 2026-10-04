@@ -850,9 +850,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
             <button type="button" className="settings-toggle" aria-label="ゲーム設定を開閉" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><DotsThreeVertical size={16} weight="bold" aria-hidden="true" /><strong>{formatLabel("game", format.game)}</strong><span>{formatLabel("stack", format.stack)}</span></button>
             {settingsOpen && <button type="button" className="settings-backdrop" aria-label="閉じる" onClick={() => setSettingsOpen(false)} />}
             <div className="settings-body">
-              <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {formatLabel("rake", format.rake)}</li>{!isDefaultProfile(tableProfile) && <li className="table-profile-summary">卓: {describeProfile(tableProfile)}</li>}</ul>
+              <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {formatLabel("rake", format.rake)}</li></ul>
               <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
               <div className="settings-actions">
+                {/* Table conditions sit in a chip (full text on hover) so the card never grows taller. */}
+                {!isDefaultProfile(tableProfile) && <button type="button" className="table-profile-chip" title={`卓: ${describeProfile(tableProfile)}`} aria-label={`卓の傾向: ${describeProfile(tableProfile)}`} onClick={() => setFormatOpen(true)}>卓</button>}
                 <button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を変更" title="ゲーム設定を変更" onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" /></button>
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
               </div>

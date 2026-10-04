@@ -122,8 +122,8 @@ function DrillsBlock({ drills, reviewCount, drafts, onOpen, onCreate, onStartRev
   const inProgress = drills.filter(drill => drafts[drill.id]).length;
   return <ModeBlock theme="#f0609e" className="is-drills" visualClass="drills-visual" label={localized("Drills", "ドリル")}
     visual={<div className="drill-deck" aria-hidden="true">
-      {["76s", "QQ", "AKs"].map((hand, index) => <span key={hand} className="drill-deck-card" style={{ "--k": index - 1 }}>
-        <b>{hand}</b><i />
+      {[["♠", -0.5], ["♥", 0.5]].map(([suit, k]) => <span key={suit} className="drill-deck-card" style={{ "--k": k }}>
+        <b>A</b><i>{suit}</i>
       </span>)}
     </div>}
     eyebrow={`DRILLS · ${localized(`${drills.length} saved`, `${drills.length}個`)}`}
