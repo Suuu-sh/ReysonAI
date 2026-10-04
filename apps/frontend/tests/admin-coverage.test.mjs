@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { dataset, hasDataset } from "../src/estimated/datasets.ts";
 import { coverageCatalog, formatBacklog, postflopCatalog, priorityBacklog } from "../src/admin/coverage.ts";
 
 test("every persisted spot maps onto the enumerated preflop tree", () => {
@@ -10,7 +11,7 @@ test("every persisted spot maps onto the enumerated preflop tree", () => {
   assert.equal(byKey.open.todo, 0);
   assert.equal(byKey.response.total, 15);
   assert.equal(byKey.squeeze.total, 60);
-  assert.equal(catalog.done + catalog.todo, catalog.total);
+  assert.equal(catalog.done + catalog.todo + catalog.unreachable, catalog.total);
 });
 
 test("format backlog marks only built formats as done", () => {
@@ -75,4 +76,45 @@ test("stage 1 preflop categories enumerate and store every expected history", ()
     assert.ok(category.modelled, key);
     assert.equal(new Set(category.rows.map(r => r.id)).size, count, key);
   }
+});
+
+
+test("stage 2 coverage enumerates all 3,115 continuation decisions separately from source decisions", () => {
+  const catalog = coverageCatalog();
+  const counts = { squeeze: 440, cold_four_bet: 160, two_caller_squeeze: 2295, three_bet_cold_call: 220 };
+  for (const [family, count] of Object.entries(counts)) {
+    const category = catalog.categories.find(c => c.key === `continuation_${family}`);
+    assert.equal(category.total, count);
+    assert.equal(category.done + category.todo + category.unreachable, count);
+    assert.ok(category.rows.every(row => row.priority === 4 && (row.status === "done" ? row.hands === 169 : row.hands === 0)));
+  }
+  assert.equal(catalog.total, 3340);
+});
+
+
+test("missing Stage 2 publication stays pending while proved impossible histories are not TODO work", () => {
+  const current = coverageCatalog(), absent = coverageCatalog({ continuationData: null });
+  const currentRows = current.categories.filter(category => category.key.startsWith("continuation_")).flatMap(category => category.rows);
+  const absentRows = absent.categories.filter(category => category.key.startsWith("continuation_")).flatMap(category => category.rows);
+  assert.equal(absentRows.length, 3115);
+  assert.ok(absentRows.some(row => row.status === "todo"));
+  assert.ok(absentRows.every(row => row.status !== "done"));
+  for (const row of currentRows.filter(row => row.status === "done")) {
+    assert.equal(absentRows.find(item => item.id === row.id).status, "todo", row.id);
+  }
+  if (currentRows.some(row => row.status === "done")) {
+    assert.equal(currentRows.filter(row => row.status === "unreachable").length, 1504);
+    assert.equal(currentRows.filter(row => row.status === "todo").length, 0);
+  }
+});
+
+
+test("a stored continuation with a missing reachable ancestor remains pending", { skip: !hasDataset("continuation-responses") }, () => {
+  const original = dataset("continuation-responses"), ids = new Set(original.spots.map(spot => spot.id));
+  const child = original.spots.find(spot => Object.values(spot.source_factors).flat().some(factor => factor.dataset === "continuation-responses" && ids.has(factor.spot_id)));
+  const ancestor = Object.values(child.source_factors).flat().find(factor => factor.dataset === "continuation-responses" && ids.has(factor.spot_id)).spot_id;
+  const partial = { ...original, spots: original.spots.filter(spot => spot.id !== ancestor) };
+  const rows = coverageCatalog({ continuationData: partial }).categories.flatMap(category => category.rows);
+  assert.equal(rows.find(row => row.id === ancestor).status, "todo");
+  assert.equal(rows.find(row => row.id === child.id).status, "todo");
 });

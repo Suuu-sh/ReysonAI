@@ -1,3 +1,4 @@
+import { generateContinuationFacts } from "./lib/continuation-reasons.mjs";
 // Computes per-hand facts (equity, pot odds, blockers, fold equity) that ground detailed reasons.
 // Usage: node scripts/reason-facts.mjs [spot_id ...]   (no ids = every spot)
 // Writes .local/reason-facts/<spot_id>.json; seeded, so reruns are reproducible.
@@ -395,4 +396,16 @@ for (const [id, build] of builders) {
   }
   writeFileSync(new URL(`${id}.json`, outDir), JSON.stringify(facts, null, 2) + "\n");
   console.log(`${id} ${((Date.now() - started) / 1000).toFixed(1)}s`);
+}
+
+// Keep stage-two facts isolated from the legacy fingerprint so existing
+// reason files remain byte-for-byte stable when only continuations are added.
+if (existsSync(new URL("continuation-responses.json", dataDir))) {
+  const continuationCount = generateContinuationFacts({
+    data: load("continuation-responses"), equities: load("continuation-call-equities"), outDir, wanted,
+    datasets: { "opening-ranges": opening, "preflop-ranges": responses, "multiway-responses": multiway,
+      "multiway2-responses": multiway2, "squeeze-responses": squeezes,
+      "cold-three-bet-responses": coldThreeBets, "cold-four-bet-responses": coldFourBets },
+  });
+  console.log(`${continuationCount} continuation fact files written`);
 }

@@ -10,3 +10,12 @@
 /apps/frontend/.local/
 .DS_Store
 __pycache__/
+# Reviewed Stage 2 bytes are stored in the Git LFS archive. Restore locally;
+# staging, caches and expanded authoring facts remain under ignored .local/.
+/apps/frontend/src/estimated/continuation-responses.json
+/apps/frontend/src/estimated/continuation-call-equities.json
+/apps/frontend/src/estimated/continuation-audit-report.json
+/apps/frontend/src/estimated/reasons/sq_*.json
+/apps/frontend/src/estimated/reasons/sq2_*.json
+/apps/frontend/src/estimated/reasons/cc_*.json
+/apps/frontend/src/estimated/reasons/c4_*.json

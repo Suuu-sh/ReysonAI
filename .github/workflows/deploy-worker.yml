@@ -1,4 +1,4 @@
-name: Deploy ReysonAI frontend
+name: Verify reviewed data and deploy ReysonAI
 
 on:
   push:
@@ -18,7 +18,17 @@ on:
       - 'apps/frontend/vite.config.*'
       - 'apps/frontend/tsconfig*.json'
       - 'apps/frontend/wrangler.jsonc'
+      - 'apps/frontend/tests/**'
+      - 'apps/backend/migrations/0003_preflop.sql'
+      - 'apps/backend/wrangler.jsonc'
+      - 'configs/**'
+      - 'artifacts/preflop/**'
+      - '.gitattributes'
       - '.github/workflows/deploy-worker.yml'
+  pull_request:
+    branches:
+      - development
+      - main
   workflow_dispatch:
 
 permissions:
@@ -26,13 +36,73 @@ permissions:
 
 # Keep the running deployment intact; only the newest pending run is retained.
 concurrency:
-  group: reysonai-frontend-production
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('reysonai-preflop-pr-{0}', github.event.pull_request.number) || 'reysonai-frontend-production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  verify:
+    name: Verify reviewed preflop snapshot
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/frontend
+    env:
+      NODE_OPTIONS: --max-old-space-size=2048
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - name: Check out exact workflow revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          lfs: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore exact reviewed Git LFS payload
+        run: node scripts/restore-reviewed-preflop.mjs
+
+      # Authoring and independent AI review happen locally, before commit.
+      # CI must never generate strategies or update the review receipt.
+      - name: Verify reviewed artifact and source hashes; serialize preflop only
+        run: node scripts/verify-reviewed-preflop.mjs --out .local/reviewed-preflop
+
+      - name: Check continuation invariants and unchanged HU inputs
+        run: node --test --test-force-exit --test-concurrency=1 tests/continuation-*.test.mjs tests/reviewed-preflop.test.mjs tests/preflop-delivery.test.mjs tests/preflop-workflow.test.mjs tests/preflop-local-d1.test.mjs tests/reviewed-preflop-archive.test.mjs tests/detailed-reasons.test.mjs
+
+      - name: Verify local D1 roundtrip, idempotency, isolation and failed-import rollback
+        run: node scripts/verify-preflop-local-d1.mjs --sql .local/reviewed-preflop/preflop.sql --manifest .local/reviewed-preflop/delivery.json
+
+      - name: Typecheck and build compatible client
+        run: |
+          npm run typecheck
+          npm run build
+          npm run test:sites
+
+      - name: Retain exact validated delivery SQL
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: reviewed-preflop-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            apps/frontend/.local/reviewed-preflop/preflop.sql
+            apps/frontend/.local/reviewed-preflop/delivery.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
+
   deploy:
-    name: Deploy Worker
-    if: github.ref == 'refs/heads/main'
+    name: Deploy compatible client and reviewed preflop data
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -59,25 +129,66 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
+          lfs: true
 
       - name: Set up Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
-          node-version: '22'
+          node-version: '22.20.0'
           cache: npm
           cache-dependency-path: apps/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Restore exact reviewed Git LFS payload
+        run: node scripts/restore-reviewed-preflop.mjs
+
+      - name: Fetch this run's validated delivery SQL
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: reviewed-preflop-${{ github.sha }}-${{ github.run_attempt }}
+          path: apps/frontend/.local/reviewed-preflop
+
+      - name: Recheck delivery against this exact checkout
+        env:
+          NODE_OPTIONS: --max-old-space-size=2048
+        run: node scripts/verify-reviewed-preflop.mjs --check-bundle --out .local/reviewed-preflop
+
       - name: Build
         run: npm run build
 
       - name: Deploy Worker
-        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4
+        # npx's cache leaves reviewed package/lockfile bytes unchanged; the
+        # Wrangler action installs into this package when Wrangler is absent.
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: |
+          npx --yes wrangler@4.147.0 deploy --config wrangler.jsonc | tee .local/client-deployment.log
+          node --input-type=module -e "import { readFileSync } from 'node:fs'; if (!/Current Version ID:\\s*[0-9a-f-]{36}/i.test(readFileSync('.local/client-deployment.log', 'utf8'))) throw new Error('No positive Worker deployment confirmation; do not publish data');"
+
+      # The new client reads both old and compact reason formats. Deploy it
+      # before importing compact data. A failed import keeps the old D1 data.
+      # One file contains ONLY 0003's idempotent schema + the preflop snapshot;
+      # never invoke bare publish:d1, migrations apply, or whole-DB rollback.
+      - name: Import reviewed preflop snapshot into D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NODE_OPTIONS: --max-old-space-size=2048
+          WRANGLER_SEND_METRICS: 'false'
+        run: node scripts/import-reviewed-preflop.mjs --remote
+
+      - name: Retain preflop recovery reference and import outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/frontend
-          wranglerVersion: '4.147.0'
-          command: deploy --config wrangler.jsonc
+          name: preflop-delivery-outcome-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            apps/frontend/.local/reviewed-preflop/before-import-bookmark.json
+            apps/frontend/.local/reviewed-preflop/import-outcome.json
+          if-no-files-found: ignore
+          include-hidden-files: true
+          retention-days: 30
