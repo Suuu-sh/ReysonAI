@@ -197,6 +197,40 @@ OPEN_CONTEXT = {
  'CO': {'UTG': (.14,.50), 'HJ': (.18,.65)},
  'BTN': {'UTG': (.19,.50), 'HJ': (.25,.68), 'CO': (.30,.82)},
 }
+# 2026-10-04 PR review: a NIT still defends the big blind against steals.
+# Explicit call floors, not EV autofill. Columns are the named spots below.
+# Keep every original 3bet mix; expand mainly pairs and suited families, leaving
+# weak offsuit hands folded. BB versus 2.5BB CO/BTN and 3.5BB SB opens continues
+# around 20%; earlier BB defense tightens and SB keeps a seats-behind discount.
+# SB vs UTG/HJ and all non-blind spots retain their original narrow profiles.
+NIT_BLIND_CALL_SPOTS = ('BB_vs_UTG', 'BB_vs_HJ', 'BB_vs_CO', 'BB_vs_BTN',
+                        'BB_vs_SB', 'SB_vs_CO', 'SB_vs_BTN')
+NIT_BLIND_CALL_FLOORS = {
+    #                         BB: UTG HJ  CO BTN  SB | SB: CO BTN
+    'high_pairs':              (50, 65, 85, 90, 85,       35, 50),
+    'middle_pairs':            (45, 60, 80, 85, 80,       35, 50),
+    'small_pairs':             (35, 45, 60, 65, 60,       25, 40),
+    'aq':                      (45, 60, 75, 80, 75,       30, 45),
+    'strong_suited_aces':      (45, 60, 80, 85, 80,       35, 50),
+    'middle_suited_aces':      (40, 50, 65, 70, 65,       30, 40),
+    'wheel_aces':              (40, 50, 65, 70, 65,       30, 40),
+    'broadway_aces':           (25, 30, 40, 45, 45,       20, 25),
+    'middle_offsuit_aces':     ( 5,  5,  5,  5,  5,        0,  5),
+    'suited_broadways':        (45, 60, 80, 85, 80,       35, 50),
+    'offsuit_broadways':       (20, 25, 35, 35, 35,       15, 20),
+    'middle_suited_kings':     (35, 45, 60, 65, 60,       25, 40),
+    'weak_suited_kings':       (20, 30, 35, 40, 40,       15, 25),
+    'middle_suited_queens':    (35, 45, 55, 60, 60,       25, 35),
+    'weak_suited_queens':      (15, 20, 30, 30, 30,       10, 15),
+    'middle_suited_jacks':     (30, 40, 50, 55, 55,       20, 30),
+    'weak_suited_jacks':       (10, 15, 20, 20, 20,       10, 10),
+    'suited_connectors':       (40, 50, 65, 70, 65,       30, 40),
+    'suited_gappers':          (20, 25, 35, 35, 35,       15, 20),
+    'weak_suited':             ( 5,  5, 10, 10, 10,        5,  5),
+}
+assert all(len(values) == len(NIT_BLIND_CALL_SPOTS) for values in NIT_BLIND_CALL_FLOORS.values())
+assert set(NIT_BLIND_CALL_FLOORS) <= {name for name, _ in GROUPS}
+
 # Facing 3bet / 4bet / 5bet: authored (call, raise) or call percentages, again
 # ordered by the named hand groups. Frequency does not depend on call EV.
 THREE = {
@@ -293,6 +327,10 @@ def frequencies(p, name, spot, g):
             continuation = sum(RESPONSE[p][g])
             bet = min(bet, continuation)
             call = continuation-bet
+        if p == 'nit' and spot['id'] in NIT_BLIND_CALL_SPOTS:
+            floors = NIT_BLIND_CALL_FLOORS.get(GROUPS[g][0])
+            if floors is not None:
+                call = max(call, floors[NIT_BLIND_CALL_SPOTS.index(spot['id'])])
         # Preserve the stated passive/aggressive mix when the SB-vs-BTN
         # aggressive context reaches the 100% action simplex.
         if call+bet > 100: call = 100-bet

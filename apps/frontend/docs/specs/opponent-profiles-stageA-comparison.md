@@ -38,7 +38,7 @@ The selected villain alone uses its profile. BTN villain reaches the flop with i
 | standard | BTN | 568.00 | 13.73 | 36.62 | 49.65 | 13.38 | 72.71 | 13.91 | 57.81 |
 | standard | BB | 554.30 | 6.98 | 40.30 | 52.72 | 3.28 | 73.46 | 23.25 | 54.33 |
 | nit | BTN | 342.30 | 18.84 | 35.76 | 45.40 | 22.20 | 64.39 | 13.41 | 59.64 |
-| nit | BB | 103.40 | 26.11 | 42.55 | 31.33 | 30.17 | 58.61 | 11.22 | 61.36 |
+| nit | BB | 244.40 | 20.38 | 58.76 | 20.87 | 18.13 | 63.18 | 18.70 | 57.98 |
 | station | BTN | 641.20 | 11.70 | 35.90 | 52.40 | 11.56 | 60.67 | 27.78 | 55.13 |
 | station | BB | 1120.26 | 5.58 | 26.15 | 68.28 | 4.53 | 48.22 | 47.25 | 50.34 |
 | lag | BTN | 806.80 | 8.92 | 31.88 | 59.20 | 8.95 | 56.02 | 35.03 | 53.32 |
@@ -59,17 +59,17 @@ The selected villain alone uses its profile. BTN villain reaches the flop with i
 | nit | preflop-ranges | CO_vs_UTG | 1326.00 | three_bet 1.53 / call 2.18 / fold 96.30 | three_bet 5.45 / call 5.19 / fold 89.36 |
 | nit | preflop-ranges | BTN_vs_UTG | 1326.00 | three_bet 1.53 / call 2.56 / fold 95.91 | three_bet 5.31 / call 7.07 / fold 87.62 |
 | nit | preflop-ranges | SB_vs_UTG | 1326.00 | three_bet 1.62 / call 2.13 / fold 96.25 | three_bet 5.05 / call 0.00 / fold 94.95 |
-| nit | preflop-ranges | BB_vs_UTG | 1326.00 | three_bet 1.46 / call 5.20 / fold 93.33 | three_bet 4.28 / call 24.19 / fold 71.52 |
+| nit | preflop-ranges | BB_vs_UTG | 1326.00 | three_bet 1.46 / call 11.08 / fold 87.45 | three_bet 4.28 / call 24.19 / fold 71.52 |
 | nit | preflop-ranges | CO_vs_HJ | 1326.00 | three_bet 1.76 / call 2.32 / fold 95.92 | three_bet 6.88 / call 6.27 / fold 86.86 |
 | nit | preflop-ranges | BTN_vs_HJ | 1326.00 | three_bet 1.80 / call 2.68 / fold 95.52 | three_bet 6.75 / call 9.17 / fold 84.08 |
 | nit | preflop-ranges | SB_vs_HJ | 1326.00 | three_bet 1.85 / call 2.35 / fold 95.80 | three_bet 7.06 / call 0.00 / fold 92.94 |
-| nit | preflop-ranges | BB_vs_HJ | 1326.00 | three_bet 1.69 / call 6.09 / fold 92.22 | three_bet 5.66 / call 30.54 / fold 63.80 |
+| nit | preflop-ranges | BB_vs_HJ | 1326.00 | three_bet 1.69 / call 13.68 / fold 84.62 | three_bet 5.66 / call 30.54 / fold 63.80 |
 | nit | preflop-ranges | BTN_vs_CO | 1326.00 | three_bet 2.01 / call 3.01 / fold 94.98 | three_bet 8.73 / call 11.00 / fold 80.27 |
-| nit | preflop-ranges | SB_vs_CO | 1326.00 | three_bet 2.29 / call 2.35 / fold 95.36 | three_bet 11.52 / call 0.00 / fold 88.48 |
-| nit | preflop-ranges | BB_vs_CO | 1326.00 | three_bet 1.98 / call 6.88 / fold 91.14 | three_bet 7.84 / call 33.37 / fold 58.79 |
-| nit | preflop-ranges | SB_vs_BTN | 1326.00 | three_bet 2.82 / call 2.83 / fold 94.34 | three_bet 16.76 / call 0.00 / fold 83.24 |
-| nit | preflop-ranges | BB_vs_BTN | 1326.00 | three_bet 2.29 / call 7.80 / fold 89.91 | three_bet 11.03 / call 41.80 / fold 47.16 |
-| nit | preflop-ranges | BB_vs_SB | 1326.00 | three_bet 2.13 / call 6.47 / fold 91.40 | three_bet 8.95 / call 33.14 / fold 57.90 |
+| nit | preflop-ranges | SB_vs_CO | 1326.00 | three_bet 2.29 / call 7.92 / fold 89.78 | three_bet 11.52 / call 0.00 / fold 88.48 |
+| nit | preflop-ranges | BB_vs_CO | 1326.00 | three_bet 1.98 / call 17.68 / fold 80.35 | three_bet 7.84 / call 33.37 / fold 58.79 |
+| nit | preflop-ranges | SB_vs_BTN | 1326.00 | three_bet 2.82 / call 10.57 / fold 86.60 | three_bet 16.76 / call 0.00 / fold 83.24 |
+| nit | preflop-ranges | BB_vs_BTN | 1326.00 | three_bet 2.29 / call 18.43 / fold 79.28 | three_bet 11.03 / call 41.80 / fold 47.16 |
+| nit | preflop-ranges | BB_vs_SB | 1326.00 | three_bet 2.13 / call 17.83 / fold 80.04 | three_bet 8.95 / call 33.14 / fold 57.90 |
 | nit | three-bet-responses | UTG_vs_HJ_three_bet | 120.80 | four_bet 14.32 / call 24.70 / fold 60.98 | four_bet 14.92 / call 25.06 / fold 60.02 |
 | nit | three-bet-responses | UTG_vs_CO_three_bet | 120.80 | four_bet 14.32 / call 24.70 / fold 60.98 | four_bet 14.92 / call 26.99 / fold 58.09 |
 | nit | three-bet-responses | UTG_vs_BTN_three_bet | 120.80 | four_bet 14.32 / call 24.70 / fold 60.98 | four_bet 15.01 / call 27.61 / fold 57.38 |

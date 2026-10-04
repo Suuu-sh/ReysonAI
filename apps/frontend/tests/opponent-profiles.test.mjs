@@ -102,6 +102,29 @@ test("positional contraction never turns premium open responses into accidental 
   }
 });
 
+test("NIT blind defense stays near 20% against steals with calls, preserving every published 3bet", () => {
+  const spots=bundles.nit["preflop-ranges"].spots;
+  const combos=h=>h.length===2?6:h.endsWith("s")?4:12;
+  const weighted=(s, action)=>s.hands.reduce((sum,r)=>sum+combos(r.hand)*r[action],0)/1326;
+  const find=id=>spots.find(s=>s.id===id);
+  const continuation=id=>weighted(find(id),"call")+weighted(find(id),"three_bet");
+  for(const id of ["BB_vs_CO","BB_vs_BTN","BB_vs_SB"]) {
+    assert.ok(continuation(id)>=19 && continuation(id)<=22,`${id}: ${continuation(id)}`);
+    assert.ok(weighted(find(id),"call")>=17,`${id}: widen mainly through calls`);
+    for(const h of ["66","76s","A9s","Q9s"]) assert.ok(find(id).hands.find(r=>r.hand===h).call>=55,`${id}/${h}`);
+    for(const h of ["72o","K2o","Q2o"]) assert.equal(find(id).hands.find(r=>r.hand===h).fold,100,`${id}/${h}`);
+  }
+  assert.ok(continuation("BB_vs_UTG")>=12 && continuation("BB_vs_UTG")<continuation("BB_vs_HJ"));
+  assert.ok(continuation("BB_vs_HJ")<continuation("BB_vs_CO"));
+  assert.ok(continuation("SB_vs_CO")>=10 && continuation("SB_vs_CO")<continuation("SB_vs_BTN"));
+  assert.ok(continuation("SB_vs_BTN")>=12 && continuation("SB_vs_BTN")<=15);
+  // Fingerprint only the aggression projection from reviewed PR #28 head
+  // 2ed13e2. The fix changes calls/folds, never 3bet frequencies or sizes.
+  const projection=spots.map(s=>[s.id,s.hands.map(r=>[r.hand,r.three_bet,r.three_bet_size_bb])]);
+  assert.equal(createHash("sha256").update(JSON.stringify(projection)).digest("hex"),
+    "ac67a82cf036b8c44c007c15ebd15b9916cddde6e487974a8eb978baa69283e1");
+});
+
 test("reach uses the actor's profile, multiplying all its own earlier actions", () => {
   const b=bundles.lag;
   const s=b["five-bet-responses"].spots.find(s=>s.id==="BTN_vs_BB_five_bet");
