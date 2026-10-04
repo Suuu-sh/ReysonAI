@@ -1,0 +1,36 @@
+name: Verify public postflop runtime config
+on:
+  pull_request:
+    branches: [development, main, feat/native-google-session-bridge]
+    paths:
+      - 'apps/backend/**'
+      - 'configs/**'
+      - 'apps/frontend/scripts/postflop-ai/**'
+      - 'apps/frontend/scripts/lib/**'
+      - 'apps/frontend/scripts/data/postflop-ai-pilot.json'
+      - '.github/workflows/verify-postflop-runtime-config.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: apps/backend
+    env:
+      NODE_OPTIONS: --max-old-space-size=256
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+      - name: Verify exact public body, binding isolation and existing routing
+        run: |
+          npm run check
+          npm run test:runtime-config
+          npm run test:account
+          npm run test:account-native

@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
-import { hashFile, localEnvironment, parseArguments, localSqlGroups, sqlStatements, readPreflopSnapshot, validateLocalConfig, validateManifest, verifyLocalD1, WRANGLER_VERSION } from "../scripts/verify-preflop-local-d1.mjs";
+import { hashFile, localEnvironment, parseArguments, localSqlGroups, sqlStatements, readPreflopSnapshot, validateLocalConfig, validateManifest, verifyLocalD1, WRANGLER_VERSION, UNRELATED_SEED } from "../scripts/verify-preflop-local-d1.mjs";
 
 const hash = text => createHash("sha256").update(text).digest("hex");
 const body = JSON.stringify({ text: "日本語; apostrophe ' and emoji 🂡", value: [1, 2, 3] });
@@ -78,6 +78,23 @@ test("full payload roundtrip includes every ordered UTF-8 byte", () => {
   try { assert.deepEqual(readPreflopSnapshot(db), [expected]); } finally { db.close(); }
 });
 
+test("current backend schema has a valid preservation sentinel in every unrelated table", () => {
+  const db = new DatabaseSync(":memory:");
+  const migrations = new URL("../../backend/migrations/", import.meta.url);
+  try {
+    db.exec("PRAGMA foreign_keys = ON");
+    for (const name of readdirSync(migrations).filter(name => /^\d+.*\.sql$/.test(name)).sort())
+      db.exec(readFileSync(new URL(name, migrations), "utf8"));
+    db.exec(UNRELATED_SEED);
+    const tables = db.prepare("SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT IN ('preflop_datasets', 'preflop_dataset_parts') ORDER BY name").all();
+    for (const { name } of tables)
+      assert.equal(db.prepare(`SELECT COUNT(*) AS count FROM "${name.replaceAll('"', '""')}"`).get().count, 1, `${name}: expected one unrelated sentinel row`);
+    for (const name of ["account_native_attempts", "account_native_oauth_states", "account_native_sessions"])
+      assert.ok(tables.some(table => table.name === name), `${name}: native migration must be covered`);
+    assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
+  } finally { db.close(); }
+});
+
 test("roundtrip rejects corrupted content, missing parts, or orphaned rows", () => {
   for (const sql of [
     "UPDATE preflop_dataset_parts SET body = body || 'changed' WHERE part = 1",
@@ -118,7 +135,7 @@ test("pinned Wrangler local integration: Unicode roundtrip, repeated import, iso
     const result = await verifyLocalD1({ sql, manifest: manifestPath, wrangler: process.env.PREFLOP_LOCAL_WRANGLER, log: () => {} });
     assert.equal(result.full_payload_sha256_roundtrip, true);
     assert.equal(result.repeated_imports, 2);
-    assert.equal(result.unrelated_tables_preserved.length, 11);
+    assert.equal(result.unrelated_tables_preserved.length, 14);
     assert.equal(result.full_file_failure_rollback, "preserved all preexisting preflop rows and unrelated sentinels");
     const bounded = await verifyLocalD1({ sql, manifest: manifestPath, wrangler: process.env.PREFLOP_LOCAL_WRANGLER, boundedLocal: true, log: () => {} });
     assert.equal(bounded.full_payload_sha256_roundtrip, true);

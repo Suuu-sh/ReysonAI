@@ -9474,8 +9474,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 7658,
-      "sha256": "eedd04d46ef7340a7197367b04296cf561f7ac4e18df85259e71b33210d31211"
+      "bytes": 7723,
+      "sha256": "1fe32dd2df0fe57e714bcbdfd977a4ac3972acbe8e0f53b0c8a947fc74431300"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -9734,8 +9734,8 @@
     },
     {
       "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
-      "bytes": 20495,
-      "sha256": "a71fae99b166226d0b071a0fd81daa2b6380dc4426c1aea8747b27bc51d9b42e"
+      "bytes": 21071,
+      "sha256": "3d4719abf77f16f0c8b07ce640542612f416365122b3cc9c1052c8c18f3f377e"
     },
     {
       "path": "apps/frontend/scripts/verify-reviewed-preflop.mjs",
@@ -9898,11 +9898,72 @@
       "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
     }
   ],
-  "content_sha256": "ef9962af4b9a40b7e68a35cfc578723ceaec024ae158a2895eca732b0bcc9b8a",
+  "content_sha256": "a774eb23e280cf0fbee50705226276094f0a8ec3069d9950ef65db94ad71073f",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
     "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
     "format": "ustar+gzip"
-  }
+  },
+  "delivery_review_amendments": [
+    {
+      "date": "2026-10-04",
+      "reviewer": "Independent PR35 delivery-source review",
+      "source_commit": "a18365fbeaef70f970a7a374b3d201885e6b05df",
+      "scope": "Only the inherited Actions artifact naming and overwrite change in .github/workflows/deploy-worker.yml. This amendment does not re-author or re-approve strategy quality; the original independent strategy review, findings, advisories and limitations above remain unchanged.",
+      "before": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 7658,
+        "sha256": "eedd04d46ef7340a7197367b04296cf561f7ac4e18df85259e71b33210d31211"
+      },
+      "after": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 7723,
+        "sha256": "1fe32dd2df0fe57e714bcbdfd977a4ac3972acbe8e0f53b0c8a947fc74431300"
+      },
+      "rationale": "Removing github.run_attempt from the matching upload/download name lets a failed deploy-only rerun reuse the verified artifact from the same workflow run. The pinned download-artifact action has no github-token, repository, run-id, pattern or merge-multiple override and defaults to the current repository/current run. GitHub reruns retain the original GITHUB_SHA and GITHUB_REF, and the artifact name still binds github.sha. overwrite:true replaces that run-scoped artifact only when the verify job reruns and all its prior checks pass.",
+      "preserved_gates": "Deployment still requires verify, is main-only and excludes pull_request. Restore validates every source and archive hash. The deployment checkout recomputes the delivery and --check-bundle compares the complete SQL and manifest before deployment/import. No source exclusion, fallback, generation command, credential/permission expansion or validation bypass was added.",
+      "verified_unchanged": {
+        "other_source_records": 85,
+        "artifact_records": 1888,
+        "archive_entries": 1614,
+        "archive_bytes": 1747857,
+        "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
+      },
+      "references": [
+        "https://github.com/Suuu-sh/ReysonAI/commit/a18365fbeaef70f970a7a374b3d201885e6b05df",
+        "https://github.com/actions/download-artifact/blob/d3f86a106a0bac45b974a628896c90dbdf5c8093/README.md#inputs",
+        "https://github.com/actions/upload-artifact/blob/ea165f8d65b6e75b540449e92b4886f43607fa02/README.md#overwriting-an-artifact",
+        "https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs"
+      ]
+    },
+    {
+      "date": "2026-10-04",
+      "reviewer": "Independent native-auth delivery-fixture review",
+      "reviewed_base_commit": "331be682fc35964a6dcdfe1b23a87b6f4642db18",
+      "scope": "Only disposable local-verification seed coverage for the three additive native-auth tables from migration 0008. Original independent strategy review, findings, advisories, source fingerprint, counts and limitations remain unchanged.",
+      "before": {
+        "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+        "bytes": 20495,
+        "sha256": "a71fae99b166226d0b071a0fd81daa2b6380dc4426c1aea8747b27bc51d9b42e"
+      },
+      "after": {
+        "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+        "bytes": 21071,
+        "sha256": "3d4719abf77f16f0c8b07ce640542612f416365122b3cc9c1052c8c18f3f377e"
+      },
+      "rationale": "The local verifier applies every backend migration and correctly requires one preservation sentinel in every unrelated table. Migration 0008 adds account_native_attempts, account_native_oauth_states and account_native_sessions; the old seed omitted all three. Add one constraint-valid synthetic row in each and export the existing seed for a schema-driven regression. The native session sentinel uses an independent attempt identifier, consistent with session revocation surviving attempt cleanup.",
+      "preserved_gates": "Independent review confirmed the verifier differs only by the seed export and three INSERT statements. Every unrelated schema/row check, both full imports, exact payload hashes, idempotency checks and the failed full-file rollback test remain intact. No table exclusion, empty-table allowance, bounded-local CI mode, real credential, remote operation or strategy-generation change.",
+      "validation": "A new in-memory SQLite regression applies all current migrations with foreign keys enabled and checks one row in every unrelated table plus foreign_key_check. It reproduces the account_native_attempts missing-sentinel failure before the seed fix and passes afterward. Focused workflow/delivery/local-verifier tests: 15 passed, one explicit opt-in Wrangler integration skip; independent local-verifier rerun: nine passed, one same explicit skip. Strict whole-file GitHub Actions validation remains required for the final commit.",
+      "verified_unchanged": {
+        "other_source_records": 85,
+        "artifact_records": 1888,
+        "archive_entries": 1614,
+        "archive_bytes": 1747857,
+        "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
+      }
+    }
+  ]
 }

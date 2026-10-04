@@ -200,7 +200,7 @@ export function readPreflopSnapshot(db) {
   return snapshot;
 }
 
-const UNRELATED_SEED = `
+export const UNRELATED_SEED = `
 INSERT INTO postflop_spots VALUES ('local-sentinel', 'local-sentinel', 'srp', 'oop_checks', 'BTN', 'BB', 5.5, 97.5, '{"keep":true}');
 INSERT INTO postflop_policies VALUES ('local-sentinel', 'flop', 'local-hash', '{"keep":true}', '{"keep":true}');
 INSERT INTO postflop_reasons VALUES ('local-sentinel', 'flop', '{"keep":true}');
@@ -212,6 +212,9 @@ INSERT INTO account_sessions VALUES ('local-session', 'local-user', 1);
 INSERT INTO account_oauth_states VALUES ('local-state', 'local-verifier', 'local-nonce', 1);
 INSERT INTO account_rate_limits VALUES ('local-bucket', 1, 1);
 INSERT INTO account_data VALUES ('local-user', '{"keep":true}', 1);
+INSERT INTO account_native_attempts (attempt_hash, code_challenge, app_state, redirect_id, status, oauth_state_hash, user_id, expires_at) VALUES ('local-native-attempt', 'local-native-challenge', 'local-native-app-state', 'reysonai-mobile', 'authorizing', 'local-native-state', 'local-user', 1);
+INSERT INTO account_native_oauth_states VALUES ('local-native-state', 'local-native-attempt', 'local-native-verifier', 'local-native-nonce', 1);
+INSERT INTO account_native_sessions VALUES ('local-native-session', 'local-user', 'native', 'local-native-session-attempt', 1);
 `;
 
 function sentinelInsert(name) {
