@@ -1,12 +1,12 @@
 import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
-import { ArrowClockwise, ArrowLeft, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
+import { ArrowClockwise, ArrowLeft, Barbell, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { ModeBlock } from "./ModeBlock.tsx";
 import { AGENT_TABLE } from "../agent/characters.ts";
 import { AgentAvatar } from "../agent/AgentAvatar.tsx";
 import { loadAgentHands, summarizeAgentHands } from "../agent/agent-stats.ts";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.ts";
 import { drillStats } from "./drill-store.ts";
-import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIER_EN, playedToday, tierFor } from "./rank-store.ts";
+import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIERS, TIER_EN, playedToday, tierFor } from "./rank-store.ts";
 import { localized } from "../locale.ts";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
@@ -118,15 +118,10 @@ function DrillsBlock({ drills, reviewCount, drafts, onOpen, onCreate, onStartRev
   const totals = drills.map(drillStats);
   const attempts = totals.reduce((sum, item) => sum + item.attempts, 0);
   const answered = totals.reduce((sum, item) => sum + item.answered, 0);
-  const best = totals.map(item => item.best).filter(value => value != null).sort((a, b) => b - a)[0] ?? null;
-  const trend = drills.flatMap(drill => (drill.sessions ?? []).map(session => ({ at: session.at ?? 0, rate: session.answered ? session.score / session.answered : null })))
-    .filter(item => item.rate != null).sort((a, b) => a.at - b.at).slice(-12).map(item => item.rate);
   const inProgress = drills.filter(drill => drafts[drill.id]).length;
   return <ModeBlock theme="#f0609e" className="is-drills" visualClass="drills-visual" label={localized("Drills", "ドリル")}
-    visual={<div className="drills-visual-card">
-      <span>{localized("Best", "ベスト")}</span>
-      <strong>{pct(best)}</strong>
-      <Sparkline values={trend} width={150} height={34} />
+    visual={<div className="drills-visual-card drills-visual-icon">
+      <Barbell size={64} weight="duotone" aria-hidden="true" />
       <small>{localized(`${drills.length} saved drills`, `保存ドリル ${drills.length}個`)}</small>
     </div>}
     eyebrow={`DRILLS · ${localized(`${drills.length} saved`, `${drills.length}個`)}`}
@@ -210,9 +205,20 @@ function RankedEmblem({ rank, tier }) {
   </div>;
 }
 
+// Master in front; on hover every tier slides out from behind it into one row (bronze → master).
+function RankFan() {
+  const last = TIERS.length - 1;
+  return <div className="rank-fan" aria-hidden="true">
+    {TIERS.map((tier, index) => <span key={tier.name} className={`rank-fan-item${index === last ? " is-front" : ""}`}
+      style={{ "--k": index - last / 2, "--d": last - index, zIndex: index + 1 }}>
+      <RankBadge name={tier.name} size={64} />
+    </span>)}
+  </div>;
+}
+
 function RankedComingSoon() {
   return <ModeBlock theme="#b7a0db" className="is-ranked is-coming-soon" visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
-    visual={<RankBadge name="マスター" size={64} />}
+    visual={<RankFan />}
     eyebrow="RANKED"
     title={localized("Ranked matches", "ランク戦")}
     status={localized("Coming soon", "近日公開")}
@@ -254,8 +260,12 @@ function AgentEntry({ onStart }) {
   const record = summarizeAgentHands(loadAgentHands());
   const points = Math.round(record.netBb * 100);
   return <ModeBlock theme={table.theme} className="is-agent" visualClass="agent-lineup" label={localized("Agent table", "Agent戦")}
-    visual={table.agents.map((agent, index) => <span key={agent.id} className="agent-table-face" style={{ "--i": index }} aria-hidden="true">
-      <AgentAvatar id={agent.id} color={agent.color} size={52} /><small>{agent.name.en}</small></span>)}
+    visual={table.agents.map((agent, index) => {
+      const middle = (table.agents.length - 1) / 2;
+      return <span key={agent.id} className={`agent-table-face${index === Math.round(middle) ? " is-front" : ""}`}
+        style={{ "--k": index - middle, "--d": Math.abs(index - middle), zIndex: 10 - Math.abs(index - middle) }} aria-hidden="true">
+        <AgentAvatar id={agent.id} color={agent.color} size={52} /><small>{agent.name.en}</small></span>;
+    })}
     eyebrow={`REYSON AGENT · ${table.name.en}`}
     title={localized("Agent table", "Agent戦")}
     status={localized("Beta", "β版")}

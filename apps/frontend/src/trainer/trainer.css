@@ -536,7 +536,7 @@
 .agent-lineup { gap: 8px; }
 .agent-lineup .agent-table-face { display: grid; justify-items: center; gap: 4px; transition: transform .2s ease; }
 .agent-lineup .agent-table-face small { color: var(--text-subtle); font-size: 9px; font-weight: 800; letter-spacing: .14em; }
-.mode-block.is-agent:hover .agent-table-face { transform: translateY(-2px); }
+
 
 @media (max-width: 1100px) { .mode-block { grid-template-columns: 220px minmax(0, 1fr) 160px; } .agent-lineup .agent-table-face .agent-unit { width: 40px; height: 40px; } }
 @media (max-width: 860px) {
@@ -699,3 +699,31 @@
 .lb-head-tools { display: flex; align-items: center; gap: 10px; }
 .lb-head-tools .lb-period { min-width: 200px; }
 @media (max-width: 720px) { .lb-head-tools { width: 100%; } .lb-head-tools .lb-period { flex: 1; min-width: 0; } }
+.drills-visual-icon { gap: 10px; padding: 20px 28px 14px; color: var(--mode-theme); }
+.drills-visual-icon small { color: var(--text-muted); }
+
+/* Hover reveals (2026-10-04): ranked tiers slide out from behind master, the Agent lineup spreads
+   out from the middle face, and the drill barbell does a lift. */
+.rank-fan { position: relative; width: 100%; height: 84px; container-type: inline-size; }
+.rank-fan-item { position: absolute; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.55);
+  transition: transform .5s var(--ease-out) calc(var(--d) * 45ms), opacity .3s ease calc(var(--d) * 45ms); }
+.rank-fan-item.is-front { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.mode-block:is(:hover, :focus-within) .rank-fan-item { opacity: 1; transform: translate(calc(-50% + var(--k) * min(46px, 16cqi)), -50%) scale(.62); }
+.agent-lineup { position: relative; min-height: 96px; container-type: inline-size; }
+.agent-lineup .agent-table-face { position: absolute; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.7);
+  transition: transform .5s var(--ease-out) calc(var(--d) * 50ms), opacity .3s ease calc(var(--d) * 50ms); }
+.agent-lineup .agent-table-face.is-front { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+.mode-block.is-agent:is(:hover, :focus-within) .agent-table-face { opacity: 1; transform: translate(calc(-50% + var(--k) * min(66px, 20cqi)), -50%) scale(.9); }
+.drills-visual-icon svg { transition: filter .3s ease; transform-origin: 50% 80%; }
+.mode-block.is-drills:is(:hover, :focus-within) .drills-visual-icon svg { animation: drill-lift 1s var(--ease-out) both; filter: drop-shadow(0 0 14px color-mix(in srgb, var(--mode-theme) 55%, transparent)); }
+@keyframes drill-lift {
+  0% { transform: translateY(0) rotate(0); }
+  30% { transform: translateY(-14px) rotate(-6deg); }
+  55% { transform: translateY(-10px) rotate(4deg); }
+  75% { transform: translateY(-13px) rotate(-2deg); }
+  100% { transform: translateY(-8px) rotate(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rank-fan-item, .agent-lineup .agent-table-face { transition: none; }
+  .mode-block.is-drills:is(:hover, :focus-within) .drills-visual-icon svg { animation: none; }
+}
