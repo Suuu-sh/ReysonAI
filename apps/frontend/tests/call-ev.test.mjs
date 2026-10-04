@@ -243,12 +243,19 @@ test("EV-capacity conflicts stay advisory, but leaving profitable defense unused
   assert.ok(auditEstimates(data).findings.some(f => f.check === "auto-profit" && f.spot === "UTG vs HJ 3bet" && isBlockingAuditFinding(f)));
 });
 
-test("cached Monte Carlo equity can be reproduced from checked source ranges and the recorded seed", async () => {
-  const { equityVsRange, weightedRange, seededRandom, seedFor } = await import("../scripts/lib/equity.mjs");
+test("preserved v1 preflop equities remain historical rather than being relabelled as corrected output", async () => {
+  const { EVALUATOR_VERSION, equityVsRange, weightedRange, seededRandom, seedFor } = await import("../scripts/lib/equity.mjs");
+  // The best-five correction intentionally does not migrate any saved frequency,
+  // equity or reason. A separate reviewed migration must version and regenerate
+  // this cache; using the same seed does not make its old evaluator correct.
+  assert.equal(table().version, 1);
+  assert.equal(EVALUATOR_VERSION, 2);
   const entry = table().spots.BB_vs_SB;
   const range = weightedRange(entry.input.ranges[0].map(([hand, weight]) => ({ hand, weight })));
   const actual = equityVsRange("J4o", range, 12000, seededRandom(seedFor("call-equity-v1|BB_vs_SB|J4o")));
-  assert.equal(actual, entry.equities.J4o);
+  assert.equal(entry.equities.J4o, 0.3375);
+  assert.equal(actual, 0.34020833333333333);
+  assert.notEqual(actual, entry.equities.J4o);
 });
 
 test("every reachable call-decision reason exposes the same EQR/EV as generation and audit", () => {

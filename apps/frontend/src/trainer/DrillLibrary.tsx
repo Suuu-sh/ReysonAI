@@ -269,7 +269,7 @@ function AgentEntry({ onStart }) {
     eyebrow={`REYSON AGENT · ${table.name.en}`}
     title={localized("Agent table", "Agent戦")}
     status={localized("Beta", "β版")}
-    description={localized("A 6-max table where every Agent plays the Reyson solver estimate. Fold any time, then watch the rest or skip.", "全員がReyson solver（AI推定）通りに打つ6人卓。降りたら続きを観戦することも、スキップすることもできます。")}
+    description={localized("A 6-max table where every Agent plays the Reyson solver estimate.", "全員がReyson solver（AI推定）通りに打つ6人卓。")}
     actions={<>
       <button type="button" className="mode-primary" onClick={() => onStart(table.id, false)}><Play size={14} weight="fill" />{localized("Sit down", "着席する")}</button>
       <button type="button" className="mode-secondary" onClick={() => onStart(table.id, true)}><Eye size={15} />{localized("Watch", "観戦")}</button>

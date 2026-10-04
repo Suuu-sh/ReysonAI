@@ -33,9 +33,10 @@ export function combosOf(hand) {
   return out;
 }
 
-// 5-7 card evaluator returning a comparable score. Allocation free (it ranks every combo of a board
-// in the computed defence); tests/equity-evaluate.test.mjs pins it to the original
-// array-based implementation, including its kicker quirks, on random hands.
+// Best-five evaluator for 5-7 cards. Allocation free: computed defence ranks every combo.
+// Version 2 fixes excess kickers and count-ordered quads/two-pair kickers. Persisted
+// preflop estimates remain historical data until an explicit, reviewed migration.
+export const EVALUATOR_VERSION = 2;
 const counts = new Int8Array(13);
 const suitCount = new Int8Array(4);
 const suitMask = new Int16Array(4);
@@ -68,7 +69,12 @@ export function evaluate(cards) {
   let n = 0;
   for (let c = 4; c >= 1; c -= 1) for (let rank = 12; rank >= 0; rank -= 1) if (counts[rank] === c) byCount[n++] = rank;
   const top = byCount[0], second = n > 1 ? byCount[1] : -1;
-  if (counts[top] === 4) return packed(7, top, n > 1 ? second : 0, 0, 0, 0);
+  if (counts[top] === 4) {
+    // A remaining pair/trip is only a kicker candidate; count order is irrelevant.
+    let kicker = 12;
+    while (kicker > 0 && (kicker === top || !counts[kicker])) kicker -= 1;
+    return packed(7, top, kicker, 0, 0, 0);
+  }
   if (counts[top] === 3 && counts[second] >= 2) return packed(6, top, second, 0, 0, 0);
   if (flush >= 0) {
     const kickers = [0, 0, 0, 0, 0];
@@ -84,9 +90,13 @@ export function evaluate(cards) {
     if (singles === 0) s0 = rank; else if (singles === 1) s1 = rank; else if (singles === 2) s2 = rank; else if (singles === 3) s3 = rank; else if (singles === 4) s4 = rank;
     singles += 1;
   }
-  if (counts[top] === 3) return packed(3, top, s0, s1, s2, s3);
-  if (counts[top] === 2 && counts[second] === 2) return packed(2, top, second, n > 2 ? byCount[2] : 0, 0, 0);
-  if (counts[top] === 2) return packed(1, top, s0, s1, s2, s3);
+  if (counts[top] === 3) return packed(3, top, s0, s1, 0, 0);
+  if (counts[top] === 2 && counts[second] === 2) {
+    let kicker = 12;
+    while (kicker > 0 && (kicker === top || kicker === second || !counts[kicker])) kicker -= 1;
+    return packed(2, top, second, kicker, 0, 0);
+  }
+  if (counts[top] === 2) return packed(1, top, s0, s1, s2, 0);
   return packed(0, s0, s1, s2, s3, s4);
 }
 

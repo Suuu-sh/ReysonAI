@@ -166,9 +166,16 @@
 @keyframes agent-rise { from { opacity: 0; transform: translateY(6px); } }
 @keyframes agent-fade { from { opacity: 0; transform: translateX(-4px); } }
 
-@media (max-width: 1100px) {
-  .agent-layout { grid-template-columns: 1fr; }
-  .agent-side { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+/* One screen (2026-10-04): the page is exactly the viewport tall; the felt scales with the height,
+   and the side panels keep a right column that scrolls on its own instead of dropping below. */
+@media (min-width: 721px) {
+  .agent-page { height: calc(100dvh - 32px); min-height: 0; overflow: hidden; padding-bottom: 0; }
+  .agent-layout { height: 100%; min-height: 0; grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 280px); align-items: stretch; }
+  .agent-stage { min-height: 0; grid-template-rows: minmax(0, 1fr) auto; }
+  .agent-felt-wrap { min-height: 0; padding: clamp(46px, 9vh, 74px) clamp(56px, 8vw, 96px) clamp(72px, 13vh, 112px); }
+  .agent-felt { width: min(100%, 720px, calc((100dvh - 330px) * 2.05)); }
+  .agent-side { min-height: 0; align-content: start; overflow-y: auto; scrollbar-width: thin; padding-right: 2px; }
+  .agent-log .agent-log-body { max-height: none; }
 }
 @media (max-width: 720px) {
   /* Portrait table: seats down both sides, smaller cards. */
