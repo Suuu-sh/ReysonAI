@@ -1,6 +1,6 @@
 # 3人SRP・段階1 実装記録（未完了）
 
-更新: 2026-10-04。これは専用実行基盤の段階的な実装記録です。方針生成、全ボード戦略監査、画面、Agent戦、本番配信はまだ完了していません。対応済みの戦略として公開してはいけません。
+更新: 2026-10-04。これは専用実行基盤の段階的な実装記録です。代表1経路の第一候補は保存済みですが分類上の品質問題で保留。全経路の方針生成、全ボード戦略監査、画面、Agent戦、本番配信はまだ完了していません。対応済みの戦略として公開してはいけません。
 
 ## 仕様と基点
 
@@ -46,7 +46,7 @@
 
 ## 検証
 
-- 新規focused tests: 21件PASS。
+- 新規focused tests: 26件PASS。
 - 独立Astraの別実装DFS（`postflop-mw3-independent.test.mjs`）:
   - 8BB: 31,487状態、34,206 action edge、17,214終端、117node
   - 8.5BB: 31,148状態、33,951 edge、17,067終端、117node
@@ -54,7 +54,8 @@
   - 合計90,213状態・98,400 edge・49,260終端。合法action、整数cent要求額、all-in、folded席、chip保存・精算はPASS。
 - 独立reviewで見つけた履歴黙示切り捨て、float誤差による不可能raise、half-cent丸めを修正して回帰追加済み。
 - `npm run typecheck`: PASS。
-- `npm run build`: transforming中にexit137/Killed。共有環境のresource調整後に再実行が必要。成功とは扱わない。
+- local `npm run build`: transforming中にexit137/Killed。初回PR head `16eebb53` はGitHub Actionsのtypecheck/buildがPASS（run 37212330881）。deploy jobはskipped。以降の追加分は最終headで再確認する。
+- browser向けmw3 runtime adapterのesbuild bundle: PASS、38,626 bytes。実画面への接続・ブラウザ操作QAを意味しない。
 - 既存HUソース・データ・fingerprint入力は変更なし。ただしHU `audit --all`、frontend全tests、ブラウザQAはこの3人変更の最終状態に対してまだ実施していない。
 
 ## 未完了・公開gate
@@ -64,3 +65,14 @@
 3. 代表の独立品質reviewを通してから残り15経路をauthor。16経路の専用artifactをhash付きLFS archiveへ保存し、Actionsはrestore/verifyのみとする。
 4. 共通HU/Stage3基盤の統合後、Rangeの3表/行動ブロック、Agent戦、説明、read-only artifact delivery/publish対象をつなぐ。欠損は未収録とする。
 5. 全tests/typecheck/build、既存HU auditと照合不変、3人フロップ→リバーのブラウザQA後に統合・公開の判断へ渡す。
+
+
+## 代表第一候補と追加adapter（2026-10-04）
+
+- Astra第一候補: CO→BTN→BB、flop 5,925 / later 28,245 rules。全33,585 overrideの実選択・整数sum100・再生成一致PASS。著者の自己点検は `multiway-postflop-stage1.pilot-policy-review.md`。
+- flop policy hash `a2b34e77fd998d2eb05c848fee0f8ae4ee9941e9e38137effdcf6359d0320f12`、later `883bf82991a20b4d7c9e455c45fce58df3b9a7508cf1d2648f6c4c86499d306c`。候補はsource/implementation/provenance付きで`.local`に保全。
+- 品質blocker: 共有handTierがboard-only two-pair/trips等もmonsterにする。trips flop13種で全handがmonster、`AsAdKcKd2h`で76もmonsterになる。3人専用classifier改善とAstra再author/review前に16経路へ展開しない。
+- `mw3-actions.mjs`: 実際に同額all-inへmergeするaction labelを観測上の1actionへまとめ、reachは保存確率の和で条件付ける。raw saved頻度を改変しない。
+- `mw3-joint-defence.mjs`: 最低20,000のwhole-tuple rejection sampling。同じ合法tuple内で、3→2人になる逐次foldの確率を掛けてから平均。既fold参加者のblockerも残す。公開gateの最適性証明には使わず警告診断。
+- `mw3-runtime.mjs`: 3人のRange用データとseeded Agentのpause/resume/river精算の共有adapter。現在actorだけ現在戦略、他席は過去行動によるreachと明記。HU/既存画面には未接続。
+- `gate-mw3-pilot.mjs`: 明示指定時のみ全1,755flop・代表後段runout・joint防御を検査するローカルgate。AI呼出し、D1/import、配信はしない。

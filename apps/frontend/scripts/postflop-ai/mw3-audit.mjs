@@ -2,7 +2,7 @@
 // Finite contexts collapse only policy-equivalent states, never joint reach probabilities.
 import { combosOf } from '../lib/equity.mjs';
 import { evaluateContinuation } from '../lib/continuation-evaluator.mjs';
-import { handTier, TIERS } from './model.mjs';
+import { handTier, runoutTexture, TIERS } from './model.mjs';
 import { canonicalFlops } from './flop-isomorphism.mjs';
 import { selectMw3Rule, validateMw3Policy } from './mw3-policy.mjs';
 import { probeMw3Hand } from './mw3-tree.mjs';
@@ -11,7 +11,7 @@ export function mw3BoardRanges(inputs, board) {
   const blocked = new Set(board);
   return Object.fromEntries(inputs.spot.seats.map(seat => [seat, inputs.seatRows[seat].filter(row => row.freq > 0).flatMap(row =>
     combosOf(row.hand).filter(combo => combo.every(card => !blocked.has(card))).map(combo => ({
-      combo, weight: row.freq / 100, tier: handTier(combo, board, evaluateContinuation([...combo, ...board])) }))) ]));
+      hand: row.hand, combo, weight: row.freq / 100, tier: handTier(combo, board, evaluateContinuation([...combo, ...board])) }))) ]));
 }
 
 const selectorCoverage = (decision, rule) => ({
@@ -54,8 +54,7 @@ export function auditMw3Board(inputs, policies, board, contexts) {
     warningWeighting: 'raw_own_action_preflop_combo_weight_not_joint_or_policy_history_reach' };
 }
 
-export function auditMw3AllFlops(inputs, policies, { onProgress = () => {} } = {}) {
-  const contract = probeMw3Hand(inputs.spot);
+export function auditMw3AllFlops(inputs, policies, { onProgress = () => {}, contract = probeMw3Hand(inputs.spot) } = {}) {
   validateMw3Policy(policies.flop, { spotId: inputs.spot.id, nodes: contract.nodes });
   validateMw3Policy(policies.later, { spotId: inputs.spot.id, nodes: contract.nodes });
   const boards = canonicalFlops(), warnings = new Map(), errors = [], uncovered = new Map();
@@ -82,4 +81,26 @@ export function auditMw3AllFlops(inputs, policies, { onProgress = () => {} } = {
     scope: 'all_1755_flops_all_geometric_contexts_all_source_supported_combo_tiers',
     jointDefence: 'not_part_of_this_structural_pass_requires_tuple_conditioned_diagnostic',
     warningWeighting: 'raw_own_action_preflop_combo_weight_not_joint_or_policy_history_reach' };
+}
+
+
+export function representativeMw3Runouts(flops) {
+  const out = [];
+  for (const flop of flops) {
+    const turns = new Map();
+    for (let card = 0; card < 52; card++) if (!flop.includes(card)) {
+      const board = [...flop, card], texture = runoutTexture(board);
+      if (!turns.has(texture)) turns.set(texture, board);
+    }
+    for (const turn of turns.values()) {
+      out.push(turn);
+      const rivers = new Map();
+      for (let card = 0; card < 52; card++) if (!turn.includes(card)) {
+        const board = [...turn, card], texture = runoutTexture(board);
+        if (!rivers.has(texture)) rivers.set(texture, board);
+      }
+      out.push(...rivers.values());
+    }
+  }
+  return out;
 }

@@ -166,3 +166,16 @@ test('policy context distinguishes live position, response commitment and exact 
   assert.equal(decision.responseType, 'cold'); assert.ok(Math.abs(decision.callPrice - 2.64 / ((10.64 + 2.64) * 0.95)) < 1e-14);
   act(response, ['call', 'raise']); assert.equal(mw3Decision(response).responseType, 'invested');
 });
+
+test('identical low-SPR wagers aggregate their saved policy probabilities as one observable action', async () => {
+  const { mw3ActionGroups, mw3ObservableMix, mw3ObservedProbability } = await import('../scripts/postflop-ai/mw3-actions.mjs');
+  const table = replayMw3(spot, { flop: ['bet33', 'raise', 'raise', 'call', 'call'], turn: [] });
+  const groups = mw3ActionGroups(table), allin = groups.find(group => group.action === 'allin');
+  assert.ok(allin.actions.includes('bet125')); assert.ok(allin.actions.includes('allin'));
+  const mix = { check: 40, bet33: 10, bet75: 15, bet125: 20, allin: 15 };
+  const effective = mw3ObservableMix(table, mix);
+  assert.equal(effective.allin, allin.actions.reduce((sum, action) => sum + mix[action], 0));
+  assert.equal(mw3ObservedProbability(groups, mix, 'bet125'), effective.allin / 100);
+  assert.equal(mw3ObservedProbability(groups, mix, 'allin'), effective.allin / 100);
+  assert.equal(Object.values(effective).reduce((a, b) => a + b, 0), 100);
+});
