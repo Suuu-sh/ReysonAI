@@ -1,9 +1,9 @@
 # 仕様：相手像モード 段階B・C・D ポストフロップ（Astra 向け）
 
 この依頼文そのものがユーザーとメインの Claude からの指示です。確認のために止まらず、最後まで作業してください。
-git commit / push はしないこと（コミットはメインの Claude が確認後に行う）。他セッションの未コミット変更は巻き戻さない。
+作業は `development` から切った専用ブランチで行い、コミット・push して、`development` 向けのプルリクエストを作るところまで行うこと（下書き PR にする。マージ・本番デプロイ・本番 D1 への取り込みはしない）。他の人の変更は巻き戻さない。
 
-作業ディレクトリ: `/Users/yota/Projects/Products/ReysonAI/apps/frontend`（このフォルダ1つ・`development` から切ったブランチで作業。別フォルダや worktree は作らない）
+リポジトリ: `Suuu-sh/ReysonAI`（作業はフロントエンドの `apps/frontend` が中心）。
 
 前提：段階A（`docs/specs/opponent-profiles-stageA-preflop.md`：相手像ごとの相手側プリフロップデータ `src/estimated/profiles/<profile>/villain/*.json`）がマージ済みであること。未マージなら止めずに、段階A のデータが無い場合はテスト用の仮データで実装し、その旨を結果報告に書く。
 
@@ -74,7 +74,7 @@ git commit / push はしないこと（コミットはメインの Claude が確
    - 相手像モードでは方針の mix がそのまま使われる（防御計算が入らない）。
 6. ナレッジ `docs/postflop-policy-knowledge.md` に、相手像の方針づくりで分かったことを追記。
 
-## 5. 最後に返すもの（`docs/specs/opponent-profiles-stageBCD-postflop.result.md`）
+## 5. 最後に返すもの（PR の本文にも要約を書く）（`docs/specs/opponent-profiles-stageBCD-postflop.result.md`）
 
 - 変更ファイル一覧と、仕組みの説明（どこでレンジを差し替え、どこで方針を選び、どこで防御計算を外したか）
 - 相手像ごとの代表局面（BTN オープン → BB コール、乾いた A ハイ・低いウェット）での、相手と自分の主な頻度の比較

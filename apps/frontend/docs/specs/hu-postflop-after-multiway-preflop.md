@@ -1,9 +1,9 @@
 # 仕様：スクイーズ・コールド4bet 後に2人になったポットのポストフロップ（Astra 向け）
 
 この依頼文そのものがユーザーとメインの Claude からの指示です。確認のために止まらず、最後まで作業してください。
-git commit / push はしないこと（コミットはメインの Claude が確認後に行う）。他セッションの未コミット変更は巻き戻さない。
+作業は `development` から切った専用ブランチで行い、コミット・push して、`development` 向けのプルリクエストを作るところまで行うこと（下書き PR にする。マージ・本番デプロイ・本番 D1 への取り込みはしない）。他の人の変更は巻き戻さない。
 
-作業ディレクトリ: `/Users/yota/Projects/Products/ReysonAI/apps/frontend`（このフォルダ1つ・`development` から切ったブランチで作業。別フォルダや worktree は作らない）
+リポジトリ: `Suuu-sh/ReysonAI`（作業はフロントエンドの `apps/frontend` が中心）。
 
 ## 0. 背景と最初に読むもの
 
@@ -63,7 +63,7 @@ git commit / push はしないこと（コミットはメインの Claude が確
 - ブラウザで、Agent戦とレンジ画面の両方で、スクイーズ後の流れがフロップからリバーまで普通に打てることを確認（手順かスクリーンショットを結果報告に）。
 - ナレッジ `docs/postflop-policy-knowledge.md` に、この局面群の方針づくりで分かったことを追記。
 
-## 4. 最後に返すもの（`docs/specs/hu-postflop-after-multiway-preflop.result.md`）
+## 4. 最後に返すもの（PR の本文にも要約を書く）（`docs/specs/hu-postflop-after-multiway-preflop.result.md`）
 
 - 作った局面の一覧（ID・流れ・ポット・スタック・ツリー・到達頻度）と、作らなかった流れとその理由
 - 変更ファイル一覧
