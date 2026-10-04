@@ -1,6 +1,8 @@
+import type { CSSProperties } from "react";
 import { Crosshair, Hourglass, X } from "@phosphor-icons/react";
 import { localized } from "../i18n.ts";
-import { AGENT_BASELINE, READ_MIN_HANDS, READ_WINDOW, type PlayerRead } from "./player-read.ts";
+import { AGENT_BASELINE, READ_MIN_HANDS, READ_WINDOW, STYLES, type PlayerRead, type StyleId } from "./player-read.ts";
+import { StyleAvatar } from "./StyleAvatar.tsx";
 
 const pct = (value: number | null | undefined) => value == null ? "—" : `${Math.round(value * 100)}%`;
 const text = (value: { ja: string; en: string }) => localized(value.en, value.ja);
@@ -26,6 +28,18 @@ function StatRow({ row }: { row: Row }) {
   </li>;
 }
 
+// Every style's character, the current one lit.
+const ROSTER: StyleId[] = ["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"];
+function StyleRoster({ current }: { current: StyleId }) {
+  return <ol className="style-roster" aria-label={localized("Play styles", "プレイスタイル一覧")}>
+    {ROSTER.map(id => { const style = STYLES[id], on = id === current;
+      return <li key={id} className={on ? "is-current" : ""} aria-current={on ? "true" : undefined} title={text(style.summary)} style={{ "--style": style.color } as CSSProperties}>
+        <StyleAvatar id={id} color={style.color} size={40} dim={!on} />
+        <span>{text(style.name)}</span>
+      </li>; })}
+  </ol>;
+}
+
 // Style map: the centre is the agents' balanced play.
 function StyleMap({ read }: { read: PlayerRead }) {
   const point = read.map;
@@ -36,7 +50,9 @@ function StyleMap({ read }: { read: PlayerRead }) {
       <span className="q bl">{localized("Tight · passive", "タイト・パッシブ")}</span>
       <span className="q br">{localized("Loose · passive", "ルース・パッシブ")}</span>
       <span className="style-map-center" title={localized("Agent baseline", "Agent基準")} />
-      {point && <span className="style-map-point" style={{ left: `${50 + point.x * 44}%`, top: `${50 - point.y * 44}%` }} />}
+      {point && <span className="style-map-point" style={{ left: `${50 + point.x * 44}%`, top: `${50 - point.y * 44}%`, "--style": read.style.color } as CSSProperties}>
+        <StyleAvatar id={read.style.id} color={read.style.color} size={28} />
+      </span>}
     </div>
     <figcaption><span>← {localized("Tight", "タイト")}</span><span>{localized("Centre = Agent baseline", "中心 = Agent基準")}</span><span>{localized("Loose", "ルース")} →</span></figcaption>
   </figure>;
@@ -67,13 +83,18 @@ export function PlayStyleDashboard({ read, onClose }: { read: PlayerRead; onClos
     <div className="style-window" aria-hidden="true"><i style={{ width: `${Math.min(100, read.hands / READ_WINDOW * 100)}%` }} /></div>
 
     <div className="style-dash-top">
-      <div className="style-label">
-        <span>{localized("Style", "スタイル")}</span>
-        <strong>{text(read.style.name)}</strong>
-        <p>{text(read.style.summary)}</p>
+      <div className="style-label" style={{ "--style": read.style.color } as CSSProperties}>
+        <StyleAvatar id={read.style.id} color={read.style.color} size={76} />
+        <div>
+          <span>{localized("Style", "スタイル")} · {text(read.style.mascot)}</span>
+          <strong>{text(read.style.name)}</strong>
+          <p>{text(read.style.summary)}</p>
+        </div>
       </div>
       <StyleMap read={read} />
     </div>
+
+    <StyleRoster current={read.style.id} />
 
     <ul className="style-rows">{rows.map(row => <StatRow key={row.key} row={row} />)}</ul>
 
@@ -100,7 +121,7 @@ export function PlayStyleCard({ read, onOpen }: { read: PlayerRead; onOpen: () =
   const s = read.stats;
   return <button type="button" className="style-card" onClick={onOpen}>
     <span className="style-card-head"><span>{localized("Agent read", "Agentの読み")}</span><small>{read.hands}/{READ_WINDOW}</small></span>
-    <strong>{text(read.style.name)}</strong>
+    <span className="style-card-who"><StyleAvatar id={read.style.id} color={read.style.color} size={40} /><span><strong>{text(read.style.name)}</strong><small>{text(read.style.mascot)}</small></span></span>
     <span className="style-card-stats"><span>VPIP <b>{pct(s.vpip)}</b></span><span>PFR <b>{pct(s.pfr)}</b></span><span>3bet <b>{pct(s.threeBet)}</b></span></span>
     <span className="style-card-more">{localized("Open dashboard", "ダッシュボードを開く")} →</span>
   </button>;

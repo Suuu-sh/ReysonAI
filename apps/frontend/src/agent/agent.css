@@ -262,6 +262,20 @@
 .style-card-head { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .style-card-head small { font-variant-numeric: tabular-nums; letter-spacing: 0; }
 .style-card strong { font-size: 18px; letter-spacing: .02em; }
+.style-card-who { display: flex; align-items: center; gap: 10px; }
+.style-card-who > span { display: grid; }
+.style-card-who small { color: var(--text-muted); font-size: 11px; }
+
+/* Style characters: animal faces in a rounded square, unlike the Agents' round helmets. */
+.style-unit { display: block; flex: 0 0 auto; }
+.style-unit .style-unit-face { animation: style-blink 4.6s ease-in-out infinite; }
+.style-unit.is-dim .style-unit-face { animation: none; }
+@keyframes style-blink { 0%, 92%, 100% { opacity: 1; } 95% { opacity: .35; } }
+.style-roster { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; margin: 0; padding: 0; list-style: none; }
+.style-roster li { display: grid; justify-items: center; gap: 4px; padding: 6px 2px; border-radius: 10px; color: var(--text-subtle); font-size: 9px; font-weight: 700; line-height: 1.25; text-align: center; opacity: .8; }
+.style-roster li.is-current { color: var(--text); opacity: 1; background: color-mix(in srgb, var(--style) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--style) 45%, transparent); }
+.style-roster li.is-current span { color: var(--style); }
+@media (prefers-reduced-motion: reduce) { .style-unit .style-unit-face { animation: none; } }
 .style-card-stats { display: flex; gap: 12px; color: var(--text-muted); font-size: 11px; }
 .style-card-stats b { color: var(--text); font-variant-numeric: tabular-nums; }
 .style-card-more { color: var(--accent); font-size: 11px; font-weight: 700; }
@@ -283,7 +297,9 @@
 .style-window { height: 3px; overflow: hidden; border-radius: 2px; background: var(--surface-hover); }
 .style-window i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #4fd1ff); }
 .style-dash-top { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.style-label { display: grid; align-content: start; gap: 4px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.style-label { display: grid; grid-template-columns: auto 1fr; align-content: start; align-items: start; gap: 12px; padding: 14px; border: 1px solid color-mix(in srgb, var(--style) 30%, var(--line)); border-radius: 12px; background: radial-gradient(circle at 14% 20%, color-mix(in srgb, var(--style) 14%, transparent), transparent 60%), var(--surface); }
+.style-label > div { display: grid; gap: 4px; min-width: 0; }
+.style-label .style-unit { filter: drop-shadow(0 0 14px color-mix(in srgb, var(--style) 40%, transparent)); }
 .style-label span { color: var(--text-muted); font-size: 11px; }
 .style-label strong { font-size: 20px; line-height: 1.3; letter-spacing: .02em; }
 .style-label p { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.6; }
@@ -293,7 +309,7 @@
 .style-map .q { position: absolute; color: var(--text-subtle); font-size: 9px; font-weight: 700; }
 .style-map .tl { top: 6px; left: 8px; } .style-map .tr { top: 6px; right: 8px; } .style-map .bl { bottom: 6px; left: 8px; } .style-map .br { bottom: 6px; right: 8px; }
 .style-map-center { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; border: 1px dashed var(--text-subtle); border-radius: 50%; transform: translate(-50%, -50%); }
-.style-map-point { position: absolute; width: 14px; height: 14px; border: 2px solid #fff; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px rgb(240 96 158 / 25%), 0 0 18px rgb(240 96 158 / 60%); transform: translate(-50%, -50%); transition: left .5s ease, top .5s ease; }
+.style-map-point { position: absolute; display: block; line-height: 0; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--style) 60%, transparent)); transform: translate(-50%, -50%); transition: left .5s ease, top .5s ease; }
 .style-map figcaption { display: flex; justify-content: space-between; color: var(--text-subtle); font-size: 9px; }
 
 .style-rows { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
@@ -327,6 +343,7 @@
 @media (max-width: 560px) {
   .style-dash { padding: 16px; }
   .style-dash-top { grid-template-columns: 1fr; }
+  .style-roster { grid-template-columns: repeat(4, 1fr); }
   .style-row { grid-template-columns: 96px 1fr 84px; gap: 8px; }
   .style-row-label small { display: none; }
   .style-exploit li { grid-template-columns: 1fr; gap: 4px; }
