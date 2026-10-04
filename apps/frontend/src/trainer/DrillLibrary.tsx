@@ -1,5 +1,5 @@
 import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
-import { ArrowClockwise, ArrowLeft, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
+import { ArrowClockwise, ArrowLeft, Barbell, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
 import { ModeBlock } from "./ModeBlock.tsx";
 import { AGENT_TABLE } from "../agent/characters.ts";
 import { AgentAvatar } from "../agent/AgentAvatar.tsx";
@@ -118,15 +118,10 @@ function DrillsBlock({ drills, reviewCount, drafts, onOpen, onCreate, onStartRev
   const totals = drills.map(drillStats);
   const attempts = totals.reduce((sum, item) => sum + item.attempts, 0);
   const answered = totals.reduce((sum, item) => sum + item.answered, 0);
-  const best = totals.map(item => item.best).filter(value => value != null).sort((a, b) => b - a)[0] ?? null;
-  const trend = drills.flatMap(drill => (drill.sessions ?? []).map(session => ({ at: session.at ?? 0, rate: session.answered ? session.score / session.answered : null })))
-    .filter(item => item.rate != null).sort((a, b) => a.at - b.at).slice(-12).map(item => item.rate);
   const inProgress = drills.filter(drill => drafts[drill.id]).length;
   return <ModeBlock theme="#f0609e" className="is-drills" visualClass="drills-visual" label={localized("Drills", "ドリル")}
-    visual={<div className="drills-visual-card">
-      <span>{localized("Best", "ベスト")}</span>
-      <strong>{pct(best)}</strong>
-      <Sparkline values={trend} width={150} height={34} />
+    visual={<div className="drills-visual-card drills-visual-icon">
+      <Barbell size={64} weight="duotone" aria-hidden="true" />
       <small>{localized(`${drills.length} saved drills`, `保存ドリル ${drills.length}個`)}</small>
     </div>}
     eyebrow={`DRILLS · ${localized(`${drills.length} saved`, `${drills.length}個`)}`}
