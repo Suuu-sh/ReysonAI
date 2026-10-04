@@ -1,8 +1,8 @@
 import React, { Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { ServiceSite } from "./site/ServiceSite.tsx";
-import { en } from "./site/content.ts";
-import { ja } from "./site/content-ja.ts";
+import { SITE_COPY } from "./site/locales.ts";
+import type { SiteLocale } from "./site/content.ts";
 import "./styles.css";
 import "./site/site.css";
 import { productLocale, rememberLocale } from "./locale.ts";
@@ -15,21 +15,20 @@ const withDatasets = (names, load) => () => Promise.all([preloadDatasets(names),
 const ProductApp = lazy(withDatasets(APP_DATASETS, () => import("./ProductApp.tsx")));
 const isProductRoute = isProductAppRoute(window.location.pathname, window.location.hostname);
 const initialSiteLocale = productLocale();
-const copy = initialSiteLocale === "ja" ? ja : en;
+const copy = SITE_COPY[initialSiteLocale];
 document.documentElement.lang = isProductRoute ? productLocale() : initialSiteLocale;
-document.title = isProductRoute ? (productLocale() === "ja" ? "ReysonAI · レンジ分析" : "ReysonAI · Range Analysis") : copy.title;
+document.title = isProductRoute ? ({ en: "ReysonAI · Range Analysis", ja: "ReysonAI · レンジ分析", "zh-CN": "ReysonAI · 范围分析", es: "ReysonAI · Análisis de rangos" }[productLocale()]) : copy.title;
 if (!isProductRoute) document.querySelector('meta[name="description"]')?.setAttribute("content", copy.description);
 
 function MarketingSite() {
   const [locale, setLocale] = React.useState(initialSiteLocale);
   React.useEffect(() => {
-    const selectedCopy = locale === "ja" ? ja : en;
+    const selectedCopy = SITE_COPY[locale];
     document.documentElement.lang = locale;
     document.title = selectedCopy.title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", selectedCopy.description);
   }, [locale]);
-  const switchLocale = () => {
-    const next = locale === "ja" ? "en" : "ja";
+  const switchLocale = (next: SiteLocale) => {
     rememberLocale(next);
     setLocale(next);
   };
@@ -39,7 +38,7 @@ function MarketingSite() {
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     {isProductRoute
-      ? <Suspense fallback={<div className="site-loading">Opening ReysonAI…</div>}><ProductApp /></Suspense>
+      ? <Suspense fallback={<div className="site-loading">{({ en: "Opening ReysonAI…", ja: "ReysonAIを開いています…", "zh-CN": "正在打开ReysonAI…", es: "Abriendo ReysonAI…" }[productLocale()])}</div>}><ProductApp /></Suspense>
       : <MarketingSite />}
   </React.StrictMode>,
 );

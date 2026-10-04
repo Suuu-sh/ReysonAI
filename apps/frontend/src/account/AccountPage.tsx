@@ -4,9 +4,8 @@ import { Check, CreditCard, DownloadSimple, Palette, SignOut, Sparkle, Translate
 import { useState } from "react";
 import { Sidebar } from "../components/layout.tsx";
 import { levels, loadProfile, saveProfile } from "../profile.ts";
-import { localized, productLocale, selectProductLocale } from "../i18n.ts";
-import { en as siteEn } from "../site/content.ts";
-import { ja as siteJa } from "../site/content-ja.ts";
+import { localized, productLocale, LOCALES, selectProductLocale } from "../i18n.ts";
+import { SITE_COPY } from "../site/locales.ts";
 import { exportLocalData, loadAppearance, loadDisplayMode, practiceKeys, saveAppearance, saveDisplayMode } from "./preferences.ts";
 import { ACCOUNT_SECTION, initialOf } from "./AccountMenu.tsx";
 
@@ -23,7 +22,7 @@ function Choice({ options, value, onChange, label }) {
   return <div className="account-choice" role="radiogroup" aria-label={label}>
     {options.map(option => <button type="button" role="radio" key={option.value} aria-checked={value === option.value}
       disabled={option.disabled} className={value === option.value ? "on" : ""} onClick={() => onChange(option.value)}>
-      {option.preview}<strong translate={option.native ? "no" : undefined}>{option.label}</strong>{option.hint && <small>{option.hint}</small>}
+      {option.preview}<strong translate={option.native ? "no" : undefined} lang={option.native ? option.value : undefined}>{option.label}</strong>{option.hint && <small>{option.hint}</small>}
     </button>)}
   </div>;
 }
@@ -78,7 +77,7 @@ function AccountTab({ profile, onProfileSaved }) {
 }
 
 function SubscriptionTab() {
-  const pricing = (productLocale() === "ja" ? siteJa : siteEn).pricing;
+  const pricing = SITE_COPY[productLocale()].pricing;
   return <>
     <section className="account-card account-plan-current">
       <div>
@@ -141,7 +140,7 @@ function LanguageTab() {
     <header><h2>{t("言語", "Language")}</h2></header>
     <SettingRow title={t("表示言語", "Display language")} description={t("切り替えるとページを再読み込みします。戦略データや保存した記録は翻訳されません。", "Switching reloads the page. Strategy data and saved records are not translated.")}>
       <Choice label={t("表示言語", "Display language")} value={locale} onChange={value => value !== locale && selectProductLocale(value)}
-        options={[{ value: "en", label: "English", native: true }, { value: "ja", label: "日本語", native: true }]} />
+        options={LOCALES.map(item => ({ ...item, native: true }))} />
     </SettingRow>
   </section>;
 }

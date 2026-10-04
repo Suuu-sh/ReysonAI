@@ -35,7 +35,7 @@ export function spotTitle(spot) {
 }
 
 export function spotPrompt(spot) {
-  if (productLocale() === "en") {
+  if (productLocale() !== "ja") {
     if (spot.kind === "open") {
       const before = POSITIONS.slice(0, POSITIONS.indexOf(spot.hero));
       return before.length ? `${before.join(", ")} folded. You are ${spot.hero}.` : `You are first to act in ${spot.hero}.`;
@@ -234,7 +234,7 @@ function seatNote(action, category, spot) {
 
 export function studyNote(action, hand, spot = null) {
   const category = handCategory(hand);
-  if (productLocale() === "en") {
+  if (productLocale() !== "ja") {
     const family = {
       pair_high: "a high pocket pair", pair_low: "a small or middle pocket pair", suited_ace: "a suited ace",
       suited_broadway: "a suited broadway hand", suited_connector: "a suited connector", suited_other: "a suited hand",

@@ -54,7 +54,7 @@
 .site h2 { font-size: clamp(28px, 3vw, 46px); font-weight: 700; line-height: 1.2; text-wrap: balance; }
 .site h2 span { color: var(--muted); }
 .site h2 span::before { content: " "; }
-.site-ja h2 span::before { content: none; }
+.site-ja h2 span::before, .site-zh-CN h2 span::before { content: none; }
 .site-ja h1, .site-ja h2, .site-ja h3 { letter-spacing: -.01em; }
 .site-ja h2 { font-size: clamp(25px, 2.8vw, 42px); line-height: 1.25; }
 .site-visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -91,7 +91,7 @@
 .site-nav a:hover { color: var(--ink); }
 .site-nav a:hover::after { transform: scaleX(1); transform-origin: left; }
 .site-header-actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
-.site .site-lang { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 6px 12px; border: 1px solid var(--line-strong); border-radius: var(--badge-radius); color: var(--muted); font-size: 12px; font-weight: 600; transition: color .2s ease, border-color .2s ease; }
+.site .site-lang { width: auto; max-width: 126px; margin: 0; background: var(--surface); font-family: inherit; cursor: pointer; color-scheme: dark; display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 6px 12px; border: 1px solid var(--line-strong); border-radius: var(--badge-radius); color: var(--muted); font-size: 12px; font-weight: 600; transition: color .2s ease, border-color .2s ease; }
 .site .site-lang:hover { border-color: var(--muted); color: var(--ink); }
 .site .site-menu { display: none; place-items: center; width: 40px; height: 40px; border-radius: var(--control-radius); }
 

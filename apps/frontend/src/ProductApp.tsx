@@ -2,7 +2,7 @@ import { LearningAccess, isLearningSection, learningAllowed, readLearningIntent,
 import { AuthPanel, useAccount } from "./account/AuthPanel.tsx";
 import { accountSnapshot, logoutAccount, refreshAccount, revalidateAccountSession, startGoogleSignIn } from "./account/session.ts";
 import { applyAppearance } from "./account/preferences.ts";
-import { localized } from "./locale.ts";
+import { localized, productLocale } from "./locale.ts";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Onboarding } from "./components/Onboarding.tsx";
 import { RangeWorkspace } from "./estimated/RangeWorkspace.tsx";
@@ -11,13 +11,19 @@ import { adoptOnboardingDraft, clearProfile, loadProfile, saveProfile, stashOnbo
 import { AccountPage, LogoutDialog } from "./account/AccountPage.tsx";
 import { ACCOUNT_SECTION } from "./account/AccountMenu.tsx";
 import { clearPracticeData } from "./account/preferences.ts";
-import { LOGOUT_SECTION, RANGE_SECTION } from "./components/layout.tsx";
+import { LOGOUT_SECTION, RANGE_SECTION, Sidebar } from "./components/layout.tsx";
 import { localizeProductSurface } from "./i18n.ts";
 import { HOME_PATH, WELCOME_PATH, canonicalPath, pathOfSection, sectionOfPath } from "./route.ts";
 
 export default function ProductApp() {
-  useLayoutEffect(() => localizeProductSurface(document.getElementById("root")), []);
   const account = useAccount();
+  const locale = productLocale();
+  useLayoutEffect(() => localizeProductSurface(document.getElementById("root"), locale), [locale]);
+  const pageTitle = localized("Range Analysis", "レンジ分析");
+  useLayoutEffect(() => {
+    document.documentElement.lang = locale;
+    document.title = `ReysonAI · ${pageTitle}`;
+  }, [locale, pageTitle]);
   const [authOpen, setAuthOpen] = useState(window.location.hash.startsWith("#account-error="));
   const [logoutError, setLogoutError] = useState(false);
   useEffect(() => {
@@ -78,12 +84,12 @@ export default function ProductApp() {
   const shared = { profile, onEditProfile: () => setEditing(true), onSectionChange: navigate };
   const [sectionName, tab] = section.split("#");
   const page = sectionName === ACCOUNT_SECTION ? <AccountPage {...shared} tab={tab} onProfileSaved={setProfile} />
-    : isLearningSection(section) ? <LearningAccess account={account} onBack={() => navigate(RANGE_SECTION)} onChanged={reloadProfile}><TrainerPage {...shared} section={section} path={path} onNavigate={go} /></LearningAccess>
+    : isLearningSection(section) ? <LearningAccess account={account} navigation={<Sidebar {...shared} activeSection={section} />} onBack={() => navigate(RANGE_SECTION)} onChanged={reloadProfile}><TrainerPage {...shared} section={section} path={path} onNavigate={go} /></LearningAccess>
     : <RangeWorkspace {...shared} />;
   return <>
     {account.error && account.user && <p role="alert" className="account-sync-error">{localized("Account saving unavailable. Export records in Settings before reloading. No automatic retry.", "アカウント保存が利用できません。再読込前に設定から記録を書き出してください。自動再試行はしません。")}</p>}
     {logoutError && <p role="alert">{localized("Sign out failed. Your session is unchanged.", "ログアウトできませんでした。セッションは変更していません。")}</p>}
-    <div key={account.user?.id ?? "guest"}>{page}</div>
+    <div key={`${account.user?.id ?? "guest"}:${locale}`}>{page}</div>
     {loggingOut && <LogoutDialog onCancel={() => setLoggingOut(false)} onConfirm={async ({ clearData }) => {
       if (accountSnapshot().user) { try { await logoutAccount(); } catch { setLogoutError(true); return; } setLoggingOut(false); go(HOME_PATH); reloadProfile(); return; }
       if (clearData) clearPracticeData();
