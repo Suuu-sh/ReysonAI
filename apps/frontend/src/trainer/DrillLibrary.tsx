@@ -205,12 +205,14 @@ function RankedEmblem({ rank, tier }) {
   </div>;
 }
 
-// Master in front; on hover every tier slides out from behind it into one row (bronze → master).
+// Master stays in the middle; on hover the other tiers slide out from behind it, strongest first,
+// alternating right and left (diamond right, platinum left, gold right, ...).
+const fanOffset = strength => strength === 0 ? 0 : strength % 2 ? (strength + 1) / 2 : -strength / 2;
 function RankFan() {
   const last = TIERS.length - 1;
   return <div className="rank-fan" aria-hidden="true">
     {TIERS.map((tier, index) => <span key={tier.name} className={`rank-fan-item${index === last ? " is-front" : ""}`}
-      style={{ "--k": index - last / 2, "--d": last - index, zIndex: index + 1 }}>
+      style={{ "--k": fanOffset(last - index), "--d": last - index, zIndex: index + 1 }}>
       <RankBadge name={tier.name} size={64} />
     </span>)}
   </div>;
