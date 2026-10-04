@@ -1,8 +1,11 @@
 # 3人SRP・段階1 実装記録（未完了）
 
-更新: 2026-10-04 22:10 UTC。到達可能16経路のうち、独立品質受入れ済みは5/16（CO→BTN→BB、HJ→BTN→BB、HJ→CO→BB、UTG→BTN→BB、UTG→CO→BB）、公開承認済み0。全16の個別Astra author profileと共通数値基盤の独立reviewは完了し、残11は個別compile・同じ全量gate待ちです。次のUTG→HJ→BB / CO→BTN→SBを逐次検証中です。Range/Agent/APIの専用consumerは実装・静的review・focused testsまで完了し、実browser QAを準備中です。正式archive/receipt、実strictD1、LFS配送、全体release gateは未完了です。下の時刻付き記録は各時点の履歴であり、現在の公開可否はこの冒頭と次節を優先してください。
+更新: 2026-10-04 22:34 UTC。到達可能16経路のうち、独立品質受入れ済みは7/16（前5経路にUTG→HJ→BB、CO→BTN→SBを追加）、公開承認済み0。全16の個別Astra author profileと共通数値基盤の独立reviewは完了し、残9は個別compile・同じ全量gate待ちです。次のHJ→BTN→SBを検証中です。Range/Agent/APIの専用consumerは実装・静的review・focused testsまで完了し、実browser QAを準備中です。正式archive/receipt、実strictD1、LFS配送、全体release gateは未完了です。下の時刻付き記録は各時点の履歴であり、現在の公開可否はこの冒頭と次節を優先してください。
 
 ## 現在の検証済み範囲
+
+- UTG→HJ→BB / CO→BTN→SBも限定受入れ。独立Astraが14raw files・122,490 rules・計240k handsのaccounting/replay参照を照合した。警告40/27を保持し、SB版の8.5BB pot、92 flop / 1,111 later contexts、cent単位の125%額10.63BBも個別確認。詳細は `multiway-postflop-stage1.narrow-quality-review.md`。
+- 保存物restore/CI verifierは全16保持によるメモリ問題、committed inventory消失、current HEAD sourceの未照合、CI trigger不足、raw Git archive受理の5件を修正し、独立Astra再reviewで静的GO。18契約と合成16spot lifetime試験、実empty inventory verify/restoreはPASS。実16保存物の容量確認と公式LFS/receiptは別gate。`../mw3-saved-restore-independent-review.md`参照。
 
 - UTG→BTN→BB / UTG→CO→BBも各1755flop・236laterでerror/gap0、joint90×20k＋18支持0、自己対戦120k＋full replay一致。独立Astraは14raw files、123,012 rules、計240k handsのaccountingを照合し限定受入れ。両方36警告、最悪の参考MDF差は−34.0600 / −34.3814pt。`multiway-postflop-stage1.utg-quality-review.md`に詳細を保存した。
 - 歴史author rationaleのconnector表現を同reviewのerrataで訂正した。HJ/CO対UTGにはJTs/QJs/KQsのcall支持があり、欠ける低いconnectorはT9s以下。全45 source-support listは現JSONの正の支持と一致し、説明誤りで実rangeを削ってはいない。recipe-pinned文言と保存頻度は歴史bytesとして保持する。
@@ -76,7 +79,7 @@
 
 ## 未完了・公開gate
 
-1. 残11を個別author profileからcompileし、既存と同じ全量gateと独立Astra品質reviewを閉じる。警告・支持0・未計測条件を保存する。
+1. 残9を個別author profileからcompileし、既存と同じ全量gateと独立Astra品質reviewを閉じる。警告・支持0・未計測条件を保存する。
 2. 実browserで3表・exact combo・3→2・全street・rewind/reset/失敗retryとAgent精算を確認し、既存HUの表示回帰を確認する。
 3. 最終sourceを固定後、各経路のhash付きarchive/manifest・独立receipt・一致SQLを作る。全量strict local D1で保存/API/再起動/rollback/既存データ保全を確認する。
 4. 実Git LFS uploadとfresh fetch/hash確認を行い、Actionsはrestore/verifyのみとする。pointerのみを配送完了としない。

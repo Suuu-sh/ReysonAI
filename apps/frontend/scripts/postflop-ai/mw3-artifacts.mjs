@@ -11,6 +11,9 @@ export function mw3ImplementationHash() {
     readFileSync(join(mw3Root, 'scripts/postflop-ai', path), 'utf8')])));
 }
 const probes = new Map();
+// Byte-restore verification scopes contract witnesses to one spot at a time.
+// Clearing this optional memoization changes no numerical contract/results.
+export function clearMw3ContractCache() { const count = probes.size; probes.clear(); return count; }
 export function mw3Contract(inputs) {
   const key = `${inputs.spot.id}|${inputs.spot.potBb}|${inputs.spot.stackBb}`;
   if (!probes.has(key)) probes.set(key, probeMw3Hand(inputs.spot));

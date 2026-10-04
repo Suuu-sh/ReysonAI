@@ -1,16 +1,38 @@
 // Byte-only, single-spot Mw3 preservation. Packaging is not policy acceptance.
 // Reuse the already-reviewed writer/safe-IO primitives without changing HU code.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { closeSync, constants, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { inflateRawSync, crc32 } from 'node:zlib';
-import { assertSafeFile, assertRecords, encodeArchive, jsonBytes, readSafeFile, sha256, validHash } from './reviewed-postflop-archive.mjs';
-export { jsonBytes, readSafeFile, sha256 };
+import { assertSafeFile, assertRecords, encodeArchive, jsonBytes, sha256, validHash } from './reviewed-postflop-archive.mjs';
+export { jsonBytes, sha256 };
 export const MW3_ARCHIVE_LIMITS = Object.freeze({ file: 16 * 1024 * 1024, total: 48 * 1024 * 1024, compressed: 8 * 1024 * 1024, manifest: 2 * 1024 * 1024 });
 export const MW3_ARTIFACT_PREFIX = 'apps/frontend/.local/postflop-ai/mw3/';
 export const MW3_REPORT_NAMES = Object.freeze(['all-flops', 'joint-defence', 'later-runouts', 'simulation', 'simulation-replay']);
 const fail = message => { throw new Error(message); };
 const sorted = values => [...values].sort();
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+// Capture one bounded regular-file descriptor. O_NOFOLLOW and before/after
+// identity checks reject a replaced final path; bounded reads never follow a
+// growing file into an unbounded allocation. Keep the shared HU helper intact.
+export function readSafeFile(root, path, limit = MW3_ARCHIVE_LIMITS.file) {
+  assertSafeFile(root, path);
+  const fd = openSync(join(root, path), constants.O_RDONLY | constants.O_NOFOLLOW);
+  try {
+    const before = fstatSync(fd, { bigint: true });
+    if (!before.isFile() || !Number.isSafeInteger(limit) || limit < 0 || before.size > BigInt(limit)) fail(`File exceeds byte limit: ${path}`);
+    const body = Buffer.alloc(Number(before.size) + 1); let used = 0;
+    while (used < body.length) {
+      const count = readSync(fd, body, used, body.length - used, null);
+      if (!count) break;
+      used += count;
+    }
+    const after = fstatSync(fd, { bigint: true });
+    assertSafeFile(root, path);
+    const named = lstatSync(join(root, path), { bigint: true });
+    if (used !== Number(before.size) || ['dev', 'ino', 'size', 'mtimeNs', 'ctimeNs'].some(key => before[key] !== after[key] || after[key] !== named[key])) fail(`File changed while reading: ${path}`);
+    return body.subarray(0, used);
+  } finally { closeSync(fd); }
+}
 const SOURCE_PATH = /^(?:apps\/frontend\/(?:scripts\/(?:postflop-ai|lib|data)\/[^.][A-Za-z0-9_./-]*\.(?:mjs|json|py)|src\/[A-Za-z0-9_/-]+\.(?:ts|tsx|json|css|png|svg)|(?:package(?:-lock)?|tsconfig)\.json|docs\/[A-Za-z0-9_./-]+\.md)|apps\/backend\/(?:src|scripts|tests)\/[A-Za-z0-9_./-]+|apps\/shared\/[A-Za-z0-9_-]+\.ts|configs\/[A-Za-z0-9_-]+\.json|\.gitattributes)$/;
 export function mw3ArchiveContentHash(manifest) {
   const { archive, content_sha256, ...content } = manifest;
@@ -107,12 +129,12 @@ export function restoreMw3ArchiveBytes(root, manifest, files) {
     const body = files.get(item.path);
     if (!Buffer.isBuffer(body) || body.length !== item.bytes || sha256(body) !== item.sha256) fail('Mw3 restore bytes differ');
     assertSafeFile(root, item.path, { missing: true });
-    if (existsSync(join(root, item.path)) && !readFileSync(join(root, item.path)).equals(body)) fail('Existing Mw3 artifact differs and is preserved');
+    if (existsSync(join(root, item.path)) && !readSafeFile(root, item.path, item.bytes).equals(body)) fail('Existing Mw3 artifact differs and is preserved');
   }
   for (const [path, body] of files) {
     mkdirSync(dirname(join(root, path)), { recursive: true }); assertSafeFile(root, path, { missing: true });
     if (existsSync(join(root, path))) {
-      if (!readFileSync(join(root, path)).equals(body)) fail('Mw3 artifact changed during restoration');
+      if (!readSafeFile(root, path, body.length).equals(body)) fail('Mw3 artifact changed during restoration');
     } else writeFileSync(join(root, path), body, { flag: 'wx', mode: 0o644 });
   }
   return { files: files.size, bytes: manifest.artifacts.reduce((sum, row) => sum + row.bytes, 0) };
