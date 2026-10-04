@@ -5,7 +5,7 @@ This is source/provenance preservation for an unapproved offline experiment, not
 - Target: private `Suuu-sh/ReysonAI`, branch `fix/low-flop-evidence-preview`, Draft PR against `development`.
 - Remote base inspected: `506b1235689189ec634f6dc5d7d3832d88ad0da8`.
 - No automatic merge, production import, legacy policy rewrite, classifier replacement or old-report refresh is included.
-- The active experiment is closed-driver v3, using only the four original exact negative contexts. Its new 36-contract execution gate is pending; v1/v2 logs retain their original identities.
+- The active experiment is closed-driver v3, using only the four original exact negative contexts. Its 36-contract local execution gate and independent limited-research review passed; v1/v2 logs retain their original identities.
 - The fixed evidence comes from main `2064a41011f0e91685e592c6e5f4c07f07ba7570`, with the full inherited runtime/fallback behavior. It must not be relabeled as evidence for a newer runtime.
 
 ## Real archive delivery is still pending
@@ -31,3 +31,7 @@ The output roots must be fresh. These commands never repeat the 8,192-sample stu
 Local authoring checkpoint IDs in historical reports are local Git provenance, not promises that those commits exist as remote refs. The archive contains the exact checkpoint source subset; its manifest/file identities and the verified remote main blobs anchor reproducibility. The initial `pack` command needs the original authoring history and inputs. Portable exact reconstruction uses `repack` from a verified restored root and the fixed manifest.
 
 Nine of fifteen selected continuation cases have negative conservative intervals, four are inconclusive and two are positive under the fixed runtime. That selected research does not justify a broad calling rule. The experimental activation stays at four exact rows among 21,546 checked rows. There is no GTO or optimal-frequency claim. Actual application would need a trusted approval supply path, model/derived-artifact handling, fresh-runtime validation and a separate production decision.
+
+## Verified remote blocker
+
+The first Draft head `02a960a11b29cd8588105b6a5df786a62ba02297` passed the public postflop runtime-config check. The reviewed-data workflow stopped during checkout because the exact research LFS object returned server 404; its deployment job was skipped. This is a real object-delivery blocker, not a successful remote research validation, and no LFS check or required gate was weakened to hide it.

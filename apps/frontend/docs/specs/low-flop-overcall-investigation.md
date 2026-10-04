@@ -126,3 +126,7 @@ The positive flush-draw control has no floor addition. It must not be described 
 These comparisons hold the existing future policy, fallback behavior and observed-bet support fixed. They compare forced call with folding now; they do not optimize later decisions, compare raises, or prove an equilibrium policy. Total measured case execution was 248.329 seconds, maximum RSS 349,716 KiB. Full raw evidence, source identities and execution records are in `low-flop-overcall.additional-rollouts.json`.
 
 The four-context preview currently changes only four of 21,546 archived node/combo rows, with node-wide call reductions of approximately 0.11–0.87 percentage points. This limited prototype does not resolve general overcalling. Its table substitution is not a full integrated Gate impact audit.
+
+## Current delivery checkpoint
+
+A closed, explicitly unapproved v3 preview now passes 36 mandatory contracts and independent limited-research review. It runs the unchanged frozen main engine and changes only the four original exact contexts: 4 of 21,546 audited rows. Its active-input boundary rejects caller iterators, accessors, proxies and foreign execution objects. See `low-flop-overcall.runtime-preview.md` and its v3 execution review. This remains a small research candidate, not a general quality correction or a change to the current application. Draft PR #45 preserves source/provenance; actual GitHub LFS object delivery and clean remote materialization are still pending.
