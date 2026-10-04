@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, ClockCounterClockwise, Play } from "@phosphor-icons/react";
 import { RESULT_LABELS, spotById, spotTitle } from "./trainer-data.ts";
+import { displayDrillName } from "./drill-store.ts";
 import { practiceSessionRows } from "./practice-sessions.ts";
 import { localized, localeTag } from "../locale.ts";
 import "./sessions.css";
@@ -23,13 +24,19 @@ function Cards({ cards }) {
     <span key={`${card}-${index}`} className={`suit-${card[1]}`}>{card[0]}{SUITS[card[1]] ?? card[1]}</span>)}</span>;
 }
 
+export function displaySessionName(session) {
+  if (session.kind === "review") return localized("Review drill", "復習ドリル");
+  if (session.drillId === "ranked") return localized("Ranked match", "ランク戦");
+  return displayDrillName({ id: session.drillId, name: session.name });
+}
+
 function SessionDetail({ session, onBack, onResume }) {
   const hasHistory = Array.isArray(session.hands);
   return <div className="sessions-detail">
     <button type="button" className="config-edit sessions-back" onClick={onBack}><ArrowLeft size={14} />{localized("Sessions", "セッション一覧")}</button>
     <header className="sessions-detail-head">
       <div><span className="sessions-eyebrow">{session.status === "draft" ? "途中保存" : "完了した練習"}</span>
-        <h1 translate="no">{session.name}</h1><p>{dateLabel(session.at)} · Cash · 6max · 100bb</p></div>
+        <h1 translate="no">{displaySessionName(session)}</h1><p>{dateLabel(session.at)} · Cash · 6max · 100bb</p></div>
       {session.status === "draft" && <button type="button" className="mode-primary sessions-resume" onClick={() => onResume(session)}><Play size={14} weight="fill" />{localized("Resume", "続きから")}</button>}
     </header>
     <dl className="trainer-pulse sessions-summary">
@@ -91,10 +98,10 @@ export function SessionPage({ drills, reviews, drafts, onResume }) {
     </tr></thead><tbody>{visible.map(session => <tr key={session.key}>
       <td>{dateLabel(session.at)}</td>
       <td>Cash · 6max</td>
-      <td><button type="button" className="sessions-row-link" translate="no" onClick={() => setSelectedKey(session.key)}>{session.name}</button></td>
+      <td><button type="button" className="sessions-row-link" translate="no" onClick={() => setSelectedKey(session.key)}>{displaySessionName(session)}</button></td>
       <td><span className={`sessions-status ${session.status}`}>{session.status === "draft" ? "途中保存" : "完了"}</span></td>
       <td>{session.answered}</td><td className="sessions-rate">{rateLabel(session.score, session.answered)}</td><td>{durationLabel(session.durationMs)}</td>
-      <td><button type="button" className="sessions-open" aria-label={localized(`View hand history for ${session.name}`, `${session.name}のハンド履歴を見る`)} translate="no" onClick={() => setSelectedKey(session.key)}><ArrowRight size={16} /></button></td>
+      <td><button type="button" className="sessions-open" aria-label={localized(`View hand history for ${displaySessionName(session)}`, `${displaySessionName(session)}のハンド履歴を見る`)} translate="no" onClick={() => setSelectedKey(session.key)}><ArrowRight size={16} /></button></td>
     </tr>)}</tbody></table></div> : <div className="sessions-empty-state"><ClockCounterClockwise size={28} />
       <h2>まだセッションがありません</h2><p>{filter === "all" ? "ドリルで練習を始めると、ここに記録が並びます。" : "この状態のセッションはありません。"}</p></div>}
   </div>;

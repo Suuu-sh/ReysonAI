@@ -17,7 +17,7 @@ import { displayModes } from "./display-mode.ts";
 import { displayModeKey } from "../profile.ts";
 import { useDetailedReasons } from "./detailed-reasons.ts";
 import { localizedPreflopReason, localizedFactLabel, localizedEquityNote } from "./english-reasons.ts";
-import { productLocale } from "../i18n.ts";
+import { productLocale, translateProductCopy } from "../i18n.ts";
 import { localized } from "../locale.ts";
 import { fiveBetMatrixModel, useFiveBetSpot } from "./five-bet-responses.ts";
 import {
@@ -244,7 +244,6 @@ export function prioritizeParticipantRanges(rangeEntries, selectedActionEntries)
 
 function ActionDropdown({ position, options, onSelect }) {
   const [menu, setMenu] = useState(null);
-  const english = productLocale() !== "ja";
   const toggle = event => {
     event.stopPropagation();
     if (menu) { setMenu(null); return; }
@@ -252,11 +251,11 @@ function ActionDropdown({ position, options, onSelect }) {
     setMenu({ top: rect.bottom + 4, right: Math.max(8, window.innerWidth - rect.right) });
   };
   return <div className="action-seat-select" onClick={event => event.stopPropagation()}>
-    <button type="button" className="action-seat-select-trigger" aria-haspopup="menu" aria-expanded={Boolean(menu)} aria-label={`${position}のアクションを選択`} onClick={toggle}>{english ? "Take action" : "アクションを選択"}<CaretDown size={12} aria-hidden="true" /></button>
+    <button type="button" className="action-seat-select-trigger" aria-haspopup="menu" aria-expanded={Boolean(menu)} aria-label={localized(`Choose action for ${position}`, `${position}のアクションを選択`)} onClick={toggle}>{localized("Take action", "アクションを選択")}<CaretDown size={12} aria-hidden="true" /></button>
     {menu && createPortal(<>
-      <button type="button" className="action-seat-select-backdrop" aria-label="閉じる" onClick={() => setMenu(null)} />
+      <button type="button" className="action-seat-select-backdrop" aria-label={localized("Close", "閉じる")} onClick={() => setMenu(null)} />
       <div className="action-seat-select-menu" role="menu" style={{ top: menu.top, right: menu.right }}>
-        {options.map(option => <button type="button" role="menuitem" key={option.action} onClick={() => { setMenu(null); onSelect(option.action); }}>{option.label}</button>)}
+        {options.map(option => <button type="button" role="menuitem" key={option.action} onClick={() => { setMenu(null); onSelect(option.action); }}>{translateProductCopy(option.label)}</button>)}
       </div>
     </>, document.body)}
   </div>;
