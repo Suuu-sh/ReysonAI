@@ -47,7 +47,7 @@ export const en = {
   },
   agent: {
     status: "Beta", title1: "Agent table.", title2: "Put it to work in real hands.",
-    description: "Sit at a 6-max table with five Agents that play the Reyson AI estimate. Use the ranges you studied on the hands you are dealt. Fold any time, then watch the rest or skip ahead.",
+    description: "Sit at a 6-max table with five Agents that play the Reyson AI estimate. Use the ranges you studied on the hands you are dealt.",
     points: ["Every Agent plays the Reyson solver (AI estimate)", "100BB cash game, results kept in points", "Your play style read from your latest 1,000 hands", "Heads-up after the flop for now (beta)"],
     sample: "Sample",
   },

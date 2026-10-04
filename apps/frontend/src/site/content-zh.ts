@@ -45,7 +45,7 @@ export const zh: SiteCopy = {
   },
   agent: {
     status: "测试版", title1: "Agent牌桌，", title2: "在实战手牌中运用所学。",
-    description: "与5个按照Reyson AI估算行动的Agent同坐6人桌。在发到的手牌中运用学过的范围。随时可以弃牌，然后旁观余下行动或跳到下一手。",
+    description: "与5个按照Reyson AI估算行动的Agent同坐6人桌。在发到的手牌中运用学过的范围。",
     points: ["每个Agent都按照Reyson solver（AI估算）行动", "100BB现金局，以积分记录结果", "根据最近1,000手牌分析你的打法风格", "目前翻牌后仅支持单挑（测试版）"],
     sample: "示例",
   },

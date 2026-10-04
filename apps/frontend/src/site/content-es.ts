@@ -45,7 +45,7 @@ export const es: SiteCopy = {
   },
   agent: {
     status: "Beta", title1: "Mesa de Agents.", title2: "Aplica lo aprendido.",
-    description: "Siéntate en una mesa de 6 jugadores con cinco Agents que siguen la estimación de Reyson AI. Aplica los rangos estudiados a las manos que recibas. Retírate cuando quieras y observa el resto o salta a la siguiente mano.",
+    description: "Siéntate en una mesa de 6 jugadores con cinco Agents que siguen la estimación de Reyson AI. Aplica los rangos estudiados a las manos que recibas.",
     points: ["Cada Agent sigue Reyson solver (estimación de IA)", "Cash de 100BB, con resultados en puntos", "Tu estilo de juego según tus últimas 1,000 manos", "Después del flop, solo uno contra uno por ahora (beta)"],
     sample: "Ejemplo",
   },
