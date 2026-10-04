@@ -2,6 +2,7 @@ import { isNativeAccountRequest, routeNativeAccount } from "./native-account.ts"
 import { routeAccount, type AccountEnv } from "./account.ts";
 import { routePostflop, type D1Database } from "./postflop.ts";
 import { routePreflopDatasets } from "./preflop-datasets.ts";
+import { POSTFLOP_RUNTIME_CONFIG_PATH, routePostflopRuntimeConfig } from "./postflop-runtime-config.ts";
 
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"] as const;
 
@@ -69,6 +70,10 @@ const JSON_HEADERS = {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    // Public, version-pinned browser inputs need no account, D1/R2, dataset cache
+    // or environment access, including for invalid methods and query strings.
+    const runtimeUrl = new URL(request.url);
+    if (runtimeUrl.pathname === POSTFLOP_RUNTIME_CONFIG_PATH) return routePostflopRuntimeConfig(request, runtimeUrl);
     try {
       if (request.method === "OPTIONS") {
         return withCors(new Response(null, { status: 204 }), request, env);
