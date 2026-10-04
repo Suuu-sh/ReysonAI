@@ -702,25 +702,26 @@
 
 /* Hover reveals (2026-10-04): ranked tiers slide out from behind master, the Agent lineup spreads
    out from the middle face, and the drill barbell does a lift. */
-.rank-fan { position: relative; width: 100%; height: 150px; container-type: inline-size; }
+.rank-fan { position: relative; width: 100%; height: 170px; container-type: inline-size; }
 .rank-fan-item { position: absolute; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.55);
   transition: transform .5s var(--ease-out) calc(var(--d) * 45ms), opacity .3s ease calc(var(--d) * 45ms); }
 .rank-fan-item.is-front { opacity: 1; transform: translate(-50%, -50%) scale(2.2); }
 .mode-block:is(:hover, :focus-within) .rank-fan-item { opacity: 1; transform: translate(calc(-50% + var(--k) * min(46px, 16cqi)), -50%) scale(.62); }
-.agent-lineup { position: relative; min-height: 160px; container-type: inline-size; }
+.agent-lineup { position: relative; min-height: 170px; container-type: inline-size; }
 .agent-lineup .agent-table-face { position: absolute; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.7);
   transition: transform .5s var(--ease-out) calc(var(--d) * 50ms), opacity .3s ease calc(var(--d) * 50ms); }
-.agent-lineup .agent-table-face.is-front { opacity: 1; transform: translate(-50%, -50%) scale(2.1); }
+/* Resting emblems share one size: ranked 64px × 2.2 ≈ 140px; Agent 52px × 2.7; drill cards 102px × 1.37. */
+.agent-lineup .agent-table-face.is-front { opacity: 1; transform: translate(-50%, -50%) scale(2.7); }
 .mode-block.is-agent:is(:hover, :focus-within) .agent-table-face { opacity: 1; transform: translate(calc(-50% + var(--k) * min(66px, 20cqi)), -50%) scale(.9); }
 .mode-block.is-drills:is(:hover, :focus-within) @media (prefers-reduced-motion: reduce) {
   .rank-fan-item, .agent-lineup .agent-table-face { transition: none; }
   .mode-block.is-drills:is(:hover, :focus-within) }
 
 /* Drill deck: three flashcards stacked like the other emblems; on hover they fan out. */
-.drill-deck { position: relative; width: 100%; height: 150px; }
+.drill-deck { position: relative; width: 100%; height: 170px; }
 .drill-deck-card { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 74px; height: 102px; border: 1.5px solid color-mix(in srgb, var(--mode-theme) 70%, transparent); border-radius: 12px;
   background: linear-gradient(160deg, color-mix(in srgb, var(--mode-theme) 22%, #18121a) 0%, #120d12 100%); box-shadow: 0 10px 26px rgb(0 0 0 / 45%), 0 0 22px color-mix(in srgb, var(--mode-theme) 22%, transparent);
-  transform: translate(-50%, -50%) rotate(calc(var(--k) * 4deg)) translateY(calc(var(--k) * -3px)) scale(1.25); transition: transform .5s var(--ease-out); }
+  transform: translate(-50%, -50%) rotate(calc(var(--k) * 4deg)) translateY(calc(var(--k) * -3px)) scale(1.37); transition: transform .5s var(--ease-out); }
 .drill-deck-card b { color: var(--mode-theme); font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
 .drill-deck-card i { position: absolute; bottom: 12px; width: 26px; height: 3px; border-radius: 2px; background: color-mix(in srgb, var(--mode-theme) 55%, transparent); }
 .drill-deck-card:nth-child(3) { z-index: 3; } .drill-deck-card:nth-child(2) { z-index: 2; }
