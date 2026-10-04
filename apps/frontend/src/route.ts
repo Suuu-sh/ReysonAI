@@ -48,7 +48,13 @@ export function isAppPath(pathname: string) {
   return ["/app", "/ranges", "/trainer", "/sessions", "/analysis", "/weakness", "/account", "/learn", "/analyze", "/stats", "/solutions", WELCOME_PATH].some(base => under(path, base));
 }
 
+export function legalDocumentOf(pathname: string): "terms" | "privacy" | null {
+  const path = clean(pathname);
+  return path === "/terms" ? "terms" : path === "/privacy" ? "privacy" : null;
+}
+
 export function isProductAppRoute(pathname: string, hostname: string) {
+  if (legalDocumentOf(pathname)) return false;
   return hostname === "app.reysonai.com" || isAppPath(pathname);
 }
 

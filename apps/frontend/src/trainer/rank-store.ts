@@ -1,58 +1,13 @@
-// Ranked matches: fixed conditions, a daily cap, and an Elo-style rating kept in this browser only.
-// When accounts land, the same records can be sent to the server to build a leaderboard.
+// Legacy local records remain exportable, but are never imported into server rankings.
 import { normalizeSettings } from "./trainer-data.ts";
 
 const KEY = "reysonai.trainer.ranked.v1";
-// Locked in production builds until launch; only the dev server shows ranked matches and the leaderboard.
-export const RANKED_ENABLED = Boolean(import.meta.env?.DEV);
-export const RANKED_LENGTH = 20;
-export const RANKED_DAILY_LIMIT = 3;
-export const START_RATING = 1000;
-const K = 12; // rating points at stake per question
+// The UI additionally requires the live authenticated server readiness response.
+export const RANKED_ENABLED = true;
+import { RANKED_LENGTH, RANKED_DAILY_LIMIT, START_RATING, TIERS, TIER_EN, LEGEND, LEGEND_TOP_N, isLegend, displayTier, tierFor, questionRating, rateMatch, LEADERBOARD_MIN_MATCHES } from "../../../shared/ranked-rules.ts";
+export { RANKED_LENGTH, RANKED_DAILY_LIMIT, START_RATING, TIERS, TIER_EN, LEGEND, LEGEND_TOP_N, isLegend, displayTier, tierFor, questionRating, rateMatch, LEADERBOARD_MIN_MATCHES };
 const MATCH_LIMIT = 100;
-
-// Same conditions for everyone: every spot and seat, standard difficulty and grading, no review mix-in.
 export const RANKED_SETTINGS = Object.freeze(normalizeSettings({ difficulty: "standard", strictness: "standard", review: false }));
-
-export const TIERS = Object.freeze([
-  { name: "ブロンズ", min: 0 },
-  { name: "シルバー", min: 950 },
-  { name: "ゴールド", min: 1100 },
-  { name: "プラチナ", min: 1250 },
-  { name: "ダイヤモンド", min: 1400 },
-  { name: "マスター", min: 1550 },
-]);
-
-export const TIER_EN = { ブロンズ: "Bronze", シルバー: "Silver", ゴールド: "Gold", プラチナ: "Platinum", ダイヤモンド: "Diamond", マスター: "Master", レジェンド: "Legend" };
-
-// Legend is not a rating band: it is the top LEGEND_TOP_N placed players who are in Master
-// (2026-10-04 user decision). It needs everyone's placement, so it only exists on the leaderboard.
-export const LEGEND = "レジェンド";
-export const LEGEND_TOP_N = 10;
-export const isLegend = (rating, place) => place != null && place <= LEGEND_TOP_N && rating >= TIERS.at(-1).min;
-export const displayTier = (rating, place = null) => isLegend(rating, place) ? LEGEND : tierFor(rating).name;
-
-export function tierFor(rating) {
-  const index = TIERS.findLastIndex(tier => rating >= tier.min);
-  const tier = TIERS[index];
-  const next = TIERS[index + 1] ?? null;
-  return { ...tier, next, progress: next ? (rating - tier.min) / (next.min - tier.min) : 1 };
-}
-
-// Clear-cut hands are easy to get right, mixed-frequency hands are hard.
-export function questionRating(mix) {
-  const top = Math.max(...Object.values(mix ?? {}), 0);
-  return top >= 0.9 ? 850 : top >= 0.7 ? 1050 : 1250;
-}
-
-export function rateMatch(rating, log) {
-  let current = rating;
-  for (const item of log) {
-    const expected = 1 / (1 + 10 ** ((questionRating(item.mix) - current) / 400));
-    current += K * (item.score - expected);
-  }
-  return Math.round(current);
-}
 
 const dayKey = at => { const d = new Date(at); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
 
@@ -87,7 +42,7 @@ export function saveRankState(state) {
 
 // --- Leaderboard ---
 // `others` will come from the server once accounts exist; today only this browser's player is known.
-export const LEADERBOARD_MIN_MATCHES = 3;
+
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 export function playerSummary(state, period = "all", now = Date.now()) {

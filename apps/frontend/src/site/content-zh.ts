@@ -87,5 +87,5 @@ export const zh: SiteCopy = {
     ],
   },
   final: { title1: "下一次练习，", title2: "从一手牌开始。", description: "打开应用，选择局面，点击一手牌。", action: "打开ReysonAI", note: "免费预览 · 无需账户" },
-  footer: { tagline: "Don't just play. Understand why.", product: "产品", open: "打开应用", how: "使用方法", drill: "训练", analysis: "分析", compare: "对比", pricing: "价格", faq: "常见问题", legal: "法律条款", privacy: "隐私政策 · 即将推出", terms: "使用条款 · 即将推出", disclaimer: "ReysonAI提供扑克策略和学习信息。AI方案属于估算，不保证数学最优，也不保证等同于GTO解。请理性游戏。" },
+  footer: { tagline: "Don't just play. Understand why.", product: "产品", open: "打开应用", how: "使用方法", drill: "训练", analysis: "分析", compare: "对比", pricing: "价格", faq: "常见问题", legal: "法律条款", privacy: "隐私政策", terms: "使用条款", disclaimer: "ReysonAI提供扑克策略和学习信息。AI方案属于估算，不保证数学最优，也不保证等同于GTO解。请理性游戏。" },
 };
