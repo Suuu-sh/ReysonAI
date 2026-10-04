@@ -74,7 +74,7 @@ function Harness({ currentContext, currentSelection, client, active = true }) {
 }
 test('dedicated renderer shows three initial matrices, localized roles and exact combo controls without EV', async () => {
   await domTest(async ({ root }) => {
-    const view = mw3DecisionView(kit.inputs, kit.policies, { board: [48, 22, 3], paths: { flop: [] } });
+    const view = mw3DecisionView(kit.inputs, kit.policies, { board: [51, 21, 0], paths: { flop: [] } });
     for (const locale of ['en', 'ja', 'zh-CN', 'es']) {
       window.localStorage.setItem(LOCALE_KEY, locale);
       await act(async () => root.render(React.createElement(Mw3RangeView, { view, locale })));
@@ -121,7 +121,7 @@ test('rewind and board replacement render only the newest numerical view and kee
     await render(selection()); await flush();
     assert.equal(document.querySelector('[data-actions]').dataset.actions, '');
     await render(selection({ flopCards: ['Kh', '9d', '4c'] })); await flush();
-    assert.equal(document.querySelector('[data-board]').dataset.board, [45, 30, 11].join(','));
+    assert.equal(document.querySelector('[data-board]').dataset.board, [46, 29, 8].join(','));
     assert.equal(document.querySelectorAll('.mw3-tables > .matrix-panel').length, 3);
   });
 });

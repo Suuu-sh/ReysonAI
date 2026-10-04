@@ -9,6 +9,7 @@ import { buildActionBlocks, decodeRangeUrl, encodeRangeUrl, defaultRangeSelectio
 import { defaultFormat } from '../src/estimated/game-formats.ts';
 import { DEFAULT_PROFILE } from '../src/estimated/table-profile.ts';
 import { postflopSpotFor } from '../src/agent/hand.ts';
+import { cardText } from '../scripts/postflop-ai/flop-isomorphism.mjs';
 import { mw3DecisionView } from '../scripts/postflop-ai/mw3-runtime.mjs';
 import { deliveryFixture } from './helpers/mw3-consumer-fixture.mjs';
 const fixture = await deliveryFixture(), kit = await fixture.client.load(fixture.id), spot = kit.inputs.spot;
@@ -94,4 +95,27 @@ test('three-player URL roundtrips full streets without invoking HU geometry or a
   assert.deepEqual(rewound.flopActions, ['check']); assert.equal(rewound.turnCard, ''); assert.equal(rewound.riverCard, '');
   const clientCode = source('estimated/mw3-browser.ts');
   assert.doesNotMatch(clientCode.replace(/^\s*\/\/.*$/gm, ""), /localStorage|window\.location|searchParams\.get/);
+});
+
+test('Range board IDs use the shared cdhs convention for every physical card', () => {
+  for (let card = 0; card < 52; card++) {
+    const ids = [card, (card + 1) % 52, (card + 2) % 52];
+    const navigation = buildMw3RangeNavigation(spot, selection({ flopCards: ids.map(cardText) }));
+    assert.deepEqual(navigation.board, ids);
+    assert.deepEqual(navigation.board.map(cardText), ids.map(cardText));
+  }
+});
+test('visible flop/turn/river cards block those exact suit combinations in all participant tables', () => {
+  for (const extra of [{}, { flopActions: ['check', 'check', 'check'], turnCard: '3h' },
+    { flopActions: ['check', 'check', 'check'], turnCard: '3h', turnActions: ['check', 'check', 'check'], riverCard: '4s' }]) {
+    const state = selection(extra), visible = [...state.flopCards, ...[state.turnCard, state.riverCard].filter(Boolean)];
+    const navigation = buildMw3RangeNavigation(spot, state);
+    assert.deepEqual(navigation.board, [51, 21, 0, 6, 11].slice(0, visible.length));
+    assert.deepEqual(navigation.board.map(cardText), visible);
+    const view = mw3DecisionView(kit.inputs, kit.policies, navigation);
+    assert.equal(view.participants.length, 3);
+    for (const participant of view.participants) for (const row of participant.rows) for (const combo of row.combos) {
+      assert.ok(combo.cards.every(card => !visible.includes(cardText(card))), `${participant.seat}: displayed board card reappeared in hole combo`);
+    }
+  }
 });

@@ -1,9 +1,10 @@
 import { applyMw3Action, createMw3Table, mw3Decision, settleMw3, startMw3Street } from "../../scripts/postflop-ai/mw3-engine.mjs";
+import { cardIds } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
 import { cloneMw3Table, mw3ActionGroups } from "../../scripts/postflop-ai/mw3-actions.mjs";
 import { mw3ActionLabel, mw3Copy } from "./mw3-copy.ts";
 
 const streets = ["flop", "turn", "river"];
-const cardsToInt = (cards: string[]) => cards.map(card => "23456789TJQKA".indexOf(card[0]) * 4 + "shdc".indexOf(card[1]));
+const cardsToInt = (cards: string[]) => cardIds(cards.join(""), cards.length);
 const validCards = (cards: string[], count: number) => cards.length === count && cards.every(card => /^[2-9TJQKA][shdc]$/.test(card)) && new Set(cards).size === count;
 export type Mw3RangeSelection = { flopCards: string[]; flopActions: string[]; turnCard: string; turnActions: string[]; riverCard: string; riverActions: string[] };
 
