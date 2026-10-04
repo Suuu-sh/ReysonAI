@@ -2,8 +2,8 @@
 // hand-features.mjs's structural made-hand distinctions, without its ~1,000-opponent
 // strength scan per combo. Existing HU classification and evaluator stay byte-identical.
 import { evaluateContinuation } from '../lib/continuation-evaluator.mjs';
-export const MW3_HAND_CLASSIFIER_VERSION = 2;
-export const MW3_TIERS = Object.freeze(['nuts', 'monster', 'strong', 'draw', 'medium', 'air', 'board_shared', 'board_locked']);
+export const MW3_HAND_CLASSIFIER_VERSION = 4;
+export const MW3_TIERS = Object.freeze(['absolute_nuts', 'nuts', 'monster', 'strong', 'draw', 'medium', 'air', 'board_shared', 'board_locked']);
 function privateDraw(hole, board, currentScore) {
   if (board.length === 5) return false;
   const all = [...hole, ...board], known = new Set(all), ranks = new Set(all.map(card => card >> 2));
@@ -32,6 +32,15 @@ const primaryRank = score => Math.floor(score / 16 ** 4) % 16;
 const secondaryRank = score => Math.floor(score / 16 ** 3) % 16;
 const CATEGORIES = ['highCard', 'pair', 'twoPair', 'trips', 'straight', 'flush', 'fullHouse', 'quads', 'straightFlush'];
 const boardMaxima = new Map();
+let boardRankingCacheLimit = 512;
+// Offline simulations may retain all rank tables for one fixed flop. Numeric behavior
+// is independent of this bounded cache size; browsers keep the 512-board default.
+export function setMw3RankingCacheLimit(limit) {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 4096) throw new Error('Invalid mw3 rank-cache limit');
+  const previous = boardRankingCacheLimit; boardRankingCacheLimit = limit;
+  while (boardMaxima.size > limit) boardMaxima.delete(boardMaxima.keys().next().value);
+  return previous;
+}
 
 // Public upper bound: maximize over every legal two-card holding after excluding
 // ONLY the public board. Equal score is guaranteed nuts; a lower score may still be
@@ -48,7 +57,7 @@ function boardRanking(board) {
   }
   raw.sort((a, b) => b[0] - a[0] || a[1] - b[1] || a[2] - b[2]);
   const ranking = { scores: Uint32Array.from(raw, item => item[0]), first: Uint8Array.from(raw, item => item[1]), second: Uint8Array.from(raw, item => item[2]) };
-  if (boardMaxima.size >= 512) boardMaxima.delete(boardMaxima.keys().next().value);
+  if (boardMaxima.size >= boardRankingCacheLimit) boardMaxima.delete(boardMaxima.keys().next().value);
   boardMaxima.set(key, ranking);
   return ranking;
 }
@@ -72,6 +81,38 @@ export function mw3OpponentMaxScore(hole, board) {
 // from a particular private holding.
 export function mw3BoardLocked(board) {
   return Array.isArray(board) && board.length === 5 && evaluateContinuation(board) === mw3BoardMaxScore(board);
+}
+
+// A sufficient certificate, not equity or an exhaustive classification of every
+// future lock. Opponent's final seven cards contain B known board cards and 7-B
+// external cards, so every best five contains at least B-2 known board cards.
+// Enumerate an upper bound on all possible opponent full houses or better, with
+// Hero's BOTH cards removed. If this is <= Hero's current >=full-house rank, no
+// runout can beat Hero (whose best-five rank cannot decrease). A tie may occur.
+// A false certificate never claims Hero can lose; it may miss joint improvements.
+export function mw3FutureOpponentUpper(hole, board) {
+  if (!Array.isArray(hole) || hole.length !== 2 || !Array.isArray(board) || ![3, 4, 5].includes(board.length)) throw new Error('Invalid mw3 future-lock cards');
+  evaluateContinuation([...hole, ...board]);
+  const needed = board.length - 2, held = new Set(hole), known = new Set(board);
+  const holeCounts = new Uint8Array(13), boardCounts = new Uint8Array(13);
+  for (const card of hole) holeCounts[card >> 2]++;
+  for (const card of board) boardCounts[card >> 2]++;
+  const packed = (category, first, second = 0) => category * 16 ** 5 + first * 16 ** 4 + second * 16 ** 3;
+  for (let high = 12; high >= 3; high--) for (let suit = 0; suit < 4; suit++) {
+    const ranks = high === 3 ? [12, 0, 1, 2, 3] : [high - 4, high - 3, high - 2, high - 1, high];
+    const cards = ranks.map(rank => rank * 4 + suit);
+    if (cards.every(card => !held.has(card)) && cards.filter(card => known.has(card)).length >= needed) return packed(8, high);
+  }
+  for (let quad = 12; quad >= 0; quad--) if (holeCounts[quad] === 0) {
+    for (let kicker = 12; kicker >= 0; kicker--) if (kicker !== quad &&
+        boardCounts[quad] + Math.min(1, boardCounts[kicker]) >= needed) return packed(7, quad, kicker);
+  }
+  for (let trip = 12; trip >= 0; trip--) if (4 - holeCounts[trip] >= 3) {
+    for (let pair = 12; pair >= 0; pair--) if (pair !== trip && 4 - holeCounts[pair] >= 2 &&
+        Math.min(3, boardCounts[trip]) + Math.min(2, boardCounts[pair]) >= needed) return packed(6, trip, pair);
+  }
+  // Every lower category lies below this conservative bound.
+  return 6 * 16 ** 5 - 1;
 }
 
 export function mw3HandFacts(hole, board) {
@@ -98,12 +139,17 @@ export function mw3HandFacts(hole, board) {
   const kickerPowers = ({ 0: [4, 3, 2, 1, 0], 1: [3, 2, 1], 2: [2], 3: [3, 2], 7: [3] })[category] ?? [];
   const playedKickers = kickerPowers.map(power => Math.floor(score / 16 ** power) % 16);
   const privateKickers = playsBoard ? [] : holeRanks.filter(rank => boardCounts[rank] === 0 && playedKickers.includes(rank));
+  const blockerConditionedNuts = !playsBoard && score >= mw3OpponentMaxScore(hole, board);
+  const royal = score === 8 * 16 ** 5 + 12 * 16 ** 4;
   return { score, category, categoryName: CATEGORIES[category], madeKind, primaryRank: first, secondaryRank: second,
     pocket, holeRanks, boardRanks, highestSideRank: sideRanks[0] ?? null, privatePairRank,
     highestPrivateKicker: privateKickers.length ? Math.max(...privateKickers) : null,
     playsBoard, boardLocked: playsBoard && mw3BoardLocked(board),
     guaranteedPrivateNuts: !playsBoard && score === mw3BoardMaxScore(board),
-    blockerConditionedNuts: !playsBoard && score >= mw3OpponentMaxScore(hole, board),
+    // Preserve existing river frequencies: only the original royal class moves
+    // to absolute_nuts there; every other exact river nuts already has fold=0.
+    absoluteNuts: blockerConditionedNuts && category >= 6 && (royal || board.length < 5 && score >= mw3FutureOpponentUpper(hole, board)),
+    blockerConditionedNuts,
     nutsDetection: 'public_upper_bound_fact_and_exact_hole_blocker_conditioned_current_rank',
     hasDraw: privateDraw(hole, board, score) };
 }
@@ -115,6 +161,7 @@ export function mw3HandTier(hole, board) {
   const f = mw3HandFacts(hole, board);
   if (f.boardLocked) return 'board_locked';
   if (f.playsBoard) return 'board_shared';
+  if (f.absoluteNuts) return 'absolute_nuts';
   if (f.blockerConditionedNuts) return 'nuts';
   const withDraw = tier => tier === 'medium' && f.hasDraw ? 'draw' : tier;
   if (f.madeKind === 'pocketPlusBoardPair') return withDraw(f.highestSideRank === null || f.privatePairRank > f.highestSideRank ? 'strong' : 'medium');

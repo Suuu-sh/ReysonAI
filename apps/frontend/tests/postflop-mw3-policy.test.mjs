@@ -9,7 +9,7 @@ import { MW3_TIERS as TIERS } from '../scripts/postflop-ai/mw3-hand-features.mjs
 const spot = loadMw3Catalog()[0], probe = probeMw3Hand(spot), board = parseCards('As7d2c', 3), hole = parseCards('KhQd', 2);
 // Test fixture only: never saved, registered, published or used as a runtime reference.
 function fixture() {
-  return { version: 2, kind: 'ai_estimate_not_gto', spot_id: spot.id, streets: ['flop'],
+  return { version: 3, kind: 'ai_estimate_not_gto', spot_id: spot.id, streets: ['flop'],
     rules: Object.keys(probe.nodes).filter(node => node.startsWith('mw3_flop_')).flatMap(node => TIERS.map(tier => {
       const actions = describeMw3Node(node).actions;
       return { node, tier, when: mw3AnySelector(), priority: 0, mix: Object.fromEntries(actions.map((action, i) => [action, i ? 0 : 100])) };

@@ -3,9 +3,8 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { buildMw3Catalog, MW3_VERSION } from './mw3-spots.mjs';
-import { MW3_HAND_CLASSIFIER_VERSION, MW3_TIERS } from './mw3-hand-features.mjs';
-import { MW3_SIZING } from './mw3-engine.mjs';
+import { buildMw3Catalog } from './mw3-spots.mjs';
+import { buildMw3InputMaterial } from './mw3-input-core.mjs';
 export const mw3Root = fileURLToPath(new URL('../..', import.meta.url));
 export const mw3Sha = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const read = name => JSON.parse(readFileSync(join(mw3Root, 'src/estimated', `${name}.json`), 'utf8'));
@@ -19,17 +18,6 @@ export function mw3ArtifactPaths(spot) {
 }
 export function loadMw3Inputs(id) {
   const sources = { opening: read('opening-ranges'), responses: read('preflop-ranges'), multiway: read('multiway-responses') };
-  const spot = buildMw3Catalog(sources).find(spot => spot.id === id);
-  if (!spot) throw new Error(`Unknown mw3 SRP: ${id}`);
-  if (!spot.reachable) throw new Error(`Unreachable mw3 SRP: ${id}: ${spot.unavailableReason}`);
-  const sourceSpots = { opening: sources.opening.spots.find(item => item.id === spot.sources.openingId),
-    response: sources.responses.spots.find(item => item.id === spot.sources.firstResponseId),
-    multiway: sources.multiway.spots.find(item => item.id === spot.sources.multiwayResponseId) };
-  const geometry = { kind: spot.kind, id: spot.id, seats: spot.seats, opener: spot.opener, firstCaller: spot.firstCaller,
-    secondCaller: spot.secondCaller, potBb: spot.potBb, stackBb: spot.stackBb, openBb: spot.openBb };
-  const fingerprint = mw3Sha({ version: MW3_VERSION, geometry, sourceSpots, sizing: MW3_SIZING,
-    rake: { rate: 0.05, capBb: 3, noFlopNoDrop: true }, evaluator: 'continuation-best-five-v1',
-    classifier: { version: MW3_HAND_CLASSIFIER_VERSION, tiers: MW3_TIERS },
-    sourceScope: 'three_live_ranges_forced_fold_holecards_unmodeled' });
-  return { spot, seatRows: spot.seatRows, sourceSpots, fingerprint, sizing: MW3_SIZING };
+  const { fingerprintMaterial, ...inputs } = buildMw3InputMaterial(id, sources);
+  return { ...inputs, fingerprint: mw3Sha(fingerprintMaterial) };
 }

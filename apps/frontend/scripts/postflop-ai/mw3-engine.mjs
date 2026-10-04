@@ -93,6 +93,7 @@ export function mw3Decision(table) {
   const activePosition = activeIndex === 0 ? "first" : activeIndex === liveSeats.length - 1 ? "last" : "middle";
   return { seat, role, node, street: table.street, actions, facing, lowSpr, raises: state.raises,
     pendingBehind: state.pending.slice(1), liveSeats, potBb: table.pot, callBb,
+    stackBb: table.stacks[seat], committedBb: state.committed[seat], currentBetBb: state.currentBet,
     activePosition, players: liveSeats.length, responseType: facing ? state.committed[seat] > 0 ? "invested" : "cold" : "none",
     callPrice, priceBand: facing ? mw3PriceBand(callPrice) : "none", sprAfterCall, sprBand: mw3SprBand(sprAfterCall),
     line: state.previousAggressor === null ? "checked" : state.previousAggressor === seat ? "aggressor" : "defender" };

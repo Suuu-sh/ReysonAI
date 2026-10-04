@@ -90,3 +90,22 @@
 - 新classifier/codec/deliveryに対する独立reviewで発見された、実kicker誤表示、共有boardだけの偽draw、型coercionでのkeyOrder/street一致を修正。独立7件＋既存9件の16回帰PASS。追加nuts cacheは全相手再列挙一致の自前回帰PASS、最終独立reviewが必要。
 - transportは同じauthored JSON/hashを厳密復元するdictionary codecとUTF-8整合chunk。v1 later6.71MB→771KB、flop1.42MB→217KB。D1の[2MB行／100KB statement制限](https://developers.cloudflare.com/d1/platform/limits/)を確認し、partは最大48KB UTF-8に分割する。これは未配信のadapter。
 - まだ戦略品質GOではない。flop/turnのcurrent-nutsと私有royalの将来lockが同じtierなので、後者の少量foldが残る。次の最小修正はroyal限定absolute_nutsの専用tier。v2成果は履歴として保全し、最終gateの代用にしない。
+
+## 代表 V4 の準備（2026-10-04 17:15 UTC、未公開）
+
+- Astra著者の確認を経てclassifier version4を採用。現在nutsとは別に、flop/turnで将来のどのrunoutにも負けない私有役を十分条件で検出する。tieはあり得る。対象はfull house以上、現在のblocker-conditioned nuts、かつboard共有でない場合のみ。
+- 証明: 現在boardがB枚なら、相手の最終7枚のうち外部cardは7−B枚なのでbest5には現在boardが最低B−2枚含まれる。Hero2枚を除外して、この条件を満たすstraight flush/quads/full houseの最大scoreを列挙。そのupperがHero CURRENT score以下なら、Heroの完成後scoreは低下しないため敗北不能。候補が無い場合の6×16^5−1は下位categoryを包含する保守的上限であり、実際に到達する最高scoreではない。
+- riverの非royal current-nuts profileは変えず、既存fold0を保持。board_locked/sharedの優先判定も保持。certificate=falseは『負ける可能性あり』の断定ではない。著者は既存absolute mixの数値維持を確認、他8tiersの数値も保持。
+- source identityは`9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3`。V3 sourceもローカルに保全。V4候補artifactのmaterialize・全board gate・joint20k・自己対戦10k×12は排他枠待ちで、まだ実行していない。
+- focused22件PASS: Node/browser source hash一致、codec/street型厳密性、分類・private draw、6 turnケースの全river×全合法相手pair（273,240比較）でupper>=exact、flop false→turn true境界とsuit/Hero/board順不変。typecheck PASS。新classifierの最終独立Astra reviewは別gateとして残る。
+- `Mw3RangeView.tsx`は未接続の表示部品。残っている全参加者の表を保持し、現在actor以外はown-action履歴reachと明示。ハンド選択・具体combo・4言語の3人専用説明・実額action/history表示を準備。共有Range/Agent本体へは未接続、実画面QA未実施。
+- browser入力adapterはNodeと同一materialをhash化し、source/implementation/policy hashと全117nodeの必要inventoryを検証。部分的にnodeが丸ごと無いpolicyも表示前に拒否する。
+- 未登録のbackend delivery module、hash付きimmutable header/part、追加SQLを隔離準備。既定approval registryは空で、D1 rowやqueryから公開を許可できない。既存index route/migration/HU tableは変更なし。transport4 unit tests、ローカルSQLiteの繰返し適用・FK・HU sentinel保全PASS。これは配信済み・review承認済みを意味しない。
+- PR44 head `25c6de21`に対する既存2 CIはPASS（runs 37218178517 / 37218178511）。本節の後続準備はそのCI対象外。全最終suite/build/HU audit/Agent・RangeブラウザQA/LFS実体送信は残る。
+- 共通HU model/evaluatorの統合後は意味hashのstale判定を保持し、差分の独立reviewと必要再検証を経てから最終artifact/receiptを確定する。未安定baseで16全量を先行生成しない。
+
+### V4 独立semantic review（17:25 UTC）
+
+独立Astraがfuture upper / exact blocker cache / board共有優先 / river既存profile / 117node coverage / 未公開deliveryの承認境界をPASS。新規修正必須事項なし。軽量確認14件PASSで、strategy全体の品質GOではない。別実装のpure simulation report validatorを追加し、12board順序・split・seed、最低10,000件、期待source/policy hash、勝敗・terminal・street action上限、レーキ上限と全体chip総和を検証する。
+
+`gate-mw3-pilot.mjs --simulate --replay`を準備。replayは同一engineのdeterministic再実行で、独立アルゴリズムとは呼ばない。reportはsource / implementation / verification hashごとのディレクトリに保存し、相違する既存reportは上書きしない。materialize・重い実gateは引き続き排他枠待ち。

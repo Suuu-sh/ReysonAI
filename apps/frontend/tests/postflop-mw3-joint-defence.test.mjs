@@ -20,7 +20,7 @@ test('joint sampler rejects the full tuple rather than resampling only the later
 });
 test('joint fold diagnostics use sequential policies within each legal tuple, with fixed 20,000 minimum', () => {
   const inputs = loadMw3Inputs('CO_open_BTN_call_BB_call'), contract = probeMw3Hand(inputs.spot);
-  const make = streets => validateMw3Policy({ version: 2, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets,
+  const make = streets => validateMw3Policy({ version: 3, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets,
     rules: Object.keys(contract.nodes).filter(node => streets.includes(describeMw3Node(node).street)).flatMap(node => TIERS.map(tier => {
       const actions = describeMw3Node(node).actions, chosen = actions.includes('bet33') ? 'bet33' : 'fold';
       return { node, tier, when: mw3AnySelector(), priority: 0, mix: Object.fromEntries(actions.map(action => [action, action === chosen ? 100 : 0])) };

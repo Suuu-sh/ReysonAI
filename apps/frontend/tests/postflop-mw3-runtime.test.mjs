@@ -8,7 +8,7 @@ import { parseCards } from '../scripts/postflop-ai/model.mjs';
 import { MW3_TIERS as TIERS } from '../scripts/postflop-ai/mw3-hand-features.mjs';
 import { seededRandom } from '../scripts/lib/equity.mjs';
 const inputs = loadMw3Inputs('CO_open_BTN_call_BB_call'), contract = probeMw3Hand(inputs.spot);
-const make = streets => validateMw3Policy({ version: 2, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets,
+const make = streets => validateMw3Policy({ version: 3, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets,
   rules: Object.keys(contract.nodes).filter(node => streets.includes(describeMw3Node(node).street)).flatMap(node => TIERS.map(tier => {
     const actions = describeMw3Node(node).actions, selected = actions.includes('check') ? 'check' : 'fold';
     return { node, tier, when: mw3AnySelector(), priority: 0, mix: Object.fromEntries(actions.map(action => [action, action === selected ? 100 : 0])) };
@@ -23,6 +23,8 @@ test('range adapter shows exactly three participants and distinguishes current s
   assert.ok(view.participants.slice(1).every(item => item.actions === null && item.displayKind === 'historical_policy_reach'));
   assert.equal(view.explanationFacts.computedDefence, false);
   assert.throws(() => mw3DecisionView(inputs, {}, { board: board.slice(0, 3), paths: { flop: [] } }), /own saved/);
+  const invalid = structuredClone(policies); invalid.later.streets = ['turn,river'];
+  assert.throws(() => mw3DecisionView(inputs, invalid, { board: board.slice(0, 3), paths: { flop: [] } }), /own saved/);
 });
 test('Agent adapter is repeatable, pauses on the human, resumes through river and settles all three seats', () => {
   const awaiting = playMw3WithPolicies(inputs, policies, { hands, board, human: 'BB', random: seededRandom(27) });
@@ -32,4 +34,11 @@ test('Agent adapter is repeatable, pauses on the human, resumes through river an
   assert.equal(result.status, 'done'); assert.equal(result.board.length, 5); assert.equal(result.table.log.length, 9);
   assert.equal(result.settlement.winner, 'CO'); assert.equal(result.settlement.rakeBb, 0.4);
   assert.throws(() => playMw3WithPolicies(inputs, policies, { hands, board, human: 'BB', humanActions: ['check', 'check', 'check', 'check'], random: seededRandom(27) }), /after hand completion/);
+  assert.throws(() => playMw3WithPolicies(inputs, policies, { hands: { ...hands, UTG: parseCards('TcTd', 2) }, board, random: seededRandom(27) }), /Invalid mw3 Agent hand/);
+});
+
+test('simulation rejects lower sample counts and ambiguous board lists before executing', async () => {
+  const { simulateMw3 } = await import('../scripts/postflop-ai/mw3-simulation.mjs');
+  assert.throws(() => simulateMw3(inputs, policies, { samplesPerBoard: 9999 }), /cannot reduce/);
+  assert.throws(() => simulateMw3(inputs, policies, { boardList: [{ cards: 'As7d2c', split: 'design' }, { cards: 'As7d2c', split: 'design' }] }), /board list/);
 });

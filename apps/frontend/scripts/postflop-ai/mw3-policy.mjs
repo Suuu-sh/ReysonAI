@@ -3,7 +3,8 @@
 import { flopTextureKeys, LINES, RUNOUT_TEXTURES, runoutTexture, TEXTURES } from './model.mjs';
 import { MW3_TIERS as TIERS, mw3HandTier } from './mw3-hand-features.mjs';
 import { describeMw3Node } from './mw3-tree.mjs';
-export const MW3_POLICY_SCHEMA = 2;
+export const MW3_POLICY_SCHEMA = 3;
+export const MW3_MAX_RULES = 60000;
 export const MW3_SELECTOR_KEYS = Object.freeze(['line', 'texture', 'players', 'position', 'response', 'price', 'spr']);
 export const MW3_SELECTORS = Object.freeze({ line: ['any', ...LINES], texture: ['any', ...TEXTURES, ...RUNOUT_TEXTURES],
   players: ['any', 2, 3], position: ['any', 'first', 'middle', 'last'], response: ['any', 'none', 'cold', 'invested'],
@@ -33,7 +34,7 @@ function overlaps(a, b, street) {
 export function validateMw3Policy(policy, { spotId, nodes } = {}) {
   if (keys(policy) !== envelopeKeys || policy.version !== MW3_POLICY_SCHEMA || policy.kind !== 'ai_estimate_not_gto' ||
       typeof policy.spot_id !== 'string' || spotId && policy.spot_id !== spotId ||
-      !['flop', 'turn,river'].includes(policy.streets?.join()) || !Array.isArray(policy.rules) || !policy.rules.length || policy.rules.length > 50000) {
+      !['flop', 'turn,river'].includes(policy.streets?.join()) || !Array.isArray(policy.rules) || !policy.rules.length || policy.rules.length > MW3_MAX_RULES) {
     throw new Error('Invalid mw3 policy envelope');
   }
   const expected = new Set(nodes ? Object.keys(nodes).filter(node => policy.streets.includes(describeMw3Node(node).street)) : []);

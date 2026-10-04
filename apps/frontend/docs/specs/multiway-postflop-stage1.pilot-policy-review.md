@@ -254,3 +254,123 @@ V1のriver `AAKK2`では全rangeがmonsterだった。V2ではprivate A/Kによ�
 3. nutsは唯一勝つhandとは限らず、opponentとtieするnutsも含む。nutsを強いvalueとしてbet/raiseする一律頻度は、split-pot構造の細部を捉えない。
 4. fullhouseの上下、低い一枚flush、nut draw / weak draw、top-pair kicker、bettor identityと詳細historyの合流は依然coarse。exact current rank classifierの導入はequityや均衡戦略の導入ではない。
 5. 正規化・選択・合法性PASSと、共同防御の妥当性・全board品質・公開承認は別である。既知の限界を警告0という理由だけで解決済みにしない。
+
+---
+
+# V3 authoring review: private royal-only absolute nuts
+
+更新: 2026-10-04。V1/V2の記録を保持し、V2で見つかった私有royalの早期street誤foldを、独立classと専用保存mixで修正した。V2で完走したgate（親報告: 1,755 flop error0、236 later board error0、90 × 20,000-sample joint診断のwarning39）は`archive-v2`の履歴であり、V3の再gate完了を意味しない。
+
+## 契約
+
+- source fingerprint: `55d6405109a7921e59c93686160097b758ac94eb6ffc618aa96128bd78266663`。
+- policy schema 3、classifier version 3。
+- tier順: `absolute_nuts, nuts, monster, strong, draw, medium, air, board_shared, board_locked`。
+- 親側classifierが、private best-five scoreが理論上最大のA-high straight flushに一致し、かつ`playsBoard=false`の場合だけabsolute_nutsを返す。
+- 優先順はboard_locked → board_shared → absolute_nuts → current nuts → residual tiers。公開royalはboard_lockedであり、private value profileへ流さない。
+- 私有royalは今後のrunoutでも他のhandに負けず、別人が同じroyalを完成することもない。current-rank nutsのredraw/freerollリスクとは分離する。
+- 低いstraight flushやquadsを一律future lockに拡張していない。classの検出範囲はroyalに限定したpositive subset。
+
+## 独立authorしたroyal profile
+
+新しい`ABSOLUTE_FLOP_BET` / `ABSOLUTE_FLOP_SIZES` / `ABSOLUTE_LATER_BET` / `ABSOLUTE_LATER_SIZES` / `ABSOLUTE_RAISE`を追加した。V2 nutsの行をコピーしてfoldだけ書き換えたものではない。
+
+- flopのfirst-action betはBB28%、CO62%、BTN80%。先頭では相手のimprovementやbetを許せるためcheckを十分残す。サイズ33/75/125のconditional配分はBB75/25/0、CO65/35/0、BTN55/45/0。
+- turnは現在position / live人数 / lineごとのvalue-building profile。royalなのでfree cardによる逆転を心配する必要はなく、前aggressorに打たせるcheckを保つ。
+- riverは今後のvalue回収機会がないためbetを増やす。例3人checkedはBB83 / CO90 / BTN99%、3人aggressorは97 / 99 / 100%。同じ共有nutsを全員が持つboard_lockedのcheck100とは明確に異なる。
+- laterのsizeはrunout別。相手のflush等が成立し得るrunoutでは75/125を増やす。これは自分の強さが失われたかどうかの判定ではなく、相手が続行できるhandを作り得ることへの判断。
+- low-SPRではcheck/shove、medium low-SPRでは33/shove。firstで常に全stackを入れる方針にはしない。
+- **全street、全facing node、全priceでfold0**。raise可能ならcall/raiseを混ぜ、他の1人が応答を残していればcallでovercallを誘う。raise不可ならcall100。
+- 例えばraise可能なriver33%へのraise anchorは88%、75%は95%、125%とraise1は100%。3人で応答が後ろに残る場合は5ptをcallへ回す。意味なく全局面をraise100に統一していない。
+
+## V2の既存8tierを変えていないこと
+
+V3完成policyからabsolute_nuts行だけを除外し、envelope versionだけ2へ戻したJSONを、`archive-v2`のflop/later policyと比較した。**両方ともJSON sequenceが完全一致**した。
+
+したがってcurrent nutsのflop/turn判断、river fold0、board_shared/board_locked、residual5-tierの頻度・selector・priorityはV2の専門判断をそのまま維持している。親側shared infraをこのauthor作業では編集していない。
+
+## 軽量selfcheck
+
+- `node --check` PASS、builder内のschema validation両方PASS。
+- 117 nodes / 1,209 contexts。
+- flop: 33 × 9 defaults + 96 × 12 × 9 overrides = **10,665 rules**。
+- later: 84 × 9 defaults + 1,113 × 5 × 9 overrides = **50,841 rules**。親側の新しい個別policy上限60,000内。
+- 新tierだけの全**6,717** overrideを実board代表で選択: first691 / facing6,026、全件priority100、合法action key/order、整数sum100。全facingでfold0。
+- 既存8tierの完全一致と合わせ、新tier追加で旧頻度を偶発的にずらしていないことを確認。
+- 同じinputs/probeでの再生成JSON一致。
+- 実hand回帰:
+  - `AhKhQh / JhTh`、CO expensive raise2: V2 fold3/call97 → V3 **fold0/call100**。
+  - `AhKhQhJc / JhTh`、CO expensive raise2: V2 fold8/call92 → V3 **fold0/call100**。
+  - `AhKhQhJc2d / JhTh`でもabsolute_nutsでfold0/call100。
+  - 公開`AhKhQhJhTh`上の76はboard_lockedのまま。
+  - `5h7h9h / 6h8h`および`KhKd2h / KcKs`はcurrent nutsのままで、royalへ誤昇格しない。
+- 確定policy SHA-256:
+  - flop: `3682c70f1cd131a825d67dc564bb45706d5b8885c0de4ef6bfe8493fe13fef06`
+  - later: `d840d8174ff3ad1fe983e5fbd0696b9c28296f5e4d8af394b12d76e070b18582`
+- 親からの排他window指示に従い、V3の全1,755/later/joint gateやbuildはこのauthor作業で実行していない。これらと独立quality reviewは親工程。
+
+## V3でも残る限界
+
+- V2のboard_shared内の強弱差、history/contextの合流、draw・kicker粒度、均衡未検証は残る。
+- Royalの将来lockは解消したが、**他のblocker-dependent future lockを網羅していない**。例`JhTh9h / KhQh`の私有K-high straight flushはKh/Qhがroyalを塞ぐため将来負けないが、指定どおりcurrent nutsに分類される。これを含む全future-lock誤foldの解決とは呼ばない。
+- 一方、すべての低いstraight flushをfuture lockにするのも誤り。`5h7h9h / 6h8h`は現在nutsでも、turn/riverがTh/JhならQhKhがより高いstraight flushを作り得る。
+- 第一代表候補として構造整合を確認した段階であり、16経路展開・本番公開の承認ではない。
+
+---
+
+# V4 author review: sufficient future no-loss certificate
+
+更新: 2026-10-04。V3までの履歴を保持する。親が3人専用classifier version4に追加したpure rank certificateをレビューし、royal以外にも**flop/turnだけ**で証明されたno-loss handをabsolute_nutsへ分類することを承認した。著者versionは4、保存policy schemaは3のまま。
+
+- 新source fingerprint: `9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3`。
+- river absolute_nutsはV3と同じprivate royal限定。他のriver nutsのfold0/profile、board_shared、board_lockedは変更しない。
+- sourceはこのfingerprintへ再pinした。**全frequency定数・mix実行ロジック・rule展開ロジックを変更していない**。著者version、入力pin、absolute profileの意味を説明するコメントだけを更新した。
+
+## 証明の契約
+
+現在のboardがB枚なら、相手の最終7枚は、現在board B枚、残りrunout 5−B枚、相手のprivate2枚からなる。そのbest-fiveは現在boardを少なくともB−2枚使う。したがってflopは最低1枚、turnは最低2枚で正しい。
+
+親実装`mw3FutureOpponentUpper`はHeroの2枚を除いたavailable cardsから、上記board利用枚数を満たすstraight flush / quads / fullhouseの最大scoreを列挙する。
+
+- straight flush: wheelを含む同一suitの5連続rank。Heroカードを含まず、現在boardとの共通カード数がB−2以上。
+- quads: Heroがquad rankを持たず、boardのquad-rank枚数＋boardから使えるkicker1枚がB−2以上。2枚しか持てないHeroによってkicker rankの全4枚が失われることはない。
+- fullhouse: trip rankの利用可能枚数≥3、pair rank≥2。min(3, board trip count)＋min(2, board pair count)がB−2以上。
+- どのfullhouse以上も候補にならない場合は`6 × 16^5 − 1`を返す。これはflush以下すべてを上回る保守的upperであり、実際の最高flush scoreだとは主張しない。
+
+Heroの最終best-five scoreは現在値より低下しない。よって、current category≥fullhouse、current blocker-conditioned nuts、!playsBoardというguardの下で、opponent upper ≤ Hero CURRENT scoreなら、すべてのrunoutでHeroが負けないことが保証される。**同点はあり得る。** certificate=falseは「将来負けるrunoutが存在する」という逆向きの主張ではない。
+
+これはequity・EV・実到達rangeの計算ではない。相手の実際の伏せ札を参照せず、既知のHeroカードと公開boardだけで最悪のmade-hand rankを制限する。board_locked/sharedを先に分類する順序も維持する。
+
+## Split可能でも既存absolute mixを維持できる理由
+
+著者としてflop/turnの既存profileを再確認し、今回の限定的な対象拡大には**数値変更不要**と判断した。
+
+- fold0の根拠は独占勝利ではなく、誰にも負けないと証明されたhandで既存potのshareを失わないことである。
+- 「tieする相手がいる可能性」と「全相手が必ずtieすること」は異なる。後者であるboard_lockedは先に除外され、check100/call100/raise0のまま。
+- 新しいfuture-lock handでも、相手にはHeroより弱いfullhouse / quads kicker等があり得る。raiseでworse handからvalueを得る判断自体は、split可能性だけで不合理にはならない。
+- 既存flop/turn profileはcheckやcallを十分残す。例turn75%、3人、後続responseあり、cold、standard price、deep SPRではfold0 / call43 / raise57。常にraise100にしてsplit potを大きくするものではない。
+- free cardで負けることはないが、独占勝利が同点へ変わることはある。royal固有だった「必ず独占勝利」という説明を撤回し、混合のvalue-building / overcall誘導として再確認した。
+- riverの高頻度value-raise profileを新しい共有future-lock handへ拡張していない。riverは従来royal限定のままなので、その役割はV3から変わらない。
+
+これは正確なequityや最適性の証明ではなく、現在のcoarseなAI頻度profileへの専門判断である。board_sharedの強弱差などV3以前からの残限界は残る。
+
+## 軽量確認のみ実行
+
+親の排他windowに従い、builderによる全policy compile、全1,755/later/joint gate、selfplay、buildは起動していない。
+
+- `node --check scripts/data/mw3-co-btn-bb-authored.mjs`: PASS。
+- `loadMw3Inputs`の実fingerprintが新pinと一致。
+- 編集前後のauthor sourceからコメントを除き、著者versionとfingerprintの変更だけを正規化して比較: **完全一致**。従来8tierだけでなくabsolute mixも数値・式とも変更なし。
+- 実classifierの10個point回帰:
+  - `JhTh9h / KhQh`: absolute_nuts。
+  - `5h7h9h / 6h8h`: current nutsのまま。
+  - `5h7h9h2c / 6h8h`: absolute_nutsへ。
+  - `AhAdKc / AcKh`: current nutsのまま。
+  - `AhAdKcKs / AcKh`: absolute_nutsへ。upper=current=7,122,944でtie可能。
+  - `AhAdAc / AsQh`: current nutsのまま。
+  - `AhAdAcKs / AsQh`: absolute_nutsへ。
+  - `AhAdKcKs2c / AcKh`: riverなのでV3同様current nutsのまま。
+  - `AsAdAhKsKd / 7c6c`: board_sharedのまま。
+  - `AhKhQhJhTh / 7c6c`: board_lockedのまま。
+- authored absolute関数の軽いpoint callで全3streetのexpensive raise2がfold0/call100、上記turn75%がfold0/call43/raise57であることを確認。
+- V4の完成candidate policy hashと再gate結果は、このターンでは生成せず、親の後続materialize/gateで確定する。V3記載hashをV4の検証済みartifact hashとして転載しない。

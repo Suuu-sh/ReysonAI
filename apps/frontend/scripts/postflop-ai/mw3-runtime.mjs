@@ -6,9 +6,10 @@ import { mw3HistoryRanges } from './mw3-joint-defence.mjs';
 import { mw3PolicyMix } from './mw3-policy.mjs';
 
 function requirePolicies(inputs, policies) {
+  const stagesMatch = (actual, expected) => Array.isArray(actual) && actual.length === expected.length && actual.every((street, index) => street === expected[index]);
   if (!inputs?.spot?.reachable || !policies?.flop || !policies?.later ||
       policies.flop.spot_id !== inputs.spot.id || policies.later.spot_id !== inputs.spot.id ||
-      policies.flop.streets?.join() !== 'flop' || policies.later.streets?.join() !== 'turn,river') {
+      !stagesMatch(policies.flop.streets, ['flop']) || !stagesMatch(policies.later.streets, ['turn', 'river'])) {
     throw new Error('mw3 requires its own saved flop and later policies');
   }
 }
@@ -48,7 +49,7 @@ export function playMw3WithPolicies(inputs, policies, { hands, board, human = nu
   requirePolicies(inputs, policies);
   if (typeof random !== "function") throw new Error("mw3 Agent requires an explicit seeded random source");
   const known = [...board, ...Object.values(hands).flat()];
-  if (board.length !== 5 || new Set(known).size !== known.length || known.some(card => !Number.isInteger(card) || card < 0 || card > 51) ||
+  if (Object.keys(hands).sort().join() !== [...inputs.spot.seats].sort().join() || board.length !== 5 || new Set(known).size !== known.length || known.some(card => !Number.isInteger(card) || card < 0 || card > 51) ||
       inputs.spot.seats.some(seat => hands[seat]?.length !== 2) || human !== null && !inputs.spot.seats.includes(human)) throw new Error('Invalid mw3 Agent hand');
   const table = createMw3Table(inputs.spot), choices = [...humanActions];
   for (const street of MW3_STREETS) {

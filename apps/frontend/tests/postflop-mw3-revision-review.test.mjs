@@ -10,7 +10,7 @@ import { encodeMw3Policy, decodeMw3Policy } from '../scripts/postflop-ai/mw3-pol
 import { prepareMw3PolicyParts, restoreMw3PolicyParts } from '../scripts/postflop-ai/mw3-delivery.mjs';
 const facts = (hole, board) => mw3HandFacts(parseCards(hole, 2), parseCards(board, board.length / 2));
 function policy() {
-  return { version: 2, kind: 'ai_estimate_not_gto', spot_id: 'independent-review-never-published',
+  return { version: 3, kind: 'ai_estimate_not_gto', spot_id: 'independent-review-never-published',
     streets: ['turn', 'river'], rules: ['turn', 'river'].flatMap(street => TIERS.map(tier => ({
       node: `mw3_${street}_first_first`, tier, when: mw3AnySelector(), priority: 0,
       mix: { check: 80.125, bet33: 10.375, bet75: 7.25, bet125: 2.25 },

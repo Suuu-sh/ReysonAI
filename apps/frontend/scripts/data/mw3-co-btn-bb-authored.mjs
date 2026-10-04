@@ -7,16 +7,16 @@ import { describeMw3Node, mw3PolicyContextKey } from '../postflop-ai/mw3-tree.mj
 import { mw3AnySelector, validateMw3Policy } from '../postflop-ai/mw3-policy.mjs';
 
 export const MW3_PILOT_AUTHORSHIP = Object.freeze({
-  spotId: 'CO_open_BTN_call_BB_call', version: 2, model: 'gpt-6-astra',
-  sourceFingerprint: '6adc8a5f853d488f68edd4dbae4cdfbeb9d459a234dca8584f078f46652edd9d',
-  status: 'eight_tier_candidate_requires_independent_review_not_publishable',
+  spotId: 'CO_open_BTN_call_BB_call', version: 4, model: 'gpt-6-astra',
+  sourceFingerprint: '9826ec09f4b8420f866c8ac656e6f755966423c2d843bcb604eff97dbd6a89c3',
+  status: 'nine_tier_candidate_requires_independent_review_not_publishable',
   tierOrder: [...TIERS],
 });
 const FLOP_TEXTURES = ['dry', 'wet', 'monotone', 'paired'].flatMap(shape =>
   ['high', 'mid', 'low'].map(height => `${shape}_${height}`));
 const LATER_TEXTURES = ['blank', 'over', 'pair', 'straight', 'flush'];
 // These five-column profiles are the re-reviewed residual made/draw classes.
-// The three new classes have independent profiles below; never index them here.
+// The four specialized classes have independent profiles below; never index them here.
 const BASE_TIERS = ['monster', 'strong', 'draw', 'medium', 'air'];
 const at = (values, tier) => {
   const index = BASE_TIERS.indexOf(tier);
@@ -384,9 +384,73 @@ function boardSharedMix(d, texture) {
   mix.call = bounded(call); mix.fold = 100 - mix.call;
   return mix;
 }
+// V4: certified private no-loss hands, with ties possible. On flop/turn the
+// classifier admits royal OR a current >=full-house nuts with a sufficient
+// all-future-opponent rank bound. River remains private royal ONLY, preserving
+// the V3 river profile and all other river current-nuts frequencies.
+// The author re-reviewed and retained these V3 numerical mixes: early-street
+// calls protect third-player value / split-pot efficiency, and raises can earn
+// value from worse holdings. No-loss does not mean every opponent must chop.
+// Free cards cannot beat a certified hand, but may turn a sole win into a tie.
+// Do not extend this class to generic quads/straight flushes without the proof.
+const ABSOLUTE_FLOP_BET = { first: 28, middle: 62, last: 80 };
+const ABSOLUTE_FLOP_SIZES = { first: [75, 25, 0], middle: [65, 35, 0], last: [55, 45, 0] };
+const ABSOLUTE_LATER_BET = {
+  turn: {
+    3: { checked: { first: 46, middle: 61, last: 84 }, aggressor: { first: 78, middle: 86, last: 93 }, defender: { first: 22, middle: 26, last: 73 } },
+    2: { checked: { first: 60, last: 89 }, aggressor: { first: 86, last: 95 }, defender: { first: 25, last: 81 } },
+  },
+  river: {
+    3: { checked: { first: 83, middle: 90, last: 99 }, aggressor: { first: 97, middle: 99, last: 100 }, defender: { first: 44, middle: 48, last: 96 } },
+    2: { checked: { first: 90, last: 100 }, aggressor: { first: 99, last: 100 }, defender: { first: 52, last: 99 } },
+  },
+};
+const ABSOLUTE_LATER_SIZES = {
+  turn: { blank: [35, 55, 10], over: [40, 50, 10], pair: [50, 45, 5], straight: [30, 60, 10], flush: [25, 60, 15] },
+  river: { blank: [15, 65, 20], over: [20, 60, 20], pair: [30, 60, 10], straight: [15, 60, 25], flush: [10, 60, 30] },
+};
+const ABSOLUTE_RAISE = {
+  flop: { 33: 48, 75: 56, 125: 62, raise1: 66, raise2: 0, allin: 0 },
+  turn: { 33: 62, 75: 72, 125: 82, raise1: 88, raise2: 0, allin: 0 },
+  river: { 33: 88, 75: 95, 125: 100, raise1: 100, raise2: 0, allin: 0 },
+};
+function absoluteNutsMix(d, texture) {
+  const n = describeMw3Node(d.node), mix = Object.fromEntries(n.actions.map(action => [action, 0]));
+  if (!d.facing) {
+    let total = d.street === 'flop' ? ABSOLUTE_FLOP_BET[n.role]
+      : ABSOLUTE_LATER_BET[d.street][d.players][d.line][d.activePosition];
+    if (d.street !== 'flop' && d.sprBand === 'shallow') total += 4;
+    total = bounded(total); mix.check = 100 - total;
+    if (n.actions.includes('allin')) {
+      if (d.sprBand === 'shallow') mix.allin = total;
+      else [mix.bet33, mix.allin] = allocate(total, d.players === 3 ? [35, 65] : [25, 75]);
+    } else {
+      const shares = d.street === 'flop' ? ABSOLUTE_FLOP_SIZES[n.role] : ABSOLUTE_LATER_SIZES[d.street][texture];
+      [mix.bet33, mix.bet75, mix.bet125] = allocate(total, shares);
+    }
+    return mix;
+  }
+  let raised = ABSOLUTE_RAISE[d.street][n.facing];
+  if (d.players === 3) raised -= d.street === 'flop' ? n.pendingBehind ? 16 : 10
+    : d.street === 'turn' ? n.pendingBehind ? 10 : 6 : n.pendingBehind ? 5 : 2;
+  else if (d.street !== 'river') raised += 3;
+  if (d.street !== 'river') {
+    if (d.responseType === 'invested') raised += 5;
+    if (d.priceBand === 'cheap') raised -= d.street === 'flop' ? 5 : 3;
+    if (d.priceBand === 'expensive') raised += 4;
+    if (d.sprBand === 'shallow') raised += 10;
+    if (d.sprBand === 'deep') raised -= 5;
+  }
+  raised = n.actions.includes('raise') ? bounded(raised) : 0;
+  mix.fold = 0; mix.call = 100 - raised;
+  if (n.actions.includes('raise')) mix.raise = raised;
+  return mix;
+}
+
 function authoredMix(d, tier, texture) {
   if (tier === 'board_locked') return boardLockedMix(d);
   if (tier === 'board_shared') return boardSharedMix(d, texture);
+  if (tier === 'absolute_nuts') return absoluteNutsMix(d, texture);
   if (tier === 'nuts') return nutsMix(d, texture);
   return d.facing ? responseMix(d, tier, texture) : firstMix(d, tier, texture);
 }
@@ -410,8 +474,8 @@ export function buildMw3PilotPolicies(inputs, probe) {
   if (!probe?.nodes || !probe.contexts || Object.keys(probe.nodes).length !== 117 || Object.keys(probe.contexts).length !== 1209) {
     throw new Error('MW3 pilot authoring requires the complete reviewed 117-node / 1209-context probe');
   }
-  const flop = { version: 2, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets: ['flop'], rules: [] };
-  const later = { version: 2, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets: ['turn', 'river'], rules: [] };
+  const flop = { version: 3, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets: ['flop'], rules: [] };
+  const later = { version: 3, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets: ['turn', 'river'], rules: [] };
   for (const node of Object.keys(probe.nodes).sort()) {
     const d = fallbackDecision(node), policy = d.street === 'flop' ? flop : later;
     for (const tier of TIERS) policy.rules.push({ node, tier, when: mw3AnySelector(), priority: 0,

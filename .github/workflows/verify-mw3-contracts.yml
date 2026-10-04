@@ -1,0 +1,38 @@
+name: Verify three-player postflop contracts
+on:
+  pull_request:
+    branches: [development, main]
+    paths:
+      - 'apps/frontend/scripts/postflop-ai/mw3-*.mjs'
+      - 'apps/frontend/scripts/postflop-ai/model.mjs'
+      - 'apps/frontend/scripts/data/mw3-*.mjs'
+      - 'apps/frontend/scripts/lib/continuation-evaluator.mjs'
+      - 'apps/frontend/src/estimated/**'
+      - 'apps/frontend/tests/postflop-mw3-*.test.mjs'
+      - 'apps/backend/src/mw3-*.ts'
+      - 'apps/backend/scripts/sql/mw3-schema.sql'
+      - 'apps/backend/tests/mw3-*.test.mjs'
+      - 'configs/cash-6max-100bb.json'
+      - '.github/workflows/verify-mw3-contracts.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      NODE_OPTIONS: --max-old-space-size=256
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+      - name: Test isolated three-player engine, classifier, codecs and adapters
+        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs
+      - name: Test unpublished, fail-closed three-player delivery boundary
+        run: node --experimental-strip-types --test apps/backend/tests/mw3-*.test.mjs
+      # This workflow never compiles/authors saved candidates, runs the pilot gate,
+      # uploads artifacts, edits receipts, imports D1 or deploys the product.

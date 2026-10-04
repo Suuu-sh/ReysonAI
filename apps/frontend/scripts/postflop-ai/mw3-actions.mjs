@@ -13,7 +13,7 @@ export function mw3ActionGroups(table) {
     const next = cloneMw3Table(table); applyMw3Action(next, action);
     const key = mw3StateKey(next), existing = groups.get(key);
     if (existing) { existing.actions.push(action); if (action === 'allin') existing.action = action; }
-    else groups.set(key, { action, actions: [action], amountBb: next.log.at(-1).amountBb, resultingPotBb: next.pot });
+    else groups.set(key, { action, actions: [action], amountBb: next.log.at(-1).amountBb, toBb: next.streetState.committed[decision.seat], allIn: next.stacks[decision.seat] === 0, resultingPotBb: next.pot });
   }
   return [...groups.values()];
 }

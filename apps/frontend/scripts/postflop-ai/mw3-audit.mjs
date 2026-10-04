@@ -44,6 +44,7 @@ export function auditMw3Board(inputs, policies, board, contexts) {
         const aggressive = Object.entries(rule.mix).filter(([action]) => action === 'raise' || action === 'allin' || action.startsWith('bet')).reduce((a, [, n]) => a + n, 0);
         if (weight > 0 && tier === 'air' && aggressive > (decision.players === 3 ? 25 : 40)) warnings.push({ type: 'raw_air_aggression', context: key, tier, frequency: aggressive });
         if (weight > 0 && tier === 'board_locked' && (aggressive > 0 || (rule.mix.fold ?? 0) > 0)) warnings.push({ type: 'locked_board_policy_mismatch', context: key, tier, mix: rule.mix });
+        if (weight > 0 && tier === 'absolute_nuts' && (rule.mix.fold ?? 0) > 0) warnings.push({ type: 'certified_future_nuts_folds', context: key, tier, frequency: rule.mix.fold });
         if (weight > 0 && tier === 'nuts' && street === 'river' && (rule.mix.fold ?? 0) > 0) warnings.push({ type: 'river_nuts_folds', context: key, tier, frequency: rule.mix.fold });
         if (weight > 0 && tier === 'board_shared' && aggressive > 0) warnings.push({ type: 'shared_board_aggression', context: key, tier, frequency: aggressive });
       } catch (error) { errors.push({ context: key, tier, message: error.message }); }

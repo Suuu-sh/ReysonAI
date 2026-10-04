@@ -85,3 +85,16 @@ export function probeMw3Hand(spot, { maxStates = 250000 } = {}) {
   return { uniqueStates: seen.size, actionEdges, terminals, byStreet, terminalKinds, nodes, contexts,
     scope: 'all_legal_chip_states_flop_through_river_one_witness_per_equivalent_state_not_policy_reach' };
 }
+
+// The complete node contract for the three approved 100BB SRP geometries. The
+// independent full-state traversals pin this inventory against actual legal play.
+export function mw3RequiredPolicyNodes(streets = ['flop', 'turn', 'river']) {
+  if (!Array.isArray(streets) || streets.some(street => !['flop', 'turn', 'river'].includes(street))) throw new Error('Invalid mw3 policy street set');
+  const nodes = {};
+  for (const street of streets) for (const role of ['first', 'middle', 'last']) {
+    const endings = ['first', ...(street === 'flop' ? [] : ['first_low_spr']),
+      ...['33', '75', '125', 'raise1', 'raise2', ...(street === 'flop' ? [] : ['allin'])].flatMap(size => ['behind', 'closing'].map(position => `vs_${size}_${position}`))];
+    for (const ending of endings) { const node = `mw3_${street}_${role}_${ending}`; nodes[node] = describeMw3Node(node); }
+  }
+  return nodes;
+}

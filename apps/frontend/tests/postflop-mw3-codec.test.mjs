@@ -4,7 +4,7 @@ import { encodeMw3Policy, decodeMw3Policy } from '../scripts/postflop-ai/mw3-pol
 import { mw3AnySelector } from '../scripts/postflop-ai/mw3-policy.mjs';
 import { MW3_TIERS as TIERS } from '../scripts/postflop-ai/mw3-hand-features.mjs';
 const policy = () => ({ rules: TIERS.map(tier => ({ tier, node: 'mw3_flop_first_first', mix: { bet75: 7, check: 81, bet125: 2, bet33: 10 },
-  priority: 0, when: mw3AnySelector() })), version: 2, kind: 'ai_estimate_not_gto', spot_id: 'test-never-published', streets: ['flop'] });
+  priority: 0, when: mw3AnySelector() })), version: 3, kind: 'ai_estimate_not_gto', spot_id: 'test-never-published', streets: ['flop'] });
 test('compact transport preserves exact rules, integers and JSON key order', () => {
   const source = policy(), compact = encodeMw3Policy(source), restored = decodeMw3Policy(JSON.parse(JSON.stringify(compact)));
   assert.deepEqual(restored, source); assert.equal(JSON.stringify(restored), JSON.stringify(source));

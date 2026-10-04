@@ -1,6 +1,6 @@
 // Lossless transport/storage dictionary. Exact authored percentages and JSON key order
 // round-trip; this is compression, never generation or a fallback policy.
-import { validateMw3Policy } from './mw3-policy.mjs';
+import { validateMw3Policy, MW3_MAX_RULES } from './mw3-policy.mjs';
 export const MW3_POLICY_ENCODING = 'mw3-policy-dictionary-v1';
 const ROOT_KEYS = ['version', 'kind', 'spot_id', 'streets', 'rules'];
 const RULE_KEYS = ['node', 'tier', 'when', 'priority', 'mix'];
@@ -24,8 +24,8 @@ export function decodeMw3Policy(encoded) {
   if (!encoded || encoded.encoding !== MW3_POLICY_ENCODING ||
       !sameKeys(encoded.rootOrder, ROOT_KEYS) || !encoded.header || typeof encoded.header !== 'object' ||
       Object.keys(encoded.header).sort().join() !== ROOT_KEYS.filter(key => key !== 'rules').sort().join() ||
-      !Array.isArray(encoded.rows) || !encoded.rows.length || encoded.rows.length > 50000 ||
-      ['nodes', 'tiers', 'selectors', 'mixes', 'ruleOrders'].some(key => !Array.isArray(encoded[key]) || encoded[key].length > 50000) ||
+      !Array.isArray(encoded.rows) || !encoded.rows.length || encoded.rows.length > MW3_MAX_RULES ||
+      ['nodes', 'tiers', 'selectors', 'mixes', 'ruleOrders'].some(key => !Array.isArray(encoded[key]) || encoded[key].length > MW3_MAX_RULES) ||
       encoded.ruleOrders.some(order => !sameKeys(order, RULE_KEYS))) throw new Error('Invalid compact mw3 policy envelope');
   const lookup = (list, index) => {
     if (!Number.isInteger(index) || index < 0 || index >= list.length) throw new Error('Invalid compact mw3 dictionary index');

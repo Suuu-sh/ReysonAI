@@ -69,3 +69,61 @@ test('cached blocker-conditioned nuts exactly match full legal-opponent enumerat
   assert.notEqual(classify('AcAd', 'Kd8s3c'), 'nuts');
   assert.equal(classify('7c6c', 'AcKdQhJsTc'), 'board_locked');
 });
+
+test('certified future locks include private blocker locks without stealing shared or public boards', () => {
+  assert.equal(classify('JhTh', 'AhKhQh'), 'absolute_nuts');
+  assert.equal(classify('KhQh', 'JhTh9h'), 'absolute_nuts');
+  assert.equal(classify('9h6h', 'Th8h7h2c'), 'absolute_nuts');
+  assert.equal(classify('AcKh', 'AhAdKcKs'), 'absolute_nuts');
+  assert.equal(classify('AsQh', 'AhAdAcKs'), 'absolute_nuts');
+  assert.equal(classify('7c6c', 'AsAdAhKsKd'), 'board_shared');
+  assert.equal(classify('Th9d', 'AhKhQhJh'), 'absolute_nuts');
+  assert.equal(classify('7c6c', 'AhKhQhJhTh'), 'board_locked');
+  assert.notEqual(classify('9h8h', 'JhTh7h'), 'absolute_nuts', 'Lower straight flushes are not a universal future lock');
+  assert.notEqual(classify('AcAd', 'AhAsKh'), 'absolute_nuts', 'Current quads are not declared a universal future lock');
+  for (const [hole, flop, turn] of [['6h8h', '5h7h9h', '5h7h9h2c'], ['AcKh', 'AhAdKc', 'AhAdKcKs'], ['AsQh', 'AhAdAc', 'AhAdAcKs']]) {
+    assert.notEqual(classify(hole, flop), 'absolute_nuts');
+    assert.equal(classify(hole, turn), 'absolute_nuts');
+    const h = parseCards(hole, 2), b = parseCards(turn, 4);
+    for (let offset = 1; offset < 4; offset++) {
+      const permute = card => (card & ~3) | ((card + offset) & 3);
+      assert.equal(mw3HandTier(h.map(permute).reverse(), b.map(permute).reverse()), 'absolute_nuts');
+    }
+  }
+  assert.notEqual(classify('KcKs', 'KhKdAh2c'), 'absolute_nuts');
+  assert.notEqual(classify('5h4h', 'Ah2h3h'), 'absolute_nuts');
+  assert.equal(classify('AcKc', 'AhAdKdKs2c'), 'nuts', 'Existing non-royal river profile stays unchanged');
+});
+
+test('bounded board ranking cache eviction changes no current-nuts result', async () => {
+  const { setMw3RankingCacheLimit, mw3OpponentMaxScore } = await import('../scripts/postflop-ai/mw3-hand-features.mjs');
+  const h = parseCards('QhJd', 2), b = parseCards('AhKh8h3h2c', 5), expected = mw3OpponentMaxScore(h, b);
+  const prior = setMw3RankingCacheLimit(1);
+  try {
+    facts('AcKc', 'AhAdKdKs2c');
+    assert.equal(mw3OpponentMaxScore(h, b), expected);
+    assert.throws(() => setMw3RankingCacheLimit(0), /Invalid/);
+  } finally { setMw3RankingCacheLimit(prior); }
+});
+
+test('future upper bound dominates every river and opposing pair in six turn fixtures', async () => {
+  const { mw3FutureOpponentUpper } = await import('../scripts/postflop-ai/mw3-hand-features.mjs');
+  const { evaluateContinuation } = await import('../scripts/lib/continuation-evaluator.mjs');
+  const cases = [['KhQh', 'JhTh9h2c'], ['9h6h', 'Th8h7h2c'], ['AcKh', 'AhAdKcKs'],
+    ['AsQh', 'AhAdAcKs'], ['QhJh', 'AhKh8h3h'], ['JhTh', '9h8h7d2c']];
+  for (const [h, b] of cases) {
+    const hole = parseCards(h, 2), board = parseCards(b, 4), blocked = new Set([...hole, ...board]);
+    const remaining = Array.from({ length: 52 }, (_, i) => i).filter(card => !blocked.has(card));
+    const upper = mw3FutureOpponentUpper(hole, board);
+    let exact = -Infinity;
+    for (const river of remaining) for (let i = 0; i < remaining.length; i++) if (remaining[i] !== river) {
+      for (let j = i + 1; j < remaining.length; j++) if (remaining[j] !== river) {
+        exact = Math.max(exact, evaluateContinuation([...board, river, remaining[i], remaining[j]]));
+      }
+    }
+    assert.ok(upper >= exact, `${h}/${b}: future opponent exceeds certificate bound`);
+    assert.equal(mw3FutureOpponentUpper([...hole].reverse(), [...board].reverse()), upper);
+  }
+  assert.throws(() => mw3FutureOpponentUpper(parseCards('AcAd', 2), parseCards('Ac2h3s', 3)), /Duplicate/);
+  assert.throws(() => mw3FutureOpponentUpper([], []), /Invalid/);
+});
