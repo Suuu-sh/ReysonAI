@@ -7,7 +7,7 @@ import { AgentAvatar } from "../agent/AgentAvatar.tsx";
 import { loadAgentHands, summarizeAgentHands } from "../agent/agent-stats.ts";
 import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.ts";
 import { drillStats } from "./drill-store.ts";
-import { LEGEND, RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, TIERS, TIER_EN, playedToday, tierFor } from "./rank-store.ts";
+import { LEGEND, RANKED_DAILY_LIMIT, RANKED_LENGTH, TIERS, TIER_EN, tierFor } from "./rank-store.ts";
 import { localized } from "../locale.ts";
 
 const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
@@ -86,9 +86,9 @@ function DrillCard({ drill, draft, onStart, onEdit, onDelete }) {
 }
 
 // Trainer home: a heading, any session to resume, and one mode block per way to practise.
-export function TrainerHome({ drills, reviewCount, drafts = {}, onOpenDrills, onCreate, onStartReview, onResume, rank, onStartRanked, onOpenRanking, onStartAgent = null }) {
+export function TrainerHome({ drills, reviewCount, drafts = {}, onOpenDrills, onCreate, onStartReview, onResume, rank, rankedReady = false, rankedBusy = false, onStartRanked, onOpenRanking, onStartAgent = null }) {
   // Only drafts that can still be opened: ranked, review, or a drill that still exists.
-  const resumable = Object.values(drafts).filter(draft => draft && ((RANKED_ENABLED && draft.key === "ranked") || draft.key === "review" || (draft.key !== "ranked" && drills.some(drill => drill.id === draft.key))))
+  const resumable = Object.values(drafts).filter(draft => draft && (draft.key === "review" || (draft.key !== "ranked" && drills.some(drill => drill.id === draft.key))))
     .sort((a, b) => (b.savedAt ?? 0) - (a.savedAt ?? 0));
   return <div className="drill-library trainer-home">
     <header className="trainer-home-head">
@@ -108,7 +108,7 @@ export function TrainerHome({ drills, reviewCount, drafts = {}, onOpenDrills, on
       </li>)}</ul>
     </section>}
     <div className="mode-stack">
-      {RANKED_ENABLED ? rank && <RankedCard rank={rank} draft={drafts.ranked} onStart={onStartRanked} onOpenRanking={onOpenRanking} /> : <RankedComingSoon />}
+      {rankedReady ? rank && <RankedCard rank={rank} busy={rankedBusy} draft={rank.active} onStart={onStartRanked} onOpenRanking={onOpenRanking} /> : <RankedComingSoon />}
       {onStartAgent && <AgentEntry onStart={onStartAgent} />}
       <DrillsBlock drills={drills} reviewCount={reviewCount} drafts={drafts} onOpen={onOpenDrills} onCreate={onCreate} onStartReview={onStartReview} />
     </div>
@@ -122,8 +122,8 @@ function DrillsBlock({ drills, reviewCount, drafts, onOpen, onCreate, onStartRev
   const inProgress = drills.filter(drill => drafts[drill.id]).length;
   return <ModeBlock theme="#f0609e" className="is-drills" visualClass="drills-visual" label={localized("Drills", "ドリル")}
     visual={<div className="drill-deck" aria-hidden="true">
-      {["76s", "QQ", "AKs"].map((hand, index) => <span key={hand} className="drill-deck-card" style={{ "--k": index - 1 }}>
-        <b>{hand}</b><i />
+      {[["♠", -0.5], ["♥", 0.5]].map(([suit, k]) => <span key={suit} className="drill-deck-card" style={{ "--k": k }}>
+        <b>A</b><i>{suit}</i>
       </span>)}
     </div>}
     eyebrow={`DRILLS · ${localized(`${drills.length} saved`, `${drills.length}個`)}`}
@@ -226,25 +226,25 @@ function RankedComingSoon() {
     visual={<RankFan />}
     eyebrow="RANKED"
     title={localized("Ranked matches", "ランク戦")}
-    status={localized("Coming soon", "近日公開")}
-    actions={<button type="button" className="mode-primary" disabled>{localized("Coming soon", "近日公開")}</button>} />;
+    status={localized("Sign in · server availability required", "ログイン・サーバー準備が必要")}
+    actions={<button type="button" className="mode-primary" disabled>{localized("Sign in · server availability required", "ログイン・サーバー準備が必要")}</button>} />;
 }
 
-function RankedCard({ rank, draft, onStart, onOpenRanking }) {
+function RankedCard({ rank, busy, draft, onStart, onOpenRanking }) {
   const tier = tierFor(rank.rating);
-  const left = Math.max(0, RANKED_DAILY_LIMIT - playedToday(rank));
-  const canStart = Boolean(draft) || left > 0;
+  const left = rank.remaining ?? 0;
+  const canStart = !busy && (Boolean(draft) || left > 0);
   return <ModeBlock theme={tierColor(tier.name)} className={`is-ranked${draft ? " in-progress" : ""}`} visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
     visual={<RankedEmblem rank={rank} tier={tier} />}
-    eyebrow={`RANKED · ${localized("Local progress", "このブラウザの記録")}`}
+    eyebrow={`RANKED · ${localized("Server ranked", "サーバー集計")}`}
     title={localized("Ranked matches", "ランク戦")}
     description={localized(`All spots · standard difficulty · ${RANKED_LENGTH} questions. Harder hands move your rating more.`, `全局面・標準難易度・${RANKED_LENGTH}問。難しいハンドほどレートが大きく動きます。`)}
     actions={<>
       <button type="button" className="mode-primary" disabled={!canStart} onClick={onStart}>
-        <Play size={14} weight="fill" />{draft ? localized("Resume", "続きから") : canStart ? localized("Play ranked", "ランク戦に挑む") : localized("Back tomorrow", "また明日")}
+        <Play size={14} weight="fill" />{draft ? localized("Restart reserved match", "予約試合を最初から") : canStart ? localized("Play ranked", "ランク戦に挑む") : localized("Back tomorrow", "また明日")}
       </button>
       <button type="button" className="mode-secondary" onClick={onOpenRanking}><Trophy size={15} />{localized("Leaderboard", "ランキング")}</button>
-      <small className="mode-quota">{draft ? localized(`${draft.session.answered} answered`, `${draft.session.answered}問 回答済み`) : localized(`${left} / ${RANKED_DAILY_LIMIT} left today`, `今日の残り ${left} / ${RANKED_DAILY_LIMIT}回`)}</small>
+      <small className="mode-quota">{draft ? localized(`Reserved match`, `予約済みの試合`) : localized(`${left} / ${RANKED_DAILY_LIMIT} left today · resets 00:00 UTC`, `今日の残り ${left} / ${RANKED_DAILY_LIMIT}回 · UTC 0時更新`)}</small>
     </>}
     foot={<RankLadder rating={rank.rating} />}>
     <div className="ranked-stats">

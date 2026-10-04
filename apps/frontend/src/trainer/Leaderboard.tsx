@@ -1,8 +1,8 @@
 import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Trophy } from "@phosphor-icons/react";
-import { LEADERBOARD_MIN_MATCHES, TIER_EN, displayTier, leaderboardRows, playerSummary, tierFor } from "./rank-store.ts";
-import { demoPlayers, showDemoPlayers } from "./leaderboard-demo.ts";
+import { LEADERBOARD_MIN_MATCHES, TIER_EN, displayTier, tierFor } from "./rank-store.ts";
+import { rankedRequest } from "./ranked-api.ts";
 import { localized } from "../i18n.ts";
 
 const pct = value => `${Math.round(value * 100)}%`;
@@ -18,7 +18,7 @@ function Podium({ rows }) {
   return <ol className="lb-podium" aria-label={localized("Top three", "上位3人")}>
     {order.map(row => {
       const tier = displayTier(row.rating, row.place);
-      return <li key={row.name} className={`place-${row.place}${row.self ? " self" : ""}`} style={{ "--tier": tierColor(tier) }}>
+      return <li key={row.id} className={`place-${row.place}${row.self ? " self" : ""}`} style={{ "--tier": tierColor(tier) }}>
         <span className="lb-podium-place">{row.place}</span>
         <RankBadge name={tier} size={row.place === 1 ? 76 : 60} />
         <strong><span translate="no">{row.name}</span>{row.self && <small>{localized("You", "あなた")}</small>}</strong>
@@ -30,20 +30,26 @@ function Podium({ rows }) {
   </ol>;
 }
 
-// Only this browser's player is known until accounts sync ranked results to the server. The local
-// dev server adds dummy players (leaderboard-demo.ts) so the board can be designed with data.
-export function Leaderboard({ rank, profile, onBack, others = null }) {
+// Only server-assigned global placements determine Legend; never rerank a limited client list.
+export function Leaderboard({ rank, onBack }) {
   const [period, setPeriod] = useState("week");
-  const me = playerSummary(rank, period);
-  const name = profile?.nickname || localized("You", "あなた");
-  const demo = others == null && showDemoPlayers();
-  const field = others ?? (demo ? demoPlayers(period) : []);
-  const rows = leaderboardRows([...field, ...(me ? [{ ...me, name, self: true }] : [])]);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    let canceled = false;
+    setLoading(true); setError(false); setRows([]);
+    rankedRequest(`leaderboard?period=${period}`).then(response => { if (!canceled) setRows(response.rows); })
+      .catch(() => { if (!canceled) setError(true); }).finally(() => { if (!canceled) setLoading(false); });
+    return () => { canceled = true; };
+  }, [period]);
+  const me = rows.find(row => row.self);
+  const name = me?.name ?? localized("You", "あなた");
   const placed = rows.filter(row => row.place != null);
   const podium = placed.length >= 3 ? placed.slice(0, 3) : [];
   const listed = podium.length ? rows.filter(row => !podium.includes(row)) : rows;
   const recent = [...rank.matches].reverse().slice(0, 20);
-  const tier = tierFor(rank.rating);
+  const tier = { ...tierFor(rank.rating), name: displayTier(rank.rating, me?.place ?? null) };
   const myRow = rows.find(row => row.self);
   const toGo = Math.max(0, LEADERBOARD_MIN_MATCHES - (me?.matches ?? 0));
   return <div className="leaderboard">
@@ -55,7 +61,7 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
           `ランク戦のレート順です。期間内に${LEADERBOARD_MIN_MATCHES}試合以上プレイすると順位が付きます。`)}</p>
       </div>
       <div className="lb-head-tools">
-        {demo && <small className="lb-demo-flag">{localized("Local dev: dummy players", "ローカル開発用のダミー")}</small>}
+
         <div className="lb-period" role="group" aria-label={localized("Ranking period", "ランキング期間")}>
           {PERIODS.map(item => <button key={item.value} type="button" aria-pressed={period === item.value}
             className={period === item.value ? "on" : ""} onClick={() => setPeriod(item.value)}>{localized(item.label[0], item.label[1])}</button>)}
@@ -66,7 +72,7 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
     <section className="lb-me" style={{ "--mode-theme": tierColor(tier.name) }} aria-label={localized("Your standing", "あなたの記録")}>
       <div className="lb-me-id">
         <RankBadge name={tier.name} size={44} />
-        <div><strong translate="no">{name}</strong><span>{tierLabel(rank.rating)}</span></div>
+        <div><strong translate="no">{name}</strong><span>{tierLabel(rank.rating, me?.place ?? null)}</span></div>
       </div>
       <dl className="lb-me-stats">
         <div><dt>{localized("Rating", "レート")}</dt><dd>{rank.rating.toLocaleString()}</dd></div>
@@ -76,14 +82,14 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
       <span className="lb-me-note">{toGo ? localized(`${toGo} more to be placed`, `あと${toGo}試合で順位確定`) : localized("Placed this period", "順位確定")}</span>
     </section>
 
-    {rows.length ? <>
+    {loading ? <p role="status">{localized("Loading server leaderboard…", "サーバーランキングを読み込み中…")}</p> : error ? <p role="alert">{localized("Leaderboard unavailable. No local or sample rankings are shown.", "ランキングを取得できませんでした。ローカル記録やダミーの順位は表示しません。")}</p> : rows.length ? <>
       {podium.length > 0 && <Podium rows={podium} />}
       <div className="sessions-table-scroll"><table className="leaderboard-table">
         <thead><tr><th>{localized("Place", "順位")}</th><th>{localized("Player", "プレイヤー")}</th><th>{localized("Rank", "ランク")}</th><th>{localized("Rating", "レート")}</th>
           <th>{period === "week" ? localized("This week", "今週の増減") : localized("Change", "増減")}</th><th>{localized("Matches", "試合")}</th><th>{localized("Accuracy", "正答率")}</th></tr></thead>
         <tbody>{listed.map((row, index) => {
           const rowTier = displayTier(row.rating, row.place);
-          return <tr key={`${row.name}-${index}`} className={row.self ? "self" : ""} style={{ "--tier": tierColor(rowTier) }}>
+          return <tr key={row.id} className={row.self ? "self" : ""} style={{ "--tier": tierColor(rowTier) }}>
             <td className="place">{row.place ?? "—"}</td>
             <td><span className="leaderboard-player"><span className="lb-avatar" aria-hidden="true">{initial(row.name)}</span><span translate="no">{row.name}</span>{row.self && <small>{localized("You", "あなた")}</small>}</span></td>
             <td><span className="leaderboard-rank"><RankBadge name={rowTier} size={26} />{tierLabel(row.rating, row.place)}</span></td>
@@ -95,9 +101,7 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
         })}</tbody>
       </table></div>
     </> : <section className="leaderboard-empty"><Trophy size={40} /><h2>{localized("Your climb starts here", "最初の一歩を踏み出そう")}</h2><p>{period === "week" ? localized("No ranked matches this week yet.", "今週はまだランク戦をプレイしていません。") : localized("No ranked matches yet.", "まだランク戦をプレイしていません。")}</p><button type="button" className="setup-secondary" onClick={onBack}>{localized("Back to ranked arena", "ランクアリーナへ")}</button></section>}
-    <p className="leaderboard-note">{demo
-      ? localized("Dummy players are shown only on the local dev server. Real players will appear once accounts are available.", "ダミーのプレイヤーはローカル開発サーバーでだけ表示されます。アカウント機能の公開後、実際のプレイヤーが並びます。")
-      : localized("Other players will appear here once accounts are available.", "アカウント機能の公開後、ほかのプレイヤーもここに並びます。")}</p>
+    <p className="leaderboard-note">{localized("Server-confirmed matches only · weekly means the last 7 days. Legend: Master rating and a global top-10 placement in this period. AI-estimate alignment, not GTO or win rate.", "サーバーで確定した試合のみ集計 · 週間は直近7日間。レジェンドはマスターのレートかつ期間内の全体10位以内。AI推定との一致であり、GTOや勝率ではありません。")}</p>
     <section className="lb-ladder"><RankLadder rating={rank.rating} /></section>
     {recent.length > 0 && <section className="leaderboard-history">
       <h2>{localized("Your match history", "自分の試合履歴")}</h2>

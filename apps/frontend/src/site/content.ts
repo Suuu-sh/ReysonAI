@@ -89,7 +89,7 @@ export const en = {
     ],
   },
   final: { title1: "Your next session", title2: "starts with one hand.", description: "Open the app, pick a spot, tap a hand.", action: "Open ReysonAI", note: "Free preview · No account required" },
-  footer: { tagline: "Don't just play. Understand why.", product: "Product", open: "Open the app", how: "How it works", drill: "Training", analysis: "Analysis", compare: "Compare", pricing: "Pricing", faq: "FAQ", legal: "Legal", privacy: "Privacy · coming soon", terms: "Terms · coming soon", disclaimer: "ReysonAI provides poker strategy and educational information. AI Solutions are estimates and are not guaranteed to be mathematically optimal or equivalent to GTO solutions. Please play responsibly." },
+  footer: { tagline: "Don't just play. Understand why.", product: "Product", open: "Open the app", how: "How it works", drill: "Training", analysis: "Analysis", compare: "Compare", pricing: "Pricing", faq: "FAQ", legal: "Legal", privacy: "Privacy Policy", terms: "Terms of Use", disclaimer: "ReysonAI provides poker strategy and educational information. AI Solutions are estimates and are not guaranteed to be mathematically optimal or equivalent to GTO solutions. Please play responsibly." },
 };
 
 export type SiteCopy = typeof en;

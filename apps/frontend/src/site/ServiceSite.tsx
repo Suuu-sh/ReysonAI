@@ -872,7 +872,7 @@ function Footer() {
         <div className="site-footer-links">
           <div><span>{c.footer.product}</span><a href={appHref}>{c.footer.open}</a><a href="#how">{c.footer.how}</a><a href="#drill">{c.footer.drill}</a><a href="#analysis">{c.footer.analysis}</a></div>
           <div><span>ReysonAI</span><a href="#compare">{c.footer.compare}</a><a href="#pricing">{c.footer.pricing}</a><a href="#faq">{c.footer.faq}</a></div>
-          <div><span>{c.footer.legal}</span><span className="is-muted">{c.footer.privacy}</span><span className="is-muted">{c.footer.terms}</span></div>
+          <div><span>{c.footer.legal}</span><a href="/privacy">{c.footer.privacy}</a><a href="/terms">{c.footer.terms}</a></div>
         </div>
       </div>
       <p className="site-disclaimer">{c.footer.disclaimer}</p>

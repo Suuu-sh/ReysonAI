@@ -70,7 +70,7 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
   transition: width .18s ease, flex-basis .18s ease, padding .18s ease;
 }
 .sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 34px; }
-.brand { display: flex; align-items: center; gap: 7px; min-width: 0; font-size: 17px; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 22px; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
 .brand-copy { line-height: 1.2; }
 .brand > svg, .brand span { color: var(--accent); }
 .brand > svg { width: 28px; flex-shrink: 0; }
@@ -246,7 +246,7 @@ th small { display: block; }
 }
 
 @media (max-width: 1199px) and (min-width: 1050px) {
-  .brand { font-size: 17px; }
+  .brand { font-size: 20px; }
   .brand > svg { width: 23px; }
   .app-sidebar.is-collapsed .header-nav button.active::before { left: -4px; }
   main { padding: 10px; }

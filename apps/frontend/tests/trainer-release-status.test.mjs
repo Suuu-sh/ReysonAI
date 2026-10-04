@@ -40,7 +40,7 @@ function buttons(node) {
 for (const locale of ["en", "ja"]) {
   test(`production trainer displays closed Ranked and title-adjacent Agent beta (${locale})`, async () => {
     const { TrainerHome, emptyRankState, RANKED_ENABLED } = await homeModule(false, locale);
-    assert.equal(RANKED_ENABLED, false);
+    assert.equal(RANKED_ENABLED, true);
     const input = props(emptyRankState());
     let rankedCalls = 0, rankingCalls = 0, resumeCalls = 0;
     const agentCalls = [];
@@ -54,7 +54,7 @@ for (const locale of ["en", "ja"]) {
     assert.ok(ranked);
     assert.match(ranked, /<svg class="rank-badge" data-tier="master" width="64" height="64"/);
     assert.ok(ranked.includes(locale === "en" ? 'aria-label="Master rank"' : 'aria-label="マスターランク"'));
-    assert.ok(ranked.includes(locale === "en" ? "Coming soon" : "近日公開"));
+    assert.ok(ranked.includes(locale === "en" ? "Sign in · server availability required" : "ログイン・サーバー準備が必要"));
     assert.match(ranked, /<button[^>]*disabled=""/);
     assert.doesNotMatch(ranked, /mode-secondary|ranked-stats|rank-ladder/);
     assert.match(html, locale === "en" ? /<h3>Agent table<span class="mode-release-status">Beta<\/span><\/h3>/ : /<h3>Agent戦<span class="mode-release-status">β版<\/span><\/h3>/);
@@ -69,10 +69,10 @@ for (const locale of ["en", "ja"]) {
     assert.equal(controls.filter(control => !control.props.disabled).length, 4, "Agent sit/watch and drills open/create remain active");
   });
 }
-test("local development keeps genuine ranked and leaderboard controls", async () => {
+test("authenticated server readiness enables ranked controls without importing local drafts", async () => {
   const { TrainerHome, emptyRankState, RANKED_ENABLED } = await homeModule(true, "en");
   assert.equal(RANKED_ENABLED, true);
-  const input = props(emptyRankState());
+  const input = { ...props({ ...emptyRankState(), remaining: 3 }), rankedReady: true };
   let started = 0, ranking = 0, resumed = 0;
   input.onStartRanked = () => started++;
   input.onOpenRanking = () => ranking++;
@@ -84,23 +84,21 @@ test("local development keeps genuine ranked and leaderboard controls", async ()
   for (const control of buttons(tree)) if (!control.props.disabled) control.props.onClick?.();
   assert.equal(started, 1);
   assert.equal(ranking, 1);
-  assert.equal(resumed, 1);
+  assert.equal(resumed, 0);
 });
 test("direct ranked routes retain production guards independently of the visible teaser", async () => {
   const page = await readFile(new URL("../src/trainer/TrainerPage.tsx", import.meta.url), "utf8");
-  assert.match(page, /const rankedClosed = route\.key === "ranked" && \(!RANKED_ENABLED \|\|/);
-  assert.match(page, /if \(drill && !rankedClosed\) begin\(drill, route\.key === "review"\); else setPhase\(route\.key === "ranked" \|\| !drill \? "library" : "drills", true\)/);
-  assert.match(page, /phase === "ranking" && RANKED_ENABLED \? <Leaderboard/);
-  // Execute the actual direct-route initialization branch with and without a saved
-  // ranked draft. No browser hooks, saved data, or route implementations are replaced.
+  assert.match(page, /const rankedClosed = route\.key === "ranked" && !rankedReady/);
+  assert.match(page, /phase === "ranking" && rankedReady \? <Leaderboard/);
   const routeBranch = page.match(/    if \(route.phase === "drill"[\s\S]*?(?=    if \(route.phase === "agent")/)?.[0];
   assert.ok(routeBranch);
-  const initialize = new Function("route", "active", "keyOf", "RANKED_DRILL", "reviewDrill", "drills", "RANKED_ENABLED", "drafts", "playedToday", "rankState", "RANKED_DAILY_LIMIT", "begin", "setPhase", routeBranch);
-  for (const drafts of [{}, { ranked: { session: { answered: 2 } } }]) {
-    const begun = [], redirects = [];
-    initialize({ phase: "drill", key: "ranked" }, null, () => "ranked", { id: "ranked" }, {}, [], false, drafts, () => 0, {}, 3,
-      (...args) => begun.push(args), (...args) => redirects.push(args));
-    assert.deepEqual(begun, []);
-    assert.deepEqual(redirects, [["library", true]]);
+  const initialize = new Function("route", "active", "keyOf", "RANKED_DRILL", "reviewDrill", "drills", "rankedReady", "begin", "start", "setPhase", routeBranch);
+  for (const ready of [false, true]) {
+    const begun = [], starts = [], redirects = [];
+    initialize({ phase: "drill", key: "ranked" }, null, () => "ranked", { id: "ranked" }, {}, [], ready,
+      (...args) => begun.push(args), (...args) => starts.push(args), (...args) => redirects.push(args));
+    assert.deepEqual(begun, [], "ranked never starts the local-only drill");
+    assert.equal(starts.length, ready ? 1 : 0);
+    assert.deepEqual(redirects, ready ? [] : [["library", true]]);
   }
 });

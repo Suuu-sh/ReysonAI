@@ -87,5 +87,5 @@ export const es: SiteCopy = {
     ],
   },
   final: { title1: "Tu próxima sesión", title2: "empieza con una mano.", description: "Abre la app, elige una situación y pulsa una mano.", action: "Abrir ReysonAI", note: "Vista previa gratuita · Sin cuenta" },
-  footer: { tagline: "Don't just play. Understand why.", product: "Producto", open: "Abrir la app", how: "Cómo funciona", drill: "Entrenamiento", analysis: "Análisis", compare: "Comparativa", pricing: "Precios", faq: "Preguntas frecuentes", legal: "Legal", privacy: "Privacidad · próximamente", terms: "Condiciones · próximamente", disclaimer: "ReysonAI ofrece información educativa y de estrategia de póquer. Las soluciones de IA son estimaciones y no se garantiza que sean matemáticamente óptimas ni equivalentes a soluciones GTO. Juega de forma responsable." },
+  footer: { tagline: "Don't just play. Understand why.", product: "Producto", open: "Abrir la app", how: "Cómo funciona", drill: "Entrenamiento", analysis: "Análisis", compare: "Comparativa", pricing: "Precios", faq: "Preguntas frecuentes", legal: "Legal", privacy: "Política de privacidad", terms: "Condiciones de uso", disclaimer: "ReysonAI ofrece información educativa y de estrategia de póquer. Las soluciones de IA son estimaciones y no se garantiza que sean matemáticamente óptimas ni equivalentes a soluciones GTO. Juega de forma responsable." },
 };

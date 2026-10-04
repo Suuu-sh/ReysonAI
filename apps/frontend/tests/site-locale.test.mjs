@@ -166,7 +166,9 @@ test("all site locales render a selected native-language control and localized p
 test("the marketing entry chooses metadata from the selected locale and preserves the route", () => {
   const source = readFileSync(new URL("../src/main.tsx", import.meta.url), "utf8");
   assert.match(source, /const copy = SITE_COPY\[initialSiteLocale\]/);
-  assert.match(source, /const selectedCopy = SITE_COPY\[locale\]/);
+  assert.match(source, /const selectedCopy = legalDocument/);
+  assert.match(source, /: SITE_COPY\[locale\]/);
+  assert.match(source, /LEGAL_COPY\[locale\]\[legalDocument\]/);
   assert.match(source, /document\.documentElement\.lang = locale/);
   assert.match(source, /document\.title = selectedCopy\.title/);
   assert.match(source, /setAttribute\("content", selectedCopy\.description\)/);

@@ -1,6 +1,9 @@
+import { routeRanked } from "./ranked.ts";
+import { isNativeAccountRequest, routeNativeAccount } from "./native-account.ts";
 import { routeAccount, type AccountEnv } from "./account.ts";
 import { routePostflop, type D1Database } from "./postflop.ts";
 import { routePreflopDatasets } from "./preflop-datasets.ts";
+import { POSTFLOP_RUNTIME_CONFIG_PATH, routePostflopRuntimeConfig } from "./postflop-runtime-config.ts";
 
 const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"] as const;
 
@@ -54,7 +57,7 @@ type Manifest = {
   edge?: EdgeManifest;
 };
 type R2Bucket = { get(key: string): Promise<{ text(): Promise<string> } | null> };
-type Env = AccountEnv & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
+type Env = AccountEnv & { AUTH_NATIVE_ENABLED?: string; RANKED_ENABLED?: string } & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
 type PublishedData = {
   summary: Solution;
   nodesIndex: NodeSummary[];
@@ -68,6 +71,10 @@ const JSON_HEADERS = {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    // Public, version-pinned browser inputs need no account, D1/R2, dataset cache
+    // or environment access, including for invalid methods and query strings.
+    const runtimeUrl = new URL(request.url);
+    if (runtimeUrl.pathname === POSTFLOP_RUNTIME_CONFIG_PATH) return routePostflopRuntimeConfig(request, runtimeUrl);
     try {
       if (request.method === "OPTIONS") {
         return withCors(new Response(null, { status: 204 }), request, env);
@@ -79,7 +86,7 @@ export default {
     } catch (error: unknown) {
       const status = error instanceof HttpError ? error.status : 500;
       return withCors(
-        errorResponse(status, new URL(request.url).pathname.startsWith("/v1/account/") ? "account_service_unavailable" : error instanceof Error ? error.message : "internal error"),
+        errorResponse(status, new URL(request.url).pathname.startsWith("/v1/account/") ? "account_service_unavailable" : new URL(request.url).pathname.startsWith("/v1/ranked/") ? "ranked_service_unavailable" : error instanceof Error ? error.message : "internal error"),
         request,
         env,
       );
@@ -93,6 +100,8 @@ function notModified(request: Request, response: Response): Response | null {
 }
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
+  if (url.pathname.startsWith("/v1/ranked/")) return routeRanked(request, env);
+  if (isNativeAccountRequest(url)) return routeNativeAccount(request, env);
   if (url.pathname.startsWith("/v1/account/")) return routeAccount(request, env);
   if (url.pathname === "/health" && request.method === "GET") {
     return json({ status: "ok", service: "reysonai-api" });
@@ -484,6 +493,13 @@ function withCors(response: Response, request: Request, env: Env): Response {
     }
     headers.set("cache-control", "no-store");
   }
+  // Native endpoints have no browser CORS exemption or credentialed transport.
+  if (isNativeAccountRequest(new URL(request.url))) {
+    headers.delete("access-control-allow-origin");
+    headers.delete("access-control-allow-credentials");
+    headers.set("referrer-policy", "no-referrer");
+    headers.set("cache-control", "no-store");
+  }
   headers.set("access-control-allow-methods", "GET, POST, OPTIONS");
   headers.set("access-control-allow-headers", "content-type");
   headers.set("vary", [...new Set(["Origin", ...(response.headers.get("vary") ?? "").split(",").map(item => item.trim()).filter(Boolean)])].join(", "));
@@ -504,3 +520,4 @@ class HttpError extends Error {
 function isRecord(value: unknown): value is JsonRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+

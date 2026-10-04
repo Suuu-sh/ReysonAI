@@ -16,7 +16,7 @@ import { AgentTablePage } from "../agent/AgentTable.tsx";
 import { PlayerAnalysis } from "./PlayerAnalysis.tsx";
 import { SessionPage } from "./SessionPage.tsx";
 import { loadReviewSessions, newSessionRecord, recordReviewSession } from "./practice-sessions.ts";
-import { RANKED_DAILY_LIMIT, RANKED_ENABLED, RANKED_LENGTH, RANKED_SETTINGS, loadRankState, playedToday, recordMatch, saveRankState, TIER_EN, tierFor } from "./rank-store.ts";
+import { RANKED_LENGTH, RANKED_SETTINGS, emptyRankState, TIER_EN, tierFor } from "./rank-store.ts";
 import { Leaderboard } from "./Leaderboard.tsx";
 import "./trainer.css";
 import { localized } from "../i18n.ts";
@@ -147,6 +147,9 @@ function SessionPanel({ session, history }) {
 const KIND_OPTIONS = [{ value: "open", label: "オープン", hint: "前の人が全員フォールド" }, { value: "response", label: "vs オープン", hint: "誰かのオープンに応答" }];
 // Every drill is a fixed 10-question session that cannot be ended early.
 const SESSION_LENGTH = 10;
+import { rankedRequest } from "./ranked-api.ts";
+import { accountSnapshot, subscribeAccount } from "../account/session.ts";
+
 const RANKED_DRILL = Object.freeze({ id: "ranked", name: "ランク戦", settings: RANKED_SETTINGS });
 
 function Segmented({ options, value, onChange, label }) {
@@ -289,7 +292,7 @@ function RankResult({ rank }) {
   </section>;
 }
 
-function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, initialDraft, onProgress, onOpenSetup, onFinish, length = SESSION_LENGTH }) {
+function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, initialDraft, onProgress, onOpenSetup, onFinish, length = SESSION_LENGTH, rankedMatch = null }) {
   const spots = useMemo(() => spotsForSettings(settings), [settings]);
   // Keep just-answered hands out of the review queue so a miss is not re-asked immediately.
   const review = useMemo(() => {
@@ -298,12 +301,18 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
     const cooled = all.filter(item => !recent.has(`${item.spotId}|${item.hand}`));
     return reviewOnly && !cooled.length ? all : cooled;
   }, [history, reviewOnly]);
-  const next = useCallback(() => {
+  const next = useCallback((index = 0) => {
+    if (rankedMatch) {
+      const issued = rankedMatch.questions[index];
+      const base = spotById.get(issued.spotId);
+      const spot = { ...base, byHand: new Map(base.byHand).set(issued.hand, issued.mix) };
+      return { spot, hand: issued.hand, cards: randomSuits(issued.hand), review: false };
+    }
     const question = reviewOnly && review.length
       ? pickQuestion(filterSpots(), () => 0, [...review].sort(() => Math.random() - 0.5))
       : pickQuestion(spots.length ? spots : filterSpots(), Math.random, settings.review ? review : [], 0.25, settings.difficulty);
     return { ...question, cards: randomSuits(question.hand) };
-  }, [spots, review, reviewOnly, settings]);
+  }, [spots, review, reviewOnly, settings, rankedMatch]);
   const [restored] = useState(() => restoreDrillDraft(initialDraft));
   const [startedAt] = useState(() => Date.now() - (restored?.elapsedMs ?? 0));
   const [question, setQuestion] = useState(() => restored?.question ?? next());
@@ -332,7 +341,7 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
 
   const advance = useCallback(() => {
     if (lastQuestion) { onFinish(session.log, Date.now() - startedAt); return; }
-    setQuestion(next()); setAnswer(null);
+    setQuestion(next(session.answered)); setAnswer(null);
   }, [next, lastQuestion, onFinish, session.log]);
 
   useEffect(() => {
@@ -488,7 +497,21 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   const [editing, setEditing] = useState(null); // { drill, isNew }
   const [run, setRun] = useState(0);
   const [result, setResult] = useState(null);
-  const [rankState, setRankState] = useState(loadRankState);
+  const [rankState, setRankState] = useState(emptyRankState);
+  const [rankedReady, setRankedReady] = useState(false);
+  const [rankedError, setRankedError] = useState("");
+  const [rankedBusy, setRankedBusy] = useState(false);
+  const [account, setAccount] = useState(accountSnapshot);
+  useEffect(() => subscribeAccount(() => setAccount(accountSnapshot())), []);
+  useEffect(() => {
+    let canceled = false;
+    setRankedReady(false); setRankState(emptyRankState()); setActive(null); setResult(null);
+    if (!account.ready || !account.user?.verified || account.error) return;
+    rankedRequest("profile").then(response => {
+      if (!canceled) { setRankState(response.state); setRankedReady(response.enabled); setRankedError(""); }
+    }).catch(() => { if (!canceled) setRankedError(localized("Ranked is unavailable. Your local records do not count toward rankings.", "ランク戦は現在利用できません。ローカル記録はランキングに反映されません。")); });
+    return () => { canceled = true; };
+  }, [account.ready, account.user?.id, account.error]);
   // The trainer's sub-page lives in the URL (see route.ts); the state below only holds what the
   // page needs, and is rebuilt from the URL after a reload.
   const route = section === "トレーナー" ? trainerRouteOf(path) : { phase: "library" as const };
@@ -507,19 +530,39 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
     setActive({ drill, review, ranked: drill.id === RANKED_DRILL.id, name: saved?.drillName ?? drill.name, settings: saved?.settings ?? drill.settings });
     setRun(value => value + 1);
   };
-  const start = (drill, review = false) => {
+  const start = async (drill, review = false) => {
+    if (drill.id === "ranked") {
+      if (!rankedReady || rankedBusy) return;
+      if (!rankState.active && !window.confirm(localized("Start a public ranked match? Your anonymous Player name, rating and practice results appear on the leaderboard. Each start uses one of 3 daily attempts (reset 00:00 UTC), even if abandoned. Ratings reflect the saved AI estimate, not GTO or win rate.", "公開ランク戦を開始しますか？匿名のPlayer名・レート・練習結果がランキングに公開されます。開始すると中断しても1日3回の枠を消費します（UTC 0時リセット）。レートはAI推定との一致を示し、GTOや勝率ではありません。"))) return;
+      setRankedBusy(true); setRankedError("");
+      try {
+        const response = await rankedRequest("matches", { consent: true });
+        if (response.match.questions.some(q => !spotById.get(q.spotId)?.byHand.has(q.hand))) throw new Error("dataset");
+        setRankState(response.state);
+        setActive({ drill, review: false, ranked: true, rankedMatch: response.match, name: drill.name, settings: drill.settings });
+        setRun(value => value + 1);
+        onNavigate(trainerPath({ phase: "drill", key: "ranked" }));
+      } catch { setRankedError(localized("Could not start ranked. Try again after checking your connection and daily limit.", "ランク戦を開始できませんでした。接続と本日の残り回数を確認してください。")); }
+      finally { setRankedBusy(false); }
+      return;
+    }
     begin(drill, review);
     onNavigate(trainerPath({ phase: "drill", key: drill.id === RANKED_DRILL.id ? "ranked" : review ? "review" : drill.id }));
   };
   const reviewDrill = useMemo(() => ({ id: "review", name: "復習ドリル", settings: normalizeSettings({ count: Math.min(20, Math.max(reviewCount, 1)) }, profile?.level) }), [reviewCount, profile]);
-  const onFinish = useCallback((log, durationMs) => {
+  const onFinish = useCallback(async (log, durationMs) => {
     discardProgress(active.review ? "review" : active.drill.id);
     let record = null;
     if (active.ranked) {
-      const next = recordMatch(rankState, log);
-      setRankState(next); saveRankState(next);
-      setResult({ log, record: null, rank: next.matches.at(-1) });
-      onNavigate(trainerPath({ phase: "result", key: keyOf(active) }), true);
+      if (rankedBusy) return;
+      setRankedBusy(true); setRankedError("");
+      try {
+        const response = await rankedRequest(`matches/${active.rankedMatch.id}/finish`, { actions: log.map(item => item.action) });
+        setRankState(response.state);
+        setResult({ log, record: null, rank: response.match });
+        onNavigate(trainerPath({ phase: "result", key: keyOf(active) }), true);
+      } catch { setRankedError(localized("Result not confirmed. Stay here and press Finish again to retry; no local rating is awarded.", "結果を確認できませんでした。この画面で完了を再度押して確認してください。ローカルでレートは付与しません。")); }
+      finally { setRankedBusy(false); }
       return;
     }
     if (log.length) {
@@ -535,7 +578,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
     }
     setResult({ log, record });
     onNavigate(trainerPath({ phase: "result", key: keyOf(active) }), true);
-  }, [active, drills, discardProgress, rankState, onNavigate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [active, drills, discardProgress, rankState, onNavigate, rankedBusy]); // eslint-disable-line react-hooks/exhaustive-deps
   // After a reload (or back/forward) the URL can name a page whose state is gone: rebuild it,
   // or fall back to the nearest page that needs none.
   useEffect(() => {
@@ -546,12 +589,12 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
     }
     if (route.phase === "drill" && (!active || keyOf(active) !== route.key)) {
       const drill = route.key === "ranked" ? RANKED_DRILL : route.key === "review" ? reviewDrill : drills.find(item => item.id === route.key);
-      const rankedClosed = route.key === "ranked" && (!RANKED_ENABLED || (!drafts.ranked && playedToday(rankState) >= RANKED_DAILY_LIMIT));
-      if (drill && !rankedClosed) begin(drill, route.key === "review"); else setPhase(route.key === "ranked" || !drill ? "library" : "drills", true);
+      const rankedClosed = route.key === "ranked" && !rankedReady;
+      if (drill && !rankedClosed) { if (route.key === "ranked") start(drill); else begin(drill, route.key === "review"); } else setPhase(route.key === "ranked" || !drill ? "library" : "drills", true);
     }
     if (route.phase === "agent" && !agentTableById(route.tableId)) setPhase("library", true);
     if (route.phase === "result" && (!result || !active || keyOf(active) !== route.key)) setPhase(route.key === "ranked" ? "library" : "drills", true);
-  }, [path, section]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [path, section, rankedReady]); // eslint-disable-line react-hooks/exhaustive-deps
   const mainRef = useRef(null);
   useEffect(() => { mainRef.current?.scrollTo?.(0, 0); window.scrollTo?.(0, 0); }, [phase, section]);
   const activeDraftKey = active && (active.review ? "review" : active.drill.id);
@@ -561,6 +604,8 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   return <div className="shell">
     <Sidebar activeSection={section} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} />
     <main className="trainer-page" ref={mainRef}>
+      {rankedError && <p role="alert">{rankedError}</p>}
+      {rankedBusy && <p role="status">{localized("Confirming with ranked server…", "ランク戦サーバーに確認中…")}</p>}
       {section === "弱点"
         ? <Weakness history={history}
             onStart={() => { setPhase("library"); }}
@@ -573,11 +618,11 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("drills")}
             onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("drills"); }} />
         : phase === "agent" && agentTable && agentTableById(agentTable.tableId) ? <AgentTablePage key={`${agentTable.tableId}-${agentTable.watch}`} tableId={agentTable.tableId} watch={agentTable.watch} onExit={() => setPhase("library")} />
-        : phase === "ranking" && RANKED_ENABLED ? <Leaderboard rank={rankState} profile={profile} onBack={() => setPhase("library")} />
+        : phase === "ranking" && rankedReady ? <Leaderboard rank={rankState} profile={profile} onBack={() => setPhase("library")} />
         : phase === "result" && result ? <SessionResult log={result.log} record={result.record} rank={result.rank} settings={current.settings} drill={active.review ? null : current}
-            onRestart={active.ranked && (playedToday(rankState) >= RANKED_DAILY_LIMIT) ? null : () => start(current, active.review)} onLibrary={() => setPhase(active.ranked ? "library" : "drills")} />
+            onRestart={active.ranked && (rankState.remaining === 0) ? null : () => start(current, active.review)} onLibrary={() => setPhase(active.ranked ? "library" : "drills")} />
         : phase === "drill" && current ? <Drill key={run} history={history} onAnswer={onAnswer} settings={current.settings} drillName={current.name} reviewOnly={active.review}
-            draftKey={activeDraftKey} initialDraft={activeDraft} onProgress={onProgress}
+            draftKey={activeDraftKey} initialDraft={active.ranked ? null : activeDraft} onProgress={active.ranked ? () => {} : onProgress} rankedMatch={active.rankedMatch}
             onOpenSetup={() => setPhase(active.ranked ? "library" : "drills")} onFinish={onFinish} length={active.ranked ? RANKED_LENGTH : undefined} />
         : phase === "drills" ? <DrillLibrary drills={drills} reviewCount={reviewCount} drafts={drafts} onBack={() => setPhase("library")}
             onStart={drill => start(drill)} onStartReview={() => start(reviewDrill, true)}
@@ -588,7 +633,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onResume={key => key === "ranked" ? start(RANKED_DRILL) : key === "review" ? start(reviewDrill, true) : start(drills.find(drill => drill.id === key) ?? drills[0])}
             onCreate={() => { setEditing(newDrill()); onNavigate(trainerPath({ phase: "new" })); }} onStartReview={() => start(reviewDrill, true)}
             onStartAgent={(tableId, watch) => onNavigate(trainerPath({ phase: "agent", tableId, watch }))}
-            rank={rankState} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")} />}
+            rank={rankState} rankedReady={rankedReady} rankedBusy={rankedBusy} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")} />}
     </main>
   </div>;
 }

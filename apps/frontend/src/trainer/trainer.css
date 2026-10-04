@@ -705,8 +705,15 @@
 .rank-fan { position: relative; width: 100%; height: 170px; container-type: inline-size; }
 .rank-fan-item { position: absolute; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.55);
   transition: transform .5s var(--ease-out) calc(var(--d) * 45ms), opacity .3s ease calc(var(--d) * 45ms); }
-.rank-fan-item.is-front { opacity: 1; transform: translate(-50%, -50%) scale(2.2); }
-.mode-block:is(:hover, :focus-within) .rank-fan-item { opacity: 1; transform: translate(calc(-50% + var(--k) * min(92px, 30cqi)), -50%) scale(1.25); }
+/* Resting: diamond · legend · master in a row (legend a bit larger). Hover: the side badges lean out
+   and the legend rises with a glow. */
+.rank-fan-item { opacity: 1; transform: translate(calc(-50% + var(--k) * min(92px, 30cqi)), -50%) scale(1.25); }
+.rank-fan-item.is-front { transform: translate(-50%, -50%) scale(1.55); }
+.rank-fan-item .rank-badge { transition: filter .4s ease; }
+.mode-block:is(:hover, :focus-within) .rank-fan-item { transform: translate(calc(-50% + var(--k) * min(104px, 34cqi)), calc(-50% + 6px)) rotate(calc(var(--k) * 8deg)) scale(1.18); }
+.mode-block:is(:hover, :focus-within) .rank-fan-item.is-front { transform: translate(-50%, calc(-50% - 10px)) scale(1.75); }
+.mode-block:is(:hover, :focus-within) .rank-fan-item.is-front .rank-badge { filter: drop-shadow(0 0 22px color-mix(in srgb, var(--mode-theme) 70%, transparent)); animation: rank-float 2.4s ease-in-out .5s infinite; }
+@keyframes rank-float { 50% { translate: 0 -5px; } }
 .agent-lineup { position: relative; min-height: 170px; container-type: inline-size; }
 .agent-lineup .agent-table-face { position: absolute; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.7);
   transition: transform .5s var(--ease-out) calc(var(--d) * 50ms), opacity .3s ease calc(var(--d) * 50ms); }
@@ -719,14 +726,16 @@
 
 /* Drill deck: three flashcards stacked like the other emblems; on hover they fan out. */
 .drill-deck { position: relative; width: 100%; height: 170px; }
-.drill-deck-card { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 74px; height: 102px; border: 1.5px solid color-mix(in srgb, var(--mode-theme) 70%, transparent); border-radius: 12px;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--mode-theme) 22%, #18121a) 0%, #120d12 100%); box-shadow: 0 10px 26px rgb(0 0 0 / 45%), 0 0 22px color-mix(in srgb, var(--mode-theme) 22%, transparent);
-  transform: translate(-50%, -50%) rotate(calc(var(--k) * 4deg)) translateY(calc(var(--k) * -3px)) scale(1.37); transition: transform .5s var(--ease-out); }
-.drill-deck-card b { color: var(--mode-theme); font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
-.drill-deck-card i { position: absolute; bottom: 12px; width: 26px; height: 3px; border-radius: 2px; background: color-mix(in srgb, var(--mode-theme) 55%, transparent); }
-.drill-deck-card:nth-child(3) { z-index: 3; } .drill-deck-card:nth-child(2) { z-index: 2; }
-.mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card { transform: translate(calc(-50% + var(--k) * 70px), -50%) rotate(calc(var(--k) * 10deg)) translateY(calc(var(--k) * var(--k) * 8px)) scale(1); }
-/* Agent names show only when the lineup spreads out. */
+.drill-deck-card { position: absolute; top: 50%; left: 50%; display: grid; grid-template-rows: auto 1fr; padding: 10px 12px; width: 92px; height: 128px; border: 1.5px solid color-mix(in srgb, var(--mode-theme) 70%, transparent); border-radius: 13px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--mode-theme) 22%, #18121a) 0%, #120d12 100%); box-shadow: 0 12px 28px rgb(0 0 0 / 45%), 0 0 22px color-mix(in srgb, var(--mode-theme) 22%, transparent);
+  transform: translate(calc(-50% + var(--k) * 50px), -50%) rotate(calc(var(--k) * 8deg)); transform-origin: 50% 110%; transition: transform .55s var(--ease-out), box-shadow .3s ease; }
+.drill-deck-card b { color: var(--mode-theme); font-size: 26px; font-weight: 800; line-height: 1; }
+.drill-deck-card i { align-self: center; justify-self: center; color: var(--mode-theme); font-size: 44px; font-style: normal; line-height: 1; }
+.drill-deck-card:nth-child(2) { z-index: 2; }
+.mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card { transform: translate(calc(-50% + var(--k) * 68px), calc(-50% - 8px)) rotate(calc(var(--k) * 15deg)); box-shadow: 0 16px 34px rgb(0 0 0 / 50%), 0 0 30px color-mix(in srgb, var(--mode-theme) 40%, transparent); }
+.drill-deck-card:hover { z-index: 3; }
+@media (prefers-reduced-motion: reduce) { .drill-deck-card { transition: none; } }
+/* Agent names show only when the lineup spreads out; the hidden name stays out of the layout so the
+   resting face is centred (restored 2026-10-05 after a merge dropped it). */
 .agent-lineup .agent-table-face small { position: absolute; top: calc(100% + 4px); left: 50%; opacity: 0; transform: translateX(-50%); white-space: nowrap; transition: opacity .25s ease; }
 .mode-block.is-agent:is(:hover, :focus-within) .agent-table-face small { opacity: 1; transition-delay: .2s; }
-@media (prefers-reduced-motion: reduce) { .drill-deck-card { transition: none; } }

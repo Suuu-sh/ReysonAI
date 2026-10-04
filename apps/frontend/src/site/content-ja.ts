@@ -87,5 +87,5 @@ export const ja: SiteCopy = {
     ],
   },
   final: { title1: "次のセッションは、", title2: "ひとつのハンドから。", description: "アプリを開いて、局面を選び、ハンドをタップするだけ。", action: "ReysonAI を開く", note: "無料プレビュー · アカウント不要" },
-  footer: { tagline: "Don't just play. Understand why.", product: "プロダクト", open: "アプリを開く", how: "使い方", drill: "トレーニング", analysis: "分析", compare: "比較", pricing: "料金", faq: "よくある質問", legal: "規約", privacy: "プライバシー · 準備中", terms: "利用規約 · 準備中", disclaimer: "ReysonAIはポーカーの戦略と学習のための情報を提供します。AIソリューションは推定であり、数学的な最適性やGTOソリューションとの同等性は保証されません。節度をもってお楽しみください。" },
+  footer: { tagline: "Don't just play. Understand why.", product: "プロダクト", open: "アプリを開く", how: "使い方", drill: "トレーニング", analysis: "分析", compare: "比較", pricing: "料金", faq: "よくある質問", legal: "規約", privacy: "プライバシーポリシー", terms: "利用規約", disclaimer: "ReysonAIはポーカーの戦略と学習のための情報を提供します。AIソリューションは推定であり、数学的な最適性やGTOソリューションとの同等性は保証されません。節度をもってお楽しみください。" },
 };
