@@ -117,18 +117,34 @@
 :root[data-cards="two"] .trainer-card.suit-c { background: linear-gradient(160deg, #4a4a55, #2e2e36); }
 :root[data-motion="reduce"] *, :root[data-motion="reduce"] *::before, :root[data-motion="reduce"] *::after { animation: none !important; transition: none !important; }
 
+.account-tab-short { display: none; }
 @media (max-width: 760px) {
-  .account-layout { grid-template-columns: minmax(0, 1fr); }
-  .account-tabs { display: flex; overflow-x: auto; scrollbar-width: none; }
-  .account-tabs button { flex: 0 0 auto; }
+  .account-layout { grid-template-columns: minmax(0, 1fr); padding-bottom: 32px; }
+  /* Four equal segments, icon over label, so every tab fits without sideways scrolling. */
+  .account-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .account-tabs button { flex-direction: column; justify-content: center; gap: 3px; min-width: 0; padding: 7px 2px 6px; font-size: 11px; text-align: center; white-space: nowrap; }
+  .account-tab-full { display: none; }
+  .account-tab-short { display: inline; }
+  .account-card { padding: 14px; }
+  .account-profile { gap: 12px; }
+  .account-avatar.xl { width: 48px; height: 48px; font-size: 19px; }
+  .account-row > div:first-child { min-width: 0; flex-basis: 100%; }
+  .account-row .account-choice { width: 100%; }
+  .account-choice button { flex: 1; }
+  .account-auth-actions > button { flex: 1; }
   .account-plans { grid-template-columns: minmax(0, 1fr); }
 }
 
-.account-auth { max-width: 680px; margin: 16px auto; padding: 20px; }
-.account-auth form { display: grid; gap: 16px; margin: 16px 0; }
-.account-auth p { line-height: 1.6; overflow-wrap: anywhere; }
-.account-auth .account-dialog-actions { flex-wrap: wrap; }
-.account-auth > button { margin: 8px 8px 0 0; }
+/* Sign-in card: same rhythm as the other settings cards; standalone (sign-in page) it is centred. */
+.account-page > .account-auth { width: min(100% - 32px, 560px); margin: 24px auto 12px; }
+.account-page > .account-auth + .account-primary { display: flex; margin: 0 auto; }
+.account-auth p { margin: 0; color: var(--text-muted); font-size: 12.5px; line-height: 1.65; overflow-wrap: anywhere; }
+.account-auth .account-auth-email { color: var(--text); font-size: 13.5px; font-weight: 700; }
+.account-auth .account-check { font-size: 12px; }
+.account-auth-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); }
+.account-auth > .account-secondary { justify-self: start; }
+.account-auth p.account-notice { display: flex; align-items: flex-start; gap: 8px; padding: 9px 11px; border: 1px solid color-mix(in srgb, #f6c34a 30%, var(--line)); border-radius: 9px; background: color-mix(in srgb, #f6c34a 8%, transparent); color: var(--text); font-size: 12px; line-height: 1.55; }
+.account-notice svg { flex: 0 0 auto; margin-top: 1px; color: #f6c34a; }
 .account-sync-error { position: sticky; top: 0; z-index: 100; background: #29232a; padding: 12px; margin: 0; }
 
 /* Learning sign-in gate */

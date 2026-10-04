@@ -13,7 +13,7 @@ import { ACCOUNT_SECTION, initialOf } from "./AccountMenu.tsx";
 const t = (ja, en) => localized(en, ja);
 export const ACCOUNT_TABS = [
   { value: "account", Icon: UserCircle, ja: "アカウント", en: "Account" },
-  { value: "subscription", Icon: CreditCard, ja: "サブスクリプション", en: "Subscription" },
+  { value: "subscription", Icon: CreditCard, ja: "サブスクリプション", en: "Subscription", shortJa: "プラン", shortEn: "Plan" },
   { value: "appearance", Icon: Palette, ja: "外観", en: "Appearance" },
   { value: "language", Icon: Translate, ja: "言語", en: "Language" },
 ];
@@ -172,8 +172,11 @@ export function AccountPage({ profile, tab = "account", onSectionChange, onEditP
       <div className="account-layout">
         <header className="account-heading"><h1>{t("設定", "Settings")}</h1></header>
         <nav className="account-tabs" aria-label={t("設定の項目", "Settings sections")}>
-          {ACCOUNT_TABS.map(({ value, Icon, ja, en }) => <button type="button" key={value} aria-current={active === value ? "page" : undefined}
-            className={active === value ? "on" : ""} onClick={() => onSectionChange(`${ACCOUNT_SECTION}#${value}`)}><Icon size={17} />{t(ja, en)}</button>)}
+          {ACCOUNT_TABS.map(({ value, Icon, ja, en, shortJa, shortEn }) => <button type="button" key={value} aria-current={active === value ? "page" : undefined} aria-label={t(ja, en)}
+            className={active === value ? "on" : ""} onClick={() => onSectionChange(`${ACCOUNT_SECTION}#${value}`)}>
+            <Icon size={17} weight={active === value ? "fill" : "regular"} />
+            {shortJa ? <><span className="account-tab-full">{t(ja, en)}</span><span className="account-tab-short" aria-hidden="true">{t(shortJa, shortEn)}</span></> : t(ja, en)}
+          </button>)}
         </nav>
         <div className="account-content">
           {active === "account" ? <AccountTab key={profile?.updatedAt} profile={profile} onProfileSaved={onProfileSaved} />
