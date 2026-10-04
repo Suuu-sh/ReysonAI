@@ -11,6 +11,7 @@ import { boardHeight, boardTexture, handTier, LINES, parseCards, RUNOUT_TEXTURES
 import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
 import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
+import { NEW_HU_ACTION_MODEL_VERSION } from "./observable-actions.mjs";
 
 // Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
 // Existing candidates are reused as saved (the first BTN/BB pilot was made with gpt-6-sol).
@@ -86,6 +87,19 @@ function spotContext(inputs) {
   return { preflop, design, heights, raiser, nodeNames };
 }
 
+// These execution notes are scoped to the new family. Legacy prompt strings and
+// saved policy metadata must not change just because the new model is described.
+export function newHuAuthoringContract(inputs) {
+  if (!inputs.spot.history) return [];
+  return [
+    `New-HU execution model ${NEW_HU_ACTION_MODEL_VERSION}: the exact all-in merge threshold is ${config.later_all_in_merge_ratio * 100}% of the remaining effective stack. Keep every required authored action key, even when sizes collapse physically.`,
+    "The runtime preserves each label's authored probabilities, river shove rerouting and individual bluff cap, then sums the final played probabilities of labels producing the same public chip action. Defenders observe that summed range, never the hidden sampled size label. Flop and turn have no explicit allin node; their merged actions use one existing canonical size node but are physically all-in. Do not rely on distinct response ranges for indistinguishable bets.",
+    "Facing-node fold/call percentages do not directly set the effective current response: computed defence uses blocker-aware equity against saved policy reach, realization, price, and the existing MDF floor/ceiling. However, the existing reach model still multiplies earlier call/fold histories by their saved policy probabilities, so these rows materially affect subsequent inferred ranges. In particular, a saved zero call can remove a hand from later inferred support even when the computed current decision calls. Author them coherently; they are not disposable placeholders. Authored legal raises and betting mixtures also remain material. Only on new-HU rivers, the added MDF-floor call is suppressed when exact call EV against known compatible saved support is negative. Raw logistic calls, legal raises and unknown-support behavior remain. Do not confuse changing these saved reach factors with directly correcting the current computed call/fold response.",
+    "Actual bluff-cap reduction remains provenance for the inherited defence ceiling. A pooled class containing an under-bluffed label and a clipped label need not saturate the break-even bluff share. The floor exception can leave defence below MDF and less robust to unmodeled extra bluffs; fixed opponent profiles use different ranges. Neither the model nor its audits prove equilibrium.",
+    "The compact hand tiers are coarse board-aware categories, not a guarantee of value against the reached opponent range. In particular, paired/board-made hands in a monster tier can still be weak. Review actual range support, blockers, board height and line; do not force value-only bets merely from the tier name. The size-specific air-share guidance below is a heuristic, not a substitute for the actual equity-defined post-cap mixture or its all-in class.",
+  ];
+}
+
 export function promptFor(inputs) {
   const { spot } = inputs;
   const { preflop, design, heights, raiser, nodeNames } = spotContext(inputs);
@@ -93,9 +107,10 @@ export function promptFor(inputs) {
   const bets = FLOP_BETS.join("/"), sizes = FLOP_BETS.map(flopBetLabel).join(" / ");
   const facingList = bettor => FLOP_BETS.map(bet => facingNode(bettor, bet)).join(" / ");
   const later = "Turn/river use a separate later-street policy; do not author them.";
-  const tree = spot.tree === "oop_leads"
+  let tree = spot.tree === "oop_leads"
     ? `${spot.oop} acts first and chooses check/${bets} (oop_first; bets are ${sizes} of the pot). Facing that bet, ${spot.ip} chooses fold/call/raise to 3x the bet (${facingList("oop")}); facing the raise ${spot.oop} chooses fold/call/raise (oop_vs_raise); re-raises continue through ip_vs_raise2, oop_vs_raise3 and ip_vs_raise4 (fold/call only). Those re-raise nodes (raise2 and deeper) need no rules: reference mixes are used. After ${spot.oop} checks, ${spot.ip} chooses check/${bets} (btn_first); ${spot.oop} facing that bet chooses fold/call/raise to 3x the bet (${facingList("ip")}); ${spot.ip} facing that check-raise chooses fold/call/raise (btn_vs_raise; deeper re-raise nodes bb_vs_raise2, btn_vs_raise3, bb_vs_raise4 need no rules). Up to 4 raises; bets and raises are capped by the ${spot.stackBb}BB stacks, and any wager committing at least two thirds of the remaining stack is an all-in. ${later}`
     : `${spot.oop} checks first. ${spot.ip} chooses check/${bets} (btn_first; bets are ${sizes} of the pot). ${spot.oop} facing that bet chooses fold/call/raise to 3x the bet (${facingList("ip")}). ${spot.ip} facing check-raise chooses fold/call/raise (btn_vs_raise; deeper re-raise nodes bb_vs_raise2, btn_vs_raise3, bb_vs_raise4 need no rules). Up to 4 raises.${spot.kind !== "srp" ? ` Bets and raises are capped by the ${spot.stackBb}BB stacks, and any wager committing at least two thirds of the remaining stack is an all-in.` : ""} ${later}`;
+  if (spot.history) tree = tree.replaceAll("at least two thirds of the remaining stack", `at least ${config.later_all_in_merge_ratio * 100}% of the remaining effective stack`);
   return [
     "Create compact flop-only AI-estimated poker policy rules, not GTO, solver, equilibrium, or external chart output. Return one JSON object only. Do not call tools or write files.",
     `Cash 6-max 100BB no ante, ${preflop} flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB.`,
@@ -103,6 +118,7 @@ export function promptFor(inputs) {
     "Input summaries below are weighted real two-card combo distributions after excluding flop blockers. Tier values are rounded percentages, in monster/strong/draw/medium/air order. Never infer the opponent's hidden cards during a decision.",
     `Example design flops: ${design.join(", ")}. Boards by height: ${heights.join(", ")}. Users can pick any of the 1,755 flop classes, so rules must generalize to every board.`,
     tree,
+    ...newHuAuthoringContract(inputs),
     "Use tier order monster(two pair+), strong(top pair/overpair), draw(flush/straight draw), medium(other pair), air. A rule's texture is a shape (dry/wet/monotone/paired), a height by the top card (high = A/K/Q, mid = J/T/9, low = 8 or lower), a shape_height pair such as dry_low or wet_high, or any. The most specific matching rule wins (shape_height, then shape, then height, then any). Every node and tier MUST have one texture=any fallback.",
     `Nodes/actions: ${JSON.stringify(Object.fromEntries(nodes.map(node => [node, NODES[node]])))}. Tiers: ${TIERS.join(", ")}.`,
     "Board height decides range advantage: compare the two ranges on the height boards above. On every *_first node write a shape_height rule for every one of the 12 shape x height pairs (dry/wet/monotone/paired x high/mid/low) for the air, medium and draw tiers (a shape-only rule such as paired would otherwise hide the height), plus height rules for the other tiers: where the bettor's range is weaker on that height (e.g. a preflop raiser on low boards), check more and bet air much less often, so a bet range never carries more air than its size supports; where it is stronger (e.g. the raiser on high boards), bet more often and smaller. Facing nodes may also use heights.",
@@ -222,7 +238,8 @@ export function promptForLater(inputs) {
     `Cash 6-max 100BB no ante, ${preflop} flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB. The flop is played by a separate saved flop policy (bets 33/75/125% pot, up to 4 3x raises); you author only the turn and river.`,
     `${spot.ip} (${raiser(spot.ip)}) is in position; ${spot.oop} (${raiser(spot.oop)}) is out of position.`,
     "Preflop range summaries on example flops (weighted two-card combos; tiers in monster/strong/draw/medium/air %): " + design.join(", ") + ". Ranges narrow on later streets according to earlier actions; never infer the opponent's hidden cards.",
-    `Street trees (the same shape on turn and river; up to four raises per street; any wager committing at least two thirds of the remaining stack becomes all-in): ${street("turn")} ${street("river")}`,
+    `Street trees (the same shape on turn and river; up to four raises per street; any wager committing ${spot.history ? `at least ${config.later_all_in_merge_ratio * 100}% of the remaining effective stack` : "at least two thirds of the remaining stack"} becomes all-in): ${street("turn")} ${street("river")}`,
+    ...newHuAuthoringContract(inputs),
     `Features: tier = the acting player's hand on the current board (monster two pair+, strong top pair/overpair, draw flush/straight draw (turn only), medium other pair, air). texture = what the newest card did: ${RUNOUT_TEXTURES.join("/")} (flush = completes/extends a suit, pair = pairs the board, straight = new 3-to-a-straight, over = new highest card, blank = none). line = the acting player's result on the previous street: ${LINES.join("/")} (aggressor = they made the last called bet/raise, defender = the opponent did, checked = it checked through).`,
     `Nodes/actions: ${JSON.stringify(LATER_NODES)}. River tiers exclude draw.`,
     `Output exactly {version:1,kind:'ai_estimate_not_gto',streets:{turn:{rules:[...]},river:{rules:[...]}}} where each rule is {node,line,texture,tier,mix}; line is 'any' or one of ${LINES.join("/")}, texture is 'any' or one of ${RUNOUT_TEXTURES.join("/")}. Every node x tier MUST have one line='any',texture='any' fallback (${fallbacks} in total); at most 20 other rules per node. Mix keys must be exactly the node's legal actions, integers 0..100 summing to 100. No rationale, code or other properties.`,

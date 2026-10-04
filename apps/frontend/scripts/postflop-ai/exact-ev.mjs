@@ -15,6 +15,7 @@ import { NODES } from "./policy.mjs";
 import { LATER_NODES } from "./later-tree.mjs";
 import { comboId, isBettingNode, isFacingNode, rankTable, tierArray } from "./defence.mjs";
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
+import { canonicalPostflopPath, canonicalNodeForTable, projectActionMix } from "./observable-actions.mjs";
 
 const shapeCaches = new WeakMap();
 const STOP = Symbol("stop at the pending decision");
@@ -41,6 +42,7 @@ function fillProbs(mix, actions, out, offset, stride) {
 
 // Replays `path` with the real engine: the pending decision (or null when the hand is over) and the table.
 function advance(spot, path, finalBoard) {
+  path = canonicalPostflopPath(spot, path, config);
   const table = createTable(spot);
   let pending = null;
   try {
@@ -92,18 +94,20 @@ export function exactActionEv({ spot, defence, rootPath, finals, expectedNode, h
   let shapes = shapeCaches.get(spot);
   if (!shapes) shapeCaches.set(spot, shapes = new Map());
   const shapeOf = (path, finalBoard) => {
+    path = canonicalPostflopPath(spot, path, config);
     const key = `${path.flop}|${path.turn}|${path.river}`;
     let shape = shapes.get(key);
     if (!shape) {
       const { table, pending } = advance(spot, path, finalBoard);
       shape = pending ? { terminal: false, len: pending.boardLen, table, node: pending.node, seat: pending.seat,
-        street: pending.street, actions: actionsOf(pending.node) } : { terminal: true, len: 3, table, leaf: null };
+        street: pending.street, actions: table.log.at(-1)?.observation?.classes.map(group => group.action) ?? actionsOf(pending.node) } : { terminal: true, len: 3, table, leaf: null };
       if (shapes.size > 20000) shapes.clear();
       shapes.set(key, shape);
     }
     return shape;
   };
   const makeEntry = (path, finalBoard, v, active, mass) => {
+    path = canonicalPostflopPath(spot, path, config);
     const shape = shapeOf(path, finalBoard);
     if (shape.terminal) return { terminal: true, len: 3, shape, table: shape.table, v, active, mass };
     return { terminal: false, len: shape.len, shape, table: shape.table, node: shape.node, seat: shape.seat, street: shape.street,
@@ -135,7 +139,11 @@ export function exactActionEv({ spot, defence, rootPath, finals, expectedNode, h
         return equity === null ? capped : defence.applyEquity(context, capped, equity, combo);
       };
     }
-    return entry.mixer = mixer;
+    const observation = table.log.at(-1)?.observation;
+    return entry.mixer = observation ? (combo, id) => {
+      const raw = mixer(combo, id);
+      return raw ? projectActionMix(raw, observation) : raw;
+    } : mixer;
   };
 
   const oppProbsOf = (entry, oppSeatIsActor) => {
@@ -143,7 +151,10 @@ export function exactActionEv({ spot, defence, rootPath, finals, expectedNode, h
     const n = entry.actions.length, probs = new Float64Array(n * nOpp), mixer = mixerOf(entry);
     for (const i of entry.active) {
       const mix = mixer(oppItems[i].combo, oppId[i]);
-      if (mix) fillProbs(mix, entry.actions, probs, i, nOpp);
+      if (mix) {
+        if (entry.table.log.at(-1)?.observation) for (let k = 0; k < n; k++) probs[i + k * nOpp] = mix[entry.actions[k]] / 100;
+        else fillProbs(mix, entry.actions, probs, i, nOpp);
+      }
     }
     return entry.oppProbs = probs;
   };
@@ -154,7 +165,8 @@ export function exactActionEv({ spot, defence, rootPath, finals, expectedNode, h
     const n = entry.actions.length, p = new Float64Array(n), raw = new Float64Array(n);
     const mix = mixerOf(entry)(hero.combo, hero.id);
     if (mix) {
-      fillProbs(mix, entry.actions, p, 0, 1);
+      if (entry.table.log.at(-1)?.observation) for (let k = 0; k < n; k++) p[k] = mix[entry.actions[k]] / 100;
+      else fillProbs(mix, entry.actions, p, 0, 1);
       for (let k = 0; k < n; k++) raw[k] = mix[entry.actions[k]] / 100;
     }
     entry.hero.set(hero.id, info = { p, raw });
@@ -163,6 +175,7 @@ export function exactActionEv({ spot, defence, rootPath, finals, expectedNode, h
 
   // --- root ---
   const root = makeEntry(rootPath, finalBoard0, new Float64Array(nOpp).fill(1), allActive, massOf(new Float64Array(nOpp).fill(1)));
+  if (!root.terminal) expectedNode = canonicalNodeForTable(root.table, expectedNode);
   if (root.terminal || root.node !== expectedNode) throw new Error(`Exact EV root mismatch: ${root.node} !== ${expectedNode}`);
   const heroSeat = root.seat, oppSeat = spot.ip === heroSeat ? spot.oop : spot.ip;
   const atRoot = { ...root.table.invested };

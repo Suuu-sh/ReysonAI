@@ -55,14 +55,14 @@ export function packView(view) {
   const rows = view.rows.map(({ combos: detail, ...row }) => {
     lengths.push(detail.length); combos.push(...detail); return row;
   });
-  return { node: view.node, seat: view.seat, actions: view.actions, lengths,
+  return { node: view.node, seat: view.seat, actions: view.actions, ...(view.unavailable ? { unavailable: true } : {}), lengths,
     rows: packFrame(rows), combos: packFrame(combos) };
 }
 export function unpackView(view) {
   const rows = unpackFrame(view.rows), combos = unpackFrame(view.combos);
   let at = 0;
   rows.forEach((row, index) => { row.combos = combos.slice(at, at += view.lengths[index]); });
-  return { node: view.node, seat: view.seat, actions: view.actions, rows };
+  return { node: view.node, seat: view.seat, actions: view.actions, ...(view.unavailable ? { unavailable: true } : {}), rows };
 }
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

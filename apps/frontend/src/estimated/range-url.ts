@@ -6,7 +6,7 @@ import { appendContinuationBlocks, chooseContinuationAction, continuationRootFor
 import { multiway2Spots } from "./multiway2-responses.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { defaultFormat, formatOptions } from "./game-formats.ts";
-import { completedFlopContext, flopDecision, laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
+import { canonicalStreetActions, hasObservablePostflopActions, completedFlopContext, flopDecision, laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
 
 // The recorded-matchup lookup is identical to extended-ranges.ts, isolated here
 // so the shared action strip and URL codec do not depend on React hooks.
@@ -363,7 +363,19 @@ function parsePostflopActions(value) {
 }
 // Native decision options enforce node reachability, stack caps, and street
 // termination. Never feed an imported illegal sequence to the UI replay engine.
-function reachablePostflopPrefix(actions, decisionFor) {
+function reachablePostflopPrefix(actions, decisionFor, canonicalize = null) {
+  // Keep the raw imported prefix until validating its original node legality.
+  // Normalizing an earlier merged bet first would incorrectly reject its old
+  // impossible-raise-as-call alias, or accept an explicit allin→raise.
+  if (canonicalize) {
+    const source = [];
+    let canonical = [];
+    for (const action of actions) {
+      try { canonical = canonicalize([...source, action]); source.push(action); }
+      catch { break; }
+    }
+    return canonical;
+  }
   const prefix = [];
   for (const action of actions) {
     const decision = decisionFor(prefix);
@@ -394,6 +406,21 @@ export function encodeRangeUrl(state, actionBlocks = buildRangeUrlActionBlocks(s
   }
   const actions = chosenPreflopTokens(actionBlocks);
   if (actions.length) params.set("preflop_actions", actions.join("-"));
+  const context = completedFlopContext({ ...state, actionBlocks,
+    isDefaultTable: Object.keys(defaultFormat).every(key => format[key] === defaultFormat[key])
+      && profileLevel(state.tableProfile?.call) === "normal" && profileLevel(state.tableProfile?.three_bet) === "normal" });
+  if (context && hasObservablePostflopActions(context) && state.showFlop !== false) {
+    state = { ...state, flopActions: canonicalStreetActions("flop", state.flopActions ?? [], undefined, context) };
+    const turnStart = laterStart(state.flopActions, context);
+    if (turnStart && state.turnCard) {
+      state.turnActions = canonicalStreetActions("turn", state.turnActions ?? [], turnStart, context);
+      const turn = replayLater("turn", state.turnActions, turnStart, context);
+      if (state.riverCard && turn.state.end && !turn.state.end.winner && turn.stacks.ip > 0 && turn.stacks.oop > 0) {
+        state.riverActions = canonicalStreetActions("river", state.riverActions ?? [],
+          { pot: turn.pot, stacks: turn.stacks, lastAggressor: turn.lastAggressor }, context);
+      }
+    }
+  }
   const flop = state.showFlop === false ? null : boardCards(state.flopCards?.join(""), 3);
   if (flop) {
     params.set("board", flop.join(""));
@@ -446,14 +473,16 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
     state.riverCard = river[0]; state.riverActions = parsePostflopActions(params.get("river_actions"));
     return state;
   }
+  const canonicalize = (street, start) => hasObservablePostflopActions(context)
+    ? actions => canonicalStreetActions(street, actions, start, context) : null;
   state.flopActions = reachablePostflopPrefix(parsePostflopActions(params.get("flop_actions")),
-    actions => flopDecision(actions, context));
+    actions => flopDecision(actions, context), canonicalize("flop", undefined));
   const turn = boardCards(params.get("turn"), 1, flop);
   const turnStart = laterStart(state.flopActions, context);
   if (!turn || !turnStart) return state;
   state.turnCard = turn[0];
   state.turnActions = reachablePostflopPrefix(parsePostflopActions(params.get("turn_actions")),
-    actions => laterDecision("turn", actions, turnStart, context));
+    actions => laterDecision("turn", actions, turnStart, context), canonicalize("turn", turnStart));
   const river = boardCards(params.get("river"), 1, [...flop, ...turn]);
   const turnReplay = replayLater("turn", state.turnActions, turnStart, context);
   if (!river || !turnReplay.state.end || ["fold", "raise-fold"].includes(turnReplay.state.end.type)
@@ -461,7 +490,7 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
   const riverStart = { pot: turnReplay.pot, stacks: turnReplay.stacks, lastAggressor: turnReplay.lastAggressor };
   state.riverCard = river[0];
   state.riverActions = reachablePostflopPrefix(parsePostflopActions(params.get("river_actions")),
-    actions => laterDecision("river", actions, riverStart, context));
+    actions => laterDecision("river", actions, riverStart, context), canonicalize("river", riverStart));
   return state;
 }
 

@@ -1,3 +1,4 @@
+import { canonicalPostflopPath, usesObservableActions } from "./observable-actions.mjs";
 // Pure, browser-safe per-hand flop EV core shared by the saved 12-board artifact generator
 // and the on-demand browser worker. These are AI-policy self-play estimates, not GTO.
 import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
@@ -50,6 +51,11 @@ function sampler(items) {
 export function playFromNode({ hands, flop, runout, history, forced, policy, laterPolicy = referenceLaterPolicy(), random,
   spot = spotById(), tree = spot.tree ?? "oop_checks", defence = null }) {
   if (typeof random !== "function") throw new Error("Invalid flop EV simulation context");
+  if (usesObservableActions(spot)) {
+    const taken = canonicalPostflopPath(spot, { flop: [...history, forced] }, config).flop;
+    history = canonicalPostflopPath(spot, { flop: history }, config).flop;
+    forced = taken.at(-1);
+  }
   const start = flopState(tree, history);
   if (!start.node) throw new Error("No decision after this flop history");
   const actor = spot[start.role];
@@ -75,6 +81,7 @@ export function playFromNode({ hands, flop, runout, history, forced, policy, lat
 
 function nodeSetup(history, inputs, policy, flop, tree, defence) {
   const { spot } = inputs;
+  history = canonicalPostflopPath(spot, { flop: history }, config).flop;
   const state = flopState(tree, history);
   const table = createTable(spot);
   const stop = new Error("stop at the decision");
@@ -93,6 +100,11 @@ function nodeSetup(history, inputs, policy, flop, tree, defence) {
 
 export function computeNodeMonteCarlo({ board, history, inputs, flopPolicy, laterPolicy, samples, onlyHand = null, seed, uncertainty = false, runoutSet = null, rng = seededRandom }) {
   const { spot } = inputs;
+  try { history = canonicalPostflopPath(spot, { flop: history }, config).flop; }
+  catch (error) {
+    if (/Illegal action after flop effectively ended/.test(error.message)) return { node: null, actor: null, pot_bb: null, rows: {}, unreachable: true };
+    throw error;
+  }
   const state = flopState(spot.tree, history);
   if (!state.node) return { node: null, actor: null, pot_bb: null, rows: {}, unreachable: true };
   const actor = spot[state.role];
@@ -102,10 +114,10 @@ export function computeNodeMonteCarlo({ board, history, inputs, flopPolicy, late
   const nodeMix = combo => {
     const base = policyMix(flopPolicy, state.node, combo, board.cards);
     nodeTable ??= replayOrNull(inputs, board.cards, { flop: history }) ?? false;
-    return nodeTable ? defence.mix(nodeTable, board.cards, state.node, combo, base) : base;
+    return nodeTable ? defence.observableMix(nodeTable, board.cards, state.node, combo, base) : base;
   };
   const setup = nodeSetup(history, inputs, flopPolicy, board.cards, spot.tree, defence);
-  const actions = NODES[state.node];
+  const actions = setup.nodeTable?.log.at(-1)?.observation?.classes.map(group => group.action) ?? NODES[state.node];
   const reachableVillain = setup.villain.filter(item => item.weight > 0);
   if (!setup.nodeTable || !reachableVillain.length || !setup.hero.some(item => item.weight > 0)) {
     return { node: state.node, actor, pot_bb: setup.pot, rows: {}, unreachable: true };
@@ -206,6 +218,11 @@ export function computeNodeMonteCarlo({ board, history, inputs, flopPolicy, late
 // exhaustive ones ten times that. The set is fixed, so the result never varies between requests.
 export function computeNodeExact({ board, history, inputs, flopPolicy, laterPolicy, onlyHand = null, runouts = null, prune }) {
   const { spot } = inputs;
+  try { history = canonicalPostflopPath(spot, { flop: history }, config).flop; }
+  catch (error) {
+    if (/Illegal action after flop effectively ended/.test(error.message)) return { node: null, actor: null, pot_bb: null, rows: {}, unreachable: true };
+    throw error;
+  }
   const state = flopState(spot.tree, history);
   if (!state.node) return { node: null, actor: null, pot_bb: null, rows: {}, unreachable: true };
   const actor = spot[state.role];
@@ -216,7 +233,7 @@ export function computeNodeExact({ board, history, inputs, flopPolicy, laterPoli
   // retain hundreds of turn/flop prefix tables. No hands/actions/runouts change.
   defence.largeRun = true;
   const setup = nodeSetup(history, inputs, flopPolicy, board.cards, spot.tree, defence);
-  const actions = NODES[state.node];
+  const actions = setup.nodeTable?.log.at(-1)?.observation?.classes.map(group => group.action) ?? NODES[state.node];
   const oppItems = setup.villain.filter(item => item.weight > 0);
   // A history through an impossible raise (the opponent is all-in) never reaches this decision.
   if (!setup.nodeTable || !oppItems.length || !setup.hero.some(item => item.weight > 0)) {
@@ -233,14 +250,15 @@ export function computeNodeExact({ board, history, inputs, flopPolicy, laterPoli
   const result = exactActionEv({ spot, defence, rootPath: { flop: history, turn: [], river: [] }, finals,
     expectedNode: state.node, ...(prune === undefined ? {} : { prune }), heroGroups: [...groups].map(([key, items]) => ({ key, items })), oppItems });
   const rows = {};
+  const exactActions = usesObservableActions(spot) ? result.actions : actions;
   for (const [hand, row] of result.rows) {
     const ev = row.mixEv, equity = row.equity;
     rows[hand] = {
       equity_pct: round(equity * 100),
-      ev_bb: Object.fromEntries(actions.map((action, k) => [action, round(row.ev[k])])),
+      ev_bb: Object.fromEntries(exactActions.map((action, k) => [action, round(row.ev[k])])),
       mix_ev_bb: round(ev),
       eqr: equity > 0.02 ? round(ev / (equity * (setup.pot - rake(setup.pot)))) : null,
-      mix: Object.fromEntries(actions.map((action, k) => [action, round(row.mix[k])])),
+      mix: Object.fromEntries(exactActions.map((action, k) => [action, round(row.mix[k])])),
     };
   }
   return { node: state.node, actor, pot_bb: setup.pot, rows, ...(!Object.keys(rows).length ? { unreachable: true } : {}) };
@@ -279,6 +297,7 @@ export function flopHandEvForHand({ flop, history = [], hand, inputs, flopPolicy
   const board = parseFlopBoard(flop);
   const policy = validatePolicy(flopPolicy, inputs.spot.tree);
   const later = validateLaterPolicy(laterPolicy);
+  history = canonicalPostflopPath(inputs.spot, { flop: history }, config).flop;
   const state = flopState(inputs.spot.tree, history);
   if (!state.node) return { node: null, actor: null, pot_bb: null, row: null, unreachable: true, street: "flop" };
   const sampleSeed = seed == null ? undefined : Number.isInteger(seed) ? seed : seedFor(String(seed));

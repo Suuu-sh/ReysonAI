@@ -38,7 +38,7 @@ export function reviewedSourcePaths(root = REPOSITORY) {
   }
   [...sourceRoots, '.gitattributes', `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`,
     `${FRONTEND}docs/postflop-policy-knowledge.md`,
-    ...['.md', '.storage.md', '.independent-review.md', '.policy-review.md'].map(suffix => `${FRONTEND}docs/specs/hu-postflop-after-multiway-preflop${suffix}`)].forEach(visit);
+    ...['.md', '.storage.md', '.independent-review.md', '.policy-review.md', '.observable-actions.md'].map(suffix => `${FRONTEND}docs/specs/hu-postflop-after-multiway-preflop${suffix}`)].forEach(visit);
   return [...found].filter(path => !inputNames.some(name => path === `${FRONTEND}src/estimated/${name}.json`)).sort(compare);
 }
 export const reviewedInputPaths = () => inputNames.map(name => `${FRONTEND}src/estimated/${name}.json`).sort(compare);

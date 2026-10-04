@@ -46,9 +46,9 @@ function pair(id) {
     artifacts, report_path: localPath(paths.report), all_board_identity_hash: sha(allBoardIdentity(inputs, flop, later, 'all')) } };
 }
 
-export function snapshot(ids) {
-  if (!Array.isArray(ids) || !ids.length || ids.length > 407 || new Set(ids).size !== ids.length) fail('Explicit unique bounded spot IDs required');
-  if (config.samples_per_board_profile_seat !== 10000 || boards().length !== 12) fail('Full configured 10,000 samples / 12 representative boards required');
+// Read-only dependency capture is independent of locally activated policy pairs.
+// Fixtures and handoffs copy these exact bytes before invoking the unchanged gates.
+export function snapshotDependencies() {
   const audit_identity = captureAuditIdentity();
   const inputPaths = new Set(audit_identity.inputs.map(item => item.path));
   const graph = captureSourceGraph({ roots: ROOTS });
@@ -59,9 +59,16 @@ export function snapshot(ids) {
   // independent-review document must not invalidate prior numerical policies.
   const handoff_files = reviewedSourcePaths().filter(path => !sourceMap.has(path))
     .map(path => auditFileRecord(AUDIT_REPOSITORY, path));
+  return { sources, inputs: audit_identity.inputs, audit_identity, handoff_files };
+}
+
+export function snapshot(ids) {
+  if (!Array.isArray(ids) || !ids.length || ids.length > 407 || new Set(ids).size !== ids.length) fail('Explicit unique bounded spot IDs required');
+  if (config.samples_per_board_profile_seat !== 10000 || boards().length !== 12) fail('Full configured 10,000 samples / 12 representative boards required');
+  const dependencies = snapshotDependencies();
   const spots = ids.map(id => pair(id).value);
-  return { schema_version: 1, kind: 'local-serial-validation-pin', sources, inputs: audit_identity.inputs, audit_identity,
-    handoff_files, config, simulation_version: SIMULATION_VERSION, defence_version: spots[0].defence_version,
+  return { schema_version: 1, kind: 'local-serial-validation-pin', ...dependencies,
+    config, simulation_version: SIMULATION_VERSION, defence_version: spots[0].defence_version,
     spots };
 }
 
@@ -153,10 +160,12 @@ export function verifyAllBoards(request) {
     evaluated_boards: result.evaluated_boards, unreachable: result.unreachable, errors: result.errors, warnings: proof.warnings };
 }
 
-const [operation, ...extra] = process.argv.slice(2);
-if (extra.length || !['snapshot', 'report', 'replay', 'all-boards'].includes(operation)) fail('Usage: serial-validation-proof.mjs snapshot|report|replay|all-boards < bounded JSON stdin');
-const body = readFileSync(0);
-if (body.length > 8 * 1024 * 1024) fail('Request exceeds bounded manifest size');
-const request = JSON.parse(body);
-const result = operation === 'snapshot' ? snapshot(request.ids) : ({ report: verifyReport, replay: verifyReplay, 'all-boards': verifyAllBoards })[operation](request);
-console.log(`SERIAL_RESULT ${JSON.stringify(result)}`);
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const [operation, ...extra] = process.argv.slice(2);
+  if (extra.length || !['snapshot', 'report', 'replay', 'all-boards'].includes(operation)) fail('Usage: serial-validation-proof.mjs snapshot|report|replay|all-boards < bounded JSON stdin');
+  const body = readFileSync(0);
+  if (body.length > 8 * 1024 * 1024) fail('Request exceeds bounded manifest size');
+  const request = JSON.parse(body);
+  const result = operation === 'snapshot' ? snapshot(request.ids) : ({ report: verifyReport, replay: verifyReplay, 'all-boards': verifyAllBoards })[operation](request);
+  console.log(`SERIAL_RESULT ${JSON.stringify(result)}`);
+}

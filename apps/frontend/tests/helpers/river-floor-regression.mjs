@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { decodeArchive } from '../../scripts/postflop-ai/reviewed-postflop-archive.mjs';
-import { defenceFor, replayDecision } from '../../scripts/postflop-ai/defence.mjs';
+import { defenceFor, replayDecision, rankTable, comboId } from '../../scripts/postflop-ai/defence.mjs';
 import { parseCards } from '../../scripts/postflop-ai/model.mjs';
 
 export const REPRESENTATIVE = 'UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call';
@@ -17,13 +17,24 @@ export const FOUNDATION_HASH = 'e74de8b1cfb9349d20f0e328c6d7c3f36220c0ec533eae1b
 export const FOUNDATION_MANIFEST_HASH = '29e8f902289c5420b2c14dbf3bf7fd32effe975cafa14844d5b012eb74012dca';
 export const LEGACY_HASH = '5f5dd88540c00ce7426146b91b1fd9c0cc10974b146ba02a175cc067395e7b0a';
 
-export function foundationPair() {
+function readFoundation() {
   const manifestBytes = readFileSync(new URL('hu-after-multiway-foundation-v3.manifest.json', archiveRoot));
   assert.equal(bytesHash(manifestBytes), FOUNDATION_MANIFEST_HASH);
   const manifest = JSON.parse(manifestBytes);
   assert.equal(manifest.approval, 'unapproved');
   assert.equal(manifest.archive.sha256, FOUNDATION_HASH);
   const bodies = decodeArchive(readFileSync(new URL('hu-after-multiway-foundation-v3.tar.gz', archiveRoot)), manifest);
+  return { manifest, bodies };
+}
+
+export function foundationCandidateFiles() {
+  const { manifest, bodies } = readFoundation();
+  return manifest.artifacts.filter(item => item.spot === REPRESENTATIVE && ['candidate', 'laterCandidate'].includes(item.kind))
+    .map(item => ({ ...item, body: bodies.get(item.path) }));
+}
+
+export function foundationPair() {
+  const { manifest, bodies } = readFoundation();
   return Object.fromEntries(manifest.artifacts.filter(item => item.spot === REPRESENTATIVE && ['candidate', 'laterCandidate', 'report'].includes(item.kind))
     .map(item => [item.kind, JSON.parse(bodies.get(item.path))]));
 }
@@ -62,14 +73,47 @@ export const nonriverCases = [
   { id: 'flop-control', board: 'As7d2c', path: { flop: ['bet33'] } },
   { id: 'turn-control', board: 'AcKc4c6s', path: { flop: ['check', 'check'], turn: ['bet75'] } },
 ];
+// Actual engine paths to the initial bettor's response to a river raise.
+// They preserve each saved action label, including stack/merge bookkeeping.
+export const riverRaiseCases = ['7c5d5hJh3h', 'AcKc4c6s9c', '7c5d5hTs6h'].flatMap(board =>
+  ['oop', 'ip'].map(role => ({ id: `raise-${role}-${board}`, board,
+    path: { flop: ['check', 'check'], turn: ['check', 'check'], river: [...(role === 'ip' ? ['check'] : []), 'bet33', 'raise'] } })));
+
+// Independent test reference: base-2 string expansion instead of the production
+// IEEE bit decoder. Do not use rounded cached equity to classify real support.
+export function exactCallEvidence(context, id) {
+  const fraction = value => {
+    const [whole, tail = ''] = value.toString(2).split('.');
+    return { n: BigInt(`0b${whole}${tail}`), e: tail.length };
+  };
+  const score = rankTable(context.board).score, hero = [Math.floor(id / 52), id % 52], rows = [];
+  for (let i = 0; i < context.bettorRange.ids.length; i++) {
+    const other = context.bettorRange.ids[i], cards = [Math.floor(other / 52), other % 52];
+    if (!(context.bettorRange.w[i] > 0) || cards.some(card => hero.includes(card) || context.board.includes(card))) continue;
+    assert.ok(score[other] >= 0 && score[id] >= 0);
+    rows.push({ ...fraction(context.bettorRange.w[i]), outcome: score[id] > score[other] ? 2 : score[id] === score[other] ? 1 : 0 });
+  }
+  if (!rows.length) return { status: 'unknown' };
+  const exponent = Math.max(...rows.map(row => row.e));
+  let total = 0n, payout = 0n;
+  for (const row of rows) { const weight = row.n << BigInt(exponent - row.e); total += weight; payout += weight * BigInt(row.outcome); }
+  const net = fraction(context.finalPot - context.rake), cost = fraction(context.call), chips = Math.max(net.e, cost.e);
+  const numerator = payout * (net.n << BigInt(chips - net.e)) - 2n * total * (cost.n << BigInt(chips - cost.e));
+  return { status: 'known', sign: numerator < 0n ? -1 : numerator > 0n ? 1 : 0,
+    compatible: rows.length, wins: rows.filter(row => row.outcome === 2).length, ties: rows.filter(row => row.outcome === 1).length };
+}
 export function legacyCase(inputs) {
   return { board: '7c5d5h3c8s', path: { flop: inputs.spot.tree === 'oop_leads' ? ['check', 'check'] : ['check'], turn: ['check', 'check'], river: ['bet33'] } };
 }
 
-export function probe(inputs, pair, item) {
+export function probe(inputs, pair, item, { disableNegativeRiverFloor = false } = {}) {
+  // A separate model instance preserves identical observable ranges/chip rules
+  // while disabling only the scoped floor exemption for its causal control.
+  if (disableNegativeRiverFloor) inputs = { ...inputs };
   const board = parseCards(item.board, item.board.length / 2);
   const table = replayDecision(inputs, board, item.path), entry = table.log.at(-1);
   const defence = defenceFor(inputs, pair.candidate.policy, pair.laterCandidate.policy);
+  if (disableNegativeRiverFloor) defence.negativeRiverCallEv = () => false;
   const context = defence.context(table, board, entry.node);
   if (!context) return { defence, table, board, entry, context, rows: [], summary: null };
   const summary = defence.summarize(context);
@@ -98,4 +142,32 @@ export function numericGolden(result) {
     combos: rows.length, zero_combos: zero.length, zero_called_mass: called / total, zero_raw_called_mass: rawCalled / total,
     defence_frequency: summary.defenceFrequency, floor, call: context.call, required: context.required, mdf: context.mdf,
     defender_total: total, value_weight: summary.valueWeight, bluff_weight: summary.bluffWeight };
+}
+
+// Real preserved-v3 support, shared ranks and independent sparse arrays. Only
+// exact cache allocation differs between probe arms; no policy/range is cloned to Git.
+export function exactCacheFixture(inputs, pair, model, count = 512) {
+  const p = probe(inputs, pair, riverCases.find(item => item.id === 'flush-checked'));
+  const table = rankTable(p.board), contexts = Array.from({ length: count }, (_, index) => ({
+    key: `exact-cache-${index}`, street: 'river', board: p.board, tables: [table],
+    call: p.context.call, finalPot: p.context.finalPot, rake: p.context.rake, required: p.context.required,
+    floor: { ...p.context.floor }, ceiling: p.context.ceiling,
+    bettorRange: Object.fromEntries(['ids', 'lo', 'hi', 'w'].map(key => [key, p.context.bettorRange[key].slice()])),
+  }));
+  const residualIds = new Set(['TdTh', 'TdTs', 'ThTs'].map(text => comboId(...parseCards(text, 2))));
+  const selected = [...p.rows.filter(row => residualIds.has(row.id)),
+    ...[...p.rows].sort((a, b) => b.equity - a.equity).slice(0, 4)];
+  assert.ok(selected.length >= 4);
+  const heroes = selected.map(row => ({ id: row.id, combo: [Math.floor(row.id / 52), row.id % 52], base: row.capped, equity: row.equity }));
+  for (const context of contexts) model.contexts.river.set(context.key, context);
+  return { contexts, heroes, source: p };
+}
+
+export function exactCacheObservation(model, context, heroes) {
+  return heroes.map(hero => {
+    const negative = model.negativeRiverCallEv(context, hero.combo);
+    const raw = model.applyEquity(context, hero.base, hero.equity, hero.combo, true);
+    const mix = model.applyEquity(context, hero.base, hero.equity, hero.combo);
+    return { id: hero.id, negative, sign: context.exactRiverCallEv.signs.get(hero.id), raw, mix };
+  });
 }

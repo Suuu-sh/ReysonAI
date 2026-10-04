@@ -38,12 +38,13 @@ const bb = (value?: number) => value == null ? "" : `${+value.toFixed(2)}`;
 const pts = (value: number) => toPoints(value).toLocaleString();
 const signed = (points: number) => `${points > 0 ? "+" : ""}${points.toLocaleString()}`;
 
-export function actionLabel(entry: { action: string; to?: number }) {
+export function actionLabel(entry: { action: string; to?: number; allIn?: boolean }) {
   const { action, to } = entry;
   const amount = to ? ` ${bb(to)}` : "";
   if (action === "fold") return localized("Fold", "フォールド");
   if (action === "check") return localized("Check", "チェック");
   if (action === "call") return `${localized("Call", "コール")}${amount}`;
+  if (entry.allIn) return `${localized("All-in", "オールイン")}${amount}`;
   if (action === "limp") return localized("Limp", "リンプ");
   if (action === "open") return `${localized("Raise", "レイズ")}${amount}`;
   if (action === "three_bet") return `3bet${amount}`;
@@ -54,6 +55,11 @@ export function actionLabel(entry: { action: string; to?: number }) {
   const bet = /^bet(\d+)$/.exec(action);
   if (bet) return `${localized("Bet", "ベット")}${amount || ` ${bet[1]}%`}`;
   return action;
+}
+// A size token may address an effective all-in. Never show its unplayed nominal
+// percentage under the actual all-in amount; legacy options have no allIn flag.
+export function AgentActionSizeHint({ option }: { option: { key: string; allIn?: boolean } }) {
+  return !option.allIn && /^bet\d+$/.test(option.key) ? <small>{option.key.slice(3)}%</small> : null;
 }
 // Raises and bets read as street totals; a call reads as the chips it adds.
 function asDisplayed(entries: LogEntry[], entry: LogEntry) {
@@ -307,8 +313,8 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
                 {pending.notice === "no_multiway" && <small className="agent-turn-note">{localized("Beta: multiway pots aren't supported yet, so a call that would make the flop three-way isn't offered.", "β版のため、まだマルチウェイ（3人以上でのフロップ）に対応していません。ここでのコールは3人目になるため選べません。")}</small>}
               </div>
               <div className="agent-buttons">{pending.options.map((option, index) => <button type="button" key={option.key} className={`agent-act tone-${tone(option.key)}`} onClick={() => act(option.key)}>
-                <kbd>{index + 1}</kbd><span>{actionLabel({ action: option.key, to: option.key === "call" ? pending.toCall : option.to })}</span>
-                {/^bet\d+$/.test(option.key) && <small>{option.key.slice(3)}%</small>}</button>)}</div>
+                <kbd>{index + 1}</kbd><span>{actionLabel({ action: option.key, to: option.key === "call" ? pending.toCall : option.to, allIn: option.allIn })}</span>
+                <AgentActionSizeHint option={option} /></button>)}</div>
             </>
             : done ? <>
               <p className="agent-summary">{myDelta == null ? winnerLine : <>{localized("This hand", "このハンド")} <b className={myDelta > 0 ? "up" : myDelta < 0 ? "down" : ""}>{signed(myDelta)}</b></>}</p>

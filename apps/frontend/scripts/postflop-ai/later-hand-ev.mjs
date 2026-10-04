@@ -1,3 +1,4 @@
+import { actionModelIdentity, hasCurrentActionModel } from "./observable-actions.mjs";
 // 本番はオンデマンドの laterHandEvForHand を使う。事前計算は検証用。
 // Per-hand action EV/EQR for representative turn and river nodes. Values are sampled by
 // AI-policy self-play and are local estimates, not GTO or solver output.
@@ -98,7 +99,7 @@ function artifactPath(inputs) {
 }
 
 function matchesLaterHandEv(data, inputs, candidate, laterCandidate) {
-  return Boolean(laterCandidate) && data?.kind === "ai_estimate_not_gto" && data.version === LATER_HAND_EV_VERSION &&
+  return Boolean(laterCandidate) && data?.kind === "ai_estimate_not_gto" && data.version === LATER_HAND_EV_VERSION && hasCurrentActionModel(inputs.spot, data) &&
     (!inputs.spot.history || data.defence_version === defenceVersionFor(inputs)) &&
     data.source_hash === inputs.fingerprint && data.policy_hash === candidate?.metadata?.policy_hash &&
     data.later_policy_hash === sha(laterCandidate.policy) && data.method === "exact_expectation" &&
@@ -153,7 +154,7 @@ export async function generateLaterHandEv({ spotId = DEFAULT_SPOT_ID, samples = 
   }
   const flopPolicy = validatePolicy(candidate.policy, inputs.spot.tree);
   const laterPolicy = validateLaterPolicy(laterCandidate.policy);
-  const result = { kind: "ai_estimate_not_gto", version: LATER_HAND_EV_VERSION, source_hash: inputs.fingerprint,
+  const result = { kind: "ai_estimate_not_gto", version: LATER_HAND_EV_VERSION, ...actionModelIdentity(inputs.spot), source_hash: inputs.fingerprint,
     ...(inputs.spot.history ? { defence_version: defenceVersionFor(inputs) } : {}),
     policy_hash: candidate.metadata.policy_hash, later_policy_hash: sha(laterPolicy), method: "exact_expectation", seed: config.seed, boards: {} };
   result.boards = await generateBoardBatch(spotId, samples, onBoard);

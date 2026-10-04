@@ -1,3 +1,4 @@
+import { actionModelIdentity } from "./observable-actions.mjs";
 import { hasPostflopDeal } from "./range-support.mjs";
 import { createHash } from "node:crypto";
 import { seedFor, seededRandom } from "../lib/equity.mjs";
@@ -143,7 +144,7 @@ export function simulationReport(inputs, candidate, samples, laterCandidate, res
   const laterPolicy = laterCandidate ? laterCandidate.policy ?? laterCandidate : referenceLater;
   const { spot } = inputs;
   const unreachable = spot.history ? boards().filter(board => !hasPostflopDeal(inputs, board.cards)).map(board => board.id) : [];
-  return { kind: "ai_estimate_not_gto", version: 1, simulation_version: SIMULATION_VERSION,
+  return { kind: "ai_estimate_not_gto", version: 1, simulation_version: SIMULATION_VERSION, ...actionModelIdentity(spot),
     spot: spot.id, source_hash: inputs.fingerprint,
     ...(unreachable.length ? { unreachable_boards: unreachable } : {}),
     later_sizing_hash: laterSizingHash(),

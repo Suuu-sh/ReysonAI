@@ -25,16 +25,18 @@ test('merged-all-in mixes agree across view, simulation and explanation boundari
   const expected=defence.mix(table,board,entry.node,combo,defence.baseMix(table,board,entry.node,combo));
   assert.equal(expected.raise,0);
   assert.deepEqual(defence.mix(table,board,entry.node,combo,raw),expected);
-  assert.deepEqual(defence.facts(table,board,entry.node,combo,raw).mix,expected);
+  const observable = defence.observableMix(table,board,entry.node,combo,raw);
+  assert.deepEqual(observable, {fold:expected.fold,call:expected.call});
+  assert.deepEqual(defence.facts(table,board,entry.node,combo,raw).mix,observable);
   const rows=laterMixRows({actor:'HJ',role:'ip',board,node:entry.node,line:entry.line,inputs,flopPolicy:flop,laterPolicy:later,paths});
   const kqs=rows.find(row=>row.hand==='KQs'); assert.ok(kqs.reachable);
   for(const item of kqs.combos) {
-    const cards=parseCards(item.cards,2), mix=defence.mix(table,board,entry.node,cards,defence.baseMix(table,board,entry.node,cards));
-    assert.equal(item.mix.raise,0);
-    for(const key of ['fold','call','raise']) assert.ok(Math.abs(item.mix[key]-mix[key]/100)<1e-12);
+    const cards=parseCards(item.cards,2), mix=defence.observableMix(table,board,entry.node,cards,defence.baseMix(table,board,entry.node,cards));
+    assert.equal(item.mix.raise,undefined);
+    for(const key of ['fold','call']) assert.ok(Math.abs(item.mix[key]-mix[key]/100)<1e-12);
   }
   const explanation=explainLaterCombo({flop:'As7d2c',flopActions:'bet75,call',turn:'Jh',turnActions:'bet75',cards:'KhQh',inputs,flopPolicy:flop,laterPolicy:later});
-  assert.deepEqual(explanation.defence.mix,expected);
+  assert.deepEqual(explanation.defence.mix,observable);
 });
 
 test('flop all-in normalization is centralized while legal raises remain authored', () => {

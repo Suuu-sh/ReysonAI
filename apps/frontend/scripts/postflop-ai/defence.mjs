@@ -1,5 +1,7 @@
 import { makeRange, indexOf, weightOf, equityVersus, equitiesVersus, releaseRangeTables } from "./range-equity.mjs";
 import { packEquities, packWeights, unpackWeights } from "./cached-values.mjs";
+import { compileRiverCallEv, exactRiverCallEv } from "./exact-river-call-ev.mjs";
+import { canonicalPostflopPath, canonicalNodeForTable, playedActionMass, projectActionMix, NEW_HU_ACTION_MODEL_VERSION } from "./observable-actions.mjs";
 // Computed defence (call / fold) at facing nodes of the heads-up postflop pilot.
 //
 // The AI policies give every facing decision a fixed mix per hand tier, so their calls ignore the
@@ -35,10 +37,11 @@ import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 // Best-five showdown ranking: older derived defence/base artifacts are stale.
 export const DEFENCE_VERSION = 6;
-// HU-after-multiway alone excludes mathematically zero river floor promotion.
+// HU-after-multiway alone excludes negative-call-EV river floor promotion.
 // Legacy spots retain their numerical model and derived-artifact identities.
-// 7 used float === 0; 8 proves zero by integer-rank compatible support instead.
-export const NEW_HU_DEFENCE_VERSION = 8;
+// 7 used float === 0; 8 proved zero support; 9 compares exact weighted call EV.
+// 10 conditions only on observable action classes, after the unchanged per-label caps.
+export const NEW_HU_DEFENCE_VERSION = NEW_HU_ACTION_MODEL_VERSION;
 export const defenceVersionFor = inputs => inputs.spot.history ? NEW_HU_DEFENCE_VERSION : DEFENCE_VERSION;
 // Sampled turn+river runouts per flop decision (seeded by the flop, shared by every node of it).
 export const FLOP_RUNOUTS = 300;
@@ -224,6 +227,11 @@ const pathError = message => new DefencePathError(message);
 // engine table whose last log entry is the pending decision.
 export function replayDecision(inputs, board, path, config = pilotConfig) {
   const spot = inputs.spot, table = createTable(spot), flop = board.slice(0, 3);
+  try { path = canonicalPostflopPath(spot, path, config); }
+  catch (error) {
+    if (/Illegal action after (flop|turn|river) effectively ended|Action history continues after a pending or completed hand/.test(error.message)) throw pathError(error.message);
+    throw error;
+  }
   const street = board.length === 3 ? "flop" : board.length === 4 ? "turn" : "river";
   const actionsOf = name => path[name] ?? [];
   try {
@@ -277,6 +285,8 @@ export function defenceFor(inputs, flopPolicy, laterPolicy = null, { bluffCap = 
 
 // Contexts kept per street: a river context is small, a turn context may hold up to 46 prefix tables.
 const LIMITS = { flop: 96, turn: 3000, river: 16000 };
+// BigInt support/sign data needs a much smaller lifetime than ordinary contexts.
+export const RIVER_EXACT_CACHE_LIMIT = 128;
 const FACT_RANGE_LIMITS = { flop: 24, turn: 64, river: 96 };
 // Small/cold requests favour shared dense stages. Only a large self-play run
 // needs sparse reach storage; avoid expansion work on the interactive path.
@@ -293,6 +303,7 @@ class Defence {
     this.largeRun = false;
     this.stages = new Map();
     this.contexts = { flop: new Map(), turn: new Map(), river: new Map() };
+    this.exactRiverContexts = new Map();
     this.bets = { flop: new Map(), turn: new Map(), river: new Map() };
     this.bettingFactRanges = { flop: new Map(), turn: new Map(), river: new Map() };
   }
@@ -301,6 +312,7 @@ class Defence {
   // graphs before the worker starts another board, retaining policy/base weights
   // and the large-run storage mode. No cache is cleared between hands/histories.
   releaseBoardCaches() {
+    this.clearExactRiverCaches();
     this.stages.clear();
     for (const group of [this.contexts, this.bets, this.bettingFactRanges]) {
       for (const cache of Object.values(group)) cache.clear();
@@ -311,7 +323,18 @@ class Defence {
   // more than `limit` are held. Everything else (policy, base weights, flop / turn stages) is kept.
   trimRiverCaches(limit) {
     if (this.contexts.river.size <= limit) return;
+    this.clearExactRiverCaches();
     this.contexts.river.clear(); this.bets.river.clear(); this.bettingFactRanges.river.clear();
+  }
+
+  releaseExactRiverContext(context) {
+    if (context) delete context.exactRiverCallEv;
+    this.exactRiverContexts.delete(context);
+  }
+
+  clearExactRiverCaches() {
+    for (const context of this.exactRiverContexts.keys()) delete context.exactRiverCallEv;
+    this.exactRiverContexts.clear();
   }
 
   // Saved preflop weights of a seat by combo id (no board removed).
@@ -360,6 +383,7 @@ class Defence {
   // The same policy lookup as policyMix/laterPolicyMix, reusing board-wide tiers and rules.
   // Engine callers already have the pending entry (including its previous-street line).
   baseMix(table, board, node, combo) {
+    node = canonicalNodeForTable(table, node);
     const entry = table.log.at(-1);
     if (entry?.node !== node) throw new Error("Policy mix needs the pending decision");
     const tier = tierArray(board)[comboId(combo[0], combo[1])];
@@ -374,6 +398,7 @@ class Defence {
     for (const entry of entries) {
       const stageBoard = board.slice(0, entry.boardLen);
       key += `|${stageBoard.join(",")}:${entry.node}:${entry.line}:${entry.action}`;
+      if (entry.observation) key += `:${entry.canRaise}:${entry.observation.actions.map(action => entry.observation.byAction[action].action).join(',')}`;
       // A bluff-capped decision (bluff cap) depends on the whole line, so its stage is not cached.
       const cap = table ? this.entryBetting(table, board, entry) : null;
       const cacheable = entry.street !== "river" && !cap;
@@ -384,7 +409,10 @@ class Defence {
         const factors = new Float64Array(TIERS.length * 3);
         for (let tier = 0; tier < TIERS.length; tier++) {
           const base = this.policyRule(entry, texture, tier);
-          for (let kind = 0; kind < 3; kind++) factors[tier * 3 + kind] = (cap ? cap.apply(base, kind, tier) : base)[entry.action] / 100;
+          for (let kind = 0; kind < 3; kind++) {
+            const final = cap ? cap.apply(base, kind, tier) : base;
+            factors[tier * 3 + kind] = (entry.observation ? projectActionMix(final, entry.observation) : final)[entry.action] / 100;
+          }
         }
         const kinds = cap ? cap.kind : null;
         next = new Float64Array(NUM_IDS);
@@ -411,12 +439,17 @@ class Defence {
   // The defence context of the pending decision of `table` at `node` (null when it is not a facing
   // decision or the bettor range is empty). Cached per (node, board, actions taken).
   context(table, board, node) {
+    node = canonicalNodeForTable(table, node);
     if (!isFacingNode(node)) return null;
     const street = streetOf(node), cache = this.contexts[street];
     const key = `${node}#${board.join(",")}#${table.path.flop}#${table.path.turn}#${table.path.river}`;
     if (cache.has(key)) { const hit = cache.get(key); cache.delete(key); cache.set(key, hit); return hit; }
     const context = this.build(table, board, node, street, key);
-    if (cache.size >= LIMITS[street]) cache.delete(cache.keys().next().value);
+    if (cache.size >= LIMITS[street]) {
+      const oldest = cache.keys().next().value;
+      this.releaseExactRiverContext(cache.get(oldest));
+      cache.delete(oldest);
+    }
     cache.set(key, context);
     if (street === "river" && cache.size >= COMPACT_CACHE_AFTER) this.largeRun = true;
     return context;
@@ -435,18 +468,19 @@ class Defence {
     const bettorRange = makeRange(bettorWeights);
     if (!(bettorRange.total > 0)) return null;
     const priorBetting = this.entryBetting(table, board, prior);
-    const facedCap = priorBetting?.caps.find(item => item.action === prior.action) ?? null;
+    const facedCap = (prior.observation ? priorBetting?.observedCaps : priorBetting?.caps)?.find(item => item.action === prior.action) ?? null;
     return { key, node, street, board, role, bettor, defender, target, ...chips,
       potBefore: prior.pot, wager, call,
       bettorRange, defenderEntries: log.filter(entry => entry.seat === defender && entry !== target),
       table, cap: this.betting(table, board, node), tables: null, ceiling: undefined, floor: undefined,
       // The faced action was under the bluff cap: its range is at or below break-even in bluffs.
-      capped: Boolean(facedCap && facedCap.factor < 1), facedCap,
+      capped: Boolean(facedCap && (prior.observation ? facedCap.wasReduced : facedCap.factor < 1)), facedCap,
       equities: new Map(), summary: null };
   }
 
   // The bluff cap of the pending betting decision (null when nothing is capped). See docs/postflop-defence.md.
   betting(table, board, node) {
+    node = canonicalNodeForTable(table, node);
     if (!this.bluffCap || !isBettingNode(node)) return null;
     const street = streetOf(node), cache = this.bets[street];
     const key = `${node}#${board.join(",")}#${table.path.flop}#${table.path.turn}#${table.path.river}`;
@@ -550,12 +584,42 @@ class Defence {
       }
       return out ?? base;
     };
-    return { node, bettor, caps, kind, passive, apply,
+    // Public cap provenance is computed from the actually played probabilities.
+    // Keep the original per-label caps above: pooling before applying them changes
+    // the strategy. Actual removal does not assert that the pool is saturated.
+    let observedCaps = null;
+    if (target.observation) {
+      observedCaps = target.observation.classes.filter(group => group.aliases.some(action => caps.some(cap => cap.action === action)))
+        .map(group => ({ action: group.action, aliases: [...group.aliases], allIn: group.allIn, amountBb: group.amountBb, paid: group.paid,
+          alpha: caps.find(cap => group.aliases.includes(cap.action)).alpha,
+          ratio: caps.find(cap => group.aliases.includes(cap.action)).ratio,
+          valueBefore: 0, bluffBefore: 0, valueAfter: 0, bluffAfter: 0, removedBluff: 0 }));
+      for (const id of bettorRange.ids) {
+        if (!kind[id]) continue;
+        const base = this.policyRule(target, texture, tiers[id]);
+        const before = playedActionMass(reroute(base, tiers[id]), target.observation.actions);
+        const after = playedActionMass(apply(base, kind[id], tiers[id]), target.observation.actions);
+        const value = kind[id] === 1, weight = bettorWeights[id] / 100;
+        for (const cap of observedCaps) {
+          const pre = cap.aliases.reduce((sum, action) => sum + before[action], 0);
+          const post = cap.aliases.reduce((sum, action) => sum + after[action], 0);
+          cap[value ? 'valueBefore' : 'bluffBefore'] += weight * pre;
+          cap[value ? 'valueAfter' : 'bluffAfter'] += weight * post;
+          if (!value && pre > post) cap.removedBluff += weight * (pre - post);
+        }
+      }
+      for (const cap of observedCaps) {
+        cap.wasReduced = cap.removedBluff > 0;
+        cap.factor = cap.bluffBefore > 0 ? cap.bluffAfter / cap.bluffBefore : 1;
+      }
+    }
+    return { node, bettor, caps, ...(target.observation ? { observedCaps } : {}), kind, passive, apply,
       applyCombo: (base, combo) => apply(base, kind[comboId(combo[0], combo[1])], tiers[comboId(combo[0], combo[1])]) };
   }
 
   // Break-even requirement and supported bluffs for every aggressive option at a betting node.
   bettingFacts(table, board, node, combo) {
+    node = canonicalNodeForTable(table, node);
     if (!isBettingNode(node)) return null;
     const info = this.betting(table, board, node);
     const type = info?.kind[comboId(combo[0], combo[1])] ?? 0;
@@ -577,16 +641,19 @@ class Defence {
     }
     const share = (value, bluff) => value + bluff > 0 ? round4(bluff / (value + bluff)) : null;
     const target = table.log.at(-1), bettor = target.seat, defender = table.other(bettor);
-    const actions = (NODES[node] ?? LATER_NODES[node]).filter(isAggressive).flatMap(action => {
+    const publicActions = target.observation ? target.observation.classes.map(group => group.action) : (NODES[node] ?? LATER_NODES[node]);
+    const actions = publicActions.filter(isAggressive).flatMap(action => {
       const after = replayOrNull(this.inputs, board, { flop: table.path.flop, turn: table.path.turn, river: table.path.river,
         [target.street]: [...table.path[target.street], action] });
       if (!after) return [];
       const wager = r2(after.pot - target.pot);
       const call = Math.min(after.stacks[defender], r2(after.invested[bettor] - after.invested[defender]));
       const alpha = requiredEquity({ potBefore: target.pot, wager, call }).required;
-      const cap = info?.caps.find(item => item.action === action);
-      return [{ action, alpha: round4(alpha), bluffs_per_100_value: round4(alpha < 1 ? alpha / (1 - alpha) * 100 : 0),
-        capped: Boolean(cap && cap.factor < 1), factor: round4(cap?.factor ?? 1),
+      const cap = (target.observation ? info?.observedCaps : info?.caps)?.find(item => item.action === action);
+      const observable = target.observation?.byAction[action];
+      return [{ action, ...(observable ? { aliases: observable.aliases, allIn: observable.allIn, amountBb: observable.amountBb } : {}), alpha: round4(alpha), bluffs_per_100_value: round4(alpha < 1 ? alpha / (1 - alpha) * 100 : 0),
+        capped: Boolean(cap && (target.observation ? cap.wasReduced : cap.factor < 1)), factor: round4(cap?.factor ?? 1),
+        ...(target.observation && cap ? { aliases: cap.aliases, wasReduced: cap.wasReduced, removed_bluff: cap.removedBluff } : {}),
         value_before: cap ? round4(cap.valueBefore) : null, bluff_before: cap ? round4(cap.bluffBefore) : null,
         bluff_share_before: cap ? share(cap.valueBefore, cap.bluffBefore) : null,
         bluff_share_before_pct: cap && share(cap.valueBefore, cap.bluffBefore) !== null ? round4(share(cap.valueBefore, cap.bluffBefore) * 100) : null,
@@ -666,25 +733,26 @@ class Defence {
     return factors[tiers[comboId(combo[0], combo[1])]] ?? 1;
   }
 
-  // River equity is mathematically zero only with nonempty compatible positive
-  // support and no win OR tie. Prefix/blocker subtraction may leave a tiny
-  // float residue (or round a genuine outcome to zero), so never test its size.
-  onlyLosingRiverSupport(context, combo) {
-    if (context.board?.length !== 5 || combo[0] === combo[1] ||
-        context.board.includes(combo[0]) || context.board.includes(combo[1])) return false;
-    const score = this.tablesOf(context)[0]?.score, own = score?.[comboId(combo[0], combo[1])];
-    if (!Number.isInteger(own) || own < 0) return false;
-    const { ids, lo, hi, w } = context.bettorRange;
-    let compatible = false;
-    for (let i = 0; i < ids.length; i++) {
-      if (!(w[i] > 0)) continue;
-      if (lo[i] === combo[0] || lo[i] === combo[1] || hi[i] === combo[0] || hi[i] === combo[1] ||
-          context.board.includes(lo[i]) || context.board.includes(hi[i])) continue;
-      const other = score[ids[i]];
-      if (!Number.isInteger(other) || other < 0 || other <= own) return false;
-      compatible = true;
+  negativeRiverCallEv(context, combo) {
+    if (!Array.isArray(context.board) || context.board.length !== 5 ||
+        !Array.isArray(combo) || combo.length !== 2 || new Set([...context.board, ...combo]).size !== 7 ||
+        ![...context.board, ...combo].every(card => Number.isInteger(card) && card >= 0 && card < 52)) return false;
+    // Touch this independent small LRU even when the hero's sign is already cached.
+    // Eviction drops only exact memoization; rebuilding uses the same saved bytes.
+    if (this.exactRiverContexts.has(context)) this.exactRiverContexts.delete(context);
+    else if (this.exactRiverContexts.size >= RIVER_EXACT_CACHE_LIMIT) {
+      this.releaseExactRiverContext(this.exactRiverContexts.keys().next().value);
     }
-    return compatible;
+    this.exactRiverContexts.set(context, true);
+    const exact = context.exactRiverCallEv ??= {
+      compiled: compileRiverCallEv(context, this.tablesOf(context)[0]?.score), signs: new Map(),
+    };
+    const id = comboId(combo[0], combo[1]);
+    if (!exact.signs.has(id)) {
+      const result = exactRiverCallEv(exact.compiled, combo);
+      exact.signs.set(id, result.status === 'known' ? result.sign : null);
+    }
+    return exact.signs.get(id) === -1;
   }
 
   applyEquity(context, base, equity, combo, raw = false) {
@@ -697,9 +765,9 @@ class Defence {
       const moved = Number.isInteger(mix.fold) && Number.isInteger(mix.call) ? Math.round(mix.fold * factor) : round6(mix.fold * factor);
       // Keep the original allocation: never redistribute removed promotion.
       // Raw logistic calls and legal/capped raises are preserved, allowing
-      // honest below-target defence when no compatible win/tie is available.
+      // honest below-target defence when the saved bettor range makes calling lose.
       if (moved > 0 && this.inputs.spot.history && context.street === "river" && context.call > 0 &&
-          this.onlyLosingRiverSupport(context, combo)) return mix;
+          this.negativeRiverCallEv(context, combo)) return mix;
       return { ...mix, fold: round6(mix.fold - moved), call: round6(mix.call + moved) };
     }
     const ceiling = raw ? null : this.ceilingOf(context);
@@ -806,6 +874,8 @@ class Defence {
   // The defended mix of `combo` at the pending decision of `table`; `base` is the AI policy mix,
   // returned unchanged when the node is not a facing decision or no context can be built.
   mix(table, board, node, combo, base) {
+    const canonicalNode = canonicalNodeForTable(table, node);
+    if (canonicalNode !== node) { node = canonicalNode; base = this.baseMix(table, board, node, combo); }
     // Every consumer may pass a raw saved tier mix. Normalize impossible raises
     // before computing call/fold, exactly as the engine's policyRule does.
     const entry = table.log.at(-1);
@@ -820,6 +890,12 @@ class Defence {
     if (!context) return capped;
     const equity = this.equity(context, combo);
     return equity === null ? capped : this.applyEquity(context, capped, equity, combo);
+  }
+
+  // Public/display projection. Sampling must keep using mix() and the original
+  // ordered label list; the engine immediately records its observable class.
+  observableMix(table, board, node, combo, base) {
+    return projectActionMix(this.mix(table, board, node, combo, base), table.log.at(-1)?.observation);
   }
 
   // Chips and break-even of the facing decision (null when it is not a facing decision).
@@ -872,6 +948,8 @@ class Defence {
   // Facts for explanations / UI about one defender combo at the pending decision (null when the
   // node is not a facing decision or no context exists).
   facts(table, board, node, combo, base = null) {
+    const canonicalNode = canonicalNodeForTable(table, node);
+    if (canonicalNode !== node) { node = canonicalNode; if (base) base = this.baseMix(table, board, node, combo); }
     const entry = table.log.at(-1);
     if (base) base = effectiveMix(base, entry?.node === node ? entry.canRaise : true);
     const context = this.context(table, board, node);
@@ -902,6 +980,8 @@ class Defence {
     const margin = realized === null ? null : realized - context.required;
     const mix = base && equity !== null ? this.applyEquity(context, context.cap ? context.cap.applyCombo(base, combo) : base, equity, combo) : null;
     const share = (value, bluff) => value + bluff > 0 ? round4(bluff / (value + bluff) * 100) : null;
+    const prior = context.table.log.at(-2), observableFaced = prior?.observation?.byAction[prior.action];
+    const physical = observableFaced ? { aliases: observableFaced.aliases, allIn: observableFaced.allIn, amountBb: observableFaced.amountBb } : {};
     return {
       node, street: context.street, role: context.role, fallback: equity === null,
       pot_before_bb: round4(context.potBefore), bet_bb: round4(context.wager), call_bb: round4(context.call),
@@ -915,14 +995,16 @@ class Defence {
       mdf: round4(context.mdf),
       bettor_range: { value_weight: round4(summary.valueWeight), bluff_weight: round4(summary.bluffWeight),
         value_pct: split ? round4(summary.valueWeight / split * 100) : null, bluff_pct: split ? round4(summary.bluffWeight / split * 100) : null },
-      faced_action: context.facedCap ? { action: context.facedCap.action, alpha: round4(context.facedCap.alpha),
-        capped: context.facedCap.factor < 1,
+      faced_action: context.facedCap ? { action: context.facedCap.action, ...physical, alpha: round4(context.facedCap.alpha),
+        capped: context.capped,
+        ...(context.target.observation ? { aliases: context.facedCap.aliases, wasReduced: context.facedCap.wasReduced,
+          removed_bluff: context.facedCap.removedBluff } : {}),
         bluff_share_before_pct: share(context.facedCap.valueBefore, context.facedCap.bluffBefore),
         bluff_share_after_pct: share(context.facedCap.valueAfter, context.facedCap.bluffAfter) }
-        : { action: context.table.log.at(-2)?.action ?? null, capped: false },
+        : { action: context.table.log.at(-2)?.action ?? null, ...physical, capped: false },
       blockers: { value_removed_pct: summary.valueWeight ? round4(removed[1] / summary.valueWeight * 100) : 0,
         bluff_removed_pct: summary.bluffWeight ? round4(removed[2] / summary.bluffWeight * 100) : 0 },
-      ...(mix ? { mix } : {}),
+      ...(mix ? { mix: projectActionMix(mix, context.target.observation) } : {}),
     };
   }
 }

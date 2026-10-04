@@ -8,6 +8,7 @@
 import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.mjs";
 import { validatePolicy, choose } from "../../scripts/postflop-ai/policy.mjs";
 import { validateLaterPolicy } from "../../scripts/postflop-ai/later-policy.mjs";
+import { canonicalNodeForTable } from "../../scripts/postflop-ai/observable-actions.mjs";
 import { defenceFor } from "../../scripts/postflop-ai/defence.mjs";
 import type { Choice, PreflopAction } from "./preflop.ts";
 
@@ -59,6 +60,10 @@ export function createAgent({ registry = emptyRegistry, profileId = null }: { re
       return { action: offered.choices.find(choice => choice.action.key === key)!.action, mix, source: profile ? "profile" : "balanced" };
     },
     postflop({ kit, table, street, node, board, hole, actions, random }) {
+      const requestedNode = node;
+      node = canonicalNodeForTable(table, node);
+      const observation = table.log.at(-1)?.observation;
+      if (observation && requestedNode !== node) actions = observation.actions.filter(action => action !== "raise" || observation.canRaise);
       const base = kit.defence.baseMix(table, board, node, hole);
       const balanced = kit.defence.mix(table, board, node, hole, base);
       const profile = registry.lookup({ key: `postflop:${kit.spotId}:${street}:${node}`, hand: "", profileId });

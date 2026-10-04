@@ -1,0 +1,69 @@
+{
+  "description": "Numeric golden extracted from independently checked read-only v3 negative-call-EV floor experiment; no policy bytes or approval receipt. Version8 classifications remain historical.",
+  "comparison_sha256": "2d5bac7d3d84e5970eb25c7ed9d8e62ec193e8d484c2bf0f620563685796e086",
+  "code_identity": "29f343fe901b9bd6f91bc5e6e6bf7b39041189e68087ba9d6087df39f7c5dca8",
+  "source_hash": "a446af2ae12f4d68aa5810cd88912ebd95642462a8cf8e5e472df6c66d22e975",
+  "policy_hashes": {
+    "flop": "9070ca5074b6600eaeb1f1a20a03ce4bb2b40ecea457f8cd578fcec43e8a513a",
+    "v3": "c37c4091096867f53e9ec531220f5ff99c7f2a5364d7bc56283afaeca17333d6",
+    "v4_rejected_draft": "901e2f2589aeffd1534ef3854ad4a8c7da942ccd48d35e31835960c3ed208698"
+  },
+  "river": {
+    "high-flop125": {
+      "defence_frequency": 0.36870057455873134,
+      "negative_ev_call_mass": 0.05488653911380251,
+      "raw_logistic_negative_ev_call_mass": 0.05488653911380251,
+      "floor_added_negative_ev_call_mass": 0,
+      "call_bb": 33.5,
+      "net_payout_unrounded": 165.5
+    },
+    "flush-checked": {
+      "defence_frequency": 0.5035117968755792,
+      "negative_ev_call_mass": 0,
+      "raw_logistic_negative_ev_call_mass": 0,
+      "floor_added_negative_ev_call_mass": 0,
+      "call_bb": 9.57,
+      "net_payout_unrounded": 45.733000000000004
+    },
+    "flush-merged-shove": {
+      "defence_frequency": 0.3935683188766658,
+      "negative_ev_call_mass": 0.009745016291100651,
+      "raw_logistic_negative_ev_call_mass": 0.009745016291100651,
+      "floor_added_negative_ev_call_mass": 0,
+      "call_bb": 41.32,
+      "net_payout_unrounded": 200
+    },
+    "flush-flop125": {
+      "defence_frequency": 0.4582902872045248,
+      "negative_ev_call_mass": 0.0027508484011440526,
+      "raw_logistic_negative_ev_call_mass": 0.0027508484011440526,
+      "floor_added_negative_ev_call_mass": 0,
+      "call_bb": 33.5,
+      "net_payout_unrounded": 165.5
+    },
+    "paired-oop-value-only": {
+      "defence_frequency": 0.023378399728678417,
+      "negative_ev_call_mass": 0.0012239832044809741,
+      "raw_logistic_negative_ev_call_mass": 0.0012239832044809741,
+      "floor_added_negative_ev_call_mass": 0,
+      "call_bb": 21.75,
+      "net_payout_unrounded": 69.5
+    },
+    "paired-ip-merged-shove": {
+      "defence_frequency": 0.23772154541501977,
+      "negative_ev_call_mass": 2.2177007686478727e-05,
+      "raw_logistic_negative_ev_call_mass": 2.2177007686478727e-05,
+      "floor_added_negative_ev_call_mass": 0,
+      "call_bb": 65.25,
+      "net_payout_unrounded": 200
+    },
+    "positive-equity-floor-control": {
+      "defence_frequency": 0.5846154026966212,
+      "negative_ev_call_mass": 0.007974911680865993,
+      "raw_logistic_negative_ev_call_mass": 0.007974911680865993,
+      "floor_added_negative_ev_call_mass": 0,
+      "call_bb": 9.57,
+      "net_payout_unrounded": 45.733000000000004
+    }
+  }
+}

@@ -12,6 +12,23 @@ The current candidate is therefore **the unchanged revision-3 pair under model8*
 
 The branch comparison is a read-only derivation from the full saved matrix and independently proven support-based zero-call removals; the model8 regression pins all genuine-positive mixes and reach data unchanged. It is not a new execution. Its optional action-frequency × conditional-call-mass product uses separate marginal ranges and is only a diagnostic sorting aid, never joint deal probability, EV, exploitability or an acceptance score. Independent review receives the actual frequencies and call masses, not just that product.
 
+## Non-production call-EV floor comparison
+
+A separately authorized experiment keeps canonical version8 and all policy artifacts unchanged. It compares the preserved v3 and rejected v4 policies under the current model versus a candidate rule that removes **only actual MDF-added calls with strictly negative call EV against known model betting support**. It retains the original pre-floor logistic split, legal raises, caps, floor allocation and all nonnegative-EV mixes; unknown/empty/invalid support keeps current behavior. This is not an adopted production rule or a claim of strategic acceptance.
+
+The experiment enumerates compatible positive-weight hands with integer ranks and evaluates the exact sign of `(2×winWeight+tieWeight)×netPayout −2×totalWeight×callCost`. Stored Float64 weights, `netPayout=context.finalPot-context.rake` as computed by existing JavaScript, and `context.call` are represented as exact dyadic rationals. There is no epsilon; exact equality remains eligible. This establishes the sign for the represented model, not ideal decimal arithmetic. The simulator separately rounds settlement payout to two decimals; the diagnostic records that boundary rather than substituting it into the primary rule.
+
+Execution14:32:04.857–14:32:08.841 UTC completed with exit0. The2×2 covers98 first-node decisions per policy,462 reached branches and44,519 defender observations. All14,657 nonnegative-EV mixes and all raises/pre-floor/cap/reach observations remain unchanged. It removes8,017 observed negative-EV floor promotions. Boundary tests cover exact zero and both adjacent ULPs, ties, subnormal/genuinely tiny winning support, exact power-of-two scaling/order invariance, pooled aliases and invalid/empty/blocked cases. Independent numerical/Fraction confirmation is pending.
+
+- Complete result SHA-256: `2d5bac7d3d84e5970eb25c7ed9d8e62ec193e8d484c2bf0f620563685796e086` (`.local/postflop-ai/river-floor-ev-probe/comparison.json`).
+- Prototype instrumentation:22,110 exact-sign evaluations and424 compiled contexts took182.12ms inside the applicable floor-promotion checks; full probe3.984s, peakRSS338,972KiB. It includes assertion/diagnostic work and repeated contexts. This is not a full-simulation performance guarantee.
+
+**Paired non-all-in control:** on `7c5d5hJh3h`, flop125/call then turn check/check, OOP bet33 is33.50BB. HJ88 has model equity2.2663% and call EV−29.7493BB. Compatible pre-bet BB support is entirely in the same monster tier:0.2208 value weight and0.00512 bluff weight. A river tier literal cannot change their internal ratio. The current model's extra-floor conditional loss is−16.6159BB per own reached-defender range; the candidate removes that increment while leaving raw negative-call loss−0.00329BB. Achieved defence falls65.1852%→8.0287%, making the reduction in MDF protection explicit.
+
+**Merged-shove control:** on `Ac7d2h9hJd`, flop33/call then OOP turn75/call, AsKs has call EV−41.1652BB against the explicitallin label. However, bet33/bet75/bet125/allin all pay41.32BB. Exactly pooling their existing post-cap supports gives AsKs equity17.6066% and call EV−6.1068BB. This pool is a separate observable-wager diagnostic, not a canonical alias-model change. Medium/strong hands that AsKs beats are available but absent from the explicitallin selection, so policy-label allocation also contributes here. The rejected v4 has no positive explicitallin branch; its diagnostic explicitly uses the actually reached bet33 alias for the same wager.
+
+Negative-call mass alone treats tiny represented losses and large losses equally. The result therefore records each branch's additional-floor loss, remaining raw-logistic loss and total negative-call loss, normalized by its own reached-defender weights. These are conditional model-loss diagnostics, not joint-deal EV, exploitability or a probability of encountering the branch. Preventing losses against the saved model support can weaken resistance to unknown extra bluffs and may leave defence well below MDF. Raw negative-EV logistic tails and disadvantageous raises remain separate contracts. Adoption requires the owner's decision after independent confirmation; the experiment does not optimize the entire strategy.
+
 ## Verified authoring inputs
 
 - Catalog: 137 Stage A paths and 270 reach-ranked Stage B paths selected for authoring after the user approved allowing the necessary time for full coverage. The initial 12-path Stage B planning cap was removed. All 100BB five-bet all-ins are excluded.
@@ -170,7 +187,7 @@ The largest groups are:
 - `later warn value-only-raise turn_oop_vs_raise3`: 959 occurrences on 959 distinct flops; examples 2c2d2h, 3c2c2d, 3c2d2h.
 - `later warn value-only-raise turn_ip_vs_raise3`: 898 occurrences on 898 distinct flops; examples 2c2d2h, 3c2c2d, 3c2d2h.
 
-Coarse river-air ratios are not the equity-defined bluff-cap ratio. Deep `raise2+` warnings come from the shared reference mixes rather than independently authored deep-raise rules. Computed-defence warnings must not be “fixed” by treating saved call/fold placeholders as the effective strategy. These advisories do not certify equilibrium or optimality.
+Coarse river-air ratios are not the equity-defined bluff-cap ratio. Deep `raise2+` warnings come from the shared reference mixes rather than independently authored deep-raise rules. Computed-defence warnings must not be “fixed” by treating saved call/fold rows as the effective current strategy. Those saved probabilities still determine earlier-action reach in the existing model, so they remain material to later inferred support. These advisories do not certify equilibrium or optimality.
 
 ## Legacy artifact preservation
 
@@ -191,3 +208,19 @@ After the authorized Astra authoring route and original artifact bytes are avail
 5. Run the final audit serially after concurrent writes are complete, and verify all 45 original artifact pairs remain byte-for-byte unchanged and their existing audits pass.
 
 No flop-base or hand-EV generation, production D1 import or deployment was performed.
+
+
+## Current candidate-model gate (2026-10-04)
+
+The5 preserved policy pairs remain unapproved and402 additional policies are not authored.
+The previous representative simulation/replay/all1,755 results belong to historical model6,
+not the current model10 implementation candidate. Model9 exact-call-EV and bounded-cache
+preflights were completed and frozen separately; their one-board equivalence result is not
+a replacement for current full validation. The newly adopted observable-action contract
+changes range conditioning and invalidates those derived results. See
+[the version10 contract](hu-postflop-after-multiway-preflop.observable-actions.md).
+
+Current floor regressions compare model10 against a test-only control that disables only
+the negative-call-EV floor exemption, retaining exactly the same observable classes, raw
+mixtures, ranges, chip state and floor allocation. Historical numeric fixtures are not
+rewritten or relabeled. All45 legacy byte/numeric golden checks remain mandatory.

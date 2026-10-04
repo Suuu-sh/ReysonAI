@@ -5,6 +5,7 @@ import { NODES, flopBetFraction, flopState, isFlopBet, raiseDepth } from "../../
 import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.mjs";
 import { parseFlopBoard } from "../../scripts/postflop-ai/model.mjs";
 import pilotConfig from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
+import { replayObservableStreet, usesObservableActions } from "../../scripts/postflop-ai/observable-actions.mjs";
 
 export const representativeFlops = pilot.boards.map(board => parseFlopBoard(board.cards).id);
 export const deck = "23456789TJQKA".split("").flatMap(rank => "shdc".split("").map(suit => `${rank}${suit}`));
@@ -65,7 +66,67 @@ export function completedFlopContext({ actionBlocks, rangeType, opener, hero, ca
 // Seat names, starting pot, stacks and tree of the flop; the first pilot spot when none is given.
 function geometry(spot) {
   const base = spot?.ip && spot?.oop && Number.isFinite(spot.potBb) && Number.isFinite(spot.stackBb) ? spot : spotById(DEFAULT_SPOT_ID);
-  return { ...base, tree: base.tree ?? "oop_checks" };
+  // Completed UI context carries spotId rather than the catalog history itself.
+  // Resolve that identifier before opting into the new-HU action model.
+  const catalog = base.spotId ? spotById(base.spotId) : null;
+  return { ...base, ...(catalog?.history ? { history: catalog.history } : {}), tree: base.tree ?? "oop_checks" };
+}
+
+export function hasObservablePostflopActions(spot) { return usesObservableActions(geometry(spot)); }
+export function canonicalStreetActions(street, actions, start, spot) {
+  const g = geometry(spot);
+  return usesObservableActions(g) ? replayObservableStreet({ spot: g, street, actions, start }).actions : actions;
+}
+
+function observableOptions(observation, locale = "en") {
+  const t = optionText[locale] ?? optionText.en;
+  return observation.classes.map(group => {
+    const { action, paid, amountBb, allIn } = group;
+    let label;
+    if (action === "fold" || action === "check") label = t[action];
+    else if (action === "call") label = `${t.call} ${formatBb(paid)}`;
+    else if (allIn) label = `${t.allIn} ${formatBb(amountBb)}`;
+    else if (action === "raise") {
+      const role = observation.role, other = rival(role);
+      // The group's totals include this wager. Undo it to recover the facing
+      // amount and pot before the action, just as the legacy label contract.
+      const mine = group.committed[role] - paid, theirs = group.committed[other];
+      const beforePot = group.pot - paid;
+      const pct = Math.round((amountBb - theirs) / (beforePot + theirs - mine) * 100);
+      label = `${t.raise} ${formatBb(amountBb)} (${pct}%)`;
+    } else label = `${t.bet} ${formatBb(paid)} (${action.slice(3)}%)`;
+    return { action, label, amountBb: action === "call" ? paid : amountBb, allIn, paid, aliases: group.aliases };
+  });
+}
+
+// Presentation over the same new-HU transition replay as the numerical engine.
+// Kept behind the catalog gate so legacy UI geometry/identities stay byte-stable.
+function observableReplay(street, actions, start, g) {
+  const result = replayObservableStreet({ spot: g, street, actions, start });
+  const history = street === "flop" && g.tree === "oop_checks" ? [`${g.oop} Check`] : [];
+  const stacksBefore = [];
+  for (const step of result.state.steps) {
+    const group = step.observation.byAction[step.action];
+    const option = observableOptions(step.observation).find(item => item.action === step.action);
+    stacksBefore.push(round(group.stacks[step.role] + group.paid));
+    const label = step.action === "call" ? `Call${group.allIn ? " All-in" : ""}` : option.label;
+    history.push(`${g[step.role]} ${label}`);
+  }
+  const { state, stacks, committed } = result;
+  const prior = state.steps.at(-1), observed = prior?.observation.byAction[prior.action];
+  const facedAction = state.node && observed && ["bet", "raise"].includes(observed.family)
+    ? { action: observed.action, allIn: observed.allIn, amountBb: observed.amountBb } : null;
+  let pot = result.pot;
+  // Existing flop UI reports the settled fold pot; later UI reports before
+  // settlement. Do not change that separate presentation convention here.
+  if (street === "flop" && state.end?.winner) {
+    const winner = state.end.winner, loser = rival(winner);
+    pot = round(pot - Math.max(0, committed[winner] - committed[loser]));
+  }
+  return { g, state, pot, history, stacks, invested: committed,
+    stackNow: state.role ? stacks[state.role] : null, stacksBefore,
+    end: state.end ?? null, lastAggressor: result.lastAggressor, facedAction,
+    chipsNow: state.node ? { pot, committed: { ...committed }, stacks: { ...stacks }, observation: result.observation } : null };
 }
 
 // Replays the flop actions with the same chip rules as the scripts (engine.mjs): bets are a
@@ -74,6 +135,7 @@ function geometry(spot) {
 // "oop_leads": the OOP preflop raiser acts first (oop_first → ip_vs_* → oop_vs_raise).
 function replay(actions, spot) {
   const g = geometry(spot);
+  if (usesObservableActions(g)) return observableReplay("flop", actions, undefined, g);
   const requested = flopState(g.tree, actions);
   const invested = { ip: 0, oop: 0 };
   let pot = g.potBb, aggressor = null;
@@ -163,6 +225,7 @@ function flopOptionsFor(chips, node, role, locale = "en") {
 // The options of a decision with their real amounts: [{ action, label, amountBb, allIn }] (raise is dropped
 // when raising is impossible). `street` is "flop", "turn" or "river"; `locale` "en" or "ja".
 export function decisionOptions(chips, node, street = "flop", locale = "en") {
+  if (chips?.observation) return observableOptions(chips.observation, locale).map(({ paid, ...rest }) => rest);
   if (street === "flop") return flopOptionsFor(chips, node, nodeRoleOf(node), locale).map(({ paid, ...rest }) => rest);
   return buildOptions(chips, node, nodeRoleOf(node), LATER_NODES[node], pilotConfig.later_raise_multiplier,
     action => betFraction(street, action), locale).map(({ paid, ...rest }) => rest);
@@ -177,10 +240,10 @@ const buildOptionsFor = (street, chips, node, role) =>
 const nodeRoleOf = node => node.startsWith("btn_") || node.startsWith("ip_") || /^(turn|river)_ip_/.test(node) ? "ip" : "oop";
 
 export function flopDecision(actions = [], spot) {
-  const { g, state, pot, history, chipsNow } = replay(actions, spot);
+  const { g, state, pot, history, chipsNow, facedAction } = replay(actions, spot);
   if (state.node) {
     const options = decisionOptions(chipsNow, state.node, "flop");
-    return { node: state.node, actor: g[state.role], potBb: pot, history, options,
+    return { node: state.node, actor: g[state.role], potBb: pot, history, options, ...(facedAction ? { facedAction } : {}),
       labels: Object.fromEntries(decisionOptions(chipsNow, state.node, "flop", "en").map(o => [o.action, o.label])),
       labelsJa: Object.fromEntries(decisionOptions(chipsNow, state.node, "flop", "ja").map(o => [o.action, o.label])) };
   }
@@ -194,6 +257,7 @@ export function flopDecision(actions = [], spot) {
 
 export function buildFlopActionBlocks(actions = [], spot) {
   const g = geometry(spot);
+  const chosenActions = usesObservableActions(g) ? canonicalStreetActions("flop", actions, undefined, g) : actions;
   const blocks = g.tree === "oop_checks"
     ? [{ key: "flop-oop-check", kind: "flop-forced", position: g.oop, stack: `${g.stackBb}`, chosen: "check", options: [{ action: "check", label: "Check" }], active: false }]
     : [];
@@ -205,7 +269,7 @@ export function buildFlopActionBlocks(actions = [], spot) {
       break;
     }
     blocks.push({ key: `flop-${index}`, kind: "flop", flopIndex: index, position: g[state.role], stack: `${stackNow}`,
-      chosen: actions[index] ?? null, options: blockOptions(decisionOptions(chipsNow, state.node, "flop")), active: index === actions.length });
+      chosen: chosenActions[index] ?? null, options: blockOptions(decisionOptions(chipsNow, state.node, "flop")), active: index === actions.length });
   }
   return blocks;
 }
@@ -235,6 +299,7 @@ export function laterStart(flopActions = [], spot) {
 export function replayLater(street, actions = [], start, spot) {
   if (!start || !["turn", "river"].includes(street)) throw new Error("Invalid later-street start");
   const g = geometry(spot);
+  if (usesObservableActions(g)) return observableReplay(street, actions, start, g);
   const stacks = { ip: round(start.stacks.ip), oop: round(start.stacks.oop) };
   let pot = round(start.pot), aggressor = null;
   const committed = { ip: 0, oop: 0 }, history = [];
@@ -295,6 +360,7 @@ function boardBlock(street, card, potBb) {
 
 function appendLaterDecisionBlocks(blocks, street, actions, start, spot, hasNextStreet = false) {
   const g = geometry(spot);
+  const chosenActions = usesObservableActions(g) ? canonicalStreetActions(street, actions, start, g) : actions;
   for (let index = 0; index <= actions.length; index++) {
     const replayed = replayLater(street, actions.slice(0, index), start, spot);
     const state = replayed.state;
@@ -309,7 +375,7 @@ function appendLaterDecisionBlocks(blocks, street, actions, start, spot, hasNext
     }
     const role = state.role;
     blocks.push({ key: state.node, kind: "flop", street, laterIndex: index, position: g[role],
-      stack: formatBb(replayed.stacks[role]), chosen: actions[index] ?? null, options: blockOptions(decisionOptions(replayed.chipsNow, state.node, street)), active: index === actions.length });
+      stack: formatBb(replayed.stacks[role]), chosen: chosenActions[index] ?? null, options: blockOptions(decisionOptions(replayed.chipsNow, state.node, street)), active: index === actions.length });
   }
   return replayLater(street, actions, start, spot);
 }
@@ -343,6 +409,7 @@ export function laterDecision(street, actions = [], start, spot) {
   const role = replayed.state.role;
   const labelsFor = locale => Object.fromEntries(decisionOptions(replayed.chipsNow, replayed.state.node, street, locale).map(o => [o.action, o.label]));
   return { street, node: replayed.state.node, actor: geometry(spot)[role], role, potBb: replayed.pot,
+    ...(replayed.facedAction ? { facedAction: replayed.facedAction } : {}),
     options: decisionOptions(replayed.chipsNow, replayed.state.node, street), labels: labelsFor("en"), labelsJa: labelsFor("ja"),
     line: lineFor(start.lastAggressor ?? null, role), history: replayed.history, lastAggressor: replayed.lastAggressor };
 }

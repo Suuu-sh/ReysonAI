@@ -98,6 +98,14 @@ export function computeLaterView({ spotId, flop, flopActions = "", turn = "", tu
   datasets, flopCandidate, laterCandidate }) {
   const inputs = buildInputs(spotId, datasets);
   const { flopPolicy, laterPolicy } = policyForLater(inputs, flopCandidate, laterCandidate);
+  if (inputs.spot.history) {
+    const context = laterExplainContext({ flop, flopActions, turn, turnActions, river, riverActions }, inputs);
+    const { decision, board, street } = context;
+    const rows = laterMixRows({ actor: decision.actor, role: decision.role, board, node: decision.node, line: decision.line,
+      inputs, flopPolicy, laterPolicy, paths: { flop: context.flopPath, turn: context.turnPath, river: context.riverPath } });
+    return { kind: "ai_estimate_not_gto", street, node: decision.node, actor: decision.actor, line: decision.line,
+      texture: runoutTexture(board), pot_bb: decision.potBb, rows };
+  }
   const flopBoard = parseFlopBoard(flop);
   const used = new Set(flopBoard.cards);
   const turnCard = singleCard(turn, "ターン", used);

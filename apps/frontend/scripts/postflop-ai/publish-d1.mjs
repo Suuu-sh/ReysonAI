@@ -1,3 +1,4 @@
+import { hasCurrentActionModel } from "./observable-actions.mjs";
 import { defenceVersionFor } from "./defence.mjs";
 import { hasPostflopDeal } from "./range-support.mjs";
 // SQL for the canonical local postflop artifacts in the reysonai D1 database (schema:
@@ -41,7 +42,7 @@ export function spotArtifacts(spot) {
 export function isFreshSimulationReport(inputs, candidate, laterCandidate, report) {
   if (!report || report.kind !== "ai_estimate_not_gto" || report.version !== 1 || report.spot !== inputs.spot.id ||
       report.policy_hash !== candidate.metadata.policy_hash || report.source_hash !== inputs.fingerprint ||
-      report.simulation_version !== SIMULATION_VERSION || report.defence_version !== defenceVersionFor(inputs) ||
+      report.simulation_version !== SIMULATION_VERSION || !hasCurrentActionModel(inputs.spot, report) || report.defence_version !== defenceVersionFor(inputs) ||
       report.later_sizing_hash !== laterSizingHash() || report.seed !== config.seed ||
       report.samples_per_board_profile_seat !== config.samples_per_board_profile_seat ||
       (report.later_policy_hash ?? null) !== (laterCandidate?.metadata.policy_hash ?? null)) return false;

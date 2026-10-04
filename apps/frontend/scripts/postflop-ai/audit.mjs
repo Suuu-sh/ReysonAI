@@ -1,3 +1,4 @@
+import { hasCurrentActionModel } from "./observable-actions.mjs";
 import { hasPostflopDeal } from "./range-support.mjs";
 import { boards, config, laterSizingHash, seatRange } from "./inputs.mjs";
 import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePolicy } from "./policy.mjs";
@@ -16,7 +17,7 @@ export function auditExperiment(inputs, candidate, report, laterCandidate = null
       report.source_hash !== inputs.fingerprint || report.policy_hash !== sha(policy) ||
       (report.later_policy_hash ?? null) !== (laterPolicy ? sha(laterPolicy) : null) || report.later_sizing_hash !== laterSizingHash() ||
       report.kind !== "ai_estimate_not_gto" || report.version !== 1 ||
-      report.simulation_version !== SIMULATION_VERSION || report.spot !== spot.id ||
+      report.simulation_version !== SIMULATION_VERSION || !hasCurrentActionModel(spot, report) || report.spot !== spot.id ||
       (candidate.metadata.spot ?? spot.id) !== spot.id || (candidate.metadata.tree ?? "oop_checks") !== spot.tree ||
       report.samples_per_board_profile_seat !== config.samples_per_board_profile_seat || report.seed !== config.seed) {
     throw new Error("Candidate or simulation report is stale/incomplete");

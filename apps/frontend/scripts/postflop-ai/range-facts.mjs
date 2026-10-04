@@ -8,6 +8,7 @@ import { comboId, defenceFor, replayOrNull } from "./defence.mjs";
 import { LATER_NODES, laterNodeRole } from "./later-tree.mjs";
 import { laterPolicyMix } from "./later-policy.mjs";
 import { NODES, nodeRole, policyMix } from "./policy.mjs";
+import { canonicalNodeForTable } from "./observable-actions.mjs";
 import { historyFor } from "./tree.mjs";
 
 const round4 = v => Math.round(v * 1e4) / 1e4;
@@ -33,6 +34,8 @@ const strongOf = t => (t.monster ?? 0) + (t.strong ?? 0);
 export function rangeFactsFor({ inputs, flopPolicy, laterPolicy = null, board, table, node, role, line = null }) {
   if (inputs.spot.history) assertPostflopDeal(inputs, board);
   if (!table) return null;
+  node = canonicalNodeForTable(table, node);
+  if (inputs.spot.history && table.log.at(-1).seat !== inputs.spot[role]) throw new Error("Observable actor does not match history");
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
   const heroSeat = inputs.spot[role], oppSeat = inputs.spot[role === "ip" ? "oop" : "ip"];
   const heroItems = comboRange(inputs.seatRows[heroSeat], "freq", board);
@@ -50,7 +53,7 @@ export function rangeFactsFor({ inputs, flopPolicy, laterPolicy = null, board, t
     const heroPrev = tiersOf(heroItems, heroDense, prev), oppPrev = tiersOf(oppItems, oppDense, prev);
     facts.runout_shift = { hero: round4(strongOf(hero) - strongOf(heroPrev)), opp: round4(strongOf(opp) - strongOf(oppPrev)) };
   }
-  const actions = (NODES[node] ?? LATER_NODES[node] ?? []).filter(aggressive);
+  const actions = (pending?.observation ? pending.observation.classes.map(group => group.action) : NODES[node] ?? LATER_NODES[node] ?? []).filter(aggressive);
   if (actions.length) {
     const sums = Object.fromEntries(actions.map(a => [a, { tiers: emptyTiers(), total: 0 }]));
     let reach = 0;
@@ -59,7 +62,7 @@ export function rangeFactsFor({ inputs, flopPolicy, laterPolicy = null, board, t
       if (!(w > 0)) continue;
       const base = line === null ? policyMix(flopPolicy, node, item.combo, board)
         : laterPolicyMix(laterPolicy, node, item.combo, board, line);
-      const mix = defence.mix(table, board, node, item.combo, base);
+      const mix = defence.observableMix(table, board, node, item.combo, base);
       const tier = tierOf(item.combo, board);
       reach += w;
       for (const a of actions) { const x = w * (mix[a] ?? 0) / 100; sums[a].tiers[tier] += x; sums[a].total += x; }

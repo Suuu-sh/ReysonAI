@@ -1,3 +1,5 @@
+import { observableFlopRequest } from "./observable-view-paths.mjs";
+import { actionModelIdentity, usesObservableActions } from "./observable-actions.mjs";
 // Shared balanced-mode base data: deterministic strategies and the exact UI fact projection.
 // Offline authoring and browser fallback share this code; loading never authors a policy.
 import { sha } from "./browser-inputs.mjs";
@@ -17,7 +19,7 @@ export const FLOP_BASE_VERSION = 7;
 const laterSizingHash = config => sha(Object.fromEntries(["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"].map(key => [key, config[key]])));
 
 export function flopBaseIdentity(inputs, candidate, laterCandidate) {
-  return { generator_version: FLOP_BASE_VERSION, isomorphism_version: ISOMORPHISM_VERSION,
+  return { generator_version: FLOP_BASE_VERSION, isomorphism_version: ISOMORPHISM_VERSION, ...actionModelIdentity(inputs.spot),
     evaluator_version: EVALUATOR_VERSION,
     source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash,
     later_policy_hash: sha(laterCandidate?.policy ?? referenceLaterPolicy()),
@@ -58,7 +60,7 @@ export function buildFlopBase({ board, inputs, candidate, laterCandidate }) {
       });
       averages.push(entries.length ? averageFlopUiFacts(entries) : null);
     }
-    predictors[history] = flopBlockerPredictors(inputs, candidate.policy, canonical.cards, history ? history.split(",") : [], view);
+    predictors[history] = view.unavailable ? null : flopBlockerPredictors(inputs, candidate.policy, canonical.cards, history ? history.split(",") : [], view);
     return [history, { view: packView(view), combo_facts: packFrame(facts), class_facts: packFrame(averages) }];
   }));
   return compactFlopBase({ kind: "ai_estimate_not_gto", mode: "balanced", spot: inputs.spot.id, flop: canonical.key,
@@ -100,9 +102,13 @@ export function storedFlopNodes(base, inputs, board, history = null) {
 export function storedFlopExplanation(base, { boardCards, node, cards, combos, prev = "bet33", history, inputs }) {
   const canonical = canonicalFlop(boardCards);
   if (base.flop !== canonical.key) return null;
-  const path = history ?? historyFor(inputs.spot.tree, node, prev);
+  let path = history ?? historyFor(inputs.spot.tree, node, prev);
+  if (usesObservableActions(inputs.spot)) {
+    try { ({ history: path, node } = observableFlopRequest(inputs.spot, node, path)); }
+    catch { return null; }
+  }
   const data = historyData(base, path.join(","));
-  if (!data || data.view.node !== node) return null;
+  if (!data || data.view.unavailable || data.view.node !== node) return null;
   const read = actualCards => {
     const key = comboKey(actualCards, canonical.toCanonical), item = data.indexes.get(key);
     if (!item) return null;
