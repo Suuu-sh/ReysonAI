@@ -53,3 +53,7 @@ Not covered: account deletion/retention policy, authoritative ranked scoring, si
 From `apps/backend`: `npm run check`, `npm run test:account`, `npm run test:account-local`, `npm run test:account-native`. Authentication tests use an in-memory SQLite database, controlled clock, ephemeral signing keys and mocked Google HTTP only. They cover exact expiry, replay, wrong challenge/state/redirect, concurrent exchange, transaction rollback, provider rejection, cancellation, same-email/different-sub isolation, shared Web snapshots, conflict/import rules, logout and transport separation. The dedicated PR workflow runs these checks with no live secrets or deploy step.
 
 References: https://developers.cloudflare.com/d1/worker-api/d1-database/#batch, https://developers.google.com/identity/openid-connect/openid-connect, https://www.rfc-editor.org/rfc/rfc8252, https://www.rfc-editor.org/rfc/rfc9700.html.
+
+### Cross-repository mobile contract check
+
+Bundle the actual mobile `src/api/native-account.ts` to an ESM file with the mobile repository's installed esbuild (`--bundle --platform=node --format=esm`). Then run `node apps/backend/scripts/check-native-client-contract.mjs /absolute/path/to/bundle.mjs` from the Web repository. The inspectable harness uses the actual backend routes plus an in-memory database and signed mocked Google responses; it verifies login, save/conflict, restore and revocation without accounts or network. The mobile source is never copied into this repository.
