@@ -3,7 +3,7 @@ import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, Gra
 import { useState } from "react";
 import { ACCOUNT_SECTION, AccountMenu } from "../account/AccountMenu.tsx";
 import "../account/preferences.ts";
-import { productLocale, selectProductLocale, localized } from "../i18n.ts";
+import { localized } from "../i18n.ts";
 
 export const RANGE_SECTION = "レンジ分析";
 export const LOGOUT_SECTION = "ログアウト";
@@ -100,10 +100,6 @@ export function Sidebar({ activeSection, onSectionChange, profile = null, onEdit
           </div>
         ))}
       </nav>
-      <div className="app-language-switch" role="group" aria-label="Language / 言語">
-        <button type="button" aria-pressed={productLocale() === "en"} onClick={() => selectProductLocale("en")}>EN</button>
-        <button type="button" aria-pressed={productLocale() === "ja"} onClick={() => selectProductLocale("ja")}>日本語</button>
-      </div>
       {profile ? <AccountMenu profile={profile} collapsed={collapsed}
         onNavigate={tab => onSectionChange(`${ACCOUNT_SECTION}#${tab}`)} onLogout={() => onSectionChange(LOGOUT_SECTION)} /> : (
         <div className="header-meta">

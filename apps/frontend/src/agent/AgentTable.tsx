@@ -303,6 +303,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
               <div className="agent-turn">
                 <b>{localized("Your turn", "あなたの番")}</b>
                 <small>{pending.toCall ? localized(`To call ${bb(pending.toCall)}BB`, `コール額 ${bb(pending.toCall)}BB`) : localized("You can check", "チェックできます")} · {localized("pot", "ポット")} {bb(pending.pot)}BB</small>
+                {pending.notice === "no_data" && <small className="agent-turn-note">{localized("Beta: this line (e.g. a squeeze or cold 4-bet pot) has no saved postflop strategy yet, so the hand is checked down to showdown.", "β版のため、この流れ（スクイーズやコールド4betのポットなど）のポストフロップ方針はまだありません。ショーダウンまでチェックで進みます。")}</small>}
                 {pending.notice === "no_multiway" && <small className="agent-turn-note">{localized("Beta: multiway pots aren't supported yet, so a call that would make the flop three-way isn't offered.", "β版のため、まだマルチウェイ（3人以上でのフロップ）に対応していません。ここでのコールは3人目になるため選べません。")}</small>}
               </div>
               <div className="agent-buttons">{pending.options.map((option, index) => <button type="button" key={option.key} className={`agent-act tone-${tone(option.key)}`} onClick={() => act(option.key)}>
