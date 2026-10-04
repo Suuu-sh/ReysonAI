@@ -110,7 +110,7 @@ test("focus session validation preserves dirty records without data reload or le
 test("postflop (flop to river) is behind Google sign-in for guests", async () => {
   const { readFileSync } = await import("node:fs");
   const source = readFileSync(new URL("../src/estimated/RangeWorkspace.tsx", import.meta.url), "utf8");
-  assert.match(source, /flopActive && !postflopAllowed \? <PostflopSignIn/);
+  assert.match(source, /if \(flopActive && !postflopAllowed\) return <div className="shell">/);
   assert.match(source, /setFlopDialogOpen\(postflopAllowed\)/);
   assert.match(source, /setStreetCardDialog\(postflopAllowed \? street : null\)/);
 });

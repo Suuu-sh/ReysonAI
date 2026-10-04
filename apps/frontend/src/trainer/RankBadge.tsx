@@ -1,11 +1,11 @@
 import { TIER_COLORS, TierEmblem, tierColor } from "./RankEmblem.tsx";
-import { TIERS, TIER_EN, tierFor } from "./rank-store.ts";
+import { LEGEND, LEGEND_TOP_N, TIERS, TIER_EN, tierFor } from "./rank-store.ts";
 import { localized } from "../locale.ts";
 
 export { TIER_COLORS, tierColor };
 
 export function RankBadge({ name, size = 48 }) {
-  const level = Math.max(0, TIERS.findIndex(tier => tier.name === name));
+  const level = name === LEGEND ? TIERS.length : Math.max(0, TIERS.findIndex(tier => tier.name === name));
   return <TierEmblem level={level} name={name} size={size} tier={TIER_EN[name]?.toLowerCase()} label={localized(`${localized(TIER_EN[name], name)} rank`, `${name}ランク`)} />;
 }
 
@@ -16,5 +16,8 @@ export function RankLadder({ rating }) {
       style={{ "--tier": tierColor(tier.name) }}>
       <RankBadge name={tier.name} size={34} /><span>{localized(TIER_EN[tier.name], tier.name)}</span><small>{tier.min.toLocaleString()}+</small>
     </li>)}
+    <li className="legend" style={{ "--tier": tierColor(LEGEND) }}>
+      <RankBadge name={LEGEND} size={34} /><span>{localized("Legend", LEGEND)}</span><small>{localized(`Master top ${LEGEND_TOP_N}`, `マスター上位${LEGEND_TOP_N}人`)}</small>
+    </li>
   </ol>;
 }

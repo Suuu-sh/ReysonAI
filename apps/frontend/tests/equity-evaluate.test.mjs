@@ -1,64 +1,57 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { evaluate, seededRandom } from "../scripts/lib/equity.mjs";
+import { fiveCardScore, bestFiveScore } from "./reference/best-five.mjs";
+import { parseCards } from "../scripts/postflop-ai/model.mjs";
 
-// The original array-based evaluator, kept verbatim as the reference the allocation-free
-// evaluate() must reproduce (including its kicker quirks: the quads kicker and the third two-pair
-// rank are the next entry by count, not the highest remaining rank).
-function referenceEvaluate(cards) {
-  const rankOf = card => card >> 2;
-  const suitOf = card => card & 3;
-  const counts = new Array(13).fill(0);
-  const suits = [[], [], [], []];
-  for (const card of cards) { counts[rankOf(card)] += 1; suits[suitOf(card)].push(rankOf(card)); }
-  const straightHigh = ranks => {
-    const has = new Set(ranks);
-    for (let high = 12; high >= 4; high -= 1) if ([0, 1, 2, 3, 4].every(i => has.has(high - i))) return high;
-    return has.has(12) && [0, 1, 2, 3].every(r => has.has(r)) ? 3 : -1;
-  };
-  const score = (category, kickers) => {
-    let value = category;
-    for (let i = 0; i < 5; i += 1) value = value * 16 + (kickers[i] ?? 0);
-    return value;
-  };
-  const flushSuit = suits.find(s => s.length >= 5);
-  if (flushSuit) {
-    const high = straightHigh(flushSuit);
-    if (high >= 0) return score(8, [high]);
-  }
-  const byCount = [...counts.keys()].filter(r => counts[r]).sort((a, b) => counts[b] - counts[a] || b - a);
-  const [top, second] = byCount;
-  if (counts[top] === 4) return score(7, [top, byCount.filter(r => r !== top)[0]]);
-  if (counts[top] === 3 && counts[second] >= 2) return score(6, [top, second]);
-  if (flushSuit) return score(5, flushSuit.sort((a, b) => b - a));
-  const straight = straightHigh([...counts.keys()].filter(r => counts[r]));
-  if (straight >= 0) return score(4, [straight]);
-  const singles = byCount.filter(r => counts[r] === 1);
-  if (counts[top] === 3) return score(3, [top, ...singles]);
-  if (counts[top] === 2 && counts[second] === 2) return score(2, [top, second, byCount.filter(r => r !== top && r !== second)[0]]);
-  if (counts[top] === 2) return score(1, [top, ...singles]);
-  return score(0, singles);
-}
+// The former test compared to the original evaluator including its known bugs.
+// Correctness is now checked independently, not against historical output.
+test("all 2,598,960 five-card hands match an independent oracle and category counts", () => {
+  const counts = Array(9).fill(0), ranks = new Set(), hand = Array(5);
+  let total = 0;
+  for (let a = 0; a < 48; a++) for (let b = a + 1; b < 49; b++)
+    for (let c = b + 1; c < 50; c++) for (let d = c + 1; d < 51; d++)
+      for (let e = d + 1; e < 52; e++) {
+        hand[0] = a; hand[1] = b; hand[2] = c; hand[3] = d; hand[4] = e;
+        const expected = fiveCardScore(hand), actual = evaluate(hand);
+        if (actual !== expected) assert.equal(actual, expected, hand.join(","));
+        counts[Math.floor(actual / 16 ** 5)]++; ranks.add(actual); total++;
+      }
+  assert.equal(total, 2598960);
+  assert.equal(ranks.size, 7462);
+  assert.deepEqual(counts, [1302540, 1098240, 123552, 54912, 10200, 5108, 3744, 624, 40]);
+});
 
-test("evaluate matches the original implementation on random 5-7 card hands", () => {
-  const random = seededRandom(20260930);
-  for (let round = 0; round < 400000; round++) {
-    const size = 5 + (round % 3);
-    const cards = new Set();
+test("seeded six/seven-card hands match exhaustive five-card-subset enumeration", () => {
+  const random = seededRandom(20261004);
+  for (let round = 0; round < 30000; round++) {
+    const cards = new Set(), size = 6 + round % 2;
     while (cards.size < size) cards.add(Math.floor(random() * 52));
-    const hand = [...cards];
-    assert.equal(evaluate(hand), referenceEvaluate(hand), hand.join(","));
+    const hand = [...cards], expected = bestFiveScore(hand);
+    assert.equal(evaluate(hand), expected, hand.join(","));
+    if (round % 100 === 0) {
+      assert.equal(evaluate([...hand].reverse()), expected, "card order does not break ties");
+      for (let suitShift = 1; suitShift < 4; suitShift++)
+        assert.equal(evaluate(hand.map(card => (card & ~3) + ((card + suitShift) & 3))), expected, "suits have equal rank");
+    }
   }
 });
 
-test("evaluate matches on paired-heavy hands (quads, full houses, three pairs)", () => {
+test("paired-heavy hands choose kickers by rank and ignore cards outside the best five", () => {
   const random = seededRandom(7);
-  for (let round = 0; round < 200000; round++) {
-    // Draw from only 5 ranks (often adjacent, sometimes with the ace) so multiples are common.
-    const start = Math.floor(random() * 9), ranks = [start, start + 1, start + 2, start + 3, random() < 0.5 ? 12 : start + 4];
+  for (let round = 0; round < 12000; round++) {
+    const start = Math.floor(random() * 9), ranks = [start, start + 1, start + 2, start + 3, 12];
     const cards = new Set();
     while (cards.size < 7) cards.add(ranks[Math.floor(random() * ranks.length)] * 4 + Math.floor(random() * 4));
     const hand = [...cards];
-    assert.equal(evaluate(hand), referenceEvaluate(hand), hand.join(","));
+    assert.equal(evaluate(hand), bestFiveScore(hand), hand.join(","));
+  }
+});
+
+test("best-five edge cases cover a second trip, third pair, flush, wheel and quads", () => {
+  for (const text of ["AsAhAdKsKhKd2c", "AsAhKsKhQsQh2c", "7s7h7d7c2s2hAs", "KsKhQdQc2c2dAs",
+    "AsAhAdKsQsJs2c", "AsAhKsQsJs9c2d", "As2s3s4s5sKdQh", "AsKsQsJs9s8s2s", "AsKdQhJcTs2c3d"]) {
+    const cards = parseCards(text, text.length / 2);
+    assert.equal(evaluate(cards), bestFiveScore(cards), text);
   }
 });

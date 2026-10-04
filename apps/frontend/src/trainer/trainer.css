@@ -523,7 +523,7 @@
 .ranked-bar { display: block; height: 4px; margin-top: 6px; overflow: hidden; border-radius: 2px; background: var(--surface-hover); }
 .ranked-bar b { display: block; height: 100%; border-radius: 2px; background: var(--mode-theme); }
 .rank-badge { display: block; flex-shrink: 0; }
-.rank-ladder { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin: 0; padding: 0; list-style: none; }
+.rank-ladder { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 0; padding: 0; list-style: none; }
 .rank-ladder li { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 6px; padding: 4px 6px; border-radius: 8px; color: var(--text-subtle); font-size: 11px; opacity: .55; }
 .rank-ladder li .rank-badge { grid-row: span 2; }
 .rank-ladder li span { font-weight: 700; }
@@ -699,31 +699,34 @@
 .lb-head-tools { display: flex; align-items: center; gap: 10px; }
 .lb-head-tools .lb-period { min-width: 200px; }
 @media (max-width: 720px) { .lb-head-tools { width: 100%; } .lb-head-tools .lb-period { flex: 1; min-width: 0; } }
-.drills-visual-icon { gap: 10px; padding: 20px 28px 14px; color: var(--mode-theme); }
-.drills-visual-icon small { color: var(--text-muted); }
 
 /* Hover reveals (2026-10-04): ranked tiers slide out from behind master, the Agent lineup spreads
    out from the middle face, and the drill barbell does a lift. */
-.rank-fan { position: relative; width: 100%; height: 110px; container-type: inline-size; }
+.rank-fan { position: relative; width: 100%; height: 170px; container-type: inline-size; }
 .rank-fan-item { position: absolute; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.55);
   transition: transform .5s var(--ease-out) calc(var(--d) * 45ms), opacity .3s ease calc(var(--d) * 45ms); }
-.rank-fan-item.is-front { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+.rank-fan-item.is-front { opacity: 1; transform: translate(-50%, -50%) scale(2.2); }
 .mode-block:is(:hover, :focus-within) .rank-fan-item { opacity: 1; transform: translate(calc(-50% + var(--k) * min(46px, 16cqi)), -50%) scale(.62); }
-.agent-lineup { position: relative; min-height: 120px; container-type: inline-size; }
+.agent-lineup { position: relative; min-height: 170px; container-type: inline-size; }
 .agent-lineup .agent-table-face { position: absolute; top: 50%; left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(.7);
   transition: transform .5s var(--ease-out) calc(var(--d) * 50ms), opacity .3s ease calc(var(--d) * 50ms); }
-.agent-lineup .agent-table-face.is-front { opacity: 1; transform: translate(-50%, -50%) scale(1.6); }
+/* Resting emblems share one size: ranked 64px × 2.2 ≈ 140px; Agent 52px × 2.7; drill cards 102px × 1.37. */
+.agent-lineup .agent-table-face.is-front { opacity: 1; transform: translate(-50%, -50%) scale(2.7); }
 .mode-block.is-agent:is(:hover, :focus-within) .agent-table-face { opacity: 1; transform: translate(calc(-50% + var(--k) * min(66px, 20cqi)), -50%) scale(.9); }
-.drills-visual-icon svg { transition: filter .3s ease; transform-origin: 50% 80%; }
-.mode-block.is-drills:is(:hover, :focus-within) .drills-visual-icon svg { animation: drill-lift 1s var(--ease-out) both; filter: drop-shadow(0 0 14px color-mix(in srgb, var(--mode-theme) 55%, transparent)); }
-@keyframes drill-lift {
-  0% { transform: translateY(0) rotate(0); }
-  30% { transform: translateY(-14px) rotate(-6deg); }
-  55% { transform: translateY(-10px) rotate(4deg); }
-  75% { transform: translateY(-13px) rotate(-2deg); }
-  100% { transform: translateY(-8px) rotate(0); }
-}
-@media (prefers-reduced-motion: reduce) {
+.mode-block.is-drills:is(:hover, :focus-within) @media (prefers-reduced-motion: reduce) {
   .rank-fan-item, .agent-lineup .agent-table-face { transition: none; }
-  .mode-block.is-drills:is(:hover, :focus-within) .drills-visual-icon svg { animation: none; }
-}
+  .mode-block.is-drills:is(:hover, :focus-within) }
+
+/* Drill deck: three flashcards stacked like the other emblems; on hover they fan out. */
+.drill-deck { position: relative; width: 100%; height: 170px; }
+.drill-deck-card { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 74px; height: 102px; border: 1.5px solid color-mix(in srgb, var(--mode-theme) 70%, transparent); border-radius: 12px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--mode-theme) 22%, #18121a) 0%, #120d12 100%); box-shadow: 0 10px 26px rgb(0 0 0 / 45%), 0 0 22px color-mix(in srgb, var(--mode-theme) 22%, transparent);
+  transform: translate(-50%, -50%) rotate(calc(var(--k) * 4deg)) translateY(calc(var(--k) * -3px)) scale(1.37); transition: transform .5s var(--ease-out); }
+.drill-deck-card b { color: var(--mode-theme); font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+.drill-deck-card i { position: absolute; bottom: 12px; width: 26px; height: 3px; border-radius: 2px; background: color-mix(in srgb, var(--mode-theme) 55%, transparent); }
+.drill-deck-card:nth-child(3) { z-index: 3; } .drill-deck-card:nth-child(2) { z-index: 2; }
+.mode-block.is-drills:is(:hover, :focus-within) .drill-deck-card { transform: translate(calc(-50% + var(--k) * 70px), -50%) rotate(calc(var(--k) * 10deg)) translateY(calc(var(--k) * var(--k) * 8px)) scale(1); }
+/* Agent names show only when the lineup spreads out. */
+.agent-lineup .agent-table-face small { position: absolute; top: calc(100% + 4px); left: 50%; opacity: 0; transform: translateX(-50%); white-space: nowrap; transition: opacity .25s ease; }
+.mode-block.is-agent:is(:hover, :focus-within) .agent-table-face small { opacity: 1; transition-delay: .2s; }
+@media (prefers-reduced-motion: reduce) { .drill-deck-card { transition: none; } }

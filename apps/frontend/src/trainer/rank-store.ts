@@ -23,7 +23,14 @@ export const TIERS = Object.freeze([
   { name: "マスター", min: 1550 },
 ]);
 
-export const TIER_EN = { ブロンズ: "Bronze", シルバー: "Silver", ゴールド: "Gold", プラチナ: "Platinum", ダイヤモンド: "Diamond", マスター: "Master" };
+export const TIER_EN = { ブロンズ: "Bronze", シルバー: "Silver", ゴールド: "Gold", プラチナ: "Platinum", ダイヤモンド: "Diamond", マスター: "Master", レジェンド: "Legend" };
+
+// Legend is not a rating band: it is the top LEGEND_TOP_N placed players who are in Master
+// (2026-10-04 user decision). It needs everyone's placement, so it only exists on the leaderboard.
+export const LEGEND = "レジェンド";
+export const LEGEND_TOP_N = 10;
+export const isLegend = (rating, place) => place != null && place <= LEGEND_TOP_N && rating >= TIERS.at(-1).min;
+export const displayTier = (rating, place = null) => isLegend(rating, place) ? LEGEND : tierFor(rating).name;
 
 export function tierFor(rating) {
   const index = TIERS.findLastIndex(tier => rating >= tier.min);

@@ -1,10 +1,12 @@
 // Regenerates the authored estimate JSON in a staging dir and publishes it only if the audit passes.
-// Usage: npm run build:estimates   (ESTIMATES_DRY_RUN=1: audit only, keep staging, publish nothing)
+// Usage: npm run build:estimates [-- --profiles-only]
+// ESTIMATES_DRY_RUN=1: audit only, keep staging, publish nothing.
+// --profiles-only preserves every standard dataset/reason while iterating archetypes.
 import { execFileSync } from "node:child_process";
 import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { auditEstimates, isBlockingAuditFinding } from "../src/estimated/audit.ts";
+import { auditEstimates, auditOpponentProfiles, isBlockingAuditFinding } from "../src/estimated/audit.ts";
 import { validateDataset } from "../src/estimated/ranges.ts";
 import { validateOpeningDataset } from "../src/estimated/opening-ranges.ts";
 import { validateThreeBetDataset } from "../src/estimated/three-bet-responses.ts";
@@ -18,6 +20,9 @@ import { validateColdThreeBetDataset } from "../src/estimated/cold-three-bet-res
 
 import { validateMultiway2Dataset } from "../src/estimated/multiway2-responses.ts";
 import { validateColdFourBetDataset } from "../src/estimated/cold-four-bet-responses.ts";
+
+import { loadOpponentProfileBundles, profileSourceFindings } from "./lib/opponent-profile-build.mjs";
+import { OPPONENT_PROFILE_DATASETS } from "../src/estimated/opponent-profiles.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const published = join(root, "src/estimated");
@@ -36,19 +41,22 @@ const generators = [
   ["node", "generate-limp-deep-responses.mjs"],
   ["python3", "generate-cold-three-bet-responses.py"],
   ["python3", "generate-cold-four-bet-responses.py"],
+  // Separate behavioral data: never passed through apply-call-ev or reasons.
+  ["python3", "generate-opponent-profiles.py"],
 ];
 // Keep even transient generated data in this worktree.
 mkdirSync(join(root, ".local"), { recursive: true });
 const equityCache = join(root, ".local/call-equities-cache.json");
 const staging = mkdtempSync(join(root, ".local/estimates-build-"));
 const dryRun = process.env.ESTIMATES_DRY_RUN === "1";
+const profilesOnly = process.argv.includes("--profiles-only");
 
 try {
   for (const name of [...files, "call-equities"]) if (existsSync(join(published, `${name}.json`))) copyFileSync(join(published, `${name}.json`), join(staging, `${name}.json`));
   // Optional speed cache. Every entry is checked against exact current ranges,
   // geometry, sample count and seed; an empty .local rebuild computes it afresh.
-  if (existsSync(equityCache)) copyFileSync(equityCache, join(staging, "call-equities.json"));
-  for (const [runtime, script] of generators) {
+  if (!profilesOnly && existsSync(equityCache)) copyFileSync(equityCache, join(staging, "call-equities.json"));
+  for (const [runtime, script] of generators.filter(([, script]) => !profilesOnly || script === "generate-opponent-profiles.py")) {
     execFileSync(runtime, [join(root, "scripts", script)], { cwd: root, stdio: "inherit", env: { ...process.env, ESTIMATES_DIR: staging, CALL_EQUITIES_CACHE: equityCache } });
   }
   const load = name => JSON.parse(readFileSync(join(staging, `${name}.json`), "utf8"));
@@ -76,6 +84,9 @@ try {
   validateMultiway2Dataset(multiway2, multiway, responses, opening);
   validateColdFourBetDataset(coldFourBets, coldThreeBets, responses, opening);
   const { findings } = auditEstimates({ opening, responses, threeBets, fourBets, fiveBets, multiway, squeezes, limp, limpDeep, coldThreeBets, multiway2, coldFourBets, callEquities: load("call-equities") });
+  const profiles = loadOpponentProfileBundles(staging);
+  findings.push(...auditOpponentProfiles(profiles, Object.fromEntries(OPPONENT_PROFILE_DATASETS.map(n => [n, load(n)]))).findings,
+    ...profileSourceFindings(profiles, staging));
   for (const f of findings) console.error(`- [${f.severity}] ${f.check} · ${f.spot}: ${f.detail}`);
   const blocking = findings.filter(isBlockingAuditFinding);
   if (blocking.length) {
@@ -83,6 +94,9 @@ try {
     process.exitCode = 1;
   } else if (dryRun) {
     console.log(`dry run: 検証通過（助言警告 ${findings.length}件）。公開していません。staging: ${staging}`);
+  } else if (profilesOnly) {
+    cpSync(join(staging, "profiles"), join(published, "profiles"), { recursive: true });
+    console.log(`Opponent profiles published after structural audit; standard datasets and reasons unchanged (${findings.length} warnings).`);
   } else {
     // Compose against the audited staged strategy, never old .local facts.
     for (const script of ["reason-facts.mjs", "compose-reasons.mjs"]) {
@@ -92,6 +106,7 @@ try {
     cpSync(join(staging, "reason-facts"), join(root, ".local/reason-facts"), { recursive: true });
     cpSync(join(staging, "reasons"), join(published, "reasons"), { recursive: true });
     for (const name of [...files, "call-equities", "call-ev-report"]) copyFileSync(join(staging, `${name}.json`), join(published, `${name}.json`));
+    cpSync(join(staging, "profiles"), join(published, "profiles"), { recursive: true });
     console.log(`検証を通過したため src/estimated に保存しました。（助言警告 ${findings.length}件、公開を妨げません）`);
   }
 } catch (error) {

@@ -1,13 +1,13 @@
 import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
 import { useState } from "react";
 import { ArrowLeft, Trophy } from "@phosphor-icons/react";
-import { LEADERBOARD_MIN_MATCHES, TIER_EN, leaderboardRows, playerSummary, tierFor } from "./rank-store.ts";
+import { LEADERBOARD_MIN_MATCHES, TIER_EN, displayTier, leaderboardRows, playerSummary, tierFor } from "./rank-store.ts";
 import { demoPlayers, showDemoPlayers } from "./leaderboard-demo.ts";
 import { localized } from "../i18n.ts";
 
 const pct = value => `${Math.round(value * 100)}%`;
 const PERIODS = [{ value: "week", label: ["Weekly", "週間"] }, { value: "all", label: ["All time", "通算"] }];
-const tierLabel = rating => localized(TIER_EN[tierFor(rating).name], tierFor(rating).name);
+const tierLabel = (rating, place = null) => { const name = displayTier(rating, place); return localized(TIER_EN[name], name); };
 const dateLabel = at => new Date(at).toLocaleString(undefined, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
 const signed = value => `${value >= 0 ? "+" : "−"}${Math.abs(value)}`;
 const initial = name => [...String(name)][0]?.toUpperCase() ?? "?";
@@ -17,12 +17,12 @@ function Podium({ rows }) {
   const order = [rows[1], rows[0], rows[2]].filter(Boolean);
   return <ol className="lb-podium" aria-label={localized("Top three", "上位3人")}>
     {order.map(row => {
-      const tier = tierFor(row.rating).name;
+      const tier = displayTier(row.rating, row.place);
       return <li key={row.name} className={`place-${row.place}${row.self ? " self" : ""}`} style={{ "--tier": tierColor(tier) }}>
         <span className="lb-podium-place">{row.place}</span>
         <RankBadge name={tier} size={row.place === 1 ? 76 : 60} />
         <strong><span translate="no">{row.name}</span>{row.self && <small>{localized("You", "あなた")}</small>}</strong>
-        <span className="lb-podium-tier">{tierLabel(row.rating)}</span>
+        <span className="lb-podium-tier">{tierLabel(row.rating, row.place)}</span>
         <b>{row.rating.toLocaleString()}</b>
         <small className={row.gain >= 0 ? "up" : "down"}>{signed(row.gain)}</small>
       </li>;
@@ -82,11 +82,11 @@ export function Leaderboard({ rank, profile, onBack, others = null }) {
         <thead><tr><th>{localized("Place", "順位")}</th><th>{localized("Player", "プレイヤー")}</th><th>{localized("Rank", "ランク")}</th><th>{localized("Rating", "レート")}</th>
           <th>{period === "week" ? localized("This week", "今週の増減") : localized("Change", "増減")}</th><th>{localized("Matches", "試合")}</th><th>{localized("Accuracy", "正答率")}</th></tr></thead>
         <tbody>{listed.map((row, index) => {
-          const rowTier = tierFor(row.rating).name;
+          const rowTier = displayTier(row.rating, row.place);
           return <tr key={`${row.name}-${index}`} className={row.self ? "self" : ""} style={{ "--tier": tierColor(rowTier) }}>
             <td className="place">{row.place ?? "—"}</td>
             <td><span className="leaderboard-player"><span className="lb-avatar" aria-hidden="true">{initial(row.name)}</span><span translate="no">{row.name}</span>{row.self && <small>{localized("You", "あなた")}</small>}</span></td>
-            <td><span className="leaderboard-rank"><RankBadge name={rowTier} size={26} />{tierLabel(row.rating)}</span></td>
+            <td><span className="leaderboard-rank"><RankBadge name={rowTier} size={26} />{tierLabel(row.rating, row.place)}</span></td>
             <td><b>{row.rating.toLocaleString()}</b></td>
             <td className={row.gain >= 0 ? "up" : "down"}>{signed(row.gain)}</td>
             <td>{row.matches}{row.place == null && <small className="lb-unplaced">{localized(" · unplaced", " · 順位なし")}</small>}</td>

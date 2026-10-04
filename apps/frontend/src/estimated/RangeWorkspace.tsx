@@ -829,6 +829,16 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const focusedEntry = visibleRangeEntries.find(entry => entry.position === focusedRange && entry.model);
   const displayedEntries = focusedEntry ? [focusedEntry] : visibleRangeEntries;
 
+  // Guests who reach the flop see only the sign-in card, centred on one screen (no action strip).
+  if (flopActive && !postflopAllowed) return <div className="shell">
+    <Sidebar activeSection={RANGE_SECTION}
+      onSectionChange={onSectionChange ?? (() => {})}
+      profile={profile} onEditProfile={onEditProfile} />
+    <main className="postflop-gate-main">
+      <PostflopSignIn account={account} onBack={() => setShowFlop(false)} />
+    </main>
+  </div>;
+
   return <div className="shell">
     <Sidebar activeSection={RANGE_SECTION}
       onSectionChange={onSectionChange ?? (() => {})}
@@ -871,7 +881,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive && !postflopAllowed ? <PostflopSignIn account={account} onBack={() => setShowFlop(false)} /> : flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        {flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
           {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}

@@ -4,7 +4,8 @@
 import type { D1Database } from "./postflop.ts";
 
 type Result = { status: number; body?: unknown; text?: string; etag?: string };
-const NAME = /^[A-Za-z0-9_-]+(\/[A-Za-z0-9_-]+)?$/;
+// Keep ordinary names unchanged; allow only the Stage A villain namespace.
+const NAME = /^(?:[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)?|profiles\/(?:nit|station|lag|maniac)\/villain\/(?:opening-ranges|preflop-ranges|three-bet-responses|four-bet-responses|five-bet-responses|limp-responses|limp-deep-responses|meta))$/;
 
 export async function routePreflopDatasets(db: D1Database | undefined, path: string): Promise<Result> {
   if (!db) throw new Error("DB binding is not configured");
@@ -13,7 +14,9 @@ export async function routePreflopDatasets(db: D1Database | undefined, path: str
     return { status: 200, body: { kind: "ai_estimate_not_gto",
       datasets: Object.fromEntries(results.map(row => [row.name, { hash: row.content_hash, bytes: row.bytes }])) } };
   }
-  const name = decodeURIComponent(path.slice("/v1/preflop/datasets/".length));
+  let name;
+  try { name = decodeURIComponent(path.slice("/v1/preflop/datasets/".length)); }
+  catch { return { status: 400, body: { error: "invalid dataset name" } }; }
   if (!NAME.test(name)) return { status: 400, body: { error: "invalid dataset name" } };
   const [meta, parts] = await Promise.all([
     db.prepare("SELECT content_hash, parts FROM preflop_datasets WHERE name = ?").bind(name).all<{ content_hash: string; parts: number }>(),
