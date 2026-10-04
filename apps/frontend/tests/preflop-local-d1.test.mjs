@@ -89,8 +89,8 @@ test("current backend schema has a valid preservation sentinel in every unrelate
     const tables = db.prepare("SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT IN ('preflop_datasets', 'preflop_dataset_parts') ORDER BY name").all();
     for (const { name } of tables)
       assert.equal(db.prepare(`SELECT COUNT(*) AS count FROM "${name.replaceAll('"', '""')}"`).get().count, 1, `${name}: expected one unrelated sentinel row`);
-    for (const name of ["account_native_attempts", "account_native_oauth_states", "account_native_sessions"])
-      assert.ok(tables.some(table => table.name === name), `${name}: native migration must be covered`);
+    for (const name of ["account_native_attempts", "account_native_oauth_states", "account_native_sessions", "ranked_players", "ranked_matches"])
+      assert.ok(tables.some(table => table.name === name), `${name}: current account/ranked migrations must be covered`);
     assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
   } finally { db.close(); }
 });
@@ -135,7 +135,9 @@ test("pinned Wrangler local integration: Unicode roundtrip, repeated import, iso
     const result = await verifyLocalD1({ sql, manifest: manifestPath, wrangler: process.env.PREFLOP_LOCAL_WRANGLER, log: () => {} });
     assert.equal(result.full_payload_sha256_roundtrip, true);
     assert.equal(result.repeated_imports, 2);
-    assert.equal(result.unrelated_tables_preserved.length, 14);
+    assert.equal(result.unrelated_tables_preserved.length, 16);
+    for (const name of ["ranked_players", "ranked_matches"])
+      assert.ok(result.unrelated_tables_preserved.includes(name), `${name}: imports and rollback must preserve ranked records`);
     assert.equal(result.full_file_failure_rollback, "preserved all preexisting preflop rows and unrelated sentinels");
     const bounded = await verifyLocalD1({ sql, manifest: manifestPath, wrangler: process.env.PREFLOP_LOCAL_WRANGLER, boundedLocal: true, log: () => {} });
     assert.equal(bounded.full_payload_sha256_roundtrip, true);

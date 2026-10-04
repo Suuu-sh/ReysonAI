@@ -15,6 +15,23 @@
       "files": 32,
       "source_commit": "6e59fe9fbd5ecd946010be1f893d9ee6e04f98a5",
       "scope": "Exact development bytes from merged, reviewed PR28; structural/source tests passed. No profile or Stage2 data changed."
+    },
+    "renewal": {
+      "date": "2026-10-04",
+      "reviewer": "Independent read-only release/configuration and ranked-preservation review",
+      "scope": "Source/configuration only: ece9ca0 workflow and backend config delta, plus ranked player/match sentinel inserts in the local D1 verifier. No renewed strategy-quality or Astra data approval; original data review remains unchanged.",
+      "report": "apps/frontend/docs/specs/multiway-preflop-stage2.result.md",
+      "blocking_findings": 0,
+      "verification": {
+        "ranked_backend_tests": "5 passed",
+        "ranked_workflow_tests": "2 passed",
+        "localization_tests": "10 passed, including Spanish ranked labels",
+        "local_d1_tests": "10 passed using pinned Wrangler 4.147.0; strict small fixture imports twice and failed-file rollback preserve all 16 unrelated tables; bounded small-fixture diagnostic also passed",
+        "artifact_and_archive_identity": "All 1888 delivered artifact records and the LFS archive are unchanged",
+        "source_identity": "3 bound sources reviewed; other 83 source records unchanged",
+        "source_fingerprint": "Recomputed continuation policy/reason fingerprint unchanged"
+      },
+      "limitations": "Small-fixture local D1 evidence is not full 1888-dataset whole-file rollback proof. Exact-head strict full delivery Actions verification and production deployment/readiness remain pending. Original full-suite and lint limitations remain."
     }
   },
   "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
@@ -9474,8 +9491,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 7723,
-      "sha256": "1fe32dd2df0fe57e714bcbdfd977a4ac3972acbe8e0f53b0c8a947fc74431300"
+      "bytes": 9937,
+      "sha256": "370f35ffd6028cb5a3570dff827071ee86f3484cc03808b6383cb334538c709e"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -9484,8 +9501,8 @@
     },
     {
       "path": "apps/backend/wrangler.jsonc",
-      "bytes": 1006,
-      "sha256": "2766036336b8c07bae2a48d1187ad5d6155407ceaa01578dbd58b957c4baf51a"
+      "bytes": 1072,
+      "sha256": "1aeff1e9cd31d57680620f9749965e14e2163aa671d8479bcf793c6df5d2decb"
     },
     {
       "path": "apps/frontend/package-lock.json",
@@ -9734,8 +9751,8 @@
     },
     {
       "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
-      "bytes": 21071,
-      "sha256": "3d4719abf77f16f0c8b07ce640542612f416365122b3cc9c1052c8c18f3f377e"
+      "bytes": 21454,
+      "sha256": "f3f812617e6f288341efdcaeffd24a7ee6ade6ffad36b00b5a707a6c841c4527"
     },
     {
       "path": "apps/frontend/scripts/verify-reviewed-preflop.mjs",
@@ -9898,7 +9915,7 @@
       "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
     }
   ],
-  "content_sha256": "a774eb23e280cf0fbee50705226276094f0a8ec3069d9950ef65db94ad71073f",
+  "content_sha256": "8da2d19455009d74f5fbb9a452569dbb9d3faac0e191f0d34cbb9744f203bd0a",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
