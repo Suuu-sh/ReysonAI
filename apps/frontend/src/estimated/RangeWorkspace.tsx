@@ -28,6 +28,7 @@ import {
   validateDataset,
 } from "./ranges.ts";
 import { ArrowCounterClockwise, CaretDown, DotsThreeVertical, GearSix } from "@phosphor-icons/react";
+import { RangeContextCard } from "./RangeContextCard.tsx";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
 import { FlopCardDialog, PostflopTrial, StreetCardDialog, suitLabels } from "./PostflopTrial.tsx";
 import { useAccount } from "../account/AuthPanel.tsx";
@@ -846,7 +847,11 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     <main>
       <Panel className="estimate-settings">
         <ActionPath
-          leading={<div className={`action-seat action-seat-info${settingsOpen ? " is-open" : ""}`}>
+          leading={<RangeContextCard postflop={flopActive} settingsOpen={settingsOpen}
+            boards={combinedBlocks.filter(block => block.kind === "board")}
+            onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed) : setStreetCardDialog(postflopAllowed ? street : null)}
+            onReset={resetPath}
+            displayModeControl={<div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>}>
             <button type="button" className="settings-toggle" aria-label="ゲーム設定を開閉" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><DotsThreeVertical size={16} weight="bold" aria-hidden="true" /><strong>{formatLabel("game", format.game)}</strong><span>{formatLabel("stack", format.stack)}</span></button>
             {settingsOpen && <button type="button" className="settings-backdrop" aria-label="閉じる" onClick={() => setSettingsOpen(false)} />}
             <div className="settings-body">
@@ -858,7 +863,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
               </div>
             </div>
-          </div>}
+          </RangeContextCard>}
           expanded
           blocks={combinedBlocks}
           selectedRangeBlock={selectedRangeBlock}
