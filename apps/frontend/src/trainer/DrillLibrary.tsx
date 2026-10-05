@@ -178,13 +178,10 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
   </div>;
 }
 
-// Emblem inside a ring that fills toward the next tier, beside the tier name and the last five matches.
 // Live ranked emblem: the tier badge inside a progress ring toward the next tier. The arc draws in
-// on load; on hover the badge lifts and floats, the ticks turn and the next tier peeks in.
-function RankedEmblem({ rank, tier }) {
+// on load; on hover the badge lifts and floats and the next tier peeks in.
+function RankedEmblem({ tier }) {
   const radius = 54, length = 2 * Math.PI * radius;
-  const recent = rank.matches.slice(-5);
-  const last = rank.matches.at(-1);
   return <div className="ranked-emblem-wrap">
     <div className="ranked-emblem" style={{ "--arc": length, "--arc-fill": length * tier.progress }}>
       <svg className="ranked-ring" viewBox="0 0 128 128" aria-hidden="true">
@@ -197,15 +194,6 @@ function RankedEmblem({ rank, tier }) {
     </div>
     <div className="ranked-emblem-info">
       <span className="ranked-tier-name">{localized(TIER_EN[tier.name], tier.name)}</span>
-      <small>{last ? <>{localized("Last match", "前回")} <b className={last.after >= last.before ? "up" : "down"}>{last.after >= last.before ? "▲" : "▼"}{Math.abs(last.after - last.before)}</b></> : localized("No matches yet", "まだ試合なし")}</small>
-      <ol className="ranked-pips" aria-label={localized("Last five ranked matches", "直近5試合")}>
-        {Array.from({ length: 5 }, (_, i) => {
-          const match = recent[i - (5 - recent.length)];
-          const up = match ? match.after >= match.before : null;
-          return <li key={i} className={match ? (up ? "up" : "down") : "empty"} style={{ "--i": i }}
-            title={match ? `${up ? "+" : "−"}${Math.abs(match.after - match.before)}` : localized("No match", "試合なし")} />;
-        })}
-      </ol>
     </div>
   </div>;
 }
@@ -238,7 +226,7 @@ function RankedCard({ rank, busy, draft, onStart, onOpenRanking }) {
   const left = rank.remaining ?? 0;
   const canStart = !busy && (Boolean(draft) || left > 0);
   return <ModeBlock theme={tierColor(tier.name)} className={`is-ranked${draft ? " in-progress" : ""}`} visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
-    visual={<RankedEmblem rank={rank} tier={tier} />}
+    visual={<RankedEmblem tier={tier} />}
     eyebrow={`RANKED · ${localized("Server ranked", "サーバー集計")}`}
     title={localized("Ranked matches", "ランク戦")}
     description={localized(`All spots · standard difficulty · ${RANKED_LENGTH} questions. Harder hands move your rating more.`, `全局面・標準難易度・${RANKED_LENGTH}問。難しいハンドほどレートが大きく動きます。`)}
