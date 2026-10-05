@@ -26,6 +26,7 @@ async function fixture(){
  const a='a'.repeat(64),b='b'.repeat(64);
  for(const [id,token] of [['A',a],['B',b]]){sqlite.prepare('INSERT INTO account_users VALUES (?,?,?,?)').run(id,id,`${id}@invalid`,Date.now());sqlite.prepare('INSERT INTO account_sessions VALUES (?,?,?)').run(await digest(token),id,Math.floor(Date.now()/1000)+3600);}
  const env={DB:db,FASTFOLD_ENABLED:'true',AUTH_ENABLED:'true',AUTH_LOCAL_DEV:'true',AUTH_APP_URL:origin,ALLOWED_ORIGIN:origin,GOOGLE_REDIRECT_URI:'http://localhost:8787/v1/account/google/callback',AUTH_RATE_LIMIT_KEY:'ephemeral-test-only'};
+ env.FASTFOLD_RUNTIME={getByName(){return {handle:request=>routeFastFold(request,env)}}};
  const call=async(path,body,user=a,extra={})=>{const before=queryCount;const response=await worker.fetch(new Request(endpoint+path,{headers:{cookie:`reysonai-dev-session=${user}`,origin,...(body===undefined?{}:{'content-type':'application/json'}),...extra},...(body===undefined?{}:{method:'POST',body:JSON.stringify(body)})}),env);assert.ok(queryCount-before<=50,`D1 budget for ${path}: ${queryCount-before}`);return response;};
  return {sqlite,env,call,a,b,get queryCount(){return queryCount},close(){sqlite.close()}};
 }

@@ -1,4 +1,4 @@
-import { routeFastFold } from "./fastfold.ts";
+import { dispatchFastFold, type FastFoldRuntimeEnv } from "./fastfold-dispatch.ts";
 import { routeRanked } from "./ranked.ts";
 import { isNativeAccountRequest, routeNativeAccount } from "./native-account.ts";
 import { routeAccount, type AccountEnv } from "./account.ts";
@@ -58,7 +58,7 @@ type Manifest = {
   edge?: EdgeManifest;
 };
 type R2Bucket = { get(key: string): Promise<{ text(): Promise<string> } | null> };
-type Env = AccountEnv & { AUTH_NATIVE_ENABLED?: string; RANKED_ENABLED?: string; FASTFOLD_ENABLED?: string } & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
+type Env = AccountEnv & FastFoldRuntimeEnv & { AUTH_NATIVE_ENABLED?: string; RANKED_ENABLED?: string; FASTFOLD_ENABLED?: string } & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
 type PublishedData = {
   summary: Solution;
   nodesIndex: NodeSummary[];
@@ -101,7 +101,7 @@ function notModified(request: Request, response: Response): Response | null {
 }
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
-  if (url.pathname.startsWith("/v1/fastfold/")) return routeFastFold(request, env);
+  if (url.pathname.startsWith("/v1/fastfold/")) return dispatchFastFold(request, env);
   if (url.pathname.startsWith("/v1/ranked/")) return routeRanked(request, env);
   if (isNativeAccountRequest(url)) return routeNativeAccount(request, env);
   if (url.pathname.startsWith("/v1/account/")) return routeAccount(request, env);

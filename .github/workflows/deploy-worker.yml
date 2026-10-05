@@ -92,7 +92,7 @@ jobs:
 
       - name: Verify continuous FastFold authentication, replay and atomic settlement
         working-directory: apps/backend
-        run: node --experimental-strip-types --test tests/fastfold.test.mjs tests/fastfold-release.test.mjs
+        run: npx --yes --package=wrangler@4.147.0 --call 'node scripts/verify-fastfold-local-runtime.mjs --wrangler "$(command -v wrangler)"'
 
       - name: Verify local D1 roundtrip, idempotency, isolation and failed-import rollback
         run: node scripts/verify-preflop-local-d1.mjs --sql .local/reviewed-preflop/preflop.sql --manifest .local/reviewed-preflop/delivery.json

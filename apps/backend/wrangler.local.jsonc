@@ -1,9 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "reysonai-api-local",
-  "main": "src/index.ts",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-09-22",
   "workers_dev": false,
+  "durable_objects": {"bindings": [{"name": "FASTFOLD_RUNTIME", "class_name": "FastFoldRuntime"}]},
+  "migrations": [{"tag": "fastfold-sqlite-v1", "new_sqlite_classes": ["FastFoldRuntime"]}],
   "routes": [],
   "dev": { "ip": "127.0.0.1", "port": 8787, "local_protocol": "http" },
   "d1_databases": [{

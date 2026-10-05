@@ -10,6 +10,7 @@ import { createRoot } from 'react-dom/client';
 import React, { act } from 'react';
 import worker from '../../backend/src/index.ts';
 import { digest } from '../../backend/src/account.ts';
+import { routeFastFold } from '../../backend/src/fastfold.ts';
 
 // Isolated in-memory authenticated integration. No real cookies, users, OAuth,
 // production requests, auth bypass, persisted fixtures or deployed ranking.
@@ -28,6 +29,9 @@ async function ephemeralServer() {
   for (const name of names) { const body=readFileSync(new URL(`../src/estimated/${name}.json`,import.meta.url),'utf8'); sqlite.prepare('INSERT INTO preflop_datasets VALUES (?,?,?,1)').run(name,createHash('sha256').update(body).digest('hex'),Buffer.byteLength(body)); sqlite.prepare('INSERT INTO preflop_dataset_parts VALUES (?,0,?)').run(name,body); }
   const token = 'e'.repeat(64); sqlite.prepare('INSERT INTO account_users VALUES (?,?,?,?)').run('ephemeral','ephemeral','test@example.invalid',Date.now()); sqlite.prepare('INSERT INTO account_sessions VALUES (?,?,?)').run(await digest(token),'ephemeral',Math.floor(Date.now()/1000)+3600);
   const env = { DB,FASTFOLD_ENABLED:'true',AUTH_ENABLED:'true',AUTH_LOCAL_DEV:'true',AUTH_APP_URL:'http://localhost:5173',ALLOWED_ORIGIN:'http://localhost:5173',GOOGLE_REDIRECT_URI:'http://localhost:8787/v1/account/google/callback',AUTH_RATE_LIMIT_KEY:'ephemeral-test-only',GOOGLE_CLIENT_ID:'ephemeral-test-only',GOOGLE_CLIENT_SECRET:'ephemeral-test-only' };
+  // Match the runtime binding boundary while retaining real route authentication,
+  // server replay, CAS and the isolated SQLite database (no auth bypass).
+  env.FASTFOLD_RUNTIME = { getByName() { return { handle: request => routeFastFold(request, env) }; } };
   const calls = [];
   const request = async (url, options = {}) => { calls.push({url,options}); return worker.fetch(new Request(url, { ...options,headers:{...options.headers,origin:env.AUTH_APP_URL,cookie:`reysonai-dev-session=${token}`} }),env); };
   return {sqlite,calls,request};
