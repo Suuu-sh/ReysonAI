@@ -270,3 +270,14 @@
 .stats-seg-period { margin-left: auto; padding-left: 10px; color: var(--text-subtle); }
 .stats-seg-period svg { margin-right: 4px; }
 @media (max-width: 720px) { .stats-seg-period { margin-left: 0; } }
+
+/* Practice animals reuse the Agent artwork, not its real-hand metrics. */
+.analysis-animal-kpi { display: flex; align-items: center; gap: 8px; font-size: 20px; }
+.practice-animals > p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.practice-animals .style-roster { margin: 12px 0; }
+.analysis-map-marker.with-animal { width: 36px; height: 36px; }
+.analysis-map-marker.with-animal b { top: 36px; }
+.analysis-map-marker.with-animal.label-above b { top: auto; bottom: 36px; }
+.analysis-ranked-stats { display: grid; gap: 16px; }
+.analysis-ranked-stats > .stats-seg { justify-self: start; }
+.analysis-ranked-stats .analysis-kpi > small { display: flex; align-items: center; gap: 6px; }

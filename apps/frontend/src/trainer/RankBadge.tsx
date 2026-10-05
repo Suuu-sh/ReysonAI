@@ -11,13 +11,16 @@ export function RankBadge({ name, size = 48 }) {
 
 export function RankLadder({ rating }) {
   const current = tierFor(rating);
-  return <ol className="rank-ladder" aria-label={localized("Rank tiers and rating thresholds", "ランクと昇格レート")}>
+  const index = TIERS.findIndex(tier => tier.name === current.name);
+  // Fill across all seven pills (six tiers plus Legend) so the line ends under the current pill.
+  const fill = (index + current.progress) / (TIERS.length + 1);
+  return <ol className="rank-ladder" style={{ "--ladder-fill": fill, "--ladder-color": tierColor(current.name) }} aria-label={localized("Rank tiers and rating thresholds", "ランクと昇格レート")}>
     {TIERS.map(tier => <li key={tier.name} className={tier.name === current.name ? "current" : rating >= tier.min ? "reached" : ""} aria-current={tier.name === current.name ? "step" : undefined}
-      style={{ "--tier": tierColor(tier.name) }}>
+      style={{ "--tier": tierColor(tier.name), "--i": TIERS.indexOf(tier) }}>
       <RankBadge name={tier.name} size={34} /><span>{localized(TIER_EN[tier.name], tier.name)}</span><small>{tier.min.toLocaleString()}+</small>
     </li>)}
     <li className="legend" style={{ "--tier": tierColor(LEGEND) }}>
-      <RankBadge name={LEGEND} size={34} /><span>{localized("Legend", LEGEND)}</span><small>{localized(`Master top ${LEGEND_TOP_N}`, `マスター上位${LEGEND_TOP_N}人`)}</small>
+      <RankBadge name={LEGEND} size={34} /><span>{localized("Legend", LEGEND)}</span><small title={localized(`Master top ${LEGEND_TOP_N}`, `マスター上位${LEGEND_TOP_N}人`)}>{localized(`Top ${LEGEND_TOP_N}`, `上位${LEGEND_TOP_N}人`)}</small>
     </li>
   </ol>;
 }
