@@ -1,16 +1,13 @@
 import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
-import { DatabaseSync } from 'node:sqlite';
-import { readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+import { writeFileSync, unlinkSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { build } from 'esbuild';
-import { createHash } from 'node:crypto';
 import { JSDOM } from 'jsdom';
 import { createRoot } from 'react-dom/client';
 import React, { act } from 'react';
 import worker from '../../backend/src/index.ts';
-import { digest } from '../../backend/src/account.ts';
-import { routeFastFold } from '../../backend/src/fastfold.ts';
+import { humanRankFixture } from '../../backend/tests/fixtures/human-rank.mjs';
 
 // Isolated in-memory authenticated integration. No real cookies, users, OAuth,
 // production requests, auth bypass, persisted fixtures or deployed ranking.
@@ -20,71 +17,28 @@ const bundlePath = `/tmp/reyson-fastfold-app-test-${process.pid}.mjs`;
 writeFileSync(bundlePath, code);
 after(() => unlinkSync(bundlePath));
 const { TrainerPage, refreshAccount } = await import(pathToFileURL(bundlePath).href);
-const DATASETS = ['opening-ranges','preflop-ranges','three-bet-responses','four-bet-responses','five-bet-responses','limp-responses','limp-deep-responses','multiway-responses','squeeze-responses','cold-three-bet-responses'];
-async function ephemeralServer() {
-  const sqlite = new DatabaseSync(':memory:'); sqlite.exec('PRAGMA foreign_keys=ON');
-  for (const file of ['0001_postflop.sql','0003_preflop.sql','0007_accounts.sql','0009_ranked.sql','0010_fastfold.sql']) sqlite.exec(readFileSync(new URL(`../../backend/migrations/${file}`, import.meta.url),'utf8'));
-  const DB = { prepare(sql) { let args = []; return { bind(...values) { args=values; return this; }, async all() { return { results: sqlite.prepare(sql).all(...args) }; } }; } };
-  const names = [...DATASETS, ...['nit','station','lag','maniac'].flatMap(type => DATASETS.slice(0,7).map(name => `profiles/${type}/villain/${name}`))];
-  for (const name of names) { const body=readFileSync(new URL(`../src/estimated/${name}.json`,import.meta.url),'utf8'); sqlite.prepare('INSERT INTO preflop_datasets VALUES (?,?,?,1)').run(name,createHash('sha256').update(body).digest('hex'),Buffer.byteLength(body)); sqlite.prepare('INSERT INTO preflop_dataset_parts VALUES (?,0,?)').run(name,body); }
-  const token = 'e'.repeat(64); sqlite.prepare('INSERT INTO account_users VALUES (?,?,?,?)').run('ephemeral','ephemeral','test@example.invalid',Date.now()); sqlite.prepare('INSERT INTO account_sessions VALUES (?,?,?)').run(await digest(token),'ephemeral',Math.floor(Date.now()/1000)+3600);
-  const env = { DB,FASTFOLD_ENABLED:'true',AUTH_ENABLED:'true',AUTH_LOCAL_DEV:'true',AUTH_APP_URL:'http://localhost:5173',ALLOWED_ORIGIN:'http://localhost:5173',GOOGLE_REDIRECT_URI:'http://localhost:8787/v1/account/google/callback',AUTH_RATE_LIMIT_KEY:'ephemeral-test-only',GOOGLE_CLIENT_ID:'ephemeral-test-only',GOOGLE_CLIENT_SECRET:'ephemeral-test-only' };
-  // Match the runtime binding boundary while retaining real route authentication,
-  // server replay, CAS and the isolated SQLite database (no auth bypass).
-  env.FASTFOLD_RUNTIME = { getByName() { return { handle: request => routeFastFold(request, env) }; } };
-  const calls = [];
-  const request = async (url, options = {}) => { calls.push({url,options}); return worker.fetch(new Request(url, { ...options,headers:{...options.headers,origin:env.AUTH_APP_URL,cookie:`reysonai-dev-session=${token}`} }),env); };
-  return {sqlite,calls,request};
-}
-
-test('actual Trainer ranked entry renders FastFold against authenticated server and preserves all seven ladder tiers',async()=>{
-  const server=await ephemeralServer();
-  const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost:5173/learn/trainer'});
-  const previous={window:globalThis.window,document:globalThis.document,fetch:globalThis.fetch};
-  globalThis.window=dom.window;globalThis.document=dom.window.document;globalThis.fetch=server.request;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
-  dom.window.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
-  dom.window.scrollTo=()=>{}; let root=createRoot(dom.window.document.getElementById('root'));
-  let path='/learn/trainer';
-  const props={profile:{nickname:'Test',level:'intermediate',updatedAt:new Date().toISOString()},onSectionChange(){},onNavigate(next){path=next;render();}};
-  const render=()=>root.render(React.createElement(TrainerPage,{...props,path}));
-  const settle=async predicate=>{for(let i=0;i<100&&!predicate();i++)await act(async()=>{await new Promise(resolve=>setTimeout(resolve,10));});assert.ok(predicate(),'UI request did not settle');};
-  const click=async selector=>{const button=dom.window.document.querySelector(selector);assert.ok(button,`Missing ${selector}`);await act(async()=>{button.click();});};
-  const getSession=async()=>{const response=await server.request('http://localhost:8787/v1/fastfold/profile');assert.equal(response.status,200);return (await response.json()).state.active;};
-  try {
-    const readiness=await server.request('http://localhost:8787/v1/fastfold/status'); assert.equal(readiness.status,200,await readiness.text());
-    await refreshAccount(); await act(async()=>render());
-    await settle(()=>dom.window.document.querySelector('.is-ranked')?.textContent.includes('FastFold'));
-    assert.match(dom.window.document.body.textContent,/FastFold/);
-    assert.equal(dom.window.document.querySelectorAll('.is-ranked .rank-ladder [data-tier]').length,7);
-    assert.doesNotMatch(dom.window.document.querySelector('.is-ranked').textContent,/20 questions|3 daily|left today/);
-    await click('.is-ranked .mode-primary');
-    assert.equal(path,'/learn/trainer/ranked/play');
-    await settle(()=>Boolean(dom.window.document.querySelector('.ff-intro input')));
-    assert.ok(dom.window.document.querySelector('.ff-arena'));
-    assert.equal(dom.window.document.querySelector('.trainer-actions'),null);
-    await act(async()=>{dom.window.document.querySelector('.ff-intro input').click();});
-    await click('.ff-intro .setup-start');
-    await settle(()=>Boolean(dom.window.document.querySelector('.ff-actions button')));
-    let session=await getSession(); assert.equal(session.status,'active');
-    assert.equal(dom.window.document.querySelectorAll('.ff-opponent').length,5);
-    assert.match(dom.window.document.body.textContent,/Postflop uses balanced policy|タイプは実際/);
-    // Server-issued Fold settles current hand and immediately provides a new hand.
-    for(let i=0;i<3;i++) {
-      const oldId=session.hand.id;
-      const action=dom.window.document.querySelector('.ff-action-fold')??dom.window.document.querySelector('.ff-actions button');
-      await act(async()=>action.click()); await settle(()=>!dom.window.document.querySelector('.ff-actions button')?.disabled); session=await getSession();
-      if(action.classList.contains('ff-action-fold')) assert.notEqual(session.hand.id,oldId);
-    }
-    const handId=session.hand.id;
-    await click('.ff-table-top button'); await settle(()=>!dom.window.document.querySelector('.ff-table-top button')?.disabled); session=await getSession(); assert.equal(session.status,'paused');assert.equal(session.hand.id,handId);
-    await act(async()=>root.unmount()); root=createRoot(dom.window.document.getElementById('root'));
-    await act(async()=>render()); await settle(()=>Boolean(dom.window.document.querySelector('.ff-table-top button'))); assert.match(dom.window.document.body.textContent,/Paused|一時停止中/);
-    await click('.ff-table-top button'); await settle(()=>!dom.window.document.querySelector('.ff-table-top button')?.disabled); session=await getSession(); assert.equal(session.status,'active');assert.equal(session.hand.id,handId);
-    // The formerly saved quiz result URL must render FastFold and redirect to play.
-    path='/learn/trainer/ranked/play/result'; await act(async()=>render()); assert.equal(path,'/learn/trainer/ranked/play'); assert.ok(dom.window.document.querySelector('.ff-arena'));
-    assert.ok(server.calls.every(call=>!String(call.url).includes('/v1/ranked/matches')));
-    assert.equal(server.sqlite.prepare("SELECT COUNT(*) n FROM ranked_matches").get()?.n??0,0);
-  } finally {
-    await act(async()=>root.unmount());dom.window.close();Object.assign(globalThis,previous);delete globalThis.IS_REACT_ACT_ENVIRONMENT;server.sqlite.close();
-  }
+test('actual Trainer uses six authenticated humans, unrated Agent waiting, server handoff and queue break',async()=>{
+  const server=await humanRankFixture();Object.assign(server.env,{GOOGLE_CLIENT_ID:'ephemeral-test-only',GOOGLE_CLIENT_SECRET:'ephemeral-test-only'});
+  const calls=[];const fetcher=async(url,options={})=>{calls.push({url,options});return worker.fetch(new Request(url,{...options,headers:{...options.headers,origin:'http://localhost:5173',cookie:`reysonai-dev-session=${server.tokens[0]}`}}),server.env);};
+  const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost:5173/learn/trainer'});const previous={window:globalThis.window,document:globalThis.document,localStorage:globalThis.localStorage,fetch:globalThis.fetch,HTMLElement:globalThis.HTMLElement};Object.assign(globalThis,{window:dom.window,document:dom.window.document,localStorage:dom.window.localStorage,fetch:fetcher,HTMLElement:dom.window.HTMLElement,IS_REACT_ACT_ENVIRONMENT:true});dom.window.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});dom.window.scrollTo=()=>{};dom.window.localStorage.setItem('reysonai:agent-speed','"fast"');
+  let root=createRoot(dom.window.document.getElementById('root')),path='/learn/trainer';const nav=[];const props={profile:{nickname:'Test',level:'intermediate',updatedAt:new Date().toISOString()},onSectionChange(){},onNavigate(next,replace){nav.push({next,replace});path=next;render();}};const render=()=>root.render(React.createElement(TrainerPage,{...props,path}));
+  const settle=async predicate=>{for(let i=0;i<150&&!predicate();i++)await act(async()=>new Promise(r=>setTimeout(r,100)));assert.ok(predicate(),'UI state did not settle');};const click=async selector=>{const b=dom.window.document.querySelector(selector);assert.ok(b,`Missing ${selector}`);await act(async()=>b.click());};
+  try{
+    await refreshAccount();await act(async()=>render());await settle(()=>dom.window.document.querySelector('.is-ranked .mode-primary')?.disabled === false);assert.equal(dom.window.document.querySelectorAll('.is-ranked .rank-ladder [data-tier]').length,7);assert.match(dom.window.document.querySelector('.is-ranked').textContent,/Six people/);await click('.is-ranked .mode-primary');await settle(()=>Boolean(dom.window.document.querySelector('.ff-intro input')));assert.equal(dom.window.document.querySelector('.agent-felt'),null);assert.equal(server.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_tables').get().n,0);
+    await click('.ff-intro input');await click('.ff-intro .setup-start');await settle(()=>Boolean(dom.window.document.querySelector('.game-controls-trigger')));await click('.game-controls-trigger');await settle(()=>Boolean(dom.window.document.querySelector('.ff-human-queue')));assert.match(dom.window.document.querySelector('.ff-human-queue').textContent,/1 \/ 6/);assert.equal((await server.state(0)).hands,0);assert.equal(server.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_tables').get().n,0);
+    for(let i=1;i<6;i++)await server.join(i);await act(async()=>window.dispatchEvent(new window.Event('focus')));await settle(()=>dom.window.document.body.textContent.includes('Six people reserved'));
+    const first=await server.state(0);assert.equal(first.phase,'reserved');assert.equal(first.reservation.accepted,false);await click('.game-modal-header button');
+    // Finish only the current real local Agent hand. The server reservation is accepted at
+    // its genuine completion boundary, not by simulating any human actions/cards locally.
+    if(!dom.window.document.querySelector('.agent-result')){await settle(()=>Boolean(dom.window.document.querySelector('.agent-act.tone-fold')) || Boolean(dom.window.document.querySelector('.agent-result')));if(dom.window.document.querySelector('.agent-act.tone-fold'))await click('.agent-act.tone-fold');}
+    await click('.game-controls-trigger');await settle(()=>dom.window.document.body.textContent.includes('Accepted. Waiting'));assert.equal((await server.state(0)).reservation.accepted,true);assert.equal(dom.window.document.querySelector('.ff-actions'),null);
+    for(let i=1;i<6;i++){const s=await server.state(i);await server.control(i,'accept',{reservationId:s.reservation.id});}await act(async()=>window.dispatchEvent(new window.Event('focus')));await settle(()=>Boolean(dom.window.document.querySelector('.ff-actions')));const human=await server.state(0);assert.equal(human.phase,'hand');assert.equal(dom.window.document.querySelectorAll('.agent-seat').length,6);assert.equal(dom.window.document.querySelectorAll('.agent-hole .is-back').length,10);assert.deepEqual(Object.keys(human.match.hand.holeCards),[human.match.participants[human.match.hero].position]);
+    // The immediate loading block is not a resolved server-public profile.
+    await click('.agent-profile-trigger');await settle(()=>dom.window.document.querySelector('.agent-profile-block')?.textContent.includes('Unknown'));assert.match(dom.window.document.querySelector('.agent-profile-block').textContent,/Unknown/);assert.ok(dom.window.document.querySelector('.agent-profile-block').closest('[role=dialog][aria-modal=true]'));assert.equal(dom.window.document.querySelector('.agent-side'),null);await click('.agent-profile-block button');
+    await click('.ff-actions .tone-fold');await settle(()=>Boolean(dom.window.document.querySelector('.ff-human-wait .game-controls-trigger')));await click('.game-controls-trigger');assert.ok(dom.window.document.querySelector('.ff-human-queue'));await click('.game-modal-header button');assert.equal((await server.state(0)).phase,'queued');assert.equal(server.sqlite.prepare("SELECT status FROM human_rank_tables WHERE id=?").get(human.match.id).status,'active');
+    await click('.ff-exit');await settle(()=>path==='/learn/trainer/ranked/waiting');const deadline=(await server.state(0)).breakExpiresAt;assert.ok(deadline);assert.match(dom.window.document.body.textContent,/not the old hand/);await act(async()=>root.unmount());root=createRoot(dom.window.document.getElementById('root'));await act(async()=>render());await settle(()=>Boolean(dom.window.document.querySelector('.ff-countdown')));assert.equal((await server.state(0)).breakExpiresAt,deadline);
+    const resume=[...dom.window.document.querySelectorAll('button')].find(b=>b.textContent==='Resume');await act(async()=>resume.click());await settle(()=>path==='/learn/trainer/ranked/play');assert.equal((await server.state(0)).phase,'queued');await settle(()=>Boolean(dom.window.document.querySelector('.ff-exit')));await click('.ff-exit');await settle(()=>path==='/learn/trainer/ranked/waiting');
+    // Ephemeral SQLite server-only deadline fixture, not a browser clock/auth override.
+    server.sqlite.prepare("UPDATE human_rank_players SET break_until=? WHERE user_id='U0'").run(Date.now()-1);await act(async()=>window.dispatchEvent(new window.Event('focus')));await settle(()=>path==='/learn/trainer');assert.equal(nav.at(-1).replace,true);assert.equal((await server.state(0)).phase,'out');assert.ok(!path.includes('/agent/'));assert.ok(calls.every(c=>!String(c.url).includes('/v1/ranked/matches')&&!/\/v1\/fastfold\/(?:start|profile|action)$/.test(String(c.url))));assert.ok(!Object.keys(dom.window.localStorage).some(k=>/agent-hands/.test(k)));
+  }finally{await act(async()=>root.unmount());dom.window.close();Object.assign(globalThis,previous);delete globalThis.IS_REACT_ACT_ENVIRONMENT;server.close();}
 });

@@ -54,8 +54,8 @@ test('authenticated leaderboard renders server global placement and Legend, neve
   globalThis.window = dom.window; globalThis.document = dom.window.document; globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   let calls = 0;
   globalThis.fetch = async url => {
-    assert.match(url, /\/v1\/fastfold\/leaderboard$/); calls++;
-    return Response.json({ season:'fastfold-v1', rows: [
+    assert.match(url, /\/v1\/fastfold\/human\/leaderboard$/); calls++;
+    return Response.json({ season:'human-fastfold-v1', rows: [
       { id:'first', name:'Player first', rating:1600, bbPer100:5, hands:104, provisional:false, place:1, self:false },
       { id:'self', name:'Player self', rating:1600, bbPer100:2, hands:103, provisional:false, place:102, self:true },
     ] });

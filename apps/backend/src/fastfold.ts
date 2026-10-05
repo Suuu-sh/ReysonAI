@@ -15,7 +15,7 @@ type Dataset = SourceDataset;
 type Data = Record<string,Dataset>;
 type Player = {user_id:string;public_name:string;rating:number;peak:number;hands:number;net_bb:number;squared_bb:number;rating_net_bb:number};
 type HiddenHand = {id:string;number:number;hero:Position;type:string;hole:Record<string,number[]>;board:number[];draws:number[];actions:string[];observations?:Array<Record<string,unknown>>;policies?:Record<string,{flop:string|null;later:string|null}>};
-type Private = {hand:HiddenHand;hashes:Record<string,string>;receipt?:{actionId:string;request:string}};
+type Private = {hand:HiddenHand;hashes:Record<string,string>;receipt?:{actionId:string;request:string};breakExpiresAt?:number;exited?:'exit'|'expired'};
 type Session = {id:string;user_id:string;version:number;status:'active'|'paused';private_json:string;settled_id:string|null;settlement_json:string|null};
 const BASE = ['opening-ranges','preflop-ranges','three-bet-responses','four-bet-responses','five-bet-responses','limp-responses','limp-deep-responses','multiway-responses','squeeze-responses','cold-three-bet-responses'];
 const PROFILE_FILES = BASE.slice(0,7);
@@ -23,7 +23,7 @@ const TYPES = ['balanced','nit','station','lag','maniac'];
 export const FASTFOLD_DATASETS = [...BASE,...TYPES.slice(1).flatMap(type=>PROFILE_FILES.map(name=>`profiles/${type}/villain/${name}`))];
 const META:Record<string,{name:{en:string;ja:string};description:{en:string;ja:string}}>= {nit:nitMeta,station:stationMeta,lag:lagMeta,maniac:maniacMeta,balanced:{name:{en:'Balanced',ja:'バランス'},description:{en:'Plays the saved AI-estimated frequencies.',ja:'保存済みAI推定頻度に沿って行動します。'}}};
 const reply = (body:unknown,status=200) => new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
-const metadata = {season:FASTFOLD_SEASON,comparisonMode:'shadow',appliedPenalty:false};
+const metadata = {season:FASTFOLD_SEASON,comparisonMode:'shadow',appliedPenalty:false,mode:'legacy_agent_practice',rankedHumanMatch:false,opponentKind:'agent'};
 const round = (n:number) => Math.round(n*100)/100;
 const uuid = (v:unknown):v is string => typeof v==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
 function uniform(n:number):number {
@@ -110,6 +110,23 @@ function settlement(hand:HiddenHand,result:HandResult,player:Player) {
   const ratingEvidenceBb=Math.max(-10,Math.min(10,netBb));
   return {id:hand.id,hero:hand.hero,netBb,ratingEvidenceBb,beforeRating:player.rating,afterRating:fastfoldRating(player.hands+1,player.rating_net_bb+ratingEvidenceBb,player.squared_bb+netBb*netBb),showdown:!!result.showdown,board:result.board,holeCards:exposedCards(result,hand.hero),winners:result.winners??[],log:result.log,opponentType:hand.type,shadow:{mode:'shadow',appliedPenalty:0,baselineDeviation:null,opponentAdjustedDeviation:null,support:'unavailable',reason:'uncalibrated_ev_reference',coverage:{baseline:false,opponentAdjusted:false},observations:hand.observations??[]}};
 }
+// Leaving is a fold, not a fabricated showdown. Refund unmatched street wager;
+// street totals already include the blinds, so never add them a second time.
+export function departureResult(hand:HiddenHand,before:HandResult):HandResult {
+  if(before.status==='done')return before;
+  const streets=new Map<string,Record<string,number>>([['preflop',{SB:.5,BB:1}]]);
+  for(const event of before.log){
+    if(event.bets)streets.set(event.street,{...(streets.get(event.street)??{}),...event.bets});
+  }
+  let invested=0;
+  for(const bets of streets.values()){
+    const mine=bets[hand.hero]??0,matched=Math.max(0,...Object.entries(bets).filter(([pos])=>pos!==hand.hero).map(([,v])=>v));
+    invested+=Math.min(mine,matched);
+  }
+  if(!Number.isFinite(invested)||invested<0)throw new Error('invalid_departure_result');
+  return {...before,status:'done',pending:undefined,showdown:false,winners:[],returns:{[hand.hero]:-round(invested)},
+    log:[...before.log,{street:before.pending?.street??'preflop',pos:hand.hero,action:'fold',pot:before.pending?.pot??before.pot??0}]};
+}
 export function actionStats(recent:Array<{hero:Position;log:HandResult['log']}>) {
   const counts={vpip:{opportunities:recent.length,taken:0},pfr:{opportunities:recent.length,taken:0},threeBet:{opportunities:0,taken:0},foldToThreeBet:{opportunities:0,taken:0}};
   for(const hand of recent){
@@ -153,7 +170,8 @@ export async function routeFastFold(request:Request,env:FastFoldEnv):Promise<Res
     if(catalog.length!==FASTFOLD_DATASETS.length||catalog.some(row=>!/^([a-f0-9]{64})$/.test(row.content_hash)||row.parts<1||row.present!==row.parts||row.first!==0||row.last!==row.parts-1||row.bytes!==row.actual_bytes))throw new Error('fastfold_dataset_unavailable');
     if(path==='status'&&request.method==='GET')return reply({enabled:true,...metadata});
     const cookie=request.headers.get('cookie')?.split(';').map(v=>v.trim()).find(v=>v.startsWith(`${transport.session}=`))?.slice(transport.session.length+1);
-    const now=Date.now();
+    let now=Date.now();
+    const respond=(body:Record<string,unknown>,status=200)=>reply({...body,serverNow:now},status);
     const [user]=cookie&&/^[a-f0-9]{64}$/.test(cookie)?await query<{id:string}>('SELECT u.id FROM account_users u JOIN account_sessions s ON s.user_id=u.id WHERE s.token_hash=? AND s.expires_at>?',await digest(cookie),Math.floor(now/1000)):[];
     if(!user)return reply({error:'sign_in_required'},401);
     const inputs=new Map<string,Promise<{data:Data;hashes:Record<string,string>}>>();
@@ -165,15 +183,36 @@ export async function routeFastFold(request:Request,env:FastFoldEnv):Promise<Res
     const readHand=(hand:HiddenHand,data:Data)=>{const key=hand.id+'|'+hand.actions.join(',');if(!replays.has(key))replays.set(key,replay(db,hand,data,sharedKits));return replays.get(key)!;};
     const player=async()=> (await query<Player>('SELECT * FROM fastfold_players WHERE user_id=?',user.id))[0]??{user_id:user.id,public_name:'',rating:1000,peak:1000,hands:0,net_bb:0,squared_bb:0,rating_net_bb:0};
     const session=async()=> (await query<Session>('SELECT * FROM fastfold_sessions WHERE user_id=?',user.id))[0];
-    const view=async(s:Session)=>{const hidden:Private=JSON.parse(s.private_json),{data}=await readInputs(hidden.hand.type,hidden.hashes);return {id:s.id,version:s.version,status:s.status,hand:publicHand(hidden.hand,await readHand(hidden.hand,data))};};
+    const view=async(s:Session)=>{const hidden:Private=JSON.parse(s.private_json);if(hidden.exited)return null;const {data}=await readInputs(hidden.hand.type,hidden.hashes);return {id:s.id,version:s.version,status:s.status,...(hidden.breakExpiresAt?{breakExpiresAt:hidden.breakExpiresAt}:{}),hand:publicHand(hidden.hand,await readHand(hidden.hand,data))};};
     const state=async()=>{const p=await player(),s=await session(),rows=await query<{public_json:string}>("SELECT public_json FROM fastfold_results WHERE user_id=? ORDER BY at DESC,rowid DESC LIMIT 100",user.id);return {rating:p.rating,peak:p.peak,hands:p.hands,netBb:round(p.net_bb),bbPer100:p.hands?round(p.net_bb/p.hands*100):null,provisional:p.hands<100,uncertainty:uncertainty(p.hands,p.squared_bb),active:s?await view(s):null,recent:rows.map(r=>JSON.parse(r.public_json)),actionStats:actionStats(rows.map(r=>JSON.parse(r.public_json)))};};
-    if(path==='profile'&&request.method==='GET')return reply({enabled:true,...metadata,publicName:(await player()).public_name||null,state:await state()});
+    const depart=async(s:Session,reason:'exit'|'expired',receipt?:Private['receipt'])=>{
+      const hidden:Private=JSON.parse(s.private_json);if(hidden.exited)return true;
+      const {data}=await readInputs(hidden.hand.type,hidden.hashes),before=await readHand(hidden.hand,data);
+      const result={...settlement(hidden.hand,departureResult(hidden.hand,before),await player()),termination:reason};
+      hidden.exited=reason;delete hidden.receipt;if(receipt)hidden.receipt=receipt;
+      const changed=await query<{id:string}>("UPDATE fastfold_sessions SET private_json=?,status='paused',version=version+1,updated_at=?,settled_id=?,settlement_json=? WHERE id=? AND user_id=? AND version=? RETURNING id",JSON.stringify(hidden),now,result.id,JSON.stringify([result]),s.id,user.id,s.version);
+      return changed.length>0;
+    };
+    // No alarm/clock in the client owns this deadline. Even closed/offline tabs
+    // cannot extend it; settlement is enforced on the next authenticated request.
+    const expirePending=async()=>{
+      const expired=await session();
+      if(expired){const hidden:Private=JSON.parse(expired.private_json);if(!hidden.exited&&hidden.breakExpiresAt&&now>=hidden.breakExpiresAt){
+        if(!await depart(expired,'expired')){const latest=await session();if(latest&&!JSON.parse(latest.private_json).exited)return false;}
+      }}
+      return true;
+    };
+    if(request.method==='GET'&&!await expirePending())return respond({error:'stale_version'},409);
+    if(path==='profile'&&request.method==='GET')return respond({enabled:true,...metadata,publicName:(await player()).public_name||null,state:await state()});
     if(path==='leaderboard'&&request.method==='GET'){
       const rows=await query<Player&{place:number}>(`WITH placed AS (SELECT *,ROW_NUMBER() OVER (ORDER BY rating DESC,net_bb / hands DESC,user_id ASC) place FROM fastfold_players WHERE hands>=100) SELECT * FROM placed WHERE place<=100 OR user_id=? ORDER BY place`,user.id);
       return reply({...metadata,rows:rows.map(p=>({id:p.public_name,name:p.public_name,rating:p.rating,hands:p.hands,bbPer100:round(p.net_bb/p.hands*100),place:p.place,self:p.user_id===user.id,provisional:false}))});
     }
-    if(request.method!=='POST'||!['start','action','pause'].includes(path))return reply({error:'not_found'},404);
+    if(request.method!=='POST'||!['start','action','pause','break','resume','leave'].includes(path))return reply({error:'not_found'},404);
     const body=await boundedBody(request);
+    // Do not let a slowly streamed request reuse a pre-deadline clock snapshot.
+    now=Date.now();
+    if(!await expirePending())return respond({error:'stale_version'},409);
     const [limit]=await query<{count:number}>('INSERT INTO account_rate_limits(bucket,count,expires_at) VALUES (?,1,?) ON CONFLICT(bucket) DO UPDATE SET count=count+1 RETURNING count',`fastfold:${user.id}:${Math.floor(now/60000)}`,Math.floor(now/1000)+120);
     if(limit.count>240)return reply({error:'rate_limited'},429);
     await query('DELETE FROM account_rate_limits WHERE expires_at<?',Math.floor(now/1000));
@@ -184,23 +223,50 @@ export async function routeFastFold(request:Request,env:FastFoldEnv):Promise<Res
         const hand=newHand(1),{hashes,data}=await readInputs(hand.type);await readHand(hand,data);
         await query('INSERT OR IGNORE INTO fastfold_players(user_id,public_name) VALUES (?,?)',user.id,`Player ${crypto.randomUUID().slice(0,8)}`);
         await query("INSERT OR IGNORE INTO fastfold_sessions(id,user_id,status,private_json,updated_at) VALUES (?,?,'active',?,?)",crypto.randomUUID(),user.id,JSON.stringify({hand,hashes}),now);s=await session();
-      }else if(s.status==='paused'){
-        await query("UPDATE fastfold_sessions SET status='active',version=version+1,updated_at=? WHERE id=? AND user_id=? AND version=?",now,s.id,user.id,s.version);s=await session();
+      }else {
+        const hidden:Private=JSON.parse(s.private_json);
+        if(hidden.exited){
+          const hand=newHand(hidden.hand.number+1),{hashes,data}=await readInputs(hand.type);await readHand(hand,data);
+          const changed=await query<{id:string}>("UPDATE fastfold_sessions SET private_json=?,status='active',version=version+1,updated_at=?,settled_id=NULL,settlement_json=NULL WHERE id=? AND user_id=? AND version=? RETURNING id",JSON.stringify({hand,hashes}),now,s.id,user.id,s.version);
+          if(!changed.length)return respond({error:'stale_version'},409);s=await session();
+        }else if(hidden.breakExpiresAt)return respond({error:'session_on_break'},409);
+        else if(s.status==='paused'){
+          await query("UPDATE fastfold_sessions SET status='active',version=version+1,updated_at=? WHERE id=? AND user_id=? AND version=?",now,s.id,user.id,s.version);s=await session();
+        }
       }
-      return reply({session:await view(s),state:await state(),...metadata});
+      return respond({session:await view(s),state:await state(),...metadata});
     }
-    if(!uuid(body.sessionId)||!Number.isInteger(body.version)||Number(body.version)<0||Object.keys(body).some(k=>!['sessionId','version',...(path==='action'?['action','actionId']:[])].includes(k)))return reply({error:'invalid_submission'},400);
+    if(!uuid(body.sessionId)||!Number.isInteger(body.version)||Number(body.version)<0||Object.keys(body).some(k=>!['sessionId','version',...(path==='action'?['action','actionId']:['break','leave'].includes(path)?['actionId']:[])].includes(k)))return reply({error:'invalid_submission'},400);
     let s=await session();if(!s||s.id!==body.sessionId)return reply({error:'session_not_found'},404);
-    const requestKey=JSON.stringify({version:body.version,action:body.action});
-    if(path==='action'){
-      if(!uuid(body.actionId)||typeof body.action!=='string')return reply({error:'invalid_action'},400);
+    const requestKey=JSON.stringify(path==='action'?{version:body.version,action:body.action}:{operation:path,version:body.version});
+    if(['action','break','leave'].includes(path)){
+      if(!uuid(body.actionId)||(path==='action'&&typeof body.action!=='string'))return reply({error:'invalid_action'},400);
       const [receipt]=await query<{request_json:string;result_id:string|null}>('SELECT request_json,result_id FROM fastfold_actions WHERE session_id=? AND action_id=?',s.id,body.actionId);
-      if(receipt){if(receipt.request_json!==requestKey)return reply({error:'action_id_conflict'},409);const [r]=receipt.result_id?await query<{public_json:string}>('SELECT public_json FROM fastfold_results WHERE id=? AND user_id=?',receipt.result_id,user.id):[];return reply({session:await view(s),state:await state(),...(r?{lastResult:JSON.parse(r.public_json)}:{}),...metadata});}
+      if(receipt){if(receipt.request_json!==requestKey)return reply({error:'action_id_conflict'},409);const [r]=receipt.result_id?await query<{public_json:string}>('SELECT public_json FROM fastfold_results WHERE id=? AND user_id=?',receipt.result_id,user.id):[];return respond({session:await view(s),state:await state(),...(r?{lastResult:JSON.parse(r.public_json)}:{}),...metadata});}
     }
-    if(s.version!==body.version)return reply({error:'stale_version'},409);
+    const lifecycle:Private=JSON.parse(s.private_json);
+    if(lifecycle.exited){
+      if(path==='leave'){const [r]=await query<{public_json:string}>('SELECT public_json FROM fastfold_results WHERE id=? AND user_id=?',lifecycle.hand.id,user.id);return respond({session:null,state:await state(),...(r?{lastResult:JSON.parse(r.public_json)}:{}),...metadata});}
+      return respond({error:lifecycle.exited==='expired'?'break_expired':'session_exited'},409);
+    }
+    if(path==='break'&&lifecycle.breakExpiresAt&&Number(body.version)<=s.version)return respond({session:await view(s),state:await state(),...metadata});
+    if(s.version!==body.version)return respond({error:'stale_version'},409);
+    if(path==='leave'){
+      if(!await depart(s,'exit',{actionId:String(body.actionId),request:requestKey}))return respond({error:'stale_version'},409);
+      s=await session();const [r]=await query<{public_json:string}>('SELECT public_json FROM fastfold_results WHERE id=? AND user_id=?',lifecycle.hand.id,user.id);
+      return respond({session:null,state:await state(),...(r?{lastResult:JSON.parse(r.public_json)}:{}),...metadata});
+    }
+    if(path==='break'||path==='resume'){
+      if(path==='resume'&&!lifecycle.breakExpiresAt)return respond({error:'session_not_on_break'},409);
+      delete lifecycle.receipt;
+      if(path==='break'){lifecycle.breakExpiresAt=now+15*60*1000;lifecycle.receipt={actionId:String(body.actionId),request:requestKey};}
+      else delete lifecycle.breakExpiresAt;
+      const changed=await query<{id:string}>("UPDATE fastfold_sessions SET private_json=?,status=?,version=version+1,updated_at=?,settled_id=NULL,settlement_json=NULL WHERE id=? AND user_id=? AND version=? RETURNING id",JSON.stringify(lifecycle),path==='break'?'paused':'active',now,s.id,user.id,s.version);
+      if(!changed.length)return respond({error:'stale_version'},409);s=await session();return respond({session:await view(s),state:await state(),...metadata});
+    }
     if(path==='pause'){
       const changed=await query<{id:string}>("UPDATE fastfold_sessions SET status='paused',version=version+1,updated_at=? WHERE id=? AND user_id=? AND version=? RETURNING id",now,s.id,user.id,s.version);
-      if(!changed.length)return reply({error:'stale_version'},409);s=await session();return reply({session:await view(s),state:await state(),...metadata});
+      if(!changed.length)return reply({error:'stale_version'},409);s=await session();return respond({session:await view(s),state:await state(),...metadata});
     }
     if(s.status!=='active')return reply({error:'session_paused'},409);
     const hidden:Private=JSON.parse(s.private_json),loaded=await readInputs(hidden.hand.type,hidden.hashes),before=await readHand(hidden.hand,loaded.data);
@@ -232,8 +298,8 @@ export async function routeFastFold(request:Request,env:FastFoldEnv):Promise<Res
       const [receipt]=await query<{request_json:string;result_id:string|null}>('SELECT request_json,result_id FROM fastfold_actions WHERE session_id=? AND action_id=?',s.id,body.actionId);
       if(!receipt||receipt.request_json!==requestKey)return reply({error:receipt?'action_id_conflict':'stale_version'},409);
       s=await session();const [saved]=receipt.result_id?await query<{public_json:string}>('SELECT public_json FROM fastfold_results WHERE id=? AND user_id=?',receipt.result_id,user.id):[];
-      return reply({session:await view(s),state:await state(),...(saved?{lastResult:JSON.parse(saved.public_json)}:{}),...metadata});
+      return respond({session:await view(s),state:await state(),...(saved?{lastResult:JSON.parse(saved.public_json)}:{}),...metadata});
     }
-    s=await session();return reply({session:await view(s),state:await state(),...(results.length?{lastResult:results[0]}:{}),...metadata});
+    s=await session();return respond({session:await view(s),state:await state(),...(results.length?{lastResult:results[0]}:{}),...metadata});
   }catch(error){const message=error instanceof Error?error.message:'';return reply({enabled:false,...metadata,error:['invalid_json','body_too_large'].includes(message)?message:message.startsWith('fastfold_')?message:'fastfold_service_unavailable'},['invalid_json','body_too_large'].includes(message)?400:503);}
 }

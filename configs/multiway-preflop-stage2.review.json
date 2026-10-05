@@ -623,6 +623,32 @@
         },
         "preserved_gates": "No sentinel table exclusions, empty allowances, new skips, assertion removal, import/rollback relaxation, checker weakening or strategy generation. Exact current source and archive restoration plus mandatory final-head strict delivery CI remain required.",
         "limitations": "Narrow local preservation-fixture review only. Existing original Astra and full-suite limitations remain; opt-in Wrangler full-file import/rollback, remote deployment, production CPU and authenticated production gameplay not re-proven by this focused test."
+      },
+      {
+        "date": "2026-10-06",
+        "reviewer": "Codex compact_styles",
+        "reviewed_base_commit": "29932c8",
+        "report": "apps/frontend/docs/specs/human-ranked-source-renewal.md",
+        "scope": "Independent source/configuration-only review of additive human-season deployment ordering/readiness and four local preservation sentinels. No renewal of original Astra strategy/data-quality approval; reviewer-authored kernel excluded.",
+        "blocking_findings": 0,
+        "before_content_sha256": "d2cc1e1ebac9e440bee77a5c03cbe8ad61ba604516304bac33e0daaa9f93181f",
+        "after_content_sha256": "a00b6da1995d096951742cfa51d5adeedaca591f3ce87d0052f956d2f3e67410",
+        "source_identity": {
+          "previous": 103,
+          "current": 103,
+          "modified": 2,
+          "added": 0,
+          "removed": 0,
+          "unchanged": 101
+        },
+        "verification": {
+          "artifact_and_archive_identity": "All original 1888 artifact records and 1747857-byte archive unchanged (b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a)",
+          "source_fingerprint": "Original fingerprint and counts preserved; no generation or unchanged geometry/input parity rerun",
+          "preservation": "All 25 unrelated tables have constraint-valid one-row sentinels, FK check passes; 9 tests pass, one existing explicit opt-in integration skip",
+          "deployment_contract": "3 existing workflow checks pass; all original publication/auth/CORS/FastFold gates retained; exact0011 precedes API, six-human readiness precedes client",
+          "runtime_evidence": "Reported real SQLite DO six-account binding, persisted reconnect and no-request alarm 1 pass zero skips, inspected by reviewer without rerun"
+        },
+        "limitations": "Narrow source-only approval does not certify reviewer-authored kernel, final frontend, final-head CI, production six-person play, production CPU, or strategy/GTO/EV quality. Original Astra and full-suite limitations remain. Experimental human rating; AI penalty0; Free quotas remain."
       }
     ],
     "fastfold_integration_renewal": {
@@ -10194,8 +10220,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 12618,
-      "sha256": "385b0f1f13c2a79bd9809d399e2e68a7a32fa7fa7fc8763a7f9c83638716c3a3"
+      "bytes": 13872,
+      "sha256": "20943a5037654897b767a3983e79868c6f13258d35f3b80d749597fb0445dbcd"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -10604,8 +10630,8 @@
     },
     {
       "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
-      "bytes": 22187,
-      "sha256": "f41bc8e4d14a9aa738a33c0ccff46eb06d17a3f050cbe088b132cf077953619d"
+      "bytes": 22777,
+      "sha256": "61e65d7ef9e66abab958b9b05fd1b8e1e6328d7b0af33ce639383d0901af23f4"
     },
     {
       "path": "apps/frontend/scripts/verify-reviewed-preflop.mjs",
@@ -10963,7 +10989,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "f403cd76b634a1a6c57d6b2cba0e893d05f005018ff795a6eb710fbd9602bde5",
+  "content_sha256": "fbd102a0c33d00e53f215c4503cc6d5a6daad659a01e80f877e1037c0d25aeaa",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -11651,6 +11677,32 @@
         },
         "local_log_sha256": "ce34fe6d8a2d6c6f9c4587fd20032baf53497931cd644f237000c26344d1a0a2",
         "limitations": "Source compatibility is not new strategy acceptance, full-delivery D1 rollback proof or production readiness. Strict exact-commit full-delivery Actions verification, the original historical full-suite/lint/delivery limitations and separate postflop quality/freshness review remain applicable. No commit, push, merge, production import or deployment is part of this review."
+      }
+    },
+    {
+      "date": "2026-10-05",
+      "reviewer": "Independent ranked browser transport and deployment-gate review",
+      "reviewed_base_commit": "2064a41011f0e91685e592c6e5f4c07f07ba7570",
+      "scope": "Only credentialed browser readiness checks added to the existing production workflow. No strategy-quality review renewal; original review metadata, findings, advisories, limitations, artifact/archive identities, counts and source fingerprint remain unchanged.",
+      "before": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 9937,
+        "sha256": "370f35ffd6028cb5a3570dff827071ee86f3484cc03808b6383cb334538c709e"
+      },
+      "after": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 11418,
+        "sha256": "3fe349c2a380a6122f7364846f074276606223167315d76ea09b580401936a28"
+      },
+      "rationale": "The prior live readiness GET did not inspect CORS, so enabled:true could pass while browsers rejected authenticated ranked requests. The strengthened gate validates exact production origin plus credentials on status, POST preflight and the expected unauthenticated profile rejection, without a user session or production match.",
+      "preserved_gates": "The verify dependency, main-only production condition, exact checkout, source/archive hash restoration, strict local D1 full-delivery checks, reviewed bundle validation and deployment-before-import ordering remain intact. No origin configuration, credential, authentication, schema or strategy data changes are included in this amendment.",
+      "verified_unchanged": {
+        "other_source_records": 85,
+        "artifact_records": 1888,
+        "archive_entries": 1614,
+        "archive_bytes": 1747857,
+        "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
       }
     }
   ]

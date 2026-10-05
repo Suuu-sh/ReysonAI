@@ -16,6 +16,8 @@ on:
       - 'apps/frontend/scripts/postflop-ai/**'
       - 'apps/frontend/scripts/lib/**'
       - 'apps/frontend/scripts/data/postflop-ai-pilot.json'
+      - 'apps/frontend/tests/human-ranked-ui.test.mjs'
+      - 'apps/frontend/tests/poker-table-ui.test.mjs'
       - 'apps/frontend/tests/fastfold-ui.test.mjs'
       - 'apps/frontend/tests/fastfold-app-integration.test.mjs'
       - 'apps/frontend/tests/ranked-ui.test.mjs'
@@ -44,7 +46,7 @@ jobs:
         run: npm ci
       - name: Verify FastFold UI, readiness and ranked workflow
         working-directory: apps/frontend
-        run: node --experimental-strip-types --test tests/fastfold-ui.test.mjs tests/fastfold-app-integration.test.mjs tests/ranked-ui.test.mjs tests/trainer-release-status.test.mjs tests/ranked-workflow.test.mjs
+        run: node --experimental-strip-types --test tests/human-ranked-ui.test.mjs tests/poker-table-ui.test.mjs tests/fastfold-ui.test.mjs tests/fastfold-app-integration.test.mjs tests/ranked-ui.test.mjs tests/trainer-release-status.test.mjs tests/ranked-workflow.test.mjs
       - name: Verify authoritative FastFold replay and backend module
         working-directory: apps/backend
         run: |
