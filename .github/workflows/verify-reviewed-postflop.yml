@@ -1,0 +1,134 @@
+name: Verify HU delivery contracts and requested approved bytes
+on:
+  pull_request:
+    branches: [development, main, feat/native-google-session-bridge]
+    paths:
+      - 'apps/frontend/scripts/**'
+      - 'apps/frontend/tests/**'
+      - 'apps/frontend/docs/specs/hu-postflop-after-multiway-preflop.delivery.md'
+      - 'apps/backend/migrations/**'
+      - 'artifacts/**'
+      - 'configs/**'
+      - '.github/workflows/verify-reviewed-postflop.yml'
+  workflow_dispatch:
+    inputs:
+      prepare_current_delivery:
+        description: 'Require an existing independent current collection/delivery review'
+        type: boolean
+        default: false
+      index:
+        description: 'Immutable repository-relative reviewed collection index'
+        type: string
+        default: ''
+      review:
+        description: 'Separately supplied immutable collection/delivery review receipt'
+        type: string
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: verify-reviewed-hu-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  contracts:
+    name: Code and historical legacy fixture checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/frontend
+    env:
+      NODE_OPTIONS: --max-old-space-size=1536
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          lfs: true
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install pinned ordinary dependencies
+        run: npm ci
+      - name: Restore and verify official reviewed Stage 2 inputs
+        run: |
+          node scripts/restore-reviewed-preflop.mjs
+          node scripts/verify-reviewed-preflop.mjs --out .local/reviewed-preflop
+      - name: Verify immutable HU45 and restore all exact historical fixture bytes
+        run: |
+          python3 -B scripts/postflop-ai/preserve-legacy-postflop.py --verify
+          python3 -B scripts/postflop-ai/restore-legacy-postflop-fixture.py --disposable-checkout
+      - name: Serial contract, numerical boundary and real legacy fixture regression tests
+        run: |
+          node --test --test-concurrency=1 tests/postflop-reviewed-index.test.mjs tests/postflop-reviewed-delivery.test.mjs tests/postflop-local-d1.test.mjs tests/postflop-delivery-workflow.test.mjs
+          node --test --test-concurrency=1 tests/postflop-artifact-storage.test.mjs tests/postflop-legacy-preservation.test.mjs tests/postflop-multiway.test.mjs tests/postflop-report-contract.test.mjs tests/postflop-publish-d1.test.mjs tests/postflop-low-spr-consumers.test.mjs tests/postflop-numeric-ui-boundary.test.mjs
+      - name: Typecheck/build/sites compatibility
+        run: |
+          npm run typecheck
+          npm run build
+          npm run test:sites
+      - name: Explicit validation scope
+        run: echo 'Code/legacy fixtures only; no current reviewed HU delivery was verified. Exact historical accepted-root proof and current collection acceptance are separate gates.' >> "$GITHUB_STEP_SUMMARY"
+  current_delivery:
+    name: Requested current independently reviewed delivery
+    if: github.event_name == 'workflow_dispatch' && inputs.prepare_current_delivery
+    needs: contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/frontend
+    env:
+      NODE_OPTIONS: --max-old-space-size=1536
+      WRANGLER_SEND_METRICS: 'false'
+      HU_INDEX: ${{ inputs.index }}
+      HU_REVIEW: ${{ inputs.review }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          lfs: true
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Require actual current index and separate delivery receipt
+        run: |
+          test -n "$HU_INDEX" && test -n "$HU_REVIEW"
+          [[ "$HU_INDEX" =~ ^artifacts/postflop/[a-z0-9-]+\.index\.json$ ]]
+          [[ "$HU_REVIEW" =~ ^configs/[a-z0-9-]+\.review\.json$ ]]
+          test -f "../../$HU_INDEX" && test -f "../../$HU_REVIEW"
+      - name: Install pinned dependencies and LOCAL importer without source changes
+        run: |
+          npm ci
+          npm install --prefix .local/pinned-wrangler --no-audit --no-fund wrangler@4.147.0
+      - name: Restore verified inputs and exact legacy fixture
+        run: |
+          node scripts/restore-reviewed-preflop.mjs
+          node scripts/verify-reviewed-preflop.mjs --out .local/reviewed-preflop
+          python3 -B scripts/postflop-ai/preserve-legacy-postflop.py --verify
+          python3 -B scripts/postflop-ai/restore-legacy-postflop-fixture.py --disposable-checkout
+      - name: Verify exact independently reviewed current conversion
+        run: node scripts/postflop-ai/verify-reviewed-postflop-delivery.mjs --index "$HU_INDEX" --review "$HU_REVIEW" --out apps/frontend/.local/reviewed-hu-delivery
+      - name: Collection-wide preflight and bounded restoration
+        run: node scripts/postflop-ai/restore-reviewed-postflop-index.mjs --index "$HU_INDEX" --review "$HU_REVIEW"
+      - name: Strict full-file LOCAL D1 roundtrip, isolation and observable rollback
+        run: node scripts/verify-postflop-local-d1.mjs --index "$HU_INDEX" --review "$HU_REVIEW" --bundle apps/frontend/.local/reviewed-hu-delivery --wrangler .local/pinned-wrangler/node_modules/wrangler/bin/wrangler.js > .local/reviewed-hu-delivery/local-result.json
+      - name: Retain exact validated SQL, manifest and local result for this commit
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: reviewed-hu-delivery-${{ github.sha }}
+          overwrite: true
+          path: |
+            apps/frontend/.local/reviewed-hu-delivery/postflop.sql
+            apps/frontend/.local/reviewed-hu-delivery/delivery.json
+            apps/frontend/.local/reviewed-hu-delivery/local-result.json
+            apps/frontend/.local/reviewed-hu-delivery/local-d1-evidence/**
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
