@@ -2,15 +2,17 @@
 .agent-page:has(.game-details) .agent-layout { position: relative; display: block; min-height: 0; height: 100%; }
 .agent-page:has(.game-details) .agent-stage { height: 100%; min-height: 0; padding-top: 0; }
 .game-details { display: contents; }
-.game-history-rail { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 5px; max-width: 100%; height: 44px; overflow-x: auto; scrollbar-width: none; z-index: 5; }
+.game-history-rail { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; height: 44px; z-index: 5; pointer-events: none; }
+.game-history-items { display: flex; align-items: center; gap: 3px; max-width: calc(100% - 49px); height: 44px; overflow: hidden; }
 .game-history-rail button { flex: none; display: flex; align-items: center; justify-content: center; gap: 3px; min-height: 44px; padding: 3px 5px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--text); font-size: 11px; cursor: pointer; }
+.game-history-rail button { pointer-events: auto; }
 .game-history-cards { display: flex; gap: 2px; }
 .game-history-rail .game-history-hand { display: grid; gap: 1px; justify-items: center; }
 .game-history-hand b { font-size: 10px; line-height: 1; font-variant-numeric: tabular-nums; }
 .agent-card.is-history { width: 17px; height: 23px; padding: 1px 0; border-radius: 2px; box-shadow: none; animation: none; }
 .agent-card.is-history b { font-size: 12px; line-height: 1; }
 .agent-card.is-history i { font-size: 8px; line-height: 1; }
-.game-history-rail .game-controls-trigger { min-width: 44px; font-size: 15px; }
+.game-history-rail .game-controls-trigger { position: absolute; right: 0; top: 0; width: 44px; min-width: 44px; font-size: 15px; }
 .modal-backdrop:has(> .game-details-modal) { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 12px; box-sizing: border-box; background: rgb(0 0 0 / 68%); overflow: auto; }
 .game-details-modal { position: relative; box-sizing: border-box; min-height: 0; background: var(--surface, #16161b); color: var(--text, #eee); border: 1px solid var(--line-strong, #333); border-radius: 10px; box-shadow: 0 24px 80px rgb(0 0 0 / 55%); width: min(560px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); overflow: auto; display: grid; gap: 12px; padding: 16px; }
 .game-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -111,10 +113,17 @@
   .agent-page:has(.game-details) .agent-card.is-hero { width: 38px; height: 52px; }
   .agent-page:has(.game-details) .agent-card.is-hero b { font-size: 23px; }
 }
+@media (max-width: 650px) and (min-height: 451px) and (max-height: 649px) {
+  /* Keep the top-center player below the history rail without pushing its cards onto the board. */
+  .agent-page:has(.game-details) .agent-seat.slot-3 { left: calc(50% - 4px); gap: 6px; transform: translate(-50%, calc(-50% + 12px)); flex-direction: row-reverse; }
+}
 @media (max-width: 650px) and (max-height: 450px) {
   .agent-page:has(.game-details) .agent-stage { padding-top: 0; }
-  .game-history-rail { top: -48px; max-width: 46%; }
-  .agent-page:has(.game-details) .agent-top { padding-right: 46%; }
+  .game-history-rail { top: -48px; max-width: none; }
+  .game-history-items { margin-left: 160px; max-width: calc(100% - 209px); }
+  .agent-page:has(.game-details) .agent-top { padding-right: 49px; }
+  .agent-page:has(.game-details) .agent-title { flex: 0 0 100px; min-width: 0; }
+  .agent-page:has(.game-details) .ff-header > .agent-toggle { margin-left: auto; }
   .agent-page:has(.game-details) .agent-title strong { font-size: 10px; }
   .agent-page:has(.game-details) .agent-felt-wrap { padding: 45px 40px 48px; }
   .agent-page:has(.game-details) .agent-felt { height: 100cqh; }

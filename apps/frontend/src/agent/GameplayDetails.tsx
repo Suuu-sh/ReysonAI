@@ -24,13 +24,15 @@ export function GameplayDetails({ profile, children, requestedPanel, onClose, cu
   const chosen = history.find(hand => hand.id === selected);
   return <div className="game-details">
     <div className="game-history-rail" aria-label={t("Hand history", "ハンド履歴", "手牌历史", "Historial de manos")}>
-      <button type="button" className="game-current-hand" onClick={() => { setSelected(null); setActive("history"); }} aria-label={t("Current hand and action log", "現在のハンドと操作履歴", "当前手牌与行动记录", "Mano actual y registro de acciones")}>
-        {currentCards.length === 2 ? currentCards.map((card, i) => <PlayingCard variant="agent" card={card} size="is-history" key={i}/>) : <span>{t("Hand", "ハンド", "手牌", "Mano")}</span>}
-      </button>
-      {history.slice(0, 6).map(hand => <button type="button" className="game-history-hand" key={hand.id} onClick={() => { setSelected(hand.id); setActive("history"); }} aria-label={`${t("Hand", "ハンド", "手牌", "Mano")} #${hand.id}${hand.resultBb == null ? "" : ` · ${hand.resultBb > 0 ? "+" : ""}${hand.resultBb} bb`}`}>
-        <span className="game-history-cards">{hand.cards?.length === 2 ? hand.cards.map((card, i) => <PlayingCard variant="agent" card={card} size="is-history" key={i}/>) : <span>#{hand.id}</span>}</span>
-        {hand.resultBb != null && <b className={hand.resultBb > 0 ? "up" : hand.resultBb < 0 ? "down" : ""}>{hand.resultBb > 0 ? "+" : ""}{Number(hand.resultBb.toFixed(2))} bb</b>}
-      </button>)}
+      <div className="game-history-items">
+        <button type="button" className="game-current-hand" onClick={() => { setSelected(null); setActive("history"); }} aria-label={t("Current hand and action log", "現在のハンドと操作履歴", "当前手牌与行动记录", "Mano actual y registro de acciones")}>
+          {currentCards.length === 2 ? currentCards.map((card, i) => <PlayingCard variant="agent" card={card} size="is-history" key={i}/>) : <span>{t("Hand", "ハンド", "手牌", "Mano")}</span>}
+        </button>
+        {history.slice(0, 3).map(hand => <button type="button" className="game-history-hand" key={hand.id} onClick={() => { setSelected(hand.id); setActive("history"); }} aria-label={`${t("Hand", "ハンド", "手牌", "Mano")} #${hand.id}${hand.resultBb == null ? "" : ` · ${hand.resultBb > 0 ? "+" : ""}${hand.resultBb} bb`}`}>
+          <span className="game-history-cards">{hand.cards?.length === 2 ? hand.cards.map((card, i) => <PlayingCard variant="agent" card={card} size="is-history" key={i}/>) : <span>#{hand.id}</span>}</span>
+          {hand.resultBb != null && <b className={hand.resultBb > 0 ? "up" : hand.resultBb < 0 ? "down" : ""}>{hand.resultBb > 0 ? "+" : ""}{Number(hand.resultBb.toFixed(2))} bb</b>}
+        </button>)}
+      </div>
       <button type="button" className="game-controls-trigger" onClick={() => setActive("details")} aria-label={t("Session, rank and controls", "セッション・ランク・設定", "会话、评分与设置", "Sesión, rango y controles")}>•••</button>
     </div>
     {(profile || active) && createPortal(<Dialog labelledBy={`${uid}-details`} onClose={() => { if (profile && isValidElement<{ onClose: () => void }>(profile)) profile.props.onClose(); else close(); }} className={`game-details-modal${profile ? " game-profile-modal" : ""}`}>
