@@ -59,7 +59,7 @@ const MAP_ZONES: { id: StyleId; x: [number, number]; y: [number, number] }[] = [
 function StyleMap({ read }: { read: PlayerRead }) {
   const point = read.map;
   return <figure className="style-map" aria-label={point ? localized(`Style map: ${text(read.style.name)}`, `スタイルマップ：${text(read.style.name)}`) : localized("Style map (collecting hands)", "スタイルマップ（集計中）")}>
-    <div className="style-map-y" aria-hidden="true"><span>↑ {localized("Aggressive", "アグレッシブ")}</span><span>{localized("Vertical: raise share of entries (PFR / VPIP)", "縦軸：参加時のレイズ割合（PFR ÷ VPIP）")}</span></div>
+    <div className="style-map-y" aria-hidden="true"><span>↑<br />{localized("Aggressive", "アグレッシブ")}</span><small>{localized("Raise share", "レイズ割合")}<br />PFR÷VPIP</small><span>{localized("Passive", "パッシブ")}<br />↓</span></div>
     <div className="style-map-grid">
       {MAP_ZONES.map(zone => { const style = STYLES[zone.id], on = zone.id === read.style.id;
         return <span key={zone.id} className={`style-zone${on ? " is-current" : ""}`} title={text(style.summary)}
@@ -71,8 +71,7 @@ function StyleMap({ read }: { read: PlayerRead }) {
         <StyleAvatar id={read.style.id} color={read.style.color} size={28} />
       </span>}
     </div>
-    <div className="style-map-y is-bottom" aria-hidden="true"><span>↓ {localized("Passive", "パッシブ")}</span></div>
-    <figcaption><span>← {localized("Tight", "タイト")}</span><span>{localized("Horizontal: entry rate (VPIP) · centre = Agent baseline", "横軸：参加率（VPIP）· 中心 = Agent基準")}</span><span>{localized("Loose", "ルース")} →</span></figcaption>
+        <figcaption><span>← {localized("Tight", "タイト")}</span><span>{localized("Horizontal: entry rate (VPIP) · centre = Agent baseline", "横軸：参加率（VPIP）· 中心 = Agent基準")}</span><span>{localized("Loose", "ルース")} →</span></figcaption>
   </figure>;
 }
 
