@@ -380,15 +380,19 @@
 .style-map-y { min-width: 0; overflow-wrap: anywhere; display: flex; flex-direction: column; justify-content: space-between; padding: 6px 0; color: var(--text-subtle); font-size: 8px; font-weight: 700; line-height: 1.4; text-align: center; }
 .style-map-y small { font-size: 8px; font-weight: 500; }
 
-/* Public profiles share a bounded seat and the existing accessible Dialog. */
+/* Public profiles share a bounded seat and a compact sidebar-first block. */
 .agent-avatar { flex-shrink: 0; }
 .agent-profile-trigger { position:absolute; inset:0; z-index:2; background:transparent; border:0; border-radius:inherit; cursor:pointer; padding:0; }
 .agent-profile-trigger:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
-.agent-profile-dialog { width:min(480px, calc(100vw - 32px)); max-height:calc(100dvh - 40px); overflow:auto; }
-.agent-profile-dialog header { display:flex; align-items:center; gap:12px; }
-.agent-profile-dialog h2 { min-width:0; overflow-wrap:anywhere; flex:1; }
-.agent-profile-dialog p { font-size:13px; line-height:1.6; color:var(--text-muted); }
-.agent-profile-dialog dl { display:grid; grid-template-columns:1fr auto; gap:8px; }
+.agent-profile-block { min-width:0; gap:8px; }
+.agent-profile-block header { display:grid; grid-template-columns:40px minmax(0,1fr) auto; align-items:center; gap:8px; }
+.agent-profile-block header svg { width:40px; height:40px; }
+.agent-profile-block h3 { min-width:0; margin:0; overflow-wrap:anywhere; font-size:13px; }
+.agent-profile-block header button { padding:4px 6px; min-height:36px; background:transparent; color:var(--text-muted); border:1px solid var(--line); border-radius:4px; cursor:pointer; }
+.agent-profile-block p { font-size:11px; line-height:1.5; color:var(--text-muted); margin:0; }
+.agent-profile-block dl { display:grid; grid-template-columns:1fr auto; gap:6px; margin:0; font-size:11px; }
+.agent-profile-block dd { margin:0; }
+@media(max-width:720px) { .agent-profile-block header button { min-height:44px; } }
 @media(min-width:721px) { .agent-felt-wrap { padding-inline:max(90px, 10%); } .agent-side { overflow-y:auto; } }
 @media(min-width:721px) and (max-height:620px) { .agent-page { height:auto; min-height:calc(100dvh - 120px); overflow:visible; } .agent-layout { min-height:430px; height:auto; } }
 

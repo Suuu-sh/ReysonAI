@@ -185,19 +185,18 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   useEffect(() => {
     if (!done) return;
     if (handoffKey) {
-      if (opponentProfile) return;
       const key = `${session.handNo}:${handoffKey}`;
       if (acceptedBoundary.current !== key) { acceptedBoundary.current = key; boundary.current?.(); }
       return;
     }
     const timer = window.setTimeout(nextHand, showdown ? (speed === "fast" ? 2500 : 3500) : speed === "fast" ? 300 : 600);
     return () => window.clearTimeout(timer);
-  }, [done, showdown, nextHand, speed, handoffKey, session.handNo, opponentProfile]);
+  }, [done, showdown, nextHand, speed, handoffKey, session.handNo]);
 
   // Keyboard: 1-9 pick an action, Enter / Space deal the next hand, S skips.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (document.querySelector('[aria-modal="true"]') || handoffKey && done || event.metaKey || event.ctrlKey || event.altKey || (event.target as HTMLElement)?.closest?.("input, textarea, select")) return;
+      if (document.querySelector('[aria-modal="true"]') || handoffKey && done || event.metaKey || event.ctrlKey || event.altKey || (event.target as HTMLElement)?.closest?.("input, textarea, select, button, a, [role=button]")) return;
       if (pending && /^[1-9]$/.test(event.key)) {
         const option = pending.options[Number(event.key) - 1];
         if (option) { event.preventDefault(); act(option.key); }
@@ -315,6 +314,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
       </section>
 
       <aside className="agent-side">
+        {opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}
         {waitingSidebar}
         {waitingMode && <section className="agent-panel"><h3>{profileText("Practice Agents", "練習相手のAgent", "练习Agent", "Agents de práctica")}</h3>{table.agents.map(character => <div className="ff-opponent" key={character.id}><button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"),avatar:<StyleAvatar id="balanced" color={character.color} size={64}/>})}><StyleAvatar id="balanced" color={character.color} size={32}/></button><div><strong>{character.name.en}</strong><small>{profileText("Balanced · preflop", "バランス型・プリフロップ", "平衡型 · 翻牌前", "Equilibrado · preflop")}</small></div></div>)}</section>}
         {!waitingMode && <>
@@ -344,7 +344,6 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
         </>}
       </aside>
     </div>
-    {opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}
     {styleOpen && liveRead && <div className="style-drawer" role="dialog" aria-modal="true" aria-label={localized("Your play style", "あなたのプレイスタイル")}>
       <button type="button" className="style-drawer-backdrop" aria-label={localized("Close", "閉じる")} onClick={() => setStyleOpen(false)} />
       <div className="style-drawer-panel"><PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} /></div>
