@@ -54,6 +54,7 @@ test("ranked emblem keeps its tier but omits match history for empty and populat
     }));
     assert.match(html, /class="ranked-tier-name"/);
     assert.doesNotMatch(html, /まだ試合なし|No matches yet|Last match|直近5試合|ranked-pips/);
+    assert.doesNotMatch(html, /New season · server confirmed · no daily start limit|新シーズン・サーバー確定・開始回数の制限なし/);
   }
 });
 

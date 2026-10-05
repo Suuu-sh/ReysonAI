@@ -24,6 +24,23 @@ test("player analysis opens with the style map, without the redundant summary ca
   assert.doesNotMatch(html, /analysis-hero|現在の練習傾向|回答履歴|重複を除いた問題|分析した局面/);
 });
 
+test("Drill and Agent Stats share the dark map structure but keep source-specific axes and baselines", () => {
+  const drill = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], onStart() {} }));
+  const agent = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], initialView: "agent", onStart() {} }));
+  for (const html of [drill, agent]) {
+    assert.match(html, /class="play-style-map"/);
+    assert.match(html, /class="play-style-map-y"/);
+    assert.match(html, /class="play-style-map-grid"/);
+    assert.match(html, /class="play-style-map-x"/);
+    assert.match(html, /class="style-zone/);
+  }
+  assert.match(drill, /↑<br\/>3bet 多/);
+  assert.match(drill, /今回出た問題の平均方針/);
+  assert.match(agent, /↑<br\/>アグレッシブ/);
+  assert.match(agent, /Agent基準/);
+  assert.doesNotMatch(agent, /↑<br\/>3bet 多/);
+});
+
 test("player analysis includes graded strengths, weaknesses and a link to detailed review", () => {
   const history = [
     ...Array.from({ length: 5 }, () => ({ spotId: "UTG_open", hand: "AA", action: "open", result: "best", score: 1 })),
