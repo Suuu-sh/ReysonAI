@@ -9,6 +9,7 @@
     "test:runtime-config": "node --experimental-strip-types --test --test-concurrency=1 tests/postflop-runtime-config.test.mjs tests/index.test.mjs",
     "test:account": "node --experimental-strip-types --test tests/account.test.mjs",
     "test:account-local": "node --experimental-strip-types --test tests/account-local.test.mjs",
-    "test:account-native": "node --experimental-strip-types --test --test-concurrency=1 tests/native-account.test.mjs"
+    "test:account-native": "node --experimental-strip-types --test --test-concurrency=1 tests/native-account.test.mjs",
+    "test:fastfold": "node --experimental-strip-types --test tests/fastfold.test.mjs tests/fastfold-release.test.mjs"
   }
 }

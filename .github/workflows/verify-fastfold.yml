@@ -1,0 +1,52 @@
+name: Verify FastFold ranked core
+on:
+  pull_request:
+    branches: [development, main]
+    paths:
+      - 'apps/backend/**'
+      - 'apps/shared/**'
+      - 'apps/frontend/src/agent/**'
+      - 'apps/frontend/src/trainer/**'
+      - 'apps/frontend/src/account/**'
+      - 'apps/frontend/src/components/**'
+      - 'apps/frontend/src/estimated/**'
+      - 'apps/frontend/src/locale.ts'
+      - 'apps/frontend/src/i18n.ts'
+      - 'apps/frontend/src/route.ts'
+      - 'apps/frontend/scripts/postflop-ai/**'
+      - 'apps/frontend/scripts/lib/**'
+      - 'apps/frontend/scripts/data/postflop-ai-pilot.json'
+      - 'apps/frontend/tests/fastfold-ui.test.mjs'
+      - 'apps/frontend/tests/fastfold-app-integration.test.mjs'
+      - 'apps/frontend/tests/ranked-ui.test.mjs'
+      - 'apps/frontend/tests/trainer-release-status.test.mjs'
+      - 'apps/frontend/tests/ranked-workflow.test.mjs'
+      - 'apps/frontend/package.json'
+      - 'apps/frontend/package-lock.json'
+      - 'configs/**'
+      - '.github/workflows/verify-fastfold.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+      - name: Install locked frontend test dependencies
+        working-directory: apps/frontend
+        run: npm ci
+      - name: Verify FastFold UI, readiness and ranked workflow
+        working-directory: apps/frontend
+        run: node --experimental-strip-types --test tests/fastfold-ui.test.mjs tests/fastfold-app-integration.test.mjs tests/ranked-ui.test.mjs tests/trainer-release-status.test.mjs tests/ranked-workflow.test.mjs
+      - name: Verify authoritative FastFold replay and backend module
+        working-directory: apps/backend
+        run: |
+          npm run test:fastfold
+          npm run check

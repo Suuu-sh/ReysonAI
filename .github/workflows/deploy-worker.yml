@@ -25,6 +25,8 @@ on:
       - 'apps/backend/tests/**'
       - 'apps/backend/package.json'
       - 'apps/backend/migrations/0009_ranked.sql'
+      - 'apps/backend/migrations/0010_fastfold.sql'
+      - 'apps/backend/scripts/**'
       - 'apps/shared/**'
       - 'configs/**'
       - 'artifacts/preflop/**'
@@ -87,6 +89,10 @@ jobs:
       - name: Verify authoritative ranked service without live credentials
         working-directory: apps/backend
         run: node --experimental-strip-types --test tests/ranked.test.mjs
+
+      - name: Verify continuous FastFold authentication, replay and atomic settlement
+        working-directory: apps/backend
+        run: node --experimental-strip-types --test tests/fastfold.test.mjs tests/fastfold-release.test.mjs
 
       - name: Verify local D1 roundtrip, idempotency, isolation and failed-import rollback
         run: node scripts/verify-preflop-local-d1.mjs --sql .local/reviewed-preflop/preflop.sql --manifest .local/reviewed-preflop/delivery.json
@@ -176,6 +182,15 @@ jobs:
           WRANGLER_SEND_METRICS: 'false'
         run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0009_ranked.sql --yes
 
+      # Additive only: never run all pending account/postflop migrations.
+      - name: Apply exact FastFold schema
+        working-directory: apps/backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0010_fastfold.sql --yes
+
       - name: Deploy ranked API before enabling the client
         working-directory: apps/backend
         env:
@@ -223,6 +238,10 @@ jobs:
             throw new Error('Ranked authentication boundary failed');
           }
           NODE
+
+      - name: Require live FastFold release gate before compatible client
+        working-directory: apps/backend
+        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
 
       - name: Build
         run: npm run build

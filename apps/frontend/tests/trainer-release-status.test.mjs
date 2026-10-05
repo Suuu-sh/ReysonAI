@@ -88,17 +88,19 @@ test("authenticated server readiness enables ranked controls without importing l
 });
 test("direct ranked routes retain production guards independently of the visible teaser", async () => {
   const page = await readFile(new URL("../src/trainer/TrainerPage.tsx", import.meta.url), "utf8");
-  assert.match(page, /const rankedClosed = route\.key === "ranked" && !rankedReady/);
-  assert.match(page, /phase === "ranking" && rankedReady \? <Leaderboard/);
+  assert.match(page, /ready=\{account.ready && Boolean\(account.user\?\.verified\) && !account.error\}/);
+  assert.match(page, /phase === "ranking" && rankedReady && fastFoldState \? <Leaderboard/);
+  assert.match(page, /route.key === "ranked" \? <FastFoldArena/);
+  assert.match(page, /route.phase === "result" && route.key === "ranked"\) onNavigate\(trainerPath\(\{ phase: "drill", key: "ranked" \}\), true\)/);
   const routeBranch = page.match(/    if \(route.phase === "drill"[\s\S]*?(?=    if \(route.phase === "agent")/)?.[0];
   assert.ok(routeBranch);
-  const initialize = new Function("route", "active", "keyOf", "RANKED_DRILL", "reviewDrill", "drills", "rankedReady", "begin", "start", "setPhase", routeBranch);
+  const initialize = new Function("route", "active", "keyOf", "RANKED_DRILL", "reviewDrill", "drills", "rankedReady", "begin", "start", "setPhase", routeBranch.replace(/active!/g, "active"));
   for (const ready of [false, true]) {
     const begun = [], starts = [], redirects = [];
     initialize({ phase: "drill", key: "ranked" }, null, () => "ranked", { id: "ranked" }, {}, [], ready,
       (...args) => begun.push(args), (...args) => starts.push(args), (...args) => redirects.push(args));
     assert.deepEqual(begun, [], "ranked never starts the local-only drill");
-    assert.equal(starts.length, ready ? 1 : 0);
-    assert.deepEqual(redirects, ready ? [] : [["library", true]]);
+    assert.equal(starts.length, 0, "ranked route opens FastFold without issuing a quiz start");
+    assert.deepEqual(redirects, [], "FastFold renders fail-closed state instead of a drill");
   }
 });

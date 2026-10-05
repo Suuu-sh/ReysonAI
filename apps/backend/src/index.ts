@@ -1,3 +1,4 @@
+import { routeFastFold } from "./fastfold.ts";
 import { routeRanked } from "./ranked.ts";
 import { isNativeAccountRequest, routeNativeAccount } from "./native-account.ts";
 import { routeAccount, type AccountEnv } from "./account.ts";
@@ -57,7 +58,7 @@ type Manifest = {
   edge?: EdgeManifest;
 };
 type R2Bucket = { get(key: string): Promise<{ text(): Promise<string> } | null> };
-type Env = AccountEnv & { AUTH_NATIVE_ENABLED?: string; RANKED_ENABLED?: string } & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
+type Env = AccountEnv & { AUTH_NATIVE_ENABLED?: string; RANKED_ENABLED?: string; FASTFOLD_ENABLED?: string } & { SOLUTIONS: R2Bucket; DB?: D1Database; ALLOWED_ORIGIN?: string };
 type PublishedData = {
   summary: Solution;
   nodesIndex: NodeSummary[];
@@ -86,7 +87,7 @@ export default {
     } catch (error: unknown) {
       const status = error instanceof HttpError ? error.status : 500;
       return withCors(
-        errorResponse(status, new URL(request.url).pathname.startsWith("/v1/account/") ? "account_service_unavailable" : new URL(request.url).pathname.startsWith("/v1/ranked/") ? "ranked_service_unavailable" : error instanceof Error ? error.message : "internal error"),
+        errorResponse(status, new URL(request.url).pathname.startsWith("/v1/account/") ? "account_service_unavailable" : new URL(request.url).pathname.startsWith("/v1/ranked/") ? "ranked_service_unavailable" : new URL(request.url).pathname.startsWith("/v1/fastfold/") ? "fastfold_service_unavailable" : error instanceof Error ? error.message : "internal error"),
         request,
         env,
       );
@@ -100,6 +101,7 @@ function notModified(request: Request, response: Response): Response | null {
 }
 
 async function route(request: Request, env: Env, url: URL): Promise<Response> {
+  if (url.pathname.startsWith("/v1/fastfold/")) return routeFastFold(request, env);
   if (url.pathname.startsWith("/v1/ranked/")) return routeRanked(request, env);
   if (isNativeAccountRequest(url)) return routeNativeAccount(request, env);
   if (url.pathname.startsWith("/v1/account/")) return routeAccount(request, env);
@@ -486,9 +488,9 @@ function withCors(response: Response, request: Request, env: Env): Response {
   if (configured.includes("*")) headers.set("access-control-allow-origin", "*");
   else if (requestOrigin && configured.includes(requestOrigin)) headers.set("access-control-allow-origin", requestOrigin);
   const pathname = new URL(request.url).pathname;
-  // Ranked uses the same HttpOnly account cookie. Credentialed browser fetches
+  // Ranked and FastFold use the same HttpOnly account cookie. Credentialed browser fetches
   // (including OPTIONS and error responses) require an exact allowed origin.
-  if (pathname.startsWith("/v1/account/") || pathname.startsWith("/v1/ranked/")) {
+  if (pathname.startsWith("/v1/account/") || pathname.startsWith("/v1/ranked/") || pathname.startsWith("/v1/fastfold/")) {
     headers.delete("access-control-allow-origin");
     headers.delete("access-control-allow-credentials");
     if (requestOrigin && configured.filter(value => value !== "*").includes(requestOrigin)) {
