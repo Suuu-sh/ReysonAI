@@ -772,3 +772,19 @@
   .ranked-ring .arc, .mode-block.is-ranked .rank-ladder::after, .mode-block.is-ranked .ranked-bar b { animation: none; }
   .mode-block.is-ranked:is(:hover, :focus-within) .ranked-emblem-badge { animation: none; }
 }
+
+/* Trainer home: keep the live Ranked block close to Agent size, including its tier ladder. */
+.trainer-home .mode-block.is-ranked:not(.is-coming-soon) { row-gap: 10px; padding-top: 14px; padding-bottom: 14px; }
+.trainer-home .is-ranked:not(.is-coming-soon) .ranked-emblem { width: 104px; height: 104px; }
+.trainer-home .is-ranked:not(.is-coming-soon) .ranked-emblem-wrap { gap: 6px; }
+.trainer-home .is-ranked:not(.is-coming-soon) .mode-body { gap: 4px; }
+.trainer-home .is-ranked:not(.is-coming-soon) .mode-foot { margin-bottom: -14px; padding-top: 4px; padding-bottom: 5px; }
+@media (max-width: 860px) {
+  .trainer-home .is-ranked:not(.is-coming-soon) .ranked-emblem-wrap { flex-direction: row; gap: 12px; }
+  .trainer-home .is-ranked:not(.is-coming-soon) .ranked-visual { min-height: 76px; }
+  .trainer-home .is-ranked:not(.is-coming-soon) .ranked-emblem { width: 76px; height: 76px; }
+  .trainer-home .is-ranked:not(.is-coming-soon) .ranked-emblem-badge { transform: scale(.85); }
+  .trainer-home .is-ranked:not(.is-coming-soon) .mode-actions { grid-template-columns: 1fr 1fr; }
+  .trainer-home .is-ranked:not(.is-coming-soon) .ranked-stats { grid-template-columns: auto auto minmax(0, 1fr); gap: 16px; }
+  .trainer-home .is-ranked:not(.is-coming-soon) .ranked-next { grid-column: auto; }
+}
