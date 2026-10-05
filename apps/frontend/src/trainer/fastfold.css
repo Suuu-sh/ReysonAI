@@ -38,3 +38,20 @@
 .ff-countdown { font-size: 40px; font-variant-numeric: tabular-nums; }.ff-waiting .agent-buttons { flex-wrap: wrap; }
 .ff-arena.agent-page:has(.ff-waiting) { height: auto; overflow: visible; }
 .ff-waiting .agent-act { min-height: 44px; }
+
+.ff-human-rank > p,.ff-human-queue p { color:var(--text-muted); font-size:12px; line-height:1.5; margin:0; }
+.ff-human-queue > strong { font-size:24px; }
+.ff-human-rank .rank-ladder { width:100%; }
+.ff-human-wait > .ff-error { margin-bottom:8px; }
+.ff-human-wait .agent-side { overflow-y:auto; }
+.ff-opponent > div { min-width:0; } .ff-opponent strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ff-human-wait .agent-title strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+@media(max-width:720px) { .ff-actions { flex-wrap:wrap; } .ff-actions .agent-act { min-width:80px; min-height:44px; } }
+
+.ff-arena .agent-side,.ff-human-wait .agent-side { min-width:0; }
+.ff-arena .agent-side > *, .ff-human-wait .agent-side > * { min-width:0; max-width:100%; box-sizing:border-box; }
+.ff-human-rank .rank-ladder { grid-template-columns:repeat(2,minmax(0,1fr)); min-width:0; overflow:visible; }
+.ff-human-rank .rank-ladder li { min-width:0; width:auto; grid-template-columns:auto minmax(0,1fr); }
+.ff-human-rank .rank-ladder li span { overflow-wrap:anywhere; }
+.ff-human-rank .rank-ladder .rank-ladder-legend { grid-column:1/-1; }
+.ff-result-summary { display:grid; grid-template-columns:1fr auto; gap:6px; margin:0; font-size:12px; }.ff-result-summary dt { color:var(--text-muted); }.ff-result-summary dd { margin:0; }

@@ -90,7 +90,7 @@ test("direct ranked routes retain production guards independently of the visible
   const page = await readFile(new URL("../src/trainer/TrainerPage.tsx", import.meta.url), "utf8");
   assert.match(page, /ready=\{account.ready && Boolean\(account.user\?\.verified\) && !account.error\}/);
   assert.match(page, /phase === "ranking" && rankedReady && fastFoldState \? <Leaderboard/);
-  assert.match(page, /route.key === "ranked"\) \|\| phase === "waiting" \? <FastFoldArena/);
+  assert.match(page, /route.key === "ranked"\) \|\| phase === "waiting" \? <HumanRankArena/);
   assert.match(page, /route.phase === "result" && route.key === "ranked"\) onNavigate\(trainerPath\(\{ phase: "drill", key: "ranked" \}\), true\)/);
   const routeBranch = page.match(/    if \(route.phase === "drill"[\s\S]*?(?=    if \(route.phase === "agent")/)?.[0];
   assert.ok(routeBranch);

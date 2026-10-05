@@ -221,6 +221,10 @@ INSERT INTO fastfold_players (user_id, public_name) VALUES ('local-user', 'Local
 INSERT INTO fastfold_sessions (id, user_id, status, private_json, updated_at) VALUES ('local-fastfold-session', 'local-user', 'paused', '{"keep":true}', 1);
 INSERT INTO fastfold_results (id, user_id, at, net_bb, before_rating, after_rating, public_json) VALUES ('local-fastfold-result', 'local-user', 1, 0, 1000, 1000, '{"keep":true,"ratingEvidenceBb":0}');
 INSERT INTO fastfold_actions VALUES ('local-fastfold-session', 'local-fastfold-action', '{"keep":true}', 'local-fastfold-result');
+INSERT INTO human_rank_players (user_id, public_id, public_name) VALUES ('local-user', '00000000-0000-0000-0000-000000000001', 'Local human sentinel');
+INSERT INTO human_rank_tables (id, status, private_json, created_at, expires_at, updated_at) VALUES ('local-human-table', 'done', '{"users":["local-user"],"hand":null}', 1, 0, 1);
+INSERT INTO human_rank_receipts VALUES ('local-user', '00000000-0000-0000-0000-000000000002', '{"keep":true}');
+INSERT INTO human_rank_results (table_id, user_id, at, net_cents, public_json) VALUES ('local-human-table', 'local-user', 1, 0, '{"keep":true}');
 INSERT INTO fastfold_dataset_parts VALUES ('local-sentinel', '44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a', 0, '{}', 1);
 `;
 
