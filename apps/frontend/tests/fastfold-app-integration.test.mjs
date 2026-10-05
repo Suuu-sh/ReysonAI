@@ -45,7 +45,8 @@ test('actual Trainer ranked entry renders FastFold against authenticated server 
   dom.window.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
   dom.window.scrollTo=()=>{}; let root=createRoot(dom.window.document.getElementById('root'));
   let path='/learn/trainer';
-  const props={profile:{nickname:'Test',level:'intermediate',updatedAt:new Date().toISOString()},onSectionChange(){},onNavigate(next){path=next;render();}};
+  const navigations=[];
+  const props={profile:{nickname:'Test',level:'intermediate',updatedAt:new Date().toISOString()},onSectionChange(){},onNavigate(next,replace){navigations.push({next,replace});path=next;render();}};
   const render=()=>root.render(React.createElement(TrainerPage,{...props,path}));
   const settle=async predicate=>{for(let i=0;i<100&&!predicate();i++)await act(async()=>{await new Promise(resolve=>setTimeout(resolve,10));});assert.ok(predicate(),'UI request did not settle');};
   const click=async selector=>{const button=dom.window.document.querySelector(selector);assert.ok(button,`Missing ${selector}`);await act(async()=>{button.click();});};
@@ -76,12 +77,23 @@ test('actual Trainer ranked entry renders FastFold against authenticated server 
       if(action.classList.contains('ff-action-fold')) assert.notEqual(session.hand.id,oldId);
     }
     const handId=session.hand.id;
-    await click('.ff-table-top button'); await settle(()=>!dom.window.document.querySelector('.ff-table-top button')?.disabled); session=await getSession(); assert.equal(session.status,'paused');assert.equal(session.hand.id,handId);
+    await click('.ff-exit'); await settle(()=>path==='/learn/trainer/ranked/waiting'); session=await getSession(); assert.equal(session.status,'paused');assert.equal(session.hand.id,handId);
+    const deadline=session.breakExpiresAt;assert.ok(Number.isFinite(deadline));
+    assert.equal(dom.window.document.querySelector('.ff-actions'),null);assert.match(dom.window.document.body.textContent,/Waiting room/);
     await act(async()=>root.unmount()); root=createRoot(dom.window.document.getElementById('root'));
-    await act(async()=>render()); await settle(()=>Boolean(dom.window.document.querySelector('.ff-table-top button'))); assert.match(dom.window.document.body.textContent,/Paused|一時停止中/);
-    await click('.ff-table-top button'); await settle(()=>!dom.window.document.querySelector('.ff-table-top button')?.disabled); session=await getSession(); assert.equal(session.status,'active');assert.equal(session.hand.id,handId);
+    await act(async()=>render()); await settle(()=>Boolean(dom.window.document.querySelector('.ff-resume')));assert.equal((await getSession()).breakExpiresAt,deadline);
+    await click('.ff-resume');await settle(()=>path==='/learn/trainer/ranked/play'); session=await getSession();assert.equal(session.status,'active');assert.equal(session.hand.id,handId);
     // The formerly saved quiz result URL must render FastFold and redirect to play.
     path='/learn/trainer/ranked/play/result'; await act(async()=>render()); assert.equal(path,'/learn/trainer/ranked/play'); assert.ok(dom.window.document.querySelector('.ff-arena'));
+    await click('.ff-exit');await settle(()=>path==='/learn/trainer/ranked/waiting');
+    // Isolated server fixture deadline only: simulate time already elapsed, then
+    // focus checks the actual authenticated server; client never settles locally.
+    session=await getSession();const row=server.sqlite.prepare('SELECT private_json FROM fastfold_sessions WHERE id=?').get(session.id);const saved=JSON.parse(row.private_json);saved.breakExpiresAt=Date.now()-1;delete saved.receipt;
+    server.sqlite.prepare('UPDATE fastfold_sessions SET private_json=? WHERE id=?').run(JSON.stringify(saved),session.id);
+    await act(async()=>window.dispatchEvent(new window.Event('focus')));await settle(()=>path==='/learn/trainer');
+    assert.equal(navigations.at(-1).replace,true);assert.equal(await getSession(),null);assert.equal(dom.window.document.querySelector('.agent-felt'),null);
+    await settle(()=>Boolean(dom.window.document.querySelector('.is-ranked .mode-primary')));await click('.is-ranked .mode-primary');await settle(()=>Boolean(dom.window.document.querySelector('.ff-intro')));
+    await click('.ff-exit');assert.equal(path,'/learn/trainer');assert.ok(!path.includes('/agent/'));
     assert.ok(server.calls.every(call=>!String(call.url).includes('/v1/ranked/matches')));
     assert.equal(server.sqlite.prepare("SELECT COUNT(*) n FROM ranked_matches").get()?.n??0,0);
   } finally {
