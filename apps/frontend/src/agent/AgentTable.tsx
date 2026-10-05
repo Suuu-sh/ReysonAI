@@ -79,7 +79,7 @@ function chipState(revealed: LogEntry[], street: string) {
   return { committed, front };
 }
 
-type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean };
+type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean; cards: string[]; resultBb: number | null; log: LogEntry[]; board: string[] };
 
 export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = false, exitDisabled = false, handoffKey, onHandBoundary, waitingHeader, waitingSidebar }: { tableId: string; watch?: boolean; onExit: () => void; waitingMode?: boolean; exitDisabled?: boolean; handoffKey?: string; onHandBoundary?: () => void; waitingHeader?: ReactNode; waitingSidebar?: ReactNode }) {
   const table = agentTableById(tableId)!;
@@ -171,7 +171,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
     recorded.current = session.handNo;
     if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos));
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
-      mine: humanPos ? toPoints(result!.returns![humanPos] ?? 0) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
+      log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
   }, [done, humanPos, session.handNo, result, tableId, nameOf]);
 
   const act = (key: string) => setHumanActions(current => [...current, key]);
@@ -319,7 +319,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
         </footer>
       </section>
 
-      <GameplayDetails requestedPanel={compact && styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
+      <GameplayDetails profileSwitches={session.seats.filter(seat => seat.kind === "agent").map(seat => { const character = characterFor(seat.agentId); if (!character) return null; return <button type="button" className="agent-mini-profile" key={character.id} aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado")})}><AgentAvatar id={character.id} color={character.color} size={32}/></button>; })} currentCards={humanPos ? result?.holeCards[humanPos] : []} history={history.map(item => ({id:item.no,cards:item.cards,resultBb:item.resultBb,details:<HandLog entries={item.log} nameOf={nameOf} board={item.board}/>}))} requestedPanel={styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
         {waitingMode && <GamePanel id="queue" label={profileText("Queue / rank", "待機 / ランク", "队列 / 评分", "Cola / rango")}>{waitingSidebar}</GamePanel>}
         <GamePanel id="session" label={profileText(waitingMode ? "Agents" : "Session", waitingMode ? "Agent" : "セッション", waitingMode ? "Agent" : "会话", waitingMode ? "Agents" : "Sesión")}>
         {waitingMode && <section className="agent-panel"><h3>{profileText("Practice Agents", "練習相手のAgent", "练习Agent", "Agents de práctica")}</h3>{table.agents.map(character => <div className="ff-opponent" key={character.id}><button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"),avatar:<StyleAvatar id="balanced" color={character.color} size={64}/>})}><StyleAvatar id="balanced" color={character.color} size={32}/></button><div><strong>{character.name.en}</strong><small>{profileText("Balanced · preflop", "バランス型・プリフロップ", "平衡型 · 翻牌前", "Equilibrado · preflop")}</small></div></div>)}</section>}
@@ -355,10 +355,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
         <GamePanel id="tools" label={profileText("Tools", "設定", "工具", "Controles")} mobileOnly>{tools}{liveRead && <PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} />}</GamePanel>
       </GameplayDetails>
     </div>
-    {styleOpen && !compact && liveRead && <div className="style-drawer" role="dialog" aria-modal="true" aria-label={localized("Your play style", "あなたのプレイスタイル")}>
-      <button type="button" className="style-drawer-backdrop" aria-label={localized("Close", "閉じる")} onClick={() => setStyleOpen(false)} />
-      <div className="style-drawer-panel"><PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} /></div>
-    </div>}
+
   </div>;
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from "react";
+import { useId } from "react";
 import type { ReactNode } from "react";
 import { productLocale } from "../locale.ts";
 import "./agent.css";
@@ -6,12 +6,7 @@ export const profileCopy = (en: string, ja: string, zh: string, es: string) => (
 export type OpponentProfileData = { name: string; avatar: ReactNode; kind: "agent" | "human"; type: string; description?: string; samples?: number; vpip?: number | null; pfr?: number | null; unavailable?: boolean };
 export function OpponentProfile({ profile, onClose }: { profile: OpponentProfileData; onClose: () => void }) {
   const id = useId();
-  const block = useRef<HTMLElement>(null);
-  useEffect(() => {
-    block.current?.closest<HTMLElement>(".agent-side")?.scrollTo?.({ top: 0, behavior: "auto" });
-    if (window.innerWidth > 650 && window.innerWidth <= 720) block.current?.scrollIntoView?.({ block: "nearest" });
-  }, [profile.name]);
-  return <section ref={block} className="agent-panel agent-profile-block" role="region" aria-labelledby={id}>
+  return <section className="agent-panel agent-profile-block" role="region" aria-labelledby={id}>
     <header><div aria-hidden="true">{profile.avatar}</div><h3 id={id} translate="no">{profile.name}</h3><button type="button" onClick={onClose}>{profileCopy("Close", "閉じる", "关闭", "Cerrar")}</button></header>
     <p>{profile.unavailable ? profileCopy("Public profile unavailable", "公開プロフィールを利用できません", "公开资料不可用", "Perfil público no disponible") : profile.kind === "human" ? profileCopy("Human · public ranked profile", "人間・公開ランクプロフィール", "真人 · 公开排位资料", "Persona · perfil público de clasificación") : profileCopy("Agent · AI-estimated policy", "Agent・AI推定方針", "Agent · AI估计策略", "Agent · política estimada por IA")}</p>
     <strong>{profile.type}</strong>{profile.description && <p>{profile.description}</p>}

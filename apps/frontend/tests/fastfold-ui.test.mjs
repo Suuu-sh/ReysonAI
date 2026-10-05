@@ -4,8 +4,8 @@ import { build } from 'esbuild';
 import { JSDOM } from 'jsdom';
 import { createRoot } from 'react-dom/client';
 import React, { act } from 'react';
-const bundle = await build({ stdin: { contents: 'export { ffBreakRemaining } from "./src/trainer/fastfold-api.ts"; export { FastFoldArena } from "./src/trainer/FastFoldArena.tsx";', resolveDir: process.cwd(), loader: 'tsx' }, bundle: true, write: false, platform: 'node', format: 'esm', external: ['react'], jsx: 'automatic', loader: { '.css': 'empty' } });
-const code = bundle.outputFiles[0].text.replace(/from "(react(?:\/jsx-runtime)?)"/g, (_, name) => `from "${import.meta.resolve(name)}"`);
+const bundle = await build({ stdin: { contents: 'export { ffBreakRemaining } from "./src/trainer/fastfold-api.ts"; export { FastFoldArena } from "./src/trainer/FastFoldArena.tsx";', resolveDir: process.cwd(), loader: 'tsx' }, bundle: true, write: false, platform: 'node', format: 'esm', external: ['react', 'react-dom'], jsx: 'automatic', loader: { '.css': 'empty' } });
+const code = bundle.outputFiles[0].text.replace(/from "(react(?:\/jsx-runtime)?|react-dom)"/g, (_, name) => `from "${import.meta.resolve(name)}"`);
 const { FastFoldArena, ffBreakRemaining } = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
 const session = (version = 0, status = 'active', number = 1) => ({ id: 'session', version, status, hand: { id: `hand-${number}`, number, hero: 'BTN', holeCards: { BTN: ['As', 'Kd'] }, board: [], log: [{ pos: 'SB', action: 'check', street: 'preflop', pot: 1.5 }], pot: 1.5, status: 'awaiting', opponents: ['UTG','HJ','CO','SB','BB'].map(position => ({position,type:'station',label:'station',policyVersion:'saved-ai-v1'})), policyVersion: 'saved-ai-v1', pending: { street: 'preflop', pos:'BTN', options: [{key:'fold'}, {key:'open',to:2.5}], board:[], pot:1.5, toCall:0 } } });
 const state = active => ({rating:1000,peak:1000,hands:0,netBb:0,bbPer100:null,provisional:true,uncertainty:1,active,recent:[]});
@@ -13,9 +13,9 @@ const SERVER_NOW=1_700_000_000_000;
 const profile = active => ({serverNow:SERVER_NOW,enabled:true,season:'fastfold-v1',publicName:'Player test',state:state(active)});
 async function harness(run, fetcher, ready = true, view = "play") {
   const dom = new JSDOM('<div id="root"></div>', { url:'http://localhost/learn/trainer/ranked/play' });
-  const old = {window:globalThis.window,document:globalThis.document,fetch:globalThis.fetch};
+  const old = {window:globalThis.window,document:globalThis.document,fetch:globalThis.fetch,HTMLElement:globalThis.HTMLElement};
   globalThis.window=dom.window;globalThis.document=dom.window.document;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
-  globalThis.fetch = fetcher;
+  globalThis.fetch = fetcher;globalThis.HTMLElement=dom.window.HTMLElement;
   const root = createRoot(dom.window.document.getElementById('root'));
   const updates=[],navigation=[]; const props={ready,view,onBack(){navigation.push("library");},onWaiting(){navigation.push("waiting");},onPlay(){navigation.push("play");},onRanking(){},onProfile:p=>updates.push(p)};
   try { await act(async()=>root.render(React.createElement(FastFoldArena,props))); await run({dom,root,props,updates,navigation,click:async label=>{const button=[...dom.window.document.querySelectorAll('button')].find(b=>b.textContent===label);assert.ok(button,`Missing ${label}`); await act(async()=>button.click());}}); }
@@ -33,7 +33,7 @@ test('consent is explicit; no automatic start and no fixed question limit',async
 });
 test('fold advances server hand immediately; missing policy notice and scope are visible',async()=>{
   const first=session();first.hand.policyMissing=true;first.hand.pending.notice='no_multiway';
-  await harness(async({dom,click,updates})=>{assert.match(dom.window.document.body.textContent,/not a recommended strategy/);assert.match(dom.window.document.body.textContent,/Postflop uses balanced policy/);await click('Fold');assert.ok(dom.window.document.body.textContent.includes('#2'));assert.equal(updates.at(-1).state.active.hand.number,2);},async(url,options)=>{if(url.endsWith('/action')){const body=JSON.parse(options.body);assert.equal(body.action,'fold');assert.equal(body.version,0);assert.ok(body.actionId);return Response.json({serverNow:SERVER_NOW,session:session(1,'active',2),state:state(session(1,'active',2))});}return initialFetch(first)(url);});
+  await harness(async({dom,click,updates})=>{await act(async()=>dom.window.document.querySelector('.game-current-hand').click());assert.match(dom.window.document.body.textContent,/not a recommended strategy/);await click('Close');await act(async()=>dom.window.document.querySelector('.game-controls-trigger').click());assert.match(dom.window.document.body.textContent,/Postflop uses balanced policy/);await click('Close');await click('Fold');assert.ok(dom.window.document.body.textContent.includes('#2'));assert.equal(updates.at(-1).state.active.hand.number,2);},async(url,options)=>{if(url.endsWith('/action')){const body=JSON.parse(options.body);assert.equal(body.action,'fold');assert.equal(body.version,0);assert.ok(body.actionId);return Response.json({serverNow:SERVER_NOW,session:session(1,'active',2),state:state(session(1,'active',2))});}return initialFetch(first)(url);});
 });
 test('uncertain action locks buttons and retries identical action id/body',async()=>{
   const bodies=[];await harness(async({dom,click})=>{await click('Fold');assert.match(dom.window.document.body.textContent,/Not confirmed/);assert.ok(dom.window.document.querySelector('.agent-back').disabled);assert.ok([...dom.window.document.querySelectorAll('.ff-actions button')].every(b=>b.disabled));await click('Retry');assert.deepEqual(bodies[0],bodies[1]);assert.equal(dom.window.document.querySelector('[role=alert]'),null);},async(url,options)=>{if(url.endsWith('/action')){bodies.push(options.body);if(bodies.length===1)throw Error('network');return Response.json({serverNow:SERVER_NOW,session:session(1),state:state(session(1))});}return initialFetch(session())(url);});
@@ -53,14 +53,14 @@ test('sign-out hides state and drops a late action response',async()=>{
 });
 
 test('ranked uses shared Agent felt, six seats, hidden opponent cards and matching action buttons',async()=>{
-  await harness(({dom})=>{
+  await harness(async({dom})=>{
     assert.equal(dom.window.document.querySelectorAll('.agent-felt').length,1);
     assert.equal(dom.window.document.querySelectorAll('.agent-seat').length,6);
     assert.equal(dom.window.document.querySelectorAll('.agent-card.is-back').length,10);
     assert.equal(dom.window.document.querySelectorAll('.agent-hole .trainer-card').length,2);
     assert.equal(dom.window.document.querySelectorAll('.agent-board .is-slot').length,5);
     assert.ok(dom.window.document.querySelector('.ff-action-fold.agent-act.tone-fold'));
-    assert.ok(dom.window.document.querySelector('.agent-side .ff-scorebar'));
+    assert.equal(dom.window.document.querySelector('.agent-side'),null);await act(async()=>dom.window.document.querySelector('.game-controls-trigger').click());assert.ok(dom.window.document.querySelector('.game-details-modal .ff-scorebar'));
     assert.equal(dom.window.document.querySelectorAll('.ff-opponent').length,5);
   },initialFetch(session()));
 });
