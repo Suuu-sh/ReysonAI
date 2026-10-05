@@ -67,6 +67,14 @@ test("the hand tour alternates spots, pauses offscreen, yields to interaction, a
   assert.match(explorer, /data-tour-running=\{isTouring && visible\}/);
   assert.match(explorer, /aria-live=\{isTouring \? "off" : "polite"\}/,
     "automatic hands must not repeatedly interrupt a screen reader");
+  assert.doesNotMatch(explorer, /site-tour-progress|key=\{`\$\{mode\}-\$\{selected\}-\$\{isTouring\}`\}/);
+});
+
+test("pinned training slides stay visible and the hero matrix remains square", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  assert.match(css, /\.site \.site-matrix\s*\{[^}]*aspect-ratio: 1;/);
+  assert.match(css, /\.site-train\.is-scrolly \[data-reveal\]\s*\{[^}]*opacity: 1; transform: none;/);
+  assert.doesNotMatch(css, /site-tour-progress|@keyframes site-tour/);
 });
 
 test("production service-site app CTAs use the app host while previews keep their existing path", () => {

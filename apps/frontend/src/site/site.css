@@ -131,7 +131,7 @@
 
 /* The hero uses the actual saved range, not a screenshot or ornamental grid. */
 .site-matrix-scroll { max-width: 100%; padding: 3px; margin: -3px; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
-.site .site-matrix { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 2px; min-width: 316px; aspect-ratio: 1.16; }
+.site .site-matrix { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 2px; min-width: 316px; aspect-ratio: 1; }
 .site .site-cell { position: relative; display: grid; place-items: center; min-width: 0; overflow: hidden; border-radius: var(--control-radius); background: var(--fold); color: #9c9ca8; font-size: clamp(10px, .9vw, 13px); font-weight: 600; letter-spacing: -.02em; line-height: 1; transition: background-color .5s ease calc(var(--wave) * 22ms), color .5s ease calc(var(--wave) * 22ms), transform .18s var(--ease), box-shadow .18s ease; }
 .site .site-cell.is-raise { background: var(--raise); color: #fff; }
 .site .site-cell.is-call { background: var(--call); color: #fff; }
@@ -181,9 +181,6 @@
 .site .site-tour-toggle { display: grid; flex: 0 0 auto; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line-strong); border-radius: var(--control-radius); }
 .site .site-tour-toggle:hover { border-color: var(--muted); background: var(--hover); }
 .site-tour { flex: 1; min-width: 0; }
-.site-tour-progress { display: block; height: 3px; overflow: hidden; background: var(--line-strong); }
-.site-tour-progress i { display: block; width: 100%; height: 100%; background: var(--pink); transform: scaleX(0); transform-origin: left; }
-.has-motion [data-tour-running="true"] .site-tour-progress i { animation: site-tour 2.8s linear both; }
 .site-tour-caption { display: block; margin-top: 7px; color: var(--subtle); font-size: 11px; }
 .site-hero-disclaimer { max-width: 40%; color: var(--subtle); font-size: 11px; }
 .site-hero-disclaimer b { color: var(--muted); font-weight: 500; }
@@ -569,8 +566,7 @@
   .site-hero h1 { font-size: clamp(56px, 5.4vw, 74px); }
   .site-hero-lead { margin-top: 14px; font-size: 15px; }
   .site-ja .site-hero-lead { font-size: 15px; line-height: 1.7; }
-  .site-hero-range { width: min(100%, 520px); justify-self: end; }
-  .site-hero .site-matrix { aspect-ratio: 1.4; }
+  .site-hero-range { width: min(100%, 560px); justify-self: end; padding-top: 12px; }
   .site-hero-actions { margin-top: 18px; }
   .site-hero-actions .site-button { min-height: 44px; }
   .site-hero-note { margin-top: 12px; }
@@ -731,7 +727,6 @@
 @keyframes site-cell-in { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
 @keyframes site-card-flip { from { opacity: .2; transform: rotateY(85deg) translateY(-6px); } }
 @keyframes site-card-deal { from { opacity: 0; transform: translate(170px, -110px) rotate(28deg) scale(.85); } 60% { opacity: 1; } }
-@keyframes site-tour { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes site-pop { from { opacity: 0; transform: translateY(6px) scale(.85); } to { opacity: 1; transform: none; } }
 @keyframes site-dim { from { opacity: 1; border-color: var(--pink); } to { opacity: .42; } }
 @keyframes site-turn { 0%, 100% { box-shadow: 0 0 0 0 #f0609e00; } 50% { box-shadow: 0 0 0 6px #f0609e2e; } }
@@ -888,3 +883,5 @@
 .site-train.is-scrolly .site-train-rail { display: flex; width: 300%; height: 100%; transition: transform .9s var(--ease); will-change: transform; }
 .site-train.is-scrolly .site-train-rail > .site-section { flex: 0 0 calc(100% / 3); min-height: 0; height: 100%; padding-block: 24px; }
 .site-train.is-scrolly .site-ranked, .site-train.is-scrolly .site-agent { border-top: 0; }
+/* All three slides share one sticky viewport; IO reveal checks can miss off-canvas slides. */
+.site-train.is-scrolly [data-reveal] { opacity: 1; transform: none; }
