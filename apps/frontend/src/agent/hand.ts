@@ -11,7 +11,11 @@ import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from 
 import { NODES, choose } from "../../scripts/postflop-ai/policy.ts";
 import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.ts";
 import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
-import { multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.ts";
+import { createPostflopSpots } from "../../scripts/postflop-ai/spots-core.ts";
+import { dataset } from "../estimated/datasets.ts";
+import type { SourceDataset } from "../../scripts/postflop-ai/types.ts";
+import type { Spot } from "../../scripts/postflop-ai/spots.ts";
+import { multiwaySpotFor } from "../../scripts/postflop-ai/multiway-spots.ts";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
 import { type Decider, type PostflopKit } from "./policy.ts";
 
@@ -21,6 +25,11 @@ export type HumanAction = string; // preflop: dataset key (fold/call/check/open/
 
 export type HandSetup = {
   seed: string;
+  // Server-only dependency injection; defaults preserve ordinary Agent replay.
+  datasets?: (name: string) => SourceDataset | undefined;
+  dealt?: { hole: Record<string, number[]>; board: number[] };
+  draw?: (index: number) => number;
+  fastFold?: boolean;
   human: Position | null; // null: agents only
   humanActions?: HumanAction[];
   agents: Decider; // decides for every non-human seat
@@ -54,6 +63,11 @@ const CATEGORY_EN = ["High card", "One pair", "Two pair", "Three of a kind", "St
 export const handCategory = (score: number) => Math.floor(score / 16 ** 5);
 export const categoryName = (category: number, locale: "ja" | "en" = "ja") => (locale === "ja" ? CATEGORY : CATEGORY_EN)[category] ?? "";
 
+class FastFold extends Error {
+  result: HandResult;
+  constructor(result: HandResult) { super("fast fold"); this.result = result; }
+}
+
 class Await extends Error {
   pending: Pending;
   constructor(pending: Pending) { super("awaiting human"); this.pending = pending; }
@@ -72,9 +86,14 @@ export function deal(seed: string) {
 }
 
 // The postflop spot a heads-up preflop line reached, or null when no spot describes it.
-export function postflopSpotFor(events: { pos: Position; type: string; key: string }[]) {
-  const extended = multiwaySpotFor(events);
+export function postflopSpotFor(events: { pos: Position; type: string; key: string }[], lookup?: (name: string) => SourceDataset | undefined): Spot | null {
+  // An omitted lookup is ordinary Agent practice and retains its reviewed HU histories.
+  // Injected server snapshots keep FastFold's scoped legacy-only coverage.
+  const extended = lookup === undefined ? multiwaySpotFor(events) : null;
   if (extended) return extended;
+  const read = lookup ?? dataset;
+  const { spotFor, threeBetSpotFor, fourBetSpotFor, limpSpotFor } = createPostflopSpots(Object.fromEntries(
+    ["preflop-ranges", "three-bet-responses", "opening-ranges", "limp-responses"].map(name => [name, read(name)])));
   const voluntary = events.filter(e => e.type !== "fold" && e.type !== "check");
   if (new Set(voluntary.map(event => event.pos)).size > 2) return null;
   const keys = voluntary.map(e => e.key);
@@ -86,23 +105,23 @@ export function postflopSpotFor(events: { pos: Position; type: string; key: stri
   if (sig === "open,call") return spotFor(raisers[0].pos, voluntary[1].pos);
   if (sig === "open,three_bet,call") return threeBetSpotFor(raisers[0].pos, raisers[1].pos);
   if (sig === "open,three_bet,four_bet,call") return fourBetSpotFor(raisers[0].pos, raisers[1].pos);
-  return multiwaySpotFor(events);
+  return lookup === undefined ? multiwaySpotFor(events) : null;
 }
 
 export function playHand(setup: HandSetup): HandResult {
-  const { hole, board } = deal(setup.seed);
+  const { hole, board } = setup.dealt ?? deal(setup.seed);
   const holeText = Object.fromEntries(Object.entries(hole).map(([pos, cards]) => [pos, cards.map(cardText)]));
   const humanQueue = [...(setup.humanActions ?? [])];
   const log: LogEntry[] = [];
   let decisionIndex = 0;
-  const drawFor = () => seededRandom(seedFor(`${setup.seed}|decision|${decisionIndex++}`))();
+  const drawFor = () => setup.draw ? setup.draw(decisionIndex++) : seededRandom(seedFor(`${setup.seed}|decision|${decisionIndex++}`))();
   const result = (extra: Partial<HandResult>): HandResult => ({ status: "done", holeCards: holeText, board: [], log, ...extra });
 
   // Preflop.
   let state = startPreflop();
   for (let pos = nextActor(state); pos; pos = nextActor(state)) {
     const hand = handClass(hole[pos]);
-    const offered = preflopOptions(state, pos, hand);
+    const offered = preflopOptions(state, pos, hand, setup.datasets);
     let action: PreflopAction, source = offered.source ?? undefined, tableRule: string | null = null;
     if (pos === setup.human) {
       const options = humanPreflopOptions(state, pos, offered);
@@ -119,6 +138,7 @@ export function playHand(setup: HandSetup): HandResult {
     }
     state = applyPreflop(state, pos, action);
     log.push({ street: "preflop", pos, action: action.key, to: state.committed[pos], pot: preflopPot(state), bets: { ...state.committed }, source, tableRule });
+    if (setup.fastFold && pos === setup.human && action.type === "fold") return result({ showdown: false, returns: { [pos]: -round(state.committed[pos] ?? 0) }, pot: preflopPot(state) });
   }
 
   const alive = alivePositions(state);
@@ -131,7 +151,7 @@ export function playHand(setup: HandSetup): HandResult {
   }
   const [a, b] = alive;
   const allIn = alive.some(pos => (state.committed[pos] ?? 0) >= STACK_BB);
-  const spot = allIn ? null : postflopSpotFor(state.events);
+  const spot = allIn ? null : postflopSpotFor(state.events, setup.datasets);
   const kit = spot ? setup.postflop(spot.id) : null;
   if (spot && kit === undefined) return result({ status: "needs_postflop", spotId: spot.id });
 
@@ -209,6 +229,7 @@ export function playHand(setup: HandSetup): HandResult {
         allIn: observed.allIn, pot: table.pot }
       : { street, pos: seat, action, to: action === "fold" || action === "check" ? undefined : sizeOf(street, action, bets, seat), pot: table.pot };
     log.push(pendingEntry);
+    if (setup.fastFold && seat === setup.human && action === "fold") throw new FastFold({ status: "done", holeCards: holeText, board: boardSoFar(cards.length), log, showdown: false, returns: { [seat]: -round((state.committed[seat] ?? 0) + table.invested[seat]) }, pot: round(table.pot) });
     return action;
   };
   try {
@@ -226,6 +247,7 @@ export function playHand(setup: HandSetup): HandResult {
     playLaterStreetsWithPolicy(table, flop, runout, (seat: Position, node: string, cards: number[], line: string) =>
       ask(cards.length === 4 ? "turn" : "river", seat, node, cards, line), kit.inputs.config, table.lastAggressor);
   } catch (error) {
+    if (error instanceof FastFold) return error.result;
     if (error instanceof Await) return result({ status: "awaiting", pending: error.pending, spotId: spot.id, board: error.pending.board });
     throw error;
   }

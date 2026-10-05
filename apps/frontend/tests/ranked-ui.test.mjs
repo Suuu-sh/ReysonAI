@@ -21,9 +21,9 @@ test('leaderboard waits for server data without assigning a local placement', ()
   const html = renderToStaticMarkup(React.createElement(Leaderboard, { rank: emptyRankState(), onBack() {} }));
   assert.match(html, /<h1 class="trainer-home-eyebrow">[\s\S]*LEADERBOARD<\/h1>/);
   assert.doesNotMatch(html, /<h1>ランキング<\/h1>/);
-  assert.match(html, /ランク戦のレート順です/);
+  assert.match(html, /FastFoldシーズン/);
   assert.ok(html.includes('サーバーランキングを読み込み中'));
-  assert.ok(html.includes('あと3試合'));
+  assert.ok(html.includes('100確定ハンド'));
   assert.ok(!html.includes('<tbody>'));
 });
 test('local history is visible but never produces public rank rows', () => {
@@ -33,8 +33,8 @@ test('local history is visible but never produces public rank rows', () => {
   assert.ok(html.includes('data-tier="gold"'));
   assert.ok(!html.includes('Tester'));
   assert.ok(!html.includes('leaderboard-player'));
-  assert.ok(html.includes('leaderboard-history'));
-  assert.ok(html.includes('あと3試合'));
+  assert.ok(!html.includes('leaderboard-history'), 'legacy quiz history is never substituted for FastFold');
+  assert.ok(html.includes('100確定ハンド'));
 });
 test('dummy leaderboard players exist only for the local dev server', async () => {
   const { demoPlayers, showDemoPlayers } = await import('../src/trainer/leaderboard-demo.ts');
@@ -54,10 +54,10 @@ test('authenticated leaderboard renders server global placement and Legend, neve
   globalThis.window = dom.window; globalThis.document = dom.window.document; globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   let calls = 0;
   globalThis.fetch = async url => {
-    assert.match(url, /\/v1\/ranked\/leaderboard\?period=week$/); calls++;
-    return Response.json({ rows: [
-      { id:'first', name:'Player first', rating:1600, gain:5, matches:4, accuracy:.9, place:1, self:false },
-      { id:'self', name:'Player self', rating:1600, gain:2, matches:3, accuracy:.8, place:102, self:true },
+    assert.match(url, /\/v1\/fastfold\/leaderboard$/); calls++;
+    return Response.json({ season:'fastfold-v1', rows: [
+      { id:'first', name:'Player first', rating:1600, bbPer100:5, hands:104, provisional:false, place:1, self:false },
+      { id:'self', name:'Player self', rating:1600, bbPer100:2, hands:103, provisional:false, place:102, self:true },
     ] });
   };
   const root = createRoot(dom.window.document.getElementById('root'));

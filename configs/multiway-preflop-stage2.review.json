@@ -484,6 +484,257 @@
         "Real-browser acceptance",
         "Exact-head required CI"
       ]
+    },
+    "source_renewals": [
+      {
+        "date": "2026-10-05",
+        "reviewer": "Independent runtime-conversion subagent review and primary helper-extraction review",
+        "scope": "Source-only TypeScript conversion and typecheck wiring; no renewed strategy-quality or Astra data approval.",
+        "report": "apps/frontend/docs/typescript-cleanup-review.md",
+        "blocking_findings": 0,
+        "source_identity": {
+          "previous": 86,
+          "current": 87,
+          "modified": 13,
+          "removed": 3,
+          "added": 4,
+          "unchanged": 70
+        },
+        "verification": {
+          "runtime_executable_parity": "3 converted modules and 42 import-reference files match baseline after type erasure and extension normalization",
+          "helper_review": "Primary independent inspection preserves label/color/pct behavior and primitive DOM",
+          "typecheck": "Expanded site/backend, shared components and runtime strict checks passed",
+          "targeted_tests": "88 passed across runtime, cards, service site, data, primitives and backend postflop routes",
+          "artifact_and_archive_identity": "Original 1888 artifact records and archive unchanged, verified by runtime reviewer",
+          "source_fingerprint": "Recomputed unchanged"
+        },
+        "limitations": "Source-only working-tree review. Final-head CI, production and full delivery/rollback were not verified by this review. Existing strategy-review limitations remain."
+      },
+      {
+        "date": "2026-10-05",
+        "reviewer": "Independent executable-parity and source-compatibility review with primary integration review",
+        "reviewed_base_commit": "b69e306e75caf84d16fe28abfeeb19d08f9c94d9",
+        "report": "apps/frontend/docs/typescript-cleanup-review.md",
+        "scope": "Source-only strict TypeScript annotations, 22 executable-identical runtime module relocations, typed dataset boundaries, and exact-SHA historical policy-source compatibility. No data-quality or original Astra strategy-approval renewal.",
+        "before_content_sha256": "edc2c7e6f354742a7a2ba708916d400e8b4848aadf25d3742d9f4a1ab846743c",
+        "after_content_sha256": "3e667462988e02435186f07b5c662e28423931db6e0fba30e0ebac0094d46fe0",
+        "source_records_before": 87,
+        "source_records_after": 102,
+        "changes": {
+          "modified": 38,
+          "removed": 18,
+          "added": 33,
+          "unchanged": 31
+        },
+        "verified_unchanged": {
+          "artifact_records": 1888,
+          "archive_bytes": 1747857,
+          "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          }
+        },
+        "preserved_gates": "Exact current-source SHA and historical-source SHA are both required for approved type-only compatibility. Future unmatched changes hash actual bytes, missing sources fail closed, and the source graph binds the receipt/helper. Original artifacts, archive, strategy review, findings, advisories and limitations remain authoritative."
+      },
+      {
+        "date": "2026-10-05",
+        "reviewer": "Codex compact_styles",
+        "reviewed_base_commit": "e0644c2",
+        "reviewed_commit": "9ff924bd69040da3ae881eb03727fbc4a47e6ab0",
+        "report": "apps/frontend/docs/specs/fastfold-source-renewal.md",
+        "scope": "Independent source/configuration-only approval for FastFold delivery workflow, Free SQLite Durable Object configuration and scoped typed spot/input factory. Not an Astra re-review or renewed strategy-quality approval; original independent data review, findings, advisories and limitations remain authoritative.",
+        "blocking_findings": 0,
+        "before_content_sha256": "3e667462988e02435186f07b5c662e28423931db6e0fba30e0ebac0094d46fe0",
+        "after_content_sha256": "629744558b22f89494785b0c6fa8980f7e1cbc7d9dbfd7fd1201613de66c764e",
+        "source_records_before": 102,
+        "source_records_after": 103,
+        "changes": {
+          "modified": [
+            ".github/workflows/deploy-worker.yml",
+            "apps/backend/wrangler.jsonc",
+            "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+            "apps/frontend/scripts/postflop-ai/spots.ts"
+          ],
+          "removed": [],
+          "added": [
+            "apps/frontend/scripts/postflop-ai/spots-core.ts"
+          ],
+          "unchanged": 98
+        },
+        "verified_unchanged": {
+          "artifact_records": 1888,
+          "archive_bytes": 1747857,
+          "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          }
+        },
+        "verification": {
+          "geometry_parity": "All 49 current spot geometries strictly equal original typed baseline e0644c2; four remain unreachable.",
+          "build_inputs_parity": "All 45 reachable full buildInputs outputs/fingerprints JSON-identical to original typed baseline using unchanged saved datasets; no generation, equity sampling or policy rewriting.",
+          "independent_review": "Codex compact_styles audited exact five-source diff and both read-only byte/parity proof logs; no P1/P2 blocking finding."
+        },
+        "preserved_gates": "Exact reviewed source/configuration and archive restoration, unchanged delivery verification, migration ordering and mandatory final-head CI remain required. No source exclusion, checker weakening, fallback, strategy-generation command or receipt-only approval.",
+        "limitations": "Narrow source/configuration-only approval. Not a renewed Astra data or full-suite review; original strategy-review limitations remain. Production authenticated gameplay, production CPU percentiles and remote rollback were not verified by this renewal. Experimental result rating is provisional and AI-adjusted penalty is zero."
+      },
+      {
+        "date": "2026-10-05",
+        "reviewer": "Codex compact_styles",
+        "reviewed_base_commit": "88b7f6af8a416adf2aaaab18ed0c8e701cd0cb9d",
+        "report": "apps/frontend/docs/specs/fastfold-sentinel-source-renewal.md",
+        "scope": "Independent source/configuration-only approval of five constraint-valid synthetic preservation INSERTs for the additive 0010 FastFold tables and strengthening the corresponding schema/integration fixture coverage. Not a renewed Astra or strategy-quality review; original independent review and limitations remain authoritative.",
+        "blocking_findings": 0,
+        "before_content_sha256": "629744558b22f89494785b0c6fa8980f7e1cbc7d9dbfd7fd1201613de66c764e",
+        "after_content_sha256": "d2cc1e1ebac9e440bee77a5c03cbe8ad61ba604516304bac33e0daaa9f93181f",
+        "source_records_before": 103,
+        "source_records_after": 103,
+        "changes": {
+          "modified": [
+            "apps/frontend/scripts/verify-preflop-local-d1.mjs"
+          ],
+          "removed": [],
+          "added": [],
+          "unchanged": 102
+        },
+        "verified_unchanged": {
+          "artifact_records": 1888,
+          "archive_bytes": 1747857,
+          "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          }
+        },
+        "verification": {
+          "focused_test": "9 passed, 0 failed; one unchanged explicit opt-in Wrangler integration skip. All current unrelated tables contain exactly one sentinel with foreign keys enabled and foreign_key_check empty.",
+          "independent_review": "Codex compact_styles confirmed the five INSERTs, real result aggregate trigger, paused session, FK constraints and unchanged exhaustive preservation/rollback assertions.",
+          "prior_geometry_proof": "Previously approved 49 geometry and 45 full-input equivalence proof retained; none of those sources or delivered datasets changed and no regeneration/retest was performed."
+        },
+        "preserved_gates": "No sentinel table exclusions, empty allowances, new skips, assertion removal, import/rollback relaxation, checker weakening or strategy generation. Exact current source and archive restoration plus mandatory final-head strict delivery CI remain required.",
+        "limitations": "Narrow local preservation-fixture review only. Existing original Astra and full-suite limitations remain; opt-in Wrangler full-file import/rollback, remote deployment, production CPU and authenticated production gameplay not re-proven by this focused test."
+      }
+    ],
+    "fastfold_integration_renewal": {
+      "date": "2026-10-05",
+      "status": "independently-reviewed",
+      "reviewer": "Independent Stage3/FastFold integration source reviewer",
+      "report": "apps/frontend/docs/specs/multiway-preflop-stage3.typed-integration-review.md",
+      "scope": "Bounded source/configuration compatibility integration of preserved Stage3/HU model10 with the exact upstream FastFold release. Scoped legacy geometry factory plus pure unchanged HU catalog preserve ordinary practice and browser inputs; injected FastFold remains legacy-only. Exact five synthetic D1 sentinels and workflow merge retained. No strategy-quality, rating-calibration, production, browser, full-D1 rollback or final-head CI approval.",
+      "preserved_head_commit": "b3905029d0a4c4cc696edf15dd72ae369bb1827a",
+      "fixed_development_commit": "e695dc94625260b8ac620cd489c5fc24097e3252",
+      "common_base_commit": "b28147774ec6909196b80353d10129723f333adb",
+      "source_graph": {
+        "before": 153,
+        "after": 155,
+        "modified": 5,
+        "added": 2,
+        "removed": 0,
+        "unchanged": 148,
+        "change_ledger_sha256": "ba2d80d8b4207a3458a3d57165534d4bd68fd944a27bceab6468983708bb9818"
+      },
+      "upstream_review_history": {
+        "receipt_sha256": "8aa315b5fa14dd288cfe6c61e47e51fd31396af317639fa9c4bbd8f536810f18",
+        "source_renewals_preserved_verbatim": 4,
+        "boundary": "Upstream 103-source and Stage2-only delivery identities remain historical evidence, distinct from this Stage3-combined checkout."
+      },
+      "immutable_evidence": {
+        "artifact_records_unchanged": 3693,
+        "preflop_archives_unchanged": 2,
+        "inherited_hu_archives_unchanged": 2,
+        "all_prior_review_fields_unchanged": true,
+        "counts_fingerprints_policies_thresholds_samples_unchanged": true,
+        "strategy_generation": false
+      },
+      "verification": {
+        "scoped_parity": {
+          "status": "passed",
+          "descriptors": 456,
+          "reachable_complete_inputs": 452,
+          "unchanged_unreachable_legacy": 4,
+          "ordinary_hu_paths": 407,
+          "injected_hu_paths_rejected": 407,
+          "missing_hu_paths_rejected": 407,
+          "lookup_isolation": true,
+          "preflop_scopes": [
+            {
+              "family": "squeeze",
+              "id": "sq_UTGo2p5_HJc2p5_COf_BTNf_SBf_BBs13__UTGf_HJr26__to_BB",
+              "ordinary": "continuation-responses/sq_UTGo2p5_HJc2p5_COf_BTNf_SBf_BBs13__UTGf_HJr26__to_BB",
+              "injected": null
+            },
+            {
+              "family": "cold_four_bet",
+              "id": "c4_UTGo2p5_HJt8_COr26_BTNf_SBf_BBf__UTGf_HJa100__to_CO",
+              "ordinary": "continuation-responses/c4_UTGo2p5_HJt8_COr26_BTNf_SBf_BBf__UTGf_HJa100__to_CO",
+              "injected": null
+            },
+            {
+              "family": "two_caller_squeeze",
+              "id": "sq2_UTGo2p5_HJc2p5_COc2p5_BTNs14p5_SBf_BBf__to_UTG",
+              "ordinary": "continuation-responses/sq2_UTGo2p5_HJc2p5_COc2p5_BTNs14p5_SBf_BBf__to_UTG",
+              "injected": "squeeze-responses/UTG_vs_BTN_squeeze_HJcall"
+            },
+            {
+              "family": "three_bet_cold_call",
+              "id": "cc_UTGo2p5_HJt8_COc8_BTNf_SBf_BBf__to_UTG",
+              "ordinary": "continuation-responses/cc_UTGo2p5_HJt8_COc8_BTNf_SBf_BBf__to_UTG",
+              "injected": "three-bet-responses/UTG_vs_HJ_three_bet"
+            }
+          ],
+          "proof_sha256": "12198452989ddcc83d032aedfc3e9e485fbf135bbe06bd555419400c525e3c36"
+        },
+        "five_sentinels": "Independent in-memory Python SQLite check passed: all10 migrations,21 unrelated tables with exactly one row, FK enabled and no violations, real zero-evidence aggregate trigger, paused session. Not Wrangler/D1 rollback proof.",
+        "workflow": "Exact conflict-free three-way merge; both Stage3 restores, strict D1, main-only deployment and incoming FastFold migration/readiness ordering retained. Not executed by reviewer.",
+        "focused_tests": "pending; recorded separately by integration task",
+        "full_current_verifiers": "pending"
+      },
+      "preserved_metadata": "All existing Stage3-integrated review fields and amendments remain verbatim. All four upstream source_renewals are preserved verbatim in Stage2; Stage3 binds the exact final Stage2 receipt. Historical results are not relabeled as current.",
+      "remaining_gates": [
+        "Final scoped/targeted suites, typecheck and build",
+        "Current complete Stage2/Stage3 verifiers, canonical SQL and clean restoration",
+        "Strict full-file D1 preservation, idempotency and late-failure rollback",
+        "Final exact-head required CI",
+        "Browser acceptance and any separately authorized production work"
+      ]
+    },
+    "fastfold_facade_type_renewal": {
+      "date": "2026-10-05",
+      "status": "independently-reviewed",
+      "reviewer": "Independent Stage3/FastFold integration source reviewer",
+      "report": "apps/frontend/docs/specs/multiway-preflop-stage3.typed-integration-review.md",
+      "scope": "Only two erased type aliases and the LegacyFacade annotation on unchanged spots.ts const destructuring. Exports retain the established Spot|null facade while the scoped core and runtime lookup/descriptors remain unchanged. No policy/data/gate change or new numerical approval.",
+      "prior_receipt_sha256": "9156cb33224a06dd4d9b857a025047f8fc5c88eecc6ea67813aaa38514f801cb",
+      "source_changes": [
+        {
+          "previous": {
+            "path": "apps/frontend/scripts/postflop-ai/spots.ts",
+            "bytes": 1685,
+            "sha256": "eca3419557d2dc4fba69bdc3540dde814e2afed364deae295528a56ba3b4e249"
+          },
+          "current": {
+            "path": "apps/frontend/scripts/postflop-ai/spots.ts",
+            "bytes": 1933,
+            "sha256": "d9a783c3594976b7777d4402a34cfac364bad4cb74f20d2c2f5c59948fb7a994"
+          }
+        }
+      ],
+      "sources_before": 155,
+      "sources_after": 155,
+      "proof_sha256": "8fd1f2b5eeeb665506e8d0aaeac2c1e9bda513cbae9c6cbaed0293f687e6bb9d",
+      "verification": "Removing exactly the two type declarations and one annotation reproduces the exact source SHA used by the passing456-descriptor/452-input scoped parity run. Frontend strict TypeScript passed. No extra Node process or generation was run by reviewer.",
+      "preserved_metadata": "Every prior review field, including all four inherited source_renewals and the preceding FastFold integration renewal, retained verbatim. Artifacts, archives, fingerprints and counts unchanged.",
+      "remaining_gates": "Runtime typecheck, focused/full suites, full current-source delivery verification, strict D1, clean restore, exact-head CI and browser/production checks remain separate."
     }
   },
   "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
@@ -9943,8 +10194,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 11568,
-      "sha256": "dc41ec61473bd6fc94ee1e69970108b07c5e98f3d8eef216d86ed96c43e24486"
+      "bytes": 12618,
+      "sha256": "385b0f1f13c2a79bd9809d399e2e68a7a32fa7fa7fc8763a7f9c83638716c3a3"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -9953,8 +10204,8 @@
     },
     {
       "path": "apps/backend/wrangler.jsonc",
-      "bytes": 1072,
-      "sha256": "1aeff1e9cd31d57680620f9749965e14e2163aa671d8479bcf793c6df5d2decb"
+      "bytes": 1398,
+      "sha256": "e10534bdc0c073f32a9362706d87fdf0eae4906f40e8f26313602b06b42547bc"
     },
     {
       "path": "apps/frontend/package-lock.json",
@@ -10138,8 +10389,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
-      "bytes": 13141,
-      "sha256": "a00116bf560b8d6aaddc778018a1f22fa7e12b4e5c7b098ffe48ef9c784dfccd"
+      "bytes": 13283,
+      "sha256": "0cb286a9e1ed5f3dd52041466657396513941ae82d4cfd2f3999ee95c4f2a4ab"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/cached-values.ts",
@@ -10242,6 +10493,11 @@
       "sha256": "5cd8c946a63a16d8fbe8ed971991f421a5709a4edace6d9885ff086f3c43c87d"
     },
     {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-spots.ts",
+      "bytes": 2252,
+      "sha256": "69714c7970e427afae365430be043d9f54b64dc8fe991b1c00d69a7f117b9ffb"
+    },
+    {
       "path": "apps/frontend/scripts/postflop-ai/observable-actions.d.mts",
       "bytes": 2537,
       "sha256": "7245e5f98b25559ba840710e508952b9099f56eaca816a93906b14b861f0152c"
@@ -10292,9 +10548,14 @@
       "sha256": "6222b6387c187c7e19cfdbec467d638bb048244543cb038ed01b5d6bd1afd13e"
     },
     {
+      "path": "apps/frontend/scripts/postflop-ai/spots-core.ts",
+      "bytes": 11378,
+      "sha256": "762416428a128fd5b35b7ac8129e788c7291336ef763ce9938376ca4f0f29f7c"
+    },
+    {
       "path": "apps/frontend/scripts/postflop-ai/spots.ts",
-      "bytes": 13146,
-      "sha256": "e81571d8f04e19fc2383c58e93c86ad25f473b4092dbe773892e25710d9da887"
+      "bytes": 1933,
+      "sha256": "d9a783c3594976b7777d4402a34cfac364bad4cb74f20d2c2f5c59948fb7a994"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/tree.ts",
@@ -10343,8 +10604,8 @@
     },
     {
       "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
-      "bytes": 21454,
-      "sha256": "f3f812617e6f288341efdcaeffd24a7ee6ade6ffad36b00b5a707a6c841c4527"
+      "bytes": 22187,
+      "sha256": "f41bc8e4d14a9aa738a33c0ccff46eb06d17a3f050cbe088b132cf077953619d"
     },
     {
       "path": "apps/frontend/scripts/verify-reviewed-preflop.mjs",
@@ -10702,7 +10963,7 @@
       "sha256": "40622089164bac5045c772964ceaa0742e945b2ff1f40eae3dc52c308d85be1c"
     }
   ],
-  "content_sha256": "0cc7703208611d4735ccfd9dbf5e47d277382cce6c9daf8d71051c8cf69b738c",
+  "content_sha256": "f403cd76b634a1a6c57d6b2cba0e893d05f005018ff795a6eb710fbd9602bde5",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,

@@ -39,3 +39,8 @@ Any unsupported Stage 3 postflop terminal must remain unavailable; it must not l
 - Cleanup: isolated checkout remained clean; only QA-owned servers were stopped. Later continuation is blocked because the existing Mac task no longer exposes supported browser/CUA controls.
 
 The remaining browser case must be observed in a supported test environment before calling browser acceptance complete. No credentials were created, accessed or requested for this report.
+
+
+## Later source integrations
+
+The TypeScript/Stats integration was published as `b3905029d0a4c4cc696edf15dd72ae369bb1827a`. The subsequent bounded integration targets fixed development `e695dc94625260b8ac620cd489c5fc24097e3252` and retains FastFold without changing saved Stage3 data. Its complete input/scope parity and 132 targeted automated tests are recorded separately. No later real-browser run is claimed: all visual observations above remain tied to `0d0be207`, and the authenticated unsupported-terminal browser case remains NOT RUN.

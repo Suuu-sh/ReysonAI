@@ -63,10 +63,12 @@ export function nextActor(s: PreflopState): Position | null {
 
 type Situation = { source: string | null; rows: any; map: Record<string, PreflopAction> };
 
-const find = (file: string, id: string) => dataset<{spots: SourceSpot[]}>(file)?.spots?.find(item => item.id === id) ?? null;
+export type DatasetLookup = (name: string) => unknown;
 
 // The saved dataset row that answers `pos` in the current state, and how its keys map to actions.
-export function situation(s: PreflopState, pos: Position): Situation {
+export function situation(s: PreflopState, pos: Position, lookup?: DatasetLookup): Situation {
+  const read = lookup ?? dataset;
+  const find = (file: string, id: string) => (read(file) as { spots: SourceSpot[] } | undefined)?.spots.find(item => item.id === id) ?? null;
   const raises = s.raises, bet = currentBet(s);
   const raise = (key: string, to: number): PreflopAction => ({ type: "raise", to: Math.min(STACK_BB, round(to)), key });
   const call: PreflopAction = { type: "call", key: "call" }, fold: PreflopAction = { type: "fold", key: "fold" };
@@ -118,7 +120,7 @@ export function situation(s: PreflopState, pos: Position): Situation {
 
   // The bounded multiway catalog owns these histories, including cold-4bet
   // and squeeze continuations. No original-opener HU response is reused here.
-  const continuation = continuationDecisionForEvents(s.events);
+  const continuation = lookup === undefined ? continuationDecisionForEvents(s.events) : null;
   if (continuation && continuation.hero === pos) {
     const map: Record<string, PreflopAction> = { fold, call };
     for (const key of continuation.legal_actions) if (key === "four_bet" || key === "all_in") {
@@ -176,8 +178,8 @@ function contendersAfterCall(s: PreflopState, pos: Position) {
 export type Choice = { action: PreflopAction; freq: number };
 
 // The offered actions for `pos` with their saved frequency for `hand`, after the table rules.
-export function preflopOptions(s: PreflopState, pos: Position, hand: string) {
-  const sit = situation(s, pos);
+export function preflopOptions(s: PreflopState, pos: Position, hand: string, lookup?: DatasetLookup) {
+  const sit = situation(s, pos, lookup);
   const row = sit.rows?.hands?.find((item: any) => item.hand === hand) ?? null;
   const bet = currentBet(s);
   const facing = bet > contribution(s, pos);

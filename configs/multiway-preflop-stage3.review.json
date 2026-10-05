@@ -9035,8 +9035,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 11568,
-      "sha256": "dc41ec61473bd6fc94ee1e69970108b07c5e98f3d8eef216d86ed96c43e24486"
+      "bytes": 12618,
+      "sha256": "385b0f1f13c2a79bd9809d399e2e68a7a32fa7fa7fc8763a7f9c83638716c3a3"
     },
     {
       "path": ".gitignore",
@@ -9505,8 +9505,8 @@
     },
     {
       "path": "configs/multiway-preflop-stage2.review.json",
-      "bytes": 540511,
-      "sha256": "5d6842c97c4be61674cdd4a0e9d27df70d2ae8a5a48f3eb316929afe32de3d21"
+      "bytes": 556863,
+      "sha256": "630a45330923d076c71d47b1a06cbcb96e88c8d6acc5058a6698b1e30f0e62e7"
     },
     {
       "path": "configs/multiway-preflop-stage3.json",
@@ -9525,7 +9525,7 @@
     "sha256": "930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b",
     "format": "ustar+gzip-stage3-content-v1"
   },
-  "content_sha256": "bfd3d2fde9765198f49aaf3280ce85622c6392a6d209856961af29784712b459",
+  "content_sha256": "bc7f564f4d06a6d547f1aa4f319794dcbaa6bd19bf8c3ea66f68d2b434cc816e",
   "source_fingerprint": "a3b44b0e1fdf14e306d33335cdfa93196e214342a3500bd7883745da1cf522d6",
   "counts": {
     "catalog": 16132,
@@ -10006,6 +10006,125 @@
       "final_stage2_receipt": {
         "bytes": 540511,
         "sha256": "5d6842c97c4be61674cdd4a0e9d27df70d2ae8a5a48f3eb316929afe32de3d21"
+      }
+    },
+    "fastfold_integration_renewal": {
+      "date": "2026-10-05",
+      "status": "independently-reviewed",
+      "reviewer": "Independent Stage3/FastFold integration source reviewer",
+      "report": "apps/frontend/docs/specs/multiway-preflop-stage3.typed-integration-review.md",
+      "scope": "Bounded source/configuration compatibility integration of preserved Stage3/HU model10 with the exact upstream FastFold release. Scoped legacy geometry factory plus pure unchanged HU catalog preserve ordinary practice and browser inputs; injected FastFold remains legacy-only. Exact five synthetic D1 sentinels and workflow merge retained. No strategy-quality, rating-calibration, production, browser, full-D1 rollback or final-head CI approval.",
+      "preserved_head_commit": "b3905029d0a4c4cc696edf15dd72ae369bb1827a",
+      "fixed_development_commit": "e695dc94625260b8ac620cd489c5fc24097e3252",
+      "common_base_commit": "b28147774ec6909196b80353d10129723f333adb",
+      "source_graph": {
+        "before": 98,
+        "after": 98,
+        "modified": 2,
+        "added": 0,
+        "removed": 0,
+        "unchanged": 96,
+        "change_ledger_sha256": "f97117d32f5e7c054f9451c82cd1bae91ec19b3ca6a97324be76e6ddc30ced2a"
+      },
+      "upstream_review_history": {
+        "receipt_sha256": "8aa315b5fa14dd288cfe6c61e47e51fd31396af317639fa9c4bbd8f536810f18",
+        "source_renewals_preserved_verbatim": 4,
+        "boundary": "Upstream 103-source and Stage2-only delivery identities remain historical evidence, distinct from this Stage3-combined checkout."
+      },
+      "immutable_evidence": {
+        "artifact_records_unchanged": 3693,
+        "preflop_archives_unchanged": 2,
+        "inherited_hu_archives_unchanged": 2,
+        "all_prior_review_fields_unchanged": true,
+        "counts_fingerprints_policies_thresholds_samples_unchanged": true,
+        "strategy_generation": false
+      },
+      "verification": {
+        "scoped_parity": {
+          "status": "passed",
+          "descriptors": 456,
+          "reachable_complete_inputs": 452,
+          "unchanged_unreachable_legacy": 4,
+          "ordinary_hu_paths": 407,
+          "injected_hu_paths_rejected": 407,
+          "missing_hu_paths_rejected": 407,
+          "lookup_isolation": true,
+          "preflop_scopes": [
+            {
+              "family": "squeeze",
+              "id": "sq_UTGo2p5_HJc2p5_COf_BTNf_SBf_BBs13__UTGf_HJr26__to_BB",
+              "ordinary": "continuation-responses/sq_UTGo2p5_HJc2p5_COf_BTNf_SBf_BBs13__UTGf_HJr26__to_BB",
+              "injected": null
+            },
+            {
+              "family": "cold_four_bet",
+              "id": "c4_UTGo2p5_HJt8_COr26_BTNf_SBf_BBf__UTGf_HJa100__to_CO",
+              "ordinary": "continuation-responses/c4_UTGo2p5_HJt8_COr26_BTNf_SBf_BBf__UTGf_HJa100__to_CO",
+              "injected": null
+            },
+            {
+              "family": "two_caller_squeeze",
+              "id": "sq2_UTGo2p5_HJc2p5_COc2p5_BTNs14p5_SBf_BBf__to_UTG",
+              "ordinary": "continuation-responses/sq2_UTGo2p5_HJc2p5_COc2p5_BTNs14p5_SBf_BBf__to_UTG",
+              "injected": "squeeze-responses/UTG_vs_BTN_squeeze_HJcall"
+            },
+            {
+              "family": "three_bet_cold_call",
+              "id": "cc_UTGo2p5_HJt8_COc8_BTNf_SBf_BBf__to_UTG",
+              "ordinary": "continuation-responses/cc_UTGo2p5_HJt8_COc8_BTNf_SBf_BBf__to_UTG",
+              "injected": "three-bet-responses/UTG_vs_HJ_three_bet"
+            }
+          ],
+          "proof_sha256": "12198452989ddcc83d032aedfc3e9e485fbf135bbe06bd555419400c525e3c36"
+        },
+        "five_sentinels": "Independent in-memory Python SQLite check passed: all10 migrations,21 unrelated tables with exactly one row, FK enabled and no violations, real zero-evidence aggregate trigger, paused session. Not Wrangler/D1 rollback proof.",
+        "workflow": "Exact conflict-free three-way merge; both Stage3 restores, strict D1, main-only deployment and incoming FastFold migration/readiness ordering retained. Not executed by reviewer.",
+        "focused_tests": "pending; recorded separately by integration task",
+        "full_current_verifiers": "pending"
+      },
+      "preserved_metadata": "All existing Stage3-integrated review fields and amendments remain verbatim. All four upstream source_renewals are preserved verbatim in Stage2; Stage3 binds the exact final Stage2 receipt. Historical results are not relabeled as current.",
+      "remaining_gates": [
+        "Final scoped/targeted suites, typecheck and build",
+        "Current complete Stage2/Stage3 verifiers, canonical SQL and clean restoration",
+        "Strict full-file D1 preservation, idempotency and late-failure rollback",
+        "Final exact-head required CI",
+        "Browser acceptance and any separately authorized production work"
+      ],
+      "final_stage2_receipt": {
+        "bytes": 554848,
+        "sha256": "9156cb33224a06dd4d9b857a025047f8fc5c88eecc6ea67813aaa38514f801cb"
+      }
+    },
+    "fastfold_facade_type_renewal": {
+      "date": "2026-10-05",
+      "status": "independently-reviewed",
+      "reviewer": "Independent Stage3/FastFold integration source reviewer",
+      "report": "apps/frontend/docs/specs/multiway-preflop-stage3.typed-integration-review.md",
+      "scope": "Only two erased type aliases and the LegacyFacade annotation on unchanged spots.ts const destructuring. Exports retain the established Spot|null facade while the scoped core and runtime lookup/descriptors remain unchanged. No policy/data/gate change or new numerical approval.",
+      "prior_receipt_sha256": "a5c2cf564b542d7e79ead2861686105e7d2c6afd89547ffa51283c88ad19029d",
+      "source_changes": [
+        {
+          "previous": {
+            "path": "configs/multiway-preflop-stage2.review.json",
+            "bytes": 554848,
+            "sha256": "9156cb33224a06dd4d9b857a025047f8fc5c88eecc6ea67813aaa38514f801cb"
+          },
+          "current": {
+            "path": "configs/multiway-preflop-stage2.review.json",
+            "bytes": 556863,
+            "sha256": "630a45330923d076c71d47b1a06cbcb96e88c8d6acc5058a6698b1e30f0e62e7"
+          }
+        }
+      ],
+      "sources_before": 98,
+      "sources_after": 98,
+      "proof_sha256": "8fd1f2b5eeeb665506e8d0aaeac2c1e9bda513cbae9c6cbaed0293f687e6bb9d",
+      "verification": "Removing exactly the two type declarations and one annotation reproduces the exact source SHA used by the passing456-descriptor/452-input scoped parity run. Frontend strict TypeScript passed. No extra Node process or generation was run by reviewer.",
+      "preserved_metadata": "Every prior review field, including all four inherited source_renewals and the preceding FastFold integration renewal, retained verbatim. Artifacts, archives, fingerprints and counts unchanged.",
+      "remaining_gates": "Runtime typecheck, focused/full suites, full current-source delivery verification, strict D1, clean restore, exact-head CI and browser/production checks remain separate.",
+      "final_stage2_receipt": {
+        "bytes": 556863,
+        "sha256": "630a45330923d076c71d47b1a06cbcb96e88c8d6acc5058a6698b1e30f0e62e7"
       }
     }
   }
