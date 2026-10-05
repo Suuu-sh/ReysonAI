@@ -1,3 +1,4 @@
+import { GameplayDetails, GamePanel } from "./GameplayDetails.tsx";
 import { StyleAvatar } from "./StyleAvatar.tsx";
 import { OpponentProfile, profileCopy as profileText, type OpponentProfileData } from "./OpponentProfile.tsx";
 import type { ReactNode } from "react";
@@ -90,6 +91,8 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   const [loadError, setLoadError] = useState<string | null>(null);
   const [speed, setSpeed] = useState<Speed>(() => readPref("reysonai:agent-speed", "normal"));
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [compact, setCompact] = useState(() => window.matchMedia?.("(max-width: 650px)").matches ?? false);
+  useEffect(() => { const media = window.matchMedia?.("(max-width: 650px)"); if (!media) return; const update = () => setCompact(media.matches); media.addEventListener("change", update); return () => media.removeEventListener("change", update); }, []);
   const [styleOpen, setStyleOpen] = useState(false);
   const [opponentProfile, setOpponentProfile] = useState<OpponentProfileData | null>(null);
   const boundary = useRef(onHandBoundary); boundary.current = onHandBoundary;
@@ -223,13 +226,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
   const winnerLine = done ? resultLine(result!, nameOf) : null;
   const myDelta = done && humanPos ? toPoints(result!.returns![humanPos] ?? 0) : null;
 
-  return <div className="agent-page" style={{ "--table-theme": table.theme } as any}>
-    <header className="agent-top">
-      <button type="button" className={`agent-back${waitingMode ? " ff-exit" : ""}`} disabled={exitDisabled} onClick={onExit} aria-label={waitingMode ? localized("Exit", "退出") : localized("Back", "戻る")}><ArrowLeft size={16} weight="bold" />{waitingMode && localized("Exit", "退出")}</button>
-      <div className="agent-title">
-        <strong>{waitingHeader ?? localized(table.name.en, table.name.ja)}</strong>
-        <small>{watch ? localized("Spectating", "観戦") : "Reyson Agent"} · 6-max 100BB · #{session.handNo + 1}</small>
-      </div>
+  const tools = <>
       <div className="agent-tools">
         <div className="agent-segment" role="group" aria-label={localized("Speed", "速さ")}>
           {(Object.keys(SPEEDS) as Speed[]).map(value => <button key={value} type="button" aria-pressed={speed === value}
@@ -241,6 +238,15 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
           <span className="agent-rule-tip" role="tooltip">{localized("Reyson Agent is in beta and multiway pots aren't supported yet. A call that would bring a third player to the flop isn't offered (agents fold that share instead), and lines without saved data fold.",
             "Reyson Agentはβ版で、まだマルチウェイに対応していません。3人目としてフロップへ行くコールは選べず（Agentはその頻度をフォールドに回します）、保存データのない場面はフォールドになります。")}</span></span>
       </div>
+  </>;
+  return <div className="agent-page" style={{ "--table-theme": table.theme } as any}>
+    <header className="agent-top">
+      <button type="button" className={`agent-back${waitingMode ? " ff-exit" : ""}`} disabled={exitDisabled} onClick={onExit} aria-label={waitingMode ? localized("Exit", "退出") : localized("Back", "戻る")}><ArrowLeft size={16} weight="bold" />{waitingMode && localized("Exit", "退出")}</button>
+      <div className="agent-title">
+        <strong>{waitingHeader ?? localized(table.name.en, table.name.ja)}</strong>
+        <small>{watch ? localized("Spectating", "観戦") : "Reyson Agent"} · 6-max 100BB · #{session.handNo + 1}</small>
+      </div>
+      <div className="game-desktop-tools">{tools}</div>
     </header>
 
     <div className="agent-layout">
@@ -294,8 +300,8 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
               <div className="agent-turn">
                 <b>{localized("Your turn", "あなたの番")}</b>
                 <small>{pending.toCall ? localized(`To call ${bb(pending.toCall)}BB`, `コール額 ${bb(pending.toCall)}BB`) : localized("You can check", "チェックできます")} · {localized("pot", "ポット")} {bb(pending.pot)}BB</small>
-                {pending.notice === "no_data" && <small className="agent-turn-note">{localized("Beta: this line (e.g. a squeeze or cold 4-bet pot) has no saved postflop strategy yet, so the hand is checked down to showdown.", "β版のため、この流れ（スクイーズやコールド4betのポットなど）のポストフロップ方針はまだありません。ショーダウンまでチェックで進みます。")}</small>}
-                {pending.notice === "no_multiway" && <small className="agent-turn-note">{localized("Beta: multiway pots aren't supported yet, so a call that would make the flop three-way isn't offered.", "β版のため、まだマルチウェイ（3人以上でのフロップ）に対応していません。ここでのコールは3人目になるため選べません。")}</small>}
+                {pending.notice === "no_data" && <details className="agent-turn-note" open={!compact || undefined}><summary>{profileText("Beta · details", "β版・詳細", "测试版 · 详情", "Beta · detalles")}</summary><small>{localized("Beta: this line (e.g. a squeeze or cold 4-bet pot) has no saved postflop strategy yet, so the hand is checked down to showdown.", "β版のため、この流れ（スクイーズやコールド4betのポットなど）のポストフロップ方針はまだありません。ショーダウンまでチェックで進みます。")}</small></details>}
+                {pending.notice === "no_multiway" && <details className="agent-turn-note" open={!compact || undefined}><summary>{profileText("Beta · details", "β版・詳細", "测试版 · 详情", "Beta · detalles")}</summary><small>{localized("Beta: multiway pots aren't supported yet, so a call that would make the flop three-way isn't offered.", "β版のため、まだマルチウェイ（3人以上でのフロップ）に対応していません。ここでのコールは3人目になるため選べません。")}</small></details>}
               </div>
               <div className="agent-buttons">{pending.options.map((option, index) => <PokerActionButton key={option.key} tone={tone(option.key)} onClick={() => act(option.key)}>
                 <kbd>{index + 1}</kbd><span>{actionLabel({ action: option.key, to: option.key === "call" ? pending.toCall : option.to })}</span>
@@ -313,9 +319,9 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
         </footer>
       </section>
 
-      <aside className="agent-side">
-        {opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}
-        {waitingSidebar}
+      <GameplayDetails requestedPanel={compact && styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
+        {waitingMode && <GamePanel id="queue" label={profileText("Queue / rank", "待機 / ランク", "队列 / 评分", "Cola / rango")}>{waitingSidebar}</GamePanel>}
+        <GamePanel id="session" label={profileText(waitingMode ? "Agents" : "Session", waitingMode ? "Agent" : "セッション", waitingMode ? "Agent" : "会话", waitingMode ? "Agents" : "Sesión")}>
         {waitingMode && <section className="agent-panel"><h3>{profileText("Practice Agents", "練習相手のAgent", "练习Agent", "Agents de práctica")}</h3>{table.agents.map(character => <div className="ff-opponent" key={character.id}><button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"),avatar:<StyleAvatar id="balanced" color={character.color} size={64}/>})}><StyleAvatar id="balanced" color={character.color} size={32}/></button><div><strong>{character.name.en}</strong><small>{profileText("Balanced · preflop", "バランス型・プリフロップ", "平衡型 · 翻牌前", "Equilibrado · preflop")}</small></div></div>)}</section>}
         {!waitingMode && <>
         {liveRead && <PlayStyleCard read={liveRead} onOpen={() => setStyleOpen(true)} />}
@@ -330,10 +336,14 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
             </li>;
           })}</ol>
         </section>
+        </>}
+        </GamePanel><GamePanel id="hand" mobileOnly={waitingMode} label={profileText("Hand", "ハンド", "手牌", "Mano")}>
         <section className="agent-panel agent-log">
           <h3>{localized("This hand", "このハンド")}</h3>
           <HandLog entries={revealed} nameOf={nameOf} board={result?.board ?? []} />
         </section>
+        </GamePanel><GamePanel id="recent" mobileOnly={waitingMode || history.length === 0} label={profileText("Recent", "最近", "最近", "Recientes")}>
+        {history.length === 0 && <section className="agent-panel"><p className="agent-log-empty">{profileText("No completed hands yet", "完了したハンドはまだありません", "暂无已完成手牌", "Aún no hay manos terminadas")}</p></section>}
         {history.length > 0 && <section className="agent-panel">
           <h3>{localized("Recent hands", "最近のハンド")}</h3>
           <ul className="agent-recent">{history.slice(0, 6).map(item => <li key={item.no}>
@@ -341,10 +351,11 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
             {item.mine != null && <b className={item.mine > 0 ? "up" : item.mine < 0 ? "down" : ""}>{signed(item.mine)}</b>}
           </li>)}</ul>
         </section>}
-        </>}
-      </aside>
+        </GamePanel>
+        <GamePanel id="tools" label={profileText("Tools", "設定", "工具", "Controles")} mobileOnly>{tools}{liveRead && <PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} />}</GamePanel>
+      </GameplayDetails>
     </div>
-    {styleOpen && liveRead && <div className="style-drawer" role="dialog" aria-modal="true" aria-label={localized("Your play style", "あなたのプレイスタイル")}>
+    {styleOpen && !compact && liveRead && <div className="style-drawer" role="dialog" aria-modal="true" aria-label={localized("Your play style", "あなたのプレイスタイル")}>
       <button type="button" className="style-drawer-backdrop" aria-label={localized("Close", "閉じる")} onClick={() => setStyleOpen(false)} />
       <div className="style-drawer-panel"><PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} /></div>
     </div>}
@@ -353,7 +364,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
 
 function HandLog({ entries, nameOf, board }: { entries: LogEntry[]; nameOf: (pos: string) => string; board: string[] }) {
   const end = useRef<HTMLDivElement>(null);
-  useEffect(() => { end.current?.scrollIntoView?.({ block: "nearest" }); }, [entries.length]);
+  useEffect(() => { const log = end.current?.closest<HTMLElement>(".agent-log-body"); if (log) log.scrollTop = log.scrollHeight; }, [entries.length]);
   if (!entries.length) return <p className="agent-log-empty">{localized("Dealing…", "配っています…")}</p>;
   const groups = STREETS.map(street => ({ street, items: entries.filter(entry => entry.street === street) })).filter(group => group.items.length);
   const label: Record<string, string> = { preflop: localized("Preflop", "プリフロップ"), flop: localized("Flop", "フロップ"), turn: localized("Turn", "ターン"), river: localized("River", "リバー") };
