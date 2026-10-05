@@ -29,3 +29,19 @@ test("reviewed main deploy applies only ranked schema before API and live readin
   assert.ok(deployment.indexOf("- name: Deploy Worker") < deployment.indexOf("import-reviewed-preflop.mjs --remote"));
   assert.doesNotMatch(deployment.split("\n").filter(line => !line.trimStart().startsWith("#")).join("\n"), /migrations apply|publish:d1|d1 (?:restore|delete)|--file migrations\/000[1-8]/);
 });
+
+
+test("live ranked readiness checks the same credentialed CORS contract as the browser", () => {
+  assert.match(deployment, /const origin = 'https:\/\/app\.reysonai\.com'/);
+  assert.match(deployment, /headers: \{ Accept: 'application\/json', Origin: origin \}/);
+  assert.match(deployment, /get\('access-control-allow-origin'\) !== origin/);
+  assert.match(deployment, /get\('access-control-allow-credentials'\) !== 'true'/);
+  assert.match(deployment, /method: 'OPTIONS'/);
+  assert.match(deployment, /'Access-Control-Request-Method': 'POST'/);
+  assert.match(deployment, /'Access-Control-Request-Headers': 'content-type'/);
+  assert.match(deployment, /assertCors\(preflight\)/);
+  assert.match(deployment, /preflight\.status !== 204/);
+  assert.match(deployment, /assertCors\(anonymous\)/);
+  assert.match(deployment, /anonymous\.status !== 401/);
+  assert.match(deployment, /error !== 'sign_in_required'/);
+});
