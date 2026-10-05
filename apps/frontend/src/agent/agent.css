@@ -363,7 +363,7 @@
 }
 
 /* Style zones behind the map: each style's area, faintly tinted, with its character and name. */
-.style-zone { position: absolute; display: grid; align-content: start; justify-content: center; justify-items: center; gap: 2px; padding-top: 18px; box-shadow: inset 0 0 0 .5px rgb(255 255 255 / 6%); background: color-mix(in srgb, var(--style) 5%, transparent); color: var(--text-subtle); font-size: 9px; font-weight: 700; text-align: center; opacity: .7; transition: opacity .2s ease, background .2s ease; }
+.style-zone { position: absolute; display: grid; place-content: center; justify-items: center; gap: 2px; box-shadow: inset 0 0 0 .5px rgb(255 255 255 / 6%); background: color-mix(in srgb, var(--style) 5%, transparent); color: var(--text-subtle); font-size: 9px; font-weight: 700; text-align: center; opacity: .7; transition: opacity .2s ease, background .2s ease; }
 .style-zone small { font-size: inherit; line-height: 1.2; }
 .style-zone:hover { opacity: 1; background: color-mix(in srgb, var(--style) 10%, transparent); }
 .style-zone.is-current { opacity: 1; background: color-mix(in srgb, var(--style) 16%, transparent); color: var(--style); }
