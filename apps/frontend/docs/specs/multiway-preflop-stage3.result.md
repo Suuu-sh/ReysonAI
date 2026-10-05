@@ -2,7 +2,7 @@
 
 ## Review status
 
-Complete numerical/reason review and the final shared-HU integration passed. The complete frontend suite passed **836/836 tests, zero failures/skips**, followed by official combined-delivery build/check and fresh receipt-bound clean restoration. The Stage 3 LFS object has now been uploaded to the private repository and verified by a fresh fetch into separate empty LFS storage. The owner separately approved the exact Stage 3 review manifest, whose Git blob was saved successfully. Whole-delivery D1 validation, required PR CI and real-browser acceptance remain unfinished. The exact reviewed checkpoint is being saved as a Draft PR; current Ranked hotfix/upstream compatibility is a separate follow-up. No production merge, deployment or D1 import has been performed.
+Complete numerical/reason review and the final shared-HU integration passed. The complete frontend suite passed **836/836 tests, zero failures/skips**, followed by official combined-delivery build/check and fresh receipt-bound clean restoration. The Stage 3 LFS object has now been uploaded to the private repository and verified by a fresh fetch into separate empty LFS storage. The owner separately approved the exact Stage 3 review manifest, whose Git blob was saved successfully. Whole-delivery D1 validation, required PR CI and real-browser acceptance remain unfinished. The reviewed checkpoint is saved in [Draft PR #50](https://github.com/Suuu-sh/ReysonAI/pull/50). The later fixed-development and Ranked compatibility checks are recorded below; final runtime/CI acceptance is tracked on the PR. No production merge, deployment or D1 import has been performed.
 
 These are independently authored AI estimates, not a jointly solved strategy or a GTO-quality guarantee.
 
@@ -170,3 +170,17 @@ The remaining blockers are strict full-payload D1 roundtrip/repeat-import/isolat
 The owner approved saving `configs/multiway-preflop-stage3.review.json` to the private `Suuu-sh/ReysonAI` repository. The exact reviewed file is 509,233 bytes, SHA-256 `13b2c8e8a8bd2561420f0af8ca1db3c8b7dda71678c9ebbf0e909f8e6f83e37f`; its successful Git blob is `d7441c9e2610da454e35c668cbe57d6645c55bd3`. This resolves the earlier file-specific upload block for this payload. Earlier checkpoint descriptions of the upload block are historical.
 
 An authorized Mac execution completed at 01:02 UTC: it materialized the exact Stage 3 archive, verified its 2,436,451-byte size and SHA-256 `930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b`, uploaded that object to the same private repository, and fetched it into separate empty LFS storage with the same size/hash. It changed no branch/ref, commit or credentials and did not transfer the review manifest. The parent read the completed result at 01:03 UTC. This establishes actual remote LFS preservation; strict full-delivery D1, browser acceptance and required exact-head CI remain separate gates.
+
+## Fixed development and Ranked preservation — 2026-10-05
+
+The integration now retains development `27413017b2dfa6aa42099c5017aa1343989f3dd7`, including the published Ranked browser CORS fix from main `b03d8b06aaf66abcfbe7917df4d09b4d4c905671`. The Ranked patch changes the existing Worker response headers, its regression tests and the existing deployment readiness check. Source-compatibility review independently confirmed the gate is unchanged from the published fix and Stage 3's restoration/test additions remain present. All prior receipt metadata, all reviewed numerical artifacts and both archives remain intact.
+
+The shared RangeContextCard and sixteen-path upstream UI reconciliation are inherited from the separately tested HU integration. The Stage 3 workspace merge retains all 41 Stage 3-specific lines and its original continuation, hydration and URL behavior. Development's final two StyleMap display files are exact upstream bytes. Of the 27 incoming development paths, 21 match exactly; the other six retain the already-authorized HU/Stage 3 additions and their coupled review receipts.
+
+Current targeted validation: backend Ranked 11/11, frontend UI/Stage 3/Ranked 91/91 and Sites 7/7, all with zero skips; typecheck and production build pass. Both original full numerical/publication verifiers then passed, and all 3,693 metadata records / 7,126 parts / 129,253,470 SQL bytes matched the frozen canonical reference. That final delivery check took 23.22 seconds. The earlier 836-test complete suite remains evidence for its previous reviewed checkpoint; these current targeted checks are recorded separately. No new full-payload D1 cloud attempt or numerical generation was performed.
+
+Current receipt identities:
+- `configs/multiway-preflop-stage2.review.json`: 529,120 bytes; SHA-256 `3ea5d252dd257d75677ccff61bf94a3aa639066f3e32c7e20ed076b80ec3fb2b`; content `9b2a266fe502f2f04de46d1308d89908d3eb5b9d7cd635543f29397d92b7f476`.
+- `configs/multiway-preflop-stage3.review.json`: 512,995 bytes; SHA-256 `2a9dcb1dc46b38a86836a86b0afe3dfcdc025f5a8944b7c2ece3a55692bc1b4c`; content `1533778dd4ec63139dd7611d38aecca66cce5ccfac9e29a2a82c65b591f68222`.
+
+Full-payload D1, real-browser acceptance and the final required CI result remain release gates. The actual Stage 3 LFS transfer/fresh-fetch and original manifest-specific permission are already established.

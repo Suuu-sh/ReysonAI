@@ -343,6 +343,59 @@
       },
       "historical_evidence_boundary": "The verbatim inherited HU amendment records its separate checkout 89→92 source graph and 68,705,643-byte Stage2-only SQL validation. Those are historical evidence, not the current Stage3 combined 116/67 source graphs and 129,253,470-byte SQL validation. Current combined execution is recorded separately below.",
       "verification": "Independent review checked exact three-way integration, all immutable artifact/archive/source identities, both complete source graphs, historical review preservation, HU historical amendment append, and receipt coupling. Source compatibility only; final full-suite and external release gates remain pending."
+    },
+    "ranked_browser_compatibility_renewal": {
+      "date": "2026-10-05",
+      "status": "verified",
+      "reviewer": "Independent parent Ranked source/receipt compatibility review",
+      "scope": "Preserve the published main b03d8b06 Ranked credentialed-CORS fix without changing preflop numerical sources or saved artifacts. Only the workflow source identity changes in the preflop graphs; final Stage2 receipt bytes are rebound inside Stage3. This is not production deployment, D1 acceptance, or new strategy-quality review.",
+      "upstream_commit": "b03d8b06aaf66abcfbe7917df4d09b4d4c905671",
+      "code_patch_sha256": "be36405083bc4a81e0399251ca0046d379fc0d78120e5b6b758b805458ad0f8c",
+      "code_paths": [
+        {
+          "path": ".github/workflows/deploy-worker.yml",
+          "before_bytes": 10087,
+          "before_sha256": "c495c16190970556daebb62188f3507c7e23bd3a18b1cfe1bee79f62e143aa97",
+          "after_bytes": 11568,
+          "after_sha256": "dc41ec61473bd6fc94ee1e69970108b07c5e98f3d8eef216d86ed96c43e24486",
+          "after_git_blob": "7d122327d61025c3c8b38225018a391a20dc483a"
+        },
+        {
+          "path": "apps/backend/src/index.ts",
+          "before_bytes": 23082,
+          "before_sha256": "be8a53ba9de2a480e960fa6215d383ad9673f13f537d8a667c3815a7a9921398",
+          "after_bytes": 23363,
+          "after_sha256": "33dac6ccabbea05abcfe8bbd9eee164cfd074b2e76a531c189818a6561775f34",
+          "after_git_blob": "25fedaef6255c81bfa21183fa12f406380be542d"
+        },
+        {
+          "path": "apps/backend/tests/ranked.test.mjs",
+          "before_bytes": 9102,
+          "before_sha256": "577913ae4e81f80cc22b3e9dc3c03537258e46b815d308dcbed1780ac2687b74",
+          "after_bytes": 13320,
+          "after_sha256": "9c88db31a2648da926904a7c792fbd2c3105482dc7ab7cfc8edd6e9aa77fceb9",
+          "after_git_blob": "d71cc3538ee4b521610e62916cc52181ed7b4221"
+        },
+        {
+          "path": "apps/frontend/tests/ranked-workflow.test.mjs",
+          "before_bytes": 2434,
+          "before_sha256": "5389849f5728991452c87dbdb4fe44a6e502f8d2a2d3befef17e2b3e5ff31d91",
+          "after_bytes": 3350,
+          "after_sha256": "bec094ae79e4c0c2c95e7066e6d831b35d5b2b16dfde08f150761cc2f69be927",
+          "after_git_blob": "f02645a68995c177ccdc2820b6f320920602eb48"
+        }
+      ],
+      "prior_stage2_receipt_sha256": "e45f85eb251fb077165b2421fbadf6fcb42128b1b74b5c1ab4656049d9c7bc1e",
+      "prior_stage3_receipt_sha256": "13b2c8e8a8bd2561420f0af8ca1db3c8b7dda71678c9ebbf0e909f8e6f83e37f",
+      "preserved_metadata": "Every prior review field, delivery amendment, artifact/archive identity, fingerprint and count is retained verbatim. This limited amendment concerns the current Stage3-integrated workflow, not the differently sized upstream-only workflow.",
+      "validation": "At source-review time, exact current-source targeted tests and full-verifier/canonical-SQL execution remained pending. The earlier836-test run applies to its preserved checkpoint; later evidence is recorded in the result report.",
+      "remaining_gates": [
+        "Strict full-delivery D1 roundtrip, repeat import, isolation and late-failure rollback",
+        "Real-browser acceptance",
+        "Exact-head required CI"
+      ],
+      "reviewed_at_utc": "2026-10-05T01:24:24Z",
+      "verification": "The independent parent read the four-file proposal and receipt scripts, reran prepare-receipts.py, checked all1888 legacy and1805 Stage3 artifact bytes, both archives and116/67 current source candidate identities, and confirmed the CORS gate body matches the published main hotfix. The Stage3-specific restore/test additions are retained. Runtime validation is recorded separately after this limited source review."
     }
   },
   "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
@@ -9802,8 +9855,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 10087,
-      "sha256": "c495c16190970556daebb62188f3507c7e23bd3a18b1cfe1bee79f62e143aa97"
+      "bytes": 11568,
+      "sha256": "dc41ec61473bd6fc94ee1e69970108b07c5e98f3d8eef216d86ed96c43e24486"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -10376,7 +10429,7 @@
       "sha256": "67de080dd1319f92148a03d9b8f8f62550180f7c9e1c37edc848fa390760817c"
     }
   ],
-  "content_sha256": "4075f163fe37e44f16a493a56dcfe5c912876e9f06ec548a5ff4d149c5e7172d",
+  "content_sha256": "9b2a266fe502f2f04de46d1308d89908d3eb5b9d7cd635543f29397d92b7f476",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,

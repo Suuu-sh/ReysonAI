@@ -178,3 +178,13 @@ Later execution on this exact integrated source passed 836/836 complete frontend
 ## Subsequent storage status — 2026-10-05
 
 After the numerical/source reviews above, the owner explicitly approved the exact 509,233-byte Stage 3 receipt for the same private repository; blob `d7441c9e2610da454e35c668cbe57d6645c55bd3` matches the reviewed file. Authorized Mac execution also completed object-only LFS upload followed by a fresh fetch into separate empty storage, reproducing archive SHA-256 `930d88207c2aa31430eb28570f7d90e064bb3680c40203d5e860bfe9289eac7b` and 2,436,451 bytes. This later storage result does not rewrite historical review limitations or approve D1, browser, CI or production deployment.
+
+## Ranked workflow source-compatibility amendment — 2026-10-05
+
+The independent parent read the four-file Ranked patch and both proposed receipts, reran the complete receipt preparation, and checked all 1,888 legacy and 1,805 Stage 3 artifacts, both archives and the 116/67 source candidates. The current workflow differs from the production hotfix only by the already reviewed Stage 3 restore and test additions. It preserves the exact main-only deployment condition, original independent verification, full-D1/bundle checks and ordering. The candidate was approved as a limited source-compatibility update.
+
+Only the workflow source record changes in each graph; Stage 3 also rebinds the final Stage 2 receipt body. Every prior review field and amendment is retained. The current two receipts are:
+- `configs/multiway-preflop-stage2.review.json`: 529,120 bytes; SHA-256 `3ea5d252dd257d75677ccff61bf94a3aa639066f3e32c7e20ed076b80ec3fb2b`; content `9b2a266fe502f2f04de46d1308d89908d3eb5b9d7cd635543f29397d92b7f476`.
+- `configs/multiway-preflop-stage3.review.json`: 512,995 bytes; SHA-256 `2a9dcb1dc46b38a86836a86b0afe3dfcdc025f5a8944b7c2ece3a55692bc1b4c`; content `1533778dd4ec63139dd7611d38aecca66cce5ccfac9e29a2a82c65b591f68222`.
+
+The separate upstream display merge introduces no numerical source or artifact change. All 41 Stage 3-specific workspace lines survive exactly; the inherited RangeContextCard uses existing reset/edit callbacks and current visible board blocks. Backend 11, current frontend 91 and Sites 7 targeted tests passed with zero skips, along with typecheck/build. Both complete verifiers and every canonical SQL byte passed afterward. This amendment is not full-D1, browser, CI or production approval and does not relabel the earlier 836-test run as a later full-suite execution.

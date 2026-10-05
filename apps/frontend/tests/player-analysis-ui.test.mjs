@@ -51,3 +51,40 @@ test("player analysis shows a distinct ReysonAI Score trend", () => {
   assert.doesNotMatch(html, /GTO|AI推定|AI-estimated|AI estimate|未検証|not a solver/i);
   assert.match(html, /class="analysis-score-line"/);
 });
+
+test("drill styles reuse animals only after the existing diverse-sample threshold", async () => {
+  const { practiceAnimal } = await server.ssrLoadModule("/src/trainer/practice-style.ts");
+  assert.equal(practiceAnimal({ ready: false, style: { key: "nit" } }).id, "collecting");
+  for (const [key, id] of [["nit", "nit"], ["tag", "tag"], ["lag", "lag"], ["calling", "station"], ["tight", "tight_passive"], ["balanced", "balanced"]]) {
+    assert.equal(practiceAnimal({ ready: true, style: { key } }).id, id);
+  }
+  const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], onStart() {} }));
+  assert.match(html, /ドリルのプレイスタイル/);
+  assert.match(html, /Agent卓のVPIP・PFR/);
+  assert.match(html, /カメ/);
+  assert.match(html, /サメ/);
+});
+
+test("ranked stats use server match summaries, never drill history or a fabricated animal", async () => {
+  const { RankedStats } = await server.ssrLoadModule("/src/trainer/RankedStats.tsx");
+  const rank = { rating: 1120, peak: 1200, matches: [{ id: "confirmed", at: Date.now(), before: 1100, after: 1120, accuracy: .75, answered: 20 }] };
+  const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [{ spotId: "UTG_open", hand: "AA", action: "open", result: "best", score: 1 }], rank, rankedReady: true, initialView: "ranked", onStart() {} }));
+  assert.match(html, /確定済みランク戦/);
+  assert.match(html, /75%/);
+  assert.match(html, /確定済み 20 回答/);
+  assert.match(html, /GTO・EV・勝率ではありません/);
+  assert.match(html, /個別アクションがない/);
+  assert.doesNotMatch(html, /プレイスタイルマップ|style-roster|まずは練習から/);
+  const closed = renderToStaticMarkup(createElement(RankedStats, { rank, ready: false }));
+  assert.match(closed, /利用できません/);
+  assert.doesNotMatch(closed, /75%|1,120/);
+  const gated = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [], rank, rankedReady: false, onStart() {} }));
+  assert.doesNotMatch(gated, /<button[^>]*>[^<]*ランク戦/);
+});
+
+test("ranked answers stay outside local drill history", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const source = await readFile(new URL("../src/trainer/TrainerPage.tsx", import.meta.url), "utf8");
+  assert.match(source, /if \(!rankedMatch\) onAnswer\(/);
+  assert.match(source, /PlayerAnalysis rank=\{rankState\} rankedReady=\{rankedReady\}/);
+});

@@ -454,3 +454,15 @@ Verification:
 ## HU after multiway preflop (2026-10-04)
 - Added exact saved continuation navigation in the existing Range workspace and exact HU history recognition in both Range and Agent. All 4,200 structural terminal URL round trips and 407 supported HU mappings are tested. The existing Agent no-multiway table rule remains, so only 68 new paths are naturally selectable in Agent play.
 - Independent UI source/retry/localization findings were repaired. Real-browser flop-to-river acceptance is pending: the cloud browser rejected the local preview with `net::ERR_BLOCKED_BY_CLIENT`. No alternate network path was used. A separately authorized isolated Mac QA session is being prepared. These automated checks do not count as visual or actual gameplay acceptance.
+
+## 2026-10-05 — Drill animals and Ranked Stats
+- Drill Stats: shared animal artwork in the style KPI/map and roster; existing 30 distinct-question / 10 open / 10 response / 3 spot classifier preserved. Agent VPIP/PFR baseline not reused.
+- Ranked Stats: readiness-gated tab, server-confirmed rating/peak, weighted practice score, match count/change and history; individual action/animal analysis explicitly unavailable. New ranked answers excluded from local drill history; old untagged data limitation disclosed.
+- Browser QA: actual `/stats` guest sign-in gate preserved. Component rendering verified with a temporary, non-production fixture at 1280×720 and 390×844; drill animals, ranked table and unavailable-action copy visible; no document overflow at 390px. Existing `.ranked-stats` CSS collision found and resolved with a scoped class. Fixture removed after verification. Actual authenticated server stats not tested (local authentication unavailable).
+- Focused tests cover sample-gated animal mapping, server-only stats, readiness gate and ranked-answer separation. Typecheck/build and analysis/ranked UI/workflow/Sites tests pass. Build retains existing bundle-size and translation duplicate-key warnings. No production verification performed.
+
+## 2026-10-05 — Range leading card: board/settings switch
+- Matched the user's Cash 100bb / 6max / rake screenshot to `RangeWorkspace`'s leading action-path card, not the marketing preview.
+- Preflop keeps the existing game-settings card. Postflop defaults to Board with an immediate Board / Settings toggle; cards edit their existing street dialog and reflect only currently visible street blocks. Reset returns to preflop. Four-language control labels are included.
+- Verification: `npm --prefix apps/frontend run typecheck` passed; `node --test tests/range-context-card.test.mjs` passed 3/3 (transition/switch/edit/reset, turn/river/pending/rewind/reentry, four locales); frontend production build passed. Existing trainer CSS syntax and bundle-size warnings remain outside this change.
+- Browser: actual guest preflop screen preserved; isolated live component fixture verified five-card Board and Settings switching at desktop / 390px. Fixture removed afterward. Authenticated postflop end-to-end could not be verified because the available local browser is Guest; no sign-in bypass was used.
