@@ -179,18 +179,21 @@ export function DrillLibrary({ drills, reviewCount, drafts = {}, onStart, onEdit
 }
 
 // Emblem inside a ring that fills toward the next tier, beside the tier name and the last five matches.
+// Live ranked emblem: the tier badge inside a progress ring toward the next tier. The arc draws in
+// on load; on hover the badge lifts and floats, the ticks turn and the next tier peeks in.
 function RankedEmblem({ rank, tier }) {
   const radius = 54, length = 2 * Math.PI * radius;
   const recent = rank.matches.slice(-5);
   const last = rank.matches.at(-1);
   return <div className="ranked-emblem-wrap">
-    <div className="ranked-emblem">
+    <div className="ranked-emblem" style={{ "--arc": length, "--arc-fill": length * tier.progress }}>
       <svg className="ranked-ring" viewBox="0 0 128 128" aria-hidden="true">
         <circle cx="64" cy="64" r={radius} className="track" />
         <circle cx="64" cy="64" r={radius} className="arc" strokeDasharray={`${length * tier.progress} ${length}`} />
-        {Array.from({ length: 24 }, (_, i) => <line key={i} x1="64" y1="3" x2="64" y2={i % 6 === 0 ? 9 : 6} transform={`rotate(${i * 15} 64 64)`} className="tick" />)}
+        <g className="ticks">{Array.from({ length: 24 }, (_, i) => <line key={i} x1="64" y1="3" x2="64" y2={i % 6 === 0 ? 9 : 6} transform={`rotate(${i * 15} 64 64)`} className="tick" />)}</g>
       </svg>
-      <RankBadge name={tier.name} size={56} />
+      <span className="ranked-emblem-badge"><RankBadge name={tier.name} size={64} /></span>
+      {tier.next && <span className="ranked-emblem-next" title={localized(`Next: ${TIER_EN[tier.next.name]}`, `次: ${tier.next.name}`)}><RankBadge name={tier.next.name} size={30} /></span>}
     </div>
     <div className="ranked-emblem-info">
       <span className="ranked-tier-name">{localized(TIER_EN[tier.name], tier.name)}</span>
@@ -199,7 +202,7 @@ function RankedEmblem({ rank, tier }) {
         {Array.from({ length: 5 }, (_, i) => {
           const match = recent[i - (5 - recent.length)];
           const up = match ? match.after >= match.before : null;
-          return <li key={i} className={match ? (up ? "up" : "down") : "empty"}
+          return <li key={i} className={match ? (up ? "up" : "down") : "empty"} style={{ "--i": i }}
             title={match ? `${up ? "+" : "−"}${Math.abs(match.after - match.before)}` : localized("No match", "試合なし")} />;
         })}
       </ol>
@@ -267,7 +270,7 @@ function AgentEntry({ onStart }) {
   return <ModeBlock theme={table.theme} className="is-agent" visualClass="agent-lineup" label={localized("Agent table", "Agent戦")}
     visual={table.agents.map((agent, index) => {
       const middle = (table.agents.length - 1) / 2;
-      return <span key={agent.id} className={`agent-table-face${index === Math.round(middle) ? " is-front" : ""}`}
+      return <span key={agent.id} className={`agent-table-face${index === Math.round(middle) ? " is-front" : Math.abs(index - middle) === 1 ? " is-near" : ""}`}
         style={{ "--k": index - middle, "--d": Math.abs(index - middle), zIndex: 10 - Math.abs(index - middle) }} aria-hidden="true">
         <AgentAvatar id={agent.id} color={agent.color} size={52} /><small>{agent.name.en}</small></span>;
     })}

@@ -336,8 +336,8 @@ function Drill({ history, onAnswer, settings, drillName, reviewOnly, draftKey, i
         bestStreak: Math.max(current.bestStreak, streak), results: [...current.results, graded.result].slice(-10),
         log: [...current.log, { spotId: question.spot.id, hand: question.hand, cards: question.cards, action, result: graded.result, score: graded.score, best: graded.best, mix: graded.mix }] };
     });
-    onAnswer({ spotId: question.spot.id, hand: question.hand, action, result: graded.result, score: graded.score, at: Date.now() });
-  }, [answer, question, settings, onAnswer]);
+    if (!rankedMatch) onAnswer({ spotId: question.spot.id, hand: question.hand, action, result: graded.result, score: graded.score, at: Date.now() });
+  }, [answer, question, settings, onAnswer, rankedMatch]);
 
   const advance = useCallback(() => {
     if (lastQuestion) { onFinish(session.log, Date.now() - startedAt); return; }
@@ -611,7 +611,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onStart={() => { setPhase("library"); }}
             onStartReview={() => start(reviewDrill, true)}
             onClear={() => { if (window.confirm(localized("Clear all answer history?", "回答履歴をすべて消しますか？"))) { clearHistory(); setHistory([]); } }} />
-        : section === "プレー分析" ? <PlayerAnalysis history={history} onStart={() => { setPhase("library"); }} onOpenWeakness={() => onSectionChange("弱点")} />
+        : section === "プレー分析" ? <PlayerAnalysis rank={rankState} rankedReady={rankedReady} history={history} onStart={() => { setPhase("library"); }} onOpenWeakness={() => onSectionChange("弱点")} />
         : section === "セッション" ? <SessionPage drills={drills} reviews={reviewSessions} drafts={drafts}
             onResume={session => start(session.kind === "review" ? reviewDrill : drills.find(drill => drill.id === session.drillId), session.kind === "review")} />
         : phase === "edit" && editing ? <DrillEditor drill={editing.drill} isNew={editing.isNew} reviewCount={reviewCount}
