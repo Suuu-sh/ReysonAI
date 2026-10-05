@@ -29,7 +29,7 @@ test("account menu escapes sidebar clipping and keeps portal clicks inside the m
   const source = readFileSync(new URL("../src/account/AccountMenu.tsx", import.meta.url), "utf8");
   assert.match(source, /open && createPortal\(<div ref=\{popoverRef\} className="account-popover"/);
   assert.match(source, /<\/div>, document\.body\)/);
-  assert.match(source, /!rootRef\.current\?\.contains\(event\.target\) && !popoverRef\.current\?\.contains\(event\.target\)/);
+  assert.match(source, /!rootRef\.current\?\.contains\(event\.target(?: as Node \| null)?\) && !popoverRef\.current\?\.contains\(event\.target(?: as Node \| null)?\)/);
 });
 
 test("settings page has account, subscription, appearance and language tabs", () => {

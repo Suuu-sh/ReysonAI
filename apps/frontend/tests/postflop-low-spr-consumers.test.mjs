@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadInputs } from '../scripts/postflop-ai/inputs.mjs';
-import { referencePolicyFor, policyMix } from '../scripts/postflop-ai/policy.mjs';
-import { referenceLaterPolicy, laterPolicyMix } from '../scripts/postflop-ai/later-policy.mjs';
-import { defenceFor, replayDecision } from '../scripts/postflop-ai/defence.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
-import { laterMixRows } from '../scripts/postflop-ai/views.mjs';
-import { explainLaterCombo } from '../scripts/postflop-ai/explain-later.mjs';
+import { referencePolicyFor, policyMix } from '../scripts/postflop-ai/policy.ts';
+import { referenceLaterPolicy, laterPolicyMix } from '../scripts/postflop-ai/later-policy.ts';
+import { defenceFor, replayDecision } from '../scripts/postflop-ai/defence.ts';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
+import { laterMixRows } from '../scripts/postflop-ai/views.ts';
+import { explainLaterCombo } from '../scripts/postflop-ai/explain-later.ts';
 
 // Test-only reference rules and real saved source ranges: no optional .local
 // candidate is needed, so clean CI must exercise this regression.

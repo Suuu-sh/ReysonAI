@@ -133,8 +133,10 @@ test('review gate cannot accept a candidate with fresh-report metadata alone or 
 });
 test('postflop source graph binds archive tooling, numerical dependencies and configs', () => {
   const paths = reviewedSourcePaths();
-  for (const suffix of ['scripts/postflop-ai/defence.mjs', 'scripts/postflop-ai/board-worker.mjs', 'scripts/postflop-ai/reviewed-postflop-archive.mjs',
-    'scripts/data/postflop-ai-pilot.json', 'scripts/lib/equity.mjs']) assert.ok(paths.includes('apps/frontend/' + suffix), suffix);
+  for (const suffix of ['scripts/postflop-ai/defence.ts', 'scripts/postflop-ai/board-worker.mjs', 'scripts/postflop-ai/reviewed-postflop-archive.mjs',
+    'scripts/data/postflop-ai-pilot.json', 'scripts/lib/equity.ts']) assert.ok(paths.includes('apps/frontend/' + suffix), suffix);
+  for (const name of ['exact-river-call-ev', 'multiway-inputs', 'observable-actions', 'observable-view-paths', 'range-support', 'street-state'])
+    assert.ok(paths.includes(`apps/frontend/scripts/postflop-ai/${name}.d.mts`), name);
   assert.ok(paths.includes('configs/cash-6max-100bb.json'));
   assert.ok(paths.includes('configs/multiway-preflop-stage2.json'));
   assert.equal(paths.some(path => path.includes('/.local/')), false);
@@ -168,7 +170,7 @@ test('independent synthetic review needs both exact successful proofs and reject
   f.spot.identity = { policy_status: 'fresh-pair', report_status: 'fresh', current_source_fingerprint: actualInputs.fingerprint, flop_policy_hash: 'b'.repeat(64), later_policy_hash: 'c'.repeat(64) };
   f.bodies.set(artifactPath(f.spot, 'report'), Buffer.from(JSON.stringify({ results: [{}] })));
   const { captureAuditIdentity } = await import('../scripts/postflop-ai/audit-identity.mjs');
-  const { canonicalFlops } = await import('../scripts/postflop-ai/flop-isomorphism.mjs');
+  const { canonicalFlops } = await import('../scripts/postflop-ai/flop-isomorphism.ts');
   const { buildAllBoardCompanion, companionPathFor, summaryPathFor } = await import('../scripts/postflop-ai/all-board-companion.mjs');
   const auditIdentity = captureAuditIdentity();
   f.manifest.sources = reviewedSourcePaths().map(path => fileRecord(REPOSITORY, path));
@@ -212,6 +214,17 @@ test('independent synthetic review needs both exact successful proofs and reject
     coverage: { scope: 'complete-catalog', catalog_sha256: f.manifest.coverage.catalog_sha256, expected_new_spot_ids: [id], deferred_new_spots: [] },
     accepted_new_spots: [{ spot: id, representative_evidence: representativePath, all_board_evidence: allBoardPath }], preserved_legacy_spots: [] };
   assert.deepEqual(assertIndependentReview(receipt, snapshot).accepted_new_spots, [id]);
+  const changedInput = structuredClone(f.manifest);
+  changedInput.inputs.find(row => row.path === 'apps/frontend/src/estimated/opening-ranges.json').sha256 = '0'.repeat(64);
+  assert.throws(() => assertAuditEvidence(allBoards, f.spot, 'all-boards', changedInput, f.bodies), /All-board numerical identity differs/);
+  const omittedInput = structuredClone(f.manifest);
+  omittedInput.inputs = omittedInput.inputs.filter(row => row.path !== 'apps/frontend/src/estimated/opening-ranges.json');
+  assert.throws(() => assertAuditEvidence(allBoards, f.spot, 'all-boards', omittedInput, f.bodies), /All-board numerical identity differs/);
+  const movedInput = structuredClone(f.manifest);
+  const classifiedInput = movedInput.inputs.find(row => row.path === 'apps/frontend/src/estimated/opening-ranges.json');
+  movedInput.inputs = movedInput.inputs.filter(row => row !== classifiedInput);
+  movedInput.sources.push(classifiedInput);
+  assert.throws(() => assertAuditEvidence(allBoards, f.spot, 'all-boards', movedInput, f.bodies), /All-board numerical identity differs/);
   for (const update of [{ canonical_flops: 12 }, { street: 'flop' }, { errors: 1 }, { identity_hash: 'e'.repeat(64) }, { evaluated_boards: 1754 }, { later_coverage: {} }, { exit_code: 1 }]) {
     assert.throws(() => assertAuditEvidence({ ...allBoards, ...update }, f.spot, 'all-boards', f.manifest, f.bodies));
   }

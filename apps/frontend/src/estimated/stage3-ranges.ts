@@ -1,3 +1,6 @@
+import type { Stage3StoredSpot, Stage3Dataset, Stage3SourceSpot, Stage3UiDatasets, Stage3UiTree, Stage3UiRuntime, Stage3UiResult, Stage3UiSupport, Stage3UiEvidence, Stage3Root, Stage3Decision, Stage3RangeRef, Stage3Terminal, Stage3TerminalResult, Stage3Block, LoadedStage3UiRuntime } from "./stage3-types.ts";
+import type { SourceFactor } from "./continuation-tree.ts";
+import type { PreflopAction } from "./preflop-types.ts";
 // Read-only Stage3 UI adapter. Full offline catalogs, samplers and audits are not
 // imported. Exact saved predecessors and card compatibility govern availability.
 import { useEffect, useState } from 'react';
@@ -8,16 +11,16 @@ import { hasCompatibleDeal } from './continuation-model.ts';
 import { stage3Families, stage3RootDescriptors, STAGE3_ACTIONS, STAGE3_RARE_THRESHOLD } from './stage3-catalog.ts';
 import { stage3TreeForRoot } from './stage3-flow.ts';
 
-const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-const combos = hand => hand.length === 2 ? 6 : hand.endsWith('s') ? 4 : 12;
-const labels = { fold: 'Fold', call: 'Call', squeeze: 'Squeeze', four_bet: '4bet', all_in: 'All-in' };
+const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+const combos = (hand: string) => hand.length === 2 ? 6 : hand.endsWith('s') ? 4 : 12;
+const labels: Record<string, string> = { fold: 'Fold', call: 'Call', squeeze: 'Squeeze', four_bet: '4bet', all_in: 'All-in' };
 class MissingSource extends Error {}
-function validateRows(spot) {
+function validateRows(spot: Stage3StoredSpot) {
   if (!Array.isArray(spot?.hands) || spot.hands.length !== hands.length || spot.hands.some((row, i) => row.hand !== hands[i]
     || STAGE3_ACTIONS.some(key => !Number.isInteger(row[key]) || row[key] < 0 || row[key] > 100)
     || STAGE3_ACTIONS.reduce((sum, key) => sum + row[key], 0) !== 100)) throw new Error(`Invalid Stage3 saved rows ${spot?.id}`);
 }
-export function validateStage3UiHeader(data) {
+export function validateStage3UiHeader(data: Stage3Dataset | null | undefined) {
   if (!data) return;
   const meta = data.metadata;
   if (!same(meta?.families, stage3Families) || meta?.schema_version !== '1.0' || meta.storage !== 'reachable-nonrare-only'
@@ -30,16 +33,16 @@ export function validateStage3UiHeader(data) {
     || data.catalog_spot_count !== data.spot_count + data.omitted_unreachable_count + data.omitted_rare_count
     || new Set(data.spots.map(spot => spot.id)).size !== data.spot_count) throw new Error('Invalid saved Stage3 metadata');
 }
-export function createStage3UiRuntime(datasets) {
-  const legacy = createContinuationUiRuntime(datasets);
+export function createStage3UiRuntime(datasets: Stage3UiDatasets): Stage3UiRuntime {
+  const legacy = createContinuationUiRuntime(datasets as Parameters<typeof createContinuationUiRuntime>[0]);
   const data = datasets['stage3-responses'];
   validateStage3UiHeader(data);
-  const records = new Map(Object.entries(datasets).flatMap(([name, content]) => (content?.spots ?? []).map(spot => [`${name}/${spot.id}`, spot])));
-  const checked = new Set(), resultCache = new Map();
-  function validateSpot(spot, tree) {
+  const records = new Map<string, Stage3SourceSpot>(Object.entries(datasets).flatMap(([name, content]) => (content?.spots ?? []).map(spot => [`${name}/${spot.id}`, spot])));
+  const checked = new Set<string>(), resultCache = new Map<string, Stage3UiResult>();
+  function validateSpot(spot: Stage3StoredSpot, tree: Stage3UiTree) {
     if (checked.has(spot.id)) return;
     const node = tree.nodes.get(spot.id);
-    if (!node || spot.unreachable !== false || Object.entries(node).some(([key, value]) => !same(spot[key], value))) throw new Error('Invalid Stage3 saved history');
+    if (!node || spot.unreachable !== false || Object.entries(node).some(([key, value]) => !same(spot[key as keyof typeof spot], value))) throw new Error('Invalid Stage3 saved history');
     validateRows(spot);
     for (const row of spot.hands) {
       if (STAGE3_ACTIONS.some(key => !node.legal_actions.includes(key) && row[key] !== 0)
@@ -47,18 +50,18 @@ export function createStage3UiRuntime(datasets) {
     }
     checked.add(spot.id);
   }
-  function source(ref, tree) {
+  function source(ref: SourceFactor, tree: Stage3UiTree): Stage3SourceSpot {
     const spot = records.get(`${ref.dataset}/${ref.spot_id}`);
     if (!spot) throw new MissingSource(`${ref.dataset}/${ref.spot_id}`);
     if (ref.dataset === 'stage3-responses') {
-      const sourceTree = stage3TreeForRoot(spot.root_id);
+      const sourceTree = stage3TreeForRoot(spot.root_id!);
       if (!sourceTree) throw new Error('Unknown Stage3 predecessor root');
-      validateSpot(spot, sourceTree);
+      validateSpot(spot as Stage3StoredSpot, sourceTree);
     }
-    else if (legacy.select({ kind: 'saved-source', dataset: ref.dataset, id: ref.spot_id }).status === 'missing') throw new MissingSource(`${ref.dataset}/${ref.spot_id}`);
+    else if (legacy.select({ kind: 'saved-source', dataset: ref.dataset, id: ref.spot_id } as Stage3RangeRef).status === 'missing') throw new MissingSource(`${ref.dataset}/${ref.spot_id}`);
     return spot;
   }
-  function weights(factors, tree, resolving = new Set()) {
+  function weights(factors: readonly SourceFactor[], tree: Stage3UiTree, resolving = new Set<string>()): Map<string, number> {
     const rows = factors.map(ref => {
       if (ref.dataset === 'stage3-responses' && !records.has(`${ref.dataset}/${ref.spot_id}`)) {
         if (resolving.has(ref.spot_id)) throw new Error('Cyclic Stage3 predecessor');
@@ -67,7 +70,7 @@ export function createStage3UiRuntime(datasets) {
         const ancestor = ancestorTree?.nodes.get(ref.spot_id);
         if (!ancestor) throw new MissingSource(`stage3-responses/${ref.spot_id}`);
         resolving.add(ref.spot_id);
-        const reach = context(ancestor, ancestorTree, resolving);
+        const reach = context(ancestor, ancestorTree!, resolving);
         resolving.delete(ref.spot_id);
         if (!reach.unreachable) throw new MissingSource(`stage3-responses/${ref.spot_id}`);
         // An impossible predecessor cannot produce any observed action,
@@ -78,15 +81,15 @@ export function createStage3UiRuntime(datasets) {
     });
     return new Map(hands.map(hand => [hand, rows.reduce((weight, { ref, rows }) => {
       if (!rows) return 0;
-      const value = rows.get(hand)?.[ref.action];
-      if (!Number.isInteger(value) || value < 0 || value > 100) throw new Error('Invalid Stage3 source frequency');
-      return weight * value / 100;
+      const value = rows.get(hand)?.[ref.action as PreflopAction];
+      if (!Number.isInteger(value) || value! < 0 || value! > 100) throw new Error('Invalid Stage3 source frequency');
+      return weight * value! / 100;
     }, 1)]));
   }
-  function evidence(root, tree) {
+  function evidence(root: Stage3Root, tree: Stage3UiTree): Stage3UiEvidence {
     const known = [];
     for (const seat of root.participants) {
-      const factors = root.history.filter(event => event.seat === seat && event.source).map(event => event.source);
+      const factors = root.history.filter(event => event.seat === seat && event.source).map(event => event.source!);
       if (!factors.length) continue;
       // A fourth caller's unavailable range contributes at most one; only a
       // rigorous bound on the already-known prefix can justify omission.
@@ -98,34 +101,34 @@ export function createStage3UiRuntime(datasets) {
     const upper = Math.min(1, product / disjoint);
     return { joint_reach_upper_bound: upper, rare: root.rare_eligible && upper < STAGE3_RARE_THRESHOLD };
   }
-  function context(node, tree, resolving = new Set()) {
+  function context(node: Stage3Decision, tree: Stage3UiTree, resolving = new Set<string>()): Stage3UiSupport {
     const ranges = new Map(node.participants.map(seat => [seat, weights(node.source_factors[seat], tree, resolving)]));
-    const own = ranges.get(node.hero);
-    const others = node.participants.filter(seat => seat !== node.hero).map(seat => [...ranges.get(seat)].filter(([, value]) => value > 0));
-    const compatible = new Map();
-    const reach = hand => {
+    const own = ranges.get(node.hero)!;
+    const others = node.participants.filter(seat => seat !== node.hero).map(seat => [...ranges.get(seat)!].filter(([, value]) => value > 0));
+    const compatible = new Map<string, boolean>();
+    const reach = (hand: string): number => {
       if (!own.get(hand)) return 0;
       if (!compatible.has(hand)) compatible.set(hand, hasCompatibleDeal(hand, others));
-      return compatible.get(hand) ? own.get(hand) : 0;
+      return compatible.get(hand) ? own.get(hand)! : 0;
     };
     return { reach, unreachable: !hands.some(hand => reach(hand) > 0) };
   }
-  function select(ref) {
+  function select(ref: Stage3RangeRef): Stage3UiResult {
     if (ref.kind !== 'stage3') return legacy.select(ref);
     const key = `${ref.rootId}/${ref.id}`;
-    if (resultCache.has(key)) return resultCache.get(key);
-    const tree = stage3TreeForRoot(ref.rootId), node = tree?.nodes.get(ref.id);
+    if (resultCache.has(key)) return resultCache.get(key)!;
+    const tree = stage3TreeForRoot(ref.rootId), node = tree?.nodes.get(ref.id!);
     if (!node) throw new Error('Unknown Stage3 UI decision');
-    let result;
+    let result: Stage3UiResult;
     try {
-      const reachEvidence = evidence(tree.root, tree);
+      const reachEvidence = evidence(tree!.root, tree!);
       if (reachEvidence.rare) result = { status: 'rare', node, reach: reachEvidence };
       else {
-        const support = context(node, tree), spot = records.get(`stage3-responses/${node.id}`);
+        const support = context(node, tree!), spot = records.get(`stage3-responses/${node.id}`) as Stage3StoredSpot | undefined;
         if (support.unreachable) result = { status: 'unreachable', node };
         else if (!spot) result = { status: 'missing', node };
         else {
-          validateSpot(spot, tree);
+          validateSpot(spot, tree!);
           if (spot.hands.some(row => !support.reach(row.hand) && row.fold !== 100)) throw new Error('Invalid Stage3 zero-reach row');
           const actions = [...node.legal_actions].sort((a, b) => ['all_in', 'four_bet', 'squeeze', 'call', 'fold'].indexOf(a) - ['all_in', 'four_bet', 'squeeze', 'call', 'fold'].indexOf(b));
           result = { status: 'saved', node, spot, model: { actions,
@@ -138,14 +141,14 @@ export function createStage3UiRuntime(datasets) {
       if (!(error instanceof MissingSource)) throw error;
       result = { status: 'missing', node, source: error.message };
     }
-    if (resultCache.size >= 64) resultCache.delete(resultCache.keys().next().value);
+    if (resultCache.size >= 64) resultCache.delete(resultCache.keys().next().value!);
     resultCache.set(key, result); return result;
   }
-  function selectTerminal(terminal) {
+  function selectTerminal(terminal: Stage3Terminal): Stage3TerminalResult {
     const tree = stage3TreeForRoot(terminal.root_id);
     if (!tree?.terminalById.has(terminal.id)) throw new Error('Unknown Stage3 terminal');
     try {
-      const reachEvidence = evidence(tree.root, tree);
+      const reachEvidence = evidence(tree!.root, tree!);
       if (reachEvidence.rare) return { status: 'rare', reach: reachEvidence };
       const ranges = terminal.participants.map(seat => [...weights(terminal.source_factors[seat], tree)].filter(([, value]) => value > 0));
       return { status: ranges.every(range => range.length) && ranges[0].some(([hand]) => hasCompatibleDeal(hand, ranges.slice(1))) ? 'saved' : 'unreachable' };
@@ -158,16 +161,16 @@ export function createStage3UiRuntime(datasets) {
 }
 
 export const stage3SourceNames = [...continuationSourceNames, 'stage3-responses'];
-export function createStage3UiLoader(fetchDataset = loadDataset) {
-  const successful = new Map(); let pending;
-  return function load() {
-    pending ??= Promise.all(stage3SourceNames.map(async name => {
+export function createStage3UiLoader(fetchDataset: (name: string) => Promise<unknown> = loadDataset) {
+  const successful = new Map<string, Stage3UiDatasets[string]>(); let pending: Promise<LoadedStage3UiRuntime> | null | undefined;
+  return function load(): Promise<LoadedStage3UiRuntime> {
+    pending ??= Promise.all(stage3SourceNames.map(async (name): Promise<[string, Stage3UiDatasets[string]]> => {
       if (successful.has(name)) return [name, successful.get(name)];
-      try { const data = await fetchDataset(name); if (data) successful.set(name, data); return [name, data ?? null]; }
+      try { const data = await fetchDataset(name) as Stage3UiDatasets[string]; if (data) successful.set(name, data); return [name, data ?? null]; }
       catch { return [name, null]; }
     })).then(entries => {
       const missingSources = entries.filter(([, data]) => !data).map(([name]) => name);
-      const result = { ...createStage3UiRuntime(Object.fromEntries(entries)), missingSources };
+      const result = { ...createStage3UiRuntime(Object.fromEntries(entries) as Stage3UiDatasets), missingSources };
       if (missingSources.length) pending = null;
       return result;
     }).catch(error => { pending = null; throw error; });
@@ -175,8 +178,8 @@ export function createStage3UiLoader(fetchDataset = loadDataset) {
   };
 }
 const loadStage3UiRuntime = createStage3UiLoader();
-export function useStage3UiRuntime(enabled) {
-  const [state, setState] = useState({ runtime: null, error: null });
+export function useStage3UiRuntime(enabled: boolean) {
+  const [state, setState] = useState<{ runtime: LoadedStage3UiRuntime | null; error: Error | null }>({ runtime: null, error: null });
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     if (!enabled || state.runtime && !state.runtime.missingSources.length) return;
@@ -187,7 +190,7 @@ export function useStage3UiRuntime(enabled) {
   }, [enabled, attempt]);
   return { ...state, retry: () => setAttempt(value => value + 1) };
 }
-export function withStage3Availability(blocks, runtime, error = null) {
+export function withStage3Availability(blocks: Stage3Block[], runtime: Stage3UiRuntime | null, error: Error | null = null): Stage3Block[] {
   let available = Boolean(runtime) && !error;
   return blocks.map(block => {
     if (block.stage3Terminal) {
@@ -197,7 +200,7 @@ export function withStage3Availability(blocks, runtime, error = null) {
     }
     if (!block.stage3Node) return block;
     let status = error ? 'error' : runtime ? 'missing' : 'loading';
-    try { if (runtime) status = runtime.select(block.rangeRef).status; } catch { status = 'error'; }
+    try { if (runtime) status = runtime.select(block.rangeRef!).status; } catch { status = 'error'; }
     if (status !== 'saved') available = false;
     return { ...block, stage3Status: status, options: block.options.map(option => ({ ...option,
       disabled: option.disabled || status !== 'saved' && option.action !== block.chosen })) };

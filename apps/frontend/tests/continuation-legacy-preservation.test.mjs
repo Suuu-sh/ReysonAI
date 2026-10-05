@@ -5,11 +5,11 @@ import test from "node:test";
 import baseline from "./fixtures/stage2-legacy-baseline.json" with { type: "json" };
 import { gameConfig } from "../src/estimated/sizing.ts";
 import { artifactPaths, config, loadInputs, useArtifactSource } from "../scripts/postflop-ai/inputs.mjs";
-import { buildInputs } from "../scripts/postflop-ai/browser-inputs.mjs";
+import { buildInputs } from "../scripts/postflop-ai/browser-inputs.ts";
 import { loadCandidate, loadLaterCandidate, sha } from "../scripts/postflop-ai/generate.mjs";
-import { referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
-import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { POSTFLOP_SPOTS } from "../scripts/postflop-ai/spots.mjs";
+import { referencePolicyFor } from "../scripts/postflop-ai/policy.ts";
+import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
+import { POSTFLOP_SPOTS } from "../scripts/postflop-ai/spots.ts";
 
 // Pinned from development 9a787954, before stage two. Keeping file hashes and
 // source identities in a small fixture makes this guard work without Git or

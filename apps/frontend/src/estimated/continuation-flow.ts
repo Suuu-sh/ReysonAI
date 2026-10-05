@@ -1,12 +1,17 @@
+/// <reference lib="es2023.array" />
+import type { ActionBlock, RangeUrlSelection } from "./range-url.ts";
+import type { ContinuationRoot } from "./continuation-tree.ts";
+type FlowSelection = Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & Partial<Pick<RangeUrlSelection, "callers" | "pendingRaise" | "coldAction">>;
+type FlowChoices = Partial<Pick<RangeUrlSelection, "squeezeResponse" | "continuationActions">>;
 // UI navigation uses the frequency-free catalog; strategy availability is a
 // separate read-only check. A missing policy never changes the recorded path.
 import { continuationRoots, continuationById, continuationTerminals } from './continuation-tree.ts';
 
 const terminals = new Map(continuationTerminals.map(node => [node.id, node]));
-const savedAction = action => action === 'raise' ? 'four_bet' : action;
-const uiAction = action => action === 'four_bet' ? 'raise' : action;
-const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-export function continuationRootForSelection({ rangeType, opener, hero, callers = [], pendingRaise, coldAction }) {
+const savedAction = (action: string) => action === 'raise' ? 'four_bet' : action;
+const uiAction = <T extends string | null | undefined>(action: T) => action === 'four_bet' ? 'raise' : action;
+const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+export function continuationRootForSelection({ rangeType, opener, hero, callers = [], pendingRaise, coldAction }: FlowSelection) {
   return continuationRoots.find(root => root.opener === opener && (
     pendingRaise === 'squeeze' && rangeType === 'response'
       ? root.squeezer === hero && same(root.callers, callers)
@@ -17,13 +22,13 @@ export function continuationRootForSelection({ rangeType, opener, hero, callers 
         : false)) ?? null;
 }
 
-export function continuationChoices(root, { squeezeResponse = [], continuationActions = [] }) {
+export function continuationChoices(root: ContinuationRoot, { squeezeResponse = [], continuationActions = [] }: FlowChoices) {
   return [...(root.family === 'squeeze' ? squeezeResponse : []), ...continuationActions].map(savedAction);
 }
 
 // Preserve the existing squeeze fields for old saved sessions and shared URLs.
 // Only the newly supported decisions live in continuationActions.
-export function chooseContinuationAction(state, block, action) {
+export function chooseContinuationAction(state: FlowChoices, block: Pick<ActionBlock, "priorContinuationActions" | "continuationFamily">, action: string | null) {
   const choices = block.priorContinuationActions ?? [];
   const next = action == null ? choices : [...choices, savedAction(action)];
   const legacyCount = block.continuationFamily === 'squeeze'
@@ -32,10 +37,10 @@ export function chooseContinuationAction(state, block, action) {
   return { squeezeResponse: next.slice(0, legacyCount).map(uiAction), continuationActions: next.slice(legacyCount) };
 }
 
-export function appendContinuationBlocks(blocks, root, state) {
+export function appendContinuationBlocks(blocks: ActionBlock[], root: ContinuationRoot, state: FlowChoices): ActionBlock[] {
   // Complete the initial lap, including seats behind a cold caller/raiser. All
   // outside seats in this bounded catalog are explicit forced folds.
-  const result = root.history.map((event, index) => {
+  const result: ActionBlock[] = root.history.map((event, index) => {
     const previous = blocks.find(block => block.position === event.seat && !block.key.startsWith('continuation-'));
     if (!previous) throw new Error(`Missing initial seat ${event.seat}`);
     return { ...previous,
@@ -46,8 +51,8 @@ export function appendContinuationBlocks(blocks, root, state) {
     };
   });
   const choices = continuationChoices(root, state);
-  let id = root.first_decision_id;
-  const prior = [];
+  let id = root.first_decision_id!;
+  const prior: string[] = [];
   for (let index = 0; index < 32; index++) {
     const terminal = terminals.get(id);
     if (terminal) {
@@ -64,7 +69,7 @@ export function appendContinuationBlocks(blocks, root, state) {
     const node = continuationById.get(id);
     if (!node) throw new Error(`Unknown continuation ${id}`);
     const asked = choices[index];
-    const chosen = node.legal_actions.includes(asked) ? asked : null;
+    const chosen = (node.legal_actions as readonly string[]).includes(asked) ? asked : null;
     const legacy = root.family === 'squeeze' && node.reused;
     result.push({ key: `bounded-${node.id}`, position: node.hero, stack: String(100 - node.contributions_bb[node.hero]),
       kind: legacy ? 'squeeze-response' : 'bounded-continuation', role: index === 0 ? 'opener' : 'caller',
@@ -79,7 +84,7 @@ export function appendContinuationBlocks(blocks, root, state) {
   throw new Error('Continuation exceeds the bounded catalog');
 }
 
-export function continuationLiveSeats(blocks) {
+export function continuationLiveSeats(blocks: readonly Pick<ActionBlock, "continuationTerminal" | "continuationNode">[]) {
   const last = blocks.at(-1);
   return last?.continuationTerminal?.live_participants ?? last?.continuationNode?.live_participants ?? null;
 }

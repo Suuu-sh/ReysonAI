@@ -37,7 +37,7 @@ test("both review source graphs bind isolated Stage 3 authoring and safe deliver
     "apps/frontend/scripts/generate-stage3-responses.mjs", "apps/frontend/scripts/lib/stage3-profiles.mjs",
     "apps/frontend/src/estimated/stage3-tree.ts", "apps/frontend/src/estimated/stage3-model.ts", "apps/frontend/src/estimated/stage3-call-ev.ts",
     "apps/frontend/src/estimated/stage3-audit.ts", "apps/frontend/src/estimated/stage3-coverage.ts", "apps/frontend/src/estimated/stage3-reason-format.ts",
-    "apps/frontend/scripts/lib/continuation-evaluator.mjs", "apps/frontend/scripts/lib/equity.mjs",
+    "apps/frontend/scripts/lib/continuation-evaluator.ts", "apps/frontend/scripts/lib/equity.ts",
     "apps/frontend/scripts/package-reviewed-stage3.py", "apps/frontend/scripts/restore-reviewed-stage3.mjs", ".github/workflows/deploy-worker.yml"])
     for (const paths of [stage2, stage3]) assert.ok(paths.includes(path), path);
   assert.ok(stage3.includes("configs/multiway-preflop-stage2.review.json"));

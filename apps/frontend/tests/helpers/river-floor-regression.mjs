@@ -6,8 +6,8 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { decodeArchive } from '../../scripts/postflop-ai/reviewed-postflop-archive.mjs';
-import { defenceFor, replayDecision, rankTable, comboId } from '../../scripts/postflop-ai/defence.mjs';
-import { parseCards } from '../../scripts/postflop-ai/model.mjs';
+import { defenceFor, replayDecision, rankTable, comboId } from '../../scripts/postflop-ai/defence.ts';
+import { parseCards } from '../../scripts/postflop-ai/model.ts';
 
 export const REPRESENTATIVE = 'UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call';
 export const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');

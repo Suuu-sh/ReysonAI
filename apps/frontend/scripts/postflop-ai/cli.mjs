@@ -10,7 +10,7 @@ import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { simulateParallel } from "./simulation-parallel.mjs";
 import { generateHandEv } from "./hand-ev.mjs";
 import { generateLaterHandEv } from "./later-hand-ev.mjs";
-import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById } from "./spots.mjs";
+import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById } from "./spots.ts";
 import { auditFileRecord, AUDIT_REPOSITORY, captureAuditIdentity, identityHash } from "./audit-identity.mjs";
 import { assertSafeFile } from "./reviewed-postflop-archive.mjs";
 import { isFreshSimulationReport } from "./publish-d1.mjs";

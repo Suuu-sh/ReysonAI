@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { POSTFLOP_SPOTS, spotById } from '../scripts/postflop-ai/spots.mjs';
+import { POSTFLOP_SPOTS, spotById } from '../scripts/postflop-ai/spots.ts';
 import { replayObservableStreet } from '../scripts/postflop-ai/observable-actions.mjs';
 import { flopDecision, laterDecision, laterStart, replayLater, buildFlopActionBlocks,
   buildLaterActionBlocks, canonicalStreetActions, hasObservablePostflopActions } from '../src/estimated/postflop-trial.ts';

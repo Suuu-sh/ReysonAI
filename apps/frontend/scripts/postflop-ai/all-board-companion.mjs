@@ -1,10 +1,10 @@
 // Bounded, byte-pinned companion for an already completed audit. No simulation.
 // The active runner/checkpoint format and its original summary are unchanged.
 import { isDeepStrictEqual } from 'node:util';
-import { canonicalFlops } from './flop-isomorphism.mjs';
+import { canonicalFlops } from './flop-isomorphism.ts';
 import { allBoardSummaryName } from './all-board-checkpoints.mjs';
 import { hasPostflopDeal } from './range-support.mjs';
-import { seededRandom, seedFor } from '../lib/equity.mjs';
+import { seededRandom, seedFor } from '../lib/equity.ts';
 import { ARTIFACT_PREFIX, LIMITS, sha256, validHash } from './reviewed-postflop-archive.mjs';
 
 const hashJSON = value => sha256(JSON.stringify(value));

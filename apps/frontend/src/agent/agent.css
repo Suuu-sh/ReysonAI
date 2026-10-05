@@ -297,6 +297,9 @@
 .style-window { height: 3px; overflow: hidden; border-radius: 2px; background: var(--surface-hover); }
 .style-window i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #4fd1ff); }
 .style-dash-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); align-items: start; gap: 14px; }
+.style-dash-summary { display: grid; gap: 10px; min-width: 0; }
+.style-roster-compact { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.style-roster-compact li { min-width: 0; overflow-wrap: anywhere; }
 .style-label { display: grid; grid-template-columns: auto 1fr; align-content: start; align-items: start; gap: 12px; padding: 14px; border: 1px solid color-mix(in srgb, var(--style) 30%, var(--line)); border-radius: 12px; background: radial-gradient(circle at 14% 20%, color-mix(in srgb, var(--style) 14%, transparent), transparent 60%), var(--surface); }
 .style-label > div { display: grid; gap: 4px; min-width: 0; }
 .style-label .style-unit { filter: drop-shadow(0 0 14px color-mix(in srgb, var(--style) 40%, transparent)); }
@@ -363,9 +366,15 @@
 }
 
 /* Style zones behind the map: each style's area, faintly tinted, with its character and name. */
-.style-zone { position: absolute; display: grid; align-content: start; justify-content: center; justify-items: center; gap: 2px; padding-top: 18px; box-shadow: inset 0 0 0 .5px rgb(255 255 255 / 6%); background: color-mix(in srgb, var(--style) 5%, transparent); color: var(--text-subtle); font-size: 9px; font-weight: 700; text-align: center; opacity: .7; transition: opacity .2s ease, background .2s ease; }
+.style-zone { position: absolute; display: grid; place-content: center; justify-items: center; gap: 2px; box-shadow: inset 0 0 0 .5px rgb(255 255 255 / 6%); background: color-mix(in srgb, var(--style) 5%, transparent); color: var(--text-subtle); font-size: 9px; font-weight: 700; text-align: center; opacity: .7; transition: opacity .2s ease, background .2s ease; }
 .style-zone small { font-size: inherit; line-height: 1.2; }
 .style-zone:hover { opacity: 1; background: color-mix(in srgb, var(--style) 10%, transparent); }
 .style-zone.is-current { opacity: 1; background: color-mix(in srgb, var(--style) 16%, transparent); color: var(--style); }
 .style-zone.is-current { align-content: end; padding: 0 0 6px; }
 .style-map-center, .style-map-point { z-index: 1; }
+
+/* Vertical axis: aggression (PFR / VPIP), labelled along the map's left edge. */
+.style-map { grid-template-columns: 36px minmax(0, 1fr); column-gap: 5px; }
+.style-map figcaption { grid-column: 2; }
+.style-map-y { min-width: 0; overflow-wrap: anywhere; display: flex; flex-direction: column; justify-content: space-between; padding: 6px 0; color: var(--text-subtle); font-size: 8px; font-weight: 700; line-height: 1.4; text-align: center; }
+.style-map-y small { font-size: 8px; font-weight: 500; }

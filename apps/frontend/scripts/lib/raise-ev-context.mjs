@@ -3,7 +3,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { equityVsRange, seededRandom, seedFor, weightedRange } from "./equity.mjs";
+import { equityVsRange, seededRandom, seedFor, weightedRange } from "./equity.ts";
 import { raiseEv, replyShares } from "./raise-ev.mjs";
 
 const SAMPLES = 3000;

@@ -8,7 +8,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { comboCount } from "./lib/equity.mjs";
+import { comboCount } from "./lib/equity.ts";
 import { DATASET_NAMES as LEGACY_DATASET_NAMES, compareToReferences, loadReferences } from "./lib/benchmark.mjs";
 import { diffSpot, parseFindings, summarizeFindings } from "./lib/estimate-diff.mjs";
 import { isBlockingAuditFinding } from "../src/estimated/audit-policy.ts";

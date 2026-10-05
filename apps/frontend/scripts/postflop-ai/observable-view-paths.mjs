@@ -1,7 +1,7 @@
 // Presentation/offline consumer boundary for imported flop labels. Numerical
 // replay remains in the single observable-action module; legacy requests retain
 // their exact structural semantics and error behavior.
-import { flopState } from './tree.mjs';
+import { flopState } from './tree.ts';
 import { replayObservableStreet, usesObservableActions } from './observable-actions.mjs';
 
 export function observableFlopRequest(spot, node, history) {

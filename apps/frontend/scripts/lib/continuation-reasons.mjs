@@ -15,6 +15,7 @@ import { allowedCall } from "../../src/estimated/call-ev.ts";
 import { EQR, MULTIWAY_EQR } from "../../src/estimated/eqr.ts";
 import { rakeConfig, raked } from "../../src/estimated/rake.ts";
 import { effectiveStackBb, isInPosition, sizing } from "../../src/estimated/sizing.ts";
+import { policySourceBytes } from "./typescript-policy-source.mjs";
 
 const ACTIONS = ["fold", "call", "four_bet", "all_in"];
 const NAMES = { open: "オープン", call: "コール", fold: "フォールド", three_bet: "3bet", squeeze: "スクイーズ", four_bet: "4bet", all_in: "オールイン" };
@@ -51,7 +52,7 @@ export function continuationReasonFingerprint({ data, datasets, equities }) {
     sizing, effectiveStackBb, twoCallerFourBetToBb }));
   for (const name of POLICY_FILES) {
     hash.update(name);
-    hash.update(readFileSync(new URL(`../../${name}`, import.meta.url)));
+    hash.update(policySourceBytes(name));
   }
   hashDocument(hash, "continuation-responses", data);
   hashDocument(hash, "continuation-call-equities", equities);

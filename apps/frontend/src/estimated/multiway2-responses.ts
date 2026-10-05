@@ -1,3 +1,6 @@
+import type { FrequencyRow, PreflopAction } from "./preflop-types.ts";
+import type { Multiway2Dataset, Multiway2Spot, MultiwayDataset, OpeningDataset, ResponseDataset } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { effectiveStackBb, openSizeBb, openSizeFor, positions, twoCallerSqueezeToSize } from "./sizing.ts";
 import { hasConfiguredRake } from "./rake.ts";
@@ -7,7 +10,7 @@ import { validateMultiwayDataset } from "./multiway-responses.ts";
 
 // Same ordered triples as admin/coverage.ts's multiway_two_callers category.
 // Hero acts for the first time after an open and exactly two prior calls.
-const triples = list => list.flatMap((a, i) => list.slice(i + 1).flatMap((b, j) =>
+const triples = (list: string[]) => list.flatMap((a, i) => list.slice(i + 1).flatMap((b, j) =>
   list.slice(i + j + 2).map(c => [a, b, c])));
 export const multiway2Spots = positions.slice(0, 3).flatMap(opener =>
   triples(positions.slice(positions.indexOf(opener) + 1)).map(([c1, c2, hero]) => ({
@@ -16,10 +19,10 @@ export const multiway2Spots = positions.slice(0, 3).flatMap(opener =>
     source_caller_ids: [`${c1}_vs_${opener}`, `${c2}_vs_${opener}_${c1}call`],
   })));
 const ROW_KEYS = ["hand", "fold", "call", "squeeze", "squeeze_size_bb"];
-const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
-export function validateMultiway2Dataset(data, multiway, responses, openings) {
-  const fail = detail => { throw new Error(`2コーラーへの応答データが不正です: ${detail}`); };
+export function validateMultiway2Dataset(data: Multiway2Dataset, multiway: MultiwayDataset, responses: ResponseDataset, openings: OpeningDataset) {
+  const fail: (detail: string) => never = detail => { throw new Error(`2コーラーへの応答データが不正です: ${detail}`); };
   if (data?.metadata?.schema_version !== "1.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.game !== "6max Cash / No-Limit Texas Holdem" ||
@@ -37,13 +40,13 @@ export function validateMultiway2Dataset(data, multiway, responses, openings) {
     validateOpeningDataset(openings);
     validateDataset(responses);
     validateMultiwayDataset(multiway, responses);
-  } catch (error) { fail(`前段のデータ: ${error.message}`); }
-  const frequencies = (dataset, id, action) => {
+  } catch (error) { fail(`前段のデータ: ${(error as Error).message}`); }
+  const frequencies = <D extends OpeningDataset | ResponseDataset | MultiwayDataset>(dataset: D, id: string, action: PreflopAction): D["spots"][number] => {
     const source = dataset.spots.find(item => item.id === id);
     if (!source || !Array.isArray(source.hands) || source.hands.length !== hands.length ||
         source.hands.some((row, j) => row?.hand !== hands[j] ||
-          !Number.isInteger(row[action]) || row[action] < 0 || row[action] > 100)) fail(`前段の頻度: ${id}`);
-    return source;
+          !Number.isInteger((row as FrequencyRow)[action]!) || (row as FrequencyRow)[action]! < 0 || (row as FrequencyRow)[action]! > 100)) fail(`前段の頻度: ${id}`);
+    return source as D["spots"][number];
   };
   for (let i = 0; i < multiway2Spots.length; i += 1) {
     const expected = multiway2Spots[i], spot = data.spots[i];
@@ -58,7 +61,7 @@ export function validateMultiway2Dataset(data, multiway, responses, openings) {
     const unreachable = !open.hands.some(row => row.open > 0) ||
       !first.hands.some(row => row.call > 0) || !second.hands.some(row => row.call > 0);
     const size = twoCallerSqueezeToSize(expected.opener, expected.hero);
-    if (!spot || !Object.entries(expected).every(([key, value]) => same(spot[key], value)) ||
+    if (!spot || !Object.entries(expected).every(([key, value]) => same(spot[key as keyof typeof spot], value)) ||
         typeof spot.unreachable !== "boolean" || spot.unreachable !== unreachable ||
         spot.open_size_bb !== openSizeFor(expected.opener) || spot.squeeze_size_bb !== size ||
         spot.effective_stack_bb !== effectiveStackBb ||
@@ -76,13 +79,13 @@ export function validateMultiway2Dataset(data, multiway, responses, openings) {
   return data;
 }
 
-export function findMultiway2Spot(data, opener, callers, hero = "BB") {
+export function findMultiway2Spot(data: Multiway2Dataset, opener: string, callers: string[], hero = "BB") {
   const spot = data?.spots?.find(item => item.hero === hero && item.opener === opener && same(item.callers, callers));
   if (!spot) throw new Error(`この組み合わせの${hero}の2コーラー応答はありません。`);
   return spot;
 }
 
-export function multiway2MatrixModel(spot) {
+export function multiway2MatrixModel(spot: Multiway2Spot): MatrixModel {
   return {
     actions: ["squeeze", "call", "fold"],
     actionLabels: { squeeze: `スクイーズ ${spot.squeeze_size_bb}BB` },

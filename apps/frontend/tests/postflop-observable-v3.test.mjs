@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadInputs } from '../scripts/postflop-ai/inputs.mjs';
-import { defenceFor, replayDecision, comboId } from '../scripts/postflop-ai/defence.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
+import { defenceFor, replayDecision, comboId } from '../scripts/postflop-ai/defence.ts';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
 import { REPRESENTATIVE, foundationPair, hash, probe, numericGolden, exactCallEvidence } from './helpers/river-floor-regression.mjs';
 
 const original = loadInputs(REPRESENTATIVE), pair = foundationPair();

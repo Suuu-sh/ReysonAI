@@ -2,7 +2,9 @@
 
 ## Review status
 
-Complete numerical/reason review and the final shared-HU integration passed. The complete frontend suite passed **836/836 tests, zero failures/skips**, followed by official combined-delivery build/check and fresh receipt-bound clean restoration. The Stage 3 LFS object has now been uploaded to the private repository and verified by a fresh fetch into separate empty LFS storage. The owner separately approved the exact Stage 3 review manifest, whose Git blob was saved successfully. Whole-delivery D1 validation, required PR CI and real-browser acceptance remain unfinished. The reviewed checkpoint is saved in [Draft PR #50](https://github.com/Suuu-sh/ReysonAI/pull/50). The later fixed-development and Ranked compatibility checks are recorded below; final runtime/CI acceptance is tracked on the PR. No production merge, deployment or D1 import has been performed.
+The numerical/reason snapshot remains independently reviewed and byte-identical. The current source integrates fixed development `b28147774ec6909196b80353d10129723f333adb`, including its TypeScript refactor and Stats/Ranked presentation, while preserving the Stage 3/HU runtime behavior. Independent source review, strict frontend/runtime typechecks, focused regressions, build, both complete publication verifiers, canonical SQL identity, and fresh first/repeated archive restoration have passed. See the current integration record below and [independent source review](multiway-preflop-stage3.typed-integration-review.md).
+
+The preserved earlier checkpoint passed the full frontend suite **836/836**; that historical result is not described as a new complete-suite run. Its strict whole-delivery D1 CI also passed. The current revision's required CI is tracked on [Draft PR #50](https://github.com/Suuu-sh/ReysonAI/pull/50). The required preflop browser flows passed on head `0d0be207`; the authenticated unsupported-postflop screen remains **NOT RUN**, because Guest sign-in intercepted it and the supported Mac browser binding later became unavailable. No production merge, deployment or D1 import has occurred. Earlier blocker descriptions below are chronological history and are superseded by this status and the current integration record.
 
 These are independently authored AI estimates, not a jointly solved strategy or a GTO-quality guarantee.
 
@@ -184,3 +186,17 @@ Current receipt identities:
 - `configs/multiway-preflop-stage3.review.json`: 512,995 bytes; SHA-256 `2a9dcb1dc46b38a86836a86b0afe3dfcdc025f5a8944b7c2ece3a55692bc1b4c`; content `1533778dd4ec63139dd7611d38aecca66cce5ccfac9e29a2a82c65b591f68222`.
 
 Full-payload D1, real-browser acceptance and the final required CI result remain release gates. The actual Stage 3 LFS transfer/fresh-fetch and original manifest-specific permission are already established.
+
+
+## Current typed-development integration — 2026-10-05
+
+- Fixed inputs: preserved PR50 `0d0be207c8775e0f1615a9984f308fbf8230932f` and development `b28147774ec6909196b80353d10129723f333adb`.
+- Independent review preserved all 3,693 saved artifact bodies, both archive payloads, both immutable fixtures, every saved fingerprint/count, and every prior receipt review field. All 35 inspected Stats/Ranked/account files match fixed development. Stage 3 state, participant ranges, no-HU fallback, rewind/reset/reload and Retry behavior remain intact.
+- Historical-byte compatibility now has 29 independently checked exact pairs. Type/import-only changes and the three explicit presentation/fingerprint-adapter exceptions are separately identified. Both source walkers include adjacent declarations; source-only receipt graphs are Stage2 153 and Stage3 98, with exact final receipt coupling.
+- Strict frontend and runtime TypeScript checks pass. Focused UI/history/access/legacy tests pass **134**, with **one optional private `.local` HU-policy check skipped** because its local artifacts are unavailable; the immutable 45-spot source fingerprints and pinned policy-loader checks do run and pass. The former guest-gate source-regex assertion now accepts only the erased type annotation; its full eight-test access suite passes.
+- Storage/authoring/delivery/source regressions pass **64/64**, zero skips, including the real pinned Wrangler 4.147.0 local small-fixture roundtrip, repeat import, table isolation and full-file rollback. The separate inherited HU collector has a reviewed relocation/type-declaration amendment and exact known-input namespace checks, with wrong-hash, absent-input and wrong-namespace negatives. This does not approve new HU policies or replace full-payload D1.
+- Backend Ranked **11/11** and Sites **7/7** pass. Production build passes; the existing large-chunk advisory remains.
+- Official combined verifier/SQL build passes in 23.90s; official repeated bundle check passes in 22.73s. All 3,693 metadata records / 7,126 parts / **129,253,470 SQL bytes** retain SHA-256 `25d7f2a99ff7e7b0603116ab533a72e4a48f369b277e170b8db52d7e64791443`. Maximum observed process RSS was 1,038,028 KiB despite a 768 MiB V8 heap; these are distinct measurements. No strategies were generated.
+- A fresh source-only tree initially contained neither expanded Stage2 nor Stage3 snapshot. Both first and repeated official restorers installed the same 1,614 / 1,805 entries; both complete numerical/publication verifiers then passed in 18.29s. No source generation, sampling or archive repackaging occurred.
+
+The browser record remains tied to its actual tested head. Current-source CI and the unsupported-terminal browser observation remain explicit release gates; the PR must not be merged/deployed merely because source integration is complete.

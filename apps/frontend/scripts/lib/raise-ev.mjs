@@ -6,7 +6,7 @@
 //           all-in gets it in at 100BB (ignores opener folding to the shove, so conservative)
 import { raked } from "../../src/estimated/rake.ts";
 import { equityRealization } from "../../src/estimated/eqr.ts";
-import { combosOf } from "./equity.mjs";
+import { combosOf } from "./equity.ts";
 
 const blind = { SB: 0.5, BB: 1 };
 

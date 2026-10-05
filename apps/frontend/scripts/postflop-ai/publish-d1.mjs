@@ -1,5 +1,5 @@
 import { hasCurrentActionModel } from "./observable-actions.mjs";
-import { defenceVersionFor } from "./defence.mjs";
+import { defenceVersionFor } from "./defence.ts";
 import { hasPostflopDeal } from "./range-support.mjs";
 // SQL for the canonical local postflop artifacts in the reysonai D1 database (schema:
 // apps/backend/migrations). Spots whose flop policy or report is missing or stale are
@@ -8,7 +8,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { loadInputs, readArtifact, config, boards, laterSizingHash } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
 import { SIMULATION_VERSION, PROFILES } from "./simulation.mjs";
-import { POSTFLOP_SPOTS } from "./spots.mjs";
+import { POSTFLOP_SPOTS } from "./spots.ts";
 
 // D1 rejects SQL statements over 100 KB, so every stored JSON value must stay below this.
 export const MAX_VALUE_BYTES = 90_000;

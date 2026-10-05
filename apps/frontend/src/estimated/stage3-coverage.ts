@@ -1,14 +1,15 @@
+import type { Stage3Dataset, Stage3Sources } from "./stage3-types.ts";
 // Full deterministic coverage/omission evidence. This never invents strategies.
 import { stage3Roots, stage3Spots, stage3Terminals, stage3Boundaries, stage3Families, stage3RootById, STAGE3_RARE_THRESHOLD } from "./stage3-tree.ts";
 import { createStage3Model, stage3ComboCount } from "./stage3-model.ts";
-export function stage3Coverage(data, datasets) {
+export function stage3Coverage(data: Stage3Dataset, datasets: Stage3Sources) {
   const model = createStage3Model({ ...datasets, "stage3-responses": data });
   const saved = new Map(data.spots.map(spot => [spot.id, spot]));
   const families = data.metadata.families;
   const roots = stage3Roots.filter(root => families.includes(root.family) && (!data.metadata.root_ids || data.metadata.root_ids.includes(root.id)));
   const entries = stage3Spots.filter(node => roots.some(root => root.id === node.root_id)).map(node => {
-    const evidence = model.rootEvidence(stage3RootById.get(node.root_id));
-    let status, independent_product = null, joint_reach_upper_bound = evidence.joint_reach_upper_bound;
+    const evidence = model.rootEvidence(stage3RootById.get(node.root_id)!);
+    let status: string, independent_product: number | null = null, joint_reach_upper_bound = evidence.joint_reach_upper_bound;
     if (evidence.rare) status = "rare";
     else {
       const context = model.context(node, saved.get(node.id) ?? node);
@@ -37,7 +38,7 @@ export function stage3Coverage(data, datasets) {
       decision_count: entries.filter(e => e.root_id === root.id).length, ...model.rootEvidence(root) })),
     boundaries: stage3Boundaries.filter(b => roots.some(r => r.id === b.root_id)), entries };
 }
-export function validateStage3Coverage(coverage, data, datasets) {
+export function validateStage3Coverage(coverage: ReturnType<typeof stage3Coverage>, data: Stage3Dataset, datasets: Stage3Sources) {
   const expected = stage3Coverage(data, datasets);
   if (JSON.stringify(coverage) !== JSON.stringify(expected) || expected.missing_count) throw new Error("Invalid/stale Stage3 coverage or omissions");
   return coverage;

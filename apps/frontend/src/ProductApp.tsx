@@ -99,7 +99,7 @@ export default function ProductApp() {
       onCancel={() => setEditing(false)} onComplete={values => { setProfile(saveProfile(values)); setEditing(false); }} />;
   }
 
-  const navigate = name => {
+  const navigate = (name: string) => {
     if (name === LOGOUT_SECTION) { setLoggingOut(true); return; }
     rememberLearningIntent(isLearningSection(name) && !learningAllowed(account) ? name : null);
     go(pathOfSection(name));

@@ -24,6 +24,6 @@ const copy = {
 } as const;
 
 export function stage3Copy(key: keyof typeof copy, locale: string = productLocale()) {
-  const index = { en: 0, ja: 1, 'zh-CN': 2, es: 3 }[locale] ?? 0;
+  const index = ({ en: 0, ja: 1, 'zh-CN': 2, es: 3 } as Record<string, number>)[locale] ?? 0;
   return copy[key][index];
 }

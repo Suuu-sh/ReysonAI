@@ -6,7 +6,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { artifactPaths, config, loadInputs } from "../inputs.mjs";
 import { loadCandidate, sha } from "../generate.mjs";
-import { validateLaterPolicy } from "../later-policy.mjs";
+import { validateLaterPolicy } from "../later-policy.ts";
 import { simulate } from "../simulation.mjs";
 import { compareLaterCandidate, worstProfileScore } from "../regenerate-later.mjs";
 import { checkLaterBalance } from "../balance.mjs";

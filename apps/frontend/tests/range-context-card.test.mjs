@@ -25,7 +25,7 @@ after(async () => {
 });
 const board = (street, cards) => ({ key: street, street, cards });
 let edited, resets = 0;
-const props = { settingsOpen: false, boards: [board("flop", ["As", "Kd", "7c"])], onEditBoard: street => { edited = street; }, onReset: () => { resets++; }, displayModeControl: createElement("div", null, "Simple / Standard") };
+const props = { settingsOpen: false, boards: [board("flop", ["As", "Kd", "7c"])], onEditBoard: street => { edited = street; }, onReset: () => { resets++; } };
 const render = async extra => act(async () => root.render(createElement(Card, { ...props, ...extra }, createElement("div", { className: "settings-body" }, "Cash 100bb"))));
 const click = async selector => act(async () => document.querySelector(selector).click());
 test("preflop keeps settings, entering flop defaults to board, switching back is immediate", async () => {
@@ -34,6 +34,7 @@ test("preflop keeps settings, entering flop defaults to board, switching back is
   assert.equal(document.querySelector(".range-context-switch"), null);
   await render({ postflop: true });
   assert.equal(document.querySelectorAll(".postflop-card").length, 3);
+  assert.equal(document.querySelector(".range-context-board-footer .display-mode-toggle"), null);
   assert.match(document.body.textContent, /A♠K♦7♣/);
   assert.doesNotMatch(document.body.textContent, /Cash/);
   await click('.range-context-switch button:nth-child(2)');

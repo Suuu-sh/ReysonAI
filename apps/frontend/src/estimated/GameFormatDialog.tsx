@@ -1,9 +1,13 @@
+import type { Dispatch, SetStateAction } from "react";
+import type { FormatKey, GameFormat } from "./game-formats.ts";
+import type { ProfileKey, ProfileLevel, TableProfile } from "./table-profile.ts";
 import { ArrowLeft, CaretRight, LockSimple, X } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { Dialog } from "../components/Dialog.tsx";
 import { detailedFormatFields, formatOptions, gameFormatFields, isBuilt, optionAvailable } from "./game-formats.ts";
 import { DEFAULT_PROFILE, LEVEL_LABELS, PROFILE_LABELS, PROFILE_LEVELS } from "./table-profile.ts";
 
-function FormatFields({ fields, draft, onChange }) {
+function FormatFields({ fields, draft, onChange }: { fields: readonly [FormatKey, string][]; draft: GameFormat; onChange: Dispatch<SetStateAction<GameFormat>> }) {
   return fields.map(([key, label]) => <fieldset className="format-field" key={key}>
     <legend>{label}</legend>
     <div className="format-options">
@@ -20,20 +24,20 @@ function FormatFields({ fields, draft, onChange }) {
 }
 
 // Tendencies of the players behind the opener.
-function TableProfilePage({ profile, onChange }) {
+function TableProfilePage({ profile, onChange }: { profile: TableProfile; onChange: (profile: TableProfile) => void }) {
   return <div className="advanced-settings-page" aria-label="卓の傾向">
     <p className="modal-description">相手の傾向に合わせてオープンレンジを調整します（実験的な近似計算）。変更したハンドは表の枠で示します。</p>
-    {Object.keys(DEFAULT_PROFILE).map(key => <fieldset className="format-field" key={key}>
+    {(Object.keys(DEFAULT_PROFILE) as ProfileKey[]).map(key => <fieldset className="format-field" key={key}>
       <legend>{PROFILE_LABELS[key]}</legend>
       <div className="format-options">
         {PROFILE_LEVELS.map(level => <button type="button" key={level} className={`format-option${profile[key] === level ? " selected" : ""}`} aria-pressed={profile[key] === level}
-          onClick={() => onChange({ ...profile, [key]: level })}>{LEVEL_LABELS[level]}</button>)}
+          onClick={() => onChange({ ...profile, [key]: level })}>{LEVEL_LABELS[level as ProfileLevel]}</button>)}
       </div>
     </fieldset>)}
   </div>;
 }
 
-export function AdvancedSettingsPage({ format, onChange }) {
+export function AdvancedSettingsPage({ format, onChange }: { format: GameFormat; onChange: Dispatch<SetStateAction<GameFormat>> }) {
   return <div className="advanced-settings-page" aria-label="より詳細な設定">
     <p className="modal-description">対戦環境の詳細を設定します。現在選べるレンジはアンティなしのみです。</p>
     <FormatFields fields={detailedFormatFields} draft={format} onChange={onChange} />
@@ -41,19 +45,11 @@ export function AdvancedSettingsPage({ format, onChange }) {
   </div>;
 }
 
-export function GameFormatDialog({ format, tableProfile = DEFAULT_PROFILE, onSave, onClose }) {
+export function GameFormatDialog({ format, tableProfile = DEFAULT_PROFILE, onSave, onClose }: { format: GameFormat; tableProfile?: TableProfile; onSave: (format: GameFormat, profile: TableProfile) => void; onClose: () => void }) {
   const [draft, setDraft] = useState(format);
   const [profileDraft, setProfileDraft] = useState(tableProfile);
   const [page, setPage] = useState("game");
-  const dialogRef = useRef(null);
-  useEffect(() => {
-    dialogRef.current?.focus();
-    const onKey = event => { if (event.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-  return <div className="modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
-    <div className="modal" role="dialog" aria-modal="true" aria-labelledby="game-format-title" tabIndex={-1} ref={dialogRef}>
+  return <Dialog labelledBy="game-format-title" onClose={onClose}>
       <div className="modal-heading">
         <div className="modal-title-group">
           {page !== "game" && <button type="button" className="modal-back" aria-label="ゲーム設定に戻る" title="ゲーム設定に戻る" onClick={() => setPage("game")}><ArrowLeft size={16} aria-hidden="true" /></button>}
@@ -75,6 +71,5 @@ export function GameFormatDialog({ format, tableProfile = DEFAULT_PROFILE, onSav
         <button type="button" className="onboarding-cancel" onClick={onClose}>キャンセル</button>
         <button type="button" className="primary" disabled={!isBuilt(draft)} onClick={() => onSave(draft, profileDraft)}>適用する</button>
       </div>
-    </div>
-  </div>;
+  </Dialog>;
 }

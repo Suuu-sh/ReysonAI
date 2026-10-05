@@ -2,6 +2,7 @@
 // No equities or frequencies are invented here: both inputs must be saved first.
 import { encodeStage3Reasons } from "../../src/estimated/stage3-reason-format.ts";
 import { createHash } from "node:crypto";
+import { policySourceBytes } from "./typescript-policy-source.mjs";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { hands } from "../../src/data.ts";
@@ -52,7 +53,7 @@ export function stage3ReasonFingerprint({ data, datasets, equities }) {
     sizing, effectiveStackBb, stage3Sizing }));
   for (const name of STAGE3_REASON_POLICY_FILES) {
     hash.update(name);
-    hash.update(readFileSync(new URL(`../../${name}`, import.meta.url)));
+    hash.update(policySourceBytes(name));
   }
   hashDocument(hash, "stage3-responses", data);
   hashDocument(hash, "stage3-call-equities", equities);

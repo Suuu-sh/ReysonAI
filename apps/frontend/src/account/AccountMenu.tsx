@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+import type { Profile } from "../profile.ts";
 import { CreditCard, Palette, SignOut, UserCircle } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -5,24 +7,24 @@ import { levelLabel } from "../profile.ts";
 import "./account.css";
 import { localized } from "../i18n.ts";
 
-const t = (ja, en) => localized(en, ja);
+const t = (ja: string, en: string) => localized(en, ja);
 export const ACCOUNT_SECTION = "アカウント";
 
-export function initialOf(profile) {
+export function initialOf(profile: Profile | null) {
   return (profile?.nickname?.trim()?.[0] ?? "G").toUpperCase();
 }
 
 // Profile chip at the bottom of the sidebar; opens an upward menu like a typical account menu.
-export function AccountMenu({ profile, collapsed, onNavigate, onLogout }) {
+export function AccountMenu({ profile, collapsed, onNavigate, onLogout }: { profile: Profile; collapsed: boolean; onNavigate: (tab: string) => void; onLogout: () => void }) {
   const [open, setOpen] = useState(false);
-  const [position, setPosition] = useState(null);
-  const rootRef = useRef(null);
-  const popoverRef = useRef(null);
-  const chipRef = useRef(null);
+  const [position, setPosition] = useState<CSSProperties | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const chipRef = useRef<HTMLButtonElement>(null);
   // Portal outside the sidebar's clipping and stacking context; keep chip-relative coordinates.
   const toggleMenu = () => {
     if (open) { setOpen(false); return; }
-    const rect = chipRef.current.getBoundingClientRect();
+    const rect = chipRef.current!.getBoundingClientRect();
     setPosition(collapsed
       ? { left: rect.right + 10, bottom: Math.max(8, window.innerHeight - rect.bottom) }
       : { left: rect.left, width: rect.width, bottom: window.innerHeight - rect.top + 6 });
@@ -31,14 +33,14 @@ export function AccountMenu({ profile, collapsed, onNavigate, onLogout }) {
 
   useEffect(() => {
     if (!open) return undefined;
-    const close = event => { if (!rootRef.current?.contains(event.target) && !popoverRef.current?.contains(event.target)) { setOpen(false); } };
-    const onKey = event => { if (event.key === "Escape") { setOpen(false); } };
+    const close = (event: MouseEvent) => { if (!rootRef.current?.contains(event.target as Node | null) && !popoverRef.current?.contains(event.target as Node | null)) { setOpen(false); } };
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); } };
     document.addEventListener("mousedown", close);
     document.addEventListener("keydown", onKey);
     return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", onKey); };
   }, [open]);
 
-  const go = tab => { setOpen(false); onNavigate(tab); };
+  const go = (tab: string) => { setOpen(false); onNavigate(tab); };
   const name = profile?.nickname || t("ゲスト", "Guest");
 
   return <div className={`account-menu${collapsed ? " collapsed" : ""}`} ref={rootRef}>

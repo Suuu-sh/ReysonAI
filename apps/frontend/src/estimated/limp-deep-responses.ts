@@ -1,3 +1,5 @@
+import type { MatrixModel } from "../data.ts";
+import type { LimpDataset, LimpDeepDataset, LimpDeepSpot, LimpFourBetSpot, LimpIsoSpot, OpeningDataset, SpotDataset } from "./preflop-types.ts";
 // Deep SB-limp branch: SB limps → BB isos 3.5BB → SB limp-reraises 10.5BB →
 // BB 4bets 26BB → SB fold / call / all-in 100BB → BB fold / call the all-in.
 // Kept apart from limp-responses.json (and its validator) on purpose.
@@ -12,14 +14,14 @@ export const LIMP_DEEP_LEGAL_ACTIONS = Object.freeze({
   [LIMP_FIVE_BET_RESPONSE_ID]: ["fold", "call"],
 });
 
-const percent = value => Number.isInteger(value) && value >= 0 && value <= 100;
-const hasExactKeys = (row, keys) => Object.keys(row).length === keys.length && keys.every(key => Object.hasOwn(row, key));
-const bySpot = (data, id) => data?.spots?.find(spot => spot.id === id);
+const percent = (value: number) => Number.isInteger(value) && value >= 0 && value <= 100;
+const hasExactKeys = (row: object, keys: readonly string[]) => Object.keys(row).length === keys.length && keys.every(key => Object.hasOwn(row, key));
+const bySpot = <S extends { id: string }>(data: SpotDataset<S> | null | undefined, id: string) => data?.spots?.find(spot => spot.id === id);
 
 // `limp` is the saved limp-responses.json: reachability comes from SB's limp ×
 // limp-reraise (4bet response) and BB's iso × 4bet (all-in response).
-export function validateLimpDeepResponses(data, opening, limp) {
-  const fail = detail => { throw new Error(`リンプ深部応答データが不正です: ${detail}`); };
+export function validateLimpDeepResponses(data: LimpDeepDataset, opening: OpeningDataset, limp: LimpDataset) {
+  const fail: (detail: string) => never = detail => { throw new Error(`リンプ深部応答データが不正です: ${detail}`); };
   const fourBetTo = fourBetToSize("BB", "SB");
   const allInTo = fiveBetToSize();
   if (data?.metadata?.schema_version !== "1.0" ||
@@ -32,13 +34,13 @@ export function validateLimpDeepResponses(data, opening, limp) {
       !Array.isArray(data.spots) || data.spots.length !== 2) fail("メタデータ・局面数");
 
   const sbOpen = opening?.spots?.find(spot => spot.id === "SB_open" && spot.hero === "SB");
-  const bbIso = bySpot(limp, "BB_vs_SB_limp");
-  const sbIso = bySpot(limp, "SB_vs_BB_iso");
-  const bbReraise = bySpot(limp, "BB_vs_SB_limp_reraise");
+  const bbIso = (bySpot(limp, "BB_vs_SB_limp") as import("./preflop-types.ts").LimpCheckSpot | undefined);
+  const sbIso = (bySpot(limp, "SB_vs_BB_iso") as LimpIsoSpot | undefined);
+  const bbReraise = (bySpot(limp, "BB_vs_SB_limp_reraise") as import("./preflop-types.ts").LimpReraiseSpot | undefined);
   if (!sbOpen || !bbIso || !sbIso || !bbReraise || bbReraise.four_bet_size_bb !== fourBetTo) fail("前段（SBオープン・リンプ応答）の参照");
 
   const [sb, bb] = data.spots;
-  const common = spot => spot.source_opening_id === "SB_open" && spot.source_limp_response_id === bbIso.id &&
+  const common = (spot: LimpDeepSpot) => spot.source_opening_id === "SB_open" && spot.source_limp_response_id === bbIso.id &&
     spot.source_iso_response_id === sbIso.id && spot.source_limp_reraise_response_id === bbReraise.id &&
     spot.open_size_bb === sbCompleteToBb && spot.iso_size_bb === isoVsLimpToBb &&
     spot.limp_reraise_size_bb === limpReraiseToBb && spot.four_bet_size_bb === fourBetTo &&
@@ -56,36 +58,36 @@ export function validateLimpDeepResponses(data, opening, limp) {
   const isoBy = new Map(bbIso.hands.map(row => [row.hand, row.raise]));
   const bbFourBetBy = new Map(bbReraise.hands.map(row => [row.hand, row.four_bet]));
   for (const row of sb.hands) {
-    const unreachable = !(limpBy.get(row.hand) > 0 && sbReraiseBy.get(row.hand) > 0);
+    const unreachable = !(limpBy.get(row.hand)! > 0 && sbReraiseBy.get(row.hand)! > 0);
     if (!hasExactKeys(row, ["hand", "fold", "call", "all_in", "all_in_size_bb"]) ||
         ![row.fold, row.call, row.all_in].every(percent) || row.fold + row.call + row.all_in !== 100 ||
         row.all_in_size_bb !== (row.all_in > 0 ? allInTo : null) ||
         (unreachable && row.fold !== 100)) fail(`${sb.id} / ${row.hand}`);
   }
   const shoveBy = new Map(sb.hands.map(row => [row.hand, row.all_in]));
-  if (![...shoveBy].some(([hand, allIn]) => allIn > 0 && limpBy.get(hand) > 0 && sbReraiseBy.get(hand) > 0)) fail(`${sb.id}: オールインレンジが空`);
+  if (![...shoveBy].some(([hand, allIn]) => allIn > 0 && limpBy.get(hand)! > 0 && sbReraiseBy.get(hand)! > 0)) fail(`${sb.id}: オールインレンジが空`);
   for (const row of bb.hands) {
-    const unreachable = !(isoBy.get(row.hand) > 0 && bbFourBetBy.get(row.hand) > 0);
+    const unreachable = !(isoBy.get(row.hand)! > 0 && bbFourBetBy.get(row.hand)! > 0);
     const equity = row.equity_vs_shove_pct;
     if (!hasExactKeys(row, ["hand", "fold", "call", "equity_vs_shove_pct"]) ||
         ![row.fold, row.call].every(percent) || row.fold + row.call !== 100 ||
         (unreachable ? row.fold !== 100 || equity !== null
-          : !(Number.isFinite(equity) && equity >= 0 && equity <= 100))) fail(`${bb.id} / ${row.hand}`);
+          : !(Number.isFinite(equity) && equity! >= 0 && equity! <= 100))) fail(`${bb.id} / ${row.hand}`);
   }
   if (!(bb.call_break_even_equity_pct > 0 && bb.call_break_even_equity_pct < 100) || !(bb.shove_range_combos > 0)) fail(`${bb.id}: 必要勝率・オールインレンジ`);
   return data;
 }
 
 // SB facing BB's 4bet: hands that never limp-reraise (SB_vs_BB_iso raise 0%) are unreachable.
-export function limpFourBetMatrixModel(spot, limp) {
-  const iso = limp?.spots?.find(item => item.id === spot.source_iso_response_id);
+export function limpFourBetMatrixModel(spot: LimpFourBetSpot, limp: LimpDataset): MatrixModel {
+  const iso = (limp?.spots?.find(item => item.id === spot.source_iso_response_id) as LimpIsoSpot | undefined);
   if (!iso) throw new Error("BBの4betへの応答にはSBのリンプレイズ頻度が必要です。");
   const reraise = new Map(iso.hands.map(row => [row.hand, row.raise]));
   return {
     actions: ["all_in", "call", "fold"],
     actionLabels: { all_in: `オールイン ${spot.all_in_size_bb}BB` },
     aggregates: new Map(spot.hands.map(row => {
-      const unreachable = !(reraise.get(row.hand) > 0);
+      const unreachable = !(reraise.get(row.hand)! > 0);
       return [row.hand, {
         hand: row.hand, comboCount: row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12,
         unreachable,
@@ -95,8 +97,8 @@ export function limpFourBetMatrixModel(spot, limp) {
   };
 }
 
-export function findLimpDeepResponseSpot(data, id) {
+export function findLimpDeepResponseSpot<I extends LimpDeepSpot["id"]>(data: LimpDeepDataset, id: I): Extract<LimpDeepSpot, { id: I }> {
   const spot = bySpot(data, id);
   if (!spot) throw new Error(`リンプ深部応答局面がありません: ${id}`);
-  return spot;
+  return spot as Extract<LimpDeepSpot, { id: I }>;
 }

@@ -1,6 +1,6 @@
 # Stage 3 browser acceptance procedure
 
-Status: prepared, not yet executed against the final Stage 3 revision. Record the exact commit, browser, date, result and screenshot locations below after the run. A passing mounted/SSR test is not a substitute for this browser check.
+Status: partially executed on exact head `0d0be207` on 2026-10-05. The required preflop paths passed; the unsupported postflop screen remains NOT RUN. The later typed-development integration has separate source/type/unit evidence and is not represented as a new browser pass. A passing mounted/SSR test is not a substitute for this browser check.
 
 ## Environment
 
@@ -26,11 +26,16 @@ For a three-caller rare root, choose UTG open, HJ call, CO call, BTN call, then 
 
 Any unsupported Stage 3 postflop terminal must remain unavailable; it must not load a policy belonging to an existing Stage 2/HU history.
 
-## Result record
+## Result record — 2026-10-05
 
-- Commit: pending
-- Browser and environment: pending
-- Required path and screenshots: pending
-- Stage 3 saved root and IDs: pending
-- Reload/rewind/reset/missing-data/language checks: pending
-- Failures and fixes: pending
+- Commit: `0d0be207c8775e0f1615a9984f308fbf8230932f`.
+- Environment: authorized isolated Mac checkout and supported browser control; no production data/authentication. Both reviewed archives were restored and verified before the run.
+- Required Stage1/2 path: PASS, including UTG AA 25% call / 75% four-bet, HJ AA 30% call / 70% all-in, pot 51BB, four participant tables, URL reload, rewind to UTG call and reset.
+- Saved Stage3 root: `s3_squeeze_extra_UTGo2p5_HJc2p5_COf_BTNf_SBs13_to_BB`. BB entrant call/raise branches, participant comparison, reload/rewind/reset: PASS.
+- Rare three-caller root: PASS in Japanese, English, Simplified Chinese and Spanish. Saved-data recovery after one localhost 503: PASS.
+- Unsupported Stage3 postflop consumer: NOT RUN. Enter flop reached the Guest sign-in gate, so the downstream no-policy screen and absence of a borrowed HU request were not observed. No fake session or authentication bypass was introduced.
+- Separate isolated evidence: Stage3 no-HU-fallback test 1/1, learning access 8/8, local-account boundary 3/3; these are not authenticated browser E2E. The representative two-player Stage3 terminal retains CO/BTN with `pilotAvailable=false` and `spotId=null`.
+- Screens were visually inspected. PNG export was denied by browser security, and no alternate route was used; no saved screenshot file is claimed.
+- Cleanup: isolated checkout remained clean; only QA-owned servers were stopped. Later continuation is blocked because the existing Mac task no longer exposes supported browser/CUA controls.
+
+The remaining browser case must be observed in a supported test environment before calling browser acceptance complete. No credentials were created, accessed or requested for this report.

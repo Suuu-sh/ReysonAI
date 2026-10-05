@@ -1,4 +1,4 @@
-import { comboCount, combosOf, equityVsRange, seedFor, seededRandom, weightedRange } from "./equity.mjs";
+import { comboCount, combosOf, equityVsRange, seedFor, seededRandom, weightedRange } from "./equity.ts";
 import { rake, rakeMetadata, raked } from "../../src/estimated/rake.ts";
 import { openSizeFor } from "../../src/estimated/sizing.ts";
 

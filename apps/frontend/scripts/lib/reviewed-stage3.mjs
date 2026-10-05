@@ -1,5 +1,5 @@
 // Exact Stage 3 review receipt. No generation or automatic approval lives here.
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual } from "node:util";
@@ -22,7 +22,12 @@ export function reviewedStage3SourcePaths(root = STAGE3_REPOSITORY) {
     if (found.has(path)) return;
     if (path.startsWith("../") || path.startsWith("/")) throw new Error("Stage 3 review source escapes repository");
     found.add(path);
-    if (!/\.(?:mjs|ts|tsx|js)$/.test(path)) return;
+    // Bind adjacent module declarations and their type-only dependencies too.
+    if (path.endsWith(".mjs")) {
+      const declaration = path.slice(0, -4) + ".d.mts";
+      if (existsSync(join(root, declaration))) visit(declaration);
+    }
+    if (!/\.(?:mjs|mts|ts|tsx|js)$/.test(path)) return;
     const text = readFileSync(join(root, path), "utf8");
     const imports = /(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']/g;
     const dynamicImports = /\bimport\s*\(\s*["']([^"']+)["']/g;

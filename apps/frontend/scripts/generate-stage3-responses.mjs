@@ -10,8 +10,8 @@ import { validateStage3Dataset, validateStage3Sources } from "../src/estimated/s
 import { iterateStage3Defense, orderStage3Calls, stage3OrderEdges, auditStage3Estimates } from "../src/estimated/stage3-audit.ts";
 import { allowedCall, callFacts, threeBetTargetCall } from "../src/estimated/stage3-call-ev.ts";
 import { rakeMetadata, raked } from "../src/estimated/rake.ts";
-import { weightedRange, seededRandom, seedFor } from "./lib/equity.mjs";
-import { continuationEquity as stage3Equity } from "./lib/continuation-equity.mjs";
+import { weightedRange, seededRandom, seedFor } from "./lib/equity.ts";
+import { continuationEquity as stage3Equity } from "./lib/continuation-equity.ts";
 import { allInCallFrequency } from "./lib/all-in-call.mjs";
 import { stage3Profile } from "./lib/stage3-profiles.mjs";
 import { checkRangeBalance, checkCrossStrengthInversion } from "../src/estimated/audit.ts";

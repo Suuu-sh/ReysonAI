@@ -40,16 +40,16 @@ export const THREE_BETTOR_BEHIND_EQR = 0.85;
 // alone ignores the seats behind and overstates cold calls.
 // Squeeze: each later seat squeezes roughly 3%, forfeiting the whole flat
 // (×0.97 per seat), keyed by seats behind: 2 (BTN) 0.94, 3 (CO) 0.91, 4 (HJ) 0.885.
-export const COLD_CALL_SQUEEZE_EQR = Object.freeze({ 2: 0.94, 3: 0.91, 4: 0.885 });
+export const COLD_CALL_SQUEEZE_EQR: Readonly<Record<number, number>> = Object.freeze({ 2: 0.94, 3: 0.91, 4: 0.885 });
 // Overcalls: the blinds overcall often, and offsuit flats (one-pair, often
 // dominated, no flush) realize less in three-way pots (×0.95). Suited hands and
 // pairs keep their multiway implied odds, so only offsuit hands take this.
 export const COLD_CALL_OFFSUIT_EQR = 0.95;
-export function seatsBehind(hero) {
+export function seatsBehind(hero: string) {
   return positions.length - 1 - positions.indexOf(hero);
 }
 const ranks = "23456789TJQKA";
-export function eqrCategory(hand) {
+export function eqrCategory(hand: string) {
   if (!/^(?:([2-9TJQKA])\1|[2-9TJQKA]{2}[so])$/.test(hand)) throw new Error(`Invalid hand: ${hand}`);
   if (hand.length === 2) return "pair";
   const a = ranks.indexOf(hand[0]), b = ranks.indexOf(hand[1]);
@@ -64,7 +64,7 @@ export function eqrCategory(hand) {
   if (broadway) return "offsuit_broadway";
   return gap <= 1 ? "offsuit_connected" : "offsuit_other";
 }
-export function equityRealization(hand, hero, opponents, { allIn = false, bbBehind = false, callerBehind = false, openerBehind = false, coldCallBehind = false, threeBettorBehind = false } = {}) {
+export function equityRealization(hand: string, hero: string, opponents: string[], { allIn = false, bbBehind = false, callerBehind = false, openerBehind = false, coldCallBehind = false, threeBettorBehind = false } = {}) {
   const category = eqrCategory(hand);
   if (!positions.includes(hero) || !Array.isArray(opponents) || ![1, 2, 3].includes(opponents.length) ||
       new Set([hero, ...opponents]).size !== opponents.length + 1 || opponents.some(p => !positions.includes(p))) {

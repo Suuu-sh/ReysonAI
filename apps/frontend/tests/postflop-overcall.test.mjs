@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import { checkFlopBalance, checkLaterBalance } from "../scripts/postflop-ai/balance.mjs";
 import { lowerDefence } from "../scripts/postflop-ai/fix-overcall.mjs";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
-import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
-import { referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
+import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
+import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
+import { referencePolicyFor } from "../scripts/postflop-ai/policy.ts";
 
 const clone = value => structuredClone(value);
 const inputs = loadInputs("BTN_open_BB_call");
@@ -87,7 +87,7 @@ test("lowerDefence rejects invalid shares, nodes, policy kinds, and malformed po
 });
 
 test("flop and later balance report overcall above minimum defence, not a balanced response", () => {
-  // Facing nodes are judged on the computed defence (defence.mjs): calling too much shows up when the
+  // Facing nodes are judged on the computed defence (defence.ts): calling too much shows up when the
   // bettor's range is mostly bluffs, not when the policy's own call numbers are raised.
   const flopPolicy = referencePolicyFor(inputs.spot.tree);
   const overcallingFlop = clone(flopPolicy);

@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { isStage3ArtifactPath, sha256Stage3, stage3FileRecord } from "../scripts/lib/stage3-artifacts.mjs";
+import { policySourceBytes } from "../scripts/lib/typescript-policy-source.mjs";
 const root = fileURLToPath(new URL("../../..", import.meta.url));
 const bytes = readFileSync(new URL("./fixtures/stage3-legacy-baseline.json", import.meta.url));
 const baseline = JSON.parse(bytes);
@@ -22,8 +23,12 @@ test("every 1888 pre-existing JSON artifact stays byte-identical and no legacy f
   for (const item of baseline.artifacts) assert.deepEqual(stage3FileRecord(root, item.path), item, item.path);
   assert.deepEqual(jsonPaths("apps/frontend/src/estimated").filter(path => !isStage3ArtifactPath(path)).sort(), baseline.artifacts.map(item => item.path));
 });
-test("Stage 2 fingerprint-bound policy/model/sizing sources and archive stay byte-identical", () => {
-  for (const item of baseline.protected_sources) assert.deepEqual(stage3FileRecord(root, item.path), item, item.path);
+test("Stage 2 historical policy identities and raw archive bytes remain unchanged", () => {
+  for (const item of baseline.protected_sources) {
+    const bytes = item.path.startsWith("apps/frontend/")
+      ? policySourceBytes(item.path.slice("apps/frontend/".length)) : readFileSync(resolve(root, item.path));
+    assert.deepEqual({ path: item.path, bytes: bytes.length, sha256: sha256Stage3(bytes) }, item, item.path);
+  }
   const { format, ...archive } = baseline.stage2_archive;
   assert.equal(format, "ustar+gzip");
   assert.deepEqual(stage3FileRecord(root, archive.path), archive);

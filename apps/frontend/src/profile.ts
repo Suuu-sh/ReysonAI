@@ -15,7 +15,9 @@ const storage = () => {
   try { return typeof window === "undefined" ? null : accountStorage(); } catch { return null; }
 };
 
-export function loadProfile() {
+export interface Profile { nickname: string; level: string; updatedAt: string }
+export type ProfileDraft = { nickname?: string; level: string };
+export function loadProfile(): Profile | null {
   try {
     const saved = JSON.parse(storage()?.getItem(profileKey) ?? "null");
     // The former 上級 level was merged into 中級.
@@ -24,7 +26,7 @@ export function loadProfile() {
   } catch { return null; }
 }
 
-export function saveProfile({ nickname = "", level }) {
+export function saveProfile({ nickname = "", level }: ProfileDraft) {
   if (!levels.some(item => item.value === level)) throw new Error("レベルを選んでください。");
   const previousProfile = loadProfile();
   const profile = { nickname: nickname.trim().slice(0, 20), level, updatedAt: new Date().toISOString() };
@@ -37,7 +39,7 @@ export function saveProfile({ nickname = "", level }) {
   return profile;
 }
 
-export const levelLabel = level => levels.find(item => item.value === level)?.label ?? "";
+export const levelLabel = (level: string | undefined) => levels.find(item => item.value === level)?.label ?? "";
 
 // Guest logout forgets only the browser profile.
 export function clearProfile() {
@@ -49,7 +51,7 @@ export function clearProfile() {
 const draftKey = "reysonai:onboarding-draft:v1";
 const session = () => { try { return window.sessionStorage; } catch { return null; } };
 
-export function stashOnboardingDraft({ nickname = "", level = "" }) {
+export function stashOnboardingDraft({ nickname = "", level = "" }: { nickname?: string; level?: string }) {
   try { session()?.setItem(draftKey, JSON.stringify({ nickname, level, locale: productLocale() })); } catch {}
 }
 

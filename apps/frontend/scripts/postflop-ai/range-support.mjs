@@ -1,4 +1,4 @@
-import { combosOf } from '../lib/equity.mjs';
+import { combosOf } from '../lib/equity.ts';
 
 // Exact existence check, not an equity estimate. A preflop-reachable AA/AA
 // history cannot reach a flop containing an ace. Only the two live ranges

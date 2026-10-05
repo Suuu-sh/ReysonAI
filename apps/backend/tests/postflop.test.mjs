@@ -6,7 +6,7 @@ import worker from "../src/index.ts";
 import { spotArtifacts } from "../../frontend/scripts/postflop-ai/publish-d1.mjs";
 import { postflopResponse } from "../../frontend/scripts/postflop-ai/local-view.mjs";
 import { boards } from "../../frontend/scripts/postflop-ai/inputs.mjs";
-import { spotById } from "../../frontend/scripts/postflop-ai/spots.mjs";
+import { spotById } from "../../frontend/scripts/postflop-ai/spots.ts";
 
 // In-memory D1 answering the worker's queries: WHERE spot_id = ?.
 function mockDb(tables) {

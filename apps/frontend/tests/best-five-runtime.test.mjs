@@ -1,9 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { parseCards } from "../scripts/postflop-ai/model.mjs";
-import { rankTable, comboId } from "../scripts/postflop-ai/defence.mjs";
-import { makeRange, equityVersus, equitiesVersus } from "../scripts/postflop-ai/range-equity.mjs";
-import { createTable, settle } from "../scripts/postflop-ai/engine.mjs";
+import { parseCards } from "../scripts/postflop-ai/model.ts";
+import { rankTable, comboId } from "../scripts/postflop-ai/defence.ts";
+import { makeRange, equityVersus, equitiesVersus } from "../scripts/postflop-ai/range-equity.ts";
+import { createTable, settle } from "../scripts/postflop-ai/engine.ts";
 import { fiveCardScore } from "./reference/best-five.mjs";
 
 const tied = [

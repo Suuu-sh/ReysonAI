@@ -1,5 +1,5 @@
 import { allBoardIdentity, allBoardSummaryName, assertAllBoardRunIdentity, openBoardCheckpoints, writeImmutableAllBoardOutput } from "./all-board-checkpoints.mjs";
-import { defenceFor } from "./defence.mjs";
+import { defenceFor } from "./defence.ts";
 import { hasPostflopDeal } from "./range-support.mjs";
 // node scripts/postflop-ai/audit-all-boards.mjs [--spot <id> ...] [--street flop|later|all] [--workers N]
 // Runs the balance checks (balance.mjs) on every one of the 1,755 canonical flops, one board at a
@@ -14,8 +14,8 @@ import { join } from "node:path";
 import { loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
 import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
-import { canonicalFlops } from "./flop-isomorphism.mjs";
-import { POSTFLOP_SPOTS } from "./spots.mjs";
+import { canonicalFlops } from "./flop-isomorphism.ts";
+import { POSTFLOP_SPOTS } from "./spots.ts";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const outDir = join(root, ".local/postflop-ai/all-boards-audit");

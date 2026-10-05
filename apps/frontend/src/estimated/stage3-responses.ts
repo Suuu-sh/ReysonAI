@@ -1,17 +1,18 @@
+import type { Stage3Action, Stage3Dataset, Stage3SourceDatasets, Stage3Sources } from "./stage3-types.ts";
 import { hands } from "../data.ts";
 import { hasConfiguredRake } from "./rake.ts";
 import { stage3ById, stage3Families, stage3Spots, stage3RootById, stage3Roots } from "./stage3-tree.ts";
 import { createStage3Model, MissingStage3SourceError } from "./stage3-model.ts";
 import { validateContinuationSources, validateContinuationDataset } from "./continuation-responses.ts";
-export const STAGE3_ACTIONS = ["fold", "call", "squeeze", "four_bet", "all_in"];
+export const STAGE3_ACTIONS: Stage3Action[] = ["fold", "call", "squeeze", "four_bet", "all_in"];
 const rowKeys = ["hand", ...STAGE3_ACTIONS, "raise_to_size_bb"];
-export function validateStage3Sources(data) {
+export function validateStage3Sources(data: Stage3SourceDatasets) {
   validateContinuationSources(data);
   if (!data["continuation-responses"]) throw new Error("Stage3 requires the unchanged reviewed Stage2 continuation snapshot for fold boundaries");
   validateContinuationDataset(data["continuation-responses"], data);
 }
-export function validateStage3Dataset(data, datasets, { allowPartial = false } = {}) {
-  const fail = message => { throw new Error(`Invalid stage3 data: ${message}`); };
+export function validateStage3Dataset(data: Stage3Dataset, datasets: Stage3SourceDatasets, { allowPartial = false } = {}) {
+  const fail = (message: string): never => { throw new Error(`Invalid stage3 data: ${message}`); };
   const families = data?.metadata?.families;
   if (!Array.isArray(families) || !families.length || new Set(families).size !== families.length ||
       families.some(f => !stage3Families.includes(f)) ||
@@ -33,7 +34,7 @@ export function validateStage3Dataset(data, datasets, { allowPartial = false } =
   for (const node of expected) {
     const spot = data.spots[storedIndex];
     if (sparse && spot?.id !== node.id) {
-      if (model.rootEvidence(stage3RootById.get(node.root_id)).rare) { rareCount++; continue; }
+      if (model.rootEvidence(stage3RootById.get(node.root_id)!).rare) { rareCount++; continue; }
       if (!model.context(node).unreachable) fail(`missing reachable history ${node.id}`);
       impossibleCount++;
       // Do not register a guessed policy. Any later reference re-proves that
@@ -41,7 +42,7 @@ export function validateStage3Dataset(data, datasets, { allowPartial = false } =
       continue;
     }
     storedIndex++;
-    if (!spot || Object.entries(node).some(([key, value]) => JSON.stringify(spot[key]) !== JSON.stringify(value))) fail(`history/source/geometry ${node.id}`);
+    if (!spot || Object.entries(node).some(([key, value]) => JSON.stringify(spot[key as keyof typeof spot]) !== JSON.stringify(value))) fail(`history/source/geometry ${node.id}`);
     const context = model.context(node, spot);
     if (sparse && context.unreachable) fail(`stored impossible history ${node.id}`);
     if (spot.unreachable !== context.unreachable || !Array.isArray(spot.hands) || spot.hands.length !== hands.length) fail(`reach/hands ${node.id}`);
@@ -52,7 +53,7 @@ export function validateStage3Dataset(data, datasets, { allowPartial = false } =
           STAGE3_ACTIONS.reduce((sum, a) => sum + row[a], 0) !== 100 ||
           STAGE3_ACTIONS.some(a => !node.legal_actions.includes(a) && row[a] !== 0)) fail(`actions ${node.id}/${hands[j]}`);
       const raise = row.squeeze ? node.action_sizes_bb.squeeze : row.four_bet ? node.action_sizes_bb.four_bet : row.all_in ? node.action_sizes_bb.all_in : null;
-      if (row.raise_to_size_bb !== raise || raise !== null && (raise < node.minimum_raise_to_bb || raise > 100) ||
+      if (row.raise_to_size_bb !== raise || raise !== null && (raise < node.minimum_raise_to_bb! || raise > 100) ||
           context.reach(row.hand) === 0 && row.fold !== 100) fail(`size/flow ${node.id}/${row.hand}`);
     }
     model.register(spot);
@@ -62,7 +63,7 @@ export function validateStage3Dataset(data, datasets, { allowPartial = false } =
   return data;
 }
 
-export function findStage3Spot(data, id, datasets) {
+export function findStage3Spot(data: Stage3Dataset | null | undefined, id: string, datasets: Stage3Sources) {
   const spot = data?.spots?.find(item => item.id === id);
   if (spot) return spot;
   const node = stage3ById.get(id);
@@ -72,12 +73,12 @@ export function findStage3Spot(data, id, datasets) {
 
 // Read-only runtime classification. An absent publication or reachable ancestor
 // stays missing; only exact source support can prove an impossible history.
-export function stage3Availability(data, datasets, id, model = createStage3Model({ ...datasets, "stage3-responses": data })) {
+export function stage3Availability(data: Stage3Dataset | null | undefined, datasets: Stage3Sources, id: string, model = createStage3Model({ ...datasets, "stage3-responses": data })) {
   const node = stage3ById.get(id);
   if (!node || node.reused) throw new Error(`Unknown stage3 ${id}`);
   const spot = data?.spots?.find(item => item.id === id);
   try {
-    const evidence = model.rootEvidence(stage3RootById.get(node.root_id));
+    const evidence = model.rootEvidence(stage3RootById.get(node.root_id)!);
     if (evidence.rare) return { status: "rare", spot: null, reach: evidence };
     const context = model.context(node, spot ?? node);
     if (context.unreachable) return { status: "unreachable", spot: null };

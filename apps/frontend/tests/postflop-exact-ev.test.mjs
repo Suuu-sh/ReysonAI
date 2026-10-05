@@ -1,14 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
-import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
-import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { defenceFor, replayDecision } from "../scripts/postflop-ai/defence.mjs";
+import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.ts";
+import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
+import { defenceFor, replayDecision } from "../scripts/postflop-ai/defence.ts";
 import { exactActionEv } from "../scripts/postflop-ai/exact-ev.mjs";
-import { parseCards } from "../scripts/postflop-ai/model.mjs";
+import { parseCards } from "../scripts/postflop-ai/model.ts";
 import { laterHandEvForHand, laterHandEvForHandMonteCarlo } from "../scripts/postflop-ai/later-hand-ev-core.mjs";
 import { flopHandEvForHand, flopHandEvForHandMonteCarlo, flopEvRunouts, FLOP_EV_RUNOUTS } from "../scripts/postflop-ai/flop-hand-ev-core.mjs";
-import { parseFlopBoard } from "../scripts/postflop-ai/model.mjs";
+import { parseFlopBoard } from "../scripts/postflop-ai/model.ts";
 import { enumerateLaterEv } from "./reference/hand-ev-enumeration.mjs";
 
 const inputs = loadInputs("BTN_open_BB_call"), flopPolicy = referencePolicy, laterPolicy = referenceLaterPolicy();

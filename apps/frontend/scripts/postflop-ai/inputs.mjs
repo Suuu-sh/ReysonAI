@@ -3,10 +3,10 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { combosOf } from "../lib/equity.mjs";
+import { combosOf } from "../lib/equity.ts";
 import { gameConfig } from "../../src/estimated/sizing.ts";
-import { parseCards } from "./model.mjs";
-import { DEFAULT_SPOT_ID, spotById } from "./spots.mjs";
+import { parseCards } from "./model.ts";
+import { DEFAULT_SPOT_ID, spotById } from "./spots.ts";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 // The edge worker (apps/backend) has no filesystem: it installs a source that
@@ -35,7 +35,7 @@ const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("
 const LATER_KEYS = ["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"];
 // Flop candidate identity predates the later-street tree. Exclude only its new sizing
 // keys, keeping the original key order and every original config field in the hash.
-// The computed-defence constants (defence.mjs) are not part of any candidate's identity either.
+// The computed-defence constants (defence.ts) are not part of any candidate's identity either.
 // The raise-chain depth (max_raises_per_street) is not part of any identity either: saved policies stay valid.
 const NON_FLOP_KEYS = [...LATER_KEYS, "defence_realization", "river_allin_max_pot_ratio", "max_raises_per_street"];
 const flopConfig = () => Object.fromEntries(Object.entries(config).filter(([key]) =>
@@ -137,7 +137,7 @@ function loadFourBetInputs(spot, opening, baseOk) {
   return { spot, opening, response, threeBetResponse, threeBet, config, fingerprint, seatRows };
 }
 
-// Limped pots: each seat's factors are [file, spot id, action] (spots.mjs).
+// Limped pots: each seat's factors are [file, spot id, action] (spots.ts).
 function loadLimpInputs(spot, opening, baseOk) {
   const limp = read("limp-responses");
   const byId = id => limp.spots.find(item => item.id === id);
