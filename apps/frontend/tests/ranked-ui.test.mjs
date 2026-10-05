@@ -14,7 +14,7 @@ test('every rank has an inline emblem and ladder uses canonical thresholds', () 
     assert.ok(html.includes(`${tier.min.toLocaleString()}+`));
   }
   assert.ok(!html.includes('.png'));
-  assert.match(html, /title="マスターのうち上位10人">マスターのうち上位10人<\/small>/);
+  assert.match(html, /title="マスターのうち上位10人">Top10<\/small>/);
   assert.equal((html.match(/aria-current="step"/g) ?? []).length, 1);
 });
 test('leaderboard waits for server data without assigning a local placement', () => {
