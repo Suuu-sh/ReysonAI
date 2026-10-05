@@ -1,3 +1,4 @@
+import { PokerTable, PokerSeat, PokerChip, PokerActionButton } from "./PokerTable.tsx";
 import { PlayingCard } from "../components/PlayingCard.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning } from "@phosphor-icons/react";
@@ -233,13 +234,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
 
     <div className="agent-layout">
       <section className="agent-stage">
-        <div className="agent-felt-wrap">
-          <div className="agent-felt">
-            <span className="agent-felt-logo" aria-hidden="true">ReysonAI</span>
-            <div className="agent-center">
-              <div className="agent-board">{[0, 1, 2, 3, 4].map(i => boardCards[i]
-                ? <PlayingCard variant="agent" key={`${i}-${boardCards[i]}`} card={boardCards[i]} size="is-board" />
-                : <span key={i} className="agent-card is-slot is-board" />)}</div>
+        <PokerTable board={boardCards} center={<>
               {done ? <div className="agent-result" key={session.handNo}>
                   <b>{winnerLine}</b>
                   <small>{localized("Pot", "ポット")} {pts(totalPot)}{result!.rake ? ` · ${localized("rake", "レーキ")} ${pts(result!.rake)}` : ""}</small>
@@ -249,12 +244,11 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
                   : <div className="agent-pot is-total"><span>{localized("Total", "合計")}</span><b>{pts(totalPot)}</b></div>}
               {waiting && <div className="agent-thinking">{localized("Reading the AI estimate…", "AI推定を読み込み中…")}</div>}
               {done && result?.policyMissing && <div className="agent-note">{localized("No saved postflop policy for this line, so it was checked down.", "この経路のAI方針がないため、チェックダウンしました")}</div>}
-            </div>
+            </>}>
             {!done && session.seats.map((seat, index) => {
               const slotIndex = (index - order + 6) % 6;
               const amount = chips.front[positions[index]] ?? 0;
-              return amount > 0 ? <span key={`chip-${index}`} className={`agent-chip slot-${slotIndex}`}>
-                <i aria-hidden="true" />{pts(amount)}</span> : null;
+              return amount > 0 ? <PokerChip key={`chip-${index}`} slot={slotIndex} amount={pts(amount)} /> : null;
             })}
             {session.seats.map((seat, index) => {
               const slotIndex = (index - order + 6) % 6;
@@ -271,27 +265,16 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
               const showCards = isHuman || watch || (done && result?.showdown && !folded);
               const delta = done ? toPoints(result!.returns![pos] ?? 0) : null;
               const stack = done ? 100 + (result!.returns![pos] ?? 0) : 100 - (chips.committed[pos] ?? 0);
-              return <div key={index} className={`agent-seat slot-${slotIndex}${isHuman ? " is-human" : ""}${folded ? " is-folded" : ""}${won ? " is-winner" : ""}${actingPos === pos ? " is-acting" : ""}`}>
-                <div className="agent-hole">{(result?.holeCards[pos] ?? []).map((card, i) => <PlayingCard variant="agent" key={`${session.handNo}-${i}`} card={card} hidden={!showCards} size={isHuman ? "is-hero" : ""} />)}</div>
-                <div className="agent-plate">
-                  <div className="agent-avatar">
-                    {character ? <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : <span className="agent-you">YOU</span>}
-                    {actingPos === pos && !isHuman && <span className="agent-dots" aria-hidden="true"><i /><i /><i /></span>}
-                  </div>
-                  <div className="agent-meta">
-                    <b>{character ? character.name.en : localized("You", "あなた")}</b>
-                    <small>{pts(stack)}</small>
-                  </div>
-                  <span className="agent-pos">{pos}</span>
-                  {pos === "BTN" && <span className="agent-dealer" aria-label="Dealer">D</span>}
-                </div>
-                {lastOnStreet && !done && <span className={`agent-bubble tone-${tone(lastOnStreet.action)}`} key={`${lastOnStreet.street}-${mine.length}`}>{actionLabel(asDisplayed(revealed, lastOnStreet))}</span>}
+              return <PokerSeat key={index} slot={slotIndex} human={isHuman} folded={folded} won={Boolean(won)} acting={actingPos === pos}
+                cards={result?.holeCards[pos] ?? []} showCards={Boolean(showCards)} handKey={session.handNo}
+                avatar={character ? <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : undefined}
+                name={character ? character.name.en : localized("You", "あなた")} stack={pts(stack)} position={pos}
+                bubble={lastOnStreet && !done ? <span className={`agent-bubble tone-${tone(lastOnStreet.action)}`} key={`${lastOnStreet.street}-${mine.length}`}>{actionLabel(asDisplayed(revealed, lastOnStreet))}</span> : null}>
                 {done && result?.showdown && result.handRanks?.[pos] != null && !folded && <span className={`agent-handname${won ? " is-win" : ""}`}>{handName(result.handRanks[pos])}</span>}
                 {delta != null && delta !== 0 && <span className={`agent-delta ${delta > 0 ? "up" : "down"}`}>{signed(delta)}</span>}
-              </div>;
+              </PokerSeat>;
             })}
-          </div>
-        </div>
+        </PokerTable>
 
         <footer className={`agent-actions${pending ? " is-turn" : ""}`}>
           {pending ? <>
@@ -301,9 +284,9 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
                 {pending.notice === "no_data" && <small className="agent-turn-note">{localized("Beta: this line (e.g. a squeeze or cold 4-bet pot) has no saved postflop strategy yet, so the hand is checked down to showdown.", "β版のため、この流れ（スクイーズやコールド4betのポットなど）のポストフロップ方針はまだありません。ショーダウンまでチェックで進みます。")}</small>}
                 {pending.notice === "no_multiway" && <small className="agent-turn-note">{localized("Beta: multiway pots aren't supported yet, so a call that would make the flop three-way isn't offered.", "β版のため、まだマルチウェイ（3人以上でのフロップ）に対応していません。ここでのコールは3人目になるため選べません。")}</small>}
               </div>
-              <div className="agent-buttons">{pending.options.map((option, index) => <button type="button" key={option.key} className={`agent-act tone-${tone(option.key)}`} onClick={() => act(option.key)}>
+              <div className="agent-buttons">{pending.options.map((option, index) => <PokerActionButton key={option.key} tone={tone(option.key)} onClick={() => act(option.key)}>
                 <kbd>{index + 1}</kbd><span>{actionLabel({ action: option.key, to: option.key === "call" ? pending.toCall : option.to })}</span>
-                {/^bet\d+$/.test(option.key) && <small>{option.key.slice(3)}%</small>}</button>)}</div>
+                {/^bet\d+$/.test(option.key) && <small>{option.key.slice(3)}%</small>}</PokerActionButton>)}</div>
             </>
             : done ? <>
               <p className="agent-summary">{myDelta == null ? winnerLine : <>{localized("This hand", "このハンド")} <b className={myDelta > 0 ? "up" : myDelta < 0 ? "down" : ""}>{signed(myDelta)}</b></>}</p>

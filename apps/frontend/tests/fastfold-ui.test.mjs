@@ -28,14 +28,14 @@ test('invalid readiness never loads profile or local ranking',async()=>{
   let calls=0;await harness(({dom})=>{assert.match(dom.window.document.body.textContent,/unavailable/);assert.doesNotMatch(dom.window.document.body.innerHTML,/ff-scorebar/);},async()=>{calls++;return Response.json({enabled:true,season:'old',comparisonMode:'shadow',appliedPenalty:false});});assert.equal(calls,1);
 });
 test('consent is explicit; no automatic start and no fixed question limit',async()=>{
-  const urls=[];await harness(async({dom})=>{assert.match(dom.window.document.body.textContent,/Unlimited hands/);const start=[...dom.window.document.querySelectorAll('button')].find(b=>b.textContent.includes('Start FastFold'));assert.ok(start.disabled);assert.equal(urls.filter(url=>url.endsWith('/start')).length,0);},async url=>{urls.push(url);return initialFetch(null)(url);});
+  const urls=[];await harness(async({dom})=>{assert.match(dom.window.document.body.textContent,/Unlimited hands/);const start=[...dom.window.document.querySelectorAll('button')].find(b=>b.textContent.includes('Start FastFold'));assert.ok(start.disabled);assert.ok(dom.window.document.querySelector('.ff-arena.is-lobby'));assert.equal(urls.filter(url=>url.endsWith('/start')).length,0);},async url=>{urls.push(url);return initialFetch(null)(url);});
 });
 test('fold advances server hand immediately; missing policy notice and scope are visible',async()=>{
   const first=session();first.hand.policyMissing=true;first.hand.pending.notice='no_multiway';
   await harness(async({dom,click,updates})=>{assert.match(dom.window.document.body.textContent,/not a recommended strategy/);assert.match(dom.window.document.body.textContent,/Postflop uses balanced policy/);await click('Fold');assert.ok(dom.window.document.body.textContent.includes('#2'));assert.equal(updates.at(-1).state.active.hand.number,2);},async(url,options)=>{if(url.endsWith('/action')){const body=JSON.parse(options.body);assert.equal(body.action,'fold');assert.equal(body.version,0);assert.ok(body.actionId);return Response.json({session:session(1,'active',2),state:state(session(1,'active',2))});}return initialFetch(first)(url);});
 });
 test('uncertain action locks buttons and retries identical action id/body',async()=>{
-  const bodies=[];await harness(async({dom,click})=>{await click('Fold');assert.match(dom.window.document.body.textContent,/Not confirmed/);assert.ok([...dom.window.document.querySelectorAll('.ff-actions button')].every(b=>b.disabled));await click('Retry');assert.deepEqual(bodies[0],bodies[1]);assert.equal(dom.window.document.querySelector('[role=alert]'),null);},async(url,options)=>{if(url.endsWith('/action')){bodies.push(options.body);if(bodies.length===1)throw Error('network');return Response.json({session:session(1),state:state(session(1))});}return initialFetch(session())(url);});
+  const bodies=[];await harness(async({dom,click})=>{await click('Fold');assert.match(dom.window.document.body.textContent,/Not confirmed/);assert.ok(dom.window.document.querySelector('.agent-back').disabled);assert.ok([...dom.window.document.querySelectorAll('.ff-actions button')].every(b=>b.disabled));await click('Retry');assert.deepEqual(bodies[0],bodies[1]);assert.equal(dom.window.document.querySelector('[role=alert]'),null);},async(url,options)=>{if(url.endsWith('/action')){bodies.push(options.body);if(bodies.length===1)throw Error('network');return Response.json({session:session(1),state:state(session(1))});}return initialFetch(session())(url);});
 });
 test('pause keeps same hand; resume posts no new random seed or local deck',async()=>{
   const posts=[];await harness(async({dom,click})=>{await click('Pause');assert.match(dom.window.document.body.textContent,/same decision/);assert.equal(dom.window.document.querySelector('.ff-actions'),null);await click('Resume');assert.ok(dom.window.document.querySelector('.ff-actions'));assert.equal(posts.length,2);assert.deepEqual(posts[1],{consent:true});},async(url,options)=>{if(options?.method==='POST'){posts.push(JSON.parse(options.body));const next=session(posts.length, url.endsWith('/pause')?'paused':'active');return Response.json({session:next,state:state(next)});}return initialFetch(session())(url);});
@@ -45,4 +45,17 @@ test('stale version reconciles without leaving controls locked',async()=>{
 });
 test('sign-out hides state and drops a late action response',async()=>{
   let resolveAction;await harness(async({dom,root,props,updates,click})=>{await click('Fold');await act(async()=>root.render(React.createElement(FastFoldArena,{...props,ready:false})));const count=updates.length;await act(async()=>resolveAction(Response.json({session:session(1),state:state(session(1))})));assert.equal(updates.length,count);assert.doesNotMatch(dom.window.document.body.innerHTML,/ff-scorebar|ff-actions/);assert.match(dom.window.document.body.textContent,/Sign in/);},async(url,options)=>url.endsWith('/action')?new Promise(resolve=>{resolveAction=resolve;}):initialFetch(session())(url));
+});
+
+test('ranked uses shared Agent felt, six seats, hidden opponent cards and matching action buttons',async()=>{
+  await harness(({dom})=>{
+    assert.equal(dom.window.document.querySelectorAll('.agent-felt').length,1);
+    assert.equal(dom.window.document.querySelectorAll('.agent-seat').length,6);
+    assert.equal(dom.window.document.querySelectorAll('.agent-card.is-back').length,10);
+    assert.equal(dom.window.document.querySelectorAll('.agent-hole .trainer-card').length,2);
+    assert.equal(dom.window.document.querySelectorAll('.agent-board .is-slot').length,5);
+    assert.ok(dom.window.document.querySelector('.ff-action-fold.agent-act.tone-fold'));
+    assert.ok(dom.window.document.querySelector('.agent-side .ff-scorebar'));
+    assert.equal(dom.window.document.querySelectorAll('.ff-opponent').length,5);
+  },initialFetch(session()));
 });

@@ -78,7 +78,7 @@ test('actual Trainer ranked entry renders FastFold against authenticated server 
     const handId=session.hand.id;
     await click('.ff-table-top button'); await settle(()=>!dom.window.document.querySelector('.ff-table-top button')?.disabled); session=await getSession(); assert.equal(session.status,'paused');assert.equal(session.hand.id,handId);
     await act(async()=>root.unmount()); root=createRoot(dom.window.document.getElementById('root'));
-    await act(async()=>render()); await settle(()=>Boolean(dom.window.document.querySelector('.ff-table-top button'))); assert.match(dom.window.document.body.textContent,/Paused|一時停止中/);
+    await act(async()=>render()); await settle(()=>Boolean(dom.window.document.querySelector('.ff-paused'))); assert.match(dom.window.document.body.textContent,/Paused|一時停止中/);
     await click('.ff-table-top button'); await settle(()=>!dom.window.document.querySelector('.ff-table-top button')?.disabled); session=await getSession(); assert.equal(session.status,'active');assert.equal(session.hand.id,handId);
     // The formerly saved quiz result URL must render FastFold and redirect to play.
     path='/learn/trainer/ranked/play/result'; await act(async()=>render()); assert.equal(path,'/learn/trainer/ranked/play'); assert.ok(dom.window.document.querySelector('.ff-arena'));
