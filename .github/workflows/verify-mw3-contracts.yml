@@ -32,6 +32,11 @@ on:
       - 'apps/frontend/src/agent/**'
       - 'apps/frontend/tests/mw3-consumer-*.test.mjs'
       - 'apps/frontend/tests/mw3-local-d1.test.mjs'
+      - 'apps/frontend/tests/mw3-owned-process.test.mjs'
+      - 'apps/frontend/tests/mw3-api-lifecycle.test.mjs'
+      - 'apps/frontend/tests/mw3-parent-boundary.test.mjs'
+      - 'apps/frontend/scripts/ci/mw3-*.mjs'
+      - 'apps/frontend/scripts/ci/postflop-command-supervisor.py'
       - 'apps/frontend/scripts/verify-mw3-local-d1.mjs'
       - 'apps/frontend/tests/helpers/mw3-consumer-fixture.mjs'
       - 'apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs'
@@ -77,12 +82,16 @@ jobs:
           node --check apps/frontend/scripts/postflop-ai/mw3-snapshot-cli.mjs
           node --check apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs
           node --check apps/frontend/scripts/verify-mw3-local-d1.mjs
+          node --check apps/frontend/scripts/ci/mw3-local-command.mjs
+          node --check apps/frontend/scripts/ci/mw3-api-oracle.mjs
+          node --check apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs
+          python3 -c "import ast,pathlib; ast.parse(pathlib.Path('apps/frontend/scripts/ci/postflop-command-supervisor.py').read_text())"
       - name: Verify inventory and restore only committed independently accepted MW3 bytes
         run: node apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs restore
       - name: Test sequential saved-ledger memory boundary with synthetic bytes only
         run: node --expose-gc apps/frontend/tests/helpers/mw3-saved-memory-fixture.mjs
       - name: Test isolated three-player engine, classifier, codecs and adapters
-        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs apps/frontend/tests/mw3-local-d1.test.mjs
+        run: node --test --test-concurrency=1 apps/frontend/tests/postflop-mw3-*.test.mjs apps/frontend/tests/mw3-consumer-*.test.mjs apps/frontend/tests/mw3-local-d1.test.mjs apps/frontend/tests/mw3-owned-process.test.mjs apps/frontend/tests/mw3-api-lifecycle.test.mjs apps/frontend/tests/mw3-parent-boundary.test.mjs
       - name: Test unpublished, fail-closed three-player delivery boundary
         run: node --experimental-strip-types --test apps/backend/tests/mw3-*.test.mjs
       # This workflow never compiles/authors saved candidates, runs the pilot gate,

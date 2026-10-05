@@ -7,8 +7,8 @@ import { DatabaseSync } from 'node:sqlite';
 import { WRANGLER_VERSION, RUNTIME_PINS, UNRELATED_TABLES, parseArguments, localConfig, validateLocalConfig, validateRuntimePackages, readRuntimePins,
   completedJson, assertFinishedSqlFailure, assertReviewedSql, assertDeliveryRows, databaseSnapshot, preservationSeed,
   conflictSetup, localWorkerSource, loadReviewedDelivery, capturePinnedFiles, writeCapturedSources, assertCapturedSources,
-  SUPERVISOR_SOURCE, runSupervisedCommand } from '../scripts/verify-mw3-local-d1.mjs';
-import { localEnvironment } from '../scripts/verify-preflop-local-d1.mjs';
+  runSupervisedCommand, verifyMw3LocalD1 } from '../scripts/ci/mw3-local-d1-oracle.mjs';
+import { localEnvironment } from '../scripts/ci/mw3-local-command.mjs';
 import { prepareMw3SnapshotDeliveries, mw3DeliveryPins, buildMw3DeliverySql } from '../scripts/postflop-ai/mw3-reviewed-delivery.mjs';
 import { sha256, jsonBytes } from '../scripts/postflop-ai/mw3-reviewed-archive.mjs';
 import { verifyMw3Snapshot } from '../scripts/postflop-ai/mw3-reviewed-snapshot.mjs';
@@ -80,23 +80,9 @@ test('zero launcher status, empty/partial output and failed JSON cannot masquera
   assert.equal(completedJson('[{"success":true}]').length, 1);
   for (const text of ['', '[]', '{}', '[{"success":false}]', '[{"success":true},{}]', 'Wrangler stopped', '[{"success":true}']) assert.throws(() => completedJson(text));
 });
-test('rollback evidence uses original child status and owned-group completion, even when SQL error text precedes SIGKILL', () => {
-  const id = 'synthetic-command-1', group = 456;
-  const resource = { command_id: id, group_id: group, exit_status: 1, wrapper_exit_status: 1, timed_out: false, interrupted_signal: null, group_cleanup_complete: true };
-  const cleanup = { command_id: id, group_id: group, group_cleanup_complete: true, live_members: [] };
-  const valid = { status: 1, signal: null, stdout: '', stderr: 'NOT NULL constraint failed: mw3_policy_parts.body',
-    command_id: id, command_resource: resource, command_group_cleanup: cleanup };
-  assertFinishedSqlFailure(valid, /mw3_policy_parts\.body/);
-  for (const error of [null, { ...valid, status: 0 }, { ...valid, status: null }, { ...valid, status: 124 },
-    { ...valid, signal: 'SIGKILL' }, { ...valid, stderr: 'out of memory' }, { ...valid, command_resource: null },
-    { ...valid, command_resource: { ...resource, exit_status: -9, wrapper_exit_status: 137 }, status: 137 },
-    { ...valid, command_resource: { ...resource, exit_status: -9 } },
-    { ...valid, command_resource: { ...resource, timed_out: true } },
-    { ...valid, command_resource: { ...resource, interrupted_signal: 15 } },
-    { ...valid, command_resource: { ...resource, command_id: 'other-command' } },
-    { ...valid, command_resource: { ...resource, group_cleanup_complete: false } },
-    { ...valid, command_group_cleanup: { ...cleanup, live_members: [789] } },
-    { ...valid, command_group_cleanup: { ...cleanup, group_id: group + 1 } }]) {
+test('rollback requires full independently bound command evidence and never merely SQL diagnostics', () => {
+  for (const error of [null, { status: 1, signal: null, stderr: 'NOT NULL constraint failed: mw3_policy_parts.body' },
+    { status: 1, command_resource: { classification: 'normal-exit' }, commandOutcome: {} }]) {
     assert.throws(() => assertFinishedSqlFailure(error, /mw3_policy_parts\.body/));
   }
 });
@@ -201,20 +187,20 @@ test('schema snapshot excludes only literal internal prefixes, never SQL LIKE wi
     assert.equal(snapshot.rows.xcfa_user_data.length, 1); assert.equal(snapshot.rows._cf_internal_fixture, undefined);
   } finally { db.close(); }
 });
-test('supervisor contains signal/finally cleanup and captures both child streams directly to evidence files', () => {
-  assert.match(SUPERVISOR_SOURCE, /signal\.signal\(signal\.SIGTERM,interrupt\)/); assert.match(SUPERVISOR_SOURCE, /signal\.signal\(signal\.SIGINT,interrupt\)/);
-  assert.match(SUPERVISOR_SOURCE, /finally:/); assert.match(SUPERVISOR_SOURCE, /start_new_session=True,stdout=out,stderr=err/);
-  assert.match(SUPERVISOR_SOURCE, /cleanup_complete=clean_group\(child\.pid,group_birth\)/); assert.match(SUPERVISOR_SOURCE, /status=child\.wait/);
-  assert.match(SUPERVISOR_SOURCE, /'exit_status':status/); assert.match(SUPERVISOR_SOURCE, /'group_cleanup_complete':cleanup_complete/);
+test('the sole ownership implementation is the unchanged reviewed subreaper with anchored discovery', () => {
+  const source = readFileSync(new URL('../scripts/ci/postflop-command-supervisor.py', import.meta.url));
+  assert.equal(sha256(source), '61d0fe490ff4e1e82667a8ec188c1206efd1c26067ff8d6061b4bc8a1a67164d');
+  assert.match(source.toString(), /PR_SET_CHILD_SUBREAPER/); assert.match(source.toString(), /supervision_complete/);
+  assert.match(source.toString(), /ownership_conflicts/); assert.match(source.toString(), /start_ticks/);
 });
 test('synthetic process fixture: supervisor retains successful stdout and stderr without discarding warnings', () => {
   const directory = mkdtempSync(join(tmpdir(), 'mw3-supervisor-success-'));
   try {
     const result = runSupervisedCommand({ directory, commandId: 'synthetic-success', command: 'python3',
-      args: ['-c', "import sys;sys.stdout.write('雪 stdout');sys.stderr.write('warning: synthetic fixture stderr')"], timeoutSeconds: 5 });
+      args: ['-c', "import sys;sys.stdout.write('雪 stdout');sys.stderr.write('warning: synthetic fixture stderr')"], timeoutMs: 5000 });
     assert.equal(result.stdout, '雪 stdout'); assert.equal(result.stderr, 'warning: synthetic fixture stderr');
-    assert.equal(result.measurement.exit_status, 0); assert.deepEqual(result.cleanup.live_members, []);
-    assert.equal(readFileSync(join(directory, 'synthetic-success.stderr.log'), 'utf8'), result.stderr);
+    assert.equal(result.measurement.actual_returncode, 0); assert.deepEqual(result.cleanup.remaining_live, []);
+    assert.equal(readFileSync(join(result.evidence_directory, 'stderr.log'), 'utf8'), result.stderr);
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 test('synthetic process fixtures: NOT NULL text before killed, timed-out or interrupted children is never completed SQL proof', () => {
@@ -228,12 +214,12 @@ test('synthetic process fixtures: NOT NULL text before killed, timed-out or inte
     ];
     for (const row of cases) {
       let failure;
-      try { runSupervisedCommand({ directory, commandId: row.id, command: 'python3', args: ['-c', row.code], timeoutSeconds: row.seconds }); }
+      try { runSupervisedCommand({ directory, commandId: row.id, command: 'python3', args: ['-c', row.code], timeoutMs: Math.round(row.seconds * 1000), cleanupMs: 200 }); }
       catch (error) { failure = error; }
       assert.ok(failure); assert.match(failure.stderr, /NOT NULL constraint failed/);
       assert.throws(() => assertFinishedSqlFailure(failure, /mw3_policy_parts\.body/));
-      assert.equal(failure.command_group_cleanup.group_cleanup_complete, true); assert.deepEqual(failure.command_group_cleanup.live_members, []);
-      if (row.id === 'synthetic-killed') assert.equal(failure.command_resource.exit_status, -9);
+      assert.equal(failure.command_group_cleanup.complete, true); assert.deepEqual(failure.command_group_cleanup.remaining_live, []);
+      if (row.id === 'synthetic-killed') assert.equal(failure.command_resource.actual_returncode, -9);
       if (row.id === 'synthetic-timeout') assert.equal(failure.command_resource.timed_out, true);
       if (row.id === 'synthetic-interrupted') assert.equal(failure.command_resource.interrupted_signal, 15);
     }
@@ -268,4 +254,8 @@ test('runtime pins follow wrangler-dist and Miniflare dependency resolution rath
       } else assert.throws(() => readRuntimePins(entry), scenario === 'nested-cli' ? /pinned miniflare/ : scenario === 'nested-miniflare' ? /workerd version/ : /same pinned workerd entry/);
     } finally { rmSync(temporary, { recursive: true, force: true }); }
   }
+});
+
+test('the application oracle cannot start the strict gate from mutable live imports without its captured parent boundary', async () => {
+  await assert.rejects(() => verifyMw3LocalD1({ wrangler: '/unused/synthetic-wrangler.js' }), /captured parent boundary/);
 });

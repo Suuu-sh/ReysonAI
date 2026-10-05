@@ -4,6 +4,8 @@
 
 ## 現在の検証済み範囲
 
+- 2026-10-05 00:13 UTC: owned-process/captured-parent D1 adapterのR1〜R4を修正し、exact `00bc6491`で独立Astraの限定統合GO。Node24.19でsyntax8、local20 / owned9 / API7 / parent7の43/43・skip0を14.87秒でPASS。最終HTTP応答/完成直前の異常終了拒否、全41moduleと6TSの捕捉実評価を保存証拠で独立照合した。主branchへ13pathをexact移植し、既存7limitationsを保持。Node22 CI・最終統合suite・本物archive/receipt/SQLを使うstrictD1は未実施。`../mw3-owned-supervision-independent-review.md`参照。
+
 - UTG→CO→BTN / UTG→HJ→BTNも限定受入れ。独立Astraが14現物・118,854 rules・計240k handsを照合。両方の97 positive joint / 11支持0を実source/tierから説明し、他経路の99/9や90/18へ変更していない。共同警告32 / 39と最大約33ptの参考MDF不足を保持。`multiway-postflop-stage1.nonblind-utg-quality-review.md`参照。
 - source checkpoint `6b3b2e397f1698639a4104e8fd001bc966e3ded3`は4CI全PASS。直前同一codeの`f12c707b`では150frontend＋6backend=156/156、skip0を確認済み。新D1 bootstrapは別worktreeで実依存.ts対応と真の最終応答故障fixtureを修正中で、これらは当該CIの証拠に含めない。
 

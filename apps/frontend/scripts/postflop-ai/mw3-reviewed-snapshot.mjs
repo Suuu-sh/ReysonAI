@@ -52,6 +52,8 @@ function sourcePathsFor(identity) {
   ['apps/backend/src/index.ts', 'apps/backend/src/mw3-transport.ts', 'apps/backend/scripts/sql/mw3-schema.sql', 'apps/shared/mw3-approved.ts',
     `${FRONTEND}src/estimated/mw3-browser.ts`, `${FRONTEND}src/estimated/Mw3RangeView.tsx`, `${FRONTEND}src/estimated/RangeWorkspace.tsx`,
     `${FRONTEND}src/agent/mw3-hand.ts`, `${FRONTEND}src/agent/hand.ts`, `${FRONTEND}src/agent/AgentTable.tsx`,
+    `${FRONTEND}scripts/ci/postflop-command-supervisor.py`, `${FRONTEND}scripts/ci/mw3-local-command.mjs`,
+    `${FRONTEND}scripts/ci/mw3-api-oracle.mjs`, `${FRONTEND}scripts/ci/mw3-local-d1-oracle.mjs`, `${FRONTEND}scripts/verify-mw3-local-d1.mjs`,
     `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`, 'configs/cash-6max-100bb.json', '.gitattributes'].forEach(visit);
   return [...found].sort();
 }
