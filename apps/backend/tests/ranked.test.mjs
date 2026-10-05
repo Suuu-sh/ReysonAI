@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import { routeRanked, gradeRanked, questionPool } from '../src/ranked.ts';
 import { digest } from '../src/account.ts';
+import worker from '../src/index.ts';
 const token='a'.repeat(64);
 async function fixture() {
  const sqlite=new DatabaseSync(':memory:');sqlite.exec('PRAGMA foreign_keys=ON');
@@ -104,4 +105,57 @@ test('expired matches cannot update ratings and malformed submissions cannot fin
  f.sqlite.prepare('UPDATE ranked_matches SET expires_at=0 WHERE id=?').run(match.id);
  assert.equal((await f.call(`matches/${match.id}/finish`,{actions})).status,409);
  assert.equal(f.sqlite.prepare('SELECT matches FROM ranked_players').get().matches,0);
+}));
+
+// Exercise the actual Worker entry point: routeRanked alone cannot detect a
+// browser rejecting cookie-authenticated responses because of missing CORS.
+const appOrigin = 'https://app.reysonai.com';
+function assertRankedCors(response) {
+ assert.equal(response.headers.get('access-control-allow-origin'),appOrigin);
+ assert.equal(response.headers.get('access-control-allow-credentials'),'true');
+ assert.equal(response.headers.get('cache-control'),'no-store');
+ assert.match(response.headers.get('vary'),/Origin/);
+}
+function browserRequest(path,body,headers={}) {
+ return new Request(`https://api.reysonai.com/v1/ranked/${path}`,{
+  credentials:'include',headers:{origin:appOrigin,cookie:`__Host-reysonai=${token}`,...(body===undefined?{}:{'content-type':'application/json'}),...headers},
+  ...(body===undefined?{}:{method:'POST',body:JSON.stringify(body)})
+ });
+}
+test('browser cookie transport covers ranked profile, preflight, start, finish and leaderboard',withFixture(async f=>{
+ const preflight=await worker.fetch(new Request('https://api.reysonai.com/v1/ranked/matches',{method:'OPTIONS',headers:{origin:appOrigin,'access-control-request-method':'POST','access-control-request-headers':'content-type'}}),f.env);
+ assert.equal(preflight.status,204);assertRankedCors(preflight);
+ assert.match(preflight.headers.get('access-control-allow-methods'),/POST/);
+ assert.match(preflight.headers.get('access-control-allow-headers'),/content-type/);
+ const call=async(path,body)=>{const response=await worker.fetch(browserRequest(path,body),f.env);assertRankedCors(response);assert.equal(response.status,200);return response.json();};
+ assert.equal((await call('status')).enabled,true);
+ const profile=await call('profile');assert.equal(profile.enabled,true);assert.equal(profile.state.remaining,3);
+ const {match}=await call('matches',{consent:true});assert.equal(match.questions.length,20);
+ const actions=match.questions.map(q=>Object.keys(q.mix).sort((a,b)=>q.mix[b]-q.mix[a])[0]);
+ const completed=await call(`matches/${match.id}/finish`,{actions});
+ assert.equal(completed.state.totalMatches,1);assert.equal(completed.state.remaining,2);assert.equal(completed.state.active,null);
+ const board=await call('leaderboard?period=all');assert.equal(board.rows[0].self,true);
+ assert.equal(board.rows[0].matches,1);assert.equal(JSON.stringify(board).includes('private@example.invalid'),false);
+}));
+test('ranked authentication, validation, quota and unavailable errors remain readable to the allowed browser',withFixture(async f=>{
+ const assertError=async(request,status)=>{const response=await worker.fetch(request,f.env);assert.equal(response.status,status);assertRankedCors(response);};
+ await assertError(browserRequest('profile',undefined,{cookie:''}),401);
+ await assertError(browserRequest('matches',{}),400);
+ for(let i=0;i<3;i++){await f.call('matches',{consent:true});f.sqlite.prepare("UPDATE ranked_matches SET expires_at=0 WHERE status='active'").run();}
+ await assertError(browserRequest('matches',{consent:true}),429);
+ f.env.RANKED_ENABLED='false';await assertError(browserRequest('status'),503);
+ f.env.RANKED_ENABLED='true';f.env.DB={prepare(){throw new Error('test unavailable');}};
+ await assertError(browserRequest('leaderboard'),500);
+}));
+test('ranked CORS never grants credentials to an unknown, missing, null or wildcard origin',withFixture(async f=>{
+ for(const allowed of [appOrigin,'*',`${appOrigin},*`]) for(const origin of ['https://evil.invalid','null',null]) for(const method of ['GET','OPTIONS']) {
+  const response=await worker.fetch(new Request('https://api.reysonai.com/v1/ranked/profile',{method,headers:origin?{origin}:{}}),{...f.env,ALLOWED_ORIGIN:allowed});
+  assert.equal(response.headers.get('access-control-allow-origin'),null,`${allowed} / ${origin} / ${method}`);
+  assert.equal(response.headers.get('access-control-allow-credentials'),null);
+ }
+ for(const allowed of ['*','']) {
+  const response=await worker.fetch(browserRequest('status'),{...f.env,ALLOWED_ORIGIN:allowed});
+  assert.equal(response.headers.get('access-control-allow-origin'),null);
+  assert.equal(response.headers.get('access-control-allow-credentials'),null);
+ }
 }));
