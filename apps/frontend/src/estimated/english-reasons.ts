@@ -4,7 +4,7 @@ import { productLocale } from "../locale.ts";
 // strategy or EV; it only describes the stored frequencies and audited facts.
 const ACTIONS = {
   open: "open", limp: "limp", check: "check", raise: "raise", three_bet: "3-bet",
-  four_bet: "4-bet", all_in: "go all-in", call: "call", fold: "fold",
+  squeeze: "squeeze", four_bet: "4-bet", all_in: "go all-in", call: "call", fold: "fold",
 };
 
 export const englishFactLabels = {
@@ -15,6 +15,8 @@ export const englishFactLabels = {
   dead_money_bb: "Chips from folded players",
   weighted_fold_pct: "Fold frequency weighted by own reach combos",
   weighted_call_pct: "Call frequency weighted by own reach combos",
+  weighted_squeeze_pct: "Squeeze frequency weighted by own reach combos",
+  squeeze_pct: "Saved squeeze frequency",
   weighted_four_bet_pct: "4-bet frequency weighted by own reach combos",
   weighted_all_in_pct: "All-in frequency weighted by own reach combos",
   equity_margin_pct: "Equity margin above the call threshold",
@@ -187,12 +189,13 @@ function handDescription(hand, en = "en") {
 
 export function englishPreflopReason(hand, detailed, data, en = "en") {
   if (!detailed) return narrative("No hand-specific explanation is recorded for this spot.", [], en);
+  if (detailed.facts?.reach_pct === 0) return narrative("The saved source actions or card compatibility make this hand unreachable in this history. A saved 100% fold is a placeholder, not a recommendation.", [], en);
   if (/前段|到達不能|頻度が0%/.test(detailed.reason)) {
     return narrative("The preceding action has zero recorded frequency for this hand, so this branch is unreachable. A saved 100% fold here is a data placeholder, not a recommendation.", [], en);
   }
   const facts = detailed.facts ?? {};
   const parts = [narrative("{0} in this saved spot.", [handDescription(hand.hand, en)], en)];
-  const equityEntry = Object.entries(facts).find(([key, value]) => key.startsWith("equity_vs_") && key.endsWith("_pct") && Number.isFinite(value));
+  const equityEntry = Object.entries(facts).find(([key, value]) => (key === "equity_pct" || key.startsWith("equity_vs_") && key.endsWith("_pct")) && Number.isFinite(value));
   if (equityEntry) {
     const [key, value] = equityEntry;
     parts.push(narrative("{0} is {1}%.", [englishFactLabels[key] ?? narrative("Raw equity", [], en), value.toFixed(1)], en));

@@ -1,3 +1,4 @@
+import { expandStage3Reasons } from "./stage3-reason-format.ts";
 import { useEffect, useState } from "react";
 
 import { expandContinuationReasons } from "./continuation-reason-format.ts";
@@ -12,7 +13,7 @@ export function hasDetailedReasons(spotId) {
 
 export function loadDetailedReasons(spotId) {
   if (!hasDetailedReasons(spotId)) return Promise.resolve(null);
-  if (!cache.has(spotId)) cache.set(spotId, loadDataset(`reasons/${spotId}`).then(expandContinuationReasons).catch(error => { cache.delete(spotId); throw error; }));
+  if (!cache.has(spotId)) cache.set(spotId, loadDataset(`reasons/${spotId}`).then(expandContinuationReasons).then(expandStage3Reasons).catch(error => { cache.delete(spotId); throw error; }));
   return cache.get(spotId);
 }
 

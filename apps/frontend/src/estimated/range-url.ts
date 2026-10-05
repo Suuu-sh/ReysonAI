@@ -1,3 +1,4 @@
+import { appendStage3Blocks, withStage3Entrances, stage3RootForSelection, normalizeStage3Selection } from "./stage3-flow.ts";
 import { hands } from "../data.ts";
 import { positions, fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
 import { limpActionTransition, nextActorsAfterRaise, responseActionTransition } from "./action-path.ts";
@@ -83,10 +84,11 @@ function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseActi
 }
 
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], raiseSizeFor = () => null }) {
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], stage3RootId = null, stage3Actions = [], raiseSizeFor = () => null }) {
   if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
-  const boundedState = { rangeType, opener, hero, callers, pendingRaise, coldAction, squeezeResponse, continuationActions };
+  const boundedState = { rangeType, opener, hero, callers, foldedHero, pendingRaise, coldAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions };
   const boundedRoot = continuationRootForSelection(boundedState);
+  const stage3Root = stage3RootForSelection(boundedState);
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -151,7 +153,8 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
         : { kind: "response", position };
     blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat", rangeRef });
   }
-  if (boundedRoot) return appendContinuationBlocks(blocks, boundedRoot, boundedState);
+  if (stage3Root) return appendStage3Blocks(blocks, stage3Root, boundedState);
+  if (boundedRoot) return withStage3Entrances(appendContinuationBlocks(blocks, boundedRoot, boundedState), boundedState);
   if (coldAction) {
     blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${coldAction.position}の${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}以降の推定レンジはまだありません。` });
     return blocks;
@@ -221,7 +224,7 @@ export type RangeUrlSelection = {
   foldedHero: boolean; pendingRaise: string | null; continuationAction: string | null;
   shoveResponse: string | null; coldAction: { position: string; action: string } | null;
   limpAction: string | null; limpResponseAction: string | null; limpReraiseAction: string | null;
-  limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; selected: string;
+  limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; stage3RootId?: string | null; stage3Actions?: string[]; selected: string;
 };
 export type RangeUrlState = RangeUrlSelection & {
   format: typeof defaultFormat; tableProfile: { call: string; three_bet: string };
@@ -234,7 +237,7 @@ export const defaultRangeSelection: RangeUrlSelection = {
   rangeType: "open", opener: "UTG", hero: "HJ", callers: [], foldedHero: false,
   pendingRaise: null, continuationAction: null, shoveResponse: null, coldAction: null,
   limpAction: null, limpResponseAction: null, limpReraiseAction: null,
-  limpFourBetAction: null, squeezeResponse: [], continuationActions: [], selected: "AKo",
+  limpFourBetAction: null, squeezeResponse: [], continuationActions: [], stage3RootId: null, stage3Actions: [], selected: "AKo",
 };
 const emptyPostflop = () => ({ showFlop: false, flopCards: ["", "", ""], flopActions: [], turnCard: "", turnActions: [], riverCard: "", riverActions: [] });
 const validHand = hand => hands.includes(hand) ? hand : "AKo";
@@ -404,6 +407,12 @@ export function encodeRangeUrl(state, actionBlocks = buildRangeUrlActionBlocks(s
     const level = profileLevel(state.tableProfile?.[key]);
     if (level !== "normal") params.set(key, level);
   }
+  const stage3 = stage3RootForSelection(state);
+  if (stage3) {
+    const normalized = normalizeStage3Selection(stage3.id, state.stage3Actions);
+    params.set("stage3_root", normalized.stage3RootId);
+    if (normalized.stage3Actions.length) params.set("stage3_actions", normalized.stage3Actions.join(","));
+  }
   const actions = chosenPreflopTokens(actionBlocks);
   if (actions.length) params.set("preflop_actions", actions.join("-"));
   const context = completedFlopContext({ ...state, actionBlocks,
@@ -441,7 +450,7 @@ export function encodeRangeUrl(state, actionBlocks = buildRangeUrlActionBlocks(s
 export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState | null {
   const raw = typeof query === "string" ? query.replace(/^[^?]*\?/, "").split("#")[0] : query;
   const params = new URLSearchParams(raw);
-  const keys = ["gametype", "depth", "open", "ante", "rake", "call", "three_bet", "preflop_actions", "board", "flop_actions", "turn", "turn_actions", "river", "river_actions", "hand"];
+  const keys = ["stage3_root", "stage3_actions", "gametype", "depth", "open", "ante", "rake", "call", "three_bet", "preflop_actions", "board", "flop_actions", "turn", "turn_actions", "river", "river_actions", "hand"];
   if (!keys.some(key => params.has(key))) return null;
   const gametype = params.get("gametype") ?? `${defaultFormat.game}-${defaultFormat.table}`;
   const [game, table] = gametype.split("-");
@@ -451,7 +460,8 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
     rake: params.get("rake") ?? defaultFormat.rake };
   const knownFormat = gametype === `${game}-${table}` && (!params.has("ante") || ["0", "1"].includes(params.get("ante")))
     && Object.keys(defaultFormat).every(key => formatOptions[key].some(option => option.value === format[key]));
-  const state: RangeUrlState = { ...replayPreflop(params.get("preflop_actions")),
+  const stage3 = params.has("stage3_root") ? normalizeStage3Selection(params.get("stage3_root"), (params.get("stage3_actions") ?? "").split(",").filter(Boolean)) : null;
+  const state: RangeUrlState = { ...replayPreflop(params.get("preflop_actions")), ...(stage3 ?? {}),
     selected: validHand(params.get("hand")), format: knownFormat ? format : { ...defaultFormat },
     tableProfile: { call: profileLevel(params.get("call")), three_bet: profileLevel(params.get("three_bet")) }, ...emptyPostflop() };
   const flop = boardCards(params.get("board"), 3);

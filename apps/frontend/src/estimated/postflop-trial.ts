@@ -51,7 +51,7 @@ export function completedFlopContext({ actionBlocks, rangeType, opener, hero, ca
   if (!end || end.continuationAvailable === false || !/^\d+人でフロップへ$/.test(end.result)) return null;
   const potBb = Number(/^ポット ([\d.]+)bb$/.exec(end.pot)?.[1]);
   if (!Number.isFinite(potBb)) return null;
-  let players = end.continuationTerminal?.live_participants ?? (rangeType === "limp" ? ["SB", "BB"]
+  let players = end.stage3Terminal?.live_participants ?? end.continuationTerminal?.live_participants ?? (rangeType === "limp" ? ["SB", "BB"]
     : rangeType === "response" ? [opener, ...callers] : [opener, hero]);
   const spot = flopSpotFor({ actionBlocks, rangeType, opener, hero, callers, foldedHero, pendingRaise, squeezeResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
   if (spot?.history) players = [spot.oop, spot.ip];

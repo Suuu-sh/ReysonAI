@@ -7,10 +7,12 @@ import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual } from "node:util";
 import { assertContinuationPublication } from "./continuation-publication.mjs";
 import { continuationReasonFingerprint } from "./continuation-reasons.mjs";
-import { buildPreflopSql, preflopDatasets, PART_CHARS } from "../publish-d1.mjs";
+import { preparePreflopSerialization, writePreflopSqlFile, assertPreflopSqlFile } from "./preflop-sql.mjs";
 import { auditOpponentProfiles, OPPONENT_PROFILE_DATASETS } from "../../src/estimated/opponent-profiles.ts";
 import { loadOpponentProfileBundles, profileSourceFindings } from "./opponent-profile-build.mjs";
 import { isBlockingAuditFinding } from "../../src/estimated/profile-audit-policy.ts";
+import { isStage3ArtifactPath } from "./stage3-artifacts.mjs";
+import { verifyReviewedStage3 } from "./reviewed-stage3.mjs";
 
 export const FRONTEND = fileURLToPath(new URL("../..", import.meta.url));
 export const REPOSITORY = resolve(FRONTEND, "../..");
@@ -34,6 +36,12 @@ const sourceRoots = [
   "apps/frontend/scripts/build-estimates.mjs",
   "apps/frontend/scripts/validate-estimates.mjs",
   "apps/frontend/scripts/pipeline.mjs",
+  "apps/frontend/scripts/audit-estimates.mjs",
+  "apps/frontend/scripts/range.mjs",
+  "apps/frontend/scripts/build-stage3.mjs",
+  "apps/frontend/scripts/generate-stage3-responses.mjs",
+  "apps/frontend/scripts/restore-reviewed-stage3.mjs",
+  "apps/frontend/scripts/record-stage3-review-candidate.mjs",
 ];
 const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 const load = path => JSON.parse(readFileSync(path, "utf8"));
@@ -54,7 +62,7 @@ function jsonFiles(root, path) {
 export function reviewedSourcePaths(root = REPOSITORY) {
   const found = new Set(["apps/frontend/package.json", "apps/frontend/package-lock.json", "apps/backend/migrations/0003_preflop.sql",
     ".gitattributes", ".github/workflows/deploy-worker.yml", "apps/backend/wrangler.jsonc", "apps/frontend/wrangler.jsonc", "apps/frontend/scripts/ci/preflop.wrangler.jsonc",
-    "apps/frontend/scripts/package-reviewed-preflop.py", "apps/frontend/scripts/generate-opponent-profiles.py"]);
+    "apps/frontend/scripts/package-reviewed-preflop.py", "apps/frontend/scripts/package-reviewed-stage3.py", "apps/frontend/scripts/generate-opponent-profiles.py"]);
   function visit(path) {
     if (found.has(path)) return;
     if (path.startsWith("../") || path.startsWith("/")) throw new Error("Review source escapes repository");
@@ -62,7 +70,8 @@ export function reviewedSourcePaths(root = REPOSITORY) {
     if (!/\.(?:mjs|ts|tsx|js)$/.test(path)) return;
     const text = readFileSync(join(root, path), "utf8");
     const imports = /(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']/g;
-    for (const match of text.matchAll(imports)) {
+    const dynamicImports = /\bimport\s*\(\s*["']([^"']+)["']/g;
+    for (const match of [...text.matchAll(imports), ...text.matchAll(dynamicImports)]) {
       if (!match[1].startsWith(".")) continue;
       visit(relative(root, resolve(root, dirname(path), match[1])).replaceAll("\\", "/"));
     }
@@ -72,7 +81,9 @@ export function reviewedSourcePaths(root = REPOSITORY) {
 }
 
 export function reviewedFiles(root = REPOSITORY) {
-  const artifacts = jsonFiles(root, dataPrefix.slice(0, -1)).sort(compare).map(path => fileRecord(root, path));
+  // Stage 2 retains its exact 1,888-file snapshot. Stage 3 has an independent
+  // archive/receipt; refreshing a Stage 2 receipt cannot bless new Stage 3 data.
+  const artifacts = jsonFiles(root, dataPrefix.slice(0, -1)).filter(path => !isStage3ArtifactPath(path)).sort(compare).map(path => fileRecord(root, path));
   const sources = reviewedSourcePaths(root).map(path => fileRecord(root, path));
   const archive = { ...fileRecord(root, ARCHIVE_FILE), format: "ustar+gzip" };
   return { artifacts, sources, archive, content_sha256: sha256(JSON.stringify({ artifacts, sources, archive })) };
@@ -111,19 +122,37 @@ export function verifyReviewedPreflop(root = REPOSITORY) {
   return { record, complete, counts };
 }
 
-export function preparePreflopDelivery(root = REPOSITORY) {
+export function preparePreflopDeliveryStream(root = REPOSITORY) {
   const { record, counts } = verifyReviewedPreflop(root);
-  const datasets = preflopDatasets(join(root, dataPrefix));
+  const stage3 = verifyReviewedStage3(root);
   // This is deliberately not `migrations apply`: other migrations contain
   // unrelated postflop/account changes. The preflop schema is idempotent.
   const schema = readFileSync(join(root, "apps/backend/migrations/0003_preflop.sql"), "utf8");
-  const sql = `${schema}\n${buildPreflopSql(datasets)}`;
-  const manifest = { schema_version: 1, reviewed_content_sha256: record.content_sha256,
+  const serialized = preparePreflopSerialization(join(root, dataPrefix), `${schema}\n`);
+  const manifest = { schema_version: 1, reviewed_content_sha256: sha256(JSON.stringify({ stage2: record.content_sha256, stage3: stage3.record.content_sha256 })),
+    reviewed_stage2_content_sha256: record.content_sha256, reviewed_stage3_content_sha256: stage3.record.content_sha256,
     review_manifest_sha256: sha256(readFileSync(join(root, REVIEW_FILE))), counts,
-    sql: { sha256: sha256(sql), bytes: Buffer.byteLength(sql) },
-    datasets: Object.entries(datasets).map(([name, body]) => ({ name, sha256: sha256(body),
-      bytes: Buffer.byteLength(body), parts: Math.ceil(body.length / PART_CHARS) })).sort((a, b) => compare(a.name, b.name)) };
-  return { sql, manifest };
+    stage3_review_manifest_sha256: sha256(readFileSync(join(root, "configs/multiway-preflop-stage3.review.json"))), stage3_counts: stage3.counts,
+    sql: serialized.sql, datasets: serialized.datasets };
+  return { sqlChunks: serialized.sqlChunks, manifest };
+}
+
+// Retain the materialized API for small callers, but never use it in delivery CLIs.
+export function preparePreflopDelivery(root = REPOSITORY) {
+  const expected = preparePreflopDeliveryStream(root);
+  const sql = Array.from(expected.sqlChunks()).join("");
+  if (sha256(sql) !== expected.manifest.sql.sha256 || Buffer.byteLength(sql) !== expected.manifest.sql.bytes)
+    throw new Error("Delivery bundle differs from the reviewed checkout");
+  return { sql, manifest: expected.manifest };
+}
+
+export function writePreflopDeliveryFile(path, expected) {
+  writePreflopSqlFile(path, expected.sqlChunks(), expected.manifest.sql);
+}
+
+export function assertDeliveryBundleFile(path, manifest, expected) {
+  if (!isDeepStrictEqual(manifest, expected.manifest)) throw new Error("Delivery bundle differs from the reviewed checkout");
+  assertPreflopSqlFile(path, expected.sqlChunks(), expected.manifest.sql);
 }
 
 export function assertDeliveryBundle(sql, manifest, expected) {

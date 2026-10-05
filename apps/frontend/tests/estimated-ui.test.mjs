@@ -250,7 +250,8 @@ test("action block selection points to saved ranges and uses the bounded catalog
   const squeezed = { rangeType: "response", opener: "UTG", hero: "SB", callers: ["HJ"], foldedHero: false, pendingRaise: "squeeze" };
   const squeezePath = buildActionBlocks(squeezed);
   assert.deepEqual(squeezePath.find(block => block.position === "SB").rangeRef, { kind: "saved-source", position: "SB", dataset: "multiway-responses", id: "SB_vs_UTG_HJcall" });
-  assert.equal(squeezePath.find(block => block.position === "BB").kind, "forced");
+  assert.equal(squeezePath.find(block => block.position === "BB").kind, "stage3-entry");
+  assert.equal(squeezePath.find(block => block.position === "BB").chosen, "fold");
   const openerBlock = squeezePath.at(-1);
   assert.deepEqual([openerBlock.kind, openerBlock.role, openerBlock.position, openerBlock.active], ["squeeze-response", "opener", "UTG", true]);
   assert.deepEqual(openerBlock.options.map(option => option.label), ["Fold", "Call 13", "Raise 26"]);
