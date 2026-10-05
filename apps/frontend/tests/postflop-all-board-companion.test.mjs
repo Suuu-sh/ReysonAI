@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { canonicalFlops } from '../scripts/postflop-ai/flop-isomorphism.mjs';
-import { combosOf, seededRandom, seedFor } from '../scripts/lib/equity.mjs';
+import { canonicalFlops } from '../scripts/postflop-ai/flop-isomorphism.ts';
+import { combosOf, seededRandom, seedFor } from '../scripts/lib/equity.ts';
 import { assertAllBoardCompanion, buildAllBoardCompanion, summarizeCompanionRows } from '../scripts/postflop-ai/all-board-companion.mjs';
 import { sha256 } from '../scripts/postflop-ai/reviewed-postflop-archive.mjs';
 

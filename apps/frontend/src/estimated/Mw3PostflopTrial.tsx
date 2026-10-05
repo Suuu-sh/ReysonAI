@@ -26,7 +26,7 @@ export function useMw3RangeSession(context: any, selection: Mw3RangeSelection, c
     });
     return () => controller.abort();
   }, [id, enabled, client, attempt]);
-  const kit = enabled && loaded?.key === id && loaded.client === client ? loaded.kit : null;
+  const kit = enabled && loaded?.key === id && loaded!.client === client ? loaded!.kit : null;
   const navigation = useMemo(() => {
     if (!enabled || !kit) return null;
     try { return buildMw3RangeNavigation(kit.inputs.spot, selection, productLocale()); }
@@ -41,7 +41,7 @@ export function useMw3RangeSession(context: any, selection: Mw3RangeSelection, c
     return () => controller.abort();
   }, [kit, navigation, key]);
   const view = computed?.key === key && computed.kit === kit ? computed.view : null;
-  const failed = Boolean(enabled && loaded?.key === id && loaded.client === client && loaded.failed || navigation?.invalid || computed?.key === key && computed.kit === kit && computed.failed);
+  const failed = Boolean(enabled && loaded?.key === id && loaded!.client === client && loaded!.failed || navigation?.invalid || computed?.key === key && computed.kit === kit && computed.failed);
   const loading = enabled && client.supportsSpot(id) && !failed && (!kit || navigation && !view);
   return { navigation, view, loading, failed, approved: enabled && client.supportsSpot(id), retry: () => { setLoaded(null); setComputed(null); setAttempt(value => value + 1); } };
 }

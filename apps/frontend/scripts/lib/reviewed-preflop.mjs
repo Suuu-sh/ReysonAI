@@ -1,7 +1,7 @@
 // Read-only verification of a previously authored and independently reviewed snapshot.
 // Nothing in this module generates ranges, equities, frequencies or reason facts.
 import { createHash } from "node:crypto";
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual } from "node:util";
@@ -59,7 +59,12 @@ export function reviewedSourcePaths(root = REPOSITORY) {
     if (found.has(path)) return;
     if (path.startsWith("../") || path.startsWith("/")) throw new Error("Review source escapes repository");
     found.add(path);
-    if (!/\.(?:mjs|ts|tsx|js)$/.test(path)) return;
+    // Bound type declarations are provenance records, never executable imports.
+    if (path.endsWith(".mjs")) {
+      const declaration = path.slice(0, -4) + ".d.mts";
+      if (existsSync(join(root, declaration))) visit(declaration);
+    }
+    if (!/\.(?:mjs|ts|tsx|js|d\.mts)$/.test(path)) return;
     const text = readFileSync(join(root, path), "utf8");
     const imports = /(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']/g;
     for (const match of text.matchAll(imports)) {

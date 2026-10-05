@@ -1,3 +1,7 @@
+import type { AnswerEntry, AnswerResult } from "./types.ts";
+interface Bucket { key: string; label: string; answered: number; score: number }
+type RatedBucket = Bucket & { rate: number; provisional?: boolean };
+interface ReviewHand { spotId: string; hand: string; label: string; answered: number; misses: number; last: AnswerResult }
 import { accountStorage } from "../account/session.ts";
 // Answer history kept in this browser only. Everything here must survive storage being unavailable.
 import { CATEGORY_LABELS, handCategory, spotById, spotTitle } from "./trainer-data.ts";
@@ -5,31 +9,31 @@ import { CATEGORY_LABELS, handCategory, spotById, spotTitle } from "./trainer-da
 const KEY = "reysonai.trainer.history.v1";
 const LIMIT = 500;
 
-export function loadHistory() {
+export function loadHistory(): AnswerEntry[] {
   try {
-    const parsed = JSON.parse(accountStorage().getItem(KEY) ?? "[]");
+    const parsed = JSON.parse(accountStorage()!.getItem(KEY) ?? "[]");
     return Array.isArray(parsed) ? parsed.filter(item => spotById.has(item?.spotId)) : [];
   } catch { return []; }
 }
 
-export function saveHistory(history) {
-  try { accountStorage().setItem(KEY, JSON.stringify(history.slice(-LIMIT))); } catch {}
+export function saveHistory(history: AnswerEntry[]) {
+  try { accountStorage()!.setItem(KEY, JSON.stringify(history.slice(-LIMIT))); } catch {}
 }
 
 export function clearHistory() {
-  try { accountStorage().removeItem(KEY); } catch {}
+  try { accountStorage()!.removeItem(KEY); } catch {}
 }
 
-function bucket(map, key, label, entry) {
+function bucket(map: Map<string, Bucket>, key: string, label: string, entry: AnswerEntry) {
   const item = map.get(key) ?? { key, label, answered: 0, score: 0 };
   item.answered++; item.score += entry.score;
   map.set(key, item);
 }
 
-export function summarize(history) {
-  const bySpot = new Map(), byCategory = new Map(), byHand = new Map();
+export function summarize(history: AnswerEntry[]) {
+  const bySpot = new Map<string, Bucket>(), byCategory = new Map<string, Bucket>(), byHand = new Map<string, ReviewHand>();
   for (const entry of history) {
-    const spot = spotById.get(entry.spotId);
+    const spot = spotById.get(entry.spotId)!;
     bucket(bySpot, spot.id, spotTitle(spot), entry);
     const category = handCategory(entry.hand);
     bucket(byCategory, category, CATEGORY_LABELS[category], entry);
@@ -38,7 +42,7 @@ export function summarize(history) {
     hand.answered++; if (entry.result === "miss") hand.misses++; hand.last = entry.result;
     byHand.set(key, hand);
   }
-  const rate = item => ({ ...item, rate: item.answered ? item.score / item.answered : 0 });
+  const rate = (item: Bucket) => ({ ...item, rate: item.answered ? item.score / item.answered : 0 });
   const answered = history.length;
   return {
     answered,
@@ -53,19 +57,19 @@ export function summarize(history) {
 
 // Keep practice accuracy separate from the style map's action-frequency deltas.
 // Both strength and weakness cards use the same graded history as the 弱点 page.
-export function practiceHighlights(stats, minAnswers = 5) {
-  const eligible = items => items.filter(item => item.answered >= minAnswers);
-  const strongest = items => eligible(items).filter(item => item.rate >= 0.8)
+export function practiceHighlights(stats: ReturnType<typeof summarize>, minAnswers = 5) {
+  const eligible = (items: RatedBucket[]) => items.filter(item => item.answered >= minAnswers);
+  const strongest = (items: RatedBucket[]) => eligible(items).filter(item => item.rate >= 0.8)
     .sort((a, b) => b.rate - a.rate || b.answered - a.answered)[0];
-  const weakest = items => eligible(items).filter(item => item.rate <= 0.6)
+  const weakest = (items: RatedBucket[]) => eligible(items).filter(item => item.rate <= 0.6)
     .sort((a, b) => a.rate - b.rate || b.answered - a.answered)[0]
     ?? items.filter(item => item.answered >= 3 && item.answered < minAnswers && item.rate <= 0.6)
       .sort((a, b) => a.rate - b.rate || b.answered - a.answered)
       .map(item => ({ ...item, provisional: true }))[0];
-  const pick = select => {
+  const pick = (select: (items: RatedBucket[]) => RatedBucket | undefined) => {
     const spot = select(stats.bySpot);
     const category = select(stats.byCategory);
-    return [spot && { ...spot, kind: "局面" }, category && { ...category, kind: "ハンド種類" }].filter(Boolean);
+    return [spot && { ...spot, kind: "局面" }, category && { ...category, kind: "ハンド種類" }].filter<RatedBucket & { kind: string }>(Boolean as typeof Boolean & { <T>(value: T): value is NonNullable<T> });
   };
   return {
     strengths: pick(strongest),

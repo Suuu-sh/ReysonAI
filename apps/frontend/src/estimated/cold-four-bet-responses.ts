@@ -1,3 +1,6 @@
+import type { FrequencyRow } from "./preflop-types.ts";
+import type { ColdFourBetDataset, ColdThreeBetDataset, OpeningDataset, ResponseDataset } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { validateDataset } from "./ranges.ts";
 import { validateOpeningDataset } from "./opening-ranges.ts";
@@ -24,8 +27,8 @@ export const coldFourBetSpots = coldThreeBetSpots.flatMap(source => [null, "fold
 })));
 const ROW_KEYS = ["hand", "fold", "call", "all_in", "all_in_size_bb"];
 
-export function validateColdFourBetDataset(data, coldThreeBets, responses, openings) {
-  const fail = detail => { throw new Error(`コールド4bet後の応答データが不正です: ${detail}`); };
+export function validateColdFourBetDataset(data: ColdFourBetDataset, coldThreeBets: ColdThreeBetDataset, responses: ResponseDataset, openings: OpeningDataset) {
+  const fail: (detail: string) => never = detail => { throw new Error(`コールド4bet後の応答データが不正です: ${detail}`); };
   // All three sources are mandatory. Never interpret absent/malformed source
   // rows as zero reach or quietly accept a mismatched preceding history.
   try {
@@ -33,7 +36,7 @@ export function validateColdFourBetDataset(data, coldThreeBets, responses, openi
     validateOpeningDataset(openings);
     validateColdThreeBetDataset(coldThreeBets, responses);
   } catch (error) {
-    fail(`前段データ: ${error.message}`);
+    fail(`前段データ: ${(error as Error).message}`);
   }
   if (data?.metadata?.schema_version !== "1.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
@@ -66,7 +69,7 @@ export function validateColdFourBetDataset(data, coldThreeBets, responses, openi
         opening.hands.some(row => !Number.isInteger(row.open)) || response.hands.some(row => !Number.isInteger(row.three_bet))) {
       fail(`前段の対応関係・到達頻度: ${expected.id}`);
     }
-    if (!spot || Object.entries(expected).some(([key, value]) => spot[key] !== value) ||
+    if (!spot || Object.entries(expected).some(([key, value]) => spot[key as keyof typeof spot] !== value) ||
         spot.open_size_bb !== open || spot.three_bet_size_bb !== threeBet || spot.four_bet_size_bb !== fourBet ||
         !(threeBet > open && fourBet > threeBet && fourBet < effectiveStackBb) ||
         // A full cold 4bet must at least repeat X's last raise increment.
@@ -75,7 +78,7 @@ export function validateColdFourBetDataset(data, coldThreeBets, responses, openi
         !Array.isArray(spot.hands) || spot.hands.length !== hands.length) fail(`局面・サイズ: ${spot?.id ?? expected.id}`);
     const reachRows = expected.prior_action === null ? opening.hands : response.hands;
     const reachAction = expected.prior_action === null ? "open" : "three_bet";
-    const reach = new Map(reachRows.map(row => [row.hand, row[reachAction]]));
+    const reach = new Map(reachRows.map(row => [row.hand, (row as FrequencyRow)[reachAction]]));
     for (let j = 0; j < hands.length; j += 1) {
       const row = spot.hands[j];
       if (row?.hand !== hands[j] || Object.keys(row).length !== ROW_KEYS.length ||
@@ -91,18 +94,18 @@ export function validateColdFourBetDataset(data, coldThreeBets, responses, openi
   return data;
 }
 
-export function findColdFourBetSpot(data, { opener, threeBettor, fourBettor, priorAction = null }) {
+export function findColdFourBetSpot(data: ColdFourBetDataset, { opener, threeBettor, fourBettor, priorAction = null }: { opener: string; threeBettor: string; fourBettor: string; priorAction?: string | null }) {
   const spot = data?.spots?.find(item => item.opener === opener && item.three_bettor === threeBettor &&
     item.four_bettor === fourBettor && item.prior_action === priorAction);
   if (!spot) throw new Error("この履歴のコールド4bet後の応答はありません。");
   return spot;
 }
 
-export function loadColdFourBetDataset(raw, coldThreeBets, responses, openings) {
+export function loadColdFourBetDataset(raw: string | undefined, coldThreeBets: ColdThreeBetDataset, responses: ResponseDataset, openings: OpeningDataset) {
   if (raw === undefined) return { error: "コールド4bet後の応答データなし。保存済みJSONがありません。" };
   try {
     return { data: validateColdFourBetDataset(JSON.parse(raw), coldThreeBets, responses, openings) };
   } catch (error) {
-    return { error: `コールド4bet後の応答を表示できません。${error.message}` };
+    return { error: `コールド4bet後の応答を表示できません。${(error as Error).message}` };
   }
 }

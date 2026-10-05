@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { continuationTerminals, continuationRoots } from '../../src/estimated/continuation-tree.ts';
 import { createContinuationModel, hasCompatibleDeal, continuationCombos } from '../../src/estimated/continuation-model.ts';
 import { isInPosition } from '../../src/estimated/sizing.ts';
-import { seededRandom, seedFor } from '../lib/equity.mjs';
+import { seededRandom, seedFor } from '../lib/equity.ts';
 
 const sourceNames = ['opening-ranges', 'preflop-ranges', 'multiway-responses', 'multiway2-responses', 'squeeze-responses', 'cold-three-bet-responses', 'cold-four-bet-responses', 'continuation-responses'];
 const roots = new Map(continuationRoots.map(root => [root.id, root]));

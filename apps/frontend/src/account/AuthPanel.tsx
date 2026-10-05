@@ -3,19 +3,19 @@ import { useEffect, useState } from "react";
 import { localized } from "../locale.ts";
 import { accountSnapshot, importGuestData, logoutAccount, startGoogleSignIn, subscribeAccount } from "./session.ts";
 import "./account.css";
-const t = (en, ja) => localized(en, ja);
+const t = (en: string, ja: string) => localized(en, ja);
 export function useAccount() {
   const [state, setState] = useState(accountSnapshot);
   useEffect(() => subscribeAccount(() => setState(accountSnapshot())), []);
   return state;
 }
-export function AuthPanel({ onChanged = () => {}, onGuest }) {
+export function AuthPanel({ onChanged = () => {}, onGuest }: { onChanged?: () => void; onGuest?: () => void }) {
   const { user: sessionUser, error, available } = useAccount();
   const user = ["session", "verification"].includes(error) ? null : sessionUser;
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(typeof window !== "undefined" && window.location.hash.startsWith("#account-error=") ? t("Google sign-in was not completed. No automatic retry was made.", "Googleログインが完了しませんでした。自動再試行はしていません。") : "");
-  const perform = async action => {
+  const perform = async (action: () => void | Promise<void>) => {
     setBusy(true); setMessage("");
     try { await action(); }
     catch { setMessage(t("Unable to complete this request. Check your connection. No automatic retry was made.", "処理できませんでした。接続を確認してください。自動再試行はしていません。")); }

@@ -1,6 +1,8 @@
+import type { RangeUrlSelection, ActionBlock } from "./range-url.ts";
+import type { FrequencyRow } from "./preflop-types.ts";
 import { positions } from "./ranges.ts";
 
-export function nextActorsAfterRaise(aggressor, activeSeats) {
+export function nextActorsAfterRaise(aggressor: string, activeSeats: readonly string[]) {
   const aggressorIndex = positions.indexOf(aggressor);
   if (aggressorIndex < 0) return [];
 
@@ -10,7 +12,7 @@ export function nextActorsAfterRaise(aggressor, activeSeats) {
 }
 
 // Selecting a later seat is a shortcut: any unselected seats before it have folded.
-export function responseActionTransition({ opener, callers = [], position, action }) {
+export function responseActionTransition({ opener, callers = [], position, action }: { opener: string; callers?: string[]; position: string; action: string }): Pick<RangeUrlSelection, "rangeType" | "hero" | "callers" | "foldedHero" | "pendingRaise"> | null {
   const positionIndex = positions.indexOf(position);
   const openerIndex = positions.indexOf(opener);
   if (positionIndex <= openerIndex || !["fold", "call", "raise"].includes(action)) return null;
@@ -38,7 +40,7 @@ export function responseActionTransition({ opener, callers = [], position, actio
   };
 }
 
-export function limpActionTransition({ rangeType, opener, hero, limpAction = null, limpResponseAction = null, limpReraiseAction = null, position, action }) {
+export function limpActionTransition({ rangeType, opener, hero, limpAction = null, limpResponseAction = null, limpReraiseAction = null, position, action }: Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & Partial<Pick<RangeUrlSelection, "limpAction" | "limpResponseAction" | "limpReraiseAction">> & { position: string; action: string }): (Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero" | "limpAction" | "limpResponseAction">) | null {
   if (rangeType === "open" && opener === "SB" && position === "SB" && action === "call") {
     return { rangeType: "limp", opener: "SB", hero: "BB", limpAction: null, limpResponseAction: null };
   }
@@ -63,7 +65,7 @@ export function limpActionTransition({ rangeType, opener, hero, limpAction = nul
 
 // Clicking a seat in the action path returns the selector to that decision,
 // removing choices made at that seat and later in the hand.
-export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], squeezeResponse = [], block }) {
+export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], squeezeResponse = [], block }: Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & Partial<Pick<RangeUrlSelection, "callers" | "squeezeResponse">> & { block?: ActionBlock | null }): (Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero" | "callers" | "foldedHero" | "pendingRaise" | "continuationAction" | "shoveResponse">) | null {
   if (!block) return null;
 
   if (block.stage === "limp-opening") {
@@ -166,7 +168,7 @@ export function rewindActionBlockTransition({ rangeType, opener, hero, callers =
   return null;
 }
 
-export function buildNextActionNode({ rangeType, opener, hero, callers = [], currentHand, foldedHero = false }) {
+export function buildNextActionNode({ rangeType, opener, hero, callers = [], currentHand, foldedHero = false }: Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & Partial<Pick<RangeUrlSelection, "callers" | "foldedHero">> & { currentHand?: FrequencyRow | null }) {
   if (foldedHero) return null;
 
   let aggressor;

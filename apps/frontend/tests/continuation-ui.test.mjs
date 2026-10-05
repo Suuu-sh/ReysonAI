@@ -6,7 +6,7 @@ import { buildRangeUrlActionBlocks, decodeRangeUrl, encodeRangeUrl } from '../sr
 import { chooseContinuationAction, continuationLiveSeats } from '../src/estimated/continuation-flow.ts';
 import { continuationSourceNames, createContinuationUiLoader, createContinuationUiRuntime, withContinuationAvailability } from '../src/estimated/continuation-ranges.ts';
 import { completedFlopContext } from '../src/estimated/postflop-trial.ts';
-import { POSTFLOP_SPOTS } from '../scripts/postflop-ai/spots.mjs';
+import { POSTFLOP_SPOTS } from '../scripts/postflop-ai/spots.ts';
 import { postflopAvailabilityError } from '../src/estimated/continuation-copy.ts';
 const data = Object.fromEntries(continuationSourceNames.map(name => [name, JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url), 'utf8'))]));
 const runtime = createContinuationUiRuntime(data);

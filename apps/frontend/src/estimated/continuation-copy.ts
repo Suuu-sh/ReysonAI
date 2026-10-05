@@ -17,7 +17,8 @@ const copy = {
   noPolicyDetail: ['This exact history has no saved postflop policy for the selected settings. Return through the preflop action blocks or choose another history.', 'この履歴と選択した設定のポストフロップ方針は未収録です。プリフロップの行動ブロックから戻り、別の履歴を選べます。', '此完整行动记录和所选设置尚无保存的翻牌后策略。可通过翻牌前行动块返回并选择其他记录。', 'Este historial exacto no tiene una estrategia postflop guardada para los ajustes elegidos. Vuelve a los bloques preflop o elige otro historial.'],
 };
 export const continuationCopy = (key: keyof typeof copy) => copy[key][{ en: 0, ja: 1, 'zh-CN': 2, es: 3 }[productLocale()]];
-export function postflopAvailabilityError(error) {
-  return error?.code === 'POSTFLOP_BOARD_UNREACHABLE' || (error?.message ?? error) === 'This board is unreachable from the saved preflop ranges.'
-    ? continuationCopy('boardUnreachable') : error?.message ?? String(error);
+export function postflopAvailabilityError(error: unknown) {
+  const errorLike = error as { code?: unknown; message?: string } | null | undefined;
+  return errorLike?.code === 'POSTFLOP_BOARD_UNREACHABLE' || (errorLike?.message ?? error) === 'This board is unreachable from the saved preflop ranges.'
+    ? continuationCopy('boardUnreachable') : errorLike?.message ?? String(error);
 }

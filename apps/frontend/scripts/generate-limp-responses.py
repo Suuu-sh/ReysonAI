@@ -51,7 +51,7 @@ def parse_profile(text, width, default=None):
     return values
 
 
-# Recalibrated against the protected 2026-09-24 SB limp mix using equity.mjs,
+# Recalibrated against the protected 2026-09-24 SB limp mix using equity.ts,
 # 12,000 samples, seededRandom(seedFor('BB_vs_SB_limp')), canonical hand order.
 # Value iso still starts around 55% equity versus SB's limp range; K8s/Q9s/JTs,
 # K9o and QJo stay pure checks (below that threshold, and their families cap

@@ -33,7 +33,7 @@ export function readSafeFile(root, path, limit = MW3_ARCHIVE_LIMITS.file) {
     return body.subarray(0, used);
   } finally { closeSync(fd); }
 }
-const SOURCE_PATH = /^(?:apps\/frontend\/(?:scripts\/(?:(?:postflop-ai|lib|data)\/[^.][A-Za-z0-9_./-]*\.(?:mjs|json|py)|ci\/(?:postflop-command-supervisor\.py|mw3-(?:local-command|api-oracle|local-d1-oracle|registry-mode)\.mjs)|verify-(?:mw3|preflop)-local-d1\.mjs)|src\/[A-Za-z0-9_/-]+\.(?:ts|tsx|json|css|png|svg)|(?:package(?:-lock)?|tsconfig)\.json|docs\/[A-Za-z0-9_./-]+\.md)|apps\/backend\/(?:src|scripts|tests)\/[A-Za-z0-9_./-]+|apps\/shared\/[A-Za-z0-9_-]+\.ts|configs\/[A-Za-z0-9_-]+\.json|\.gitattributes)$/;
+const SOURCE_PATH = /^(?:apps\/frontend\/(?:scripts\/(?:(?:postflop-ai|lib|data)\/[^.][A-Za-z0-9_./-]*\.(?:mjs|ts|d\.mts|json|py)|ci\/(?:postflop-command-supervisor\.py|mw3-(?:local-command|api-oracle|local-d1-oracle|registry-mode)\.mjs)|verify-(?:mw3|preflop)-local-d1\.mjs)|src\/[A-Za-z0-9_/-]+\.(?:ts|tsx|json|css|png|svg)|(?:package(?:-lock)?|tsconfig)\.json|docs\/(?:[A-Za-z0-9_./-]+\.md|mw3-source-identity\/(?:exact-pair-parity|gate-identity-wiring-amendment|transitive-mw3-input-review)\.json))|apps\/backend\/(?:src|scripts|tests)\/[A-Za-z0-9_./-]+|apps\/shared\/[A-Za-z0-9_-]+\.ts|configs\/(?:[A-Za-z0-9_-]+\.json|source-identity-mw3\.review\.json)|\.gitattributes)$/;
 export function mw3ArchiveContentHash(manifest) {
   const { archive, content_sha256, ...content } = manifest;
   return sha256(jsonBytes(content));

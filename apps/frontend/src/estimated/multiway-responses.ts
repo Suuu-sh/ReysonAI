@@ -1,3 +1,5 @@
+import type { MultiwayDataset, MultiwaySpot, ResponseDataset } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { effectiveStackBb, openSizeBb, threeBetToSize } from "./sizing.ts";
 import { hasConfiguredRake } from "./rake.ts";
@@ -15,8 +17,8 @@ export const multiwaySpots = [
   ...["UTG", "HJ", "CO", "BTN"].map(opener => ({ hero: "BB", opener, caller: "SB" })),
 ];
 
-export function validateMultiwayDataset(data, responses?) {
-  const fail = detail => { throw new Error(`マルチウェイ応答データが不正です: ${detail}`); };
+export function validateMultiwayDataset(data: MultiwayDataset, responses?: ResponseDataset) {
+  const fail: (detail: string) => never = detail => { throw new Error(`マルチウェイ応答データが不正です: ${detail}`); };
   if (data?.metadata?.schema_version !== "1.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.game !== "6max Cash / No-Limit Texas Holdem" ||
@@ -54,13 +56,13 @@ export function validateMultiwayDataset(data, responses?) {
   return data;
 }
 
-export function findMultiwaySpot(data, opener, caller, hero = "BB") {
+export function findMultiwaySpot(data: MultiwayDataset, opener: string, caller: string, hero = "BB") {
   const spot = data?.spots?.find(item => item.opener === opener && item.callers?.length === 1 && item.callers[0] === caller && item.hero === hero);
   if (!spot) throw new Error(`この組み合わせの${hero}マルチウェイ応答はありません。`);
   return spot;
 }
 
-export function multiwayMatrixModel(spot) {
+export function multiwayMatrixModel(spot: MultiwaySpot): MatrixModel {
   return {
     actions: ["squeeze", "call", "fold"],
     actionLabels: { squeeze: `スクイーズ ${spot.squeeze_size_bb}BB` },

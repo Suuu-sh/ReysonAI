@@ -10,8 +10,8 @@ import { constants, copyFileSync, existsSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { artifactPaths, loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
-import { validateLaterPolicy } from "./later-policy.mjs";
-import { POSTFLOP_SPOTS } from "./spots.mjs";
+import { validateLaterPolicy } from "./later-policy.ts";
+import { POSTFLOP_SPOTS } from "./spots.ts";
 
 export const DONK_SCALE = 0.3;
 const json = value => `${JSON.stringify(value, null, 2)}\n`;

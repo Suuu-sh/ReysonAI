@@ -1,6 +1,6 @@
 // Three-player SRP source catalog. Intentionally separate from the immutable HU catalog.
 import { hands } from "../../src/data.ts";
-import { comboCount, combosOf } from "../lib/equity.mjs";
+import { comboCount, combosOf } from "../lib/equity.ts";
 import { validateMultiwayDataset } from "../../src/estimated/multiway-responses.ts";
 import { validateDataset } from "../../src/estimated/ranges.ts";
 import { validateOpeningDataset } from "../../src/estimated/opening-ranges.ts";

@@ -2,15 +2,15 @@ import { usesObservableActions, replayObservableStreet } from "./observable-acti
 import { hasPostflopDeal } from "./range-support.mjs";
 // Deterministic range-weighted sanity checks for the locally authored postflop policies.
 // These checks describe balance heuristics, not solver targets or GTO requirements.
-import { seedFor, seededRandom } from "../lib/equity.mjs";
+import { seedFor, seededRandom } from "../lib/equity.ts";
 import { boards, comboRange, config, seatRange } from "./inputs.mjs";
-import { flopTextureKeys, handTier, runoutTexture } from "./model.mjs";
-import { LATER_NODES, betFraction, laterNodeRole, streetHistories, streetState } from "./later-tree.mjs";
-import { referenceLaterTierMix, validateLaterPolicy } from "./later-policy.mjs";
-import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.mjs";
-import { FLOP_BETS, flopBetFraction, flopState, raiseDepth, treeHistories } from "./tree.mjs";
-import { createTable, playFlop } from "./engine.mjs";
-import { defenceFor, replayOrNull, requiredEquity } from "./defence.mjs";
+import { flopTextureKeys, handTier, runoutTexture } from "./model.ts";
+import { LATER_NODES, betFraction, laterNodeRole, streetHistories, streetState } from "./later-tree.ts";
+import { referenceLaterTierMix, validateLaterPolicy } from "./later-policy.ts";
+import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.ts";
+import { FLOP_BETS, flopBetFraction, flopState, raiseDepth, treeHistories } from "./tree.ts";
+import { createTable, playFlop } from "./engine.ts";
+import { defenceFor, replayOrNull, requiredEquity } from "./defence.ts";
 
 const pct = value => `${(value * 100).toFixed(1)}%`;
 const mean = values => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
@@ -370,7 +370,7 @@ export function checkFlopBalance(inputs, flopPolicy, { boardList = boards() } = 
   const nodes = treeNodes(inputs.spot.tree).filter(node => node.endsWith("_first") || NODES[node].includes("raise"));
   const histories = firstHistoryByNode(treeHistories(inputs.spot.tree));
   const tierFor = makeTierReader(), mixFor = makeFlopMixReader(policy, tierFor), collection = new Map();
-  // Facing nodes are judged on the computed defence (defence.mjs), not the tier mixes of the policy.
+  // Facing nodes are judged on the computed defence (defence.ts), not the tier mixes of the policy.
   const defence = defenceFor(inputs, policy, null), observed = new Set();
   for (const board of boardList.filter(board => !inputs.spot.history || hasPostflopDeal(inputs, board.cards))) for (const requestedNode of nodes) {
     let node = requestedNode;
@@ -429,7 +429,7 @@ export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = 
 
   const tierFor = makeTierReader(), flopMixFor = makeFlopMixReader(flop, tierFor);
   const mixFor = makeLaterMixReader(later, tierFor), collection = new Map(), baseCache = new Map();
-  // Facing nodes are judged on the computed defence (defence.mjs), not the tier mixes of the policy.
+  // Facing nodes are judged on the computed defence (defence.ts), not the tier mixes of the policy.
   const defence = defenceFor(inputs, flop, later);
   const defended = (table, name, combo, cards, line) => observableAuditMix(defence, table, cards, name, combo, mixFor(name, combo, cards, line));
   const observed = new Set();

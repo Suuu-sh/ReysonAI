@@ -1,6 +1,6 @@
 // Three-player-origin SRP state machine. No HU policy/defence imports and no side pots.
 // The original seats/roles survive a fold: a three-player origin never becomes a HU policy.
-import { evaluateContinuation } from "../lib/continuation-evaluator.mjs";
+import { evaluateContinuation } from "../lib/continuation-evaluator.ts";
 import { MW3_SEAT_ORDER } from "./mw3-spots.mjs";
 export const MW3_SIZING = Object.freeze({ bets: Object.freeze({ bet33: 0.33, bet75: 0.75, bet125: 1.25 }),
   raiseMultiplier: 3, maxRaisesPerStreet: 2, allInMergeRatio: 0.67 });

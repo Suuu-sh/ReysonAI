@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { verifyMw3Evidence } from '../scripts/postflop-ai/mw3-acceptance-evidence.mjs';
 import { representativeMw3Runouts } from '../scripts/postflop-ai/mw3-audit.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
 import { mw3Sha } from '../scripts/postflop-ai/mw3-inputs.mjs';
 import pilot from '../scripts/data/postflop-ai-pilot.json' with { type: 'json' };
 function fixture() {

@@ -1,3 +1,5 @@
+import type { ColdThreeBetDataset, ColdThreeBetSpot, ResponseDataset } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { effectiveStackBb, fourBetToSize, openSizeBb, openSizeFor, positions, threeBetToSize } from "./sizing.ts";
 import { hasConfiguredRake } from "./rake.ts";
@@ -17,8 +19,8 @@ export const coldThreeBetSpots = RFI_SEATS.flatMap(opener => positions.slice(pos
   }))));
 const ROW_KEYS = ["hand", "fold", "call", "four_bet", "four_bet_size_bb"];
 
-export function validateColdThreeBetDataset(data, responses) {
-  const fail = detail => { throw new Error(`3betへのコールド応答データが不正です: ${detail}`); };
+export function validateColdThreeBetDataset(data: ColdThreeBetDataset, responses?: ResponseDataset) {
+  const fail: (detail: string) => never = detail => { throw new Error(`3betへのコールド応答データが不正です: ${detail}`); };
   if (data?.metadata?.schema_version !== "1.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.game !== "6max Cash / No-Limit Texas Holdem" ||
@@ -38,7 +40,7 @@ export function validateColdThreeBetDataset(data, responses) {
         !source.hands.some(row => row.three_bet > 0))) fail(`3bet元がありません: ${expected.source_response_id}`);
     const threeBet = threeBetToSize(expected.opener, expected.three_bettor);
     const size = fourBetToSize(expected.hero, expected.three_bettor);
-    if (!spot || Object.entries(expected).some(([key, value]) => spot[key] !== value) ||
+    if (!spot || Object.entries(expected).some(([key, value]) => spot[key as keyof typeof spot] !== value) ||
         spot.open_size_bb !== openSizeFor(expected.opener) || spot.three_bet_size_bb !== threeBet ||
         (source && (source.three_bet_size_bb !== threeBet || (source.open_size_bb ?? openSizeFor(expected.opener)) !== spot.open_size_bb)) ||
         spot.four_bet_size_bb !== size || !(size > threeBet && size < effectiveStackBb) ||
@@ -57,13 +59,13 @@ export function validateColdThreeBetDataset(data, responses) {
   return data;
 }
 
-export function findColdThreeBetSpot(data, { opener, threeBettor, hero }) {
+export function findColdThreeBetSpot(data: ColdThreeBetDataset, { opener, threeBettor, hero }: { opener: string; threeBettor: string; hero: string }) {
   const spot = data?.spots?.find(item => item.opener === opener && item.three_bettor === threeBettor && item.hero === hero);
   if (!spot) throw new Error("この組み合わせの3betへのコールド応答はありません。");
   return spot;
 }
 
-export function coldThreeBetMatrixModel(spot) {
+export function coldThreeBetMatrixModel(spot: ColdThreeBetSpot): MatrixModel {
   return {
     actions: ["raise_four_bet", "call", "fold"],
     actionLabels: { raise_four_bet: `4bet ${spot.four_bet_size_bb}BB` },

@@ -3,15 +3,16 @@
 // replaying with one more human action reproduces everything before it. When the human must act
 // and no action is left, the replay stops and returns the pending decision.
 //
-// Postflop reuses the AI-estimate engine (scripts/postflop-ai/engine.mjs) on the heads-up spot the
+// Postflop reuses the AI-estimate engine (scripts/postflop-ai/engine.ts) on the heads-up spot the
 // preflop reached, with the same mixes the candidate plays in the simulation (policy + computed
 // defence). A pot without a saved postflop policy is checked down, never filled from another spot.
-import { evaluate as evaluateHand, seededRandom, seedFor } from "../../scripts/lib/equity.mjs";
-import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "../../scripts/postflop-ai/engine.mjs";
-import { NODES, choose } from "../../scripts/postflop-ai/policy.mjs";
-import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.mjs";
-import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
-import { multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
+import { evaluate as evaluateHand, seededRandom, seedFor } from "../../scripts/lib/equity.ts";
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "../../scripts/postflop-ai/engine.ts";
+import { NODES, choose } from "../../scripts/postflop-ai/policy.ts";
+import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.ts";
+import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
+import type { Spot } from "../../scripts/postflop-ai/spots.ts";
+import { multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.ts";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
 import { mw3OriginForEvents } from "../estimated/mw3-context.ts";
 import { isVerifiedMw3Kit, type Mw3Kit } from "../estimated/mw3-browser.ts";
@@ -141,7 +142,7 @@ export function playHand(setup: HandSetup): HandResult {
   if (alive.length >= 3) {
     // Never reduce a multiway deal to the first two seats or check it down.
     const origin = alive.length === 3 ? mw3OriginForEvents(state.events) : null;
-    if (!origin || !origin.seats.every(seat => alive.includes(seat))) return result({ status: "unavailable", unavailableReason: "unsupported_multiway_origin" });
+    if (!origin || !origin.seats.every(seat => alive.includes(seat as Position))) return result({ status: "unavailable", unavailableReason: "unsupported_multiway_origin" });
     const mw3Kit = setup.mw3?.kit(origin.id);
     if (setup.mw3?.supportsSpot(origin.id) && mw3Kit === undefined) return result({ status: "needs_postflop", postflopKind: "mw3_srp", spotId: origin.id });
     if (!mw3Kit || !isVerifiedMw3Kit(mw3Kit) || mw3Kit.spotId !== origin.id) return result({ status: "unavailable", postflopKind: "mw3_srp", spotId: origin.id, unavailableReason: "missing_or_unapproved_mw3_policy" });
@@ -157,7 +158,7 @@ export function playHand(setup: HandSetup): HandResult {
   }
   const [a, b] = alive;
   const allIn = alive.some(pos => (state.committed[pos] ?? 0) >= STACK_BB);
-  const spot = allIn ? null : postflopSpotFor(state.events);
+  const spot = (allIn ? null : postflopSpotFor(state.events)) as Spot | null;
   const kit = spot ? setup.postflop(spot.id) : null;
   if (spot && kit === undefined) return result({ status: "needs_postflop", spotId: spot.id });
 

@@ -1,5 +1,5 @@
 import { applyMw3Action, createMw3Table, mw3Decision, settleMw3, startMw3Street } from "../../scripts/postflop-ai/mw3-engine.mjs";
-import { cardIds } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
+import { cardIds } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 import { cloneMw3Table, mw3ActionGroups } from "../../scripts/postflop-ai/mw3-actions.mjs";
 import { mw3ActionLabel, mw3Copy } from "./mw3-copy.ts";
 
@@ -44,7 +44,7 @@ export function buildMw3RangeNavigation(spot: any, selection: Mw3RangeSelection,
       paths[street].push(observed.action);
       applyMw3Action(table, observed.action);
     }
-    if (!table.streetState.end) break;
+    if (!table.streetState!.end) break;
     if (table.winner || street === "river") {
       const displayPotBb = table.winner ? settleMw3(cloneMw3Table(table)).potBb : table.pot;
       blocks.push({ key: `mw3-${street}-end`, kind: "end", result: table.winner ? `${table.winner} ${t.wins}` : t.showdown,
@@ -52,7 +52,7 @@ export function buildMw3RangeNavigation(spot: any, selection: Mw3RangeSelection,
       break;
     }
   }
-  return { blocks, paths, table, settledPotBb: table.winner ? settleMw3(cloneMw3Table(table)).potBb : null, board: board.slice(0, { flop: 3, turn: 4, river: 5 }[table.street]),
+  return { blocks, paths, table, settledPotBb: table.winner ? settleMw3(cloneMw3Table(table)).potBb : null, board: board.slice(0, { flop: 3, turn: 4, river: 5 }[table.street as "flop" | "turn" | "river"]),
     pendingStreet: blocks.find(block => block.kind === "board" && block.pending)?.street ?? null };
 }
 
@@ -65,7 +65,7 @@ export function canonicalMw3RangeSelection(spot: any, selection: Partial<Mw3Rang
   if (!validCards(source.flopCards, 3)) return result;
   const table = createMw3Table(spot);
   for (const [index, street] of streets.entries()) {
-    if (index && (!table.streetState.end || table.winner)) {
+    if (index && (!table.streetState!.end || table.winner)) {
       if (street === "turn") result.turnCard = "";
       result.riverCard = "";
       break;

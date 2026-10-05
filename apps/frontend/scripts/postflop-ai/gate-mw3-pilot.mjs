@@ -1,5 +1,6 @@
 // Explicit local representative gate. This compiles the already-authored Astra source,
 // never invokes an AI, writes source ranges, deploys or imports D1.
+import { mw3CurrentVerificationHash } from './mw3-source-identity.mjs';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildMw3PilotPolicies, MW3_PILOT_AUTHORSHIP } from '../data/mw3-co-btn-bb-authored.mjs';
@@ -10,14 +11,13 @@ import { diagnoseMw3JointFold } from './mw3-joint-defence.mjs';
 import { mw3ImplementationHash } from './mw3-artifacts.mjs';
 import { simulateMw3 } from './mw3-simulation.mjs';
 import { validateMw3SimulationReport } from './mw3-simulation-report.mjs';
-import { parseCards } from './model.mjs';
+import { parseCards } from './model.ts';
 import pilot from '../data/postflop-ai-pilot.json' with { type: 'json' };
 const args = new Set(process.argv.slice(2));
 if ([...args].some(arg => !['--all-flops', '--later', '--joint', '--simulate', '--replay'].includes(arg)) || !args.size) throw new Error('Use --all-flops, --later, --joint, --simulate and/or --replay explicitly');
 const inputs = loadMw3Inputs(MW3_PILOT_AUTHORSHIP.spotId), contract = probeMw3Hand(inputs.spot), policies = buildMw3PilotPolicies(inputs, contract);
 const implementationHash = mw3ImplementationHash();
-const verificationHash = mw3Sha(Object.fromEntries(['gate-mw3-pilot.mjs', 'mw3-audit.mjs', 'mw3-simulation.mjs', 'mw3-simulation-report.mjs', 'flop-isomorphism.mjs', '../data/postflop-ai-pilot.json']
-  .map(path => [path, readFileSync(join(mw3Root, 'scripts/postflop-ai', path), 'utf8')])));
+const verificationHash = mw3CurrentVerificationHash('pilot');
 const outDir = join(mw3Root, '.local/postflop-ai/mw3/pilot-gate', `v${MW3_PILOT_AUTHORSHIP.version}-${inputs.fingerprint.slice(0, 12)}-${implementationHash.slice(0, 12)}-${verificationHash.slice(0, 12)}`);
 mkdirSync(outDir, { recursive: true });
 const identity = { spot: inputs.spot.id, sourceHash: inputs.fingerprint, flopHash: mw3Sha(policies.flop), laterHash: mw3Sha(policies.later),

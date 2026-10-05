@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import config from '../scripts/data/postflop-ai-pilot.json' with { type: 'json' };
 import catalog from '../scripts/data/hu-after-multiway-spots.json' with { type: 'json' };
-import { NODES } from '../scripts/postflop-ai/tree.mjs';
-import { LATER_NODES } from '../scripts/postflop-ai/later-tree.mjs';
-import { choose } from '../scripts/postflop-ai/policy.mjs';
-import { createTable, playFlop, playLaterStreetsWithPolicy } from '../scripts/postflop-ai/engine.mjs';
-import { replayDecision } from '../scripts/postflop-ai/defence.mjs';
+import { NODES } from '../scripts/postflop-ai/tree.ts';
+import { LATER_NODES } from '../scripts/postflop-ai/later-tree.ts';
+import { choose } from '../scripts/postflop-ai/policy.ts';
+import { createTable, playFlop, playLaterStreetsWithPolicy } from '../scripts/postflop-ai/engine.ts';
+import { replayDecision } from '../scripts/postflop-ai/defence.ts';
 import { actionProjection, playedActionMass, projectActionMix, replayObservableStreet, canonicalPostflopPath,
   canonicalNodeForTable, actionModelIdentity, hasCurrentActionModel } from '../scripts/postflop-ai/observable-actions.mjs';
 

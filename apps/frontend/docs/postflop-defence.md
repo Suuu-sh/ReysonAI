@@ -15,8 +15,8 @@ call / fold part of every facing decision is now a calculation. Betting decision
 sizes) and the raise share stay AI-policy driven.
 
 A facing node is any node whose actions include `call`: the flop `bb_vs_*`, `ip_vs_*`,
-`btn_vs_raise`, `oop_vs_raise` (tree.mjs) and the turn / river `{street}_{role}_vs_{size}`,
-`{street}_{role}_vs_allin`, `{street}_{role}_vs_raise` (later-tree.mjs).
+`btn_vs_raise`, `oop_vs_raise` (tree.ts) and the turn / river `{street}_{role}_vs_{size}`,
+`{street}_{role}_vs_allin`, `{street}_{role}_vs_raise` (later-tree.ts).
 
 ## The model
 

@@ -46,6 +46,17 @@ test("trainer landing keeps its pink eyebrow without a duplicate page title", ()
   assert.doesNotMatch(html, /trainer-pulse|今日の回答|直近\d+問の正答率|連続練習/);
 });
 
+test("ranked emblem keeps its tier but omits match history for empty and populated records", () => {
+  for (const matches of [[], [{ before: 1200, after: 1215 }]]) {
+    const html = renderToStaticMarkup(createElement(TrainerHome, {
+      drills: [], reviewCount: 0, rank: { rating: 1200, peak: 1250, remaining: 3, matches }, rankedReady: true,
+      onOpenDrills() {}, onCreate() {}, onStartReview() {}, onResume() {}, onStartRanked() {}, onOpenRanking() {},
+    }));
+    assert.match(html, /class="ranked-tier-name"/);
+    assert.doesNotMatch(html, /まだ試合なし|No matches yet|Last match|直近5試合|ranked-pips/);
+  }
+});
+
 test("sessions page keeps its session-total stats", () => {
   const html = renderToStaticMarkup(createElement(SessionPage, { drills: [], reviews: [], drafts: {}, onResume() {} }));
   assert.match(html, /class="trainer-pulse" aria-label="セッションの合計"/);

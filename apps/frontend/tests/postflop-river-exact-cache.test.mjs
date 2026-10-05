@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadInputs } from '../scripts/postflop-ai/inputs.mjs';
-import { defenceFor, RIVER_EXACT_CACHE_LIMIT } from '../scripts/postflop-ai/defence.mjs';
+import { defenceFor, RIVER_EXACT_CACHE_LIMIT } from '../scripts/postflop-ai/defence.ts';
 import { REPRESENTATIVE, foundationPair, exactCacheFixture, exactCacheObservation } from './helpers/river-floor-regression.mjs';
 
 const inputs = loadInputs(REPRESENTATIVE), pair = foundationPair();

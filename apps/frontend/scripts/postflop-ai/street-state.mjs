@@ -1,9 +1,9 @@
 // Shared HU chip/path facts. UI intent, labels and transport live in their consumers.
 // Preserve the legacy replay arithmetic; new HU delegates to its observable model.
 import pilot from '../data/postflop-ai-pilot.json' with { type: 'json' };
-import { DEFAULT_SPOT_ID, spotById } from './spots.mjs';
-import { NODES, flopBetFraction, flopState, isFlopBet } from './tree.mjs';
-import { LATER_NODES, betFraction, streetState } from './later-tree.mjs';
+import { DEFAULT_SPOT_ID, spotById } from './spots.ts';
+import { NODES, flopBetFraction, flopState, isFlopBet } from './tree.ts';
+import { LATER_NODES, betFraction, streetState } from './later-tree.ts';
 import { replayObservableStreet, usesObservableActions } from './observable-actions.mjs';
 
 const round = value => Math.round(value * 100) / 100;

@@ -9,7 +9,7 @@ import { buildActionBlocks, decodeRangeUrl, encodeRangeUrl, defaultRangeSelectio
 import { defaultFormat } from '../src/estimated/game-formats.ts';
 import { DEFAULT_PROFILE } from '../src/estimated/table-profile.ts';
 import { postflopSpotFor } from '../src/agent/hand.ts';
-import { cardText } from '../scripts/postflop-ai/flop-isomorphism.mjs';
+import { cardText } from '../scripts/postflop-ai/flop-isomorphism.ts';
 import { mw3DecisionView } from '../scripts/postflop-ai/mw3-runtime.mjs';
 import { deliveryFixture } from './helpers/mw3-consumer-fixture.mjs';
 const fixture = await deliveryFixture(), kit = await fixture.client.load(fixture.id), spot = kit.inputs.spot;

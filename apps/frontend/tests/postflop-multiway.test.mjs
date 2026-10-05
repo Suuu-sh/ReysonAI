@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import { POSTFLOP_SPOTS, MULTIWAY_POSTFLOP_CATALOG, multiwaySpotFor } from '../scripts/postflop-ai/spots.mjs';
+import { POSTFLOP_SPOTS, MULTIWAY_POSTFLOP_CATALOG, multiwaySpotFor } from '../scripts/postflop-ai/spots.ts';
 import { loadInputs, useArtifactSource, seatRange } from '../scripts/postflop-ai/inputs.mjs';
-import { buildInputs } from '../scripts/postflop-ai/browser-inputs.mjs';
+import { buildInputs } from '../scripts/postflop-ai/browser-inputs.ts';
 import { datasetsNeededForSpot } from '../src/estimated/postflop-browser.ts';
 import { postflopSpotFor } from '../src/agent/hand.ts';
 import { completedFlopContext } from '../src/estimated/postflop-trial.ts';
@@ -108,7 +108,7 @@ test('local D1-compatible SQL preserves existing policies and supports safe retr
 
 test('AA-only support rejects impossible boards instead of manufacturing combos', async () => {
   const {hasPostflopDeal,assertPostflopDeal}=await import('../scripts/postflop-ai/range-support.mjs');
-  const {parseCards}=await import('../scripts/postflop-ai/model.mjs');
+  const {parseCards}=await import('../scripts/postflop-ai/model.ts');
   const inputs={spot:{ip:'HJ',oop:'BB',history:[]},seatRows:{HJ:[{hand:'AA',freq:100}],BB:[{hand:'AA',freq:100}]}};
   assert.equal(hasPostflopDeal(inputs,parseCards('Kh7d2c',3)),true);
   assert.equal(hasPostflopDeal(inputs,parseCards('As7d2c',3)),false);

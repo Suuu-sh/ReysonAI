@@ -4,9 +4,9 @@ import { loadMw3Inputs } from '../scripts/postflop-ai/mw3-inputs.mjs';
 import { probeMw3Hand, describeMw3Node } from '../scripts/postflop-ai/mw3-tree.mjs';
 import { mw3AnySelector, validateMw3Policy } from '../scripts/postflop-ai/mw3-policy.mjs';
 import { mw3DecisionView, playMw3WithPolicies } from '../scripts/postflop-ai/mw3-runtime.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
 import { MW3_TIERS as TIERS } from '../scripts/postflop-ai/mw3-hand-features.mjs';
-import { seededRandom } from '../scripts/lib/equity.mjs';
+import { seededRandom } from '../scripts/lib/equity.ts';
 const inputs = loadMw3Inputs('CO_open_BTN_call_BB_call'), contract = probeMw3Hand(inputs.spot);
 const make = streets => validateMw3Policy({ version: 3, kind: 'ai_estimate_not_gto', spot_id: inputs.spot.id, streets,
   rules: Object.keys(contract.nodes).filter(node => streets.includes(describeMw3Node(node).street)).flatMap(node => TIERS.map(tier => {

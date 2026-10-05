@@ -1,10 +1,10 @@
 import { parentPort, workerData } from "node:worker_threads";
 import { handEvForBoard } from "./flop-hand-ev-core.mjs";
 import { simulate } from "./simulation.mjs";
-import { referenceLaterPolicy } from "./later-policy.mjs";
-import { defenceFor } from "./defence.mjs";
-import { buildFlopBase } from "./flop-base-core.mjs";
-import { releaseFlopUiFacts } from "./flop-ui-facts.mjs";
+import { referenceLaterPolicy } from "./later-policy.ts";
+import { defenceFor } from "./defence.ts";
+import { buildFlopBase } from "./flop-base-core.ts";
+import { releaseFlopUiFacts } from "./flop-ui-facts.ts";
 import { writeFlopBaseFile } from "./flop-base-files.mjs";
 
 const { kind, inputs, policy, laterCandidate, samples, taskOptions = {} } = workerData;

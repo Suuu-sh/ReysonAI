@@ -13,7 +13,7 @@ import { APP_DATASETS, datasetNames, preloadDatasets } from "./estimated/dataset
 
 // The app reads preflop datasets synchronously, so preload them and the dataset index
 // before importing its module.
-const withDatasets = (names, load) => () => Promise.all([preloadDatasets(names), datasetNames()]).then(load);
+const withDatasets = <T,>(names: string[], load: () => Promise<T>) => () => Promise.all([preloadDatasets(names), datasetNames()]).then(load);
 const ProductApp = lazy(withDatasets(APP_DATASETS, () => import("./ProductApp.tsx")));
 const isProductRoute = isProductAppRoute(window.location.pathname, window.location.hostname);
 const legalDocument = legalDocumentOf(window.location.pathname);
@@ -42,7 +42,7 @@ function MarketingSite() {
     : <ServiceSite locale={locale} onLocaleChange={switchLocale} />;
 }
 
-createRoot(document.getElementById("root")).render(
+createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     {isProductRoute
       ? <Suspense fallback={<div className="site-loading">{({ en: "Opening ReysonAI…", ja: "ReysonAIを開いています…", "zh-CN": "正在打开ReysonAI…", es: "Abriendo ReysonAI…" }[productLocale()])}</div>}><ProductApp /></Suspense>

@@ -169,7 +169,8 @@
 .postflop-later-range-layout .postflop-hand-detail { align-content: start; }
 @media (max-width: 760px) { .postflop-range-layout { grid-template-columns: minmax(0, 1fr); } }
 .action-seat-info .action-seat-heading { align-items: center; }
-.settings-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.settings-header { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.settings-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; flex: 0 0 auto; }
 .settings-icon-button { display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; padding: 0; border: 1px solid var(--line-strong); border-radius: 6px; background: transparent; color: var(--text-muted); }
 .settings-icon-button:hover:not(:disabled) { border-color: var(--accent-soft); background: var(--surface-hover); color: var(--text); }
 .settings-icon-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -352,16 +353,15 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 
 .action-seat-info { gap: 8px; padding: 10px 12px; }
 .action-seat-select { display: none; }
-.settings-toggle { display: inline-flex; align-items: baseline; gap: 6px; padding: 0; border: 0; background: transparent; color: var(--text-muted); font: inherit; font-size: 15px; cursor: default; pointer-events: none; }
+.settings-toggle { display: inline-flex; align-items: center; gap: 5px; min-width: 0; padding: 0; border: 0; background: transparent; color: var(--text-muted); font: inherit; font-size: 13px; cursor: default; pointer-events: none; white-space: nowrap; }
 .settings-toggle strong { font-weight: 700; }
 .settings-toggle span { font-weight: 700; }
 .settings-toggle svg, .settings-backdrop { display: none; }
 .settings-body { display: flex; flex: 1; flex-direction: column; gap: 8px; }
 .action-seat-info .settings-body ul { padding: 0 0 0 18px; font-size: 13px; }
-.settings-body .settings-actions { position: absolute; top: 8px; right: 8px; margin: 0; gap: 4px; }
 .settings-change-button { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: var(--surface-hover); color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .settings-change-button:hover { background: var(--line-strong); }
-.settings-body .settings-icon-button { border: 0; background: var(--surface-hover); }
+.settings-header .settings-icon-button { border: 0; background: var(--surface-hover); }
 @media (max-width: 760px) {
   .action-seat-info { flex: 0 0 auto; width: auto; padding: 0; justify-content: center; }
   .action-path-seats { align-items: stretch; min-height: 44px; }
@@ -390,7 +390,8 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
   .action-seat-select-menu { position: fixed; z-index: 41; display: flex; flex-direction: column; gap: 2px; min-width: 140px; padding: 4px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface-raised); box-shadow: 0 12px 32px rgba(0, 0, 0, .5); }
   .action-seat-select-menu button { padding: 8px 10px; border: 0; border-radius: 5px; background: transparent; color: var(--text); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
   .action-seat-select-menu button:hover { background: var(--surface-hover); }
-  .settings-toggle { cursor: pointer; pointer-events: auto; align-items: center; height: 100%; padding: 4px 10px 4px 6px; font-size: 13px; white-space: nowrap; }
+  .settings-header { flex: 0 0 auto; }
+  .settings-toggle { cursor: pointer; pointer-events: auto; height: 100%; padding: 4px 0 4px 2px; font-size: 13px; white-space: nowrap; }
   .settings-toggle svg { display: block; color: var(--text-muted); }
   .settings-body { display: none; }
   .action-seat-info.is-open .settings-backdrop { display: block; position: fixed; inset: 0; z-index: 40; border: 0; background: rgba(0, 0, 0, .5); }
@@ -417,13 +418,11 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .range-context-switch button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 4px 5px; border: 0; border-radius: 5px; background: transparent; color: var(--text-muted); font: inherit; font-size: 11px; cursor: pointer; }
 .range-context-switch button[aria-pressed="true"] { background: var(--surface-hover); color: var(--text); }
 .range-context-switch button:focus-visible, .range-context-street:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.has-context-switch .settings-body .settings-actions { position: static; margin-left: auto; }
 .range-context-board { display: flex; align-items: center; gap: 4px; margin: auto 0; }
 .range-context-street { display: inline-flex; gap: 3px; padding: 0; border: 0; background: transparent; cursor: pointer; }
 .range-context-street .postflop-card { min-width: 27px; height: 36px; padding: 0 2px; font-size: 14px; }
 .range-context-street:hover .postflop-card { box-shadow: 0 0 0 1px var(--accent); }
 .range-context-board-footer { display: flex; align-items: center; gap: 5px; }
-.range-context-board-footer .display-mode-toggle { flex: 1; }
 .range-context-board-footer .settings-icon-button { width: 24px; height: 24px; flex: 0 0 24px; }
 @media (max-width: 760px) {
   .action-seat-info.has-context-switch { flex-direction: row; align-items: center; gap: 6px; padding: 4px 6px; }
@@ -431,8 +430,8 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
   .range-context-switch button { min-height: 28px; padding: 2px 5px; font-size: 10px; }
   .range-context-street .postflop-card { min-width: 25px; height: 34px; font-size: 13px; }
   .range-context-board-footer { flex-direction: column; }
-  .range-context-board-footer .display-mode-toggle { display: none; }
   .has-context-switch .settings-toggle { height: auto; }
+  .has-context-switch .settings-header { flex: 1 1 auto; }
   .action-seat-info.has-context-switch.is-open .settings-body { position: static; width: auto; padding: 0; border: 0; box-shadow: none; }
   .action-seat-info.has-context-switch.is-open .settings-backdrop { display: none; }
 }

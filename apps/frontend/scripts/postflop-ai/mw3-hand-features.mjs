@@ -1,7 +1,7 @@
 // Cheap private-card contribution facts for the NEW mw3 model only. Taxonomy mirrors
 // hand-features.mjs's structural made-hand distinctions, without its ~1,000-opponent
 // strength scan per combo. Existing HU classification and evaluator stay byte-identical.
-import { evaluateContinuation } from '../lib/continuation-evaluator.mjs';
+import { evaluateContinuation } from '../lib/continuation-evaluator.ts';
 export const MW3_HAND_CLASSIFIER_VERSION = 4;
 export const MW3_TIERS = Object.freeze(['absolute_nuts', 'nuts', 'monster', 'strong', 'draw', 'medium', 'air', 'board_shared', 'board_locked']);
 function privateDraw(hole, board, currentScore) {

@@ -133,8 +133,8 @@ test('review gate cannot accept a candidate with fresh-report metadata alone or 
 });
 test('postflop source graph binds archive tooling, numerical dependencies and configs', () => {
   const paths = reviewedSourcePaths();
-  for (const suffix of ['scripts/postflop-ai/defence.mjs', 'scripts/postflop-ai/board-worker.mjs', 'scripts/postflop-ai/reviewed-postflop-archive.mjs',
-    'scripts/data/postflop-ai-pilot.json', 'scripts/lib/equity.mjs']) assert.ok(paths.includes('apps/frontend/' + suffix), suffix);
+  for (const suffix of ['scripts/postflop-ai/defence.ts', 'scripts/postflop-ai/board-worker.mjs', 'scripts/postflop-ai/reviewed-postflop-archive.mjs',
+    'scripts/data/postflop-ai-pilot.json', 'scripts/lib/equity.ts']) assert.ok(paths.includes('apps/frontend/' + suffix), suffix);
   assert.ok(paths.includes('configs/cash-6max-100bb.json'));
   assert.ok(paths.includes('configs/multiway-preflop-stage2.json'));
   assert.equal(paths.some(path => path.includes('/.local/')), false);
@@ -159,7 +159,7 @@ test('partial manifest names omitted catalog spots; a receipt cannot silently cl
   assert.throws(() => assertManifest(resign(f.manifest)), /unavailable/);
 });
 
-test('independent synthetic review needs both exact successful proofs and rejects partial/stale all-board proof', async () => {
+test('independent synthetic review needs both exact successful proofs and rejects partial/stale all-board proof', async t => {
   const { config, loadInputs } = await import('../scripts/postflop-ai/inputs.mjs');
   const { allBoardIdentity } = await import('../scripts/postflop-ai/all-board-checkpoints.mjs');
   const hashJSON = value => sha256(JSON.stringify(value));
@@ -168,7 +168,7 @@ test('independent synthetic review needs both exact successful proofs and reject
   f.spot.identity = { policy_status: 'fresh-pair', report_status: 'fresh', current_source_fingerprint: actualInputs.fingerprint, flop_policy_hash: 'b'.repeat(64), later_policy_hash: 'c'.repeat(64) };
   f.bodies.set(artifactPath(f.spot, 'report'), Buffer.from(JSON.stringify({ results: [{}] })));
   const { captureAuditIdentity } = await import('../scripts/postflop-ai/audit-identity.mjs');
-  const { canonicalFlops } = await import('../scripts/postflop-ai/flop-isomorphism.mjs');
+  const { canonicalFlops } = await import('../scripts/postflop-ai/flop-isomorphism.ts');
   const { buildAllBoardCompanion, companionPathFor, summaryPathFor } = await import('../scripts/postflop-ai/all-board-companion.mjs');
   const auditIdentity = captureAuditIdentity();
   f.manifest.sources = reviewedSourcePaths().map(path => fileRecord(REPOSITORY, path));
@@ -212,6 +212,24 @@ test('independent synthetic review needs both exact successful proofs and reject
     coverage: { scope: 'complete-catalog', catalog_sha256: f.manifest.coverage.catalog_sha256, expected_new_spot_ids: [id], deferred_new_spots: [] },
     accepted_new_spots: [{ spot: id, representative_evidence: representativePath, all_board_evidence: allBoardPath }], preserved_legacy_spots: [] };
   assert.deepEqual(assertIndependentReview(receipt, snapshot).accepted_new_spots, [id]);
+  await t.test('type-reached exact preflop inputs still reject a changed raw-input digest', () => {
+    const path = 'apps/frontend/src/estimated/preflop-ranges.json';
+    assert.ok(f.manifest.inputs.some(item => item.path === path));
+    const changed = { ...f.manifest, inputs: f.manifest.inputs.map(item => item.path === path ? { ...item, sha256: '0'.repeat(64) } : item) };
+    assert.throws(() => assertAuditEvidence(allBoards, f.spot, 'all-boards', changed, f.bodies), /numerical identity differs/);
+  });
+  await t.test('an allowlisted input cannot be accepted from source records instead', () => {
+    const path = 'apps/frontend/src/estimated/preflop-ranges.json';
+    const input = f.manifest.inputs.find(item => item.path === path); assert.ok(input);
+    const moved = { ...f.manifest, inputs: f.manifest.inputs.filter(item => item.path !== path), sources: [...f.manifest.sources, input] };
+    assert.throws(() => assertAuditEvidence(allBoards, f.spot, 'all-boards', moved, f.bodies), /numerical identity differs/);
+  });
+  await t.test('a non-allowlisted numerical source cannot be reclassified as an input', () => {
+    const path = 'apps/frontend/scripts/postflop-ai/audit-all-boards.mjs';
+    const source = f.manifest.sources.find(item => item.path === path); assert.ok(source);
+    const moved = { ...f.manifest, sources: f.manifest.sources.filter(item => item.path !== path), inputs: [...f.manifest.inputs, source] };
+    assert.throws(() => assertAuditEvidence(allBoards, f.spot, 'all-boards', moved, f.bodies), /numerical identity differs/);
+  });
   for (const update of [{ canonical_flops: 12 }, { street: 'flop' }, { errors: 1 }, { identity_hash: 'e'.repeat(64) }, { evaluated_boards: 1754 }, { later_coverage: {} }, { exit_code: 1 }]) {
     assert.throws(() => assertAuditEvidence({ ...allBoards, ...update }, f.spot, 'all-boards', f.manifest, f.bodies));
   }

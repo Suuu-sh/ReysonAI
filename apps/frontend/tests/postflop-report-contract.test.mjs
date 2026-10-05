@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { loadInputs, boards, config, useArtifactSource } from '../scripts/postflop-ai/inputs.mjs';
-import { referencePolicyFor } from '../scripts/postflop-ai/policy.mjs';
-import { referenceLaterPolicy } from '../scripts/postflop-ai/later-policy.mjs';
+import { referencePolicyFor } from '../scripts/postflop-ai/policy.ts';
+import { referenceLaterPolicy } from '../scripts/postflop-ai/later-policy.ts';
 import { sha } from '../scripts/postflop-ai/generate.mjs';
 import { simulationReport, PROFILES } from '../scripts/postflop-ai/simulation.mjs';
 import { hasPostflopDeal } from '../scripts/postflop-ai/range-support.mjs';
@@ -11,7 +11,7 @@ import { isFreshSimulationReport } from '../scripts/postflop-ai/publish-d1.mjs';
 import { postflopResponse, buildLaterView } from '../scripts/postflop-ai/local-view.mjs';
 import { computeLaterView, computeLaterExplain } from '../src/estimated/postflop-compute.ts';
 import { datasetsNeededForSpot } from '../src/estimated/postflop-browser.ts';
-import { flopBaseIdentity, isFreshFlopBase } from '../scripts/postflop-ai/flop-base-core.mjs';
+import { flopBaseIdentity, isFreshFlopBase } from '../scripts/postflop-ai/flop-base-core.ts';
 
 const id='CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_fold_SB_4bet_BB_fold_CO_call';
 function fixture(inputs) {

@@ -1,7 +1,7 @@
 // Shared benchmark helpers: combo-weighted aggregate frequencies of saved
 // spots, and comparison against reference files in .local/benchmarks.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { comboCount } from "./equity.mjs";
+import { comboCount } from "./equity.ts";
 
 export const DATASET_NAMES = Object.freeze(["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses"]);
 const ACTIONS = ["open", "limp", "three_bet", "four_bet", "all_in", "squeeze", "call", "fold"];

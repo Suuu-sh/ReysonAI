@@ -1,6 +1,6 @@
 // Dedicated saved three-player-origin policies. No HU defence, reference mixes, EV
 // optimizer, frequency rescaling or missing/stale-artifact fallback is permitted.
-import { flopTextureKeys, LINES, RUNOUT_TEXTURES, runoutTexture, TEXTURES } from './model.mjs';
+import { flopTextureKeys, LINES, RUNOUT_TEXTURES, runoutTexture, TEXTURES } from './model.ts';
 import { MW3_TIERS as TIERS, mw3HandTier } from './mw3-hand-features.mjs';
 import { describeMw3Node } from './mw3-tree.mjs';
 export const MW3_POLICY_SCHEMA = 3;

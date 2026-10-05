@@ -110,6 +110,7 @@ export function installCapturedParentHooks({ root, records, buffers, executionLe
     load(url, context, nextLoad) {
       if (url.startsWith('node:')) return nextLoad(url, context);
       const path = localPath(url), source = sources.get(path);
+      assert.ok(!/\.d\.(?:ts|mts)$/.test(path), 'Declaration sources must never execute');
       assert.ok(/\.(?:mjs|js|json|ts)$/.test(path), 'Unsupported parent evaluation format');
       const row = pinned.get(path); assert.deepEqual(digest(source), { bytes: row.bytes, sha256: row.sha256 });
       let executed = source, transformation = null;

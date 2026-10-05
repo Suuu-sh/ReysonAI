@@ -1,5 +1,5 @@
-import { evaluate } from "../../scripts/lib/equity.mjs";
-import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
+import { evaluate } from "../../scripts/lib/equity.ts";
+import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 import { playMw3WithPolicies } from "../../scripts/postflop-ai/mw3-runtime.mjs";
 import { isVerifiedMw3Kit, type Mw3Kit } from "../estimated/mw3-browser.ts";
 import { POSITIONS, STACK_BB, type Position, type PreflopState } from "./preflop.ts";
@@ -22,7 +22,7 @@ export function playMw3AgentHand({ kit, state, hole, board, human, humanActions,
   const result = playMw3WithPolicies(kit.inputs, kit.policies, { hands, board,
     human: human && seats.includes(human) ? human : null, humanActions, random });
   const bets: Record<string, Record<string, number>> = {};
-  const log: LogEntry[] = result.table.log.map((entry: any) => {
+  const log: LogEntry[] = result.table.log.map(entry => {
     const totals = bets[entry.street] ??= Object.fromEntries(seats.map(seat => [seat, 0]));
     totals[entry.seat] = entry.committedBb + entry.amountBb;
     return { street: entry.street, pos: entry.seat, action: entry.action,
@@ -36,7 +36,7 @@ export function playMw3AgentHand({ kit, state, hole, board, human, humanActions,
     const pending = result.pending;
     return { status: "awaiting", postflopKind: "mw3_srp", spotId: kit.spotId, board: shownBoard, log,
       pending: { street: pending.street, pos: pending.seat, pot: pending.potBb, board: shownBoard, toCall: pending.callBb,
-        options: pending.actionGroups.map((group: any) => ({ key: group.action,
+        options: pending.actionGroups.map(group => ({ key: group.action,
           to: group.action === "fold" || group.action === "check" ? undefined : group.toBb,
           amountBb: group.amountBb, allIn: group.allIn, aliases: [...group.actions] })) } };
   }

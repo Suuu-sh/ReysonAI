@@ -1,6 +1,6 @@
 // Advisory diagnostics only. Draw all three holecard ranges simultaneously and reject
 // the complete tuple on collision; never multiply independently averaged fold rates.
-import { seedFor, seededRandom } from '../lib/equity.mjs';
+import { seedFor, seededRandom } from '../lib/equity.ts';
 import { mw3BoardRanges } from './mw3-audit.mjs';
 import { applyMw3Action, createMw3Table, mw3Decision, MW3_STREETS, replayMw3, startMw3Street } from './mw3-engine.mjs';
 import { cloneMw3Table, mw3ActionGroups, mw3ObservedProbability } from './mw3-actions.mjs';

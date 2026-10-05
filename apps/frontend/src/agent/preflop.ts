@@ -1,3 +1,5 @@
+import type { OpeningSpot, ResponseSpot, ThreeBetSpot, FourBetSpot, FiveBetSpot, MultiwaySpot, SqueezeSpot, ColdThreeBetSpot, ColdFourBetSpot, Multiway2Spot, LimpSpot, LimpDeepSpot } from "../estimated/preflop-types.ts";
+type SourceSpot = OpeningSpot | ResponseSpot | ThreeBetSpot | FourBetSpot | FiveBetSpot | MultiwaySpot | SqueezeSpot | ColdThreeBetSpot | ColdFourBetSpot | Multiway2Spot | LimpSpot | LimpDeepSpot;
 import { mw3OriginForEvents } from "../estimated/mw3-context.ts";
 import { continuationDecisionForEvents } from "../estimated/continuation-history.ts";
 // Six-handed preflop for the Reyson Agent table. Every decision is looked up in a saved preflop
@@ -32,7 +34,7 @@ export type PreflopState = {
   acted: Set<string>; // acted since the last raise
   voluntary: Set<string>; // put chips in by choice (called, limped or raised)
   events: PreflopEvent[];
-  raises: { pos: Position; to: number; kind: string }[];
+  raises: { pos: Position; to: number; kind: string; callers?: Position[] }[];
   limper: Position | null;
   callers: Position[]; // callers of the current raise level
 };
@@ -61,7 +63,7 @@ export function nextActor(s: PreflopState): Position | null {
 
 type Situation = { source: string | null; rows: any; map: Record<string, PreflopAction> };
 
-const find = (file: string, id: string) => dataset(file)?.spots?.find((item: any) => item.id === id) ?? null;
+const find = (file: string, id: string) => dataset<{spots: SourceSpot[]}>(file)?.spots?.find(item => item.id === id) ?? null;
 
 // The saved dataset row that answers `pos` in the current state, and how its keys map to actions.
 export function situation(s: PreflopState, pos: Position): Situation {
@@ -228,7 +230,7 @@ export function applyPreflop(s: PreflopState, pos: Position, action: PreflopActi
     const to = Math.min(STACK_BB, action.to ?? bet);
     const kind = action.key === "squeeze" ? "squeeze" : action.key;
     // Remember who flatted the open before a squeeze (squeeze-responses are keyed by them).
-    if (next.raises.length === 1) next.raises[0] = { ...next.raises[0], callers: [...next.callers] } as any;
+    if (next.raises.length === 1) next.raises[0] = { ...next.raises[0], callers: [...next.callers] };
     next.committed[pos] = to;
     next.voluntary.add(pos);
     next.raises.push({ pos, to, kind });

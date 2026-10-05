@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { featuresFromText } from "../scripts/postflop-ai/hand-features.mjs";
-import { drawLevel, madeLevel, roleFromFeatures } from "../scripts/postflop-ai/hand-role.mjs";
+import { featuresFromText } from "../scripts/postflop-ai/hand-features.ts";
+import { drawLevel, madeLevel, roleFromFeatures } from "../scripts/postflop-ai/hand-role.ts";
 import { handRole } from "../src/estimated/postflop-explanation.ts";
 import { betSentences, describeHand } from "../src/estimated/postflop-hand-copy.ts";
-import { evaluate } from "../scripts/lib/equity.mjs";
+import { evaluate } from "../scripts/lib/equity.ts";
 
 const F = (hole, board) => featuresFromText(hole, board);
 

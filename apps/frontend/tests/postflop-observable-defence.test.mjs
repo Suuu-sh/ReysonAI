@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadInputs } from '../scripts/postflop-ai/inputs.mjs';
-import { referencePolicyFor, NODES } from '../scripts/postflop-ai/policy.mjs';
-import { referenceLaterPolicy, laterPolicyMix } from '../scripts/postflop-ai/later-policy.mjs';
-import { LATER_NODES } from '../scripts/postflop-ai/later-tree.mjs';
-import { defenceFor, replayDecision, comboId, rankTable, defenceVersionFor } from '../scripts/postflop-ai/defence.mjs';
+import { referencePolicyFor, NODES } from '../scripts/postflop-ai/policy.ts';
+import { referenceLaterPolicy, laterPolicyMix } from '../scripts/postflop-ai/later-policy.ts';
+import { LATER_NODES } from '../scripts/postflop-ai/later-tree.ts';
+import { defenceFor, replayDecision, comboId, rankTable, defenceVersionFor } from '../scripts/postflop-ai/defence.ts';
 import { playedActionMass, projectActionMix } from '../scripts/postflop-ai/observable-actions.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
 import { compileRiverCallEv, exactRiverCallEv } from '../scripts/postflop-ai/exact-river-call-ev.mjs';
 import { exactActionEv } from '../scripts/postflop-ai/exact-ev.mjs';
 import { simulationReport } from '../scripts/postflop-ai/simulation.mjs';

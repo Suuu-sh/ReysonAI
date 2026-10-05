@@ -49,8 +49,8 @@ const descriptions = {
 const prefixes = { en: "In this three-player-origin pot: ", ja: "3人ポットでは、", "zh-CN": "在这个三人起始底池中：", es: "En este bote originado con tres jugadores: " };
 const averages = { en: "The combinations have different strength groups. This is their path-weighted average mix.", ja: "組み合わせごとに強さの分類が異なります。表示は到達割合で重み付けした平均です。", "zh-CN": "各具体组合的牌力分类不同，显示的是按路径到达权重计算的平均策略。", es: "Las combinaciones pertenecen a distintos grupos de fuerza. Se muestra la mezcla media ponderada por su peso en la secuencia." };
 const future = { en: " Later cards can change that strength.", ja: " 残りのカードで強さは変わり得ます。", "zh-CN": " 后续牌可能改变这一强度。", es: " Las cartas posteriores pueden cambiar esa fuerza." };
-export function mw3HandExplanation({ tier, tiers = [], street, locale = "en" }: any) {
-  const lang = Object.hasOwn(descriptions, locale) ? locale : "en";
+export function mw3HandExplanation({ tier, tiers = [], street, locale = "en" }: { tier?: keyof typeof descriptions.en | null; tiers?: (keyof typeof descriptions.en)[]; street: string; locale?: string }) {
+  const lang = (Object.hasOwn(descriptions, locale) ? locale : "en") as keyof typeof descriptions;
   if (!tier && new Set(tiers).size !== 1) return prefixes[lang] + averages[lang];
   const current = tier ?? tiers[0], text = descriptions[lang][current];
   if (!text) throw new Error("Unknown three-player hand strength");

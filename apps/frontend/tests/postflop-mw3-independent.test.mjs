@@ -7,7 +7,7 @@ import { buildMw3Catalog } from '../scripts/postflop-ai/mw3-spots.mjs';
 import { applyMw3Action, assertMw3Conservation, createMw3Table, mw3Decision,
   settleMw3, startMw3Street } from '../scripts/postflop-ai/mw3-engine.mjs';
 import { describeMw3Node, mw3RequiredPolicyNodes } from '../scripts/postflop-ai/mw3-tree.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
 
 const data = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
 const catalog = buildMw3Catalog({ opening: data('opening-ranges'), responses: data('preflop-ranges'),

@@ -1,11 +1,11 @@
 // Offline self-play/chip-flow verification of three dedicated saved policies.
 // No HU reference bot, profile overlay, EV recommendation, or policy editing.
-import { seededRandom, seedFor } from '../lib/equity.mjs';
+import { seededRandom, seedFor } from '../lib/equity.ts';
 import { mw3BoardRanges } from './mw3-audit.mjs';
 import { makeMw3TupleSampler } from './mw3-joint-defence.mjs';
 import { playMw3WithPolicies } from './mw3-runtime.mjs';
 import { setMw3RankingCacheLimit } from './mw3-hand-features.mjs';
-import { parseCards } from './model.mjs';
+import { parseCards } from './model.ts';
 import { mw3Sha } from './mw3-inputs.mjs';
 import pilot from '../data/postflop-ai-pilot.json' with { type: 'json' };
 export const MW3_SIMULATION_VERSION = 1;

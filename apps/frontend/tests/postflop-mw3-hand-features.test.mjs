@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mw3BoardLocked, mw3HandFacts, mw3HandTier } from '../scripts/postflop-ai/mw3-hand-features.mjs';
-import { parseCards, handTier as legacyTier } from '../scripts/postflop-ai/model.mjs';
+import { parseCards, handTier as legacyTier } from '../scripts/postflop-ai/model.ts';
 const classify = (hole, board) => mw3HandTier(parseCards(hole, 2), parseCards(board, board.length / 2));
 const facts = (hole, board) => mw3HandFacts(parseCards(hole, 2), parseCards(board, board.length / 2));
 
@@ -34,7 +34,7 @@ test('draws require private card participation and never exist on the river', ()
 
 test('public-max nuts never conflates locked boards or claims blocker-conditional hands are beatable', async () => {
   const { mw3BoardMaxScore } = await import('../scripts/postflop-ai/mw3-hand-features.mjs');
-  const { evaluateContinuation } = await import('../scripts/lib/continuation-evaluator.mjs');
+  const { evaluateContinuation } = await import('../scripts/lib/continuation-evaluator.ts');
   assert.equal(facts('JhTh', 'AhKhQh').guaranteedPrivateNuts, true);
   assert.equal(facts('7c6c', 'AcKdQhJsTc').guaranteedPrivateNuts, false);
   assert.equal(facts('7c6c', 'AcKdQhJsTc').boardLocked, true);
@@ -49,7 +49,7 @@ test('public-max nuts never conflates locked boards or claims blocker-conditiona
 
 test('cached blocker-conditioned nuts exactly match full legal-opponent enumeration', async () => {
   const { mw3OpponentMaxScore, mw3BoardMaxScore } = await import('../scripts/postflop-ai/mw3-hand-features.mjs');
-  const { evaluateContinuation } = await import('../scripts/lib/continuation-evaluator.mjs');
+  const { evaluateContinuation } = await import('../scripts/lib/continuation-evaluator.ts');
   const cases = [['AcKc', 'AhAdKdKs2c'], ['QhJd', 'AhKh8h3h2c'], ['JhTh', '9h8h7d2c'], ['Tc9c', 'AsKdQhJc2d'],
     ['AhKh', 'QhJh2c'], ['AcAd', 'Kd8s3c'], ['7c6c', 'AcKdQhJsTc']];
   for (const [h, b] of cases) {
@@ -108,7 +108,7 @@ test('bounded board ranking cache eviction changes no current-nuts result', asyn
 
 test('future upper bound dominates every river and opposing pair in six turn fixtures', async () => {
   const { mw3FutureOpponentUpper } = await import('../scripts/postflop-ai/mw3-hand-features.mjs');
-  const { evaluateContinuation } = await import('../scripts/lib/continuation-evaluator.mjs');
+  const { evaluateContinuation } = await import('../scripts/lib/continuation-evaluator.ts');
   const cases = [['KhQh', 'JhTh9h2c'], ['9h6h', 'Th8h7h2c'], ['AcKh', 'AhAdKcKs'],
     ['AsQh', 'AhAdAcKs'], ['QhJh', 'AhKh8h3h'], ['JhTh', '9h8h7d2c']];
   for (const [h, b] of cases) {

@@ -1,7 +1,7 @@
 // New-HU public actions. Saved policy labels remain latent sampling choices;
 // only their physical chip transition can be observed by another player.
-import { NODES, flopBetFraction, flopState, facingNode, raiseNode, raiseDepth } from './tree.mjs';
-import { LATER_NODES, betFraction, streetState, laterRaiseNode } from './later-tree.mjs';
+import { NODES, flopBetFraction, flopState, facingNode, raiseNode, raiseDepth } from './tree.ts';
+import { LATER_NODES, betFraction, streetState, laterRaiseNode } from './later-tree.ts';
 import pilotConfig from '../data/postflop-ai-pilot.json' with { type: 'json' };
 
 export const NEW_HU_ACTION_MODEL_VERSION = 10;

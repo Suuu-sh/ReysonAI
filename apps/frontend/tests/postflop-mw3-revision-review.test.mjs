@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mw3HandFacts, mw3HandTier } from '../scripts/postflop-ai/mw3-hand-features.mjs';
-import { evaluateContinuation } from '../scripts/lib/continuation-evaluator.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
+import { evaluateContinuation } from '../scripts/lib/continuation-evaluator.ts';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
 import { MW3_TIERS as TIERS } from '../scripts/postflop-ai/mw3-hand-features.mjs';
 import { mw3AnySelector } from '../scripts/postflop-ai/mw3-policy.mjs';
 import { encodeMw3Policy, decodeMw3Policy } from '../scripts/postflop-ai/mw3-policy-codec.mjs';

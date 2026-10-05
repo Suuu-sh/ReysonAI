@@ -1,8 +1,8 @@
 import game from "../../../configs/cash-6max-100bb.json" with { type: "json" };
 import stage2 from "../../../configs/multiway-preflop-stage2.json" with { type: "json" };
 import pilot from "../../frontend/scripts/data/postflop-ai-pilot.json" with { type: "json" };
-import { referencePolicyFor } from "../../frontend/scripts/postflop-ai/policy.mjs";
-import { referenceLaterPolicy } from "../../frontend/scripts/postflop-ai/later-policy.mjs";
+import { referencePolicyFor } from "../../frontend/scripts/postflop-ai/policy.ts";
+import { referenceLaterPolicy } from "../../frontend/scripts/postflop-ai/later-policy.ts";
 
 export const POSTFLOP_RUNTIME_CONFIG_PATH = "/v1/postflop/runtime-config";
 

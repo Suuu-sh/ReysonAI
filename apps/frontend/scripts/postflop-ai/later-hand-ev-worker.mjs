@@ -1,8 +1,8 @@
 import { parentPort, workerData } from "node:worker_threads";
 import { boards, config, loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
-import { validatePolicy } from "./policy.mjs";
-import { validateLaterPolicy } from "./later-policy.mjs";
+import { validatePolicy } from "./policy.ts";
+import { validateLaterPolicy } from "./later-policy.ts";
 import { laterHandEvForBoard } from "./later-hand-ev.mjs";
 
 try {

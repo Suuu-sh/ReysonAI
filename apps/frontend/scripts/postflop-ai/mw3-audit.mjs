@@ -1,9 +1,9 @@
 // Structural all-board coverage and transparent, advisory policy diagnostics.
 // Finite contexts collapse only policy-equivalent states, never joint reach probabilities.
-import { combosOf } from '../lib/equity.mjs';
-import { runoutTexture } from './model.mjs';
+import { combosOf } from '../lib/equity.ts';
+import { runoutTexture } from './model.ts';
 import { MW3_TIERS as TIERS, mw3HandTier } from './mw3-hand-features.mjs';
-import { canonicalFlops } from './flop-isomorphism.mjs';
+import { canonicalFlops } from './flop-isomorphism.ts';
 import { selectMw3Rule, validateMw3Policy } from './mw3-policy.mjs';
 import { probeMw3Hand } from './mw3-tree.mjs';
 

@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { callContexts, callFacts, allowedCall, targetCall, threeBetTargetCall, isOopThreeBetResponse, validCallEquities, CALL_EQUITY_VERSION, CALL_EQUITY_SAMPLES, CALL_EQUITY_SEED, OOP_THREE_BET_FILL_EV, THREE_BET_FILL_EV, OOP_THREE_BET_FILL_RAMP, THREE_BET_FILL_RAMP } from "../src/estimated/call-ev.ts";
 import { reconcileCalls } from "./lib/call-consistency.mjs";
-import { comboCount, equityVsRange, equityVsRanges, weightedRange, seededRandom, seedFor } from "./lib/equity.mjs";
+import { comboCount, equityVsRange, equityVsRanges, weightedRange, seededRandom, seedFor } from "./lib/equity.ts";
 
 const dir = process.env.ESTIMATES_DIR;
 if (!dir || resolve(dir) === resolve("src/estimated")) throw new Error("Run npm run build:estimates; staging required");

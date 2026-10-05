@@ -1,7 +1,7 @@
 // Read-only completeness checks for existing evidence, never a rerun or approval.
 import pilot from '../data/postflop-ai-pilot.json' with { type: 'json' };
 import { representativeMw3Runouts } from './mw3-audit.mjs';
-import { parseCards } from './model.mjs';
+import { parseCards } from './model.ts';
 import { validateMw3SimulationReport } from './mw3-simulation-report.mjs';
 import { mw3Sha } from './mw3-inputs.mjs';
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);

@@ -10,7 +10,7 @@ import { build } from 'esbuild';
 import { sqlStatements } from '../verify-preflop-local-d1.mjs';
 import { backendMigrationStatements } from '../lib/backend-migration-sql.mjs';
 import { buildSql, spotArtifacts, quote } from './publish-d1.mjs';
-import { spotById } from './spots.mjs';
+import { spotById } from './spots.ts';
 import { artifactPaths } from './inputs.mjs';
 
 const FRONTEND=fileURLToPath(new URL('../..',import.meta.url)), BACKEND=resolve(FRONTEND,'../backend');

@@ -1,14 +1,14 @@
 // Local authoring/storage boundary for already-authored Astra mw3 policies.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { mw3ArtifactPaths, mw3Root, mw3Sha } from './mw3-inputs.mjs';
+import { dirname } from 'node:path';
+import { mw3CompatibilityIdentity } from './mw3-source-identity.mjs';
+import { mw3ArtifactPaths, mw3Sha } from './mw3-inputs.mjs';
 import { MW3_POLICY_SCHEMA, validateMw3Policy } from './mw3-policy.mjs';
 import { probeMw3Hand } from './mw3-tree.mjs';
 export const MW3_SEMANTIC_SOURCES = Object.freeze(['mw3-engine.mjs', 'mw3-hand-features.mjs', 'mw3-actions.mjs', 'mw3-tree.mjs', 'mw3-policy.mjs', 'mw3-spots.mjs', 'mw3-inputs.mjs', 'mw3-input-core.mjs',
   'mw3-runtime.mjs', 'mw3-joint-defence.mjs', 'model.mjs', '../lib/equity.mjs', '../lib/continuation-evaluator.mjs']);
 export function mw3ImplementationHash() {
-  return mw3Sha(Object.fromEntries(MW3_SEMANTIC_SOURCES.map(path => [path,
-    readFileSync(join(mw3Root, 'scripts/postflop-ai', path), 'utf8')])));
+  return mw3CompatibilityIdentity('semantic').historicalHash;
 }
 const probes = new Map();
 // Byte-restore verification scopes contract witnesses to one spot at a time.

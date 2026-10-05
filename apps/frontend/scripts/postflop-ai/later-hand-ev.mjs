@@ -6,15 +6,15 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { availableParallelism } from "node:os";
 import { Worker } from "node:worker_threads";
-import { seedFor, seededRandom } from "../lib/equity.mjs";
+import { seedFor, seededRandom } from "../lib/equity.ts";
 import { artifactPaths, boards, config, loadInputs, readArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
-import { validatePolicy } from "./policy.mjs";
-import { validateLaterPolicy } from "./later-policy.mjs";
-import { streetHistories } from "./later-tree.mjs";
-import { FLOP_BETS, flopState } from "./tree.mjs";
-import { DEFAULT_SPOT_ID } from "./spots.mjs";
-import { defenceVersionFor } from "./defence.mjs";
+import { validatePolicy } from "./policy.ts";
+import { validateLaterPolicy } from "./later-policy.ts";
+import { streetHistories } from "./later-tree.ts";
+import { FLOP_BETS, flopState } from "./tree.ts";
+import { DEFAULT_SPOT_ID } from "./spots.ts";
+import { defenceVersionFor } from "./defence.ts";
 import { LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, computeNode, laterHandEvForHand, laterHandEvKey, makeLaterMixReader } from "./later-hand-ev-core.mjs";
 
 // The on-demand one-hand entry point lives in the pure core (shared with the browser worker).

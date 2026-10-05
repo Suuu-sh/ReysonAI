@@ -8,6 +8,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { stripTypeScriptTypes } from 'node:module';
 import { captureBoundaryRecords, installCapturedParentHooks, parseArguments, writeBoundaryGitPointer } from '../scripts/verify-mw3-local-d1.mjs';
 const sha = body => createHash('sha256').update(body).digest('hex');
 const row = (path, bytes) => ({ path, bytes: bytes.length, sha256: sha(bytes) });
@@ -132,7 +133,7 @@ test('captured typed TS, relative TS and JSON dependencies evaluate from recorde
   } finally { if (binding) binding.finish('fail'); retain(directory, passed); }
 });
 
-test('the complete actual parent graph links under exact-buffer hooks, including the captured shared registry and all seven required TS modules, without invoking the oracle', async () => {
+test('the complete actual parent graph links under exact-buffer hooks, including the captured shared registry, migrated runtime modules and nonexecuting type provenance, without invoking the oracle', async () => {
   const directory = mkdtempSync(join(tmpdir(), 'mw3-parent-real-graph-')), root = join(directory, 'replay'); mkdirSync(root);
   const origin = fileURLToPath(new URL('../../../', import.meta.url)), entry = 'apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs';
   const files = new Map(); let binding;
@@ -147,18 +148,35 @@ test('the complete actual parent graph links under exact-buffer hooks, including
       }
     }
     visit(entry);
-    const expectedTs = ['apps/shared/mw3-approved.ts', 'apps/frontend/src/data.ts', 'apps/frontend/src/estimated/multiway-responses.ts',
-      'apps/frontend/src/estimated/opening-ranges.ts', 'apps/frontend/src/estimated/rake.ts',
-      'apps/frontend/src/estimated/ranges.ts', 'apps/frontend/src/estimated/sizing.ts'].sort();
-    assert.deepEqual([...files.keys()].filter(path => path.endsWith('.ts')).sort(), expectedTs);
+    const expectedRuntimeTs = ['apps/shared/mw3-approved.ts', 'apps/frontend/src/data.ts', 'apps/frontend/src/components/action-format.ts',
+      'apps/frontend/src/estimated/multiway-responses.ts', 'apps/frontend/src/estimated/opening-ranges.ts',
+      'apps/frontend/src/estimated/rake.ts', 'apps/frontend/src/estimated/ranges.ts', 'apps/frontend/src/estimated/sizing.ts',
+      'apps/frontend/scripts/postflop-ai/model.ts', 'apps/frontend/scripts/lib/equity.ts',
+      'apps/frontend/scripts/lib/continuation-evaluator.ts'];
+    for (const path of expectedRuntimeTs) assert.ok(files.has(path), `Missing migrated runtime source: ${path}`);
+    const executable = new Set();
+    function executableVisit(path) {
+      if (executable.has(path)) return;
+      assert.ok(files.has(path), `Executable dependency must be captured: ${path}`);
+      assert.doesNotMatch(path, /\.d\.(?:ts|mts)$/);
+      executable.add(path);
+      if (!/\.(?:mjs|js|ts)$/.test(path)) return;
+      const raw = files.get(path).toString('utf8');
+      const text = path.endsWith('.ts') ? stripTypeScriptTypes(raw, { mode: 'strip' }) : raw;
+      for (const match of text.matchAll(/(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']/g)) {
+        if (match[1].startsWith('.')) executableVisit(relative(origin, resolve(origin, dirname(path), match[1])).replaceAll('\\', '/'));
+      }
+    }
+    executableVisit(entry);
+    for (const path of expectedRuntimeTs) assert.ok(executable.has(path), `Expected runtime module was only a type dependency: ${path}`);
     const records = [...files].map(([path, bytes]) => row(path, bytes)), buffers = captureBoundaryRecords(origin, root, records);
     const executionLedgerPath = join(directory, 'parent.execution.json');
     binding = installCapturedParentHooks({ root, records, buffers, executionLedgerPath, metadata: { synthetic_source_only_startup: true } });
     const parent = await import(pathToFileURL(join(root, entry)).href);
     assert.equal(typeof parent.verifyMw3LocalD1, 'function'); assert.equal(typeof parent.assertFinishedSqlFailure, 'function');
     assert.equal(parent.WRANGLER_VERSION, '4.147.0'); // Constant inspection only; no runtime command.
-    assert.deepEqual([...binding.loaded.keys()].sort(), [...files.keys()].sort(), 'Every actual transitive module was supplied by the capture loader');
-    for (const path of expectedTs) {
+    assert.deepEqual([...binding.loaded.keys()].sort(), [...executable].sort(), 'Every actual executable dependency was supplied by the capture loader; type-only provenance was not executed');
+    for (const path of expectedRuntimeTs) {
       const evidence = binding.loaded.get(path); assert.equal(evidence.transformation.api, 'node:module.stripTypeScriptTypes');
       assert.equal(evidence.sha256, sha(files.get(path)));
       assert.equal(sha(readFileSync(join(directory, evidence.transformation.output_path))), evidence.executed_source.sha256);
@@ -166,8 +184,31 @@ test('the complete actual parent graph links under exact-buffer hooks, including
     assert.equal(existsSync(join(root, 'apps/frontend/.local')), false, 'Import/link did not start oracle, strategy generation, Wrangler or D1 work');
     binding.finish('pass'); binding = null;
     const evidence = JSON.parse(readFileSync(executionLedgerPath)); assert.equal(evidence.status, 'pass');
-    assert.equal(evidence.loaded_sources.length, records.length);
+    assert.equal(evidence.loaded_sources.length, executable.size);
     // Retain this real-graph format/identity proof for independent inspection.
     retain(directory, false);
   } finally { if (binding) binding.finish('fail'); }
+});
+
+
+test('captured declaration provenance is retained but .d.ts and .d.mts can never execute', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'mw3-parent-declarations-')), origin = join(directory, 'live'), root = join(directory, 'replay');
+  mkdirSync(origin); mkdirSync(root); let passed = false, binding;
+  try {
+    const files = new Map([
+      ['entry.ts', Buffer.from("import type { Shape } from './shape.d.mts'; export const value: Shape = { value: 7 };\n")],
+      ['shape.d.mts', Buffer.from("export type Shape = { value: number };\n")],
+      ['shape.d.ts', Buffer.from("export type Shape = { value: number };\n")],
+    ]);
+    for (const [path, bytes] of files) writeFileSync(join(origin, path), bytes);
+    const records = [...files].map(([path, bytes]) => row(path, bytes));
+    const buffers = captureBoundaryRecords(origin, root, records);
+    binding = installCapturedParentHooks({ root, records, buffers, executionLedgerPath: join(directory, 'parent.execution.json') });
+    const value = await import(pathToFileURL(join(root, 'entry.ts')).href); assert.equal(value.value.value, 7);
+    for (const path of ['shape.d.mts', 'shape.d.ts']) {
+      assert.ok(buffers.has(path)); assert.equal(binding.loaded.has(path), false);
+      await assert.rejects(() => import(pathToFileURL(join(root, path)).href), /Declaration sources must never execute/);
+    }
+    binding.finish('pass'); binding = null; passed = true;
+  } finally { if (binding) binding.finish('fail'); retain(directory, passed); }
 });

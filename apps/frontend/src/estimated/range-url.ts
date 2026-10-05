@@ -1,3 +1,12 @@
+import type { ContinuationDecision, ContinuationTerminal, ContinuationFamily, HistoryAction } from "./continuation-tree.ts";
+import type { FormatKey, GameFormat } from "./game-formats.ts";
+import type { TableProfile } from "./table-profile.ts";
+import type { ResponseDataset, ThreeBetDataset, FourBetDataset } from "./preflop-types.ts";
+export type RangeRef = { dataset?: string; id?: string; kind: string; position: string; caller?: string; squeezer?: string; priorAction?: string | null; threeBettor?: string; opponent?: string; reason?: string };
+export type ActionOption = { action: string; label: string; disabled?: boolean };
+export type ActionBlock = { key: string; position: string; stack: string; kind: string; options: ActionOption[]; active: boolean; chosen: string | null | undefined; rangeRef?: RangeRef; stage?: string; role?: string; result?: string; pot?: string; historical?: boolean; continuationFamily?: ContinuationFamily; continuationNode?: ContinuationDecision; priorContinuationActions?: string[]; postflopEvents?: HistoryAction[]; continuationTerminal?: ContinuationTerminal; continuationAvailable?: boolean; continuationStatus?: string };
+export type RangeBuildState = Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & { spot?: { three_bet_size_bb?: number; four_bet_size_bb?: number | null } | null; raiseToBb?: number | null; raiseSizeFor?: (position: string) => number | null };
+export type RangeEncodingState = RangeBuildState & Partial<Omit<RangeUrlState, "tableProfile">> & { tableProfile?: Partial<TableProfile>; hand?: string };
 import { canonicalMw3RangeSelection } from "./mw3-range-state.ts";
 import { hands } from "../data.ts";
 import { positions, fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
@@ -11,19 +20,19 @@ import { canonicalStreetActions, hasObservablePostflopActions, completedFlopCont
 
 // The recorded-matchup lookup is identical to extended-ranges.ts, isolated here
 // so the shared action strip and URL codec do not depend on React hooks.
-export function multiwayContext(opener, callers, position) {
+export function multiwayContext(opener: string, callers: string[], position: string) {
   const earlier = callers.filter(caller => positions.indexOf(caller) < positions.indexOf(position));
   if (earlier.length !== 1) return null;
   const [caller] = earlier;
   return multiwaySpots.some(spot => spot.opener === opener && spot.caller === caller && spot.hero === position) ? { opener, caller } : null;
 }
 
-const startingContribution = { SB: 0.5, BB: 1 };
-const formatBb = value => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
-function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction = null, limpFourBetAction = null }) {
+const startingContribution: Record<string, number> = { SB: 0.5, BB: 1 };
+const formatBb = (value: number | null | undefined) => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
+function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction = null, limpFourBetAction = null }: Pick<RangeUrlSelection, "limpAction" | "limpResponseAction"> & Partial<Pick<RangeUrlSelection, "limpReraiseAction" | "limpFourBetAction">>): ActionBlock[] {
   const contribution = { ...startingContribution };
-  const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
-  const blocks = [];
+  const stackOf = (position: string) => formatBb(100 - (contribution[position] ?? 0));
+  const blocks: ActionBlock[] = [];
   for (const position of positions.slice(0, positions.indexOf("SB"))) {
     blocks.push({ key: position, position, stack: stackOf(position), active: false, chosen: "fold", options: [{ action: "fold", label: "Fold", disabled: true }], kind: "seat", rangeRef: { kind: "opening", position } });
   }
@@ -35,7 +44,7 @@ function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseActi
     const counted = values.length > 1 ? [Math.min(values[0], values[1]), ...values.slice(1)] : values;
     return `ポット ${formatBb(counted.reduce((sum, value) => sum + value, 0))}bb`;
   };
-  const end = (result) => blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result, pot: pot() });
+  const end = (result: string) => blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result, pot: pot() });
 
   if (!limpAction) {
     blocks.push({ key: "limp-BB", position: "BB", stack: stackOf("BB"), active: true, chosen: null, stage: "limp-bb", options: [
@@ -84,7 +93,7 @@ function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseActi
 }
 
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], raiseSizeFor = () => null }) {
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], raiseSizeFor = () => null }: RangeBuildState): ActionBlock[] {
   if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
   const boundedState = { rangeType, opener, hero, callers, pendingRaise, coldAction, squeezeResponse, continuationActions };
   const boundedRoot = continuationRootForSelection(boundedState);
@@ -94,8 +103,8 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
   const reraised = rangeType === "three_bet" || rangeType === "four_bet";
   const threeBetSizeBb = reraised ? spot?.three_bet_size_bb : raiseSizeFor(hero);
   const contribution = { ...startingContribution };
-  const stackOf = position => formatBb(100 - (contribution[position] ?? 0));
-  const blocks = [];
+  const stackOf = (position: string) => formatBb(100 - (contribution[position] ?? 0));
+  const blocks: ActionBlock[] = [];
   const lastIndex = opening ? openerIndex : positions.length - 1;
   for (let index = 0; index <= lastIndex; index += 1) {
     const position = positions[index];
@@ -141,7 +150,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
     const hasEarlierCaller = callers.some(caller => positions.indexOf(caller) < index);
     const multiway = hasEarlierCaller ? multiwayContext(opener, callers, position) : null;
     const multiway2 = multiway2Spots.find(item => item.opener === opener && item.hero === position && JSON.stringify(item.callers) === JSON.stringify(earlierCallers));
-    const rangeRef = multiway2
+    const rangeRef: RangeRef = multiway2
       ? { kind: "saved-source", position, dataset: "multiway2-responses", id: multiway2.id }
       : multiway
       ? { kind: "multiway", position, caller: multiway.caller }
@@ -190,7 +199,7 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
 }
 
 // The hand's outcome once the last decision closes the action, with the final pot.
-function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, contribution, threeBetSizeBb, spot }) {
+function handResult({ rangeType, opener, hero, callers, foldedHero, pendingRaise, continuationAction, shoveResponse, contribution, threeBetSizeBb, spot }: RangeBuildState & { callers: string[]; contribution: Record<string, number>; threeBetSizeBb?: number | null }) {
   // An uncalled bet is returned, so the largest contribution only counts up to the next largest.
   const pot = () => {
     const values = Object.values(contribution).sort((x, y) => y - x);
@@ -225,7 +234,7 @@ export type RangeUrlSelection = {
   limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; selected: string;
 };
 export type RangeUrlState = RangeUrlSelection & {
-  format: typeof defaultFormat; tableProfile: { call: string; three_bet: string };
+  format: typeof defaultFormat; tableProfile: TableProfile;
   showFlop: boolean; flopCards: string[]; flopActions: string[];
   turnCard: string; turnActions: string[]; riverCard: string; riverActions: string[];
 };
@@ -238,22 +247,22 @@ export const defaultRangeSelection: RangeUrlSelection = {
   limpFourBetAction: null, squeezeResponse: [], continuationActions: [], selected: "AKo",
 };
 const emptyPostflop = () => ({ showFlop: false, flopCards: ["", "", ""], flopActions: [], turnCard: "", turnActions: [], riverCard: "", riverActions: [] });
-const validHand = hand => hands.includes(hand) ? hand : "AKo";
-const profileLevel = value => ["low", "normal", "high"].includes(value) ? value : "normal";
-const copySelection = () => ({ ...defaultRangeSelection, callers: [], squeezeResponse: [], continuationActions: [] });
+const validHand = (hand: string | null | undefined) => hands.includes(hand!) ? hand! : "AKo";
+const profileLevel = (value: string | null | undefined) => ["low", "normal", "high"].includes(value!) ? value as TableProfile["call"] : "normal";
+const copySelection = (): RangeUrlSelection => ({ ...defaultRangeSelection, callers: [], squeezeResponse: [], continuationActions: [] });
 
-function availableDataset(name) {
-  try { return publishedDataset(name); } catch { return null; }
+function availableDataset<T>(name: string): T | null {
+  try { return publishedDataset<T>(name); } catch { return null; }
 }
 
 // Uses the same saved sizes and exact strip builder as the workspace. No strategy
 // rows are synthesized: config sizing is only the fallback when data is absent.
-export function buildRangeUrlActionBlocks(state) {
+export function buildRangeUrlActionBlocks(state: RangeBuildState) {
   const { opener, hero, rangeType } = state;
-  const responses = availableDataset("preflop-ranges");
-  const threeBets = availableDataset("three-bet-responses");
-  const fourBets = availableDataset("four-bet-responses");
-  const responseFor = position => responses?.spots.find(spot => spot.opener === opener && spot.hero === position);
+  const responses = availableDataset<ResponseDataset>("preflop-ranges");
+  const threeBets = availableDataset<ThreeBetDataset>("three-bet-responses");
+  const fourBets = availableDataset<FourBetDataset>("four-bet-responses");
+  const responseFor = (position: string) => responses?.spots.find(spot => spot.opener === opener && spot.hero === position);
   const savedSpot = rangeType === "four_bet"
     ? fourBets?.spots.find(spot => spot.opener === opener && spot.hero === hero)
     : rangeType === "three_bet"
@@ -266,9 +275,9 @@ export function buildRangeUrlActionBlocks(state) {
       ?? (position !== opener ? threeBetToSize(opener, position) : null)) });
 }
 
-const preflopToken = token => token === "F" ? "fold" : token === "C" ? "call" : token === "X" ? "check"
+const preflopToken = (token: string) => token === "F" ? "fold" : token === "C" ? "call" : token === "X" ? "check"
   : token === "RAI" ? "all_in" : /^R\d+(?:\.\d+)?$/.test(token) ? "raise" : null;
-function chosenPreflopTokens(blocks) {
+function chosenPreflopTokens(blocks: readonly ActionBlock[]) {
   const tokens = [];
   for (const block of blocks) {
     if (block.kind === "end" || !block.chosen) break;
@@ -279,15 +288,15 @@ function chosenPreflopTokens(blocks) {
       if (!size) break;
       tokens.push(`R${size}`);
     } else {
-      const token = { fold: "F", call: "C", check: "X", all_in: "RAI" }[action];
+      const token = { fold: "F", call: "C", check: "X", all_in: "RAI" }[action as "fold" | "call" | "check" | "all_in"];
       if (!token) break;
       tokens.push(token);
     }
   }
   return tokens;
 }
-const splitActions = value => value ? value.split(/[-,]/) : [];
-function replayPreflop(value) {
+const splitActions = (value: string | null | undefined) => value ? value.split(/[-,]/) : [];
+function replayPreflop(value: string | null) {
   let state = copySelection();
   let index = 0;
   // The block cursor also consumes forced folds and cold folds without changing
@@ -340,7 +349,7 @@ function replayPreflop(value) {
   return state;
 }
 
-function postflopToken(action) {
+function postflopToken(action: string) {
   if (action === "check") return "X";
   if (action === "call") return "C";
   if (action === "fold") return "F";
@@ -350,7 +359,7 @@ function postflopToken(action) {
   if (/^bet\d+(?:\.\d+)?$/.test(action)) return `B${action.slice(3)}`;
   return null;
 }
-function parsePostflopActions(value) {
+function parsePostflopActions(value: string | null) {
   const actions = [];
   for (const token of splitActions(value).slice(0, 32)) {
     const action = token === "X" ? "check" : token === "C" ? "call" : token === "F" ? "fold"
@@ -364,20 +373,20 @@ function parsePostflopActions(value) {
 }
 // Native decision options enforce node reachability, stack caps, and street
 // termination. Never feed an imported illegal sequence to the UI replay engine.
-function reachablePostflopPrefix(actions, decisionFor, canonicalize = null) {
+function reachablePostflopPrefix(actions: string[], decisionFor: (actions: string[]) => { options?: readonly { action: string }[] }, canonicalize: ((actions: string[]) => string[]) | null = null) {
   // Keep the raw imported prefix until validating its original node legality.
   // Normalizing an earlier merged bet first would incorrectly reject its old
   // impossible-raise-as-call alias, or accept an explicit allin→raise.
   if (canonicalize) {
-    const source = [];
-    let canonical = [];
+    const source: string[] = [];
+    let canonical: string[] = [];
     for (const action of actions) {
       try { canonical = canonicalize([...source, action]); source.push(action); }
       catch { break; }
     }
     return canonical;
   }
-  const prefix = [];
+  const prefix: string[] = [];
   for (const action of actions) {
     const decision = decisionFor(prefix);
     if (!decision.options?.some(option => option.action === action)) break;
@@ -385,15 +394,15 @@ function reachablePostflopPrefix(actions, decisionFor, canonicalize = null) {
   }
   return prefix;
 }
-const cardValid = card => /^[2-9TJQKA][shdc]$/.test(card);
-function boardCards(value, count, used = []) {
+const cardValid = (card: string) => /^[2-9TJQKA][shdc]$/.test(card);
+function boardCards(value: string | null | undefined, count: number, used: readonly string[] = []) {
   if (typeof value !== "string" || value.length !== count * 2) return null;
-  const cards = value.match(/.{2}/g);
+  const cards = value.match(/.{2}/g)!;
   return cards.every(cardValid) && new Set([...used, ...cards]).size === used.length + count ? cards : null;
 }
 
 /** Pure canonical spot URL. UI callers pass the actual preflop strip blocks. */
-export function encodeRangeUrl(state, actionBlocks = buildRangeUrlActionBlocks(state)) {
+export function encodeRangeUrl(state: RangeEncodingState, actionBlocks = buildRangeUrlActionBlocks(state)) {
   const format = { ...defaultFormat, ...state.format };
   const params = new URLSearchParams();
   params.set("gametype", `${format.game}-${format.table}`);
@@ -401,14 +410,14 @@ export function encodeRangeUrl(state, actionBlocks = buildRangeUrlActionBlocks(s
   if (format.openSize !== defaultFormat.openSize) params.set("open", String(format.openSize));
   if (format.ante !== defaultFormat.ante) params.set("ante", format.ante ? "1" : "0");
   if (format.rake !== defaultFormat.rake) params.set("rake", format.rake);
-  for (const key of ["call", "three_bet"]) {
+  for (const key of ["call", "three_bet"] as const) {
     const level = profileLevel(state.tableProfile?.[key]);
     if (level !== "normal") params.set(key, level);
   }
   const actions = chosenPreflopTokens(actionBlocks);
   if (actions.length) params.set("preflop_actions", actions.join("-"));
   const context = completedFlopContext({ ...state, actionBlocks,
-    isDefaultTable: Object.keys(defaultFormat).every(key => format[key] === defaultFormat[key])
+    isDefaultTable: Object.keys(defaultFormat).every(key => format[key as keyof GameFormat] === defaultFormat[key as keyof GameFormat])
       && profileLevel(state.tableProfile?.call) === "normal" && profileLevel(state.tableProfile?.three_bet) === "normal" });
   if (context?.kind === "mw3_srp" && state.showFlop !== false && Array.isArray(state.flopCards)) {
     state = { ...state, ...canonicalMw3RangeSelection(context.mw3Spot, state) };
@@ -428,7 +437,7 @@ export function encodeRangeUrl(state, actionBlocks = buildRangeUrlActionBlocks(s
   const flop = state.showFlop === false ? null : boardCards(state.flopCards?.join(""), 3);
   if (flop) {
     params.set("board", flop.join(""));
-    const writeActions = (key, actions) => params.set(key, (actions ?? []).map(postflopToken).filter(Boolean).join("-"));
+    const writeActions = (key: string, actions: string[] | undefined) => params.set(key, (actions ?? []).map(postflopToken).filter(Boolean).join("-"));
     writeActions("flop_actions", state.flopActions);
     const turn = boardCards(state.turnCard, 1, flop);
     if (turn) {
@@ -453,15 +462,15 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
     openSize: params.has("open") ? Number(params.get("open")) : defaultFormat.openSize,
     ante: params.has("ante") ? params.get("ante") === "1" : defaultFormat.ante,
     rake: params.get("rake") ?? defaultFormat.rake };
-  const knownFormat = gametype === `${game}-${table}` && (!params.has("ante") || ["0", "1"].includes(params.get("ante")))
-    && Object.keys(defaultFormat).every(key => formatOptions[key].some(option => option.value === format[key]));
+  const knownFormat = gametype === `${game}-${table}` && (!params.has("ante") || ["0", "1"].includes(params.get("ante")!))
+    && (Object.keys(defaultFormat) as FormatKey[]).every(key => formatOptions[key].some(option => option.value === format[key]));
   const state: RangeUrlState = { ...replayPreflop(params.get("preflop_actions")),
     selected: validHand(params.get("hand")), format: knownFormat ? format : { ...defaultFormat },
     tableProfile: { call: profileLevel(params.get("call")), three_bet: profileLevel(params.get("three_bet")) }, ...emptyPostflop() };
   const flop = boardCards(params.get("board"), 3);
   if (!flop) return state;
   const context = completedFlopContext({ ...state, actionBlocks: buildRangeUrlActionBlocks(state),
-    isDefaultTable: Object.keys(defaultFormat).every(key => state.format[key] === defaultFormat[key])
+    isDefaultTable: (Object.keys(defaultFormat) as FormatKey[]).every(key => state.format[key as keyof GameFormat] === defaultFormat[key as keyof GameFormat])
       && state.tableProfile.call === "normal" && state.tableProfile.three_bet === "normal" });
   // A board cannot revive a closed/winning preflop path. A completed path
   // without a pilot still has an active read-only placeholder in the workspace.
@@ -485,8 +494,8 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
     state.riverCard = river[0]; state.riverActions = parsePostflopActions(params.get("river_actions"));
     return state;
   }
-  const canonicalize = (street, start) => hasObservablePostflopActions(context)
-    ? actions => canonicalStreetActions(street, actions, start, context) : null;
+  const canonicalize = (street: string, start: ReturnType<typeof laterStart> | undefined) => hasObservablePostflopActions(context)
+    ? (actions: string[]) => canonicalStreetActions(street, actions, start, context) : null;
   state.flopActions = reachablePostflopPrefix(parsePostflopActions(params.get("flop_actions")),
     actions => flopDecision(actions, context), canonicalize("flop", undefined));
   const turn = boardCards(params.get("turn"), 1, flop);
@@ -510,7 +519,7 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
 export function readRangeUrl(browser = typeof window === "undefined" ? null : window) {
   return browser?.location?.pathname === "/analyze/ranges" ? decodeRangeUrl(browser.location.search) : null;
 }
-export function replaceRangeUrl(url, browser = typeof window === "undefined" ? null : window) {
+export function replaceRangeUrl(url: string, browser = typeof window === "undefined" ? null : window) {
   if (browser?.location?.pathname !== "/analyze/ranges") return false;
   const canonical = `${url.split("#")[0]}${browser.location.hash ?? ""}`;
   const current = `${browser.location.pathname}${browser.location.search}${browser.location.hash ?? ""}`;

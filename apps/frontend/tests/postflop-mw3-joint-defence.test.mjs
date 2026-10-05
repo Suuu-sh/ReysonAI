@@ -4,9 +4,9 @@ import { loadMw3Inputs } from '../scripts/postflop-ai/mw3-inputs.mjs';
 import { probeMw3Hand, describeMw3Node } from '../scripts/postflop-ai/mw3-tree.mjs';
 import { mw3AnySelector, validateMw3Policy } from '../scripts/postflop-ai/mw3-policy.mjs';
 import { makeMw3TupleSampler, diagnoseMw3JointFold, MW3_JOINT_SAMPLES } from '../scripts/postflop-ai/mw3-joint-defence.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
 import { MW3_TIERS as TIERS } from '../scripts/postflop-ai/mw3-hand-features.mjs';
-import { seededRandom } from '../scripts/lib/equity.mjs';
+import { seededRandom } from '../scripts/lib/equity.ts';
 const hand = text => parseCards(text, 2);
 test('joint sampler rejects the full tuple rather than resampling only the later conflicting hand', () => {
   const ranges = { A: [{ combo: hand('AsAh'), weight: 1 }, { combo: hand('KsKh'), weight: 1 }],

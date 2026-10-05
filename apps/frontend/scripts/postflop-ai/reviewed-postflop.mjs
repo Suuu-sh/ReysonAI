@@ -9,7 +9,7 @@ import { assertAllBoardCompanion, companionPathFor, summaryPathFor } from './all
 import { captureAuditIdentity, identityHash } from './audit-identity.mjs';
 import { loadCandidate, loadLaterCandidate, sha } from './generate.mjs';
 import { isFreshSimulationReport } from './publish-d1.mjs';
-import { POSTFLOP_SPOTS } from './spots.mjs';
+import { POSTFLOP_SPOTS } from './spots.ts';
 import { ARTIFACT_PREFIX, LIMITS, allowedEvidencePath, artifactPath, assertManifest, compare, contentIdentity,
   decodeArchive, encodeArchive, fileRecord, jsonBytes, readSafeFile, safeRelativePath, sha256 } from './reviewed-postflop-archive.mjs';
 
@@ -20,7 +20,7 @@ export const REVIEW_FILE = 'configs/hu-postflop-after-multiway.review.json';
 const FRONTEND = 'apps/frontend/';
 const inputNames = ['opening-ranges', 'preflop-ranges', 'three-bet-responses', 'four-bet-responses', 'limp-responses', 'limp-deep-responses',
   'multiway-responses', 'multiway2-responses', 'squeeze-responses', 'cold-three-bet-responses', 'cold-four-bet-responses', 'continuation-responses'];
-const sourceRoots = ['cli.mjs', 'audit-all-boards.mjs', 'board-worker.mjs', 'browser-inputs.mjs', 'publish-d1.mjs', 'build-multiway-spots.mjs',
+const sourceRoots = ['cli.mjs', 'audit-all-boards.mjs', 'board-worker.mjs', 'browser-inputs.ts', 'publish-d1.mjs', 'build-multiway-spots.mjs',
   'package-all-board-companion.mjs', 'package-reviewed-postflop.mjs', 'restore-reviewed-postflop.mjs', 'verify-reviewed-postflop.mjs', 'preserve-legacy-postflop.py'].map(name => `${FRONTEND}scripts/postflop-ai/${name}`);
 // Consumer provenance remains bound by the publication review even when it is
 // no longer an incidental dependency of the numerical execution graph.
@@ -197,7 +197,8 @@ export function assertAuditEvidence(proof, spot, kind, manifest, files, { root =
     const currentIdentityHash = sha(identity);
     for (const record of identity.code) {
       const path = relative(root, resolve(root, FRONTEND, 'scripts/postflop-ai', record.path)).replaceAll('\\', '/');
-      if (!manifest.sources.some(item => item.path === path && item.sha256 === record.sha256)) throw new Error('All-board numerical identity differs from archive source records');
+      const boundRecords = reviewedInputPaths().includes(path) ? manifest.inputs : manifest.sources;
+      if (!boundRecords.some(item => item.path === path && item.sha256 === record.sha256)) throw new Error('All-board numerical identity differs from archive source/input records');
     }
     const coverage = result?.later_coverage;
     if (!proof.command.includes('audit-all-boards.mjs') ||

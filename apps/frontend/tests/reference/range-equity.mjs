@@ -1,4 +1,4 @@
-// Frozen W1 reference from defence.mjs before optimisation (test-only).
+// Frozen W1 reference from defence.ts before optimisation (test-only).
 const NUM_IDS = 52 * 52;
 const PREFIX_AFTER = 3;
 

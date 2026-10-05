@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { buildMw3Catalog, hasCompatibleMw3Hands, mw3SpotFor } from '../scripts/postflop-ai/mw3-spots.mjs';
 import { applyMw3Action, assertMw3Conservation, createMw3Table, mw3Decision, replayMw3, settleMw3, startMw3Street } from '../scripts/postflop-ai/mw3-engine.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
 const data = name => JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url)));
 const sources = { opening: data('opening-ranges'), responses: data('preflop-ranges'), multiway: data('multiway-responses') };
 const catalog = buildMw3Catalog(sources);

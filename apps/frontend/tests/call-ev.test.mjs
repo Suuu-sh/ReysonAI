@@ -244,7 +244,7 @@ test("EV-capacity conflicts stay advisory, but leaving profitable defense unused
 });
 
 test("preserved v1 preflop equities remain historical rather than being relabelled as corrected output", async () => {
-  const { EVALUATOR_VERSION, equityVsRange, weightedRange, seededRandom, seedFor } = await import("../scripts/lib/equity.mjs");
+  const { EVALUATOR_VERSION, equityVsRange, weightedRange, seededRandom, seedFor } = await import("../scripts/lib/equity.ts");
   // The best-five correction intentionally does not migrate any saved frequency,
   // equity or reason. A separate reviewed migration must version and regenerate
   // this cache; using the same seed does not make its old evaluator correct.

@@ -1,16 +1,19 @@
+import type { TrainerSettings, TrainerSpot, GradedAnswer } from "./types.ts";
+interface OpenSourceSpot { id: string; hero: string; open_size_bb: number; hands: { hand: string; fold: number; open: number }[] }
+interface ResponseSourceSpot extends Omit<OpenSourceSpot, "hands"> { opener: string; three_bet_size_bb: number; hands: { hand: string; fold: number; call: number; three_bet: number }[] }
 // Preflop drill: question picking, grading and study notes built on the saved estimated ranges.
 import { dataset } from "../estimated/datasets.ts";
 import { hands } from "../data.ts";
 import { productLocale } from "../i18n.ts";
 
 // Published preflop datasets (src/estimated/datasets.ts); preloaded before this module runs in the browser.
-const openingSource = dataset("opening-ranges");
-const responseSource = dataset("preflop-ranges");
+const openingSource = dataset<{ spots: OpenSourceSpot[] }>("opening-ranges");
+const responseSource = dataset<{ spots: ResponseSourceSpot[] }>("preflop-ranges");
 
 export const POSITIONS = ["UTG", "HJ", "CO", "BTN", "SB", "BB"];
 
 // Normalise both datasets into { id, kind, hero, opener, actions, byHand: Map(hand -> {action: 0..1}) }.
-function openSpot(spot) {
+function openSpot(spot: OpenSourceSpot): TrainerSpot {
   return {
     id: spot.id, kind: "open", hero: spot.hero, opener: null, openSize: spot.open_size_bb,
     actions: [{ key: "fold", label: "フォールド" }, { key: "open", label: `レイズ ${spot.open_size_bb}BB` }],
@@ -18,7 +21,7 @@ function openSpot(spot) {
   };
 }
 
-function responseSpot(spot) {
+function responseSpot(spot: ResponseSourceSpot): TrainerSpot {
   return {
     id: spot.id, kind: "response", hero: spot.hero, opener: spot.opener, openSize: spot.open_size_bb,
     actions: [{ key: "fold", label: "フォールド" }, { key: "call", label: `コール ${spot.open_size_bb}BB` },
@@ -27,14 +30,14 @@ function responseSpot(spot) {
   };
 }
 
-export const SPOTS = [...openingSource.spots.map(openSpot), ...responseSource.spots.map(responseSpot)];
-export const spotById = new Map(SPOTS.map(spot => [spot.id, spot]));
+export const SPOTS: TrainerSpot[] = [...openingSource.spots.map(openSpot), ...responseSource.spots.map(responseSpot)];
+export const spotById = new Map<string, TrainerSpot>(SPOTS.map(spot => [spot.id, spot]));
 
-export function spotTitle(spot) {
+export function spotTitle(spot: TrainerSpot) {
   return spot.kind === "open" ? `${spot.hero} オープン` : `${spot.hero} vs ${spot.opener} オープン`;
 }
 
-export function spotPrompt(spot) {
+export function spotPrompt(spot: TrainerSpot) {
   if (productLocale() !== "ja") {
     if (spot.kind === "open") {
       const before = POSITIONS.slice(0, POSITIONS.indexOf(spot.hero));
@@ -58,7 +61,7 @@ export const CATEGORY_LABELS = {
   offsuit_ace: "オフスートA", offsuit_other: "その他のオフスート",
 };
 
-export function handCategory(hand) {
+export function handCategory(hand: string) {
   const [a, b] = [RANK_ORDER.indexOf(hand[0]), RANK_ORDER.indexOf(hand[1])];
   if (hand.length === 2) return a >= RANK_ORDER.indexOf("T") ? "pair_high" : "pair_low";
   const suited = hand[2] === "s";
@@ -76,13 +79,13 @@ export function handCategory(hand) {
 const NEIGHBOR_STEPS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 const GRID = [..."AKQJT98765432"];
 
-function primary(mix) {
+function primary(mix: Record<string, number>) {
   return Object.entries(mix).reduce((best, entry) => entry[1] > best[1] ? entry : best)[0];
 }
 
 // Borderline and mixed hands teach the most; obvious folds are rarely asked.
 // easy also asks clear-cut hands, hard asks only mixed-frequency hands.
-function handWeight(spot, hand, difficulty = "standard") {
+function handWeight(spot: TrainerSpot, hand: string, difficulty = "standard") {
   const mix = spot.byHand.get(hand);
   if (!mix) return 0;
   const top = Math.max(...Object.values(mix));
@@ -123,8 +126,8 @@ export const STRICTNESS_OPTIONS = [
   { value: "strict", label: "厳しめ", hint: "いちばん多い選択だけ正解", mixed: Infinity },
 ];
 
-export function normalizeSettings(raw = {}, level = null) {
-  const pick = (value, allowed, fallback) => allowed.includes(value) ? value : fallback;
+export function normalizeSettings(raw: Partial<TrainerSettings> = {}, level: string | null = null): TrainerSettings {
+  const pick = <T,>(value: T | undefined, allowed: T[], fallback: T): T => allowed.includes(value!) ? value! : fallback;
   const kinds = Array.isArray(raw.kinds) ? raw.kinds.filter(kind => ["open", "response"].includes(kind)) : [];
   const positions = Array.isArray(raw.positions) ? raw.positions.filter(position => POSITIONS.includes(position)) : [];
   return {
@@ -137,30 +140,30 @@ export function normalizeSettings(raw = {}, level = null) {
   };
 }
 
-export function spotsForSettings(settings) {
+export function spotsForSettings(settings: TrainerSettings) {
   return SPOTS.filter(spot => settings.kinds.includes(spot.kind) && settings.positions.includes(spot.hero));
 }
 
-export function pickQuestion(spots, random = Math.random, review = [], reviewShare = 0.25, difficulty = "standard") {
+export function pickQuestion(spots: TrainerSpot[], random = Math.random, review: { spotId: string; hand: string }[] = [], reviewShare = 0.25, difficulty = "standard") {
   const allowed = new Set(spots.map(spot => spot.id));
   const queued = review.filter(item => allowed.has(item.spotId));
   if (queued.length && random() < reviewShare) {
     const item = queued[Math.floor(random() * queued.length)];
-    return { spot: spotById.get(item.spotId), hand: item.hand, review: true };
+    return { spot: spotById.get(item.spotId)!, hand: item.hand, review: true };
   }
   let pool = spots.flatMap(spot => hands.map(hand => ({ spot, hand, weight: handWeight(spot, hand, difficulty) }))).filter(item => item.weight > 0);
   if (!pool.length) pool = spots.flatMap(spot => hands.map(hand => ({ spot, hand, weight: handWeight(spot, hand) }))).filter(item => item.weight > 0);
   let target = random() * pool.reduce((sum, item) => sum + item.weight, 0);
   for (const item of pool) { target -= item.weight; if (target <= 0) return { spot: item.spot, hand: item.hand, review: false }; }
-  const last = pool.at(-1);
+  const last = pool.at(-1)!;
   return { spot: last.spot, hand: last.hand, review: false };
 }
 
 // --- Grading ---
 // best: the most frequent action (or within 5pt of it); mixed: played at least the strictness threshold.
-export function grade(spot, hand, action, { lenient = false, strictness = lenient ? "lenient" : "standard" } = {}) {
+export function grade(spot: TrainerSpot, hand: string, action: string, { lenient = false, strictness = lenient ? "lenient" : "standard" }: { lenient?: boolean; strictness?: string } = {}): GradedAnswer {
   const mixedFrom = STRICTNESS_OPTIONS.find(item => item.value === strictness)?.mixed ?? 0.2;
-  const mix = spot.byHand.get(hand);
+  const mix = spot.byHand.get(hand)!;
   const top = Math.max(...Object.values(mix));
   const frequency = mix[action] ?? 0;
   const result = frequency >= top - 0.05 ? "best" : frequency >= mixedFrom ? "mixed" : "miss";
@@ -170,7 +173,7 @@ export function grade(spot, hand, action, { lenient = false, strictness = lenien
 export const RESULT_LABELS = { best: "正解", mixed: "混合で可", miss: "ミス" };
 
 // --- Study notes ---
-const ACTION_NOTES = {
+const ACTION_NOTES: Record<string, Record<string, string>> = {
   open: {
     pair_high: "強いペアは常にオープン。後ろに大きな手が少ないほど価値が上がります。",
     pair_low: "小さいペアはセットを狙う手。後ろに残る人数が多い前のポジションほど慎重になります。",
@@ -216,7 +219,7 @@ const ACTION_NOTES = {
 };
 
 // Seat-specific wording where the generic note would name the wrong position.
-function seatNote(action, category, spot) {
+function seatNote(action: string, category: string, spot: TrainerSpot | null) {
   if (!spot) return null;
   const earlyOpen = spot.kind === "open" && ["UTG", "HJ"].includes(spot.hero);
   if (action === "call" && ["suited_other", "offsuit_ace", "offsuit_other"].includes(category)) {
@@ -232,7 +235,7 @@ function seatNote(action, category, spot) {
   return null;
 }
 
-export function studyNote(action, hand, spot = null) {
+export function studyNote(action: string, hand: string, spot: TrainerSpot | null = null) {
   const category = handCategory(hand);
   if (productLocale() !== "ja") {
     const family = {
@@ -250,18 +253,18 @@ export function studyNote(action, hand, spot = null) {
 }
 
 // Same hand across related spots: other positions for opens, other openers for responses.
-export function compareAcross(spot, hand) {
+export function compareAcross(spot: TrainerSpot, hand: string) {
   const related = spot.kind === "open"
     ? SPOTS.filter(item => item.kind === "open")
     : SPOTS.filter(item => item.kind === "response" && item.hero === spot.hero);
   return related.map(item => ({ spot: item, mix: item.byHand.get(hand), current: item.id === spot.id }));
 }
 
-export function aggregatesFor(spot) {
+export function aggregatesFor(spot: TrainerSpot) {
   return new Map(hands.map(hand => [hand, { hand, comboCount: hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12, actions: spot.byHand.get(hand) ?? {} }]));
 }
 
-export function randomSuits(hand, random = Math.random) {
+export function randomSuits(hand: string, random = Math.random) {
   const suits = ["s", "h", "d", "c"];
   const first = suits[Math.floor(random() * 4)];
   if (hand.length === 2) {

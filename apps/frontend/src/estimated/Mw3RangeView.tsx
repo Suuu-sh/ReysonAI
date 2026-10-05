@@ -4,8 +4,8 @@ import { ActionBars, Panel, SectionHeading, StatusState } from "../components/pr
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { hands } from "../data.ts";
 import { productLocale } from "../i18n.ts";
-import { combosOf } from "../../scripts/lib/equity.mjs";
-import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
+import { combosOf } from "../../scripts/lib/equity.ts";
+import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 import { mw3ActionLabel } from "./mw3-copy.ts";
 import { mw3HandExplanation } from "./mw3-explanation.ts";
 import "./mw3-range.css";
@@ -33,7 +33,7 @@ function matrixModel(participant: any, board: number[]) {
 // Presentation only. A caller must supply a verified mw3DecisionView. Nothing here
 // loads, generates, publishes, or invents a missing strategy or an opponent's action.
 export function Mw3RangeView({ view, settledPotBb = null, displayMode = "standard", locale = productLocale(), onAction, onRewind }: any) {
-  const t = COPY[locale] ?? COPY.en;
+  const t = COPY[locale as keyof typeof COPY] ?? COPY.en;
   const [focus, setFocus] = useState<{ seat: string; hand: string } | null>(null);
   const [comboKey, setComboKey] = useState("all");
   const seats = view.participants.map((part: any) => part.seat).join(",");
@@ -61,12 +61,12 @@ export function Mw3RangeView({ view, settledPotBb = null, displayMode = "standar
     </div>}
     <div className={`mw3-tables${focus ? " has-detail" : ""}`}>
       {view.participants.map((part: any) => part.acting
-        ? <StrategyMatrix key={part.seat} node={part} title={`${part.seat} · ${t.current} · ${t[part.originalRole]}`} ariaLabel={`${part.seat} · ${t.current} · ${t[part.originalRole]}`}
-          aggregates={models[part.seat]} selected={focus?.seat === part.seat ? focus.hand : null} actions={actions} actionLabels={labels}
+        ? <StrategyMatrix key={part.seat} node={part} title={`${part.seat} · ${t.current} · ${t[part.originalRole as "first" | "middle" | "last"]}`} ariaLabel={`${part.seat} · ${t.current} · ${t[part.originalRole as "first" | "middle" | "last"]}`}
+          aggregates={models[part.seat]} selected={focus?.seat === part.seat ? focus!.hand : null} actions={actions} actionLabels={labels}
           simplified={displayMode === "simple"} unreachableReason={t.noReach} onSelect={(hand: string) => select(part.seat, hand)}
           />
         : <Panel key={part.seat} className="matrix-panel mw3-historical" aria-label={`${part.seat} · ${t.reach}`}>
-          <SectionHeading title={`${part.seat} · ${t.reach} · ${t[part.originalRole]}`} />
+          <SectionHeading title={`${part.seat} · ${t.reach} · ${t[part.originalRole as "first" | "middle" | "last"]}`} />
           <div className="matrix-scroll"><div className="matrix">{hands.map(hand => {
             const cell = models[part.seat].get(hand);
             return <button key={hand} type="button" disabled={!cell.comboCount} onClick={() => select(part.seat, hand)} aria-label={cell.unreachable ? `${hand}: ${t.noReach}` : `${hand}: ${t.reach}`}

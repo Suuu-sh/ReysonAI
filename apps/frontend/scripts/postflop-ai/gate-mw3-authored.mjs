@@ -1,5 +1,6 @@
 // Explicit local non-pilot spot gate. This compiles the already-authored Astra source,
 // never invokes an AI, writes source ranges, deploys or imports D1.
+import { mw3CurrentVerificationHash } from './mw3-source-identity.mjs';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseMw3AuthorArgs } from './mw3-author-cli.mjs';
@@ -9,12 +10,11 @@ import { auditMw3AllFlops, auditMw3Board, representativeMw3Runouts } from './mw3
 import { diagnoseMw3JointFold } from './mw3-joint-defence.mjs';
 import { simulateMw3 } from './mw3-simulation.mjs';
 import { validateMw3SimulationReport } from './mw3-simulation-report.mjs';
-import { parseCards } from './model.mjs';
+import { parseCards } from './model.ts';
 import pilot from '../data/postflop-ai-pilot.json' with { type: 'json' };
 const options = parseMw3AuthorArgs(process.argv.slice(2), { gate: true }), args = new Set(options.actions);
 const { author, inputs, contract, policies, recipeSha256, implementationHash } = loadMw3AuthoredContext(options);
-const verificationHash = mw3Sha(Object.fromEntries(['gate-mw3-authored.mjs', 'mw3-author-cli.mjs', 'mw3-authored-source.mjs', 'mw3-audit.mjs', 'mw3-simulation.mjs', 'mw3-simulation-report.mjs', 'flop-isomorphism.mjs', '../data/postflop-ai-pilot.json']
-  .map(path => [path, readFileSync(join(mw3Root, 'scripts/postflop-ai', path), 'utf8')])));
+const verificationHash = mw3CurrentVerificationHash('authored');
 const outDir = join(mw3Root, '.local/postflop-ai/mw3/gates', inputs.spot.slug, `v${author.version}-${inputs.fingerprint.slice(0, 12)}-${implementationHash.slice(0, 12)}-${verificationHash.slice(0, 12)}-${recipeSha256.slice(0, 12)}`);
 mkdirSync(outDir, { recursive: true });
 const identity = { spot: inputs.spot.id, sourceHash: inputs.fingerprint, flopHash: mw3Sha(policies.flop), laterHash: mw3Sha(policies.later),

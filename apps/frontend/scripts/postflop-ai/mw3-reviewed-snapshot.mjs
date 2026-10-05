@@ -3,7 +3,7 @@ import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadMw3Inputs, mw3Sha } from './mw3-inputs.mjs';
-import { MW3_SEMANTIC_SOURCES, mw3Contract, mw3ImplementationHash, verifyMw3Artifact } from './mw3-artifacts.mjs';
+import { mw3Contract, mw3ImplementationHash, verifyMw3Artifact } from './mw3-artifacts.mjs';
 import { MW3_PILOT_AUTHORSHIP } from '../data/mw3-co-btn-bb-authored.mjs';
 import { resolveMw3AuthorIdentity } from './mw3-authored-source.mjs';
 import { currentMw3SourceTree, verifyMw3SourceTree } from './mw3-source-tree.mjs';
@@ -13,6 +13,7 @@ import { MW3_ARTIFACT_PREFIX, MW3_ARCHIVE_LIMITS, MW3_REPORT_NAMES, assertMw3Arc
   mw3ArchiveContentHash, encodeMw3Archive, decodeMw3Archive, readSafeFile, jsonBytes, sha256 } from './mw3-reviewed-archive.mjs';
 export const MW3_REPOSITORY = fileURLToPath(new URL('../../../../', import.meta.url));
 const FRONTEND = 'apps/frontend/';
+import { mw3CompatibilityIdentity, MW3_CURRENT_IDENTITY_PATHS, MW3_COMPATIBILITY_SOURCE_PATHS } from './mw3-source-identity.mjs';
 const inputPaths = ['opening-ranges', 'preflop-ranges', 'multiway-responses'].map(name => `${FRONTEND}src/estimated/${name}.json`).sort();
 const gateFiles = ['mw3-audit.mjs', 'mw3-simulation.mjs', 'mw3-simulation-report.mjs', 'flop-isomorphism.mjs', '../data/postflop-ai-pilot.json'];
 const json = (body, label) => { try { return JSON.parse(body.toString('utf8')); } catch { throw new Error(`Malformed saved Mw3 JSON: ${label}`); } };
@@ -23,7 +24,7 @@ export function currentMw3ArchiveIdentity(spotId) {
     : resolveMw3AuthorIdentity({ spotId, model: 'gpt-6-astra', sourceHash: inputs.fingerprint });
   if (recipe.author.sourceFingerprint !== inputs.fingerprint) throw new Error('Stale Mw3 recipe source');
   const verificationFiles = [...(isPilot ? ['gate-mw3-pilot.mjs'] : ['gate-mw3-authored.mjs', 'mw3-author-cli.mjs', 'mw3-authored-source.mjs']), ...gateFiles];
-  const verificationHash = mw3Sha(Object.fromEntries(verificationFiles.map(path => [path, readFileSync(join(MW3_REPOSITORY, FRONTEND, 'scripts/postflop-ai', path), 'utf8')])));
+  const verificationHash = mw3CompatibilityIdentity(isPilot ? 'pilot' : 'authored').historicalHash;
   const suffix = `v${recipe.author.version}-${inputs.fingerprint.slice(0, 12)}-${implementationHash.slice(0, 12)}-${verificationHash.slice(0, 12)}`;
   const gateDirectory = isPilot ? `${MW3_ARTIFACT_PREFIX}pilot-gate/${suffix}` : `${MW3_ARTIFACT_PREFIX}gates/${inputs.spot.slug}/${suffix}-${recipe.recipeSha256.slice(0, 12)}`;
   return { ...recipe, inputs, implementationHash, verificationHash, gateDirectory,
@@ -35,7 +36,12 @@ function sourcePathsFor(identity) {
     if (!safeRelativePath(path) || path.includes('/.local/') || path.includes('/node_modules/')) throw new Error('Mw3 source dependency escaped repository source');
     if (found.has(path) || inputPaths.includes(path)) return;
     assertSafeFile(MW3_REPOSITORY, path); found.add(path);
-    if (!/\.(?:mjs|ts|tsx|js)$/.test(path)) return;
+    // Declaration files are provenance only, but their type dependencies are bound.
+    if (path.endsWith('.mjs')) {
+      const declaration = path.slice(0, -4) + '.d.mts';
+      if (existsSync(join(MW3_REPOSITORY, declaration))) visit(declaration);
+    }
+    if (!/\.(?:mjs|ts|tsx|js|d\.mts)$/.test(path)) return;
     const text = readSafeFile(MW3_REPOSITORY, path).toString('utf8');
     const imports = /(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']|\bimport\s*\(\s*["']([^"']+)["']\s*\)/g;
     for (const match of text.matchAll(imports)) {
@@ -43,7 +49,8 @@ function sourcePathsFor(identity) {
       if (name.startsWith('.')) visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, dirname(path), name)));
     }
   };
-  const roots = [...MW3_SEMANTIC_SOURCES, ...identity.verificationFiles,
+  [...MW3_CURRENT_IDENTITY_PATHS, ...MW3_COMPATIBILITY_SOURCE_PATHS].forEach(visit);
+  const roots = [
     'mw3-reviewed-archive.mjs', 'mw3-reviewed-snapshot.mjs', 'mw3-reviewed-delivery.mjs', 'mw3-reviewed-restore.mjs', 'mw3-snapshot-cli.mjs', 'mw3-draft-pins.mjs', 'mw3-acceptance-evidence.mjs', 'mw3-browser-inputs.mjs', 'mw3-transport.mjs', 'mw3-delivery.mjs'];
   roots.forEach(name => visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, FRONTEND, 'scripts/postflop-ai', name))));
   identity.sourceFiles.forEach(path => visit(FRONTEND + path));

@@ -4,7 +4,7 @@ import { loadMw3Catalog } from '../scripts/postflop-ai/mw3-inputs.mjs';
 import { mw3Decision, replayMw3 } from '../scripts/postflop-ai/mw3-engine.mjs';
 import { describeMw3Node, probeMw3Hand } from '../scripts/postflop-ai/mw3-tree.mjs';
 import { mw3AnySelector, mw3PolicyMix, selectMw3Rule, validateMw3Policy } from '../scripts/postflop-ai/mw3-policy.mjs';
-import { parseCards } from '../scripts/postflop-ai/model.mjs';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
 import { MW3_TIERS as TIERS } from '../scripts/postflop-ai/mw3-hand-features.mjs';
 const spot = loadMw3Catalog()[0], probe = probeMw3Hand(spot), board = parseCards('As7d2c', 3), hole = parseCards('KhQd', 2);
 // Test fixture only: never saved, registered, published or used as a runtime reference.

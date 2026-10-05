@@ -4,7 +4,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { isDeepStrictEqual } from 'node:util';
 import { allBoardIdentity, writeImmutableAllBoardOutput } from './all-board-checkpoints.mjs';
 import { buildAllBoardCompanion, companionPathFor, summaryPathFor } from './all-board-companion.mjs';
-import { canonicalFlops } from './flop-isomorphism.mjs';
+import { canonicalFlops } from './flop-isomorphism.ts';
 import { loadInputs } from './inputs.mjs';
 import { loadCandidate, loadLaterCandidate } from './generate.mjs';
 import { ARTIFACT_PREFIX, assertSafeFile, readSafeFile, sha256 } from './reviewed-postflop-archive.mjs';

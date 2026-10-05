@@ -1,9 +1,11 @@
+import type { HandFeatures } from "../../scripts/postflop-ai/hand-features.ts";
+import type { DefenceFacts, ExplanationFacts } from "./postflop-facts.ts";
 // Structured, fact-led postflop explanations. This module is pure: callers supply the selected
 // locale, policy mix, board classifier and computed defence facts. It never states an EV: the strategy is the answer.
 
 import { actionForCopy } from "./postflop-action-copy.ts";
-import { roleFromFeatures } from "../../scripts/postflop-ai/hand-role.mjs";
-import { featuresFromText } from "../../scripts/postflop-ai/hand-features.mjs";
+import { roleFromFeatures } from "../../scripts/postflop-ai/hand-role.ts";
+import { featuresFromText } from "../../scripts/postflop-ai/hand-features.ts";
 
 export type ExplanationLocale = "en" | "ja";
 type NumericMap = Record<string, number | undefined>;
@@ -15,7 +17,7 @@ type ExplanationInput = {
   actionMix: NumericMap;
   tiers?: NumericMap;
   texture?: string;
-  explain?: any;
+  explain?: ExplanationFacts | null;
   positions?: { ip?: string; oop?: string };
   // Optional concrete cards ("As4s" on "6h5h2d"): when present the role comes from the hand's features.
   board?: string;
@@ -102,8 +104,8 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
   const faced = facingDescription(node, opponent, locale, explain);
   const equity = fraction(facts.equity), realized = fraction(facts.realized_equity);
   const required = fraction(facts.required_equity);
-  const potToWin = Math.max(0, facts.pot_before_bb + facts.bet_bb - facts.rake_bb);
-  const top = Math.max(0, Math.min(100, 100 - (facts.percentile ?? 0) * 100));
+  const potToWin = Math.max(0, facts.pot_before_bb! + facts.bet_bb! - facts.rake_bb!);
+  const top = Math.max(0, Math.min(100, 100 - (facts.percentile! ?? 0) * 100));
   const bettorRange = facts.bettor_range ?? {};
   const facedAction = facts.faced_action;
   const observableCap = Array.isArray(facedAction?.aliases) || typeof facedAction?.wasReduced === "boolean";
@@ -120,8 +122,8 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
     {
       label: english ? "Pot odds" : "ポットオッズ",
       value: english
-        ? `Call ${bb(facts.call_bb)} to win ${bb(potToWin)} → need ${pct(required)} (rake included)`
-        : `${bb(facts.call_bb)}をコールして${bb(potToWin)}を獲得 → 必要勝率${pct(required)}（レーキ込み）`,
+        ? `Call ${bb(facts.call_bb!)} to win ${bb(potToWin)} → need ${pct(required)} (rake included)`
+        : `${bb(facts.call_bb!)}をコールして${bb(potToWin)}を獲得 → 必要勝率${pct(required)}（レーキ込み）`,
       tooltip: english ? "The call's break-even equity after the configured rake." : "設定されたレーキを差し引いたあと、コールが損益分岐になる勝率です。",
     },
     {
@@ -131,7 +133,7 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
     },
     {
       label: english ? "Realized equity" : "実現勝率",
-      value: english ? `${pct(equity)} × ${facts.realization.toFixed(2)} = ${pct(realized)}` : `${pct(equity)} × ${facts.realization.toFixed(2)} = ${pct(realized)}`,
+      value: english ? `${pct(equity)} × ${facts.realization!.toFixed(2)} = ${pct(realized)}` : `${pct(equity)} × ${facts.realization!.toFixed(2)} = ${pct(realized)}`,
       tooltip: facts.street === "river"
         ? (english ? "River equity is exact; no future street remains." : "リバーは残りのカードがないため、勝率をそのまま使います。")
         : (english ? `The ${facts.street} estimate discounts equity by the ${tier} realization factor for this position.` : `${facts.street === "flop" ? "フロップ" : "ターン"}では、${tier}の手が後のストリートまで勝率を保てる度合いを係数で見積もります。`),
@@ -143,14 +145,14 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
     },
     {
       label: english ? "Range defence" : "レンジ全体の守り",
-      value: english ? `Continues ${pct(fraction(facts.defence_frequency))} vs MDF ${pct(fraction(facts.mdf))}` : `続行${pct(fraction(facts.defence_frequency))}／MDF ${pct(fraction(facts.mdf))}`,
+      value: english ? `Continues ${pct(fraction(facts.defence_frequency!))} vs MDF ${pct(fraction(facts.mdf!))}` : `続行${pct(fraction(facts.defence_frequency!))}／MDF ${pct(fraction(facts.mdf!))}`,
       tooltip: english ? "Continue includes calls and raises. MDF is the minimum share that prevents any two cards from profiting immediately." : "続行率にはコールとレイズを含みます。MDFは、相手がどんな2枚でもすぐ利益を出せないように最低限守る割合です。",
     },
     {
       label: english ? "Bettor range" : "ベット側の内訳",
       value: english
-        ? `${pctNumber(bettorRange.value_pct ?? 0)} value / ${pctNumber(bettorRange.bluff_pct ?? 0)} bluffs${facedAction?.capped && !observableCap ? ` · bluff share capped at ${pct(fraction(facedAction.alpha))}` : ""}`
-        : `バリュー${pctNumber(bettorRange.value_pct ?? 0)}／ブラフ${pctNumber(bettorRange.bluff_pct ?? 0)}${facedAction?.capped && !observableCap ? ` · ブラフ比率は損益分岐の${pct(fraction(facedAction.alpha))}に制限` : ""}`,
+        ? `${pctNumber(bettorRange.value_pct ?? 0)} value / ${pctNumber(bettorRange.bluff_pct ?? 0)} bluffs${facedAction?.capped && !observableCap ? ` · bluff share capped at ${pct(fraction(facedAction!.alpha!))}` : ""}`
+        : `バリュー${pctNumber(bettorRange.value_pct ?? 0)}／ブラフ${pctNumber(bettorRange.bluff_pct ?? 0)}${facedAction?.capped && !observableCap ? ` · ブラフ比率は損益分岐の${pct(fraction(facedAction!.alpha!))}に制限` : ""}`,
       tooltip: english ? "Value hands have at least 50% equity against your whole range; the rest are classified as bluffs." : "自分のレンジ全体に対して勝率50%以上の手をバリュー、それ以外をブラフとして数えています。",
     },
     {
@@ -160,31 +162,31 @@ function makeFacing({ locale, node, positions, hand, tiers, explain }: Explanati
     },
   ];
   if (observableCap) {
-    const capShare = facedAction.bluff_share_after_pct;
+    const capShare = facedAction!.bluff_share_after_pct;
     if (Number.isFinite(capShare)) rows[5].value += english
-      ? ` · pooled bluff share ${pctNumber(capShare)} after component caps`
-      : ` · 個別上限の適用後、統合したブラフ比率${pctNumber(capShare)}`;
+      ? ` · pooled bluff share ${pctNumber(capShare!)} after component caps`
+      : ` · 個別上限の適用後、統合したブラフ比率${pctNumber(capShare!)}`;
     // A reduced component does not imply that the pooled action saturates its cap.
-    if (facedAction.wasReduced ?? facedAction.capped) rows[5].tooltip += english
+    if (facedAction!.wasReduced ?? facedAction!.capped) rows[5].tooltip += english
       ? " Component caps reduced bluff weight before equivalent actions were pooled."
       : " 同じ結果になるアクションを統合する前に、個別の上限によってブラフの重みが減りました。";
-    else if (facedAction.wasReduced === false) rows[5].tooltip += english
+    else if ((facedAction!.wasReduced as boolean | null | undefined) === false) rows[5].tooltip += english
       ? " No component cap reduced bluff weight; the pooled share reflects the saved mix."
       : " 個別の上限によるブラフの削減はなく、統合後の比率は保存された配分を反映しています。";
-    if (Number.isFinite(facedAction.alpha)) rows[5].tooltip += english
-      ? ` The pooled share can remain below the caller's break-even α (${pct(facedAction.alpha)}).`
-      : ` 統合後の比率は、コール側の損益分岐α（${pct(facedAction.alpha)}）を下回ることがあります。`;
+    if (Number.isFinite(facedAction!.alpha)) rows[5].tooltip += english
+      ? ` The pooled share can remain below the caller's break-even α (${pct(facedAction!.alpha!)}).`
+      : ` 統合後の比率は、コール側の損益分岐α（${pct(facedAction!.alpha!)}）を下回ることがあります。`;
   } else if (facts.faced_action?.capped) {
-    const capShare = facts.faced_action.bluff_share_after_pct;
+    const capShare = facts.faced_action!.bluff_share_after_pct;
     rows[5].tooltip += english
-      ? ` This action's bluff share is held at the caller's break-even α (${pct(facts.faced_action.alpha)}).`
-      : ` このアクションのブラフ比率は、コール側の損益分岐α（${pct(facts.faced_action.alpha)}）に抑えられています。`;
-    if (Number.isFinite(capShare)) rows[5].value += english ? ` (${pctNumber(capShare)} after cap)` : `（制限後${pctNumber(capShare)}）`;
+      ? ` This action's bluff share is held at the caller's break-even α (${pct(facts.faced_action!.alpha!)}).`
+      : ` このアクションのブラフ比率は、コール側の損益分岐α（${pct(facts.faced_action!.alpha!)}）に抑えられています。`;
+    if (Number.isFinite(capShare)) rows[5].value += english ? ` (${pctNumber(capShare!)} after cap)` : `（制限後${pctNumber(capShare!)}）`;
   }
   return { title: english ? "Facing this bet" : "このベットへの対応", rows };
 }
 
-export function handRole(equity: number, tiers: NumericMap | undefined, main: string, features?: any) {
+export function handRole(equity: number, tiers: NumericMap | undefined, main: string, features?: HandFeatures | null) {
   if (features) return roleFromFeatures(features, { action: main, equity }).role;
   const tier = Object.entries(tiers ?? {}).sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))[0]?.[0] ?? "air";
   if (!isAggressive(main)) return "pot-control";
@@ -199,7 +201,7 @@ function bettingCopy({ locale, role, main, equity, tiers }: {
   locale: ExplanationLocale; role: string; main: string; equity: number; tiers?: NumericMap;
 }) {
   const english = locale === "en", handTier = tierDescription(tiers, "hand", locale);
-  const text = {
+  const text: Record<string, string> = {
     value: english ? `This hand has ${pct(equity)} equity against the defender's range, supporting a value bet.` : `この手は相手レンジに対して勝率${pct(equity)}で、バリューベットを支える強さです。`,
     bluff: english ? `This hand has ${pct(equity)} equity against the defender's range; this ${actionLabel(main, locale).toLowerCase()} relies on fold equity.` : `この手の相手レンジへの勝率は${pct(equity)}です。この${actionLabel(main, locale)}はフォールドを引き出す狙いです。`,
     "semi-bluff": english ? `This draw has ${pct(equity)} equity against the defender's range; betting wins when they fold and still has outs when called.` : `このドローは相手レンジに対して勝率${pct(equity)}です。ベットで相手を降ろせるうえ、コールされても完成の可能性が残るセミブラフです。`,
@@ -234,15 +236,15 @@ function textureSentence(texture: string | undefined, locale: ExplanationLocale)
   } as Record<string, string>)[texture ?? ""];
 }
 
-function rangeBudgetFoldReason(facts: any, locale: ExplanationLocale): string | undefined {
-  if (!facts?.faced_action?.capped || !Number.isFinite(facts.defence_frequency) || !Number.isFinite(facts.mdf) ||
-      facts.defence_frequency > facts.mdf + 0.01 || !Number.isFinite(facts.percentile)) return undefined;
-  const top = Math.max(0, Math.min(100, 100 - facts.percentile * 100));
-  const continueShare = Math.max(0, Math.min(100, facts.defence_frequency * 100));
+function rangeBudgetFoldReason(facts: DefenceFacts | null | undefined, locale: ExplanationLocale): string | undefined {
+  if (!facts?.faced_action?.capped || !Number.isFinite(facts.defence_frequency!) || !Number.isFinite(facts.mdf!) ||
+      facts.defence_frequency! > facts.mdf! + 0.01 || !Number.isFinite(facts.percentile!)) return undefined;
+  const top = Math.max(0, Math.min(100, 100 - facts.percentile! * 100));
+  const continueShare = Math.max(0, Math.min(100, facts.defence_frequency! * 100));
   if (top <= continueShare + 1) return undefined;
   return locale === "en"
-    ? `The capped range continues only ${pct(facts.defence_frequency)}; this combo ranks in the top ${pctNumber(top)}, outside the top ${pctNumber(continueShare)} continuation budget.`
-    : `ブラフ上限を適用したレンジの続行は${pct(facts.defence_frequency)}までです。このコンボは上位${pctNumber(top)}に位置し、続行枠の上位${pctNumber(continueShare)}には届きません。`;
+    ? `The capped range continues only ${pct(facts.defence_frequency!)}; this combo ranks in the top ${pctNumber(top)}, outside the top ${pctNumber(continueShare)} continuation budget.`
+    : `ブラフ上限を適用したレンジの続行は${pct(facts.defence_frequency!)}までです。このコンボは上位${pctNumber(top)}に位置し、続行枠の上位${pctNumber(continueShare)}には届きません。`;
 }
 
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
@@ -307,7 +309,7 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
   const opponent = input.positions?.[actingRoleKey === "ip" ? "oop" : "ip"] ?? (english ? "the opponent" : "相手");
   const classStrength = tierDescription(tiers, hand, locale);
   const rawEquity = fraction(facingFacts?.equity ?? explain?.equity ?? 0);
-  let cardFeatures: any;
+  let cardFeatures: HandFeatures | undefined;
   if (input.board && input.cards) { try { cardFeatures = featuresFromText(input.cards, input.board); } catch { cardFeatures = undefined; } }
   let mainReason: string;
   let mixRationale: string | undefined;
@@ -383,7 +385,7 @@ export function buildPostflopExplanation(input: ExplanationInput): StructuredPos
   const bettingDecision = Object.keys(actionMix).some(isAggressive);
   if (bettingDecision) {
     const roleEquity = fraction(explain?.betting?.equity_vs_defender ?? rawEquity);
-    const roleNames = locale === "en"
+    const roleNames: Record<string, string> = locale === "en"
       ? { value: "Value", "semi-bluff": "Semi-bluff", bluff: "Bluff", protection: "Protection", "pot-control": "Pot control" }
       : { value: "バリュー", "semi-bluff": "セミブラフ", bluff: "ブラフ", protection: "プロテクション", "pot-control": "ポットコントロール" };
     const mainSize = selected.find(([action]) => isAggressive(action))?.[0] ?? main;
