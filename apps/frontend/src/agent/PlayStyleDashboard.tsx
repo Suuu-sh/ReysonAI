@@ -31,7 +31,7 @@ function StatRow({ row }: { row: Row }) {
 // Every style's character, the current one lit.
 const ROSTER: StyleId[] = ["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"];
 function StyleRoster({ current }: { current: StyleId }) {
-  return <ol className="style-roster" aria-label={localized("Play styles", "プレイスタイル一覧")}>
+  return <ol className="style-roster style-roster-compact" aria-label={localized("Play styles", "プレイスタイル一覧")}>
     {ROSTER.map(id => { const style = STYLES[id], on = id === current;
       return <li key={id} className={on ? "is-current" : ""} aria-current={on ? "true" : undefined} title={text(style.summary)} style={{ "--style": style.color } as CSSProperties}>
         <StyleAvatar id={id} color={style.color} size={40} dim={!on} />
@@ -107,18 +107,19 @@ export function PlayStyleDashboard({ read, onClose }: { read: PlayerRead; onClos
     <div className="style-window" aria-hidden="true"><i style={{ width: `${Math.min(100, read.hands / READ_WINDOW * 100)}%` }} /></div>
 
     <div className="style-dash-top">
-      <div className="style-label" style={{ "--style": read.style.color } as CSSProperties}>
-        <StyleAvatar id={read.style.id} color={read.style.color} size={76} />
-        <div>
-          <span>{localized("Style", "スタイル")} · {text(read.style.mascot)}</span>
-          <strong>{text(read.style.name)}</strong>
-          <p>{text(read.style.summary)}</p>
+      <div className="style-dash-summary">
+        <div className="style-label" style={{ "--style": read.style.color } as CSSProperties}>
+          <StyleAvatar id={read.style.id} color={read.style.color} size={76} />
+          <div>
+            <span>{localized("Style", "スタイル")} · {text(read.style.mascot)}</span>
+            <strong>{text(read.style.name)}</strong>
+            <p>{text(read.style.summary)}</p>
+          </div>
         </div>
+        <StyleRoster current={read.style.id} />
       </div>
       <StyleMap read={read} />
     </div>
-
-    <StyleRoster current={read.style.id} />
 
     <ul className="style-rows">{rows.map(row => <StatRow key={row.key} row={row} />)}</ul>
 

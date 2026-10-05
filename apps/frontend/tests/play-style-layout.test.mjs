@@ -1,0 +1,40 @@
+import assert from "node:assert/strict";
+import { after, before, test } from "node:test";
+import { fileURLToPath } from "node:url";
+import { readFile } from "node:fs/promises";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { JSDOM } from "jsdom";
+import { createServer } from "vite";
+
+let server, PlayStyleDashboard, playerRead, STYLES;
+const previousWindow = globalThis.window;
+before(async () => {
+  server = await createServer({ configFile: false, optimizeDeps: { noDiscovery: true }, root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
+  ({ PlayStyleDashboard } = await server.ssrLoadModule("/src/agent/PlayStyleDashboard.tsx"));
+  ({ playerRead, STYLES } = await server.ssrLoadModule("/src/agent/player-read.ts"));
+});
+after(async () => { globalThis.window = previousWindow; await server?.close(); });
+
+for (const locale of ["en", "ja", "zh-CN", "es"]) {
+  test(`style introductions stay under the selected card in ${locale}`, () => {
+    globalThis.window = { localStorage: { getItem: () => locale } };
+    const read = { ...playerRead([]), style: STYLES.lag, map: { x: .6, y: .3 } };
+    const doc = new JSDOM(renderToStaticMarkup(createElement(PlayStyleDashboard, { read }))).window.document;
+    const summary = doc.querySelector(".style-dash-summary");
+    assert.equal(summary.children[0].className, "style-label");
+    assert.equal(summary.querySelectorAll(".style-roster-compact li").length, 8);
+    assert.equal(summary.querySelectorAll('li[aria-current="true"]').length, 1);
+    assert.ok([...summary.querySelectorAll("li")].every(li => li.title && li.textContent.trim()));
+    assert.equal(summary.nextElementSibling.className, "style-map");
+    assert.ok(doc.querySelector(".style-map-point"));
+    assert.equal(doc.querySelectorAll(".style-row").length, 8);
+  });
+}
+
+test("axis width stays bounded and the compact roster does not restyle the drill roster", async () => {
+  const css = await readFile(new URL("../src/agent/agent.css", import.meta.url), "utf8");
+  assert.match(css, /\.style-map \{ grid-template-columns: 36px minmax\(0, 1fr\)/);
+  assert.match(css, /\.style-map-y \{ min-width: 0; overflow-wrap: anywhere;/);
+  assert.match(css, /\.style-roster-compact \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/);
+});

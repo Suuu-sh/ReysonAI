@@ -297,6 +297,9 @@
 .style-window { height: 3px; overflow: hidden; border-radius: 2px; background: var(--surface-hover); }
 .style-window i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #4fd1ff); }
 .style-dash-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); align-items: start; gap: 14px; }
+.style-dash-summary { display: grid; gap: 10px; min-width: 0; }
+.style-roster-compact { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.style-roster-compact li { min-width: 0; overflow-wrap: anywhere; }
 .style-label { display: grid; grid-template-columns: auto 1fr; align-content: start; align-items: start; gap: 12px; padding: 14px; border: 1px solid color-mix(in srgb, var(--style) 30%, var(--line)); border-radius: 12px; background: radial-gradient(circle at 14% 20%, color-mix(in srgb, var(--style) 14%, transparent), transparent 60%), var(--surface); }
 .style-label > div { display: grid; gap: 4px; min-width: 0; }
 .style-label .style-unit { filter: drop-shadow(0 0 14px color-mix(in srgb, var(--style) 40%, transparent)); }
@@ -371,7 +374,7 @@
 .style-map-center, .style-map-point { z-index: 1; }
 
 /* Vertical axis: aggression (PFR / VPIP), labelled along the map's left edge. */
-.style-map { grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; }
+.style-map { grid-template-columns: 36px minmax(0, 1fr); column-gap: 5px; }
 .style-map figcaption { grid-column: 2; }
-.style-map-y { display: flex; flex-direction: column; justify-content: space-between; padding: 6px 0; color: var(--text-subtle); font-size: 9px; font-weight: 700; line-height: 1.4; text-align: center; }
+.style-map-y { min-width: 0; overflow-wrap: anywhere; display: flex; flex-direction: column; justify-content: space-between; padding: 6px 0; color: var(--text-subtle); font-size: 8px; font-weight: 700; line-height: 1.4; text-align: center; }
 .style-map-y small { font-size: 8px; font-weight: 500; }
