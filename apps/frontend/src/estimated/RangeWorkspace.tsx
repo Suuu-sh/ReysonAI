@@ -31,6 +31,7 @@ import {
   validateDataset,
 } from "./ranges.ts";
 import { ArrowCounterClockwise, CaretDown, DotsThreeVertical, GearSix } from "@phosphor-icons/react";
+import { RangeContextCard } from "./RangeContextCard.tsx";
 import { GameFormatDialog } from "./GameFormatDialog.tsx";
 import { Mw3PostflopTrial, useMw3RangeSession } from "./Mw3PostflopTrial.tsx";
 import { mw3DeliveryClient } from "./mw3-browser.ts";
@@ -924,20 +925,23 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
     <main>
       <Panel className="estimate-settings">
         <ActionPath
-          leading={<div className={`action-seat action-seat-info${settingsOpen ? " is-open" : ""}`}>
+          leading={<RangeContextCard postflop={flopActive} settingsOpen={settingsOpen}
+            boards={combinedBlocks.filter(block => block.kind === "board")}
+            onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed) : setStreetCardDialog(postflopAllowed ? street : null)}
+            onReset={resetPath}
+            displayModeControl={<div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>}>
             <button type="button" className="settings-toggle" aria-label="ゲーム設定を開閉" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><DotsThreeVertical size={16} weight="bold" aria-hidden="true" /><strong>{formatLabel("game", format.game)}</strong><span>{formatLabel("stack", format.stack)}</span></button>
             {settingsOpen && <button type="button" className="settings-backdrop" aria-label="閉じる" onClick={() => setSettingsOpen(false)} />}
             <div className="settings-body">
               <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {formatLabel("rake", format.rake)}</li></ul>
               <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
               <div className="settings-actions">
-                {/* Table conditions sit in a chip (full text on hover) so the card never grows taller. */}
-                {!isDefaultProfile(tableProfile) && <button type="button" className="table-profile-chip" title={`卓: ${describeProfile(tableProfile)}`} aria-label={`卓の傾向: ${describeProfile(tableProfile)}`} onClick={() => setFormatOpen(true)}>卓</button>}
-                <button type="button" className="format-edit settings-icon-button" aria-label="ゲーム設定を変更" title="ゲーム設定を変更" onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" /></button>
+                {/* Non-default table conditions show as a dot on the settings button (full text in its tooltip), so the card keeps its size. */}
+                <button type="button" className={`format-edit settings-icon-button${isDefaultProfile(tableProfile) ? "" : " has-table-profile"}`} aria-label={isDefaultProfile(tableProfile) ? "ゲーム設定を変更" : `ゲーム設定を変更（卓: ${describeProfile(tableProfile)}）`} title={isDefaultProfile(tableProfile) ? "ゲーム設定を変更" : `卓: ${describeProfile(tableProfile)}`} onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" /></button>
                 <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
               </div>
             </div>
-          </div>}
+          </RangeContextCard>}
           expanded
           blocks={combinedBlocks}
           selectedRangeBlock={selectedRangeBlock}

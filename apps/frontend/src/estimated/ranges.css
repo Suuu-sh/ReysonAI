@@ -198,8 +198,6 @@
 .matrix button.adjusted-add::after { border: 2px solid var(--accent-bright); }
 .matrix button.adjusted-drop::after { border: 2px dashed var(--text-muted); }
 .adjustment-reason { margin: 0 0 8px; padding: 8px 10px; border-radius: 6px; background: var(--surface-accent); font-size: 13px; line-height: 1.5; }
-.table-profile-chip { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 999px; background: var(--surface-accent); color: var(--accent-bright); font-size: 11px; font-weight: 700; cursor: pointer; }
-.table-profile-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 .reason-facts dd.fact-positive { color: #6fd08c; }
 .reason-facts dd.fact-negative { color: #ff8a9a; }
 .postflop-board-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; }
@@ -411,3 +409,30 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .postflop-gate-main .learning-gate-card { gap: 10px; padding: 24px 24px 16px; }
 .postflop-gate-main .learning-gate-features li { padding: 6px 10px; }
 @media (max-height: 640px) { .postflop-gate-main .learning-gate-fine, .postflop-gate-main .learning-gate-features small { display: none; } }
+.settings-icon-button.has-table-profile { position: relative; border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong)); color: var(--accent-bright); }
+.settings-icon-button.has-table-profile::after { content: ""; position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; border: 2px solid var(--surface-raised); border-radius: 50%; background: var(--accent); }
+
+/* Board/settings stay one click apart in the leading postflop card. */
+.range-context-switch { display: flex; gap: 3px; }
+.range-context-switch button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 4px 5px; border: 0; border-radius: 5px; background: transparent; color: var(--text-muted); font: inherit; font-size: 11px; cursor: pointer; }
+.range-context-switch button[aria-pressed="true"] { background: var(--surface-hover); color: var(--text); }
+.range-context-switch button:focus-visible, .range-context-street:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.has-context-switch .settings-body .settings-actions { position: static; margin-left: auto; }
+.range-context-board { display: flex; align-items: center; gap: 4px; margin: auto 0; }
+.range-context-street { display: inline-flex; gap: 3px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.range-context-street .postflop-card { min-width: 27px; height: 36px; padding: 0 2px; font-size: 14px; }
+.range-context-street:hover .postflop-card { box-shadow: 0 0 0 1px var(--accent); }
+.range-context-board-footer { display: flex; align-items: center; gap: 5px; }
+.range-context-board-footer .display-mode-toggle { flex: 1; }
+.range-context-board-footer .settings-icon-button { width: 24px; height: 24px; flex: 0 0 24px; }
+@media (max-width: 760px) {
+  .action-seat-info.has-context-switch { flex-direction: row; align-items: center; gap: 6px; padding: 4px 6px; }
+  .range-context-switch { flex-direction: column; gap: 1px; }
+  .range-context-switch button { min-height: 28px; padding: 2px 5px; font-size: 10px; }
+  .range-context-street .postflop-card { min-width: 25px; height: 34px; font-size: 13px; }
+  .range-context-board-footer { flex-direction: column; }
+  .range-context-board-footer .display-mode-toggle { display: none; }
+  .has-context-switch .settings-toggle { height: auto; }
+  .action-seat-info.has-context-switch.is-open .settings-body { position: static; width: auto; padding: 0; border: 0; box-shadow: none; }
+  .action-seat-info.has-context-switch.is-open .settings-backdrop { display: none; }
+}

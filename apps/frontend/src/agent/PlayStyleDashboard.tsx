@@ -40,15 +40,31 @@ function StyleRoster({ current }: { current: StyleId }) {
   </ol>;
 }
 
+// Style zones on the map, in percent. They mirror classifyPlayer in player-read.ts: x = looseness / 0.2
+// (tight < -0.06, nit < -0.12, loose > 0.06) and y = aggression / 0.35 (passive < -0.15, aggressive > 0.15),
+// placed at 50 + v * 44 like the player's point.
+const ZX = { nit: 23.6, tight: 36.8, loose: 63.2 }, ZY = { aggressive: 31.1, passive: 68.9 };
+const MAP_ZONES: { id: StyleId; x: [number, number]; y: [number, number] }[] = [
+  { id: "nit", x: [0, ZX.nit], y: [0, 100] },
+  { id: "tag", x: [ZX.nit, ZX.tight], y: [0, ZY.passive] },
+  { id: "tight_passive", x: [ZX.nit, ZX.tight], y: [ZY.passive, 100] },
+  { id: "aggressive", x: [ZX.tight, ZX.loose], y: [0, ZY.aggressive] },
+  { id: "balanced", x: [ZX.tight, ZX.loose], y: [ZY.aggressive, ZY.passive] },
+  { id: "passive", x: [ZX.tight, ZX.loose], y: [ZY.passive, 100] },
+  { id: "lag", x: [ZX.loose, 100], y: [0, ZY.passive] },
+  { id: "station", x: [ZX.loose, 100], y: [ZY.passive, 100] },
+];
+
 // Style map: the centre is the agents' balanced play.
 function StyleMap({ read }: { read: PlayerRead }) {
   const point = read.map;
   return <figure className="style-map" aria-label={point ? localized(`Style map: ${text(read.style.name)}`, `スタイルマップ：${text(read.style.name)}`) : localized("Style map (collecting hands)", "スタイルマップ（集計中）")}>
     <div className="style-map-grid">
-      <span className="q tl">{localized("Tight · aggressive", "タイト・アグレッシブ")}</span>
-      <span className="q tr">{localized("Loose · aggressive", "ルース・アグレッシブ")}</span>
-      <span className="q bl">{localized("Tight · passive", "タイト・パッシブ")}</span>
-      <span className="q br">{localized("Loose · passive", "ルース・パッシブ")}</span>
+      {MAP_ZONES.map(zone => { const style = STYLES[zone.id], on = zone.id === read.style.id;
+        return <span key={zone.id} className={`style-zone${on ? " is-current" : ""}`} title={text(style.summary)}
+          style={{ left: `${zone.x[0]}%`, width: `${zone.x[1] - zone.x[0]}%`, top: `${zone.y[0]}%`, height: `${zone.y[1] - zone.y[0]}%`, "--style": style.color } as CSSProperties}>
+          {!on && <StyleAvatar id={zone.id} color={style.color} size={22} dim />}<small>{text(style.name)}</small>
+        </span>; })}
       <span className="style-map-center" title={localized("Agent baseline", "Agent基準")} />
       {point && <span className="style-map-point" style={{ left: `${50 + point.x * 44}%`, top: `${50 - point.y * 44}%`, "--style": read.style.color } as CSSProperties}>
         <StyleAvatar id={read.style.id} color={read.style.color} size={28} />
