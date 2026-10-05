@@ -1,5 +1,6 @@
 import test, { after } from 'node:test';
 import { writeFileSync, unlinkSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
@@ -7,10 +8,10 @@ import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { renderToStaticMarkup } from 'react-dom/server';
-const result=await build({stdin:{contents:'export * from "./src/agent/PokerTable.tsx"; export {OpponentProfile} from "./src/agent/OpponentProfile.tsx"; export {AgentTablePage} from "./src/agent/AgentTable.tsx";',resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,platform:'node',format:'esm',external:['react'],jsx:'automatic',loader:{'.css':'empty','.png':'dataurl','.webp':'dataurl'},define:{'import.meta.url':JSON.stringify(new URL('../src/estimated/datasets.ts',import.meta.url).href)}});
+const result=await build({stdin:{contents:'export * from "./src/agent/PokerTable.tsx"; export * from "./src/agent/GameplayDetails.tsx"; export {OpponentProfile} from "./src/agent/OpponentProfile.tsx"; export {AgentTablePage} from "./src/agent/AgentTable.tsx";',resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,platform:'node',format:'esm',external:['react'],jsx:'automatic',loader:{'.css':'empty','.png':'dataurl','.webp':'dataurl'},define:{'import.meta.url':JSON.stringify(new URL('../src/estimated/datasets.ts',import.meta.url).href)}});
 const code=result.outputFiles[0].text.replace(/from "(react(?:\/jsx-runtime)?)"/g,(_,name)=>`from "${import.meta.resolve(name)}"`);
 const bundlePath=`/tmp/reyson-poker-table-test-${process.pid}.mjs`;writeFileSync(bundlePath,code);after(()=>unlinkSync(bundlePath));
-const {PokerTable,PokerSeat,PokerChip,PokerActionButton,AgentTablePage,OpponentProfile}=await import(pathToFileURL(bundlePath).href);
+const {PokerTable,PokerSeat,PokerChip,PokerActionButton,AgentTablePage,OpponentProfile,GameplayDetails,GamePanel}=await import(pathToFileURL(bundlePath).href);
 test('shared presentation respects caller visibility, slots, chips and actions',()=>{
   const html=renderToStaticMarkup(React.createElement(PokerTable,{board:['As','Td','4c'],center:'42 bb'},[
     React.createElement(PokerSeat,{key:'seat',slot:4,position:'BTN',cards:['Kh','Qh'],showCards:false,handKey:1,name:'Agent',folded:true,acting:true,won:true,stack:'98 bb',bubble:'Call'}),
@@ -60,4 +61,43 @@ test('waiting Agent holds a reserved hand at completion without saving local his
 test('shared sidebar profile keeps four-language honesty and unavailable samples without modal semantics',()=>{
  const dom=new JSDOM('',{url:'http://localhost'});const oldWindow=globalThis.window;globalThis.window=dom.window;
  try{for(const [locale,caption,close] of [['en','Only server-public samples','Close'],['ja','サーバーの公開サンプル','閉じる'],['zh-CN','仅显示服务器公开样本','关闭'],['es','Solo muestras públicas','Cerrar']]){dom.window.localStorage.setItem('reysonai:locale:v1',locale);const html=renderToStaticMarkup(React.createElement(OpponentProfile,{profile:{name:'Player unchanged',kind:'human',type:'unknown',avatar:null},onClose(){}}));assert.ok(html.includes(caption));assert.ok(html.includes(close));assert.match(html,/role="region"/);assert.doesNotMatch(html,/aria-modal|role="dialog"/);assert.match(html,/Player unchanged/);assert.equal((html.match(/<dd>—<\/dd>/g)??[]).length,3);}}finally{dom.window.close();globalThis.window=oldWindow;}
+});
+
+test("mobile details switch and close without a modal, focus trap or replacing the current actions", async () => {
+ const dom = new JSDOM('<div id="root"></div>', {url:"http://localhost"});
+ const before = {window:globalThis.window, document:globalThis.document};
+ Object.assign(globalThis,{window:dom.window,document:dom.window.document,IS_REACT_ACT_ENVIRONMENT:true});
+ const root = createRoot(dom.window.document.getElementById("root")); let actions=0;
+ const profile = {name:"Public name",kind:"human",type:"Unknown",avatar:null};
+ const render = p => root.render(React.createElement(React.Fragment,null,
+   React.createElement("button",{className:"current-action",onClick:()=>actions++},"Call"),
+   React.createElement(GameplayDetails,{profile:p && React.createElement(OpponentProfile,{profile:p,onClose:()=>render(null)})},
+    React.createElement(GamePanel,{id:"hand",label:"Hand"},"Real current action log"),
+    React.createElement(GamePanel,{id:"rank",label:"Rank"},"All seven tiers remain available"))));
+ try {
+  await act(async()=>render(null)); const action=dom.window.document.querySelector('.current-action');
+  const nav=()=>dom.window.document.querySelector('.game-details-nav');
+  await act(async()=>nav().querySelector('button').click()); assert.equal(dom.window.document.querySelector('.game-details').dataset.open,"hand");
+  assert.equal(nav().querySelector('button').getAttribute('aria-expanded'),"true");
+  await act(async()=>render(profile)); const side=dom.window.document.querySelector('.agent-side');
+  assert.equal(side.firstElementChild.classList.contains('agent-profile-block'),true); assert.equal(side.dataset.open,"profile");
+  assert.equal(dom.window.document.querySelector('[aria-modal=true]'),null); assert.equal(dom.window.document.querySelector('[role=dialog]'),null);
+  await act(async()=>nav().querySelectorAll('button')[2].click()); assert.equal(side.dataset.open,"rank");
+  await act(async()=>render(profile)); assert.equal(side.dataset.open,"rank","ordinary hand updates do not reopen a dismissed profile");
+  const close=dom.window.document.querySelector('.game-details-close'); close.focus();
+  await act(async()=>close.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Escape',bubbles:true})));
+  assert.equal(side.dataset.open,""); assert.equal(dom.window.document.activeElement.textContent,"Rank");
+  await act(async()=>action.click()); assert.equal(actions,1); assert.equal(dom.window.document.querySelector('.current-action'),action);
+  await act(async()=>render({...profile,name:"Other player"})); assert.equal(side.dataset.open,"profile");
+  await act(async()=>dom.window.document.querySelector('.agent-profile-block button').click()); assert.equal(side.dataset.open,"");
+ } finally {await act(async()=>root.unmount());dom.window.close();Object.assign(globalThis,before);delete globalThis.IS_REACT_ACT_ENVIRONMENT;}
+});
+test("fixed mobile gameplay sizing is route-scoped and leaves bottom navigation and optional contained scroll",async()=>{
+ const css=await readFile(new URL('../src/agent/gameplay-mobile.css',import.meta.url),'utf8');
+ assert.match(css,/@media \(max-width: 650px\)/); assert.match(css,/html:has\(\.game-details\)/);
+ assert.match(css,/height: 100dvh/); assert.match(css,/env\(safe-area-inset-top, 0px\)/);
+ assert.match(css,/grid-template-rows: minmax\(0, 1fr\) auto/); assert.match(css,/max-height: clamp\(88px, 18dvh, 156px\)/);
+ assert.match(css,/max-height: 450px/); assert.match(css,/prefers-reduced-motion: reduce/);
+ const shell=await readFile(new URL('../src/styles.css',import.meta.url),'utf8');assert.match(shell,/padding-bottom: calc\(68px \+ env\(safe-area-inset-bottom, 0px\)\)/);
+ const profile=await readFile(new URL('../src/agent/OpponentProfile.tsx',import.meta.url),'utf8');assert.match(profile,/window.innerWidth > 650/);
 });
