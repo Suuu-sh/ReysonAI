@@ -52,7 +52,7 @@ The parent launches a new supervisor session/group. The supervisor enables subre
 
 Each of the two API phases runs that control bundle as the synchronous owner's actual child. Its input ledger binds the control bundle, exact expected saved delivery/policy bytes, worker bundle, dummy config, owner bytes, command ID and pinned Wrangler path. The controller starts Wrangler on localhost, performs every existing HTTP/policy/empty-registry check, rechecks its ledger, writes a strict success record containing its own and Wrangler's birth identities, then exits normally. It sends no process signals. The still-live anchored owner discovers, terminates and reaps Wrangler and its descendants, and the parent independently verifies the final ownership evidence before inspecting D1 or starting the restart phase.
 
-API-only acceptance requires actual controller exit **zero**, full completion-record/input/row equality, a late live `/proc` observation of the worker birth, one matching owner-reaped status, explicit owner TERM/KILL membership for that exact worker PID, bounded untruncated streams, conflict-free ownership, no secondary cause, and complete anchored plus parent cleanup. A normal-exit API classification is rejected. A compatible controlled worker status is required: graceful zero after recorded TERM, negative SIGTERM after recorded TERM, or negative SIGKILL after recorded KILL. Positive worker failure, incompatible spontaneous signal, absent/ambiguous status or missing owner targeting rejects even an already written success record. These are the reviewed owner’s recorded live-target/birth/status predicates; they do not cryptographically attribute an identical concurrent signal from an arbitrary same-user actor. Only this separate `api-oracle` purpose can accept the expected `descendant-leak` / `owned-descendant-interrupted` teardown classification after deliberate controller completion. A timeout, signal, resource/output limit, missing/malformed/stale completion, early worker loss or ownership uncertainty still fails. Ordinary command/expected-SQL-failure acceptance requires `normal-exit` and the `command` purpose; API teardown never proves SQL rollback. The former `startWorker` / negative-PGID `stopWorker` path is removed.
+API-only acceptance requires actual controller exit **zero**, full completion-record/input/row equality, a late live `/proc` observation of the worker birth, one matching owner-reaped status, explicit owner TERM/KILL membership for that exact worker PID, bounded untruncated streams, conflict-free ownership, no secondary cause, and complete anchored plus parent cleanup. A normal-exit API classification is rejected. A compatible controlled worker status is required: graceful zero after recorded TERM, negative SIGTERM after recorded TERM, or negative SIGKILL after recorded KILL. The only additional positive status is the exact attested Wrangler 143 case specified below. Generic positive worker failure, incompatible spontaneous signal, absent/ambiguous status or missing owner targeting rejects even an already written success record. These are the reviewed owner’s recorded live-target/birth/status predicates; they do not cryptographically attribute an identical concurrent signal from an arbitrary same-user actor. Only this separate `api-oracle` purpose can accept the expected `descendant-leak` / `owned-descendant-interrupted` teardown classification after deliberate controller completion. A timeout, signal, resource/output limit, missing/malformed/stale completion, early worker loss or ownership uncertainty still fails. Ordinary command/expected-SQL-failure acceptance requires `normal-exit` and the `command` purpose; API teardown never proves SQL rollback. The former `startWorker` / negative-PGID `stopWorker` path is removed.
 
 Every subprocess receives a credential-free allowlisted environment with isolated HOME/cache, disabled dotenv loading and disabled telemetry. The worker binds to 127.0.0.1. There is no remote D1 path. The ephemeral HTTP endpoint is not independently proven to be the recorded worker’s listening socket; constant-health/port association is a known remaining limitation. Runtime version/path pins do not attest every installed executable byte. Per-stream caps do not bound Wrangler’s separate on-disk log or every filesystem artifact.
 
@@ -115,3 +115,43 @@ Next: independently inspect the actual 32 draft pins and proposed source registr
 5. New genuine manifest/archive/independent receipt/whole SQL gate, LFS delivery verification and the complete four-phase strict local oracle, serial per spot. Every original repeated full import, both late immutable-conflict rollbacks, all unrelated ledgers and owned persistence/restart gates remain required.
 
 All new syntax, test, encoding and strict runtime steps above are presently **UNRUN**. Static Python/Git comparisons alone are not runtime acceptance.
+
+
+## Audited local Wrangler launcher teardown
+
+The local Worker module root is the private `worker-runtime/` directory. It
+contains only the ledger-bound `worker.bundle.mjs`; captured source, expected
+HTTP payloads, lifecycle evidence, logs, persisted D1 state, and temporary files
+remain outside that directory. The exact local config uses `no_bundle: true` and
+`find_additional_modules: false`. It does not use the unsupported `dev.watch`
+option. `CLOUDFLARE_CF_FETCH_ENABLED=false` disables unused Miniflare metadata
+fetching in the scrubbed local environment.
+
+Wrangler 4.147.0's canonical `bin/wrangler.js` is 3,088 bytes with SHA-256
+`780661a508810f3b65786895b1ca9aacbc4f55d329ae6b8c1e49ec8433569f77`. It forwards
+its CLI child exit, including Miniflare's signal-derived 143 on owner SIGTERM.
+API completion accepts this code only in addition to all existing controller,
+HTTP, ownership, bounded output/resource, and complete cleanup predicates. The
+installed package name/version and exact launcher bytes must match before and
+after the parent invocation and in the captured controller before launch and
+at completion; the immutable API input ledger binds that attestation. Completion
+also binds the actual live `/proc` Node executable, entire fixed local-only
+argv, cwd, and worker PID/birth, with liveness checks before and after reading
+those process fields. Additional Node preloads, remote flags, or other arguments
+are rejected. There must be exactly one reaped 143 for that birth, owner TERM in
+the same cleanup record, and no owner KILL of that worker in any cleanup record.
+Generic worker 143 remains rejected; SQL completion cannot use this exception.
+The existing controlled 0, -15, and -9 paths remain separate. The reviewed
+19,014-byte Python owner and its hash are unchanged.
+
+`tests/mw3-wrangler-startup.test.mjs` is skipped unless
+`MW3_REAL_STARTUP_WRANGLER` identifies an already installed pinned launcher. It
+uses synthetic transport data and two ephemeral registry pins, not saved-policy
+approval. It exercises all four activated API phases against real local D1,
+checks every one of the 18 unrelated-table preservation sentinels, verifies exact
+corruption repair, rejects module-discovery/reload feedback, requires the actual
+143 path, and exercises tampered attestation/process/owner evidence negatives.
+Set `MW3_REAL_STARTUP_EVIDENCE` to retain the complete run under a chosen local
+directory. The ordinary CI job includes the skipped test so syntax and imports
+still receive coverage; it does not launch Wrangler. New executions and review
+are required before any new source checkpoint is treated as validated.

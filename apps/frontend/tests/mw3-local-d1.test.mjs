@@ -75,12 +75,13 @@ test('runtime metadata pins actual Wrangler and its exact installed dependencies
 test('local config and environment exclude credentials, remote resources, assets and production settings', () => {
   const config = localConfig(); assert.deepEqual(validateLocalConfig(config), config);
   for (const extra of [{ account_id: 'real-account' }, { ai: { binding: 'AI' } }, { assets: { directory: '.' } },
-    { d1_databases: [{ ...config.d1_databases[0], remote: true }] }, { dev: { ...config.dev, ip: '0.0.0.0' } }, { no_bundle: false }]) {
+    { d1_databases: [{ ...config.d1_databases[0], remote: true }] }, { dev: { ...config.dev, ip: '0.0.0.0' } }, { no_bundle: false }, { find_additional_modules: true }, { main: './worker.bundle.mjs' }, { dev: { ...config.dev, watch: false } }]) {
     assert.throws(() => validateLocalConfig({ ...config, ...extra }));
   }
   const env = localEnvironment('/isolated-local-test');
   for (const key of ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'NODE_OPTIONS', 'HTTP_PROXY', 'HTTPS_PROXY']) assert.equal(env[key], undefined);
-  assert.equal(env.CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV, 'false'); assert.equal(env.WRANGLER_SEND_METRICS, 'false');
+  assert.equal(env.CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV, 'false'); assert.equal(env.CLOUDFLARE_CF_FETCH_ENABLED, 'false');
+  assert.equal(config.main, './worker-runtime/worker.bundle.mjs'); assert.equal(config.find_additional_modules, false); assert.equal(config.dev.watch, undefined); assert.equal(env.WRANGLER_SEND_METRICS, 'false');
 });
 test('zero launcher status, empty/partial output and failed JSON cannot masquerade as successful import', () => {
   assert.equal(completedJson('[{"success":true}]').length, 1);
@@ -246,7 +247,7 @@ test('runtime pins follow wrangler-dist and Miniflare dependency resolution rath
     try {
       packageAt(root, 'wrangler', WRANGLER_VERSION, { dependencies: { miniflare: RUNTIME_PINS.miniflare, workerd: RUNTIME_PINS.workerd, esbuild: RUNTIME_PINS.esbuild } });
       mkdirSync(join(root, 'bin')); mkdirSync(join(root, 'wrangler-dist'));
-      const entry = join(root, 'bin', 'wrangler.js'); writeFileSync(entry, '// Synthetic launcher. Never executed.\n');
+      const entry = join(root, 'bin', 'wrangler.js'); writeFileSync(entry, readFileSync(new URL('./fixtures/mw3-wrangler-4.147.0-launcher.cjs.txt', import.meta.url))); // Exact audited bytes, never executed in resolution fixture.
       writeFileSync(join(root, 'wrangler-dist', 'cli.js'), '// Synthetic runtime entry. Never executed.\n');
       for (const name of ['miniflare', 'workerd', 'esbuild']) packageAt(join(root, 'node_modules', name), name, RUNTIME_PINS[name]);
       if (scenario === 'nested-cli') packageAt(join(root, 'wrangler-dist', 'node_modules', 'miniflare'), 'miniflare', '0.0.0-wrong-runtime');
@@ -255,6 +256,8 @@ test('runtime pins follow wrangler-dist and Miniflare dependency resolution rath
       if (scenario === 'valid') {
         const pinned = readRuntimePins(entry); assert.equal(pinned.cli_entry, join(root, 'wrangler-dist', 'cli.js'));
         assert.equal(pinned.dependency_resolution.miniflare_workerd.entry, pinned.dependency_resolution.workerd.entry);
+        const canonical = readFileSync(entry); writeFileSync(entry, Buffer.concat([canonical, Buffer.from('\n')]));
+        assert.throws(() => readRuntimePins(entry), /exact reviewed 143 implementation/); writeFileSync(entry, canonical);
         packageAt(join(root, 'wrangler-dist', 'node_modules', 'miniflare'), 'miniflare', '0.0.0-inserted-after-first-check');
         assert.throws(() => readRuntimePins(entry), /pinned miniflare/, 'fresh check must observe a package added after the first lookup');
       } else assert.throws(() => readRuntimePins(entry), scenario === 'nested-cli' ? /pinned miniflare/ : scenario === 'nested-miniflare' ? /workerd version/ : /same pinned workerd entry/);

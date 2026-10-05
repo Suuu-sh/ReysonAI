@@ -4,16 +4,78 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const jsonBytes = value => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
 export const SUPERVISOR_SHA256 = '61d0fe490ff4e1e82667a8ec188c1206efd1c26067ff8d6061b4bc8a1a67164d';
+// This exception is tied to the audited installed launcher, never a generic
+// shell-style status. Its SIGTERM handler forwards Miniflare's 128 + 15 exit.
+export const WRANGLER_LAUNCHER_PIN = Object.freeze({ package_name: 'wrangler', package_version: '4.147.0',
+  bytes: 3088, sha256: '780661a508810f3b65786895b1ca9aacbc4f55d329ae6b8c1e49ec8433569f77' });
+export function readWranglerLauncherAttestation(entry) {
+  const path = realpathSync(resolve(entry));
+  assert.equal(basename(path), 'wrangler.js'); assert.equal(basename(dirname(path)), 'bin');
+  const packagePath = realpathSync(join(dirname(dirname(path)), 'package.json'));
+  const pkg = JSON.parse(readFileSync(packagePath, 'utf8')), body = readFileSync(path);
+  const value = { package_name: pkg.name, package_version: pkg.version, bytes: body.length, sha256: sha256(body) };
+  assert.deepEqual(value, WRANGLER_LAUNCHER_PIN, 'Installed Wrangler launcher is not the exact reviewed 143 implementation');
+  return { entry: path, package_path: packagePath, ...value };
+}
+export function assertWranglerLauncherAttestation(attestation, entry) {
+  assert.deepEqual(attestation, readWranglerLauncherAttestation(entry), 'Wrangler launcher/package attestation changed');
+  return attestation;
+}
+export function wranglerDevArguments(directory, entry, port) {
+  assert.ok(Number.isInteger(port) && port > 0 && port < 65536, 'Expected a concrete localhost port');
+  assert.equal(resolve(directory), directory); assert.equal(resolve(entry), entry);
+  return [entry, 'dev', '--local', '--config', join(directory, 'wrangler.json'), '--persist-to', join(directory, 'state'),
+    '--ip', '127.0.0.1', '--port', String(port), '--inspector-port', '0', '--show-interactive-dev-session=false'];
+}
+export function assertWranglerWorkerProcess(snapshot, directory, entry, identity) {
+  assert.deepEqual(Object.keys(snapshot ?? {}).sort(), ['argv', 'cwd', 'executable', 'live_after', 'live_before', 'worker_identity']);
+  assert.deepEqual(snapshot.worker_identity, identity);
+  for (const live of [snapshot.live_before, snapshot.live_after]) {
+    assert.deepEqual(Object.keys(live ?? {}).sort(), ['pid', 'start_ticks', 'state']);
+    assert.equal(live.pid, identity.pid); assert.equal(live.start_ticks, identity.start_ticks);
+    assert.ok(typeof live.state === 'string' && !['Z', 'X', 'x'].includes(live.state), 'Worker process capture was not bookended by exact live birth');
+  }
+  assert.equal(snapshot.executable, realpathSync(process.execPath), 'Worker must execute this actual Node executable');
+  assert.equal(snapshot.cwd, realpathSync(directory));
+  const argv = snapshot.argv; assert.ok(Array.isArray(argv));
+  const port = Number(argv[11]);
+  assert.deepEqual(argv, [process.execPath, ...wranglerDevArguments(directory, entry, port)],
+    'Worker command is not the fixed local-only Node/Wrangler argv; preloads and extra flags are forbidden');
+}
+export function assertWranglerSigtermTeardown(outcome, completion, inputLedgerBytes) {
+  assertCompletedCommand(outcome, { apiTeardown: true });
+  assert.deepEqual(completion.input_ledger, { bytes: inputLedgerBytes.length, sha256: sha256(inputLedgerBytes) });
+  const ledger = JSON.parse(inputLedgerBytes), runtime = completion.worker_runtime;
+  assert.equal(ledger.command_id, outcome.command_id); assert.equal(ledger.local_only, true);
+  assert.ok(ledger.wrangler_launcher, 'Generic worker status 143 is never successful teardown');
+  assertWranglerLauncherAttestation(ledger.wrangler_launcher, ledger.wrangler);
+  assert.deepEqual(Object.keys(runtime ?? {}).sort(), ['launcher_completion', 'launcher_prelaunch', 'process']);
+  assert.deepEqual(runtime.launcher_prelaunch, ledger.wrangler_launcher);
+  assert.deepEqual(runtime.launcher_completion, ledger.wrangler_launcher);
+  const directory = dirname(outcome.evidence_directory), worker = completion.worker_identity;
+  assertWranglerWorkerProcess(runtime.process, directory, ledger.wrangler, worker);
+  assert.deepEqual(completion.live_worker_before_completion, runtime.process.live_after);
+  const history = outcome.resource.cleanup_history;
+  const matches = history.flatMap(record => record.reaped.filter(row => row.pid === worker.pid && row.start_ticks === worker.start_ticks)
+    .map(reaped => ({ record, reaped })));
+  assert.equal(matches.length, 1, '143 requires one exact-birth reaped result');
+  assert.equal(matches[0].reaped.returncode, 143);
+  assert.ok(matches[0].record.term_pids.includes(worker.pid), '143 requires owner TERM in the same cleanup record that reaped this birth');
+  for (const record of [outcome.parent_cleanup, outcome.resource.cleanup, outcome.lease.final_cleanup, ...history]) {
+    assert.ok(!record.kill_pids.includes(worker.pid), '143 cannot accompany owner KILL of this worker anywhere');
+  }
+  return true;
+}
 export function localEnvironment(directory) {
   return { PATH: process.env.PATH ?? '', HOME: join(directory, 'home'), XDG_CONFIG_HOME: join(directory, 'home', '.config'),
     TMPDIR: directory, CI: 'true', NO_COLOR: '1', WRANGLER_SEND_METRICS: 'false', WRANGLER_LOG_PATH: join(directory, 'wrangler.log'),
-    CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: 'false', npm_config_cache: join(directory, 'npm-cache'),
+    CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: 'false', CLOUDFLARE_CF_FETCH_ENABLED: 'false', npm_config_cache: join(directory, 'npm-cache'),
     npm_config_update_notifier: 'false', npm_config_fund: 'false', npm_config_audit: 'false' };
 }
 const SUPERVISOR = fileURLToPath(new URL('./postflop-command-supervisor.py', import.meta.url));

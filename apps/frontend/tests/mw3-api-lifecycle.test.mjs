@@ -71,7 +71,7 @@ else {const part=delivery.parts[Number(url.searchParams.get('part'))];if(!part)r
 if(req.headers['if-none-match']?.replace(/^W\\//,'')===etag){res.writeHead(304,{etag});res.end();return;}
 res.writeHead(200,{etag,'cache-control':'private, must-revalidate','x-content-type-options':'nosniff','content-type':'application/json'});
 res.end(${JSON.stringify(fault)}==='bad-body'?text+' ':text);
-});if(${JSON.stringify(fault)}==='graceful')process.on('SIGTERM',()=>server.close(()=>process.exit(0)));process.on('SIGUSR2',()=>process.exit(7));server.listen(port,'127.0.0.1');console.error('synthetic API worker warning retained');`;
+});if(['graceful','generic-143'].includes(${JSON.stringify(fault)}))process.on('SIGTERM',()=>server.close(()=>process.exit(${JSON.stringify(fault)}==='generic-143'?143:0)));process.on('SIGUSR2',()=>process.exit(7));server.listen(port,'127.0.0.1');console.error('synthetic API worker warning retained');`;
 }
 function retain(directory, passed) {
   if (passed) rmSync(directory, { recursive: true, force: true });
@@ -86,7 +86,8 @@ test('captured controller restores exact fake HTTP routes and completes two inde
   try {
     const prepared = await syntheticPrepared(), capture = capturedControl(); writeCapturedSources(directory, capture);
     writeFileSync(join(directory, 'wrangler.json'), JSON.stringify(localConfig()));
-    writeFileSync(join(directory, 'worker.bundle.mjs'), '// synthetic worker bundle identity only\n');
+    mkdirSync(join(directory, 'worker-runtime'));
+    writeFileSync(join(directory, 'worker-runtime', 'worker.bundle.mjs'), '// synthetic worker bundle identity only\n');
     const wrangler = join(directory, 'fake-wrangler.mjs'); writeFileSync(wrangler, fakeWorkerSource());
     const pins = { entry: wrangler, esbuild_entry: process.env.MW3_TEST_ESBUILD_ENTRY ?? createRequire(import.meta.url).resolve('esbuild') };
     const control = bundleCapturedApiControl({ directory, pins, capture });
@@ -119,11 +120,16 @@ test('captured controller restores exact fake HTTP routes and completes two inde
       assertApiCompletion(outcome, completion, ledgerBytes, rows);
       assert.throws(() => assertCompletedCommand(outcome), 'API intentional teardown must remain outside ordinary SQL completion');
       for (const mutate of [c => { c.success = false; }, c => { c.controller_identity.start_ticks++; }, c => { c.worker_identity.start_ticks++; },
-        c => { c.live_worker_before_completion.state = 'Z'; }, c => { c.rows.pop(); }, c => { c.input_ledger.sha256 = '0'.repeat(64); }, c => { c.command_id = 'api-phase-other'; }]) {
+        c => { c.live_worker_before_completion.state = 'Z'; }, c => { c.worker_runtime.process.argv.splice(1, 0, '--require', '/unreviewed/preload.cjs'); },
+        c => { c.worker_runtime.process.argv.push('--remote'); }, c => { c.worker_runtime.process.cwd += '/other'; },
+        c => { c.worker_runtime.process.executable = '/other/node'; }, c => { c.worker_runtime.process.live_before.start_ticks++; },
+        c => { c.worker_runtime.process.live_after.state = 'Z'; }, c => { c.rows.pop(); }, c => { c.input_ledger.sha256 = '0'.repeat(64); }, c => { c.command_id = 'api-phase-other'; }]) {
         const changed = structuredClone(completion); mutate(changed); assert.throws(() => assertApiCompletion(outcome, changed, ledgerBytes, rows));
       }
       const ledger = JSON.parse(ledgerBytes); assertApiInputLedger(directory, ledger);
       const changed = structuredClone(ledger); changed.files[0].sha256 = '0'.repeat(64); assert.throws(() => assertApiInputLedger(directory, changed));
+      const extra = join(directory, 'worker-runtime', 'unexpected-evidence.json'); writeFileSync(extra, '{}');
+      assert.throws(() => assertApiInputLedger(directory, ledger), /unledgered file/); rmSync(extra);
     }
     passed = true;
   } finally { retain(directory, passed); }
@@ -174,7 +180,8 @@ test('a captured API controller rejects wrong HTTP body and retains worker clean
   try {
     const prepared = await syntheticPrepared(), capture = capturedControl(); writeCapturedSources(directory, capture);
     writeFileSync(join(directory, 'wrangler.json'), JSON.stringify(localConfig()));
-    writeFileSync(join(directory, 'worker.bundle.mjs'), '// synthetic worker bundle identity only\n');
+    mkdirSync(join(directory, 'worker-runtime'));
+    writeFileSync(join(directory, 'worker-runtime', 'worker.bundle.mjs'), '// synthetic worker bundle identity only\n');
     const wrangler = join(directory, 'fake-wrangler.mjs'); writeFileSync(wrangler, fakeWorkerSource('bad-body'));
     const pins = { entry: wrangler, esbuild_entry: process.env.MW3_TEST_ESBUILD_ENTRY ?? createRequire(import.meta.url).resolve('esbuild') };
     const control = bundleCapturedApiControl({ directory, pins, capture });
@@ -192,7 +199,8 @@ test('a captured API controller rejects wrong HTTP body and retains worker clean
 async function createApiFixture(directory, fault = '') {
   const prepared = await syntheticPrepared(), capture = capturedControl(); writeCapturedSources(directory, capture);
   writeFileSync(join(directory, 'wrangler.json'), JSON.stringify(localConfig()));
-  writeFileSync(join(directory, 'worker.bundle.mjs'), '// synthetic worker bundle identity only\n');
+  mkdirSync(join(directory, 'worker-runtime'));
+    writeFileSync(join(directory, 'worker-runtime', 'worker.bundle.mjs'), '// synthetic worker bundle identity only\n');
   const wrangler = join(directory, 'fake-wrangler.mjs'); writeFileSync(wrangler, fakeWorkerSource(fault));
   const pins = { entry: wrangler, esbuild_entry: process.env.MW3_TEST_ESBUILD_ENTRY ?? createRequire(import.meta.url).resolve('esbuild') };
   const control = bundleCapturedApiControl({ directory, pins, capture });
@@ -227,7 +235,7 @@ test('worker error or external SIGKILL in the final synchronous completion gap i
     const directory = mkdtempSync(join(tmpdir(), `mw3-api-precompletion-${fault}-`)), fixture = await createApiFixture(directory);
     const { prepared, pins } = fixture, expected = { deliveries: prepared.deliveries, snapshot: { candidates: prepared.snapshot.candidates } };
     writeFileSync(join(directory, 'api.expected.json'), jsonBytes(expected));
-    const paths = ['api.control.bundle.mjs', 'api.expected.json', 'worker.bundle.mjs', 'wrangler.json', 'captured-source/apps/frontend/scripts/ci/postflop-command-supervisor.py'];
+    const paths = ['api.control.bundle.mjs', 'api.expected.json', 'worker-runtime/worker.bundle.mjs', 'wrangler.json', 'captured-source/apps/frontend/scripts/ci/postflop-command-supervisor.py'];
     const ledgerBytes = jsonBytes({ schema_version: 1, command_id: 'api-phase-0', local_only: true, wrangler: pins.entry,
       files: paths.map(path => record(path, readFileSync(join(directory, path)))) });
     const ledgerPath = join(directory, 'api-phase-0.input-ledger.json'); writeFileSync(ledgerPath, ledgerBytes);
@@ -307,5 +315,20 @@ test('activated health rejects the same registry count with a different captured
     assert.equal(error.commandOutcome.resource.actual_returncode, 1);
     assert.throws(() => readFileSync(join(directory, 'api-phase-0.complete.json')), /ENOENT/);
     assert.match(error.stderr, /AssertionError/); passed = true;
+  } finally { retain(directory, passed); }
+});
+
+test('a generic signal-handling worker exit 143 is rejected despite complete HTTP and controlled owner TERM', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'mw3-api-generic-143-')); let passed = false;
+  try {
+    const fixture = await createApiFixture(directory, 'generic-143');
+    assert.throws(() => runCapturedApiPhase({ directory, ...fixture, restart: 0 }), /Generic worker status 143/);
+    const outcome = JSON.parse(readFileSync(join(directory, 'api-phase-0/outcome.json')));
+    const completion = JSON.parse(readFileSync(join(directory, 'api-phase-0.complete.json')));
+    assert.equal(completion.success, true); assert.equal(outcome.resource.actual_returncode, 0);
+    assert.equal(outcome.parent_cleanup.complete, true);
+    assert.ok(outcome.resource.cleanup_history.some(row => row.term_pids.includes(completion.worker_identity.pid) &&
+      row.reaped.some(item => item.pid === completion.worker_identity.pid && item.start_ticks === completion.worker_identity.start_ticks && item.returncode === 143)));
+    passed = true;
   } finally { retain(directory, passed); }
 });

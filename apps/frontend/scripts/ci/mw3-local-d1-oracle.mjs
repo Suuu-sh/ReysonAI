@@ -9,9 +9,10 @@ import { basename, dirname, join, relative, resolve } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
 import { UNRELATED_SEED } from '../verify-preflop-local-d1.mjs';
-import { localEnvironment, runSupervisedCommand, assertCompletedCommand } from './mw3-local-command.mjs';
+import { localEnvironment, runSupervisedCommand, assertCompletedCommand, readWranglerLauncherAttestation, assertWranglerLauncherAttestation, assertWranglerWorkerProcess, assertWranglerSigtermTeardown } from './mw3-local-command.mjs';
 export { runSupervisedCommand } from './mw3-local-command.mjs';
 export { assertApiRestoration } from './mw3-api-oracle.mjs';
+import { assertApiInputLedger } from './mw3-api-oracle.mjs';
 import { verifyMw3SourceTree } from '../postflop-ai/mw3-source-tree.mjs';
 import { MW3_REPOSITORY, verifyMw3Snapshot } from '../postflop-ai/mw3-reviewed-snapshot.mjs';
 import { MW3_ARCHIVE_LIMITS, jsonBytes, readSafeFile, sha256 } from '../postflop-ai/mw3-reviewed-archive.mjs';
@@ -36,8 +37,8 @@ const SENTINEL_HEADER = JSON.stringify({ synthetic_local_preservation_fixture: t
 const SENTINEL_HASH = sha256(SENTINEL_HEADER);
 
 export function localConfig() {
-  return { name: NAME, main: './worker.bundle.mjs', no_bundle: true, compatibility_date: '2026-09-01', send_metrics: false,
-    dev: { ip: '127.0.0.1', local_protocol: 'http', watch: false },
+  return { name: NAME, main: './worker-runtime/worker.bundle.mjs', no_bundle: true, find_additional_modules: false, compatibility_date: '2026-09-01', send_metrics: false,
+    dev: { ip: '127.0.0.1', local_protocol: 'http' },
     d1_databases: [{ binding: BINDING, database_name: NAME, database_id: '00000000-0000-0000-0000-000000000000' }] };
 }
 export function validateLocalConfig(config) {
@@ -90,7 +91,7 @@ export function readRuntimePins(entry, { directory = null, supervisorPath } = {}
   validateRuntimePackages(found.wrangler, dependencies.miniflare.info, dependencies.workerd.info, dependencies.esbuild.info);
   assert.equal(miniflareWorkerd.info.version, RUNTIME_PINS.workerd, 'Miniflare resolves a different workerd version');
   assert.equal(miniflareWorkerd.entry, dependencies.workerd.entry, 'Wrangler and Miniflare must resolve the same pinned workerd entry');
-  return { entry: path, cli_entry: found.cli_entry, esbuild_entry: dependencies.esbuild.entry,
+  return { entry: path, cli_entry: found.cli_entry, launcher_attestation: readWranglerLauncherAttestation(path), esbuild_entry: dependencies.esbuild.entry,
     dependency_resolution: Object.fromEntries([...Object.entries(dependencies), ['miniflare_workerd', miniflareWorkerd]]
       .map(([name, item]) => [name, { entry: item.entry, package_path: item.package_path }])), ...RUNTIME_PINS };
 }
@@ -168,7 +169,8 @@ export function bundleCapturedWorker({ directory, pins, capture, expectedWorkerS
 try {const result=buildSync({entryPoints:[process.argv[2]],outfile:process.argv[3],absWorkingDir:process.cwd(),bundle:true,format:'esm',platform:'browser',target:'es2022',metafile:true,tsconfigRaw:'{}'});
 require('node:fs').writeFileSync(process.argv[4],JSON.stringify(result.metafile));}
 catch(error){console.error(error);process.exitCode=1};`;
-  const entry = join(directory, 'worker.mjs'), bundle = join(directory, 'worker.bundle.mjs'), metadataPath = join(directory, 'worker.bundle.meta.json');
+  const entry = join(directory, 'worker.mjs'), bundle = join(directory, 'worker-runtime', 'worker.bundle.mjs'), metadataPath = join(directory, 'worker.bundle.meta.json');
+  mkdirSync(join(directory, 'worker-runtime'), { mode: 0o700 });
   assert.equal(sha256(readFileSync(entry)), expectedWorkerSha, 'Local oracle wrapper changed before captured-source bundling');
   runSupervisedCommand({ directory, commandId: 'bundle', command: process.execPath,
     args: ['-e', runner, pins.esbuild_entry, entry, bundle, metadataPath], timeoutMs: 60000, supervisorPath: join(directory, 'captured-source/apps/frontend/scripts/ci/postflop-command-supervisor.py') });
@@ -234,11 +236,18 @@ export function assertApiCompletion(outcome, completion, inputLedgerBytes, expec
   assert.equal(reaped.length, 1, 'Require one unambiguous anchored reaped status for the exact worker birth');
   const terminated = history.some(record => record.term_pids.includes(worker.pid));
   const killed = history.some(record => record.kill_pids.includes(worker.pid));
-  assert.ok((reaped[0].returncode === 0 || reaped[0].returncode === -15) && terminated || reaped[0].returncode === -9 && killed,
+  const ledger = JSON.parse(inputLedgerBytes), runtime = completion.worker_runtime;
+  assert.deepEqual(Object.keys(runtime ?? {}).sort(), ['launcher_completion', 'launcher_prelaunch', 'process']);
+  assert.deepEqual(runtime.launcher_prelaunch, ledger.wrangler_launcher ?? null);
+  assert.deepEqual(runtime.launcher_completion, ledger.wrangler_launcher ?? null);
+  assertWranglerWorkerProcess(runtime.process, dirname(outcome.evidence_directory), ledger.wrangler, worker);
+  assert.deepEqual(completion.live_worker_before_completion, runtime.process.live_after);
+  const launcherTerm = reaped[0].returncode === 143 && assertWranglerSigtermTeardown(outcome, completion, inputLedgerBytes);
+  assert.ok((reaped[0].returncode === 0 || reaped[0].returncode === -15) && terminated || reaped[0].returncode === -9 && killed || launcherTerm,
     'Worker must have a compatible controlled owner teardown; spontaneous failure/exit is not successful API lifecycle evidence');
   assert.deepEqual(completion, { schema_version: 1, command_id: outcome.command_id,
     controller_identity: { pid: outcome.resource.child_pid, start_ticks: outcome.resource.child_start_ticks }, worker_identity: completion.worker_identity, live_worker_before_completion: completion.live_worker_before_completion,
-    local_only: true, success: true, input_ledger: digest(inputLedgerBytes), rows: expectedRows },
+    local_only: true, success: true, input_ledger: digest(inputLedgerBytes), worker_runtime: runtime, rows: expectedRows },
     'API completion must bind exact successful controller, inputs and every restored delivery');
   return completion.rows;
 }
@@ -248,23 +257,27 @@ export function runCapturedApiPhase({ directory, pins, capture, prepared, restar
   assert.deepEqual(probe, restart < 2 ? null : { kind: restart === 2 ? 'header' : 'part', delivery_hash: prepared.deliveries[1].deliveryHash, ...(restart === 3 ? { part: prepared.deliveries[1].parts.at(-1).part } : {}) }, 'Only the two fixed activated corruption probes are allowed');
   assertCapturedSources(directory, capture);
   assert.deepEqual(digest(readFileSync(join(directory, 'api.control.bundle.mjs'))), { bytes: control.bytes, sha256: control.sha256 });
+  const launcherAttestation = pins.wrangler === WRANGLER_VERSION || pins.launcher_attestation != null ?
+    assertWranglerLauncherAttestation(pins.launcher_attestation, pins.entry) : null;
   const commandId = `api-phase-${restart}`, ledgerPath = join(directory, `${commandId}.input-ledger.json`);
   const expectedName = restart < 2 ? 'api.expected.json' : `${commandId}.expected.json`;
   const expectedPath = join(directory, expectedName), expectedBytes = jsonBytes({ registryContract, probe, databaseOnlyHash: SENTINEL_HASH, deliveries: prepared.deliveries,
     snapshot: { candidates: { candidate: { policy: prepared.snapshot.candidates.candidate.policy }, laterCandidate: { policy: prepared.snapshot.candidates.laterCandidate.policy } } } });
   if (restart !== 1) writeFileSync(expectedPath, expectedBytes, { flag: 'wx', mode: 0o444 });
   assert.deepEqual(readFileSync(expectedPath), expectedBytes, 'Expected API restoration bytes changed');
-  const paths = ['api.control.bundle.mjs', expectedName, 'worker.bundle.mjs', 'wrangler.json',
+  const paths = ['api.control.bundle.mjs', expectedName, 'worker-runtime/worker.bundle.mjs', 'wrangler.json',
     'captured-source/apps/frontend/scripts/ci/postflop-command-supervisor.py'];
-  const ledgerBytes = jsonBytes({ schema_version: 1, command_id: commandId, registry_mode: registryContract.mode, expected_path: expectedName, local_only: true, wrangler: pins.entry,
+  const ledgerBytes = jsonBytes({ schema_version: 1, command_id: commandId, registry_mode: registryContract.mode, expected_path: expectedName, local_only: true, wrangler: pins.entry, wrangler_launcher: launcherAttestation,
     files: paths.map(path => ({ path, ...digest(readFileSync(join(directory, path))) })) });
   writeFileSync(ledgerPath, ledgerBytes, { flag: 'wx', mode: 0o444 });
+  assertApiInputLedger(directory, JSON.parse(ledgerBytes));
   const outcome = runSupervisedCommand({ directory, commandId, command: process.execPath,
     args: [join(directory, 'api.control.bundle.mjs'), directory, ledgerPath], timeoutMs: 180000,
     supervisorPath: join(directory, 'captured-source/apps/frontend/scripts/ci/postflop-command-supervisor.py'), apiTeardown: true });
+  if (launcherAttestation !== null) assertWranglerLauncherAttestation(launcherAttestation, pins.entry);
   assertCapturedSources(directory, capture);
   assert.deepEqual(readFileSync(ledgerPath), ledgerBytes, 'API phase ledger changed');
-  for (const row of JSON.parse(ledgerBytes).files) assert.deepEqual(digest(readFileSync(join(directory, row.path))), { bytes: row.bytes, sha256: row.sha256 });
+  assertApiInputLedger(directory, JSON.parse(ledgerBytes));
   const expectedRows = apiPhaseRows(prepared, probe);
   const completion = JSON.parse(readFileSync(join(directory, `${commandId}.complete.json`), 'utf8'));
   return assertApiCompletion(outcome, completion, ledgerBytes, expectedRows);
@@ -466,7 +479,7 @@ export async function verifyMw3LocalD1(options) {
       assert.equal(sha256(readFileSync(join(directory, 'worker.mjs'))), report.worker_sha256, 'Local oracle source changed');
       validateLocalConfig(JSON.parse(readFileSync(configPath, 'utf8')));
       assert.deepEqual(digest(readFileSync(join(directory, 'api.control.bundle.mjs'))), { bytes: report.api_control_bundle.bytes, sha256: report.api_control_bundle.sha256 }, 'API controller bundle changed');
-      assert.deepEqual(digest(readFileSync(join(directory, 'worker.bundle.mjs'))), { bytes: report.worker_bundle.bytes, sha256: report.worker_bundle.sha256 }, 'Compiled worker changed after reviewed source bundling');
+      assert.deepEqual(digest(readFileSync(join(directory, 'worker-runtime', 'worker.bundle.mjs'))), { bytes: report.worker_bundle.bytes, sha256: report.worker_bundle.sha256 }, 'Compiled worker changed after reviewed source bundling');
       assert.deepEqual(digest(readFileSync(reviewedPath)), prepared.records.sql, 'Isolated reviewed SQL changed');
     };
     mark('captured_reviewed_runtime_and_schema_bundle_identity');

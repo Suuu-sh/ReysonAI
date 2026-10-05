@@ -3,12 +3,12 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, lstatSync, readlinkSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { restoreMw3PolicyParts } from '../postflop-ai/mw3-delivery.mjs';
-import { localEnvironment } from './mw3-local-command.mjs';
+import { localEnvironment, assertWranglerLauncherAttestation, wranglerDevArguments, assertWranglerWorkerProcess } from './mw3-local-command.mjs';
 import { assertRegistryMode, assertApiPhase, registryHealth, apiPhaseRows } from './mw3-registry-mode.mjs';
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const digest = bytes => ({ bytes: bytes.length, sha256: sha256(bytes) });
@@ -22,6 +22,14 @@ export function assertLiveIdentity(identity) {
   assert.equal(Number(fields[19]), identity.start_ticks, 'Worker birth changed before completion');
   assert.ok(!['Z', 'X', 'x'].includes(fields[0]), 'Worker died before completion');
   return { ...identity, state: fields[0] };
+}
+export function captureLiveWorkerProcess(identity) {
+  const live_before = assertLiveIdentity(identity);
+  const executable = readlinkSync(`/proc/${identity.pid}/exe`), cwd = readlinkSync(`/proc/${identity.pid}/cwd`);
+  const commandBytes = readFileSync(`/proc/${identity.pid}/cmdline`);
+  assert.equal(commandBytes.at(-1), 0, 'Worker argv is not NUL terminated');
+  const argv = commandBytes.toString('utf8').slice(0, -1).split('\0');
+  return { worker_identity: identity, live_before, executable, argv, cwd, live_after: assertLiveIdentity(identity) };
 }
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 async function expectFailure(url, status, error, init = {}) {
@@ -122,16 +130,21 @@ export function assertApiInputLedger(directory, ledger) {
   const expectedPath = Number(phase[1]) < 2 ? 'api.expected.json' : `${ledger.command_id}.expected.json`;
   assert.equal(ledger.expected_path ?? 'api.expected.json', expectedPath);
   assert.equal(ledger.local_only, true);
+  if (ledger.wrangler_launcher != null) assertWranglerLauncherAttestation(ledger.wrangler_launcher, ledger.wrangler);
   assert.ok(Array.isArray(ledger.files) && ledger.files.length === 5);
   assert.deepEqual(ledger.files.map(row => row.path).sort(),
-    ['api.control.bundle.mjs', expectedPath, 'captured-source/apps/frontend/scripts/ci/postflop-command-supervisor.py', 'worker.bundle.mjs', 'wrangler.json'].sort());
+    ['api.control.bundle.mjs', expectedPath, 'captured-source/apps/frontend/scripts/ci/postflop-command-supervisor.py', 'worker-runtime/worker.bundle.mjs', 'wrangler.json'].sort());
   for (const row of ledger.files) {
     const body = readFileSync(join(directory, row.path));
     assert.deepEqual(digest(body), { bytes: row.bytes, sha256: row.sha256 }, `API input changed: ${row.path}`);
   }
+  const runtime = join(directory, 'worker-runtime');
+  assert.ok(lstatSync(runtime).isDirectory() && !lstatSync(runtime).isSymbolicLink(), 'Worker runtime must be a private real directory');
+  assert.deepEqual(readdirSync(runtime), ['worker.bundle.mjs'], 'Worker module root contains an unledgered file');
+  assert.ok(lstatSync(join(runtime, 'worker.bundle.mjs')).isFile() && !lstatSync(join(runtime, 'worker.bundle.mjs')).isSymbolicLink(), 'Worker bundle must be a regular ledger-bound file');
   const config = JSON.parse(readFileSync(join(directory, 'wrangler.json'), 'utf8'));
-  assert.deepEqual(config, { name: 'reysonai-mw3-local-verification', main: './worker.bundle.mjs', no_bundle: true,
-    compatibility_date: '2026-09-01', send_metrics: false, dev: { ip: '127.0.0.1', local_protocol: 'http', watch: false },
+  assert.deepEqual(config, { name: 'reysonai-mw3-local-verification', main: './worker-runtime/worker.bundle.mjs', no_bundle: true, find_additional_modules: false,
+    compatibility_date: '2026-09-01', send_metrics: false, dev: { ip: '127.0.0.1', local_protocol: 'http' },
     d1_databases: [{ binding: 'MW3_LOCAL_VERIFY', database_name: 'reysonai-mw3-local-verification', database_id: '00000000-0000-0000-0000-000000000000' }] });
 }
 export async function runApiOracle(directory, ledgerPath, { beforeCompletionForTest = null } = {}) {
@@ -147,8 +160,8 @@ export async function runApiOracle(directory, ledgerPath, { beforeCompletionForT
   await new Promise((done, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', done); });
   const port = server.address().port;
   await new Promise((done, reject) => server.close(error => error ? reject(error) : done()));
-  const args = [ledger.wrangler, 'dev', '--local', '--config', join(directory, 'wrangler.json'), '--persist-to', join(directory, 'state'),
-    '--ip', '127.0.0.1', '--port', String(port), '--inspector-port', '0', '--show-interactive-dev-session=false'];
+  const launcherPrelaunch = ledger.wrangler_launcher == null ? null : assertWranglerLauncherAttestation(ledger.wrangler_launcher, ledger.wrangler);
+  const args = wranglerDevArguments(directory, ledger.wrangler, port);
   writeFileSync(join(directory, `${ledger.command_id}.worker-command.json`), JSON.stringify({ command: process.execPath, args }), { flag: 'wx' });
   const worker = spawn(process.execPath, args, { cwd: directory, env: localEnvironment(directory), stdio: ['ignore', 'inherit', 'inherit'] });
   let spawnError; worker.once('error', error => { spawnError = error; });
@@ -172,13 +185,16 @@ export async function runApiOracle(directory, ledgerPath, { beforeCompletionForT
   assert.ok(!spawnError && worker.exitCode === null && worker.signalCode === null, 'Worker exited during API proof');
   assertApiInputLedger(directory, ledger);
   assert.deepEqual(readFileSync(ledgerPath), ledgerBytes, 'API ledger changed during phase');
-  const liveWorker = assertLiveIdentity(workerIdentity);
+  const launcherCompletion = ledger.wrangler_launcher == null ? null : assertWranglerLauncherAttestation(ledger.wrangler_launcher, ledger.wrangler);
+  const workerProcess = captureLiveWorkerProcess(workerIdentity);
+  assertWranglerWorkerProcess(workerProcess, directory, ledger.wrangler, workerIdentity);
+  const liveWorker = workerProcess.live_after;
   // Fault injection is an in-process test API only; no CLI/JSON option accepts
   // it. Downstream owner evidence must reject a death during this exact gap.
   beforeCompletionForTest?.({ worker_identity: workerIdentity });
   writeFileSync(join(directory, `${ledger.command_id}.complete.json`), JSON.stringify({ schema_version: 1,
     command_id: ledger.command_id, controller_identity: controllerIdentity, worker_identity: workerIdentity, live_worker_before_completion: liveWorker, local_only: true, success: true,
-    input_ledger: digest(ledgerBytes), rows }), { flag: 'wx' });
+    input_ledger: digest(ledgerBytes), worker_runtime: { launcher_prelaunch: launcherPrelaunch, launcher_completion: launcherCompletion, process: workerProcess }, rows }), { flag: 'wx' });
   // Deliberate normal controller completion. The anchored owner cleans/reaps the
   // worker before parent inspection/restart. No positive or negative PID kills.
 }
