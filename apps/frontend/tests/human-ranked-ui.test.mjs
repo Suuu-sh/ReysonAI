@@ -53,3 +53,19 @@ test("human waiting/profile regressions are registered in scoped CI and seated u
 test("seated player heartbeat renews player lease without changing the hand-action version",async()=>{
  const timers=[],posts=[];const initial=base("hand",{version:9,match:match()});await harness(async({dom,updates})=>{assert.equal(dom.window.document.querySelector(".ff-actions")!==null,true);const heartbeat=timers.find(t=>t.ms===15000);assert.ok(heartbeat);await act(async()=>{heartbeat.fn();await Promise.resolve();});assert.equal(posts.length,1);assert.equal(posts[0].version,9);assert.ok(posts[0].actionId);assert.equal(updates.at(-1).state.hands,0);assert.equal(dom.window.document.querySelectorAll(".agent-seat").length,6);},async(url,opts)=>{if(url.endsWith("/heartbeat")){posts.push(JSON.parse(opts.body));return Response.json(base("hand",{version:10,match:match(),leaseExpiresAt:NOW+60000}));}return fetchProfile(initial)(url);},true,"play",dom=>{dom.window.setInterval=(fn,ms)=>{timers.push({fn,ms});return timers.length;};dom.window.clearInterval=()=>{};});
 });
+
+test("departed nullable seats localize without invented profiles, and profile 404 shows no fake samples",async()=>{
+ const labels={en:"Departed player",ja:"退席したプレイヤー","zh-CN":"已离桌的玩家",es:"Jugador retirado"};
+ for(const [locale,label] of Object.entries(labels)){
+  const table=match();table.participants[0].player={id:"departed-server-table-0",name:"Departed player",rating:null,hands:null,style:"unknown",unavailable:true};let opponentCalls=0;
+  await harness(async({dom})=>{
+   const doc=dom.window.document;assert.equal(doc.querySelector('.agent-seat.slot-3 .agent-meta b').textContent,label);
+   assert.equal(doc.querySelectorAll('.agent-seat').length,6);assert.equal(doc.querySelectorAll('[data-tier]').length,7);
+   await act(async()=>doc.querySelector('.agent-profile-trigger').click());
+   const block=doc.querySelector('.agent-profile-block');assert.equal(block.querySelector('h3').textContent,label);assert.equal(block.querySelector('dl'),null);assert.equal(doc.querySelector('.agent-side').firstElementChild,block);assert.equal(opponentCalls,0);
+   const real=doc.querySelectorAll('.ff-opponent strong')[1];assert.equal(real.getAttribute('translate'),'no');assert.equal(real.textContent,table.participants[1].player.name);
+   await act(async()=>doc.querySelectorAll('.agent-mini-profile')[1].click());assert.equal(opponentCalls,1);assert.equal(doc.querySelector('.agent-profile-block h3').textContent,table.participants[1].player.name);assert.equal(doc.querySelector('.agent-profile-block dl'),null);assert.equal(doc.querySelector('[role=dialog]'),null);
+   assert.ok([...doc.querySelectorAll('.ff-actions button')].every(b=>!b.disabled));
+  },async url=>{if(url.includes('/opponent?')){opponentCalls++;return Response.json({error:'not_found'},{status:404});}return fetchProfile(base('hand',{match:table}))(url);},true,'play',dom=>dom.window.localStorage.setItem('reysonai:locale:v1',locale));
+ }
+});

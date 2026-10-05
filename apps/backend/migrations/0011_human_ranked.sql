@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS human_rank_receipts (
 );
 CREATE TABLE IF NOT EXISTS human_rank_results (
  table_id TEXT NOT NULL REFERENCES human_rank_tables(id),
- user_id TEXT NOT NULL REFERENCES human_rank_players(user_id), at INTEGER NOT NULL,
+ user_id TEXT NOT NULL REFERENCES human_rank_players(user_id) ON DELETE CASCADE, at INTEGER NOT NULL,
  net_cents INTEGER NOT NULL, before_rating INTEGER NOT NULL DEFAULT 1000,
  after_rating INTEGER NOT NULL DEFAULT 1000, public_json TEXT NOT NULL,
  PRIMARY KEY(table_id,user_id)
@@ -62,7 +62,7 @@ BEGIN
  INSERT INTO human_rank_receipts VALUES(NEW.user_id,json_extract(NEW.receipt_json,'$.id'),json_extract(NEW.receipt_json,'$.request'));
 END;
 CREATE TRIGGER IF NOT EXISTS human_rank_table_receipt AFTER UPDATE OF receipt_json ON human_rank_tables
-WHEN NEW.receipt_json IS NOT NULL
+WHEN NEW.receipt_json IS NOT NULL AND json_extract(NEW.receipt_json,'$.user') IS NOT NULL AND NEW.receipt_json IS NOT OLD.receipt_json
 BEGIN
  INSERT INTO human_rank_receipts VALUES(json_extract(NEW.receipt_json,'$.user'),json_extract(NEW.receipt_json,'$.id'),json_extract(NEW.receipt_json,'$.request'));
 END;
@@ -70,7 +70,7 @@ CREATE TRIGGER IF NOT EXISTS human_rank_settle AFTER UPDATE OF settlement_json O
 WHEN NEW.settlement_json IS NOT NULL AND OLD.status!='done' AND NEW.status='done'
 BEGIN
  INSERT INTO human_rank_results(table_id,user_id,at,net_cents,public_json)
- SELECT NEW.id,json_extract(value,'$.user'),NEW.updated_at,json_extract(value,'$.net'),json_extract(value,'$.public') FROM json_each(NEW.settlement_json);
+ SELECT NEW.id,json_extract(value,'$.user'),NEW.updated_at,json_extract(value,'$.net'),json_extract(value,'$.public') FROM json_each(NEW.settlement_json) WHERE EXISTS(SELECT 1 FROM human_rank_players WHERE user_id=json_extract(value,'$.user'));
 END;
 -- Current aggregates, never a stale request's player snapshot, determine each rating.
 CREATE TRIGGER IF NOT EXISTS human_rank_aggregate AFTER INSERT ON human_rank_results
@@ -94,4 +94,21 @@ BEGIN
  WHERE table_id=NEW.id AND phase='hand' AND user_id IN (
  SELECT json_extract(NEW.private_json,'$.users['||key||']') FROM json_each(NEW.private_json,'$.hand.seats')
  WHERE json_extract(value,'$.folded')=1 OR json_extract(value,'$.autoFold')=1);
+END;
+
+-- Deleting an account or its human-season record must not strand other seats.
+-- Null seat identities retain chip/hand state, never the deleted internal user ID.
+CREATE TRIGGER IF NOT EXISTS human_rank_delete AFTER DELETE ON human_rank_players
+BEGIN
+ DELETE FROM human_rank_receipts WHERE user_id=OLD.user_id;
+ UPDATE human_rank_tables SET
+ private_json=json_set(CASE WHEN status='active' THEN
+   json_set(private_json,'$.hand.seats['||(SELECT key FROM json_each(private_json,'$.users') WHERE value=OLD.user_id)||'].autoFold',json('true'))
+   ELSE private_json END,'$.users',json((SELECT json_group_array(CASE WHEN value=OLD.user_id THEN NULL ELSE value END) FROM json_each(private_json,'$.users')))),
+ settlement_json=CASE WHEN settlement_json IS NULL THEN NULL ELSE json((SELECT json_group_array(json(value)) FROM json_each(settlement_json) WHERE json_extract(value,'$.user') IS NOT OLD.user_id)) END,
+ receipt_json=CASE WHEN json_extract(receipt_json,'$.user')=OLD.user_id THEN NULL ELSE receipt_json END,
+ departure_json=NULL,
+ expires_at=CASE WHEN status='active' AND json_extract(private_json,'$.users['||json_extract(private_json,'$.hand.turn')||']')=OLD.user_id THEN MIN(expires_at,unixepoch()*1000) ELSE expires_at END,
+ status=CASE WHEN status='reserved' THEN 'cancelled' ELSE status END,version=version+1
+ WHERE EXISTS(SELECT 1 FROM json_each(private_json,'$.users') WHERE value=OLD.user_id);
 END;

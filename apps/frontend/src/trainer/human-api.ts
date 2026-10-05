@@ -1,6 +1,6 @@
 import { accountApiBase } from "../account/config.ts";
 import { FastFoldError, type FastFoldPosition, type FastFoldState, type FastFoldResult } from "./fastfold-api.ts";
-export type HumanPublicPlayer = { id: string; name: string; hands: number; rating: number; style: string };
+export type HumanPublicPlayer = { id: string; name: string; hands: number | null; rating: number | null; style: string; unavailable?: boolean };
 export type HumanOpponent = HumanPublicPlayer & { stats?: { hands: number; vpip?: { percent: number | null }; pfr?: { percent: number | null } }; tendencyScope?: "observed_only"; confidence?: "insufficient" | "sampled" };
 export type HumanHand = { id: string; status: "playing" | "done"; street: string; board: string[]; holeCards: Partial<Record<FastFoldPosition, string[]>>; seats: { position: FastFoldPosition; stack: number; committed: number; bet: number; folded: boolean; allIn: boolean; departed: boolean }[]; pending?: { seat: number; position: FastFoldPosition; street: string; pot: number; toCall: number; options: { key: string; to?: number }[] } | null; log: { seat: number; street: string; action: string; to?: number; pot: number }[]; result?: unknown };
 export type HumanMatch = { id: string; version: number; hero: number; hand: HumanHand; participants: { seat: number; position: FastFoldPosition; player: HumanPublicPlayer }[]; turnExpiresAt: number };

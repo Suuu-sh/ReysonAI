@@ -67,3 +67,31 @@ test('CSRF, expired identity, slow body expiry and schema loss fail closed befor
  response=await worker.fetch(req({},stream),f.env);assert.equal(response.status,401);assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_players').get().n,0);
  f.sqlite.exec('DROP TRIGGER human_rank_claim');response=await worker.fetch(new Request(api+'status',{headers:{origin}}),f.env);assert.equal(response.status,503);
  }finally{Date.now=real;f.close()}});
+test('account/player deletion anonymizes every old/new table, preserves all-in chips and five surviving settlements exactly once',async()=>{
+ const f=await fixture(10);try{
+ await f.six();const old=(await f.state(0)).match;
+ // A real prior result proves deletion is not blocked by the result FK.
+ const past=crypto.randomUUID();f.sqlite.prepare("INSERT INTO human_rank_tables(id,status,private_json,created_at,expires_at) VALUES (?,'done',?,1,0)").run(past,JSON.stringify({users:['U0'],hand:null}));f.sqlite.prepare('INSERT INTO human_rank_results(table_id,user_id,at,net_cents,public_json) VALUES (?,?,1,0,?)').run(past,'U0','{}');
+ await f.call(0,'action',{tableId:old.id,version:old.version,actionId:crypto.randomUUID(),action:'all_in'});
+ let m=(await f.state(1)).match;await f.call(1,'action',{tableId:m.id,version:m.version,actionId:crypto.randomUUID(),action:'fold'});
+ await f.control(0,'break');await f.control(0,'resume');for(let i=6;i<10;i++)await f.join(i);
+ for(const i of [0,1,6,7,8,9]){const s=await f.state(i);await f.control(i,'accept',{reservationId:s.reservation.id})}
+ const newer=(await f.state(0)).match;assert.notEqual(newer.id,old.id);for(const i of [0,1]){m=(await f.state(i)).match;await f.call(i,'action',{tableId:m.id,version:m.version,actionId:crypto.randomUUID(),action:'call'})}
+ f.sqlite.prepare('DELETE FROM account_users WHERE id=?').run('U0');assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_results WHERE user_id=?').get('U0').n,0);assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_receipts WHERE user_id=?').get('U0').n,0);
+ for(const row of f.sqlite.prepare('SELECT private_json,receipt_json,departure_json,settlement_json FROM human_rank_tables').all())assert.equal(JSON.stringify(row).includes('U0'),false);
+ const unavailable=(await f.state(1)).match.participants[0].player;assert.equal(unavailable.unavailable,true);assert.equal(unavailable.rating,null);assert.equal(unavailable.hands,null);assert.equal((await f.state(1)).match.id,newer.id);
+ const privateOld=JSON.parse(f.sqlite.prepare('SELECT private_json FROM human_rank_tables WHERE id=?').get(old.id).private_json);assert.equal(privateOld.hand.seats[0].folded,false);assert.equal(privateOld.hand.seats[0].stack,0);
+ // Four remaining old-table opponents fold; departed all-in still has its rights.
+ for(const i of [2,3,4,5]){m=(await f.state(i)).match;await f.call(i,'action',{tableId:m.id,version:m.version,actionId:crypto.randomUUID(),action:'fold'})}
+ assert.equal((await f.state(1)).hands,1);assert.equal((await f.state(1)).match.id,newer.id);
+ // Other new-table opponents fold; seat1 folds on its legal flop turn after BB checks.
+ for(const i of [6,7,8]){m=(await f.state(i)).match;await f.call(i,'action',{tableId:m.id,version:m.version,actionId:crypto.randomUUID(),action:'fold'})}
+ m=(await f.state(9)).match;await f.call(9,'action',{tableId:m.id,version:m.version,actionId:crypto.randomUUID(),action:'check'});m=(await f.state(9)).match;await f.call(9,'action',{tableId:m.id,version:m.version,actionId:crypto.randomUUID(),action:'check'});m=(await f.state(1)).match;
+ const last={tableId:m.id,version:m.version,actionId:crypto.randomUUID(),action:'fold'};await f.call(1,'action',last);await f.call(1,'action',last);
+ assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_results').get().n,10);const p=f.sqlite.prepare('SELECT hands,net_bb FROM human_rank_players WHERE user_id=?').get('U1');assert.equal(p.hands,2);assert.equal(p.net_bb,-1);
+ for(const id of [old.id,newer.id]){const h=JSON.parse(f.sqlite.prepare('SELECT private_json FROM human_rank_tables WHERE id=?').get(id).private_json).hand;assert.equal(h.status,'done');assert.equal(h.result.net.reduce((a,b)=>a+b,0)+h.result.rake,0);assert.equal(h.seats[0].folded,id!==old.id)}
+ assert.deepEqual(f.sqlite.prepare('PRAGMA foreign_key_check').all(),[]);
+ }finally{f.close()}
+ // Deleting only the season record is also safe, including the current actor.
+ const g=await fixture();try{await g.six();g.sqlite.prepare('DELETE FROM human_rank_players WHERE user_id=?').run('U0');assert.equal((await g.state(1)).match.hand.pending.seat,1);for(const i of [1,2,3,4]){const m=(await g.state(i)).match;await g.call(i,'action',{tableId:m.id,version:m.version,actionId:crypto.randomUUID(),action:'fold'})}assert.equal(g.sqlite.prepare('SELECT COUNT(*) n FROM human_rank_results').get().n,5);assert.equal((await g.state(0)).phase,'out');assert.deepEqual(g.sqlite.prepare('PRAGMA foreign_key_check').all(),[]);}finally{g.close()}
+});

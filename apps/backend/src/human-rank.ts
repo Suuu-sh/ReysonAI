@@ -5,7 +5,7 @@ import { cardText } from '../../frontend/scripts/postflop-ai/flop-isomorphism.ts
 
 type Env=AccountEnv&{FASTFOLD_ENABLED?:string};
 type Player={user_id:string;public_id:string;public_name:string;phase:'out'|'queued'|'reserved'|'hand'|'break';version:number;lease_until:number;break_until:number|null;table_id:string|null;seat:number|null;accepted:number;rating:number;peak:number;hands:number;net_bb:number;rating_net_bb:number};
-type Private={users:string[];hand:MultiplayerHand|null};
+type Private={users:(string|null)[];hand:MultiplayerHand|null};
 type Table={id:string;version:number;status:'reserved'|'active'|'done'|'cancelled';private_json:string;created_at:number;expires_at:number};
 export const HUMAN_SEASON='human-fastfold-v1';
 const LEASE=45_000,RESERVATION=60_000,TURN=30_000,BREAK=900_000;
@@ -16,7 +16,7 @@ const q=<T>(db:D1Database,sql:string,...args:unknown[])=>db.prepare(sql).bind(..
 function deck(){const d=Array.from({length:52},(_,i)=>i);for(let i=51;i>0;i--){const n=i+1,limit=Math.floor(4294967296/n)*n;let value;do{value=crypto.getRandomValues(new Uint32Array(1))[0]}while(value>=limit);const j=value%n;[d[i],d[j]]=[d[j],d[i]];}return d;}
 function projection(hand:MultiplayerHand,seat:number){const v=publicProjection(hand,seat);return {...v,board:v.board.map(cardText),holeCards:Object.fromEntries(Object.entries(v.holeCards).map(([p,c])=>[p,c!.map(cardText)]))};}
 const shadow={mode:'shadow',appliedPenalty:0,baselineDeviation:null,opponentAdjustedDeviation:null,support:'uncalibrated_ev_reference'};
-function settlements(t:Table,hidden:Private){const hand=hidden.hand!;if(!hand.result) return null;return JSON.stringify(hidden.users.map((user,seat)=>{const view=projection(hand,seat);return {user,net:hand.result!.net[seat],public:JSON.stringify({id:t.id,season:HUMAN_SEASON,hero:POSITIONS[seat],netBb:hand.result!.net[seat]/100,showdown:hand.result!.showdown,board:view.board,holeCards:view.holeCards,winners:hand.result!.winners.map(i=>POSITIONS[i]),shadow,log:hand.log})};}));}
+function settlements(t:Table,hidden:Private){const hand=hidden.hand!;if(!hand.result) return null;return JSON.stringify(hidden.users.flatMap((user,seat)=>{if(user===null)return [];const view=projection(hand,seat);return {user,net:hand.result!.net[seat],public:JSON.stringify({id:t.id,season:HUMAN_SEASON,hero:POSITIONS[seat],netBb:hand.result!.net[seat]/100,showdown:hand.result!.showdown,board:view.board,holeCards:view.holeCards,winners:hand.result!.winners.map(i=>POSITIONS[i]),shadow,log:hand.log})};}));}
 async function commitTable(db:D1Database,t:Table,hidden:Private,now:number,receipt:unknown=null,departure:{user:string;version:number;phase:'break'|'out';deadline:number|null}|null=null){
  const done=hidden.hand?.status==='done',previous:Private=JSON.parse(t.private_json);
  const deadline=previous.hand?.turn===hidden.hand?.turn&&previous.hand?.street===hidden.hand?.street?t.expires_at:now+TURN;
@@ -30,7 +30,11 @@ export async function sweepHumanRank(env:Env,now=Date.now()){
  for(const t of reservations)await q(db,"UPDATE human_rank_tables SET status='cancelled',version=version+1 WHERE id=? AND version=? AND status='reserved'",t.id,t.version);
  await q(db,"UPDATE human_rank_players SET phase='out',version=version+1 WHERE user_id IN (SELECT user_id FROM human_rank_players WHERE phase='queued' AND lease_until<=? LIMIT 128)",now);
  const due=await q<Table>(db,"SELECT * FROM human_rank_tables WHERE status='active' AND expires_at<=? ORDER BY expires_at LIMIT 4",now);
- for(const t of due){const hidden:Private=JSON.parse(t.private_json),hand=hidden.hand!;if(hand.turn===null)continue;const action=legalActions(hand).some(a=>a.key==='check')?'check':'fold';hidden.hand=applyAction(hand,hand.turn,action);await commitTable(db,t,hidden,now);}
+ for(const t of due){const hidden:Private=JSON.parse(t.private_json),hand=hidden.hand!;if(hand.turn===null)continue;
+  // SQL deletion anonymizes the seat and queues forfeiture. Only the pure rules
+  // engine drains it: off-turn/all-in rights and unmatched refunds remain intact.
+  if(hidden.users[hand.turn]===null){hidden.hand=forfeit(hand,hand.turn);await commitTable(db,t,hidden,now);continue;}
+  const action=legalActions(hand).some(a=>a.key==='check')?'check':'fold';hidden.hand=applyAction(hand,hand.turn,action);await commitTable(db,t,hidden,now);}
 }
 export async function nextHumanDeadline(env:Env){const db=env.DB as D1Database;const [row]=await q<{due:number|null}>(db,"SELECT MIN(due) due FROM (SELECT expires_at due FROM human_rank_tables WHERE status IN ('reserved','active') UNION ALL SELECT lease_until FROM human_rank_players WHERE phase IN ('queued','reserved') UNION ALL SELECT break_until FROM human_rank_players WHERE phase='break')");return row?.due??null;}
 async function progressPool(db:D1Database,now:number){
@@ -52,7 +56,7 @@ export async function routeHumanRank(request:Request,env:Env):Promise<Response>{
   await q(db,'SELECT user_id,public_id,phase,lease_until,break_until,table_id,seat,accepted,version,rating,peak,hands,net_bb,rating_net_bb,receipt_json FROM human_rank_players LIMIT 0');
   await q(db,'SELECT id,version,status,private_json,expires_at,receipt_json,settlement_json,departure_json FROM human_rank_tables LIMIT 0');
   await q(db,'SELECT user_id,action_id,request_json FROM human_rank_receipts LIMIT 0');await q(db,'SELECT table_id,user_id,net_cents,before_rating,after_rating,public_json FROM human_rank_results LIMIT 0');
-  const triggers=await q<{name:string}>(db,"SELECT name FROM sqlite_master WHERE type='trigger' AND name IN ('human_rank_claim','human_rank_reserved','human_rank_activate','human_rank_phase','human_rank_player_receipt','human_rank_table_receipt','human_rank_settle','human_rank_aggregate','human_rank_departure')");if(triggers.length!==9)throw Error('human_rank_schema_unavailable');
+  const triggers=await q<{name:string}>(db,"SELECT name FROM sqlite_master WHERE type='trigger' AND name IN ('human_rank_claim','human_rank_reserved','human_rank_activate','human_rank_phase','human_rank_player_receipt','human_rank_table_receipt','human_rank_settle','human_rank_aggregate','human_rank_departure','human_rank_delete')");if(triggers.length!==10)throw Error('human_rank_schema_unavailable');
   if(path==='status'&&request.method==='GET')return respond({enabled:true});
   const cookie=request.headers.get('cookie')?.split(';').map(x=>x.trim()).find(x=>x.startsWith(transport.session+'='))?.slice(transport.session.length+1);
   const [user]=cookie&&/^[a-f\d]{64}$/.test(cookie)?await q<{id:string}>(db,'SELECT u.id FROM account_users u JOIN account_sessions s ON s.user_id=u.id WHERE s.token_hash=? AND s.expires_at>?',await digest(cookie),Math.floor(now/1000)):[];
@@ -67,7 +71,7 @@ export async function routeHumanRank(request:Request,env:Env):Promise<Response>{
    const base={rating:p?.rating??1000,peak:p?.peak??1000,hands:p?.hands??0,netBb:p?.net_bb??0,bbPer100:p?.hands?p.net_bb/p.hands*100:null,provisional:(p?.hands??0)<100,uncertainty:null,recent:recent.map(r=>JSON.parse(r.public_json)),phase:p?.phase??'out',version:p?.version??0,leaseExpiresAt:p?.lease_until??0,queue:{humans:count.humans,required:6},...(p?.break_until?{breakExpiresAt:p.break_until}:{})};
    if(!p?.table_id)return base;const t=await table(p.table_id);if(!t)return base;
    if(t.status==='reserved'){const [accepted]=await q<{n:number}>(db,'SELECT COUNT(*) n FROM human_rank_players WHERE table_id=? AND accepted=1',t.id);return {...base,reservation:{id:t.id,expiresAt:t.expires_at,accepted:!!p.accepted,acceptedHumans:accepted.n}};}
-   if(t.status==='active'&&p.phase==='hand'&&p.seat!==null){const hidden:Private=JSON.parse(t.private_json),participants=await q<Player>(db,"SELECT * FROM human_rank_players WHERE user_id IN (SELECT value FROM json_each(?,'$.users'))",t.private_json);return {...base,match:{id:t.id,version:t.version,hero:p.seat,turnExpiresAt:t.expires_at,hand:projection(hidden.hand!,p.seat),participants:hidden.users.map((id,seat)=>({seat,position:POSITIONS[seat],player:publicPlayer(participants.find(x=>x.user_id===id)!)}))}};}
+   if(t.status==='active'&&p.phase==='hand'&&p.seat!==null){const hidden:Private=JSON.parse(t.private_json),participants=await q<Player>(db,"SELECT * FROM human_rank_players WHERE user_id IN (SELECT value FROM json_each(?,'$.users'))",t.private_json);return {...base,match:{id:t.id,version:t.version,hero:p.seat,turnExpiresAt:t.expires_at,hand:projection(hidden.hand!,p.seat),participants:hidden.users.map((id,seat)=>({seat,position:POSITIONS[seat],player:id!==null&&participants.some(x=>x.user_id===id)?publicPlayer(participants.find(x=>x.user_id===id)!):{id:`departed-${t.id}-${seat}`,name:'Departed player',rating:null,hands:null,style:'unknown',tendencyScope:'observed_only',unavailable:true}}))}};}
    return base;
   };
   if(request.method==='GET'){
