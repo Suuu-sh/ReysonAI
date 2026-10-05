@@ -17,6 +17,21 @@ from low_flop_fixture import (DEFAULT_MANIFEST, REPO, TESTS, file_record, fresh_
 PARITY_KEYS = ['reach', 'initial', 'rollout', 'source_fingerprint', 'flop_policy_hash', 'later_policy_hash']
 PARITY_SEED = 'low-flop-contract-parity-v1'
 
+# The archived candidate was authored in a HU-derived checkout. Its inherited
+# engine/input closure is part of the immutable fixture, not the PR's live core.
+# Only these research-owned files are taken from the current checkout. This is
+# an explicit staging contract, never a missing-file fallback.
+CURRENT_RESEARCH_FILES = frozenset([
+    'apps/frontend/docs/specs/low-flop-overcall.baseline.json',
+    'apps/frontend/scripts/postflop-ai/audit-identity.mjs',
+    'apps/frontend/scripts/postflop-ai/build-flop-promotion-veto.mjs',
+    'apps/frontend/scripts/postflop-ai/diagnose-low-flop-defence.mjs',
+    'apps/frontend/scripts/postflop-ai/flop-promotion-veto.mjs',
+    'apps/frontend/scripts/postflop-ai/rollout-diagnostic-contract.mjs',
+    'apps/frontend/scripts/postflop-ai/rollout-low-flop-defence.mjs',
+    *[f'apps/frontend/tests/{name}.test.mjs' for name, _ in TESTS],
+])
+
 
 def check_tap(text, count):
     """A zero exit code alone cannot pass a skipped or empty contract suite."""
@@ -37,20 +52,34 @@ def check_replay(result, case):
 
 
 def copy_candidate(root, output, manifest, checkpoint):
+    rows = [row for row in manifest['files'] if row['path'].startswith('candidate-source/')]
+    names = {row['path'][len('candidate-source/'):] for row in rows}
+    require(len(rows) == len(names) == 43 and CURRENT_RESEARCH_FILES <= names,
+            'Candidate staging requires the complete 43-file closure and 11 research files')
+    plan = []
+    for row in rows:
+        relative = row['path'][len('candidate-source/'):]
+        current = not checkpoint and relative in CURRENT_RESEARCH_FILES
+        source = REPO / relative if current else root / row['path']
+        before = file_record(source, relative)
+        if not current:
+            require(before == {**row, 'path': relative}, f'Archived candidate source drift: {relative}')
+        plan.append({'path': relative, 'source': source, 'record': before,
+                     'origin': 'current-research-checkout' if current else 'verified-candidate-archive'})
     candidate = output / 'candidate'
     candidate.mkdir()
     records = []
-    for row in manifest['files']:
-        if row['path'].startswith('candidate-source/'):
-            relative = row['path'][len('candidate-source/'):]
-            source = root / row['path'] if checkpoint else REPO / relative
-            before = file_record(source, relative)
-            target = candidate / relative
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(source, target)
-            require(file_record(target, relative) == before, f'Candidate changed while copying: {relative}')
-            records.append(before)
-    require(records, 'No candidate source closure')
+    for item in plan:
+        relative, source, before = item['path'], item['source'], item['record']
+        target = candidate / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with source.open('rb') as origin, target.open('xb') as destination:
+            shutil.copyfileobj(origin, destination, 65536)
+        require(file_record(target, relative) == before and file_record(source, relative) == before,
+                f'Candidate changed while copying: {relative}')
+        records.append(before)
+    write_json(output / 'candidate-source-origins.json',
+               [{**item['record'], 'origin': item['origin']} for item in plan])
     for name, _ in TESTS:
         require((candidate / f'apps/frontend/tests/{name}.test.mjs').is_file(), f'Missing required test: {name}')
     # Current tests read this path relative to their module. It is private to this run.
@@ -76,7 +105,8 @@ def run_gate(root, output, manifest_path=DEFAULT_MANIFEST, checkpoint=False):
     summary = {'schema_version': 1, 'status': 'running', 'production_eligible': False,
                'fixture_manifest_sha256': file_record(manifest_path)['sha256'],
                'fixture_archive_sha256': manifest['archive']['sha256'],
-               'candidate_mode': 'archived-checkpoint' if checkpoint else 'current-checkout-source',
+               'candidate_mode': 'archived-checkpoint' if checkpoint else 'archived-core-with-current-research',
+               'candidate_staging_version': 2,
                'processes': [], 'required_contracts': 27, 'required_parity_samples': 128,
                'required_replays': 7, 'remaining': ['independent delivery review', 'all-combo integrated runtime impact audit',
                                                   'candidate-wide statistical budget and trusted approval receipts']}

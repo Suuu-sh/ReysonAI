@@ -8,11 +8,11 @@ This is source/provenance preservation for an unapproved offline experiment, not
 - The active experiment is closed-driver v3, using only the four original exact negative contexts. Its 36-contract local execution gate and independent limited-research review passed; v1/v2 logs retain their original identities.
 - The fixed evidence comes from main `2064a41011f0e91685e592c6e5f4c07f07ba7570`, with the full inherited runtime/fallback behavior. It must not be relabeled as evidence for a newer runtime.
 
-## Real archive delivery is still pending
+## Remote materialization and execution status
 
 `artifacts/postflop/low-flop-research-v1.tar.gz` is committed as a Git LFS pointer. The preserved real object has 1,911,780 bytes and SHA-256 `31294eff5249b46fd737cfa97d0809c103381b80fc7e419eb89261f166b0adfa`. Its 467 members total 38,976,270 bytes.
 
-Local fresh restore, full byte verification and manifest-pinned repack have passed. **GitHub LFS object upload and a clean remote materialization have not passed yet.** The pointer alone is not artifact delivery. Keep the PR in Draft and do not treat missing bytes as authorization to synthesize policies, use a reference strategy or skip the mandatory research gate.
+Local fresh restore, full byte verification and manifest-pinned repack passed. On 2026-10-05, the GitHub LFS object was uploaded and fetched into empty Mac storage with matching size/SHA. A fresh exact-head checkout restored all 467 members. Its first mandatory research gate failed before any contract because staging assumed source files inherited from the authoring HU branch. Staging version 2 explicitly uses the archived core plus current research files; fresh remote execution of this correction is still required. Keep the PR in Draft. See `low-flop-overcall.portable-staging.md`.
 
 Once the exact object is available through the authorized repository LFS workflow:
 
@@ -32,6 +32,6 @@ Local authoring checkpoint IDs in historical reports are local Git provenance, n
 
 Nine of fifteen selected continuation cases have negative conservative intervals, four are inconclusive and two are positive under the fixed runtime. That selected research does not justify a broad calling rule. The experimental activation stays at four exact rows among 21,546 checked rows. There is no GTO or optimal-frequency claim. Actual application would need a trusted approval supply path, model/derived-artifact handling, fresh-runtime validation and a separate production decision.
 
-## Verified remote blocker
+## Historical remote failures and current correction
 
-The first Draft head `02a960a11b29cd8588105b6a5df786a62ba02297` passed the public postflop runtime-config check. The reviewed-data workflow stopped during checkout because the exact research LFS object returned server 404; its deployment job was skipped. This is a real object-delivery blocker, not a successful remote research validation, and no LFS check or required gate was weakened to hide it.
+The first Draft head `02a960a11b29cd8588105b6a5df786a62ba02297` passed the public postflop runtime-config check. The reviewed-data workflow stopped during checkout because the exact research LFS object returned server 404; its deployment job was skipped. That LFS 404 was resolved after real object transfer. Attempt 2 passed checkout but the unchanged Stage2 receipt rejected the additive research LFS attribute. Independent source-only review accepted a separate, narrowly scoped receipt amendment in commit `3ca065ada06e2e8385d87dd493cb8aca98ef2267`. No LFS check or required gate was weakened. The separate research staging defect and its unexecuted fresh-remote acceptance remain explicitly open.

@@ -10,7 +10,7 @@ python scripts/research/low_flop_fixture.py repack \
   --archive .local/low-flop-repacked-immutable-v1.tar.gz
 ```
 
-This fresh-output operation reads only the manifest's fixed 467 members and verifies the final compressed bytes against the original hash. Local reproduction succeeded at 1,911,780 bytes and SHA-256 `31294eff5249b46fd737cfa97d0809c103381b80fc7e419eb89261f166b0adfa` with CPython 3.12.14 and zlib 1.3.2. A different compressor that changes bytes fails the exact check rather than silently creating a new v1 artifact. The original archive and manifest are unchanged. Remote Git LFS materialization is not yet verified.
+This fresh-output operation reads only the manifest's fixed 467 members and verifies the final compressed bytes against the original hash. Local reproduction succeeded at 1,911,780 bytes and SHA-256 `31294eff5249b46fd737cfa97d0809c103381b80fc7e419eb89261f166b0adfa` with CPython 3.12.14 and zlib 1.3.2. A different compressor that changes bytes fails the exact check rather than silently creating a new v1 artifact. The original archive and manifest are unchanged. On 2026-10-05 the repository LFS object was uploaded, fetched into empty storage and verified on the Mac; a fresh remote checkout restored all 467 members. Its first mandatory gate failed before any Node contract because the authoring checkout's inherited core was missing. See `low-flop-overcall.portable-staging.md` for the separate staging correction and fresh-execution status.
 
 For the current closed-runtime experiment, use the separate mandatory `low_flop_runtime_gate.py` entry point described in `low-flop-overcall.runtime-preview.md`; the historical 27-contract gate by itself does not accept that newer runtime.
 
@@ -88,13 +88,20 @@ python scripts/research/low_flop_gate.py \
   --output .local/low-flop-research-gate-v1
 ```
 
-The output must not exist and must be separate from the fixture root. The gate copies the
-current checkout's candidate source/test/input closure into its own run root and places
-exact original policy bytes only in that private copy. This handles the existing cache
-contract's module-relative policy path without modifying the tests or writing into the
-checkout's production policy directory. All copied inputs have recorded hashes. A newly
-introduced dependency outside that closure must be explicitly incorporated and reviewed;
-missing dependencies fail rather than falling back to the checkout.
+The output must not exist and must be separate from the fixture root. Staging version 2
+explicitly copies 32 inherited candidate core/input files from the verified archive and
+11 enumerated research source/test files from the current checkout. The runtime gate
+then stages its current driver, pins, test and two review files. These sources are never
+selected according to which files happen to exist. Missing current research source,
+missing or changed archived core, and incomplete closure fail before Node starts.
+`candidate-source-origins.json` records every selected origin and byte identity.
+
+The gate places all 90 original policy files only in its private run copy. This handles
+the existing cache contract's module-relative policy path without writing into the
+checkout's production policy directory. A newly introduced dependency outside the
+43-file closure must be explicitly incorporated and reviewed. This validates current
+research code against the preserved candidate core; it does not validate a current
+application core or claim that the authoring HU branch was delivered as product code.
 
 For the exact archived candidate instead of current checkout source, add `--checkpoint`.
 This choice is recorded in `summary.json`. The frozen v1/v2 parity snapshots always come
