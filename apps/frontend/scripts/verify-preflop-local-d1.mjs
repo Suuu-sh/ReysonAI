@@ -217,6 +217,11 @@ INSERT INTO account_native_oauth_states VALUES ('local-native-state', 'local-nat
 INSERT INTO account_native_sessions VALUES ('local-native-session', 'local-user', 'native', 'local-native-session-attempt', 1);
 INSERT INTO ranked_players VALUES ('local-user', 'Local ranked sentinel', 1200, 1250, 1);
 INSERT INTO ranked_matches (id, user_id, day, slot, started_at, expires_at, status, questions_json, actions_json, completed_at, before_rating, after_rating, score) VALUES ('local-ranked-match', 'local-user', '2000-01-01', 1, 1, 2, 'complete', '[{"keep":true}]', '["fold"]', 2, 1180, 1200, 1);
+INSERT INTO fastfold_players (user_id, public_name) VALUES ('local-user', 'Local FastFold sentinel');
+INSERT INTO fastfold_sessions (id, user_id, status, private_json, updated_at) VALUES ('local-fastfold-session', 'local-user', 'paused', '{"keep":true}', 1);
+INSERT INTO fastfold_results (id, user_id, at, net_bb, before_rating, after_rating, public_json) VALUES ('local-fastfold-result', 'local-user', 1, 0, 1000, 1000, '{"keep":true,"ratingEvidenceBb":0}');
+INSERT INTO fastfold_actions VALUES ('local-fastfold-session', 'local-fastfold-action', '{"keep":true}', 'local-fastfold-result');
+INSERT INTO fastfold_dataset_parts VALUES ('local-sentinel', '44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a', 0, '{}', 1);
 `;
 
 function sentinelInsert(name) {
