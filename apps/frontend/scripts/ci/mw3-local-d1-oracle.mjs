@@ -24,7 +24,9 @@ import { prepareMw3SnapshotDeliveries, mw3DeliveryPins, assertMw3IndependentRece
 export const WRANGLER_VERSION = '4.147.0';
 export const RUNTIME_PINS = Object.freeze({ wrangler: WRANGLER_VERSION, miniflare: '5.20261001.0-alpha', workerd: '1.20261001.1', esbuild: '0.28.1' });
 export const UNRELATED_TABLES = Object.freeze(['account_data', 'account_native_attempts', 'account_native_oauth_states', 'account_native_sessions',
-  'account_oauth_states', 'account_rate_limits', 'account_sessions', 'account_users', 'dataset_versions', 'postflop_flop_base_br',
+  'account_oauth_states', 'account_rate_limits', 'account_sessions', 'account_users', 'dataset_versions',
+  'fastfold_actions', 'fastfold_dataset_parts', 'fastfold_players', 'fastfold_results', 'fastfold_sessions',
+  'human_rank_players', 'human_rank_receipts', 'human_rank_results', 'human_rank_tables', 'postflop_flop_base_br',
   'postflop_policies', 'postflop_reasons', 'postflop_reports', 'postflop_spots', 'preflop_dataset_parts', 'preflop_datasets', 'ranked_matches', 'ranked_players']);
 const FRONTEND = fileURLToPath(new URL('../../', import.meta.url));
 const BINDING = 'MW3_LOCAL_VERIFY', NAME = 'reysonai-mw3-local-verification';
@@ -514,7 +516,7 @@ export async function verifyMw3LocalD1(options) {
     setup('synthetic-local-seed.sql', Buffer.concat([prepared.capture.schemaBytes, Buffer.from(`\n${preservationSeed()}`)]));
     const dbPath = findDatabase(persist), all = () => inspect(dbPath, db => databaseSnapshot(db));
     const preserved = inspect(dbPath, db => databaseSnapshot(db, { excludeMw3: true }));
-    assert.deepEqual(Object.keys(preserved.rows).sort(), UNRELATED_TABLES, 'All 18 current unrelated tables must be covered');
+    assert.deepEqual(Object.keys(preserved.rows).sort(), UNRELATED_TABLES, `All ${UNRELATED_TABLES.length} current unrelated tables must be covered`);
     for (const [name, rows] of Object.entries(preserved.rows)) assert.equal(rows.length, 1, `${name}: missing unrelated preservation sentinel`);
     const sentinel = inspect(dbPath, db => databaseSnapshot(db));
     const verify = () => inspect(dbPath, db => {
@@ -528,7 +530,7 @@ export async function verifyMw3LocalD1(options) {
     });
     for (let pass = 1; pass <= 2; pass++) {
       importFile(reviewedPath); verify(); mark(`whole_file_exact_import_${pass}`);
-      options.log?.(`Strict MW3 LOCAL D1 import ${pass}/2: exact header/chunk/hash equality and all 18 unrelated tables verified.`);
+      options.log?.(`Strict MW3 LOCAL D1 import ${pass}/2: exact header/chunk/hash equality and all ${UNRELATED_TABLES.length} unrelated tables verified.`);
     }
     const committed = all();
     for (const kind of ['part', 'header']) {

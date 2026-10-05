@@ -1,3 +1,8 @@
+import { GameplayDetails, GamePanel } from "./GameplayDetails.tsx";
+import { StyleAvatar } from "./StyleAvatar.tsx";
+import { OpponentProfile, profileCopy as profileText, type OpponentProfileData } from "./OpponentProfile.tsx";
+import type { ReactNode } from "react";
+import { PokerTable, PokerSeat, PokerChip, PokerActionButton } from "./PokerTable.tsx";
 import { PlayingCard } from "../components/PlayingCard.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning } from "@phosphor-icons/react";
@@ -84,9 +89,9 @@ function chipState(revealed: LogEntry[], street: string) {
   return { committed, front };
 }
 
-type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean };
+type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean; cards: string[]; resultBb: number | null; log: LogEntry[]; board: string[] };
 
-export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3DeliveryClient }: { tableId: string; watch?: boolean; onExit: () => void; mw3Client?: Mw3DeliveryClient }) {
+export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = false, exitDisabled = false, handoffKey, onHandBoundary, waitingHeader, waitingSidebar, mw3Client = mw3DeliveryClient }: { tableId: string; watch?: boolean; onExit: () => void; waitingMode?: boolean; exitDisabled?: boolean; handoffKey?: string; onHandBoundary?: () => void; waitingHeader?: ReactNode; waitingSidebar?: ReactNode; mw3Client?: Mw3DeliveryClient }) {
   const table = agentTableById(tableId)!;
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<Session>(() => createSession({ tableId, seed: `${tableId}-${Date.now()}`, humanSeat: watch ? null : 0 }));
@@ -97,7 +102,12 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
   const [loadError, setLoadError] = useState<string | null>(null);
   const [speed, setSpeed] = useState<Speed>(() => readPref("reysonai:agent-speed", "normal"));
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [compact, setCompact] = useState(() => window.matchMedia?.("(max-width: 650px)").matches ?? false);
+  useEffect(() => { const media = window.matchMedia?.("(max-width: 650px)"); if (!media) return; const update = () => setCompact(media.matches); media.addEventListener("change", update); return () => media.removeEventListener("change", update); }, []);
   const [styleOpen, setStyleOpen] = useState(false);
+  const [opponentProfile, setOpponentProfile] = useState<OpponentProfileData | null>(null);
+  const boundary = useRef(onHandBoundary); boundary.current = onHandBoundary;
+  const acceptedBoundary = useRef<string | null>(null);
 
   useEffect(() => { preloadDatasets(AGENT_DATASETS).then(() => setReady(true), error => setLoadError(String(error?.message ?? error))); }, []);
 
@@ -106,7 +116,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
   const humanPos = humanSeat >= 0 ? positions[humanSeat] : null;
   // The agents read the human's latest 1000 Agent hands. The read is fixed when a hand starts so a
   // replay of that hand never changes; it is handed to the agents as their profile (A5 hook).
-  const handRead = useMemo(() => humanPos ? playerRead(loadAgentHands()) : null, [session.handNo, humanPos]); // eslint-disable-line react-hooks/exhaustive-deps
+  const handRead = useMemo(() => !waitingMode && humanPos ? playerRead(loadAgentHands()) : null, [session.handNo, humanPos]); // eslint-disable-line react-hooks/exhaustive-deps
   const agents = useMemo(() => createAgent({ profileId: handRead && handRead.confidence !== "collecting" ? handRead.style.id : null }), [handRead]);
   const result: HandResult | null = useMemo(() => {
     if (!ready) return null;
@@ -193,17 +203,18 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
   useEffect(() => {
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
-    if (humanPos) saveAgentHand(handRecord(result!, tableId, humanPos));
+    if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos));
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
-      mine: humanPos ? toPoints(result!.returns![humanPos] ?? 0) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
+      log: [...revealed], board: [...boardCards], resultBb: humanPos && Number.isFinite(result!.returns![humanPos]) ? result!.returns![humanPos] : null, cards: humanPos ? [...(result!.holeCards[humanPos] ?? [])] : [], mine: humanPos && Number.isFinite(result!.returns![humanPos]) ? toPoints(result!.returns![humanPos]) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
   }, [done, humanPos, session.handNo, result, tableId, nameOf]);
 
   const act = (key: string) => setHumanActions(current => [...current, key]);
   const nextHand = useCallback(() => {
     if (!result || result.status !== "done") return;
+    if (handoffKey) return;
     setSession(current => finishHand(current, result.returns!));
     setHumanActions([]); setShown(0);
-  }, [result]);
+  }, [result, handoffKey]);
   const skip = () => setShown(log.length);
 
   // Deal the next hand by itself: right away, except at a showdown, where the cards stay up long
@@ -211,14 +222,19 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
   const showdown = done && Boolean(result?.showdown);
   useEffect(() => {
     if (!done) return;
+    if (handoffKey) {
+      const key = `${session.handNo}:${handoffKey}`;
+      if (acceptedBoundary.current !== key) { acceptedBoundary.current = key; boundary.current?.(); }
+      return;
+    }
     const timer = window.setTimeout(nextHand, showdown ? (speed === "fast" ? 2500 : 3500) : speed === "fast" ? 300 : 600);
     return () => window.clearTimeout(timer);
-  }, [done, showdown, nextHand, speed]);
+  }, [done, showdown, nextHand, speed, handoffKey, session.handNo]);
 
   // Keyboard: 1-9 pick an action, Enter / Space deal the next hand, S skips.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.metaKey || event.ctrlKey || event.altKey || (event.target as HTMLElement)?.closest?.("input, textarea, select")) return;
+      if (document.querySelector('[aria-modal="true"]') || handoffKey && done || event.metaKey || event.ctrlKey || event.altKey || (event.target as HTMLElement)?.closest?.("input, textarea, select, button, a, [role=button]")) return;
       if (pending && /^[1-9]$/.test(event.key)) {
         const option = pending.options[Number(event.key) - 1];
         if (option) { event.preventDefault(); act(option.key); }
@@ -230,7 +246,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
   });
 
   // The dashboard shows the read including the hand just finished.
-  const liveRead = useMemo(() => humanPos ? playerRead(loadAgentHands()) : null, [humanPos, history.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  const liveRead = useMemo(() => !waitingMode && humanPos ? playerRead(loadAgentHands()) : null, [humanPos, history.length]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!styleOpen) return;
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setStyleOpen(false); };
@@ -245,13 +261,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
   const winnerLine = done ? resultLine(result!, nameOf) : null;
   const myDelta = done && humanPos ? toPoints(result!.returns![humanPos] ?? 0) : null;
 
-  return <div className="agent-page" style={{ "--table-theme": table.theme } as any}>
-    <header className="agent-top">
-      <button type="button" className="agent-back" onClick={onExit} aria-label={localized("Back", "戻る")}><ArrowLeft size={16} weight="bold" /></button>
-      <div className="agent-title">
-        <strong>{localized(table.name.en, table.name.ja)}</strong>
-        <small>{watch ? localized("Spectating", "観戦") : "Reyson Agent"} · 6-max 100BB · #{session.handNo + 1}</small>
-      </div>
+  const tools = <>
       <div className="agent-tools">
         <div className="agent-segment" role="group" aria-label={localized("Speed", "速さ")}>
           {(Object.keys(SPEEDS) as Speed[]).map(value => <button key={value} type="button" aria-pressed={speed === value}
@@ -262,17 +272,20 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
         <span className="agent-rule" tabIndex={0}><Info size={13} />{mw3Text.beta}
           <span className="agent-rule-tip" role="tooltip">{mw3Text.rule}</span></span>
       </div>
+  </>;
+  return <div className="agent-page" style={{ "--table-theme": table.theme } as any}>
+    <header className="agent-top">
+      <button type="button" className={`agent-back${waitingMode ? " ff-exit" : ""}`} disabled={exitDisabled} onClick={onExit} aria-label={waitingMode ? localized("Exit", "退出") : localized("Back", "戻る")}><ArrowLeft size={16} weight="bold" />{waitingMode && localized("Exit", "退出")}</button>
+      <div className="agent-title">
+        <strong>{waitingHeader ?? localized(table.name.en, table.name.ja)}</strong>
+        <small>{watch ? localized("Spectating", "観戦") : "Reyson Agent"} · 6-max 100BB · #{session.handNo + 1}</small>
+      </div>
+      <div className="game-desktop-tools">{tools}</div>
     </header>
 
     <div className="agent-layout">
       <section className="agent-stage">
-        <div className="agent-felt-wrap">
-          <div className="agent-felt">
-            <span className="agent-felt-logo" aria-hidden="true">ReysonAI</span>
-            <div className="agent-center">
-              <div className="agent-board">{[0, 1, 2, 3, 4].map(i => boardCards[i]
-                ? <PlayingCard variant="agent" key={`${i}-${boardCards[i]}`} card={boardCards[i]} size="is-board" />
-                : <span key={i} className="agent-card is-slot is-board" />)}</div>
+        <PokerTable board={boardCards} center={<>
               {done ? <div className="agent-result" key={session.handNo}>
                   <b>{winnerLine}</b>
                   <small>{localized("Pot", "ポット")} {pts(totalPot)}{result!.rake ? ` · ${localized("rake", "レーキ")} ${pts(result!.rake)}` : ""}</small>
@@ -283,12 +296,11 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
               {waiting && <div className="agent-thinking">{result?.postflopKind === "mw3_srp" ? mw3Text.loading : localized("Reading the AI estimate…", "AI推定を読み込み中…")}</div>}
               {unavailable && <div className="agent-note" role="status">{mw3Text.unavailable}</div>}
               {done && result?.policyMissing && <div className="agent-note">{localized("No saved postflop policy for this line, so it was checked down.", "この経路のAI方針がないため、チェックダウンしました")}</div>}
-            </div>
+            </>}>
             {!done && session.seats.map((seat, index) => {
               const slotIndex = (index - order + 6) % 6;
               const amount = chips.front[positions[index]] ?? 0;
-              return amount > 0 ? <span key={`chip-${index}`} className={`agent-chip slot-${slotIndex}`}>
-                <i aria-hidden="true" />{pts(amount)}</span> : null;
+              return amount > 0 ? <PokerChip key={`chip-${index}`} slot={slotIndex} amount={pts(amount)} /> : null;
             })}
             {session.seats.map((seat, index) => {
               const slotIndex = (index - order + 6) % 6;
@@ -305,39 +317,30 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
               const showCards = isHuman || watch || (done && result?.showdown && !folded);
               const delta = done ? toPoints(result!.returns![pos] ?? 0) : null;
               const stack = done ? 100 + (result!.returns![pos] ?? 0) : 100 - (chips.committed[pos] ?? 0);
-              return <div key={index} className={`agent-seat slot-${slotIndex}${isHuman ? " is-human" : ""}${folded ? " is-folded" : ""}${won ? " is-winner" : ""}${actingPos === pos ? " is-acting" : ""}`}>
-                <div className="agent-hole">{(result?.holeCards[pos] ?? []).map((card, i) => <PlayingCard variant="agent" key={`${session.handNo}-${i}`} card={card} hidden={!showCards} size={isHuman ? "is-hero" : ""} />)}</div>
-                <div className="agent-plate">
-                  <div className="agent-avatar">
-                    {character ? <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : <span className="agent-you">YOU</span>}
-                    {actingPos === pos && !isHuman && <span className="agent-dots" aria-hidden="true"><i /><i /><i /></span>}
-                  </div>
-                  <div className="agent-meta">
-                    <b>{character ? character.name.en : localized("You", "あなた")}</b>
-                    <small>{pts(stack)}</small>
-                  </div>
-                  <span className="agent-pos">{pos}</span>
-                  {pos === "BTN" && <span className="agent-dealer" aria-label="Dealer">D</span>}
-                </div>
-                {lastOnStreet && !done && <span className={`agent-bubble tone-${tone(lastOnStreet.action)}`} key={`${lastOnStreet.street}-${mine.length}`}>{actionLabel(asDisplayed(revealed, lastOnStreet))}</span>}
+              return <PokerSeat key={index} slot={slotIndex} human={isHuman} folded={folded} won={Boolean(won)} acting={actingPos === pos}
+                cards={result?.holeCards[pos] ?? []} showCards={Boolean(showCards)} handKey={session.handNo}
+                avatar={character ? waitingMode ? <StyleAvatar id="balanced" color={character.color} size={50} dim={folded}/> : <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : undefined}
+                onProfile={character ? () => setOpponentProfile({name:character.name.en, avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>, kind:"agent", type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"), description:profileText("Saved balanced AI estimate. Agent codenames do not change policies.", "保存済みのバランス型AI推定。Agent名で方針は変わりません。", "已保存的平衡AI估计。Agent名称不会改变策略。", "Estimación IA equilibrada guardada. Los nombres Agent no cambian la política.")}) : undefined}
+                profileLabel={character ? `${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}` : undefined} fullName={character?.name.en}
+                name={character ? waitingMode ? "BAL" : character.name.en : localized("You", "あなた")} stack={pts(stack)} position={pos}
+                bubble={lastOnStreet && !done ? <span className={`agent-bubble tone-${tone(lastOnStreet.action)}`} key={`${lastOnStreet.street}-${mine.length}`}>{actionLabel(asDisplayed(revealed, lastOnStreet))}</span> : null}>
                 {done && result?.showdown && result.handRanks?.[pos] != null && !folded && <span className={`agent-handname${won ? " is-win" : ""}`}>{handName(result.handRanks[pos])}</span>}
                 {delta != null && delta !== 0 && <span className={`agent-delta ${delta > 0 ? "up" : "down"}`}>{signed(delta)}</span>}
-              </div>;
+              </PokerSeat>;
             })}
-          </div>
-        </div>
+        </PokerTable>
 
         <footer className={`agent-actions${pending ? " is-turn" : ""}`}>
           {pending ? <>
               <div className="agent-turn">
                 <b>{localized("Your turn", "あなたの番")}</b>
                 <small>{pending.toCall ? localized(`To call ${bb(pending.toCall)}BB`, `コール額 ${bb(pending.toCall)}BB`) : localized("You can check", "チェックできます")} · {localized("pot", "ポット")} {bb(pending.pot)}BB</small>
-                {pending.notice === "no_data" && <small className="agent-turn-note">{localized("Beta: this line (e.g. a squeeze or cold 4-bet pot) has no saved postflop strategy yet, so the hand is checked down to showdown.", "β版のため、この流れ（スクイーズやコールド4betのポットなど）のポストフロップ方針はまだありません。ショーダウンまでチェックで進みます。")}</small>}
-                {pending.notice === "no_multiway" && <small className="agent-turn-note">{mw3Text.blocked}</small>}
+                {pending.notice === "no_data" && <details className="agent-turn-note" open={!compact || undefined}><summary>{profileText("Beta · details", "β版・詳細", "测试版 · 详情", "Beta · detalles")}</summary><small>{localized("Beta: this line (e.g. a squeeze or cold 4-bet pot) has no saved postflop strategy yet, so the hand is checked down to showdown.", "β版のため、この流れ（スクイーズやコールド4betのポットなど）のポストフロップ方針はまだありません。ショーダウンまでチェックで進みます。")}</small></details>}
+                {pending.notice === "no_multiway" && <details className="agent-turn-note" open={!compact || undefined}><summary>{profileText("Beta · details", "β版・詳細", "测试版 · 详情", "Beta · detalles")}</summary><small>{mw3Text.blocked}</small></details>}
               </div>
-              <div className="agent-buttons">{pending.options.map((option, index) => <button type="button" key={option.key} className={`agent-act tone-${tone(option.key)}`} onClick={() => act(option.key)}>
+              <div className="agent-buttons">{pending.options.map((option, index) => <PokerActionButton key={option.key} tone={tone(option.key)} onClick={() => act(option.key)}>
                 <kbd>{index + 1}</kbd><span>{actionLabel({ action: option.key, to: option.key === "call" ? pending.toCall : option.to, amountBb: option.amountBb, allIn: option.allIn })}</span>
-                <AgentActionSizeHint option={option} /></button>)}</div>
+                <AgentActionSizeHint option={option} /></PokerActionButton>)}</div>
             </>
             : unavailable ? <>
               <p className="agent-summary" role="status">{mw3Text.ended}</p>
@@ -355,23 +358,31 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
         </footer>
       </section>
 
-      <aside className="agent-side">
+      <GameplayDetails profileSwitches={session.seats.filter(seat => seat.kind === "agent").map(seat => { const character = characterFor(seat.agentId); if (!character) return null; return <button type="button" className="agent-mini-profile" key={character.id} aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado")})}><AgentAvatar id={character.id} color={character.color} size={32}/></button>; })} currentCards={humanPos ? result?.holeCards[humanPos] : []} history={history.map(item => ({id:item.no,cards:item.cards,resultBb:item.resultBb,details:<HandLog entries={item.log} nameOf={nameOf} board={item.board}/>}))} requestedPanel={styleOpen ? "tools" : null} onClose={() => setStyleOpen(false)} profile={opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}>
+        {waitingMode && <GamePanel id="queue" label={profileText("Queue / rank", "待機 / ランク", "队列 / 评分", "Cola / rango")}>{waitingSidebar}</GamePanel>}
+        <GamePanel id="session" label={profileText(waitingMode ? "Agents" : "Session", waitingMode ? "Agent" : "セッション", waitingMode ? "Agent" : "会话", waitingMode ? "Agents" : "Sesión")}>
+        {waitingMode && <section className="agent-panel"><h3>{profileText("Practice Agents", "練習相手のAgent", "练习Agent", "Agents de práctica")}</h3>{table.agents.map(character => <div className="ff-opponent" key={character.id}><button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"),avatar:<StyleAvatar id="balanced" color={character.color} size={64}/>})}><StyleAvatar id="balanced" color={character.color} size={32}/></button><div><strong>{character.name.en}</strong><small>{profileText("Balanced · preflop", "バランス型・プリフロップ", "平衡型 · 翻牌前", "Equilibrado · preflop")}</small></div></div>)}</section>}
+        {!waitingMode && <>
         {liveRead && <PlayStyleCard read={liveRead} onOpen={() => setStyleOpen(true)} />}
         <section className="agent-panel">
           <h3>{localized("Session", "セッション")}<small>{localized(`${session.handNo} hands`, `${session.handNo}ハンド`)}</small></h3>
           <ol className="agent-standings">{standings.map(({ seat, index }) => {
             const character = seat.kind === "agent" ? characterFor(seat.agentId) : null;
             return <li key={index} className={seat.kind === "human" ? "is-human" : ""}>
-              <span className="agent-mini">{character ? <AgentAvatar id={character.id} color={character.color} size={22} /> : <i>YOU</i>}</span>
+              <span className="agent-mini">{character ? <button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en, avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>, kind:"agent", type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"), description:profileText("Saved balanced AI estimate.", "保存済みバランス型AI推定。", "已保存的平衡AI估计。", "Estimación IA equilibrada guardada.")})}><AgentAvatar id={character.id} color={character.color} size={22}/></button> : <i>YOU</i>}</span>
               <span>{character ? localized(character.name.en, character.name.ja) : localized("You", "あなた")}</span>
               <b className={seat.points > 0 ? "up" : seat.points < 0 ? "down" : ""}>{signed(seat.points)}</b>
             </li>;
           })}</ol>
         </section>
+        </>}
+        </GamePanel><GamePanel id="hand" mobileOnly={waitingMode} label={profileText("Hand", "ハンド", "手牌", "Mano")}>
         <section className="agent-panel agent-log">
           <h3>{localized("This hand", "このハンド")}</h3>
           <HandLog entries={revealed} nameOf={nameOf} board={result?.board ?? []} />
         </section>
+        </GamePanel><GamePanel id="recent" mobileOnly={waitingMode || history.length === 0} label={profileText("Recent", "最近", "最近", "Recientes")}>
+        {history.length === 0 && <section className="agent-panel"><p className="agent-log-empty">{profileText("No completed hands yet", "完了したハンドはまだありません", "暂无已完成手牌", "Aún no hay manos terminadas")}</p></section>}
         {history.length > 0 && <section className="agent-panel">
           <h3>{localized("Recent hands", "最近のハンド")}</h3>
           <ul className="agent-recent">{history.slice(0, 6).map(item => <li key={item.no}>
@@ -379,18 +390,17 @@ export function AgentTablePage({ tableId, watch = false, onExit, mw3Client = mw3
             {item.mine != null && <b className={item.mine > 0 ? "up" : item.mine < 0 ? "down" : ""}>{signed(item.mine)}</b>}
           </li>)}</ul>
         </section>}
-      </aside>
+        </GamePanel>
+        <GamePanel id="tools" label={profileText("Tools", "設定", "工具", "Controles")} mobileOnly>{tools}{liveRead && <PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} />}</GamePanel>
+      </GameplayDetails>
     </div>
-    {styleOpen && liveRead && <div className="style-drawer" role="dialog" aria-modal="true" aria-label={localized("Your play style", "あなたのプレイスタイル")}>
-      <button type="button" className="style-drawer-backdrop" aria-label={localized("Close", "閉じる")} onClick={() => setStyleOpen(false)} />
-      <div className="style-drawer-panel"><PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} /></div>
-    </div>}
+
   </div>;
 }
 
 function HandLog({ entries, nameOf, board }: { entries: LogEntry[]; nameOf: (pos: string) => string; board: string[] }) {
   const end = useRef<HTMLDivElement>(null);
-  useEffect(() => { end.current?.scrollIntoView?.({ block: "nearest" }); }, [entries.length]);
+  useEffect(() => { const log = end.current?.closest<HTMLElement>(".agent-log-body"); if (log) log.scrollTop = log.scrollHeight; }, [entries.length]);
   if (!entries.length) return <p className="agent-log-empty">{localized("Dealing…", "配っています…")}</p>;
   const groups = STREETS.map(street => ({ street, items: entries.filter(entry => entry.street === street) })).filter(group => group.items.length);
   const label: Record<string, string> = { preflop: localized("Preflop", "プリフロップ"), flop: localized("Flop", "フロップ"), turn: localized("Turn", "ターン"), river: localized("River", "リバー") };

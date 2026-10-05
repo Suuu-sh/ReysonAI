@@ -1,3 +1,7 @@
+import { HumanRankArena } from "./HumanRankArena.tsx";
+import { humanProfile, humanRankState } from "./human-api.ts";
+import { ffCopy as ff } from "./fastfold-api.ts";
+import type { FastFoldProfile, FastFoldState } from "./fastfold-api.ts";
 import type { CSSProperties } from "react";
 import type { Profile } from "../profile.ts";
 import type { AnswerEntry, Drill as SavedDrill, DrillDraft, DrillQuestion, GradedAnswer, IssuedMatch, NamedDrill, RankedMatch, SessionProgress, TrainerSettings, TrainerSpot } from "./types.ts";
@@ -497,6 +501,8 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   const [run, setRun] = useState(0);
   const [result, setResult] = useState<{ log: AnswerEntry[]; record: SessionRecord | null; rank?: RankedMatch } | null>(null);
   const [rankState, setRankState] = useState(emptyRankState);
+  const [fastFoldState, setFastFoldState] = useState<FastFoldState | null>(null);
+  const [readinessRetry, setReadinessRetry] = useState(0);
   const [rankedReady, setRankedReady] = useState(false);
   const [rankedError, setRankedError] = useState("");
   const [rankedBusy, setRankedBusy] = useState(false);
@@ -504,13 +510,13 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   useEffect(() => subscribeAccount(() => setAccount(accountSnapshot())), []);
   useEffect(() => {
     let canceled = false;
-    setRankedReady(false); setRankState(emptyRankState()); setActive(null); setResult(null);
+    setRankedReady(false); setFastFoldState(null); setRankState(emptyRankState()); setActive(null); setResult(null);
     if (!account.ready || !account.user?.verified || account.error) return;
-    rankedRequest("profile").then(response => {
-      if (!canceled) { setRankState(response.state); setRankedReady(response.enabled); setRankedError(""); }
+    humanProfile().then(response => {
+      if (!canceled) { setFastFoldState(humanRankState(response.state)); setRankedReady(response.enabled === true); setRankedError(""); }
     }).catch(() => { if (!canceled) setRankedError(localized("Ranked is unavailable. Your local records do not count toward rankings.", "ランク戦は現在利用できません。ローカル記録はランキングに反映されません。")); });
     return () => { canceled = true; };
-  }, [account.ready, account.user?.id, account.error]);
+  }, [account.ready, account.user?.id, account.user?.verified, account.error, readinessRetry]);
   // The trainer's sub-page lives in the URL (see route.ts); the state below only holds what the
   // page needs, and is rebuilt from the URL after a reload.
   const route = section === "トレーナー" ? trainerRouteOf(path) : { phase: "library" as const };
@@ -531,18 +537,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   };
   const start = async (drill: NamedDrill, review = false) => {
     if (drill.id === "ranked") {
-      if (!rankedReady || rankedBusy) return;
-      if (!rankState.active && !window.confirm(localized("Start a public ranked match? Your anonymous Player name, rating and practice results appear on the leaderboard. Each start uses one of 3 daily attempts (reset 00:00 UTC), even if abandoned. Ratings reflect the saved AI estimate, not GTO or win rate.", "公開ランク戦を開始しますか？匿名のPlayer名・レート・練習結果がランキングに公開されます。開始すると中断しても1日3回の枠を消費します（UTC 0時リセット）。レートはAI推定との一致を示し、GTOや勝率ではありません。"))) return;
-      setRankedBusy(true); setRankedError("");
-      try {
-        const response = await rankedRequest("matches", { consent: true });
-        if (response.match.questions.some(q => !spotById.get(q.spotId)?.byHand.has(q.hand))) throw new Error("dataset");
-        setRankState(response.state);
-        setActive({ drill, review: false, ranked: true, rankedMatch: response.match, name: drill.name, settings: drill.settings });
-        setRun(value => value + 1);
-        onNavigate(trainerPath({ phase: "drill", key: "ranked" }));
-      } catch { setRankedError(localized("Could not start ranked. Try again after checking your connection and daily limit.", "ランク戦を開始できませんでした。接続と本日の残り回数を確認してください。")); }
-      finally { setRankedBusy(false); }
+      if (rankedReady && !rankedBusy) onNavigate(trainerPath({ phase: "drill", key: "ranked" }));
       return;
     }
     begin(drill, review);
@@ -586,14 +581,16 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
       const drill = drills.find(item => item.id === route.id);
       if (drill) setEditing({ drill, isNew: false }); else setPhase("drills", true);
     }
-    if (route.phase === "drill" && (!active || keyOf(active!) !== route.key)) {
+    if (route.phase === "drill" && route.key !== "ranked" && (!active || keyOf(active!) !== route.key)) {
       const drill = route.key === "ranked" ? RANKED_DRILL : route.key === "review" ? reviewDrill : drills.find(item => item.id === route.key);
       const rankedClosed = route.key === "ranked" && !rankedReady;
       if (drill && !rankedClosed) { if (route.key === "ranked") start(drill); else begin(drill, route.key === "review"); } else setPhase(route.key === "ranked" || !drill ? "library" : "drills", true);
     }
     if (route.phase === "agent" && !agentTableById(route.tableId)) setPhase("library", true);
-    if (route.phase === "result" && (!result || !active || keyOf(active!) !== route.key)) setPhase(route.key === "ranked" ? "library" : "drills", true);
+    if (route.phase === "result" && route.key === "ranked") onNavigate(trainerPath({ phase: "drill", key: "ranked" }), true);
+    if (route.phase === "result" && route.key !== "ranked" && (!result || !active || keyOf(active!) !== route.key)) setPhase(route.key === "ranked" ? "library" : "drills", true);
   }, [path, section, rankedReady]); // eslint-disable-line react-hooks/exhaustive-deps
+  const onFastFoldProfile = useCallback((response: FastFoldProfile) => { setFastFoldState(response.state); setRankedReady(response.enabled === true); }, []);
   const mainRef = useRef<HTMLElement>(null);
   useEffect(() => { mainRef.current?.scrollTo?.(0, 0); window.scrollTo?.(0, 0); }, [phase, section]);
   const activeDraftKey = active && (active!.review ? "review" : active!.drill.id);
@@ -603,7 +600,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
   return <div className="shell">
     <Sidebar activeSection={section} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} />
     <main className="trainer-page" ref={mainRef}>
-      {rankedError && <p role="alert">{rankedError}</p>}
+      {rankedError && <p role="alert">{rankedError} <button type="button" className="config-edit" onClick={() => setReadinessRetry(value => value + 1)}>{ff("Retry connection", "接続を再試行", "重试连接", "Reintentar conexión")}</button></p>}
       {rankedBusy && <p role="status">{localized("Confirming with ranked server…", "ランク戦サーバーに確認中…")}</p>}
       {section === "弱点"
         ? <Weakness history={history}
@@ -617,7 +614,8 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onChange={drill => setEditing({ ...editing, drill })} onCancel={() => setPhase("drills")}
             onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("drills"); }} />
         : phase === "agent" && agentTable && agentTableById(agentTable.tableId) ? <AgentTablePage key={`${agentTable.tableId}-${agentTable.watch}`} tableId={agentTable.tableId} watch={agentTable.watch} onExit={() => setPhase("library")} />
-        : phase === "ranking" && rankedReady ? <Leaderboard rank={rankState} profile={profile} onBack={() => setPhase("library")} />
+        : phase === "ranking" && rankedReady && fastFoldState ? <Leaderboard rank={fastFoldState} profile={profile} onBack={() => setPhase("library")} />
+        : ((phase === "drill" || phase === "result") && "key" in route && route.key === "ranked") || phase === "waiting" ? <HumanRankArena key={account.user?.id ?? "signed-out"} ready={account.ready && Boolean(account.user?.verified) && !account.error} view={phase === "waiting" ? "waiting" : "play"} onBack={() => setPhase("library", true)} onWaiting={() => onNavigate(trainerPath({ phase: "waiting" }), true)} onPlay={() => onNavigate(trainerPath({ phase: "drill", key: "ranked" }), true)} onRanking={() => setPhase("ranking")} onProfile={onFastFoldProfile} />
         : phase === "result" && result ? <SessionResult log={result.log} record={result.record} rank={result.rank} settings={current!.settings} drill={active!.review ? null : current!}
             onRestart={active!.ranked && (rankState.remaining === 0) ? null : () => start(current!, active!.review)} onLibrary={() => setPhase(active!.ranked ? "library" : "drills")} />
         : phase === "drill" && current ? <Drill key={run} history={history} onAnswer={onAnswer} settings={current!.settings} drillName={current!.name} reviewOnly={active!.review}
@@ -632,7 +630,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onResume={key => key === "ranked" ? start(RANKED_DRILL) : key === "review" ? start(reviewDrill, true) : start(drills.find(drill => drill.id === key) ?? drills[0])}
             onCreate={() => { setEditing(newDrill()); onNavigate(trainerPath({ phase: "new" })); }} onStartReview={() => start(reviewDrill, true)}
             onStartAgent={(tableId, watch) => onNavigate(trainerPath({ phase: "agent", tableId, watch }))}
-            rank={rankState} rankedReady={rankedReady} rankedBusy={rankedBusy} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")} />}
+            rank={fastFoldState} rankedReady={rankedReady} rankedBusy={rankedBusy} onStartRanked={() => start(RANKED_DRILL)} onOpenRanking={() => setPhase("ranking")} />}
     </main>
   </div>;
 }

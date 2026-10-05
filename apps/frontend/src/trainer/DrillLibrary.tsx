@@ -1,5 +1,6 @@
+import { ffCopy as ff } from "./fastfold-api.ts";
 import type { CSSProperties } from "react";
-import type { AnswerEntry, Drill, DrillDraft, DrillDrafts, IssuedMatch, RankState, TrainerSettings } from "./types.ts";
+import type { AnswerEntry, Drill, DrillDraft, DrillDrafts, TrainerSettings } from "./types.ts";
 import { displayDrillName } from "./drill-store.ts";
 import { RankBadge, RankLadder, tierColor } from "./RankBadge.tsx";
 import { ArrowClockwise, ArrowLeft, Eye, PencilSimple, Play, Plus, Trash, Trophy } from "@phosphor-icons/react";
@@ -11,6 +12,8 @@ import { DIFFICULTY_OPTIONS, POSITIONS, spotsForSettings } from "./trainer-data.
 import { drillStats } from "./drill-store.ts";
 import { LEGEND, RANKED_DAILY_LIMIT, RANKED_LENGTH, TIERS, TIER_EN, tierFor } from "./rank-store.ts";
 import { localized } from "../locale.ts";
+
+type RankSummary = { rating: number; peak: number; active?: unknown };
 
 const pct = (value: number | null | undefined) => value == null ? "—" : `${Math.round(value * 100)}%`;
 
@@ -88,7 +91,7 @@ function DrillCard({ drill, draft, onStart, onEdit, onDelete }: { drill: Drill; 
 }
 
 // Trainer home: a heading, any session to resume, and one mode block per way to practise.
-export function TrainerHome({ drills, reviewCount, drafts = {}, onOpenDrills, onCreate, onStartReview, onResume, rank, rankedReady = false, rankedBusy = false, onStartRanked, onOpenRanking, onStartAgent = null }: { drills: Drill[]; history?: AnswerEntry[]; reviewCount: number; drafts?: DrillDrafts; onOpenDrills: () => void; onCreate: () => void; onStartReview: () => void; onResume: (key: string) => void; rank?: RankState | null; rankedReady?: boolean; rankedBusy?: boolean; onStartRanked: () => void; onOpenRanking: () => void; onStartAgent?: ((tableId: string, watch: boolean) => void) | null }) {
+export function TrainerHome({ drills, reviewCount, drafts = {}, onOpenDrills, onCreate, onStartReview, onResume, rank, rankedReady = false, rankedBusy = false, onStartRanked, onOpenRanking, onStartAgent = null }: { drills: Drill[]; history?: AnswerEntry[]; reviewCount: number; drafts?: DrillDrafts; onOpenDrills: () => void; onCreate: () => void; onStartReview: () => void; onResume: (key: string) => void; rank?: RankSummary | null; rankedReady?: boolean; rankedBusy?: boolean; onStartRanked: () => void; onOpenRanking: () => void; onStartAgent?: ((tableId: string, watch: boolean) => void) | null }) {
   // Only drafts that can still be opened: ranked, review, or a drill that still exists.
   const resumable = Object.values(drafts).filter(draft => draft && (draft.key === "review" || (draft.key !== "ranked" && drills.some(drill => drill.id === draft.key))))
     .sort((a, b) => (b.savedAt ?? 0) - (a.savedAt ?? 0));
@@ -223,21 +226,20 @@ function RankedComingSoon() {
     actions={<button type="button" className="mode-primary" disabled>{localized("Sign in · server availability required", "ログイン・サーバー準備が必要")}</button>} />;
 }
 
-function RankedCard({ rank, busy, draft, onStart, onOpenRanking }: { rank: RankState; busy: boolean; draft?: IssuedMatch | null; onStart: () => void; onOpenRanking: () => void }) {
+function RankedCard({ rank, busy, draft, onStart, onOpenRanking }: { rank: RankSummary; busy: boolean; draft?: unknown; onStart: () => void; onOpenRanking: () => void }) {
   const tier = tierFor(rank.rating);
-  const left = rank.remaining ?? 0;
-  const canStart = !busy && (Boolean(draft) || left > 0);
+  const canStart = !busy;
   return <ModeBlock theme={tierColor(tier.name)} className={`is-ranked${draft ? " in-progress" : ""}`} visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
     visual={<RankedEmblem tier={tier} />}
     eyebrow={`RANKED · ${localized("Server ranked", "サーバー集計")}`}
-    title={localized("Ranked matches", "ランク戦")}
-    description={localized(`All spots · standard difficulty · ${RANKED_LENGTH} questions. Harder hands move your rating more.`, `全局面・標準難易度・${RANKED_LENGTH}問。難しいハンドほどレートが大きく動きます。`)}
+    title={ff("Human FastFold β", "対人FastFold β", "真人FastFold β", "FastFold humano β")}
+    description={ff("Six people must join before a ranked hand starts. Practice against unrated Agents while waiting.", "人間6人が揃ってからランク戦を開始。待つ間はランク非加算のAgent戦。", "六人到齐后开始排位。等待时可练习不计分的Agent对局。", "La mano clasificatoria empieza con seis personas. Mientras esperas, practica con Agents sin puntuación.")}
     actions={<>
       <button type="button" className="mode-primary" disabled={!canStart} onClick={onStart}>
-        <Play size={14} weight="fill" />{draft ? localized("Restart reserved match", "予約試合を最初から") : canStart ? localized("Play ranked", "ランク戦に挑む") : localized("Back tomorrow", "また明日")}
+        <Play size={14} weight="fill" />{draft ? ff("Open human queue", "対人待機を開く", "打开真人队列", "Abrir cola humana") : ff("Join human queue", "対人待機へ", "加入真人队列", "Unirse a cola humana")}
       </button>
       <button type="button" className="mode-secondary" onClick={onOpenRanking}><Trophy size={15} />{localized("Leaderboard", "ランキング")}</button>
-      <small className="mode-quota">{draft ? localized(`Reserved match`, `予約済みの試合`) : localized(`${left} / ${RANKED_DAILY_LIMIT} left today · resets 00:00 UTC`, `今日の残り ${left} / ${RANKED_DAILY_LIMIT}回 · UTC 0時更新`)}</small>
+      <small className="mode-quota">{ff("New season · server confirmed · no daily start limit", "新シーズン・サーバー確定・開始回数の制限なし", "新赛季 · 服务器确认 · 开始次数不限", "Nueva temporada · confirmada por servidor · sin límite de inicios")}</small>
     </>}
     foot={<RankLadder rating={rank.rating} />}>
     <div className="ranked-stats">

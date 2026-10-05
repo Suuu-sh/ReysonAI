@@ -25,6 +25,9 @@ on:
       - 'apps/backend/tests/**'
       - 'apps/backend/package.json'
       - 'apps/backend/migrations/0009_ranked.sql'
+      - 'apps/backend/migrations/0010_fastfold.sql'
+      - 'apps/backend/migrations/0011_human_ranked.sql'
+      - 'apps/backend/scripts/**'
       - 'apps/shared/**'
       - 'configs/**'
       - 'artifacts/preflop/**'
@@ -87,6 +90,10 @@ jobs:
       - name: Verify authoritative ranked service without live credentials
         working-directory: apps/backend
         run: node --experimental-strip-types --test tests/ranked.test.mjs
+
+      - name: Verify continuous FastFold authentication, replay and atomic settlement
+        working-directory: apps/backend
+        run: npx --yes --package=wrangler@4.147.0 --call 'node scripts/verify-fastfold-local-runtime.mjs --wrangler "$(command -v wrangler)"'
 
       - name: Verify local D1 roundtrip, idempotency, isolation and failed-import rollback
         run: node scripts/verify-preflop-local-d1.mjs --sql .local/reviewed-preflop/preflop.sql --manifest .local/reviewed-preflop/delivery.json
@@ -176,6 +183,24 @@ jobs:
           WRANGLER_SEND_METRICS: 'false'
         run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0009_ranked.sql --yes
 
+      # Additive only: never run all pending account/postflop migrations.
+      - name: Apply exact FastFold schema
+        working-directory: apps/backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0010_fastfold.sql --yes
+
+      # Independent human season: apply only this reviewed additive schema.
+      - name: Apply exact six-human ranked schema
+        working-directory: apps/backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: npx --yes wrangler@4.147.0 d1 execute reysonai --remote --config wrangler.jsonc --file migrations/0011_human_ranked.sql --yes
+
       - name: Deploy ranked API before enabling the client
         working-directory: apps/backend
         env:
@@ -204,6 +229,17 @@ jobs:
           if (!response.ok || (await response.json()).enabled !== true) {
             throw new Error('Ranked API/schema/published data are not ready; do not enable client');
           }
+          const humanResponse = await fetch('https://api.reysonai.com/v1/fastfold/human/status', {
+            headers: { Accept: 'application/json', Origin: origin },
+            signal: AbortSignal.timeout(15000),
+          });
+          assertCors(humanResponse);
+          const human = await humanResponse.json();
+          if (!humanResponse.ok || human.enabled !== true || human.season !== 'human-fastfold-v1' ||
+              human.mode !== 'six_verified_humans' || human.requiredHumans !== 6 ||
+              human.comparisonMode !== 'shadow' || human.appliedPenalty !== false) {
+            throw new Error('Six-human API/schema is not ready; do not enable compatible client');
+          }
           const preflight = await fetch('https://api.reysonai.com/v1/ranked/matches', {
             method: 'OPTIONS',
             headers: { Origin: origin, 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type' },
@@ -223,6 +259,10 @@ jobs:
             throw new Error('Ranked authentication boundary failed');
           }
           NODE
+
+      - name: Require live FastFold release gate before compatible client
+        working-directory: apps/backend
+        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
 
       - name: Build
         run: npm run build

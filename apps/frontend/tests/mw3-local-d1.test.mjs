@@ -93,7 +93,7 @@ test('rollback requires full independently bound command evidence and never mere
     assert.throws(() => assertFinishedSqlFailure(error, /mw3_policy_parts\.body/));
   }
 });
-test('existing migrations get a preservation sentinel in every one of the 18 application tables', () => {
+test('existing migrations get a preservation sentinel in every application table including FastFold and human seasons', () => {
   const db = seededDatabase();
   try {
     const snapshot = databaseSnapshot(db, { excludeMw3: true });
@@ -153,7 +153,11 @@ test('synthetic SQLite reference: late immutable part and header conflicts expos
 });
 test('database value ledger includes unrelated schema, binary and Unicode row changes', () => {
   for (const sql of ["UPDATE preflop_dataset_parts SET body='雪 changed'", "UPDATE postflop_flop_base_br SET body=X'0002FF'",
-    'CREATE INDEX local_extra_index ON account_users(email)', 'DELETE FROM ranked_matches']) {
+    'CREATE INDEX local_extra_index ON account_users(email)', 'DELETE FROM ranked_matches',
+    `UPDATE fastfold_actions SET request_json='{"changed":true}'`, `UPDATE fastfold_dataset_parts SET body='{"changed":true}'`,
+    "UPDATE fastfold_players SET public_name='Changed FastFold sentinel'", 'UPDATE fastfold_results SET at=2', 'UPDATE fastfold_sessions SET updated_at=2',
+    "UPDATE human_rank_players SET public_name='Changed human sentinel'", `UPDATE human_rank_receipts SET request_json='{"changed":true}'`,
+    'UPDATE human_rank_results SET at=2', 'UPDATE human_rank_tables SET updated_at=2']) {
     const db = seededDatabase();
     try { const before = databaseSnapshot(db); db.exec(sql); assert.notDeepEqual(databaseSnapshot(db), before); } finally { db.close(); }
   }

@@ -4,7 +4,7 @@ import { appEntryHref, canonicalPath, isAppPath, isProductAppRoute, pathOfSectio
 
 test("every trainer route round-trips through its /learn path", () => {
   const routes = [
-    { phase: "library" }, { phase: "drills" }, { phase: "ranking" }, { phase: "new" }, { phase: "edit", id: "d-1" },
+    { phase: "library" }, { phase: "waiting" }, { phase: "drills" }, { phase: "ranking" }, { phase: "new" }, { phase: "edit", id: "d-1" },
     { phase: "drill", key: "d-1" }, { phase: "result", key: "d-1" }, { phase: "drill", key: "review" }, { phase: "result", key: "review" },
     { phase: "drill", key: "ranked" }, { phase: "result", key: "ranked" },
     { phase: "agent", tableId: "reyson-01", watch: false }, { phase: "agent", tableId: "reyson-01", watch: true },
@@ -16,6 +16,7 @@ test("every trainer route round-trips through its /learn path", () => {
     assert.equal(sectionOfPath(path), "トレーナー", path);
   }
   assert.equal(trainerPath({ phase: "drill", key: "ranked" }), "/learn/trainer/ranked/play");
+  assert.equal(trainerPath({ phase: "waiting" }), "/learn/trainer/ranked/waiting");
   assert.equal(trainerPath({ phase: "ranking" }), "/learn/trainer/ranked/leaderboard");
   assert.equal(trainerPath({ phase: "drill", key: "d-1" }), "/learn/trainer/drills/d-1/play");
 });
