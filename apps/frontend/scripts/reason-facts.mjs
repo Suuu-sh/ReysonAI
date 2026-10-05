@@ -3,7 +3,7 @@ import { generateContinuationFacts } from "./lib/continuation-reasons.mjs";
 // Usage: node scripts/reason-facts.mjs [spot_id ...]   (no ids = every spot)
 // Writes .local/reason-facts/<spot_id>.json; seeded, so reruns are reproducible.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
+import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.ts";
 import { raked } from "../src/estimated/rake.ts";
 import { reasonSourceFingerprint } from "./lib/reason-context.mjs";
 import { coldFourBetFoldThreshold, callContexts, callFacts, isColdCaller, limpReraiseFoldThreshold, squeezeFoldThreshold, validCallEquities } from "../src/estimated/call-ev.ts";

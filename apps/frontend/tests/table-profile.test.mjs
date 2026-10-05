@@ -4,7 +4,7 @@ import { adjustOpeningSpot, adjustResponseRow, adjustmentReason, applyTableProfi
 import { compareOpenEv, limitToBudget } from "../scripts/exploit-open.mjs";
 import adjustments from "../src/estimated/table-profile-adjustments.json" with { type: "json" };
 import opening from "../src/estimated/opening-ranges.json" with { type: "json" };
-import { comboCount } from "../scripts/lib/equity.mjs";
+import { comboCount } from "../scripts/lib/equity.ts";
 import { summarizeAgreement } from "../scripts/benchmark-record.mjs";
 
 const total = row => row.fold + row.call + row.three_bet;

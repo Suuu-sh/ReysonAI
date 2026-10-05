@@ -10,16 +10,16 @@ export function productLocale(): ProductLocale {
   // Pure model/SSR callers keep their historical Japanese output; the actual
   // product runs in a browser, where an unset preference always means English.
   if (typeof window === "undefined") return "ja";
-  try { const saved = accountStorage().getItem(LOCALE_KEY); return isProductLocale(saved) ? saved : "en"; }
+  try { const saved = accountStorage()!.getItem(LOCALE_KEY); return isProductLocale(saved) ? saved : "en"; }
   catch { return "en"; }
 }
 
-export function rememberLocale(locale) {
+export function rememberLocale(locale: unknown) {
   if (!isProductLocale(locale)) return;
-  try { accountStorage().setItem(LOCALE_KEY, locale); } catch {}
+  try { accountStorage()!.setItem(LOCALE_KEY, locale); } catch {}
 }
 
-export async function selectProductLocale(locale) {
+export async function selectProductLocale(locale: unknown) {
   if (!isProductLocale(locale)) return;
   rememberLocale(locale);
   await saveAccountData();
@@ -27,4 +27,4 @@ export async function selectProductLocale(locale) {
   window.location.reload();
 }
 
-export const localized = (english, japanese) => productLocale() === "ja" ? japanese : translateLocaleCopy(english, productLocale());
+export const localized = (english: string, japanese: string) => productLocale() === "ja" ? japanese : translateLocaleCopy(english, productLocale());

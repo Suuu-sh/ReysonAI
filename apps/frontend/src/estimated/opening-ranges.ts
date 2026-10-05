@@ -1,8 +1,10 @@
+import type { OpeningDataset, OpeningSpot } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { openSizeBb, openSizeFor, positions, sbCompleteToBb } from "./sizing.ts";
 import { hasConfiguredRake } from "./rake.ts";
 
-export function validateOpeningDataset(data) {
+export function validateOpeningDataset(data: OpeningDataset) {
   const openingPositions = positions.slice(0, -1);
   if (data?.metadata?.ante_bb !== 0 || data?.metadata?.strategy_type !== "ai_estimate_not_gto" ||
       !hasConfiguredRake(data.metadata) ||
@@ -21,13 +23,13 @@ export function validateOpeningDataset(data) {
     }
     for (const row of spot.hands) {
       const hasLimp = spot.hero === "SB";
-      const limp = hasLimp ? row.limp : 0;
+      const limp = hasLimp ? row.limp! : 0;
       if (!hands.includes(row.hand) || ![row.open, row.fold].every(n => Number.isFinite(n) && n >= 0 && n <= 100) ||
           !Number.isFinite(limp) || limp < 0 || limp > 100 ||
           Math.abs(row.open + limp + row.fold - 100) > 1e-6 ||
           row.open_size_bb !== (row.open > 0 ? size : null) ||
           (hasLimp
-            ? row.limp_size_bb !== (row.limp > 0 ? sbCompleteToBb : null)
+            ? row.limp_size_bb !== (row.limp! > 0 ? sbCompleteToBb : null)
             : Object.hasOwn(row, "limp") || Object.hasOwn(row, "limp_size_bb"))) {
         throw new Error(`オープンハンドデータが不正です: ${spot.id} / ${row.hand}`);
       }
@@ -36,13 +38,13 @@ export function validateOpeningDataset(data) {
   return data;
 }
 
-export function findOpeningSpot(data, hero) {
+export function findOpeningSpot(data: OpeningDataset, hero: string) {
   const spot = data.spots.find(item => item.hero === hero);
   if (!spot) throw new Error("このポジションのオープンレンジはありません。");
   return spot;
 }
 
-export function openingMatrixModel(spot) {
+export function openingMatrixModel(spot: OpeningSpot): MatrixModel {
   const raiseAction = `raise_${spot.open_size_bb}`;
   return {
     actions: [raiseAction, "limp", "fold"],

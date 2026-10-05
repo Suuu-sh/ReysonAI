@@ -1,3 +1,5 @@
+import type { ContinuationDataset, ContinuationSourceDatasets } from "./preflop-types.ts";
+import type { ContinuationAction, ContinuationFamily } from "./continuation-tree.ts";
 import { hands } from "../data.ts";
 import { hasConfiguredRake } from "./rake.ts";
 import { continuationById, continuationFamilies, continuationSpots } from "./continuation-tree.ts";
@@ -10,9 +12,9 @@ import { validateSqueezeDataset } from "./squeeze-responses.ts";
 import { validateColdThreeBetDataset } from "./cold-three-bet-responses.ts";
 import { validateColdFourBetDataset } from "./cold-four-bet-responses.ts";
 
-export const CONTINUATION_ACTIONS = ["fold", "call", "four_bet", "all_in"];
+export const CONTINUATION_ACTIONS: readonly ContinuationAction[] = ["fold", "call", "four_bet", "all_in"];
 const rowKeys = ["hand", ...CONTINUATION_ACTIONS, "raise_to_size_bb"];
-export function validateContinuationSources(data) {
+export function validateContinuationSources(data: ContinuationSourceDatasets) {
   const opening = data["opening-ranges"], responses = data["preflop-ranges"], multiway = data["multiway-responses"],
     multiway2 = data["multiway2-responses"], squeezes = data["squeeze-responses"],
     coldThreeBets = data["cold-three-bet-responses"], coldFourBets = data["cold-four-bet-responses"];
@@ -23,11 +25,11 @@ export function validateContinuationSources(data) {
   validateColdThreeBetDataset(coldThreeBets, responses);
   validateColdFourBetDataset(coldFourBets, coldThreeBets, responses, opening);
 }
-export function validateContinuationDataset(data, datasets, { allowPartial = false } = {}) {
-  const fail = message => { throw new Error(`Invalid continuation data: ${message}`); };
+export function validateContinuationDataset(data: ContinuationDataset, datasets: ContinuationSourceDatasets, { allowPartial = false } = {}) {
+  const fail: (message: string) => never = message => { throw new Error(`Invalid continuation data: ${message}`); };
   const families = data?.metadata?.families;
   if (!Array.isArray(families) || !families.length || new Set(families).size !== families.length ||
-      families.some(f => !continuationFamilies.includes(f)) ||
+      families.some(f => !continuationFamilies.includes(f as ContinuationFamily)) ||
       (!allowPartial && JSON.stringify(families) !== JSON.stringify(continuationFamilies))) fail("families");
   const expected = continuationSpots.filter(node => families.includes(node.family));
   const sparse = data.metadata.schema_version === "1.1" && data.metadata.storage === "reachable-only";
@@ -49,7 +51,7 @@ export function validateContinuationDataset(data, datasets, { allowPartial = fal
       continue;
     }
     storedIndex++;
-    if (!spot || Object.entries(node).some(([key, value]) => JSON.stringify(spot[key]) !== JSON.stringify(value))) fail(`history/source/geometry ${node.id}`);
+    if (!spot || Object.entries(node).some(([key, value]) => JSON.stringify(spot[key as keyof typeof spot]) !== JSON.stringify(value))) fail(`history/source/geometry ${node.id}`);
     const context = model.context(node, spot);
     if (sparse && context.unreachable) fail(`stored impossible history ${node.id}`);
     if (spot.unreachable !== context.unreachable || !Array.isArray(spot.hands) || spot.hands.length !== hands.length) fail(`reach/hands ${node.id}`);
@@ -60,7 +62,7 @@ export function validateContinuationDataset(data, datasets, { allowPartial = fal
           CONTINUATION_ACTIONS.reduce((sum, a) => sum + row[a], 0) !== 100 ||
           CONTINUATION_ACTIONS.some(a => !node.legal_actions.includes(a) && row[a] !== 0)) fail(`actions ${node.id}/${hands[j]}`);
       const raise = row.four_bet ? node.action_sizes_bb.four_bet : row.all_in ? node.action_sizes_bb.all_in : null;
-      if (row.raise_to_size_bb !== raise || raise !== null && (raise < node.minimum_raise_to_bb || raise > 100) ||
+      if (row.raise_to_size_bb !== raise || raise !== null && (raise! < node.minimum_raise_to_bb! || raise > 100) ||
           context.reach(row.hand) === 0 && row.fold !== 100) fail(`size/flow ${node.id}/${row.hand}`);
     }
     model.register(spot);
@@ -69,7 +71,7 @@ export function validateContinuationDataset(data, datasets, { allowPartial = fal
   return data;
 }
 
-export function findContinuationSpot(data, id, datasets) {
+export function findContinuationSpot(data: ContinuationDataset | null | undefined, id: string, datasets?: ContinuationSourceDatasets) {
   const spot = data?.spots?.find(item => item.id === id);
   if (spot) return spot;
   const node = continuationById.get(id);
@@ -79,7 +81,7 @@ export function findContinuationSpot(data, id, datasets) {
 
 // Keep the catalog complete while storing only histories with nonzero support.
 // Validation proves every omission; filtering a corrupt reachable row must fail.
-export function compactContinuationDataset(data, datasets) {
+export function compactContinuationDataset(data: ContinuationDataset, datasets: ContinuationSourceDatasets) {
   validateContinuationDataset(data, datasets, { allowPartial: true });
   const spots = data.spots.filter(spot => !spot.unreachable);
   const catalogCount = continuationSpots.filter(node => data.metadata.families.includes(node.family)).length;
@@ -91,7 +93,7 @@ export function compactContinuationDataset(data, datasets) {
 
 // Read-only runtime classification. An absent publication or reachable ancestor
 // stays missing; only exact source support can prove an impossible history.
-export function continuationAvailability(data, datasets, id, model = createContinuationModel({ ...datasets, "continuation-responses": data })) {
+export function continuationAvailability(data: ContinuationDataset | null | undefined, datasets: ContinuationSourceDatasets, id: string, model = createContinuationModel({ ...datasets, "continuation-responses": data })) {
   const node = continuationById.get(id);
   if (!node || node.reused) throw new Error(`Unknown continuation ${id}`);
   const spot = data?.spots?.find(item => item.id === id);

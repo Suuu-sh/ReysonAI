@@ -5,11 +5,11 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { artifactPaths, boards, config, readArtifact, requireArtifact, root, seatRange } from "./inputs.mjs";
-import { LATER_NODES, STREETS, openingActions, streetNodes } from "./later-tree.mjs";
-import { boardHeight, boardTexture, handTier, LINES, parseCards, RUNOUT_TEXTURES, TIERS } from "./model.mjs";
-import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
-import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.mjs";
-import { validateLaterPolicy } from "./later-policy.mjs";
+import { LATER_NODES, STREETS, openingActions, streetNodes } from "./later-tree.ts";
+import { boardHeight, boardTexture, handTier, LINES, parseCards, RUNOUT_TEXTURES, TIERS } from "./model.ts";
+import { NODES, treeNodes, validatePolicy } from "./policy.ts";
+import { FLOP_BETS, facingNode, flopBetLabel, raiseDepth } from "./tree.ts";
+import { validateLaterPolicy } from "./later-policy.ts";
 
 // Local Codex model for new candidates: --model, else POSTFLOP_AI_MODEL, else this default.
 // Existing candidates are reused as saved (the first BTN/BB pilot was made with gpt-6-sol).

@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import { dataset } from "../src/estimated/datasets.ts";
 import { loadInputs, artifactPaths } from "../scripts/postflop-ai/inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "../scripts/postflop-ai/generate.mjs";
-import { spotById } from "../scripts/postflop-ai/spots.mjs";
+import { spotById } from "../scripts/postflop-ai/spots.ts";
 import { playHand, postflopSpotFor } from "../src/agent/hand.ts";
 import { createAgent, makePostflopKit } from "../src/agent/policy.ts";
 import { applyPreflop, handClass, nextActor, preflopOptions, startPreflop } from "../src/agent/preflop.ts";

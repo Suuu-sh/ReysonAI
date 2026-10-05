@@ -2,7 +2,7 @@
 // for every reachable spot that has no candidate yet (existing candidates are reused).
 import { generate, generateLater } from "../generate.mjs";
 import { loadInputs } from "../inputs.mjs";
-import { POSTFLOP_SPOTS } from "../spots.mjs";
+import { POSTFLOP_SPOTS } from "../spots.ts";
 import { build } from "./generic.mjs";
 const opts = { model: "claude-opus-5-5", effort: "high" };
 for (const spot of POSTFLOP_SPOTS.filter(item => item.reachable)) {

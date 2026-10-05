@@ -10,8 +10,8 @@ import { validateContinuationDataset, validateContinuationSources } from "../src
 import { iterateContinuationDefense, orderContinuationCalls, continuationOrderEdges, auditContinuationEstimates } from "../src/estimated/continuation-audit.ts";
 import { allowedCall, callFacts, threeBetTargetCall } from "../src/estimated/call-ev.ts";
 import { rakeMetadata, raked } from "../src/estimated/rake.ts";
-import { weightedRange, seededRandom, seedFor } from "./lib/equity.mjs";
-import { continuationEquity } from "./lib/continuation-equity.mjs";
+import { weightedRange, seededRandom, seedFor } from "./lib/equity.ts";
+import { continuationEquity } from "./lib/continuation-equity.ts";
 import { allInCallFrequency } from "./lib/all-in-call.mjs";
 import { continuationProfile } from "./lib/continuation-profiles.mjs";
 import { checkRangeBalance, checkCrossStrengthInversion } from "../src/estimated/audit.ts";

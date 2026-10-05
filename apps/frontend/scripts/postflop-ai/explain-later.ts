@@ -1,30 +1,52 @@
+import type { FlopPolicy, HandTier, Inputs, LaterPolicy, PreviousLine, RoleValues } from "./types.ts";
+import type { PlayerRole } from "./tree.ts";
+import type { LaterStreet } from "./later-tree.ts";
+import type { ReachStep } from "./types.ts";
+import type { WeightedCombo } from "../lib/equity.ts";
+import type { Table } from "./engine.ts";
+import type { Spot } from "./spots.ts";
+import type { LaterStartState } from "../../src/estimated/postflop-trial.ts";
+export type LaterContextOptions = { flop: unknown; flopActions?: unknown; turn: unknown; turnActions?: unknown; river?: unknown; riverActions?: unknown };
+export type LaterExplainOptions = LaterContextOptions & { inputs: Inputs; flopPolicy: FlopPolicy; laterPolicy: LaterPolicy; cards?: unknown; combos?: readonly { cards: string; weight: number }[] };
+export type PendingLaterDecision = Extract<ReturnType<typeof laterDecision>, { node: string }>;
+export type LaterExplainContext = { flopBoard: ReturnType<typeof parseFlopBoard>; flopPath: string[]; flopSteps: ReachStep[]; start: LaterStartState;
+ turnPath: string[]; turnReplay: ReturnType<typeof replayLater>; turnBoard: number[]; riverPath: string[]; riverBoard: number[] | null;
+ riverStart: LaterStartState | null; riverReplay: ReturnType<typeof replayLater> | null; street: LaterStreet; board: number[];
+ history: string[]; previousAggressor: PlayerRole | null; decision: PendingLaterDecision };
+export type ExplanationGroup = { key: string; share: number; hands: { hand: string; tier: string }[] };
+export type LaterActionFacts = { groups: ExplanationGroup[]; foldShare?: number; required?: number };
+type EvaluatedCombo = WeightedCombo & { tier: HandTier; equity: number };
+type DefenceModel = ReturnType<typeof defenceFor>;
+
 // Evidence for one private combo on the saved AI-estimated turn/river policy.
 // This is a range-weighted estimate, not a solver or GTO result.
-import { evaluate } from "../lib/equity.mjs";
-import { seatRange } from "./browser-inputs.mjs";
-import { handTier, parseCards, parseFlopBoard, runoutTexture } from "./model.mjs";
-import { scaleByPath, validatePolicy } from "./policy.mjs";
-import { LATER_NODES, laterNodeRole } from "./later-tree.mjs";
-import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
-import { flopState } from "./tree.mjs";
+import { evaluate } from "../lib/equity.ts";
+import { seatRange } from "./browser-inputs.ts";
+import { handTier, parseCards, parseFlopBoard, runoutTexture } from "./model.ts";
+import { scaleByPath, validatePolicy } from "./policy.ts";
+import { LATER_NODES, laterNodeRole } from "./later-tree.ts";
+import { laterPolicyMix, validateLaterPolicy } from "./later-policy.ts";
+import { flopState } from "./tree.ts";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
-import { defenceFor, isFacingNode, replayOrNull } from "./defence.mjs";
-import { averageExplanationFacts } from "./explain-aggregate.mjs";
+import { defenceFor, isFacingNode, replayOrNull } from "./defence.ts";
+import { averageExplanationFacts } from "./explain-aggregate.ts";
 
 const RANKS = "23456789TJQKA";
 const MAX_TURN_COMBOS = 300;
-const cardText = card => RANKS[card >> 2] + "cdhs"[card & 3];
-const otherRole = role => role === "ip" ? "oop" : "ip";
-const lineFor = (previousAggressor, role) => previousAggressor === null
+const cardText = (card: number): string => RANKS[card >> 2] + "cdhs"[card & 3];
+const otherRole = (role: PlayerRole): PlayerRole => role === "ip" ? "oop" : "ip";
+const lineFor = (previousAggressor: PlayerRole | null, role: PlayerRole): PreviousLine => previousAggressor === null
   ? "checked" : previousAggressor === role ? "aggressor" : "defender";
 
-function parsePath(value, label) {
+function parsePath(value: unknown, label: string): string[] {
   if (value == null || value === "") return [];
   if (typeof value !== "string") throw new Error(`${label}アクションの形式が正しくありません。`);
   return value.split(",");
 }
 
-function singleCard(value, label, used, required = false) {
+function singleCard(value: unknown, label: string, used: Set<number>, required: true): number;
+function singleCard(value: unknown, label: string, used: Set<number>, required?: boolean): number | null;
+function singleCard(value: unknown, label: string, used: Set<number>, required = false): number | null {
   if (!value) {
     if (required) throw new Error(`${label}カードを選択してください。`);
     return null;
@@ -35,7 +57,7 @@ function singleCard(value, label, used, required = false) {
   return card;
 }
 
-export function laterExplainContext({ flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "" }, inputs) {
+export function laterExplainContext({ flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "" }: LaterContextOptions, inputs: Inputs): LaterExplainContext {
   const flopBoard = parseFlopBoard(flop);
   const flopPath = parsePath(flopActions, "フロップ");
   const turnPath = parsePath(turnActions, "ターン");
@@ -47,12 +69,12 @@ export function laterExplainContext({ flop, flopActions = "", turn, turnActions 
   if (!start) throw new Error("フロップのアクションが後続ストリートへ進める状態ではありません。");
 
   const turnReplay = replayLater("turn", turnPath, start, inputs.spot);
-  let street = "turn", board = turnBoard, history = turnPath;
+  let street: LaterStreet = "turn", board = turnBoard, history = turnPath;
   let nodeDecision = laterDecision("turn", turnPath, start, inputs.spot);
   let previousAggressor = start.lastAggressor;
-  let riverBoard = null, riverStart = null, riverReplay = null;
+  let riverBoard: number[] | null = null, riverStart: LaterStartState | null = null, riverReplay: ReturnType<typeof replayLater> | null = null;
   if (!nodeDecision.node) {
-    if (["fold", "raise-fold"].includes(turnReplay.end?.type) || turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0) {
+    if (["fold", "raise-fold"].includes(turnReplay.end?.type!) || turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0) {
       throw new Error("このアクションではショウダウンまで進んでおり、次の判断はありません。");
     }
     const riverCard = singleCard(river, "リバー", used, true);
@@ -74,10 +96,10 @@ export function laterExplainContext({ flop, flopActions = "", turn, turnActions 
     throw new Error("フロップのアクションが後続ストリートへ進める状態ではありません。");
   }
   return { flopBoard, flopPath, flopSteps: flopReplay.steps, start, turnPath, turnReplay, turnBoard,
-    riverPath, riverBoard, riverStart, riverReplay, street, board, history, previousAggressor, decision: nodeDecision };
+    riverPath, riverBoard, riverStart, riverReplay, street, board, history, previousAggressor, decision: nodeDecision as PendingLaterDecision };
 }
 
-function scaleLaterPath(items, role, steps, policy, board, previousAggressor) {
+function scaleLaterPath<T extends WeightedCombo>(items: T[], role: PlayerRole, steps: readonly ReachStep[], policy: LaterPolicy, board: readonly number[], previousAggressor: PlayerRole | null): T[] {
   const line = lineFor(previousAggressor, role);
   return steps.filter(step => step.role === role).reduce((range, step) => range.map(item => ({
     ...item, weight: item.weight * laterPolicyMix(policy, step.node, item.combo, board, line)[step.action] / 100,
@@ -86,7 +108,7 @@ function scaleLaterPath(items, role, steps, policy, board, previousAggressor) {
 
 // Exported for range-reach tests and other local analysis. Each opponent combo is weighted
 // by that seat's saved preflop, flop, turn, and (when present) river actions only.
-export function laterOpponentRange({ context, inputs, hero, flopPolicy, laterPolicy }) {
+export function laterOpponentRange({ context, inputs, hero, flopPolicy, laterPolicy }: { context: LaterExplainContext; inputs: Inputs; hero: readonly number[]; flopPolicy: FlopPolicy; laterPolicy: LaterPolicy }): WeightedCombo[] {
   const { spot } = inputs;
   const role = otherRole(context.decision.role);
   const seat = spot[role];
@@ -98,18 +120,18 @@ export function laterOpponentRange({ context, inputs, hero, flopPolicy, laterPol
   items = scaleByPath(items, role, context.flopSteps, flopPolicy, context.flopBoard.cards);
   items = scaleLaterPath(items, role, context.turnReplay.state.steps, laterPolicy, context.turnBoard, context.start.lastAggressor);
   if (context.street === "river") {
-    items = scaleLaterPath(items, role, context.riverReplay.state.steps, laterPolicy, context.riverBoard, context.riverStart.lastAggressor);
+    items = scaleLaterPath(items, role, context.riverReplay!.state.steps, laterPolicy, context.riverBoard!, context.riverStart!.lastAggressor);
   }
   return items.filter(item => item.weight > 0);
 }
 
-function handClass([a, b]) {
+function handClass([a, b]: readonly number[]): string {
   const [high, low] = (a >> 2) >= (b >> 2) ? [a, b] : [b, a];
   if ((high >> 2) === (low >> 2)) return RANKS[high >> 2].repeat(2);
   return RANKS[high >> 2] + RANKS[low >> 2] + ((high & 3) === (low & 3) ? "s" : "o");
 }
 
-function equityFor(hero, villain, board) {
+function equityFor(hero: readonly number[], villain: readonly number[], board: readonly number[]): number {
   if (board.length === 5) {
     const mine = evaluate([...hero, ...board]), theirs = evaluate([...villain, ...board]);
     return mine > theirs ? 1 : mine === theirs ? 0.5 : 0;
@@ -126,9 +148,9 @@ function equityFor(hero, villain, board) {
   return live ? won / live : 0.5;
 }
 
-function summarize(items) {
+function summarize(items: readonly EvaluatedCombo[]) {
   const total = items.reduce((sum, item) => sum + item.weight, 0);
-  const byClass = new Map();
+  const byClass = new Map<string, { hand: string; weight: number; tiers: Partial<Record<HandTier, number>> }>();
   for (const item of items) {
     const key = handClass(item.combo);
     const entry = byClass.get(key) ?? { hand: key, weight: 0, tiers: {} };
@@ -142,14 +164,17 @@ function summarize(items) {
   return { weight: total, hands };
 }
 
-function group(key, items, all) {
+function group(key: string, items: readonly EvaluatedCombo[], all: number): ExplanationGroup {
   const { weight, hands } = summarize(items);
   return { key, share: all ? weight / all : 0, hands };
 }
 
 // `defenceOf(action)` returns { defence, table } for the responder's decision after `action`
 // (defence.mjs), or null when the line is not a legal continuation.
-function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks, heroDefence, defenceOf) {
+function detailsFor(hero: readonly number[], villains: WeightedCombo[], board: readonly number[], policy: LaterPolicy,
+ decision: PendingLaterDecision & { previousAggressor: PlayerRole | null }, spot: Spot, potBb: number, stacks: RoleValues,
+ heroDefence: { requirement: ReturnType<DefenceModel["requirement"]>; facts: ReturnType<DefenceModel["facts"]> } | null,
+ defenceOf: (action: string) => { defence: DefenceModel; table: Table } | null) {
   let range = villains.filter(item => item.weight > 0);
   let truncated = false;
   // Turn equity enumerates all legal rivers per combo. Bound worker latency by retaining
@@ -162,15 +187,15 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
   const total = evaluated.reduce((sum, item) => sum + item.weight, 0);
   const equity = total ? evaluated.reduce((sum, item) => sum + item.weight * item.equity, 0) / total : 0;
   const ahead = evaluated.filter(item => item.equity >= 0.5), behind = evaluated.filter(item => item.equity < 0.5);
-  const actions = {}, betTable = {};
-  const responseDetail = (responseNode, lineRole, action) => {
+  const actions: Record<string, LaterActionFacts> = {}, betTable: Record<string, { calledEquity: number | null }> = {};
+  const responseDetail = (responseNode: string, lineRole: PlayerRole, action: string) => {
     const computed = defenceOf(action);
     const response = evaluated.map(item => {
       let mix = laterPolicyMix(policy, responseNode, item.combo, board, lineFor(decision.previousAggressor, lineRole));
       if (computed) mix = computed.defence.mix(computed.table, board, responseNode, item.combo, mix);
       return { item, fold: mix.fold / 100, cont: 1 - mix.fold / 100 };
     });
-    const weighted = (list, key) => list.map(({ item, ...rest }) => ({ ...item, weight: item.weight * rest[key] })).filter(item => item.weight > 0);
+    const weighted = (list: { item: EvaluatedCombo; fold: number; cont: number }[], key: "fold" | "cont") => list.map(({ item, ...rest }) => ({ ...item, weight: item.weight * rest[key] })).filter(item => item.weight > 0);
     const folds = response.reduce((sum, entry) => sum + entry.item.weight * entry.fold, 0);
     let calledWeight = 0, calledEquity = 0;
     for (const entry of response) { const w = entry.item.weight * entry.cont; calledWeight += w; calledEquity += w * entry.item.equity; }
@@ -216,7 +241,7 @@ function detailsFor(hero, villains, board, policy, decision, spot, potBb, stacks
 }
 
 export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "", cards,
-  inputs, flopPolicy, laterPolicy }) {
+  inputs, flopPolicy, laterPolicy }: LaterExplainOptions) {
   const boardContext = laterExplainContext({ flop, flopActions, turn, turnActions, river, riverActions }, inputs);
   const flopRules = validatePolicy(flopPolicy, inputs.spot.tree);
   const laterRules = validateLaterPolicy(laterPolicy);
@@ -226,10 +251,10 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
   // Responders (and the hero's own break-even / defence facts) use the computed defence.
   const defence = defenceFor(inputs, flopRules, laterRules);
   const { board, street } = boardContext;
-  const pathWith = action => ({ flop: boardContext.flopPath,
+  const pathWith = (action: string) => ({ flop: boardContext.flopPath,
     turn: street === "turn" ? [...boardContext.turnPath, action] : boardContext.turnPath,
     river: street === "river" ? [...boardContext.riverPath, action] : [] });
-  const defenceOf = action => {
+  const defenceOf = (action: string) => {
     const table = replayOrNull(inputs, board, pathWith(action));
     return table ? { defence, table } : null;
   };
@@ -242,7 +267,7 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
   const bettingFacts = heroTable && defence.bettingFacts(heroTable, board, boardContext.decision.node, hero);
   const result = detailsFor(hero, villains, board, laterRules, {
     ...boardContext.decision, street, previousAggressor: boardContext.previousAggressor,
-  }, inputs.spot, boardContext.decision.potBb, street === "turn" ? boardContext.turnReplay.stacks : boardContext.riverReplay.stacks,
+  }, inputs.spot, boardContext.decision.potBb, street === "turn" ? boardContext.turnReplay.stacks : boardContext.riverReplay!.stacks,
   heroDefence, defenceOf);
   return { kind: "ai_estimate_not_gto", node: boardContext.decision.node, street,
     line: boardContext.decision.line, texture: runoutTexture(board), equity: heroDefence?.facts?.equity ?? result.equity,
@@ -252,7 +277,7 @@ export function explainLaterCombo({ flop, flopActions = "", turn, turnActions = 
 }
 
 export function explainLaterCombos({ flop, flopActions = "", turn, turnActions = "", river = "", riverActions = "", combos,
-  inputs, flopPolicy, laterPolicy }) {
+  inputs, flopPolicy, laterPolicy }: LaterExplainOptions) {
   if (!Array.isArray(combos) || !combos.length) throw new Error("At least one reachable combo is required.");
   const entries = combos.map(({ cards, weight }) => ({ weight,
     facts: explainLaterCombo({ flop, flopActions, turn, turnActions, river, riverActions, cards,

@@ -3,14 +3,14 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { artifactPaths, loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "../scripts/postflop-ai/generate.mjs";
-import { DefencePathError, comboId, defenceFor, isFacingNode, logistic, rankTable, replayDecision, requiredEquity, splitMix, tierArray } from "../scripts/postflop-ai/defence.mjs";
-import { rake } from "../scripts/postflop-ai/engine.mjs";
-import { boardTexture, handTier, parseCards, runoutTexture, TIERS } from "../scripts/postflop-ai/model.mjs";
-import { referencePolicy, referencePolicyFor, policyMix } from "../scripts/postflop-ai/policy.mjs";
-import { laterPolicyMix, referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
+import { DefencePathError, comboId, defenceFor, isFacingNode, logistic, rankTable, replayDecision, requiredEquity, splitMix, tierArray } from "../scripts/postflop-ai/defence.ts";
+import { rake } from "../scripts/postflop-ai/engine.ts";
+import { boardTexture, handTier, parseCards, runoutTexture, TIERS } from "../scripts/postflop-ai/model.ts";
+import { referencePolicy, referencePolicyFor, policyMix } from "../scripts/postflop-ai/policy.ts";
+import { laterPolicyMix, referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
 import { buildLaterView } from "../scripts/postflop-ai/local-view.mjs";
 import { laterHandEvForHand } from "../scripts/postflop-ai/later-hand-ev.mjs";
-import { seededRandom } from "../scripts/lib/equity.mjs";
+import { seededRandom } from "../scripts/lib/equity.ts";
 
 // These tests exercise the plain bluff cap and defence; null turns the SPR all-in rule off (tested separately).
 const noShoveRule = inputs => ({ ...inputs, config: { ...inputs.config, river_allin_max_pot_ratio: null } });

@@ -9,11 +9,11 @@
 // s_hero(path) * v_opp(path): a hero scalar times a vector over the opponent combos. Leaves are fold
 // payoffs or showdowns; showdowns are summed with rank-sorted prefix sums and per-card blocker lists, so a
 // leaf costs O(hero combos) after an O(opponent combos) setup. Chips, rake, stack caps and the all-in
-// merge come from engine.mjs itself (every state is replayed by the engine).
-import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
-import { NODES } from "./policy.mjs";
-import { LATER_NODES } from "./later-tree.mjs";
-import { comboId, isBettingNode, isFacingNode, rankTable, tierArray } from "./defence.mjs";
+// merge come from engine.ts itself (every state is replayed by the engine).
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.ts";
+import { NODES } from "./policy.ts";
+import { LATER_NODES } from "./later-tree.ts";
+import { comboId, isBettingNode, isFacingNode, rankTable, tierArray } from "./defence.ts";
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 const shapeCaches = new WeakMap();

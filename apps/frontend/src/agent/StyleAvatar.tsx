@@ -1,10 +1,11 @@
+import type { ReactElement } from "react";
 import { useId } from "react";
 import type { StyleId } from "./player-read.ts";
 
 // Play-style mascots. They share the Agents' dark shell and glow, but are animal faces in a
 // rounded-square frame, so a style is never mistaken for an Agent (round frame, helmet, visor).
 // `head` is the shell silhouette; `face` draws the glowing eyes and details in the style colour.
-type Part = (color: string) => JSX.Element;
+type Part = (color: string) => ReactElement;
 const DARK = "#07080b";
 
 const MASCOTS: Record<StyleId, { head: string; face: Part }> = {

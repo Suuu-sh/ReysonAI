@@ -8,7 +8,7 @@ const API_ROUTES = new Set(["spot", "flop"]);
 
 export type PostflopRoute = keyof typeof LOCAL_PATHS;
 
-export function postflopUrl(route: PostflopRoute, params: URLSearchParams | Record<string, string>, base = (import.meta as any).env?.VITE_API_BASE): string {
+export function postflopUrl(route: PostflopRoute, params: URLSearchParams | Record<string, string>, base = (import.meta as ImportMeta & { env?: { VITE_API_BASE?: string } }).env?.VITE_API_BASE): string {
   const query = new URLSearchParams(params).toString();
   const path = base && API_ROUTES.has(route) ? `${String(base).replace(/\/$/, "")}/v1/postflop/${route}` : LOCAL_PATHS[route];
   return `${path}?${query}`;

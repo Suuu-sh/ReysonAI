@@ -1,3 +1,4 @@
+import type { ProductLocale } from "./locale-metadata.ts";
 // Product copy is localized at the presentation boundary. Strategy data, stored
 // sessions, and their stable identifiers are deliberately never translated.
 import { translateLocaleCopy } from "./locales/copy.ts";
@@ -7,7 +8,7 @@ export { LOCALE_KEY, productLocale, selectProductLocale, localized, LOCALES, loc
 
 // Longest phrases are applied first so a specific instruction is not damaged by
 // a shorter navigation label. These are view-copy translations only, not data.
-export const COPY = {
+export const COPY: Record<string, string> = {
   "ランク戦": "Ranked match", "ランキング": "Leaderboard", "週間": "Weekly", "通算": "All time", "順位": "Place", "プレイヤー": "Player", "試合": "Matches", "増減": "Change", "今週の増減": "This week", "日時": "Date", "自分の試合履歴": "Your match history", "今週はまだランク戦をプレイしていません。": "No ranked matches this week yet.", "まだランク戦をプレイしていません。": "No ranked matches yet.", "ランク戦に挑む": "Play ranked", "ランク": "Rank", "レート": "Rating", "最高": "Peak", "昇格": "Promoted", "降格": "Demoted", "また明日": "Come back tomorrow", "最高ランクです": "Top rank reached", "ブロンズ": "Bronze", "シルバー": "Silver", "ゴールド": "Gold", "プラチナ": "Platinum", "ダイヤモンド": "Diamond", "マスター": "Master",
   "はじめに、あなたのレベルを教えてください": "First, tell us your experience level",
   "レベルに合わせて、レンジ表の見せ方を変えます。あとからいつでも変更できます。": "We tailor the range display to your level. You can change it any time.",
@@ -93,18 +94,18 @@ export const COPY = {
 const replacements = Object.entries(COPY).sort((a, b) => b[0].length - a[0].length);
 const kana = /[\u3040-\u30ff]/;
 const cjk = /[\u3400-\u9fff]/;
-const escapePattern = value => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escapePattern = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 // A single source-token pass never feeds translated Chinese back through the
 // Japanese dictionary (e.g. 回答, 分 and 人 also occur in Chinese prose).
 const unitSource = "回答|問|局面|ハンド|回|秒|分|人";
 const sourceTokens = new RegExp(`\\d+(?:${unitSource})|${replacements.map(([source]) => escapePattern(source)).join("|")}|(?:${unitSource})|[・＋（）。、]`, "g");
-const targetCopy = {
+const targetCopy: Partial<Record<ProductLocale, Set<string>>> = {
   "zh-CN": new Set(Object.values(reasonCopy).map(values => values[0].trim())),
   es: new Set(Object.values(reasonCopy).map(values => values[1].trim())),
 };
-const units = { 回答: ["answer", "answers"], 問: ["question", "questions"], 局面: ["spot", "spots"], ハンド: ["hand", "hands"], 回: ["time", "times"], 秒: ["sec", "sec"], 分: ["min", "min"], 人: ["player", "players"] };
+const units: Record<string, string[]> = { 回答: ["answer", "answers"], 問: ["question", "questions"], 局面: ["spot", "spots"], ハンド: ["hand", "hands"], 回: ["time", "times"], 秒: ["sec", "sec"], 分: ["min", "min"], 人: ["player", "players"] };
 
-function translateSourceCount(value, locale) {
+function translateSourceCount(value: string, locale: ProductLocale) {
   const count = /^(\d+)(回答|問|局面|ハンド|回|秒|分|人)$/.exec(value);
   if (!count) return null;
   // Chinese uses these same units, including 分 for a rating score. Do not
@@ -113,7 +114,7 @@ function translateSourceCount(value, locale) {
   return translateLocaleCopy(`${count[1]} ${units[count[2]][Number(count[1]) === 1 ? 0 : 1]}`, locale);
 }
 
-export function translateProductCopy(value, locale = productLocale()) {
+export function translateProductCopy(value: string, locale = productLocale()): string {
   if (locale === "ja" || typeof value !== "string" || !value) return value;
   // React already renders much of the product with localized(). The initial
   // observer scan and any later scan must accept that target-language copy.
@@ -142,22 +143,22 @@ export function translateProductCopy(value, locale = productLocale()) {
   return translateLegacyTokens(value, locale);
 }
 
-function translateLegacyTokens(value, locale) {
-  const punctuation = locale === "zh-CN"
+function translateLegacyTokens(value: string, locale: ProductLocale) {
+  const punctuation: Record<string, string> = locale === "zh-CN"
     ? { "・": " · ", "＋": " + ", "（": "（", "）": "）", "。": "。", "、": "、" }
     : { "・": " · ", "＋": " + ", "（": " (", "）": ")", "。": ".", "、": ", " };
-  const translated = value.replace(sourceTokens, source => translateSourceCount(source, locale)
+  const translated = value.replace(sourceTokens, (source: string) => translateSourceCount(source, locale)
     ?? (targetCopy[locale]?.has(source.trim()) ? source
       : Object.hasOwn(COPY, source) ? translateLocaleCopy(COPY[source], locale)
       : units[source] ? translateLocaleCopy(` ${units[source][1]}`, locale) : punctuation[source]));
   return translateExplanationCopy(translated, locale);
 }
 
-export function localizeProductSurface(root, locale = productLocale()) {
+export function localizeProductSurface(root: Node | null, locale = productLocale()) {
   if (!root || locale === "ja") return () => {};
-  const translatedNodes = new WeakMap();
-  const translatedAttributes = new WeakMap();
-  const convertText = node => {
+  const translatedNodes = new WeakMap<Node, string>();
+  const translatedAttributes = new WeakMap<Element, Record<string, string>>();
+  const convertText = (node: Node) => {
     if (!node.nodeValue?.trim()) return;
     if (node.parentElement?.closest('[translate="no"], script, style, textarea, code, pre')) return; // e.g. native language names
     const translated = translateProductCopy(node.nodeValue, locale);
@@ -166,7 +167,7 @@ export function localizeProductSurface(root, locale = productLocale()) {
       node.nodeValue = translated;
     }
   };
-  const convertElement = element => {
+  const convertElement = (element: Node) => {
     if (!(element instanceof Element) || element.closest('[translate="no"]')) return;
     for (const name of ["aria-label", "title", "placeholder"]) {
       const value = element.getAttribute(name);
@@ -178,7 +179,7 @@ export function localizeProductSurface(root, locale = productLocale()) {
       }
     }
   };
-  const scan = start => {
+  const scan = (start: Node) => {
     if (start.nodeType === Node.TEXT_NODE) return convertText(start);
     if (start.nodeType !== Node.ELEMENT_NODE) return;
     convertElement(start);
@@ -194,8 +195,8 @@ export function localizeProductSurface(root, locale = productLocale()) {
       if (record.type === "characterData") {
         if (record.target.nodeValue !== translatedNodes.get(record.target)) convertText(record.target);
       } else if (record.type === "attributes") {
-        const value = record.target.getAttribute(record.attributeName);
-        if (value !== translatedAttributes.get(record.target)?.[record.attributeName]) convertElement(record.target);
+        const value = (record.target as Element).getAttribute(record.attributeName!);
+        if (value !== translatedAttributes.get(record.target as Element)?.[record.attributeName!]) convertElement(record.target as Element);
       } else for (const node of record.addedNodes) scan(node);
     }
   });

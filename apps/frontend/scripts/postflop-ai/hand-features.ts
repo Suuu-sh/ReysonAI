@@ -1,3 +1,23 @@
+export type MadeStrength = "nut" | "nearNut" | "strong" | "medium" | "weak";
+export type MadeHand = {
+ category: string; kind: string; usesHole: number; high?: number; pairRank?: number; kicker?: number;
+ kickerStrength?: "strong" | "medium" | "weak"; pairRanks?: number[]; hasLowerBoardCard?: boolean;
+ tripsRank?: number; flushSuit?: number; playsBoard?: boolean; strength?: MadeStrength;
+ beatenBy?: number; percentile?: number; nut?: boolean; worsePairs?: Record<string, boolean>;
+ worseClasses?: string[]; flushKind?: "nut" | "secondNut" | "low"; nutStraight?: boolean; vulnerable?: boolean;
+};
+export type HandDraws = {
+ flush: { suit: number; kind: "nut" | "secondNut" | "nonNut"; oneCard: boolean } | null;
+ straight: "gutshot" | "openEnded" | "doubleGutter" | null; combo: boolean;
+ backdoorFlush: { suit: number; nut: boolean } | null; backdoorStraight: boolean;
+ outs: number; flushOuts: number; straightOuts: number; dirtyOuts: number; outRanks: number[];
+ any?: boolean; strong?: boolean;
+};
+export type HandBlockers = {
+ nutFlush: { suit: number; rank: number } | null; secondNutFlush: { suit: number; rank: number } | null;
+ nutStraight: boolean; topPair: boolean; sets: boolean; overpairs: boolean;
+};
+export type MadeContext = { rc: Int8Array; bc: Int8Array; boardRanks: number[]; score: number };
 // Hand-specific facts of one hole combo on a 3-5 card board: what the hand has made, which draws it holds,
 // the overcards and the blockers it carries. Pure and cheap (about a thousand 5-7 card evaluations per call),
 // browser and Node. The explanation copy and the shared role decision (hand-role.mjs) are built on these facts.
@@ -10,26 +30,26 @@
 //  - draw `outs` count unseen cards that complete a straight or flush using at least one hole card. A straight
 //    out is "dirty" (not counted) when that card also puts three of a suit on the board and we hold no flush.
 //    Outs that would only pair us, and the opponent's own redraws, are ignored.
-import { evaluate } from "../lib/equity.mjs";
-import { parseCards } from "./model.mjs";
+import { evaluate } from "../lib/equity.ts";
+import { parseCards } from "./model.ts";
 
 export const RANK_CHARS = "23456789TJQKA";
 export const SUIT_CHARS = "cdhs";
 const CATEGORIES = ["highCard", "pair", "twoPair", "trips", "straight", "flush", "fullHouse", "quads", "straightFlush"];
 
-const rankOf = c => c >> 2, suitOf = c => c & 3;
+const rankOf = (c: number) => c >> 2, suitOf = (c: number) => c & 3;
 
 // Windows of five ranks, the wheel (ace low) included. -1 stands for the low ace.
 const WINDOWS = Array.from({ length: 10 }, (_, i) => Array.from({ length: 5 }, (_, k) => i - 1 + k));
-const slot = r => r === -1 ? 12 : r;
+const slot = (r: number) => r === -1 ? 12 : r;
 
-function straightHigh(mask) {
+function straightHigh(mask: number) {
   for (let high = 12; high >= 4; high--) if (((mask >> (high - 4)) & 31) === 31) return high;
   return (mask & 0x100f) === 0x100f ? 3 : -1;
 }
 
 // Share thresholds on the fraction of random holdings that beat us.
-function strengthOf(beatenBy, beaters) {
+function strengthOf(beatenBy: number, beaters: number) {
   if (beaters === 0) return "nut";
   if (beatenBy <= 0.02) return "nearNut";
   if (beatenBy <= 0.12) return "strong";
@@ -37,15 +57,15 @@ function strengthOf(beatenBy, beaters) {
   return "weak";
 }
 
-function kickerStrength(rank) { return rank >= 9 ? "strong" : rank >= 6 ? "medium" : "weak"; }
+function kickerStrength(rank: number) { return rank >= 9 ? "strong" : rank >= 6 ? "medium" : "weak"; }
 
-function madeHand(hole, board, cat, ctx) {
+function madeHand(hole: readonly number[], board: readonly number[], cat: number, ctx: MadeContext) {
   const { rc, bc, boardRanks } = ctx;
   const hr = [rankOf(hole[0]), rankOf(hole[1])].sort((a, b) => b - a);
   const pocket = hr[0] === hr[1];
   const topB = boardRanks[0];
-  const ranksByCount = n => { const out = []; for (let r = 12; r >= 0; r--) if (rc[r] === n) out.push(r); return out; };
-  const made = { category: CATEGORIES[cat], kind: CATEGORIES[cat], usesHole: 0 };
+  const ranksByCount = (n: number) => { const out = []; for (let r = 12; r >= 0; r--) if (rc[r] === n) out.push(r); return out; };
+  const made: MadeHand = { category: CATEGORIES[cat], kind: CATEGORIES[cat], usesHole: 0 };
   const holeMatches = hr.filter(r => bc[r] > 0);
   if (cat === 0) {
     made.high = hr[0];
@@ -97,12 +117,12 @@ function madeHand(hole, board, cat, ctx) {
 }
 
 // Hole cards inside the best straight (the five ranks ending at `high`).
-function straightUse(hole, high) {
+function straightUse(hole: readonly number[], high: number) {
   const win = high === 3 ? [12, 0, 1, 2, 3] : [high - 4, high - 3, high - 2, high - 1, high];
   return hole.filter(c => win.includes(rankOf(c))).length;
 }
 
-export function handFeatures(hole, board) {
+export function handFeatures(hole: readonly number[], board: readonly number[]) {
   if (hole.length !== 2 || board.length < 3 || board.length > 5) throw new Error("Invalid hand or board");
   const all = [...hole, ...board];
   if (new Set(all).size !== all.length) throw new Error("Duplicate cards");
@@ -138,7 +158,7 @@ export function handFeatures(hole, board) {
   for (let c = 0; c < 52; c++) if (!dead.has(c)) rem.push(c);
   const tally = Array.from({ length: 9 }, () => [0, 0]); // per category: [we beat them, they beat or tie us]
   const sub = { overpair: [0, 0], topPair: [0, 0], underpair: [0, 0], lower: [0, 0] }; // one-pair holdings by kind: [lose to us, beat or tie us]
-  let beat = 0, tie = 0, win = 0, bestStraight = -1, bestStraightRanks = null;
+  let beat = 0, tie = 0, win = 0, bestStraight = -1, bestStraightRanks: Set<number> | null = null;
   for (let i = 0; i < rem.length; i++) for (let j = i + 1; j < rem.length; j++) {
     const v = evaluate([rem[i], rem[j], ...board]);
     const vc = Math.floor(v / 16 ** 5);
@@ -152,7 +172,7 @@ export function handFeatures(hole, board) {
     }
     if (v >= 4 * 16 ** 5 && v < 5 * 16 ** 5) {
       if (v > bestStraight) { bestStraight = v; bestStraightRanks = new Set(); }
-      if (v === bestStraight) { bestStraightRanks.add(rankOf(rem[i])); bestStraightRanks.add(rankOf(rem[j])); }
+      if (v === bestStraight) { bestStraightRanks!.add(rankOf(rem[i])); bestStraightRanks!.add(rankOf(rem[j])); }
     }
   }
   const total = beat + tie + win;
@@ -168,15 +188,15 @@ export function handFeatures(hole, board) {
     .sort((x, y) => y.lose - x.lose).map(x => x.cls);
 
   // Flush quality: our best card of the suit against the best unseen ones.
-  const suitRankFree = (s, skip = 0) => {
+  const suitRankFree = (s: number, skip = 0) => {
     let n = skip;
     for (let r = 12; r >= 0; r--) if (!board.some(c => suitOf(c) === s && rankOf(c) === r)) { if (n === 0) return r; n--; }
     return -1;
   };
-  const topSuited = s => Math.max(-1, ...hole.filter(c => suitOf(c) === s).map(rankOf));
+  const topSuited = (s: number) => Math.max(-1, ...hole.filter(c => suitOf(c) === s).map(rankOf));
   if (cat === 5) {
-    const t = topSuited(made.flushSuit);
-    made.flushKind = t === suitRankFree(made.flushSuit) ? "nut" : t === suitRankFree(made.flushSuit, 1) ? "secondNut" : "low";
+    const t = topSuited(made.flushSuit!);
+    made.flushKind = t === suitRankFree(made.flushSuit!) ? "nut" : t === suitRankFree(made.flushSuit!, 1) ? "secondNut" : "low";
   }
   if (cat === 4 || cat === 8) made.nutStraight = made.nut;
 
@@ -191,7 +211,7 @@ export function handFeatures(hole, board) {
   made.vulnerable = drawy && cat >= 1 && cat <= 5 && made.strength !== "nut" && made.kind !== "boardPair" && made.kind !== "boardTwoPair" && made.kind !== "boardTrips";
 
   // Draws (never on the river).
-  const draws = { flush: null, straight: null, combo: false, backdoorFlush: null, backdoorStraight: false,
+  const draws: HandDraws = { flush: null, straight: null, combo: false, backdoorFlush: null, backdoorStraight: false,
     outs: 0, flushOuts: 0, straightOuts: 0, dirtyOuts: 0, outRanks: [] };
   if (street !== "river") {
     let flushDrawSuit = -1;
@@ -203,7 +223,7 @@ export function handFeatures(hole, board) {
     }
     // Outs: unseen cards that complete a straight or flush using a hole card. A straight out is "dirty" when the card also
     // puts three of a suit on the board. Straight completions are named only from ranks that give at least one out.
-    const clean = new Set(), outRankSet = new Set();
+    const clean = new Set<number>(), outRankSet = new Set<number>();
     if (cat < 4) for (const x of rem) {
       const s2 = evaluate([...all, x]);
       const c2 = Math.floor(s2 / 16 ** 5);
@@ -245,7 +265,7 @@ export function handFeatures(hole, board) {
   const aceHigh = unpaired && holeRanks.includes(12);
 
   // Blockers.
-  const blockers = { nutFlush: null, secondNutFlush: null, nutStraight: false, topPair: false, sets: false, overpairs: false };
+  const blockers: HandBlockers = { nutFlush: null, secondNutFlush: null, nutStraight: false, topPair: false, sets: false, overpairs: false };
   for (let s = 0; s < 4; s++) {
     const need = street === "flop" ? 2 : 3;
     if (suitBoard[s] < need) continue;
@@ -253,7 +273,7 @@ export function handFeatures(hole, board) {
     if (t >= 0 && t === suitRankFree(s)) blockers.nutFlush = { suit: s, rank: t };
     else if (t >= 0 && t === suitRankFree(s, 1)) blockers.secondNutFlush = { suit: s, rank: t };
   }
-  if (bestStraightRanks && cat < 4) blockers.nutStraight = holeRanks.some(r => bestStraightRanks.has(r) && bc[r] === 0);
+  if (bestStraightRanks && cat < 4) blockers.nutStraight = holeRanks.some(r => bestStraightRanks!.has(r) && bc[r] === 0);
   blockers.topPair = holeRanks.includes(topB);
   blockers.sets = holeRanks.some(r => bc[r] > 0);
   blockers.overpairs = overRanks.length > 0;
@@ -262,14 +282,16 @@ export function handFeatures(hole, board) {
     aceHighValue: aceHigh && ahead >= 0.3, boardInfo, blockers };
 }
 
-export function featuresFromText(holeText, boardText) {
+export function featuresFromText(holeText: string, boardText: string) {
   return handFeatures(parseCards(holeText, 2), parseCards(boardText, boardText.length / 2));
 }
 
 // Stable text key of the parts of the features the copy depends on: the average-of-combos view uses it to pick the
 // representative (most common) combo of a hand class.
-export function featureSignature(f) {
+export function featureSignature(f: HandFeatures) {
   const d = f.draws;
   return [f.made.kind, f.made.strength, f.made.kickerStrength ?? "", d.flush?.kind ?? "", d.straight ?? "",
     d.backdoorFlush ? "bf" : "", f.overcards.count, f.blockers.nutFlush ? "nf" : "", f.blockers.nutStraight ? "ns" : ""].join("|");
 }
+
+export type HandFeatures = ReturnType<typeof handFeatures>;

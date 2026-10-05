@@ -1,3 +1,9 @@
+import type { CSSProperties, ReactNode } from "react";
+import type { Icon } from "@phosphor-icons/react";
+import type { AnswerEntry, RankState } from "./types.ts";
+type PlayerAnalysisModel = ReturnType<typeof analyzePlayer>;
+interface BreakdownCounts { total: number; best: number; mixed: number; miss: number; score: number }
+interface BreakdownRow extends BreakdownCounts { key: string; label: string }
 import { ArrowRight, Barbell, CalendarBlank, ChartLineUp, Cards, Crosshair, Info, Robot, Trophy, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
 import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
 import { PlayStyleDashboard, StyleZones, type StyleZone } from "../agent/PlayStyleDashboard.tsx";
@@ -15,21 +21,21 @@ import { CATEGORY_LABELS, handCategory, spotById } from "./trainer-data.ts";
 import "./analysis.css";
 import { localized } from "../i18n.ts";
 
-const pct = value => value == null ? "—" : `${Math.round(value * 100)}%`;
-const points = value => value == null ? "—" : `${value >= 0 ? "+" : ""}${Math.round(value * 100)}pt`;
-const deltaTone = value => value == null || Math.abs(value) < 0.05 ? "even" : value > 0 ? "up" : "down";
+const pct = (value: number | null | undefined) => value == null ? "—" : `${Math.round(value * 100)}%`;
+const points = (value: number | null | undefined) => value == null ? "—" : `${value >= 0 ? "+" : ""}${Math.round(value * 100)}pt`;
+const deltaTone = (value: number | null | undefined) => value == null || Math.abs(value) < 0.05 ? "even" : value > 0 ? "up" : "down";
 const STYLE_SAMPLE_TARGET = 30;
 // ±10pt from the policy counts as "near the baseline" (see player-analysis.ts plot scale: 30pt → 38%).
 const BASELINE_RADIUS = 10 / 30 * 38;
 
 // Counts a number up once on mount. Server render and reduced motion show the final value.
-function CountUp({ value, duration = 900 }) {
+function CountUp({ value, duration = 900 }: { value: number; duration?: number }) {
   const [shown, setShown] = useState(value);
   useLayoutEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { setShown(value); return; }
-    let frame;
+    let frame: number;
     const start = performance.now();
-    const tick = now => {
+    const tick = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
       setShown(Math.round(value * (1 - (1 - t) ** 3)));
       if (t < 1) frame = requestAnimationFrame(tick);
@@ -42,14 +48,14 @@ function CountUp({ value, duration = 900 }) {
 }
 
 // Long method notes stay available but out of the way.
-function InfoTip({ label = "説明", children }) {
+function InfoTip({ label = "説明", children }: { label?: string; children: ReactNode }) {
   return <details className="analysis-info">
     <summary aria-label={label} title={label}><Info size={14} /></summary>
     <div className="analysis-info-body">{children}</div>
   </details>;
 }
 
-function Kpi({ label, icon: Icon, value, sub, accent, compact, children }) {
+function Kpi({ label, icon: Icon, value, sub, accent, compact, children }: { label: ReactNode; icon?: Icon; value: ReactNode; sub?: ReactNode; accent?: boolean; compact?: boolean; children?: ReactNode }) {
   return <div className={`analysis-kpi${accent ? " accent" : ""}${compact ? " compact" : ""}`}>
     <span className="analysis-kpi-label">{Icon && <i aria-hidden="true"><Icon size={16} /></i>}{label}</span>
     <strong>{value}</strong>
@@ -74,7 +80,7 @@ const PRACTICE_ZONES: StyleZone[] = [
   { id: "station", x: [PX.loose, 100], y: [PY.more, 100] },
 ];
 
-function StyleMap({ analysis }) {
+function StyleMap({ analysis }: { analysis: PlayerAnalysisModel }) {
   const { plot, metrics, ready } = analysis;
   const animal = practiceAnimal(analysis);
   return <section className="analysis-card analysis-map" aria-labelledby="analysis-map-title">
@@ -89,13 +95,13 @@ function StyleMap({ analysis }) {
       <span className="axis-y" aria-hidden="true"><span>↑<br />3bet 多</span><span>3bet 少<br />↓</span></span>
       <div className="analysis-map-grid">
         <StyleZones zones={PRACTICE_ZONES} current={analysis.ready ? animal.id : null} />
-        <span className="analysis-map-baseline" aria-hidden="true" style={{ "--r": `${BASELINE_RADIUS}%` }}><small>基準付近</small></span>
+        <span className="analysis-map-baseline" aria-hidden="true" style={{ "--r": `${BASELINE_RADIUS}%` } as CSSProperties}><small>基準付近</small></span>
         <span className="analysis-map-center" aria-hidden="true" title="方針" />
         {plot && <svg className="analysis-map-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <line x1="50" y1="50" x2={plot.x} y2={plot.y} pathLength="1" />
         </svg>}
-        {plot ? <span className={`analysis-map-marker${ready ? " with-animal" : ""}${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%` }}
-          role="img" aria-label={`あなたの練習位置。参加頻度は推定方針から${points(-metrics.fold.delta)}、3betは${points(metrics.threeBet.delta)}。${ready ? "" : "暫定表示。"}`}>
+        {plot ? <span className={`analysis-map-marker${ready ? " with-animal" : ""}${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%` } as CSSProperties}
+          role="img" aria-label={`あなたの練習位置。参加頻度は推定方針から${points(-metrics.fold.delta!)}、3betは${points(metrics.threeBet.delta)}。${ready ? "" : "暫定表示。"}`}>
           <>{ready ? <StyleAvatar id={animal.id} color={animal.color} size={36} /> : <i />}</><b>あなた{ready ? "" : " · 暫定"}</b>
         </span> : <span className="analysis-map-wait">10問以上で表示</span>}
       </div>
@@ -105,20 +111,20 @@ function StyleMap({ analysis }) {
 }
 
 // One track per action: your rate as a bar, the estimate as a tick.
-function ActionRow({ title, detail, metric, index }) {
+function ActionRow({ title, detail, metric, index }: { title: string; detail: string; metric: PlayerAnalysisModel["metrics"]["fold"]; index: number }) {
   const tone = deltaTone(metric.delta);
-  return <li className="analysis-action" style={{ "--i": index }}>
+  return <li className="analysis-action" style={{ "--i": index } as CSSProperties}>
     <div className="analysis-action-label"><strong>{title}</strong><small>{detail} · {metric.count}問</small></div>
     <div className="analysis-action-track" aria-hidden="true">
-      <b style={{ width: `${(metric.actual ?? 0) * 100}%` }} />
-      {metric.expected != null && <i style={{ left: `${metric.expected * 100}%` }} />}
+      <b style={{ width: `${(metric.actual ?? 0) * 100}%` } as CSSProperties} />
+      {metric.expected != null && <i style={{ left: `${metric.expected * 100}%` } as CSSProperties} />}
     </div>
     <div className="analysis-action-values"><strong>{pct(metric.actual)}</strong><small>推定 {pct(metric.expected)}</small></div>
     <span className={`analysis-delta ${tone}`}>{points(metric.delta)}</span>
   </li>;
 }
 
-function ActionComparison({ analysis }) {
+function ActionComparison({ analysis }: { analysis: PlayerAnalysisModel }) {
   const { metrics, bySpot } = analysis;
   return <section className="analysis-card analysis-actions" aria-labelledby="analysis-actions-title">
     <header className="analysis-card-head">
@@ -136,7 +142,7 @@ function ActionComparison({ analysis }) {
     </ul>
     {bySpot.length > 0 && <div className="analysis-spot-diff">
       <h3>フォールド差が大きい局面</h3>
-      <ul>{bySpot.slice(0, 3).map((spot, index) => <li key={spot.id} style={{ "--i": index }}>
+      <ul>{bySpot.slice(0, 3).map((spot, index) => <li key={spot.id} style={{ "--i": index } as CSSProperties}>
         <span>{spot.label}<small>{spot.count}問</small></span>
         <small>{pct(spot.actual)} / 推定 {pct(spot.expected)}</small>
         <b className={deltaTone(spot.delta)}>{points(spot.delta)}</b>
@@ -145,10 +151,10 @@ function ActionComparison({ analysis }) {
   </section>;
 }
 
-function ScoreChart({ progress }) {
+function ScoreChart({ progress }: { progress: ReturnType<typeof scoreProgress> }) {
   const left = 28, right = 712, top = 8, bottom = 100;
-  const x = index => left + (progress.series.length === 1 ? (right - left) / 2 : index * (right - left) / (progress.series.length - 1));
-  const y = value => bottom - value * (bottom - top);
+  const x = (index: number) => left + (progress.series.length === 1 ? (right - left) / 2 : index * (right - left) / (progress.series.length - 1));
+  const y = (value: number | null) => bottom - value! * (bottom - top);
   const line = progress.series.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
   return <section className="analysis-card analysis-score" aria-labelledby="analysis-score-title">
     <header className="analysis-card-head">
@@ -171,10 +177,10 @@ function ScoreChart({ progress }) {
   </section>;
 }
 
-function HighlightCard({ title, items, empty, tone, children }) {
+function HighlightCard({ title, items, empty, tone, children }: { title: string; items: ReturnType<typeof practiceHighlights>["strengths"]; empty: string; tone: string; children?: ReactNode }) {
   return <section className={`analysis-card analysis-highlight ${tone}`} aria-label={title}>
     <header className="analysis-card-head"><h2>{tone === "strength" ? <TrendUp size={15} weight="bold" /> : <TrendDown size={15} weight="bold" />}{title}</h2></header>
-    {items.length ? <ul>{items.map((item, index) => <li key={`${item.kind}-${item.key}`} style={{ "--i": index }}>
+    {items.length ? <ul>{items.map((item, index) => <li key={`${item.kind}-${item.key}`} style={{ "--i": index } as CSSProperties}>
       <span><small>{item.kind} · {item.answered}問{item.provisional ? " · 暫定" : ""}</small><strong>{item.label}</strong></span>
       <b>{pct(item.rate)}</b>
     </li>)}</ul> : <p className="analysis-empty">{empty}</p>}
@@ -182,18 +188,18 @@ function HighlightCard({ title, items, empty, tone, children }) {
   </section>;
 }
 
-const PERIODS = [["all", "全期間", null], ["30d", "30日", 30], ["7d", "7日", 7]];
+const PERIODS: [string, string, number | null][] = [["all", "全期間", null], ["30d", "30日", 30], ["7d", "7日", 7]];
 const KINDS = [["all", "すべて"], ["open", "オープン"], ["response", "vs オープン"]];
 const BREAKDOWNS = [["spot", "局面"], ["position", "ポジション"], ["category", "ハンド種類"]];
 
 // Answers grouped by spot, the hero's position or hand category, with the best / mixed / miss split.
-function breakdownRows(history, by) {
-  const rows = new Map();
+function breakdownRows(history: AnswerEntry[], by: string) {
+  const rows = new Map<string, BreakdownRow>();
   for (const entry of history) {
     const spot = spotById.get(entry.spotId);
     if (!spot) continue;
     const key = by === "position" ? spot.hero : by === "category" ? handCategory(entry.hand) : spot.id;
-    const label = by === "position" ? spot.hero : by === "category" ? CATEGORY_LABELS[key] : spot.kind === "open" ? `${spot.hero} オープン` : `${spot.hero} vs ${spot.opener}`;
+    const label = by === "position" ? spot.hero : by === "category" ? CATEGORY_LABELS[key as keyof typeof CATEGORY_LABELS] : spot.kind === "open" ? `${spot.hero} オープン` : `${spot.hero} vs ${spot.opener}`;
     const row = rows.get(key) ?? { key, label, total: 0, best: 0, mixed: 0, miss: 0, score: 0 };
     row.total++; row[entry.result] = (row[entry.result] ?? 0) + 1; row.score += entry.score;
     rows.set(key, row);
@@ -201,12 +207,12 @@ function breakdownRows(history, by) {
   return [...rows.values()].sort((a, b) => b.total - a.total);
 }
 
-function Breakdown({ history }) {
+function Breakdown({ history }: { history: AnswerEntry[] }) {
   const [by, setBy] = useState("spot");
   const rows = useMemo(() => breakdownRows(history, by), [history, by]);
   const all = useMemo(() => breakdownRows(history, "all"), [history]);
-  const share = (row, key) => row.total ? Math.round(row[key] / row.total * 1000) / 10 : 0;
-  const line = (row, label, strong) => <tr key={row.key ?? label} className={strong ? "is-total" : ""}>
+  const share = (row: BreakdownCounts, key: "best" | "mixed" | "miss") => row.total ? Math.round(row[key] / row.total * 1000) / 10 : 0;
+  const line = (row: BreakdownCounts & { key?: string }, label: string, strong?: boolean) => <tr key={row.key ?? label} className={strong ? "is-total" : ""}>
     <th scope="row">{label}</th>
     <td>{row.total}</td>
     <td className="tone-best">{share(row, "best")}</td>
@@ -232,18 +238,18 @@ function Breakdown({ history }) {
   </section>;
 }
 
-function guidanceNotes(metrics) {
+function guidanceNotes(metrics: PlayerAnalysisModel["metrics"]) {
   const notes = [];
-  if (metrics.fold.delta >= 0.10) notes.push(localized("You fold more often than the estimate. Review borderline hands that can open or call in the range table.", "フォールドが多め。オープン・コールを選べる境界のハンドをレンジ表で確認。"));
-  if (metrics.fold.delta <= -0.10) notes.push(localized("You participate more often than the estimate. Check whether you continue too often with high-fold-frequency hands.", "参加が広め。フォールド頻度の高いハンドを続けすぎていないか確認。"));
-  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta <= -0.10) notes.push(localized("You 3-bet less often. Review value and blocker 3-bet candidates in response-to-open drills.", "3betが少なめ。対オープンのドリルでバリューとブロッカーの3bet候補を復習。"));
-  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta >= 0.10) notes.push(localized("You 3-bet more often. Review hands that mix calls and folds.", "3betが多め。コールやフォールドを混ぜるハンドを見直し。"));
-  if (metrics.call.count >= 10 && metrics.call.delta >= 0.10) notes.push(localized("You call more often. Check your position and the opponent's opening position before continuing.", "コールが多め。ポジションと相手のオープン位置を確認してから続ける。"));
+  if (metrics.fold.delta! >= 0.10) notes.push(localized("You fold more often than the estimate. Review borderline hands that can open or call in the range table.", "フォールドが多め。オープン・コールを選べる境界のハンドをレンジ表で確認。"));
+  if (metrics.fold.delta! <= -0.10) notes.push(localized("You participate more often than the estimate. Check whether you continue too often with high-fold-frequency hands.", "参加が広め。フォールド頻度の高いハンドを続けすぎていないか確認。"));
+  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta! <= -0.10) notes.push(localized("You 3-bet less often. Review value and blocker 3-bet candidates in response-to-open drills.", "3betが少なめ。対オープンのドリルでバリューとブロッカーの3bet候補を復習。"));
+  if (metrics.threeBet.count >= 10 && metrics.threeBet.delta! >= 0.10) notes.push(localized("You 3-bet more often. Review hands that mix calls and folds.", "3betが多め。コールやフォールドを混ぜるハンドを見直し。"));
+  if (metrics.call.count >= 10 && metrics.call.delta! >= 0.10) notes.push(localized("You call more often. Check your position and the opponent's opening position before continuing.", "コールが多め。ポジションと相手のオープン位置を確認してから続ける。"));
   if (!notes.length) notes.push(localized("No major imbalance stands out. Keep practicing your weaker spots and hands.", "大きな偏りはありません。苦手な局面とハンドを中心に練習を続けましょう。"));
   return notes.slice(0, 3);
 }
 
-export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, rank = null, rankedReady = false, initialView = "drills" }) {
+export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, rank = null, rankedReady = false, initialView = "drills" }: { history: AnswerEntry[]; onStart: () => void; onOpenWeakness: () => void; rank?: RankState | null; rankedReady?: boolean; initialView?: string }) {
   const [period, setPeriod] = useState("all");
   const [kind, setKind] = useState("all");
   const history = useMemo(() => {
@@ -257,7 +263,7 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
   const stats = useMemo(() => summarize(history), [history]);
   const highlights = useMemo(() => practiceHighlights(stats), [stats]);
   const { metrics } = analysis;
-  const scoreDelta = progress.series.length > progress.windowSize ? progress.current - progress.series.at(-1 - progress.windowSize) : null;
+  const scoreDelta = progress.series.length > progress.windowSize ? progress.current! - progress.series.at(-1 - progress.windowSize)! : null;
   const styleProgress = Math.min(1, analysis.samples / STYLE_SAMPLE_TARGET);
   const [view, setView] = useState(initialView);
   const animal = practiceAnimal(analysis);
@@ -271,7 +277,7 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
     </header>
     <div className="stats-toolbar">
       <div className="stats-seg" role="group" aria-label="分析の対象">
-        {[["drills", localized("Drills", "ドリル練習"), Barbell], ...(rankedReady ? [["ranked", localized("Ranked match", "ランク戦"), Trophy]] : []), ["agent", localized("Agent matches", "Agent戦"), Robot]].map(([value, label, Icon]) =>
+        {([["drills", localized("Drills", "ドリル練習"), Barbell], ...(rankedReady ? [["ranked", localized("Ranked match", "ランク戦"), Trophy]] : []), ["agent", localized("Agent matches", "Agent戦"), Robot]] as [string, string, Icon][]).map(([value, label, Icon]) =>
           <button key={value} type="button" className={view === value ? "on" : ""} aria-pressed={view === value} onClick={() => setView(value)}><Icon size={15} />{label}</button>)}
       </div>
       {view === "drills" && <>
@@ -288,7 +294,7 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
     {view === "agent" ? <div className="analysis-agent">
       <AgentAnalysis />
       {agentRead && <div className="analysis-card analysis-agent-read"><PlayStyleDashboard read={agentRead} /></div>}
-    </div> : view === "ranked" ? <RankedStats rank={rank} ready={rankedReady} /> : <>
+    </div> : view === "ranked" ? <RankedStats rank={rank!} ready={rankedReady} /> : <>
 
     <div className="analysis-kpis">
       <Kpi label="ReysonAI Score" icon={ChartLineUp} accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
@@ -296,7 +302,7 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
       </Kpi>
       <Kpi label="正答率" icon={Crosshair} value={stats.answered ? <><CountUp value={Math.round(stats.rate * 100)} /><small>%</small></> : "—"} sub={`${stats.answered}回答`} />
       <Kpi label="プレイスタイル" icon={Target} value={<span className="analysis-animal-kpi"><StyleAvatar id={animal.id} color={animal.color} size={40} />{analysis.ready ? analysis.style.label : "判定中"}</span>} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>
-        {!analysis.ready && <span className="analysis-kpi-bar" aria-hidden="true"><i style={{ width: `${styleProgress * 100}%` }} /></span>}
+        {!analysis.ready && <span className="analysis-kpi-bar" aria-hidden="true"><i style={{ width: `${styleProgress * 100}%` } as CSSProperties} /></span>}
       </Kpi>
       <Kpi label="出題の内訳" icon={Cards} compact value={<><CountUp value={analysis.openSamples} /><small>オープン</small> <CountUp value={analysis.responseSamples} /><small>vs オープン</small></>}
         sub={analysis.ready ? `${analysis.distinctSpots}局面` : "判定には各10問・3局面以上"} />
@@ -304,9 +310,9 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
 
     <section className="analysis-card practice-animals" aria-label={localized("Drill play styles", "ドリルのプレイスタイル")}>
       <p>{localized("Animals describe deviations from the estimate for the same drill questions, not Agent-table VPIP/PFR or real-money play.", "動物は同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFRや実戦の打ち方の判定ではありません。")}</p>
-      <ol className="style-roster">{["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"].map(id => {
+      <ol className="style-roster">{(["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"] as const).map(id => {
         const style = STYLES[id], current = animal.id === id;
-        return <li key={id} className={current ? "is-current" : ""} aria-current={current ? "true" : undefined} style={{ "--style": style.color }}>
+        return <li key={id} className={current ? "is-current" : ""} aria-current={current ? "true" : undefined} style={{ "--style": style.color } as CSSProperties}>
           <StyleAvatar id={id} color={style.color} size={40} dim={!current} /><span>{localized(style.mascot.en, style.mascot.ja)}</span>
         </li>;
       })}</ol>
@@ -334,7 +340,7 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
         </HighlightCard>
         <section className="analysis-card analysis-guidance" aria-label="次の練習ポイント">
           <header className="analysis-card-head"><h2><Target size={15} weight="bold" />次の練習ポイント</h2></header>
-          <ul>{guidanceNotes(metrics).map((note, index) => <li key={note} style={{ "--i": index }}>{note}</li>)}</ul>
+          <ul>{guidanceNotes(metrics).map((note, index) => <li key={note} style={{ "--i": index } as CSSProperties}>{note}</li>)}</ul>
         </section>
       </div>
     </>}

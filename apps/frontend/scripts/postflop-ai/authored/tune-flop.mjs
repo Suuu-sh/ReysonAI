@@ -7,7 +7,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { artifactPaths, config, loadInputs } from "../inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "../generate.mjs";
-import { validatePolicy } from "../policy.mjs";
+import { validatePolicy } from "../policy.ts";
 import { simulate } from "../simulation.mjs";
 import { checkFlopBalance } from "../balance.mjs";
 import { flopAdoptionDecision, rebindLaterPolicy, worstProfileScore } from "../regenerate-flop.mjs";

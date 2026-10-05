@@ -1,7 +1,9 @@
-import { combosOf } from "../lib/equity.mjs";
+import type { FrequencyRow, Inputs, PostflopDatasets, SourceAction, SourceDataset, SourceHand, SourceSpot } from "./types.ts";
+import type { WeightedCombo } from "../lib/equity.ts";
+import { combosOf } from "../lib/equity.ts";
 import { gameConfig } from "../../src/estimated/sizing.ts";
-import { parseCards } from "./model.mjs";
-import { DEFAULT_SPOT_ID, spotById } from "./spots.mjs";
+import { parseCards } from "./model.ts";
+import { DEFAULT_SPOT_ID, spotById } from "./spots.ts";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 const SHA256_K = [
@@ -15,10 +17,10 @@ const SHA256_K = [
   0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 ];
 
-const rotateRight = (value, amount) => (value >>> amount) | (value << (32 - amount));
+const rotateRight = (value: number, amount: number): number => (value >>> amount) | (value << (32 - amount));
 
 // Synchronous SHA-256 for fingerprints used by the Node and browser compute paths.
-export function sha256(text) {
+export function sha256(text: string): string {
   const bytes = new TextEncoder().encode(text);
   const bitLength = BigInt(bytes.length) * 8n;
   const paddedLength = Math.ceil((bytes.length + 9) / 64) * 64;
@@ -58,28 +60,28 @@ export function sha256(text) {
   return hash.map(value => value.toString(16).padStart(8, "0")).join("");
 }
 
-export const sha = value => sha256(JSON.stringify(value));
+export const sha = (value: unknown): string => sha256(JSON.stringify(value));
 
 const LATER_KEYS = ["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"];
 const NON_FLOP_KEYS = [...LATER_KEYS, "defence_realization", "river_allin_max_pot_ratio", "max_raises_per_street"];
 const flopConfig = () => Object.fromEntries(Object.entries(pilotConfig).filter(([key]) => !NON_FLOP_KEYS.includes(key)));
-const getDataset = (datasets, key, ...aliases) => {
+const getDataset = (datasets: PostflopDatasets, key: string, ...aliases: string[]): SourceDataset | null => {
   for (const name of [key, ...aliases]) if (datasets?.[name]) return datasets[name];
   return null;
 };
-const findSpot = (dataset, id) => dataset?.spots?.find(item => item.id === id);
-const freqRows = (rows, action) => rows.map(row => ({ hand: row.hand, freq: row[action] }));
+const findSpot = (dataset: SourceDataset | null, id: string | undefined): SourceSpot | undefined => dataset?.spots?.find(item => item.id === id);
+const freqRows = (rows: SourceHand[], action: SourceAction): FrequencyRow[] => rows.map(row => ({ hand: row.hand, freq: row[action] }));
 
-function productRows(factors) {
+function productRows(factors: readonly (readonly [SourceHand[], SourceAction])[]): FrequencyRow[] {
   const maps = factors.map(([rows, action]) => new Map(rows.map(row => [row.hand, row[action]])));
   const hands = factors[0][0].map(row => row.hand);
   if (maps.some(map => map.size !== hands.length || hands.some(hand => !Number.isFinite(map.get(hand))))) {
     throw new Error("Postflop source hand rows differ");
   }
-  return hands.map(hand => ({ hand, freq: maps.reduce((product, map) => product * map.get(hand) / 100, 100) }));
+  return hands.map(hand => ({ hand, freq: maps.reduce((product, map) => product * map.get(hand)! / 100, 100) }));
 }
 
-export function buildInputs(spotId = DEFAULT_SPOT_ID, datasets = {}) {
+export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: PostflopDatasets = {}): Inputs {
   const spot = spotById(spotId);
   if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
 
@@ -126,7 +128,7 @@ export function buildInputs(spotId = DEFAULT_SPOT_ID, datasets = {}) {
 
   if (spot.kind === "limp") {
     const limp = limpData;
-    const byId = id => findSpot(limp, id);
+    const byId = (id: string) => findSpot(limp, id);
     const bbLimp = byId("BB_vs_SB_limp"), iso = byId("SB_vs_BB_iso"), reraise = byId("BB_vs_SB_limp_reraise");
     if (!baseOk || !bbLimp || !iso || !reraise ||
         opening.hands.some(row => row.limp > 0 && row.limp_size_bb !== 1) || bbLimp.raise_size_bb !== 3.5 ||
@@ -138,10 +140,10 @@ export function buildInputs(spotId = DEFAULT_SPOT_ID, datasets = {}) {
     if (spot.responseId === "SB_vs_BB_limp_four_bet" && (!fourBet || fourBet.limp_reraise_size_bb !== 10.5 || reraise.four_bet_size_bb !== fourBet.four_bet_size_bb)) {
       throw new Error(`${spot.id} source geometry changed`);
     }
-    const files = { "opening-ranges": { spots: [opening] }, "limp-responses": limp, "limp-deep-responses": deep ?? { spots: [] } };
-    const sources = {};
+    const files: Record<string, SourceDataset | null> = { "opening-ranges": { spots: [opening] }, "limp-responses": limp, "limp-deep-responses": deep ?? { spots: [] } };
+    const sources: Record<string, SourceSpot> = {};
     const seatRows = Object.fromEntries(Object.entries(spot.ranges).map(([seat, factors]) => [seat, productRows(factors.map(([file, id, action]) => {
-      const source = files[file].spots.find(item => item.id === id);
+      const source = files[file]!.spots.find(item => item.id === id);
       if (!source) throw new Error(`${spot.id} source ${id} is missing`);
       sources[id] = source;
       return [source.hands, action];
@@ -161,13 +163,13 @@ export function buildInputs(spotId = DEFAULT_SPOT_ID, datasets = {}) {
   const calls = new Map(response.hands.map(row => [row.hand, row.call]));
   if (calls.size !== opening.hands.length || opening.hands.some(row => !calls.has(row.hand))) throw new Error(`${spot.id} hand rows differ`);
   const seatRows = {
-    [spot.opener]: opening.hands.map(row => ({ hand: row.hand, freq: row.open * calls.get(row.hand) / 100 })),
+    [spot.opener]: opening.hands.map(row => ({ hand: row.hand, freq: row.open * calls.get(row.hand)! / 100 })),
     [spot.threeBettor]: freqRows(threeBet.hands, "three_bet"),
   };
   return { spot, opening, response, threeBet, config, fingerprint, seatRows };
 }
 
-export function comboRange(rows, action, board) {
+export function comboRange<K extends string>(rows: readonly ({ hand: string } & Record<K, number>)[], action: K, board: readonly number[]): WeightedCombo[] {
   const blocked = new Set(board);
   return rows.flatMap(row => {
     const weight = row[action] / 100;
@@ -176,7 +178,7 @@ export function comboRange(rows, action, board) {
   });
 }
 
-export function seatRange(inputs, seat, board) {
+export function seatRange(inputs: Inputs, seat: string, board: readonly number[]): WeightedCombo[] {
   const rows = inputs.seatRows[seat];
   if (!rows) throw new Error(`${seat} is not in ${inputs.spot.id}`);
   return comboRange(rows, "freq", board);
@@ -185,7 +187,7 @@ export function seatRange(inputs, seat, board) {
 export function boards() {
   if (pilotConfig.boards.length !== 12 || pilotConfig.boards.filter(board => board.split === "design").length !== 8 ||
       pilotConfig.boards.filter(board => board.split === "holdout").length !== 4) throw new Error("Expected 8 design and 4 holdout boards");
-  const unique = new Set();
+  const unique = new Set<string>();
   return pilotConfig.boards.map(item => {
     const cards = parseCards(item.cards, 3);
     if (unique.has(item.cards)) throw new Error("Repeated representative flop");

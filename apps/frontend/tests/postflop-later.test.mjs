@@ -1,11 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { seededRandom } from "../scripts/lib/equity.mjs";
+import { seededRandom } from "../scripts/lib/equity.ts";
 import { boards, loadInputs, makeSampler, samplePair, seatRange } from "../scripts/postflop-ai/inputs.mjs";
-import { parseCards, runoutTexture } from "../scripts/postflop-ai/model.mjs";
-import { LATER_NODES, openingActions, streetHistories, streetNodes, streetState } from "../scripts/postflop-ai/later-tree.mjs";
-import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
+import { parseCards, runoutTexture } from "../scripts/postflop-ai/model.ts";
+import { LATER_NODES, openingActions, streetHistories, streetNodes, streetState } from "../scripts/postflop-ai/later-tree.ts";
+import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
+import { referencePolicyFor } from "../scripts/postflop-ai/policy.ts";
 import { dealRunout, playHand } from "../scripts/postflop-ai/simulation.mjs";
 
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -91,7 +91,7 @@ test("playHand conserves chips through turn/river policies, including low-SPR al
 
 test("flop bets at low SPR merge into all-in (≥ 67% of the remaining stack)", async () => {
   const { flopDecision } = await import("../src/estimated/postflop-trial.ts");
-  const { spotById } = await import("../scripts/postflop-ai/spots.mjs");
+  const { spotById } = await import("../scripts/postflop-ai/spots.ts");
   const spot = spotById("UTG_open_SB_4bp_call"); // pot 53BB, stacks 74BB
   const big = flopDecision(["bet125"], spot);
   assert.match(big.history.at(-1), /All-in 74/);

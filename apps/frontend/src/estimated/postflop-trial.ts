@@ -1,13 +1,30 @@
+import type { BettingAction, BettingState, FlopTree, PlayerRole } from "../../scripts/postflop-ai/tree.ts";
+import type { LaterStreet } from "../../scripts/postflop-ai/later-tree.ts";
+import type { PreviousLine, RoleValues, Street } from "../../scripts/postflop-ai/types.ts";
+export type FlopGeometry = { ip: string; oop: string; potBb: number; stackBb: number; tree?: FlopTree };
+export type FlopGeometryInput = { ip?: string | null; oop?: string | null; potBb?: number | null; stackBb?: number | null; tree?: FlopTree | null };
+export type Chips = { pot: number; committed: RoleValues; stacks: RoleValues };
+export type DecisionOption = { action: string; label: string; amountBb: number; allIn: boolean };
+type PaidOption = DecisionOption & { paid: number };
+export type LaterStartState = { pot: number; stacks: RoleValues; lastAggressor: PlayerRole | null };
+export type TrialDecisionBlock = { key: string; kind: "flop" | "flop-forced"; position: string; stack: string; chosen: string | null;
+  options: { action: string; label: string }[]; active: boolean; street?: LaterStreet; flopIndex?: number; laterIndex?: number };
+export type TrialEndBlock = { key: string; kind: "end"; result?: string; pot?: string; options: [] };
+export type TrialBoardBlock = { key: string; kind: "board"; cards: string[]; street: LaterStreet; pending: boolean; potBb: number };
+export type TrialActionBlock = TrialDecisionBlock | TrialEndBlock | TrialBoardBlock;
+type CompletionOptions = { rangeType: string; opener: string; hero: string; callers?: string[]; foldedHero?: boolean;
+  limpAction?: string | null; limpResponseAction?: string | null; limpReraiseAction?: string | null; limpFourBetAction?: string | null };
+
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
-import { DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
-import { NODES, flopBetFraction, flopState, isFlopBet, raiseDepth } from "../../scripts/postflop-ai/tree.mjs";
-import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.mjs";
-import { parseFlopBoard } from "../../scripts/postflop-ai/model.mjs";
+import { DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.ts";
+import { NODES, flopBetFraction, flopState, isFlopBet, raiseDepth } from "../../scripts/postflop-ai/tree.ts";
+import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.ts";
+import { parseFlopBoard } from "../../scripts/postflop-ai/model.ts";
 import pilotConfig from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 
 export const representativeFlops = pilot.boards.map(board => parseFlopBoard(board.cards).id);
 export const deck = "23456789TJQKA".split("").flatMap(rank => "shdc".split("").map(suit => `${rank}${suit}`));
-export function recognizedFlop(cards) {
+export function recognizedFlop(cards: unknown): string | null {
   if (!Array.isArray(cards) || cards.length !== 3 || cards.some(card => !deck.includes(card)) || new Set(cards).size !== 3) return null;
   try {
     return parseFlopBoard(cards.join("")).id;
@@ -15,12 +32,12 @@ export function recognizedFlop(cards) {
     return null;
   }
 }
-const round = value => Math.round(value * 100) / 100;
+const round = (value: number): number => Math.round(value * 100) / 100;
 
-// The saved heads-up flop spot a completed preflop path reaches, or null (scripts/postflop-ai/spots.mjs):
+// The saved heads-up flop spot a completed preflop path reaches, or null (scripts/postflop-ai/spots.ts):
 // single-raised pots (O opens, exactly one later seat C calls), 3bet pots (O opens, X 3bets, O calls),
 // 4bet pots (… O 4bets, X calls) and SB's limped pots; everyone else folds.
-function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }) {
+function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }: CompletionOptions & { callers: string[] }) {
   if (rangeType === "response") return foldedHero && callers.length === 1 ? spotFor(opener, callers[0]) : null;
   if (rangeType === "three_bet") return callers.length === 0 ? threeBetSpotFor(opener, hero) : null;
   if (rangeType === "four_bet") return callers.length === 0 ? fourBetSpotFor(opener, hero) : null;
@@ -33,43 +50,43 @@ function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction,
   return null;
 }
 
-export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null }) {
+export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null }: CompletionOptions & { actionBlocks: readonly { kind: string; result?: string; pot?: string }[]; isDefaultTable: boolean }) {
   const end = actionBlocks.find(block => block.kind === "end");
-  if (!end || !/^\d+人でフロップへ$/.test(end.result)) return null;
-  const potBb = Number(/^ポット ([\d.]+)bb$/.exec(end.pot)?.[1]);
+  if (!end || !/^\d+人でフロップへ$/.test(end.result!)) return null;
+  const potBb = Number(/^ポット ([\d.]+)bb$/.exec(end.pot!)?.[1]);
   if (!Number.isFinite(potBb)) return null;
   const players = rangeType === "limp" ? ["SB", "BB"]
     : rangeType === "response" ? [opener, ...callers] : [opener, hero];
   const spot = flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
-  const pilotAvailable = Boolean(spot?.reachable) && potBb === spot.potBb && Boolean(isDefaultTable);
+  const pilotAvailable = Boolean(spot?.reachable) && potBb === spot!.potBb && Boolean(isDefaultTable);
   return {
     players, potBb, pilotAvailable,
-    spotId: pilotAvailable ? spot.id : null, ip: pilotAvailable ? spot.ip : null, oop: pilotAvailable ? spot.oop : null,
-    stackBb: pilotAvailable ? spot.stackBb : null, tree: pilotAvailable ? spot.tree : null,
+    spotId: pilotAvailable ? spot!.id : null, ip: pilotAvailable ? spot!.ip : null, oop: pilotAvailable ? spot!.oop : null,
+    stackBb: pilotAvailable ? spot!.stackBb : null, tree: pilotAvailable ? spot!.tree : null,
   };
 }
 
 // Seat names, starting pot, stacks and tree of the flop; the first pilot spot when none is given.
-function geometry(spot) {
-  const base = spot?.ip && spot?.oop && Number.isFinite(spot.potBb) && Number.isFinite(spot.stackBb) ? spot : spotById(DEFAULT_SPOT_ID);
+function geometry(spot?: FlopGeometryInput | null) {
+  const base = spot?.ip && spot?.oop && Number.isFinite(spot!.potBb) && Number.isFinite(spot.stackBb) ? spot as FlopGeometry : spotById(DEFAULT_SPOT_ID);
   return { ...base, tree: base.tree ?? "oop_checks" };
 }
 
-// Replays the flop actions with the same chip rules as the scripts (engine.mjs): bets are a
+// Replays the flop actions with the same chip rules as the scripts (engine.ts): bets are a
 // fraction of the pot, raises 3× the bet, both capped by the stack; an uncalled amount is returned.
 // "oop_checks": the OOP player checks, then btn_* (IP) / bb_* (OOP) nodes.
 // "oop_leads": the OOP preflop raiser acts first (oop_first → ip_vs_* → oop_vs_raise).
-function replay(actions, spot) {
+function replay(actions: readonly string[], spot?: FlopGeometryInput | null) {
   const g = geometry(spot);
   const requested = flopState(g.tree, actions);
   const invested = { ip: 0, oop: 0 };
-  let pot = g.potBb, aggressor = null;
-  const left = role => round(g.stackBb - invested[role]);
-  const rival = role => role === "ip" ? "oop" : "ip";
+  let pot = g.potBb, aggressor: PlayerRole | null = null;
+  const left = (role: PlayerRole) => round(g.stackBb - invested[role]);
+  const rival = (role: PlayerRole) => role === "ip" ? "oop" : "ip";
   const chipsNow = () => ({ pot, committed: { ...invested }, stacks: { ip: left("ip"), oop: left("oop") } });
-  const put = (role, amount) => { const value = round(Math.min(left(role), amount)); invested[role] = round(invested[role] + value); pot = round(pot + value); return value; };
+  const put = (role: PlayerRole, amount: number) => { const value = round(Math.min(left(role), amount)); invested[role] = round(invested[role] + value); pot = round(pot + value); return value; };
   const history = g.tree === "oop_checks" ? [`${g.oop} Check`] : [];
-  const stacks = [], effective = [], canRaises = [];
+  const stacks: number[] = [], effective: BettingAction[] = [], canRaises: boolean[] = [];
   for (const { node, role, action: asked } of requested.steps) {
     const name = g[role], other = rival(role);
     stacks.push(left(role));
@@ -77,7 +94,7 @@ function replay(actions, spot) {
     canRaises.push(can);
     let action = asked;
     if (action === "raise" && !can) action = "call";
-    const option = flopOptionsFor(chipsNow(), node, role).find(item => item.action === action);
+    const option = flopOptionsFor(chipsNow(), node, role).find(item => item.action === action)!;
     if (action === "check") history.push(`${name} Check`);
     else if (isFlopBet(action)) { put(role, option.paid); aggressor = role; history.push(`${name} ${option.label}`); }
     else if (action === "call") { put(role, invested[other] - invested[role]); history.push(`${name} Call${left(role) === 0 ? " All-in" : ""}`); }
@@ -89,27 +106,27 @@ function replay(actions, spot) {
   }
   const state = flopState(g.tree, effective);
   state.steps.forEach((step, index) => { step.canRaise = canRaises[index]; });
-  if (state.end && ["fold", "raise-fold"].includes(state.end.type)) {
-    const winner = state.end.winner, loser = rival(winner);
+  if (state.end && ["fold", "raise-fold"].includes(state.end!.type)) {
+    const winner = state.end.winner!, loser = rival(winner);
     pot = round(pot - Math.max(0, invested[winner] - invested[loser]));
   }
   const chips = { invested, stacks: { ip: left("ip"), oop: left("oop") } };
-  return { g, state, pot, history, stacks, stackNow: state.role ? left(state.role) : null, ...chips,
+  return { g, state, pot, history, stackNow: state.role ? left(state.role) : null, ...chips,
     chipsNow: state.node ? { pot, committed: { ...invested }, stacks: { ip: left("ip"), oop: left("oop") } } : null,
-    lastAggressor: state.end && ["call", "raise-call"].includes(state.end.type) ? aggressor : null };
+    lastAggressor: state.end && ["call", "raise-call"].includes(state.end!.type) ? aggressor : null };
 }
 
 // ---- amount-based action options (shared by the flop and later streets) ----
 // `chips`: { pot, committed: { ip, oop } (street totals so far), stacks: { ip, oop } (remaining before acting) }.
-const rival = role => role === "ip" ? "oop" : "ip";
-const capOf = (chips, role) => Math.min(chips.stacks[role], chips.stacks[rival(role)] + chips.committed[rival(role)] - chips.committed[role]);
-// Raising needs an opponent who is not all-in and chips beyond the call (same rule as engine.mjs).
-export function canRaiseNow(chips, role) {
+const rival = (role: PlayerRole) => role === "ip" ? "oop" : "ip";
+const capOf = (chips: Chips, role: PlayerRole): number => Math.min(chips.stacks[role], chips.stacks[rival(role)] + chips.committed[rival(role)] - chips.committed[role]);
+// Raising needs an opponent who is not all-in and chips beyond the call (same rule as engine.ts).
+export function canRaiseNow(chips: Chips, role: PlayerRole): boolean {
   const other = rival(role);
   return chips.stacks[other] > 0 && chips.committed[role] + capOf(chips, role) > chips.committed[other];
 }
 // A wager of `amount` chips: committing >= the merge ratio of the effective stack becomes all-in.
-function wagerOf(chips, role, amount) {
+function wagerOf(chips: Chips, role: PlayerRole, amount: number) {
   const limit = capOf(chips, role);
   return amount >= limit * pilot.later_all_in_merge_ratio ? { paid: round(limit), allIn: true } : { paid: round(Math.min(amount, chips.stacks[role])), allIn: round(Math.min(amount, chips.stacks[role])) >= chips.stacks[role] };
 }
@@ -117,10 +134,10 @@ const optionText = {
   en: { check: "Check", fold: "Fold", call: "Call", bet: "Bet", raise: "Raise", allIn: "All-in" },
   ja: { check: "チェック", fold: "フォールド", call: "コール", bet: "ベット", raise: "レイズ", allIn: "オールイン" },
 };
-function buildOptions(chips, node, role, actions, multiplier, fractionOf, locale) {
-  const t = optionText[locale] ?? optionText.en, other = rival(role), mine = chips.committed[role], theirs = chips.committed[other];
+function buildOptions(chips: Chips, node: string, role: PlayerRole, actions: readonly string[], multiplier: number, fractionOf: (action: string) => number, locale: string): PaidOption[] {
+  const t = optionText[locale as keyof typeof optionText] ?? optionText.en, other = rival(role), mine = chips.committed[role], theirs = chips.committed[other];
   const canRaise = canRaiseNow(chips, role);
-  const out = [];
+  const out: PaidOption[] = [];
   for (const action of actions) {
     if (action === "check") out.push({ action, label: t.check, amountBb: 0, allIn: false, paid: 0 });
     else if (action === "fold") out.push({ action, label: t.fold, amountBb: 0, allIn: false, paid: 0 });
@@ -144,44 +161,44 @@ function buildOptions(chips, node, role, actions, multiplier, fractionOf, locale
   }
   return out;
 }
-function flopOptionsFor(chips, node, role, locale = "en") {
+function flopOptionsFor(chips: Chips, node: string, role: PlayerRole, locale = "en") {
   return buildOptions(chips, node, role, NODES[node], pilot.flop_check_raise_multiplier, flopBetFraction, locale);
 }
 // The options of a decision with their real amounts: [{ action, label, amountBb, allIn }] (raise is dropped
 // when raising is impossible). `street` is "flop", "turn" or "river"; `locale` "en" or "ja".
-export function decisionOptions(chips, node, street = "flop", locale = "en") {
+export function decisionOptions(chips: Chips, node: string, street: string = "flop", locale = "en"): DecisionOption[] {
   if (street === "flop") return flopOptionsFor(chips, node, nodeRoleOf(node), locale).map(({ paid, ...rest }) => rest);
   return buildOptions(chips, node, nodeRoleOf(node), LATER_NODES[node], pilotConfig.later_raise_multiplier,
     action => betFraction(street, action), locale).map(({ paid, ...rest }) => rest);
 }
 // A bet or raise that the merge ratio turns into an all-in is the same line as the explicit all-in,
 // so the action path offers it once (the explicit all-in wins).
-const blockOptions = options => options
+const blockOptions = (options: readonly DecisionOption[]) => options
   .filter(option => !(option.allIn && option.action !== "allin" && option.action !== "call" && options.some(other => other.action === "allin")))
   .map(({ action, label }) => ({ action, label }));
-const buildOptionsFor = (street, chips, node, role) =>
+const buildOptionsFor = (street: string, chips: Chips, node: string, role: PlayerRole) =>
   buildOptions(chips, node, role, LATER_NODES[node], pilotConfig.later_raise_multiplier, action => betFraction(street, action), "en");
-const nodeRoleOf = node => node.startsWith("btn_") || node.startsWith("ip_") || /^(turn|river)_ip_/.test(node) ? "ip" : "oop";
+const nodeRoleOf = (node: string): PlayerRole => node.startsWith("btn_") || node.startsWith("ip_") || /^(turn|river)_ip_/.test(node) ? "ip" : "oop";
 
-export function flopDecision(actions = [], spot) {
+export function flopDecision(actions: readonly string[] = [], spot?: FlopGeometryInput | null) {
   const { g, state, pot, history, chipsNow } = replay(actions, spot);
   if (state.node) {
-    const options = decisionOptions(chipsNow, state.node, "flop");
+    const options = decisionOptions(chipsNow!, state.node, "flop");
     return { node: state.node, actor: g[state.role], potBb: pot, history, options,
-      labels: Object.fromEntries(decisionOptions(chipsNow, state.node, "flop", "en").map(o => [o.action, o.label])),
-      labelsJa: Object.fromEntries(decisionOptions(chipsNow, state.node, "flop", "ja").map(o => [o.action, o.label])) };
+      labels: Object.fromEntries(decisionOptions(chipsNow!, state.node, "flop", "en").map(o => [o.action, o.label])),
+      labelsJa: Object.fromEntries(decisionOptions(chipsNow!, state.node, "flop", "ja").map(o => [o.action, o.label])) };
   }
-  const { type, winner } = state.end;
-  const last = state.steps.at(-1);
+  const { type, winner } = state.end!;
+  const last = state.steps.at(-1)!;
   const result = type === "check" ? `${g[last.role]}もチェック。フロップの判断は終了です。`
     : type === "call" || type === "raise-call" ? `${g[last.role]}がコール。フロップの判断は終了です。`
-    : `${g[last.role]}がフォールド。${g[winner]}の勝ちです。`;
+    : `${g[last.role]}がフォールド。${g[winner!]}の勝ちです。`;
   return { result, potBb: pot, history };
 }
 
-export function buildFlopActionBlocks(actions = [], spot) {
+export function buildFlopActionBlocks(actions: readonly string[] = [], spot?: FlopGeometryInput | null): TrialActionBlock[] {
   const g = geometry(spot);
-  const blocks = g.tree === "oop_checks"
+  const blocks: TrialActionBlock[] = g.tree === "oop_checks"
     ? [{ key: "flop-oop-check", kind: "flop-forced", position: g.oop, stack: `${g.stackBb}`, chosen: "check", options: [{ action: "check", label: "Check" }], active: false }]
     : [];
   for (let index = 0; index <= actions.length; index++) {
@@ -192,40 +209,40 @@ export function buildFlopActionBlocks(actions = [], spot) {
       break;
     }
     blocks.push({ key: `flop-${index}`, kind: "flop", flopIndex: index, position: g[state.role], stack: `${stackNow}`,
-      chosen: actions[index] ?? null, options: blockOptions(decisionOptions(chipsNow, state.node, "flop")), active: index === actions.length });
+      chosen: actions[index] ?? null, options: blockOptions(decisionOptions(chipsNow!, state.node, "flop")), active: index === actions.length });
   }
   return blocks;
 }
 
-const formatBb = value => `${Number(round(value).toFixed(2))}`;
-const foldEnd = (state, spot) => {
+const formatBb = (value: number): string => `${Number(round(value).toFixed(2))}`;
+const foldEnd = (state: BettingState, spot: FlopGeometry): string => {
   const foldedRole = state.steps.at(-1)?.role;
   const winnerRole = state.end?.winner;
-  return `${spot[foldedRole]}がフォールド。${spot[winnerRole]}の勝ちです。`;
+  return `${spot[foldedRole!]}がフォールド。${spot[winnerRole!]}の勝ちです。`;
 };
-const showdownEnd = allIn => allIn ? "オールイン・ショウダウン" : "ショーダウン";
+const showdownEnd = (allIn: boolean): string => allIn ? "オールイン・ショウダウン" : "ショーダウン";
 
-function isFlopContinueState(state) {
-  return Boolean(state.end && ["check", "call", "raise-call"].includes(state.end.type));
+function isFlopContinueState(state: BettingState): boolean {
+  return Boolean(state.end && ["check", "call", "raise-call"].includes(state.end!.type));
 }
 
 // A later street is available only after a completed, non-folded, non-all-in flop.
 // `lastAggressor` remains a role (IP/OOP), matching the later policy engine.
-export function laterStart(flopActions = [], spot) {
+export function laterStart(flopActions: readonly string[] = [], spot?: FlopGeometryInput | null): LaterStartState | null {
   const { g, state, pot, stacks, lastAggressor } = replay(flopActions, spot);
   if (!isFlopContinueState(state) || stacks.ip <= 0 || stacks.oop <= 0) return null;
   return { pot, stacks, lastAggressor };
 }
 
 // Replay one turn or river with the exact effective-stack and all-in merge rules used by
-// scripts/postflop-ai/engine.mjs. `start` is the state at the beginning of this street.
-export function replayLater(street, actions = [], start, spot) {
+// scripts/postflop-ai/engine.ts. `start` is the state at the beginning of this street.
+export function replayLater(street: string, actions: readonly string[] = [], start: LaterStartState, spot?: FlopGeometryInput | null) {
   if (!start || !["turn", "river"].includes(street)) throw new Error("Invalid later-street start");
   const g = geometry(spot);
   const stacks = { ip: round(start.stacks.ip), oop: round(start.stacks.oop) };
-  let pot = round(start.pot), aggressor = null;
-  const committed = { ip: 0, oop: 0 }, history = [];
-  const put = (role, amount) => {
+  let pot = round(start.pot), aggressor: PlayerRole | null = null;
+  const committed = { ip: 0, oop: 0 }, history: string[] = [];
+  const put = (role: PlayerRole, amount: number) => {
     const value = round(Math.min(stacks[role], amount));
     if (!Number.isFinite(value) || value < 0) throw new Error("Invalid later-street wager");
     stacks[role] = round(stacks[role] - value);
@@ -233,16 +250,16 @@ export function replayLater(street, actions = [], start, spot) {
     pot = round(pot + value);
     return value;
   };
-  const cap = role => {
+  const cap = (role: PlayerRole) => {
     const other = role === "ip" ? "oop" : "ip";
     return Math.min(stacks[role], stacks[other] + committed[other] - committed[role]);
   };
-  const wager = (role, amount) => {
+  const wager = (role: PlayerRole, amount: number) => {
     const limit = cap(role);
     return put(role, amount >= limit * pilotConfig.later_all_in_merge_ratio ? limit : amount);
   };
   const requestedState = streetState(street, actions);
-  const actualActions = [], canRaises = [];
+  const actualActions: string[] = [], canRaises: boolean[] = [];
   for (let index = 0; index < requestedState.steps.length; index++) {
     const { node, role } = requestedState.steps[index];
     const name = g[role], other = role === "ip" ? "oop" : "ip";
@@ -251,7 +268,7 @@ export function replayLater(street, actions = [], start, spot) {
     const can = canRaiseNow(chips, role);
     canRaises.push(can);
     if (action === "raise" && !can) action = "call";
-    const option = buildOptionsFor(street, chips, node, role).find(item => item.action === action);
+    const option = buildOptionsFor(street, chips, node, role).find(item => item.action === action)!;
     if (action === "allin" || action.startsWith("bet") || action === "raise") {
       put(role, option.paid);
       aggressor = role;
@@ -276,17 +293,17 @@ export function replayLater(street, actions = [], start, spot) {
     chipsNow: state.node ? { pot, committed: { ...committed }, stacks: { ip: stacks.ip, oop: stacks.oop } } : null };
 }
 
-function boardBlock(street, card, potBb) {
+function boardBlock(street: LaterStreet, card: string, potBb: number): TrialBoardBlock {
   return { key: `${street}-board`, kind: "board", cards: card ? [card] : [], street, pending: !card, potBb };
 }
 
-function appendLaterDecisionBlocks(blocks, street, actions, start, spot, hasNextStreet = false) {
+function appendLaterDecisionBlocks(blocks: TrialActionBlock[], street: LaterStreet, actions: readonly string[], start: LaterStartState, spot?: FlopGeometryInput | null, hasNextStreet = false) {
   const g = geometry(spot);
   for (let index = 0; index <= actions.length; index++) {
     const replayed = replayLater(street, actions.slice(0, index), start, spot);
     const state = replayed.state;
     if (!state.node) {
-      const isFold = ["fold", "raise-fold"].includes(state.end.type);
+      const isFold = ["fold", "raise-fold"].includes(state.end!.type);
       const allIn = replayed.stacks.ip <= 0 || replayed.stacks.oop <= 0;
       if (isFold || allIn || !hasNextStreet) {
         const result = isFold ? foldEnd(state, g) : showdownEnd(allIn);
@@ -296,20 +313,20 @@ function appendLaterDecisionBlocks(blocks, street, actions, start, spot, hasNext
     }
     const role = state.role;
     blocks.push({ key: state.node, kind: "flop", street, laterIndex: index, position: g[role],
-      stack: formatBb(replayed.stacks[role]), chosen: actions[index] ?? null, options: blockOptions(decisionOptions(replayed.chipsNow, state.node, street)), active: index === actions.length });
+      stack: formatBb(replayed.stacks[role]), chosen: actions[index] ?? null, options: blockOptions(decisionOptions(replayed.chipsNow!, state.node, street)), active: index === actions.length });
   }
   return replayLater(street, actions, start, spot);
 }
 
 // Build later street board/decision blocks in action order. The end block for a normally
 // completed flop is replaced by its turn block; folds and all-ins are left to the flop view.
-export function buildLaterActionBlocks({ flopActions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [] } = {}, spot) {
+export function buildLaterActionBlocks({ flopActions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [] }: { flopActions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[] } = {}, spot?: FlopGeometryInput | null): TrialActionBlock[] {
   const turnStart = laterStart(flopActions, spot);
   if (!turnStart) return [];
-  const blocks = [boardBlock("turn", turnCard, turnStart.pot)];
+  const blocks: TrialActionBlock[] = [boardBlock("turn", turnCard, turnStart.pot)];
   if (!turnCard) return blocks;
   const turnReplay = appendLaterDecisionBlocks(blocks, "turn", turnActions, turnStart, spot, true);
-  if (!turnReplay.state.end || ["fold", "raise-fold"].includes(turnReplay.state.end.type) ||
+  if (!turnReplay.state.end || ["fold", "raise-fold"].includes(turnReplay.state.end!.type) ||
       turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0) return blocks;
   const riverStart = { pot: turnReplay.pot, stacks: turnReplay.stacks, lastAggressor: turnReplay.lastAggressor };
   blocks.push(boardBlock("river", riverCard, riverStart.pot));
@@ -318,18 +335,18 @@ export function buildLaterActionBlocks({ flopActions = [], turnCard = "", turnAc
   return blocks;
 }
 
-function lineFor(previousAggressor, role) {
+function lineFor(previousAggressor: PlayerRole | null, role: PlayerRole): PreviousLine {
   return previousAggressor === null ? "checked" : previousAggressor === role ? "aggressor" : "defender";
 }
 
 // Presentation contract used by the local range API: the current node, actor, pot, and
 // the previous-street line from the acting player's perspective.
-export function laterDecision(street, actions = [], start, spot) {
+export function laterDecision(street: string, actions: readonly string[] = [], start: LaterStartState, spot?: FlopGeometryInput | null) {
   const replayed = replayLater(street, actions, start, spot);
   if (!replayed.state.node) return { street, end: replayed.end, potBb: replayed.pot, stacks: replayed.stacks, history: replayed.history, lastAggressor: replayed.lastAggressor };
   const role = replayed.state.role;
-  const labelsFor = locale => Object.fromEntries(decisionOptions(replayed.chipsNow, replayed.state.node, street, locale).map(o => [o.action, o.label]));
+  const labelsFor = (locale: string) => Object.fromEntries(decisionOptions(replayed.chipsNow!, replayed.state.node!, street, locale).map(o => [o.action, o.label]));
   return { street, node: replayed.state.node, actor: geometry(spot)[role], role, potBb: replayed.pot,
-    options: decisionOptions(replayed.chipsNow, replayed.state.node, street), labels: labelsFor("en"), labelsJa: labelsFor("ja"),
+    options: decisionOptions(replayed.chipsNow!, replayed.state.node!, street), labels: labelsFor("en"), labelsJa: labelsFor("ja"),
     line: lineFor(start.lastAggressor ?? null, role), history: replayed.history, lastAggressor: replayed.lastAggressor };
 }
