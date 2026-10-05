@@ -9491,8 +9491,8 @@
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
-      "bytes": 9937,
-      "sha256": "370f35ffd6028cb5a3570dff827071ee86f3484cc03808b6383cb334538c709e"
+      "bytes": 11418,
+      "sha256": "3fe349c2a380a6122f7364846f074276606223167315d76ea09b580401936a28"
     },
     {
       "path": "apps/backend/migrations/0003_preflop.sql",
@@ -9945,7 +9945,7 @@
       "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
     }
   ],
-  "content_sha256": "7d13a2288a6013758ec949f6f05df53f18f59f2c54142b6b690f446f19b1865b",
+  "content_sha256": "c0a65e4101870779e6bd1b3866d498c369e7c7a2ad0a9acb6055fba71fa24edb",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -10634,6 +10634,33 @@
         "local_log_sha256": "ce34fe6d8a2d6c6f9c4587fd20032baf53497931cd644f237000c26344d1a0a2",
         "limitations": "Source compatibility is not new strategy acceptance, full-delivery D1 rollback proof or production readiness. Strict exact-commit full-delivery Actions verification, the original historical full-suite/lint/delivery limitations and separate postflop quality/freshness review remain applicable. No commit, push, merge, production import or deployment is part of this review."
       }
+    },
+    {
+      "date": "2026-10-05",
+      "reviewer": "Independent parent review of inherited Ranked workflow binding on the MW3 source checkpoint",
+      "reviewed_base_commit": "49c51101e28a0ae610c74c1a0168970754cb2bd0",
+      "scope": "Only credentialed browser readiness checks added to the existing production workflow. No strategy-quality review renewal; original review metadata, findings, advisories, limitations, artifact/archive identities, counts and source fingerprint remain unchanged.",
+      "before": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 9937,
+        "sha256": "370f35ffd6028cb5a3570dff827071ee86f3484cc03808b6383cb334538c709e"
+      },
+      "after": {
+        "path": ".github/workflows/deploy-worker.yml",
+        "bytes": 11418,
+        "sha256": "3fe349c2a380a6122f7364846f074276606223167315d76ea09b580401936a28"
+      },
+      "rationale": "The prior live readiness GET did not inspect CORS, so enabled:true could pass while browsers rejected authenticated ranked requests. The strengthened gate validates exact production origin plus credentials on status, POST preflight and the expected unauthenticated profile rejection, without a user session or production match.",
+      "preserved_gates": "The verify dependency, main-only production condition, exact checkout, source/archive hash restoration, strict local D1 full-delivery checks, reviewed bundle validation and deployment-before-import ordering remain intact. No origin configuration, credential, authentication, schema or strategy data changes are included in this amendment.",
+      "verified_unchanged": {
+        "other_source_records": 91,
+        "artifact_records": 1888,
+        "archive_entries": 1614,
+        "archive_bytes": 1747857,
+        "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
+      },
+      "inherited_approved_hotfix": "921bcf30b99fb64d542031d4ed0b2bd7b2f34e11"
     }
   ]
 }

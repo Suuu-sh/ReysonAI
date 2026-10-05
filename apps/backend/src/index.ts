@@ -493,8 +493,12 @@ function withCors(response: Response, request: Request, env: Env): Response {
   const requestOrigin = request.headers.get("origin");
   if (configured.includes("*")) headers.set("access-control-allow-origin", "*");
   else if (requestOrigin && configured.includes(requestOrigin)) headers.set("access-control-allow-origin", requestOrigin);
-  if (new URL(request.url).pathname.startsWith("/v1/account/")) {
+  const pathname = new URL(request.url).pathname;
+  // Ranked uses the same HttpOnly account cookie. Credentialed browser fetches
+  // (including OPTIONS and error responses) require an exact allowed origin.
+  if (pathname.startsWith("/v1/account/") || pathname.startsWith("/v1/ranked/")) {
     headers.delete("access-control-allow-origin");
+    headers.delete("access-control-allow-credentials");
     if (requestOrigin && configured.filter(value => value !== "*").includes(requestOrigin)) {
       headers.set("access-control-allow-origin", requestOrigin);
       headers.set("access-control-allow-credentials", "true");
