@@ -1,3 +1,6 @@
+import { StyleAvatar } from "./StyleAvatar.tsx";
+import { OpponentProfile, profileCopy as profileText, type OpponentProfileData } from "./OpponentProfile.tsx";
+import type { ReactNode } from "react";
 import { PokerTable, PokerSeat, PokerChip, PokerActionButton } from "./PokerTable.tsx";
 import { PlayingCard } from "../components/PlayingCard.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -77,7 +80,7 @@ function chipState(revealed: LogEntry[], street: string) {
 
 type HistoryItem = { no: number; winners: string; mine: number | null; showdown: boolean };
 
-export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: string; watch?: boolean; onExit: () => void }) {
+export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = false, exitDisabled = false, handoffKey, onHandBoundary, waitingHeader, waitingSidebar }: { tableId: string; watch?: boolean; onExit: () => void; waitingMode?: boolean; exitDisabled?: boolean; handoffKey?: string; onHandBoundary?: () => void; waitingHeader?: ReactNode; waitingSidebar?: ReactNode }) {
   const table = agentTableById(tableId)!;
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<Session>(() => createSession({ tableId, seed: `${tableId}-${Date.now()}`, humanSeat: watch ? null : 0 }));
@@ -88,6 +91,9 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   const [speed, setSpeed] = useState<Speed>(() => readPref("reysonai:agent-speed", "normal"));
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [styleOpen, setStyleOpen] = useState(false);
+  const [opponentProfile, setOpponentProfile] = useState<OpponentProfileData | null>(null);
+  const boundary = useRef(onHandBoundary); boundary.current = onHandBoundary;
+  const acceptedBoundary = useRef<string | null>(null);
 
   useEffect(() => { preloadDatasets(AGENT_DATASETS).then(() => setReady(true), error => setLoadError(String(error?.message ?? error))); }, []);
 
@@ -96,7 +102,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   const humanPos = humanSeat >= 0 ? positions[humanSeat] : null;
   // The agents read the human's latest 1000 Agent hands. The read is fixed when a hand starts so a
   // replay of that hand never changes; it is handed to the agents as their profile (A5 hook).
-  const handRead = useMemo(() => humanPos ? playerRead(loadAgentHands()) : null, [session.handNo, humanPos]); // eslint-disable-line react-hooks/exhaustive-deps
+  const handRead = useMemo(() => !waitingMode && humanPos ? playerRead(loadAgentHands()) : null, [session.handNo, humanPos]); // eslint-disable-line react-hooks/exhaustive-deps
   const agents = useMemo(() => createAgent({ profileId: handRead && handRead.confidence !== "collecting" ? handRead.style.id : null }), [handRead]);
   const result: HandResult | null = useMemo(() => {
     if (!ready) return null;
@@ -160,17 +166,17 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   useEffect(() => {
     if (!done || recorded.current === session.handNo) return;
     recorded.current = session.handNo;
-    if (humanPos) saveAgentHand(handRecord(result!, tableId, humanPos));
+    if (humanPos && !waitingMode) saveAgentHand(handRecord(result!, tableId, humanPos));
     setHistory(current => [{ no: session.handNo + 1, winners: (result!.winners ?? []).map(nameOf).join(" / "),
       mine: humanPos ? toPoints(result!.returns![humanPos] ?? 0) : null, showdown: Boolean(result!.showdown) }, ...current].slice(0, 30));
   }, [done, humanPos, session.handNo, result, tableId, nameOf]);
 
   const act = (key: string) => setHumanActions(current => [...current, key]);
   const nextHand = useCallback(() => {
-    if (!result || result.status !== "done") return;
+    if (!result || result.status !== "done" || handoffKey) return;
     setSession(current => finishHand(current, result.returns!));
     setHumanActions([]); setShown(0);
-  }, [result]);
+  }, [result, handoffKey]);
   const skip = () => setShown(log.length);
 
   // Deal the next hand by itself: right away, except at a showdown, where the cards stay up long
@@ -178,14 +184,20 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   const showdown = done && Boolean(result?.showdown);
   useEffect(() => {
     if (!done) return;
+    if (handoffKey) {
+      if (opponentProfile) return;
+      const key = `${session.handNo}:${handoffKey}`;
+      if (acceptedBoundary.current !== key) { acceptedBoundary.current = key; boundary.current?.(); }
+      return;
+    }
     const timer = window.setTimeout(nextHand, showdown ? (speed === "fast" ? 2500 : 3500) : speed === "fast" ? 300 : 600);
     return () => window.clearTimeout(timer);
-  }, [done, showdown, nextHand, speed]);
+  }, [done, showdown, nextHand, speed, handoffKey, session.handNo, opponentProfile]);
 
   // Keyboard: 1-9 pick an action, Enter / Space deal the next hand, S skips.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.metaKey || event.ctrlKey || event.altKey || (event.target as HTMLElement)?.closest?.("input, textarea, select")) return;
+      if (document.querySelector('[aria-modal="true"]') || handoffKey && done || event.metaKey || event.ctrlKey || event.altKey || (event.target as HTMLElement)?.closest?.("input, textarea, select")) return;
       if (pending && /^[1-9]$/.test(event.key)) {
         const option = pending.options[Number(event.key) - 1];
         if (option) { event.preventDefault(); act(option.key); }
@@ -197,7 +209,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
   });
 
   // The dashboard shows the read including the hand just finished.
-  const liveRead = useMemo(() => humanPos ? playerRead(loadAgentHands()) : null, [humanPos, history.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  const liveRead = useMemo(() => !waitingMode && humanPos ? playerRead(loadAgentHands()) : null, [humanPos, history.length]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!styleOpen) return;
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setStyleOpen(false); };
@@ -214,9 +226,9 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
 
   return <div className="agent-page" style={{ "--table-theme": table.theme } as any}>
     <header className="agent-top">
-      <button type="button" className="agent-back" onClick={onExit} aria-label={localized("Back", "戻る")}><ArrowLeft size={16} weight="bold" /></button>
+      <button type="button" className={`agent-back${waitingMode ? " ff-exit" : ""}`} disabled={exitDisabled} onClick={onExit} aria-label={waitingMode ? localized("Exit", "退出") : localized("Back", "戻る")}><ArrowLeft size={16} weight="bold" />{waitingMode && localized("Exit", "退出")}</button>
       <div className="agent-title">
-        <strong>{localized(table.name.en, table.name.ja)}</strong>
+        <strong>{waitingHeader ?? localized(table.name.en, table.name.ja)}</strong>
         <small>{watch ? localized("Spectating", "観戦") : "Reyson Agent"} · 6-max 100BB · #{session.handNo + 1}</small>
       </div>
       <div className="agent-tools">
@@ -267,8 +279,10 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
               const stack = done ? 100 + (result!.returns![pos] ?? 0) : 100 - (chips.committed[pos] ?? 0);
               return <PokerSeat key={index} slot={slotIndex} human={isHuman} folded={folded} won={Boolean(won)} acting={actingPos === pos}
                 cards={result?.holeCards[pos] ?? []} showCards={Boolean(showCards)} handKey={session.handNo}
-                avatar={character ? <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : undefined}
-                name={character ? character.name.en : localized("You", "あなた")} stack={pts(stack)} position={pos}
+                avatar={character ? waitingMode ? <StyleAvatar id="balanced" color={character.color} size={50} dim={folded}/> : <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : undefined}
+                onProfile={character ? () => setOpponentProfile({name:character.name.en, avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>, kind:"agent", type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"), description:profileText("Saved balanced AI estimate. Agent codenames do not change policies.", "保存済みのバランス型AI推定。Agent名で方針は変わりません。", "已保存的平衡AI估计。Agent名称不会改变策略。", "Estimación IA equilibrada guardada. Los nombres Agent no cambian la política.")}) : undefined}
+                profileLabel={character ? `${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}` : undefined} fullName={character?.name.en}
+                name={character ? waitingMode ? "BAL" : character.name.en : localized("You", "あなた")} stack={pts(stack)} position={pos}
                 bubble={lastOnStreet && !done ? <span className={`agent-bubble tone-${tone(lastOnStreet.action)}`} key={`${lastOnStreet.street}-${mine.length}`}>{actionLabel(asDisplayed(revealed, lastOnStreet))}</span> : null}>
                 {done && result?.showdown && result.handRanks?.[pos] != null && !folded && <span className={`agent-handname${won ? " is-win" : ""}`}>{handName(result.handRanks[pos])}</span>}
                 {delta != null && delta !== 0 && <span className={`agent-delta ${delta > 0 ? "up" : "down"}`}>{signed(delta)}</span>}
@@ -301,13 +315,16 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
       </section>
 
       <aside className="agent-side">
+        {waitingSidebar}
+        {waitingMode && <section className="agent-panel"><h3>{profileText("Practice Agents", "練習相手のAgent", "练习Agent", "Agents de práctica")}</h3>{table.agents.map(character => <div className="ff-opponent" key={character.id}><button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en,kind:"agent",type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"),avatar:<StyleAvatar id="balanced" color={character.color} size={64}/>})}><StyleAvatar id="balanced" color={character.color} size={32}/></button><div><strong>{character.name.en}</strong><small>{profileText("Balanced · preflop", "バランス型・プリフロップ", "平衡型 · 翻牌前", "Equilibrado · preflop")}</small></div></div>)}</section>}
+        {!waitingMode && <>
         {liveRead && <PlayStyleCard read={liveRead} onOpen={() => setStyleOpen(true)} />}
         <section className="agent-panel">
           <h3>{localized("Session", "セッション")}<small>{localized(`${session.handNo} hands`, `${session.handNo}ハンド`)}</small></h3>
           <ol className="agent-standings">{standings.map(({ seat, index }) => {
             const character = seat.kind === "agent" ? characterFor(seat.agentId) : null;
             return <li key={index} className={seat.kind === "human" ? "is-human" : ""}>
-              <span className="agent-mini">{character ? <AgentAvatar id={character.id} color={character.color} size={22} /> : <i>YOU</i>}</span>
+              <span className="agent-mini">{character ? <button type="button" className="agent-mini-profile" aria-label={`${profileText("Profile", "プロフィール", "资料", "Perfil")}: ${character.name.en}`} onClick={() => setOpponentProfile({name:character.name.en, avatar:<AgentAvatar id={character.id} color={character.color} size={64}/>, kind:"agent", type:profileText("Balanced", "バランス型", "平衡型", "Equilibrado"), description:profileText("Saved balanced AI estimate.", "保存済みバランス型AI推定。", "已保存的平衡AI估计。", "Estimación IA equilibrada guardada.")})}><AgentAvatar id={character.id} color={character.color} size={22}/></button> : <i>YOU</i>}</span>
               <span>{character ? localized(character.name.en, character.name.ja) : localized("You", "あなた")}</span>
               <b className={seat.points > 0 ? "up" : seat.points < 0 ? "down" : ""}>{signed(seat.points)}</b>
             </li>;
@@ -324,8 +341,10 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
             {item.mine != null && <b className={item.mine > 0 ? "up" : item.mine < 0 ? "down" : ""}>{signed(item.mine)}</b>}
           </li>)}</ul>
         </section>}
+        </>}
       </aside>
     </div>
+    {opponentProfile && <OpponentProfile profile={opponentProfile} onClose={() => setOpponentProfile(null)} />}
     {styleOpen && liveRead && <div className="style-drawer" role="dialog" aria-modal="true" aria-label={localized("Your play style", "あなたのプレイスタイル")}>
       <button type="button" className="style-drawer-backdrop" aria-label={localized("Close", "閉じる")} onClick={() => setStyleOpen(false)} />
       <div className="style-drawer-panel"><PlayStyleDashboard read={liveRead} onClose={() => setStyleOpen(false)} /></div>

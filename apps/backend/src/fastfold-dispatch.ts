@@ -13,12 +13,13 @@ export async function dispatchFastFold(request:Request,env:FastFoldRuntimeEnv):P
  // Reject declared oversized bodies cheaply; the DO still bounds the streamed body.
  const length=request.headers.get('content-length');if(request.method==='POST'&&length&&Number(length)>4096)return reply('body_too_large',400);
  let name='public-status';
- if(path!=='/v1/fastfold/status'||request.method!=='GET'){
+ if(!['/v1/fastfold/status','/v1/fastfold/human/status'].includes(path)||request.method!=='GET'){
   const cookieName=env.AUTH_LOCAL_DEV==='true'?'reysonai-dev-session':'__Host-reysonai';
   const token=request.headers.get('cookie')?.split(';').map(s=>s.trim()).find(s=>s.startsWith(cookieName+'='))?.slice(cookieName.length+1);
   if(!token||!/^[a-f0-9]{64}$/.test(token))return reply('sign_in_required',401);
   name='session-shard-'+(parseInt((await digest(token)).slice(0,2),16)%32);
  }
+ if(path.startsWith('/v1/fastfold/human/'))name='human-pool';
  // Original request stream, cookie and Origin are forwarded; no internal user ID header.
  return env.FASTFOLD_RUNTIME.getByName(name).handle(request);
 }

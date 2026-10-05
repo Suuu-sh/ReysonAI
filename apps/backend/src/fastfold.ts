@@ -23,7 +23,7 @@ const TYPES = ['balanced','nit','station','lag','maniac'];
 export const FASTFOLD_DATASETS = [...BASE,...TYPES.slice(1).flatMap(type=>PROFILE_FILES.map(name=>`profiles/${type}/villain/${name}`))];
 const META:Record<string,{name:{en:string;ja:string};description:{en:string;ja:string}}>= {nit:nitMeta,station:stationMeta,lag:lagMeta,maniac:maniacMeta,balanced:{name:{en:'Balanced',ja:'バランス'},description:{en:'Plays the saved AI-estimated frequencies.',ja:'保存済みAI推定頻度に沿って行動します。'}}};
 const reply = (body:unknown,status=200) => new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
-const metadata = {season:FASTFOLD_SEASON,comparisonMode:'shadow',appliedPenalty:false};
+const metadata = {season:FASTFOLD_SEASON,comparisonMode:'shadow',appliedPenalty:false,mode:'legacy_agent_practice',rankedHumanMatch:false,opponentKind:'agent'};
 const round = (n:number) => Math.round(n*100)/100;
 const uuid = (v:unknown):v is string => typeof v==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
 function uniform(n:number):number {

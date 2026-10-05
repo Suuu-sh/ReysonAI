@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';import {DatabaseSync}from'node:sqlite';import{readFileSync}from'node:fs';
+import {routeHumanRank}from'../../src/human-rank.ts';import {digest}from'../../src/account.ts';import worker from'../../src/index.ts';
+const origin='http://localhost:5173',api='http://localhost:8787/v1/fastfold/human/';
+export async function humanRankFixture(users=7){const sqlite=new DatabaseSync(':memory:');sqlite.exec('PRAGMA foreign_keys=ON');for(const name of ['0007_accounts.sql','0011_human_ranked.sql'])sqlite.exec(readFileSync(new URL('../../migrations/'+name,import.meta.url),'utf8'));
+let count=0;const DB={prepare(sql){let args=[];return{bind(...v){args=v;return this},async all(){count++;return{results:sqlite.prepare(sql).all(...args)}}}}};const tokens=[];
+for(let i=0;i<users;i++){const token=await digest('ephemeral-human-'+i);tokens.push(token);sqlite.prepare('INSERT INTO account_users VALUES(?,?,?,?)').run('U'+i,'subject'+i,'synthetic@example.invalid',Date.now());sqlite.prepare('INSERT INTO account_sessions VALUES(?,?,?)').run(await digest(token),'U'+i,Math.floor(Date.now()/1000)+86400);}
+const env={DB,AUTH_ENABLED:'true',FASTFOLD_ENABLED:'true',AUTH_LOCAL_DEV:'true',AUTH_APP_URL:origin,ALLOWED_ORIGIN:origin,GOOGLE_REDIRECT_URI:'http://localhost:8787/v1/account/google/callback',AUTH_RATE_LIMIT_KEY:'synthetic-only'};env.FASTFOLD_RUNTIME={getByName(name){assert.equal(name,'human-pool');return{handle:req=>routeHumanRank(req,env)}}};
+const call=async(i,path,body,status=200)=>{const before=count,r=await worker.fetch(new Request(api+path,{headers:{origin,cookie:'reysonai-dev-session='+tokens[i],...(body?{'content-type':'application/json'}:{})},...(body?{method:'POST',body:JSON.stringify(body)}:{})}),env),out=await r.json();if(Array.isArray(status))assert.ok(status.includes(r.status),JSON.stringify(out));else assert.equal(r.status,status,JSON.stringify(out));assert.ok(count-before<=50,`D1 ${path} queries ${count-before}`);return out;};
+const state=async i=>(await call(i,'profile')).state;const control=async(i,path,extra={})=>call(i,path,{version:(await state(i)).version,actionId:crypto.randomUUID(),...extra});
+const join=async i=>control(i,'join',{consent:true});
+const six=async()=>{for(let i=0;i<6;i++)await join(i);for(let i=0;i<6;i++){const s=await state(i);await control(i,'accept',{reservationId:s.reservation.id})}return (await state(0)).match;};
+return{sqlite,env,tokens,call,state,control,join,six,close(){sqlite.close()}};}

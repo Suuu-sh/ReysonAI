@@ -232,11 +232,11 @@ function RankedCard({ rank, busy, draft, onStart, onOpenRanking }: { rank: RankS
   return <ModeBlock theme={tierColor(tier.name)} className={`is-ranked${draft ? " in-progress" : ""}`} visualClass="ranked-visual" label={localized("Ranked matches", "ランク戦")}
     visual={<RankedEmblem tier={tier} />}
     eyebrow={`RANKED · ${localized("Server ranked", "サーバー集計")}`}
-    title="FastFold β"
-    description={ff("Unlimited Agent hands · fold to the next table · pause/resume. Rating follows settled results; AI comparison stays shadow-only.", "Agent戦はハンド数・時間無制限。フォールドで次の卓へ。一時停止・再開。収支主軸のレート、AI比較はshadowのみ。", "Agent手数和时间不限。弃牌换桌，随时暂停/继续。评分以结算收益为主，AI仅作影子分析。", "Manos Agent ilimitadas: retírate y cambia de mesa, pausa/continúa. Puntuación por resultados; IA solo en paralelo.")}
+    title={ff("Human FastFold β", "対人FastFold β", "真人FastFold β", "FastFold humano β")}
+    description={ff("Six people must join before a ranked hand starts. Practice against unrated Agents while waiting.", "人間6人が揃ってからランク戦を開始。待つ間はランク非加算のAgent戦。", "六人到齐后开始排位。等待时可练习不计分的Agent对局。", "La mano clasificatoria empieza con seis personas. Mientras esperas, practica con Agents sin puntuación.")}
     actions={<>
       <button type="button" className="mode-primary" disabled={!canStart} onClick={onStart}>
-        <Play size={14} weight="fill" />{draft ? ff("Resume FastFold", "FastFoldを再開", "继续FastFold", "Continuar FastFold") : ff("Play FastFold", "FastFoldに挑む", "玩FastFold", "Jugar FastFold")}
+        <Play size={14} weight="fill" />{draft ? ff("Open human queue", "対人待機を開く", "打开真人队列", "Abrir cola humana") : ff("Join human queue", "対人待機へ", "加入真人队列", "Unirse a cola humana")}
       </button>
       <button type="button" className="mode-secondary" onClick={onOpenRanking}><Trophy size={15} />{localized("Leaderboard", "ランキング")}</button>
       <small className="mode-quota">{ff("New season · server confirmed · no daily start limit", "新シーズン・サーバー確定・開始回数の制限なし", "新赛季 · 服务器确认 · 开始次数不限", "Nueva temporada · confirmada por servidor · sin límite de inicios")}</small>
