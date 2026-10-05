@@ -370,5 +370,8 @@
 .style-zone.is-current { align-content: end; padding: 0 0 6px; }
 .style-map-center, .style-map-point { z-index: 1; }
 
-/* Vertical axis: aggression (PFR / VPIP), labelled above and below the map. */
-.style-map-y { display: flex; justify-content: space-between; color: var(--text-subtle); font-size: 9px; }
+/* Vertical axis: aggression (PFR / VPIP), labelled along the map's left edge. */
+.style-map { grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; }
+.style-map figcaption { grid-column: 2; }
+.style-map-y { display: flex; flex-direction: column; justify-content: space-between; padding: 6px 0; color: var(--text-subtle); font-size: 9px; font-weight: 700; line-height: 1.4; text-align: center; }
+.style-map-y small { font-size: 8px; font-weight: 500; }
