@@ -23,7 +23,8 @@ if(!enabled){
  if(!catalogResponse.ok)throw Error('Missing published dataset catalog');
  const catalog=(await catalogResponse.json()).datasets;
  for(const name of FASTFOLD_DATASETS){
-  const expected=readFileSync(new URL(`../../frontend/src/estimated/${name}.json`,import.meta.url));
+  // Match the exact reviewed publisher delivery bytes (publish-d1.mjs preflopDatasets), not pretty source whitespace.
+  const expected=Buffer.from(JSON.stringify(JSON.parse(readFileSync(new URL(`../../frontend/src/estimated/${name}.json`,import.meta.url),'utf8'))));
   const expectedHash=createHash('sha256').update(expected).digest('hex');
   if(catalog?.[name]?.hash!==expectedHash||catalog[name].bytes!==expected.length)throw Error(`Published source differs from exact reviewed checkout: ${name}`);
   const response=await fetch(api+'/v1/preflop/datasets/'+encodeURIComponent(name),{signal:AbortSignal.timeout(15000)});
