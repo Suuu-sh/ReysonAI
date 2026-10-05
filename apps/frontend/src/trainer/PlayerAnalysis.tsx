@@ -1,6 +1,10 @@
-import { ArrowRight, Barbell, CalendarBlank, ChartLineUp, Cards, Crosshair, Info, Robot, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
+import { ArrowRight, Barbell, CalendarBlank, ChartLineUp, Cards, Crosshair, Info, Robot, Trophy, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
 import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
 import { PlayStyleDashboard } from "../agent/PlayStyleDashboard.tsx";
+import { StyleAvatar } from "../agent/StyleAvatar.tsx";
+import { STYLES } from "../agent/player-read.ts";
+import { practiceAnimal, PRACTICE_EXPLANATIONS } from "./practice-style.ts";
+import { RankedStats } from "./RankedStats.tsx";
 import { playerRead } from "../agent/player-read.ts";
 import { loadAgentHands } from "../agent/agent-stats.ts";
 import "../agent/agent.css";
@@ -56,6 +60,7 @@ function Kpi({ label, icon: Icon, value, sub, accent, compact, children }) {
 
 function StyleMap({ analysis }) {
   const { plot, metrics, ready } = analysis;
+  const animal = practiceAnimal(analysis);
   const active = plot ? `${plot.y <= 50 ? (plot.x <= 50 ? "tag" : "lag") : (plot.x <= 50 ? "tp" : "lp")}` : null;
   return <section className="analysis-card analysis-map" aria-labelledby="analysis-map-title">
     <header className="analysis-card-head">
@@ -75,9 +80,9 @@ function StyleMap({ analysis }) {
         {plot && <svg className="analysis-map-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <line x1="50" y1="50" x2={plot.x} y2={plot.y} pathLength="1" />
         </svg>}
-        {plot ? <span className={`analysis-map-marker${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%` }}
+        {plot ? <span className={`analysis-map-marker${ready ? " with-animal" : ""}${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%` }}
           role="img" aria-label={`あなたの練習位置。参加頻度は推定方針から${points(-metrics.fold.delta)}、3betは${points(metrics.threeBet.delta)}。${ready ? "" : "暫定表示。"}`}>
-          <i /><b>あなた{ready ? "" : " · 暫定"}</b>
+          <>{ready ? <StyleAvatar id={animal.id} color={animal.color} size={36} /> : <i />}</><b>あなた{ready ? "" : " · 暫定"}</b>
         </span> : <span className="analysis-map-wait">10問以上で表示</span>}
       </div>
       <figcaption className="axis-x"><span>← タイト</span><span>ルース →</span></figcaption>
@@ -224,7 +229,7 @@ function guidanceNotes(metrics) {
   return notes.slice(0, 3);
 }
 
-export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness }) {
+export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, rank = null, rankedReady = false, initialView = "drills" }) {
   const [period, setPeriod] = useState("all");
   const [kind, setKind] = useState("all");
   const history = useMemo(() => {
@@ -240,18 +245,19 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness })
   const { metrics } = analysis;
   const scoreDelta = progress.series.length > progress.windowSize ? progress.current - progress.series.at(-1 - progress.windowSize) : null;
   const styleProgress = Math.min(1, analysis.samples / STYLE_SAMPLE_TARGET);
-  const [view, setView] = useState("drills");
+  const [view, setView] = useState(initialView);
+  const animal = practiceAnimal(analysis);
   const agentRead = useMemo(() => view === "agent" ? playerRead(loadAgentHands()) : null, [view]);
 
   return <div className="player-analysis">
     <header className="trainer-home-head stats-page-head">
       <div><h1 className="trainer-home-eyebrow">STATS</h1>
-        <p>{view === "agent" ? "Agent卓での収支と、Agentが読んでいるあなたの打ち方を振り返ります。" : "ドリルやランク戦での選び方を、保存済みレンジと比べて振り返ります。"}</p></div>
+        <p>{view === "agent" ? "Agent卓での収支と、Agentが読んでいるあなたの打ち方を振り返ります。" : view === "ranked" ? localized("Review server-confirmed ranked results separately from drills.", "サーバーで確定したランク戦の結果を、ドリルと分けて振り返ります。") : localized("Compare drill choices with the saved ranges for the same questions.", "ドリルでの選び方を、同じ問題の保存済みレンジと比べて振り返ります。")}</p></div>
       <button type="button" className="mode-primary analysis-start" onClick={onStart}>練習する<ArrowRight size={15} /></button>
     </header>
     <div className="stats-toolbar">
       <div className="stats-seg" role="group" aria-label="分析の対象">
-        {[["drills", "ドリル練習", Barbell], ["agent", "Agent戦", Robot]].map(([value, label, Icon]) =>
+        {[["drills", localized("Drills", "ドリル練習"), Barbell], ...(rankedReady ? [["ranked", localized("Ranked match", "ランク戦"), Trophy]] : []), ["agent", localized("Agent matches", "Agent戦"), Robot]].map(([value, label, Icon]) =>
           <button key={value} type="button" className={view === value ? "on" : ""} aria-pressed={view === value} onClick={() => setView(value)}><Icon size={15} />{label}</button>)}
       </div>
       {view === "drills" && <>
@@ -268,19 +274,30 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness })
     {view === "agent" ? <div className="analysis-agent">
       <AgentAnalysis />
       {agentRead && <div className="analysis-card analysis-agent-read"><PlayStyleDashboard read={agentRead} /></div>}
-    </div> : <>
+    </div> : view === "ranked" ? <RankedStats rank={rank} ready={rankedReady} /> : <>
 
     <div className="analysis-kpis">
       <Kpi label="ReysonAI Score" icon={ChartLineUp} accent value={progress.current == null ? "—" : <><CountUp value={Math.round(progress.current * 100)} /><small>%</small></>}
         sub={scoreDelta == null ? `直近${progress.recentCount || 10}回答の平均${progress.recentCount && progress.recentCount < progress.windowSize ? " · 暫定" : ""}` : <span className={deltaTone(scoreDelta)}>{points(scoreDelta)}{localized(" · versus 10 answers ago", " · 10回答前比")}</span>}>
       </Kpi>
       <Kpi label="正答率" icon={Crosshair} value={stats.answered ? <><CountUp value={Math.round(stats.rate * 100)} /><small>%</small></> : "—"} sub={`${stats.answered}回答`} />
-      <Kpi label="プレイスタイル" icon={Target} value={analysis.ready ? analysis.style.label : "判定中"} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>
+      <Kpi label="プレイスタイル" icon={Target} value={<span className="analysis-animal-kpi"><StyleAvatar id={animal.id} color={animal.color} size={40} />{analysis.ready ? analysis.style.label : "判定中"}</span>} sub={analysis.ready ? "練習での傾向（暫定）" : `${analysis.samples} / ${STYLE_SAMPLE_TARGET}問`}>
         {!analysis.ready && <span className="analysis-kpi-bar" aria-hidden="true"><i style={{ width: `${styleProgress * 100}%` }} /></span>}
       </Kpi>
       <Kpi label="出題の内訳" icon={Cards} compact value={<><CountUp value={analysis.openSamples} /><small>オープン</small> <CountUp value={analysis.responseSamples} /><small>vs オープン</small></>}
         sub={analysis.ready ? `${analysis.distinctSpots}局面` : "判定には各10問・3局面以上"} />
     </div>
+
+    <section className="analysis-card practice-animals" aria-label={localized("Drill play styles", "ドリルのプレイスタイル")}>
+      <p>{localized("Animals describe deviations from the estimate for the same drill questions, not Agent-table VPIP/PFR or real-money play.", "動物は同じドリル問題の推定方針との差を表します。Agent卓のVPIP・PFRや実戦の打ち方の判定ではありません。")}</p>
+      <ol className="style-roster">{["nit", "tight_passive", "tag", "passive", "balanced", "aggressive", "station", "lag"].map(id => {
+        const style = STYLES[id], current = animal.id === id;
+        return <li key={id} className={current ? "is-current" : ""} aria-current={current ? "true" : undefined} style={{ "--style": style.color }}>
+          <StyleAvatar id={id} color={style.color} size={40} dim={!current} /><span>{localized(style.mascot.en, style.mascot.ja)}</span>
+        </li>;
+      })}</ol>
+      <p>{localized(PRACTICE_EXPLANATIONS[analysis.style.key], analysis.style.explanation)}</p>
+    </section>
 
     {history.length > 0 && <Breakdown history={history} />}
 
@@ -310,8 +327,9 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness })
 
     </>}
 
-    <p className="analysis-footnote">
+    {view === "drills" && <p className="analysis-footnote">
       練習問題での選択傾向です（強み・弱点は5問以上で80%以上／60%以下、3〜4問は暫定）。回答はこのブラウザ内だけに保存されます。
-    </p>
+      <br />{localized("New ranked answers are excluded. Older untagged history may contain ranked answers and cannot be separated.", "今後のランク戦回答は除外します。種別のない旧履歴はランク戦回答が混在している可能性があり、分離できません。")}
+    </p>}
   </div>;
 }
