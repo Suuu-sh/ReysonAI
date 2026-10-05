@@ -852,16 +852,18 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
             onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed) : setStreetCardDialog(postflopAllowed ? street : null)}
             onReset={resetPath}
             displayModeControl={<div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>}>
-            <button type="button" className="settings-toggle" aria-label="ゲーム設定を開閉" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><DotsThreeVertical size={16} weight="bold" aria-hidden="true" /><strong>{formatLabel("game", format.game)}</strong><span>{formatLabel("stack", format.stack)}</span></button>
+            <div className="settings-header">
+              <button type="button" className="settings-toggle" aria-label="ゲーム設定を開閉" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><DotsThreeVertical size={16} weight="bold" aria-hidden="true" /><strong>{formatLabel("game", format.game)}</strong><span>{formatLabel("stack", format.stack)}</span></button>
+              <div className="settings-actions">
+                {/* Keep non-default table conditions visible as a dot and in the control tooltip. */}
+                <button type="button" className={`format-edit settings-icon-button${isDefaultProfile(tableProfile) ? "" : " has-table-profile"}`} aria-label={isDefaultProfile(tableProfile) ? "ゲーム設定を変更" : `ゲーム設定を変更（卓: ${describeProfile(tableProfile)}）`} title={isDefaultProfile(tableProfile) ? "ゲーム設定を変更" : `卓: ${describeProfile(tableProfile)}`} onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" /></button>
+                <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
+              </div>
+            </div>
             {settingsOpen && <button type="button" className="settings-backdrop" aria-label="閉じる" onClick={() => setSettingsOpen(false)} />}
             <div className="settings-body">
               <ul><li>{formatLabel("table", format.table)} · Open {formatLabel("openSize", format.openSize)}</li><li>レーキ {formatLabel("rake", format.rake)}</li></ul>
               <div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>
-              <div className="settings-actions">
-                {/* Non-default table conditions show as a dot on the settings button (full text in its tooltip), so the card keeps its size. */}
-                <button type="button" className={`format-edit settings-icon-button${isDefaultProfile(tableProfile) ? "" : " has-table-profile"}`} aria-label={isDefaultProfile(tableProfile) ? "ゲーム設定を変更" : `ゲーム設定を変更（卓: ${describeProfile(tableProfile)}）`} title={isDefaultProfile(tableProfile) ? "ゲーム設定を変更" : `卓: ${describeProfile(tableProfile)}`} onClick={() => setFormatOpen(true)}><GearSix size={14} weight="fill" aria-hidden="true" /></button>
-                <button type="button" className="path-reset settings-icon-button" aria-label="アクションをリセット" title="アクションをリセット" onClick={resetPath}><ArrowCounterClockwise size={14} aria-hidden="true" /></button>
-              </div>
             </div>
           </RangeContextCard>}
           expanded
