@@ -9486,8 +9486,8 @@
   "sources": [
     {
       "path": ".gitattributes",
-      "bytes": 77,
-      "sha256": "3db0b6bec6b547977cafbb1385371aa701b892cdd2fb54bd48ebe18c3a5f96a4"
+      "bytes": 239,
+      "sha256": "e72729076335c30812dfa8d1cb37dac19b1561fb3fc60ed679484cbf6ad5df2c"
     },
     {
       "path": ".github/workflows/deploy-worker.yml",
@@ -9915,7 +9915,7 @@
       "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
     }
   ],
-  "content_sha256": "8da2d19455009d74f5fbb9a452569dbb9d3faac0e191f0d34cbb9744f203bd0a",
+  "content_sha256": "a1debd2a3cca135f1c71c163d6750e0aa47b0f613cbd5cb97989e28e84e354f0",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
@@ -9981,6 +9981,47 @@
         "archive_sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
         "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
       }
+    },
+    {
+      "date": "2026-10-05",
+      "status": "independently-reviewed-source-only",
+      "reviewer": "Independent parent source-identity and preservation review",
+      "reviewed_head_commit": "5d3ff5f1ecbfb1c703ad7daf45ca40b1492ea1e9",
+      "scope": "Only the additive Git LFS attribute for the immutable low-flop research archive. Original strategy review, review renewal, previous delivery amendments, numerical artifacts, archive, counts and source fingerprint remain unchanged.",
+      "before": {
+        "path": ".gitattributes",
+        "bytes": 77,
+        "sha256": "3db0b6bec6b547977cafbb1385371aa701b892cdd2fb54bd48ebe18c3a5f96a4"
+      },
+      "after": {
+        "path": ".gitattributes",
+        "bytes": 239,
+        "sha256": "e72729076335c30812dfa8d1cb37dac19b1561fb3fc60ed679484cbf6ad5df2c"
+      },
+      "rationale": "The new path-specific LFS rule materializes the research fixture. The existing Stage2 LFS rule is an identical byte prefix. No wildcard or existing rule was edited, and no runtime, source discovery, restore or verification logic changed.",
+      "preserved_gates": "The complete 86-source closure remains bound. No path exclusion, validation bypass, strategy generation, credential change, merge or deployment is introduced.",
+      "previous_content_sha256": "8da2d19455009d74f5fbb9a452569dbb9d3faac0e191f0d34cbb9744f203bd0a",
+      "new_content_sha256": "a1debd2a3cca135f1c71c163d6750e0aa47b0f613cbd5cb97989e28e84e354f0",
+      "verified_unchanged": {
+        "other_source_records": 85,
+        "artifact_records": 1888,
+        "archive": {
+          "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+          "bytes": 1747857,
+          "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+          "format": "ustar+gzip"
+        },
+        "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+        "counts": {
+          "catalog": 3115,
+          "saved": 1611,
+          "unreachable": 1504,
+          "hands": 272259
+        },
+        "prior_delivery_amendments": 2
+      },
+      "validation": "Independent read-only verification checked all 86 exact-head source byte/hash records, the unchanged 77-byte existing attribute prefix, preservation of original review/renewal, all 1888 artifact records, archive, counts, source fingerprint and both prior amendments, and recomputed the complete content seal. The original 85 source records remain identical; only the appended research-archive LFS rule changes .gitattributes. The source-only amendment is accepted. Final post-amendment restore and exact-head CI remain required; strategy quality is not re-reviewed.",
+      "limitations": "This candidate does not renew strategy-quality review, approve the low-flop preview, establish general quality, or grant production eligibility. Original review findings and limitations remain."
     }
   ]
 }
