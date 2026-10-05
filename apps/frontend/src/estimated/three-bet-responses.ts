@@ -1,9 +1,11 @@
+import type { OpeningDataset, ResponseDataset, ThreeBetDataset, ThreeBetSpot } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { hasConfiguredRake } from "./rake.ts";
 import { positions } from "./ranges.ts";
 import { fourBetToSize, isInPosition, openSizeBb, openSizeFor } from "./sizing.ts";
 
-export function validateThreeBetDataset(data, responses, openings) {
+export function validateThreeBetDataset(data: ThreeBetDataset, responses: ResponseDataset, openings: OpeningDataset) {
   const expected = positions.flatMap((hero, i) => positions.slice(i + 1).map(bettor => `${hero}_vs_${bettor}_three_bet`));
   if (data?.metadata?.ante_bb !== 0 || data?.metadata?.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.effective_stack_bb !== 100 || data.metadata.open_size_bb !== openSizeBb ||
@@ -42,13 +44,13 @@ export function validateThreeBetDataset(data, responses, openings) {
   return data;
 }
 
-export function findThreeBetSpot(data, hero, threeBettor) {
+export function findThreeBetSpot(data: ThreeBetDataset, hero: string, threeBettor: string) {
   const spot = data.spots.find(s => s.hero === hero && s.three_bettor === threeBettor);
   if (!spot) throw new Error("この組み合わせの3bet後の応答はありません。");
   return spot;
 }
 
-export function threeBetMatrixModel(spot) {
+export function threeBetMatrixModel(spot: ThreeBetSpot): MatrixModel {
   return {
     actions: ["raise_four_bet", "call", "fold"],
     actionLabels: { raise_four_bet: `レイズ ${spot.four_bet_size_bb}BB` },

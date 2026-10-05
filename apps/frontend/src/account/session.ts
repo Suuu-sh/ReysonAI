@@ -1,23 +1,26 @@
 import { accountApiBase } from "./config.ts";
 // Guest records stay local; account records live in memory and use an HttpOnly cookie.
 export const accountKeys = ["reysonai:profile:v1", "reysonai:appearance:v1", "reysonai:display-mode:v1", "reysonai:locale:v1", "reysonai.trainer.history.v1", "reysonai.trainer.drills.v1", "reysonai.trainer.drafts.v1", "reysonai.trainer.review-sessions.v1"];
-let user = null;
-let data = {};
+export interface AccountUser { id: string; email: string; verified: boolean; name?: string; picture?: string }
+export interface AccountState { user: AccountUser | null; ready: boolean; available: boolean; error: string }
+interface AccountResponses { session: { user: AccountUser | null }; data: { data?: Record<string, unknown>; version: number }; "google/start": { url: string }; logout: { ok?: boolean } }
+let user: AccountUser | null = null;
+let data: Record<string, unknown> = {};
 let version = 0;
 let ready = false;
 let available = false;
 let error = "";
-let timer;
+let timer: ReturnType<typeof setTimeout> | undefined;
 let pending = Promise.resolve();
-let refreshing;
+let refreshing: Promise<void> | null | undefined;
 let dirty = false;
 let transitioning = false;
-const listeners = new Set();
+const listeners = new Set<() => void>();
 const emit = () => listeners.forEach(listener => listener());
 export const accountSnapshot = () => ({ user, ready, available, error });
-export const subscribeAccount = listener => { listeners.add(listener); return () => listeners.delete(listener); };
-export async function accountRequest(path, body) {
-  const base = accountApiBase(import.meta.env ?? {});
+export const subscribeAccount = (listener: () => void): (() => void) => { listeners.add(listener); return () => listeners.delete(listener); };
+export async function accountRequest<P extends keyof AccountResponses>(path: P, body?: unknown): Promise<AccountResponses[P]> {
+  const base = accountApiBase((import.meta as ImportMeta & { env?: Parameters<typeof accountApiBase>[0] }).env ?? {});
   const response = await fetch(`${base}/v1/account/${path}`, { credentials: "include", ...(body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }) });
   const result = await response.json();
   if (!response.ok) throw new Error(response.status === 503 ? "disabled" : response.status === 409 ? "conflict" : response.status === 401 ? "session" : response.status === 403 ? "verification" : "request");
@@ -48,13 +51,13 @@ export function refreshAccount() {
         version = saved.version;
       } else data = {};
       dirty = false; error = "";
-    } catch (cause) { available = ["session", "verification"].includes(cause.message); error = cause.message === "disabled" ? "" : available ? cause.message : "request"; }
+    } catch (cause) { available = ["session", "verification"].includes((cause as Error).message); error = (cause as Error).message === "disabled" ? "" : available ? (cause as Error).message : "request"; }
     ready = true; transitioning = false; emit();
   })().finally(() => { refreshing = null; });
   return refreshing;
 }
 // Focus checks only the session identity: never replace unsaved in-memory data.
-let rechecking;
+let rechecking: Promise<void> | null | undefined;
 export function revalidateAccountSession() {
   if (rechecking) return rechecking;
   if (!ready || refreshing || error) return Promise.resolve();
@@ -65,8 +68,8 @@ export function revalidateAccountSession() {
         error = "session"; available = true; emit();
       }
     } catch (cause) {
-      available = ["session", "verification"].includes(cause.message);
-      error = available ? cause.message : "request"; emit();
+      available = ["session", "verification"].includes((cause as Error).message);
+      error = available ? (cause as Error).message : "request"; emit();
     }
   })().finally(() => { rechecking = null; });
   return rechecking;
@@ -75,10 +78,10 @@ export function accountStorage() {
   if (!user) { try { return typeof window === "undefined" ? null : window.localStorage; } catch { return null; } }
   return {
     get length() { return Object.keys(data).length; },
-    key: index => Object.keys(data)[index] ?? null,
-    getItem: key => accountKeys.includes(key) && key in data ? (typeof data[key] === "string" ? data[key] : JSON.stringify(data[key])) : null,
-    setItem: (key, value) => { if (!accountKeys.includes(key) || transitioning) return; try { data[key] = JSON.parse(value); } catch { data[key] = value; } dirty = true; queueSave(); },
-    removeItem: key => { if (accountKeys.includes(key) && !transitioning) { delete data[key]; dirty = true; queueSave(); } },
+    key: (index: number) => Object.keys(data)[index] ?? null,
+    getItem: (key: string): string | null => accountKeys.includes(key) && key in data ? (typeof data[key] === "string" ? data[key] as string : JSON.stringify(data[key])) : null,
+    setItem: (key: string, value: string) => { if (!accountKeys.includes(key) || transitioning) return; try { data[key] = JSON.parse(value); } catch { data[key] = value; } dirty = true; queueSave(); },
+    removeItem: (key: string) => { if (accountKeys.includes(key) && !transitioning) { delete data[key]; dirty = true; queueSave(); } },
   };
 }
 function queueSave() {
@@ -86,14 +89,14 @@ function queueSave() {
   clearTimeout(timer);
   timer = setTimeout(() => { saveAccountData(); }, 350);
 }
-export function saveAccountData(extra = {}) {
+export function saveAccountData(extra: { importLocal?: boolean; consent?: boolean } = {}) {
   clearTimeout(timer);
   pending = pending.then(async () => {
     if (!user?.verified || error || !dirty) return;
     const snapshot = JSON.parse(JSON.stringify(data));
     dirty = false;
     try { const result = await accountRequest("data", { data: snapshot, version, ...extra }); version = result.version; }
-    catch (cause) { dirty = true; error = cause.message; emit(); }
+    catch (cause) { dirty = true; error = (cause as Error).message; emit(); }
   });
   return pending;
 }
@@ -102,7 +105,7 @@ export async function importGuestData(consent = false) {
   clearTimeout(timer);
   await pending;
   if (error) throw new Error(error);
-  const imported = {};
+  const imported: Record<string, unknown> = {};
   for (const key of accountKeys) {
     const value = window.localStorage.getItem(key);
     if (value !== null) { try { imported[key] = JSON.parse(value); } catch { imported[key] = value; } }

@@ -38,7 +38,7 @@ test("format backlog marks only built formats as done", () => {
 });
 
 test("postflop backlog lists flop and turn/river policies for every reachable spot", async () => {
-  const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.mjs");
+  const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.ts");
   const catalog = postflopCatalog(POSTFLOP_SPOTS, {
     "btn-bb-srp-v1-policy.json": "a", "co-bb-srp-v1-policy.json": "a", "hj-bb-srp-v1-policy.json": "a", "utg-bb-srp-v1-policy.json": "b",
   }, ["BTN_open_BB_call"]);
@@ -54,7 +54,7 @@ test("postflop backlog lists flop and turn/river policies for every reachable sp
 });
 
 test("TODO priority follows BTN-BB heads-up, other heads-up, release prep, then multiway", async () => {
-  const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.mjs");
+  const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.ts");
   const preflop = coverageCatalog();
   const postflop = postflopCatalog(POSTFLOP_SPOTS);
   const preflopRows = preflop.categories.flatMap(category => category.rows);
@@ -77,7 +77,7 @@ test("TODO priority follows BTN-BB heads-up, other heads-up, release prep, then 
 
 test("postflop hand-EV is not tracked as a coverage stage (dropped 2026-10-01)", async () => {
   const { postflopCatalog, RELEASE_TASKS } = await import("../src/admin/coverage.ts");
-  const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.mjs");
+  const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.ts");
   const spot = POSTFLOP_SPOTS.find(item => item.id === "BTN_open_BB_call");
   assert.equal(postflopCatalog([spot], {}).categories.some(category => category.street === "hand_ev"), false);
   assert.match(RELEASE_TASKS.find(task => task.id === "release_turn_river_ev").path, /見送り/);

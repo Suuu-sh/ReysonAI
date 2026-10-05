@@ -8,7 +8,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
+import { comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.ts";
 import { ALL_IN_CALL_SAMPLES, MIX_BAND_PCT, allInCallFrequency } from "./lib/all-in-call.mjs";
 import { rakeMetadata, raked } from "../src/estimated/rake.ts";
 import { effectiveStackBb, fiveBetToSize, fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeBb, sbCompleteToBb } from "../src/estimated/sizing.ts";

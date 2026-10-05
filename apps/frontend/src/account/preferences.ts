@@ -23,7 +23,7 @@ export function applyAppearance(appearance = loadAppearance()) {
   document.documentElement.dataset.motion = appearance.motion;
 }
 
-export function saveAppearance(appearance) {
+export function saveAppearance(appearance: ReturnType<typeof loadAppearance>) {
   try { storage()?.setItem(KEY, JSON.stringify(appearance)); } catch {}
   applyAppearance(appearance);
 }
@@ -32,7 +32,7 @@ export function loadDisplayMode() {
   return storage()?.getItem(displayModeKey) === "simple" ? "simple" : "standard";
 }
 
-export function saveDisplayMode(mode) {
+export function saveDisplayMode(mode: string) {
   try { storage()?.setItem(displayModeKey, mode === "simple" ? "simple" : "standard"); } catch {}
 }
 
@@ -42,14 +42,14 @@ const PRACTICE_PREFIX = "reysonai.trainer.";
 export function practiceKeys() {
   const store = storage();
   if (!store) return [];
-  return Array.from({ length: store.length }, (_, index) => store.key(index)).filter(key => key?.startsWith(PRACTICE_PREFIX));
+  return Array.from({ length: store.length }, (_, index) => store.key(index)).filter(key => key?.startsWith(PRACTICE_PREFIX)) as string[];
 }
 
 export function exportLocalData() {
   if (accountSnapshot().user) return exportAccountData();
   const store = storage();
-  const data = {};
-  for (const key of practiceKeys()) { try { data[key] = JSON.parse(store.getItem(key)); } catch { data[key] = store.getItem(key); } }
+  const data: Record<string, unknown> = {};
+  for (const key of practiceKeys()) { try { data[key] = JSON.parse(store!.getItem(key)!); } catch { data[key] = store!.getItem(key)!; } }
   return { app: "ReysonAI", exportedAt: new Date().toISOString(), data };
 }
 

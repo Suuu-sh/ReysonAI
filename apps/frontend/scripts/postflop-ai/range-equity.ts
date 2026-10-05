@@ -1,9 +1,18 @@
+export type ScoreTable = { score: Int32Array; sortedIds: Int16Array | Int32Array | number[]; sortedScores: Int32Array | number[] };
+type CardList = { scores: Int32Array; prefix: Float64Array };
+type Bounds = { first: Int16Array; last: Int16Array };
+type RangePlan = Bounds & { prefix: Float64Array; offsets: Int16Array; ids: Int16Array; scores: Int32Array; weights: Float64Array; score: Int32Array };
+export type WeightedRange = {
+ ids: Int16Array; lo: Uint8Array; hi: Uint8Array; w: Float64Array; total: number; queries: number;
+ dense: Float64Array | null; byCard: number[][] | null; prefix: Map<ScoreTable, Float64Array> | null;
+ cards?: Map<ScoreTable, CardList[]>; plans?: Map<ScoreTable, RangePlan>;
+};
 // Exact weighted-range queries. Browser-safe; keeps the original addition/subtraction order.
-import { equityKernel } from "./equity-kernel.mjs";
+import { equityKernel } from "./equity-kernel.ts";
 const NUM_IDS = 52 * 52;
 const PREFIX_AFTER = 3;
 
-export function makeRange(dense) {
+export function makeRange(dense: ArrayLike<number>): WeightedRange {
   let count = 0;
   for (let id = 0; id < NUM_IDS; id++) if (dense[id] > 0) count++;
   const ids = new Int16Array(count), lo = new Uint8Array(count), hi = new Uint8Array(count), w = new Float64Array(count);
@@ -18,18 +27,18 @@ export function makeRange(dense) {
 }
 
 // Batches only need dense weights, not the per-card JS arrays used by point queries.
-function denseOf(range) {
+function denseOf(range: WeightedRange) {
   if (!range.dense) {
     range.dense = new Float64Array(NUM_IDS);
     range.prefix = new Map();
-    for (let i = 0; i < range.ids.length; i++) range.dense[range.ids[i]] = range.w[i];
+    for (let i = 0; i < range.ids.length; i++) range.dense![range.ids[i]] = range.w[i];
   }
   return range;
 }
-export function indexOf(range) {
+export function indexOf(range: WeightedRange) {
   denseOf(range);
   if (!range.byCard) {
-    range.byCard = Array.from({ length: 52 }, () => []);
+    range.byCard = Array.from({ length: 52 }, (): number[] => []);
     for (let i = 0; i < range.ids.length; i++) {
       const id = range.ids[i];
       range.byCard[range.lo[i]].push(id); range.byCard[range.hi[i]].push(id);
@@ -37,26 +46,26 @@ export function indexOf(range) {
   }
   return range;
 }
-export const weightOf = (range, id) => indexOf(range).dense[id];
+export const weightOf = (range: WeightedRange, id: number) => indexOf(range).dense![id];
 
-function prefixFor(range, table) {
-  let prefix = range.prefix.get(table);
+function prefixFor(range: WeightedRange, table: ScoreTable) {
+  let prefix = range.prefix!.get(table);
   if (!prefix) {
-    const { sortedIds } = table, dense = range.dense;
+    const { sortedIds } = table, dense = range.dense!;
     prefix = new Float64Array(sortedIds.length + 1);
     let sum = 0;
     for (let i = 0; i < sortedIds.length; i++) { sum += dense[sortedIds[i]]; prefix[i + 1] = sum; }
-    range.prefix.set(table, prefix);
+    range.prefix!.set(table, prefix);
   }
   return prefix;
 }
 
-const lowerBound = (values, target) => {
+const lowerBound = (values: ArrayLike<number>, target: number) => {
   let lo = 0, hi = values.length;
   while (lo < hi) { const mid = (lo + hi) >> 1; if (values[mid] < target) lo = mid + 1; else hi = mid; }
   return lo;
 };
-const upperBound = (values, target) => {
+const upperBound = (values: ArrayLike<number>, target: number) => {
   let lo = 0, hi = values.length;
   while (lo < hi) { const mid = (lo + hi) >> 1; if (values[mid] <= target) lo = mid + 1; else hi = mid; }
   return lo;
@@ -64,11 +73,11 @@ const upperBound = (values, target) => {
 
 // Equity of the combo `id` against `range` over `tables` (ties half); null when nothing is left.
 // Combos of the range that share a card with the hero combo are removed, so blockers count.
-export function equityVersus(range, id, tables, { wasm = true } = {}) {
+export function equityVersus(range: WeightedRange, id: number, tables: readonly ScoreTable[], { wasm = true } = {}) {
   return ++range.queries > PREFIX_AFTER ? equityIndexed(range, id, tables) : equityScan(range, id, tables, wasm);
 }
 
-function equityScan(range, id, tables, wasm) {
+function equityScan(range: WeightedRange, id: number, tables: readonly ScoreTable[], wasm: boolean) {
   const c1 = Math.floor(id / 52), c2 = id % 52, { ids, lo, hi, w } = range;
   const kernel = wasm ? equityKernel() : null;
   if (kernel) {
@@ -111,11 +120,11 @@ function equityScan(range, id, tables, wasm) {
 
 // Per-card sorted score lists with prefix sums of one range on one table (river contexts): the blockers of
 // a hero combo are then two binary searches instead of a loop over every range combo holding its cards.
-function cardLists(range, table) {
+function cardLists(range: WeightedRange, table: ScoreTable) {
   let lists = range.cards?.get(table);
   if (!lists) {
-    const scores = Array.from({ length: 52 }, () => []), weights = Array.from({ length: 52 }, () => []);
-    const dense = range.dense;
+    const scores = Array.from({ length: 52 }, (): number[] => []), weights = Array.from({ length: 52 }, (): number[] => []);
+    const dense = range.dense!;
     for (const id of table.sortedIds) {
       const weight = dense[id];
       if (!(weight > 0)) continue;
@@ -132,14 +141,14 @@ function cardLists(range, table) {
   return lists;
 }
 
-function equityIndexedSingle(range, id, table) {
+function equityIndexedSingle(range: WeightedRange, id: number, table: ScoreTable) {
   indexOf(range);
   const own = table.score[id];
   if (own < 0) return null;
   const prefix = prefixFor(range, table), c1 = (id / 52) | 0, c2 = id % 52;
   const bounds = boundsFor(table), first = bounds.first[id], last = bounds.last[id];
   let total = prefix[prefix.length - 1], win = prefix[first], tie = prefix[last] - prefix[first];
-  const lists = cardLists(range, table), self = range.dense[id];
+  const lists = cardLists(range, table), self = range.dense![id];
   for (const card of [c1, c2]) {
     const { scores, prefix: sums } = lists[card];
     const lo = lowerBound(scores, own), hi = upperBound(scores, own);
@@ -150,8 +159,8 @@ function equityIndexedSingle(range, id, table) {
   return total > 1e-12 ? (win + 0.5 * tie) / total : null;
 }
 
-const boundsCache = new WeakMap();
-function boundsFor(table) {
+const boundsCache = new WeakMap<ScoreTable, Bounds>();
+function boundsFor(table: ScoreTable) {
   let bounds = boundsCache.get(table);
   if (bounds) return bounds;
   const first = new Int16Array(NUM_IDS), last = new Int16Array(NUM_IDS);
@@ -166,7 +175,7 @@ function boundsFor(table) {
   boundsCache.set(table, bounds);
   return bounds;
 }
-function planFor(range, table) {
+function planFor(range: WeightedRange, table: ScoreTable) {
   let plan = range.plans?.get(table);
   if (plan) return plan;
   const prefix = prefixFor(range, table), { first, last } = boundsFor(table);
@@ -188,7 +197,7 @@ function planFor(range, table) {
   (range.plans ??= new Map()).set(table, plan);
   return plan;
 }
-function equityIndexed(range, id, tables) {
+function equityIndexed(range: WeightedRange, id: number, tables: readonly ScoreTable[]) {
   if (tables.length === 1) return equityIndexedSingle(range, id, tables[0]);
   indexOf(range);
   const c1 = (id / 52) | 0, c2 = id % 52;
@@ -222,7 +231,7 @@ const riverQueries = new Int16Array(NUM_IDS * 2), riverWins = new Float64Array(N
 const riverBlockOffsets = new Int16Array(53), riverBlockAt = new Int16Array(52);
 const riverBlockScores = new Int32Array(NUM_IDS), riverBlockWeights = new Float64Array(NUM_IDS), riverBlockSums = new Float64Array(NUM_IDS);
 let batchGeneration = 0;
-export function releaseRangeTables(range) {
+export function releaseRangeTables(range: WeightedRange) {
   // Floors/ceilings have saved every reachable equity. Release the dense index too;
   // an uncommon later point/facts query reconstructs it exactly from ids/w.
   range.plans = undefined; range.prefix = null; range.cards = undefined;
@@ -231,7 +240,7 @@ export function releaseRangeTables(range) {
 
 // River: merge rank-sorted hero queries with the two per-card blocker prefix lists.
 // Prefix values and the order of the two subtractions are the original single-table path.
-function riverEquities(range, ids, offset, table, values) {
+function riverEquities(range: WeightedRange, ids: ArrayLike<number>, offset: number, table: ScoreTable, values: (number | null)[]) {
   if (ids.length > NUM_IDS) {
     for (let j = offset; j < ids.length; j++) values[j] = equityVersus(range, ids[j], [table]);
     return values;
@@ -259,7 +268,7 @@ function riverEquities(range, ids, offset, table, values) {
     if (j < 0) continue;
     queries[at[(id / 52) | 0]++] = j; queries[at[id % 52]++] = j;
   }
-  const prefix = prefixFor(range, table), blockOffsets = riverBlockOffsets.fill(0), dense = range.dense;
+  const prefix = prefixFor(range, table), blockOffsets = riverBlockOffsets.fill(0), dense = range.dense!;
   for (const id of table.sortedIds) if (dense[id] > 0) { blockOffsets[(id / 52) | 0]++; blockOffsets[id % 52]++; }
   let start = 0;
   for (let card = 0; card < 52; card++) { const n = blockOffsets[card]; blockOffsets[card] = start; start += n + 1; }
@@ -297,7 +306,7 @@ function riverEquities(range, ids, offset, table, values) {
       const card = k === 0 ? c1 : c2;
       total -= blockSums[blockOffsets[card + 1] - 1]; win -= wins[2 * j + k]; tie -= ties[2 * j + k];
     }
-    const self = range.dense[id];
+    const self = range.dense![id];
     if (self > 0) { total += self; tie += self; }
     values[j] = total > 1e-12 ? (win + 0.5 * tie) / total : null;
   }
@@ -305,7 +314,7 @@ function riverEquities(range, ids, offset, table, values) {
   return values;
 }
 
-export function equitiesVersus(range, ids, tables, { wasm = true } = {}) {
+export function equitiesVersus(range: WeightedRange, ids: ArrayLike<number>, tables: readonly ScoreTable[], { wasm = true } = {}) {
   const values = new Array(ids.length);
   let offset = 0;
   while (offset < ids.length && range.queries < PREFIX_AFTER) {
@@ -319,7 +328,7 @@ export function equitiesVersus(range, ids, tables, { wasm = true } = {}) {
     const count = ids.length - offset;
     for (let j = 0; j < count; j++) kernel.ids[j] = ids[offset + j];
     kernel.numerator.fill(0, 0, count); kernel.denominator.fill(0, 0, count);
-    kernel.dense.set(range.dense); kernel.bettors.set(range.ids);
+    kernel.dense.set(range.dense!); kernel.bettors.set(range.ids);
     for (const table of tables) {
       const { first, last } = boundsFor(table), score = table.score;
       kernel.score.set(score); kernel.first.set(first); kernel.last.set(last);

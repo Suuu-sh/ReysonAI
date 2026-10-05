@@ -1,7 +1,8 @@
+import type { StrategyCombo } from "../data.ts";
 import { label, pct, sortActions } from "../data.ts";
 import { Panel } from "./primitives.tsx";
 
-export function ComboTable({ selected, combos }) {
+export function ComboTable({ selected, combos }: { selected: string; combos: StrategyCombo[] }) {
   if (!combos.length) return null;
   const columns = sortActions(combos[0]?.actions ?? []);
 
@@ -22,7 +23,7 @@ export function ComboTable({ selected, combos }) {
               {combos.map(combo => (
                 <tr key={combo.combo}>
                   <th>{combo.combo}</th>
-                  {sortActions(combo.actions).map(action => <td key={action.action}>{pct(action.frequency)}{Number.isFinite(action.evBb) && <> / {action.evBb.toFixed(3)}</>}</td>)}
+                  {sortActions(combo.actions).map(action => <td key={action.action}>{pct(action.frequency)}{Number.isFinite(action.evBb) && <> / {action.evBb!.toFixed(3)}</>}</td>)}
                 </tr>
               ))}
             </tbody>

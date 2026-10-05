@@ -1,13 +1,16 @@
+import type { CSSProperties } from "react";
+import type { ActionBarsProps } from "../components/primitives.tsx";
+export type PreflopCallEvFacts = { eqr: number; equityPct: number; callEvBb: number };
 import { barColor } from "../components/primitives.tsx";
 import { label, pct } from "../data.ts";
 import "./postflop-hand-ev.css";
 import { localized } from "../i18n.ts";
 
-const signed = value => `${value > 0 ? "+" : ""}${value.toFixed(2)}bb`;
+const signed = (value: number) => `${value > 0 ? "+" : ""}${value.toFixed(2)}bb`;
 
 // Preflop has a saved model EV for calling, not per-action or policy-mix EV.
 // Keep the postflop visual notation without implying that uncomputed actions are zero.
-export function PreflopCallEvBars({ items, labels = {}, facts, equityLabel = "勝率" }) {
+export function PreflopCallEvBars({ items, labels = {}, facts, equityLabel = "勝率" }: ActionBarsProps & { facts: PreflopCallEvFacts; equityLabel?: string }) {
   const { eqr, equityPct, callEvBb } = facts;
   if (![eqr, equityPct, callEvBb].every(Number.isFinite)) return null;
 
@@ -18,7 +21,7 @@ export function PreflopCallEvBars({ items, labels = {}, facts, equityLabel = "�
       <div><dt>コールEV（推定）</dt><dd className={callEvBb >= 0 ? "ev-positive" : "ev-negative"}>{signed(callEvBb)}</dd></div>
     </dl>
     <div className="bars">
-      {items.map((item, index) => <div className="bar-row with-ev" key={item.action} style={{ "--i": index }}>
+      {items.map((item, index) => <div className="bar-row with-ev" key={item.action} style={{ "--i": index } as CSSProperties}>
         <span><i style={{ background: barColor(item.action) }} />{labels[item.action] ?? label(item.action)}</span>
         <div className="track" aria-hidden="true"><div style={{ width: pct(item.frequency), background: barColor(item.action) }} /></div>
         <b>{pct(item.frequency)}</b>

@@ -1,3 +1,10 @@
+import type { MatrixModel } from "../data.ts";
+export type ActionTreeIdentity = { action_history: unknown[]; acting_position: string; active_positions: string[]; responding_positions: string[]; effective_stack_bb: number };
+export type ActionTreeSpot = ActionTreeIdentity & { id: string; effective_stack_remaining_bb: number; current_bet_to_bb: number; action_options: { action: string; key: string; label: string; raise_to_bb?: number; call_to_bb?: number }[]; transitions: { action: string; next_spot_id?: string; terminal?: { outcome: string } }[]; range_ref?: { family: string; spot_id: string }; range_profile_id?: string; range_file?: string; unreachable_hands: string[] };
+type ActionTreeMetadata = { schema_version: string; strategy_type: string; effective_stack_bb: number; ante_bb: number; range_encoding: string; game?: string };
+export type ActionTreeDataset = { metadata: ActionTreeMetadata; spot_count: number; spots: ActionTreeSpot[] };
+export type ActionRangeProfile = { id: string; actions: string[]; action_frequencies: Record<string, string>; reason_codes: (keyof typeof reasonText)[] };
+export type ActionRangeDataset = { metadata: ActionTreeMetadata; profiles: ActionRangeProfile[]; profile_count: number; hand_classes_per_profile: number };
 import { hands } from "../data.ts";
 import { positions } from "./sizing.ts";
 
@@ -12,9 +19,9 @@ export const reasonText = Object.freeze({
 });
 
 const base64Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-const comboCount = hand => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
+const comboCount = (hand: string) => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
 
-export function encodePercentVector(values) {
+export function encodePercentVector(values: number[]) {
   if (!Array.isArray(values) || values.length !== hands.length) throw new Error("頻度ベクトルは169件必要です。");
   return values.map(value => {
     if (!Number.isInteger(value) || value < 0 || value > 100) throw new Error("頻度は0〜100の整数で指定してください。");
@@ -22,9 +29,9 @@ export function encodePercentVector(values) {
   }).join("");
 }
 
-export function decodePercentVector(encoded) {
+export function decodePercentVector(encoded: string) {
   if (typeof encoded !== "string" || encoded.length !== hands.length * 2) throw new Error("保存頻度ベクトルが不正です。");
-  const values = new Array(hands.length);
+  const values: number[] = new Array(hands.length);
   for (let index = 0; index < hands.length; index += 1) {
     const high = base64Digits.indexOf(encoded[index * 2]);
     const low = base64Digits.indexOf(encoded[index * 2 + 1]);
@@ -35,11 +42,11 @@ export function decodePercentVector(encoded) {
   return values;
 }
 
-export function spotIdentity({ action_history, acting_position, active_positions, responding_positions, effective_stack_bb }) {
+export function spotIdentity({ action_history, acting_position, active_positions, responding_positions, effective_stack_bb }: ActionTreeIdentity) {
   return JSON.stringify([action_history, acting_position, active_positions, responding_positions, effective_stack_bb]);
 }
 
-export function fnv64(value) {
+export function fnv64(value: string) {
   let hash = 14695981039346656037n;
   for (const byte of new TextEncoder().encode(value)) {
     hash ^= BigInt(byte);
@@ -48,12 +55,12 @@ export function fnv64(value) {
   return hash.toString(16).padStart(16, "0");
 }
 
-export function actionTreeSpotId(spot) {
+export function actionTreeSpotId(spot: ActionTreeIdentity) {
   return `spot-${fnv64(spotIdentity(spot))}`;
 }
 
-export function validateActionTreeDataset(data) {
-  const fail = detail => { throw new Error(`保存済みアクションツリーが不正です: ${detail}`); };
+export function validateActionTreeDataset(data: ActionTreeDataset) {
+  const fail = (detail: string): never => { throw new Error(`保存済みアクションツリーが不正です: ${detail}`); };
   if (data?.metadata?.schema_version !== "2.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.effective_stack_bb !== 100 || data.metadata.ante_bb !== 0 ||
@@ -90,7 +97,7 @@ export function validateActionTreeDataset(data) {
       if (!option || !["fold", "call", "check", "raise", "all_in"].includes(option.action) ||
           typeof option.key !== "string" || actionKeys.has(option.key) ||
           ((option.action === "raise" || option.action === "all_in") &&
-            (!Number.isFinite(option.raise_to_bb) || option.raise_to_bb <= spot.current_bet_to_bb || option.raise_to_bb > 100)) ||
+            (!Number.isFinite(option.raise_to_bb) || option.raise_to_bb! <= spot.current_bet_to_bb || option.raise_to_bb! > 100)) ||
           (option.action === "all_in" && option.raise_to_bb !== 100) ||
           (option.action === "call" && option.call_to_bb !== spot.current_bet_to_bb)) {
         fail(`選択肢 ${spot.id}`);
@@ -123,8 +130,8 @@ export function validateActionTreeDataset(data) {
   return data;
 }
 
-export function validateActionRangeDataset(data, expectedProfiles) {
-  const fail = detail => { throw new Error(`保存済みレンジが不正です: ${detail}`); };
+export function validateActionRangeDataset(data: ActionRangeDataset, expectedProfiles?: ReadonlySet<string>) {
+  const fail = (detail: string): never => { throw new Error(`保存済みレンジが不正です: ${detail}`); };
   if (data?.metadata?.schema_version !== "1.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.effective_stack_bb !== 100 || data.metadata.ante_bb !== 0 ||
@@ -143,7 +150,7 @@ export function validateActionRangeDataset(data, expectedProfiles) {
     const vectors = profile.actions.map(action => {
       const encoded = profile.action_frequencies[action];
       try { return decodePercentVector(encoded); } catch { fail(`${profile.id} / ${action}`); }
-    });
+    }) as number[][];
     for (let handIndex = 0; handIndex < hands.length; handIndex += 1) {
       if (vectors.some(vector => !Number.isInteger(vector[handIndex]) || vector[handIndex] < 0 || vector[handIndex] > 100) ||
           vectors.reduce((sum, vector) => sum + vector[handIndex], 0) !== 100) fail(`${profile.id} / ${hands[handIndex]} frequency`);
@@ -155,7 +162,7 @@ export function validateActionRangeDataset(data, expectedProfiles) {
   return data;
 }
 
-export function actionRangeModel(profile, spot) {
+export function actionRangeModel(profile: ActionRangeProfile, spot: ActionTreeSpot): MatrixModel & { reasonFor(hand: string): string } {
   const vectors = new Map(profile.actions.map(action => [action, decodePercentVector(profile.action_frequencies[action])]));
   const unreachable = new Set(spot.unreachable_hands);
   return {
@@ -165,9 +172,9 @@ export function actionRangeModel(profile, spot) {
       hand,
       comboCount: comboCount(hand),
       unreachable: unreachable.has(hand),
-      actions: unreachable.has(hand) ? {} : Object.fromEntries(profile.actions.map(action => [action, vectors.get(action)[handIndex] / 100])),
+      actions: unreachable.has(hand) ? {} : Object.fromEntries(profile.actions.map(action => [action, vectors.get(action)![handIndex] / 100])),
     }])),
-    reasonFor: hand => {
+    reasonFor: (hand: string) => {
       if (unreachable.has(hand)) return reasonText.unreachable;
       const index = hands.indexOf(hand);
       return index < 0 ? "" : reasonText[profile.reason_codes[index]];

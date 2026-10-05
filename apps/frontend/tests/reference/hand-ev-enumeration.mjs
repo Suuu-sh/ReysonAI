@@ -1,9 +1,9 @@
 // Slow, independent reference for scripts/postflop-ai/exact-ev.mjs: plain enumeration of every opponent
 // combo, every runout and every action sequence (engine replays + defence.mix), no vectors, no prefix sums.
-import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "../../scripts/postflop-ai/engine.mjs";
-import { NODES } from "../../scripts/postflop-ai/policy.mjs";
-import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.mjs";
-import { evaluate } from "../../scripts/lib/equity.mjs";
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "../../scripts/postflop-ai/engine.ts";
+import { NODES } from "../../scripts/postflop-ai/policy.ts";
+import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.ts";
+import { evaluate } from "../../scripts/lib/equity.ts";
 import config from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 
 const STOP = Symbol("stop");

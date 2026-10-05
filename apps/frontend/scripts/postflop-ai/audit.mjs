@@ -1,8 +1,8 @@
 import { boards, config, laterSizingHash, seatRange } from "./inputs.mjs";
-import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePolicy } from "./policy.mjs";
+import { NODES, nodeRole, policyMix, referencePolicyFor, treeNodes, validatePolicy } from "./policy.ts";
 import { PROFILES, SIMULATION_VERSION, simulate } from "./simulation.mjs";
 import { sha } from "./generate.mjs";
-import { validateLaterPolicy } from "./later-policy.mjs";
+import { validateLaterPolicy } from "./later-policy.ts";
 import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
 
 export function auditExperiment(inputs, candidate, report, laterCandidate = null, { replay: providedReplay } = {}) {

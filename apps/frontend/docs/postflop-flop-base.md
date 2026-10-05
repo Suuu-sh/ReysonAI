@@ -25,7 +25,7 @@ Missing/stale optional base data falls back to the deterministic browser computa
 
 ## Suit isomorphism and exact delivery
 
-`flop-isomorphism.mjs` is pure Node/browser code. It enumerates S4's 24 suit
+`flop-isomorphism.ts` is pure Node/browser code. It enumerates S4's 24 suit
 permutations and chooses the lexicographically smallest numeric tuple, ordered by
 descending rank and ascending suit within pairs. Card IDs are `rank * 4 + cdhs`.
 It returns both actual→canonical and inverse suit permutations, including unused
@@ -170,7 +170,7 @@ layout/ProductApp files, `.claude/launch.json`, and `apps/preflop-ui/` were not 
 
 - `apps/frontend/AGENTS.md`, `apps/frontend/package.json`, `apps/frontend/vite.config.mjs`
 - `apps/frontend/docs/postflop-flop-base.md`
-- New `apps/frontend/scripts/postflop-ai/`: `flop-isomorphism.mjs`,
+- New `apps/frontend/scripts/postflop-ai/`: `flop-isomorphism.ts`,
   `flop-isomorphism.d.mts`, `flop-ui-facts.mjs`, `flop-base-codec.mjs`,
   `flop-base-core.mjs`, `flop-base-files.mjs`, `flop-base-d1.mjs`, `flop-base.mjs`
 - Updated `apps/frontend/scripts/postflop-ai/`: `board-batch.mjs`,

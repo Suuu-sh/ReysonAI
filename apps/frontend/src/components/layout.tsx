@@ -1,3 +1,5 @@
+import type { Profile } from "../profile.ts";
+import type { Icon } from "@phosphor-icons/react";
 import { BrandIcon } from "./BrandIcon.tsx";
 import { CaretDoubleLeft, ChartBar, CaretDoubleRight, ClockCounterClockwise, GraduationCap, SquaresFour, GearSix } from "@phosphor-icons/react";
 import { useState } from "react";
@@ -8,7 +10,7 @@ import { localized } from "../i18n.ts";
 export const RANGE_SECTION = "レンジ分析";
 export const LOGOUT_SECTION = "ログアウト";
 
-const navigationGroups = [
+const navigationGroups: { label: string; items: { Icon: Icon; name: string; status?: string }[] }[] = [
   {
     label: "解析",
     items: [
@@ -42,9 +44,9 @@ function readInitialCollapsed() {
   return window.matchMedia("(max-width: 1049px)").matches;
 }
 
-export function Sidebar({ activeSection, onSectionChange, profile = null, onEditProfile }) {
+export function Sidebar({ activeSection, onSectionChange, profile = null, onEditProfile }: { activeSection: string; onSectionChange: (section: string) => void; profile?: Profile | null; onEditProfile?: () => void; onLogout?: () => void }) {
   const [collapsed, setCollapsed] = useState(readInitialCollapsed);
-  const toggle = next => {
+  const toggle = (next: boolean) => {
     setCollapsed(next);
     try { window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0"); } catch {}
   };

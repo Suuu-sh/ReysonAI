@@ -1,3 +1,5 @@
+import type { ExplanationFacts } from "./postflop-facts.ts";
+import type { RangeFacts } from "../../scripts/postflop-ai/range-facts.ts";
 import { narrative, translateExplanationCopy, type NarrativeLanguage } from "../locales/reason-copy.ts";
 // Advanced, jargon-rich postflop explanations: one short paragraph per action, in the vocabulary of experienced
 // players (range/nut advantage, polarised vs merged, capped, bluff-catcher, blockers, SPR, geometric sizing...).
@@ -11,7 +13,7 @@ export type AdvancedLocale = "en" | "ja" | "zh-CN" | "es";
 type NumericMap = Record<string, number | undefined>;
 export type AdvancedInput = {
   locale: AdvancedLocale; node: string; hand: string; actionMix: NumericMap; tiers?: NumericMap;
-  texture?: string; explain?: any; positions?: { ip?: string; oop?: string };
+  texture?: string; explain?: ExplanationFacts | null; positions?: { ip?: string; oop?: string };
   // Concrete cards make the copy hand-specific: the full board ("6h5h2d"), the exact combo ("As4s") or, for an
   // averaged hand class, its combos (the most common combo class is described).
   // Per-decision labels with real amounts (decisionOptions); falls back to the plain labels.
@@ -56,7 +58,7 @@ export function sizeKind(t: Tiers | undefined): SizeKind | null {
 }
 export type Advantage = "hero" | "opp" | "even";
 // Range advantage from the share of strong made hands (monster + strong); nut advantage from the monster share.
-export function advantages(rf: any): { range: Advantage; nuts: Advantage; heroCapped: boolean; oppCapped: boolean } | null {
+export function advantages(rf: RangeFacts | null | undefined): { range: Advantage; nuts: Advantage; heroCapped: boolean; oppCapped: boolean } | null {
   const h: Tiers | undefined = rf?.tiers?.hero, o: Tiers | undefined = rf?.tiers?.opp;
   if (!h || !o) return null;
   const d = share(h, "monster", "strong") - share(o, "monster", "strong");
@@ -68,7 +70,7 @@ export function advantages(rf: any): { range: Advantage; nuts: Advantage; heroCa
 
 type Ctx = {
   en: NarrativeLanguage; node: string; hand: string; tier: string; street: "flop" | "turn" | "river"; ip: boolean; facing: boolean;
-  rf: any; adv: ReturnType<typeof advantages>; line?: string; texture?: string; explain: any; opp: string; equity: number;
+  rf: RangeFacts | null | undefined; adv: ReturnType<typeof advantages>; line?: string | null; texture?: string; explain: ExplanationFacts | null | undefined; opp: string; equity: number;
 };
 
 // ---- context sentences ----------------------------------------------------------------------------------
@@ -319,7 +321,7 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
 
   const ordered = [...played].sort((a, b) => ORDER.indexOf(a[0]) - ORDER.indexOf(b[0]));
   const topAction = played[0]?.[0];
-  const blocks: AdvancedBlock[] = [];
+  const blocks: (AdvancedBlock & { _s?: string[] })[] = [];
   const anyBet = names.some(aggressive);
   for (const [action, frequency] of ordered) {
     const sentences: string[] = [];
@@ -331,7 +333,7 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
       sentences.push(...betSentences(desc, action, roleOf(action), hc), responseSentence(f, cl, ctx, desc.tag));
     }
     blocks.push({ action, label: input.labels?.[action] ?? LABELS[en ? "en" : "ja"][action] ?? action, frequency, text: "" });
-    (blocks[blocks.length - 1] as any)._s = sentences;
+    blocks[blocks.length - 1]._s = sentences;
   }
   // The single range-level sentence of the explanation: one of the available range statements (advantage, texture,
   // runout, size composition, street story, SPR), chosen per hand so that hands at the same node do not all share it.
@@ -346,8 +348,8 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
   ].filter(x => x.text);
   const pick = pool.length ? pool[hashOf(`${input.cards ?? input.hand}|${input.node}`) % pool.length] : null;
   for (const b of blocks) {
-    const s: string[] = (b as any)._s;
-    delete (b as any)._s;
+    const s: string[] = b._s!;
+    delete b._s;
     b.text = finish(b === topBlock && pick && !pick.texture ? [...s.slice(0, 5), pick.text] : s);
   }
   const d = input.explain?.defence;

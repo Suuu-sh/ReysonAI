@@ -1,3 +1,24 @@
+import type { CSSProperties, MouseEvent, ReactNode } from "react";
+import type { Profile } from "../profile.ts";
+import type { MatrixModel } from "../data.ts";
+import type { ResponseDataset, OpeningDataset, LimpDataset, LimpDeepDataset, ThreeBetDataset, OpeningSpot, ResponseSpot, ThreeBetSpot, FourBetSpot, FrequencyRow, OpeningHand } from "./preflop-types.ts";
+import type { GameFormat } from "./game-formats.ts";
+import type { TableProfile, TableAdjustments } from "./table-profile.ts";
+import type { ActionBlock, ActionOption, RangeRef, RangeBuildState, RangeUrlSelection } from "./range-url.ts";
+import type { ExtendedSpot } from "./extended-ranges.ts";
+import type { StreetCardDialog as StreetCardDialogName } from "./street-card-dialog-state.ts";
+import type { PreflopCallEvFacts } from "./PreflopCallEvBars.tsx";
+
+type DisplayHand = FrequencyRow & Partial<{ reason: string; adjusted: "add" | "drop"; shift_bb: number; saved_open: number; open_size_bb: number | null; three_bet_size_bb: number | null; four_bet_size_bb: number | null; all_in_size_bb: number | null; squeeze_size_bb: number | null; equity_vs_shove_pct: number | null }>;
+type DisplaySpot = { id: string; hands: DisplayHand[]; table_profile?: TableProfile; open_size_bb?: number; three_bet_size_bb?: number; four_bet_size_bb?: number; squeeze_size_bb?: number; limp_reraise_size_bb?: number; prior_action?: string | null; call_break_even_equity_pct?: number };
+type RangeEntry = { position: string; kind: string; title: string; spot?: DisplaySpot | null; model?: MatrixModel | null; hand?: DisplayHand; statusTitle?: string; statusDescription?: string; unreachableReason?: string | null; rangeBlockKey?: string; raiseToBb?: number; allInSizeBb?: number; fourBetSizeBb?: number; threeBetSizeBb?: number };
+type LocalRange = { position: string; available_actions?: string[]; raise_to_bb?: number; rows: [string, number, number, number][] };
+type LocalEstimate = { scenario?: string; ranges: LocalRange[] };
+type LocalEstimateResponse = { error?: string; data?: LocalEstimate; pending?: boolean; cached?: boolean };
+type InlineFact = { key?: string; label: string; unit?: string; value: number | null | undefined };
+type WorkspaceActionBlock = Partial<Omit<ActionBlock, "key" | "kind">> & { key: string; kind: string; cards?: string[]; street?: string; potBb?: number; pending?: boolean; flopIndex?: number; laterIndex?: number };
+type WorkspaceProps = { profile?: Profile | null; onEditProfile?: () => void; onSectionChange?: (section: string) => void };
+type ActionPathProps = RangeBuildState & { leading?: ReactNode; expanded?: boolean; blocks?: WorkspaceActionBlock[]; selectedRangeBlock?: string | null; onSelectRangeBlock?: (key: string | null) => void; onRewindActionBlock?: ((block: WorkspaceActionBlock) => void) | null; onEnterPostflop?: (() => void) | null; onOpenFlopCards?: () => void; onOpenLaterCard?: (street: string) => void; onFlopAction?: (block: WorkspaceActionBlock, action: string) => void; onLaterAction?: (block: WorkspaceActionBlock, action: string) => void; onAct?: (position: string, action: string) => void; onContinuationAction?: (action: string) => void; onColdAction?: (value: RangeUrlSelection["coldAction"]) => void; onSqueezeResponse?: (role: string, action: string) => void; onFourBet?: () => void; onAllIn?: () => void; onShoveResponse?: (action: string) => void };
 import { accountStorage } from "../account/session.ts";
 import { dataset as publishedDataset } from "./datasets.ts";
 import { useMemo, useState, useEffect, useRef } from "react";
@@ -49,59 +70,59 @@ const openingSource = publishedDataset("opening-ranges");
 const limpSource = publishedDataset("limp-responses");
 const limpDeepSource = publishedDataset("limp-deep-responses");
 const threeBetSource = publishedDataset("three-bet-responses");
-const tableAdjustments = publishedDataset("table-profile-adjustments");
+const tableAdjustments = publishedDataset<TableAdjustments>("table-profile-adjustments");
 
-let dataset;
-let dataError;
-try { dataset = validateDataset(source); } catch (error) { dataError = error.message; }
-let openingDataset;
-let openingDataError;
-try { openingDataset = validateOpeningDataset(openingSource); } catch (error) { openingDataError = error.message; }
-let limpDataset;
-let limpDataError;
+let dataset: ResponseDataset | undefined;
+let dataError: string | undefined;
+try { dataset = validateDataset(source); } catch (error) { dataError = (error as Error).message; }
+let openingDataset: OpeningDataset | undefined;
+let openingDataError: string | undefined;
+try { openingDataset = validateOpeningDataset(openingSource); } catch (error) { openingDataError = (error as Error).message; }
+let limpDataset: LimpDataset | undefined;
+let limpDataError: string | undefined;
 try {
   if (openingDataError) throw new Error(openingDataError);
-  limpDataset = validateLimpResponses(limpSource, openingDataset);
-} catch (error) { limpDataError = error.message; }
-let limpDeepDataset;
-try { if (limpDataset) limpDeepDataset = validateLimpDeepResponses(limpDeepSource, openingDataset, limpDataset); } catch { limpDeepDataset = null; }
-let threeBetDataset;
-let threeBetDataError;
+  limpDataset = validateLimpResponses(limpSource, openingDataset!);
+} catch (error) { limpDataError = (error as Error).message; }
+let limpDeepDataset: LimpDeepDataset | null | undefined;
+try { if (limpDataset!) limpDeepDataset = validateLimpDeepResponses(limpDeepSource, openingDataset!, limpDataset!); } catch { limpDeepDataset = null; }
+let threeBetDataset: ThreeBetDataset | undefined;
+let threeBetDataError: string | undefined;
 try {
   if (dataError || openingDataError) throw new Error(dataError || openingDataError);
-  threeBetDataset = validateThreeBetDataset(threeBetSource, dataset, openingDataset);
-} catch (error) { threeBetDataError = error.message; }
+  threeBetDataset = validateThreeBetDataset(threeBetSource, dataset!, openingDataset!);
+} catch (error) { threeBetDataError = (error as Error).message; }
 
 // A missing dataset stays inside the explicit error boundary, like invalid JSON.
 const fourBetRaw = (() => { try { return JSON.stringify(publishedDataset("four-bet-responses")); } catch { return undefined; } })();
-const fourBetState = loadFourBetDataset(fourBetRaw, dataset, threeBetDataset, openingDataset);
+const fourBetState = loadFourBetDataset(fourBetRaw, dataset!, threeBetDataset!, openingDataset!);
 
 const selectionStorageKey = "reysonai:estimated-selection:v1";
 const displayModeStorageKey = displayModeKey;
 const formatStorageKey = "reysonai:game-format:v1";
 const tableProfileStorageKey = "reysonai:table-profile:v1";
-const openingModelFor = spot => markAdjustedModel(openingMatrixModel(spot), spot);
+const openingModelFor = (spot: OpeningSpot) => markAdjustedModel(openingMatrixModel(spot), spot);
 // Postflop labels end in "(33%)"; show that part right-aligned so the amounts line up.
 function OptionLabel({ label }: { label: string }) {
   const match = /^(.*\S)\s+(\(\d+%\))$/.exec(label);
   return match ? <><span className="action-seat-main">{match[1]}</span><span className="action-seat-pct">{match[2]}</span></> : <>{label}</>;
 }
 
-export function selectedHandForRangeEntry(entry, selected) {
+export function selectedHandForRangeEntry(entry: RangeEntry, selected: string) {
   return entry.spot?.hands.find(row => row.hand === selected) ?? entry.hand;
 }
 const legacySelectionStorageKey = "reysonai-legacy:estimated-selection:v1";
-function restoredSelection(initialRangeType) {
+function restoredSelection(initialRangeType: string): Omit<RangeUrlSelection, "coldAction"> & Partial<Pick<RangeUrlSelection, "coldAction">> {
   const fallback = { rangeType: initialRangeType, opener: initialRangeType === "limp" ? "SB" : "BTN", hero: "BB", callers: [], foldedHero: false, pendingRaise: null, continuationAction: null, shoveResponse: null, limpAction: null, limpResponseAction: null, limpReraiseAction: null, limpFourBetAction: null, squeezeResponse: [], selected: "AKo" };
   if (typeof window === "undefined") return fallback;
   try {
     const stored = window.sessionStorage.getItem(selectionStorageKey) ?? window.sessionStorage.getItem(legacySelectionStorageKey);
-    const saved = JSON.parse(stored);
+    const saved = JSON.parse(stored!);
     const limpSelection = saved?.rangeType === "limp";
     if (!saved || !rangeTypes.some(item => item.value === saved.rangeType && item.available) ||
         !positions.slice(0, -1).includes(saved.opener) || !positions.includes(saved.hero) ||
         (limpSelection ? saved.opener !== "SB" || !["BB", "SB"].includes(saved.hero) : positions.indexOf(saved.hero) <= positions.indexOf(saved.opener)) ||
-        !Array.isArray(saved.callers) || saved.callers.some(position => !positions.includes(position) || positions.indexOf(position) <= positions.indexOf(saved.opener)) ||
+        !Array.isArray(saved.callers) || saved.callers.some((position: string) => !positions.includes(position) || positions.indexOf(position) <= positions.indexOf(saved.opener)) ||
         new Set(saved.callers).size !== saved.callers.length) return fallback;
     const pendingRaise = saved.pendingRaise === "all_in" && saved.rangeType === "four_bet" ? "all_in" : saved.pendingRaise === "squeeze" && saved.rangeType === "response" && saved.callers.length ? "squeeze" : null;
     const continuationAction = (saved.rangeType === "three_bet" || saved.rangeType === "four_bet") && ["fold", "call"].includes(saved.continuationAction) ? saved.continuationAction : null;
@@ -112,12 +133,12 @@ function restoredSelection(initialRangeType) {
     const limpFourBetAction = limpReraiseAction === "raise" && ["fold", "call", "all_in"].includes(saved.limpFourBetAction) ? saved.limpFourBetAction : null;
     const squeezeActions = ["fold", "call", "raise"];
     const squeezeResponse = pendingRaise === "squeeze" && Array.isArray(saved.squeezeResponse) && saved.squeezeResponse.length <= 2 &&
-      saved.squeezeResponse.every(action => squeezeActions.includes(action)) && !(saved.squeezeResponse[0] === "raise" && saved.squeezeResponse.length > 1) ? saved.squeezeResponse : [];
+      saved.squeezeResponse.every((action: string) => squeezeActions.includes(action)) && !(saved.squeezeResponse[0] === "raise" && saved.squeezeResponse.length > 1) ? saved.squeezeResponse : [];
     return { ...fallback, ...saved, pendingRaise, continuationAction, shoveResponse, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, selected: hands.includes(saved.selected) ? saved.selected : fallback.selected };
   } catch { return fallback; }
 }
 
-function HandHeader({ position, hand, comboCount, onClose }) {
+function HandHeader({ position, hand, comboCount, onClose }: { position: string; hand: string; comboCount: number; onClose?: () => void }) {
   return <div className="hand-header">
     <strong>{hand}</strong>
     <span>{position} · {comboCount} Combos</span>
@@ -126,29 +147,29 @@ function HandHeader({ position, hand, comboCount, onClose }) {
 }
 
 // EV-style facts are in bb with a sign; everything else is a percentage.
-const formatFact = ({ value, unit }) => unit === "bb"
-  ? `${value > 0 ? "+" : ""}${Number(value).toFixed(2)}bb`
+const formatFact = ({ value, unit }: InlineFact) => unit === "bb"
+  ? `${value! > 0 ? "+" : ""}${Number(value).toFixed(2)}bb`
   : `${Number(value).toFixed(1)}%`;
 
-function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }) {
+function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }: { hand: DisplayHand; reasonState: ReturnType<typeof useDetailedReasons>; inlineFacts?: InlineFact[] | null; hideCallEv?: boolean | null }) {
   const { data, loading, error } = reasonState;
   const detailed = data?.hands[hand.hand];
   const english = productLocale() !== "ja";
   const facts = detailed
-    ? data.fact_labels.map(({ key, label, scope, unit }) => ({ key, label: english ? localizedFactLabel(key) ?? label : label, unit, value: scope === "spot" ? data.spot_facts[key] : detailed.facts[key] }))
+    ? data!.fact_labels!.map(({ key, label, scope, unit }) => ({ key, label: english ? localizedFactLabel(key) ?? label : label, unit, value: scope === "spot" ? data!.spot_facts![key] as number | null : detailed.facts![key] }))
     : inlineFacts ?? [];
   const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined && !(hideCallEv && fact.key === "call_ev_bb"));
   return <div className="ai-reason">
     <span>AIの考え方</span>
     <p>{english ? (detailed ? localizedPreflopReason(hand, detailed, data) : loading ? "Loading…" : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (loading ? "読み込み中…" : error ? "理由を読み込めませんでした。" : hand.reason)}</p>
     {shown.length > 0 && <dl className="reason-facts">
-      {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd className={fact.unit === "bb" ? (fact.value >= 0 ? "fact-positive" : "fact-negative") : undefined}>{formatFact(fact)}</dd></div>)}
+      {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd className={fact.unit === "bb" ? (fact.value! >= 0 ? "fact-positive" : "fact-negative") : undefined}>{formatFact(fact)}</dd></div>)}
     </dl>}
-    {detailed && <small className="reason-note">{english ? localizedEquityNote() : data.equity_note}</small>}
+    {detailed && <small className="reason-note">{english ? localizedEquityNote() : data!.equity_note}</small>}
   </div>;
 }
 
-function endResultLabel(result) {
+function endResultLabel(result: string) {
   if (productLocale() === "ja") return result;
   const players = /^(\d+)人でフロップへ$/.exec(result);
   if (players) return `${players[1]} players to the flop`;
@@ -162,14 +183,14 @@ function endResultLabel(result) {
   return result;
 }
 
-function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, extra = null, spot, position, onReturnToComparison, displayMode }) {
+function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, extra = null, spot, position, onReturnToComparison, displayMode }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string }) {
   const reasonState = useDetailedReasons(spot?.id);
-  const equityFact = reasonState.data?.fact_labels.find(fact => fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
+  const equityFact = reasonState.data?.fact_labels!.find(fact => fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
   const savedFacts = reasonState.data?.hands[hand.hand]?.facts;
   const callEvFacts = savedFacts && equityFact ? { eqr: savedFacts.eqr, equityPct: savedFacts[equityFact.key], callEvBb: savedFacts.call_ev_bb } : null;
   const hasCallEv = callEvFacts && Object.values(callEvFacts).every(Number.isFinite);
   const tableReason = adjustmentReason(hand, spot?.table_profile);
-  const aggregate = model.aggregates.get(hand.hand);
+  const aggregate = model.aggregates.get(hand.hand)!;
   const actionItems = model.actions.map(action => ({ action, frequency: aggregate.actions[action] }));
   const inlineFacts = isFiveBet ? [
     { label: "勝率（対オールインレンジ）", value: hand.equity_vs_shove_pct },
@@ -186,7 +207,7 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
       {displayMode === "standard" && <>
       {isFourBet && <small>オールイン = 5bet（合計100BB）</small>}
       {hasCallEv && !tableReason
-        ? <PreflopCallEvBars items={actionItems} labels={model.actionLabels} facts={callEvFacts} equityLabel={equityFact.label} />
+        ? <PreflopCallEvBars items={actionItems} labels={model.actionLabels} facts={callEvFacts as PreflopCallEvFacts} equityLabel={equityFact!.label} />
         : <ActionBars items={actionItems} labels={model.actionLabels} />}
       {!tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} hideCallEv={hasCallEv} />}
       {isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
@@ -197,10 +218,10 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
           : isFourBet ? { label: "5betオールイン（合計）", value: hand.all_in_size_bb === null ? "—（5betなし）" : `${hand.all_in_size_bb} BB` }
           : isThreeBet ? { label: "4betサイズ（合計）", value: hand.four_bet_size_bb === null ? "—（4betなし）" : `${hand.four_bet_size_bb} BB` }
           : { label: "3betサイズ（合計）", value: hand.three_bet_size_bb === null ? "—（3betなし）" : `${hand.three_bet_size_bb} BB` },
-        ...(isFourBet ? [{ label: "受ける4bet（合計）", value: `${spot.four_bet_size_bb} BB` }, { label: "元の3bet（合計）", value: `${spot.three_bet_size_bb} BB` }] : []),
-        ...(isThreeBet ? [{ label: "受ける3bet（合計）", value: `${spot.three_bet_size_bb} BB` }] : []),
-        ...(isFiveBet ? [{ label: "自分の4bet（合計）", value: `${spot.four_bet_size_bb} BB` }, { label: "相手の元の3bet（合計）", value: `${spot.three_bet_size_bb} BB` }] : []),
-      ].filter(Boolean)} />}
+        ...(isFourBet ? [{ label: "受ける4bet（合計）", value: `${spot!.four_bet_size_bb} BB` }, { label: "元の3bet（合計）", value: `${spot!.three_bet_size_bb} BB` }] : []),
+        ...(isThreeBet ? [{ label: "受ける3bet（合計）", value: `${spot!.three_bet_size_bb} BB` }] : []),
+        ...(isFiveBet ? [{ label: "自分の4bet（合計）", value: `${spot!.four_bet_size_bb} BB` }, { label: "相手の元の3bet（合計）", value: `${spot!.three_bet_size_bb} BB` }] : []),
+       ].filter(Boolean) as { label: string; value: string }[]} />}
       </>}
       </>}
       {aggregate.unreachable && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} />}
@@ -208,11 +229,11 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
   </div>;
 }
 
-function LocalHandBreakdown({ entry, selected, onClose, displayMode }) {
-  const aggregate = entry.model.aggregates.get(selected);
+function LocalHandBreakdown({ entry, selected, onClose, displayMode }: { entry: RangeEntry; selected: string; onClose: () => void; displayMode: string }) {
+  const aggregate = entry.model!.aggregates.get(selected)!;
   return <div className="detail-column comparison-focus-details"><Panel>
     <HandHeader position={entry.position} hand={selected} comboCount={aggregate.comboCount} onClose={onClose} />
-    {displayMode === "standard" && <><ActionBars items={entry.model.actions.map(action => ({ action, frequency: aggregate.actions[action] }))} labels={entry.model.actionLabels} />
+    {displayMode === "standard" && <><ActionBars items={entry.model!.actions.map(action => ({ action, frequency: aggregate.actions[action] }))} labels={entry.model!.actionLabels} />
     <StatList items={entry.allInSizeBb ? [
       { label: "受ける5betオールイン（合計）", value: `${entry.allInSizeBb} BB` },
       { label: "直前の4bet（合計）", value: `${entry.fourBetSizeBb} BB` },
@@ -221,7 +242,7 @@ function LocalHandBreakdown({ entry, selected, onClose, displayMode }) {
   </Panel></div>;
 }
 
-function InlineGenerationControl({ description, status, error, onGenerate }) {
+function InlineGenerationControl({ description, status, error, onGenerate }: { description: string; status: string; error: string; onGenerate: () => void }) {
   const label = status === "checking" ? "保存状態を確認中…"
     : status === "loading" ? "Codexで生成中…"
     : status === "cached" ? "保存済みレンジを表示中"
@@ -235,17 +256,17 @@ function InlineGenerationControl({ description, status, error, onGenerate }) {
   </>;
 }
 
-const formatBb = value => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
+const formatBb = (value: number | null | undefined) => value === null || value === undefined ? "—" : String(Math.round(value * 100) / 100);
 
-export function prioritizeParticipantRanges(rangeEntries, selectedActionEntries) {
+export function prioritizeParticipantRanges<T extends { position: string }>(rangeEntries: T[], selectedActionEntries: T[] | null) {
   if (!selectedActionEntries) return rangeEntries;
   const prioritizedPositions = new Set(selectedActionEntries.map(entry => entry.position));
   return [...selectedActionEntries, ...rangeEntries.filter(entry => !prioritizedPositions.has(entry.position))];
 }
 
-function ActionDropdown({ position, options, onSelect }) {
-  const [menu, setMenu] = useState(null);
-  const toggle = event => {
+function ActionDropdown({ position, options, onSelect }: { position: string; options: ActionOption[]; onSelect: (action: string) => void }) {
+  const [menu, setMenu] = useState<{ top: number; right: number } | null>(null);
+  const toggle = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     if (menu) { setMenu(null); return; }
     const rect = event.currentTarget.getBoundingClientRect();
@@ -262,20 +283,20 @@ function ActionDropdown({ position, options, onSelect }) {
   </div>;
 }
 
-export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onOpenFlopCards = () => {}, onOpenLaterCard = () => {}, onFlopAction = () => {}, onLaterAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onSqueezeResponse = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }) {
-  const blocks = providedBlocks ?? buildActionBlocks(state);
-  const seatsRef = useRef(null);
+export function ActionPath({ leading, expanded, blocks: providedBlocks, selectedRangeBlock = null, onSelectRangeBlock = () => {}, onRewindActionBlock = null, onEnterPostflop = null, onOpenFlopCards = () => {}, onOpenLaterCard = () => {}, onFlopAction = () => {}, onLaterAction = () => {}, onAct = () => {}, onContinuationAction = () => {}, onColdAction = () => {}, onSqueezeResponse = () => {}, onFourBet = () => {}, onAllIn = () => {}, onShoveResponse = () => {}, ...state }: ActionPathProps) {
+  const blocks: WorkspaceActionBlock[] = providedBlocks ?? buildActionBlocks(state);
+  const seatsRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const seats = seatsRef.current;
     if (seats) seats.scrollTo({ left: seats.scrollWidth, behavior: "smooth" });
   }, [blocks.length]);
-  const select = (block, action) => {
+  const select = (block: WorkspaceActionBlock, action: string) => {
     if (block.kind === "flop" && block.street) onLaterAction(block, action);
     else if (block.kind === "flop") onFlopAction(block, action);
-    else if (block.stage === "limp-bb" || block.stage === "limp-sb-response" || block.stage === "limp-bb-reraise" || block.stage === "limp-sb-four-bet") onAct(block.position, action);
-    else if (block.kind === "squeeze-response") onSqueezeResponse(block.role, action);
-    else if (block.kind === "seat") onAct(block.position, action);
-    else if (block.kind === "cold") onColdAction(action === "fold" ? null : { position: block.position, action });
+    else if (block.stage === "limp-bb" || block.stage === "limp-sb-response" || block.stage === "limp-bb-reraise" || block.stage === "limp-sb-four-bet") onAct(block.position!, action);
+    else if (block.kind === "squeeze-response") onSqueezeResponse(block.role!, action);
+    else if (block.kind === "seat") onAct(block.position!, action);
+    else if (block.kind === "cold") onColdAction(action === "fold" ? null : { position: block.position!, action });
     else if (block.kind === "shove-response") onShoveResponse(action);
     else if (block.kind === "continuation" && block.position === state.opener && state.rangeType === "three_bet") action === "raise" ? onFourBet() : onContinuationAction(action);
     else if (block.kind === "continuation" && block.position === state.opener && action !== "raise") { onAct(state.hero, "raise"); onContinuationAction(action); }
@@ -291,22 +312,22 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
           const isFlop = street === "flop";
           const title = isFlop ? "Flop" : street === "turn" ? "Turn" : "River";
           const label = isFlop ? "フロップ" : street === "turn" ? "ターン" : "リバー";
-          const selected = block.cards.some(Boolean);
+          const selected = block.cards!.some(Boolean);
           const english = productLocale() !== "ja";
           return <button type="button" className={`action-seat action-seat-board${isFlop ? "" : " action-seat-board-later"}`} key={block.key}
             onClick={isFlop ? onOpenFlopCards : () => onOpenLaterCard(street)}
             aria-label={english ? `${title} card ${selected ? "change" : "select"}` : `${label}カードを${selected ? "変更" : "選択"}`}>
             <span className="action-seat-heading"><strong>{title}</strong><span className="action-seat-board-edit" aria-hidden="true">{english ? selected ? "Edit" : "Select" : selected ? "変更" : "選択"}</span></span>
-            <span className="action-seat-board-cards">{(isFlop ? [0, 1, 2].map(index => block.cards[index] ?? "") : [block.cards[0] ?? ""]).map((card, index) => <span key={index} className={`action-seat-board-card${/[hd]$/.test(card) ? " red" : ""}${card ? "" : " empty"}`}>{card ? <>{card[0]}<span className="suit">{suitLabels[card[1]]}</span></> : "?"}</span>)}</span>
+            <span className="action-seat-board-cards">{(isFlop ? [0, 1, 2].map(index => block.cards![index] ?? "") : [block.cards![0] ?? ""]).map((card, index) => <span key={index} className={`action-seat-board-card${/[hd]$/.test(card) ? " red" : ""}${card ? "" : " empty"}`}>{card ? <>{card[0]}<span className="suit">{suitLabels[card[1] as keyof typeof suitLabels]}</span></> : "?"}</span>)}</span>
             {Number.isFinite(block.potBb) && <small className="action-seat-board-pot" aria-label={`${english ? "Pot at the start of the street" : "ストリート開始時のポット"} ${formatBb(block.potBb)}BB`}>{english ? "Pot" : "ポット"} {formatBb(block.potBb)}BB</small>}
           </button>;
         }
-        const chosenOption = block.options.find(option => option.action === block.chosen);
+        const chosenOption = block.options!.find(option => option.action === block.chosen);
         if (block.kind === "end") return <div className="action-seat action-seat-end" key={block.key}>
           <div className="action-seat-heading"><strong>終了</strong></div>
-          <p className="action-seat-result">{endResultLabel(block.result)}</p>
+          <p className="action-seat-result">{endResultLabel(block.result!)}</p>
           <small>{block.pot}</small>
-          {/^\d+人でフロップへ$/.test(block.result) && onEnterPostflop && <button type="button" className="enter-postflop" onClick={onEnterPostflop}>フロップへ進む →</button>}
+          {/^\d+人でフロップへ$/.test(block.result!) && onEnterPostflop && <button type="button" className="enter-postflop" onClick={onEnterPostflop}>フロップへ進む →</button>}
         </div>;
         const activateBlock = () => onRewindActionBlock
           ? onRewindActionBlock(block)
@@ -314,13 +335,13 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
         return <div className={`action-seat action-seat-${block.kind}${block.active ? " active" : ""}${selectedRangeBlock === block.key ? " range-selected" : ""}${onRewindActionBlock ? " action-seat-clickable" : ""}`} key={block.key} onClick={onRewindActionBlock ? activateBlock : undefined} title={onRewindActionBlock ? "ブロック全体をクリックしてこのアクションに戻る" : undefined}>
           <div className="action-seat-heading"><button type="button" className="action-seat-position" aria-pressed={selectedRangeBlock === block.key} aria-label={`${block.position}のアクションに戻り、レンジ表を表示`} title="このアクションに戻り、関連するレンジ表を表示" onClick={event => { event.stopPropagation(); activateBlock(); }}>{block.position}</button><span>{block.stack}</span></div>
           {expanded ? <div className="action-seat-options">
-            {block.options.map(option => {
+            {block.options!.map(option => {
               const selected = option.action === block.chosen;
               const disabled = option.disabled || block.kind === "forced" || block.kind === "pending";
               return <button type="button" key={option.action} className={selected ? "chosen" : ""} aria-pressed={selected} disabled={disabled} title={selected && onRewindActionBlock ? "クリックしてこのアクション前に戻る" : undefined} onClick={event => { event.stopPropagation(); selected && onRewindActionBlock ? onRewindActionBlock(block) : select(block, option.action); }}><OptionLabel label={option.label} /></button>;
             })}
             {block.kind === "pending" && <small className="action-path-pending">推定レンジ準備中</small>}
-            {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && <ActionDropdown position={block.position} options={block.options.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
+            {block.active && !block.chosen && block.kind !== "forced" && block.kind !== "pending" && <ActionDropdown position={block.position!} options={block.options!.filter(option => !option.disabled)} onSelect={action => select(block, action)} />}
           </div> : <span className={`action-seat-summary${block.kind === "pending" ? " action-path-pending" : ""}`}>{chosenOption?.label ?? (block.kind === "pending" ? "推定レンジ準備中" : "—")}</span>}
         </div>;
       })}
@@ -328,7 +349,7 @@ export function ActionPath({ leading, expanded, blocks: providedBlocks, selected
   </div>;
 }
 
-function PostflopSignIn({ account, onBack }) {
+function PostflopSignIn({ account, onBack }: { account: ReturnType<typeof useAccount>; onBack: () => void }) {
   return <div className="learning-gate postflop-gate"><LearningGate account={account} onBack={onBack}
     title={localized("Sign in to play the flop to the river", "ログインしてフロップ以降を見る")}
     lead={localized("Postflop ranges and hand explanations are available after Google sign-in.", "フロップからリバーまでのAI推定レンジと解説は、Googleログインで使えます。")}
@@ -340,7 +361,7 @@ function PostflopSignIn({ account, onBack }) {
     backLabel={localized("Back to preflop ranges", "プリフロップのレンジに戻る")} /></div>;
 }
 
-export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }) {
+export function EstimatedRanges({ initialRangeType = "response", fourBet = fourBetState, profile = null, onEditProfile, onSectionChange }: WorkspaceProps & { initialRangeType?: string; fourBet?: ReturnType<typeof loadFourBetDataset> }) {
   const [initialUrlState] = useState(() => readRangeUrl());
   const [initialSelection] = useState(() => initialUrlState ?? restoredSelection(initialRangeType));
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -349,7 +370,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const account = useAccount();
   const postflopAllowed = learningAllowed(account);
   const [flopDialogOpen, setFlopDialogOpen] = useState(false);
-  const [streetCardDialog, setStreetCardDialog] = useState(null);
+  const [streetCardDialog, setStreetCardDialog] = useState<StreetCardDialogName | null>(null);
   const [flopCards, setFlopCards] = useState(initialUrlState?.flopCards ?? ["", "", ""]);
   const [flopActions, setFlopActions] = useState(initialUrlState?.flopActions ?? []);
   const [turnCard, setTurnCard] = useState(initialUrlState?.turnCard ?? "");
@@ -379,8 +400,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const isComparison = rangeType === "response";
   const [opener, setOpener] = useState(initialSelection.opener);
   const [hero, setHero] = useState(initialSelection.hero);
-  const [focusedRange, setFocusedRange] = useState(null);
-  const [selectedRangeBlock, setSelectedRangeBlock] = useState(null);
+  const [focusedRange, setFocusedRange] = useState<string | null>(null);
+  const [selectedRangeBlock, setSelectedRangeBlock] = useState<string | null>(null);
   const [callers, setCallers] = useState(initialSelection.callers);
   const [foldedHero, setFoldedHero] = useState(initialSelection.foldedHero);
   const [pendingRaise, setPendingRaise] = useState(initialSelection.pendingRaise);
@@ -392,19 +413,19 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [limpReraiseAction, setLimpReraiseAction] = useState(initialSelection.limpReraiseAction);
   const [limpFourBetAction, setLimpFourBetAction] = useState(initialSelection.limpFourBetAction);
   const [squeezeResponse, setSqueezeResponse] = useState(initialSelection.squeezeResponse);
-  const [format, setFormat] = useState(() => {
+  const [format, setFormat] = useState<GameFormat>(() => {
     if (initialUrlState) return initialUrlState.format;
     try {
-      const saved = JSON.parse(window.localStorage.getItem(formatStorageKey));
+      const saved = JSON.parse(window.localStorage.getItem(formatStorageKey)!);
       return saved && isBuilt(saved) ? saved : defaultFormat;
     } catch { return defaultFormat; }
   });
   const [tableProfile, setTableProfile] = useState(() => {
     if (initialUrlState) return initialUrlState.tableProfile;
-    try { return normalizeProfile(JSON.parse(window.localStorage.getItem(tableProfileStorageKey)) ?? DEFAULT_PROFILE); } catch { return DEFAULT_PROFILE; }
+    try { return normalizeProfile(JSON.parse(window.localStorage.getItem(tableProfileStorageKey)!) ?? DEFAULT_PROFILE); } catch { return DEFAULT_PROFILE; }
   });
   const [formatOpen, setFormatOpen] = useState(false);
-  function saveFormat(value, profileValue = tableProfile) {
+  function saveFormat(value: GameFormat, profileValue = tableProfile) {
     setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]);
     setFormat(value);
     setTableProfile(profileValue);
@@ -414,10 +435,10 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       window.localStorage.setItem(tableProfileStorageKey, JSON.stringify(profileValue));
     } catch {}
   }
-  const openingSpotFor = position => openingDataset ? adjustOpeningSpot(findOpeningSpot(openingDataset, position), tableAdjustments, tableProfile) : null;
-  const openingTitle = position => `${position} · オープンレンジ${isDefaultProfile(tableProfile) ? "" : "（卓に合わせて調整）"}`;
-  const [localEstimate, setLocalEstimate] = useState(null);
-  const [localEstimateRequestKey, setLocalEstimateRequestKey] = useState(null);
+  const openingSpotFor = (position: string) => openingDataset ? adjustOpeningSpot(findOpeningSpot(openingDataset!, position), tableAdjustments, tableProfile) : null;
+  const openingTitle = (position: string) => `${position} · オープンレンジ${isDefaultProfile(tableProfile) ? "" : "（卓に合わせて調整）"}`;
+  const [localEstimate, setLocalEstimate] = useState<LocalEstimate | null>(null);
+  const [localEstimateRequestKey, setLocalEstimateRequestKey] = useState<string | null>(null);
   const [localStatus, setLocalStatus] = useState(
     initialSelection.rangeType === "response" && initialSelection.callers.length > 0 && !initialSelection.foldedHero ||
     initialSelection.rangeType === "four_bet" && initialSelection.pendingRaise === "all_in" ? "checking" : "idle",
@@ -428,20 +449,20 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const [displayMode, setDisplayMode] = useState(() => {
     try { return accountStorage()?.getItem(displayModeStorageKey) === "simple" ? "simple" : "standard"; } catch { return "standard"; }
   });
-  function changeDisplayMode(value) {
+  function changeDisplayMode(value: string) {
     setDisplayMode(value);
     try { accountStorage()?.setItem(displayModeStorageKey, value); } catch {}
   }
   const currentError = isFourBet ? fourBet.error : isOpening ? openingDataError : isLimp ? limpDataError : isThreeBet ? threeBetDataError : dataError || openingDataError;
   const openerSpot = useMemo(() => openingSpotFor(opener), [opener, tableProfile]);
   const openerModel = useMemo(() => openerSpot ? openingModelFor(openerSpot) : null, [openerSpot]);
-  const spot = isOpening
+  const spot: DisplaySpot | null | undefined = isOpening
     ? openerSpot
     : isLimp ? null
     : isFourBet ? fourBet.data ? findFourBetSpot(fourBet.data, opener, hero) : null
-    : isThreeBet ? threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null
-    : dataset ? findSpot(dataset, opener, hero) : null;
-  const model = useMemo(() => spot ? (isOpening ? openingModelFor(spot) : isFourBet ? fourBetMatrixModel(spot, findSpot(dataset, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot) : matrixModel(spot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
+    : isThreeBet ? threeBetDataset ? findThreeBetSpot(threeBetDataset!, opener, hero) : null
+    : dataset ? findSpot(dataset!, opener, hero) : null;
+  const model = useMemo(() => spot ? (isOpening ? openingModelFor(spot as OpeningSpot) : isFourBet ? fourBetMatrixModel(spot as FourBetSpot, findSpot(dataset!, opener, hero)) : isThreeBet ? threeBetMatrixModel(spot as ThreeBetSpot) : matrixModel(spot as ResponseSpot)) : null, [spot, isOpening, isThreeBet, isFourBet, opener, hero]);
   function resetPath() {
     setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopCards(["", "", ""]); setFlopActions([]);
     setRangeType("response");
@@ -460,7 +481,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setLocalStatus("idle");
     setLocalError("");
   }
-  function changeOpener(value) {
+  function changeOpener(value: string) {
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
     setOpener(value);
     setRangeType("open");
@@ -474,7 +495,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setFoldedHero(false);
   }
 
-  function actAt(position, action) {
+  function actAt(position: string, action: string) {
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
     const index = positions.indexOf(position);
     const next = positions[index + 1];
@@ -517,7 +538,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setPendingRaise(transition.pendingRaise);
   }
 
-  function rewindToActionBlock(block) {
+  function rewindToActionBlock(block: WorkspaceActionBlock) {
     if (block.kind === "flop" && block.street === "turn") {
       setTurnActions(current => current.slice(0, block.laterIndex ?? 0));
       setRiverCard(""); setRiverActions([]);
@@ -535,7 +556,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       return;
     }
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
-    const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, limpAction, limpResponseAction, squeezeResponse, block });
+    const transition = rewindActionBlockTransition({ rangeType, opener, hero, callers, squeezeResponse, block: block as ActionBlock });
     setFocusedRange(null);
     setColdAction(null);
     setSelectedRangeBlock(current => current === block.key ? null : block.key);
@@ -579,7 +600,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const fiveBetModel = useMemo(() => fiveBet.spot ? fiveBetMatrixModel(fiveBet.spot) : null, [fiveBet.spot]);
   // The persisted dataset wins; local generation is only a fallback when it has no such spot.
   const fiveBetRequest = isFourBet && pendingRaise === "all_in" && spot && !fiveBet.spot && !fiveBet.loading
-    ? { scenario: "five_bet_all_in_response", opener, hero, callers: [], three_bet_size_bb: spot.three_bet_size_bb, four_bet_size_bb: spot.four_bet_size_bb, all_in_size_bb: 100 }
+    ? { scenario: "five_bet_all_in_response", opener, hero, callers: [], three_bet_size_bb: spot!.three_bet_size_bb, four_bet_size_bb: spot!.four_bet_size_bb, all_in_size_bb: 100 }
     : null;
   const activeGenerationRequest = fiveBetRequest ?? multiwayRequest;
   const canGenerate = Boolean(multiwayRequest);
@@ -594,17 +615,17 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   useEffect(() => {
     if (!activeGenerationRequest || !requestKey) return;
     let cancelled = false;
-    let timer;
+    let timer: number | undefined;
     async function refresh() {
       try {
-        const response = await fetch(`/local-estimates?request=${encodeURIComponent(requestKey)}`);
-        const result = await response.json();
+        const response = await fetch(`/local-estimates?request=${encodeURIComponent(requestKey!)}`);
+        const result = await response.json() as LocalEstimateResponse;
         if (!response.ok) throw new Error(result.error || "保存状態を確認できません。");
         if (cancelled) return;
         if (result.data) { setLocalEstimate(result.data); setLocalEstimateRequestKey(requestKey); setLocalStatus("cached"); return; }
         if (result.pending) { setLocalStatus("loading"); timer = window.setTimeout(refresh, 1500); return; }
         setLocalStatus(current => current === "loading" ? current : "idle");
-      } catch (error) { if (!cancelled) { setLocalStatus("error"); setLocalError(error.message); } }
+      } catch (error) { if (!cancelled) { setLocalStatus("error"); setLocalError((error as Error).message); } }
     }
     refresh();
     return () => { cancelled = true; window.clearTimeout(timer); };
@@ -615,19 +636,19 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     setLocalStatus("loading"); setLocalError("");
     try {
       const response = await fetch("/local-estimates", { method: "POST", headers: { "Content-Type": "application/json" }, body: requestKey });
-      const result = await response.json();
+      const result = await response.json() as LocalEstimateResponse;
       if (submittedKey !== currentRequestKey.current) return;
       if (!response.ok || !result.data) throw new Error(result.error || "ローカル生成に接続できません。画面を再読み込みしてください。");
       setLocalEstimate(result.data); setLocalEstimateRequestKey(submittedKey); setLocalStatus(result.cached ? "cached" : "generated");
-    } catch (error) { if (submittedKey === currentRequestKey.current) { setLocalStatus("error"); setLocalError(error.message); } }
+    } catch (error) { if (submittedKey === currentRequestKey.current) { setLocalStatus("error"); setLocalError((error as Error).message); } }
   }
-  const localMatrix = range => ({ actions: range.available_actions ?? ["raise", "call", "fold"], actionLabels: range.raise_to_bb ? { raise: `レイズ ${range.raise_to_bb}BB` } : {}, aggregates: new Map(range.rows.map(([hand, fold, call, raise]) => [hand, {
+  const localMatrix = (range: LocalRange): MatrixModel => ({ actions: range.available_actions ?? ["raise", "call", "fold"], actionLabels: range.raise_to_bb ? { raise: `レイズ ${range.raise_to_bb}BB` } : {}, aggregates: new Map(range.rows.map(([hand, fold, call, raise]) => [hand, {
     hand, comboCount: hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12,
     actions: { fold: fold / 100, call: call / 100, raise: raise / 100 },
   }])) });
   const currentLocalEstimate = localEstimateRequestKey === requestKey ? localEstimate : null;
-  const raiseSizeFor = position => {
-    const candidate = dataset && positions.indexOf(position) > positions.indexOf(opener) ? findSpot(dataset, opener, position) : null;
+  const raiseSizeFor = (position: string) => {
+    const candidate = dataset && positions.indexOf(position) > positions.indexOf(opener) ? findSpot(dataset!, opener, position) : null;
     return candidate?.hands.find(row => row.three_bet_size_bb !== null)?.three_bet_size_bb ?? null;
   };
   const actionState = { rangeType, opener, hero, spot, callers, foldedHero, raiseToBb: currentLocalEstimate?.ranges.find(range => range.position === hero)?.raise_to_bb, pendingRaise, continuationAction, shoveResponse, coldAction, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction, squeezeResponse, raiseSizeFor };
@@ -651,57 +672,57 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const laterBlocks = canEnterLaterStreets
     ? buildLaterActionBlocks({ flopActions, turnCard, turnActions, riverCard, riverActions }, flopContext)
     : [];
-  const pendingStreetCard = flopActive ? laterBlocks.find(block => block.kind === "board" && block.pending)?.street ?? null : null;
-  const previousPendingStreetCard = useRef(null);
+  const pendingStreetCard = (flopActive ? (laterBlocks.find(block => block.kind === "board" && block.pending) as { street: StreetCardDialogName } | undefined)?.street ?? null : null) as StreetCardDialogName | null;
+  const previousPendingStreetCard = useRef<StreetCardDialogName | null>(null);
   useEffect(() => {
     const nextDialog = nextPendingStreetCardDialog(pendingStreetCard, previousPendingStreetCard.current);
     if (nextDialog) setStreetCardDialog(nextDialog);
     previousPendingStreetCard.current = pendingStreetCard;
   }, [pendingStreetCard]);
-  const combinedBlocks = flopActive
-    ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop", potBb: flopContext.potBb },
-      ...(flopContext.pilotAvailable && flopBoard
+  const combinedBlocks: WorkspaceActionBlock[] = flopActive
+    ? [...actionBlocks.filter(block => block.kind !== "end"), { key: "flop-board", kind: "board", cards: flopCards, street: "flop", potBb: flopContext!.potBb },
+      ...(flopContext!.pilotAvailable && flopBoard
         ? [...buildFlopActionBlocks(flopActions, flopContext).filter(block => !(canEnterLaterStreets && block.kind === "end")), ...laterBlocks]
         : [])]
     : actionBlocks;
-  const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset, opener, hero) : null;
+  const responseSpot = !isOpening && !isLimp && dataset && positions.indexOf(hero) > positions.indexOf(opener) ? findSpot(dataset!, opener, hero) : null;
   const responseModel = responseSpot ? matrixModel(responseSpot) : null;
-  const threeBetSpot = (isThreeBet || isFourBet) && threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, hero) : null;
+  const threeBetSpot = (isThreeBet || isFourBet) && threeBetDataset ? findThreeBetSpot(threeBetDataset!, opener, hero) : null;
   const threeBetModel = threeBetSpot ? threeBetMatrixModel(threeBetSpot) : null;
-  const extended = useExtendedDatasets(isThreeBet || (isComparison && callers.length > 0), dataset, openingDataset);
+  const extended = useExtendedDatasets(isThreeBet || (isComparison && callers.length > 0), dataset!, openingDataset!);
   // Multiway / squeeze-response / cold-3bet tables come from the lazily loaded datasets.
-  const extendedEntry = (ref, title) => {
-    const missing = (statusTitle, statusDescription) => ({ position: ref.position, kind: "pending", title, statusTitle, statusDescription });
+  const extendedEntry = (ref: RangeRef, title: string): RangeEntry => {
+    const missing = (statusTitle: string, statusDescription: string): RangeEntry => ({ position: ref.position, kind: "pending", title, statusTitle, statusDescription });
     if (extended.error) return missing("レンジを読み込めません", extended.error.message);
     if (!extended.data) return missing("読み込み中", "保存済みレンジを読み込んでいます。");
     const savedSpot = findExtendedSpot(extended.data, ref, opener);
     if (!savedSpot) return missing("レンジ未収録", "この履歴のレンジはまだ保存されていません。");
-    return { position: ref.position, kind: ref.kind, spot: savedSpot, model: extendedModel(ref.kind, savedSpot, dataset, openingDataset), title,
+    return { position: ref.position, kind: ref.kind, spot: savedSpot, model: extendedModel(ref.kind, savedSpot, dataset!, openingDataset!), title,
       hand: savedSpot.hands.find(row => row.hand === selected), unreachableReason: extendedUnreachableReason(ref.kind, savedSpot) };
   };
-  const extendedTitle = ref => ref.kind === "multiway" ? `${ref.position} · オープン＋コールへの応答`
+  const extendedTitle = (ref: RangeRef) => ref.kind === "multiway" ? `${ref.position} · オープン＋コールへの応答`
     : ref.kind === "cold" ? `${ref.position} · ${ref.threeBettor}の3betへのコールド応答`
     : ref.priorAction ? `${ref.position} · スクイーズへの応答（${opener}${ref.priorAction === "fold" ? "フォールド" : "コール"}後）` : `${ref.position} · スクイーズへの応答`;
-  const rangeEntries = [];
-  const addSaved = (position, kind, savedSpot, savedModel, title) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, hand: savedSpot?.hands.find(row => row.hand === selected) });
+  const rangeEntries: RangeEntry[] = [];
+  const addSaved = (position: string, kind: string, savedSpot: DisplaySpot | null | undefined, savedModel: MatrixModel | null, title: string) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, hand: savedSpot?.hands.find(row => row.hand === selected) });
   if (isOpening) {
     addSaved(opener, "opening", openerSpot, openerModel, openingTitle(opener));
   } else if (isLimp) {
-    const bbLimpSpot = limpDataset ? findLimpResponseSpot(limpDataset, "BB_vs_SB_limp") : null;
-    const bbLimpModel = bbLimpSpot ? limpResponsesMatrixModel(bbLimpSpot, openingDataset) : null;
+    const bbLimpSpot = limpDataset ? findLimpResponseSpot(limpDataset!, "BB_vs_SB_limp") : null;
+    const bbLimpModel = bbLimpSpot ? limpResponsesMatrixModel(bbLimpSpot, openingDataset!) : null;
     if (limpAction === "raise" && limpResponseAction === "raise" && limpReraiseAction === "raise") {
-      const reraiseSpot = limpDataset ? findLimpResponseSpot(limpDataset, LIMP_RERAISE_RESPONSE_ID) : null;
+      const reraiseSpot = limpDataset ? findLimpResponseSpot(limpDataset!, LIMP_RERAISE_RESPONSE_ID) : null;
       const fourBetSpot = limpDeepDataset ? findLimpDeepResponseSpot(limpDeepDataset, LIMP_FOUR_BET_RESPONSE_ID) : null;
-      addSaved("BB", "limp_reraise", reraiseSpot, reraiseSpot ? limpResponsesMatrixModel(reraiseSpot, openingDataset, limpDataset) : null, "BB · リンプ・リレイズへの応答（履歴）");
-      addSaved("SB", "limp_four_bet", fourBetSpot, fourBetSpot ? limpFourBetMatrixModel(fourBetSpot, limpDataset) : null, "SB · BBの4betへの応答");
+      addSaved("BB", "limp_reraise", reraiseSpot, reraiseSpot ? limpResponsesMatrixModel(reraiseSpot, openingDataset!, limpDataset!) : null, "BB · リンプ・リレイズへの応答（履歴）");
+      addSaved("SB", "limp_four_bet", fourBetSpot, fourBetSpot ? limpFourBetMatrixModel(fourBetSpot, limpDataset!) : null, "SB · BBの4betへの応答");
     } else if (limpAction === "raise" && limpResponseAction === "raise") {
-      const sbIsoSpot = limpDataset ? findLimpResponseSpot(limpDataset, "SB_vs_BB_iso") : null;
-      const reraiseSpot = limpDataset ? findLimpResponseSpot(limpDataset, LIMP_RERAISE_RESPONSE_ID) : null;
-      addSaved("SB", "limp_response", sbIsoSpot, sbIsoSpot ? limpResponsesMatrixModel(sbIsoSpot, openingDataset) : null, "SB · アイソレイズへの応答（履歴）");
-      addSaved("BB", "limp_reraise", reraiseSpot, reraiseSpot ? limpResponsesMatrixModel(reraiseSpot, openingDataset, limpDataset) : null, "BB · リンプ・リレイズへの応答");
+      const sbIsoSpot = limpDataset ? findLimpResponseSpot(limpDataset!, "SB_vs_BB_iso") : null;
+      const reraiseSpot = limpDataset ? findLimpResponseSpot(limpDataset!, LIMP_RERAISE_RESPONSE_ID) : null;
+      addSaved("SB", "limp_response", sbIsoSpot, sbIsoSpot ? limpResponsesMatrixModel(sbIsoSpot, openingDataset!) : null, "SB · アイソレイズへの応答（履歴）");
+      addSaved("BB", "limp_reraise", reraiseSpot, reraiseSpot ? limpResponsesMatrixModel(reraiseSpot, openingDataset!, limpDataset!) : null, "BB · リンプ・リレイズへの応答");
     } else if (limpAction === "raise") {
-      const sbIsoSpot = limpDataset ? findLimpResponseSpot(limpDataset, "SB_vs_BB_iso") : null;
-      const sbIsoModel = sbIsoSpot ? limpResponsesMatrixModel(sbIsoSpot, openingDataset) : null;
+      const sbIsoSpot = limpDataset ? findLimpResponseSpot(limpDataset!, "SB_vs_BB_iso") : null;
+      const sbIsoModel = sbIsoSpot ? limpResponsesMatrixModel(sbIsoSpot, openingDataset!) : null;
       addSaved("BB", "limp_response", bbLimpSpot, bbLimpModel, "BB · SBリンプへの応答（履歴）");
       addSaved("SB", "limp_response", sbIsoSpot, sbIsoModel, "SB · アイソレイズへの応答");
     } else {
@@ -716,7 +737,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     if (openerAction !== "fold") rangeEntries.push(extendedEntry({ kind: "squeeze", position: opener, ...squeezeRef, priorAction: null }, `${opener} · スクイーズへの応答${openerAction ? "（履歴）" : ""}`));
     if (callerAction !== "fold") {
       if (!openerAction) {
-        const callerSpot = dataset ? findSpot(dataset, opener, caller) : null;
+        const callerSpot = dataset ? findSpot(dataset!, opener, caller) : null;
         addSaved(caller, "response", callerSpot, callerSpot ? matrixModel(callerSpot) : null, `${caller} · オープンへの応答（履歴）`);
       } else if (openerAction === "raise") rangeEntries.push({ position: caller, kind: "pending", title: `${caller} · 4betへの応答`, statusTitle: "レンジ未収録", statusDescription: "スクイーズ後の4betへの応答データはまだ保存されていません。" });
       else rangeEntries.push(extendedEntry({ kind: "squeeze", position: caller, ...squeezeRef, priorAction: openerAction }, extendedTitle({ kind: "squeeze", position: caller, priorAction: openerAction })));
@@ -734,7 +755,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         else rangeEntries.push({ position, kind: "pending", title: `${position} · 推定レンジ準備中`, statusTitle: "レンジ未収録", statusDescription: "この履歴のレンジはまだ保存されていません。" });
       } else if (!showPendingRanges && position === hero) addSaved(position, "response", responseSpot, responseModel, `${position} · オープンへの応答`);
       else if (pendingRaise !== "squeeze" && multiwayContext(opener, callers, position)) {
-        const { caller } = multiwayContext(opener, callers, position);
+        const { caller } = multiwayContext(opener, callers, position)!;
         rangeEntries.push(extendedEntry({ kind: "multiway", position, caller }, extendedTitle({ kind: "multiway", position })));
       } else {
         const localRange = currentLocalEstimate?.ranges.find(range => range.position === position);
@@ -751,7 +772,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       if (fiveBet.spot) addSaved(opener, "five_bet", fiveBet.spot, fiveBetModel, `${opener} · 5betオールインへの応答`);
       else if (fiveBet.loading) rangeEntries.push({ position: opener, kind: "pending", title: `${opener} · 5betオールインへの応答`, statusTitle: "読み込み中", statusDescription: "保存済みレンジを読み込んでいます。" });
       else rangeEntries.push(allInRange
-        ? { position: opener, kind: "local", model: localMatrix(allInRange), title: `${opener} · 5betオールインへの応答`, allInSizeBb: 100, fourBetSizeBb: spot.four_bet_size_bb, threeBetSizeBb: spot.three_bet_size_bb }
+        ? { position: opener, kind: "local", model: localMatrix(allInRange), title: `${opener} · 5betオールインへの応答`, allInSizeBb: 100, fourBetSizeBb: spot!.four_bet_size_bb, threeBetSizeBb: spot!.three_bet_size_bb }
         : { position: opener, kind: "pending", title: `${opener} · 5betオールインへの応答`, statusTitle: "レンジ未収録", statusDescription: "5betオールイン後の応答データはまだ保存されていません。" });
       addSaved(hero, "four_bet", spot, model, `${hero} · 4betへの応答（5bet選択）`);
     } else {
@@ -761,13 +782,13 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   }
   // The last raiser's table goes on the left.
   const aggressor = isLimp && limpAction === "raise" ? "BB" : isThreeBet || pendingRaise ? hero : opener;
-  rangeEntries.sort((a, b) => (b.position === aggressor) - (a.position === aggressor));
-  const actionRangeEntry = (block, role) => {
+  rangeEntries.sort((a, b) => ((b.position === aggressor) as unknown as number) - ((a.position === aggressor) as unknown as number));
+  const actionRangeEntry = (block: ActionBlock | undefined, role: string): RangeEntry | null => {
     const ref = block?.rangeRef;
     if (!ref) return null;
     const labelContext = role === "previous" ? "前のポジション・履歴" : "選択位置";
-    const withContext = entry => entry && ({ ...entry, hand: selectedHandForRangeEntry(entry, selected), title: `${entry.title}（${labelContext}）`, rangeBlockKey: block.key });
-    const missing = (title, description = ref.reason || "この履歴のレンジはまだ保存されていません。", statusTitle = "レンジ未収録") => ({
+    const withContext = (entry: RangeEntry | null) => entry && ({ ...entry, hand: selectedHandForRangeEntry(entry, selected), title: `${entry.title}（${labelContext}）`, rangeBlockKey: block.key });
+    const missing = (title: string, description = ref.reason || "この履歴のレンジはまだ保存されていません。", statusTitle = "レンジ未収録") => ({
       position: ref.position,
       kind: "pending",
       title: `${ref.position} · ${title}（${labelContext}）`,
@@ -783,30 +804,30 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     if (ref.kind === "multiway" || ref.kind === "squeeze" || ref.kind === "cold") return withContext(extendedEntry(ref, extendedTitle(ref)));
     if (ref.kind === "limp_four_bet") {
       const savedSpot = limpDeepDataset ? findLimpDeepResponseSpot(limpDeepDataset, LIMP_FOUR_BET_RESPONSE_ID) : null;
-      return savedSpot ? withContext({ position: ref.position, kind: "limp_four_bet", spot: savedSpot, model: limpFourBetMatrixModel(savedSpot, limpDataset), title: "SB · BBの4betへの応答" }) : missing("BBの4betへの応答");
+      return savedSpot ? withContext({ position: ref.position, kind: "limp_four_bet", spot: savedSpot, model: limpFourBetMatrixModel(savedSpot, limpDataset!), title: "SB · BBの4betへの応答" }) : missing("BBの4betへの応答");
     }
     if (ref.kind === "limp_reraise") {
-      const savedSpot = limpDataset ? findLimpResponseSpot(limpDataset, LIMP_RERAISE_RESPONSE_ID) : null;
-      return savedSpot ? withContext({ position: ref.position, kind: "limp_reraise", spot: savedSpot, model: limpResponsesMatrixModel(savedSpot, openingDataset, limpDataset), title: "BB · リンプ・リレイズへの応答" }) : missing("リンプ・リレイズへの応答");
+      const savedSpot = limpDataset ? findLimpResponseSpot(limpDataset!, LIMP_RERAISE_RESPONSE_ID) : null;
+      return savedSpot ? withContext({ position: ref.position, kind: "limp_reraise", spot: savedSpot, model: limpResponsesMatrixModel(savedSpot, openingDataset!, limpDataset!), title: "BB · リンプ・リレイズへの応答" }) : missing("リンプ・リレイズへの応答");
     }
     if (ref.kind === "limp_bb" || ref.kind === "limp_sb") {
       const id = ref.kind === "limp_bb" ? "BB_vs_SB_limp" : "SB_vs_BB_iso";
-      const savedSpot = limpDataset ? findLimpResponseSpot(limpDataset, id) : null;
-      const savedModel = savedSpot ? limpResponsesMatrixModel(savedSpot, openingDataset) : null;
+      const savedSpot = limpDataset ? findLimpResponseSpot(limpDataset!, id) : null;
+      const savedModel = savedSpot ? limpResponsesMatrixModel(savedSpot, openingDataset!) : null;
       const title = ref.kind === "limp_bb" ? "BB · SBリンプへの応答" : "SB · アイソレイズへの応答";
       return savedSpot ? withContext({ position: ref.position, kind: "limp_response", spot: savedSpot, model: savedModel, title }) : missing(title);
     }
     if (ref.kind === "response") {
-      const savedSpot = dataset ? findSpot(dataset, opener, ref.position) : null;
+      const savedSpot = dataset ? findSpot(dataset!, opener, ref.position) : null;
       return savedSpot ? withContext({ position: ref.position, kind: "response", spot: savedSpot, model: matrixModel(savedSpot), title: `${ref.position} · オープンへの応答` }) : missing("オープンへの応答");
     }
     if (ref.kind === "three_bet") {
-      const savedSpot = threeBetDataset ? findThreeBetSpot(threeBetDataset, opener, ref.opponent) : null;
+      const savedSpot = threeBetDataset ? findThreeBetSpot(threeBetDataset!, opener, ref.opponent!) : null;
       return savedSpot ? withContext({ position: ref.position, kind: "three_bet", spot: savedSpot, model: threeBetMatrixModel(savedSpot), title: `${ref.position} · 3betへの応答` }) : missing("3betへの応答");
     }
     if (ref.kind === "four_bet") {
       const savedSpot = fourBet.data ? findFourBetSpot(fourBet.data, opener, ref.position) : null;
-      return savedSpot ? withContext({ position: ref.position, kind: "four_bet", spot: savedSpot, model: fourBetMatrixModel(savedSpot, dataset ? findSpot(dataset, opener, ref.position) : null), title: `${ref.position} · 4betへの応答` }) : missing("4betへの応答");
+      return savedSpot ? withContext({ position: ref.position, kind: "four_bet", spot: savedSpot, model: fourBetMatrixModel(savedSpot, (dataset ? findSpot(dataset!, opener, ref.position) : null)!), title: `${ref.position} · 4betへの応答` }) : missing("4betへの応答");
     }
     if (ref.kind === "five_bet") {
       if (fiveBet.spot) return withContext({ position: ref.position, kind: "five_bet", spot: fiveBet.spot, model: fiveBetMatrixModel(fiveBet.spot), title: `${ref.position} · 5betオールインへの応答` });
@@ -824,7 +845,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const selectedActionEntries = selectedBlockIndex < 0 ? null : [
     ...(isOpening ? [] : [actionRangeEntry(actionBlocks[selectedBlockIndex - 1], "previous")]),
     actionRangeEntry(actionBlocks[selectedBlockIndex], "selected"),
-  ].filter(Boolean);
+  ].filter(Boolean) as RangeEntry[];
   // Keep the focused action pair first, but never hide other active participants' ranges.
   const visibleRangeEntries = prioritizeParticipantRanges(rangeEntries, selectedActionEntries);
   const focusedEntry = visibleRangeEntries.find(entry => entry.position === focusedRange && entry.model);
@@ -848,8 +869,8 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       <Panel className="estimate-settings">
         <ActionPath
           leading={<RangeContextCard postflop={flopActive} settingsOpen={settingsOpen}
-            boards={combinedBlocks.filter(block => block.kind === "board")}
-            onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed) : setStreetCardDialog(postflopAllowed ? street : null)}
+            boards={combinedBlocks.filter(block => block.kind === "board") as { key: string; street?: "flop" | "turn" | "river"; cards: string[] }[]}
+            onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed) : setStreetCardDialog(postflopAllowed ? street as StreetCardDialogName : null)}
             onReset={resetPath}>
             <div className="settings-header">
               <button type="button" className="settings-toggle" aria-label="ゲーム設定を開閉" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><DotsThreeVertical size={16} weight="bold" aria-hidden="true" /><strong>{formatLabel("game", format.game)}</strong><span>{formatLabel("stack", format.stack)}</span></button>
@@ -872,7 +893,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onRewindActionBlock={rewindToActionBlock}
           onEnterPostflop={flopContext ? () => { setShowFlop(true); setFlopDialogOpen(postflopAllowed); setSelectedRangeBlock(null); } : null}
           onOpenFlopCards={() => setFlopDialogOpen(postflopAllowed)}
-          onOpenLaterCard={street => setStreetCardDialog(postflopAllowed ? street : null)}
+          onOpenLaterCard={street => setStreetCardDialog(postflopAllowed ? street as StreetCardDialogName : null)}
           onFlopAction={(block, action) => { setFlopActions(current => [...current.slice(0, block.flopIndex), action]); setSelectedRangeBlock(null); }}
           onLaterAction={(block, action) => {
             if (block.street === "turn") setTurnActions(current => [...current.slice(0, block.laterIndex), action]);
@@ -888,13 +909,13 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           onContinuationAction={action => { setPendingRaise(null); setFocusedRange(null); setShoveResponse(null); setSelectedRangeBlock(null); setContinuationAction(action); }}
         />
         </Panel>
-        {flopActive ? <PostflopTrial context={flopContext} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
-        <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length }}>
-          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model.actions} actionLabels={entry.model.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
+        {flopActive ? <PostflopTrial context={flopContext!} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
+        <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length } as CSSProperties}>
+          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model!.actions} actionLabels={entry.model!.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
             {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のレンジを生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}
-          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand} model={focusedEntry.model} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} extra={extendedBreakdown(focusedEntry.kind, focusedEntry.spot, focusedEntry.hand)} spot={focusedEntry.spot} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
+          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} extra={extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}
@@ -915,6 +936,6 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   </div>;
 }
 
-export function RangeWorkspace({ profile, onEditProfile, onSectionChange }) {
+export function RangeWorkspace({ profile, onEditProfile, onSectionChange }: WorkspaceProps) {
   return <EstimatedRanges profile={profile} onEditProfile={onEditProfile} onSectionChange={onSectionChange} />;
 }

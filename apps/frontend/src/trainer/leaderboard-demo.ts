@@ -1,7 +1,7 @@
 // Dummy leaderboard players for local development only (Vite dev server). Production and tests
 // never see them: until accounts sync ranked results, the real board holds only this browser's
 // player. Deterministic so the local board looks the same on every reload.
-import { seededRandom, seedFor } from "../../scripts/lib/equity.mjs";
+import { seededRandom, seedFor } from "../../scripts/lib/equity.ts";
 
 const NAMES = ["Kaito", "mika_gto", "RiverRat", "ShoveBot", "Haru", "nit_kun", "Yuzu", "BluffLord", "Sora77", "AceHigh",
   "takumi", "3betKing", "Lyn", "PotOdds", "Ren", "check_raise", "Mei", "FoldPls", "Daichi", "SnapCall", "Aoi", "MinRaise"];

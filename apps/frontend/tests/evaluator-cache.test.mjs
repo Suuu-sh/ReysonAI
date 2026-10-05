@@ -1,12 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { EVALUATOR_VERSION } from "../scripts/lib/equity.mjs";
-import { DEFENCE_VERSION } from "../scripts/postflop-ai/defence.mjs";
-import { flopBaseIdentity, isFreshFlopBase } from "../scripts/postflop-ai/flop-base-core.mjs";
+import { EVALUATOR_VERSION } from "../scripts/lib/equity.ts";
+import { DEFENCE_VERSION } from "../scripts/postflop-ai/defence.ts";
+import { flopBaseIdentity, isFreshFlopBase } from "../scripts/postflop-ai/flop-base-core.ts";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
-import { referencePolicy } from "../scripts/postflop-ai/policy.mjs";
-import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { sha } from "../scripts/postflop-ai/browser-inputs.mjs";
+import { referencePolicy } from "../scripts/postflop-ai/policy.ts";
+import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
+import { sha } from "../scripts/postflop-ai/browser-inputs.ts";
 import { computeBoard } from "../src/estimated/postflop-compute.ts";
 import opening from "../src/estimated/opening-ranges.json" with { type: "json" };
 import responses from "../src/estimated/preflop-ranges.json" with { type: "json" };
