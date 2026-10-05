@@ -1,0 +1,249 @@
+{
+  "kind": "model11-allboard-partitioned-closed-output-inventory",
+  "version": 1,
+  "roots": [
+    "apps/frontend/scripts/postflop-ai/evaluate-model11-allboard-partitioned.mjs"
+  ],
+  "sources": [
+    {
+      "path": "apps/frontend/scripts/data/hu-after-multiway-spots.json",
+      "bytes": 1146128,
+      "sha256": "096b926d3d7f84c88475e99f3ebdfa80f046539ee7b41983ac9b8c1eec229851"
+    },
+    {
+      "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+      "bytes": 1554,
+      "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+    },
+    {
+      "path": "apps/frontend/scripts/lib/equity.mjs",
+      "bytes": 8026,
+      "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/all-board-checkpoints.mjs",
+      "bytes": 8114,
+      "sha256": "b26ad2839b300900221919cbbcb81e98981a900a88be21aef52fe28f4258d1fa"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/all-board-companion.mjs",
+      "bytes": 9702,
+      "sha256": "3986bd11c13fc971e50c231d354afb5976d947a18957e09a3a8a4ace23cb13c1"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+      "bytes": 3843,
+      "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/balance-model11-kernel.mjs",
+      "bytes": 31222,
+      "sha256": "6192350ae7209cd4a4b9c7316d5c75c2811f8dd96cb12b9a304be2af6d736431"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+      "bytes": 12322,
+      "sha256": "9675c4ddb40552d10264c5e759e1d92d9f262a9b87c3404a6187e35befd06a8a"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/cached-values.mjs",
+      "bytes": 2594,
+      "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/decision-prefix.mjs",
+      "bytes": 2961,
+      "sha256": "eff7da5d838350ea6ef35c19fcb47a0f4cbebfe6d7440797913cb8916d11258d"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+      "bytes": 58585,
+      "sha256": "e08345ce116a42e7db6b5506cb06956c4f36dfc9cd78eeeda383177ec2bede33"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/effective-action-law.mjs",
+      "bytes": 4637,
+      "sha256": "7c229ea339eae16bd390dde5e758f626ad3fd2a262c8615c76fb52632c2f851c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/effective-artifact-contract.mjs",
+      "bytes": 5322,
+      "sha256": "9690c3510a4b8336a18cefdf22860dfca824e9ed4e19f69280bfb01d841e6601"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+      "bytes": 2695,
+      "sha256": "66dc6667d3c8085b772cee46a0e3c4f3d0abbeff269e0febc75cc344ac212476"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+      "bytes": 22595,
+      "sha256": "b24146403ddd487a645d3b9408a7abc3f2d93a0d9ef0f84723fdc785196db7b2"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
+      "bytes": 10708,
+      "sha256": "7fb969fbd6f9266debe164126ed1a74c63d35ae8c02c0f35693b7bedd0e7e930"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+      "bytes": 9601,
+      "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-allboard-partitioned.mjs",
+      "bytes": 5703,
+      "sha256": "39c1473934d3206f4a1509f827c5efcb9f9086d9d45629934e67befd44ecf9d6"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-audit.mjs",
+      "bytes": 7249,
+      "sha256": "fe0f807b31b9ceadd29d49c377100cdcd2c4160ccda342bb22fdd290895c1400"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/exact-river-call-ev.mjs",
+      "bytes": 4699,
+      "sha256": "b624216c5019d6a5ddbb5e9e53d1a9f618d8c534e772b76258634d310490e3bb"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/execution-model11.mjs",
+      "bytes": 2871,
+      "sha256": "9c63d825e8c66aa9fe76b733905a543c540b84613d1fd7f03bce7000aaa84f4d"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.mjs",
+      "bytes": 3762,
+      "sha256": "81c15f8ed865d56b78078136e389e6ea04851dbac506d2df2102f87acc737076"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/gate-model11.mjs",
+      "bytes": 9918,
+      "sha256": "8a5d7d2547c97fdb3db050a93c6ac06fef19a87fb88b33c0154f93f8abe1949c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
+      "bytes": 13323,
+      "sha256": "bcef936f80e2f2ce4e41c4842f122a748a792910919f75648c66daf00f92fe2f"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
+      "bytes": 7489,
+      "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
+      "bytes": 5417,
+      "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+      "bytes": 6991,
+      "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model11-allboard-partitioned-output.mjs",
+      "bytes": 8095,
+      "sha256": "1c73356ba26788017466fb4286c73178de71877d68534364db7e9af326521752"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model11-gate-contract.mjs",
+      "bytes": 13833,
+      "sha256": "e0267982806b694135b0eee046a8c83a09f165dd53090186a28bc4dbe882bf15"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model11-gate-drivers.mjs",
+      "bytes": 21673,
+      "sha256": "c287f3e028d948a5e3bbe24352990c5e0ae8de6f6f624b34e3b0824b0ba48664"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model11-gate-source.mjs",
+      "bytes": 2443,
+      "sha256": "30e8e5ed027b37f7467109413c73dad87830fa39b16b00f5dbe9ae69539cf9e0"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model11-zero-proof.mjs",
+      "bytes": 6154,
+      "sha256": "3a6a36e343cc313e9ff1efdcd625fcbeb855e0613e9c0f1fec612d7c284e10ab"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-inputs.mjs",
+      "bytes": 4246,
+      "sha256": "5cd8c946a63a16d8fbe8ed971991f421a5709a4edace6d9885ff086f3c43c87d"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+      "bytes": 11070,
+      "sha256": "982ea012ed5d799ffbcff76420377c062e8ce2593bdb3fbe972d91dd27d1e429"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
+      "bytes": 9434,
+      "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-equity.mjs",
+      "bytes": 17176,
+      "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-support.mjs",
+      "bytes": 969,
+      "sha256": "dc3797c8bc9ba021213e9ff88b49b5fa1f383c84509cb039275a13526ca4f303"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/reviewed-postflop-archive.mjs",
+      "bytes": 13097,
+      "sha256": "a18c1f26d4347e4d390b9acb9c76297222d1f6a2f6a9cefbfcdbf5f21f0b39e0"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/simulation-model11.mjs",
+      "bytes": 10078,
+      "sha256": "fd874397785d7c7a98a11bbc9ef35523991fae7a2942af61718460b2f952a084"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
+      "bytes": 9275,
+      "sha256": "659c44e038043d777879b5057b4042032c5a60fb2542c738cb1469e5386e4024"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
+      "bytes": 10746,
+      "sha256": "803adfa6396041c128e92349a636ad15f565c60ae64d330337d4fb55d0e46d5e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
+      "bytes": 6876,
+      "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+    },
+    {
+      "path": "apps/frontend/src/estimated/datasets.ts",
+      "bytes": 3726,
+      "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+    },
+    {
+      "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+      "bytes": 9482,
+      "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+    },
+    {
+      "path": "apps/frontend/src/estimated/sizing.ts",
+      "bytes": 3392,
+      "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+    },
+    {
+      "path": "apps/frontend/tests/fixtures/model11-gate-raw-inputs.json",
+      "bytes": 2429,
+      "sha256": "143f13ca99925a7b8b6aca3bdc3f168943ca86e2e3684846cef1fb668b1416d0"
+    },
+    {
+      "path": "configs/cash-6max-100bb.json",
+      "bytes": 918,
+      "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+    },
+    {
+      "path": "configs/multiway-preflop-stage2.json",
+      "bytes": 95,
+      "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "kind": "exact-model11-balance-kernel-correspondence",
+  "baseCommit": "e51db8e8e478665a6b00e5e4eebdf3a16846a640",
+  "source": "apps/frontend/scripts/postflop-ai/balance.mjs",
+  "sourceBytes": 31011,
+  "sourceSha256": "27976f9a3de6e5092bfd0f02fa7732fa33861c28621162cda0f275201e03a637",
+  "kernel": "apps/frontend/scripts/postflop-ai/balance-model11-kernel.mjs",
+  "kernelBytes": 31222,
+  "kernelSha256": "6192350ae7209cd4a4b9c7316d5c75c2811f8dd96cb12b9a304be2af6d736431",
+  "header": "// Mechanical model11 gate copy. Only the five pinned factory substitutions are allowed.\n// See tests/fixtures/model11-balance-kernel-correspondence.json; never edit thresholds here.\n",
+  "substitutions": [
+    {
+      "old": "import { defenceFor, replayOrNull, requiredEquity } from \"./defence.mjs\";",
+      "new": "import { replayOrNull, requiredEquity } from \"./defence.mjs\";"
+    },
+    {
+      "old": "export function checkFlopBalance(inputs, flopPolicy, { boardList = boards() } = {}) {",
+      "new": "export function checkFlopBalance(inputs, flopPolicy, { boardList = boards(), defenceFactory } = {}) {"
+    },
+    {
+      "old": "const defence = defenceFor(inputs, policy, null), observed = new Set();",
+      "new": "const defence = defenceFactory(inputs, policy, null), observed = new Set();"
+    },
+    {
+      "old": "export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = true, boardList = boards() } = {}) {",
+      "new": "export function checkLaterBalance(inputs, flopPolicy, laterPolicy, { authored = true, boardList = boards(), defenceFactory } = {}) {"
+    },
+    {
+      "old": "const defence = defenceFor(inputs, flop, later);",
+      "new": "const defence = defenceFactory(inputs, flop, later);"
+    }
+  ],
+  "invariant": "All other source bytes, including findings/thresholds/runouts/paths/aggregation order, are identical."
+}

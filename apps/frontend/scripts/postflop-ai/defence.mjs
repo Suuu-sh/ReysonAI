@@ -201,7 +201,7 @@ export function flopRunouts(flop) {
 }
 
 // The final boards a decision on `board` is evaluated over (each as a rank table).
-function finalTables(board) {
+export function finalTables(board) {
   if (board.length === 5) return [rankTable(board)];
   if (board.length === 4) {
     const tables = [];
@@ -292,7 +292,7 @@ const FACT_RANGE_LIMITS = { flop: 24, turn: 64, river: 96 };
 // needs sparse reach storage; avoid expansion work on the interactive path.
 const COMPACT_CACHE_AFTER = 4096;
 
-class Defence {
+export class Defence {
   constructor(inputs, flopPolicy, laterPolicy, bluffCap = true) {
     this.bluffCap = bluffCap;
     this.inputs = inputs; this.flopPolicy = flopPolicy; this.laterPolicy = laterPolicy;
@@ -541,7 +541,7 @@ class Defence {
     const tables = finalTables(board), tiers = tierArray(board), texture = textureOf(target.street, board.slice(0, target.boardLen));
     // value = equity against the defender's whole range >= VALUE_EQUITY (the classification of the defence facts).
     const kind = new Uint8Array(NUM_IDS);
-    const values = equitiesVersus(defenderRange, bettorRange.ids, tables);
+    const values = this.queryEquities(defenderRange, bettorRange.ids, tables);
     for (let i = 0; i < bettorRange.ids.length; i++) {
       const equity = values[i];
       if (equity !== null) kind[bettorRange.ids[i]] = equity >= VALUE_EQUITY ? 1 : 2;
@@ -636,7 +636,7 @@ class Defence {
     const id = comboId(combo[0], combo[1]);
     let equityVsDefender = rangeContext.equities.get(id);
     if (equityVsDefender === undefined) {
-      equityVsDefender = equityVersus(rangeContext.range, id, rangeContext.tables);
+      equityVsDefender = this.queryEquity(rangeContext.range, id, rangeContext.tables);
       rangeContext.equities.set(id, equityVsDefender);
     }
     const share = (value, bluff) => value + bluff > 0 ? round4(bluff / (value + bluff)) : null;
@@ -681,12 +681,15 @@ class Defence {
 
   tablesOf(context) { return context.tables ??= finalTables(context.board); }
 
+  queryEquity(range, id, tables) { return equityVersus(range, id, tables); }
+  queryEquities(range, ids, tables) { return equitiesVersus(range, ids, tables); }
+
   // Equity of a defender combo against the bettor range (null when no bettor combo is compatible).
   equity(context, combo) {
     const id = comboId(combo[0], combo[1]);
     let value = context.equities.get(id);
     if (value === undefined) {
-      value = equityVersus(context.bettorRange, id, this.tablesOf(context));
+      value = this.queryEquity(context.bettorRange, id, this.tablesOf(context));
       context.equities.set(id, value);
     }
     // Keep the interactive hot lookup small/inlinable; large-run storage work is outlined.
@@ -717,7 +720,7 @@ class Defence {
       context.completeEquities = true;
     }
     if (!ids.length) { releaseRangeTables(context.bettorRange); return; }
-    const values = equitiesVersus(context.bettorRange, ids, this.tablesOf(context));
+    const values = this.queryEquities(context.bettorRange, ids, this.tablesOf(context));
     for (let i = 0; i < ids.length; i++) context.equities.set(ids[i], values[i]);
     context.equities = packEquities(context.equities);
     releaseRangeTables(context.bettorRange);
@@ -935,7 +938,7 @@ class Defence {
     const kind = new Uint8Array(NUM_IDS); // 1 value, 2 bluff
     let valueWeight = 0, bluffWeight = 0;
     if (defenderRange.total > 0) for (const id of context.bettorRange.ids) {
-      const equity = equityVersus(defenderRange, id, tables);
+      const equity = this.queryEquity(defenderRange, id, tables);
       if (equity === null) continue;
       const weight = weightOf(context.bettorRange, id);
       if (equity >= VALUE_EQUITY) { kind[id] = 1; valueWeight += weight; } else { kind[id] = 2; bluffWeight += weight; }

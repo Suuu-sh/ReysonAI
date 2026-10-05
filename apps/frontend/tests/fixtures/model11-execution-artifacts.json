@@ -1,0 +1,260 @@
+{
+  "kind": "model11-execution-adapter-frozen-artifact-selection",
+  "historicalEvidenceStatus": "source bytes only; fresh tests required",
+  "files": [
+    {
+      "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_3bet_BB_call_CO_fold.flop.json",
+      "bytes": 20610,
+      "sha256": "24c8936509d1fe359b6e3554baa215b56ab60275981c19f0c3b9162685a1a418"
+    },
+    {
+      "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_3bet_BB_call_CO_fold.later.json",
+      "bytes": 52356,
+      "sha256": "6f9cca85206cd11b3eba56545568d6ff03ac5b403f898a4fac7d4ac62db4720e"
+    },
+    {
+      "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold.flop.json",
+      "bytes": 40561,
+      "sha256": "52399aec08874b2331c0aac840246f04f835eea922fa8586c2036b8aefacfdf8"
+    },
+    {
+      "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold.later.json",
+      "bytes": 52889,
+      "sha256": "7e1664cd8a09c16eb6371c4a4007e5b9623466ca3d06d2d5f358ce78054e2ecd"
+    },
+    {
+      "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.flop.json",
+      "bytes": 40058,
+      "sha256": "22919105d09997b89501ac53631fd10da9852794d5921688a2bfb07196fc5102"
+    },
+    {
+      "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.later.json",
+      "bytes": 52400,
+      "sha256": "bac3b2ba2691fc20d68e425368b4759f88cd053a13b5a053d342edb916f82a39"
+    },
+    {
+      "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_SB_3bet_BB_call_CO_fold.flop.json",
+      "bytes": 40033,
+      "sha256": "be468f4fefab0dadba2a83b0296d88900f8dfab16f747e48b848c32a0d0e3d8b"
+    },
+    {
+      "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_SB_3bet_BB_call_CO_fold.later.json",
+      "bytes": 52371,
+      "sha256": "776033a7d2914c1db167a6ed0279363d0340354e74c805a528ea334e4c3bac46"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/btn-open-sb-3bet-bb-call-btn-fold-hu-v1-later-policy.json",
+      "bytes": 52878,
+      "sha256": "df7ddfeae0716da56cba17ffea73b93d2c11660974bfdecf96759028d0ba0a2f"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/btn-open-sb-3bet-bb-call-btn-fold-hu-v1-policy.json",
+      "bytes": 40558,
+      "sha256": "dc69f19f4591699ed7336e277a268f163a46319295165976e4b5e8ced94bd208"
+    }
+  ],
+  "cases": [
+    {
+      "caseNumber": 1,
+      "spot": "CO_open_BTN_3bet_BB_call_CO_fold",
+      "board": "As7d2c9h9d",
+      "path": {
+        "flop": [
+          "check"
+        ],
+        "turn": [
+          "check",
+          "check"
+        ],
+        "river": [
+          "check"
+        ]
+      },
+      "node": "river_ip_first",
+      "role": "ip",
+      "action": "allin",
+      "policies": {
+        "flop": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_3bet_BB_call_CO_fold.flop.json",
+          "bytes": 20610,
+          "sha256": "24c8936509d1fe359b6e3554baa215b56ab60275981c19f0c3b9162685a1a418",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_3bet_BB_call_CO_fold.candidate.json"
+        },
+        "later": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_3bet_BB_call_CO_fold.later.json",
+          "bytes": 52356,
+          "sha256": "6f9cca85206cd11b3eba56545568d6ff03ac5b403f898a4fac7d4ac62db4720e",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_3bet_BB_call_CO_fold.laterCandidate.json"
+        }
+      }
+    },
+    {
+      "caseNumber": 2,
+      "spot": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold",
+      "board": "7c6d4s2hQc",
+      "path": {
+        "flop": [
+          "check",
+          "check"
+        ],
+        "turn": [
+          "check",
+          "check"
+        ],
+        "river": []
+      },
+      "node": "river_oop_first",
+      "role": "oop",
+      "action": "allin",
+      "policies": {
+        "flop": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold.flop.json",
+          "bytes": 40561,
+          "sha256": "52399aec08874b2331c0aac840246f04f835eea922fa8586c2036b8aefacfdf8",
+          "baselinePolicySourcePath": ".local/postflop-ai/co-open-btn-call-bb-squeeze-co-call-btn-fold-hu-v1-policy.json"
+        },
+        "later": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold.later.json",
+          "bytes": 52889,
+          "sha256": "7e1664cd8a09c16eb6371c4a4007e5b9623466ca3d06d2d5f358ce78054e2ecd",
+          "baselinePolicySourcePath": ".local/postflop-ai/co-open-btn-call-bb-squeeze-co-call-btn-fold-hu-v1-later-policy.json"
+        }
+      }
+    },
+    {
+      "caseNumber": 3,
+      "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+      "board": "9s7s3s2dQh",
+      "path": {
+        "flop": [
+          "check",
+          "check"
+        ],
+        "turn": [
+          "check",
+          "check"
+        ],
+        "river": [
+          "check"
+        ]
+      },
+      "node": "river_ip_first",
+      "role": "ip",
+      "action": "allin",
+      "policies": {
+        "flop": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.flop.json",
+          "bytes": 40058,
+          "sha256": "22919105d09997b89501ac53631fd10da9852794d5921688a2bfb07196fc5102",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.candidate.json"
+        },
+        "later": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.later.json",
+          "bytes": 52400,
+          "sha256": "bac3b2ba2691fc20d68e425368b4759f88cd053a13b5a053d342edb916f82a39",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.laterCandidate.json"
+        }
+      }
+    },
+    {
+      "caseNumber": 4,
+      "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+      "board": "2c2d2hAs9d",
+      "path": {
+        "flop": [
+          "check",
+          "check"
+        ],
+        "turn": [
+          "check",
+          "check"
+        ],
+        "river": []
+      },
+      "node": "river_oop_first",
+      "role": "oop",
+      "action": "allin",
+      "policies": {
+        "flop": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_SB_3bet_BB_call_CO_fold.flop.json",
+          "bytes": 40033,
+          "sha256": "be468f4fefab0dadba2a83b0296d88900f8dfab16f747e48b848c32a0d0e3d8b",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.candidate.json"
+        },
+        "later": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_SB_3bet_BB_call_CO_fold.later.json",
+          "bytes": 52371,
+          "sha256": "776033a7d2914c1db167a6ed0279363d0340354e74c805a528ea334e4c3bac46",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.laterCandidate.json"
+        }
+      }
+    },
+    {
+      "caseNumber": 5,
+      "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+      "board": "9s7s3s2dQh",
+      "path": {
+        "flop": [
+          "check",
+          "check"
+        ],
+        "turn": [
+          "check",
+          "check"
+        ],
+        "river": []
+      },
+      "node": "river_oop_first",
+      "role": "oop",
+      "action": "allin",
+      "policies": {
+        "flop": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_SB_3bet_BB_call_CO_fold.flop.json",
+          "bytes": 40033,
+          "sha256": "be468f4fefab0dadba2a83b0296d88900f8dfab16f747e48b848c32a0d0e3d8b",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.candidate.json"
+        },
+        "later": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_SB_3bet_BB_call_CO_fold.later.json",
+          "bytes": 52371,
+          "sha256": "776033a7d2914c1db167a6ed0279363d0340354e74c805a528ea334e4c3bac46",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.laterCandidate.json"
+        }
+      }
+    },
+    {
+      "caseNumber": 6,
+      "spot": "CO_open_BTN_3bet_BB_call_CO_fold",
+      "board": "Jc9d4h2s8c",
+      "path": {
+        "flop": [
+          "check"
+        ],
+        "turn": [
+          "bet33",
+          "call"
+        ],
+        "river": [
+          "check"
+        ]
+      },
+      "node": "river_ip_first",
+      "role": "ip",
+      "action": "allin",
+      "policies": {
+        "flop": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_3bet_BB_call_CO_fold.flop.json",
+          "bytes": 20610,
+          "sha256": "24c8936509d1fe359b6e3554baa215b56ab60275981c19f0c3b9162685a1a418",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_3bet_BB_call_CO_fold.candidate.json"
+        },
+        "later": {
+          "path": "apps/frontend/.local/hu-model11/six-real-fixtures-v1/policies/CO_open_BTN_3bet_BB_call_CO_fold.later.json",
+          "bytes": 52356,
+          "sha256": "6f9cca85206cd11b3eba56545568d6ff03ac5b403f898a4fac7d4ac62db4720e",
+          "baselinePolicySourcePath": ".local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_3bet_BB_call_CO_fold.laterCandidate.json"
+        }
+      }
+    }
+  ]
+}
