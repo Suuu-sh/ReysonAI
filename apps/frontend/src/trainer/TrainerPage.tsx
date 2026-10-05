@@ -1,5 +1,6 @@
-import { FastFoldArena } from "./FastFoldArena.tsx";
-import { fastFoldProfile, ffCopy as ff } from "./fastfold-api.ts";
+import { HumanRankArena } from "./HumanRankArena.tsx";
+import { humanProfile, humanRankState } from "./human-api.ts";
+import { ffCopy as ff } from "./fastfold-api.ts";
 import type { FastFoldProfile, FastFoldState } from "./fastfold-api.ts";
 import type { CSSProperties } from "react";
 import type { Profile } from "../profile.ts";
@@ -511,8 +512,8 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
     let canceled = false;
     setRankedReady(false); setFastFoldState(null); setRankState(emptyRankState()); setActive(null); setResult(null);
     if (!account.ready || !account.user?.verified || account.error) return;
-    fastFoldProfile().then(response => {
-      if (!canceled) { setFastFoldState(response.state); setRankedReady(response.enabled === true); setRankedError(""); }
+    humanProfile().then(response => {
+      if (!canceled) { setFastFoldState(humanRankState(response.state)); setRankedReady(response.enabled === true); setRankedError(""); }
     }).catch(() => { if (!canceled) setRankedError(localized("Ranked is unavailable. Your local records do not count toward rankings.", "ランク戦は現在利用できません。ローカル記録はランキングに反映されません。")); });
     return () => { canceled = true; };
   }, [account.ready, account.user?.id, account.user?.verified, account.error, readinessRetry]);
@@ -614,7 +615,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
             onSave={andStart => { const drill = { ...editing.drill, name: editing.drill.name.trim() }; commitDrills(upsertDrill(drills, drill)); if (andStart) start(drill); else setPhase("drills"); }} />
         : phase === "agent" && agentTable && agentTableById(agentTable.tableId) ? <AgentTablePage key={`${agentTable.tableId}-${agentTable.watch}`} tableId={agentTable.tableId} watch={agentTable.watch} onExit={() => setPhase("library")} />
         : phase === "ranking" && rankedReady && fastFoldState ? <Leaderboard rank={fastFoldState} profile={profile} onBack={() => setPhase("library")} />
-        : ((phase === "drill" || phase === "result") && "key" in route && route.key === "ranked") || phase === "waiting" ? <FastFoldArena key={account.user?.id ?? "signed-out"} ready={account.ready && Boolean(account.user?.verified) && !account.error} view={phase === "waiting" ? "waiting" : "play"} onBack={() => setPhase("library", true)} onWaiting={() => onNavigate(trainerPath({ phase: "waiting" }), true)} onPlay={() => onNavigate(trainerPath({ phase: "drill", key: "ranked" }), true)} onRanking={() => setPhase("ranking")} onProfile={onFastFoldProfile} />
+        : ((phase === "drill" || phase === "result") && "key" in route && route.key === "ranked") || phase === "waiting" ? <HumanRankArena key={account.user?.id ?? "signed-out"} ready={account.ready && Boolean(account.user?.verified) && !account.error} view={phase === "waiting" ? "waiting" : "play"} onBack={() => setPhase("library", true)} onWaiting={() => onNavigate(trainerPath({ phase: "waiting" }), true)} onPlay={() => onNavigate(trainerPath({ phase: "drill", key: "ranked" }), true)} onRanking={() => setPhase("ranking")} onProfile={onFastFoldProfile} />
         : phase === "result" && result ? <SessionResult log={result.log} record={result.record} rank={result.rank} settings={current!.settings} drill={active!.review ? null : current!}
             onRestart={active!.ranked && (rankState.remaining === 0) ? null : () => start(current!, active!.review)} onLibrary={() => setPhase(active!.ranked ? "library" : "drills")} />
         : phase === "drill" && current ? <Drill key={run} history={history} onAnswer={onAnswer} settings={current!.settings} drillName={current!.name} reviewOnly={active!.review}

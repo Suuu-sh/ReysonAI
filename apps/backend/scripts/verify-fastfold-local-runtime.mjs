@@ -11,7 +11,7 @@ const root=resolve(dirname(wrangler),'..');
 const manifest=JSON.parse(readFileSync(resolve(root,'package.json'),'utf8'));
 if(manifest.name!=='wrangler'||manifest.version!=='4.147.0')throw Error('Only the reviewed official Wrangler4.147.0 runtime is accepted');
 const require=createRequire(wrangler),runtime=require.resolve('miniflare');
-const result=spawnSync(process.execPath,['--experimental-strip-types','--test','tests/fastfold.test.mjs','tests/fastfold-release.test.mjs','tests/fastfold-do.test.mjs'],{
+const result=spawnSync(process.execPath,['--experimental-strip-types','--test','tests/fastfold.test.mjs','tests/fastfold-release.test.mjs','tests/fastfold-do.test.mjs','tests/multiplayer-engine.test.mjs','tests/human-rank.test.mjs','tests/human-rank-do.test.mjs'],{
  cwd:new URL('..',import.meta.url),stdio:'inherit',env:{...process.env,WORKERD_MODULE:runtime,WRANGLER_SEND_METRICS:'false'},
 });
 if(result.error)throw result.error;process.exit(result.status??1);
