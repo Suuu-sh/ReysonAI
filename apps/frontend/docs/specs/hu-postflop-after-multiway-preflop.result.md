@@ -913,3 +913,89 @@ separate historical repository and successfully checked by the official verifier
 The current source needs a new pin, fresh representative simulation/replay and
 the unchanged official full1755 gate. Checkpoint reuse is allowed only by that
 existing gate under exactly equal full numerical identity; no proof is relabelled.
+
+## 2026-10-04 20:48 UTC — fresh pure-core representative gates
+
+The frozen shared-source checkpoint is local commit
+`3ab7ad54822d77d2a59821d24878eb47d19e4a76`, published as PR41 head
+`1031287c24c9a42d9da35c8e42e027852c2d221f`, with identical tree
+`0ef7e64db3717349b66d4bfa2adf4bba2dd1539f`. Required preflop receipt,
+strict local D1, typecheck/build, account-auth and runtime-config CI passed;
+deployment remained skipped. The post-extraction representative run is
+`run-20261004T195059Z-5180880b4f354ae2b286ac8951fbc9b2`.
+
+The new pin includes 57 runtime source files, 12 inputs and 26 handoff files,
+SHA-256 `9ca5a868cbdadaaeecca8823c8128f6b9b812c8b2e825dd8d40b99106963e409`.
+Runtime identity is
+`9bd6bc57d528478011c07f63fd2d575f3b77d3bb038705bb5d99ba10fd880dce`;
+the full all-board identity remains
+`16867bc8d681321acf544095d93bdb174357330105c54493094a2459e139046a`.
+Actual sequential command receipts record:
+
+- Fresh simulation: 19:50:59.703–20:07:47.915 UTC, 1,008.212 seconds, exit 0.
+- Separate full fixed-seed replay: 20:07:48.665–20:24:56.097 UTC,
+  1,027.432 seconds, exit 0. Both retain all 72 × 10,000 paired deals.
+- Fresh all-board recomputation: 20:24:56.870–20:45:43.356 UTC,
+  1,246.486 seconds, exit 0. No prior checkpoints were copied into this run.
+
+The complete simulation report, all-board summary and 1,755-row companion are
+byte-identical to the historical accepted snapshot: SHA-256 `80b657a0…95581`,
+`aceb751a…766b9` and `1dc4c95b…e94fd`, respectively. New command evidence has
+its own timestamps, logs, source binding and proof hashes. All 1,755 boards were
+evaluated, none unreachable; zero errors, zero clean boards and 20,642 warning
+occurrences remain. Seeded later coverage is 7,020 turns and 21,060 river runouts,
+not exhaustive legal later runouts.
+
+Independent Python verification completed 7,676 assertions, including all
+22,100 raw flops under all 24 suit permutations, the exact canonical set/order,
+every fresh checkpoint row/hash, and independently recalculated joint live-range
+support after card removal on the seeded later runouts. Source and execution
+checks also preserve all 135 legacy artifact files and the exact historical
+delivery fixture. This does not enlarge the accepted catalog beyond one spot.
+
+An explicitly unapproved new versioned snapshot was packaged and passed the
+official integrity verifier:
+
+- `artifacts/postflop/hu-after-multiway-purecore-v1.tar.gz`: 106,733 bytes,
+  SHA-256 `c8eea224ec5908947ca9e976b7f971126257b44ce846a58b66bc1d8176680992`.
+- Matching `.manifest.json`: 128,231 bytes,
+  SHA-256 `1a6a68d894ca823822012f8440037496e9b61dedf099ef8554a2087b104b5fc4`.
+
+Independent review accepted this exact versioned snapshot for the same one spot.
+The separate receipt, `configs/hu-postflop-after-multiway-purecore-v1.review.json`,
+is 119,772 bytes, SHA-256
+`ab3c971c40045a226e05ed9a921fc675a8b85367a2c28be673fac3fe1127e9a5`.
+The unchanged official verifier then passed in 1.468 seconds, exit 0, with
+`independently-reviewed-subset-verified`. All three exact files are preserved in
+Library; the historical archive and receipt remain unchanged. Mac LFS transfer,
+final browser QA, the current complete frontend suite and the remaining 406
+policy acceptances are still pending.
+
+The next four individually authored Astra proposals passed the official flop/
+later schema and ordinary metadata loader checks in a separate ignored staging
+directory. Their source products, prompt hashes and declared table hashes match
+the frozen contexts. They are not installed, independently reviewed or numerically
+accepted. No existing policy or report was replaced.
+
+
+## 2026-10-05 01:04 UTC - current snapshot LFS preservation
+
+The exact 106,733-byte current pure-core archive above was uploaded to this
+repository's Git LFS storage and fetched again using empty temporary LFS storage.
+The fetched SHA-256 matched c8eea224ec5908947ca9e976b7f971126257b44ce846a58b66bc1d8176680992.
+The matching immutable manifest and independent receipt are now preserved with
+the pointer. Expanded policy JSON is not committed. This remains model10
+acceptance for one of 407 spots, with 406 still unaccepted.
+
+The isolated model11 experiment has corrected the two known range-conditioning
+counterexamples and passed seven predeclared fixed controls, independently
+checked in 205,734 assertions without discrepancy. That limited result does not
+approve a model11 policy, default-model change or full-catalog publication.
+Six original tiny-support cases, positive reroute coverage, frozen old45/all407
+preservation, consumer integration and full gates remain separate work.
+
+The downstream delivery source checkpoint completed 815 frontend tests with
+zero failures and skips; current strict delivery still awaits the new ES1
+captured-execution boundary and actual D1 validation. This archive commit does
+not supply a collection delivery index or authorize production publication.
+Final browser QA and all remaining policy acceptances are still pending.

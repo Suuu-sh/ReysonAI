@@ -1,0 +1,1874 @@
+{
+  "schema_version": 1,
+  "review": {
+    "status": "independently-reviewed",
+    "author": "Policy author and numerical extraction implementation owner",
+    "reviewer": "Independent numerical and delivery reviewer, separate from author, extraction, execution and archive preparation",
+    "scope": "Fresh post-extraction numerical and exact-byte delivery acceptance for the previously reviewed model10 representative only (1/407), as an AI estimate. The other406 remain deferred. No GTO optimality, exhaustive later-street coverage, legacy current-model recertification, final UI/browser acceptance, merge, production publication or deployment is authorized.",
+    "baseline_commit": "3ab7ad54822d77d2a59821d24878eb47d19e4a76",
+    "reviewed_at": "2026-10-04T20:51:59.983659+00:00",
+    "blocking_findings": 0
+  },
+  "manifest_sha256": "1a6a68d894ca823822012f8440037496e9b61dedf099ef8554a2087b104b5fc4",
+  "archive_sha256": "c8eea224ec5908947ca9e976b7f971126257b44ce846a58b66bc1d8176680992",
+  "content_sha256": "7f5daa4f02e3eb6abb4e7d64d262b21b25ea162484b5434e8771b7cfcbbd829c",
+  "coverage": {
+    "scope": "reviewed-subset",
+    "catalog_sha256": "ef91cd427a9ee4c903734bfd8256a50306c6dfd137170266bc5984e562a9bf13",
+    "expected_new_spot_ids": [
+      "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call"
+    ],
+    "deferred_new_spots": [
+      {
+        "spot": "BTN_open_SB_3bet_BB_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "BTN_open_SB_3bet_BB_call_BTN_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "BTN_open_SB_3bet_BB_call_BTN_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "BTN_open_SB_3bet_BB_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_4bet_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_4bet_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_call_CO_4bet_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_call_CO_4bet_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_BB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_4bet_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_4bet_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_call_CO_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_call_CO_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_3bet_SB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_4bet_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_4bet_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_4bet_BB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_4bet_BB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_4bet_BTN_call_SB_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_4bet_BTN_fold_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_4bet_BTN_fold_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_4bet_SB_fold_BB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_fold_SB_4bet_BB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_call_BTN_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_call_SB_4bet_BB_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_call_SB_4bet_BB_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_fold_SB_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_call_BB_squeeze_CO_fold_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_call_BTN_4bet_SB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_call_BTN_4bet_SB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_fold_BTN_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_BTN_call_SB_squeeze_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_4bet_CO_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_4bet_CO_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_call_CO_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_call_CO_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_4bet_HJ_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_4bet_HJ_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_call_HJ_4bet_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_call_HJ_4bet_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_BB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_4bet_HJ_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_4bet_HJ_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_call_HJ_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_call_HJ_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_3bet_SB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_4bet_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_4bet_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_call_BTN_4bet_BB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_call_BTN_4bet_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_fold_BTN_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_BB_squeeze_HJ_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_4bet_BTN_call_SB_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_4bet_BTN_fold_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_4bet_BTN_fold_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_call_BTN_4bet_SB_fold_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_call_BTN_fold_SB_4bet_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_call_BTN_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_call_SB_4bet_BB_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_call_SB_4bet_BB_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_fold_SB_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_call_BB_squeeze_HJ_fold_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_call_BTN_4bet_SB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_call_BTN_4bet_SB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_fold_BTN_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_BTN_call_SB_squeeze_HJ_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_4bet_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_4bet_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_call_HJ_4bet_CO_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_call_HJ_4bet_CO_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_4bet_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_4bet_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_call_HJ_4bet_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_call_HJ_4bet_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_BTN_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_4bet_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_4bet_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_call_HJ_4bet_CO_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_call_HJ_4bet_CO_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_3bet_SB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_4bet_CO_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_4bet_CO_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_call_CO_4bet_BB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_call_CO_4bet_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_fold_CO_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BB_squeeze_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_4bet_CO_call_BTN_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_4bet_CO_fold_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_4bet_CO_fold_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_call_CO_4bet_BTN_fold_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_call_CO_fold_BTN_4bet_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_call_CO_fold_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_4bet_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_4bet_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_call_BTN_4bet_BB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_call_BTN_4bet_BB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_4bet_CO_call_BTN_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_4bet_CO_fold_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_4bet_CO_fold_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_call_CO_4bet_BTN_fold_SB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_call_CO_fold_BTN_4bet_SB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_call_CO_fold_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_call_BTN_4bet_SB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_call_BTN_4bet_SB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_fold_BTN_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_call_SB_squeeze_HJ_fold_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_4bet_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_4bet_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_call_CO_4bet_BTN_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_call_CO_4bet_BTN_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_fold_CO_4bet_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_BTN_squeeze_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_4bet_CO_call_SB_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_4bet_CO_fold_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_4bet_CO_fold_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_call_CO_4bet_SB_fold_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_call_CO_fold_SB_4bet_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_call_CO_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_call_SB_4bet_BB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_call_SB_4bet_BB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_fold_SB_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_call_BB_squeeze_HJ_fold_CO_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_4bet_CO_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_4bet_CO_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_call_CO_4bet_SB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_call_CO_4bet_SB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_fold_CO_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_CO_call_SB_squeeze_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_4bet_HJ_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_4bet_HJ_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_call_HJ_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_call_HJ_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "HJ_open_SB_3bet_BB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_4bet_UTG_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_4bet_UTG_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_call_UTG_4bet_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_call_UTG_4bet_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_BB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_4bet_UTG_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_4bet_UTG_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_call_UTG_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_call_UTG_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_3bet_SB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_4bet_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_4bet_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_call_BTN_4bet_BB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_call_BTN_4bet_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_fold_BTN_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_BB_squeeze_UTG_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_4bet_BTN_call_SB_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_4bet_BTN_fold_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_4bet_BTN_fold_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_call_BTN_4bet_SB_fold_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_call_BTN_fold_SB_4bet_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_call_BTN_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_call_SB_4bet_BB_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_call_SB_4bet_BB_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_fold_SB_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_call_BB_squeeze_UTG_fold_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_call_BTN_4bet_SB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_call_BTN_4bet_SB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_fold_BTN_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_BTN_call_SB_squeeze_UTG_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_4bet_UTG_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_4bet_UTG_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_call_UTG_4bet_CO_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_call_UTG_4bet_CO_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_4bet_UTG_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_4bet_UTG_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_call_UTG_4bet_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_call_UTG_4bet_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_BTN_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_4bet_UTG_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_4bet_UTG_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_call_UTG_4bet_CO_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_call_UTG_4bet_CO_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_3bet_SB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_4bet_CO_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_4bet_CO_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_call_CO_4bet_BB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_call_CO_4bet_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_fold_CO_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BB_squeeze_UTG_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_4bet_CO_call_BTN_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_4bet_CO_fold_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_4bet_CO_fold_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_call_CO_4bet_BTN_fold_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_call_CO_fold_BTN_4bet_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_call_CO_fold_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_4bet_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_4bet_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_call_BTN_4bet_BB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_call_BTN_4bet_BB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_fold_BTN_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_BB_squeeze_UTG_fold_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_4bet_CO_call_BTN_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_4bet_CO_fold_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_4bet_CO_fold_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_call_CO_4bet_BTN_fold_SB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_call_CO_fold_BTN_4bet_SB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_call_CO_fold_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_call_BTN_4bet_SB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_call_BTN_4bet_SB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_fold_BTN_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_call_SB_squeeze_UTG_fold_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_4bet_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_4bet_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_call_CO_4bet_BTN_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_call_CO_4bet_BTN_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_fold_CO_4bet_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_BTN_squeeze_UTG_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_4bet_CO_call_SB_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_4bet_CO_fold_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_4bet_CO_fold_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_call_CO_4bet_SB_fold_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_call_CO_fold_SB_4bet_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_call_CO_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_call_SB_4bet_BB_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_call_SB_4bet_BB_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_fold_SB_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_call_BB_squeeze_UTG_fold_CO_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_4bet_CO_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_4bet_CO_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_call_CO_4bet_SB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_call_CO_4bet_SB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_fold_CO_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_CO_call_SB_squeeze_UTG_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_4bet_UTG_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_4bet_UTG_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_call_UTG_4bet_HJ_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_call_UTG_4bet_HJ_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_4bet_UTG_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_4bet_UTG_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_call_UTG_4bet_HJ_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_call_UTG_4bet_HJ_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_BTN_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_4bet_UTG_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_4bet_UTG_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_call_UTG_4bet_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_call_UTG_4bet_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_CO_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_4bet_UTG_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_4bet_UTG_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_call_UTG_4bet_HJ_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_call_UTG_4bet_HJ_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_3bet_SB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_4bet_HJ_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_4bet_HJ_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_call_HJ_4bet_BB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_call_HJ_4bet_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_4bet_HJ_call_BTN_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_4bet_HJ_fold_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_4bet_HJ_fold_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_call_HJ_4bet_BTN_fold_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_call_HJ_fold_BTN_4bet_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_call_HJ_fold_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_4bet_BTN_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_4bet_BTN_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_call_BTN_4bet_BB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_call_BTN_4bet_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_fold_BTN_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_BB_squeeze_UTG_fold_HJ_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_4bet_HJ_call_BTN_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_4bet_HJ_fold_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_4bet_HJ_fold_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_call_HJ_4bet_BTN_fold_SB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_call_HJ_fold_BTN_4bet_SB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_call_HJ_fold_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_4bet_BTN_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_4bet_BTN_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_call_BTN_4bet_SB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_call_BTN_4bet_SB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_fold_BTN_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_call_SB_squeeze_UTG_fold_HJ_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_4bet_HJ_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_4bet_HJ_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_call_HJ_4bet_BTN_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_call_HJ_4bet_BTN_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_fold_HJ_4bet_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_BTN_squeeze_UTG_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_4bet_HJ_call_CO_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_4bet_HJ_fold_CO_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_4bet_HJ_fold_CO_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_call_HJ_4bet_CO_fold_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_call_HJ_fold_CO_4bet_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_call_HJ_fold_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_4bet_CO_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_4bet_CO_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_call_CO_4bet_BB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_call_CO_4bet_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_fold_CO_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BB_squeeze_UTG_fold_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_4bet_HJ_call_CO_fold_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_4bet_HJ_fold_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_4bet_HJ_fold_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_call_HJ_4bet_CO_fold_BTN_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_call_HJ_fold_CO_4bet_BTN_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_call_HJ_fold_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_4bet_CO_call_BTN_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_4bet_CO_fold_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_call_CO_4bet_BTN_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_call_CO_4bet_BTN_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_fold_CO_4bet_BTN_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_BTN_squeeze_UTG_fold_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_4bet_HJ_call_CO_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_4bet_HJ_fold_CO_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_4bet_HJ_fold_CO_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_call_HJ_4bet_CO_fold_SB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_call_HJ_fold_CO_4bet_SB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_call_HJ_fold_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_4bet_CO_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_4bet_CO_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_call_CO_4bet_SB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_call_CO_4bet_SB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_fold_CO_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_call_SB_squeeze_UTG_fold_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_4bet_HJ_call_CO_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_4bet_HJ_fold_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_call_HJ_4bet_CO_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_call_HJ_4bet_CO_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_fold_HJ_4bet_CO_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_CO_squeeze_UTG_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_4bet_HJ_call_SB_fold_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_4bet_HJ_fold_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_4bet_HJ_fold_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_call_HJ_4bet_SB_fold_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_call_HJ_fold_SB_4bet_BB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_call_HJ_fold_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_call_SB_4bet_BB_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_call_SB_4bet_BB_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_fold_SB_4bet_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_call_BB_squeeze_UTG_fold_HJ_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_4bet_HJ_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_4bet_HJ_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_call_HJ_4bet_SB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_call_HJ_4bet_SB_fold_UTG_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_call_HJ_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_fold_HJ_4bet_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_HJ_call_SB_squeeze_UTG_fold_HJ_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_4bet_UTG_call_SB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_4bet_UTG_fold_SB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_call_UTG_4bet_SB_call_BB_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_call_UTG_4bet_SB_fold_BB_call",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      },
+      {
+        "spot": "UTG_open_SB_3bet_BB_call_UTG_fold",
+        "reason": "Deferred: requires its own independently authored policy, configured simulation, strict replay, all-1755 audit and independent scoped quality review."
+      }
+    ]
+  },
+  "accepted_new_spots": [
+    {
+      "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+      "representative_evidence": "apps/frontend/.local/postflop-ai/audit-evidence/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call-replay-1791144469095.json",
+      "all_board_evidence": "apps/frontend/.local/postflop-ai/audit-evidence/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call--16867bc8d681321acf544095d93bdb174357330105c54493094a2459e139046a-serial-run-20261004T195059Z-5180880b4f354ae2b286ac8951fbc9b2-attempt-000001-all-boards.json"
+    }
+  ],
+  "preserved_legacy_spots": [],
+  "independent_current_review": {
+    "path": "apps/frontend/.local/hu-purecore-independent-review/independent-review.md",
+    "bytes": 9583,
+    "sha256": "5b155d505f7512d2c920c5966f3c4db48154ae6a26c12cac7fe784c22e1a30f4"
+  },
+  "policy_review": {
+    "path": "apps/frontend/docs/specs/hu-postflop-after-multiway-preflop.independent-review.md",
+    "bytes": 153020,
+    "sha256": "50df0570b1e5d4a216b00b32f20880b335926df76b902306ab11b4738b39d2dc",
+    "section": "Representative v3 policy quality under model10, 2026-10-04 17:55 UTC",
+    "disposition": "Prior independent model10 policy-quality decision read and retained for unchanged policy/source-range bytes after reviewed pure extraction, exact old/new output parity and fresh full numerical gates. Earlier effective-line diagnostics are explicitly historical, not relabelled fresh; residual limitations remain accepted only within the same AI-estimate scope."
+  },
+  "model_identity": {
+    "defence_version": 10,
+    "simulation_version": 3,
+    "action_model_version": 10,
+    "source_fingerprint": "a446af2ae12f4d68aa5810cd88912ebd95642462a8cf8e5e472df6c66d22e975",
+    "flop_policy_hash": "9070ca5074b6600eaeb1f1a20a03ce4bb2b40ecea457f8cd578fcec43e8a513a",
+    "later_policy_hash": "c37c4091096867f53e9ec531220f5ff99c7f2a5364d7bc56283afaeca17333d6",
+    "replay_identity_sha256": "9bd6bc57d528478011c07f63fd2d575f3b77d3bb038705bb5d99ba10fd880dce",
+    "all_board_identity_sha256": "16867bc8d681321acf544095d93bdb174357330105c54493094a2459e139046a"
+  },
+  "numerical_run": {
+    "path": "apps/frontend/.local/postflop-ai/serial-validation/runs/run-20261004T195059Z-5180880b4f354ae2b286ac8951fbc9b2",
+    "pin": {
+      "path": "apps/frontend/.local/postflop-ai/serial-validation/runs/run-20261004T195059Z-5180880b4f354ae2b286ac8951fbc9b2/pin.json",
+      "bytes": 26541,
+      "sha256": "9ca5a868cbdadaaeecca8823c8128f6b9b812c8b2e825dd8d40b99106963e409"
+    },
+    "export_manifest": {
+      "path": "apps/frontend/.local/postflop-ai/serial-validation/runs/run-20261004T195059Z-5180880b4f354ae2b286ac8951fbc9b2/export-manifest.json",
+      "bytes": 9967,
+      "sha256": "4406448839eb62cca9b32b86f16406ca6a3aeebdeaeda5bf8a0df317c0db04c5"
+    },
+    "actual_phases": [
+      {
+        "phase": "simulate",
+        "receipt_sha256": "d8e05db3840753cde50818874812b7d37123ff7e2d259d61bfce7b4fa6e2155b",
+        "command": [
+          "node",
+          "--max-old-space-size=512",
+          "scripts/postflop-ai/cli.mjs",
+          "simulate",
+          "--spot",
+          "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call"
+        ],
+        "started_at": "2026-10-04T19:50:59.703Z",
+        "completed_at": "2026-10-04T20:07:47.915Z",
+        "wall_seconds": 1008.212,
+        "exit_code": 0,
+        "log": {
+          "path": "apps/frontend/.local/postflop-ai/serial-control/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call/simulate/attempt-000001.log",
+          "bytes": 428,
+          "sha256": "3f1c827c4d6e1dca20b4a6e1e7709b9914113a812f0149cb872d6f22e7c994f6"
+        }
+      },
+      {
+        "phase": "replay",
+        "receipt_sha256": "cfc5e6f0a94007027330c53486810d4db75e1da7418d65a0b21fbcfd69f69fe0",
+        "command": [
+          "node",
+          "--max-old-space-size=512",
+          "scripts/postflop-ai/cli.mjs",
+          "audit",
+          "--spot",
+          "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call"
+        ],
+        "started_at": "2026-10-04T20:07:48.665Z",
+        "completed_at": "2026-10-04T20:24:56.097Z",
+        "wall_seconds": 1027.432,
+        "exit_code": 0,
+        "log": {
+          "path": "apps/frontend/.local/postflop-ai/serial-control/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call/replay/attempt-000001.log",
+          "bytes": 1117,
+          "sha256": "170b5ef8e3440a3c5910d2f2602abd41d35e52971433aa59013f426046e327bf"
+        }
+      },
+      {
+        "phase": "all-boards",
+        "receipt_sha256": "22d903d01499709fd2ca2a383f03ef553259a5b1fe89269f7495f808344f80a2",
+        "command": [
+          "node",
+          "--max-old-space-size=512",
+          "scripts/postflop-ai/audit-all-boards.mjs",
+          "--spot",
+          "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+          "--street",
+          "all",
+          "--workers",
+          "1"
+        ],
+        "started_at": "2026-10-04T20:24:56.870Z",
+        "completed_at": "2026-10-04T20:45:43.356Z",
+        "wall_seconds": 1246.486,
+        "exit_code": 0,
+        "log": {
+          "path": "apps/frontend/.local/postflop-ai/serial-control/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call/all-boards/attempt-000001.log",
+          "bytes": 6379,
+          "sha256": "6e1364aefa824436ee66d0b7b847694e32d6fe7071932c11dc778eece6ff2504"
+        }
+      }
+    ],
+    "simulation": {
+      "comparisons": 72,
+      "paired_deals_per_comparison": 10000,
+      "report_bytes": 35094,
+      "report_sha256": "80b657a069d8399a79b326d3322e86caac60b7c89d07c9a4e6f38dc0e8395581",
+      "exact_historical_report_bytes": true
+    },
+    "official_replay": {
+      "comparisons": 72,
+      "expanded_combo_decisions": 19936,
+      "warnings": 23,
+      "proof_sha256": "068560dccf059616af2c80b40841297573edd2a4bca5456ebdab537fbb936588"
+    },
+    "all_boards": {
+      "full_recomputation_from_zero": true,
+      "canonical_raw_flops": 22100,
+      "suit_permutations": 24,
+      "canonical_classes": 1755,
+      "row_hashes_checked": 1755,
+      "summary_sha256": "aceb751a2c27dcb0aabccdfe2f64e41b0f9af51723c6aec5815d26a39eb766b9",
+      "companion_sha256": "1dc4c95bc5a6037e94453f5119e174e2821a1530d07d561a7b1ac0aaec9e94fd",
+      "fresh_all_board_proof": {
+        "path": "apps/frontend/.local/postflop-ai/audit-evidence/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call--16867bc8d681321acf544095d93bdb174357330105c54493094a2459e139046a-serial-run-20261004T195059Z-5180880b4f354ae2b286ac8951fbc9b2-attempt-000001-all-boards.json",
+        "sha256": "281b30418b581db29683c1afbe422c82a99b36497b62ccbf77d301adf597ff56"
+      },
+      "later_coverage": {
+        "flops": 1755,
+        "reachable_flops": 1755,
+        "turn_boards": 7020,
+        "unreachable_turn_boards": 0,
+        "river_runouts": 21060,
+        "unreachable_river_runouts": 0
+      },
+      "clean": 0,
+      "errors": 0,
+      "warning_occurrences": 20642
+    },
+    "export_remains_unapproved": true
+  },
+  "separate_historical_preservation": {
+    "legacy_hu45_archive": {
+      "path": "artifacts/postflop/legacy-hu45-source.zip",
+      "bytes": 441204,
+      "sha256": "5f5dd88540c00ce7426146b91b1fd9c0cc10974b146ba02a175cc067395e7b0a"
+    },
+    "legacy_hu45_manifest": {
+      "path": "artifacts/postflop/legacy-hu45-source.manifest.json",
+      "bytes": 38758,
+      "sha256": "99624eb47ccf1df1aa30a92c58a88e6036a329cc012326b8165b067c37dd1759"
+    },
+    "historical_foundation_archive": {
+      "path": "artifacts/postflop/hu-after-multiway-foundation-v3.tar.gz",
+      "bytes": 127590,
+      "sha256": "e74de8b1cfb9349d20f0e328c6d7c3f36220c0ec533eae1b01e1f6635cca45fe"
+    },
+    "historical_foundation_manifest": {
+      "path": "artifacts/postflop/hu-after-multiway-foundation-v3.manifest.json",
+      "bytes": 132788,
+      "sha256": "29e8f902289c5420b2c14dbf3bf7fd32effe975cafa14844d5b012eb74012dca"
+    },
+    "previous_defence6_report": {
+      "path": "apps/frontend/.local/postflop-ai/policy-revisions/UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call/defence6-before-model10/report-f46f16717c144053c8480905783883572c19d38083992ec9acc8729d3ef16139.json",
+      "bytes": 35068,
+      "sha256": "f46f16717c144053c8480905783883572c19d38083992ec9acc8729d3ef16139"
+    },
+    "status": "Exact historical bytes preserved; not accepted as current-model numerical evidence"
+  },
+  "historical_delivery_preservation": {
+    "records": 95,
+    "legacy_spots": 45,
+    "legacy_raw_policy_later_report_files": 135,
+    "legacy_live_and_zip_bytes_match": true,
+    "canonical_historical_archive_manifest_receipt_unchanged": true,
+    "old_review_receipt": {
+      "path": "configs/hu-postflop-after-multiway.review.json",
+      "bytes": 129396,
+      "sha256": "0cfd4476194ddbd511d2b3108fddb49c9cac83ba5ce4d73bb00c540a7a7c931d"
+    },
+    "claim": "Historical evidence remains historical; no legacy report has been upgraded to current-model acceptance."
+  },
+  "independent_verification": {
+    "method": "Read-only Python hashing and source graph reconstruction, exact Git object comparison, recorded actual command inspection, full canonical flop enumeration, seeded joint-support coverage reconstruction, warning aggregation, deterministic archive inspection and retained strategic-limit review. No Node run by reviewer. No canonical source/data/historical receipt edits.",
+    "source_records": 57,
+    "inputs": 12,
+    "handoff_records": 26,
+    "all_board_source_records": 31,
+    "publication_source_records": 81,
+    "local_checkpoint": {
+      "commit": "3ab7ad54822d77d2a59821d24878eb47d19e4a76",
+      "tree": "0ef7e64db3717349b66d4bfa2adf4bba2dd1539f",
+      "committed_source_records": 81
+    },
+    "verification_records": [
+      {
+        "path": "apps/frontend/.local/hu-purecore-independent-review/source-and-execution-checks.json",
+        "bytes": 52212,
+        "sha256": "32671d4103229ef38e3e7927891c1c32aa49f4873c93ce4c9baf3e58e0995223"
+      },
+      {
+        "path": "apps/frontend/.local/hu-purecore-independent-review/full-board-checks.json",
+        "bytes": 5889,
+        "sha256": "af09ea78819732706542444b153305e3a43a6d4101fd423d301c860783663dd0"
+      },
+      {
+        "path": "apps/frontend/.local/hu-purecore-independent-review/versioned-archive-checks.json",
+        "bytes": 1198,
+        "sha256": "5e6645f4afa7c699898d8b973ffc84b53a64994f72ee1e2465ddd34fd4d90616"
+      }
+    ],
+    "mechanical_accepted_receipt_validator": "Pending implementation owner execution on the next available shared slot; this field is not a claim that the command already ran."
+  },
+  "artifact_locations": {
+    "archive": "artifacts/postflop/hu-after-multiway-purecore-v1.tar.gz",
+    "manifest": "artifacts/postflop/hu-after-multiway-purecore-v1.manifest.json",
+    "intended_final_review_receipt": "configs/hu-postflop-after-multiway-purecore-v1.review.json"
+  }
+}
