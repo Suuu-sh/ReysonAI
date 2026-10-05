@@ -178,6 +178,7 @@
   .agent-log .agent-log-body { max-height: none; }
 }
 @media (max-width: 720px) {
+  .agent-layout { grid-template-columns: minmax(0, 1fr); }
   /* Portrait table: seats down both sides, smaller cards. */
   .agent-felt-wrap { padding: 46px 34px 92px; }
   .agent-felt { width: min(100%, 360px); aspect-ratio: .72; box-shadow: 0 0 0 7px #1a1a20, 0 0 0 8px #2a2a32, inset 0 0 60px rgb(0 0 0 / 55%); }
