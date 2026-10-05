@@ -423,7 +423,6 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
 .range-context-street .postflop-card { min-width: 27px; height: 36px; padding: 0 2px; font-size: 14px; }
 .range-context-street:hover .postflop-card { box-shadow: 0 0 0 1px var(--accent); }
 .range-context-board-footer { display: flex; align-items: center; gap: 5px; }
-.range-context-board-footer .display-mode-toggle { flex: 1; }
 .range-context-board-footer .settings-icon-button { width: 24px; height: 24px; flex: 0 0 24px; }
 @media (max-width: 760px) {
   .action-seat-info.has-context-switch { flex-direction: row; align-items: center; gap: 6px; padding: 4px 6px; }
@@ -431,7 +430,6 @@ button.postflop-suit-cell:hover { filter: brightness(1.15); transform: scale(1.0
   .range-context-switch button { min-height: 28px; padding: 2px 5px; font-size: 10px; }
   .range-context-street .postflop-card { min-width: 25px; height: 34px; font-size: 13px; }
   .range-context-board-footer { flex-direction: column; }
-  .range-context-board-footer .display-mode-toggle { display: none; }
   .has-context-switch .settings-toggle { height: auto; }
   .has-context-switch .settings-header { flex: 1 1 auto; }
   .action-seat-info.has-context-switch.is-open .settings-body { position: static; width: auto; padding: 0; border: 0; box-shadow: none; }

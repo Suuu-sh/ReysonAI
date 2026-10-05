@@ -850,8 +850,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
           leading={<RangeContextCard postflop={flopActive} settingsOpen={settingsOpen}
             boards={combinedBlocks.filter(block => block.kind === "board")}
             onEditBoard={street => street === "flop" ? setFlopDialogOpen(postflopAllowed) : setStreetCardDialog(postflopAllowed ? street : null)}
-            onReset={resetPath}
-            displayModeControl={<div className="display-mode-toggle" role="group" aria-label="表示モード">{displayModes.map(mode => <button type="button" key={mode.value} aria-pressed={displayMode === mode.value} onClick={() => changeDisplayMode(mode.value)}>{mode.label}</button>)}</div>}>
+            onReset={resetPath}>
             <div className="settings-header">
               <button type="button" className="settings-toggle" aria-label="ゲーム設定を開閉" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(open => !open)}><DotsThreeVertical size={16} weight="bold" aria-hidden="true" /><strong>{formatLabel("game", format.game)}</strong><span>{formatLabel("stack", format.stack)}</span></button>
               <div className="settings-actions">
