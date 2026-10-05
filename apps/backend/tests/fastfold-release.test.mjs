@@ -17,9 +17,11 @@ test('exact additive FastFold schema precedes API and readiness precedes compati
  for(const filename of ['wrangler.jsonc','wrangler.local.jsonc']){const config=readFileSync(new URL('../'+filename,import.meta.url),'utf8');assert.match(config,/"main": "src\/worker.ts"/);assert.match(config,/"name": "FASTFOLD_RUNTIME"/);assert.match(config,/"new_sqlite_classes": \["FastFoldRuntime"\]/);assert.doesNotMatch(config,/"new_classes"/)}
 });
 test('read-only release probe proves exact38 public sources and rejects corruption',async()=>{
- const bodies=Object.fromEntries(FASTFOLD_DATASETS.map(name=>[name,readFileSync(new URL(`../../frontend/src/estimated/${name}.json`,import.meta.url),'utf8')]));
+ const rawBodies=Object.fromEntries(FASTFOLD_DATASETS.map(name=>[name,readFileSync(new URL(`../../frontend/src/estimated/${name}.json`,import.meta.url),'utf8')]));
+ const bodies=Object.fromEntries(Object.entries(rawBodies).map(([name,body])=>[name,JSON.stringify(JSON.parse(body))]));
  const catalog=Object.fromEntries(Object.entries(bodies).map(([name,body])=>[name,{hash:createHash('sha256').update(body).digest('hex'),bytes:Buffer.byteLength(body)}]));
- let corrupt=false,writes=0;
+ const rawCatalog=Object.fromEntries(Object.entries(rawBodies).map(([name,body])=>[name,{hash:createHash('sha256').update(body).digest('hex'),bytes:Buffer.byteLength(body)}]));
+ let corrupt=false,rawPretty=false,writes=0;
  const server=createServer((req,res)=>{
   if(!['GET','OPTIONS'].includes(req.method))writes++;
   res.setHeader('access-control-allow-origin','https://app.reysonai.com');res.setHeader('access-control-allow-credentials','true');
@@ -28,11 +30,11 @@ test('read-only release probe proves exact38 public sources and rejects corrupti
   const path=req.url;
   if(path==='/v1/fastfold/status')res.end(JSON.stringify({enabled:true}));
   else if(path==='/v1/fastfold/profile'){res.writeHead(401);res.end(JSON.stringify({error:'sign_in_required'}))}
-  else if(path==='/v1/preflop/datasets')res.end(JSON.stringify({datasets:catalog}));
-  else if(path.startsWith('/v1/preflop/datasets/')){const name=decodeURIComponent(path.slice('/v1/preflop/datasets/'.length));res.end(corrupt&&name==='opening-ranges'?'{}':bodies[name]);}
+  else if(path==='/v1/preflop/datasets')res.end(JSON.stringify({datasets:rawPretty?rawCatalog:catalog}));
+  else if(path.startsWith('/v1/preflop/datasets/')){const name=decodeURIComponent(path.slice('/v1/preflop/datasets/'.length));res.end(corrupt&&name==='opening-ranges'?'{}':rawPretty?rawBodies[name]:bodies[name]);}
   else {res.writeHead(404);res.end('{}')}
  });
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const api='http://127.0.0.1:'+server.address().port;
  const probe=()=>new Promise(resolve=>{const child=spawn(process.execPath,['--experimental-strip-types',new URL('../scripts/verify-fastfold-readiness.mjs',import.meta.url).pathname,'--api='+api],{stdio:['ignore','pipe','pipe']});let output='';child.stdout.on('data',d=>output+=d);child.stderr.on('data',d=>output+=d);child.on('close',code=>resolve({code,output}));});
- try{const healthy=await probe();assert.equal(healthy.code,0,healthy.output);assert.match(healthy.output,/38 exact published source hashes/);corrupt=true;const broken=await probe();assert.notEqual(broken.code,0);assert.match(broken.output,/Published content\/hash differs/);assert.equal(writes,0)}finally{await new Promise(resolve=>server.close(resolve))}
+ try{const healthy=await probe();assert.equal(healthy.code,0,healthy.output);assert.match(healthy.output,/38 exact published source hashes/);corrupt=true;const broken=await probe();assert.notEqual(broken.code,0);assert.match(broken.output,/Published content\/hash differs/);corrupt=false;rawPretty=true;const pretty=await probe();assert.notEqual(pretty.code,0);assert.match(pretty.output,/Published source differs from exact reviewed checkout: opening-ranges/);assert.equal(writes,0)}finally{await new Promise(resolve=>server.close(resolve))}
 });
