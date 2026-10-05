@@ -239,7 +239,6 @@ function RankedCard({ rank, busy, draft, onStart, onOpenRanking }: { rank: RankS
         <Play size={14} weight="fill" />{draft ? ff("Open human queue", "対人待機を開く", "打开真人队列", "Abrir cola humana") : ff("Join human queue", "対人待機へ", "加入真人队列", "Unirse a cola humana")}
       </button>
       <button type="button" className="mode-secondary" onClick={onOpenRanking}><Trophy size={15} />{localized("Leaderboard", "ランキング")}</button>
-      <small className="mode-quota">{ff("New season · server confirmed · no daily start limit", "新シーズン・サーバー確定・開始回数の制限なし", "新赛季 · 服务器确认 · 开始次数不限", "Nueva temporada · confirmada por servidor · sin límite de inicios")}</small>
     </>}
     foot={<RankLadder rating={rank.rating} />}>
     <div className="ranked-stats">

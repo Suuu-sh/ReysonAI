@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Crosshair, Hourglass, X } from "@phosphor-icons/react";
 import { localized } from "../i18n.ts";
 import { AGENT_BASELINE, READ_MIN_HANDS, READ_WINDOW, STYLES, type PlayerRead, type StyleId } from "./player-read.ts";
@@ -46,6 +46,22 @@ function StyleRoster({ current }: { current: StyleId }) {
 const ZX = { nit: 23.6, tight: 36.8, loose: 63.2 }, ZY = { aggressive: 31.1, passive: 68.9 };
 export type StyleZone = { id: StyleId; x: [number, number]; y: [number, number]; label?: boolean };
 
+// Drill and Agent Stats share the chart frame; their zones, data and axis meaning stay source-specific.
+export function StyleMapFrame({ ariaLabel, xLeft, xRight, yTop, yBottom, children }: {
+  ariaLabel: string;
+  xLeft: string;
+  xRight: string;
+  yTop: string;
+  yBottom: string;
+  children: ReactNode;
+}) {
+  return <figure className="play-style-map" aria-label={ariaLabel}>
+    <span className="play-style-map-y" aria-hidden="true"><span>↑<br />{yTop}</span><span>{yBottom}<br />↓</span></span>
+    <div className="play-style-map-grid">{children}</div>
+    <figcaption className="play-style-map-x"><span>← {xLeft}</span><span>{xRight} →</span></figcaption>
+  </figure>;
+}
+
 // Each style's area behind a map, faintly tinted with its character; the current one is lit.
 export function StyleZones({ zones, current }: { zones: StyleZone[]; current: StyleId | null }) {
   return <>{zones.map((zone, index) => { const style = STYLES[zone.id], on = zone.id === current;
@@ -69,17 +85,18 @@ const MAP_ZONES: StyleZone[] = [
 // Style map: the centre is the agents' balanced play.
 function StyleMap({ read }: { read: PlayerRead }) {
   const point = read.map;
-  return <figure className="style-map" aria-label={point ? localized(`Style map: ${text(read.style.name)}`, `スタイルマップ：${text(read.style.name)}`) : localized("Style map (collecting hands)", "スタイルマップ（集計中）")}>
-    <div className="style-map-y" aria-hidden="true"><span>↑<br />{localized("Aggressive", "アグレッシブ")}</span><span>{localized("Passive", "パッシブ")}<br />↓</span></div>
-    <div className="style-map-grid">
+  const pointY = point ? 50 - point.y * 44 : 50;
+  return <StyleMapFrame ariaLabel={point ? localized(`Style map: ${text(read.style.name)}`, `スタイルマップ：${text(read.style.name)}`) : localized("Style map (collecting hands)", "スタイルマップ（集計中）")}
+    xLeft={localized("Tight", "タイト")} xRight={localized("Loose", "ルース")}
+    yTop={localized("Aggressive", "アグレッシブ")} yBottom={localized("Passive", "パッシブ")}>
       <StyleZones zones={MAP_ZONES} current={read.style.id} />
-      <span className="style-map-center" title={localized("Agent baseline", "Agent基準")} />
-      {point && <span className="style-map-point" style={{ left: `${50 + point.x * 44}%`, top: `${50 - point.y * 44}%`, "--style": read.style.color } as CSSProperties}>
-        <StyleAvatar id={read.style.id} color={read.style.color} size={28} />
+      <span className="play-style-map-center" title={localized("Agent baseline", "Agent基準")} />
+      {point && <span className={`play-style-map-point${pointY > 70 ? " label-above" : ""}`} role="img" aria-label={localized("Your position", "あなたの位置")}
+        style={{ left: `${50 + point.x * 44}%`, top: `${pointY}%`, "--style": read.style.color } as CSSProperties}>
+        <StyleAvatar id={read.style.id} color={read.style.color} size={36} />
+        <b>{localized("You", "あなた")}</b>
       </span>}
-    </div>
-        <figcaption><span>← {localized("Tight", "タイト")}</span><span>{localized("Loose", "ルース")} →</span></figcaption>
-  </figure>;
+  </StyleMapFrame>;
 }
 
 export function PlayStyleDashboard({ read, onClose }: { read: PlayerRead; onClose?: () => void }) {
