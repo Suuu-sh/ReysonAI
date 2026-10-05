@@ -1,6 +1,6 @@
 import { ArrowRight, Barbell, CalendarBlank, ChartLineUp, Cards, Crosshair, Info, Robot, Trophy, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
 import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
-import { PlayStyleDashboard } from "../agent/PlayStyleDashboard.tsx";
+import { PlayStyleDashboard, StyleZones, type StyleZone } from "../agent/PlayStyleDashboard.tsx";
 import { StyleAvatar } from "../agent/StyleAvatar.tsx";
 import { STYLES } from "../agent/player-read.ts";
 import { practiceAnimal, PRACTICE_EXPLANATIONS } from "./practice-style.ts";
@@ -58,10 +58,25 @@ function Kpi({ label, icon: Icon, value, sub, accent, compact, children }) {
   </div>;
 }
 
+// Practice style zones, in map percent. They mirror analyzePlayer's rules: x = 50 - fold delta / 0.30 * 38,
+// y = 50 - 3bet delta / 0.30 * 38 (fold 0.10 → 37.3, 0.15 → 31; 3bet 0.10 → 37.3, 0.05 → 43.7). The
+// calling-heavy style also needs more calls, which the map doesn't plot; it sits on the loose, non-3bet side.
+const PX = { nit: 31, tight: 37.3, loose: 62.7 }, PY = { more: 37.3, nit: 43.7, less: 62.7 };
+const PRACTICE_ZONES: StyleZone[] = [
+  { id: "tag", x: [0, PX.tight], y: [0, PY.more] },
+  { id: "tight_passive", x: [PX.nit, PX.tight], y: [PY.more, 100] },
+  { id: "tight_passive", x: [0, PX.nit], y: [PY.more, PY.nit], label: false },
+  { id: "nit", x: [0, PX.nit], y: [PY.nit, 100] },
+  { id: "aggressive", x: [PX.tight, PX.loose], y: [0, PY.more] },
+  { id: "balanced", x: [PX.tight, PX.loose], y: [PY.more, PY.less] },
+  { id: "passive", x: [PX.tight, PX.loose], y: [PY.less, 100] },
+  { id: "lag", x: [PX.loose, 100], y: [0, PY.more] },
+  { id: "station", x: [PX.loose, 100], y: [PY.more, 100] },
+];
+
 function StyleMap({ analysis }) {
   const { plot, metrics, ready } = analysis;
   const animal = practiceAnimal(analysis);
-  const active = plot ? `${plot.y <= 50 ? (plot.x <= 50 ? "tag" : "lag") : (plot.x <= 50 ? "tp" : "lp")}` : null;
   return <section className="analysis-card analysis-map" aria-labelledby="analysis-map-title">
     <header className="analysis-card-head">
       <h2 id="analysis-map-title">プレイスタイルマップ</h2>
@@ -71,10 +86,9 @@ function StyleMap({ analysis }) {
       </InfoTip>
     </header>
     <figure className="analysis-map-figure">
-      <span className="axis-y" aria-hidden="true"><span>3bet 多</span><span>3bet 少</span></span>
+      <span className="axis-y" aria-hidden="true"><span>↑<br />3bet 多</span><span>3bet 少<br />↓</span></span>
       <div className="analysis-map-grid">
-        {[["tag", "TAG"], ["lag", "LAG"], ["tp", "タイト・パッシブ"], ["lp", "ルース・パッシブ"]].map(([key, label]) =>
-          <div key={key} className={`analysis-quadrant q-${key}${active === key ? " is-active" : ""}`}><b>{label}</b></div>)}
+        <StyleZones zones={PRACTICE_ZONES} current={analysis.ready ? animal.id : null} />
         <span className="analysis-map-baseline" aria-hidden="true" style={{ "--r": `${BASELINE_RADIUS}%` }}><small>基準付近</small></span>
         <span className="analysis-map-center" aria-hidden="true" title="方針" />
         {plot && <svg className="analysis-map-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">

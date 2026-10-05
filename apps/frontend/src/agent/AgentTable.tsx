@@ -1,3 +1,4 @@
+import { PlayingCard } from "../components/PlayingCard.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning } from "@phosphor-icons/react";
 import { preloadDatasets } from "../estimated/datasets.ts";
@@ -16,7 +17,6 @@ import { PlayStyleCard, PlayStyleDashboard } from "./PlayStyleDashboard.tsx";
 import "./agent.css";
 
 export const AGENT_DATASETS = ["five-bet-responses", "cold-three-bet-responses", "multiway-responses", "squeeze-responses", "limp-deep-responses"];
-const SUITS: Record<string, string> = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const STREETS = ["preflop", "flop", "turn", "river"];
 const CARDS: Record<string, number> = { preflop: 0, flop: 3, turn: 4, river: 5 };
 const CARDS_TO_STREET: Record<number, string> = { 0: "preflop", 3: "flop", 4: "turn", 5: "river" };
@@ -28,11 +28,6 @@ type Speed = keyof typeof SPEEDS;
 // Prefs moved from evionai: to reysonai: keys with the rename; the old key is still read.
 const readPref = <T,>(key: string, fallback: T): T => { try { const v = localStorage.getItem(key) ?? localStorage.getItem(key.replace(/^reysonai:/, "evionai:")); return v == null ? fallback : JSON.parse(v); } catch { return fallback; } };
 const writePref = (key: string, value: unknown) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ } };
-
-function Card({ card, hidden = false, size = "" }: { card?: string; hidden?: boolean; size?: string }) {
-  if (hidden || !card) return <span className={`agent-card is-back ${size}`} />;
-  return <span className={`trainer-card suit-${card[1]} agent-card ${size}`}><b>{card[0]}</b><i>{SUITS[card[1]]}</i></span>;
-}
 
 const bb = (value?: number) => value == null ? "" : `${+value.toFixed(2)}`;
 const pts = (value: number) => toPoints(value).toLocaleString();
@@ -243,7 +238,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
             <span className="agent-felt-logo" aria-hidden="true">ReysonAI</span>
             <div className="agent-center">
               <div className="agent-board">{[0, 1, 2, 3, 4].map(i => boardCards[i]
-                ? <Card key={`${i}-${boardCards[i]}`} card={boardCards[i]} size="is-board" />
+                ? <PlayingCard variant="agent" key={`${i}-${boardCards[i]}`} card={boardCards[i]} size="is-board" />
                 : <span key={i} className="agent-card is-slot is-board" />)}</div>
               {done ? <div className="agent-result" key={session.handNo}>
                   <b>{winnerLine}</b>
@@ -277,7 +272,7 @@ export function AgentTablePage({ tableId, watch = false, onExit }: { tableId: st
               const delta = done ? toPoints(result!.returns![pos] ?? 0) : null;
               const stack = done ? 100 + (result!.returns![pos] ?? 0) : 100 - (chips.committed[pos] ?? 0);
               return <div key={index} className={`agent-seat slot-${slotIndex}${isHuman ? " is-human" : ""}${folded ? " is-folded" : ""}${won ? " is-winner" : ""}${actingPos === pos ? " is-acting" : ""}`}>
-                <div className="agent-hole">{(result?.holeCards[pos] ?? []).map((card, i) => <Card key={`${session.handNo}-${i}`} card={card} hidden={!showCards} size={isHuman ? "is-hero" : ""} />)}</div>
+                <div className="agent-hole">{(result?.holeCards[pos] ?? []).map((card, i) => <PlayingCard variant="agent" key={`${session.handNo}-${i}`} card={card} hidden={!showCards} size={isHuman ? "is-hero" : ""} />)}</div>
                 <div className="agent-plate">
                   <div className="agent-avatar">
                     {character ? <AgentAvatar id={character.id} color={character.color} size={50} state={won ? "win" : folded ? "fold" : "idle"} /> : <span className="agent-you">YOU</span>}
@@ -364,7 +359,7 @@ function HandLog({ entries, nameOf, board }: { entries: LogEntry[]; nameOf: (pos
   return <div className="agent-log-body">
     {groups.map(group => <div key={group.street} className="agent-log-street">
       <header><span>{label[group.street]}</span>
-        {CARDS[group.street] > 0 && <span className="agent-log-cards">{board.slice(group.street === "flop" ? 0 : CARDS[group.street] - 1, CARDS[group.street]).map(card => <Card key={card} card={card} size="is-tiny" />)}</span>}</header>
+        {CARDS[group.street] > 0 && <span className="agent-log-cards">{board.slice(group.street === "flop" ? 0 : CARDS[group.street] - 1, CARDS[group.street]).map(card => <PlayingCard variant="agent" key={card} card={card} size="is-tiny" />)}</span>}</header>
       <ul>{group.items.map((entry, i) => <li key={i} className={`tone-${tone(entry.action)}`}><span>{nameOf(entry.pos)}<small>{entry.pos}</small></span><b>{actionLabel(asDisplayed(entries, entry))}</b></li>)}</ul>
     </div>)}
     <div ref={end} />
