@@ -12,7 +12,7 @@ const ORIGIN = fileURLToPath(new URL('../../../', import.meta.url));
 const PARENT_ENTRY = 'apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs';
 const REQUIRED = ['apps/frontend/scripts/verify-mw3-local-d1.mjs', PARENT_ENTRY, 'apps/frontend/scripts/ci/mw3-local-command.mjs', 'apps/frontend/scripts/ci/mw3-api-oracle.mjs',
   'apps/frontend/scripts/ci/postflop-command-supervisor.py', 'apps/frontend/scripts/postflop-ai/mw3-reviewed-snapshot.mjs',
-  'apps/frontend/scripts/postflop-ai/mw3-reviewed-delivery.mjs'];
+  'apps/frontend/scripts/postflop-ai/mw3-reviewed-delivery.mjs', 'apps/frontend/scripts/ci/mw3-registry-mode.mjs', 'apps/shared/mw3-approved.ts'];
 const OWNER_SHA = '61d0fe490ff4e1e82667a8ec188c1206efd1c26067ff8d6061b4bc8a1a67164d';
 const sha = body => createHash('sha256').update(body).digest('hex');
 const jsonBytes = value => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
@@ -39,13 +39,14 @@ export function readBoundaryFile(root, path, limit) {
   } finally { closeSync(fd); }
 }
 export function parseArguments(argv) {
-  const options = {}, keys = { '--manifest': 'manifest', '--archive': 'archive', '--receipt': 'receipt', '--sql': 'sql', '--wrangler': 'wrangler' };
+  const options = {}, keys = { '--manifest': 'manifest', '--archive': 'archive', '--receipt': 'receipt', '--sql': 'sql', '--wrangler': 'wrangler', '--registry-mode': 'registryMode' };
   for (let i = 0; i < argv.length; i++) {
     const key = keys[argv[i]], value = argv[i + 1];
     assert.ok(key && !Object.hasOwn(options, key) && value && !value.startsWith('--'), 'Unknown, duplicate or missing verification argument');
     options[key] = argv[++i];
   }
-  for (const key of Object.values(keys)) assert.ok(options[key], `Required: --${key}`);
+  for (const key of ['manifest', 'archive', 'receipt', 'sql', 'wrangler']) assert.ok(options[key], `Required: --${key}`);
+  assert.ok(['empty', 'activated'].includes(options.registryMode ?? 'empty'), 'Registry mode must be empty or activated');
   return options;
 }
 const git = (root, args, options = {}) => execFileSync('git', ['--no-replace-objects', ...args], {
@@ -140,7 +141,8 @@ export function captureReviewedParent(options, origin = ORIGIN) {
   const directory = mkdtempSync(join(local, 'mw3-parent-boundary-')), root = join(directory, 'repository'); mkdirSync(root);
   try {
   const inputBytes = {}, inputRecords = {}, limits = { manifest: 2 * 1024 * 1024, archive: 8 * 1024 * 1024, receipt: 2 * 1024 * 1024, sql: 128 * 1024 * 1024 };
-  const capturedOptions = { wrangler: resolve(options.wrangler) };
+  const registryMode = options.registryMode ?? 'empty'; assert.ok(['empty', 'activated'].includes(registryMode));
+  const capturedOptions = { wrangler: resolve(options.wrangler), registryMode };
   for (const [kind, limit] of Object.entries(limits)) {
     const path = relative(origin, resolve(options[kind])).split(sep).join('/'); safePath(path);
     inputBytes[kind] = readBoundaryFile(origin, path, limit); inputRecords[kind] = { original_path: path, ...digest(inputBytes[kind]) };
@@ -172,7 +174,7 @@ export function captureReviewedParent(options, origin = ORIGIN) {
   // never a source import, and does not change the origin's Git configuration.
   const gitDirectory = writeBoundaryGitPointer(origin, root);
   writeFileSync(join(directory, 'capture.json'), jsonBytes({ schema_version: 1, origin, root, source_tree: manifest.source_tree,
-    original_inputs: inputRecords, sources: allRecords, trusted_entry: 'builtin-only bootstrap and installed Node; bootstrap evaluated bytes are not loader-attested', git_metadata_directory: gitDirectory }), { flag: 'wx' });
+    registry_mode: registryMode, original_inputs: inputRecords, sources: allRecords, trusted_entry: 'builtin-only bootstrap and installed Node; bootstrap evaluated bytes are not loader-attested', git_metadata_directory: gitDirectory }), { flag: 'wx' });
   return { directory, root, records: allRecords, buffers, capturedOptions, inputRecords, manifest };
   } catch (error) {
     try { writeFileSync(join(directory, 'capture-failure.json'), jsonBytes({ status: 'fail', message: error.message, root }), { flag: 'wx' }); }
@@ -187,10 +189,10 @@ export async function verifyFromCapturedParent(options) {
   const preloads = /(?:^|\s)(?:--(?:import|require|loader|experimental-loader)(?:=|\s)|-r\S*(?:\s|$))/;
   assert.ok(!preloads.test(process.env.NODE_OPTIONS ?? '') && !process.execArgv.some(arg => /^(?:--(?:import|require|loader|experimental-loader)(?:=|$)|-r)/.test(arg)), 'Custom preload/loader options are outside the trusted strict entry boundary');
   const captured = captureReviewedParent(options), executionLedgerPath = join(captured.directory, 'parent.execution.json');
-  const binding = installCapturedParentHooks({ ...captured, executionLedgerPath, metadata: { original_inputs: captured.inputRecords,
+  const binding = installCapturedParentHooks({ ...captured, executionLedgerPath, metadata: { registry_mode: captured.capturedOptions.registryMode, original_inputs: captured.inputRecords,
     source_tree: captured.manifest.source_tree, trusted_entry: 'builtin-only bootstrap and installed Node' } });
   const parentBoundary = { root: captured.root + sep, executionLedgerPath,
-    assertReady(url) { assert.equal(fileURLToPath(url), join(captured.root, PARENT_ENTRY)); binding.assertLoaded(PARENT_ENTRY); binding.assertLoaded('apps/frontend/scripts/ci/mw3-local-command.mjs'); },
+    assertReady(url) { assert.equal(fileURLToPath(url), join(captured.root, PARENT_ENTRY)); binding.assertLoaded(PARENT_ENTRY); binding.assertLoaded('apps/frontend/scripts/ci/mw3-local-command.mjs'); binding.assertLoaded('apps/shared/mw3-approved.ts'); binding.assertLoaded('apps/frontend/scripts/ci/mw3-registry-mode.mjs'); },
     assertSnapshot(bytes, manifest) { assert.equal(sha(bytes), captured.inputRecords.manifest.sha256); assert.equal(manifest.source_tree, captured.manifest.source_tree);
       assert.equal(manifest.sources_sha256, captured.manifest.sources_sha256); assert.equal(manifest.inputs_sha256, captured.manifest.inputs_sha256); },
   };

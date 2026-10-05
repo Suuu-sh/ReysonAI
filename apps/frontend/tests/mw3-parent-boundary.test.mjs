@@ -132,7 +132,7 @@ test('captured typed TS, relative TS and JSON dependencies evaluate from recorde
   } finally { if (binding) binding.finish('fail'); retain(directory, passed); }
 });
 
-test('the complete actual parent graph links under exact-buffer hooks, including all six required TS modules, without invoking the oracle', async () => {
+test('the complete actual parent graph links under exact-buffer hooks, including the captured shared registry and all seven required TS modules, without invoking the oracle', async () => {
   const directory = mkdtempSync(join(tmpdir(), 'mw3-parent-real-graph-')), root = join(directory, 'replay'); mkdirSync(root);
   const origin = fileURLToPath(new URL('../../../', import.meta.url)), entry = 'apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs';
   const files = new Map(); let binding;
@@ -147,9 +147,9 @@ test('the complete actual parent graph links under exact-buffer hooks, including
       }
     }
     visit(entry);
-    const expectedTs = ['apps/frontend/src/data.ts', 'apps/frontend/src/estimated/multiway-responses.ts',
+    const expectedTs = ['apps/shared/mw3-approved.ts', 'apps/frontend/src/data.ts', 'apps/frontend/src/estimated/multiway-responses.ts',
       'apps/frontend/src/estimated/opening-ranges.ts', 'apps/frontend/src/estimated/rake.ts',
-      'apps/frontend/src/estimated/ranges.ts', 'apps/frontend/src/estimated/sizing.ts'];
+      'apps/frontend/src/estimated/ranges.ts', 'apps/frontend/src/estimated/sizing.ts'].sort();
     assert.deepEqual([...files.keys()].filter(path => path.endsWith('.ts')).sort(), expectedTs);
     const records = [...files].map(([path, bytes]) => row(path, bytes)), buffers = captureBoundaryRecords(origin, root, records);
     const executionLedgerPath = join(directory, 'parent.execution.json');

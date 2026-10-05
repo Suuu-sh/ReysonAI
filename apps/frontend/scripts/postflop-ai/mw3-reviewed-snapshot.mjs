@@ -44,7 +44,7 @@ function sourcePathsFor(identity) {
     }
   };
   const roots = [...MW3_SEMANTIC_SOURCES, ...identity.verificationFiles,
-    'mw3-reviewed-archive.mjs', 'mw3-reviewed-snapshot.mjs', 'mw3-reviewed-delivery.mjs', 'mw3-reviewed-restore.mjs', 'mw3-snapshot-cli.mjs', 'mw3-acceptance-evidence.mjs', 'mw3-browser-inputs.mjs', 'mw3-transport.mjs', 'mw3-delivery.mjs'];
+    'mw3-reviewed-archive.mjs', 'mw3-reviewed-snapshot.mjs', 'mw3-reviewed-delivery.mjs', 'mw3-reviewed-restore.mjs', 'mw3-snapshot-cli.mjs', 'mw3-draft-pins.mjs', 'mw3-acceptance-evidence.mjs', 'mw3-browser-inputs.mjs', 'mw3-transport.mjs', 'mw3-delivery.mjs'];
   roots.forEach(name => visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, FRONTEND, 'scripts/postflop-ai', name))));
   identity.sourceFiles.forEach(path => visit(FRONTEND + path));
   // Binding the consumer/backend source independently keeps presentation out of
@@ -53,7 +53,7 @@ function sourcePathsFor(identity) {
     `${FRONTEND}src/estimated/mw3-browser.ts`, `${FRONTEND}src/estimated/Mw3RangeView.tsx`, `${FRONTEND}src/estimated/RangeWorkspace.tsx`,
     `${FRONTEND}src/agent/mw3-hand.ts`, `${FRONTEND}src/agent/hand.ts`, `${FRONTEND}src/agent/AgentTable.tsx`,
     `${FRONTEND}scripts/ci/postflop-command-supervisor.py`, `${FRONTEND}scripts/ci/mw3-local-command.mjs`,
-    `${FRONTEND}scripts/ci/mw3-api-oracle.mjs`, `${FRONTEND}scripts/ci/mw3-local-d1-oracle.mjs`, `${FRONTEND}scripts/verify-mw3-local-d1.mjs`,
+    `${FRONTEND}scripts/ci/mw3-api-oracle.mjs`, `${FRONTEND}scripts/ci/mw3-registry-mode.mjs`, `${FRONTEND}scripts/ci/mw3-local-d1-oracle.mjs`, `${FRONTEND}scripts/verify-mw3-local-d1.mjs`,
     `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`, 'configs/cash-6max-100bb.json', '.gitattributes'].forEach(visit);
   return [...found].sort();
 }

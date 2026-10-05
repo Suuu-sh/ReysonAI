@@ -7,10 +7,11 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { registryHealth, apiPhaseRows } from '../scripts/ci/mw3-registry-mode.mjs';
 import { assertApiInputLedger } from '../scripts/ci/mw3-api-oracle.mjs';
 import { assertCompletedCommand, runSupervisedCommand } from '../scripts/ci/mw3-local-command.mjs';
 import { assertApiCompletion, bundleCapturedApiControl, localConfig, runCapturedApiPhase, writeCapturedSources } from '../scripts/ci/mw3-local-d1-oracle.mjs';
-import { prepareMw3SnapshotDeliveries } from '../scripts/postflop-ai/mw3-reviewed-delivery.mjs';
+import { prepareMw3SnapshotDeliveries, mw3DeliveryPins } from '../scripts/postflop-ai/mw3-reviewed-delivery.mjs';
 import { MW3_TIERS } from '../scripts/postflop-ai/mw3-hand-features.mjs';
 import { sha256, jsonBytes } from '../scripts/postflop-ai/mw3-reviewed-archive.mjs';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
@@ -45,22 +46,25 @@ async function syntheticPrepared() {
   return { snapshot, deliveries: await prepareMw3SnapshotDeliveries(snapshot) };
 }
 function fakeWorkerSource(fault = '') {
-  return `import {createServer} from 'node:http';import {readFileSync,writeFileSync,appendFileSync} from 'node:fs';import {createHash} from 'node:crypto';
-const expected=JSON.parse(readFileSync('api.expected.json','utf8')),sha=s=>createHash('sha256').update(s).digest('hex');
+  return `import {createServer} from 'node:http';import {readFileSync,writeFileSync,appendFileSync,readdirSync} from 'node:fs';import {createHash} from 'node:crypto';
+const expectedPath=readdirSync('.').filter(name=>/^api-phase-[23]\\.expected\\.json$/.test(name)).sort().at(-1)||'api.expected.json';
+const expected=JSON.parse(readFileSync(expectedPath,'utf8')),sha=s=>createHash('sha256').update(s).digest('hex');
 const port=Number(process.argv[process.argv.indexOf('--port')+1]);
+const activated=expected.registryContract?.mode==='activated',base=activated?'/v1/mw3':'/__mw3_local_oracle/v1/mw3';
 const served=[];const server=createServer((req,res)=>{
-const url=new URL(req.url,'http://127.0.0.1');res.once('finish',()=>{const record={index:served.length+1,worker_pid:process.pid,method:req.method,path:url.pathname,delivery:url.searchParams.get('delivery'),part:url.searchParams.get('part'),status:res.statusCode};served.push(record);appendFileSync('fake-http.finished.jsonl',JSON.stringify(record)+'\\n')});const json=(status,body,headers={})=>{res.writeHead(status,{'content-type':'application/json',...headers});res.end(JSON.stringify(body))};
-if(url.pathname==='/__mw3_verify_health')return json(200,{local_only:true,registry_entries:0});
-if(!url.pathname.startsWith('/__mw3_local_oracle/'))return json(404,{error:'unpublished_delivery'});
+const url=new URL(req.url,'http://127.0.0.1');res.once('finish',()=>{const record={index:served.length+1,worker_pid:process.pid,method:req.method,path:url.pathname,delivery:url.searchParams.get('delivery'),part:url.searchParams.get('part'),status:res.statusCode};served.push(record);appendFileSync('fake-http.finished.jsonl',JSON.stringify(record)+'\\n')});const json=(status,body,headers={})=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store',...headers});res.end(JSON.stringify(body))};
+if(url.pathname==='/__mw3_verify_health')return json(200,activated?{local_only:true,registry_entries:expected.registryContract.entries,registry_mode:'activated',registry_source_sha256:${JSON.stringify(fault)}==='wrong-registry-health'?'0'.repeat(64):expected.registryContract.source_sha256,registry_pins_sha256:expected.registryContract.pins_sha256,subject_pair_sha256:expected.registryContract.subject_pair_sha256,subject_pair:expected.registryContract.subject_pair}:{local_only:true,registry_entries:0});
+if(!url.pathname.startsWith(base+'/'))return json(404,{error:activated?'not_found':'unpublished_delivery'});
 if(req.method!=='GET'){
 const final=expected.deliveries.at(-1),lastPost=req.method==='POST'&&url.pathname==='/__mw3_local_oracle/v1/mw3/manifest'&&url.searchParams.getAll('delivery').length===1&&url.searchParams.get('delivery')===final.deliveryHash;
 if(lastPost&&['last-response-nonzero','last-response-signal'].includes(${JSON.stringify(fault)}))res.once('finish',()=>{
 writeFileSync('fake-http.final-fault.json',JSON.stringify({fault:${JSON.stringify(fault)},worker_pid:process.pid,final_delivery:final.deliveryHash,response_index:served.length,finished:served}),{flag:'wx'});
 if(${JSON.stringify(fault)}==='last-response-nonzero')process.exit(7);else process.kill(process.pid,'SIGKILL');});
 return json(405,{error:'method_not_allowed'},{allow:'GET'});}
-if(url.searchParams.getAll('delivery').length!==1)return json(400,{error:'bad_query'});
+const isPart=url.pathname.endsWith('/part');if(url.searchParams.getAll('delivery').length!==1||activated&&([...url.searchParams].length!==(isPart?2:1)||[...url.searchParams].some(([key])=>!(isPart?['delivery','part']:['delivery']).includes(key))||isPart&&!/^(0|[1-9][0-9]{0,3})$/.test(url.searchParams.get('part')||'')))return json(400,{error:activated?'invalid_query':'bad_query'});
 const delivery=expected.deliveries.find(row=>row.deliveryHash===url.searchParams.get('delivery'));
 if(!delivery)return json(404,{error:'unpublished_delivery'});
+if(expected.probe?.delivery_hash===delivery.deliveryHash&&(expected.probe.kind==='header'||isPart&&expected.probe.part===Number(url.searchParams.get('part'))))return json(503,{error:'delivery_unavailable'});
 let text,etag;
 if(url.pathname.endsWith('/manifest')){text=delivery.headerText;etag='"'+delivery.deliveryHash+'"';}
 else {const part=delivery.parts[Number(url.searchParams.get('part'))];if(!part)return json(404,{error:'part_not_found'});text=JSON.stringify({part:part.part,body:part.body});etag='"'+sha(text)+'"';}
@@ -259,5 +263,49 @@ test('a graceful signal-handling worker normal exit zero is accepted only with e
     assert.ok(history.some(row => row.term_pids.includes(worker.pid)));
     assert.ok(history.some(row => row.reaped.some(reaped => reaped.pid === worker.pid && reaped.start_ticks === worker.start_ticks && reaped.returncode === 0)));
     passed = true;
+  } finally { retain(directory, passed); }
+});
+
+test('activated synthetic API contract binds exact registry health and four bounded owned phases including corruption rejection', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'mw3-api-activated-')); let passed = false;
+  try {
+    const fixture = await createApiFixture(directory), { prepared, capture, pins, control } = fixture;
+    const subjectPair = mw3DeliveryPins(prepared.snapshot, prepared.deliveries);
+    prepared.registryContract = { mode: 'activated', entries: 2, source_sha256: sha256('synthetic captured registry source, never real approval'),
+      pins_sha256: sha256(JSON.stringify(subjectPair)), subject_pair_sha256: sha256(JSON.stringify(subjectPair)), subject_pair: subjectPair,
+      unknown_hash: sha256('synthetic unapproved hash') };
+    for (const restart of [0, 1, 2, 3]) {
+      const probe = restart < 2 ? null : { kind: restart === 2 ? 'header' : 'part', delivery_hash: prepared.deliveries[1].deliveryHash,
+        ...(restart === 3 ? { part: prepared.deliveries[1].parts.at(-1).part } : {}) };
+      const rows = runCapturedApiPhase({ directory, pins, capture, prepared, restart, control, probe });
+      assert.deepEqual(rows, apiPhaseRows(prepared, probe));
+      const id = `api-phase-${restart}`, ledger = JSON.parse(readFileSync(join(directory, `${id}.input-ledger.json`)));
+      assert.equal(ledger.registry_mode, 'activated'); assertApiInputLedger(directory, ledger);
+      const changed = structuredClone(ledger); changed.registry_mode = 'empty';
+      if (restart >= 2) assert.throws(() => assertApiInputLedger(directory, changed), /bounded registry-mode/);
+      const outcome = JSON.parse(readFileSync(join(directory, id, 'outcome.json')));
+      assert.equal(outcome.parent_cleanup.complete, true);
+      assert.ok(outcome.resource.cleanup_history.some(record => record.term_pids.length || record.kill_pids.length));
+      const completion = JSON.parse(readFileSync(join(directory, `${id}.complete.json`)));
+      assert.equal(completion.rows.length, 2);
+    }
+    const health = registryHealth(prepared.registryContract);
+    assert.equal(health.registry_source_sha256, prepared.registryContract.source_sha256);
+    assert.deepEqual(health.subject_pair, subjectPair);
+    passed = true;
+  } finally { retain(directory, passed); }
+});
+
+test('activated health rejects the same registry count with a different captured source identity', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'mw3-api-wrong-registry-health-')); let passed = false;
+  try {
+    const fixture = await createApiFixture(directory, 'wrong-registry-health'), pair = mw3DeliveryPins(fixture.prepared.snapshot, fixture.prepared.deliveries);
+    fixture.prepared.registryContract = { mode: 'activated', entries: 2, source_sha256: sha256('synthetic actual source'), pins_sha256: sha256(JSON.stringify(pair)),
+      subject_pair_sha256: sha256(JSON.stringify(pair)), subject_pair: pair, unknown_hash: sha256('synthetic unknown') };
+    const error = captureError(() => runCapturedApiPhase({ directory, ...fixture, restart: 0 }));
+    assert.equal(error.commandOutcome.parent_cleanup.complete, true);
+    assert.equal(error.commandOutcome.resource.actual_returncode, 1);
+    assert.throws(() => readFileSync(join(directory, 'api-phase-0.complete.json')), /ENOENT/);
+    assert.match(error.stderr, /AssertionError/); passed = true;
   } finally { retain(directory, passed); }
 });

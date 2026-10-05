@@ -1,8 +1,10 @@
 # 3人SRP・段階1 実装記録（未完了）
 
-更新: 2026-10-05 00:23 UTC。到達可能16経路すべての全量gateと独立Astra品質reviewが完了し、限定AI estimateとして16/16受入れ済み、公開承認registryは0。全経路合計28,080 flop / 3,776 later boards、1,469 positive joint events×20,000合法tuple＋259支持0、自己対戦1,920,000手と同数replayを照合した。共同防御警告は合計561件を保持し、均衡品質の承認ではない。Range/Agent/API専用consumerとD1 oracleはfocused検証まで完了。正式archive/receipt/実strictD1、全体suite、実browser QA、実LFS配送、公開gateは未完了。現在はRanked本番hotfixへ計算枠を優先し、追加Nodeを停止している。下の時刻付き記録は履歴であり、現在の公開可否は冒頭と次節を優先。
+更新: 2026-10-05 00:23 UTC。到達可能16経路すべての全量gateと独立Astra品質reviewが完了し、限定AI estimateとして16/16受入れ済み、公開承認registryは0。全経路合計28,080 flop / 3,776 later boards、1,469 positive joint events×20,000合法tuple＋259支持0、自己対戦1,920,000手と同数replayを照合した。共同防御警告は合計561件を保持し、均衡品質の承認ではない。Range/Agent/API専用consumerとD1 oracleはfocused検証まで完了。正式archive/receipt/実strictD1、全体suite、実browser QA、実LFS配送、公開gateは未完了。Ranked hotfixは統合済みで、activationの実pin/source差分reviewを進めている。下の時刻付き記録は履歴であり、現在の公開可否は冒頭と次節を優先。
 
 ## 現在の検証済み範囲
+
+- 2026-10-05 01:05 UTC: activation準備をexact `a2cf5f6e`で統合。Node24のfocused49 / consumer35 / backend6=90/90・skip0、syntax7、Stage2 restoreを29.82秒でPASSし、独立Astraが実44module/7TS、R1拒否、raw112/前後source不変を照合して限定統合GO。32 draft pinを102.23秒・累積child maxRSS283,860KiBで導出済み。Registryはまだ空、実pin/source差分の独立reviewと正式artifact/D1は別gate。Draft JSONの仮manifest/source_treeは正式receiptへ流用しない。
 
 - 最後のUTG→HJ→CO / UTG→CO→SB / UTG→HJ→SBも独立Astraの限定受入れ。21raw files・181,395 rules・540初動anchors・360k handsを確認。Joint支持は96/12、90/18、90/18で個別確認し、警告32/37/37を残す。SBは8classes・17.9 weighted combosと集中し、参考MDF不足とovercontinueが双方残る。`multiway-postflop-stage1.final-utg-quality-review.md`参照。
 - D1統合PR head `4be6b468bfd61d8953c29c1759a4523e2028a10e`のNode22.20 CIは174frontend＋6backend=180/180、skip0をPASS。これにはcaptured-parentとowned/API lifecycleの合成実process検証を含む。正式保存物を使うstrictD1および全frontend suiteは含まない。
@@ -192,3 +194,10 @@ Materializeは`materialize-mw3-pilot.mjs --spot CO_open_BTN_call_BB_call --model
 - 独立Astraが数値/author/gate/browser-inputの推移依存37ファイルを比較し変更0。implementation/verificationと保存2候補・5report hash一致。HU dispatch/defenceへの混入なし。V4数値証拠の再利用を承認し、統合だけを理由にした再author/MC再走は不要と判断。旧snapshot実行の記録は書き換えない。
 - 統合後Node検証: frontend58＋backend4＝62/62 PASS、skip0、`npm run typecheck` PASS（設定対象はsite/backendで、Range/Agent全体の型検証ではない）。19:46:44 UTC終了。Nodeの現source fingerprintとimplementation hashも旧V4値と一致。ログは `.local/postflop-ai/mw3/shared-integration-checks.log`。
 - 対象browser再bundleと最終UI接続QAは後続gate。共有sourceの意味が変わった場合はstale判定と差分独立reviewを保ち、影響する品質gateを再計算する。残15の個別authorはこの安定baseで再開し、未生成/未受入れの公開は引き続き不可。
+
+
+## 2026-10-05 bounded activation preparation (static only; not approval)
+
+The strict D1 helper now has separate optional `empty` and `activated` verification contracts. Empty preserves the original two-phase empty-registry/public404 proof. Activated binds the actual captured/evaluated shared build registry's exact source/pins/subject-pair identity to a matching new independent receipt, restores through real public route paths, and adds two bounded owned header/part-corruption rejection probes with exact full-database repair. The unchanged owner, final-worker TERM/KILL/reap acceptance, builtin-only captured-parent/strip ledger, original repeated whole imports, immutable-conflict rollback, unrelated 18-table and restart preservation gates remain mandatory.
+
+A serial transport-only CLI is prepared to derive 32 draft pins from the fixed 112-file inventory and saved candidates. No recipe or strategy authoring is involved. The command has not run, no actual delivery pins have been generated, and the shared approval registry remains empty. Source changes require independent review; historical empty-mode GO/43 focused tests and 180 Node22 CI contracts do not prove activation. The seven accepted strategy limitations, 13 numerical sources, eight authored gate-hash inputs, 20 recipes, all raw bytes and frequencies remain unchanged. See `../mw3-local-d1-verification.md` for exact command, mode contracts and required serial proof/freeze sequence. All new JavaScript syntax/tests, encoding, strict D1, final receipt/archive/SQL, browser QA and public release gates remain pending.

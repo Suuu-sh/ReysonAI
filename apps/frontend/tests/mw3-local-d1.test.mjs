@@ -6,8 +6,10 @@ import { dirname, join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { WRANGLER_VERSION, RUNTIME_PINS, UNRELATED_TABLES, parseArguments, localConfig, validateLocalConfig, validateRuntimePackages, readRuntimePins,
   completedJson, assertFinishedSqlFailure, assertReviewedSql, assertDeliveryRows, databaseSnapshot, preservationSeed,
-  conflictSetup, localWorkerSource, loadReviewedDelivery, capturePinnedFiles, writeCapturedSources, assertCapturedSources,
+  conflictSetup, repairConflict, corruptionSetup, bindCapturedRegistry, localWorkerSource, loadReviewedDelivery, capturePinnedFiles, writeCapturedSources, assertCapturedSources,
   runSupervisedCommand, verifyMw3LocalD1 } from '../scripts/ci/mw3-local-d1-oracle.mjs';
+import { assertRegistryMode, assertApiPhase, registryHealth } from '../scripts/ci/mw3-registry-mode.mjs';
+import { parseArguments as parseBoundaryArguments } from '../scripts/verify-mw3-local-d1.mjs';
 import { localEnvironment } from '../scripts/ci/mw3-local-command.mjs';
 import { prepareMw3SnapshotDeliveries, mw3DeliveryPins, buildMw3DeliverySql } from '../scripts/postflop-ai/mw3-reviewed-delivery.mjs';
 import { sha256, jsonBytes } from '../scripts/postflop-ai/mw3-reviewed-archive.mjs';
@@ -52,7 +54,11 @@ function seededDatabase() {
 test('strict CLI requires every saved input and a pinned existing runtime, refusing reduced or remote coverage', () => {
   const args = ['--manifest', 'a', '--archive', 'b', '--receipt', 'c', '--sql', 'd', '--wrangler', 'e'];
   assert.deepEqual(parseArguments(args), { manifest: 'a', archive: 'b', receipt: 'c', sql: 'd', wrangler: 'e' });
-  for (const input of [[], args.slice(0, -2), [...args, '--remote'], [...args, '--bounded-local'], [...args, '--miniflare', 'e'],
+  for (const mode of ['empty', 'activated']) {
+    assert.equal(parseArguments([...args, '--registry-mode', mode]).registryMode, mode);
+    assert.deepEqual(parseArguments([...args, '--registry-mode', mode]), parseBoundaryArguments([...args, '--registry-mode', mode]));
+  }
+  for (const input of [[...args, '--registry-mode', 'approved'], [...args, '--skip-receipt', 'true'], [...args, '--approval', 'true'], [], args.slice(0, -2), [...args, '--remote'], [...args, '--bounded-local'], [...args, '--miniflare', 'e'],
     [...args, '--config', 'production.json'], [...args, '--sql', 'again'], [...args.slice(0, -1)]]) assert.throws(() => parseArguments(input));
 });
 test('runtime metadata pins actual Wrangler and its exact installed dependencies', () => {
@@ -258,4 +264,49 @@ test('runtime pins follow wrangler-dist and Miniflare dependency resolution rath
 
 test('the application oracle cannot start the strict gate from mutable live imports without its captured parent boundary', async () => {
   await assert.rejects(() => verifyMw3LocalD1({ wrangler: '/unused/synthetic-wrangler.js' }), /captured parent boundary/);
+});
+
+test('captured activated registry must match the receipt subject pair and actual evaluated immutable source authority', async () => {
+  const f = await syntheticFixture(), pair = f.receipt.deliveries;
+  const registrySource = pins => Buffer.from(`export type Mw3ApprovedPolicy = { spotId: string; stage: "flop" | "later"; deliveryHash: string; implementationHash: string; policyHash: string; sourceHash: string; }; export const MW3_APPROVED_POLICIES: readonly Mw3ApprovedPolicy[] = Object.freeze(${JSON.stringify(pins)});`);
+  const prepared = pins => ({ ...f, review: f.receipt, capture: { files: new Map([['apps/shared/mw3-approved.ts', registrySource(pins)]]) } });
+  const empty = Object.freeze([]);
+  assert.equal(bindCapturedRegistry(prepared([]), 'empty', empty).entries, 0);
+  assert.throws(() => bindCapturedRegistry(prepared([]), 'activated', empty), /cannot grant approval/);
+  const evaluated = Object.freeze(pair.map(pin => Object.freeze({ ...pin })));
+  const contract = bindCapturedRegistry(prepared(pair), 'activated', evaluated);
+  assert.equal(contract.source_sha256, sha256(registrySource(pair)));
+  assert.deepEqual(registryHealth(contract).subject_pair, pair);
+  const worker = localWorkerSource(f.deliveries, contract);
+  assert.match(worker, /routeMw3Transport\(request, env.MW3_LOCAL_VERIFY, MW3_APPROVED_POLICIES\)/);
+  assert.match(worker, /CONTRACT.pins_sha256/); assert.match(worker, /CONTRACT.subject_pair/);
+  assert.doesNotMatch(worker, /LOCAL_ORACLE_PINS|__mw3_local_oracle/);
+  assert.throws(() => bindCapturedRegistry(prepared(pair), 'empty', evaluated), /actual empty/);
+  assert.throws(() => bindCapturedRegistry(prepared(pair), 'activated', empty), /Actual evaluated/);
+  for (const change of [pins => { pins.pop(); }, pins => { pins.push(pins[0]); }, pins => { pins[0].sourceHash = '0'.repeat(64); },
+    pins => { pins[1].implementationHash = '0'.repeat(64); }, pins => { pins[0].policyHash = '0'.repeat(64); }, pins => { pins[0].deliveryHash = '0'.repeat(64); }]) {
+    const changed = structuredClone(pair); change(changed);
+    assert.throws(() => bindCapturedRegistry(prepared(changed), 'activated', Object.freeze(changed)));
+  }
+  const wrongReceipt = prepared(pair); wrongReceipt.review = { ...f.receipt, deliveries: [] };
+  assert.throws(() => bindCapturedRegistry(wrongReceipt, 'activated', evaluated), /independent Mw3 acceptance receipt/);
+});
+test('mode-only phase expansion is bounded and exact API corruption fixtures restore every original database byte', async () => {
+  const f = await syntheticFixture();
+  for (const phase of [0, 1]) assertApiPhase('empty', phase);
+  for (const phase of [0, 1, 2, 3]) assertApiPhase('activated', phase);
+  for (const phase of [-1, 2, 3, 4, 1.5]) assert.throws(() => assertApiPhase('empty', phase));
+  for (const phase of [-1, 4, 1.5]) assert.throws(() => assertApiPhase('activated', phase));
+  assert.throws(() => assertRegistryMode('approved'));
+  for (const kind of ['header', 'part']) {
+    const db = seededDatabase();
+    try {
+      db.exec(f.sql); const before = databaseSnapshot(db), unrelated = databaseSnapshot(db, { excludeMw3: true });
+      db.exec(corruptionSetup(f.deliveries, kind));
+      assert.notDeepEqual(databaseSnapshot(db), before); assert.deepEqual(databaseSnapshot(db, { excludeMw3: true }), unrelated);
+      assert.throws(() => assertDeliveryRows(db, f.deliveries));
+      db.exec(repairConflict(f.deliveries, kind));
+      db.exec(f.sql); assertDeliveryRows(db, f.deliveries); assert.deepEqual(databaseSnapshot(db), before);
+    } finally { db.close(); }
+  }
 });

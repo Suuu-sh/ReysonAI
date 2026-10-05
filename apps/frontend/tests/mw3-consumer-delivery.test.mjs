@@ -6,10 +6,10 @@ import { deferred, deliveryFixture, repinHeader } from './helpers/mw3-consumer-f
 const fixture = await deliveryFixture();
 const create = overrides => createMw3DeliveryClient({ ...fixture.readers, ...overrides });
 
-test('empty build approval list rejects without fetching; URL parameters cannot authorize a candidate', async () => {
-  assert.equal(MW3_APPROVED_POLICIES.length, 0); assert.ok(Object.isFrozen(MW3_APPROVED_POLICIES));
+test('explicitly empty injected approval list rejects without fetching; URL parameters cannot authorize a candidate', async () => {
+  assert.ok(Object.isFrozen(MW3_APPROVED_POLICIES));
   let reads = 0;
-  const client = createMw3DeliveryClient({ readManifest: async () => { reads++; throw Error('must not fetch'); }, readDataset: async () => { reads++; } });
+  const client = createMw3DeliveryClient({ registry: Object.freeze([]), readManifest: async () => { reads++; throw Error('must not fetch'); }, readDataset: async () => { reads++; } });
   assert.equal(client.supportsSpot(fixture.id), false);
   await assert.rejects(client.load(fixture.id), error => error instanceof Mw3UnavailableError && error.reason === 'unapproved');
   assert.equal(reads, 0);

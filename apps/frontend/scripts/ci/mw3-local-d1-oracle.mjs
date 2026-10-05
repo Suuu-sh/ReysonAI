@@ -15,7 +15,10 @@ export { assertApiRestoration } from './mw3-api-oracle.mjs';
 import { verifyMw3SourceTree } from '../postflop-ai/mw3-source-tree.mjs';
 import { MW3_REPOSITORY, verifyMw3Snapshot } from '../postflop-ai/mw3-reviewed-snapshot.mjs';
 import { MW3_ARCHIVE_LIMITS, jsonBytes, readSafeFile, sha256 } from '../postflop-ai/mw3-reviewed-archive.mjs';
-import { prepareMw3SnapshotDeliveries, assertMw3IndependentReceipt, buildMw3DeliverySql } from '../postflop-ai/mw3-reviewed-delivery.mjs';
+import { MW3_APPROVED_POLICIES } from '../../../shared/mw3-approved.ts';
+import { parseMw3ApprovedRegistry } from '../postflop-ai/mw3-reviewed-restore.mjs';
+import { assertRegistryMode, assertApiPhase, registryHealth, apiPhaseRows } from './mw3-registry-mode.mjs';
+import { prepareMw3SnapshotDeliveries, mw3DeliveryPins, assertMw3IndependentReceipt, buildMw3DeliverySql } from '../postflop-ai/mw3-reviewed-delivery.mjs';
 
 export const WRANGLER_VERSION = '4.147.0';
 export const RUNTIME_PINS = Object.freeze({ wrangler: WRANGLER_VERSION, miniflare: '5.20261001.0-alpha', workerd: '1.20261001.1', esbuild: '0.28.1' });
@@ -42,13 +45,14 @@ export function validateLocalConfig(config) {
   return config;
 }
 export function parseArguments(argv) {
-  const options = {}, keys = { '--manifest': 'manifest', '--archive': 'archive', '--receipt': 'receipt', '--sql': 'sql', '--wrangler': 'wrangler' };
+  const options = {}, keys = { '--manifest': 'manifest', '--archive': 'archive', '--receipt': 'receipt', '--sql': 'sql', '--wrangler': 'wrangler', '--registry-mode': 'registryMode' };
   for (let index = 0; index < argv.length; index++) {
     const key = keys[argv[index]], value = argv[index + 1];
     assert.ok(key && !Object.hasOwn(options, key) && value && !value.startsWith('--'), 'Unknown, duplicate or missing verification argument');
     options[key] = argv[++index];
   }
-  for (const key of Object.values(keys)) assert.ok(options[key], `Required: --${key}`);
+  for (const key of ['manifest', 'archive', 'receipt', 'sql', 'wrangler']) assert.ok(options[key], `Required: --${key}`);
+  assertRegistryMode(options.registryMode);
   return options;
 }
 export function validateRuntimePackages(wrangler, miniflare, workerd, esbuild) {
@@ -238,18 +242,21 @@ export function assertApiCompletion(outcome, completion, inputLedgerBytes, expec
     'API completion must bind exact successful controller, inputs and every restored delivery');
   return completion.rows;
 }
-export function runCapturedApiPhase({ directory, pins, capture, prepared, restart, control }) {
-  assert.ok(restart === 0 || restart === 1);
+export function runCapturedApiPhase({ directory, pins, capture, prepared, restart, control, probe = null }) {
+  const registryContract = prepared.registryContract ?? { mode: 'empty', entries: 0 };
+  assertApiPhase(registryContract.mode, restart);
+  assert.deepEqual(probe, restart < 2 ? null : { kind: restart === 2 ? 'header' : 'part', delivery_hash: prepared.deliveries[1].deliveryHash, ...(restart === 3 ? { part: prepared.deliveries[1].parts.at(-1).part } : {}) }, 'Only the two fixed activated corruption probes are allowed');
   assertCapturedSources(directory, capture);
   assert.deepEqual(digest(readFileSync(join(directory, 'api.control.bundle.mjs'))), { bytes: control.bytes, sha256: control.sha256 });
   const commandId = `api-phase-${restart}`, ledgerPath = join(directory, `${commandId}.input-ledger.json`);
-  const expectedPath = join(directory, 'api.expected.json'), expectedBytes = jsonBytes({ deliveries: prepared.deliveries,
+  const expectedName = restart < 2 ? 'api.expected.json' : `${commandId}.expected.json`;
+  const expectedPath = join(directory, expectedName), expectedBytes = jsonBytes({ registryContract, probe, databaseOnlyHash: SENTINEL_HASH, deliveries: prepared.deliveries,
     snapshot: { candidates: { candidate: { policy: prepared.snapshot.candidates.candidate.policy }, laterCandidate: { policy: prepared.snapshot.candidates.laterCandidate.policy } } } });
-  if (restart === 0) writeFileSync(expectedPath, expectedBytes, { flag: 'wx', mode: 0o444 });
+  if (restart !== 1) writeFileSync(expectedPath, expectedBytes, { flag: 'wx', mode: 0o444 });
   assert.deepEqual(readFileSync(expectedPath), expectedBytes, 'Expected API restoration bytes changed');
-  const paths = ['api.control.bundle.mjs', 'api.expected.json', 'worker.bundle.mjs', 'wrangler.json',
+  const paths = ['api.control.bundle.mjs', expectedName, 'worker.bundle.mjs', 'wrangler.json',
     'captured-source/apps/frontend/scripts/ci/postflop-command-supervisor.py'];
-  const ledgerBytes = jsonBytes({ schema_version: 1, command_id: commandId, local_only: true, wrangler: pins.entry,
+  const ledgerBytes = jsonBytes({ schema_version: 1, command_id: commandId, registry_mode: registryContract.mode, expected_path: expectedName, local_only: true, wrangler: pins.entry,
     files: paths.map(path => ({ path, ...digest(readFileSync(join(directory, path))) })) });
   writeFileSync(ledgerPath, ledgerBytes, { flag: 'wx', mode: 0o444 });
   const outcome = runSupervisedCommand({ directory, commandId, command: process.execPath,
@@ -258,8 +265,7 @@ export function runCapturedApiPhase({ directory, pins, capture, prepared, restar
   assertCapturedSources(directory, capture);
   assert.deepEqual(readFileSync(ledgerPath), ledgerBytes, 'API phase ledger changed');
   for (const row of JSON.parse(ledgerBytes).files) assert.deepEqual(digest(readFileSync(join(directory, row.path))), { bytes: row.bytes, sha256: row.sha256 });
-  const expectedRows = prepared.deliveries.map(delivery => ({ stage: delivery.stage, delivery_hash: delivery.deliveryHash,
-    restored_policy_sha256: sha256(JSON.stringify(prepared.snapshot.candidates[delivery.stage === 'flop' ? 'candidate' : 'laterCandidate'].policy)), parts: delivery.parts.length }));
+  const expectedRows = apiPhaseRows(prepared, probe);
   const completion = JSON.parse(readFileSync(join(directory, `${commandId}.complete.json`), 'utf8'));
   return assertApiCompletion(outcome, completion, ledgerBytes, expectedRows);
 }
@@ -357,13 +363,13 @@ export function conflictSetup(deliveries, kind) {
     ? `UPDATE mw3_policy_parts SET body='synthetic-local-conflicting-immutable-body' WHERE delivery_hash=${quote(late.deliveryHash)} AND part=${last.part};\n`
     : `UPDATE mw3_policy_deliveries SET header_json='{"synthetic_local_conflicting_header":true}' WHERE delivery_hash=${quote(late.deliveryHash)};\n`);
 }
-function repairConflict(deliveries, kind) {
+export function repairConflict(deliveries, kind) {
   const late = deliveries[1], last = late.parts.at(-1);
   return kind === 'part'
     ? `UPDATE mw3_policy_parts SET body=${quote(last.body)} WHERE delivery_hash=${quote(late.deliveryHash)} AND part=${last.part};\n`
     : `UPDATE mw3_policy_deliveries SET header_json=${quote(late.headerText)} WHERE delivery_hash=${quote(late.deliveryHash)};\n`;
 }
-export function localWorkerSource(deliveries) {
+function emptyLocalWorkerSource(deliveries) {
   const pins = deliveries.map(row => ({ spotId: row.header.manifest.spotId, stage: row.stage, deliveryHash: row.deliveryHash }));
   return `// Ephemeral localhost oracle only. These pins never edit or authorize the shared production registry.
 import { routeMw3Transport } from ${JSON.stringify('./captured-source/apps/backend/src/mw3-transport.ts')};
@@ -378,6 +384,52 @@ export default { async fetch(request, env) {
   return routeMw3Transport(request, env.${BINDING}, proof ? LOCAL_ORACLE_PINS : MW3_APPROVED_POLICIES);
 } };\n`;
 }
+export function bindCapturedRegistry(prepared, mode = 'empty', evaluatedRegistry = MW3_APPROVED_POLICIES) {
+  assertRegistryMode(mode);
+  const source = prepared.capture.files.get('apps/shared/mw3-approved.ts');
+  assert.ok(source, 'Captured shared registry source is required');
+  const pins = parseMw3ApprovedRegistry(source);
+  assert.deepEqual(evaluatedRegistry, pins, 'Actual evaluated build registry differs from captured static authority');
+  assert.ok(Object.isFrozen(evaluatedRegistry), 'Build authority must remain immutable');
+  const subjectPair = mw3DeliveryPins(prepared.snapshot, prepared.deliveries);
+  assertMw3IndependentReceipt(prepared.review, prepared.snapshot, prepared.deliveries);
+  if (mode === 'empty') assert.equal(pins.length, 0, 'Empty-registry proof requires the actual empty build authority');
+  else {
+    assert.ok(pins.length > 0, 'Activated mode cannot grant approval to an empty build registry');
+    assert.deepEqual(pins.filter(pin => pin.spotId === prepared.snapshot.manifest.spot.id).sort((a,b) => a.stage.localeCompare(b.stage)),
+      subjectPair, 'Captured build subject pair must exactly equal every independent-receipt/source/policy pin');
+  }
+  assert.ok(pins.every(pin => pin.deliveryHash !== SENTINEL_HASH), 'Database-only sentinel cannot be a build-approved delivery');
+  let unknownHash = sha256('mw3-unknown-delivery-not-an-approval');
+  while (pins.some(pin => pin.deliveryHash === unknownHash)) unknownHash = sha256(unknownHash);
+  const contract = { mode, unknown_hash: unknownHash, entries: pins.length, source_sha256: sha256(source), pins_sha256: sha256(JSON.stringify(pins)),
+    subject_pair_sha256: sha256(JSON.stringify(subjectPair)), subject_pair: subjectPair };
+  registryHealth(contract);
+  return contract;
+}
+export function localWorkerSource(deliveries, contract = { mode: 'empty', entries: 0 }) {
+  if (assertRegistryMode(contract.mode) === 'empty') return emptyLocalWorkerSource(deliveries);
+  const health = registryHealth(contract);
+  return `// Captured build authority only. Selecting activated verification grants no approval.
+import { routeMw3Transport } from ${JSON.stringify('./captured-source/apps/backend/src/mw3-transport.ts')};
+import { MW3_APPROVED_POLICIES } from ${JSON.stringify('./captured-source/apps/shared/mw3-approved.ts')};
+const CONTRACT = ${JSON.stringify(contract)}, HEALTH = ${JSON.stringify(health)};
+const sha = async text => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))), byte => byte.toString(16).padStart(2,'0')).join('');
+export default { async fetch(request, env) {
+  if (MW3_APPROVED_POLICIES.length !== CONTRACT.entries || await sha(JSON.stringify(MW3_APPROVED_POLICIES)) !== CONTRACT.pins_sha256 ||
+      JSON.stringify(MW3_APPROVED_POLICIES.filter(pin => pin.spotId === CONTRACT.subject_pair[0].spotId).sort((a,b) => a.stage.localeCompare(b.stage))) !== JSON.stringify(CONTRACT.subject_pair))
+    return new Response('Captured registry identity differs', { status: 500 });
+  if (new URL(request.url).pathname === '/__mw3_verify_health') return Response.json(HEALTH);
+  return routeMw3Transport(request, env.${BINDING}, MW3_APPROVED_POLICIES);
+} };\n`;
+}
+export function corruptionSetup(deliveries, kind) {
+  assert.ok(['header', 'part'].includes(kind));
+  const late = deliveries[1], last = late.parts.at(-1);
+  return kind === 'header'
+    ? `UPDATE mw3_policy_deliveries SET header_json=header_json || ' ' WHERE delivery_hash=${quote(late.deliveryHash)};\n`
+    : `UPDATE mw3_policy_parts SET body=body || ' ' WHERE delivery_hash=${quote(late.deliveryHash)} AND part=${last.part};\n`;
+}
 export async function verifyMw3LocalD1(options) {
   assert.ok(options.parentBoundary && options.parentBoundary.root === MW3_REPOSITORY, 'Strict oracle must execute through its captured parent boundary');
   options.parentBoundary.assertReady(import.meta.url);
@@ -387,7 +439,7 @@ export async function verifyMw3LocalD1(options) {
   const local = join(FRONTEND, '.local'); mkdirSync(local, { recursive: true });
   const directory = mkdtempSync(join(local, 'verify-mw3-d1-'));
   const report = { schema_version: 1, status: 'running', local_only: true, mode: 'strict-whole-file', evidence_directory: directory,
-    parent_execution_ledger: options.parentBoundary.executionLedgerPath, production_approval: 'not granted by this oracle', remote_atomicity: 'not tested', gates: [] };
+    parent_execution_ledger: options.parentBoundary.executionLedgerPath, production_approval: 'not granted by this oracle', remote_atomicity: 'not tested', registry_mode: assertRegistryMode(options.registryMode), gates: [] };
   const save = () => writeFileSync(join(directory, 'result.json'), `${JSON.stringify(report, null, 2)}\n`);
   const mark = name => { report.gates.push(name); save(); };
   save();
@@ -395,6 +447,8 @@ export async function verifyMw3LocalD1(options) {
     const pins = readRuntimePins(options.wrangler, { directory }); report.runtime_pins = pins;
     const prepared = await loadReviewedDelivery(options); options.parentBoundary.assertSnapshot(prepared.snapshot.manifestBytes, prepared.snapshot.manifest); report.inputs = prepared.records; report.spot = prepared.snapshot.manifest.spot.id;
     mark('saved_snapshot_receipt_and_sql_exact_bytes');
+    prepared.registryContract = bindCapturedRegistry(prepared, report.registry_mode); report.registry_contract = prepared.registryContract;
+    mark('captured_build_registry_bound_to_independent_receipt_subject_pair');
     mkdirSync(join(directory, 'home/.config'), { recursive: true });
     // Only captured, verified bytes are written below. The original saved file
     // is not reread, split, rewritten, or used as a disposable mutable input.
@@ -402,7 +456,7 @@ export async function verifyMw3LocalD1(options) {
     assert.deepEqual(digest(readFileSync(reviewedPath)), prepared.records.sql);
     writeCapturedSources(directory, prepared.capture); report.captured_source_ledger_sha256 = sha256(jsonBytes(prepared.capture.records));
     report.captured_sources = prepared.capture.records; report.fixture_schema = digest(prepared.capture.schemaBytes);
-    const workerText = localWorkerSource(prepared.deliveries);
+    const workerText = localWorkerSource(prepared.deliveries, prepared.registryContract);
     writeFileSync(join(directory, 'worker.mjs'), workerText); report.worker_sha256 = sha256(workerText);
     report.worker_bundle = bundleCapturedWorker({ directory, pins, capture: prepared.capture, expectedWorkerSha: report.worker_sha256 });
     report.api_control_bundle = bundleCapturedApiControl({ directory, pins, capture: prepared.capture });
@@ -479,7 +533,21 @@ export async function verifyMw3LocalD1(options) {
       const restored = runCapturedApiPhase({ directory, pins, capture: prepared.capture, prepared, restart, control: report.api_control_bundle });
       assert.deepEqual(all(), committed, 'Persistent D1 changed after worker startup/API/restoration/shutdown'); verify();
       (report.api_phases ??= []).push({ command_id: `api-phase-${restart}`, evidence_directory: join(directory, `api-phase-${restart}`), completion_record: join(directory, `api-phase-${restart}.complete.json`) });
-      report.api_restoration = restored; mark(restart ? 'runtime_restart_persistence_and_api_restoration' : 'actual_route_api_restoration_and_empty_registry');
+      report.api_restoration = restored; mark(restart ? 'runtime_restart_persistence_and_api_restoration' : (report.registry_mode === 'empty' ? 'actual_route_api_restoration_and_empty_registry' : 'actual_public_route_api_restoration_and_captured_registry'));
+    }
+    if (report.registry_mode === 'activated') {
+      for (const [restart, kind] of [[2, 'header'], [3, 'part']]) {
+        const late = prepared.deliveries[1], probe = { kind, delivery_hash: late.deliveryHash, ...(kind === 'part' ? { part: late.parts.at(-1).part } : {}) };
+        setup(`synthetic-local-api-${kind}-corruption.sql`, corruptionSetup(prepared.deliveries, kind));
+        const corrupted = all(); assert.notDeepEqual(corrupted, committed, 'Corruption fixture must actually change saved D1 bytes');
+        assert.deepEqual(inspect(dbPath, db => databaseSnapshot(db, { excludeMw3: true })), preserved, 'Corruption setup changed unrelated application data');
+        const rows = runCapturedApiPhase({ directory, pins, capture: prepared.capture, prepared, restart, control: report.api_control_bundle, probe });
+        assert.deepEqual(all(), corrupted, 'Read-only rejection API phase changed corrupt database state');
+        (report.api_phases ??= []).push({ command_id: `api-phase-${restart}`, evidence_directory: join(directory, `api-phase-${restart}`), completion_record: join(directory, `api-phase-${restart}.complete.json`), probe, rows });
+        setup(`synthetic-local-api-${kind}-exact-repair.sql`, repairConflict(prepared.deliveries, kind));
+        verify(); assert.deepEqual(all(), committed, 'Exact source bytes/database ledger were not restored after API corruption probe');
+        mark(`actual_public_${kind}_hash_corruption_rejected_and_exact_database_restored`);
+      }
     }
     assertIsolatedInputs();
     report.status = 'pass'; report.local_transactions_per_import = 1; report.repeated_imports = 2;

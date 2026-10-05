@@ -80,6 +80,8 @@ jobs:
           node --check apps/frontend/scripts/postflop-ai/materialize-mw3-authored.mjs
           node --check apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs
           node --check apps/frontend/scripts/postflop-ai/mw3-snapshot-cli.mjs
+          node --check apps/frontend/scripts/postflop-ai/mw3-draft-pins.mjs
+          node --check apps/frontend/scripts/ci/mw3-registry-mode.mjs
           node --check apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs
           node --check apps/frontend/scripts/verify-mw3-local-d1.mjs
           node --check apps/frontend/scripts/ci/mw3-local-command.mjs
