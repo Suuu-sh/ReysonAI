@@ -9,7 +9,7 @@ import { loadInputs } from "../inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "../generate.mjs";
 import { flopEvRunouts, flopHandEvForHand, flopHandEvForHandMonteCarlo } from "../flop-hand-ev-core.mjs";
 import { laterHandEvForHand, laterHandEvForHandMonteCarlo } from "../later-hand-ev-core.mjs";
-import { parseFlopBoard } from "../model.mjs";
+import { parseFlopBoard } from "../model.ts";
 
 const [street = "river", seedsArg = "8", samplesArg, only] = process.argv.slice(2);
 const seeds = Number(seedsArg);

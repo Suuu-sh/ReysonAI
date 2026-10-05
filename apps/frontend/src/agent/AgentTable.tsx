@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ChartBar, Eye, FastForward, Info, Lightning } from "@phosphor-icons/react";
 import { preloadDatasets } from "../estimated/datasets.ts";
 import { loadPostflopDatasets, loadPostflopSpot } from "../estimated/postflop-browser.ts";
-import { spotById } from "../../scripts/postflop-ai/spots.mjs";
+import { spotById } from "../../scripts/postflop-ai/spots.ts";
 import { localized, translateProductCopy } from "../i18n.ts";
 import { AGENT_TABLE, GUEST_AGENT, agentTableById } from "./characters.ts";
 import { categoryName, playHand, type HandResult, type LogEntry } from "./hand.ts";

@@ -1,8 +1,10 @@
+import type { FiveBetDataset } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { hasConfiguredRake } from "./rake.ts";
 import { fourBetToSize, openSizeBb, openSizeFor, threeBetToSize } from "./sizing.ts";
 
-export function validateFiveBetDataset(data) {
+export function validateFiveBetDataset(data: FiveBetDataset) {
   if (data?.metadata?.strategy_type !== "ai_estimate_not_gto" ||
       !hasConfiguredRake(data.metadata) || !Array.isArray(data.spots) ||
       data.metadata.open_size_bb !== openSizeBb ||

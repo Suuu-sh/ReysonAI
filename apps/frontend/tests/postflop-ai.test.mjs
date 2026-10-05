@@ -1,10 +1,10 @@
 import test from "node:test";
-import { DEFENCE_VERSION } from "../scripts/postflop-ai/defence.mjs";
+import { DEFENCE_VERSION } from "../scripts/postflop-ai/defence.ts";
 import assert from "node:assert/strict";
-import { evaluate } from "../scripts/lib/equity.mjs";
+import { evaluate } from "../scripts/lib/equity.ts";
 import { boards, comboRange, loadInputs, makeSampler, samplePair } from "../scripts/postflop-ai/inputs.mjs";
-import { boardTexture, handTier, parseCards } from "../scripts/postflop-ai/model.mjs";
-import { NODES, policyMix, referencePolicy, validatePolicy } from "../scripts/postflop-ai/policy.mjs";
+import { boardTexture, handTier, parseCards } from "../scripts/postflop-ai/model.ts";
+import { NODES, policyMix, referencePolicy, validatePolicy } from "../scripts/postflop-ai/policy.ts";
 import { dealRunout, playHand, simulate } from "../scripts/postflop-ai/simulation.mjs";
 import { promptFor } from "../scripts/postflop-ai/generate.mjs";
 import { auditExperiment } from "../scripts/postflop-ai/audit.mjs";

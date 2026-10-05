@@ -1,3 +1,6 @@
+import type { FrequencySpot, PreflopAction } from "./preflop-types.ts";
+import type { MultiwayDataset, OpeningDataset, ResponseDataset, SqueezeDataset, SqueezeSpot } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { effectiveStackBb, squeezeFourBetToSize, openSizeBb, threeBetToSize } from "./sizing.ts";
 import { hasConfiguredRake } from "./rake.ts";
@@ -19,8 +22,8 @@ export const squeezeResponseSpots = squeezePriorActions.flatMap(prior => multiwa
 })));
 const ROW_KEYS = ["hand", "fold", "call", "four_bet", "four_bet_size_bb"];
 
-export function validateSqueezeDataset(data, multiway, responses, openings) {
-  const fail = detail => { throw new Error(`スクイーズ後の応答データが不正です: ${detail}`); };
+export function validateSqueezeDataset(data: SqueezeDataset, multiway: MultiwayDataset, responses: ResponseDataset, openings: OpeningDataset) {
+  const fail: (detail: string) => never = detail => { throw new Error(`スクイーズ後の応答データが不正です: ${detail}`); };
   if (data?.metadata?.schema_version !== "1.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.game !== "6max Cash / No-Limit Texas Holdem" ||
@@ -34,12 +37,12 @@ export function validateSqueezeDataset(data, multiway, responses, openings) {
 
   // Both original actions must be present and complete before a history can
   // be classified as unreachable. Missing sources must never look like 0%.
-  const sourceFrequencies = (dataset, matches, action, id) => {
+  const sourceFrequencies = <S extends FrequencySpot>(dataset: { spots: S[] }, matches: (spot: S) => boolean, action: PreflopAction, id: string) => {
     const source = dataset?.spots?.find(matches);
     if (!source || !Array.isArray(source.hands) || source.hands.length !== hands.length ||
         source.hands.some((row, j) => row?.hand !== hands[j] ||
-          !Number.isInteger(row[action]) || row[action] < 0 || row[action] > 100)) fail(`前段の局面がありません・不正です: ${id}`);
-    return new Map(source.hands.map(row => [row.hand, row[action]]));
+          !Number.isInteger(row[action]!) || row[action]! < 0 || row[action]! > 100)) fail(`前段の局面がありません・不正です: ${id}`);
+    return new Map(source.hands.map(row => [row.hand, row[action]!]));
   };
 
   for (let i = 0; i < squeezeResponseSpots.length; i += 1) {
@@ -61,7 +64,7 @@ export function validateSqueezeDataset(data, multiway, responses, openings) {
       fail(`スクイーズ元がありません・不正です: ${expected.source_squeeze_id}`);
     }
     const size = squeezeFourBetToSize(expected.hero, expected.squeezer);
-    if (!spot || Object.entries(expected).some(([key, value]) => spot[key] !== value) ||
+    if (!spot || Object.entries(expected).some(([key, value]) => spot[key as keyof typeof spot] !== value) ||
         (spot.unreachable === true) !== !historyReachable ||
         spot.open_size_bb !== source.open_size_bb || spot.squeeze_size_bb !== source.squeeze_size_bb ||
         spot.four_bet_size_bb !== size || !(size > spot.squeeze_size_bb && size < effectiveStackBb) ||
@@ -84,14 +87,14 @@ export function validateSqueezeDataset(data, multiway, responses, openings) {
   return data;
 }
 
-export function findSqueezeSpot(data, { opener, caller, squeezer, priorAction = null }) {
+export function findSqueezeSpot(data: SqueezeDataset, { opener, caller, squeezer, priorAction = null }: { opener: string; caller: string; squeezer: string; priorAction?: string | null }) {
   const spot = data?.spots?.find(item => item.opener === opener && item.caller === caller &&
     item.squeezer === squeezer && item.prior_action === priorAction);
   if (!spot) throw new Error("この組み合わせのスクイーズ後の応答はありません。");
   return spot;
 }
 
-export function squeezeMatrixModel(spot) {
+export function squeezeMatrixModel(spot: SqueezeSpot): MatrixModel {
   return {
     actions: ["raise_four_bet", "call", "fold"],
     actionLabels: { raise_four_bet: `4bet ${spot.four_bet_size_bb}BB` },

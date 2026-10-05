@@ -1,13 +1,15 @@
+import type { HoleCards, RandomSource, WeightedCombo } from "./equity.ts";
+export type ContinuationDrawTable = { range: readonly WeightedCombo[]; cumulative: number[]; total: number };
 // Exact range-weight conditioning for a Monte Carlo continuation deal.
 // Draw every modeled player's hand independently from its saved range, then
 // reject the WHOLE tuple if cards overlap. Resampling only the later player
 // would bias the earlier player's marginal range in tight multiway histories.
 // Observed folded participants constrain cards but never win the pot. Forced
 // outside folds have no modeled hand range and remain marginalized out.
-import { combosOf } from "./equity.mjs";
-import { evaluateContinuation as evaluate } from "./continuation-evaluator.mjs";
+import { combosOf } from "./equity.ts";
+import { evaluateContinuation as evaluate } from "./continuation-evaluator.ts";
 
-export function continuationDrawTables(ranges) {
+export function continuationDrawTables(ranges: readonly (readonly WeightedCombo[])[]) {
   return ranges.map(range => {
     let sum = 0;
     return { range, cumulative: range.map(item => (sum += item.weight)), total: sum };
@@ -15,7 +17,7 @@ export function continuationDrawTables(ranges) {
 }
 
 // One independent proposal, not a redraw of only the collided player.
-export function drawContinuationHoleCards(hero, tables, random) {
+export function drawContinuationHoleCards(hero: readonly number[], tables: readonly ContinuationDrawTable[], random: RandomSource) {
   const used = new Set(hero), villains = [];
   for (const table of tables) {
     const target = random() * table.total; let lo = 0, hi = table.range.length - 1;
@@ -27,7 +29,7 @@ export function drawContinuationHoleCards(hero, tables, random) {
   return { used, villains };
 }
 
-export function continuationEquity(hand, liveRanges, deadRanges, samples, random) {
+export function continuationEquity(hand: string, liveRanges: readonly (readonly WeightedCombo[])[], deadRanges: readonly (readonly WeightedCombo[])[], samples: number, random: RandomSource) {
   const ranges = [...liveRanges, ...deadRanges];
   if (!liveRanges.length || ranges.some(range => !range.length)) return null;
   const tables = continuationDrawTables(ranges);

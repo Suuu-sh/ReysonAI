@@ -1,3 +1,5 @@
+import type { AnswerEntry } from "./types.ts";
+type Sample = NonNullable<ReturnType<typeof validSample>>;
 // Practice-choice analysis. Compare each answer with the saved policy for the
 // *same* spot and hand; raw VPIP/3bet rates would be distorted by drill setup.
 import { spotById, spotTitle } from "./trainer-data.ts";
@@ -9,34 +11,34 @@ const PLOT_MIN_OPENS = 3;
 const PLOT_MIN_RESPONSES = 5;
 const PLOT_FULL_SCALE = 0.30; // A 30-point deviation reaches the visible edge.
 
-const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-export function plotPosition(foldDelta, threeBetDelta) {
+export function plotPosition(foldDelta: number | null, threeBetDelta: number | null) {
   if (!Number.isFinite(foldDelta) || !Number.isFinite(threeBetDelta)) return null;
   return {
-    x: 50 - clamp(foldDelta / PLOT_FULL_SCALE, -1, 1) * 38,
-    y: 50 - clamp(threeBetDelta / PLOT_FULL_SCALE, -1, 1) * 38,
+    x: 50 - clamp(foldDelta! / PLOT_FULL_SCALE, -1, 1) * 38,
+    y: 50 - clamp(threeBetDelta! / PLOT_FULL_SCALE, -1, 1) * 38,
   };
 }
 
-function validSample(entry) {
+function validSample(entry: AnswerEntry) {
   const spot = spotById.get(entry?.spotId);
   const rawMix = spot?.byHand.get(entry?.hand);
-  if (!rawMix || !spot.actions.some(action => action.key === entry.action)) return null;
+  if (!rawMix || !spot!.actions.some(action => action.key === entry.action)) return null;
   // SB's saved open range also contains limp, but this version of the drill
   // offers only fold/open. Compare conditionally on the available choices.
-  const offeredTotal = spot.actions.reduce((sum, action) => sum + (rawMix[action.key] ?? 0), 0);
+  const offeredTotal = spot!.actions.reduce((sum, action) => sum + (rawMix[action.key] ?? 0), 0);
   if (offeredTotal <= 0) return null;
-  const mix = Object.fromEntries(spot.actions.map(action => [action.key, (rawMix[action.key] ?? 0) / offeredTotal]));
-  return { spot, hand: entry.hand, action: entry.action, mix };
+  const mix = Object.fromEntries(spot!.actions.map(action => [action.key, (rawMix[action.key] ?? 0) / offeredTotal]));
+  return { spot: spot!, hand: entry.hand, action: entry.action, mix };
 }
 
 // A drill answer gets full alignment for a top-frequency offered action and
 // partial alignment for a mixed action. This is policy agreement, not EV/GTO.
-export function scoreProgress(history, windowSize = 10) {
+export function scoreProgress(history: AnswerEntry[], windowSize = 10) {
   const width = Number.isInteger(windowSize) && windowSize > 0 ? windowSize : 10;
-  const scores = (Array.isArray(history) ? history : []).map(validSample).filter(Boolean).map(sample => {
-    const top = Math.max(...sample.spot.actions.map(action => sample.mix[action.key]));
+  const scores = (Array.isArray(history) ? history : []).map(validSample).filter<NonNullable<ReturnType<typeof validSample>>>(Boolean as typeof Boolean & { <T>(value: T): value is NonNullable<T> }).map(sample => {
+    const top = Math.max(...sample.spot!.actions.map(action => sample.mix[action.key]));
     return sample.mix[sample.action] / top;
   });
   const series = [];
@@ -50,7 +52,7 @@ export function scoreProgress(history, windowSize = 10) {
     current: series.at(-1) ?? null, series };
 }
 
-function cohort(samples, actual, expected) {
+function cohort(samples: Sample[], actual: (item: Sample) => number, expected: (item: Sample) => number) {
   const count = samples.length;
   if (!count) return { count: 0, actual: null, expected: null, delta: null };
   const actualRate = samples.reduce((sum, item) => sum + actual(item), 0) / count;
@@ -58,10 +60,10 @@ function cohort(samples, actual, expected) {
   return { count, actual: actualRate, expected: expectedRate, delta: actualRate - expectedRate };
 }
 
-export function analyzePlayer(history) {
+export function analyzePlayer(history: AnswerEntry[]) {
   // Review drills may ask the same hand repeatedly. Keep its latest answer so
   // one difficult hand cannot decide the player's entire style label.
-  const latest = new Map();
+  const latest = new Map<string, Sample>();
   for (const entry of Array.isArray(history) ? history : []) {
     const sample = validSample(entry);
     if (sample) latest.set(`${sample.spot.id}|${sample.hand}`, sample);
@@ -85,20 +87,20 @@ export function analyzePlayer(history) {
   let style = { label: "分析中", key: "pending", explanation: "オープンと対オープンの両方を、複数の局面で練習すると傾向を表示します。" };
   if (ready) {
     const fold = metrics.fold.delta, threeBet = metrics.threeBet.delta, call = metrics.call.delta;
-    if (fold >= 0.15 && threeBet <= 0.05) style = { label: "NIT寄り", key: "nit", explanation: "同じ問題に対する推定方針よりフォールドが多く、3betも増えていません。" };
-    else if (fold >= 0.10 && threeBet >= 0.10) style = { label: "TAG寄り", key: "tag", explanation: "参加は絞りつつ、対オープンでは3betを多く選んでいます。" };
-    else if (fold <= -0.10 && threeBet >= 0.10) style = { label: "LAG寄り", key: "lag", explanation: "参加が広く、対オープンでは3betも多く選んでいます。" };
-    else if (fold <= -0.10 && call >= 0.10) style = { label: "コール過多寄り", key: "calling", explanation: "参加が広く、対オープンではコールを多く選んでいます。" };
-    else if (fold >= 0.10) style = { label: "タイト寄り", key: "tight", explanation: "同じ問題に対する推定方針よりフォールドを多く選んでいます。" };
-    else if (threeBet >= 0.10) style = { label: "攻撃的寄り", key: "aggressive", explanation: "対オープンで3betを多く選んでいます。" };
-    else if (threeBet <= -0.10) style = { label: "受動的寄り", key: "passive", explanation: "対オープンで3betを少なく選んでいます。" };
+    if (fold! >= 0.15 && threeBet! <= 0.05) style = { label: "NIT寄り", key: "nit", explanation: "同じ問題に対する推定方針よりフォールドが多く、3betも増えていません。" };
+    else if (fold! >= 0.10 && threeBet! >= 0.10) style = { label: "TAG寄り", key: "tag", explanation: "参加は絞りつつ、対オープンでは3betを多く選んでいます。" };
+    else if (fold! <= -0.10 && threeBet! >= 0.10) style = { label: "LAG寄り", key: "lag", explanation: "参加が広く、対オープンでは3betも多く選んでいます。" };
+    else if (fold! <= -0.10 && call! >= 0.10) style = { label: "コール過多寄り", key: "calling", explanation: "参加が広く、対オープンではコールを多く選んでいます。" };
+    else if (fold! >= 0.10) style = { label: "タイト寄り", key: "tight", explanation: "同じ問題に対する推定方針よりフォールドを多く選んでいます。" };
+    else if (threeBet! >= 0.10) style = { label: "攻撃的寄り", key: "aggressive", explanation: "対オープンで3betを多く選んでいます。" };
+    else if (threeBet! <= -0.10) style = { label: "受動的寄り", key: "passive", explanation: "対オープンで3betを少なく選んでいます。" };
     else style = { label: "基準に近い", key: "balanced", explanation: "練習した問題では、主な行動頻度が保存済み推定方針に近い状態です。" };
   }
 
   const bySpot = [...new Set(samples.map(item => item.spot))].map(spot => {
     const spotSamples = samples.filter(item => item.spot.id === spot.id);
     return { id: spot.id, label: spotTitle(spot), ...cohort(spotSamples, item => +(item.action === "fold"), item => item.mix.fold) };
-  }).filter(item => item.count >= 5).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta) || b.count - a.count);
+  }).filter(item => item.count >= 5).sort((a, b) => Math.abs(b.delta!) - Math.abs(a.delta!) || b.count - a.count);
 
   return { answered: Array.isArray(history) ? history.length : 0, samples: samples.length, openSamples: opens.length,
     responseSamples: responses.length, distinctSpots, ready, style, metrics, bySpot, plot };

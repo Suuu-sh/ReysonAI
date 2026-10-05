@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { evaluate, seededRandom } from "../scripts/lib/equity.mjs";
+import { evaluate, seededRandom } from "../scripts/lib/equity.ts";
 import { fiveCardScore, bestFiveScore } from "./reference/best-five.mjs";
-import { parseCards } from "../scripts/postflop-ai/model.mjs";
+import { parseCards } from "../scripts/postflop-ai/model.ts";
 
 // The former test compared to the original evaluator including its known bugs.
 // Correctness is now checked independently, not against historical output.

@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { loadInputs, readArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
 import { SIMULATION_VERSION } from "./simulation.mjs";
-import { POSTFLOP_SPOTS } from "./spots.mjs";
+import { POSTFLOP_SPOTS } from "./spots.ts";
 
 // D1 rejects SQL statements over 100 KB, so every stored JSON value must stay below this.
 export const MAX_VALUE_BYTES = 90_000;

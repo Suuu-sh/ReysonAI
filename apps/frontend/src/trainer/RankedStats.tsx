@@ -1,10 +1,11 @@
+import type { RankState } from "./types.ts";
 import { CalendarBlank, ChartLineUp, Crosshair, Target } from "@phosphor-icons/react";
 import { useState } from "react";
 import { localized, localeTag } from "../locale.ts";
 import { RankBadge } from "./RankBadge.tsx";
 import { tierFor, TIER_EN } from "./rank-store.ts";
 
-export function RankedStats({ rank, ready }: { rank: any; ready: boolean }) {
+export function RankedStats({ rank, ready }: { rank: RankState; ready: boolean }) {
   const [period, setPeriod] = useState("all");
   if (!ready) return <section className="analysis-card analysis-welcome" role="status">
     <h2>{localized("Ranked stats unavailable", "ランク戦Statsは利用できません")}</h2>
@@ -23,7 +24,7 @@ export function RankedStats({ rank, ready }: { rank: any; ready: boolean }) {
         <button key={value} type="button" className={period === value ? "on" : ""} aria-pressed={period === value} onClick={() => setPeriod(value)}>{label}</button>)}
     </div>
     <div className="analysis-kpis">
-      <div className="analysis-kpi accent"><span className="analysis-kpi-label"><Target size={16} />{localized("Current rating", "現在のレート")}</span><strong>{rank.rating.toLocaleString()}</strong><small><RankBadge name={tier.name} size={24} /> {localized(TIER_EN[tier.name], tier.name)} · {localized("Peak", "最高")} {rank.peak.toLocaleString()}</small></div>
+      <div className="analysis-kpi accent"><span className="analysis-kpi-label"><Target size={16} />{localized("Current rating", "現在のレート")}</span><strong>{rank.rating.toLocaleString()}</strong><small><RankBadge name={tier.name} size={24} /> {localized((TIER_EN as Readonly<Record<string, string>>)[tier.name], tier.name)} · {localized("Peak", "最高")} {rank.peak.toLocaleString()}</small></div>
       <div className="analysis-kpi"><span className="analysis-kpi-label"><Crosshair size={16} />{localized("Ranked practice score", "ランク戦練習スコア")}</span><strong>{score == null ? "—" : `${Math.round(score * 100)}%`}</strong><small>{localized(`${answered} confirmed answers`, `確定済み ${answered} 回答`)}</small></div>
       <div className="analysis-kpi"><span className="analysis-kpi-label"><CalendarBlank size={16} />{localized("Completed matches", "完了試合")}</span><strong>{matches.length}</strong><small>{localized("Selected period", "選択した期間")}</small></div>
       <div className="analysis-kpi"><span className="analysis-kpi-label"><ChartLineUp size={16} />{localized("Rating change", "レート増減")}</span><strong>{matches.length ? `${gain >= 0 ? "+" : ""}${gain}` : "—"}</strong><small>{localized("Selected period", "選択した期間")}</small></div>

@@ -1,18 +1,18 @@
 // OFFLINE RESEARCH TOOL ONLY (decision 2026-10-01): postflop EV is not part of the product. Not imported by the app bundle,
 // the backend or the Vite dev server; the middleware below is no longer registered.
 // Per-hand action EV and equity realization (EQR) for the local heads-up flop pilot (any
-// spot in spots.mjs, on its tree). Both players follow the saved AI candidate on the flop and
+// spot in spots.ts, on its tree). Both players follow the saved AI candidate on the flop and
 // the saved later-street policy (or the fixed reference). Each value is the expected value when both
 // players follow the shown strategy from the decision on (exact-ev.mjs) — not GTO, not solver EV. Local-only output under .local/postflop-ai/.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { artifactPaths, boards, readArtifact, config, laterSizingHash, loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
-import { referenceLaterPolicy } from "./later-policy.mjs";
-import { DEFAULT_SPOT_ID } from "./spots.mjs";
-import { parseFlopBoard } from "./model.mjs";
+import { referenceLaterPolicy } from "./later-policy.ts";
+import { DEFAULT_SPOT_ID } from "./spots.ts";
+import { parseFlopBoard } from "./model.ts";
 import { FLOP_EV_RUNOUTS, FLOP_HAND_EV_DEFAULT_SAMPLES, HISTORIES, handEvForBoard as handEvForBoardCore, historiesFor,
   playFromNode } from "./flop-hand-ev-core.mjs";
-import { DEFENCE_VERSION } from "./defence.mjs";
+import { DEFENCE_VERSION } from "./defence.ts";
 import { computeBoardBatch } from "./board-batch.mjs";
 
 export { playFromNode };

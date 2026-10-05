@@ -1,8 +1,15 @@
+export type CachedEquity = number | null | undefined;
+export type PackedWeights = { ids: Int16Array; values: Float64Array };
 // Browser-safe cache storage, not a different calculation. Float64Array preserves the
 // exact JS numbers; slots preserve missing, null and undefined independently of zero.
 const NUM_IDS = 52 * 52;
 class PackedEquities {
-  constructor(map) {
+  declare slots: Int16Array;
+  declare values: Float64Array;
+  declare states: Uint8Array;
+  declare extra: Map<number, CachedEquity> | null;
+  declare count: number;
+  constructor(map: ReadonlyMap<number, CachedEquity>) {
     this.slots = new Int16Array(NUM_IDS);
     this.values = new Float64Array(map.size);
     this.states = new Uint8Array(map.size);
@@ -14,12 +21,12 @@ class PackedEquities {
       this.write(i - 1, value);
     }
   }
-  write(i, value) {
+  write(i: number, value: CachedEquity) {
     this.states[i] = value === null ? 1 : value === undefined ? 2 : 0;
     this.values[i] = value ?? NaN;
   }
-  slot(id) { return Number.isInteger(id) ? this.slots[id] ?? 0 : 0; }
-  get(id) {
+  slot(id: number) { return Number.isInteger(id) ? this.slots[id] ?? 0 : 0; }
+  get(id: number) {
     const slot = this.slot(id);
     if (!slot) return this.extra?.get(id);
     const i = slot - 1, value = this.values[i];
@@ -29,8 +36,8 @@ class PackedEquities {
     const state = this.states[i];
     return state === 1 ? null : state === 2 ? undefined : value;
   }
-  has(id) { return Boolean(this.slot(id)) || (this.extra?.has(id) ?? false); }
-  set(id, value) {
+  has(id: number) { return Boolean(this.slot(id)) || (this.extra?.has(id) ?? false); }
+  set(id: number, value: CachedEquity) {
     const slot = this.slot(id);
     if (slot) this.write(slot - 1, value);
     else {
@@ -42,7 +49,7 @@ class PackedEquities {
   }
   get size() { return this.count; }
 }
-export function packEquities(map) {
+export function packEquities(map: Map<number, CachedEquity> | PackedEquities) {
   if (!(map instanceof Map) || map.size < 128) return map;
   for (const id of map.keys()) if (!Number.isInteger(id) || id < 0 || id >= NUM_IDS) return map;
   return new PackedEquities(map);
@@ -50,7 +57,7 @@ export function packEquities(map) {
 
 // Large reach-stage caches otherwise retain 21 KiB for even a very narrow range.
 // Store exact non-zero slots (including negative zero) in saved combo-ID order.
-export function packWeights(weights) {
+export function packWeights(weights: ArrayLike<number> & Iterable<number>) {
   let count = 0;
   for (const value of weights) if (value !== 0 || Object.is(value, -0)) count++;
   const ids = new Int16Array(count), values = new Float64Array(count);
@@ -61,7 +68,7 @@ export function packWeights(weights) {
   }
   return { ids, values };
 }
-export function unpackWeights(saved) {
+export function unpackWeights(saved: Float64Array | PackedWeights) {
   if (saved instanceof Float64Array) return saved;
   const weights = new Float64Array(NUM_IDS);
   for (let i = 0; i < saved.ids.length; i++) weights[saved.ids[i]] = saved.values[i];

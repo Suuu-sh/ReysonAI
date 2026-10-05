@@ -1,21 +1,22 @@
+import type { ExplanationFacts } from "./postflop-facts.ts";
 import { narrative, translateExplanationCopy } from "../locales/reason-copy.ts";
 // Plain-language reasons for the AI-estimated flop policy. The policy picks a mix from
 // (hand tier × board texture), so reasons are written per node, action and tier.
 import { productLocale } from "../i18n.ts";
 import { englishPostflopReasons } from "./english-reasons.ts";
-export const tierLabels = {
+export const tierLabels: Record<string, string> = {
   monster: "2ペア以上の強い役", strong: "トップペア以上", draw: "ドロー",
   medium: "弱いペア", air: "役なし",
 };
 
-export const textureLabels = {
+export const textureLabels: Record<string, string> = {
   dry: "ドライボード（つながりが少なく、手が変わりにくい）",
   wet: "ウェットボード（ストレート・フラッシュが近い）",
   monotone: "モノトーン（同じスート3枚）",
   paired: "ペアボード",
 };
 
-const reasons = {
+const reasons: Record<string, Record<string, Record<string, string>>> = {
   btn_first: {
     check: {
       monster: "強すぎる手は一部チェックして、相手にベットさせる余地を残します。",
@@ -133,20 +134,20 @@ const reasons = {
   },
 };
 
-export function dominantTier(tiers = {}) {
-  return Object.entries(tiers).reduce((best, entry) => entry[1] > best[1] ? entry : best, ["air", -1])[0];
+export function dominantTier(tiers: Record<string, number> = {}) {
+  return Object.entries(tiers).reduce<[string, number]>((best, entry) => entry[1] > best[1] ? entry : best, ["air", -1])[0];
 }
 
 // Nodes of the tree where the OOP preflop raiser leads reuse the matching reasons; there a
 // raise against a lead is a plain raise, not a check-raise.
-const aliases = { oop_first: "btn_first", ip_vs_33: "bb_vs_33", ip_vs_75: "bb_vs_75", ip_vs_125: "bb_vs_125", oop_vs_raise: "btn_vs_raise",
+const aliases: Record<string, string> = { oop_first: "btn_first", ip_vs_33: "bb_vs_33", ip_vs_75: "bb_vs_75", ip_vs_125: "bb_vs_125", oop_vs_raise: "btn_vs_raise",
   bb_vs_raise2: "btn_vs_raise", btn_vs_raise3: "btn_vs_raise", bb_vs_raise4: "btn_vs_raise",
   ip_vs_raise2: "btn_vs_raise", oop_vs_raise3: "btn_vs_raise", ip_vs_raise4: "btn_vs_raise" };
 
-export function actionReason(node, action, tier) {
+export function actionReason(node: string, action: string, tier: string) {
   const en = productLocale();
   if (en !== "ja") {
-    const reason = englishPostflopReasons[aliases[node] ?? node]?.[action]?.[tier] ?? narrative("This action is part of the saved policy.", [], en);
+    const reason = (englishPostflopReasons as Record<string, Record<string, Record<string, string>>>)[aliases[node] ?? node]?.[action]?.[tier] ?? narrative("This action is part of the saved policy.", [], en);
     const translated = translateExplanationCopy(reason, en);
     return aliases[node] ? translated.replaceAll(narrative("check-raise", [], en), en === "es" ? "subida" : "raise").replaceAll("过牌加注", "加注") : translated;
   }
@@ -156,11 +157,11 @@ export function actionReason(node, action, tier) {
 
 // Data-driven reason for one combo, built from the opponent-range explanation
 // (`/local-postflop-explain`), so the headline never contradicts the numbers.
-export function evidenceReason(action, detail, equity) {
+export function evidenceReason(action: string, detail: NonNullable<ExplanationFacts["actions"]>[string] | null | undefined, equity: number) {
   const en = productLocale();
   if (!detail || !Number.isFinite(equity)) return null;
-  const pct = value => `${Math.round(value * 100)}%`;
-  const share = key => detail.groups?.find(group => group.key === key)?.share ?? 0;
+  const pct = (value: number) => `${Math.round(value * 100)}%`;
+  const share = (key: string) => detail.groups?.find(group => group.key === key)?.share ?? 0;
   if (en !== "ja") {
     if (detail.required != null) {
       const relation = equity >= detail.required ? narrative("above", [], en) : narrative("below", [], en);

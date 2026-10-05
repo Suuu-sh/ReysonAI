@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { weightedRange, seededRandom, combosOf } from "../scripts/lib/equity.mjs";
-import { continuationDrawTables, drawContinuationHoleCards, continuationEquity } from "../scripts/lib/continuation-equity.mjs";
+import { weightedRange, seededRandom, combosOf } from "../scripts/lib/equity.ts";
+import { continuationDrawTables, drawContinuationHoleCards, continuationEquity } from "../scripts/lib/continuation-equity.ts";
 
 test("whole-tuple rejection conditions the earlier range instead of preserving its biased marginal", () => {
   const live = weightedRange([{ hand: "AA", weight: 0.9 }, { hand: "KK", weight: 0.1 }]);

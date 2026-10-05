@@ -1,4 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Dialog } from "../components/Dialog.tsx";
+import type { StrategyNode, StrategyCombo, ActionMix, PostflopDatasets } from "../../scripts/postflop-ai/types.ts";
+import type { BalancedFlopBase } from "../../scripts/postflop-ai/flop-base-core.ts";
+import type { PostflopSource } from "./postflop-browser.ts";
+import type { ExplanationFacts } from "./postflop-facts.ts";
+import type { completedFlopContext } from "./postflop-trial.ts";
+type ProductLocale = ReturnType<typeof productLocale>;
+type Positions = { ip: string | null; oop: string | null };
+type DecisionLabels = { labels?: Record<string, string>; labelsJa?: Record<string, string>; options?: { action: string; allIn?: boolean }[] };
+type HandView = { hand?: string; actions: ActionMix; tiers?: Record<string, number>; combos?: StrategyCombo[]; combo?: StrategyCombo };
+type ExplanationState = { key: string; data: ExplanationFacts | null; error: string | null; loading: boolean };
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { X } from "@phosphor-icons/react";
 import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../components/primitives.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
@@ -6,21 +17,21 @@ import { tierLabels } from "./postflop-reasons.ts";
 import { buildAdvancedExplanation } from "./postflop-advanced.ts";
 import { glossaryPieces } from "./poker-glossary.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater } from "./postflop-trial.ts";
-import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
+import { isFlopBet } from "../../scripts/postflop-ai/tree.ts";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
 import { productLocale } from "../i18n.ts";
 
 // Action labels with real amounts come from the replay (decisionOptions in postflop-trial.ts); these
 // plain labels are only the fallback (amount-free) for actions a decision does not carry.
-const baseLabels = () => productLocale() !== "ja"
+const baseLabels = (): Record<string, string> => productLocale() !== "ja"
   ? { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise" }
   : { check: "チェック", bet33: "ベット 33%", bet75: "ベット 75%", bet125: "ベット 125%", allin: "オールイン", fold: "フォールド", call: "コール", raise: "レイズ" };
-export const labelsFor = (node, decisionLabels = null) => ({ ...baseLabels(), ...(decisionLabels ?? {}) });
-const raiseAllInOf = d => Boolean(d?.options?.find(option => option.action === "raise")?.allIn);
-const decisionLabelsOf = d => d ? (productLocale() !== "ja" ? d.labels : d.labelsJa) : null;
+export const labelsFor = (node: string | null | undefined, decisionLabels: Record<string, string> | null | undefined = null) => ({ ...baseLabels(), ...(decisionLabels ?? {}) });
+const raiseAllInOf = (d: DecisionLabels | null) => Boolean(d?.options?.find(option => option.action === "raise")?.allIn);
+const decisionLabelsOf = (d: DecisionLabels | null) => d ? (productLocale() !== "ja" ? d.labels : d.labelsJa) : null;
 // btn_* nodes are the in-position player's decisions, bb_* the out-of-position player's.
-export const nodeTitle = (node, { ip, oop }) => (productLocale() !== "ja" ? {
+export const nodeTitle = (node: string | undefined, { ip, oop }: Positions) => (productLocale() !== "ja" ? {
   btn_first: `${ip} · facing ${oop}'s check`, bb_vs_33: `${oop} · facing a 33% bet`,
   bb_vs_75: `${oop} · facing a 75% bet`, bb_vs_125: `${oop} · facing a 125% bet`, btn_vs_raise: `${ip} · facing a check-raise`,
   oop_first: `${oop} · first decision`, ip_vs_33: `${ip} · facing a 33% bet`,
@@ -30,14 +41,14 @@ export const nodeTitle = (node, { ip, oop }) => (productLocale() !== "ja" ? {
   bb_vs_75: `${oop} · 75%ベットへの応答`, bb_vs_125: `${oop} · 125%ベットへの応答`, btn_vs_raise: `${ip} · チェックレイズへの応答`,
   oop_first: `${oop} · 最初の判断（先にベットできる）`, ip_vs_33: `${ip} · 33%ベットへの応答`,
   ip_vs_75: `${ip} · 75%ベットへの応答`, ip_vs_125: `${ip} · 125%ベットへの応答`, oop_vs_raise: `${oop} · レイズへの応答`,
-})[node] ?? raiseTitle(node, { ip, oop });
-function raiseTitle(node, { ip, oop }) {
+} as Record<string, string>)[node!] ?? raiseTitle(node, { ip, oop });
+function raiseTitle(node: string | undefined, { ip, oop }: Positions) {
   const match = /^(btn|bb|ip|oop)_vs_raise(\d+)$/.exec(node ?? "");
   if (!match) return undefined;
   const actor = match[1] === "btn" || match[1] === "ip" ? ip : oop;
   return `${actor} · ${productLocale() !== "ja" ? "facing a re-raise" : "再レイズへの応答"}`;
 }
-export function laterNodeTitle(node, { ip, oop }, street) {
+export function laterNodeTitle(node: string | undefined, { ip, oop }: Positions, street: string) {
   const role = node?.split("_")[1];
   const actor = role === "ip" ? ip : oop;
   const english = productLocale() !== "ja";
@@ -52,9 +63,9 @@ export function laterNodeTitle(node, { ip, oop }, street) {
   }
   return `${actor} · ${streetName} · ${action}`;
 }
-export const suitLabels = { s: "♠", h: "♥", d: "♦", c: "♣" };
+export const suitLabels: Record<string, string> = { s: "♠", h: "♥", d: "♦", c: "♣" };
 
-function rangeTotals(node, weightKey = "comboCount") {
+function rangeTotals(node: Pick<StrategyNode, "actions" | "rows">, weightKey: "comboCount" | "reachWeight" = "comboCount") {
   const totals = Object.fromEntries(node.actions.map(action => [action, 0]));
   let combos = 0, totalWeight = 0;
   for (const row of node.rows) {
@@ -67,13 +78,13 @@ function rangeTotals(node, weightKey = "comboCount") {
   return { combos, items: node.actions.map(action => ({ action, frequency: totalWeight ? totals[action] / totalWeight : 0 })) };
 }
 
-function BoardCards({ cards }) {
+function BoardCards({ cards }: { cards: string[] }) {
   return <span className="postflop-board-cards">{cards.map((card, index) => card
     ? <span key={index} className={`postflop-card suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>
     : <span key={index} className="postflop-card empty">?</span>)}</span>;
 }
 
-function SuitCardPicker({ selectedCards = new Set(), disabledCards = new Set(), onSelect, ariaLabel }) {
+function SuitCardPicker({ selectedCards = new Set(), disabledCards = new Set(), onSelect, ariaLabel }: { selectedCards?: Set<string>; disabledCards?: Set<string>; onSelect: (card: string) => void; ariaLabel: string }) {
   const english = productLocale() !== "ja";
   return <div className="street-card-options" role="group" aria-label={ariaLabel}>
     {suitOrder.map(suit => <div className={`street-suit-row suit-${suit}`} key={suit} role="group" aria-label={suitNames[english ? "en" : "ja"][suit]}>
@@ -93,15 +104,15 @@ const tablePct = (value: number | null) => value === null ? "—" : `${Math.roun
 
 // Per-action comparison at a betting decision; scrolls sideways inside its own wrapper on narrow screens.
 
-function HandReasons({ node, hand, texture, explain, loading, error, positions, boardCards, labels, raiseAllIn }: any) {
+function HandReasons({ node, hand, texture, explain, loading, error, positions, boardCards, labels, raiseAllIn }: { node: string | undefined; hand: HandView; texture: string; explain?: ExplanationFacts | null; loading: boolean; error: boolean; positions: Positions; boardCards: string | null; labels: Record<string, string>; raiseAllIn: boolean }) {
   if (!hand?.tiers) return null;
   const english = productLocale() !== "ja";
-  const plain = buildAdvancedExplanation({ locale: productLocale(), node, hand: hand.hand, actionMix: hand.actions,
-    tiers: hand.tiers, texture, explain, positions, board: boardCards, labels, raiseAllIn,
-    ...(hand.combo ? { cards: hand.combo.cards } : { combos: (hand.combos ?? []).map((item: any) => ({ cards: item.cards, weight: item.weight ?? item.reachWeight ?? 0 })) }) });
+  const plain = buildAdvancedExplanation({ locale: productLocale(), node: node!, hand: hand.hand!, actionMix: hand.actions,
+    tiers: hand.tiers, texture, explain, positions: positions as { ip: string; oop: string }, board: boardCards!, labels, raiseAllIn,
+    ...(hand.combo ? { cards: hand.combo.cards } : { combos: (hand.combos ?? []).map((item: StrategyCombo) => ({ cards: item.cards, weight: item.weight ?? item.reachWeight ?? 0 })) }) });
   return <div className="postflop-reasons postflop-reasons-structured">
     <GlossaryText className="postflop-reason-headline" text={plain.headline} locale={productLocale()} />
-    {plain.blocks.map(block => <details className="postflop-reason-section postflop-reason-action" key={block.action} style={{ "--action-color": barColor(block.action) } as any}>
+    {plain.blocks.map(block => <details className="postflop-reason-section postflop-reason-action" key={block.action} style={{ "--action-color": barColor(block.action) } as CSSProperties & { "--action-color": string }}>
       <summary>
         <span className="postflop-reason-action-name"><i style={{ background: barColor(block.action) }} aria-hidden="true" />{block.label}</span>
         <span className="postflop-reason-frequency" aria-label={`${Math.round(block.frequency * 100)}%`}>
@@ -118,11 +129,11 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions, 
 }
 
 const suitOrder = ["s", "h", "d", "c"];
-const suitNames = {
+const suitNames: Record<string, Record<string, string>> = {
   en: { s: "Spades", h: "Hearts", d: "Diamonds", c: "Clubs" },
   ja: { s: "スペード", h: "ハート", d: "ダイヤ", c: "クラブ" },
 };
-function mixGradient(mix, actions) {
+function mixGradient(mix: ActionMix, actions: readonly string[]) {
   let at = 0;
   const stops = actions.filter(action => mix[action] > 0).map(action => {
     const from = at; at += mix[action] * 100;
@@ -131,13 +142,13 @@ function mixGradient(mix, actions) {
   return stops.length ? `linear-gradient(90deg, ${stops.join(", ")})` : undefined;
 }
 
-function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missingReason, missingTitle }) {
+function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missingReason, missingTitle }: { hand: string; combos: StrategyCombo[]; actions: readonly string[]; selected: string; onSelect: (value: string) => void; labels: Record<string, string>; missingReason?: string; missingTitle?: string }) {
   if (!combos?.length) return null;
   const english = productLocale() !== "ja";
   const missing = missingReason ?? (english ? "Overlaps the board" : "ボードと重複");
   const missingDescription = missingTitle ?? (english ? "Unavailable because the cards overlap the board" : "ボードのカードと重なるため存在しません");
-  const tierName = tier => english
-    ? ({ monster: "Two pair or better", strong: "Top pair or better", draw: "Draw", medium: "Weak pair", air: "Unpaired high cards" })[tier]
+  const tierName = (tier: string) => english
+    ? ({ monster: "Two pair or better", strong: "Top pair or better", draw: "Draw", medium: "Weak pair", air: "Unpaired high cards" } as Record<string, string>)[tier]
     : tierLabels[tier];
   const pair = hand[0] === hand[1];
   const byCell = new Map(combos.map(combo => {
@@ -145,8 +156,8 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
     if (pair && suitOrder.indexOf(first) > suitOrder.indexOf(second)) [first, second] = [second, first];
     return [`${first}${second}`, combo];
   }));
-  const possible = (row, col) => pair ? suitOrder.indexOf(row) < suitOrder.indexOf(col) : hand.endsWith("s") ? row === col : row !== col;
-  const pct = value => `${Math.round(value * 100)}%`;
+  const possible = (row: string, col: string) => pair ? suitOrder.indexOf(row) < suitOrder.indexOf(col) : hand.endsWith("s") ? row === col : row !== col;
+  const pct = (value: number) => `${Math.round(value * 100)}%`;
   return <div className="postflop-suit-picker">
     <div className="postflop-suit-grid" role="group" aria-label={english ? "Suit combinations" : "スートの組み合わせ"}>
       <span />
@@ -181,13 +192,13 @@ function ComboPicker({ hand, combos, actions, selected, onSelect, labels, missin
   </div>;
 }
 
-function matrixFor(node) {
+function matrixFor(node: StrategyNode) {
   return new Map(node.rows.map(row => [row.hand, {
     hand: row.hand, comboCount: row.comboCount, unreachable: !row.reachable, actions: row.mix, tiers: row.tiers, combos: row.combos,
   }]));
 }
 
-function laterMatrixFor(view) {
+function laterMatrixFor(view: Pick<StrategyNode, "rows">) {
   return new Map(view.rows.map(row => [row.hand, {
     hand: row.hand, comboCount: row.comboCount, unreachable: !row.reachable,
     actions: row.mix, tiers: row.tiers, combos: row.combos,
@@ -203,20 +214,13 @@ export function randomFlop(random = Math.random) {
   return shuffled.slice(0, 3);
 }
 
-export function FlopCardDialog({ cards, onApply, onClose }) {
+export function FlopCardDialog({ cards, onApply, onClose }: { cards: string[]; onApply: (cards: string[]) => void; onClose: () => void }) {
   const current = recognizedFlop(cards);
   const english = productLocale() !== "ja";
   const [draft, setDraft] = useState(() => [...cards]);
-  const dialogRef = useRef(null);
-  useEffect(() => {
-    dialogRef.current?.focus();
-    const onKey = event => { if (event.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
   const selected = new Set(draft.filter(Boolean));
   const count = selected.size;
-  const chooseCard = card => {
+  const chooseCard = (card: string) => {
     const next = [...draft];
     const existing = next.indexOf(card);
     if (existing >= 0) next[existing] = "";
@@ -227,9 +231,8 @@ export function FlopCardDialog({ cards, onApply, onClose }) {
     }
     setDraft(next);
   };
-  const apply = chosen => onApply(chosen);
-  return <div className="modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
-    <div className="modal postflop-card-dialog" role="dialog" aria-modal="true" aria-labelledby="flop-card-title" tabIndex={-1} ref={dialogRef}>
+  const apply = (chosen: string[]) => onApply(chosen);
+  return <Dialog labelledBy="flop-card-title" onClose={onClose} className="postflop-card-dialog">
       <div className="modal-heading"><h2 id="flop-card-title">{english ? "Select flop" : "フロップを選択"}</h2>
         <div className="flop-dialog-heading-actions">
           <button type="button" className="flop-random-button" onClick={() => apply(randomFlop())}>
@@ -262,23 +265,14 @@ export function FlopCardDialog({ cards, onApply, onClose }) {
           ? new Set(deck.filter(card => !selected.has(card))) : undefined}
           ariaLabel={english ? "Available flop cards by suit" : "スート別のフロップカード一覧"} onSelect={chooseCard} />
       </div>
-    </div>
-  </div>;
+  </Dialog>;
 }
 
-export function StreetCardDialog({ usedCards = [], street, currentCard = "", onApply, onClose }) {
-  const dialogRef = useRef(null);
+export function StreetCardDialog({ usedCards = [], street, currentCard = "", onApply, onClose }: { usedCards?: string[]; street: string; currentCard?: string; onApply: (card: string) => void; onClose: () => void }) {
   const english = productLocale() !== "ja";
   const title = street === "turn" ? (english ? "Select turn" : "ターンを選択") : (english ? "Select river" : "リバーを選択");
   const unavailable = new Set(usedCards);
-  useEffect(() => {
-    dialogRef.current?.focus();
-    const onKey = event => { if (event.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-  return <div className="modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
-    <div className="modal postflop-card-dialog street-card-dialog" role="dialog" aria-modal="true" aria-labelledby="street-card-title" tabIndex={-1} ref={dialogRef}>
+  return <Dialog labelledBy="street-card-title" onClose={onClose} className="postflop-card-dialog street-card-dialog">
       <div className="modal-heading"><h2 id="street-card-title">{title}</h2>
         <button type="button" className="modal-close" aria-label={english ? "Close" : "閉じる"} onClick={onClose}><X size={16} /></button>
       </div>
@@ -289,24 +283,23 @@ export function StreetCardDialog({ usedCards = [], street, currentCard = "", onA
       <p className="modal-description">{english ? "Choose one card. Cards on the board are unavailable." : "1枚選んでください。盤面のカードは選べません。"}</p>
       <SuitCardPicker selectedCards={currentCard ? new Set([currentCard]) : undefined} disabledCards={unavailable}
         ariaLabel={english ? "Available cards by suit" : "スート別のカード一覧"} onSelect={onApply} />
-    </div>
-  </div>;
+  </Dialog>;
 }
 
-export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard" }) {
+export function PostflopTrial({ context, cards, actions = [], turnCard = "", turnActions = [], riverCard = "", riverActions = [], displayMode = "standard" }: { context: NonNullable<ReturnType<typeof completedFlopContext>>; cards: string[]; actions?: string[]; turnCard?: string; turnActions?: string[]; riverCard?: string; riverActions?: string[]; displayMode?: string }) {
   const board = recognizedFlop(cards);
   const [selectedHand, setSelectedHand] = useState("AKo");
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<ReturnType<typeof computeBoard> | null>(null);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
-  const [spotState, setSpotState] = useState({ spotId: null, data: null, error: null, loading: false });
-  const [datasetState, setDatasetState] = useState({ spotId: null, datasets: null, error: null, loading: false });
-  const [laterData, setLaterData] = useState(null);
+  const [spotState, setSpotState] = useState<{ spotId: string | null; data: PostflopSource | null; error: string | null; loading: boolean }>({ spotId: null, data: null, error: null, loading: false });
+  const [datasetState, setDatasetState] = useState<{ spotId: string | null; datasets: PostflopDatasets | null; error: string | null; loading: boolean }>({ spotId: null, datasets: null, error: null, loading: false });
+  const [laterData, setLaterData] = useState<ReturnType<typeof computeLaterView> | null>(null);
   const [laterStatus, setLaterStatus] = useState("idle");
   const [laterError, setLaterError] = useState("");
-  const [laterExplainState, setLaterExplainState] = useState(null);
-  const [explainState, setExplainState] = useState(null);
-  const [flopBaseState, setFlopBaseState] = useState(null);
+  const [laterExplainState, setLaterExplainState] = useState<ExplanationState | null>(null);
+  const [explainState, setExplainState] = useState<ExplanationState | null>(null);
+  const [flopBaseState, setFlopBaseState] = useState<{ spot: string; board: string; base: BalancedFlopBase | null } | null>(null);
   const decision = flopDecision(actions, context);
   const labels = labelsFor(decision.node, decisionLabelsOf(decision));
   const spotId = context.spotId;
@@ -314,9 +307,9 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const turnPath = turnActions.join(",");
   const riverPath = riverActions.join(",");
   const start = board && !decision.node ? laterStart(actions, context) : null;
-  const turnReplay = start && turnCard ? replayLater("turn", turnActions, start, context) : null;
-  let later = null, riverReplay = null;
-  if (turnReplay?.state.node) later = laterDecision("turn", turnActions, start, context);
+  const turnReplay = start && turnCard ? replayLater("turn", turnActions, start!, context) : null;
+  let later: ReturnType<typeof laterDecision> | null = null, riverReplay: ReturnType<typeof replayLater> | null = null;
+  if (turnReplay?.state.node) later = laterDecision("turn", turnActions, start!, context);
   else if (turnReplay?.state.end && !["fold", "raise-fold"].includes(turnReplay.state.end.type) &&
       turnReplay.stacks.ip > 0 && turnReplay.stacks.oop > 0 && riverCard) {
     const riverStart = { pot: turnReplay.pot, stacks: turnReplay.stacks, lastAggressor: turnReplay.lastAggressor };
@@ -332,7 +325,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     loadPostflopSpot(spotId, controller.signal)
       .then(result => {
         if (controller.signal.aborted) return;
-        if (context.tree && result.spot.tree !== context.tree) throw new Error("候補の局面が選択中のポットと一致しません。");
+        if (context.tree && result!.spot.tree !== context.tree) throw new Error("候補の局面が選択中のポットと一致しません。");
         setSpotState({ spotId, data: result, error: null, loading: false });
       })
       .catch(reason => {
@@ -376,8 +369,8 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     })
       .then(body => {
         if (controller.signal.aborted) return;
-        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.board !== board || !body.nodes ||
-            (context.tree && body.tree !== context.tree)) throw new Error("候補の局面・盤面または形式が一致しません。");
+        if (body!.kind !== "ai_estimate_not_gto" || body!.spot !== spotId || body!.board !== board || !body!.nodes ||
+            (context.tree && body!.tree !== context.tree)) throw new Error("候補の局面・盤面または形式が一致しません。");
         setData(body); setStatus("ready");
       })
       .catch(reason => { if (!isAbortError(reason)) { setError(reason.message); setStatus("error"); } });
@@ -395,8 +388,8 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
       turnActions: turnPath, river: riverCard, riverActions: riverPath, datasets: postflopDatasets,
       flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate }), controller.signal)
       .then(body => {
-        if (body.kind !== "ai_estimate_not_gto" || body.street !== later.street || body.node !== later.node ||
-            body.actor !== later.actor || body.line !== later.line || !Array.isArray(body.rows) || body.rows.length !== 169) {
+        if (body!.kind !== "ai_estimate_not_gto" || body.street !== later!.street || body.node !== later!.node ||
+            body.actor !== later!.actor || body.line !== later!.line || !Array.isArray(body.rows) || body.rows.length !== 169) {
           throw new Error("候補の局面または形式が一致しません。");
         }
         setLaterData(body); setLaterStatus("ready");
@@ -411,19 +404,19 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const totals = useMemo(() => current ? rangeTotals(current) : null, [current]);
   const matrixNode = useMemo(() => current ? { actingPosition: current.seat } : null, [current]);
   const chosen = aggregates?.get(selectedHand);
-  const laterCurrent = later?.node && laterData?.street === later.street && laterData.node === later.node &&
-    laterData.actor === later.actor && laterData.line === later.line ? laterData : null;
+  const laterCurrent = later?.node && laterData?.street === later!.street && laterData.node === later!.node &&
+    laterData.actor === later!.actor && laterData.line === later!.line ? laterData : null;
   const laterAggregates = useMemo(() => laterCurrent ? laterMatrixFor(laterCurrent) : null, [laterCurrent]);
   const laterChosen = laterAggregates?.get(selectedHand);
   const selectedLaterRow = laterCurrent?.rows.find(row => row.hand === selectedHand);
   const laterTotals = useMemo(() => laterCurrent ? rangeTotals({ rows: laterCurrent.rows, actions: Object.keys(laterCurrent.rows[0]?.mix ?? {}) }, "reachWeight") : null, [laterCurrent]);
   const laterLabels = labelsFor(later?.node, decisionLabelsOf(later));
   const laterActions = laterCurrent ? Object.keys(selectedLaterRow?.mix ?? {}) : [];
-  const laterHeading = later ? laterNodeTitle(later.node, context, later.street) : "";
+  const laterHeading = later ? laterNodeTitle(later!.node, context, later!.street) : "";
   const [selectedLaterCombo, setSelectedLaterCombo] = useState("all");
   useEffect(() => { setSelectedLaterCombo("all"); }, [selectedHand, board, turnCard, riverCard, laterCurrent?.street, laterCurrent?.node]);
   const laterCombo = laterChosen?.combos?.find(item => item.cards === selectedLaterCombo);
-  const laterView = selectedLaterCombo === "all" ? laterChosen : laterCombo
+  const laterView: HandView | null | undefined = selectedLaterCombo === "all" ? laterChosen : laterCombo
     ? { ...laterChosen, actions: laterCombo.mix, tiers: { [laterCombo.tier]: 1 }, combo: laterCombo } : null;
   const laterExplainCombos = selectedLaterCombo === "all"
     ? laterChosen?.combos?.filter(item => item.weight > 0).map(({ cards, weight }) => ({ cards, weight }))
@@ -446,10 +439,10 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const prevBet = actions.find(isFlopBet) ?? "bet33";
   const explainCombos = selectedCombo === "all"
     ? chosen?.combos?.filter(item => item.weight > 0).map(({ cards, weight }) => ({ cards, weight }))
-    : combo ? [{ cards: combo.cards, weight: combo.weight }] : null;
+    : combo ? [{ cards: combo!.cards, weight: combo.weight }] : null;
   const explainInput = chosen && !chosen.unreachable && explainCombos?.length && board && decision.node
-    ? { spotId, board, node: decision.node, prev: prevBet,
-      ...(selectedCombo === "all" ? { combos: explainCombos } : { cards: combo.cards }) } : null;
+    ? { spotId: spotId!, board, node: decision.node, prev: prevBet,
+      ...(selectedCombo === "all" ? { combos: explainCombos } : { cards: combo!.cards }) } : null;
   const explainKey = explainInput ? JSON.stringify(explainInput) : null;
   const explain = explainKey && explainState?.key === explainKey ? explainState.data : null;
   const explainLoading = Boolean(explainKey && !sourceError && postflopSource && postflopDatasets &&
@@ -470,7 +463,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     }, controller.signal)
       .then(body => {
         const matchesSelection = selectedCombo === "all"
-          ? body?.aggregate?.kind === "hand_class_average" && body.cards === null
+          ? (body as ExplanationFacts)?.aggregate?.kind === "hand_class_average" && body.cards === null
           : body?.cards === combo?.cards;
         if (body?.spot !== spotId || body?.board !== board || body.node !== decision.node || !matchesSelection) throw new Error("説明の局面が一致しません。");
         setExplainState({ key: explainKey, data: body, error: null, loading: false });
@@ -486,14 +479,14 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     const controller = new AbortController();
     setLaterExplainState({ key: laterExplainKey, data: null, error: null, loading: true });
     deferPostflopCalculation(() => {
-      const options = { ...laterExplainInput, datasets: postflopDatasets,
+      const options = { ...laterExplainInput!, datasets: postflopDatasets,
         flopCandidate: postflopSource.candidate, laterCandidate: postflopSource.laterCandidate };
       const explanation = computeLaterExplain(options);
       const range_facts = computeLaterRangeFacts(options);
       return range_facts ? { ...explanation, range_facts } : explanation;
     }, controller.signal)
       .then(body => {
-        if (body.kind !== "ai_estimate_not_gto" || body.spot !== spotId || body.street !== laterCurrent?.street ||
+        if (body!.kind !== "ai_estimate_not_gto" || body!.spot !== spotId || body.street !== laterCurrent?.street ||
             body.node !== laterCurrent?.node || body.line !== laterCurrent?.line || !body.actions || !Number.isFinite(body.equity)) {
           throw new Error(productLocale() !== "ja" ? "Explanation does not match this decision." : "説明の局面が選択中の判断と一致しません。");
         }
@@ -506,7 +499,7 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
     return () => controller.abort();
   }, [laterCurrent?.line, laterCurrent?.node, laterCurrent?.street, laterExplainKey,
     postflopDatasets, postflopSource, sourceError, spotId]);
-  const view = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
+  const view: HandView | null | undefined = selectedCombo === "all" ? chosen : combo ? { ...chosen, actions: combo.mix, tiers: { [combo.tier]: 1 }, combo } : null;
   const english = productLocale() !== "ja";
   return <div className="postflop-trial" aria-label={english ? "Postflop estimate" : "ポストフロップ試作"}>
     {!context.pilotAvailable ? <Panel className="postflop-unavailable"><StatusState title="この局面のポストフロップ方針は未収録">現在のAI試作があるのは、標準設定の2人のポットのうち、シングルレイズポット（オープン→1人がコール）、3betポット、4betポット、SBのリンプから始まるポットだけです。プリフロップの行動ブロックから戻れます。</StatusState></Panel>
@@ -523,26 +516,26 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
         {!decision.node && start && later?.node && laterStatus === "error" && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
         {current && aggregates && <div className="postflop-range-layout">
           <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · ${english ? "range" : "レンジ"}`} ariaLabel={english ? `${current.seat} flop range` : `${current.seat}のフロップレンジ`}
-            aggregates={aggregates} actions={current.actions} actionLabels={labels} simplified={displayMode === "simple"}
+            aggregates={aggregates} actions={current.actions as string[]} actionLabels={labels} simplified={displayMode === "simple"}
             selected={selectedHand} onSelect={setSelectedHand} unreachableReason="元のプリフロップ頻度0%またはボードで到達不能、推奨なし" />
           <div className="postflop-side">
           <details className="panel postflop-range-summary">
             <summary>
               <span className="postflop-range-summary-title">レンジ全体</span>
-              <span className="postflop-range-summary-bar" style={{ background: mixGradient(Object.fromEntries(totals.items.map(item => [item.action, item.frequency])), current.actions) }}
-                aria-label={totals.items.map(item => `${labels[item.action]} ${Math.round(item.frequency * 100)}%`).join("、")} />
+              <span className="postflop-range-summary-bar" style={{ background: mixGradient(Object.fromEntries(totals!.items.map(item => [item.action, item.frequency])), current.actions) }}
+                aria-label={totals!.items.map(item => `${labels[item.action]} ${Math.round(item.frequency * 100)}%`).join("、")} />
             </summary>
-            <p>到達可能な {totals.combos}コンボの加重平均です。</p>
-            <ActionBars items={totals.items} labels={labels} />
+            <p>到達可能な {totals!.combos}コンボの加重平均です。</p>
+            <ActionBars items={totals!.items} labels={labels} />
           </details>
           <Panel className="postflop-hand-detail">
             {chosen?.unreachable ? <><SectionHeading title={selectedHand} /><StatusState title="到達不能">元のプリフロップレンジに含まれないか、このボードで組み合わせがありません。</StatusState></>
               : chosen && view && <>
                   <div className="postflop-view-line static">
-                    <h3 className="postflop-view-title">{view.combo ? <>{view.combo.cards.match(/../g).map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
+                    <h3 className="postflop-view-title">{view.combo ? <>{view.combo.cards.match(/../g)!.map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                     </div>
-                <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
-                <HandReasons node={decision.node} labels={labels} raiseAllIn={raiseAllInOf(decision)} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data.texture} explain={explain} boardCards={board}
+                <ComboPicker hand={selectedHand} combos={chosen.combos} actions={current.actions as string[]} selected={selectedCombo} onSelect={setSelectedCombo} labels={labels} />
+                <HandReasons node={decision.node} labels={labels} raiseAllIn={raiseAllInOf(decision)} hand={view.combo ? { ...view, hand: view.combo.cards } : view} texture={data!.texture} explain={explain} boardCards={board}
                   loading={Boolean(explainLoading)} error={Boolean(explainError)}
                   positions={{ ip: context.ip, oop: context.oop }} />
               </>}
@@ -559,17 +552,17 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
             <details className="panel postflop-range-summary">
               <summary>
                 <span className="postflop-range-summary-title">{english ? "Entire range" : "レンジ全体"}</span>
-                <span className="postflop-range-summary-bar" style={{ background: mixGradient(Object.fromEntries(laterTotals.items.map(item => [item.action, item.frequency])), laterActions) }}
-                  aria-label={laterTotals.items.map(item => `${laterLabels[item.action]} ${Math.round(item.frequency * 100)}%`).join("、")} />
+                <span className="postflop-range-summary-bar" style={{ background: mixGradient(Object.fromEntries(laterTotals!.items.map(item => [item.action, item.frequency])), laterActions) }}
+                  aria-label={laterTotals!.items.map(item => `${laterLabels[item.action]} ${Math.round(item.frequency * 100)}%`).join("、")} />
               </summary>
-              <p>{english ? `Weighted average of ${laterTotals.combos} reachable combos.` : `到達可能な ${laterTotals.combos}コンボの加重平均です。`}</p>
-              <ActionBars items={laterTotals.items} labels={laterLabels} />
+              <p>{english ? `Weighted average of ${laterTotals!.combos} reachable combos.` : `到達可能な ${laterTotals!.combos}コンボの加重平均です。`}</p>
+              <ActionBars items={laterTotals!.items} labels={laterLabels} />
             </details>
             <Panel className="postflop-hand-detail postflop-later-hand-detail">
               {laterChosen?.unreachable ? <><SectionHeading title={selectedHand} /><StatusState title={english ? "Unreachable" : "到達不能"}>{english ? "No combo of this hand reaches this decision." : "このハンドはこの判断に到達しません。"}</StatusState></>
                 : laterChosen && laterView && <>
                   <div className="postflop-view-line static">
-                      <h3 className="postflop-view-title">{laterView.combo ? <>{laterView.combo.cards.match(/../g).map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
+                      <h3 className="postflop-view-title">{laterView.combo ? <>{laterView.combo.cards.match(/../g)!.map(card => <span key={card} className={`suit-${card[1]}`}>{card[0]}{suitLabels[card[1]]}</span>)}</> : <>{selectedHand}<small>{english ? "Average" : "平均"}</small></>}</h3>
                     </div>
                   <ComboPicker hand={selectedHand} combos={laterChosen.combos} actions={laterActions} selected={selectedLaterCombo} onSelect={setSelectedLaterCombo} labels={laterLabels}
                     missingReason={english ? "Board overlap or no reach on this action path" : "ボードと重複、またはこの行動経路に到達しない"}
@@ -587,14 +580,14 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
 }
 
 // Explanation text with poker terms as tappable chips; tapping shows the term's definition.
-function GlossaryText({ text, locale, className = "" }) {
-  const [open, setOpen] = useState(null);
+function GlossaryText({ text, locale, className = "" }: { text: string; locale: ProductLocale; className?: string }) {
+  const [open, setOpen] = useState<string | null>(null);
   const pieces = glossaryPieces(text, locale);
   const definition = pieces.find(piece => piece.term === open)?.definition;
   return <div className={`postflop-glossary-text ${className}`}>
     <p>{pieces.map((piece, index) => piece.definition
       ? <button key={index} type="button" className={`postflop-term${open === piece.term ? " active" : ""}`}
-        aria-expanded={open === piece.term} onClick={() => setOpen(open === piece.term ? null : piece.term)}>{piece.text}</button>
+        aria-expanded={open === piece.term} onClick={() => setOpen(open === piece.term ? null : piece.term!)}>{piece.text}</button>
       : <span key={index}>{piece.text}</span>)}</p>
     {definition && <p className="postflop-term-definition" role="note"><strong>{open}</strong>{locale === "ja" ? "：" : ": "}{definition}</p>}
   </div>;

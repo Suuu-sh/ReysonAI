@@ -5,6 +5,15 @@ export const OPPONENT_PROFILE_DATASETS = ["opening-ranges", "preflop-ranges", "t
   "four-bet-responses", "five-bet-responses", "limp-responses", "limp-deep-responses"] as const;
 export type OpponentProfile = typeof OPPONENT_PROFILES[number];
 export type OpponentProfileDataset = typeof OPPONENT_PROFILE_DATASETS[number];
+type ProfileRow = { hand: string; fold?: number; check?: number; [key: string]: string | number | null | undefined };
+type ProfileSpot = { id: string; hands: ProfileRow[]; opener?: string; five_bettor?: string; source_response_id?: string; raise_size_bb?: number; raise_to_bb?: number; [key: string]: unknown };
+type ProfileDataset = {
+  spots: ProfileSpot[]; spot_count: number; hand_classes_per_spot: number; entry_count: number;
+  metadata: { [key: string]: unknown; rake?: { rate?: number; cap_bb?: number; no_flop_no_drop?: boolean; calibrated?: boolean } };
+};
+type ProfileDatasets = Partial<Record<OpponentProfileDataset, ProfileDataset>>;
+type ProfileMeta = { [key: string]: unknown; name?: Record<string, string>; description?: Record<string, string>; datasets?: Partial<Record<OpponentProfileDataset, Record<string, string>>> };
+type ProfileBundle = ProfileDatasets & { meta?: ProfileMeta };
 export function opponentProfileDatasetName(profile: OpponentProfile, name: OpponentProfileDataset | "meta"): string {
   if (!OPPONENT_PROFILES.includes(profile) || ![...OPPONENT_PROFILE_DATASETS, "meta"].includes(name)) {
     throw new Error("Unknown opponent profile dataset");
@@ -15,17 +24,17 @@ export function opponentProfileDatasetName(profile: OpponentProfile, name: Oppon
 const RANKS = "AKQJT98765432";
 const HANDS = [...RANKS].flatMap((a, i) => [...RANKS].map((b, j) => i === j ? a + b : i < j ? a + b + "s" : b + a + "o"));
 const ACTIONS = new Set(["fold", "call", "open", "limp", "check", "raise", "three_bet", "four_bet", "all_in"]);
-const ROW_SIZES = { open_size_bb: "open", limp_size_bb: "limp", three_bet_size_bb: "three_bet",
+const ROW_SIZES: Record<string, string> = { open_size_bb: "open", limp_size_bb: "limp", three_bet_size_bb: "three_bet",
   four_bet_size_bb: "four_bet", all_in_size_bb: "all_in", raise_size_bb: "raise" };
-const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-const spotById = (datasets, name, id) => datasets[name]?.spots?.find(s => s.id === id);
-const frequency = (datasets, name, id, hand, action) =>
-  (spotById(datasets, name, id)?.hands?.find(r => r.hand === hand)?.[action] ?? 0) / 100;
+const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+const spotById = (datasets: ProfileDatasets, name: OpponentProfileDataset, id: string | undefined) => datasets[name]?.spots?.find(s => s.id === id);
+const frequency = (datasets: ProfileDatasets, name: OpponentProfileDataset, id: string | undefined, hand: string, action: string) =>
+  ((spotById(datasets, name, id)?.hands?.find(r => r.hand === hand)?.[action] ?? 0) as number) / 100;
 
 // Only the actor's preceding decisions contribute to its reach. Never multiply
 // by an opponent holding the same hand class; card removal belongs to Stage C.
-export function opponentProfileReach(datasets, name, spot, hand) {
-  const f = (n, id, a) => frequency(datasets, n, id, hand, a);
+export function opponentProfileReach(datasets: ProfileDatasets, name: OpponentProfileDataset, spot: ProfileSpot, hand: string) {
+  const f = (n: OpponentProfileDataset, id: string | undefined, a: string) => frequency(datasets, n, id, hand, a);
   if (name === "opening-ranges" || name === "preflop-ranges") return 1;
   if (name === "three-bet-responses") return f("opening-ranges", `${spot.opener}_open`, "open");
   if (name === "four-bet-responses") return f("preflop-ranges", spot.source_response_id, "three_bet");
@@ -45,9 +54,9 @@ export function opponentProfileReach(datasets, name, spot, hand) {
 // example station calls with negative EV) can never rewrite authored data or
 // silently weaken the ordinary audit. The balanced bundle supplies only schema,
 // IDs and exact fixed geometry, and must be independently validated as before.
-export function auditOpponentProfiles(profiles, balanced) {
-  const findings = [];
-  const add = (check, spot, detail, severity = "error") => findings.push({ check, severity, spot, detail });
+export function auditOpponentProfiles(profiles: Partial<Record<OpponentProfile, ProfileBundle>> | null | undefined, balanced: ProfileDatasets) {
+  const findings: { check: string; severity: string; spot: string; detail: string }[] = [];
+  const add = (check: string, spot: string, detail: string, severity = "error") => findings.push({ check, severity, spot, detail });
   if (!profiles || !same(Object.keys(profiles).sort(), [...OPPONENT_PROFILES].sort())) {
     add("profile-coverage", "profiles", "Expected exactly nit, station, lag and maniac.");
   }
@@ -100,8 +109,8 @@ export function auditOpponentProfiles(profiles, balanced) {
           const old = template.hands[i], keys = Object.keys(old).filter(k => k !== "reason");
           const actions = keys.filter(k => ACTIONS.has(k));
           if (!same(Object.keys(row).sort(), [...keys].sort()) ||
-              actions.some(a => !Number.isInteger(row[a]) || row[a] < 0 || row[a] > 100) ||
-              actions.reduce((sum, a) => sum + row[a], 0) !== 100) {
+              actions.some(a => !Number.isInteger(row[a]) || (row[a] as number) < 0 || (row[a] as number) > 100) ||
+              actions.reduce((sum, a) => sum + (row[a] as number), 0) !== 100) {
             add("profile-frequency", sl, `${row.hand}: action/schema mismatch or non-integer/out-of-bounds frequencies/sum.`); continue;
           }
           if ("equity_vs_shove_pct" in row && row.equity_vs_shove_pct !== null) {
@@ -110,21 +119,21 @@ export function auditOpponentProfiles(profiles, balanced) {
           for (const key of keys.filter(k => Object.hasOwn(ROW_SIZES, k))) {
             const action = ROW_SIZES[key];
             const size = key === "limp_size_bb" ? 1 : key === "raise_size_bb" ? s.raise_size_bb ?? s.raise_to_bb : s[key];
-            if (row[key] !== (row[action] > 0 ? size : null)) add("profile-sizing-context", sl, `${row.hand}: invalid ${key}.`);
+            if (row[key] !== ((row[action] as number) > 0 ? size : null)) add("profile-sizing-context", sl, `${row.hand}: invalid ${key}.`);
           }
           if (opponentProfileReach(bundle, name, s, row.hand) === 0 && row.fold !== 100) {
             add("profile-range-flow", sl, `${row.hand}: zero preceding own-action reach must be fold=100.`);
           }
         }
         const byHand = new Map(s.hands.map(r => [r.hand, r]));
-        const inversions = [];
+        const inversions: string[] = [];
         const chains = [[...RANKS].map(r => r+r), ...[...RANKS].flatMap((r, i) =>
           ["s", "o"].map(suit => [...RANKS.slice(i+1)].map(k => r+k+suit)))];
-        const compare = (a, b) => {
+        const compare = (a: string, b: string) => {
           const first = byHand.get(a), second = byHand.get(b);
           if (!first || !second || /^A6[so]$/.test(a) && /^A5[so]$/.test(b) ||
               !opponentProfileReach(bundle,name,s,a) || !opponentProfileReach(bundle,name,s,b)) return;
-          const fold = r => r.fold ?? r.check ?? 0;
+          const fold = (r: ProfileRow) => r.fold ?? r.check ?? 0;
           if (fold(first)-fold(second)>10) inversions.push(`${a}/${b} passive-or-fold ${fold(first)}/${fold(second)}`);
         };
         for (const chain of chains) for (let i=0; i<chain.length-1; i++) compare(chain[i],chain[i+1]);

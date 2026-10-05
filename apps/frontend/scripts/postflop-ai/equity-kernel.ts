@@ -1,9 +1,19 @@
+type KernelArray = Int16Array | Int32Array | Float64Array;
+type KernelConstructor = typeof Int16Array | typeof Int32Array | typeof Float64Array;
+type KernelField = "ids" | "numerator" | "denominator" | "score" | "first" | "last" | "prefix" | "offsets" | "blockers" | "scores" | "weights" | "totals" | "memoSeen" | "memoWins" | "memoTies" | "sorted" | "bettors" | "dense" | "at";
+export type EquityKernel = {
+ accumulate: (count: number) => void; scan: (count: number, own: number) => void; prepare: (sorted: number, bettors: number) => void;
+ ids: Int32Array; numerator: Float64Array; denominator: Float64Array; score: Int32Array;
+ first: Int16Array; last: Int16Array; prefix: Float64Array; offsets: Int16Array; blockers: Int16Array;
+ scores: Int32Array; weights: Float64Array; totals: Float64Array; memoSeen: Int32Array;
+ memoWins: Float64Array; memoTies: Float64Array; sorted: Int32Array; bettors: Int32Array; dense: Float64Array; at: Int16Array;
+};
 // Browser-safe scalar WebAssembly for the hot blocker-subtraction loop. No SIMD, fma,
 // reassociation, approximations, imports, I/O or random numbers. Every f64 operation has
 // exactly the same order as the JS reference. The small assembler is the source of truth:
 // there is no opaque binary artifact, compiler or additional runtime dependency.
 const NUM_IDS = 52 * 52, MAX_BLOCKERS = 2 * 1326;
-const layout = {};
+const layout = {} as Record<KernelField, { Type: KernelConstructor; length: number; offset: number }>;
 let bytes = 0;
 for (const [name, Type, length] of [
   ["ids", Int32Array, NUM_IDS], ["numerator", Float64Array, NUM_IDS], ["denominator", Float64Array, NUM_IDS],
@@ -14,17 +24,17 @@ for (const [name, Type, length] of [
   ["memoSeen", Int32Array, 1082], ["memoWins", Float64Array, 1082], ["memoTies", Float64Array, 1082],
   ["sorted", Int32Array, NUM_IDS], ["bettors", Int32Array, NUM_IDS], ["dense", Float64Array, NUM_IDS],
   ["at", Int16Array, 52],
-]) {
+] as [KernelField, KernelConstructor, number][]) {
   bytes = Math.ceil(bytes / Type.BYTES_PER_ELEMENT) * Type.BYTES_PER_ELEMENT;
   layout[name] = { Type, length, offset: bytes };
   bytes += Type.BYTES_PER_ELEMENT * length;
 }
-const uleb = value => {
+const uleb = (value: number) => {
   const out = [];
   do { const byte = value & 127; value >>>= 7; out.push(byte | (value ? 128 : 0)); } while (value);
   return out;
 };
-const sleb = value => {
+const sleb = (value: number) => {
   const out = [];
   for (;;) {
     const byte = value & 127; value >>= 7;
@@ -33,27 +43,27 @@ const sleb = value => {
     if (end) return out;
   }
 };
-const section = (id, body) => [id, ...uleb(body.length), ...body];
-const name = text => [text.length, ...Array.from(text, c => c.charCodeAt(0))];
-const get = index => [0x20, index], set = index => [0x21, index], int = value => [0x41, ...sleb(value)];
-const double = value => { const b = new Uint8Array(8); new DataView(b.buffer).setFloat64(0, value, true); return [0x44, ...b]; };
-const address = (field, index) => [...int(layout[field].offset), ...index, ...int(layout[field].Type.BYTES_PER_ELEMENT), 0x6c, 0x6a];
-const load = (field, index) => {
+const section = (id: number, body: number[]) => [id, ...uleb(body.length), ...body];
+const name = (text: string) => [text.length, ...Array.from(text, c => c.charCodeAt(0))];
+const get = (index: number) => [0x20, index], set = (index: number) => [0x21, index], int = (value: number) => [0x41, ...sleb(value)];
+const double = (value: number) => { const b = new Uint8Array(8); new DataView(b.buffer).setFloat64(0, value, true); return [0x44, ...b]; };
+const address = (field: KernelField, index: number[]) => [...int(layout[field].offset), ...index, ...int(layout[field].Type.BYTES_PER_ELEMENT), 0x6c, 0x6a];
+const load = (field: KernelField, index: number[]) => {
   const type = layout[field].Type;
   return [...address(field, index), type === Float64Array ? 0x2b : type === Int16Array ? 0x2f : 0x28,
     Math.log2(type.BYTES_PER_ELEMENT), 0];
 };
-const storeDouble = (field, index, value) => [...address(field, index), ...value, 0x39, 3, 0];
-const storeInt = (field, index, value) => [...address(field, index), ...value, 0x36, 2, 0];
-const storeShort = (field, index, value) => [...address(field, index), ...value, 0x3b, 1, 0];
+const storeDouble = (field: KernelField, index: number[], value: number[]) => [...address(field, index), ...value, 0x39, 3, 0];
+const storeInt = (field: KernelField, index: number[], value: number[]) => [...address(field, index), ...value, 0x36, 2, 0];
+const storeShort = (field: KernelField, index: number[], value: number[]) => [...address(field, index), ...value, 0x3b, 1, 0];
 // Parameter n=0; i32 locals j=1, id=2, own=3, c1=4, c2=5, k=6, end=7, other=8;
 // f64 locals total=9, win=10, tie=11, weight=12;
 // i32 locals lastCard=13, generation=14, rankGroup=15.
 // The first-card result is identical for tied scores. A tiny generation-tagged memo
 // reuses it within one first-card group; no addition or subtraction is reordered.
-const subtract = (target, value) => [...get(target), ...value, 0xa1, ...set(target)];
-const advance = index => [...get(index), ...int(1), 0x6a, ...set(index)];
-const removeCard = (card, second) => [
+const subtract = (target: number, value: number[]) => [...get(target), ...value, 0xa1, ...set(target)];
+const advance = (index: number) => [...get(index), ...int(1), 0x6a, ...set(index)];
+const removeCard = (card: number, second: boolean) => [
   ...load("offsets", get(card)), ...set(6),
   ...load("offsets", [...get(card), ...int(1), 0x6a]), ...set(7),
   0x02, 0x40, 0x03, 0x40, // block { loop {
@@ -94,7 +104,7 @@ const instructions = [
 const body = [3, 8, 0x7f, 4, 0x7c, 3, 0x7f, ...instructions];
 // Original first-three-query scan: parameters n=0, own=1; i32 locals j=2, other=3;
 // f64 total=4, win=5, tie=6, weight=7. Addition order is the original saved-ID order.
-const add = (target, value) => [...get(target), ...value, 0xa0, ...set(target)];
+const add = (target: number, value: number[]) => [...get(target), ...value, 0xa0, ...set(target)];
 const scanBody = [2, 2, 0x7f, 4, 0x7c,
   0x02, 0x40, 0x03, 0x40,
   ...get(2), ...get(0), 0x4f, 0x0d, 1,
@@ -112,7 +122,7 @@ const scanBody = [2, 2, 0x7f, 4, 0x7c,
 // Prefix/card-list preparation. Parameters ranks=0, bettors=1; i32 locals
 // j=2, id=3, c1=4, c2=5, k=6, end/count=7, start=8; f64 all=9, weight=10, total=11.
 // Sorted-prefix additions and each card's blocker subtractions use reference order.
-const loop = (index, limit, code) => [
+const loop = (index: number, limit: number[], code: number[]) => [
   ...int(0), ...set(index), 0x02, 0x40, 0x03, 0x40,
   ...get(index), ...limit, 0x4f, 0x0d, 1,
   ...code, ...advance(index), 0x0c, 0, 0x0b, 0x0b,
@@ -120,8 +130,8 @@ const loop = (index, limit, code) => [
 const cardsOfId = [
   ...get(3), ...int(52), 0x6e, ...set(4), ...get(3), ...int(52), 0x70, ...set(5),
 ];
-const addOffset = card => storeShort("offsets", get(card), [...load("offsets", get(card)), ...int(1), 0x6a]);
-const putBlocker = card => [
+const addOffset = (card: number) => storeShort("offsets", get(card), [...load("offsets", get(card)), ...int(1), 0x6a]);
+const putBlocker = (card: number) => [
   ...load("at", get(card)), ...set(6),
   ...storeShort("blockers", get(6), get(3)),
   ...storeInt("scores", get(6), load("score", get(3))),
@@ -170,14 +180,14 @@ const moduleBytes = Uint8Array.from([
   ...section(7, [4, ...name("memory"), 2, 0, ...name("accumulate"), 0, 0, ...name("scan"), 0, 1, ...name("prepare"), 0, 2]),
   ...section(10, [3, ...uleb(body.length), ...body, ...uleb(scanBody.length), ...scanBody, ...uleb(prepareBody.length), ...prepareBody]),
 ]);
-let kernel;
+let kernel: EquityKernel | null | undefined;
 export function equityKernel() {
   if (kernel !== undefined) return kernel;
   try {
     const instance = new WebAssembly.Instance(new WebAssembly.Module(moduleBytes));
-    kernel = { accumulate: instance.exports.accumulate, scan: instance.exports.scan, prepare: instance.exports.prepare };
+    kernel = { accumulate: instance.exports.accumulate as EquityKernel["accumulate"], scan: instance.exports.scan as EquityKernel["scan"], prepare: instance.exports.prepare as EquityKernel["prepare"] } as EquityKernel;
     for (const [key, { Type, length, offset }] of Object.entries(layout)) {
-      kernel[key] = new Type(instance.exports.memory.buffer, offset, length);
+      (kernel as unknown as Record<KernelField, KernelArray>)[key as KernelField] = new Type((instance.exports.memory as WebAssembly.Memory).buffer, offset, length);
     }
   } catch {
     // CSP / an environment without WebAssembly still has the identical JS implementation.

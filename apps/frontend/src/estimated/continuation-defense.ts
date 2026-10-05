@@ -1,9 +1,15 @@
+import type { ContinuationDefenseEvent } from "./continuation-audit.ts";
+import type { WeightedRange } from "./call-ev.ts";
+export type DefenseBounds = { mean: number; lower: number; upper: number; radius: number };
+export type JointDefenseInput = { event_id: string; participants: string[]; ranges: WeightedRange[]; responders: { seat: string; spot_id: string; rows: [string, number, number][] }[]; risk_bb: number; pot_before_raise_bb: number; threshold: number; conditioning: string };
+export type JointDefenseRecord = { version: number; seed_tag: string; method?: "exact" | "monte_carlo"; seed: number | null; samples: number; confidence_delta: number; input: JointDefenseInput; fold: DefenseBounds; capacity: DefenseBounds; attempts?: number; potential_deals?: number; accepted_deals?: number; normalizing_weight?: number; fold_weight?: number; capacity_weight?: number; fold_sum?: number; fold_squares?: number; capacity_sum?: number; capacity_squares?: number };
+export type DefenseHistogram = Map<number, { tuple: string[]; count: number }>;
 // Joint card-conditioned raise-defense audit. Range mixes may still report
 // traditional own-reach combo weights, but publication never uses their product
 // as a substitute for this complete-deal probability.
 import { hands } from "../data.ts";
-import { seedFor, seededRandom, weightedRange } from "../../scripts/lib/equity.mjs";
-import { continuationDrawTables, drawContinuationHoleCards } from "../../scripts/lib/continuation-equity.mjs";
+import { seedFor, seededRandom, weightedRange } from "../../scripts/lib/equity.ts";
+import { continuationDrawTables, drawContinuationHoleCards } from "../../scripts/lib/continuation-equity.ts";
 
 export const JOINT_DEFENSE_VERSION = 1;
 export const JOINT_DEFENSE_SEED = "continuation-joint-defense-v1|exact-input";
@@ -11,13 +17,13 @@ export const JOINT_DEFENSE_MIN_SAMPLES = 20000;
 export const JOINT_DEFENSE_MAX_SAMPLES = 1280000;
 export const JOINT_DEFENSE_DELTA = 1e-9;
 export const JOINT_DEFENSE_EXACT_LIMIT = 2000000;
-export const jointDefenseTolerance = record => record?.method === "exact" ? 1e-12 : 0;
+export const jointDefenseTolerance = (record: JointDefenseRecord | null | undefined) => record?.method === "exact" ? 1e-12 : 0;
 const rankNames = "23456789TJQKA";
-const handName = ([a, b]) => (a >> 2) === (b >> 2) ? rankNames[a >> 2].repeat(2)
+const handName = ([a, b]: readonly number[]) => (a >> 2) === (b >> 2) ? rankNames[a >> 2].repeat(2)
   : rankNames[Math.max(a >> 2, b >> 2)] + rankNames[Math.min(a >> 2, b >> 2)] + ((a & 3) === (b & 3) ? "s" : "o");
 const handIndices = new Map(hands.map((hand, i) => [hand, i]));
 
-export function jointDefenseInput(event) {
+export function jointDefenseInput(event: ContinuationDefenseEvent): JointDefenseInput {
   const first = event.group[0];
   if (!first) throw new Error(`No joint defense responders: ${event.id}`);
   return {
@@ -25,10 +31,10 @@ export function jointDefenseInput(event) {
     ranges: first.node.participants.map(seat => [...first.context.weights[seat]].filter(([, weight]) => weight > 0)),
     responders: event.group.map(({ node, spot, capacity }) => {
       if (!capacity) throw new Error(`Missing joint-defense call capacity: ${node.id}`);
-      return { seat: node.hero, spot_id: node.id, rows: spot.hands.map(row => {
-        const maximumFold = (100 - row.four_bet - row.all_in - capacity.maxCalls.get(row.hand)) / 100;
-        if (maximumFold > row.fold / 100 + 1e-12) throw new Error(`Saved continuation exceeds computed capacity: ${node.id}/${row.hand}`);
-        return [row.hand, row.fold / 100, Math.max(0, maximumFold)];
+      return { seat: node.hero, spot_id: node.id, rows: spot.hands.map((row): [string, number, number] => {
+        const maximumFold = (100 - row.four_bet! - row.all_in! - capacity.maxCalls.get(row.hand)!) / 100;
+        if (maximumFold > row.fold! / 100 + 1e-12) throw new Error(`Saved continuation exceeds computed capacity: ${node.id}/${row.hand}`);
+        return [row.hand, row.fold! / 100, Math.max(0, maximumFold)];
       }) };
     }),
     risk_bb: event.risk_bb, pot_before_raise_bb: event.pot_before_raise_bb, threshold: event.threshold,
@@ -39,7 +45,7 @@ export function jointDefenseInput(event) {
 // Two-sided empirical Bernstein bound for bounded [0,1] observations. Delta
 // is deliberately small for the many inspected events/adaptive repair passes.
 // This is a Monte Carlo confidence bound, not a solver/equilibrium guarantee.
-export function jointDefenseBounds(sum, squares, samples) {
+export function jointDefenseBounds(sum: number, squares: number, samples: number): DefenseBounds {
   if (!Number.isInteger(samples) || samples < 2 || !Number.isFinite(sum) || !Number.isFinite(squares) || sum < 0 || sum > samples + 1e-7 || squares < 0 || squares > sum + 1e-7) throw new Error("Invalid joint-defense moments");
   const mean = sum / samples;
   const variance = Math.max(0, (squares - sum * sum / samples) / (samples - 1));
@@ -51,34 +57,34 @@ export function jointDefenseBounds(sum, squares, samples) {
   return { mean, lower: Math.max(0, mean - radius), upper: Math.min(1, mean + radius), radius };
 }
 
-export function jointDefenseSaturated(event) {
+export function jointDefenseSaturated(event: ContinuationDefenseEvent) {
   return event.group.every(({ spot, context, capacity }) => capacity && spot.hands.every(row =>
-    context.reach(row.hand) <= 0 || row.call === capacity.maxCalls.get(row.hand)));
+    context.reach(row.hand) <= 0 || row.call === capacity.maxCalls.get(row.hand)!));
 }
 
 // A repair pass may inspect thousands of events lazily. Keep its source data
 // immutable until the next topological regeneration, otherwise an early call
 // edit changes a later event's range while its equity table still describes
 // the old policy. Only the per-event working view may be adjusted in place.
-export function jointDefenseRepairView(event) {
+export function jointDefenseRepairView(event: ContinuationDefenseEvent) {
   return { ...event, group: event.group.map(item => {
     const spot = { ...item.spot, hands: item.spot.hands.map(row => ({ ...row })) };
     return { ...item, spot, context: { ...item.context, spot } };
   }) };
 }
 
-export function validJointDefenseRecord(record, event) {
+export function validJointDefenseRecord(record: JointDefenseRecord | null | undefined, event: ContinuationDefenseEvent): record is JointDefenseRecord {
   if (!record || record.version !== JOINT_DEFENSE_VERSION || record.seed_tag !== JOINT_DEFENSE_SEED) return false;
   const input = jointDefenseInput(event);
   if (JSON.stringify(record.input) !== JSON.stringify(input)) return false;
   if (record.method === "exact") {
     const potential = input.ranges.reduce((product, range) => product * range.reduce((sum, [hand]) => sum + (hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12), 0), 1);
     if (record.seed !== null || record.samples !== 0 || record.confidence_delta !== 0 || record.potential_deals !== potential ||
-        potential > JOINT_DEFENSE_EXACT_LIMIT || !Number.isInteger(record.accepted_deals) || record.accepted_deals < 1 || record.accepted_deals > potential ||
-        !(record.normalizing_weight > 0) || !Number.isFinite(record.normalizing_weight) ||
-        ![record.fold_weight, record.capacity_weight].every(value => Number.isFinite(value) && value >= 0 && value <= record.normalizing_weight + 1e-10)) return false;
-    return JSON.stringify(record.fold) === JSON.stringify(exactBounds(record.fold_weight / record.normalizing_weight)) &&
-      JSON.stringify(record.capacity) === JSON.stringify(exactBounds(record.capacity_weight / record.normalizing_weight));
+        potential > JOINT_DEFENSE_EXACT_LIMIT || !Number.isInteger(record.accepted_deals!) || record.accepted_deals! < 1 || record.accepted_deals! > potential ||
+        !(record.normalizing_weight! > 0) || !Number.isFinite(record.normalizing_weight!) ||
+        ![record.fold_weight!, record.capacity_weight!].every(value => Number.isFinite(value) && value! >= 0 && value! <= record.normalizing_weight! + 1e-10)) return false;
+    return JSON.stringify(record.fold) === JSON.stringify(exactBounds(record.fold_weight! / record.normalizing_weight!)) &&
+      JSON.stringify(record.capacity) === JSON.stringify(exactBounds(record.capacity_weight! / record.normalizing_weight!));
   }
   if (record.method !== undefined && record.method !== "monte_carlo") return false;
   if (
@@ -87,24 +93,24 @@ export function validJointDefenseRecord(record, event) {
       !Number.isInteger(Math.log2(record.samples / JOINT_DEFENSE_MIN_SAMPLES))) return false;
   if (record.seed !== seedFor(`${JOINT_DEFENSE_SEED}|${JSON.stringify(input)}`)) return false;
   try {
-    return JSON.stringify(record.fold) === JSON.stringify(jointDefenseBounds(record.fold_sum, record.fold_squares, record.samples)) &&
-      JSON.stringify(record.capacity) === JSON.stringify(jointDefenseBounds(record.capacity_sum, record.capacity_squares, record.samples));
+    return JSON.stringify(record.fold) === JSON.stringify(jointDefenseBounds(record.fold_sum!, record.fold_squares!, record.samples)) &&
+      JSON.stringify(record.capacity) === JSON.stringify(jointDefenseBounds(record.capacity_sum!, record.capacity_squares!, record.samples));
   } catch { return false; }
 }
 
-const exactBounds = value => ({ mean: value, lower: value, upper: value, radius: 0 });
-function exactJointDefense(event, input) {
+const exactBounds = (value: number): DefenseBounds => ({ mean: value, lower: value, upper: value, radius: 0 });
+function exactJointDefense(event: ContinuationDefenseEvent, input: JointDefenseInput): JointDefenseRecord | null {
   const potential = input.ranges.reduce((product, range) => product * range.reduce((sum, [hand]) => sum + (hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12), 0), 1);
   if (potential > JOINT_DEFENSE_EXACT_LIMIT) return null;
   const tables = input.ranges.map((range, index) => ({ index,
     values: weightedRange(range.map(([hand, weight]) => ({ hand, weight }))).map(item => ({ ...item, hand: handName(item.combo) })) }))
     .sort((a, b) => a.values.length - b.values.length);
-  const tuple = [], used = new Set(); let accepted = 0;
+  const tuple: string[] = [], used = new Set<number>(); let accepted = 0;
   // Compensated sums keep the exact finite-deal calculation stable even when
   // deep source-action products make some tuple weights very small.
   const sums = [0, 0, 0], compensation = [0, 0, 0];
-  const add = (index, value) => { const y = value - compensation[index], next = sums[index] + y; compensation[index] = (next - sums[index]) - y; sums[index] = next; };
-  function visit(depth, weight) {
+  const add = (index: number, value: number) => { const y = value - compensation[index], next = sums[index] + y; compensation[index] = (next - sums[index]) - y; sums[index] = next; };
+  function visit(depth: number, weight: number): void {
     if (depth === tables.length) {
       accepted++; add(0, weight);
       add(1, weight * productFor(tuple, input.responders, input.participants, 1));
@@ -128,22 +134,22 @@ function exactJointDefense(event, input) {
     fold: exactBounds(sums[1] / sums[0]), capacity: exactBounds(sums[2] / sums[0]) };
 }
 
-function resolveSaturatedBoundary(event, record) {
+function resolveSaturatedBoundary(event: ContinuationDefenseEvent, record: JointDefenseRecord): JointDefenseRecord {
   if (record.method === "exact" || record.samples < JOINT_DEFENSE_MAX_SAMPLES ||
       record.fold.upper <= event.threshold || record.fold.lower > event.threshold || !jointDefenseSaturated(event)) return record;
   return exactJointDefense(event, record.input) ?? record;
 }
 
-function productFor(tuple, responders, participants, column) {
+function productFor(tuple: string[], responders: JointDefenseInput["responders"], participants: string[], column: 1 | 2) {
   let product = 1;
   for (const responder of responders) {
     const hand = tuple[participants.indexOf(responder.seat)];
-    product *= responder.rows[handIndices.get(hand)][column];
+    product *= responder.rows[handIndices.get(hand)!][column];
   }
   return product;
 }
 
-export function evaluateJointDefenseHistogram(event, histogram, samples) {
+export function evaluateJointDefenseHistogram(event: ContinuationDefenseEvent, histogram: ReadonlyMap<number, { tuple: string[]; count: number }>, samples: number) {
   const input = jointDefenseInput(event); let foldSum = 0, foldSquares = 0, capacitySum = 0, capacitySquares = 0;
   for (const { tuple, count } of histogram.values()) {
     const fold = productFor(tuple, input.responders, input.participants, 1), capacity = productFor(tuple, input.responders, input.participants, 2);
@@ -153,12 +159,12 @@ export function evaluateJointDefenseHistogram(event, histogram, samples) {
   return { fold: jointDefenseBounds(foldSum, foldSquares, samples), capacity: jointDefenseBounds(capacitySum, capacitySquares, samples) };
 }
 
-export function sampleJointDefense(event, { cached, withHistogram = false } = {}) {
+export function sampleJointDefense(event: ContinuationDefenseEvent, { cached, withHistogram = false }: { cached?: JointDefenseRecord | null; withHistogram?: boolean } = {}) {
   if (validJointDefenseRecord(cached, event) && (!withHistogram || cached.method === "exact")) return { record: resolveSaturatedBoundary(event, cached), histogram: null };
   const input = jointDefenseInput(event), seed = seedFor(`${JOINT_DEFENSE_SEED}|${JSON.stringify(input)}`), random = seededRandom(seed);
   const tables = continuationDrawTables(input.ranges.map(range => weightedRange(range.map(([hand, weight]) => ({ hand, weight })))));
   if (tables.some(table => !table.range.length || table.total <= 0)) throw new Error(`Empty joint defense range ${event.id}`);
-  const histogram = new Map(); let samples = 0, attempts = 0, foldSum = 0, foldSquares = 0, capacitySum = 0, capacitySquares = 0;
+  const histogram: DefenseHistogram = new Map(); let samples = 0, attempts = 0, foldSum = 0, foldSquares = 0, capacitySum = 0, capacitySquares = 0;
   let target = withHistogram && validJointDefenseRecord(cached, event) ? cached.samples : JOINT_DEFENSE_MIN_SAMPLES;
   let fold, capacity;
   while (true) {
@@ -170,7 +176,7 @@ export function sampleJointDefense(event, { cached, withHistogram = false } = {}
       const tuple = deal.villains.map(handName), f = productFor(tuple, input.responders, input.participants, 1), c = productFor(tuple, input.responders, input.participants, 2);
       samples++; foldSum += f; foldSquares += f * f; capacitySum += c; capacitySquares += c * c;
       if (withHistogram) {
-        const key = tuple.reduce((value, hand) => value * 169 + handIndices.get(hand), 0);
+        const key = tuple.reduce((value, hand) => value * 169 + handIndices.get(hand)!, 0);
         const item = histogram.get(key);
         if (item) item.count++; else histogram.set(key, { tuple, count: 1 });
       }

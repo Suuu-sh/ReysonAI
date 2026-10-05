@@ -1,8 +1,9 @@
+import type { ReactElement } from "react";
 import { useId } from "react";
 
 // Agent avatars drawn inline: a dark helmet with a glowing visor. Each agent has its own visor
 // shape and colour (characters.ts). `state` dims the visor on a fold and brightens it on a win.
-const VISORS: Record<string, (color: string) => JSX.Element> = {
+const VISORS: Record<string, (color: string) => ReactElement> = {
   orion: color => <rect x="33" y="44" width="34" height="7" rx="3.5" fill={color} />,
   vega: color => <><circle cx="50" cy="48" r="7.5" fill="none" stroke={color} strokeWidth="2.5" /><circle cx="50" cy="48" r="3" fill={color} /></>,
   nova: color => <path d="M33 41 L50 51 L67 41 L67 46.5 L50 56.5 L33 46.5 Z" fill={color} />,

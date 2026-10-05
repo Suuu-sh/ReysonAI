@@ -1,11 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
-import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
-import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
-import { parseCards } from "../scripts/postflop-ai/model.mjs";
-import { combosOf } from "../scripts/lib/equity.mjs";
+import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.ts";
+import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
+import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
+import { parseCards } from "../scripts/postflop-ai/model.ts";
+import { combosOf } from "../scripts/lib/equity.ts";
 import { laterHandEvForHand } from "../scripts/postflop-ai/later-hand-ev.mjs";
 
 const inputs = loadInputs("BTN_open_BB_call");

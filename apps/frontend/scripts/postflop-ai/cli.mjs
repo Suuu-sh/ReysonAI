@@ -9,7 +9,7 @@ import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { simulateParallel } from "./simulation-parallel.mjs";
 import { generateHandEv } from "./hand-ev.mjs";
 import { generateLaterHandEv } from "./later-hand-ev.mjs";
-import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById } from "./spots.mjs";
+import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, spotById } from "./spots.ts";
 
 const COMMANDS = ["generate", "generate-later", "simulate", "audit", "hand-ev", "later-hand-ev", "spots"];
 const USAGE = "Usage: postflop-ai <generate|generate-later|simulate|audit|hand-ev|later-hand-ev|spots> [--spot <id> | --all] [--samples N] [--model M] [--effort E]";

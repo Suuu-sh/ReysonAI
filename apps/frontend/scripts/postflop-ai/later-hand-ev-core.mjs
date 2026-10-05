@@ -1,15 +1,15 @@
 // The pure core of the turn/river per-hand action EV (no node:*): shared by the Node scripts
 // (later-hand-ev.mjs) and the browser worker (src/estimated/postflop-compute.ts), so both compute
 // exactly the same numbers. Values are sampled by AI-policy self-play with the computed defence at
-// facing decisions (defence.mjs); they are local estimates, not GTO or solver output.
-import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
-import { choose, validatePolicy } from "./policy.mjs";
-import { laterPolicyMix, validateLaterPolicy } from "./later-policy.mjs";
-import { parseCards } from "./model.mjs";
-import { LATER_NODES } from "./later-tree.mjs";
-import { flopState } from "./tree.mjs";
-import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
-import { defenceFor, replayDecision } from "./defence.mjs";
+// facing decisions (defence.ts); they are local estimates, not GTO or solver output.
+import { evaluate, seedFor, seededRandom } from "../lib/equity.ts";
+import { choose, validatePolicy } from "./policy.ts";
+import { laterPolicyMix, validateLaterPolicy } from "./later-policy.ts";
+import { parseCards } from "./model.ts";
+import { LATER_NODES } from "./later-tree.ts";
+import { flopState } from "./tree.ts";
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.ts";
+import { defenceFor, replayDecision } from "./defence.ts";
 import { exactActionEv } from "./exact-ev.mjs";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
@@ -134,7 +134,7 @@ function computeNodeMonteCarloRaw({ key, street, history, turnHistory = [], expe
   if (liveStacks[role] <= 0) return [key, { node: decision.node, actor, pot_bb: decision.potBb, rows: {}, unreachable: true }];
   const flopBoard = board.cards;
   const currentBoard = street === "turn" ? runout.turnBoard : runout.riverBoard;
-  // Every decision uses the computed defence and bluff cap (defence.mjs), in this node's mix, in the
+  // Every decision uses the computed defence and bluff cap (defence.ts), in this node's mix, in the
   // reach weights of both ranges and in every later decision of the sampled continuations.
   const defence = defenceFor(inputs, flopPolicy, laterPolicy);
   const nodeTable = replayDecision(inputs, currentBoard, { flop: flopPath.actions,

@@ -3,11 +3,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { brotliCompressSync, constants } from "node:zlib";
 import { join } from "node:path";
-import { POSTFLOP_SPOTS, DEFAULT_SPOT_ID } from "./spots.mjs";
-import { isCanonicalFlopKey } from "./flop-isomorphism.mjs";
+import { POSTFLOP_SPOTS, DEFAULT_SPOT_ID } from "./spots.ts";
+import { isCanonicalFlopKey } from "./flop-isomorphism.ts";
 import { loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
-import { flopBaseIdentity } from "./flop-base-core.mjs";
+import { flopBaseIdentity } from "./flop-base-core.ts";
 import { flopBaseDir, readFreshFlopBase, textHash } from "./flop-base-files.mjs";
 import { MAX_VALUE_BYTES, quote } from "./publish-d1.mjs";
 

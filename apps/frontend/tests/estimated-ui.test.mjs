@@ -450,14 +450,14 @@ test("estimated view always shows the expanded six-seat action path", () => {
   assert.match(html, /class="results estimate-results participant-results/);
   assert.match(html, /<strong>Cash<\/strong><span>100bb<\/span><\/button>/);
   assert.doesNotMatch(html, /<strong>推定レンジ<\/strong>/);
-  assert.match(html, /class="format-edit settings-icon-button" aria-label="ゲーム設定を変更"[^>]*><svg[\s\S]*?<\/svg><\/button><button[^>]*aria-label="アクションをリセット"[^>]*><svg[\s\S]*?<\/svg><\/button>/);
+  assert.match(html, /class="settings-header"><button[^>]*class="settings-toggle"[^>]*><svg[\s\S]*?<strong>Cash<\/strong><span>100bb<\/span><\/button><div class="settings-actions"><button[^>]*aria-label="ゲーム設定を変更"[^>]*><svg[\s\S]*?<\/svg><\/button><button[^>]*aria-label="アクションをリセット"[^>]*><svg[\s\S]*?<\/svg><\/button><\/div><\/div>/);
   assert.match(html, /aria-label="アクション履歴"/);
   assert.doesNotMatch(html, /path-toggle|アクション選択を(開|閉じ)る/);
   assert.match(html, /action-path expanded/);
   assert.match(html, /BTN[\s\S]*aria-pressed="true"[^>]*>Raise 2\.5<[\s\S]*SB[\s\S]*aria-pressed="true"[^>]*>Fold<[\s\S]*action-seat-seat active[\s\S]*BB/);
   assert.doesNotMatch(html, /Take action/);
   assert.doesNotMatch(html, /次のアクションノード|aria-label="局面"|aria-label="有効スタック"|aria-label="オープンサイズ"/);
-  assert.match(html, /action-seat-info[\s\S]*Cash[\s\S]*100bb[\s\S]*6max · Open 2\.5BB[\s\S]*aria-label="ゲーム設定を変更"[\s\S]*aria-label="アクションをリセット"[\s\S]*aria-label="UTGのアクションに戻り、レンジ表を表示"/);
+  assert.match(html, /action-seat-info[\s\S]*Cash[\s\S]*100bb[\s\S]*aria-label="ゲーム設定を変更"[\s\S]*aria-label="アクションをリセット"[\s\S]*6max · Open 2\.5BB[\s\S]*aria-label="UTGのアクションに戻り、レンジ表を表示"/);
   assert.doesNotMatch(html, /Open 2\.5BB · アンティなし/);
   assert.doesNotMatch(html, /表示アクション|すべてのアクション/);
   assert.match(html, /レイズ 2\.5 BB.*フォールド/s);

@@ -1,3 +1,5 @@
+import type { FiveBetDataset, FiveBetSpot } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { useEffect, useState } from "react";
 import { loadDataset } from "./datasets.ts";
 import { validateFiveBetDataset } from "./five-bet-dataset.ts";
@@ -5,15 +7,15 @@ import { validateFiveBetDataset } from "./five-bet-dataset.ts";
 export { validateFiveBetDataset };
 
 // Loaded only when a 5bet all-in is selected; the dataset is not needed for any other path.
-let pending;
+let pending: Promise<FiveBetDataset> | undefined;
 
 export function loadFiveBetDataset() {
   pending ??= loadDataset("five-bet-responses").then(validateFiveBetDataset).catch(error => { pending = undefined; throw error; });
   return pending;
 }
 
-export function useFiveBetSpot(opener, fiveBettor, enabled) {
-  const [state, setState] = useState({ key: null, spot: null, error: null });
+export function useFiveBetSpot(opener: string, fiveBettor: string, enabled: boolean) {
+  const [state, setState] = useState<{ key: string | null; spot: FiveBetSpot | null; error: Error | null }>({ key: null, spot: null, error: null });
   const key = enabled ? `${opener}>${fiveBettor}` : null;
   useEffect(() => {
     if (!key) return undefined;
@@ -27,7 +29,7 @@ export function useFiveBetSpot(opener, fiveBettor, enabled) {
   return state.key === key ? { ...state, loading: false } : { spot: null, error: null, loading: true };
 }
 
-export function fiveBetMatrixModel(spot) {
+export function fiveBetMatrixModel(spot: FiveBetSpot): MatrixModel {
   return {
     actions: ["call", "fold"],
     actionLabels: { call: "コール（オールイン100BB）" },

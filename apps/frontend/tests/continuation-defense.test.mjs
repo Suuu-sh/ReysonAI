@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { hands } from "../src/data.ts";
 import { sampleJointDefense, validJointDefenseRecord, jointDefenseSaturated, jointDefenseBounds, evaluateJointDefenseHistogram, jointDefenseRepairView, jointDefenseInput,
   JOINT_DEFENSE_VERSION, JOINT_DEFENSE_SEED, JOINT_DEFENSE_DELTA, JOINT_DEFENSE_MAX_SAMPLES, jointDefenseTolerance } from "../src/estimated/continuation-defense.ts";
-import { seedFor } from "../scripts/lib/equity.mjs";
+import { seedFor } from "../scripts/lib/equity.ts";
 
 function eventFixture() {
   const weights = { UTG: new Map([["AA", 1]]), HJ: new Map([["AA", 0.9], ["KK", 0.1]]), BB: new Map([["22", 1]]) };

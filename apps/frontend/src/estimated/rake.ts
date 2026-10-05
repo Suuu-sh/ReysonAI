@@ -8,16 +8,16 @@ export const rakeMetadata = Object.freeze({
   calibrated: true,
 });
 
-export function rake(potBb) {
+export function rake(potBb: number) {
   if (!Number.isFinite(potBb) || potBb < 0) throw new Error("ポット額は0以上の有限値である必要があります。");
   return Math.min(potBb * rakeConfig.rate, rakeConfig.cap_bb);
 }
 
-export function raked(potBb) {
+export function raked(potBb: number) {
   return potBb - rake(potBb);
 }
 
-export function hasConfiguredRake(metadata) {
+export function hasConfiguredRake(metadata: { rake?: { rate?: number; cap_bb?: number; no_flop_no_drop?: boolean; calibrated?: boolean } } | null | undefined) {
   return Boolean(metadata?.rake &&
     metadata.rake.rate === rakeMetadata.rate &&
     metadata.rake.cap_bb === rakeMetadata.cap_bb &&

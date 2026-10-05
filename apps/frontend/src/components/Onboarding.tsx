@@ -1,10 +1,12 @@
+import type { Profile, ProfileDraft } from "../profile.ts";
+import type { AccountState } from "../account/session.ts";
 import { BrandIcon } from "./BrandIcon.tsx";
 import { useEffect, useState } from "react";
 import { levels } from "../profile.ts";
 import { localized, productLocale, selectProductLocale, LOCALES } from "../i18n.ts";
 
 const languageDraftKey = "reysonai:onboarding-language-draft:v1";
-function readLanguageDraft(owner, profileRevision) {
+function readLanguageDraft(owner: string, profileRevision: string | null) {
   try {
     const draft = JSON.parse(window.sessionStorage.getItem(languageDraftKey) ?? "null");
     return draft?.owner === owner && draft?.profileRevision === profileRevision ? draft : null;
@@ -21,7 +23,7 @@ const GoogleMark = () => <svg className="google-mark" viewBox="0 0 48 48" width=
 </svg>;
 
 // account: { user, available } from useAccount(). Signing in is offered, never required.
-export function Onboarding({ initial, onComplete, onCancel, account = null, onSignIn = null, onAccount = null }) {
+export function Onboarding({ initial, onComplete, onCancel, account = null, onSignIn = null, onAccount = null }: { initial?: Profile | null; onComplete: (profile: ProfileDraft) => void; onCancel?: () => void; account?: Pick<AccountState, "user" | "available"> | null; onSignIn?: ((draft: ProfileDraft) => Promise<void>) | null; onAccount?: (() => void) | null }) {
   const owner = account?.user?.id ?? "guest";
   const profileRevision = initial?.updatedAt ?? null;
   const [languageDraft] = useState(() => readLanguageDraft(owner, profileRevision));
@@ -29,7 +31,7 @@ export function Onboarding({ initial, onComplete, onCancel, account = null, onSi
   useEffect(clearLanguageDraft, []);
   const [level, setLevel] = useState(languageDraft?.level ?? initial?.level ?? "");
   const [nickname, setNickname] = useState(languageDraft?.nickname ?? initial?.nickname ?? "");
-  const changeLanguage = value => {
+  const changeLanguage = (value: string) => {
     try { window.sessionStorage.setItem(languageDraftKey, JSON.stringify({ nickname, level, owner, profileRevision })); } catch {}
     selectProductLocale(value);
   };
@@ -40,7 +42,7 @@ export function Onboarding({ initial, onComplete, onCancel, account = null, onSi
   const offerGoogle = !editing && !user && Boolean(account?.available && onSignIn);
   const signIn = async () => {
     setSigningIn(true); setSignInFailed(false);
-    try { clearLanguageDraft(); await onSignIn({ nickname, level }); }
+    try { clearLanguageDraft(); await onSignIn!({ nickname, level }); }
     catch { setSignInFailed(true); setSigningIn(false); }
   };
   return <main className="onboarding">
@@ -82,7 +84,7 @@ export function Onboarding({ initial, onComplete, onCancel, account = null, onSi
         <small className="onboarding-note">{localized("Signing in saves your settings and practice records to your account and unlocks Trainer, Sessions and Weak Spots. Range analysis works as a guest too.", "ログインすると設定と練習記録がアカウントに保存され、トレーナー・セッション・弱点分析も使えます。レンジ分析はゲストでも使えます。")}</small>
       </div> : <>
         <div className="onboarding-actions">
-          {editing && <button type="button" className="onboarding-cancel" onClick={() => { clearLanguageDraft(); onCancel(); }}>キャンセル</button>}
+          {editing && <button type="button" className="onboarding-cancel" onClick={() => { clearLanguageDraft(); onCancel!(); }}>キャンセル</button>}
           <button type="submit" className="primary" disabled={!level}>{editing ? "保存する" : "はじめる"}</button>
         </div>
         <small className="onboarding-note">{user ? localized("Your settings are saved to your account.", "設定はアカウントに保存されます。") : "ゲストの設定はこのブラウザに保存されます。ログイン中の設定はアカウントに同期されます。"}</small>

@@ -1,3 +1,5 @@
+export type GameFormat = { game: string; table: string; stack: number; openSize: number; ante: boolean; rake: string };
+export type FormatKey = keyof GameFormat;
 // Game formats the range browser can show. Only formats listed in BUILT have saved ranges;
 // every other option is shown locked until its ranges are authored.
 export const formatOptions = {
@@ -8,19 +10,19 @@ export const formatOptions = {
   ante: [{ value: false, label: "アンティなし" }, { value: true, label: "アンティあり" }],
   rake: [{ value: "5pct-cap3", label: "5%・上限3BB" }, { value: "none", label: "レーキなし" }],
 };
-export const gameFormatFields = [
+export const gameFormatFields: [FormatKey, string][] = [
   ["game", "ゲーム"], ["table", "テーブル"], ["stack", "スタック"], ["openSize", "オープンサイズ"],
 ];
-export const detailedFormatFields = [["ante", "アンティ"], ["rake", "レーキ"]];
+export const detailedFormatFields: [FormatKey, string][] = [["ante", "アンティ"], ["rake", "レーキ"]];
 const allFormatFields = [...gameFormatFields, ...detailedFormatFields];
 // Online low stakes: 5% rake capped at 3BB, no flop no drop (user decision 2026-09-24).
-export const BUILT = [{ game: "cash", table: "6max", stack: 100, openSize: 2.5, ante: false, rake: "5pct-cap3" }];
+export const BUILT: GameFormat[] = [{ game: "cash", table: "6max", stack: 100, openSize: 2.5, ante: false, rake: "5pct-cap3" }];
 export const defaultFormat = BUILT[0];
 
-export const isBuilt = format => BUILT.some(built => allFormatFields.every(([key]) => built[key] === format[key]));
+export const isBuilt = (format: GameFormat) => BUILT.some(built => allFormatFields.every(([key]) => built[key] === format[key]));
 // An option is selectable when some built format uses it.
-export const optionAvailable = (key, value) => BUILT.some(built => built[key] === value);
+export const optionAvailable = (key: FormatKey, value: GameFormat[FormatKey]) => BUILT.some(built => built[key] === value);
 
-export function formatLabel(key, value) {
+export function formatLabel(key: FormatKey, value: GameFormat[FormatKey]) {
   return formatOptions[key].find(option => option.value === value)?.label ?? String(value);
 }

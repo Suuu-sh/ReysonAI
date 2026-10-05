@@ -1,12 +1,17 @@
+export type HoleCards = number[];
+export type RandomSource = () => number;
+export type WeightedHand = { hand: string; weight: number };
+export type WeightedCombo = { combo: HoleCards; weight: number };
+export type DrawTable = { range: readonly WeightedCombo[]; cumulative: number[]; sum: number };
 // Monte Carlo hand-vs-range equity with a seeded RNG so generated data is reproducible.
 const RANKS = "23456789TJQKA";
 const deck = Array.from({ length: 52 }, (_, card) => card);
-const rankOf = card => card >> 2;
-const suitOf = card => card & 3;
+const rankOf = (card: number) => card >> 2;
+const suitOf = (card: number) => card & 3;
 
-export const comboCount = hand => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
+export const comboCount = (hand: string) => hand.length === 2 ? 6 : hand.endsWith("s") ? 4 : 12;
 
-export function seededRandom(seed) {
+export function seededRandom(seed: number) {
   let state = seed >>> 0;
   return () => {
     state = (state + 0x6d2b79f5) >>> 0;
@@ -17,13 +22,13 @@ export function seededRandom(seed) {
   };
 }
 
-export function seedFor(text) {
+export function seedFor(text: string) {
   let hash = 2166136261;
   for (const char of text) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
   return hash >>> 0;
 }
 
-export function combosOf(hand) {
+export function combosOf(hand: string) {
   const a = RANKS.indexOf(hand[0]);
   const b = RANKS.indexOf(hand[1]);
   const out = [];
@@ -48,11 +53,11 @@ for (let mask = 0; mask < straightHighs.length; mask++) {
   for (let high = 12; high >= 4; high--) if (((mask >> (high - 4)) & 31) === 31) { straightHighs[mask] = high; break; }
   if (straightHighs[mask] === -1 && (mask & 0x100F) === 0x100F) straightHighs[mask] = 3;
 }
-const straightHighOf = mask => straightHighs[mask & 8191];
+const straightHighOf = (mask: number) => straightHighs[mask & 8191];
 
-const packed = (category, k0, k1, k2, k3, k4) => ((((category * 16 + k0) * 16 + k1) * 16 + k2) * 16 + k3) * 16 + k4;
+const packed = (category: number, k0: number, k1: number, k2: number, k3: number, k4: number) => ((((category * 16 + k0) * 16 + k1) * 16 + k2) * 16 + k3) * 16 + k4;
 
-export function evaluate(cards) {
+export function evaluate(cards: readonly number[]) {
   counts.fill(0); suitCount.fill(0); suitMask.fill(0);
   let mask = 0;
   for (let i = 0; i < cards.length; i += 1) {
@@ -101,11 +106,11 @@ export function evaluate(cards) {
 }
 
 // rows: [{hand, weight}] with weight in 0..1 per hand class.
-export function weightedRange(rows) {
+export function weightedRange(rows: readonly WeightedHand[]) {
   return rows.flatMap(({ hand, weight }) => weight > 0 ? combosOf(hand).map(combo => ({ combo, weight })) : []);
 }
 
-export function equityVsRange(hand, range, samples, random) {
+export function equityVsRange(hand: string, range: readonly WeightedCombo[], samples: number, random: RandomSource) {
   if (!range.length) return null;
   const mine = combosOf(hand);
   const cumulative = [];
@@ -125,7 +130,7 @@ export function equityVsRange(hand, range, samples, random) {
     }
     if (!villain) continue;
     const used = new Set([a, b, ...villain]);
-    const board = [];
+    const board: number[] = [];
     while (board.length < 5) { const card = deck[(random() * 52) | 0]; if (!used.has(card)) { used.add(card); board.push(card); } }
     const heroScore = evaluate([a, b, ...board]);
     const villainScore = evaluate([...villain, ...board]);
@@ -136,7 +141,7 @@ export function equityVsRange(hand, range, samples, random) {
 }
 
 // Share of the range's weight removed by holding this hand (averaged over its combos).
-export function blockedShare(hand, range) {
+export function blockedShare(hand: string, range: readonly WeightedCombo[]) {
   const all = range.reduce((acc, item) => acc + item.weight, 0);
   if (!all) return 0;
   const mine = combosOf(hand);
@@ -145,7 +150,7 @@ export function blockedShare(hand, range) {
 }
 
 // Hero's share of the pot against several opponents, each drawn from its own weighted range.
-export function equityVsRanges(hand, ranges, samples, random) {
+export function equityVsRanges(hand: string, ranges: readonly (readonly WeightedCombo[])[], samples: number, random: RandomSource) {
   if (ranges.some(range => !range.length)) return null;
   const tables = ranges.map(range => {
     const cumulative = [];
@@ -153,7 +158,7 @@ export function equityVsRanges(hand, ranges, samples, random) {
     for (const item of range) { sum += item.weight; cumulative.push(sum); }
     return { range, cumulative, sum };
   });
-  const draw = ({ range, cumulative, sum }) => {
+  const draw = ({ range, cumulative, sum }: DrawTable) => {
     const x = random() * sum;
     let lo = 0, hi = cumulative.length - 1;
     while (lo < hi) { const mid = (lo + hi) >> 1; if (cumulative[mid] < x) lo = mid + 1; else hi = mid; }
@@ -176,7 +181,7 @@ export function equityVsRanges(hand, ranges, samples, random) {
       villains.push(combo);
     }
     if (villains.length !== tables.length) continue;
-    const board = [];
+    const board: number[] = [];
     while (board.length < 5) { const card = deck[(random() * 52) | 0]; if (!used.has(card)) { used.add(card); board.push(card); } }
     const scores = [evaluate([a, b, ...board]), ...villains.map(v => evaluate([...v, ...board]))];
     const best = Math.max(...scores);
