@@ -7,7 +7,7 @@ import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
-import { LATER_NODES, STREETS } from "./later-tree.mjs";
+import { LATER_NODES, STREETS } from "./later-tree.ts";
 import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
 import { simulate } from "./simulation.mjs";
 import { worstProfileScore } from "./regenerate-later.mjs";

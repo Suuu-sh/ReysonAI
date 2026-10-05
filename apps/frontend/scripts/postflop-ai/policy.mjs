@@ -1,9 +1,9 @@
 import { flopTextureKeys, handTier, TEXTURES, TIERS } from "./model.mjs";
 
-import { LATER_NODES } from "./later-tree.mjs";
-import { DEFAULT_TREE, FLOP_BETS, NODES, TREES, nodeRole, raiseDepth, treeNodes } from "./tree.mjs";
+import { LATER_NODES } from "./later-tree.ts";
+import { DEFAULT_TREE, FLOP_BETS, NODES, TREES, nodeRole, raiseDepth, treeNodes } from "./tree.ts";
 
-// Node names and trees live in tree.mjs: "btn_*" / "ip_*" nodes belong to the in-position
+// Node names and trees live in tree.ts: "btn_*" / "ip_*" nodes belong to the in-position
 // player and "bb_*" / "oop_*" nodes to the out-of-position player of a heads-up pot.
 export { NODES, TREES, nodeRole, treeNodes };
 

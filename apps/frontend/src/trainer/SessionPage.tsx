@@ -1,3 +1,4 @@
+import { PlayingCard } from "../components/PlayingCard.tsx";
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, ClockCounterClockwise, Play } from "@phosphor-icons/react";
 import { RESULT_LABELS, spotById, spotTitle } from "./trainer-data.ts";
@@ -6,7 +7,6 @@ import { practiceSessionRows } from "./practice-sessions.ts";
 import { localized, localeTag } from "../locale.ts";
 import "./sessions.css";
 
-const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const dateLabel = at => new Intl.DateTimeFormat(localeTag(), { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(at);
 const rateLabel = (score, answered) => answered ? `${Math.round(score / answered * 100)}%` : "—";
 const durationLabel = durationMs => {
@@ -21,7 +21,7 @@ function actionLabel(spot, key) {
 
 function Cards({ cards }) {
   return <span className="sessions-cards">{cards.map((card, index) =>
-    <span key={`${card}-${index}`} className={`suit-${card[1]}`}>{card[0]}{SUITS[card[1]] ?? card[1]}</span>)}</span>;
+    <PlayingCard key={`${card}-${index}`} card={card} variant="text" />)}</span>;
 }
 
 export function displaySessionName(session) {

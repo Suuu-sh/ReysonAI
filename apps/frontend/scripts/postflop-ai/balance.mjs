@@ -3,10 +3,10 @@
 import { seedFor, seededRandom } from "../lib/equity.mjs";
 import { boards, comboRange, config, seatRange } from "./inputs.mjs";
 import { flopTextureKeys, handTier, runoutTexture } from "./model.mjs";
-import { LATER_NODES, betFraction, laterNodeRole, streetHistories, streetState } from "./later-tree.mjs";
+import { LATER_NODES, betFraction, laterNodeRole, streetHistories, streetState } from "./later-tree.ts";
 import { referenceLaterTierMix, validateLaterPolicy } from "./later-policy.mjs";
 import { NODES, nodeRole, policyMix, treeNodes, validatePolicy } from "./policy.mjs";
-import { FLOP_BETS, flopBetFraction, flopState, raiseDepth, treeHistories } from "./tree.mjs";
+import { FLOP_BETS, flopBetFraction, flopState, raiseDepth, treeHistories } from "./tree.ts";
 import { createTable, playFlop } from "./engine.mjs";
 import { defenceFor, replayOrNull } from "./defence.mjs";
 

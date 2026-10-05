@@ -4,7 +4,7 @@ import { config, loadInputs, boards, useArtifactSource } from "../scripts/postfl
 import { parseCards } from "../scripts/postflop-ai/model.mjs";
 import { referencePolicy } from "../scripts/postflop-ai/policy.mjs";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { streetHistories } from "../scripts/postflop-ai/later-tree.mjs";
+import { streetHistories } from "../scripts/postflop-ai/later-tree.ts";
 import { laterDecision, laterStart, replayLater } from "../src/estimated/postflop-trial.ts";
 import { rake } from "../scripts/postflop-ai/engine.mjs";
 import { explainLaterCombo, laterExplainContext, laterOpponentRange } from "../scripts/postflop-ai/explain-later.mjs";

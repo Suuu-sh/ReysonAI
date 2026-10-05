@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { MAX_RAISES, NODES, flopState, historyFor, nodeRole, raiseDepth, raiseNode, treeHistories } from "../scripts/postflop-ai/tree.mjs";
-import { LATER_NODES, streetHistories, streetState } from "../scripts/postflop-ai/later-tree.mjs";
+import { MAX_RAISES, NODES, flopState, historyFor, nodeRole, raiseDepth, raiseNode, treeHistories } from "../scripts/postflop-ai/tree.ts";
+import { LATER_NODES, streetHistories, streetState } from "../scripts/postflop-ai/later-tree.ts";
 import { RAISE_LAST, RAISE_REFERENCE, effectiveMix, policyMix, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.mjs";
 import { laterPolicyMix, referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
 import { parseCards, TIERS } from "../scripts/postflop-ai/model.mjs";

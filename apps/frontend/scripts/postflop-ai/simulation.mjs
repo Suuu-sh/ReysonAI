@@ -4,7 +4,7 @@ import { handTier } from "./model.mjs";
 import { NODES, choose, opponentMix, policyMix, referencePolicyFor } from "./policy.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
 import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterPolicy } from "./later-policy.mjs";
-import { LATER_NODES } from "./later-tree.mjs";
+import { LATER_NODES } from "./later-tree.ts";
 import { boards, config, laterSizingHash, makeSampler, samplePair, seatRange } from "./inputs.mjs";
 import { spotById } from "./spots.mjs";
 import { DEFENCE_VERSION, defenceFor } from "./defence.mjs";
@@ -46,7 +46,7 @@ export function dealRunout(hands, flop, random) {
   return [takeRandom(deck, used, random), takeRandom(deck, used, random)];
 }
 
-// One flop-to-river hand of a heads-up pot on the spot's tree (tree.mjs). `defence` (defence.mjs,
+// One flop-to-river hand of a heads-up pot on the spot's tree (tree.ts). `defence` (defence.mjs,
 // built for the hero's policies) replaces the hero's call / fold part at facing nodes with the
 // computed defence; without it the hero plays its policy mixes as saved. The opponent is the fixed
 // reference and never uses it.

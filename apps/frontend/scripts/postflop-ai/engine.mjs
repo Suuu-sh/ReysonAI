@@ -3,8 +3,8 @@
 // turn and river are only dealt.
 import { evaluate } from "../lib/equity.mjs";
 import { gameConfig } from "../../src/estimated/sizing.ts";
-import { LATER_NODES, STREETS, betFraction, streetState } from "./later-tree.mjs";
-import { NODES, facingNode, flopBetFraction, raiseNode } from "./tree.mjs";
+import { LATER_NODES, STREETS, betFraction, streetState } from "./later-tree.ts";
+import { NODES, facingNode, flopBetFraction, raiseNode } from "./tree.ts";
 
 const round = value => Math.round(value * 100) / 100;
 export const rake = pot => Math.min(pot * gameConfig.rake.rate, gameConfig.rake.cap_bb);

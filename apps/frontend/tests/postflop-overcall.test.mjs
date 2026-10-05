@@ -4,7 +4,7 @@ import { checkFlopBalance, checkLaterBalance } from "../scripts/postflop-ai/bala
 import { lowerDefence } from "../scripts/postflop-ai/fix-overcall.mjs";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
+import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
 import { referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
 
 const clone = value => structuredClone(value);

@@ -1,28 +1,8 @@
+import { label } from "./components/action-format.ts";
+export { label, color, pct } from "./components/action-format.ts";
+
 export const ranks = [..."AKQJT98765432"];
 export const hands = ranks.flatMap((a,i) => ranks.map((b,j) => i===j ? a+b : i<j ? a+b+"s" : b+a+"o"));
-export const pct = n => Number.isFinite(n) ? (n*100).toFixed(1)+"%" : "未計算";
-const ACTION_COLORS = Object.freeze({
-  fold: "#26262c",
-  call: "#3a9fb4",
-  limp: "#4fa865",
-  check: "#6b7686",
-  bet33: "#d9477f",
-  bet75: "#a85cde",
-  bet125: "#6e3fb8",
-  all_in: "#8a5fd6",
-  raise: "#d9477f",
-});
-
-export function label(a) {
-  if (a === "raise_four_bet") return "4bet（推定サイズ）";
-  if (a === "raise_ai") return "レイズ（推定サイズ）";
-  if (a === "allin") return label("all_in");
-  return ({fold:"フォールド",limp:"リンプ",call:"コール",check:"チェック",all_in:"オールイン",raise:"レイズ"})[a] ?? a.replace("raise_","レイズ ").replaceAll("_",".")+" BB";
-}
-export function color(a) {
-  if (a === "allin") return ACTION_COLORS.all_in;
-  return a?.startsWith("raise_") ? ACTION_COLORS.raise : ACTION_COLORS[a] ?? ACTION_COLORS.raise;
-}
 function actionName(item) {
   return typeof item === "string" ? item : item?.action ?? "";
 }

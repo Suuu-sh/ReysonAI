@@ -4,7 +4,7 @@ import { evaluate, seededRandom, seedFor } from "../lib/equity.mjs";
 import { seatRange } from "./browser-inputs.mjs";
 import { handTier, parseCards } from "./model.mjs";
 import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.mjs";
-import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseDepth } from "./tree.mjs";
+import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseDepth } from "./tree.ts";
 import { defenceFor, replayOrNull } from "./defence.mjs";
 import { averageExplanationFacts } from "./explain-aggregate.mjs";
 

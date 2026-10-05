@@ -1,3 +1,4 @@
+import { PlayingCard, type CardSuit as Suit } from "../components/PlayingCard.tsx";
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
 import { ArrowRight, ArrowUpRight, Check, List, Pause, Play, X } from "@phosphor-icons/react";
@@ -14,7 +15,6 @@ const useSite = () => useContext(SiteContext);
 
 type Action = "raise" | "call" | "fold";
 type RangeMode = "opening" | "response";
-type Suit = "s" | "h" | "d" | "c";
 const actions: Action[] = ["raise", "call", "fold"];
 
 const ranks = [..."AKQJT98765432"];
@@ -49,7 +49,6 @@ function actionLabel(copy: SiteCopy, mode: RangeMode, action: Action) {
   return action === "raise" && mode === "response" ? copy.common.threeBet : copy.common[action];
 }
 
-const suitGlyph: Record<Suit, string> = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const suitOrder: Suit[] = ["s", "h", "d", "c"];
 
 /** Concrete cards for a hand class; `seed` varies the suits without changing suitedness. */
@@ -87,13 +86,8 @@ function Brand() {
   return <a className="site-brand" href="/" aria-label={copy.common.home}><BrandIcon size={24} /><span>Reyson<b>AI</b></span></a>;
 }
 
-// Mirrors the trainer's PlayingCard markup so the site shows the app's four-colour cards.
-function PlayingCard({ rank, suit, index = 0 }: { rank: string; suit: Suit; index?: number }) {
-  return <span className={`site-card suit-${suit}`} style={{ "--i": index } as CSSProperties} aria-hidden="true"><b>{rank}</b><i>{suitGlyph[suit]}</i></span>;
-}
-
 function HandCards({ hand, seed = 0, className = "" }: { hand: string; seed?: number; className?: string }) {
-  return <span className={`site-hand-cards${className ? ` ${className}` : ""}`}>{handCards(hand, seed).map(([rank, suit], index) => <PlayingCard key={`${rank}${suit}`} rank={rank} suit={suit} index={index} />)}</span>;
+  return <span className={`site-hand-cards${className ? ` ${className}` : ""}`}>{handCards(hand, seed).map(([rank, suit], index) => <PlayingCard key={`${rank}${suit}`} card={`${rank}${suit}`} variant="site" aria-hidden="true" index={index} />)}</span>;
 }
 
 function ActionRows({ mode, values }: { mode: RangeMode; values: Record<Action, number> }) {
@@ -854,7 +848,7 @@ function FinalCta() {
   const { copy: c, appHref } = useSite();
   return <section className="site-final" aria-labelledby="site-final-title">
     <div className="site-wrap site-final-inner">
-      <div className="site-fan" data-reveal aria-hidden="true">{fan.map(([rank, suit], index) => <PlayingCard key={rank} rank={rank} suit={suit} index={index - 2} />)}</div>
+      <div className="site-fan" data-reveal aria-hidden="true">{fan.map(([rank, suit], index) => <PlayingCard key={rank} card={`${rank}${suit}`} variant="site" aria-hidden="true" index={index - 2} />)}</div>
       <h2 id="site-final-title" data-reveal>{c.final.title1}<span>{c.final.title2}</span></h2>
       <p data-reveal>{c.final.description}</p>
       <a className="site-button is-large" href={appHref} data-reveal>{c.final.action}<ArrowRight size={18} weight="bold" aria-hidden="true" /></a>

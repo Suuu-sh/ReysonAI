@@ -7,7 +7,7 @@ import { pathToFileURL } from "node:url";
 import { availableParallelism } from "node:os";
 import { loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
-import { canonicalFlops } from "./flop-isomorphism.mjs";
+import { canonicalFlops } from "./flop-isomorphism.ts";
 import { flopBaseIdentity } from "./flop-base-core.mjs";
 import { atomicJson, flopBaseDir, readFreshFlopBase, textHash } from "./flop-base-files.mjs";
 import { computeBoardBatch } from "./board-batch.mjs";

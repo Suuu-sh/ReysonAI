@@ -7,7 +7,7 @@ import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "./model
 import { flopBetTable, flopUiFacts } from "./flop-ui-facts.mjs";
 import { explainLaterCombo, explainLaterCombos } from "./explain-later.mjs";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
-import { FLOP_BETS, flopState } from "./tree.mjs";
+import { FLOP_BETS, flopState } from "./tree.ts";
 import { validateLaterPolicy } from "./later-policy.mjs";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
 import { flopNodes, laterMixRows } from "./views.mjs";

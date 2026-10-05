@@ -26,10 +26,10 @@ import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
 import { comboRange } from "./browser-inputs.mjs";
 import { flopTextureKeys, handTier, runoutTexture, TIERS } from "./model.mjs";
 import { NODES, effectiveMix, referenceMix, withRaise } from "./policy.mjs";
-import { LATER_NODES } from "./later-tree.mjs";
+import { LATER_NODES } from "./later-tree.ts";
 import { referenceLaterTierMix } from "./later-policy.mjs";
-import { betFraction } from "./later-tree.mjs";
-import { flopBetFraction, raiseDepth } from "./tree.mjs";
+import { betFraction } from "./later-tree.ts";
+import { flopBetFraction, raiseDepth } from "./tree.ts";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 

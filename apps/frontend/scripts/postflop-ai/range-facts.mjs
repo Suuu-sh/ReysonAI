@@ -4,10 +4,10 @@
 import { comboRange } from "./browser-inputs.mjs";
 import { handTier, TIERS } from "./model.mjs";
 import { comboId, defenceFor, replayOrNull } from "./defence.mjs";
-import { LATER_NODES, laterNodeRole } from "./later-tree.mjs";
+import { LATER_NODES, laterNodeRole } from "./later-tree.ts";
 import { laterPolicyMix } from "./later-policy.mjs";
 import { NODES, nodeRole, policyMix } from "./policy.mjs";
-import { historyFor } from "./tree.mjs";
+import { historyFor } from "./tree.ts";
 
 const round4 = v => Math.round(v * 1e4) / 1e4;
 const aggressive = a => a.startsWith("bet") || a === "allin" || a === "raise";

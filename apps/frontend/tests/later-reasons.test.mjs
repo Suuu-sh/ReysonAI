@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { after, before, test } from "node:test";
 import { createServer } from "vite";
 import { LINES, RUNOUT_TEXTURES, TIERS } from "../scripts/postflop-ai/model.mjs";
-import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
+import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
 
 const reasons = JSON.parse(readFileSync(fileURLToPath(new URL("../src/estimated/later-reasons.json", import.meta.url)), "utf8"));
 let server;

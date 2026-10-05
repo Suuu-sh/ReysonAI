@@ -7,10 +7,10 @@ import { loadCandidate, loadLaterCandidate } from "../scripts/postflop-ai/genera
 import { buildLaterView, buildLocalBoard, explainLocalCombo, postflopResponse } from "../scripts/postflop-ai/local-view.mjs";
 import { explainLaterCombo, explainLaterCombos } from "../scripts/postflop-ai/explain-later.mjs";
 import { flopBetTable, flopUiFacts } from "../scripts/postflop-ai/flop-ui-facts.mjs";
-import { canonicalFlop } from "../scripts/postflop-ai/flop-isomorphism.mjs";
+import { canonicalFlop } from "../scripts/postflop-ai/flop-isomorphism.ts";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterView } from "../src/estimated/postflop-compute.ts";
 import { NODES, treeNodes } from "../scripts/postflop-ai/policy.mjs";
-import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
+import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
 import { parseFlopBoard } from "../scripts/postflop-ai/model.mjs";
 import { seededRandom } from "../scripts/lib/equity.mjs";
 import opening from "../src/estimated/opening-ranges.json" with { type: "json" };

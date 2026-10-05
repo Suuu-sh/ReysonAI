@@ -12,7 +12,7 @@
 // merge come from engine.mjs itself (every state is replayed by the engine).
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
 import { NODES } from "./policy.mjs";
-import { LATER_NODES } from "./later-tree.mjs";
+import { LATER_NODES } from "./later-tree.ts";
 import { comboId, isBettingNode, isFacingNode, rankTable, tierArray } from "./defence.mjs";
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
 

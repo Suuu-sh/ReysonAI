@@ -1,6 +1,6 @@
 import { handTier, LINES, RUNOUT_TEXTURES, runoutTexture, TIERS } from "./model.mjs";
-import { LATER_NODES, STREETS, streetNodes } from "./later-tree.mjs";
-import { raiseDepth } from "./tree.mjs";
+import { LATER_NODES, STREETS, streetNodes } from "./later-tree.ts";
+import { raiseDepth } from "./tree.ts";
 import { raiseReferenceRow, withRaise } from "./policy.mjs";
 
 const tiersFor = street => TIERS.filter(tier => street !== "river" || tier !== "draw");

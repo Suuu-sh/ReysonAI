@@ -1,7 +1,7 @@
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 import { DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
-import { NODES, flopBetFraction, flopState, isFlopBet, raiseDepth } from "../../scripts/postflop-ai/tree.mjs";
-import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.mjs";
+import { NODES, flopBetFraction, flopState, isFlopBet, raiseDepth } from "../../scripts/postflop-ai/tree.ts";
+import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.ts";
 import { parseFlopBoard } from "../../scripts/postflop-ai/model.mjs";
 import pilotConfig from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 

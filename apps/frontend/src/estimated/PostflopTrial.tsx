@@ -6,7 +6,7 @@ import { tierLabels } from "./postflop-reasons.ts";
 import { buildAdvancedExplanation } from "./postflop-advanced.ts";
 import { glossaryPieces } from "./poker-glossary.ts";
 import { deck, flopDecision, laterDecision, laterStart, recognizedFlop, replayLater } from "./postflop-trial.ts";
-import { isFlopBet } from "../../scripts/postflop-ai/tree.mjs";
+import { isFlopBet } from "../../scripts/postflop-ai/tree.ts";
 import { computeBoard, computeExplain, computeLaterExplain, computeLaterRangeFacts, computeLaterView, computeRangeFacts } from "./postflop-compute.ts";
 import { deferPostflopCalculation, isAbortError, loadPostflopDatasets, loadPostflopSpot, loadPostflopFlop } from "./postflop-browser.ts";
 import { productLocale } from "../i18n.ts";

@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { brotliCompressSync, constants } from "node:zlib";
 import { join } from "node:path";
 import { POSTFLOP_SPOTS, DEFAULT_SPOT_ID } from "./spots.mjs";
-import { isCanonicalFlopKey } from "./flop-isomorphism.mjs";
+import { isCanonicalFlopKey } from "./flop-isomorphism.ts";
 import { loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
 import { flopBaseIdentity } from "./flop-base-core.mjs";

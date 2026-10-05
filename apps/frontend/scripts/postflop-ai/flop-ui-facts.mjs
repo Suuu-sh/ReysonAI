@@ -1,12 +1,12 @@
 // Only the numeric facts consumed by postflop-explanation.ts. No obsolete evidence groups
 // or independent 120-runout equity simulation: UI equity already comes from defence/betting.
 // Direct and stored paths use this same projection in canonical suit coordinates.
-import { canonicalFlop, cardIds, comboKey } from "./flop-isomorphism.mjs";
+import { canonicalFlop, cardIds, comboKey } from "./flop-isomorphism.ts";
 import { comboId, defenceFor, flopRunouts, rankTable, replayOrNull } from "./defence.mjs";
 import { equityVersus, indexOf, makeRange, weightOf } from "./range-equity.mjs";
 import { seatRange } from "./browser-inputs.mjs";
 import { NODES, policyMix, scaleByPath } from "./policy.mjs";
-import { FLOP_BETS, facingNode, flopState, historyFor, nodeRole, otherRole } from "./tree.mjs";
+import { FLOP_BETS, facingNode, flopState, historyFor, nodeRole, otherRole } from "./tree.ts";
 import { averageExplanationFacts } from "./explain-aggregate.mjs";
 
 const caches = new WeakMap();

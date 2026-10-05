@@ -4,12 +4,12 @@
 // decision (checks, bets, raises) keeps the AI policy mix.
 import { comboRange } from "./browser-inputs.mjs";
 import { handTier, TIERS } from "./model.mjs";
-import { LATER_NODES } from "./later-tree.mjs";
+import { LATER_NODES } from "./later-tree.ts";
 import { laterPolicyMix } from "./later-policy.mjs";
 import { NODES, nodeRole, policyMix, scaleByPath, treeNodes } from "./policy.mjs";
-import { FLOP_BETS, flopState, historyFor, treeHistories } from "./tree.mjs";
+import { FLOP_BETS, flopState, historyFor, treeHistories } from "./tree.ts";
 import { comboId, defenceFor, replayOrNull } from "./defence.mjs";
-import { canonicalFlop, remapFlopNodes } from "./flop-isomorphism.mjs";
+import { canonicalFlop, remapFlopNodes } from "./flop-isomorphism.ts";
 
 const cardText = card => "23456789TJQKA"[card >> 2] + "cdhs"[card & 3];
 const lineFor = (previousAggressor, role) => previousAggressor === null

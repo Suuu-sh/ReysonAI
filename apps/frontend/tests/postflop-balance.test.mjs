@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { checkFlopBalance, checkLaterBalance } from "../scripts/postflop-ai/balance.mjs";
 import { referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
+import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
 import { referencePolicy, referencePolicyFor, NODES } from "../scripts/postflop-ai/policy.mjs";
 import { adoptionDecision, worstProfileScore } from "../scripts/postflop-ai/regenerate-later.mjs";
 

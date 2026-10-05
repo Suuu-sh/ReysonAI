@@ -1,6 +1,6 @@
 import { dataset, loadDataset } from "./datasets.ts";
 import { postflopUrl } from "./postflop-api.ts";
-import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
+import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 
 const spotRequests = new Map<string, { promise: Promise<any>; settled: boolean }>();
 const flopRequests = new Map<string, Promise<any>>();

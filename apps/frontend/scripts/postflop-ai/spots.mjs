@@ -7,7 +7,7 @@
 //   other seat folds — one per spot in three-bet-responses.json.
 //
 // The flop tree depends on who made the last preflop raise: if that player is out of
-// position the tree is "oop_leads", otherwise "oop_checks" (the first pilot's tree; tree.mjs).
+// position the tree is "oop_leads", otherwise "oop_checks" (the first pilot's tree; tree.ts).
 import { dataset } from "../../src/estimated/datasets.ts";
 import { gameConfig, isInPosition, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb } from "../../src/estimated/sizing.ts";
 

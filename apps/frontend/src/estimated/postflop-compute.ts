@@ -4,11 +4,11 @@ import { explainLaterCombo, explainLaterCombos, laterExplainContext } from "../.
 import { flopRangeFacts, laterRangeFacts } from "../../scripts/postflop-ai/range-facts.mjs";
 import { validatePolicy } from "../../scripts/postflop-ai/policy.mjs";
 import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "../../scripts/postflop-ai/model.mjs";
-import { FLOP_BETS, flopState } from "../../scripts/postflop-ai/tree.mjs";
+import { FLOP_BETS, flopState } from "../../scripts/postflop-ai/tree.ts";
 import { referenceLaterPolicy, validateLaterPolicy } from "../../scripts/postflop-ai/later-policy.mjs";
 import { laterDecision, laterStart, replayLater } from "./postflop-trial.ts";
 import { flopNodes, laterMixRows } from "../../scripts/postflop-ai/views.mjs";
-import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
+import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 import { isFreshFlopBase, storedFlopNodes, storedFlopExplanation } from "../../scripts/postflop-ai/flop-base-core.mjs";
 
 function policyForLater(inputs, candidate, laterCandidate) {

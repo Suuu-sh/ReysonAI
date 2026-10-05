@@ -3,11 +3,11 @@
 import { sha } from "./browser-inputs.mjs";
 import { EVALUATOR_VERSION } from "../lib/equity.mjs";
 import { DEFENCE_VERSION, FLOP_RUNOUTS } from "./defence.mjs";
-import { canonicalFlop, ISOMORPHISM_VERSION, comboKey, remapFlopNode } from "./flop-isomorphism.mjs";
+import { canonicalFlop, ISOMORPHISM_VERSION, comboKey, remapFlopNode } from "./flop-isomorphism.ts";
 import { flopHistoryViews } from "./views.mjs";
 import { flopUiComboFactsCanonical, averageFlopUiFacts, flopBlockerPredictors } from "./flop-ui-facts.mjs";
 import { packFrame, packView, unpackFrameRow, unpackView, compactFlopBase, hydrateFrame } from "./flop-base-codec.mjs";
-import { FLOP_BETS, historyFor, treeNodes } from "./tree.mjs";
+import { FLOP_BETS, historyFor, treeNodes } from "./tree.ts";
 import { referenceLaterPolicy } from "./later-policy.mjs";
 
 // Version 6: the base stores strategies and explanation facts only. Postflop EV is not part of the

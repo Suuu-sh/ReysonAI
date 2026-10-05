@@ -1,6 +1,7 @@
 import { RankBadge } from "./RankBadge.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowClockwise, ArrowLeft, ArrowRight, CheckCircle, Fire, Trash, Trophy, WarningCircle, XCircle } from "@phosphor-icons/react";
+import { PlayingCard } from "../components/PlayingCard.tsx";
 import { Sidebar } from "../components/layout.tsx";
 import { Panel, SectionHeading, barColor } from "../components/primitives.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
@@ -23,18 +24,10 @@ import { localized } from "../i18n.ts";
 import { trainerPath, trainerRouteOf } from "../route.ts";
 import { agentTableById } from "../agent/characters.ts";
 
-const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
 const pct = value => `${Math.round((value ?? 0) * 100)}%`;
 const RESULT_ICONS = { best: CheckCircle, mixed: WarningCircle, miss: XCircle };
 const actionColor = key => barColor(key === "open" || key === "three_bet" ? "raise" : key);
 const shortLabel = action => action.label.split(" ")[0];
-
-// Four-colour deck (♠ graphite, ♥ red, ♦ blue, ♣ green) so the suit reads at a glance.
-function PlayingCard({ card, size = "" }) {
-  return <span className={`trainer-card suit-${card[1]} ${size}`.trim()}>
-    <b>{card[0]}</b><i>{SUITS[card[1]]}</i>
-  </span>;
-}
 
 // Seats clockwise from the hero, who always sits at the bottom centre (x%, y% of the felt).
 const SEAT_SLOTS = [[50, 100], [5, 76], [13, 12], [50, -2], [87, 12], [95, 76]];

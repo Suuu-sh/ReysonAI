@@ -9,8 +9,8 @@
 import { evaluate as evaluateHand, seededRandom, seedFor } from "../../scripts/lib/equity.mjs";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "../../scripts/postflop-ai/engine.mjs";
 import { NODES, choose } from "../../scripts/postflop-ai/policy.mjs";
-import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.mjs";
-import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.mjs";
+import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.ts";
+import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 import { fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
 import { type Decider, type PostflopKit } from "./policy.ts";

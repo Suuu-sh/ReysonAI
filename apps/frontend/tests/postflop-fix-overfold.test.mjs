@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { raiseDefence, overfoldFixDecision } from "../scripts/postflop-ai/fix-overfold.mjs";
 import { referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
+import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
 import { NODES, referencePolicy, validatePolicy } from "../scripts/postflop-ai/policy.mjs";
 
 const clone = value => structuredClone(value);

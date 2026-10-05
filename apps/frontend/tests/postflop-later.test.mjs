@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { seededRandom } from "../scripts/lib/equity.mjs";
 import { boards, loadInputs, makeSampler, samplePair, seatRange } from "../scripts/postflop-ai/inputs.mjs";
 import { parseCards, runoutTexture } from "../scripts/postflop-ai/model.mjs";
-import { LATER_NODES, openingActions, streetHistories, streetNodes, streetState } from "../scripts/postflop-ai/later-tree.mjs";
+import { LATER_NODES, openingActions, streetHistories, streetNodes, streetState } from "../scripts/postflop-ai/later-tree.ts";
 import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
 import { referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
 import { dealRunout, playHand } from "../scripts/postflop-ai/simulation.mjs";

@@ -2,7 +2,7 @@
 // combo, every runout and every action sequence (engine replays + defence.mix), no vectors, no prefix sums.
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "../../scripts/postflop-ai/engine.mjs";
 import { NODES } from "../../scripts/postflop-ai/policy.mjs";
-import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.mjs";
+import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.ts";
 import { evaluate } from "../../scripts/lib/equity.mjs";
 import config from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
 

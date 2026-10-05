@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
 import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { LATER_NODES } from "../scripts/postflop-ai/later-tree.mjs";
+import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
 import { parseCards } from "../scripts/postflop-ai/model.mjs";
 import { combosOf } from "../scripts/lib/equity.mjs";
 import { laterHandEvForHand } from "../scripts/postflop-ai/later-hand-ev.mjs";

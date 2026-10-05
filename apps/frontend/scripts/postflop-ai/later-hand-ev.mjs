@@ -10,8 +10,8 @@ import { artifactPaths, boards, config, loadInputs, readArtifact } from "./input
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { validatePolicy } from "./policy.mjs";
 import { validateLaterPolicy } from "./later-policy.mjs";
-import { streetHistories } from "./later-tree.mjs";
-import { FLOP_BETS, flopState } from "./tree.mjs";
+import { streetHistories } from "./later-tree.ts";
+import { FLOP_BETS, flopState } from "./tree.ts";
 import { DEFAULT_SPOT_ID } from "./spots.mjs";
 import { LATER_HAND_EV_FOR_HAND_DEFAULT_SAMPLES, computeNode, laterHandEvForHand, laterHandEvKey, makeLaterMixReader } from "./later-hand-ev-core.mjs";
 

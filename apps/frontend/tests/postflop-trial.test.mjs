@@ -12,7 +12,7 @@ import { loadCandidate, sha } from "../scripts/postflop-ai/generate.mjs";
 import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../scripts/postflop-ai/spots.mjs";
 import { playHand, simulate } from "../scripts/postflop-ai/simulation.mjs";
 import { createTable, playFlop, playLaterStreets, playLaterStreetsWithPolicy, settle } from "../scripts/postflop-ai/engine.mjs";
-import { FLOP_BETS, flopState, isFlopBet, treeHistories, treeNodes } from "../scripts/postflop-ai/tree.mjs";
+import { FLOP_BETS, flopState, isFlopBet, treeHistories, treeNodes } from "../scripts/postflop-ai/tree.ts";
 import { parseCards } from "../scripts/postflop-ai/model.mjs";
 import preflopRanges from "../src/estimated/preflop-ranges.json" with { type: "json" };
 import threeBetResponses from "../src/estimated/three-bet-responses.json" with { type: "json" };

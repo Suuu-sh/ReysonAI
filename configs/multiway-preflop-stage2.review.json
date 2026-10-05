@@ -32,7 +32,33 @@
         "source_fingerprint": "Recomputed continuation policy/reason fingerprint unchanged"
       },
       "limitations": "Small-fixture local D1 evidence is not full 1888-dataset whole-file rollback proof. Exact-head strict full delivery Actions verification and production deployment/readiness remain pending. Original full-suite and lint limitations remain."
-    }
+    },
+    "source_renewals": [
+      {
+        "date": "2026-10-05",
+        "reviewer": "Independent runtime-conversion subagent review and primary helper-extraction review",
+        "scope": "Source-only TypeScript conversion and typecheck wiring; no renewed strategy-quality or Astra data approval.",
+        "report": "apps/frontend/docs/typescript-cleanup-review.md",
+        "blocking_findings": 0,
+        "source_identity": {
+          "previous": 86,
+          "current": 87,
+          "modified": 13,
+          "removed": 3,
+          "added": 4,
+          "unchanged": 70
+        },
+        "verification": {
+          "runtime_executable_parity": "3 converted modules and 42 import-reference files match baseline after type erasure and extension normalization",
+          "helper_review": "Primary independent inspection preserves label/color/pct behavior and primitive DOM",
+          "typecheck": "Expanded site/backend, shared components and runtime strict checks passed",
+          "targeted_tests": "88 passed across runtime, cards, service site, data, primitives and backend postflop routes",
+          "artifact_and_archive_identity": "Original 1888 artifact records and archive unchanged, verified by runtime reviewer",
+          "source_fingerprint": "Recomputed unchanged"
+        },
+        "limitations": "Source-only working-tree review. Final-head CI, production and full delivery/rollback were not verified by this review. Existing strategy-review limitations remain."
+      }
+    ]
   },
   "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
   "counts": {
@@ -9511,8 +9537,8 @@
     },
     {
       "path": "apps/frontend/package.json",
-      "bytes": 2394,
-      "sha256": "e51066c16cbc18b21e5479fe577d84ca998a7a880e0e5f56fc3fd946c3c89d3e"
+      "bytes": 2475,
+      "sha256": "ac65544fefe4287cc9acacf85ab8dcb7acd7d88ec8de1533d5dc5264becfa78a"
     },
     {
       "path": "apps/frontend/scripts/build-continuations.mjs",
@@ -9626,13 +9652,13 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
-      "bytes": 50585,
-      "sha256": "b1c55b4978c5e4d600dddb47365b5de43d5677bfae4d949b5ca206ccfb1b7491"
+      "bytes": 50582,
+      "sha256": "eec19506ffc9e136ea8035f35aab495c346489aece386861d203fbc188f608fb"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/engine.mjs",
-      "bytes": 9827,
-      "sha256": "486b455017f6bc8dfd16f081527f766b1af7bf9bf187f5865be1968fece62524"
+      "bytes": 9825,
+      "sha256": "1b9ef028e279b4645fb612d487c56207bf9d8e7fa6df35b35c72787fd2c408f8"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
@@ -9651,13 +9677,13 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-base-core.mjs",
-      "bytes": 7058,
-      "sha256": "1e295fe65b03a8821a5bfe0d2d8e2212c65c14fc05d93ca3eb480028bef7e1a0"
+      "bytes": 7056,
+      "sha256": "22ab0fb925f2abf86f4ed2530c2054b027e55be56195d745a54b9bde363b4812"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-base-d1.mjs",
-      "bytes": 6042,
-      "sha256": "6348c51f75ba26d95c83f349bcd97d5b59b28b62f6feaa4241c4b87dfca8ff42"
+      "bytes": 6041,
+      "sha256": "eac3e195a8798fe72522a8b6f96852a68e638b6e6c089ce7e4d3601ae49796cb"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-base-files.mjs",
@@ -9665,19 +9691,19 @@
       "sha256": "4bad43e955fd5cd5dad404e25bedb0ab45bf6eb81efa20af9e2a5cfe3882daf0"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.mjs",
-      "bytes": 3762,
-      "sha256": "81c15f8ed865d56b78078136e389e6ea04851dbac506d2df2102f87acc737076"
+      "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.ts",
+      "bytes": 4926,
+      "sha256": "b2fb69a9afb86d2ae056797a023c2dbdf925e2e5e8af45c8e41dc6f79635f340"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.mjs",
-      "bytes": 10193,
-      "sha256": "013425f092de3fd96c1b20d1edef9366d91ffc42c884bc8795a3464b002d99b8"
+      "bytes": 10191,
+      "sha256": "b4037fb4c2999314b040875fd46b04cf0ac942edf142d7ba721f8af53a5a3ee6"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/generate.mjs",
-      "bytes": 22705,
-      "sha256": "9c54bdbc039be543a80b0e5b900774fc149008aee1cd4a0e7a89a2db1c621bd1"
+      "bytes": 22703,
+      "sha256": "f96ab97667409da6628edba0384b93680fa2017b9bda9075765dde966ade7b87"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/inputs.mjs",
@@ -9686,13 +9712,13 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/later-policy.mjs",
-      "bytes": 7489,
-      "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+      "bytes": 7487,
+      "sha256": "6fd62ceefa67f9822de888afc66a80fcd66e4c83ecbce46073cbc9e29a531015"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/later-tree.mjs",
-      "bytes": 5417,
-      "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+      "path": "apps/frontend/scripts/postflop-ai/later-tree.ts",
+      "bytes": 6392,
+      "sha256": "3a8d5a876823891e72b926a47fa35bef32a0516279a55de87d9b309954a389d7"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/model.mjs",
@@ -9701,8 +9727,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/policy.mjs",
-      "bytes": 9434,
-      "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+      "bytes": 9431,
+      "sha256": "6224136361a2dec84dac60e0f4248a42f124111c371cebc31f57d615f26e9701"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/publish-d1.mjs",
@@ -9716,23 +9742,23 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/simulation.mjs",
-      "bytes": 8349,
-      "sha256": "31199a082976f3b5e60b37bc513c7282799838a87eaff74a96f2731e7c20ed34"
+      "bytes": 8347,
+      "sha256": "27a88caccd3d5837129225c3e78791eea7969c0d0115c628ca43905e189980c7"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/spots.mjs",
-      "bytes": 9714,
-      "sha256": "501c1311708643fc60bb0124c5224a2d447a4709ff29b87355bf730f9ab49b08"
+      "bytes": 9713,
+      "sha256": "fb8c5575237883ddc18ae2f172a3aa91b9fffa46a2c6ae5ac7adacd0a81e1751"
     },
     {
-      "path": "apps/frontend/scripts/postflop-ai/tree.mjs",
-      "bytes": 6876,
-      "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+      "path": "apps/frontend/scripts/postflop-ai/tree.ts",
+      "bytes": 8481,
+      "sha256": "408ad71a1d80c4a718cd5c6aae5da8fe70b7f4b1e53837b62d502b6a6849fc87"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/views.mjs",
-      "bytes": 7445,
-      "sha256": "21d5bb0adfbfb363f092cc727ac65242c6c6976df4750281f2642d158a84192e"
+      "bytes": 7442,
+      "sha256": "ded2c9a4bb2d2764701a5cdc9a25bcfd519cd4b0cdc48385c409df69c16709b2"
     },
     {
       "path": "apps/frontend/scripts/publish-d1.mjs",
@@ -9760,9 +9786,14 @@
       "sha256": "1132f87eed6b1f6fb0ac4708ad50594cc5fb9e9af11c53c8349b3733dde09175"
     },
     {
+      "path": "apps/frontend/src/components/action-format.ts",
+      "bytes": 1296,
+      "sha256": "58059a12c53e115f17f0d47f9c7bc2eb4c731d1a03d3c5e126abb5d658f52bfc"
+    },
+    {
       "path": "apps/frontend/src/data.ts",
-      "bytes": 3470,
-      "sha256": "c46aac5d4bed632f419ee88b27278a799ad94ef77170db1ef8db3a30c61d2093"
+      "bytes": 2706,
+      "sha256": "fd3a759e2f86bed6c5c18daa962b8f7218f87ad8760b5882bf1a070209c9621c"
     },
     {
       "path": "apps/frontend/src/estimated/audit-policy.ts",
@@ -9915,7 +9946,7 @@
       "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
     }
   ],
-  "content_sha256": "c12636c545364ae66a10f7829bbc4bac1b602008f107ec2ad1d8036702e0357f",
+  "content_sha256": "edc2c7e6f354742a7a2ba708916d400e8b4848aadf25d3742d9f4a1ab846743c",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
