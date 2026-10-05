@@ -44,35 +44,6 @@
 
 /* Style map — y labels on the left, x labels under the plot, both aligned to the plot edges. */
 .analysis-map { display: flex; flex-direction: column; }
-.analysis-map-figure { display: grid; flex: 1; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 6px 8px; margin: 0; }
-.axis-y { display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 6px 0; color: var(--text-subtle); font-size: 10px; font-weight: 700; white-space: nowrap; }
-.axis-y span { line-height: 1.4; text-align: center; }
-.axis-y span:first-child { color: #e7abc7; }
-.axis-x { grid-column: 2; display: flex; justify-content: space-between; color: var(--text-subtle); font-size: 10px; font-weight: 700; }
-.analysis-map-grid { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); min-height: clamp(210px, 26vw, 300px); overflow: hidden; border: 1px solid var(--line-strong); border-radius: 10px;
-  background-image: radial-gradient(circle, rgb(255 255 255 / 7%) 1px, transparent 1.2px); background-size: 12.5% 12.5%; background-position: center; }
-.analysis-map-grid::before, .analysis-map-grid::after { content: ""; position: absolute; z-index: 1; background: #4b434b; pointer-events: none; }
-.analysis-map-grid::before { top: 0; bottom: 0; left: 50%; width: 1px; }
-.analysis-map-grid::after { top: 50%; right: 0; left: 0; height: 1px; }
-.analysis-quadrant { padding: 10px 12px; opacity: .72; transition: opacity .4s var(--ease-out), background-color .4s var(--ease-out); }
-.analysis-quadrant b { color: #b9b3bd; font-size: 11px; font-weight: 800; letter-spacing: .02em; }
-.analysis-quadrant.is-active { opacity: 1; }
-.analysis-quadrant.is-active b { color: #fff; }
-.q-tag { background: linear-gradient(135deg, rgb(40 70 62 / 55%), rgb(20 23 25 / 30%)); }
-.q-lag { text-align: right; background: linear-gradient(225deg, rgb(80 40 80 / 50%), rgb(26 23 32 / 30%)); }
-.q-tp { display: flex; align-items: end; background: linear-gradient(45deg, rgb(36 46 70 / 50%), rgb(20 22 27 / 30%)); }
-.q-lp { display: flex; align-items: end; justify-content: end; background: linear-gradient(315deg, rgb(80 46 52 / 50%), rgb(27 24 27 / 30%)); }
-.analysis-map-baseline { position: absolute; z-index: 1; top: 50%; left: 50%; width: calc(var(--r) * 2); height: calc(var(--r) * 2); border: 1px dashed rgb(255 255 255 / 16%); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
-.analysis-map-baseline small { display: none;  position: absolute; bottom: 100%; left: 50%; margin-bottom: 2px; color: var(--text-subtle); font-size: 9px; white-space: nowrap; transform: translateX(4px); }
-.analysis-map-center { position: absolute; z-index: 2; top: 50%; left: 50%; width: 7px; height: 7px; border: 1px solid #bbb2c1; border-radius: 50%; background: #202027; transform: translate(-50%, -50%); }
-.analysis-map-trail { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.analysis-map-trail line { stroke: rgb(240 96 158 / 55%); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-.analysis-map-marker { position: absolute; z-index: 3; display: grid; place-items: center; width: 16px; height: 16px; transform: translate(-50%, -50%); }
-.analysis-map-marker i { position: relative; display: block; width: 12px; height: 12px; border: 2px solid #fff; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgb(240 96 158 / 22%), 0 2px 8px #000; }
-.analysis-map-marker i::after { content: ""; position: absolute; inset: -2px; border: 1.5px solid var(--accent); border-radius: 50%; opacity: 0; }
-.analysis-map-marker b { position: absolute; top: 16px; left: 50%; padding: 1px 7px; border: 1px solid #e57eaa; border-radius: 999px; background: #2a1620; color: #fff; font-size: 10px; white-space: nowrap; transform: translateX(-50%); }
-.analysis-map-marker.label-above b { top: auto; bottom: 16px; }
-.analysis-map-wait { position: absolute; z-index: 2; top: 50%; left: 50%; padding: 3px 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: #141418; color: var(--text-muted); font-size: 11px; white-space: nowrap; transform: translate(-50%, -50%); }
 
 /* Action comparison */
 .analysis-legend { display: inline-flex; align-items: center; gap: 5px; color: var(--text-subtle); font-size: 10.5px; }
@@ -165,12 +136,11 @@
 .analysis-kpi-ring .fill { animation: analysis-ring 1.1s .2s var(--ease-out) both; }
 .analysis-kpi-bar i { animation: analysis-grow-x .9s .3s var(--ease-out) both; transform-origin: left; }
 
-.analysis-quadrant.is-active { animation: analysis-lit .6s 1.1s both; }
-.analysis-map-baseline { animation: analysis-fade .8s .3s both; }
-.analysis-map-trail line { animation: analysis-draw .9s .35s var(--ease-out) backwards; }
-.analysis-map-marker { animation: analysis-marker-in .9s .35s var(--ease-spring) both; }
-.analysis-map-marker i::after { animation: analysis-ripple 1.1s 1.15s var(--ease-out) 2; }
-.analysis-map-marker b { animation: analysis-pop .35s 1.1s var(--ease-spring) both; }
+.play-style-map-baseline { animation: analysis-fade .8s .3s both; }
+.play-style-map-trail line { animation: analysis-draw .9s .35s var(--ease-out) backwards; }
+.play-style-map-point { animation: analysis-marker-in .9s .35s var(--ease-spring) both; }
+.play-style-map-point i::after { animation: analysis-ripple 1.1s 1.15s var(--ease-out) 2; }
+.play-style-map-point b { animation: analysis-pop .35s 1.1s var(--ease-spring) both; }
 
 .analysis-action { animation: analysis-slide .45s calc(.2s + var(--i, 0) * .07s) var(--ease-out) both; }
 .analysis-action-track b { transform-origin: left; animation: analysis-grow-x .9s calc(.3s + var(--i, 0) * .07s) var(--ease-out) both; }
@@ -275,9 +245,6 @@
 .analysis-animal-kpi { display: flex; align-items: center; gap: 8px; font-size: 20px; }
 .practice-animals > p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
 .practice-animals .style-roster { margin: 12px 0; }
-.analysis-map-marker.with-animal { width: 36px; height: 36px; }
-.analysis-map-marker.with-animal b { top: 36px; }
-.analysis-map-marker.with-animal.label-above b { top: auto; bottom: 36px; }
 .analysis-ranked-stats { display: grid; gap: 16px; }
 .analysis-ranked-stats > .stats-seg { justify-self: start; }
 .analysis-ranked-stats .analysis-kpi > small { display: flex; align-items: center; gap: 6px; }

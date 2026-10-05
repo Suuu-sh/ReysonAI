@@ -508,7 +508,6 @@
 .mode-primary:disabled { opacity: .4; cursor: not-allowed; }
 .mode-secondary { border: 1px solid var(--line-strong); background: transparent; color: var(--text); }
 .mode-secondary:hover { border-color: var(--text-subtle); background: var(--surface-hover); }
-.mode-quota { color: var(--text-subtle); font-size: 11px; text-align: center; font-variant-numeric: tabular-nums; }
 .mode-foot { grid-column: 1 / -1; margin: 0 -22px -20px; padding: 10px 22px 12px; border-top: 1px solid var(--line); background: rgb(0 0 0 / 18%); }
 
 /* Ranked specifics */
@@ -542,7 +541,6 @@
 @media (max-width: 860px) {
   .mode-block { grid-template-columns: 1fr; gap: 14px; }
   .mode-actions { grid-template-columns: 2fr 1fr; }
-  .mode-quota { grid-column: 1 / -1; }
   .rank-ladder { grid-template-columns: repeat(3, 1fr); }
   .ranked-stats { grid-template-columns: 1fr 1fr; }
   .ranked-next { grid-column: 1 / -1; }
@@ -636,7 +634,8 @@
 /* Ranked block: same height as the others, slim tier strip */
 .mode-block.is-ranked .ranked-stats { margin-top: 2px; gap: 20px; }
 .mode-block.is-ranked .ranked-stats strong { font-size: 19px; }
-.mode-block.is-ranked .mode-foot { padding: 6px 22px 7px; }
+.mode-block.is-ranked:not(.is-coming-soon) { padding-top: 12px; }
+.mode-block.is-ranked:not(.is-coming-soon) .mode-foot { padding: 4px 22px 5px; }
 .mode-block.is-ranked .rank-ladder li { grid-template-columns: auto auto 1fr; grid-template-rows: auto; column-gap: 6px; padding: 3px 8px; }
 .mode-block.is-ranked .rank-ladder li .rank-badge { grid-row: auto; width: 20px; height: 20px; }
 .mode-block.is-ranked .rank-ladder li small { justify-self: start; }
