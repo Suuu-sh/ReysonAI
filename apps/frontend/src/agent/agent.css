@@ -369,3 +369,6 @@
 .style-zone.is-current { opacity: 1; background: color-mix(in srgb, var(--style) 16%, transparent); color: var(--style); }
 .style-zone.is-current { align-content: end; padding: 0 0 6px; }
 .style-map-center, .style-map-point { z-index: 1; }
+
+/* Vertical axis: aggression (PFR / VPIP), labelled above and below the map. */
+.style-map-y { display: flex; justify-content: space-between; color: var(--text-subtle); font-size: 9px; }
