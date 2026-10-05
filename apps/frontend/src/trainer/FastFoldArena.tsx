@@ -1,0 +1,90 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ArrowLeft, ArrowClockwise, Pause, Play, Trophy } from '@phosphor-icons/react';
+import { PlayingCard } from '../components/PlayingCard.tsx';
+import { StyleAvatar } from '../agent/StyleAvatar.tsx';
+import type { StyleId } from '../agent/player-read.ts';
+import { fastFoldProfile, fastFoldRequest, FastFoldError, ffCopy as t, ffNumber, validFastFoldSession, validFastFoldState } from './fastfold-api.ts';
+import type { FastFoldProfile, FastFoldResponse, FastFoldResult, FastFoldPosition } from './fastfold-api.ts';
+import './fastfold.css';
+
+const POSITIONS: FastFoldPosition[] = ['UTG', 'HJ', 'CO', 'BTN', 'SB', 'BB'];
+const SLOTS = [[50, 96], [5, 70], [15, 8], [50, -2], [85, 8], [95, 70]];
+const STYLES: Record<string, StyleId> = { balanced: 'balanced', nit: 'nit', tag: 'tag', lag: 'lag', station: 'station', tight_passive: 'tight_passive', passive: 'passive', aggressive: 'aggressive', maniac: 'aggressive' };
+function tendency(type: string) {
+  const copy: Record<string, string> = {
+    nit: t('Few pots; strong large raises; folds marginal hands.', '参加が狭く、大きなレイズは強い手中心。中位以下は降りやすい。', '参与较少；大加注偏强牌；边缘牌易弃。', 'Pocos botes; subidas grandes fuertes; retira manos marginales.'),
+    station: t('Wide calls; weak suited hands and small pairs continue.', '広くコールし、弱いスーテッドや小さいペアも残しやすい。', '宽范围跟注；弱同花牌与小对子也继续。', 'Iguala amplio; continúa con cartas del mismo palo débiles y pares bajos.'),
+    lag: t('Wide entries and frequent raises.', '広く参加し、レイズを多く選ぶ。', '参与广泛，加注较多。', 'Participa ampliamente y sube con frecuencia.'),
+    maniac: t('Very wide, aggressive preflop raises.', '非常に広く参加し、プリフロップで積極的にレイズ。', '范围很宽，翻牌前积极加注。', 'Rango muy amplio y subidas preflop agresivas.'),
+    balanced: t('Saved balanced AI estimate.', '保存済みのバランス型AI推定。', '已保存的平衡型AI估计。', 'Estimación IA equilibrada guardada.'),
+  };
+  return copy[type] ?? t('Tendency unavailable.', '傾向は未取得です。', '倾向不可用。', 'Tendencia no disponible.');
+}
+
+export function ffAction(key: string, to?: number): string {
+  const name = key === 'fold' ? t('Fold', 'フォールド', '弃牌', 'Retirarse') : key === 'check' ? t('Check', 'チェック', '过牌', 'Pasar') : key === 'call' || key === 'limp' ? t('Call', 'コール', '跟注', 'Igualar') : ['all_in', 'allin'].includes(key) ? t('All-in', 'オールイン', '全下', 'Todo') : key.startsWith('bet') ? t('Bet', 'ベット', '下注', 'Apostar') : t('Raise', 'レイズ', '加注', 'Subir');
+  return `${name}${to == null ? '' : ` ${ffNumber(to)} bb`}`;
+}
+export function FastFoldArena({ ready, onBack, onRanking, onProfile }: { ready: boolean; onBack: () => void; onRanking: () => void; onProfile: (profile: FastFoldProfile) => void }) {
+  const [profile, setProfile] = useState<FastFoldProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [last, setLast] = useState<FastFoldResult | null>(null);
+  const [consent, setConsent] = useState(false);
+  const generation = useRef(0);
+  const inFlight = useRef(false);
+  // Retain the id and exact body after uncertain delivery; Retry never sends a second bet.
+  const pendingRequest = useRef<{ path: string; body: unknown } | null>(null);
+  const apply = useCallback((next: FastFoldProfile) => { setProfile(next); onProfile(next); }, [onProfile]);
+  const load = useCallback(async () => {
+    const token = ++generation.current;
+    setLoading(true); setBusy(false); setError(''); setProfile(null);
+    try { const next = await fastFoldProfile(); if (token === generation.current) apply(next); }
+    catch { if (token === generation.current) setError(t('Ranked server unavailable. No local rating is awarded.', 'ランク戦サーバーは利用できません。ローカルでレートは付与しません。', '排位服务器不可用。不会授予本地评分。', 'Servidor no disponible. No se otorga clasificación local.')); }
+    finally { if (token === generation.current) setLoading(false); }
+  }, [apply]);
+  useEffect(() => { if (ready) void load(); else { ++generation.current; setProfile(null); setLast(null); setConsent(false); setBusy(false); setError(''); setLoading(false); inFlight.current = false; pendingRequest.current = null; } return () => { ++generation.current; }; }, [ready, load]);
+  async function perform(path: string, body: unknown) {
+    if (!ready || inFlight.current) return;
+    const token = generation.current;
+    inFlight.current = true; setBusy(true); setError(''); pendingRequest.current = { path, body };
+    try {
+      const response = await fastFoldRequest<FastFoldResponse>(path, body);
+      if (token !== generation.current) return;
+      if (!validFastFoldState(response.state) || !validFastFoldSession(response.session)) throw new FastFoldError('invalid_state', 503);
+      pendingRequest.current = null;
+      apply({ ...profile!, enabled: true, season: 'fastfold-v1', state: { ...response.state, active: response.session } });
+      if (response.lastResult) setLast(response.lastResult);
+    } catch (cause) {
+      if (token !== generation.current) return;
+      if (cause instanceof FastFoldError && cause.status === 409) { pendingRequest.current = null; await load(); }
+      else setError(t('Not confirmed. Actions are locked; retry the same request to avoid a duplicate.', '未確認です。操作を停止しています。同じリクエストを再試行し、重複を防ぎます。', '尚未确认。操作已锁定；请重试同一请求以避免重复。', 'Sin confirmar. Acciones bloqueadas; reintenta la misma solicitud para evitar duplicados.'));
+    } finally { if (token === generation.current) { inFlight.current = false; setBusy(false); } else if (!pendingRequest.current) inFlight.current = false; }
+  }
+  const state = profile?.state, session = state?.active, hand = session?.hand;
+  const locked = busy || Boolean(error) || loading || !ready;
+  const start = () => perform('start', { consent: true });
+  const exit = async () => { if (session?.status === 'active') await perform('pause', { sessionId: session.id, version: session.version }); else onBack(); };
+  return <div className="ff-arena">
+    <header className="ff-header"><button type="button" className="config-edit" disabled={busy} onClick={exit}><ArrowLeft size={16} />{session?.status === 'active' ? t('Pause', '一時停止', '暂停', 'Pausar') : t('Trainer', 'トレーナー', '训练', 'Entrenador')}</button><div><h1>FastFold β <span>{t('Ranked', 'ランク戦', '排位', 'Clasificatoria')}</span></h1><p>{t('Unlimited hands. Fold → next table. Pause whenever you need.', 'ハンド数・時間は無制限。フォールドで次の卓へ。いつでも一時停止。', '手数和时间不限。弃牌即换桌。随时暂停。', 'Sin límite de manos ni tiempo. Retírate y cambia de mesa. Pausa cuando quieras.')}</p></div><button type="button" className="config-edit" onClick={onRanking}><Trophy size={16} />{t('Leaderboard', 'ランキング', '排行榜', 'Clasificación')}</button></header>
+    {loading && <p role="status">{t('Connecting to ranked server…', 'ランク戦サーバーに接続中…', '正在连接排位服务器…', 'Conectando al servidor…')}</p>}
+    {error && <div className="ff-error" role="alert"><p>{error}</p><button type="button" disabled={busy} onClick={() => pendingRequest.current ? perform(pendingRequest.current.path, pendingRequest.current.body) : load()}><ArrowClockwise size={16} />{t('Retry', '再試行', '重试', 'Reintentar')}</button></div>}
+    {!ready && <p role="status">{t('Sign in and wait for live server readiness.', 'ログインとサーバーの準備が必要です。', '需要登录及服务器就绪。', 'Inicia sesión y espera a que el servidor esté disponible.')}</p>}
+    <details className="ff-rating-method"><summary>{t("About this rating", "評価について", "关于评分", "Sobre esta puntuación")}</summary><p className="ff-method">{t('Experimental result rating · per-hand contribution capped at ±10 bb and shrunk by hands + 10,000. Not a calibrated skill estimate. AI comparison unavailable; applied penalty 0.', '実験的な収支レート：1ハンドの寄与は±10bbに制限し、ハンド数＋10,000で縮約。較正済みの実力評価ではありません。AI比較は未対応・適用減点0。', '实验性收益评分：单手贡献限制在±10bb，并按手数+10,000收缩。不是已校准的实力评估。AI比较不可用，扣分0。', 'Puntuación experimental: contribución limitada a ±10 bb por mano y ajustada por manos + 10.000. No mide habilidad calibrada. Comparación IA no disponible; penalización 0.')}</p></details>
+    {state && <div className="ff-scorebar"><div><span>{t('Rating', 'レート', '评分', 'Puntuación')}</span><strong>{ffNumber(state.rating)}</strong><small>{state.provisional ? t('Provisional', '暫定', '暂定', 'Provisional') : t('Server confirmed', 'サーバー確定', '服务器确认', 'Confirmada')}</small></div><div><span>{t('Net result', '収支', '净收益', 'Resultado neto')}</span><b>{ffNumber(state.netBb, true)} bb</b></div><div><span>bb/100</span><b>{ffNumber(state.bbPer100, true)}</b></div><div><span>{t('Hands', 'ハンド', '手数', 'Manos')}</span><b>{state.hands.toLocaleString()}</b></div><div><span>{t('Applied AI penalty', 'AI減点の適用', '已应用AI扣分', 'Penalización IA aplicada')}</span><b>0</b><small>{t('Shadow only', 'shadowのみ', '仅影子分析', 'Solo análisis paralelo')}</small></div></div>}
+    {profile && !session && <section className="ff-intro"><h2>{t('Play the opponents, not a quiz.', 'クイズではなく、相手を見てプレイ。', '面对对手，而不是答题。', 'Juega contra rivales, no un cuestionario.')}</h2><p>{t('Your anonymous Player name and ranked results are public. Rating is driven by server-settled results. Opponent-aware AI comparison is uncalibrated shadow analysis and applies no penalty. No GTO score or EV-loss claim.', '匿名のPlayer名とランク結果は公開されます。レートはサーバー確定の収支が主軸です。相手別のAI比較は未較正のshadow分析で減点しません。GTOスコア・EV損失ではありません。', '匿名Player名称和排位结果公开。评分以服务器结算收益为主。对手感知AI比较尚未校准，仅作影子分析，不扣分。不是GTO评分或EV损失。', 'Tu nombre anónimo Player y resultados son públicos. La puntuación se basa en resultados liquidados por el servidor. La comparación IA por rival no está calibrada y no penaliza. No es GTO ni pérdida de EV.')}</p><label><input type="checkbox" checked={consent} onChange={event => setConsent(event.target.checked)} />{t('I agree to public participation.', '公開参加に同意します。', '我同意公开参与。', 'Acepto participar públicamente.')}</label><button type="button" className="setup-start" disabled={locked || !consent} onClick={start}><Play size={17} />{t('Start FastFold', 'FastFoldを開始', '开始FastFold', 'Empezar FastFold')}</button></section>}
+    {session && hand && <div className="ff-play-layout"><section className="ff-table-panel">
+      <div className="ff-table-top"><span>{hand.pending?.street ?? 'preflop'} · #{hand.number}</span><span>{hand.hero} · 100 bb</span><button type="button" disabled={locked} onClick={() => session.status === 'paused' ? start() : perform('pause', { sessionId: session.id, version: session.version })}>{session.status === 'paused' ? <Play size={15} /> : <Pause size={15} />}{session.status === 'paused' ? t('Resume', '再開', '继续', 'Continuar') : t('Pause', '一時停止', '暂停', 'Pausar')}</button></div>
+      <div className={`ff-table${session.status === 'paused' ? ' is-paused' : ''}`}><div className="ff-felt"><div className="ff-pot"><strong>{ffNumber(hand.pending?.pot ?? hand.pot)}<small> bb</small></strong><div className="ff-board">{hand.board.map(card => <PlayingCard key={card} card={card} />)}</div></div></div>
+        {POSITIONS.map((position, index) => { const slot = SLOTS[(index - POSITIONS.indexOf(hand.hero) + 6) % 6]; const opponent = hand.opponents.find(item => item.position === position); const folded = hand.log.some(entry => entry.pos === position && entry.action === 'fold'); return <div key={position} className={`ff-seat${position === hand.hero ? ' is-hero' : ''}${folded ? ' is-folded' : ''}`} style={{ left: `${slot[0]}%`, top: `${slot[1]}%` }}>
+          {opponent && <StyleAvatar id={STYLES[opponent.type] ?? 'collecting'} color="#a8b7d0" size={44} dim={folded} />}<b>{position === hand.hero ? t('You', 'あなた', '你', 'Tú') : opponent?.label ?? position}</b><small>{position}{position === 'BTN' ? ' · D' : ''}{folded ? ' · Fold' : ''}</small>{hand.holeCards[position as keyof typeof hand.holeCards] && <div className="ff-hole">{hand.holeCards[position as keyof typeof hand.holeCards]!.map(card => <PlayingCard key={card} card={card} />)}</div>}
+        </div>; })}
+      </div>
+      {(hand.policyMissing || hand.pending?.notice) && <p className="ff-policy-notice" role="status">{t('Saved policy is missing for this decision. Only the server’s available actions are offered; this is not a recommended strategy.', 'この判断の保存済み方針は未収録です。サーバーが提供できる操作のみであり、推奨戦略ではありません。', '该决策的已保存策略缺失。仅提供服务器可用行动，并非推荐策略。', 'Falta la política guardada para esta decisión. Solo se ofrecen acciones disponibles del servidor, no una estrategia recomendada.')}</p>}
+      {session.status === 'paused' ? <div className="ff-paused" role="status">{t('Paused. This hand stays on the server; resume from the same decision.', '一時停止中。このハンドはサーバーに保存され、同じ判断から再開します。', '已暂停。服务器保留当前手牌；从同一决策继续。', 'En pausa. El servidor conserva esta mano; continúa desde la misma decisión.')}</div> : <div className="ff-actions" aria-label={t('Your action', 'あなたの操作', '你的行动', 'Tu acción')}>{hand.pending?.options.map(option => <button type="button" key={option.key} className={`ff-action-${option.key === 'fold' ? 'fold' : option.key === 'call' || option.key === 'check' ? 'call' : 'raise'}`} disabled={locked} onClick={() => perform('action', { sessionId: session.id, version: session.version, actionId: crypto.randomUUID(), action: option.key })}>{ffAction(option.key, option.to)}</button>)}</div>}
+      <ol className="ff-log" aria-label={t('Action history', 'アクション履歴', '行动历史', 'Historial de acciones')}>{hand.log.map((entry, index) => <li key={index}><b>{entry.pos}</b> {entry.street} · {ffAction(entry.action, entry.to)}</li>)}</ol>
+    </section><aside className="ff-opponents"><h2>{t('This table', 'この卓の相手', '本桌对手', 'Esta mesa')}</h2><p>{t('Types change authored preflop policy. Postflop uses balanced policy with partial coverage.', 'タイプは実際のプリフロップ方針です。ポストフロップはバランス型・部分対応です。', '类型影响实际翻牌前策略。翻牌后为平衡型且部分覆盖。', 'Los tipos cambian la política preflop. Postflop es equilibrada con cobertura parcial.')}</p>{hand.opponents.map(opponent => <div className="ff-opponent" key={opponent.position}><StyleAvatar id={STYLES[opponent.type] ?? 'collecting'} color="#a8b7d0" size={40} /><div><strong>{opponent.position} · {opponent.label}</strong><small>{opponent.type} · {t("Preflop", "プリフロップ", "翻牌前", "Preflop")}</small><p>{tendency(opponent.type)}</p></div></div>)}<p className="ff-method">{t('Policy', '方針', '策略', 'Política')}: {hand.policyVersion}</p></aside></div>}
+    {last && <section className="ff-last" aria-live="polite"><span>{t('Last settled hand', '直前の確定ハンド', '上一手结算', 'Última mano liquidada')}</span><strong>{ffNumber(last.netBb, true)} bb</strong><b>{ffNumber(last.afterRating - last.beforeRating, true)} {t('rating', 'レート', '评分', 'puntos')}</b><small>{t('AI shadow: unavailable · applied penalty 0', 'AI shadow：未分析 · 適用減点 0', 'AI影子：未分析 · 已应用扣分0', 'IA paralelo: sin análisis · penalización aplicada 0')}</small></section>}
+  </div>;
+}

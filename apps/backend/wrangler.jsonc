@@ -1,9 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "reysonai-api",
-  "main": "src/index.ts",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-09-22",
   "workers_dev": false,
+  "durable_objects": {"bindings": [{"name": "FASTFOLD_RUNTIME", "class_name": "FastFoldRuntime"}]},
+  "migrations": [{"tag": "fastfold-sqlite-v1", "new_sqlite_classes": ["FastFoldRuntime"]}],
   "routes": [{ "pattern": "api.reysonai.com", "custom_domain": true }],
   "r2_buckets": [
     {
@@ -26,6 +28,8 @@
     "AUTH_ENABLED": "true",
     "AUTH_NATIVE_ENABLED": "false",
     "RANKED_ENABLED": "true",
+    // Approved experimental beta: Free SQLite DO compute; provisional results rating, AI penalty 0.
+    "FASTFOLD_ENABLED": "true",
     "AUTH_APP_URL": "https://app.reysonai.com",
     "GOOGLE_REDIRECT_URI": "https://api.reysonai.com/v1/account/google/callback",
     "GOOGLE_CLIENT_ID": "371026940937-n07f7kfnjqdljjrg8phqgidadas875n3.apps.googleusercontent.com"
