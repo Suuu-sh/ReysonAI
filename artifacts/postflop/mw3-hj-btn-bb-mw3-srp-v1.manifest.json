@@ -1,0 +1,1220 @@
+{
+  "schema_version": 1,
+  "kind": "mw3-artifact-snapshot",
+  "approval": "unapproved",
+  "source_tree": "d5b1f46a64a414c21ccbc7d20833a9183e7c51b2",
+  "spot": {
+    "id": "HJ_open_BTN_call_BB_call",
+    "slug": "hj-btn-bb-mw3-srp-v1",
+    "author_version": 1,
+    "author_model": "gpt-6-astra",
+    "source_hash": "6762971b2c93bc1d26aec6a2e82cc9292a03fb22e6cc497c9b0e346ae3f9df45",
+    "implementation_hash": "4ec6b527f8e2d53f08147a5c48657366a0b4b2333a5844e8bc4a0a79d3073113",
+    "verification_hash": "92b946dfc5c87359dcb3e610e832e262c2d3ac366110f295968eca2f7392c088",
+    "recipe_sha256": "6ed2c1b57e8db6a86a5b25ece5211aa118c03e5282ac78747b5ac4df5db6ebd2",
+    "gate_directory": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d",
+    "flop_policy_hash": "6f6a824c47368119bfe3ac6761e0ac5993f9eec3a352d505ce949e5c0b76b593",
+    "later_policy_hash": "764e2765a604e30c5e981b481946918de916004e135d7b98619aa9670185b33c"
+  },
+  "sources": [
+    {
+      "path": ".gitattributes",
+      "bytes": 298,
+      "sha256": "cbb00bded2287e0998e08209f73c605d541ed993864e00f9af79721df6671295"
+    },
+    {
+      "path": "apps/backend/scripts/sql/mw3-schema.sql",
+      "bytes": 895,
+      "sha256": "79ce9814ec7a5737f1f8186a0733e1990ae789b2f584b02451d37ec7d2cf7894"
+    },
+    {
+      "path": "apps/backend/src/account.ts",
+      "bytes": 13612,
+      "sha256": "4407807e9dc8204c298bc5c2a7c5f29f2a68d6e120d132510d3e46af083093da"
+    },
+    {
+      "path": "apps/backend/src/index.ts",
+      "bytes": 23871,
+      "sha256": "a0fa226c3a45c5206e0ec6c69b583dd696c06827774ee06e501150d68715e4ab"
+    },
+    {
+      "path": "apps/backend/src/mw3-transport.ts",
+      "bytes": 4837,
+      "sha256": "c6030794e0fda559e557d2477e814bb7730ec90c2b7b516155d46d7a6da12a7d"
+    },
+    {
+      "path": "apps/backend/src/native-account.ts",
+      "bytes": 18174,
+      "sha256": "bd715ebda79d728c24f527010f8c927d973122753dac8efa218a0c0c0f1907c8"
+    },
+    {
+      "path": "apps/backend/src/postflop-runtime-config.ts",
+      "bytes": 3020,
+      "sha256": "c444f8bfb4d99ac911d05e4a73e62311f6c155f0dae1b7c9661a8bce0479317c"
+    },
+    {
+      "path": "apps/backend/src/postflop.ts",
+      "bytes": 4488,
+      "sha256": "267a592f4f6719d45ebe9a8c39f105e9dbbcf789ff5dcb7fe58b93c5ed1e6dd1"
+    },
+    {
+      "path": "apps/backend/src/preflop-datasets.ts",
+      "bytes": 2288,
+      "sha256": "84dd141e951f98c1c9053a5f72e75a446dc9e52cc9a83b093aa9f449b29f1426"
+    },
+    {
+      "path": "apps/backend/src/ranked.ts",
+      "bytes": 14637,
+      "sha256": "0aa92ae665448088987c951c9a6e4cc9fc47a4e2a947e4a77b41b906a4996f61"
+    },
+    {
+      "path": "apps/frontend/docs/mw3-source-identity/exact-pair-parity.json",
+      "bytes": 193532,
+      "sha256": "a4b7f350b33b6a5aa2b15c144da01fb1b11188b99fb696e023d6f7f9b9f57d7e"
+    },
+    {
+      "path": "apps/frontend/docs/mw3-source-identity/gate-identity-wiring-amendment.json",
+      "bytes": 59393,
+      "sha256": "b1613fff73e384966022060b77838008827db328f4e01eef811c5c3ac185b411"
+    },
+    {
+      "path": "apps/frontend/docs/mw3-source-identity/transitive-mw3-input-review.json",
+      "bytes": 45177,
+      "sha256": "012a778e3637aaf2d0713ffa6d0647b29e445b074dc8448be27be53db80e404a"
+    },
+    {
+      "path": "apps/frontend/package-lock.json",
+      "bytes": 95311,
+      "sha256": "e7de639e752d167f6f7fa772a36b588ebca8e85d87f78369e72c36cb0237806d"
+    },
+    {
+      "path": "apps/frontend/package.json",
+      "bytes": 2433,
+      "sha256": "a37d38086aa3b687f2a6ebdc32c7dc7c54ab6a8ef86e70f01a7e43b6b6c39547"
+    },
+    {
+      "path": "apps/frontend/scripts/ci/mw3-api-oracle.mjs",
+      "bytes": 15886,
+      "sha256": "4f18280ef42538acf8625ba17acdb2b0fad0febef21b5077a9e1a8b37f71bdd7"
+    },
+    {
+      "path": "apps/frontend/scripts/ci/mw3-local-command.mjs",
+      "bytes": 20966,
+      "sha256": "6bccc591a87ec7b6677cc85459a45e2526d57f358d48c245d3315c019ef462ba"
+    },
+    {
+      "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+      "bytes": 48627,
+      "sha256": "73d59c0b11e76d8abfb30f7592de46fd9eff3d502600fb250495d55676fd3b61"
+    },
+    {
+      "path": "apps/frontend/scripts/ci/mw3-registry-mode.mjs",
+      "bytes": 2231,
+      "sha256": "3ef088e2c3699c1383b95efcc09b8bbe88aa7f2a1ef0df1d1b0a31e7fed45375"
+    },
+    {
+      "path": "apps/frontend/scripts/ci/postflop-command-supervisor.py",
+      "bytes": 19014,
+      "sha256": "61d0fe490ff4e1e82667a8ec188c1206efd1c26067ff8d6061b4bc8a1a67164d"
+    },
+    {
+      "path": "apps/frontend/scripts/data/hu-after-multiway-spots.json",
+      "bytes": 1146128,
+      "sha256": "096b926d3d7f84c88475e99f3ebdfa80f046539ee7b41983ac9b8c1eec229851"
+    },
+    {
+      "path": "apps/frontend/scripts/data/mw3-authored/context-judgments.mjs",
+      "bytes": 6116,
+      "sha256": "6d3f09d4c28041002e7e2bec3fe62644dfbe06b4166889441d69087f5a750bb7"
+    },
+    {
+      "path": "apps/frontend/scripts/data/mw3-authored/emit.mjs",
+      "bytes": 13898,
+      "sha256": "2b64131d0f7ffc1674c26b706f168685570a8196fa2cada2fa803384278acea8"
+    },
+    {
+      "path": "apps/frontend/scripts/data/mw3-authored/profiles/hj-open-btn-call-bb-call.json",
+      "bytes": 23366,
+      "sha256": "6171f89ddf6cc6ce085fa0800ce06d4891eb2fb89e5ecc4650466bfc87dac0ca"
+    },
+    {
+      "path": "apps/frontend/scripts/data/mw3-authored/registry.mjs",
+      "bytes": 2600,
+      "sha256": "6f819810d22a1f884bd1bc73b18015c3a8e8f5e2c886bfab4c458d16cfa1e316"
+    },
+    {
+      "path": "apps/frontend/scripts/data/mw3-co-btn-bb-authored.mjs",
+      "bytes": 27812,
+      "sha256": "ae196be62d212769fb27a1b1f6619ffd4c7f6488f5d0c3c132efd13eade42798"
+    },
+    {
+      "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+      "bytes": 1554,
+      "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+    },
+    {
+      "path": "apps/frontend/scripts/lib/continuation-evaluator.ts",
+      "bytes": 3248,
+      "sha256": "197b78df3e92fbda4244b3d993e74a37d3ee1fd6735514686bd2d8f9cb6411a4"
+    },
+    {
+      "path": "apps/frontend/scripts/lib/equity.ts",
+      "bytes": 8670,
+      "sha256": "f395860a9243f0dc450e51c6ddcc4fe700339a846198b5914ae65bf6a24906c3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
+      "bytes": 13141,
+      "sha256": "a00116bf560b8d6aaddc778018a1f22fa7e12b4e5c7b098ffe48ef9c784dfccd"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/cached-values.ts",
+      "bytes": 3101,
+      "sha256": "329995771ce7b439ebdc1cf82fe0fa12e01302a94afd500e9c9bfa28cad0db88"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/defence.ts",
+      "bytes": 64176,
+      "sha256": "52ac2e2f6a0b43c3e19857db4ff5f4553142a773031d8f4576d523347fd67f08"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/engine.ts",
+      "bytes": 12285,
+      "sha256": "aecdb9f31758243898bc49078bdf221e42412a7bebdc4d8b8186f8a2b14511bb"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/equity-kernel.ts",
+      "bytes": 11245,
+      "sha256": "9d50216df14677540e85c267d5dd426e2b8a415871ba2f9ef2e905a6fe508e3c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/exact-river-call-ev.d.mts",
+      "bytes": 883,
+      "sha256": "4d964d8219b3da119f7105ca3faae8d6a7995a541c594b8788452e8d13d89a57"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/exact-river-call-ev.mjs",
+      "bytes": 4699,
+      "sha256": "b624216c5019d6a5ddbb5e9e53d1a9f618d8c534e772b76258634d310490e3bb"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain-aggregate.ts",
+      "bytes": 2603,
+      "sha256": "4ee439458138d676fcfb62e9ce457a71ed88fa69b13e75c891058aa2d1382c50"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/explain-later.ts",
+      "bytes": 19302,
+      "sha256": "4b96167faa75c805c21e5beca0b9241d153c006218b9fbb9a8882f0447d36810"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-codec.ts",
+      "bytes": 19250,
+      "sha256": "614bd0b82ebc7a3b72d603f433b1868578a3e1046e2183256fbc57a83b6cc65e"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-base-core.ts",
+      "bytes": 8854,
+      "sha256": "3e539275440a7e7d90d4f94f91a95a07f0b45ebe3cf54c2f9f4d16ce334f6a61"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.ts",
+      "bytes": 4926,
+      "sha256": "b2fb69a9afb86d2ae056797a023c2dbdf925e2e5e8af45c8e41dc6f79635f340"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/flop-ui-facts.ts",
+      "bytes": 12642,
+      "sha256": "9fbf43504125904e62c3f2de51ee227429beea2cf526b74099851242c0480966"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/gate-mw3-authored.mjs",
+      "bytes": 6750,
+      "sha256": "9e34d6291dbba5f06ce4a3652a02e3c08a5368e7bb80f6838b644db432120779"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/gate-mw3-pilot.mjs",
+      "bytes": 6888,
+      "sha256": "f625a4bc1bb2ca8abb5025e1e8c3de846b1e9d3001d01f4ac7148bd0a79e16ca"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/hand-features.ts",
+      "bytes": 16588,
+      "sha256": "dc77532c3363958867f114be5362f52e4a491d6743ad481d4f3c3da859baf49a"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/hand-role.ts",
+      "bytes": 2965,
+      "sha256": "ca28c5982fe5915d71d33afa43d83404c5d9c4ca8c14177b96264d90790cc9ee"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-policy.ts",
+      "bytes": 8245,
+      "sha256": "f0f91c3a393e1e7a562da44fb2d344e4a81133128bcec02e709064990c5b0acc"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/later-tree.ts",
+      "bytes": 6392,
+      "sha256": "3a8d5a876823891e72b926a47fa35bef32a0516279a55de87d9b309954a389d7"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/model.ts",
+      "bytes": 7589,
+      "sha256": "fcbf13b6f8b1c3f72b8a81dcc626de89abc4c385d840163feb4bd78ca631732f"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-inputs.d.mts",
+      "bytes": 335,
+      "sha256": "1ec789143898cf7f3249788168af32cc183f14c766115870c89185e92e0e1674"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/multiway-inputs.mjs",
+      "bytes": 4246,
+      "sha256": "5cd8c946a63a16d8fbe8ed971991f421a5709a4edace6d9885ff086f3c43c87d"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-acceptance-evidence.mjs",
+      "bytes": 7352,
+      "sha256": "38b9effb39a8e1bc445e07fc76b432ffe3810c27a6688d67b7caced5d0d55713"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-actions.d.mts",
+      "bytes": 406,
+      "sha256": "85c28103f454cb47f98daaeb6b1b7c5b740b07d65b84244eaec78639ffe70937"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-actions.mjs",
+      "bytes": 1946,
+      "sha256": "49ef4365c5ecf74c04720ddc4a2b4e566d35e25ecbb464c617680704d9d80bda"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-artifacts.mjs",
+      "bytes": 4097,
+      "sha256": "bace381d55a463c1fa7e364dd1c14035599cb41bde5193e416ae759b4b0fa43f"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-audit.mjs",
+      "bytes": 7237,
+      "sha256": "4b4fa4d5ec5b1ca53e65a36ac628c04cb0e31cd6b2940612e96cc0b5eaf8ebdd"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-author-cli.mjs",
+      "bytes": 1441,
+      "sha256": "6cbc9f5ae243704906bed842b5783ae7085ae56851a5c568c15c6e4aac28427c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-authored-source.mjs",
+      "bytes": 2224,
+      "sha256": "bb6843a5578103998d8c3f4b9d929d54e6ecf4e2b052084340e1b82f09452601"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-browser-inputs.d.mts",
+      "bytes": 769,
+      "sha256": "eb664cb2c2735f73af8578c4ea45564f4a59b796ea69a3ab4e516e0fa65123b0"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-browser-inputs.mjs",
+      "bytes": 1929,
+      "sha256": "c0c342c3c6783dbd2c98f822a6f21b059fcf42616756e7bd48b721ee60abcb11"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-delivery.d.mts",
+      "bytes": 567,
+      "sha256": "a67736a8015d32ce5f510e230638fab8ab3a4bce83db4432ddada70f14619170"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-delivery.mjs",
+      "bytes": 2986,
+      "sha256": "cf9de6f14b3b0272fa573e6fc75da2950a230d9280985cdd8af2d89690769cf9"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-draft-pins.mjs",
+      "bytes": 6843,
+      "sha256": "c6a24f6b89f2c48d145de6a5c2438adb9904bdee6ac43f42ecb6f83a844d2382"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-engine.d.mts",
+      "bytes": 1059,
+      "sha256": "79aa87862ba855ffad261941e9f37241a30a303ccb440b3493f0050de108c2ba"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-engine.mjs",
+      "bytes": 12450,
+      "sha256": "b9f3f28b544c474d97c65040b835b1bfb51a7d705beb2efd81d93373bc30f1ca"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-hand-features.mjs",
+      "bytes": 12437,
+      "sha256": "c578cf11a1fd782adc89c0c98b390aa2c4b31deb2d19ddefa9e238fe4bef42e7"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-input-core.mjs",
+      "bytes": 1600,
+      "sha256": "48288f6ebf8ae21c16e78bd70bb6a5ff837d8416a0af5594a2cf211bf2b1d8c7"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-inputs.mjs",
+      "bytes": 1469,
+      "sha256": "06b3b0309a6bede655f1c81a28575c3cc5534a6a5509054cebc9d3bffd5225c2"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-joint-defence.mjs",
+      "bytes": 6218,
+      "sha256": "6f76aa4f863016496fe1fe5bd82f413dc12d30f3de372be2623a6d7fcfb65601"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-policy-codec.mjs",
+      "bytes": 3042,
+      "sha256": "dde31cdbb426aff5a8737bd3d0ae31723943027de3ba88af48cffe53bcdc21b7"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-policy.mjs",
+      "bytes": 7558,
+      "sha256": "60c7ae0ba468fbe6105abdc81322197772819ed739b064917e4669c2ed195c4c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-reviewed-archive.mjs",
+      "bytes": 11634,
+      "sha256": "cdf65748e7c6727c5e5da4ea52b8404227c173a6a56623647cc285bbc905ff05"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-reviewed-delivery.mjs",
+      "bytes": 5518,
+      "sha256": "2cdf553c571d88ac68f9e92066d14e8219fad07b696fa50c2c4dd49e68504849"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs",
+      "bytes": 18037,
+      "sha256": "a67b0d6ebae4bcbce1e023cbebfac1ade4b530c92474d5bfb8c9dc1e2268d9cb"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-reviewed-snapshot.mjs",
+      "bytes": 12463,
+      "sha256": "40bdd17eee15a45ecd6dba2ba5e162b0c76227ce2badbe99437c945f7e0a49d6"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-runtime.d.mts",
+      "bytes": 542,
+      "sha256": "4d74115863faf5d6864f765a0e07b96a087e90a26ba5433ba202fd2c10ce0b92"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-runtime.mjs",
+      "bytes": 5913,
+      "sha256": "97a26b17545afa349bc4e7e69a07bce32dbba3076565dcb8a922fee68206050d"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-simulation-report.mjs",
+      "bytes": 5783,
+      "sha256": "9a5d97bc969487dfba85c99a8ac00e96134f114921630dc86c224291c969c186"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-simulation.mjs",
+      "bytes": 4079,
+      "sha256": "825369ee0bf73dda705bbd9e7c9546280bcddf17ef78f816fddada19edbe2791"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-snapshot-cli.mjs",
+      "bytes": 3412,
+      "sha256": "53b35eb31c0235ef72efe28d32bee831f77c840b5930fbda611287d06fafb343"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-source-identity-pairs.json",
+      "bytes": 136401,
+      "sha256": "dab5917d7315cfd0a99472c01be0fe752102efb74e4329deeab484a6097f7fa2"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-source-identity.mjs",
+      "bytes": 9101,
+      "sha256": "ab6e71da4a0bdfbdcce902b57b42326b891a1be799a89ff33668ff8047305a20"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-source-tree.mjs",
+      "bytes": 2334,
+      "sha256": "0adf3d40b7b4b0defbf7634e13fda410794cce623d32207380a14195817e9681"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-spots.mjs",
+      "bytes": 8749,
+      "sha256": "3387e79adb16019e66f07444babd489c6a87957c5c8b61974c362536e9be1b22"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-transport.mjs",
+      "bytes": 1166,
+      "sha256": "c6e173a5bfc2db92a50e2c7825236b1123bf15e4135f6615a4ecf63012fdf149"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-tree.mjs",
+      "bytes": 6079,
+      "sha256": "96192b18788eae5ed76c66b3bce66adbf50e82a699e6ddd133d64d1e0efea608"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/mw3-types.ts",
+      "bytes": 4992,
+      "sha256": "80f8b0855a83c38c1bc0a227fe8e3efcf06a24472a537db3c9f338e02c6dfbc3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/observable-actions.d.mts",
+      "bytes": 2537,
+      "sha256": "7245e5f98b25559ba840710e508952b9099f56eaca816a93906b14b861f0152c"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+      "bytes": 11068,
+      "sha256": "14f27db41dc36f7a4f381cc34dc48840199b32bd99678e25480e0ba7a680b1ff"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/observable-view-paths.d.mts",
+      "bytes": 274,
+      "sha256": "9c465284e545c29caf4a269852abee6722b291a25bea5fd59b02534a3e78d4ec"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/observable-view-paths.mjs",
+      "bytes": 992,
+      "sha256": "fec71b99a6dd18429a492f9420d9d8a1f8f04093a1662651faef33e57ca25819"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/policy.ts",
+      "bytes": 10509,
+      "sha256": "b1e2090037567d79db0db0f5a6c81d8e4daeed7ed0de9b0c3b528cfa40970331"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-equity.ts",
+      "bytes": 18505,
+      "sha256": "edefbe502204e626f385ac3e9612a4d708da4b25768030f623fe81c6afdee909"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-facts.ts",
+      "bytes": 6800,
+      "sha256": "52f503d22dacb077baf1b2ff27d4a2eff0fa9a73ecbf2adefb546a04d2136fa3"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-support.d.mts",
+      "bytes": 210,
+      "sha256": "6531953338488298f54851758354664371308d9a249beb3437fa19bcd410391a"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/range-support.mjs",
+      "bytes": 968,
+      "sha256": "36cda7b43f03d4779db036bdb16a519b94fb08e60a752fe6d6b4051ff894f319"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/reviewed-postflop-archive.mjs",
+      "bytes": 13097,
+      "sha256": "a18c1f26d4347e4d390b9acb9c76297222d1f6a2f6a9cefbfcdbf5f21f0b39e0"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/spots.ts",
+      "bytes": 13146,
+      "sha256": "e81571d8f04e19fc2383c58e93c86ad25f473b4092dbe773892e25710d9da887"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/street-state.d.mts",
+      "bytes": 2884,
+      "sha256": "c3ae0da692183a035f4f0f9bbc4abf43885141bbb502e3a7810646757bfeb9ef"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/street-state.mjs",
+      "bytes": 12121,
+      "sha256": "68a7cebc720d2490310746546da453e7c3ae1e8d4728eb9177322db1e1408d98"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/tree.ts",
+      "bytes": 8501,
+      "sha256": "c6d9cc1dba8fc5a13ee7539b9e109fc3996ffd7bcfeb1afdfa455b702dd65274"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/types.ts",
+      "bytes": 3516,
+      "sha256": "97c61045c4cdfacc9eb881f53db077d505f96af8b5a16b52d52f72b00a369ee9"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/views.ts",
+      "bytes": 10453,
+      "sha256": "168b1983001307bae40f4fae3ca7d20b1689e1edda12fc5fe36a2cdb1ed395e8"
+    },
+    {
+      "path": "apps/frontend/scripts/verify-mw3-local-d1.mjs",
+      "bytes": 17389,
+      "sha256": "e3959bbb7026fa34fdee7bf402f53a65fb17d987e4c062e89eb7cd5148e45f51"
+    },
+    {
+      "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
+      "bytes": 21454,
+      "sha256": "f3f812617e6f288341efdcaeffd24a7ee6ade6ffad36b00b5a707a6c841c4527"
+    },
+    {
+      "path": "apps/frontend/src/account/AccountMenu.tsx",
+      "bytes": 3716,
+      "sha256": "de274581a93ab481f8ece44b4fa3e3ef70fff54ba2ad8a5bf454e249cd4d9f21"
+    },
+    {
+      "path": "apps/frontend/src/account/AuthPanel.tsx",
+      "bytes": 6165,
+      "sha256": "a6e9d16e986bc2120455b4962ad386b910dbf4ac59854a6a00d3ed6470bf239f"
+    },
+    {
+      "path": "apps/frontend/src/account/LearningAccess.tsx",
+      "bytes": 5850,
+      "sha256": "a738d6342a2e4814832a80b796abecb3d3f75536f7fa2def18867ce359ca3a64"
+    },
+    {
+      "path": "apps/frontend/src/account/account.css",
+      "bytes": 16025,
+      "sha256": "5840e60938679f6846814de1d22a430bfbeee17f78ff01c0f7b120dce728a8bc"
+    },
+    {
+      "path": "apps/frontend/src/account/config.ts",
+      "bytes": 594,
+      "sha256": "5c14158230f038ffea237dbfbe7ad10b8030057fa1a488cf16e5448f8e004a79"
+    },
+    {
+      "path": "apps/frontend/src/account/preferences.ts",
+      "bytes": 2363,
+      "sha256": "0db62edb9ae755cb81fe488681cc0d90c859674ccdc1b39462d601a5d5987e1f"
+    },
+    {
+      "path": "apps/frontend/src/account/session.ts",
+      "bytes": 7034,
+      "sha256": "7d51e21c5da36eb09c2c7815781d718f06da0ca65615674907134f6b8383747c"
+    },
+    {
+      "path": "apps/frontend/src/agent/AgentAvatar.tsx",
+      "bytes": 3184,
+      "sha256": "d79fdda7e1b06896a2126d3cf24b8397a76c75ea04df74b37880c12a93c1a6c4"
+    },
+    {
+      "path": "apps/frontend/src/agent/AgentTable.tsx",
+      "bytes": 29921,
+      "sha256": "c396b56ac08ffe0497c1873eb6ab919919548a5cfa1c5b76585bce10ed5e499e"
+    },
+    {
+      "path": "apps/frontend/src/agent/PlayStyleDashboard.tsx",
+      "bytes": 11736,
+      "sha256": "1af49c63314d4de8d46692a674dbbaf8f1a31fac8cb71e417efa5d5907b63b4d"
+    },
+    {
+      "path": "apps/frontend/src/agent/StyleAvatar.tsx",
+      "bytes": 7801,
+      "sha256": "4779fb7ed12a6b595105104a308c8cc256b421e8cd712fc216ac7219922b62f5"
+    },
+    {
+      "path": "apps/frontend/src/agent/agent-baseline.json",
+      "bytes": 392,
+      "sha256": "8982c7b091a83bc88b5d7bd96233089055b45b167c577ff5db327aca0b1aeefa"
+    },
+    {
+      "path": "apps/frontend/src/agent/agent-stats.ts",
+      "bytes": 5622,
+      "sha256": "6bd5417de621dc6f46ebe48f3e9ee517f2f6904f2e7066e64189dd11cac7702c"
+    },
+    {
+      "path": "apps/frontend/src/agent/agent.css",
+      "bytes": 34863,
+      "sha256": "46a7a4d66584f7c4a762b942ced9e03fbce1a850c1e07366fedd639798453eeb"
+    },
+    {
+      "path": "apps/frontend/src/agent/characters.ts",
+      "bytes": 1466,
+      "sha256": "cb795b0c1e3830225ff241f030385a40bb2de2a0b40fb5d79939cd3c9bbab490"
+    },
+    {
+      "path": "apps/frontend/src/agent/hand.ts",
+      "bytes": 18612,
+      "sha256": "dc6e61632818295e6fcfcbb05d7dfbf5c76cf55c3319332894323bbf4711a4ee"
+    },
+    {
+      "path": "apps/frontend/src/agent/mw3-hand.ts",
+      "bytes": 4033,
+      "sha256": "d6d82ecb8c572bd6a9bc40b4fd2d46571520bd29e22fea4cc0d1aedaecd6388d"
+    },
+    {
+      "path": "apps/frontend/src/agent/mw3-kit-cache.ts",
+      "bytes": 658,
+      "sha256": "cca5360f5dd1b8f75fdc8fdfe99f421323e031d253cfca7933621b064e2390bc"
+    },
+    {
+      "path": "apps/frontend/src/agent/player-read.ts",
+      "bytes": 8442,
+      "sha256": "d7b4791dbdedc1e3b3ea916a51b4e2118b798d435d7415e9bf5ddd5ae7f95ea6"
+    },
+    {
+      "path": "apps/frontend/src/agent/policy.ts",
+      "bytes": 5030,
+      "sha256": "de33d4ecbd582df42bc367e310a7a2b3acda0536477111c4cedbebc0e96aa923"
+    },
+    {
+      "path": "apps/frontend/src/agent/preflop.ts",
+      "bytes": 13315,
+      "sha256": "f1347b6e4e576192f666734676a32a433597659ab2681df19c4ce6dda6bf2999"
+    },
+    {
+      "path": "apps/frontend/src/agent/session.ts",
+      "bytes": 2439,
+      "sha256": "82d4987b629157323f0c4acc3ce6f22b4ce55ff72a697adced97d59b3843468a"
+    },
+    {
+      "path": "apps/frontend/src/assets/brand/reysonai-symbol.png",
+      "bytes": 375576,
+      "sha256": "ec7c5ecba8a2bb1cdefccfc1854898a6e6f629152dd61b8f9ca8800a98217348"
+    },
+    {
+      "path": "apps/frontend/src/components/BrandIcon.tsx",
+      "bytes": 438,
+      "sha256": "d4355a813e48ae0ca7d59b2c4593dec12f1747b7220e597ed7d5b89bdffdc297"
+    },
+    {
+      "path": "apps/frontend/src/components/Dialog.tsx",
+      "bytes": 2324,
+      "sha256": "56ad41600174f7e9bf539fc55cbfb9b8cab744d699b5d9ae85ef435881ab8833"
+    },
+    {
+      "path": "apps/frontend/src/components/PlayingCard.tsx",
+      "bytes": 1510,
+      "sha256": "ed368a7e9ab0ecb05bbea2ed56108649a21722e54505592cf7e58f5aea7aeb6e"
+    },
+    {
+      "path": "apps/frontend/src/components/StrategyMatrix.tsx",
+      "bytes": 4305,
+      "sha256": "df45e773957193f6c8f2528ec7a3184264068959c4b1ce45d73ee6f8db4d5962"
+    },
+    {
+      "path": "apps/frontend/src/components/action-format.ts",
+      "bytes": 1296,
+      "sha256": "58059a12c53e115f17f0d47f9c7bc2eb4c731d1a03d3c5e126abb5d658f52bfc"
+    },
+    {
+      "path": "apps/frontend/src/components/layout.tsx",
+      "bytes": 5731,
+      "sha256": "64ee53d3820e9e6c6ee4ee84bb9a66363cb9dad2cd72f577eb43c6df30cd4f1c"
+    },
+    {
+      "path": "apps/frontend/src/components/primitives.tsx",
+      "bytes": 3088,
+      "sha256": "915689f48d94764009392384898015c4e65704b1194b714bd3afc74c826a8687"
+    },
+    {
+      "path": "apps/frontend/src/data.ts",
+      "bytes": 3718,
+      "sha256": "386fd5eb5850e9893ed315edee00e0627e1b501347ba32cb861049040eaf2dd9"
+    },
+    {
+      "path": "apps/frontend/src/estimated/GameFormatDialog.tsx",
+      "bytes": 5355,
+      "sha256": "800bfd074318c89a9b5e8401b5a03540dd80d71e4048d6739d08a552a58fd939"
+    },
+    {
+      "path": "apps/frontend/src/estimated/Mw3PostflopTrial.tsx",
+      "bytes": 4330,
+      "sha256": "7e379fd1f7418ce2cd24b5f2191d1e00221bafa3d3685df29a2bb9dadf7d0a13"
+    },
+    {
+      "path": "apps/frontend/src/estimated/Mw3RangeView.tsx",
+      "bytes": 11632,
+      "sha256": "a42a0e07ed21d1b19567d7e0e971225a00d7d1cdde7380cd954b25f4749299b6"
+    },
+    {
+      "path": "apps/frontend/src/estimated/PostflopTrial.tsx",
+      "bytes": 47360,
+      "sha256": "02987ca5246656cad66663375ca11b458e55761d030edf584f21dbb18303972f"
+    },
+    {
+      "path": "apps/frontend/src/estimated/PreflopCallEvBars.tsx",
+      "bytes": 2572,
+      "sha256": "191b2872d1d1d3146ad7d6e048e79dd2acb51d0e206f2dc41fe0baa56b06e11f"
+    },
+    {
+      "path": "apps/frontend/src/estimated/RangeContextCard.tsx",
+      "bytes": 3167,
+      "sha256": "268dd700e8aea1d02109790669a17cca9631cdd07a74d8de0d7510a55b10b6bb"
+    },
+    {
+      "path": "apps/frontend/src/estimated/RangeWorkspace.tsx",
+      "bytes": 87308,
+      "sha256": "4588483b0c9426c7e5f84d786bfa0654189edcebc87dc35d956ecee4303228d5"
+    },
+    {
+      "path": "apps/frontend/src/estimated/action-path.ts",
+      "bytes": 9639,
+      "sha256": "dc2f9262722abf4a0e5295cd2a7a7921c0c58a8b15101f5b8b94f4bc0394583f"
+    },
+    {
+      "path": "apps/frontend/src/estimated/call-ev.ts",
+      "bytes": 22090,
+      "sha256": "8bb3a42521bd0e75f068ca6aa5cbc9c263649f7279c7f4b7e1a57c8dfbafdc45"
+    },
+    {
+      "path": "apps/frontend/src/estimated/cold-four-bet-responses.json",
+      "bytes": 1008148,
+      "sha256": "013783c4feaa42cdab083b73a534de3b9c555bc2ad14afd4984b7564f3191dc9"
+    },
+    {
+      "path": "apps/frontend/src/estimated/cold-four-bet-responses.ts",
+      "bytes": 7282,
+      "sha256": "98d3f991bddda2228588f6a5839fa69efa4f6449e43a3f22b928cccbb95ba1f0"
+    },
+    {
+      "path": "apps/frontend/src/estimated/cold-three-bet-responses.json",
+      "bytes": 514752,
+      "sha256": "be3599cfc64cdf78cfd7f096f6ca7ae51f1f47ad659b173226dd1d926d1c4531"
+    },
+    {
+      "path": "apps/frontend/src/estimated/cold-three-bet-responses.ts",
+      "bytes": 5020,
+      "sha256": "7e06f7e7be8d5bbe5888d6435768a4f14b89ca1e696ad54732427189eee9e44c"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-copy.ts",
+      "bytes": 4095,
+      "sha256": "25ad668b39b5bd5d7a9e716027081f49edb57af27022f75eb85fdf76f337e3be"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-flow.ts",
+      "bytes": 6149,
+      "sha256": "db108ecba3b902163e36893e8f39a873958bc59f5c0f3a4a36d2b21a942b2ab0"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-history.ts",
+      "bytes": 1087,
+      "sha256": "bac6d2b0e2cf8bbf256c782ddc867718fdfaba5c1b08533cfcb14adeef6a0fa8"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-model.ts",
+      "bytes": 9965,
+      "sha256": "5ae744ba5ed9cfd1d2575f17080041e33f857da498682400c348f6284710523b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-ranges.ts",
+      "bytes": 14454,
+      "sha256": "243f02d89171cec41420668807d137ceb69a6ab9328b05dcd661a774f9a11e38"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-reason-format.ts",
+      "bytes": 11381,
+      "sha256": "2408f0dbb4b84823340e9fbfcc1c591fa626943b0c3de72df8b46f448d236af2"
+    },
+    {
+      "path": "apps/frontend/src/estimated/continuation-tree.ts",
+      "bytes": 15974,
+      "sha256": "591c95a505b4da5b31432b5bed57a16c22ef921a2fd420aacb87e39c421acdd5"
+    },
+    {
+      "path": "apps/frontend/src/estimated/datasets.ts",
+      "bytes": 5397,
+      "sha256": "dd3224feae502272ded066a636760bf05b4f62d5d865ff5a802bf6ac68b3a216"
+    },
+    {
+      "path": "apps/frontend/src/estimated/detailed-reasons.ts",
+      "bytes": 1854,
+      "sha256": "d4fff938582b6dd60d99c11819313c214bd3f0df6845078125b075378b498a43"
+    },
+    {
+      "path": "apps/frontend/src/estimated/display-mode.ts",
+      "bytes": 1369,
+      "sha256": "ab54e66d49ab9aa7b44d9ef0288c26ce4a3d39653e4cafb1c916b2803cbb2963"
+    },
+    {
+      "path": "apps/frontend/src/estimated/english-reasons.ts",
+      "bytes": 14126,
+      "sha256": "6c8419d053903beefb4bdec1987a5f8654800cdf0222b6568aead74d182b09e7"
+    },
+    {
+      "path": "apps/frontend/src/estimated/eqr.ts",
+      "bytes": 5661,
+      "sha256": "852e22d48419554a5feb75830633c4d6123ce6635ad4bd2b6c1a9526ca6dd3d2"
+    },
+    {
+      "path": "apps/frontend/src/estimated/extended-ranges.ts",
+      "bytes": 7373,
+      "sha256": "2334378101361dc40eb10cb50631c3fea077db6f0150cd2025d73a65f0ca887b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/five-bet-dataset.ts",
+      "bytes": 1415,
+      "sha256": "6f686086d9c4365885eb60e42c4e2ee661aed2cbdb4d132ed54a4601c49f7c87"
+    },
+    {
+      "path": "apps/frontend/src/estimated/five-bet-responses.json",
+      "bytes": 871890,
+      "sha256": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c"
+    },
+    {
+      "path": "apps/frontend/src/estimated/five-bet-responses.ts",
+      "bytes": 2016,
+      "sha256": "adcfcd7ed1a3b085388fde6a063d8c4a205b04b7f8078c7a9096d76391abdae4"
+    },
+    {
+      "path": "apps/frontend/src/estimated/four-bet-responses.json",
+      "bytes": 379467,
+      "sha256": "70c6302ea11c6f725702030f8980883ef1ec66fb630c3d90f6c1395c4e76add5"
+    },
+    {
+      "path": "apps/frontend/src/estimated/four-bet-responses.ts",
+      "bytes": 5442,
+      "sha256": "209ad4ff8c7cf6c80c317f8604e1acb5789a80ce81a29285e09cd22a958492de"
+    },
+    {
+      "path": "apps/frontend/src/estimated/game-formats.ts",
+      "bytes": 2074,
+      "sha256": "59cce9b2823a3d09518b784ff2330e5dfd1a346d62e13fe3842dfc1acf7853bf"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-deep-responses.json",
+      "bytes": 50652,
+      "sha256": "e815907ad05b1a24f733acf9fe06cb06c2f89c41039a7226cefb420d7956e53e"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-deep-responses.ts",
+      "bytes": 7060,
+      "sha256": "b6c75bb82615c957b7c8697e970b371c8bb77bae822e89f66379e61fa081d29a"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-responses.json",
+      "bytes": 74768,
+      "sha256": "370d4b30a08394c2f6919cbbd5dec6f5531af41cfeddde3ece22f90922b34f77"
+    },
+    {
+      "path": "apps/frontend/src/estimated/limp-responses.ts",
+      "bytes": 8142,
+      "sha256": "dce0cae3e3720e0717ed5e57ac05e64390634c4e5692755fe37eefae9e758ad0"
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway-responses.ts",
+      "bytes": 4427,
+      "sha256": "285b37ce92dd2bf05a9648735a717c2f85cf801d5f099b67b30eb1d93d8674d9"
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway2-responses.json",
+      "bytes": 383303,
+      "sha256": "3d25573df0c2a7696d95a11f14eb6890f8918b46d6d3681f9c05c76b6c5d28de"
+    },
+    {
+      "path": "apps/frontend/src/estimated/multiway2-responses.ts",
+      "bytes": 6269,
+      "sha256": "3e671c36e777a4c775630f9a157a73ee9cad08d40c03881a275287f81a95c148"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-browser.ts",
+      "bytes": 9591,
+      "sha256": "e80e55e9f5dc37aadd804b22db4d06810737e10bc3f53de3095dab794bb47e4e"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-context.ts",
+      "bytes": 2575,
+      "sha256": "184b77ebfd3346a963886d8635c74f43038202f5a0e222a760b485803aef27d7"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-copy.ts",
+      "bytes": 5266,
+      "sha256": "827326721d795b1e4bf1fa5973867e346461545a502aadfdc0df1472942babe4"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-explanation.ts",
+      "bytes": 5583,
+      "sha256": "40d0ebb81bc32320f215caabc0bb2dc7fa23c25d6a3813c3c6a87db8afb07c36"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-range-state.ts",
+      "bytes": 5381,
+      "sha256": "932b75bcb5a1922eb63385b1f68ce6fa855a3b9c541b1877fd304198f0079b1b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/mw3-range.css",
+      "bytes": 1459,
+      "sha256": "7b7f4bb16e2ed875a574861245c8ad92cf2cbbc488302b99cfd185ab835bf74e"
+    },
+    {
+      "path": "apps/frontend/src/estimated/opening-ranges.ts",
+      "bytes": 2853,
+      "sha256": "830a7e3e41552c44e5692fd880335b0617911f0772f1651e8c8fa95963811ea1"
+    },
+    {
+      "path": "apps/frontend/src/estimated/opponent-profiles.ts",
+      "bytes": 10956,
+      "sha256": "39f6b040887a94ddd048c920e4596e6e0d90cd516fdcbe550c7d335c7786b44e"
+    },
+    {
+      "path": "apps/frontend/src/estimated/poker-glossary.ts",
+      "bytes": 11093,
+      "sha256": "5bde1066493aa9737ece5c7ecf38dd58112066accff8537804eeeec2f6325312"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-action-copy.ts",
+      "bytes": 767,
+      "sha256": "4f99cee975b42413bb87372695be9b22421b55cb6402204486eb0bf6f858958f"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-advanced.ts",
+      "bytes": 33694,
+      "sha256": "fff583b94330743e1180cdc1dfdbe00237153c170065ce15cde571398ef1fa6e"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-api.ts",
+      "bytes": 796,
+      "sha256": "e81c1eae3a91e2a516e557796568d524ba6536929efb5e8ce48fb42fb82f72fc"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-browser.ts",
+      "bytes": 6166,
+      "sha256": "455cbb2316602ef02284542ed52285e0887491d7e26388b5559a2f616c72dcaa"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-compute.ts",
+      "bytes": 12943,
+      "sha256": "6ba93d8279dccc50b72167f690500976ad41c0d86c090a0db9b6dcb6cb7b480b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-explanation.ts",
+      "bytes": 31876,
+      "sha256": "e0dc543e959e3b0ebd9cb2522b12aeee0b7e5a2d1388aa4936efdb2bf2974714"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-facts.ts",
+      "bytes": 1657,
+      "sha256": "3fa4237c1cd8ac34454121584c5e44bbef24d179c989fa37d7f85f263964ca69"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-hand-copy.ts",
+      "bytes": 54702,
+      "sha256": "08cf7a9dd2fb36ac87967b6e92b40d9cd631b5f8de8ea06abcbd6a8c782703b8"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-hand-ev.css",
+      "bytes": 1354,
+      "sha256": "dea6c4022c048e94d307a4ad7f8704eb24d142eec3859b571d06065bc3b25d1f"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-reasons.ts",
+      "bytes": 12239,
+      "sha256": "c41742314ce09a947a97082744070100ce35f25286800e3800e0df7a24ec28d0"
+    },
+    {
+      "path": "apps/frontend/src/estimated/postflop-trial.ts",
+      "bytes": 17698,
+      "sha256": "9df425ebb59f4a67bc715deef6000ff1b7c9b0e4cf24640c0fd81c6ef24b1ff2"
+    },
+    {
+      "path": "apps/frontend/src/estimated/preflop-types.ts",
+      "bytes": 5205,
+      "sha256": "2e5f2aede6612966b423d0753d3bf94ba2ad50536a5ddedb39efe9a56f22abcb"
+    },
+    {
+      "path": "apps/frontend/src/estimated/rake.ts",
+      "bytes": 1052,
+      "sha256": "399d85505fdf34216d5664e373e7c133b5c676dfcf136faed0ffd3b7274ce191"
+    },
+    {
+      "path": "apps/frontend/src/estimated/range-url.ts",
+      "bytes": 37107,
+      "sha256": "9353ef813259e3344a71d3ac794c400276e4847db7ffe8929b5aa883a2e8d2a0"
+    },
+    {
+      "path": "apps/frontend/src/estimated/ranges.css",
+      "bytes": 42208,
+      "sha256": "5b184312d3d1b8d10ead77576c5055e932ce64e392eda3019be025f6c72606b3"
+    },
+    {
+      "path": "apps/frontend/src/estimated/ranges.ts",
+      "bytes": 3720,
+      "sha256": "56d04ffbbcb6da004d611706129625d77cbc17da73311cadbdba53891394c4b8"
+    },
+    {
+      "path": "apps/frontend/src/estimated/sizing.ts",
+      "bytes": 3516,
+      "sha256": "e0e87afecd0fc718e2ebf80dd6a0071dca3ddc7577c4df9e57a8e0aeba6cb261"
+    },
+    {
+      "path": "apps/frontend/src/estimated/squeeze-responses.json",
+      "bytes": 1543744,
+      "sha256": "8f8d604bc80052382205363190db48bec4c9a7df8b6322af512009f47df6c9a2"
+    },
+    {
+      "path": "apps/frontend/src/estimated/squeeze-responses.ts",
+      "bytes": 7365,
+      "sha256": "3435989bc81c19e0f054a01527171abc650176c770966a87b5593f6caac5b705"
+    },
+    {
+      "path": "apps/frontend/src/estimated/street-card-dialog-state.ts",
+      "bytes": 405,
+      "sha256": "642bf67ae3be34978eb81a2a1fb512abaea36e485acd8894099c7b25150c55c8"
+    },
+    {
+      "path": "apps/frontend/src/estimated/table-profile-adjustments.json",
+      "bytes": 21073,
+      "sha256": "1c6bd85b52b6f89d11c276157b1eb602a51a4879ce3b3347f5bee84d91f8a690"
+    },
+    {
+      "path": "apps/frontend/src/estimated/table-profile.ts",
+      "bytes": 9258,
+      "sha256": "5550fe661c4d0b84a333860dcaa2e86c202262ab1915110aa50b1b7f4f5af0f6"
+    },
+    {
+      "path": "apps/frontend/src/estimated/three-bet-responses.json",
+      "bytes": 387728,
+      "sha256": "e46bbb59dc55df01240a73602b0cb214a652e5c2346f84a791178b938df40973"
+    },
+    {
+      "path": "apps/frontend/src/estimated/three-bet-responses.ts",
+      "bytes": 3633,
+      "sha256": "d67464ed961ee1916964b55a3ddc4a23cd383b61ade3203526724fc51ce4446d"
+    },
+    {
+      "path": "apps/frontend/src/i18n.ts",
+      "bytes": 35960,
+      "sha256": "9a3ee1965bf1deec42b563d7187be40e0a3a57b6fcee0daa65fe82079b07a55d"
+    },
+    {
+      "path": "apps/frontend/src/locale-metadata.ts",
+      "bytes": 433,
+      "sha256": "d74b8d82103da925f500703752c673e34f65c209d77f41ba17841389a92197c4"
+    },
+    {
+      "path": "apps/frontend/src/locale.ts",
+      "bytes": 1420,
+      "sha256": "acfcdda8a24d27327b0878db3c76bfa1e8e14f5f81c8736e1a310b821ea46758"
+    },
+    {
+      "path": "apps/frontend/src/locales/copy.ts",
+      "bytes": 1811,
+      "sha256": "288a0071b14fe803456f5a6966f5577d799a91fb4e8d81fdee6d5e582e667ecc"
+    },
+    {
+      "path": "apps/frontend/src/locales/product-dictionary.json",
+      "bytes": 43279,
+      "sha256": "caf1cb5a84d2f20782cb4f02a011838369c30112e75bb819e0d7823121ccaeaf"
+    },
+    {
+      "path": "apps/frontend/src/locales/product-direct.json",
+      "bytes": 44812,
+      "sha256": "062e6a2f513803db6432cc261923ef38147027091bfab3b906367f26e49d4413"
+    },
+    {
+      "path": "apps/frontend/src/locales/reason-copy.ts",
+      "bytes": 5172,
+      "sha256": "ac4a51ad1848103eca94f02a4d99615a9a0bca96a4c9ec40c667a36bdb8dd183"
+    },
+    {
+      "path": "apps/frontend/src/locales/reasons-primary.json",
+      "bytes": 54916,
+      "sha256": "76e92b92b0fb22259093d505e97fa39a62b4fdb514836d08c1373f0b4eb0ce43"
+    },
+    {
+      "path": "apps/frontend/src/locales/reasons-secondary.json",
+      "bytes": 51116,
+      "sha256": "714e5922d50e131832d8f0ee92babf944335f4cab7eb59d8517bed23e1080242"
+    },
+    {
+      "path": "apps/frontend/src/profile.ts",
+      "bytes": 3457,
+      "sha256": "14514fcec6cf0a892744284fbd9f550bccba421f62093640b2fcff6c34b5f996"
+    },
+    {
+      "path": "apps/shared/mw3-approved.ts",
+      "bytes": 14126,
+      "sha256": "7e1ac4ba059b4a34d8fdc7f6c6891be9929eafec470dc577c0d8702cf632fe81"
+    },
+    {
+      "path": "apps/shared/ranked-rules.ts",
+      "bytes": 2179,
+      "sha256": "4f2c1c5be55d29626afc35e10fcd5f50c4ee70ae8dd4a1ad982e94a7ed11bb0c"
+    },
+    {
+      "path": "configs/cash-6max-100bb.json",
+      "bytes": 918,
+      "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+    },
+    {
+      "path": "configs/multiway-preflop-stage2.json",
+      "bytes": 95,
+      "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+    },
+    {
+      "path": "configs/source-identity-mw3.review.json",
+      "bytes": 10958,
+      "sha256": "bd8e0ec1dade99adb73565416eee00b6395728c879ee910642c59b8af8b3cde2"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "apps/frontend/src/estimated/multiway-responses.json",
+      "bytes": 506995,
+      "sha256": "db5e05912bff4d58f845dfd3caec3e2d5292b5a914579ee96c47112836e3c912"
+    },
+    {
+      "path": "apps/frontend/src/estimated/opening-ranges.json",
+      "bytes": 113403,
+      "sha256": "236225dbae1c8aa2e2e7af8a449555f27ef80fed878114408c0e7338b89d0f0b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/preflop-ranges.json",
+      "bytes": 391641,
+      "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55"
+    }
+  ],
+  "sources_sha256": "c0b97b5950299121bbf1323da7dfb6976103680fa60c1e6a689736ac21403cfb",
+  "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
+  "artifacts": [
+    {
+      "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/all-flops.json",
+      "kind": "all-flops",
+      "spot": "HJ_open_BTN_call_BB_call",
+      "bytes": 1005,
+      "sha256": "f5c631b3f9bf1f478838b0901e491877bc47766cb0693fe48657ad4aa223ad08",
+      "entry": "objects/f5c631b3f9bf1f478838b0901e491877bc47766cb0693fe48657ad4aa223ad08"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/joint-defence.json",
+      "kind": "joint-defence",
+      "spot": "HJ_open_BTN_call_BB_call",
+      "bytes": 80541,
+      "sha256": "fbf183a79a554bc5d571f020d2f0e72cbf01857399098262464d87d8726d8ae5",
+      "entry": "objects/fbf183a79a554bc5d571f020d2f0e72cbf01857399098262464d87d8726d8ae5"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/later-runouts.json",
+      "kind": "later-runouts",
+      "spot": "HJ_open_BTN_call_BB_call",
+      "bytes": 23508,
+      "sha256": "6bd77eca5e7784731e2255985ec8918fbdc2ea86b7642afef1f8a3ec98ffe65a",
+      "entry": "objects/6bd77eca5e7784731e2255985ec8918fbdc2ea86b7642afef1f8a3ec98ffe65a"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/simulation-replay.json",
+      "kind": "simulation-replay",
+      "spot": "HJ_open_BTN_call_BB_call",
+      "bytes": 817,
+      "sha256": "d6747f149c91ca4ebcb22982093e7f6f8c98264cfb289d51f623f147f2742048",
+      "entry": "objects/d6747f149c91ca4ebcb22982093e7f6f8c98264cfb289d51f623f147f2742048"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/mw3/gates/hj-btn-bb-mw3-srp-v1/v1-6762971b2c93-4ec6b527f8e2-92b946dfc5c8-6ed2c1b57e8d/simulation.json",
+      "kind": "simulation",
+      "spot": "HJ_open_BTN_call_BB_call",
+      "bytes": 9206,
+      "sha256": "872c83cb82e922d7b0a259823e1bb9cff613373b21c10f0bcecd28303126262b",
+      "entry": "objects/872c83cb82e922d7b0a259823e1bb9cff613373b21c10f0bcecd28303126262b"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/mw3/hj-btn-bb-mw3-srp-v1-later-policy.json",
+      "kind": "laterCandidate",
+      "spot": "HJ_open_BTN_call_BB_call",
+      "bytes": 12187549,
+      "sha256": "ba643e6498a4c13f2f65916e7e685d508ef49ad5ed65c4ca786724a4107180b0",
+      "entry": "objects/ba643e6498a4c13f2f65916e7e685d508ef49ad5ed65c4ca786724a4107180b0"
+    },
+    {
+      "path": "apps/frontend/.local/postflop-ai/mw3/hj-btn-bb-mw3-srp-v1-policy.json",
+      "kind": "candidate",
+      "spot": "HJ_open_BTN_call_BB_call",
+      "bytes": 2588525,
+      "sha256": "bdbf6d3bab4cedccb6ad2b58fe3cffc0ef3922a0cac63006ce7dc2cbfeb1ec2a",
+      "entry": "objects/bdbf6d3bab4cedccb6ad2b58fe3cffc0ef3922a0cac63006ce7dc2cbfeb1ec2a"
+    }
+  ],
+  "archive": {
+    "path": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.tar.gz",
+    "format": "ustar+gzip-content-addressed-v1",
+    "bytes": 357921,
+    "sha256": "a1d6d54a8d169260c7bf38cfb062915c2ab9e64f116dfb8101c7b63dad6fbb0a"
+  },
+  "content_sha256": "8c0b8fe2230ddf6b436025d122994e29a0f341f66d6e07803a55c4a5708f195f"
+}
