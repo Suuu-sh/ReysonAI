@@ -11,7 +11,7 @@ const copy = {
 };
 
 /** Follow visible street blocks instead of stale downstream cards. */
-export function RangeContextCard({ postflop, settingsOpen, boards, onEditBoard, onReset, displayModeControl, children }) {
+export function RangeContextCard({ postflop, settingsOpen, boards, onEditBoard, onReset, children }) {
   const [view, setView] = useState("board");
   useEffect(() => { if (!postflop) setView("board"); }, [postflop]);
   const boardVisible = postflop && view === "board";
@@ -27,7 +27,7 @@ export function RangeContextCard({ postflop, settingsOpen, boards, onEditBoard, 
           {(block.street === "turn" || block.street === "river" ? [block.cards[0]] : [0, 1, 2].map(index => block.cards[index])).map((card, index) => <span key={index} className={`postflop-card${card ? ` suit-${card[1]}` : " empty"}`}>{card ? `${card[0]}${suits[card[1]]}` : "?"}</span>)}
         </button>)}
       </div>
-      <div className="range-context-board-footer">{displayModeControl}<button type="button" className="settings-icon-button" aria-label={text.reset} title={text.reset} onClick={onReset}><ArrowCounterClockwise size={14} aria-hidden="true" /></button></div>
+      <div className="range-context-board-footer"><button type="button" className="settings-icon-button" aria-label={text.reset} title={text.reset} onClick={onReset}><ArrowCounterClockwise size={14} aria-hidden="true" /></button></div>
     </> : children}
   </div>;
 }
