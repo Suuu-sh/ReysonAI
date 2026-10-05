@@ -25,6 +25,7 @@
 
 ## Stats scopes and animals (2026-10-05)
 - Drill Stats use the shared animal artwork, but keep the exact-question practice classifier and its diverse-sample thresholds. Never apply the Agent VPIP/PFR baseline to biased drill questions.
+- Drill and unranked Agent Stats share the same visual style-map/chart structure; keep their data sources, classifiers, axis meaning, and labels distinct and truthful.
 - Keep Ranked Stats separate and available only with live ranked readiness. Use server-confirmed match summaries for rating and practice scores; do not substitute local, drill or Agent records. Until the server exposes individual ranked actions, withhold ranked animal/action analysis. Ranked answers must not enter the local drill history. Old untagged history cannot be reliably separated; preserve it and disclose that limitation.
 
 ## FastFold ranked season (2026-10-05; supersedes ranked quiz rules above)

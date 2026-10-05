@@ -6,7 +6,7 @@ interface BreakdownCounts { total: number; best: number; mixed: number; miss: nu
 interface BreakdownRow extends BreakdownCounts { key: string; label: string }
 import { ArrowRight, Barbell, CalendarBlank, ChartLineUp, Cards, Crosshair, Info, Robot, Trophy, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
 import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
-import { PlayStyleDashboard, StyleZones, type StyleZone } from "../agent/PlayStyleDashboard.tsx";
+import { PlayStyleDashboard, StyleMapFrame, StyleZones, type StyleZone } from "../agent/PlayStyleDashboard.tsx";
 import { StyleAvatar } from "../agent/StyleAvatar.tsx";
 import { STYLES } from "../agent/player-read.ts";
 import { practiceAnimal, PRACTICE_EXPLANATIONS } from "./practice-style.ts";
@@ -91,22 +91,18 @@ function StyleMap({ analysis }: { analysis: PlayerAnalysisModel }) {
         <p>点は重複を除いた10問以上（オープン3問・対オープン5問以上）で表示し、30問に届くまでは暫定です。実戦の絶対的なプレイスタイルではありません。</p>
       </InfoTip>
     </header>
-    <figure className="analysis-map-figure">
-      <span className="axis-y" aria-hidden="true"><span>↑<br />3bet 多</span><span>3bet 少<br />↓</span></span>
-      <div className="analysis-map-grid">
+    <StyleMapFrame ariaLabel="ドリル練習のプレイスタイルマップ" xLeft="タイト" xRight="ルース" yTop="3bet 多" yBottom="3bet 少">
         <StyleZones zones={PRACTICE_ZONES} current={analysis.ready ? animal.id : null} />
-        <span className="analysis-map-baseline" aria-hidden="true" style={{ "--r": `${BASELINE_RADIUS}%` } as CSSProperties}><small>基準付近</small></span>
-        <span className="analysis-map-center" aria-hidden="true" title="方針" />
-        {plot && <svg className="analysis-map-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <span className="play-style-map-baseline" aria-hidden="true" style={{ "--r": `${BASELINE_RADIUS}%` } as CSSProperties}><small>基準付近</small></span>
+        <span className="play-style-map-center" aria-hidden="true" title="方針" />
+        {plot && <svg className="play-style-map-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <line x1="50" y1="50" x2={plot.x} y2={plot.y} pathLength="1" />
         </svg>}
-        {plot ? <span className={`analysis-map-marker${ready ? " with-animal" : ""}${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%` } as CSSProperties}
+        {plot ? <span className={`play-style-map-point${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%`, "--style": animal.color } as CSSProperties}
           role="img" aria-label={`あなたの練習位置。参加頻度は推定方針から${points(-metrics.fold.delta!)}、3betは${points(metrics.threeBet.delta)}。${ready ? "" : "暫定表示。"}`}>
-          <>{ready ? <StyleAvatar id={animal.id} color={animal.color} size={36} /> : <i />}</><b>あなた{ready ? "" : " · 暫定"}</b>
-        </span> : <span className="analysis-map-wait">10問以上で表示</span>}
-      </div>
-      <figcaption className="axis-x"><span>← タイト</span><span>ルース →</span></figcaption>
-    </figure>
+          {ready ? <StyleAvatar id={animal.id} color={animal.color} size={36} /> : <i />}<b>あなた{ready ? "" : " · 暫定"}</b>
+        </span> : <span className="play-style-map-wait">10問以上で表示</span>}
+    </StyleMapFrame>
   </section>;
 }
 
