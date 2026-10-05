@@ -4,7 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import worker from '../src/index.ts';
 import { digest } from '../src/account.ts';
-import { routeFastFold, newHand, publicHand, agentFor, actionStats } from '../src/fastfold.ts';
+import { routeFastFold, newHand, publicHand, agentFor, actionStats, departureResult } from '../src/fastfold.ts';
 import { fastfoldRating } from '../src/fastfold-rating.ts';
 import { playHand } from '../../frontend/src/agent/hand.ts';
 import { preflopOptions, startPreflop } from '../../frontend/src/agent/preflop.ts';
@@ -170,4 +170,81 @@ test('rating rewards outcome evidence, not hand volume; sparse hands small and n
  assert.ok(fastfoldRating(200,300,10000)>1000);assert.ok(fastfoldRating(200,-300,10000)<1000);
  const stats=actionStats([{hero:'UTG',log:[{street:'preflop',pos:'UTG',action:'open',pot:4},{street:'preflop',pos:'BB',action:'three_bet',pot:14},{street:'preflop',pos:'UTG',action:'fold',pot:14}]}]);
  assert.equal(stats.foldToThreeBet.percent,100);assert.equal(stats.vpip.percent,100);assert.equal(stats.threeBet.percent,null);
+});
+
+test('fixed server break survives retry/reload and expires once without account logout or hand discard',async()=>{
+ const realNow=Date.now;let clock=realNow();Date.now=()=>clock;
+ const f=await fixture();try{
+  let s=(await read(await f.call('start',{consent:true}))).session;
+  const request={sessionId:s.id,version:s.version,actionId:crypto.randomUUID()};
+  const first=await read(await f.call('break',request));
+  assert.equal(first.serverNow,clock);assert.equal(first.session.breakExpiresAt,clock+900000);
+  const deadline=first.session.breakExpiresAt,hand=s.hand.id,cards=s.hand.holeCards;
+  clock+=60000;
+  const retry=await read(await f.call('break',request));assert.equal(retry.session.breakExpiresAt,deadline);assert.equal(retry.session.version,first.session.version);
+  const duplicate=await read(await f.call('break',{sessionId:s.id,version:first.session.version,actionId:crypto.randomUUID()}));assert.equal(duplicate.session.breakExpiresAt,deadline);
+  await read(await f.call('break',request,f.b),404);
+  const refreshed=await read(await f.call('profile'));assert.equal(refreshed.state.active.breakExpiresAt,deadline);assert.deepEqual(refreshed.state.active.hand.holeCards,cards);
+  const resumed=await read(await f.call('resume',{sessionId:s.id,version:first.session.version}));assert.equal(resumed.session.hand.id,hand);assert.equal(resumed.session.breakExpiresAt,undefined);
+  s=resumed.session;
+  const again=await read(await f.call('break',{sessionId:s.id,version:s.version,actionId:crypto.randomUUID()}));
+  const beforeCount=f.sqlite.prepare('SELECT hands FROM fastfold_players WHERE user_id=?').get('A').hands;
+  clock=again.session.breakExpiresAt;
+  const outcomes=await Promise.all([f.call('profile'),f.call('resume',{sessionId:s.id,version:again.session.version}),f.call('action',command(s))]);
+  assert.equal(outcomes[0].status,200);for(const response of outcomes.slice(1)){const body=await read(response,409);assert.equal(body.error,'break_expired');}
+  const expired=await outcomes[0].json();assert.equal(expired.state.active,null);assert.equal(expired.state.hands,beforeCount+1);assert.equal(expired.state.recent[0].termination,'expired');assert.equal(expired.state.recent[0].netBb,0);
+  assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM fastfold_results WHERE id=?').get(hand).n,1);
+  assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM account_sessions').get().n,2);
+  await read(await f.call('profile'));assert.equal(f.sqlite.prepare('SELECT hands FROM fastfold_players WHERE user_id=?').get('A').hands,beforeCount+1);
+  const fresh=await read(await f.call('start',{consent:true}));assert.notEqual(fresh.session.hand.id,hand);assert.ok(fresh.session.version>again.session.version);
+  const oldRetry=await read(await f.call('break',request));assert.equal(oldRetry.session.hand.id,fresh.session.hand.id);assert.equal(oldRetry.session.breakExpiresAt,undefined);
+  assert.equal(/"(?:seed|draws|hashes|private_json|receipt)"/.test(JSON.stringify(expired)),false);
+  const bs=(await read(await f.call('start',{consent:true},f.b))).session;
+  const bb=await read(await f.call('break',{sessionId:bs.id,version:bs.version,actionId:crypto.randomUUID()},f.b));clock=bb.session.breakExpiresAt;
+  const newB=await read(await f.call('start',{consent:true},f.b));assert.equal(newB.state.hands,1);assert.equal(newB.state.recent[0].termination,'expired');assert.notEqual(newB.session.hand.id,bs.hand.id);
+ }finally{Date.now=realNow;f.close()}
+});
+test('explicit server exit retries settle blind loss once; failed exit rolls back; legacy pause remains resumable',async()=>{
+ const f=await fixture();try{
+  let s=(await read(await f.call('start',{consent:true}))).session;
+  for(let i=0;i<4;i++)s=(await read(await f.call('action',command(s)))).session;
+  assert.equal(s.hand.hero,'SB');
+  const paused=await read(await f.call('pause',{sessionId:s.id,version:s.version}));assert.equal(paused.session.breakExpiresAt,undefined);
+  s=(await read(await f.call('start',{consent:true}))).session;assert.equal(s.hand.id,paused.session.hand.id);
+  const leave={sessionId:s.id,version:s.version,actionId:crypto.randomUUID()};
+  await read(await f.call('leave',leave,f.b),404);
+  f.sqlite.exec("CREATE TRIGGER injected_exit_failure BEFORE INSERT ON fastfold_results BEGIN SELECT RAISE(ABORT,'injected_failure'); END");
+  await read(await f.call('leave',leave),503);assert.equal(f.sqlite.prepare('SELECT version FROM fastfold_sessions').get().version,s.version);
+  f.sqlite.exec('DROP TRIGGER injected_exit_failure');
+  const first=await read(await f.call('leave',leave)),before=first.state.hands;assert.equal(first.session,null);assert.equal(first.state.active,null);assert.equal(first.lastResult.netBb,-.5);assert.equal(first.lastResult.termination,'exit');assert.deepEqual(Object.keys(first.lastResult.holeCards),['SB']);
+  const retry=await read(await f.call('leave',leave));assert.equal(retry.state.hands,before);assert.equal(retry.lastResult.id,first.lastResult.id);
+  await read(await f.call('leave',{...leave,version:leave.version+1}),409);
+  const fresh=await read(await f.call('start',{consent:true}));assert.notEqual(fresh.session.hand.id,s.hand.id);
+  const delayed=await read(await f.call('leave',leave));assert.equal(delayed.session.hand.id,fresh.session.hand.id);assert.equal(delayed.state.hands,before);
+ }finally{f.close()}
+});
+test('departure refunds uncalled wager and sums each latest street without double blinds or hidden showdown',()=>{
+ const hand={...newHand(6),hero:'BB'};
+ const before={status:'awaiting',holeCards:{BB:['As','Kh'],BTN:['Qs','Qh']},board:['2s','3h','4c','8d'],log:[
+ {street:'preflop',pos:'BTN',action:'open',bets:{SB:.5,BB:1,BTN:3}},
+ {street:'preflop',pos:'BB',action:'call',bets:{SB:.5,BB:3,BTN:3}},
+ {street:'flop',pos:'BB',action:'bet50',bets:{BB:5,BTN:0}},
+ {street:'flop',pos:'BTN',action:'call',bets:{BB:5,BTN:5}},
+ {street:'turn',pos:'BB',action:'bet50',bets:{BB:12,BTN:0}},
+ {street:'turn',pos:'BTN',action:'allin',bets:{BB:12,BTN:7}}
+ ],pending:{street:'turn',pos:'BB',pot:30,options:[{key:'check'}],board:['2s','3h','4c','8d']}};
+ const result=departureResult(hand,before);assert.equal(result.returns.BB,-15);assert.equal(result.showdown,false);assert.equal(result.board.length,4);assert.deepEqual(Object.keys(publicHand(hand,result).holeCards),['BB']);
+});
+
+test('slow break resume stream cannot carry a pre-deadline clock past expiry',async()=>{
+ const realNow=Date.now;let clock=realNow();Date.now=()=>clock;
+ const f=await fixture();try{
+  const s=(await read(await f.call('start',{consent:true}))).session;
+  const paused=(await read(await f.call('break',{sessionId:s.id,version:s.version,actionId:crypto.randomUUID()}))).session;
+  const text=JSON.stringify({sessionId:s.id,version:paused.version});
+  const body=new ReadableStream({pull(controller){clock=paused.breakExpiresAt;controller.enqueue(new TextEncoder().encode(text));controller.close();}},{highWaterMark:0});
+  const response=await worker.fetch(new Request(endpoint+'resume',{method:'POST',headers:{cookie:`reysonai-dev-session=${f.a}`,origin,'content-type':'application/json'},body,duplex:'half'}),f.env);
+  const result=await read(response,409);assert.equal(result.error,'break_expired');
+  assert.equal(f.sqlite.prepare('SELECT hands FROM fastfold_players WHERE user_id=?').get('A').hands,1);
+ }finally{Date.now=realNow;f.close()}
 });

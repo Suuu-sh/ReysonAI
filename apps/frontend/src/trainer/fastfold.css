@@ -31,3 +31,10 @@
 
 .ff-arena.agent-page.is-lobby { height: auto; min-height: 0; overflow: visible; }
 .ff-arena .ff-last { flex-shrink: 0; }
+
+.ff-exit.agent-back { display: inline-flex; width: auto; gap: 6px; padding: 6px 10px; }
+.ff-waiting { width: min(100%, 620px); margin: 20px auto; gap: 18px; }
+.ff-waiting h2 { margin: 0; font-size: 20px; }.ff-waiting p { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.7; }
+.ff-countdown { font-size: 40px; font-variant-numeric: tabular-nums; }.ff-waiting .agent-buttons { flex-wrap: wrap; }
+.ff-arena.agent-page:has(.ff-waiting) { height: auto; overflow: visible; }
+.ff-waiting .agent-act { min-height: 44px; }

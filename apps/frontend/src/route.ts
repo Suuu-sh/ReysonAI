@@ -83,7 +83,7 @@ export function pathOfSection(section: string) {
 }
 
 export type TrainerRoute =
-  | { phase: "library" } | { phase: "drills" } | { phase: "ranking" }
+  | { phase: "library" } | { phase: "drills" } | { phase: "ranking" } | { phase: "waiting" }
   | { phase: "new" } | { phase: "edit"; id: string }
   | { phase: "drill" | "result"; key: string } // key: drill id, "review" or "ranked"
   | { phase: "agent"; tableId: string; watch: boolean };
@@ -96,6 +96,7 @@ export function trainerRouteOf(pathname: string): TrainerRoute {
   if (parts[1] === "agent" && parts[2]) return { phase: "agent", tableId: parts[2], watch: parts[3] === "watch" };
   const [area, id, action, tail] = parts.slice(2);
   const played = (key: string, step: string | undefined) => ({ phase: step === "result" ? "result" : "drill", key }) as TrainerRoute;
+  if (area === "ranked" && id === "waiting") return { phase: "waiting" };
   if (area === "ranked") return id === "play" ? played("ranked", action) : { phase: "ranking" };
   if (area === "review" && id === "play") return played("review", action);
   if (area === "drills") {
@@ -125,6 +126,7 @@ export function trainerPath(route: TrainerRoute) {
   switch (route.phase) {
     case "drills": return "/learn/trainer/drills";
     case "ranking": return "/learn/trainer/ranked/leaderboard";
+    case "waiting": return "/learn/trainer/ranked/waiting";
     case "new": return "/learn/trainer/drills/new";
     case "edit": return `/learn/trainer/drills/${id(route.id)}/edit`;
     case "drill": return play(route.key);
