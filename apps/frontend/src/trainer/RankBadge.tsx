@@ -20,7 +20,7 @@ export function RankLadder({ rating }) {
       <RankBadge name={tier.name} size={34} /><span>{localized(TIER_EN[tier.name], tier.name)}</span><small>{tier.min.toLocaleString()}+</small>
     </li>)}
     <li className="rank-ladder-legend" style={{ "--tier": tierColor(LEGEND) }}>
-      <RankBadge name={LEGEND} size={34} /><span>{localized("Legend", LEGEND)}</span><small title={localized(`Master top ${LEGEND_TOP_N}`, `マスター上位${LEGEND_TOP_N}人`)}>{localized(`Top ${LEGEND_TOP_N}`, `上位${LEGEND_TOP_N}人`)}</small>
+      <RankBadge name={LEGEND} size={34} /><span>{localized("Legend", LEGEND)}</span><small className="rank-ladder-legend-copy" title={localized(`Top ${LEGEND_TOP_N} among Masters`, `マスターのうち上位${LEGEND_TOP_N}人`)}>{localized(`Top ${LEGEND_TOP_N} among Masters`, `マスターのうち上位${LEGEND_TOP_N}人`)}</small>
     </li>
   </ol>;
 }
