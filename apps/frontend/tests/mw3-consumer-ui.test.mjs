@@ -13,6 +13,8 @@ import { buildMw3RangeNavigation } from '../src/estimated/mw3-range-state.ts';
 import { mw3DecisionView } from '../scripts/postflop-ai/mw3-runtime.mjs';
 import { mw3OriginForSelection } from '../src/estimated/mw3-context.ts';
 import { AGENT_TABLE } from '../src/agent/characters.ts';
+import { playHand as actualPlayHand } from '../src/agent/hand.ts';
+import { isVerifiedMw3Kit } from '../src/estimated/mw3-browser.ts';
 import { mw3Copy } from '../src/estimated/mw3-copy.ts';
 import { LOCALE_KEY } from '../src/locale.ts';
 import { deferred, deliveryFixture } from './helpers/mw3-consumer-fixture.mjs';
@@ -139,6 +141,117 @@ const agentBundle = await build({ entryPoints: [fileURLToPath(new URL('../src/ag
   } }],
 });
 const { AgentTablePage: ReachedAgentTable } = await importConsumerBundle(agentBundle, 'agent');
+test('waiting Agent completes a verified MW3 hand once after real human actions without reading or writing saved history', async () => {
+  // This synthetic fixture takes the actual codec/hash verification route. It
+  // tests consumer completion, not the authored policies' numerical quality.
+  const delivery = await deliveryFixture(), gate = deferred();
+  let loads = 0, deliveredKit, latestHand, boundaries = 0;
+  const states = [];
+  const forcedAgents = {
+    preflop({ pos, offered }) {
+      const key = pos === 'CO' ? 'open' : pos === 'BB' ? 'call' : 'fold';
+      const action = offered.choices.find(choice => choice.action.key === key)?.action;
+      assert.ok(action, `${pos}/${key} must be offered`);
+      return { action, mix: {}, source: 'balanced' };
+    },
+    postflop() { throw Error('Dedicated MW3 must never call the HU agent'); },
+  };
+  const client = {
+    supportsSpot: delivery.client.supportsSpot,
+    async load(id, signal) {
+      loads++;
+      await gate.promise;
+      deliveredKit = await delivery.client.load(id, signal);
+      return deliveredKit;
+    },
+    touchSpot: delivery.client.touchSpot,
+  };
+  await domTest(async ({ root, dom }) => {
+    const historyKeys = ['reysonai:agent-hands:v1', 'evionai:agent-hands:v1'];
+    const sentinels = new Map(historyKeys.map((key, index) => [key, JSON.stringify([{ at: index + 1, tableId: 'prior-session', returnBb: index }])]));
+    localStorage.setItem('reysonai:agent-speed', '"fast"');
+    for (const [key, value] of sentinels) localStorage.setItem(key, value);
+    const prototype = dom.window.Storage.prototype;
+    const getDescriptor = Object.getOwnPropertyDescriptor(prototype, 'getItem');
+    const setDescriptor = Object.getOwnPropertyDescriptor(prototype, 'setItem');
+    const originalGet = getDescriptor.value, originalSet = setDescriptor.value;
+    const storageCalls = { reads: [], writes: [] };
+    Object.defineProperty(prototype, 'getItem', { ...getDescriptor, value(key) {
+      if (historyKeys.includes(key)) storageCalls.reads.push(key);
+      return originalGet.call(this, key);
+    } });
+    Object.defineProperty(prototype, 'setItem', { ...setDescriptor, value(key, value) {
+      if (historyKeys.includes(key)) storageCalls.writes.push(key);
+      return originalSet.call(this, key, value);
+    } });
+    const originalNow = Date.now;
+    const previousPlay = Object.getOwnPropertyDescriptor(globalThis, '__MW3_AGENT_PLAY');
+    Date.now = () => 1791222000201;
+    globalThis.__MW3_AGENT_PLAY = setup => {
+      // Preserve the real session seed, human seat/actions and delivery kit.
+      latestHand = actualPlayHand({ ...setup, agents: forcedAgents });
+      states.push(latestHand.status);
+      return latestHand;
+    };
+    const until = async predicate => {
+      for (let tick = 0; tick < 150 && !predicate(); tick++) await act(async () => new Promise(resolve => setTimeout(resolve, 100)));
+      assert.ok(predicate(), 'Agent state failed to settle');
+    };
+    const assertHeld = () => {
+      assert.equal(boundaries, 0);
+      assert.equal(document.querySelector('.agent-result'), null);
+      assert.match(document.querySelector('.agent-title small').textContent, /#1/);
+    };
+    try {
+      await act(async () => root.render(React.createElement(ReachedAgentTable, {
+        tableId: AGENT_TABLE.id, onExit() {}, waitingMode: true,
+        handoffKey: 'verified-mw3-reservation', onHandBoundary: () => boundaries++, mw3Client: client,
+      })));
+      await until(() => Boolean(document.querySelector('.agent-act.tone-call')));
+      assert.equal(latestHand.status, 'awaiting'); assert.equal(latestHand.pending.street, 'preflop');
+      assert.equal(latestHand.pending.pos, 'BTN'); assertHeld();
+      await act(async () => document.querySelector('.agent-act.tone-call').click());
+      await until(() => loads === 1);
+      assert.equal(latestHand.status, 'needs_postflop'); assert.equal(latestHand.postflopKind, 'mw3_srp');
+      assert.equal(latestHand.spotId, delivery.id); assert.equal(latestHand.returns, undefined); assertHeld();
+      assert.ok(document.querySelector('.agent-thinking'));
+      await act(async () => gate.resolve());
+      for (const street of ['flop', 'turn', 'river']) {
+        await until(() => latestHand?.pending?.street === street && Boolean(document.querySelector('.agent-act.tone-check')));
+        assert.equal(latestHand.status, 'awaiting'); assert.equal(latestHand.pending.pos, 'BTN'); assertHeld();
+        await act(async () => document.querySelector('.agent-act.tone-check').click());
+      }
+      assert.equal(latestHand.status, 'done'); assert.equal(latestHand.postflopKind, 'mw3_srp');
+      assert.equal(latestHand.spotId, delivery.id); assert.equal(latestHand.showdown, true);
+      assert.equal(latestHand.board.length, 5); assert.equal(latestHand.log.filter(entry => entry.street !== 'preflop').length, 9);
+      assert.deepEqual(latestHand.log.filter(entry => entry.pos === 'BTN').map(({ street, action }) => [street, action]),
+        [['preflop', 'call'], ['flop', 'check'], ['turn', 'check'], ['river', 'check']]);
+      assert.deepEqual(Object.keys(latestHand.returns), ['UTG', 'HJ', 'CO', 'BTN', 'SB', 'BB']);
+      assert.ok(Math.abs(Object.values(latestHand.returns).reduce((sum, value) => sum + value, 0) + latestHand.rake) < 1e-8);
+      assert.equal(isVerifiedMw3Kit(deliveredKit), true); assert.equal(loads, 1);
+      // The real runner is done; the table must finish revealing before handoff.
+      assertHeld();
+      await act(async () => document.querySelector('.agent-profile-trigger').click());
+      await until(() => Boolean(document.querySelector('.agent-result')));
+      await until(() => boundaries === 1);
+      assert.ok(document.querySelector('.agent-profile-block'), 'profile does not interrupt handoff');
+      assert.ok(document.querySelector('.game-profile-modal[aria-modal=true]'));
+      assert.equal(document.querySelectorAll('.agent-board .trainer-card').length, 5);
+      assert.equal(document.querySelector('.agent-standings'), null); assert.equal(document.querySelector('.style-card'), null);
+      assert.equal(document.querySelectorAll('.game-history-hand').length, 1, 'completed waiting history remains ephemeral');
+      await act(async () => new Promise(resolve => setTimeout(resolve, 800)));
+      assert.equal(boundaries, 1); assert.match(document.querySelector('.agent-title small').textContent, /#1/);
+      assert.ok(states.includes('needs_postflop')); assert.ok(states.includes('done')); assert.ok(!states.includes('unavailable'));
+      assert.deepEqual(storageCalls, { reads: [], writes: [] });
+      for (const [key, value] of sentinels) assert.equal(originalGet.call(localStorage, key), value);
+    } finally {
+      Date.now = originalNow;
+      if (previousPlay) Object.defineProperty(globalThis, '__MW3_AGENT_PLAY', previousPlay); else delete globalThis.__MW3_AGENT_PLAY;
+      Object.defineProperty(prototype, 'getItem', getDescriptor);
+      Object.defineProperty(prototype, 'setItem', setDescriptor);
+    }
+  });
+});
 test('superseded Agent loading cannot settle a remounted new hand or write points/history', async () => {
   for (const fail of [false, true]) await domTest(async ({ root }) => {
     const gate = deferred(); let phase = 'old', loads = 0, plays = 0;
