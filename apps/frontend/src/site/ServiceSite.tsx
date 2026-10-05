@@ -199,7 +199,6 @@ function Explorer() {
         <div className="site-hero-playback">
           {motion && <button type="button" className="site-tour-toggle" data-tour-toggle aria-label={isTouring ? c.preview.pauseTour : c.preview.resumeTour} onClick={() => setTouring(current => !current)}>{isTouring ? <Pause size={18} weight="fill" aria-hidden="true" /> : <Play size={18} weight="fill" aria-hidden="true" />}</button>}
           <div className="site-tour" title={isTouring ? c.preview.touring : c.preview.manual}>
-            <span className="site-tour-progress" aria-hidden="true"><i key={`${mode}-${selected}-${isTouring}`} /></span>
             <span className="site-tour-caption">{isTouring ? c.preview.touring : c.preview.manual}</span>
           </div>
           <p className="site-hero-disclaimer">{c.preview.saved} · <b>{c.preview.notGto}</b></p>
