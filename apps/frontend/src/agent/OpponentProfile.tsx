@@ -9,7 +9,7 @@ export function OpponentProfile({ profile, onClose }: { profile: OpponentProfile
   const block = useRef<HTMLElement>(null);
   useEffect(() => {
     block.current?.closest<HTMLElement>(".agent-side")?.scrollTo?.({ top: 0, behavior: "auto" });
-    if (window.innerWidth <= 720) block.current?.scrollIntoView?.({ block: "nearest" });
+    if (window.innerWidth > 650 && window.innerWidth <= 720) block.current?.scrollIntoView?.({ block: "nearest" });
   }, [profile.name]);
   return <section ref={block} className="agent-panel agent-profile-block" role="region" aria-labelledby={id}>
     <header><div aria-hidden="true">{profile.avatar}</div><h3 id={id} translate="no">{profile.name}</h3><button type="button" onClick={onClose}>{profileCopy("Close", "閉じる", "关闭", "Cerrar")}</button></header>
