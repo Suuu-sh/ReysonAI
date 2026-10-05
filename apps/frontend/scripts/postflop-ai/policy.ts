@@ -1,4 +1,7 @@
-import { flopTextureKeys, handTier, TEXTURES, TIERS } from "./model.mjs";
+import type { ActionMix, FlopPolicy, HandTier, OpponentProfile, ReachStep } from "./types.ts";
+import type { PlayerRole } from "./tree.ts";
+import type { WeightedCombo } from "../lib/equity.ts";
+import { flopTextureKeys, handTier, TEXTURES, TIERS } from "./model.ts";
 
 import { LATER_NODES } from "./later-tree.ts";
 import { DEFAULT_TREE, FLOP_BETS, NODES, TREES, nodeRole, raiseDepth, treeNodes } from "./tree.ts";
@@ -11,13 +14,13 @@ export { NODES, TREES, nodeRole, treeNodes };
 // every node and tier (5 per node of the tree; the node count follows the configured bet sizes).
 // Policies saved before repeated raises stay valid: they have no raise key on *_vs_raise rules and
 // no *_vs_raise2..N nodes (those fall back to the reference mixes, see policyMix).
-export function validatePolicy(policy, tree = DEFAULT_TREE) {
+export function validatePolicy(policy: unknown, tree: string = DEFAULT_TREE): FlopPolicy {
   const nodes = treeNodes(tree), required = nodes.filter(node => raiseDepth(node) < 2);
-  if (!policy || policy.version !== 1 || policy.kind !== "ai_estimate_not_gto" ||
-      !Array.isArray(policy.rules) || policy.rules.length < required.length * 5 || policy.rules.length > nodes.length * 25 ||
-      Object.keys(policy).some(key => !["version", "kind", "rules"].includes(key))) throw new Error("Invalid postflop policy envelope");
+  if (!(policy as FlopPolicy) || (policy as FlopPolicy).version !== 1 || (policy as FlopPolicy).kind !== "ai_estimate_not_gto" ||
+      !Array.isArray((policy as FlopPolicy).rules) || (policy as FlopPolicy).rules.length < required.length * 5 || (policy as FlopPolicy).rules.length > nodes.length * 25 ||
+      Object.keys((policy as FlopPolicy)).some(key => !["version", "kind", "rules"].includes(key))) throw new Error("Invalid postflop policy envelope");
   const seen = new Set();
-  for (const rule of policy.rules) {
+  for (const rule of (policy as FlopPolicy).rules) {
     if (!rule || Object.keys(rule).sort().join(",") !== "mix,node,texture,tier" ||
         !nodes.includes(rule.node) || !["any", ...TEXTURES].includes(rule.texture) || !TIERS.includes(rule.tier)) {
       throw new Error("Invalid postflop policy rule");
@@ -36,10 +39,10 @@ export function validatePolicy(policy, tree = DEFAULT_TREE) {
   for (const node of required) for (const tier of TIERS) {
     if (!seen.has(`${node}|any|${tier}`)) throw new Error(`Missing fallback rule: ${node}/${tier}`);
   }
-  return policy;
+  return (policy as FlopPolicy);
 }
 
-export function policyMix(policy, node, hole, flop) {
+export function policyMix(policy: FlopPolicy, node: string, hole: readonly number[], flop: readonly number[]): ActionMix {
   const tier = handTier(hole, flop), keys = flopTextureKeys(flop), texture = keys[0];
   let rule;
   for (const key of keys) if ((rule = policy.rules.find(item => item.node === node && item.tier === tier && item.texture === key))) break;
@@ -52,38 +55,38 @@ export function policyMix(policy, node, hole, flop) {
 }
 
 // A saved *_vs_raise rule has no raise key; read it as raise 0 without touching the rule.
-export function withRaise(node, mix) {
+export function withRaise(node: string, mix: ActionMix): ActionMix {
   return (NODES[node] ?? LATER_NODES[node])?.includes("raise") && !("raise" in mix) ? { ...mix, raise: 0 } : mix;
 }
 
 // Raise cannot be offered when the raiser has no chips to raise with (the opponent is all-in or the
 // call already uses the stack): the raise share plays as a call.
-export function effectiveMix(mix, canRaise) {
+export function effectiveMix(mix: ActionMix, canRaise?: boolean): ActionMix {
   if (canRaise !== false || !mix.raise) return mix;
   return { ...mix, call: mix.call + mix.raise, raise: 0 };
 }
 
-export function choose(mix, random, actions = Object.keys(mix)) {
+export function choose(mix: ActionMix, random: number, actions: readonly string[] = Object.keys(mix)): string {
   let target = random * 100;
   for (const action of actions) { target -= mix[action]; if (target < 0) return action; }
-  return actions.at(-1);
+  return actions.at(-1)!;
 }
 
 // Fixed independent comparator. These are intentionally simple reference policies,
 // not GTO or performance targets; simulations report differences only.
 // First-to-act nodes: [check, total bet %]; the bet is spread over the configured sizes
 // by tier (value leans big, medium hands small, air slightly polarized).
-const FIRST = {
+const FIRST: Record<string, Record<HandTier, number[]>> = {
   btn_first: { monster: [5, 95], strong: [25, 75], draw: [45, 55], medium: [75, 25], air: [85, 15] },
   // The OOP preflop raiser leading (oop_leads tree): a little less betting than IP after a check.
   oop_first: { monster: [30, 70], strong: [45, 55], draw: [55, 45], medium: [80, 20], air: [80, 20] },
 };
-const SIZE_WEIGHTS = {
+const SIZE_WEIGHTS: Record<HandTier, Record<string, number>> = {
   monster: { 33: 25, 75: 50, 125: 25 }, strong: { 33: 70, 75: 25, 125: 5 }, draw: { 33: 50, 75: 35, 125: 15 },
   medium: { 33: 100, 75: 0, 125: 0 }, air: { 33: 70, 75: 15, 125: 15 },
 };
 // Facing a bet: [fold, call, raise] by bet size (the smallest size row is reused for unknown sizes).
-const FACING = {
+const FACING: Record<string, Record<HandTier, number[]>> = {
   33: { monster: [0, 45, 55], strong: [5, 80, 15], draw: [20, 70, 10], medium: [35, 65, 0], air: [90, 10, 0] },
   75: { monster: [0, 55, 45], strong: [20, 70, 10], draw: [45, 50, 5], medium: [70, 30, 0], air: [95, 5, 0] },
   125: { monster: [0, 65, 35], strong: [30, 65, 5], draw: [55, 42, 3], medium: [80, 20, 0], air: [97, 3, 0] },
@@ -91,20 +94,20 @@ const FACING = {
 // Facing raise number k (1 = the first raise of a bet): [fold, call, raise] by tier. Re-raises are small
 // and tiered (monster > strong > draw > medium > air = 0) and shrink with depth. The last allowed raise
 // (fold/call nodes) uses RAISE_LAST: [fold, call].
-export const RAISE_REFERENCE = {
+export const RAISE_REFERENCE: Record<number, Record<HandTier, number[]>> = {
   1: { monster: [0, 70, 30], strong: [25, 72, 3], draw: [45, 53, 2], medium: [75, 25, 0], air: [95, 5, 0] },
   // Re-raises keep a few draw/air bluffs so the re-raise range is not value-only.
   2: { monster: [0, 80, 20], strong: [30, 69, 1], draw: [55, 42, 3], medium: [85, 15, 0], air: [95, 3, 2] },
   3: { monster: [0, 90, 10], strong: [35, 65, 0], draw: [65, 33, 2], medium: [90, 10, 0], air: [97, 2, 1] },
 };
-export const RAISE_LAST = { monster: [0, 100], strong: [40, 60], draw: [70, 30], medium: [92, 8], air: [99, 1] };
+export const RAISE_LAST: Record<HandTier, number[]> = { monster: [0, 100], strong: [40, 60], draw: [70, 30], medium: [92, 8], air: [99, 1] };
 // [fold, call, raise?] of a raise-facing node and tier (depth of a node beyond the table reuses the last row).
-export function raiseReferenceRow(node, tier, actions) {
+export function raiseReferenceRow(node: string, tier: HandTier, actions: readonly string[]): number[] {
   if (!actions.includes("raise")) return RAISE_LAST[tier];
   return RAISE_REFERENCE[Math.min(raiseDepth(node), 3)][tier];
 }
 
-export function referenceMix(node, tier) {
+export function referenceMix(node: string, tier: HandTier): ActionMix {
   const actions = NODES[node];
   if (node.endsWith("_first")) {
     const [check, bet] = FIRST[node][tier];
@@ -118,7 +121,7 @@ export function referenceMix(node, tier) {
 }
 
 // The fixed reference policy of one tree (only that tree's nodes, in tree order).
-export function referencePolicyFor(tree = DEFAULT_TREE) {
+export function referencePolicyFor(tree: string = DEFAULT_TREE): FlopPolicy {
   return validatePolicy({ version: 1, kind: "ai_estimate_not_gto",
     rules: treeNodes(tree).flatMap(node => TIERS.map(tier => ({ node, tier, texture: "any", mix: referenceMix(node, tier) }))),
   }, tree);
@@ -126,8 +129,8 @@ export function referencePolicyFor(tree = DEFAULT_TREE) {
 export const referencePolicy = referencePolicyFor(DEFAULT_TREE);
 const referenceAll = referencePolicyFor("oop_leads");
 
-function roundMix(mix, actions) {
-  const entries = actions.map(action => [action, mix[action]]);
+function roundMix(mix: ActionMix, actions: readonly string[]): ActionMix {
+  const entries: [string, number][] = actions.map(action => [action, mix[action]]);
   const result = Object.fromEntries(entries.map(([action, value]) => [action, Math.floor(value)]));
   let left = 100 - Object.values(result).reduce((sum, value) => sum + value, 0);
   entries.sort((a, b) => (b[1] % 1) - (a[1] % 1));
@@ -135,7 +138,7 @@ function roundMix(mix, actions) {
   return result;
 }
 
-export function opponentMix(node, hole, flop, profile) {
+export function opponentMix(node: string, hole: readonly number[], flop: readonly number[], profile: OpponentProfile): ActionMix {
   if (!["standard", "passive", "aggressive"].includes(profile)) throw new Error("Unknown opponent profile");
   const base = policyMix(referenceAll, node, hole, flop);
   if (profile === "standard") return base;
@@ -157,7 +160,7 @@ export function opponentMix(node, hole, flop, profile) {
 
 // Weights each combo of `role`'s range by the policy frequency of that player's own
 // earlier flop actions in `steps` (from tree.flopState), i.e. its reach at a later decision.
-export function scaleByPath(items, role, steps, policy, flop) {
+export function scaleByPath<T extends WeightedCombo>(items: T[], role: PlayerRole, steps: readonly ReachStep[], policy: FlopPolicy, flop: readonly number[]): T[] {
   return steps.filter(step => step.role === role).reduce((range, step) =>
     range.map(item => ({ ...item, weight: item.weight * effectiveMix(policyMix(policy, step.node, item.combo, flop), step.canRaise)[step.action] / 100 })), items);
 }

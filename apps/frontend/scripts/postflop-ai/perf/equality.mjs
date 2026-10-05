@@ -8,8 +8,8 @@ import { loadCandidate, loadLaterCandidate } from "../generate.mjs";
 import { simulate } from "../simulation.mjs";
 import { handEvForBoard, flopHandEvForHand } from "../flop-hand-ev-core.mjs";
 import { laterHandEvForHand } from "../later-hand-ev-core.mjs";
-import { parseFlopBoard, parseCards } from "../model.mjs";
-import { flopNodes } from "../views.mjs";
+import { parseFlopBoard, parseCards } from "../model.ts";
+import { flopNodes } from "../views.ts";
 import { explainCombo } from "../explain.mjs";
 import { auditExperiment } from "../audit.mjs";
 

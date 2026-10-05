@@ -720,9 +720,9 @@
 .mode-block.is-agent:is(:hover, :focus-within) .agent-table-face { opacity: 1; transform: translate(calc(-50% + var(--k) * min(74px, 23cqi)), calc(-50% + 6px)) rotate(calc(var(--k) * 6deg)) scale(1.05); }
 .mode-block.is-agent:is(:hover, :focus-within) .agent-table-face.is-front { transform: translate(-50%, calc(-50% - 10px)) scale(1.55); }
 .mode-block.is-agent:is(:hover, :focus-within) .agent-table-face.is-front > :first-child { filter: drop-shadow(0 0 18px color-mix(in srgb, var(--mode-theme) 75%, transparent)); animation: rank-float 2.4s ease-in-out .5s infinite; }
-.mode-block.is-drills:is(:hover, :focus-within) @media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   .rank-fan-item, .agent-lineup .agent-table-face { transition: none; }
-  .mode-block.is-drills:is(:hover, :focus-within) }
+}
 
 /* Drill deck: three flashcards stacked like the other emblems; on hover they fan out. */
 .drill-deck { position: relative; width: 100%; height: 170px; }

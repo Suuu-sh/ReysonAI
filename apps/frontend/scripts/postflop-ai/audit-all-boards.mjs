@@ -12,7 +12,7 @@ import { loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate } from "./generate.mjs";
 import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
 import { canonicalFlops } from "./flop-isomorphism.ts";
-import { POSTFLOP_SPOTS } from "./spots.mjs";
+import { POSTFLOP_SPOTS } from "./spots.ts";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const outDir = join(root, ".local/postflop-ai/all-boards-audit");

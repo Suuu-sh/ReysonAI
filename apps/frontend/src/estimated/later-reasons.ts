@@ -49,7 +49,7 @@ export function laterActionReason({
   tier: string;
   texture: string;
   line: string;
-  locale?: Locale;
+  locale?: ReturnType<typeof productLocale>;
 }): string {
   const situation = situationForNode(node);
   const actionKey = situation === "lead" ? leadActions[action] : action;

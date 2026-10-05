@@ -1,12 +1,12 @@
 // Explains one private combo's flop options against the opponent's AI-estimated range.
 // Read-only: it reuses the audited candidate policy and never changes it.
-import { evaluate, seededRandom, seedFor } from "../lib/equity.mjs";
-import { seatRange } from "./browser-inputs.mjs";
-import { handTier, parseCards } from "./model.mjs";
-import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.mjs";
+import { evaluate, seededRandom, seedFor } from "../lib/equity.ts";
+import { seatRange } from "./browser-inputs.ts";
+import { handTier, parseCards } from "./model.ts";
+import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseDepth } from "./tree.ts";
-import { defenceFor, replayOrNull } from "./defence.mjs";
-import { averageExplanationFacts } from "./explain-aggregate.mjs";
+import { defenceFor, replayOrNull } from "./defence.ts";
+import { averageExplanationFacts } from "./explain-aggregate.ts";
 
 const RANKS = "23456789TJQKA";
 const RUNOUTS = 120;
@@ -103,7 +103,7 @@ export function explainCombo({ boardCards, node, cards, prev = "bet33", inputs, 
   const actions = {};
   let defenceFacts = null;
   let bettingFacts = null;
-  // Villain responses use the computed defence (defence.mjs) after the line `history` + hero's action.
+  // Villain responses use the computed defence (defence.ts) after the line `history` + hero's action.
   const defence = defenceFor(inputs, policy, null);
   const history = historyFor(inputs.spot.tree, node, prev);
   const table = replayOrNull(inputs, flop, { flop: history });

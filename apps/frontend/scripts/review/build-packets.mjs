@@ -1,7 +1,7 @@
 // Builds review packets for a different LLM to audit persisted ranges (see README.md).
 // Usage: node scripts/review/build-packets.mjs [spot_id ...]   (no ids = every spot)
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { comboCount, seedFor, seededRandom } from "../lib/equity.mjs";
+import { comboCount, seedFor, seededRandom } from "../lib/equity.ts";
 
 const root = new URL("../../", import.meta.url);
 const load = name => JSON.parse(readFileSync(new URL(`src/estimated/${name}.json`, root)));

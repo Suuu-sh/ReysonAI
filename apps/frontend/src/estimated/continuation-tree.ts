@@ -186,8 +186,8 @@ function reusedSource(root: ContinuationRoot, trail: HistoryAction[]): { id: str
 
 function nextFourBetSize(root: ContinuationRoot, hero: string): number {
   if (root.family === "two_caller_squeeze") return twoCallerFourBetToBb;
-  if (root.family === "squeeze") return squeezeFourBetToSize(hero, root.squeezer);
-  return fourBetToSize(hero, root.three_bettor);
+  if (root.family === "squeeze") return squeezeFourBetToSize(hero, root.squeezer!);
+  return fourBetToSize(hero, root.three_bettor!);
 }
 
 /** Enumerate all structurally legal histories, depth-first in fold/call/raise

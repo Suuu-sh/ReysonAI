@@ -7,14 +7,14 @@ for (let mask = 0; mask < straightHighs.length; mask++) {
   for (let high = 12; high >= 4; high--) if (((mask >> (high - 4)) & 31) === 31) { straightHighs[mask] = high; break; }
   if (straightHighs[mask] < 0 && (mask & 0x100F) === 0x100F) straightHighs[mask] = 3;
 }
-const packed = (category, a = 0, b = 0, c = 0, d = 0, e = 0) => ((((category * 16 + a) * 16 + b) * 16 + c) * 16 + d) * 16 + e;
+const packed = (category: number, a = 0, b = 0, c = 0, d = 0, e = 0) => ((((category * 16 + a) * 16 + b) * 16 + c) * 16 + d) * 16 + e;
 const topRanks = new Int8Array(5);
-function top(mask, exclude1 = -1, exclude2 = -1) {
+function top(mask: number, exclude1 = -1, exclude2 = -1) {
   topRanks.fill(0); let n = 0;
   for (let rank = 12; rank >= 0 && n < 5; rank--) if (mask & (1 << rank) && rank !== exclude1 && rank !== exclude2) topRanks[n++] = rank;
 }
 
-export function evaluateContinuation(cards) {
+export function evaluateContinuation(cards: readonly number[]) {
   if (cards.length < 5 || cards.length > 7) throw new Error("Continuation evaluator requires 5–7 cards");
   counts.fill(0); suitCounts.fill(0); suitMasks.fill(0);
   let mask = 0, lowSeen = 0, highSeen = 0;

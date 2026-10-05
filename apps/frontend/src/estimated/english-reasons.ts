@@ -1,3 +1,8 @@
+import type { NarrativeLanguage } from "../locales/reason-copy.ts";
+import type { ProductLocale } from "../locale.ts";
+import type { FrequencyRow, PreflopAction } from "./preflop-types.ts";
+export type DetailedReason = { reason: string; facts?: Record<string, number | null> };
+export type DetailedReasonDataset = { spot_id: string; type: string; source_fingerprint?: string; method?: string; equity_note?: string; fact_labels?: { key: string; label: string; scope?: string; unit?: string }[]; spot_facts?: Record<string, unknown> & { call_break_even_equity_pct?: number; all_fold_pct?: number }; schema_version?: undefined; hands: Record<string, DetailedReason> };
 import { narrative, translateExplanationCopy } from "../locales/reason-copy.ts";
 import { productLocale } from "../locale.ts";
 // English presentation of the recorded hand facts. This does not recompute a
@@ -7,7 +12,7 @@ const ACTIONS = {
   four_bet: "4-bet", all_in: "go all-in", call: "call", fold: "fold",
 };
 
-export const englishFactLabels = {
+export const englishFactLabels: Readonly<Record<string, string>> = {
   equity_vs_defend_pct: "Equity versus defending range",
   equity_vs_open_pct: "Equity versus opening range",
   equity_vs_continue_pct: "Equity versus continuing range",
@@ -161,41 +166,41 @@ export const englishPostflopReasons = {
   },
 };
 
-function handDescription(hand, en = "en") {
-  if (hand.length === 2) return narrative("{0} is {1}", [hand, "AKQJT".includes(hand[0]) ? narrative("a high pocket pair with strong showdown potential", [], en) : narrative("a pocket pair that can improve to a set", [], en)], en);
-  if (hand.endsWith("s") && hand[0] === "A") return narrative("{0} is a suited ace with flush potential and an ace blocker", [hand], en);
-  if (hand.endsWith("s")) return narrative("{0} is a suited hand with flush potential", [hand], en);
-  return narrative("{0} is an offsuit hand", [hand], en);
+function handDescription(hand: string, en: ProductLocale = "en") {
+  if (hand.length === 2) return narrative("{0} is {1}", [hand, "AKQJT".includes(hand[0]) ? narrative("a high pocket pair with strong showdown potential", [], en as NarrativeLanguage) : narrative("a pocket pair that can improve to a set", [], en as NarrativeLanguage)], en as NarrativeLanguage);
+  if (hand.endsWith("s") && hand[0] === "A") return narrative("{0} is a suited ace with flush potential and an ace blocker", [hand], en as NarrativeLanguage);
+  if (hand.endsWith("s")) return narrative("{0} is a suited hand with flush potential", [hand], en as NarrativeLanguage);
+  return narrative("{0} is an offsuit hand", [hand], en as NarrativeLanguage);
 }
 
-export function englishPreflopReason(hand, detailed, data, en = "en") {
-  if (!detailed) return narrative("No hand-specific explanation is recorded for this spot.", [], en);
+export function englishPreflopReason(hand: FrequencyRow, detailed: DetailedReason | null | undefined, data: DetailedReasonDataset | null | undefined, en: ProductLocale = "en") {
+  if (!detailed) return narrative("No hand-specific explanation is recorded for this spot.", [], en as NarrativeLanguage);
   if (/前段|到達不能|頻度が0%/.test(detailed.reason)) {
-    return narrative("The preceding action has zero recorded frequency for this hand, so this branch is unreachable. A saved 100% fold here is a data placeholder, not a recommendation.", [], en);
+    return narrative("The preceding action has zero recorded frequency for this hand, so this branch is unreachable. A saved 100% fold here is a data placeholder, not a recommendation.", [], en as NarrativeLanguage);
   }
   const facts = detailed.facts ?? {};
-  const parts = [narrative("{0} in this saved spot.", [handDescription(hand.hand, en)], en)];
+  const parts = [narrative("{0} in this saved spot.", [handDescription(hand.hand, en)], en as NarrativeLanguage)];
   const equityEntry = Object.entries(facts).find(([key, value]) => key.startsWith("equity_vs_") && key.endsWith("_pct") && Number.isFinite(value));
   if (equityEntry) {
     const [key, value] = equityEntry;
-    parts.push(narrative("{0} is {1}%.", [englishFactLabels[key] ?? narrative("Raw equity", [], en), value.toFixed(1)], en));
+    parts.push(narrative("{0} is {1}%.", [englishFactLabels[key] ?? narrative("Raw equity", [], en as NarrativeLanguage), value!.toFixed(1)], en as NarrativeLanguage));
   }
   if (Number.isFinite(facts.call_ev_bb)) {
-    const sign = facts.call_ev_bb > 0 ? "+" : "";
-    parts.push(narrative("Under the recorded EQR assumption, the model's call EV is {0}{1} bb.", [sign, facts.call_ev_bb.toFixed(2)], en));
+    const sign = facts.call_ev_bb! > 0 ? "+" : "";
+    parts.push(narrative("Under the recorded EQR assumption, the model's call EV is {0}{1} bb.", [sign, facts.call_ev_bb!.toFixed(2)], en as NarrativeLanguage));
     if (Number.isFinite(data?.spot_facts?.call_break_even_equity_pct) && Number.isFinite(facts.realized_equity_pct)) {
-      parts.push(narrative("Estimated realized equity ({0}%) is {1} the {2}% call threshold.", [facts.realized_equity_pct.toFixed(1), facts.realized_equity_pct >= data.spot_facts.call_break_even_equity_pct ? narrative("above", [], en) : narrative("below", [], en), data.spot_facts.call_break_even_equity_pct.toFixed(1)], en));
+      parts.push(narrative("Estimated realized equity ({0}%) is {1} the {2}% call threshold.", [facts.realized_equity_pct!.toFixed(1), facts.realized_equity_pct! >= data!.spot_facts!.call_break_even_equity_pct! ? narrative("above", [], en as NarrativeLanguage) : narrative("below", [], en as NarrativeLanguage), data!.spot_facts!.call_break_even_equity_pct!.toFixed(1)], en as NarrativeLanguage));
     }
   }
-  if (Number.isFinite(data?.spot_facts?.all_fold_pct)) parts.push(narrative("The estimated chance that all players behind fold is {0}%.", [data.spot_facts.all_fold_pct.toFixed(1)], en));
+  if (Number.isFinite(data?.spot_facts?.all_fold_pct)) parts.push(narrative("The estimated chance that all players behind fold is {0}%.", [data!.spot_facts!.all_fold_pct!.toFixed(1)], en as NarrativeLanguage));
   const blocker = Object.entries(facts).find(([key, value]) => key.startsWith("blocked_") && Number.isFinite(value));
-  if (blocker) parts.push(narrative("The saved blocker measure for this hand is {0}% ({1}).", [blocker[1].toFixed(1), englishFactLabels[blocker[0]] ?? narrative("opponent range", [], en)], en));
-  const choices = Object.entries(ACTIONS).filter(([key]) => Number.isFinite(hand[key]) && hand[key] > 0).map(([key, label]) => narrative("{0} {1}%", [label, hand[key]], en));
-  if (choices.length) parts.push(narrative("Saved action mix: {0}.", [choices.join(", ")], en));
-  else parts.push(narrative("The recorded action mix is shown above.", [], en));
+  if (blocker) parts.push(narrative("The saved blocker measure for this hand is {0}% ({1}).", [blocker[1]!.toFixed(1), englishFactLabels[blocker[0]] ?? narrative("opponent range", [], en as NarrativeLanguage)], en as NarrativeLanguage));
+  const choices = Object.entries(ACTIONS).filter(([key]) => Number.isFinite(hand[key as PreflopAction]!) && hand[key as PreflopAction]! > 0).map(([key, label]) => narrative("{0} {1}%", [label, hand[key as PreflopAction]!], en as NarrativeLanguage));
+  if (choices.length) parts.push(narrative("Saved action mix: {0}.", [choices.join(", ")], en as NarrativeLanguage));
+  else parts.push(narrative("The recorded action mix is shown above.", [], en as NarrativeLanguage));
   return parts.join(" ");
 }
 
-export const localizedPreflopReason = (hand, detailed, data) => englishPreflopReason(hand, detailed, data, productLocale());
-export const localizedFactLabel = key => translateExplanationCopy(englishFactLabels[key] ?? key, productLocale());
+export const localizedPreflopReason = (hand: FrequencyRow, detailed: DetailedReason | null | undefined, data: DetailedReasonDataset | null | undefined) => englishPreflopReason(hand, detailed, data, productLocale());
+export const localizedFactLabel = (key: string) => translateExplanationCopy(englishFactLabels[key] ?? key, productLocale());
 export const localizedEquityNote = () => translateExplanationCopy(englishEquityNote, productLocale());

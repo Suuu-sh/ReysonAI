@@ -1,3 +1,11 @@
+import type { ColdFourBetDataset, ColdThreeBetDataset, FourBetDataset, FrequencyRow, LimpDataset, LimpDeepDataset, Multiway2Dataset, MultiwayDataset, OpeningDataset, ResponseDataset, SqueezeDataset, ThreeBetDataset } from "./preflop-types.ts";
+export type WeightedRange = [string, number][];
+export type CallInput = { hero: string; opponents: string[]; cost_to_call: number; total_pot_after_call: number; all_in: boolean; ranges: WeightedRange[]; bb_behind?: boolean; caller_behind?: boolean; opener_behind?: boolean; cold_call_behind?: boolean; three_bettor_behind?: boolean; dead_opponents?: string[]; dead_ranges?: WeightedRange[]; pending_actors?: string[]; opponent_model?: string };
+export type CallHand = FrequencyRow & { fold: number; call: number };
+export type CallSpot = { id: string; hero: string; hands: CallHand[]; hero_position_vs_three_bettor?: string };
+export type CallContext<S = CallSpot> = { type: string; spot: S; input: CallInput; reach: (hand: string) => number };
+export type CallEquityTable = { version: number; samples: number; seed: string; spots: Record<string, { input: CallInput; equities: Record<string, number> }> };
+export type CallDatasets = { opening: OpeningDataset; responses?: ResponseDataset; threeBets?: ThreeBetDataset; fourBets?: FourBetDataset; multiway?: MultiwayDataset; limp?: LimpDataset; squeezes?: SqueezeDataset; coldThreeBets?: ColdThreeBetDataset; limpDeep?: LimpDeepDataset; multiway2?: Multiway2Dataset; coldFourBets?: ColdFourBetDataset };
 // Shared generation / facts / audit model. No local facts or UI dependencies.
 import { COLD_CALL_SQUEEZE_EQR, equityRealization, seatsBehind } from "./eqr.ts";
 import { raked } from "./rake.ts";
@@ -6,26 +14,26 @@ import { openSizeFor } from "./sizing.ts";
 export const CALL_EQUITY_VERSION = 1;
 export const CALL_EQUITY_SAMPLES = 12000;
 export const CALL_EQUITY_SEED = "call-equity-v1|spot|hand";
-const blind = { SB: 0.5, BB: 1 };
-const byHand = spot => new Map(spot.hands.map(row => [row.hand, row]));
-const range = (spot, weight) => spot.hands.map(row => [row.hand, weight(row)]).filter(([, w]) => w > 0);
+const blind: Readonly<Partial<Record<string, number>>> = { SB: 0.5, BB: 1 };
+const byHand = <S extends { hands: readonly FrequencyRow[] }>(spot: S): Map<string, S["hands"][number]> => new Map(spot.hands.map(row => [row.hand, row]));
+const range = <S extends { hands: readonly FrequencyRow[] }>(spot: S, weight: (row: S["hands"][number]) => number): WeightedRange => spot.hands.map((row): [string, number] => [row.hand, weight(row)]).filter(([, w]) => w > 0);
 
 // Squeezer's auto-profit break-even: its additional investment over that plus
 // the whole pot before the squeeze (open + cold call + both blinds).
-export function squeezeFoldThreshold(spot) {
+export function squeezeFoldThreshold(spot: { squeeze_size_bb: number; squeezer: string; open_size_bb: number }) {
   const risk = spot.squeeze_size_bb - (blind[spot.squeezer] ?? 0);
   return risk / (risk + 2 * spot.open_size_bb + 1.5);
 }
 
 // SB limp-reraise break-even. SB's limp-reraise bluff risks everything beyond its 1BB limp (10.5 − 1 = 9.5)
 // to win the pot before the reraise (limp 1 + iso 3.5 = 4.5): 9.5 ÷ 14 = 67.9%.
-export function coldFourBetFoldThreshold(spot) {
+export function coldFourBetFoldThreshold(spot: { four_bet_size_bb: number; four_bettor: string; open_size_bb: number; three_bet_size_bb: number; opener: string; three_bettor: string }) {
   const risk = spot.four_bet_size_bb - (blind[spot.four_bettor] ?? 0);
   const pot = spot.open_size_bb + spot.three_bet_size_bb + 1.5 - (blind[spot.opener] ?? 0) - (blind[spot.three_bettor] ?? 0);
   return risk / (risk + pot);
 }
 
-export function limpReraiseFoldThreshold(spot) {
+export function limpReraiseFoldThreshold(spot: { limp_reraise_size_bb: number; open_size_bb: number; iso_size_bb: number }) {
   const risk = spot.limp_reraise_size_bb - spot.open_size_bb;
   return risk / (risk + spot.open_size_bb + spot.iso_size_bb);
 }
@@ -34,24 +42,24 @@ export function limpReraiseFoldThreshold(spot) {
 // before the raise, like limpReraiseFoldThreshold:
 // BB's 4bet risks 26 − 3.5 = 22.5 to win 3.5 + 10.5 = 14 → 61.6%;
 // SB's all-in risks 100 − 10.5 = 89.5 to win 10.5 + 26 = 36.5 → 71.0%.
-export function limpFourBetFoldThreshold(spot) {
+export function limpFourBetFoldThreshold(spot: { four_bet_size_bb: number; iso_size_bb: number; limp_reraise_size_bb: number }) {
   const risk = spot.four_bet_size_bb - spot.iso_size_bb;
   return risk / (risk + spot.iso_size_bb + spot.limp_reraise_size_bb);
 }
-export function limpFiveBetFoldThreshold(spot) {
+export function limpFiveBetFoldThreshold(spot: { all_in_size_bb: number; limp_reraise_size_bb: number; four_bet_size_bb: number }) {
   const risk = spot.all_in_size_bb - spot.limp_reraise_size_bb;
   return risk / (risk + spot.limp_reraise_size_bb + spot.four_bet_size_bb);
 }
 
 // Non-blind seats responding to an open (HJ / CO / BTN) have both blinds and
 // possibly more seats behind them: the cold-call EQR discounts apply to their calls.
-export const isColdCaller = hero => Object.hasOwn(COLD_CALL_SQUEEZE_EQR, seatsBehind(hero));
+export const isColdCaller = (hero: string) => Object.hasOwn(COLD_CALL_SQUEEZE_EQR, seatsBehind(hero));
 
-export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets, limpDeep, multiway2, coldFourBets }) {
+export function callContexts({ opening, responses, threeBets, fourBets, multiway, limp, squeezes, coldThreeBets, limpDeep, multiway2, coldFourBets }: CallDatasets): CallContext[] {
   const opens = new Map(opening.spots.map(s => [s.hero, s]));
-  const response = (opener, hero) => responses.spots.find(s => s.opener === opener && s.hero === hero);
-  const contexts = [];
-  function add(type, spot, opponents, cost, pot, ranges, reach = () => 1, toSize, { bbBehind = false, callerBehind = false, openerBehind = false, coldCallBehind = false, threeBettorBehind = false } = {}) {
+  const response = (opener: string, hero: string) => responses!.spots.find(s => s.opener === opener && s.hero === hero);
+  const contexts: CallContext[] = [];
+  function add(type: string, spot: CallSpot & { effective_stack_bb: number }, opponents: string[], cost: number, pot: number, ranges: WeightedRange[], reach: (hand: string) => number = () => 1, toSize: number, { bbBehind = false, callerBehind = false, openerBehind = false, coldCallBehind = false, threeBettorBehind = false } = {}) {
     const hero = spot.hero;
     const allIn = toSize >= spot.effective_stack_bb;
     // bb_behind / caller_behind / opener_behind / cold_call_behind are recorded only when true, so older inputs keep their fingerprint.
@@ -65,42 +73,42 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
     const dead = 1.5 - (blind[spot.hero] ?? 0) - (blind[spot.opener] ?? 0);
     // HJ / CO / BTN flat with every later seat (including both blinds) still to act.
     add("response", spot, [spot.opener], size - (blind[spot.hero] ?? 0), 2 * size + dead,
-      [range(opens.get(spot.opener), row => row.open / 100)], undefined, size,
+      [range(opens.get(spot.opener)!, row => row.open / 100)], undefined, size,
       { coldCallBehind: isColdCaller(spot.hero) });
   }
   for (const spot of threeBets?.spots ?? []) {
-    const open = byHand(opens.get(spot.opener));
+    const open = byHand(opens.get(spot.opener)!);
     const dead = 1.5 - (blind[spot.hero] ?? 0) - (blind[spot.three_bettor] ?? 0);
     add("three_bet", spot, [spot.three_bettor], spot.three_bet_size_bb - (spot.open_size_bb ?? openSizeFor(spot.opener)),
-      2 * spot.three_bet_size_bb + dead, [range(response(spot.opener, spot.three_bettor), row => row.three_bet / 100)],
-      hand => open.get(hand).open / 100, spot.three_bet_size_bb);
+      2 * spot.three_bet_size_bb + dead, [range(response(spot.opener, spot.three_bettor)!, row => row.three_bet / 100)],
+      hand => open.get(hand)!.open / 100, spot.three_bet_size_bb);
   }
   for (const spot of fourBets?.spots ?? []) {
-    const open = byHand(opens.get(spot.opener));
-    const source = byHand(response(spot.opener, spot.hero));
-    const previous = threeBets.spots.find(s => s.opener === spot.opener && s.three_bettor === spot.hero);
+    const open = byHand(opens.get(spot.opener)!);
+    const source = byHand(response(spot.opener, spot.hero)!);
+    const previous = threeBets!.spots.find(s => s.opener === spot.opener && s.three_bettor === spot.hero);
     const dead = 1.5 - (blind[spot.hero] ?? 0) - (blind[spot.opener] ?? 0);
     add("four_bet", spot, [spot.opener], spot.four_bet_size_bb - spot.three_bet_size_bb,
-      2 * spot.four_bet_size_bb + dead, [range(previous, row => open.get(row.hand).open / 100 * row.four_bet / 100)],
-      hand => source.get(hand).three_bet / 100, spot.four_bet_size_bb);
+      2 * spot.four_bet_size_bb + dead, [range(previous!, row => open.get(row.hand)!.open / 100 * row.four_bet / 100)],
+      hand => source.get(hand)!.three_bet / 100, spot.four_bet_size_bb);
   }
   for (const spot of multiway?.spots ?? []) {
     // BB (1BB) or SB (0.5BB) calls the 2.5BB open after one cold call: 1.5BB into 8BB,
     // or 2BB into 8.5BB with BB's blind dead money and BB still to act behind SB.
     const size = spot.open_size_bb;
-    if (spot.callers.some(p => !response(spot.opener, p).hands.some(row => row.call > 0))) continue;
+    if (spot.callers.some(p => !response(spot.opener, p)!.hands.some(row => row.call > 0))) continue;
     const participants = [spot.hero, spot.opener, ...spot.callers];
     const dead = 1.5 - participants.reduce((n, p) => n + (blind[p] ?? 0), 0);
     add("multiway", spot, [spot.opener, ...spot.callers], size - (blind[spot.hero] ?? 0),
       participants.length * size + dead,
-      [range(opens.get(spot.opener), row => row.open / 100), ...spot.callers.map(p => range(response(spot.opener, p), row => row.call / 100))],
+      [range(opens.get(spot.opener)!, row => row.open / 100), ...spot.callers.map(p => range(response(spot.opener, p)!, row => row.call / 100))],
       undefined, size, { bbBehind: spot.hero === "SB" && !participants.includes("BB"), coldCallBehind: isColdCaller(spot.hero) });
   }
   for (const spot of multiway2?.spots ?? []) {
     const [c1, c2] = spot.callers;
-    const second = multiway.spots.find(s => s.id === `${c2}_vs_${spot.opener}_${c1}call`);
+    const second = multiway!.spots.find(s => s.id === `${c2}_vs_${spot.opener}_${c1}call`);
     if (!second) throw new Error(`Missing second-caller source: ${spot.id}`);
-    const ranges = [range(opens.get(spot.opener), r => r.open / 100), range(response(spot.opener, c1), r => r.call / 100), range(second, r => r.call / 100)];
+    const ranges = [range(opens.get(spot.opener)!, r => r.open / 100), range(response(spot.opener, c1)!, r => r.call / 100), range(second, r => r.call / 100)];
     if (ranges.some(r => !r.length)) continue;
     const participants = [spot.opener, c1, c2, spot.hero], size = spot.open_size_bb;
     const dead = 1.5 - participants.reduce((n, p) => n + (blind[p] ?? 0), 0);
@@ -108,31 +116,31 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
       undefined, size, { bbBehind: spot.hero === "SB", coldCallBehind: isColdCaller(spot.hero) });
   }
   for (const spot of limp?.spots.filter(s => s.id === "SB_vs_BB_iso") ?? []) {
-    const open = byHand(opens.get("SB"));
-    const iso = limp.spots.find(s => s.id === spot.source_limp_response_id);
+    const open = byHand(opens.get("SB")!);
+    const iso = limp!.spots.find(s => s.id === spot.source_limp_response_id) as import("./preflop-types.ts").LimpCheckSpot;
     add("iso_response", spot, [spot.opponent], spot.iso_size_bb - spot.open_size_bb, 2 * spot.iso_size_bb,
-      [range(iso, row => row.raise / 100)], hand => open.get(hand).limp / 100, spot.iso_size_bb);
+      [range(iso, row => row.raise / 100)], hand => open.get(hand)!.limp! / 100, spot.iso_size_bb);
   }
   // BB facing SB's limp-reraise after its own iso: 7BB more into a 21BB pot, IP.
   // Opponent range: SB's limp × limp-reraise; reach: BB's iso-raise frequency.
   for (const spot of limp?.spots.filter(s => s.id === "BB_vs_SB_limp_reraise") ?? []) {
-    const open = byHand(opens.get("SB"));
-    const iso = byHand(limp.spots.find(s => s.id === spot.source_limp_response_id));
-    const sbIso = limp.spots.find(s => s.id === spot.source_iso_response_id);
+    const open = byHand(opens.get("SB")!);
+    const iso = byHand(limp!.spots.find(s => s.id === spot.source_limp_response_id) as import("./preflop-types.ts").LimpCheckSpot);
+    const sbIso = limp!.spots.find(s => s.id === spot.source_iso_response_id) as import("./preflop-types.ts").LimpIsoSpot;
     add("limp_reraise", spot, [spot.opponent], spot.limp_reraise_size_bb - spot.iso_size_bb, 2 * spot.limp_reraise_size_bb,
-      [range(sbIso, row => open.get(row.hand).limp / 100 * row.raise / 100)], hand => iso.get(hand).raise / 100, spot.limp_reraise_size_bb);
+      [range(sbIso, row => open.get(row.hand)!.limp! / 100 * row.raise / 100)], hand => iso.get(hand)!.raise / 100, spot.limp_reraise_size_bb);
   }
   // SB facing BB's 26BB 4bet after its limp-reraise: 15.5BB more into a 52BB pot, OOP.
   // Opponent range: BB's iso × 4bet; reach: SB's limp × limp-reraise.
   for (const spot of limpDeep?.spots.filter(s => s.id === "SB_vs_BB_limp_four_bet") ?? []) {
     if (!limp) throw new Error("limp-deep-responses requires limp-responses");
-    const open = byHand(opens.get("SB"));
-    const bbIso = byHand(limp.spots.find(s => s.id === spot.source_limp_response_id));
-    const sbIso = byHand(limp.spots.find(s => s.id === spot.source_iso_response_id));
-    const bbReraise = limp.spots.find(s => s.id === spot.source_limp_reraise_response_id);
+    const open = byHand(opens.get("SB")!);
+    const bbIso = byHand(limp!.spots.find(s => s.id === spot.source_limp_response_id) as import("./preflop-types.ts").LimpCheckSpot);
+    const sbIso = byHand(limp!.spots.find(s => s.id === spot.source_iso_response_id) as import("./preflop-types.ts").LimpIsoSpot);
+    const bbReraise = limp!.spots.find(s => s.id === spot.source_limp_reraise_response_id) as import("./preflop-types.ts").LimpReraiseSpot;
     add("limp_four_bet", spot, [spot.opponent], spot.four_bet_size_bb - spot.limp_reraise_size_bb, 2 * spot.four_bet_size_bb,
-      [range(bbReraise, row => bbIso.get(row.hand).raise / 100 * row.four_bet / 100)],
-      hand => open.get(hand).limp / 100 * sbIso.get(hand).raise / 100, spot.four_bet_size_bb);
+      [range(bbReraise, row => bbIso.get(row.hand)!.raise / 100 * row.four_bet / 100)],
+      hand => open.get(hand)!.limp! / 100 * sbIso.get(hand)!.raise / 100, spot.four_bet_size_bb);
   }
   // Facing a squeeze (S = BB or SB; with SB squeezing, BB has folded). Opponent
   // range: S's saved squeeze frequencies. The other blind is dead money.
@@ -140,27 +148,27 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
   //   prior "fold": caller after the opener folded (opener's 2.5BB dead)
   //   prior "call": caller after the opener called — three-way vs S and the opener's calls
   for (const spot of squeezes?.spots ?? []) {
-    const source = multiway.spots.find(s => s.id === spot.source_squeeze_id);
-    if (!source.hands.some(row => row.squeeze > 0)) continue;
-    const squeezeRange = range(source, row => row.squeeze / 100);
+    const source = multiway!.spots.find(s => s.id === spot.source_squeeze_id);
+    if (!source!.hands.some(row => row.squeeze > 0)) continue;
+    const squeezeRange = range(source!, row => row.squeeze / 100);
     const size = spot.squeeze_size_bb, open = spot.open_size_bb;
     const deadBlind = 1.5 - [spot.squeezer, spot.opener, spot.caller].reduce((n, p) => n + (blind[p] ?? 0), 0);
     const cost = size - open;
     if (spot.prior_action === null) {
-      const openRows = byHand(opens.get(spot.opener));
+      const openRows = byHand(opens.get(spot.opener)!);
       add("squeeze", spot, [spot.squeezer], cost, 2 * size + open + deadBlind, [squeezeRange],
-        hand => openRows.get(hand).open / 100, size, { callerBehind: true });
+        hand => openRows.get(hand)!.open / 100, size, { callerBehind: true });
       continue;
     }
-    const callRows = byHand(response(spot.opener, spot.caller));
-    const reach = hand => callRows.get(hand).call / 100;
+    const callRows = byHand(response(spot.opener, spot.caller)!);
+    const reach = (hand: string) => callRows.get(hand)!.call / 100;
     if (spot.prior_action === "fold") {
       add("squeeze", spot, [spot.squeezer], cost, 2 * size + open + deadBlind, [squeezeRange], reach, size);
     } else {
-      const first = squeezes.spots.find(s => s.source_squeeze_id === spot.source_squeeze_id && s.prior_action === null);
-      const openRows = byHand(opens.get(spot.opener));
+      const first = squeezes!.spots.find(s => s.source_squeeze_id === spot.source_squeeze_id && s.prior_action === null);
+      const openRows = byHand(opens.get(spot.opener)!);
       add("squeeze", spot, [spot.squeezer, spot.opener], cost, 3 * size + deadBlind,
-        [squeezeRange, range(first, row => openRows.get(row.hand).open / 100 * row.call / 100)], reach, size);
+        [squeezeRange, range(first!, row => openRows.get(row.hand)!.open / 100 * row.call / 100)], reach, size);
     }
   }
   // Cold call of a 3bet: O opened, X 3bet, Y (hero, not yet acted) calls X's
@@ -169,48 +177,48 @@ export function callContexts({ opening, responses, threeBets, fourBets, multiway
   // saved 3bet frequencies versus O. O (uncapped) and later seats are still to
   // act: OPENER_BEHIND_EQR. Every hand reaches (Y has not acted yet).
   for (const spot of coldThreeBets?.spots ?? []) {
-    const source = response(spot.opener, spot.three_bettor);
+    const source = response(spot.opener, spot.three_bettor)!;
     const size = spot.three_bet_size_bb;
     const dead = 1.5 - [spot.hero, spot.three_bettor, spot.opener].reduce((n, p) => n + (blind[p] ?? 0), 0);
     add("cold_three_bet", spot, [spot.three_bettor], size - (blind[spot.hero] ?? 0), 2 * size + spot.open_size_bb + dead,
-      [range(source, row => row.three_bet / 100)], undefined, size, { openerBehind: true });
+      [range(source!, row => row.three_bet / 100)], undefined, size, { openerBehind: true });
   }
   for (const spot of coldFourBets?.spots ?? []) {
-    const source = coldThreeBets.spots.find(s => s.id === spot.source_cold_three_bet_id);
+    const source = coldThreeBets!.spots.find(s => s.id === spot.source_cold_three_bet_id);
     if (!source) throw new Error(`Missing cold-4bet source: ${spot.id}`);
     const opener = spot.hero === spot.opener;
-    const predecessor = byHand(opener ? opens.get(spot.opener) : response(spot.opener, spot.three_bettor));
+    const predecessor = byHand(opener ? opens.get(spot.opener)! : response(spot.opener, spot.three_bettor)!);
     const size = spot.four_bet_size_bb;
     const dead = 1.5 - [spot.opener, spot.three_bettor, spot.four_bettor].reduce((n, p) => n + (blind[p] ?? 0), 0);
     add("cold_four_bet", spot, [spot.four_bettor], size - (opener ? spot.open_size_bb : spot.three_bet_size_bb),
       2 * size + (opener ? spot.three_bet_size_bb : spot.open_size_bb) + dead,
-      [range(source, row => row.four_bet / 100)], hand => (opener ? predecessor.get(hand).open : predecessor.get(hand).three_bet) / 100,
+      [range(source!, row => row.four_bet / 100)], hand => (opener ? (predecessor.get(hand)! as FrequencyRow).open! : (predecessor.get(hand)! as FrequencyRow).three_bet!) / 100,
       size, { threeBettorBehind: opener });
   }
   return contexts;
 }
 
-export function validCallEquities(table, context) {
+export function validCallEquities(table: CallEquityTable | null | undefined, context: CallContext) {
   const entry = table?.spots?.[context.spot.id];
   return table?.version === CALL_EQUITY_VERSION && table.samples === CALL_EQUITY_SAMPLES && table.seed === CALL_EQUITY_SEED &&
     JSON.stringify(entry?.input) === JSON.stringify(context.input) &&
-    context.spot.hands.every(({ hand }) => Number.isFinite(entry.equities?.[hand]) && entry.equities[hand] >= 0 && entry.equities[hand] <= 1);
+    context.spot.hands.every(({ hand }) => Number.isFinite(entry!.equities?.[hand]) && entry!.equities[hand] >= 0 && entry!.equities[hand] <= 1);
 }
-export function callFacts(context, hand, equity) {
+export function callFacts(context: Pick<CallContext, "input">, hand: string, equity: number) {
   if (!Number.isFinite(equity) || equity < 0 || equity > 1) throw new Error(`Invalid equity: ${hand}`);
   const { hero, opponents, cost_to_call: cost, total_pot_after_call: pot, all_in: allIn, bb_behind: bbBehind = false,
     caller_behind: callerBehind = false, opener_behind: openerBehind = false, cold_call_behind: coldCallBehind = false, three_bettor_behind: threeBettorBehind = false } = context.input;
   const eqr = equityRealization(hand, hero, opponents, { allIn, bbBehind, callerBehind, openerBehind, coldCallBehind, threeBettorBehind });
   return { eqr, realized_equity_pct: equity * eqr * 100, call_ev_bb: equity * eqr * raked(pot) - cost };
 }
-export function allowedCall(call, ev) {
+export function allowedCall(call: number, ev: number) {
   if (!Number.isFinite(ev)) throw new Error("Call EV must be finite");
   return ev < -0.05 ? 0 : ev < 0.05 ? Math.min(call, 50) : call;
 }
 
 // Generation-time target: besides removing -EV calls, fill clearly +EV hands.
 // `available` is the non-raise share (call + fold); raise frequencies never change.
-export function targetCall(call, ev, available) {
+export function targetCall(call: number, ev: number, available: number) {
   if (!Number.isFinite(available) || available < call) throw new Error("Invalid available call share");
   if (ev >= 0.10) return available;
   if (ev >= 0.05) return Math.max(call, Math.round(available / 2 / 5) * 5);
@@ -228,7 +236,7 @@ export const THREE_BET_FILL_EV = 0.5;
 // pot, so only +1.50bb or better is filled there and the authored mix stands
 // below it (e.g. 22-55 mostly fold, 66-99 mixed).
 export const OOP_THREE_BET_FILL_EV = 1.5;
-export const isOopThreeBetResponse = context => context.type === "three_bet" && context.spot.hero_position_vs_three_bettor === "OOP";
+export const isOopThreeBetResponse = (context: Pick<CallContext, "type" | "spot">) => context.type === "three_bet" && context.spot.hero_position_vs_three_bettor === "OOP";
 // 2026-10-02: the opener's 3bet responses ramp the fill instead of jumping to
 // 100% at the threshold: the margin exists because the true EV is uncertain, so
 // a hand just past it (e.g. 66 at +1.52bb OOP) moves only a little toward the
@@ -237,7 +245,7 @@ export const isOopThreeBetResponse = context => context.type === "three_bet" && 
 // Squeeze / limp-reraise / cold-3bet pots keep the plain step.
 export const THREE_BET_FILL_RAMP = 0.5;
 export const OOP_THREE_BET_FILL_RAMP = 1.5;
-export function threeBetTargetCall(call, ev, available, threshold = THREE_BET_FILL_EV, ramp = 0) {
+export function threeBetTargetCall(call: number, ev: number, available: number, threshold = THREE_BET_FILL_EV, ramp = 0) {
   if (!Number.isFinite(available) || available < call) throw new Error("Invalid available call share");
   if (ev < threshold) return allowedCall(call, ev);
   const share = ramp > 0 ? Math.min(1, (ev - threshold) / ramp) : 1;
@@ -250,7 +258,7 @@ export function threeBetTargetCall(call, ev, available, threshold = THREE_BET_FI
 const RANKS = "AKQJT98765432";
 const ORDER_CHAINS = [[...RANKS].map(r => r + r), ...[...RANKS].slice(0, -1).flatMap((high, i) =>
   ["s", "o"].map(suit => [...RANKS.slice(i + 1)].map(kicker => high + kicker + suit)))];
-function orderEdges(reachable) {
+function orderEdges(reachable: (hand: string) => boolean) {
   const edges = [];
   for (const chain of ORDER_CHAINS) {
     const live = chain.filter(reachable);
@@ -270,8 +278,8 @@ function orderEdges(reachable) {
 // `ordered` also caps each weaker hand at its stronger neighbour + 10pt, the
 // most a strategy can continue without breaking the blocking strength-order checks
 // (used for squeeze responses, where equal-EV pairs differ only by sampling noise).
-export function callDefenseCapacity(context, table, { ordered = false } = {}) {
-  const maxContinue = new Map(), weights = new Map();
+export function callDefenseCapacity(context: CallContext, table: CallEquityTable, { ordered = false } = {}) {
+  const maxContinue = new Map<string, number>(), weights = new Map<string, number>();
   for (const row of context.spot.hands) {
     const combos = row.hand.length === 2 ? 6 : row.hand.endsWith("s") ? 4 : 12;
     const ev = callFacts(context, row.hand, table.spots[context.spot.id].equities[row.hand]).call_ev_bb;
@@ -280,20 +288,20 @@ export function callDefenseCapacity(context, table, { ordered = false } = {}) {
     maxContinue.set(row.hand, aggressive + allowedCall(100 - aggressive, ev));
   }
   if (ordered) {
-    const edges = orderEdges(hand => weights.get(hand) > 0);
+    const edges = orderEdges(hand => weights.get(hand)! > 0);
     for (let changed = true; changed;) {
       changed = false;
       for (const [strong, weak] of edges) {
-        const row = context.spot.hands.find(r => r.hand === weak);
-        const cap = Math.max(100 - row.fold - row.call, maxContinue.get(strong) + 10);
-        if (maxContinue.get(weak) > cap) { maxContinue.set(weak, cap); changed = true; }
+        const row = context.spot.hands.find(r => r.hand === weak)!;
+        const cap = Math.max(100 - row.fold - row.call, maxContinue.get(strong)! + 10);
+        if (maxContinue.get(weak)! > cap) { maxContinue.set(weak, cap); changed = true; }
       }
     }
   }
   let total = 0, folds = 0;
   for (const [hand, weight] of weights) {
     total += weight;
-    folds += weight * (100 - maxContinue.get(hand)) / 100;
+    folds += weight * (100 - maxContinue.get(hand)!) / 100;
   }
   return total ? { minimumFoldRate: folds / total, maximumContinuationPct: (1 - folds / total) * 100 } : null;
 }

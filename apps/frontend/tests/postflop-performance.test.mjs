@@ -1,20 +1,20 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { makeRange, equityVersus, equitiesVersus, releaseRangeTables } from "../scripts/postflop-ai/range-equity.mjs";
+import { makeRange, equityVersus, equitiesVersus, releaseRangeTables } from "../scripts/postflop-ai/range-equity.ts";
 import { makeRange as referenceRange, equityVersus as referenceEquity } from "./reference/range-equity.mjs";
-import { rankTable, comboId, defenceFor, replayOrNull } from "../scripts/postflop-ai/defence.mjs";
-import { equityKernel } from "../scripts/postflop-ai/equity-kernel.mjs";
-import { handTier, parseCards, parseFlopBoard } from "../scripts/postflop-ai/model.mjs";
+import { rankTable, comboId, defenceFor, replayOrNull } from "../scripts/postflop-ai/defence.ts";
+import { equityKernel } from "../scripts/postflop-ai/equity-kernel.ts";
+import { handTier, parseCards, parseFlopBoard } from "../scripts/postflop-ai/model.ts";
 import { handTier as referenceTier } from "./reference/hand-tier.mjs";
-import { seededRandom } from "../scripts/lib/equity.mjs";
+import { seededRandom } from "../scripts/lib/equity.ts";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
-import { referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
-import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
+import { referencePolicyFor } from "../scripts/postflop-ai/policy.ts";
+import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
 import { simulate } from "../scripts/postflop-ai/simulation.mjs";
 import { simulateParallel } from "../scripts/postflop-ai/simulation-parallel.mjs";
 import { boardWorkOrder, computeBoardBatch } from "../scripts/postflop-ai/board-batch.mjs";
 import { handEvForBoard } from "../scripts/postflop-ai/flop-hand-ev-core.mjs";
-import { packEquities, packWeights, unpackWeights } from "../scripts/postflop-ai/cached-values.mjs";
+import { packEquities, packWeights, unpackWeights } from "../scripts/postflop-ai/cached-values.ts";
 
 test("packed caches preserve exact values, missing/null states, updates and sparse reach weights", () => {
   const map = new Map(Array.from({ length: 500 }, (_, i) => [i, i / 777]));

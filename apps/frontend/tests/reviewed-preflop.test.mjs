@@ -18,9 +18,10 @@ test("review gate rejects changed/missing/extra data and changed source identiti
 });
 test("source graph binds sampler/RNG, dedicated evaluator, configs and scoped schema", () => {
   const paths = reviewedSourcePaths();
-  for (const path of ["apps/frontend/scripts/lib/equity.mjs", "apps/frontend/scripts/lib/continuation-evaluator.mjs",
+  for (const path of ["apps/frontend/scripts/lib/equity.ts", "apps/frontend/scripts/lib/continuation-evaluator.ts",
     "apps/frontend/src/estimated/continuation-defense.ts", "configs/cash-6max-100bb.json",
-    "configs/multiway-preflop-stage2.json", "apps/backend/migrations/0003_preflop.sql"])
+    "configs/multiway-preflop-stage2.json", "apps/backend/migrations/0003_preflop.sql",
+    "apps/frontend/scripts/lib/typescript-policy-source.mjs", "configs/typescript-policy-source.review.json"])
     assert.ok(paths.includes(path), path);
 });
 test("committed review manifest matches every artifact and source byte", () => {

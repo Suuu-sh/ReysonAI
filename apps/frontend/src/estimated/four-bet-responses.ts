@@ -1,3 +1,5 @@
+import type { FourBetDataset, FourBetSpot, OpeningDataset, ResponseDataset, ResponseSpot, ThreeBetDataset } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { positions, validateDataset } from "./ranges.ts";
 import { validateOpeningDataset } from "./opening-ranges.ts";
@@ -5,12 +7,12 @@ import { validateThreeBetDataset } from "./three-bet-responses.ts";
 import { fourBetToSize, openSizeBb, openSizeFor } from "./sizing.ts";
 import { hasConfiguredRake } from "./rake.ts";
 
-export function validateFourBetDataset(data, responses, previous, openings) {
+export function validateFourBetDataset(data: FourBetDataset, responses: ResponseDataset, previous: ThreeBetDataset, openings: OpeningDataset) {
   validateDataset(responses);
   validateOpeningDataset(openings);
   validateThreeBetDataset(previous, responses, openings);
   const expected = positions.flatMap((opener, i) => positions.slice(i + 1).map(hero => `${hero}_vs_${opener}_four_bet`));
-  const fail = detail => { throw new Error(`4bet後の応答データが不正です: ${detail}`); };
+  const fail: (detail: string) => never = detail => { throw new Error(`4bet後の応答データが不正です: ${detail}`); };
   if (data?.metadata?.strategy_type !== "ai_estimate_not_gto" ||
       data.metadata.effective_stack_bb !== 100 || data.metadata.open_size_bb !== openSizeBb ||
       data.metadata.ante_bb !== 0 || data.metadata.game !== "6max Cash / No-Limit Texas Holdem" ||
@@ -51,13 +53,13 @@ export function validateFourBetDataset(data, responses, previous, openings) {
   return data;
 }
 
-export function findFourBetSpot(data, opener, hero) {
+export function findFourBetSpot(data: FourBetDataset, opener: string, hero: string) {
   const spot = data.spots.find(s => s.opener === opener && s.hero === hero);
   if (!spot) throw new Error("この組み合わせの4bet後の応答はありません。");
   return spot;
 }
 
-export function fourBetMatrixModel(spot, source) {
+export function fourBetMatrixModel(spot: FourBetSpot, source: ResponseSpot): MatrixModel {
   return {
     actions: ["all_in", "call", "fold"],
     actionLabels: { all_in: "オールイン 100BB" },
@@ -75,11 +77,11 @@ export function fourBetMatrixModel(spot, source) {
   };
 }
 
-export function loadFourBetDataset(raw, responses, previous, openings) {
+export function loadFourBetDataset(raw: string | undefined, responses: ResponseDataset, previous: ThreeBetDataset, openings: OpeningDataset) {
   if (raw === undefined) return { error: "4bet後の応答データなし。保存済みJSONがありません。" };
   try {
     return { data: validateFourBetDataset(JSON.parse(raw), responses, previous, openings) };
   } catch (error) {
-    return { error: `4bet後の応答を表示できません。${error.message}` };
+    return { error: `4bet後の応答を表示できません。${(error as Error).message}` };
   }
 }

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { evaluateContinuation } from "../scripts/lib/continuation-evaluator.mjs";
-import { seededRandom } from "../scripts/lib/equity.mjs";
+import { evaluateContinuation } from "../scripts/lib/continuation-evaluator.ts";
+import { seededRandom } from "../scripts/lib/equity.ts";
 
 const ranks = "23456789TJQKA", suits = "shdc";
 const cards = text => text.split(/\s+/).map(card => ranks.indexOf(card[0]) * 4 + suits.indexOf(card[1]));

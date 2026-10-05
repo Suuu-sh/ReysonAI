@@ -6,9 +6,9 @@ import { fileURLToPath } from "node:url";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
 import { checkFlopBalance, checkLaterBalance } from "./balance.mjs";
-import { validateLaterPolicy } from "./later-policy.mjs";
+import { validateLaterPolicy } from "./later-policy.ts";
 import { LATER_NODES, STREETS } from "./later-tree.ts";
-import { NODES, treeNodes, validatePolicy } from "./policy.mjs";
+import { NODES, treeNodes, validatePolicy } from "./policy.ts";
 import { simulate } from "./simulation.mjs";
 import { worstProfileScore } from "./regenerate-later.mjs";
 

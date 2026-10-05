@@ -3,8 +3,8 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import worker from "../src/index.ts";
-import { referencePolicyFor } from "../../frontend/scripts/postflop-ai/policy.mjs";
-import { referenceLaterPolicy } from "../../frontend/scripts/postflop-ai/later-policy.mjs";
+import { referencePolicyFor } from "../../frontend/scripts/postflop-ai/policy.ts";
+import { referenceLaterPolicy } from "../../frontend/scripts/postflop-ai/later-policy.ts";
 
 const URL_BASE = "https://edge.test/v1/postflop/runtime-config";
 const HASH = "26beae01badcf7010c43376b0b394e06868361813f88817cee7c5bfa7611ef0b";

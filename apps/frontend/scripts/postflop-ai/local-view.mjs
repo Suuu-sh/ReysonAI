@@ -1,16 +1,16 @@
 // Read-only local preview of the audited pilot. Never generates or publishes a policy.
 import { loadInputs, readArtifact, requireArtifact } from "./inputs.mjs";
 import { loadCandidate, loadLaterCandidate, sha } from "./generate.mjs";
-import { scaleByPath, validatePolicy } from "./policy.mjs";
+import { scaleByPath, validatePolicy } from "./policy.ts";
 import { SIMULATION_VERSION } from "./simulation.mjs";
-import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "./model.mjs";
-import { flopBetTable, flopUiFacts } from "./flop-ui-facts.mjs";
-import { explainLaterCombo, explainLaterCombos } from "./explain-later.mjs";
-import { DEFAULT_SPOT_ID } from "./spots.mjs";
+import { boardTexture, parseCards, parseFlopBoard, runoutTexture } from "./model.ts";
+import { flopBetTable, flopUiFacts } from "./flop-ui-facts.ts";
+import { explainLaterCombo, explainLaterCombos } from "./explain-later.ts";
+import { DEFAULT_SPOT_ID } from "./spots.ts";
 import { FLOP_BETS, flopState } from "./tree.ts";
-import { validateLaterPolicy } from "./later-policy.mjs";
+import { validateLaterPolicy } from "./later-policy.ts";
 import { laterDecision, laterStart, replayLater } from "../../src/estimated/postflop-trial.ts";
-import { flopNodes, laterMixRows } from "./views.mjs";
+import { flopNodes, laterMixRows } from "./views.ts";
 
 export function buildLocalBoard(boardId, inputs, candidate) {
   const board = parseFlopBoard(boardId);

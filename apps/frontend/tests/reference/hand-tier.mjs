@@ -1,5 +1,5 @@
 // Frozen, allocation-heavy W1 reference (test-only).
-import { evaluate } from "../../scripts/lib/equity.mjs";
+import { evaluate } from "../../scripts/lib/equity.ts";
 function hasDraw(hole, board) {
   if (board.length === 5) return false;
   const all = [...hole, ...board];

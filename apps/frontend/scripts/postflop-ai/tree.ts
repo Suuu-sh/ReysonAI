@@ -4,7 +4,7 @@ export type PlayerRole = "ip" | "oop";
 export type FlopTree = "oop_checks" | "oop_leads";
 export type BetAction = `bet${number}`;
 export type BettingAction = "check" | "fold" | "call" | "raise" | "allin" | BetAction;
-export type BettingStep = { node: string; role: PlayerRole; action: BettingAction };
+export type BettingStep = { node: string; role: PlayerRole; action: BettingAction; canRaise?: boolean };
 export type BettingOutcome =
   | { type: "check"; winner?: never; raises?: never }
   | { type: "fold" | "raise-fold"; winner: PlayerRole; raises: number }

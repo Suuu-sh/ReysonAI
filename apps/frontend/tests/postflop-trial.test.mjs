@@ -9,16 +9,16 @@ import { existsSync } from "node:fs";
 import { color, label } from "../src/data.ts";
 import { artifactPaths, loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { loadCandidate, sha } from "../scripts/postflop-ai/generate.mjs";
-import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../scripts/postflop-ai/spots.mjs";
+import { DEFAULT_SPOT_ID, POSTFLOP_SPOTS, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../scripts/postflop-ai/spots.ts";
 import { playHand, simulate } from "../scripts/postflop-ai/simulation.mjs";
-import { createTable, playFlop, playLaterStreets, playLaterStreetsWithPolicy, settle } from "../scripts/postflop-ai/engine.mjs";
+import { createTable, playFlop, playLaterStreets, playLaterStreetsWithPolicy, settle } from "../scripts/postflop-ai/engine.ts";
 import { FLOP_BETS, flopState, isFlopBet, treeHistories, treeNodes } from "../scripts/postflop-ai/tree.ts";
-import { parseCards } from "../scripts/postflop-ai/model.mjs";
+import { parseCards } from "../scripts/postflop-ai/model.ts";
 import preflopRanges from "../src/estimated/preflop-ranges.json" with { type: "json" };
 import threeBetResponses from "../src/estimated/three-bet-responses.json" with { type: "json" };
 import { buildLaterView, buildLocalBoard } from "../scripts/postflop-ai/local-view.mjs";
-import { referencePolicy, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.mjs";
-import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
+import { referencePolicy, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.ts";
+import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
 import { buildFlopActionBlocks, buildLaterActionBlocks, completedFlopContext, deck, flopDecision, laterStart, replayLater, recognizedFlop, representativeFlops } from "../src/estimated/postflop-trial.ts";
 import { nextPendingStreetCardDialog } from "../src/estimated/street-card-dialog-state.ts";
 
@@ -605,8 +605,8 @@ test("every flop node, action and hand tier has a plain-language reason", async 
 test("combo explanation splits the opponent range into value, fold-out and continue groups", async () => {
   const { explainCombo, handClass } = await import("../scripts/postflop-ai/explain.mjs");
   const { loadInputs } = await import("../scripts/postflop-ai/inputs.mjs");
-  const { parseCards } = await import("../scripts/postflop-ai/model.mjs");
-  const { referencePolicy } = await import("../scripts/postflop-ai/policy.mjs");
+  const { parseCards } = await import("../scripts/postflop-ai/model.ts");
+  const { referencePolicy } = await import("../scripts/postflop-ai/policy.ts");
   assert.equal(handClass(parseCards("KcAs", 2)), "AKo");
   const inputs = loadInputs();
   const boardCards = parseCards("Js8s5d", 3);
@@ -616,7 +616,7 @@ test("combo explanation splits the opponent range into value, fold-out and conti
   const [value, foldBetter, continueBetter] = bet.actions.bet33.groups;
   const shares = value.share + continueBetter.share + bet.actions.bet33.foldShare;
   assert.ok(shares > 0.99 && shares <= 1.0001, `shares ${shares}`);
-  // Break-even is call / (final pot - capped rake) (defence.mjs).
+  // Break-even is call / (final pot - capped rake) (defence.ts).
   const breakEven = (call, potBefore, wager) => {
     const finalPot = potBefore + wager + call;
     return call / (finalPot - Math.min(finalPot * 0.05, 3));
@@ -626,7 +626,7 @@ test("combo explanation splits the opponent range into value, fold-out and conti
   assert.equal(call.defence.node, "bb_vs_33");
   assert.ok(Math.abs(call.defence.required_equity - call.actions.call.required) < 1e-3);
   assert.throws(() => explainCombo({ boardCards, node: "btn_first", cards: "JsKc", inputs, policy: referencePolicy }), /ボード/);
-  const leads = (await import("../scripts/postflop-ai/policy.mjs")).referencePolicyFor("oop_leads");
+  const leads = (await import("../scripts/postflop-ai/policy.ts")).referencePolicyFor("oop_leads");
   const sbInputs = loadInputs("SB_open_BB_call");
   const sbCall = explainCombo({ boardCards, node: "ip_vs_33", cards: "Th9d", inputs: sbInputs, policy: leads });
   assert.ok(Math.abs(sbCall.actions.call.required - breakEven(2.31, 7, 2.31)) < 0.001);

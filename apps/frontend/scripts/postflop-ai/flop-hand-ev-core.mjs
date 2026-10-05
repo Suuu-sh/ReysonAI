@@ -1,21 +1,21 @@
 // Pure, browser-safe per-hand flop EV core shared by the saved 12-board artifact generator
 // and the on-demand browser worker. These are AI-policy self-play estimates, not GTO.
-import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
-import { seatRange } from "./browser-inputs.mjs";
-import { NODES, choose, policyMix, scaleByPath, validatePolicy } from "./policy.mjs";
-import { laterPolicyMix, referenceLaterPolicy, validateLaterPolicy } from "./later-policy.mjs";
+import { evaluate, seedFor, seededRandom } from "../lib/equity.ts";
+import { seatRange } from "./browser-inputs.ts";
+import { NODES, choose, policyMix, scaleByPath, validatePolicy } from "./policy.ts";
+import { laterPolicyMix, referenceLaterPolicy, validateLaterPolicy } from "./later-policy.ts";
 import { LATER_NODES } from "./later-tree.ts";
-import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
-import { spotById } from "./spots.mjs";
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.ts";
+import { spotById } from "./spots.ts";
 import { flopState, treeHistories } from "./tree.ts";
-import { defenceFor, flopRunouts, replayOrNull } from "./defence.mjs";
+import { defenceFor, flopRunouts, replayOrNull } from "./defence.ts";
 import { exactActionEv } from "./exact-ev.mjs";
-import { parseFlopBoard } from "./model.mjs";
+import { parseFlopBoard } from "./model.ts";
 import config from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 export const FLOP_HAND_EV_FOR_HAND_DEFAULT_SAMPLES = 600;
 export const FLOP_HAND_EV_DEFAULT_SAMPLES = 2000;
-// Exact flop EV averages over the first FLOP_EV_RUNOUTS of the defence's seeded turn+river runouts (defence.mjs flopRunouts).
+// Exact flop EV averages over the first FLOP_EV_RUNOUTS of the defence's seeded turn+river runouts (defence.ts flopRunouts).
 export const FLOP_EV_RUNOUTS = 24;
 export const historiesFor = tree => treeHistories(tree);
 export const HISTORIES = Object.freeze(treeHistories("oop_checks"));

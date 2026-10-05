@@ -1,3 +1,4 @@
+import type { PostflopDatasets } from "../../scripts/postflop-ai/types.ts";
 // How an Reyson Agent picks its action. The balanced agent plays the saved frequencies exactly:
 // preflop the dataset row of its hand class (after the table rules in preflop.ts), postflop the
 // mix the AI-estimate candidate plays (policy + computed defence, as in simulation.mjs).
@@ -5,10 +6,10 @@
 // A5 hook: `ProfilePolicyRegistry` may return a profile-specific mix (opponent-adjusted range
 // tables, once they exist) for a decision. Without one the balanced mix is used. The agent never
 // edits frequencies itself.
-import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.mjs";
-import { validatePolicy, choose } from "../../scripts/postflop-ai/policy.mjs";
-import { validateLaterPolicy } from "../../scripts/postflop-ai/later-policy.mjs";
-import { defenceFor } from "../../scripts/postflop-ai/defence.mjs";
+import { buildInputs, sha } from "../../scripts/postflop-ai/browser-inputs.ts";
+import { validatePolicy, choose } from "../../scripts/postflop-ai/policy.ts";
+import { validateLaterPolicy } from "../../scripts/postflop-ai/later-policy.ts";
+import { defenceFor } from "../../scripts/postflop-ai/defence.ts";
 import type { Choice, PreflopAction } from "./preflop.ts";
 
 export type PostflopKit = { spotId: string; inputs: any; flopPolicy: any; laterPolicy: any; defence: any };
@@ -16,7 +17,7 @@ export type PostflopKit = { spotId: string; inputs: any; flopPolicy: any; laterP
 // Validates the saved flop and later candidates against the spot's inputs (same checks as
 // postflop-compute.ts) and prepares the computed defence. Returns null when anything is
 // missing or stale, so the hand is checked down instead of using another spot's policy.
-export function makePostflopKit(spotId: string, datasets: Record<string, unknown>, flopCandidate: any, laterCandidate: any): PostflopKit | null {
+export function makePostflopKit(spotId: string, datasets: PostflopDatasets, flopCandidate: any, laterCandidate: any): PostflopKit | null {
   try {
     if (!flopCandidate || !laterCandidate) return null;
     const inputs = buildInputs(spotId, datasets);

@@ -1,3 +1,6 @@
+import { Dialog } from "../components/Dialog.tsx";
+import type { ReactNode } from "react";
+import type { Profile } from "../profile.ts";
 import { AuthPanel } from "./AuthPanel.tsx";
 import { accountSnapshot } from "./session.ts";
 import { Check, CreditCard, DownloadSimple, Palette, SignOut, Sparkle, Translate, UserCircle } from "@phosphor-icons/react";
@@ -10,7 +13,7 @@ import { exportLocalData, loadAppearance, loadDisplayMode, practiceKeys, saveApp
 import { ACCOUNT_SECTION } from "./AccountMenu.tsx";
 
 
-const t = (ja, en) => localized(en, ja);
+const t = (ja: string, en: string) => localized(en, ja);
 export const ACCOUNT_TABS = [
   { value: "account", Icon: UserCircle, ja: "アカウント", en: "Account" },
   { value: "subscription", Icon: CreditCard, ja: "サブスクリプション", en: "Subscription", shortJa: "プラン", shortEn: "Plan" },
@@ -18,7 +21,7 @@ export const ACCOUNT_TABS = [
   { value: "language", Icon: Translate, ja: "言語", en: "Language" },
 ];
 
-function Choice({ options, value, onChange, label }) {
+function Choice({ options, value, onChange, label }: { options: { value: string; label: string; disabled?: boolean; preview?: ReactNode; native?: boolean; hint?: string }[]; value: string; onChange: (value: string) => void; label: string }) {
   return <div className="account-choice" role="radiogroup" aria-label={label}>
     {options.map(option => <button type="button" role="radio" key={option.value} aria-checked={value === option.value}
       disabled={option.disabled} className={value === option.value ? "on" : ""} onClick={() => onChange(option.value)}>
@@ -27,14 +30,14 @@ function Choice({ options, value, onChange, label }) {
   </div>;
 }
 
-function SettingRow({ title, description, children }) {
+function SettingRow({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return <div className="account-row">
     <div><strong>{title}</strong>{description && <small>{description}</small>}</div>
     {children}
   </div>;
 }
 
-function AccountTab({ profile, onProfileSaved }) {
+function AccountTab({ profile, onProfileSaved }: { profile: Profile | null; onProfileSaved: (profile: Profile | null) => void }) {
   const [nickname, setNickname] = useState(profile?.nickname ?? "");
   const [level, setLevel] = useState(profile?.level ?? "intermediate");
   const [saved, setSaved] = useState(false);
@@ -107,8 +110,8 @@ function SubscriptionTab() {
 function AppearanceTab() {
   const [appearance, setAppearance] = useState(loadAppearance);
   const [displayMode, setDisplayMode] = useState(loadDisplayMode);
-  const update = patch => { const next = { ...appearance, ...patch }; setAppearance(next); saveAppearance(next); };
-  const cardPreview = colors => <span className="account-card-preview" aria-hidden="true">{colors.map(([suit, color]) => <i key={suit} style={{ background: color }}>{suit}</i>)}</span>;
+  const update = (patch: Partial<ReturnType<typeof loadAppearance>>) => { const next = { ...appearance, ...patch }; setAppearance(next); saveAppearance(next); };
+  const cardPreview = (colors: string[][]) => <span className="account-card-preview" aria-hidden="true">{colors.map(([suit, color]) => <i key={suit} style={{ background: color }}>{suit}</i>)}</span>;
   return <section className="account-card">
     <header><h2>{t("外観", "Appearance")}</h2></header>
     <SettingRow title={t("テーマ", "Theme")}>
@@ -144,10 +147,9 @@ function LanguageTab() {
   </section>;
 }
 
-export function LogoutDialog({ onCancel, onConfirm }) {
+export function LogoutDialog({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: (options: { clearData: boolean }) => void }) {
   const [clearData, setClearData] = useState(false);
-  return <div className="modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onCancel(); }}>
-    <div className="modal account-logout" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+  return <Dialog labelledBy="logout-title" onClose={onCancel} className="account-logout">
       <span className="account-logout-icon"><SignOut size={20} /></span>
       <h2 id="logout-title">{t("ログアウトしますか？", "Log out?")}</h2>
       <p>{t("アカウントからログアウトします。ゲストのプロフィールと練習記録はこのブラウザに残ります。", "Sign out of your account. Guest profile and practice records remain in this browser.")}</p>
@@ -159,11 +161,10 @@ export function LogoutDialog({ onCancel, onConfirm }) {
         <button type="button" className="account-secondary" onClick={onCancel}>{t("キャンセル", "Cancel")}</button>
         <button type="button" className="account-danger" onClick={() => onConfirm({ clearData })}>{t("ログアウト", "Log out")}</button>
       </div>
-    </div>
-  </div>;
+  </Dialog>;
 }
 
-export function AccountPage({ profile, tab = "account", onSectionChange, onEditProfile, onProfileSaved, onLogout }) {
+export function AccountPage({ profile, tab = "account", onSectionChange, onEditProfile, onProfileSaved, onLogout }: { profile: Profile; tab?: string; onSectionChange: (name: string) => void; onEditProfile?: () => void; onProfileSaved: (profile: Profile | null) => void; onLogout?: () => void }) {
   const active = ACCOUNT_TABS.some(item => item.value === tab) ? tab : "account";
   return <div className="shell">
     <Sidebar activeSection={ACCOUNT_SECTION} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} onLogout={onLogout} />

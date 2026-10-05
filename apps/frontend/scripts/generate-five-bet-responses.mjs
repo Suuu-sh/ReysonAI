@@ -3,7 +3,7 @@
 // Writes only into ESTIMATES_DIR (the staging dir of `npm run build:estimates`).
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.mjs";
+import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.ts";
 import { ALL_IN_CALL_SAMPLES as SAMPLES, MIX_BAND_PCT, allInCallFrequency as callFrequency } from "./lib/all-in-call.mjs";
 import { rakeMetadata, raked } from "../src/estimated/rake.ts";
 import { openSizeFor } from "../src/estimated/sizing.ts";

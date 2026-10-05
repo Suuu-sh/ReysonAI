@@ -7,7 +7,7 @@ import { existsSync, readdirSync, readFileSync, renameSync, writeFileSync } from
 import { dirname, join } from "node:path";
 import { artifactPaths, config, loadInputs } from "./inputs.mjs";
 import { loadCandidate, sha } from "./generate.mjs";
-import { validateLaterPolicy } from "./later-policy.mjs";
+import { validateLaterPolicy } from "./later-policy.ts";
 import { checkLaterBalance } from "./balance.mjs";
 import { simulate } from "./simulation.mjs";
 import { compareLaterCandidate } from "./regenerate-later.mjs";

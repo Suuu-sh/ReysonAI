@@ -1,14 +1,15 @@
+import type { HandFeatures } from "../../scripts/postflop-ai/hand-features.ts";
 import { narrative, type NarrativeLanguage } from "../locales/reason-copy.ts";
-// Hand-specific postflop copy (EN + JA, numberless): turns the computed hand features (hand-features.mjs) and the
-// shared role decision (hand-role.mjs) into the reasons a hand has for each action. Everything here is about the
+// Hand-specific postflop copy (EN + JA, numberless): turns the computed hand features (hand-features.ts) and the
+// shared role decision (hand-role.ts) into the reasons a hand has for each action. Everything here is about the
 // hand itself: what it holds, what it wants from the action, which worse hands pay it off, which blockers it has.
 // Range-level strategy sentences live in postflop-advanced.ts and are limited to one per explanation.
-import { featureSignature, featuresFromText } from "../../scripts/postflop-ai/hand-features.mjs";
-import { drawLevel, madeLevel, roleFromFeatures } from "../../scripts/postflop-ai/hand-role.mjs";
+import { featureSignature, featuresFromText } from "../../scripts/postflop-ai/hand-features.ts";
+import { drawLevel, madeLevel, roleFromFeatures } from "../../scripts/postflop-ai/hand-role.ts";
 
 export type Level4 = "huge" | "many" | "some" | "few" | "none";
 export type Desc = {
-  f: any | null; name: string; en: NarrativeLanguage;
+  f: HandFeatures | null; name: string; en: NarrativeLanguage;
   m: "nuts" | "strong" | "medium" | "weak" | "none"; dr: "combo" | "strong" | "weak" | "none";
   made: string; draw: string; over: string; backdoor: string; has: string; worse: string;
   outs: Level4; improve: string; blockers: string[]; unblock: string; vulnerable: boolean; boardDraws: string;
@@ -29,7 +30,7 @@ export function displayName(hand: string): string {
 const join = (parts: string[], en: NarrativeLanguage) => parts.length < 2 ? (parts[0] ?? "")
   : en ? narrative("{0} and {1}", [parts.slice(0, -1).join(", "), parts[parts.length - 1]], en) : parts.join("と");
 
-export function describeHand(f: any | null, name: string, en: NarrativeLanguage, tier: string, o: string): Desc {
+export function describeHand(f: HandFeatures | null, name: string, en: NarrativeLanguage, tier: string, o: string): Desc {
   const e = (a: string, j: string) => en ? a : j;
   if (!f) {
     // No concrete cards: describe the hand class only.
@@ -38,7 +39,7 @@ export function describeHand(f: any | null, name: string, en: NarrativeLanguage,
     const made = ({ monster: e(narrative("a very strong made hand", [], en), "とても強い完成役"), strong: e(narrative("a strong pair", [], en), "強いペア"), medium: e(narrative("a weak pair", [], en), "弱いペア") } as Record<string, string>)[tier] ?? "";
     const draw = tier === "draw" ? e(narrative("a draw", [], en), "ドロー") : "";
     const has = made || draw || e(narrative("no made hand", [], en), "役なし");
-    return { f: null, name, en, m, dr, made, draw, over: "", backdoor: "", has, worse: e(narrative("weaker pairs and draws", [], en), "劣るペアやドロー"),
+    return { f: null, name, en, m: m as Desc["m"], dr, made, draw, over: "", backdoor: "", has, worse: e(narrative("weaker pairs and draws", [], en), "劣るペアやドロー"),
       outs: tier === "draw" ? "many" : "none", improve: "", blockers: [], unblock: "", vulnerable: false, boardDraws: "", river: false,
       aceHigh: false, air: tier === "air", short: made || draw || has, tag: made || draw || has, standing: "" };
   }
@@ -59,20 +60,20 @@ export function describeHand(f: any | null, name: string, en: NarrativeLanguage,
     const [kn, kj] = kindName[mk.kind] ?? [narrative("hand", [], en), "役"];
     made = e(narrative("only the board's {0} (a split)", [kn], en), `ボードの${kj}だけ（分け）`);
   } else switch (mk.kind) {
-    case "overpair": made = e(narrative("an overpair (pocket {0})", [enPlural(mk.pairRank)], en), `オーバーペア（${R(mk.pairRank)}${R(mk.pairRank)}）`); break;
-    case "underpair": made = e(narrative("an underpair (pocket {0})", [enPlural(mk.pairRank)], en), `アンダーペア（${R(mk.pairRank)}${R(mk.pairRank)}）`); break;
-    case "topPair": made = e(narrative("top pair ({0}) with {1} kicker", [enPlural(mk.pairRank), art(R(mk.kicker))], en), `${R(mk.pairRank)}のトップペア（${R(mk.kicker)}キッカー）`); break;
-    case "secondPair": made = e(narrative("second pair ({0}) with {1} kicker", [enPlural(mk.pairRank), art(R(mk.kicker))], en), `${R(mk.pairRank)}のセカンドペア（${R(mk.kicker)}キッカー）`); break;
-    case "bottomPair": made = e(narrative("bottom pair ({0}) with {1} kicker", [enPlural(mk.pairRank), art(R(mk.kicker))], en), `${R(mk.pairRank)}のボトムペア（${R(mk.kicker)}キッカー）`); break;
-    case "boardPair": made = e(narrative("only the board's pair of {0}", [enPlural(mk.pairRank)], en), `ボードの${R(mk.pairRank)}のペアだけ`); break;
-    case "topTwo": made = e(narrative("top two pair ({0} and {1})", [enPlural(mk.pairRanks[0]), enPlural(mk.pairRanks[1])], en), `トップツーペア（${R(mk.pairRanks[0])}と${R(mk.pairRanks[1])}）`); break;
+    case "overpair": made = e(narrative("an overpair (pocket {0})", [enPlural(mk.pairRank!)], en), `オーバーペア（${R(mk.pairRank!)}${R(mk.pairRank!)}）`); break;
+    case "underpair": made = e(narrative("an underpair (pocket {0})", [enPlural(mk.pairRank!)], en), `アンダーペア（${R(mk.pairRank!)}${R(mk.pairRank!)}）`); break;
+    case "topPair": made = e(narrative("top pair ({0}) with {1} kicker", [enPlural(mk.pairRank!), art(R(mk.kicker!))], en), `${R(mk.pairRank!)}のトップペア（${R(mk.kicker!)}キッカー）`); break;
+    case "secondPair": made = e(narrative("second pair ({0}) with {1} kicker", [enPlural(mk.pairRank!), art(R(mk.kicker!))], en), `${R(mk.pairRank!)}のセカンドペア（${R(mk.kicker!)}キッカー）`); break;
+    case "bottomPair": made = e(narrative("bottom pair ({0}) with {1} kicker", [enPlural(mk.pairRank!), art(R(mk.kicker!))], en), `${R(mk.pairRank!)}のボトムペア（${R(mk.kicker!)}キッカー）`); break;
+    case "boardPair": made = e(narrative("only the board's pair of {0}", [enPlural(mk.pairRank!)], en), `ボードの${R(mk.pairRank!)}のペアだけ`); break;
+    case "topTwo": made = e(narrative("top two pair ({0} and {1})", [enPlural(mk.pairRanks![0]), enPlural(mk.pairRanks![1])], en), `トップツーペア（${R(mk.pairRanks![0])}と${R(mk.pairRanks![1])}）`); break;
     case "topAndLower": made = e(narrative("two pair with the top pair", [], en), "トップペアを含むツーペア"); break;
     case "lowerTwo": made = e(narrative("the lower two pair", [], en), "下位のツーペア"); break;
     case "pocketPlusBoardPair": made = e(narrative("two pair from a pocket pair and the board pair", [], en), `ポケットペアとボードのペアによるツーペア`); break;
     case "boardPairPlusOne": made = e(narrative("two pair that leans on the board pair", [], en), "ボードのペアに頼ったツーペア"); break;
     case "boardTwoPair": made = e(narrative("only the two pair on the board", [], en), "ボードのツーペアだけ"); break;
-    case "set": made = e(narrative("a set of {0}", [enPlural(mk.tripsRank)], en), `${R(mk.tripsRank)}${R(mk.tripsRank)}のセット`); break;
-    case "trips": made = e(narrative("trips ({0}, with a pair on the board)", [enPlural(mk.tripsRank)], en), `トリップス（${R(mk.tripsRank)}）`); break;
+    case "set": made = e(narrative("a set of {0}", [enPlural(mk.tripsRank!)], en), `${R(mk.tripsRank!)}${R(mk.tripsRank!)}のセット`); break;
+    case "trips": made = e(narrative("trips ({0}, with a pair on the board)", [enPlural(mk.tripsRank!)], en), `トリップス（${R(mk.tripsRank!)}）`); break;
     case "boardTrips": made = e(narrative("only the trips on the board", [], en), "ボードのトリップスだけ"); break;
     case "straight": made = mk.nut ? e(narrative("the nut straight", [], en), "ナッツストレート") : e(narrative("a straight that is not the nuts", [], en), "ナッツではないストレート"); break;
     case "flush": made = mk.flushKind === "nut" ? e(narrative("the nut flush", [], en), "ナッツフラッシュ") : mk.flushKind === "secondNut" ? e(narrative("the second-nut flush", [], en), "2番手のフラッシュ") : e(narrative("a low flush", [], en), "下位のフラッシュ"); break;
@@ -189,15 +190,15 @@ export function describeHand(f: any | null, name: string, en: NarrativeLanguage,
     boardPairPlusOne: [narrative("two pair", [], en), "ツーペア"], set: [narrative("a set", [], en), "セット"], trips: [narrative("trips", [], en), "トリップス"], straight: [narrative("a straight", [], en), "ストレート"],
     flush: [narrative("a flush", [], en), "フラッシュ"], fullHouse: [narrative("a full house", [], en), "フルハウス"], quads: [narrative("quads", [], en), "フォーカード"], straightFlush: [narrative("a straight flush", [], en), "ストレートフラッシュ"] };
   const drawTag: Record<string, [string, string]> = { gutshot: [narrative("a gutshot", [], en), "ガットショット"], openEnded: [narrative("an open-ended draw", [], en), "オープンエンド"], doubleGutter: [narrative("a double-gutter draw", [], en), "ダブルガット"] };
-  const pr = mk.pairRank;
-  const kk = mk.kicker !== undefined ? mk.kicker : -1;
-  const pairTag = (en0: string, ja0: string): [string, string] => [narrative("{0} ({1} with {2} kicker)", [en0, enPlural(pr), art(R(kk))], en), `${R(pr)}の${ja0}（${R(kk)}キッカー）`];
+  const pr = mk.pairRank!;
+  const kk = mk.kicker! !== undefined ? mk.kicker! : -1;
+  const pairTag = (en0: string, ja0: string): [string, string] => [narrative("{0} ({1} with {2} kicker)", [en0, enPlural(pr!), art(R(kk))], en), `${R(pr!)}の${ja0}（${R(kk)}キッカー）`];
   const tagPair: [string, string] = m !== "none" && ["topPair", "secondPair", "bottomPair"].includes(mk.kind)
     ? pairTag(kindTag[mk.kind][0], kindTag[mk.kind][1])
-    : m !== "none" && mk.kind === "overpair" ? [narrative("an overpair ({0})", [enPlural(pr)], en), `${R(pr)}のオーバーペア`]
-    : m !== "none" && mk.kind === "underpair" ? [narrative("an underpair ({0})", [enPlural(pr)], en), `${R(pr)}のアンダーペア`]
-    : m !== "none" && mk.pairRanks && kindTag[mk.kind] ? [narrative("two pair ({0} and {1})", [enPlural(mk.pairRanks[0]), enPlural(mk.pairRanks[1])], en), `${R(mk.pairRanks[0])}と${R(mk.pairRanks[1])}のツーペア`]
-    : m !== "none" && mk.kind === "set" ? [narrative("a set of {0}", [enPlural(mk.tripsRank)], en), `${R(mk.tripsRank)}のセット`]
+    : m !== "none" && mk.kind === "overpair" ? [narrative("an overpair ({0})", [enPlural(pr!)], en), `${R(pr!)}のオーバーペア`]
+    : m !== "none" && mk.kind === "underpair" ? [narrative("an underpair ({0})", [enPlural(pr!)], en), `${R(pr!)}のアンダーペア`]
+    : m !== "none" && mk.pairRanks! && kindTag[mk.kind] ? [narrative("two pair ({0} and {1})", [enPlural(mk.pairRanks![0]), enPlural(mk.pairRanks![1])], en), `${R(mk.pairRanks![0])}と${R(mk.pairRanks![1])}のツーペア`]
+    : m !== "none" && mk.kind === "set" ? [narrative("a set of {0}", [enPlural(mk.tripsRank!)], en), `${R(mk.tripsRank!)}のセット`]
     : m !== "none" && kindTag[mk.kind] ? kindTag[mk.kind]
     : d.combo ? [narrative("a combo draw", [], en), "コンボドロー"]
     : d.flush ? (d.flush.kind === "nut" ? [narrative("the nut flush draw", [], en), "ナッツフラッシュドロー"] : [narrative("a flush draw", [], en), "フラッシュドロー"])
@@ -207,7 +208,7 @@ export function describeHand(f: any | null, name: string, en: NarrativeLanguage,
   const pctl = mk.percentile ?? 0;
   const level = pctl >= 0.9 ? 0 : pctl >= 0.65 ? 1 : pctl >= 0.4 ? 2 : 3;
   const boardRanksAll = [...new Set<number>(board.map((cd: number) => cd >> 2))];
-  const above = boardRanksAll.filter(r => r > (mk.pairRank ?? hiRank)).length;
+  const above = boardRanksAll.filter(r => r > (mk.pairRank! ?? hiRank)).length;
   const NUM = en ? ["no", "one", "two", narrative("three", [], en), narrative("four", [], en)] : ["", "一枚", "二枚", "三枚", "四枚"];
   const showAbove = mk.category === "pair" && mk.kind !== "overpair" && above > 0;
   const standing = m === "none" ? "" : en
@@ -215,21 +216,21 @@ export function describeHand(f: any | null, name: string, en: NarrativeLanguage,
       + narrative("{0}.", [!river && boardDraws ? narrative(", though the {0} on this board can still overtake it", [boardDraws], en) : showAbove ? narrative(", with {0} board {1} above the pair", [NUM[Math.min(above, 4)], above === 1 ? "card" : "cards"], en) : ""], en)
     : `${tag}は${["ほぼ全てのハンドに勝っています", "大半のハンドに勝っています", "全ハンドの中位あたりの強さです", "大半のハンドに負けています"][level]}。`
       + `${!river && boardDraws ? `ただしこのボードの${boardDraws}に${tag}は逆転される余地があります。` : showAbove ? `${tag}より上のランクのボードカードが${NUM[Math.min(above, 4)]}あります。` : ""}`;
-  return { f, name, en, m, dr, made, draw, over, backdoor, has, worse, outs, improve: en ? join(impr, en) : impr.join("、"), blockers, unblock,
+  return { f, name, en, m: m as Desc["m"], dr, made, draw, over, backdoor, has, worse, outs, improve: en ? join(impr, en) : impr.join("、"), blockers, unblock,
     vulnerable: Boolean(mk.vulnerable), boardDraws, river, aceHigh, air: m === "none" && dr === "none",
     short: (mk.category !== "highCard" && made) || draw || has, tag, standing };
 }
 
 // Features for the explanation inputs: an exact combo, or the most common combo class of an averaged hand.
-export function featuresForInput(board?: string, cards?: string, combos?: { cards: string; weight: number }[]): any | null {
+export function featuresForInput(board?: string, cards?: string, combos?: { cards: string; weight: number }[]): HandFeatures | null {
   if (!board || !/^([2-9TJQKA][cdhs]){3,5}$/.test(board)) return null;
   try {
     if (cards && /^([2-9TJQKA][cdhs]){2}$/.test(cards)) return featuresFromText(cards, board);
     if (!combos?.length) return null;
-    const bySig = new Map<string, { w: number; f: any }>();
+    const bySig = new Map<string, { w: number; f: HandFeatures }>();
     for (const c of combos) {
       if (!(c.weight > 0) || !/^([2-9TJQKA][cdhs]){2}$/.test(c.cards)) continue;
-      let f: any;
+      let f: HandFeatures;
       try { f = featuresFromText(c.cards, board); } catch { continue; }
       const sig = featureSignature(f), cur = bySig.get(sig);
       if (cur) cur.w += c.weight; else bySig.set(sig, { w: c.weight, f });

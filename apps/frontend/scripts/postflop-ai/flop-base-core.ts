@@ -1,21 +1,28 @@
+import type { Candidate, FlopPolicy, Inputs, LaterPolicy, PilotConfig } from "./types.ts";
+import type { FlopFactOptions, FlopUiFacts } from "./flop-ui-facts.ts";
+import type { AverageFacts } from "./explain-aggregate.ts";
+import type { BaseHistory, BlockerPredictors, CodecView, FlopBase } from "./flop-base-codec.ts";
+type StoredFact = FlopUiFacts | AverageFacts<FlopUiFacts>;
+export type BalancedFlopBase = FlopBase<StoredFact, number>;
+type HistoryData = { entry: Pick<BaseHistory<StoredFact>, "combo_facts" | "class_facts">; view: CodecView; indexes: Map<string, { index: number; rowIndex: number; weight: number }> };
 // Shared balanced-mode base data: deterministic strategies and the exact UI fact projection.
 // Offline authoring and browser fallback share this code; loading never authors a policy.
-import { sha } from "./browser-inputs.mjs";
-import { EVALUATOR_VERSION } from "../lib/equity.mjs";
-import { DEFENCE_VERSION, FLOP_RUNOUTS } from "./defence.mjs";
+import { sha } from "./browser-inputs.ts";
+import { EVALUATOR_VERSION } from "../lib/equity.ts";
+import { DEFENCE_VERSION, FLOP_RUNOUTS } from "./defence.ts";
 import { canonicalFlop, ISOMORPHISM_VERSION, comboKey, remapFlopNode } from "./flop-isomorphism.ts";
-import { flopHistoryViews } from "./views.mjs";
-import { flopUiComboFactsCanonical, averageFlopUiFacts, flopBlockerPredictors } from "./flop-ui-facts.mjs";
-import { packFrame, packView, unpackFrameRow, unpackView, compactFlopBase, hydrateFrame } from "./flop-base-codec.mjs";
+import { flopHistoryViews } from "./views.ts";
+import { flopUiComboFactsCanonical, averageFlopUiFacts, flopBlockerPredictors } from "./flop-ui-facts.ts";
+import { packFrame, packView, unpackFrameRow, unpackView, compactFlopBase, hydrateFrame } from "./flop-base-codec.ts";
 import { FLOP_BETS, historyFor, treeNodes } from "./tree.ts";
-import { referenceLaterPolicy } from "./later-policy.mjs";
+import { referenceLaterPolicy } from "./later-policy.ts";
 
 // Version 6: the base stores strategies and explanation facts only. Postflop EV is not part of the
 // product (decision 2026-10-01), so any base that still carries EV (version 5) is stale.
 export const FLOP_BASE_VERSION = 6;
-const laterSizingHash = config => sha(Object.fromEntries(["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"].map(key => [key, config[key]])));
+const laterSizingHash = (config: PilotConfig) => sha(Object.fromEntries((["later_streets", "later_raise_multiplier", "later_all_in_merge_ratio"] as const).map(key => [key, config[key]])));
 
-export function flopBaseIdentity(inputs, candidate, laterCandidate) {
+export function flopBaseIdentity(inputs: Inputs, candidate: Candidate, laterCandidate?: Candidate<LaterPolicy> | null) {
   return { generator_version: FLOP_BASE_VERSION, isomorphism_version: ISOMORPHISM_VERSION,
     evaluator_version: EVALUATOR_VERSION,
     source_hash: inputs.fingerprint, policy_hash: candidate.metadata.policy_hash,
@@ -26,15 +33,15 @@ export function flopBaseIdentity(inputs, candidate, laterCandidate) {
     samples: { defence_runouts: FLOP_RUNOUTS } };
 }
 
-export function isFreshFlopBase(data, inputs, candidate, laterCandidate) {
+export function isFreshFlopBase(data: Partial<BalancedFlopBase> | null | undefined, inputs: Inputs, candidate: Candidate, laterCandidate?: Candidate<LaterPolicy> | null) {
   if (data?.kind !== "ai_estimate_not_gto" || data.mode !== "balanced" || data.spot !== inputs.spot.id ||
       !data.histories || !data.metadata) return false;
-  const identity = flopBaseIdentity(inputs, candidate, laterCandidate);
+  const identity: Record<string, unknown> = flopBaseIdentity(inputs, candidate, laterCandidate);
   if (data.ev !== undefined) return false;
-  return Object.keys(identity).every(key => JSON.stringify(data.metadata[key]) === JSON.stringify(identity[key]));
+  return Object.keys(identity).every(key => JSON.stringify(data.metadata![key]) === JSON.stringify(identity[key]));
 }
 
-export function buildFlopBase({ board, inputs, candidate, laterCandidate }) {
+export function buildFlopBase({ board, inputs, candidate, laterCandidate }: { board: string | readonly number[]; inputs: Inputs; candidate: Candidate; laterCandidate?: Candidate<LaterPolicy> | null }): BalancedFlopBase {
   const canonical = canonicalFlop(board);
   const views = flopHistoryViews(inputs, candidate.policy, canonical.cards);
   for (const view of Object.values(views)) for (const row of view.rows) {
@@ -43,11 +50,11 @@ export function buildFlopBase({ board, inputs, candidate, laterCandidate }) {
       if (Object.values(mix).some(value => !Number.isFinite(value) || value < -1e-9 || value > 1 + 1e-9) ||
           Math.abs(Object.values(mix).reduce((sum, value) => sum + value, 0) - 1) > 1e-8) throw new Error(`Invalid base strategy: ${canonical.key}/${view.node}/${row.hand}`);
     }
-    if (row.combos.some(combo => !Number.isFinite(combo.weight) || !Number.isFinite(combo.reachWeight) || combo.reachWeight < 0)) throw new Error("Invalid base reach weights");
+    if (row.combos.some(combo => !Number.isFinite(combo.weight) || !Number.isFinite(combo.reachWeight) || combo.reachWeight! < 0)) throw new Error("Invalid base reach weights");
   }
-  const predictors = {};
+  const predictors: BlockerPredictors = {};
   const histories = Object.fromEntries(Object.entries(views).map(([history, view]) => {
-    const facts = [], averages = [];
+    const facts: FlopUiFacts[] = [], averages: (AverageFacts<FlopUiFacts> | null)[] = [];
     for (const row of view.rows) {
       const entries = row.combos.map(combo => {
         const fact = flopUiComboFactsCanonical({ boardCards: canonical.cards, node: view.node, cards: combo.cards,
@@ -60,20 +67,20 @@ export function buildFlopBase({ board, inputs, candidate, laterCandidate }) {
     predictors[history] = flopBlockerPredictors(inputs, candidate.policy, canonical.cards, history ? history.split(",") : [], view);
     return [history, { view: packView(view), combo_facts: packFrame(facts), class_facts: packFrame(averages) }];
   }));
-  return compactFlopBase({ kind: "ai_estimate_not_gto", mode: "balanced", spot: inputs.spot.id, flop: canonical.key,
+  return compactFlopBase<StoredFact>({ kind: "ai_estimate_not_gto", mode: "balanced", spot: inputs.spot.id, flop: canonical.key,
     metadata: flopBaseIdentity(inputs, candidate, laterCandidate), histories }, predictors);
 }
 
-const decoded = new WeakMap();
-function historyData(base, key) {
+const decoded = new WeakMap<BalancedFlopBase, Map<string, HistoryData>>();
+function historyData(base: BalancedFlopBase, key: string): HistoryData | null {
   let cache = decoded.get(base);
   if (!cache) decoded.set(base, cache = new Map());
-  if (cache.has(key)) return cache.get(key);
+  if (cache.has(key)) return cache.get(key)!;
   const packed = base.histories[key];
   if (!packed) return null;
   const entry = { ...packed, combo_facts: hydrateFrame(base, packed.combo_facts), class_facts: hydrateFrame(base, packed.class_facts) };
   const view = unpackView({ ...packed.view, rows: hydrateFrame(base, packed.view.rows), combos: hydrateFrame(base, packed.view.combos) });
-  const indexes = new Map();
+  const indexes = new Map<string, { index: number; rowIndex: number; weight: number }>();
   let index = 0;
   view.rows.forEach((row, rowIndex) => row.combos.forEach(combo => {
     indexes.set(combo.cards, { index: index++, rowIndex, weight: combo.weight });
@@ -83,7 +90,7 @@ function historyData(base, key) {
   return result;
 }
 
-export function storedFlopNodes(base, inputs, board, history = null) {
+export function storedFlopNodes(base: BalancedFlopBase, inputs: Inputs, board: string | readonly number[], history: string[] | null = null) {
   const canonical = canonicalFlop(board);
   if (base.flop !== canonical.key) return null;
   return Object.fromEntries(treeNodes(inputs.spot.tree).map(node => {
@@ -96,18 +103,18 @@ export function storedFlopNodes(base, inputs, board, history = null) {
   }));
 }
 
-export function storedFlopExplanation(base, { boardCards, node, cards, combos, prev = "bet33", history, inputs }) {
+export function storedFlopExplanation(base: BalancedFlopBase, { boardCards, node, cards, combos, prev = "bet33", history, inputs }: Omit<FlopFactOptions, "policy">) {
   const canonical = canonicalFlop(boardCards);
   if (base.flop !== canonical.key) return null;
   const path = history ?? historyFor(inputs.spot.tree, node, prev);
   const data = historyData(base, path.join(","));
   if (!data || data.view.node !== node) return null;
-  const read = actualCards => {
+  const read = (actualCards: string) => {
     const key = comboKey(actualCards, canonical.toCanonical), item = data.indexes.get(key);
     if (!item) return null;
     return { ...unpackFrameRow(data.entry.combo_facts, item.index), cards: actualCards };
   };
-  if (!combos) return read(cards);
+  if (!combos) return read(cards!);
   const keys = combos.map(combo => comboKey(combo.cards, canonical.toCanonical));
   const first = data.indexes.get(keys[0]);
   if (!first) return null;

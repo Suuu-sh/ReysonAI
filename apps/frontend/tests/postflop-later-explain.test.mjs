@@ -1,13 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { config, loadInputs, boards, useArtifactSource } from "../scripts/postflop-ai/inputs.mjs";
-import { parseCards } from "../scripts/postflop-ai/model.mjs";
-import { referencePolicy } from "../scripts/postflop-ai/policy.mjs";
-import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
+import { parseCards } from "../scripts/postflop-ai/model.ts";
+import { referencePolicy } from "../scripts/postflop-ai/policy.ts";
+import { referenceLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
 import { streetHistories } from "../scripts/postflop-ai/later-tree.ts";
 import { laterDecision, laterStart, replayLater } from "../src/estimated/postflop-trial.ts";
-import { rake } from "../scripts/postflop-ai/engine.mjs";
-import { explainLaterCombo, laterExplainContext, laterOpponentRange } from "../scripts/postflop-ai/explain-later.mjs";
+import { rake } from "../scripts/postflop-ai/engine.ts";
+import { explainLaterCombo, laterExplainContext, laterOpponentRange } from "../scripts/postflop-ai/explain-later.ts";
 import { laterHandEvForBoard, laterHandEvKey, loadLaterHandEv, representativeLaterRunouts } from "../scripts/postflop-ai/later-hand-ev.mjs";
 import { localPostflopMiddleware } from "../scripts/postflop-ai/local-view.mjs";
 import { sha } from "../scripts/postflop-ai/generate.mjs";
@@ -41,7 +41,7 @@ test("turn/river evidence groups conserve range share and pot odds match replaye
   const turnRole = turnDecision.role;
   const turnOther = turnRole === "ip" ? "oop" : "ip";
   const turnCall = inputs.spot.stackBb - turnReplay.stacks[turnOther] - (inputs.spot.stackBb - turnReplay.stacks[turnRole]);
-  // Break-even includes the capped rake on the final pot (defence.mjs).
+  // Break-even includes the capped rake on the final pot (defence.ts).
   const breakEven = (call, pot) => call / (pot + call - rake(pot + call));
   near(turn.actions.call.required, breakEven(turnCall, turnReplay.pot));
 

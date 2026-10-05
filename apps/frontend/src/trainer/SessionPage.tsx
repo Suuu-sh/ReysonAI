@@ -1,3 +1,4 @@
+import type { Drill, PracticeSession, DrillDrafts, SessionRow, TrainerSpot } from "./types.ts";
 import { PlayingCard } from "../components/PlayingCard.tsx";
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, ClockCounterClockwise, Play } from "@phosphor-icons/react";
@@ -7,30 +8,30 @@ import { practiceSessionRows } from "./practice-sessions.ts";
 import { localized, localeTag } from "../locale.ts";
 import "./sessions.css";
 
-const dateLabel = at => new Intl.DateTimeFormat(localeTag(), { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(at);
-const rateLabel = (score, answered) => answered ? `${Math.round(score / answered * 100)}%` : "—";
-const durationLabel = durationMs => {
+const dateLabel = (at: number) => new Intl.DateTimeFormat(localeTag(), { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(at);
+const rateLabel = (score: number, answered: number) => answered ? `${Math.round(score / answered * 100)}%` : "—";
+const durationLabel = (durationMs: number | null) => {
   if (!Number.isFinite(durationMs)) return "—";
-  const seconds = Math.floor(durationMs / 1000);
+  const seconds = Math.floor(durationMs! / 1000);
   return seconds >= 60 ? localized(`${Math.floor(seconds / 60)} min ${seconds % 60} sec`, `${Math.floor(seconds / 60)}分${seconds % 60}秒`) : localized(`${seconds} sec`, `${seconds}秒`);
 };
 
-function actionLabel(spot, key) {
+function actionLabel(spot: TrainerSpot | undefined, key: string) {
   return spot?.actions.find(action => action.key === key)?.label ?? key;
 }
 
-function Cards({ cards }) {
+function Cards({ cards }: { cards: string[] }) {
   return <span className="sessions-cards">{cards.map((card, index) =>
     <PlayingCard key={`${card}-${index}`} card={card} variant="text" />)}</span>;
 }
 
-export function displaySessionName(session) {
+export function displaySessionName(session: SessionRow) {
   if (session.kind === "review") return localized("Review drill", "復習ドリル");
   if (session.drillId === "ranked") return localized("Ranked match", "ランク戦");
   return displayDrillName({ id: session.drillId, name: session.name });
 }
 
-function SessionDetail({ session, onBack, onResume }) {
+function SessionDetail({ session, onBack, onResume }: { session: SessionRow; onBack: () => void; onResume: (session: SessionRow) => void }) {
   const hasHistory = Array.isArray(session.hands);
   return <div className="sessions-detail">
     <button type="button" className="config-edit sessions-back" onClick={onBack}><ArrowLeft size={14} />{localized("Sessions", "セッション一覧")}</button>
@@ -45,30 +46,30 @@ function SessionDetail({ session, onBack, onResume }) {
       <div><dt>練習時間</dt><dd>{durationLabel(session.durationMs)}</dd></div>
     </dl>
     <section className="sessions-history" aria-label="ハンド履歴">
-      <div className="sessions-history-head"><div><h2>ハンド履歴</h2><p>各問題で選んだアクションと、そのときの判定を表示します。</p></div><span>{hasHistory ? session.hands.length : 0} {localized((hasHistory ? session.hands.length : 0) === 1 ? "hand" : "hands", "ハンド")}</span></div>
+      <div className="sessions-history-head"><div><h2>ハンド履歴</h2><p>各問題で選んだアクションと、そのときの判定を表示します。</p></div><span>{hasHistory ? session.hands!.length : 0} {localized((hasHistory ? session.hands!.length : 0) === 1 ? "hand" : "hands", "ハンド")}</span></div>
       {!hasHistory ? <p className="sessions-empty">この過去のセッションは回答ごとの履歴を保存していません。正答率と回答数のみ確認できます。</p>
-        : !session.hands.length ? <p className="sessions-empty">まだ回答がありません。練習を再開すると、回答したハンドがここに記録されます。</p>
+        : !session.hands!.length ? <p className="sessions-empty">まだ回答がありません。練習を再開すると、回答したハンドがここに記録されます。</p>
         : <div className="sessions-table-scroll"><table className="leaderboard-table sessions-table hand-table"><thead><tr>
           <th scope="col">#</th><th scope="col">{localized("Spot", "局面")}</th><th scope="col">ハンド</th><th scope="col">{localized("Choice", "選択")}</th><th scope="col">判定</th><th scope="col">最多アクション</th>
-        </tr></thead><tbody>{session.hands.map((hand, index) => {
+        </tr></thead><tbody>{session.hands!.map((hand, index) => {
           const spot = spotById.get(hand.spotId);
           const chosenFrequency = hand.mix?.[hand.action];
-          const bestFrequency = hand.mix?.[hand.best];
+          const bestFrequency = hand.mix?.[hand.best!];
           return <tr key={index}>
             <td className="sessions-index">{index + 1}</td>
             <td>{spot ? spotTitle(spot) : hand.spotId}</td>
-            <td><div className="sessions-hand"><strong>{hand.hand}</strong><Cards cards={hand.cards} /></div></td>
-            <td><strong>{actionLabel(spot, hand.action)}</strong>{Number.isFinite(chosenFrequency) && <small>選択頻度 {Math.round(chosenFrequency * 100)}%</small>}</td>
+            <td><div className="sessions-hand"><strong>{hand.hand}</strong><Cards cards={hand.cards!} /></div></td>
+            <td><strong>{actionLabel(spot, hand.action)}</strong>{Number.isFinite(chosenFrequency) && <small>選択頻度 {Math.round(chosenFrequency! * 100)}%</small>}</td>
             <td><span className={`sessions-result result-${hand.result}`}>{RESULT_LABELS[hand.result]}</span></td>
-            <td>{hand.best ? actionLabel(spot, hand.best) : "—"}{Number.isFinite(bestFrequency) && <small>{Math.round(bestFrequency * 100)}%</small>}</td>
+            <td>{hand.best ? actionLabel(spot, hand.best) : "—"}{Number.isFinite(bestFrequency) && <small>{Math.round(bestFrequency! * 100)}%</small>}</td>
           </tr>;
         })}</tbody></table></div>}
     </section>
   </div>;
 }
 
-export function SessionPage({ drills, reviews, drafts, onResume }) {
-  const [selectedKey, setSelectedKey] = useState(null);
+export function SessionPage({ drills, reviews, drafts, onResume }: { drills: Drill[]; reviews: PracticeSession[]; drafts: DrillDrafts; onResume: (session: SessionRow) => void }) {
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [filter, setFilter] = useState("all");
   const sessions = useMemo(() => practiceSessionRows(drills, reviews, drafts), [drills, reviews, drafts]);
   const selected = sessions.find(session => session.key === selectedKey);
@@ -77,7 +78,7 @@ export function SessionPage({ drills, reviews, drafts, onResume }) {
   const completed = sessions.filter(session => session.status === "completed");
   const answered = sessions.reduce((sum, session) => sum + session.answered, 0);
   const score = sessions.reduce((sum, session) => sum + session.score, 0);
-  const time = sessions.reduce((sum, session) => sum + (Number.isFinite(session.durationMs) ? session.durationMs : 0), 0);
+  const time = sessions.reduce((sum, session) => sum + (Number.isFinite(session.durationMs) ? session.durationMs! : 0), 0);
   return <div className="sessions-page">
     <header className="trainer-home-head sessions-page-head">
       <div><h1 className="trainer-home-eyebrow">SESSIONS</h1>

@@ -2,11 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { MAX_RAISES, NODES, flopState, historyFor, nodeRole, raiseDepth, raiseNode, treeHistories } from "../scripts/postflop-ai/tree.ts";
 import { LATER_NODES, streetHistories, streetState } from "../scripts/postflop-ai/later-tree.ts";
-import { RAISE_LAST, RAISE_REFERENCE, effectiveMix, policyMix, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.mjs";
-import { laterPolicyMix, referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
-import { parseCards, TIERS } from "../scripts/postflop-ai/model.mjs";
-import { createTable, playFlop } from "../scripts/postflop-ai/engine.mjs";
-import { spotById } from "../scripts/postflop-ai/spots.mjs";
+import { RAISE_LAST, RAISE_REFERENCE, effectiveMix, policyMix, referencePolicyFor, validatePolicy } from "../scripts/postflop-ai/policy.ts";
+import { laterPolicyMix, referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
+import { parseCards, TIERS } from "../scripts/postflop-ai/model.ts";
+import { createTable, playFlop } from "../scripts/postflop-ai/engine.ts";
+import { spotById } from "../scripts/postflop-ai/spots.ts";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { decisionOptions, flopDecision } from "../src/estimated/postflop-trial.ts";
 

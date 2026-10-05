@@ -8,6 +8,15 @@ import { createContinuationModel } from "../estimated/continuation-model.ts";
 import { continuationFamilies, continuationSpots } from "../estimated/continuation-tree.ts";
 import { coldThreeBetSpots } from "../estimated/cold-three-bet-responses.ts";
 import { BUILT, formatOptions } from "../estimated/game-formats.ts";
+import type { ContinuationDataset } from "../estimated/preflop-types.ts";
+
+type SavedSpot = { id: string; hero: string; hands?: readonly unknown[] };
+type SavedDataset = { spots: SavedSpot[] };
+type ExpectedSpot = { id: string; hero: string; path: string };
+type CoverageRow = ExpectedSpot & { category: string; priority: number; status: string; street?: string; hands?: number };
+type CoverageCategory = { key: string; label: string; file: string | null; street?: string; modelled: boolean; rows: CoverageRow[]; done: number; total: number; todo: number };
+type PostflopSpot = { id: string; opener: string; ip: string; oop: string; kind: string; slug: string; reachable: boolean };
+type Stage = { street: string; label: string; suffix: string; freshness?: boolean; priority?: number };
 
 // Published preflop datasets (src/estimated/datasets.ts); preloaded before this module runs in the browser.
 const opening = dataset("opening-ranges");
@@ -22,12 +31,12 @@ const multiway2 = dataset("multiway2-responses");
 const coldFourBets = dataset("cold-four-bet-responses");
 const squeezes = dataset("squeeze-responses");
 const limpDeep = dataset("limp-deep-responses");
-const continuations = hasDataset("continuation-responses") ? dataset("continuation-responses") : null;
+const continuations = hasDataset("continuation-responses") ? dataset<ContinuationDataset>("continuation-responses") : null;
 
 const RFI = positions.slice(0, 5); // UTG..SB
-const after = seat => positions.slice(positions.indexOf(seat) + 1);
-const pairs = list => list.flatMap((a, i) => list.slice(i + 1).map(b => [a, b]));
-const triples = list => list.flatMap((a, i) => pairs(list.slice(i + 1)).map(rest => [a, ...rest]));
+const after = (seat: string) => positions.slice(positions.indexOf(seat) + 1);
+const pairs = (list: string[]): string[][] => list.flatMap((a, i) => list.slice(i + 1).map(b => [a, b]));
+const triples = (list: string[]): string[][] => list.flatMap((a, i) => pairs(list.slice(i + 1)).map(rest => [a, ...rest]));
 const headsUp = RFI.flatMap(opener => after(opener).map(hero => ({ opener, hero })));
 
 export const PRIORITIES = Object.freeze([
@@ -39,17 +48,17 @@ export const PRIORITIES = Object.freeze([
 
 const BTN_BB_PREFLOP = new Set(["BTN_open", "BB_vs_BTN", "BTN_vs_BB_three_bet", "BB_vs_BTN_four_bet", "BTN_vs_BB_five_bet"]);
 const HEADS_UP_PREFLOP = new Set(["open", "response", "three_bet", "four_bet", "five_bet", "limp", "limp_deep"]);
-export function preflopPriority(category, id) {
+export function preflopPriority(category: string, id: string) {
   if (BTN_BB_PREFLOP.has(id)) return 1;
   return HEADS_UP_PREFLOP.has(category) ? 2 : 4;
 }
 
-export function postflopPriority(spot) {
+export function postflopPriority(spot: Pick<PostflopSpot, "opener" | "ip" | "oop">) {
   return spot.opener === "BTN" && spot.ip === "BTN" && spot.oop === "BB" ? 1 : 2;
 }
 
 // Every category lists its full expected spot set; ids match the persisted datasets.
-const CATEGORIES = [
+const CATEGORIES: { key: string; label: string; file: string; data: SavedDataset; expected: ExpectedSpot[] }[] = [
   ...continuationFamilies.map(family => ({
     key: `continuation_${family}`, label: `継続分岐: ${family}`, file: "continuation-responses.json",
     data: { spots: (continuations?.spots ?? []).filter(spot => spot.family === family) },
@@ -100,11 +109,11 @@ const CATEGORIES = [
     ] },
 ];
 
-function spotsOf(data) {
+function spotsOf(data: SavedDataset | null | undefined) {
   return data?.spots ?? [];
 }
 
-export function coverageCatalog({ continuationData = continuations } = {}) {
+export function coverageCatalog({ continuationData = continuations }: { continuationData?: ContinuationDataset | null } = {}) {
   const sources = { "opening-ranges": opening, "preflop-ranges": responses, "multiway-responses": multiway,
     "multiway2-responses": multiway2, "squeeze-responses": squeezes, "cold-three-bet-responses": coldThreeBets, "cold-four-bet-responses": coldFourBets };
   const model = createContinuationModel({ ...sources, "continuation-responses": continuationData });
@@ -134,9 +143,9 @@ export function coverageCatalog({ continuationData = continuations } = {}) {
 
 // Every combination of format options; only BUILT ones have ranges. Each unbuilt format
 // needs the whole tree above again (same spot count, a rough but honest multiplier).
-export function formatBacklog(treeSize) {
-  const keys = ["game", "table", "stack", "openSize"];
-  const combos = keys.reduce((acc, key) => acc.flatMap(partial => formatOptions[key].map(option => ({ ...partial, [key]: option.value }))), [{}]);
+export function formatBacklog(treeSize: number) {
+  const keys = ["game", "table", "stack", "openSize"] as const;
+  const combos = keys.reduce<Partial<Record<typeof keys[number], string | number>>[]>((acc, key) => acc.flatMap(partial => formatOptions[key].map(option => ({ ...partial, [key]: option.value }))), [{}]);
   return combos.map(format => {
     const built = BUILT.some(b => keys.every(key => b[key] === format[key]));
     return { ...format, built, spots: built ? 0 : treeSize };
@@ -150,7 +159,7 @@ export function formatBacklog(treeSize) {
 // Each reachable spot needs a flop policy (<slug>-policy.json) and a turn/river policy
 // (<slug>-later-policy.json); spots whose preflop range never reaches the flop are skipped.
 const POT_KINDS = [["srp", "シングルレイズポット"], ["3bp", "3betポット"], ["4bp", "4betポット"], ["limp", "リンプポット"]];
-const STAGES = [
+const STAGES: Stage[] = [
   { street: "flop", label: "フロップ", suffix: "-policy.json" },
   { street: "turn_river", label: "ターン/リバー", suffix: "-later-policy.json" },
   // Per-hand EV was dropped from the product (2026-10-01): there is no EV stage to track.
@@ -165,17 +174,17 @@ export const RELEASE_TASKS = Object.freeze([
   { id: "release_turn_river_ev", hero: "—", path: "【見送り・2026-10-01 決定】ターン・リバーの手ごとのEV。EVは両者の想定戦略に依存し、相手のコールレンジがGTOと違うと正確でないため、ポストフロップのEVは出さない", done: true },
 ]);
 
-export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
-  const counts = {};
+export function postflopCatalog(spots: PostflopSpot[], artifactHashes: Record<string, string> = {}, authoredIds: string[] = []) {
+  const counts: Record<string, number> = {};
   for (const hash of Object.values(artifactHashes)) if (hash && hash !== "fresh") counts[hash] = (counts[hash] ?? 0) + 1;
-  const statusOf = (spot, name, stage) => {
+  const statusOf = (spot: PostflopSpot, name: string, stage: Stage) => {
     if (!(name in artifactHashes)) return "todo";
     if (stage.freshness) return artifactHashes[name] === "fresh" ? "done" : "todo";
     const hash = artifactHashes[name];
     return authoredIds.includes(spot.id) || (hash && counts[hash] === 1) ? "done" : "copy";
   };
   const reachable = spots.filter(spot => spot.reachable);
-  const categories = STAGES.flatMap(stage => POT_KINDS.map(([kind, kindLabel]) => {
+  const categories: CoverageCategory[] = STAGES.flatMap(stage => POT_KINDS.map(([kind, kindLabel]) => {
     const rows = reachable.filter(spot => spot.kind === kind).map(spot => ({
       id: spot.id, hero: `${spot.ip} vs ${spot.oop}`, path: `${kindLabel} · ${spot.ip} IP / ${spot.oop} OOP`,
       category: `${stage.street}_${kind}`, priority: stage.priority ?? postflopPriority(spot), status: statusOf(spot, `${spot.slug}${stage.suffix}`, stage), street: stage.street,
@@ -199,7 +208,7 @@ export function postflopCatalog(spots, artifactHashes = {}, authoredIds = []) {
   return { categories, done, total, todo: total - done, unreachable: spots.filter(spot => !spot.reachable).map(spot => spot.id) };
 }
 
-export function priorityBacklog(preflopCatalog, postflopCatalog) {
+export function priorityBacklog(preflopCatalog: { categories: { rows: CoverageRow[] }[] }, postflopCatalog: { categories: { rows: CoverageRow[] }[] }) {
   const rows = [...preflopCatalog.categories, ...postflopCatalog.categories].flatMap(category => category.rows);
   return PRIORITIES.map(priority => {
     const assigned = rows.filter(row => row.priority === priority.value);

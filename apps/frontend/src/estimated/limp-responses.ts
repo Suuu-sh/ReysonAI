@@ -1,3 +1,5 @@
+import type { MatrixModel } from "../data.ts";
+import type { LimpCheckSpot, LimpDataset, LimpSpot, OpeningDataset } from "./preflop-types.ts";
 import { hands } from "../data.ts";
 import { effectiveStackBb, fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeBb, sbCompleteToBb } from "./sizing.ts";
 
@@ -5,14 +7,16 @@ export const LIMP_RERAISE_RESPONSE_ID = "BB_vs_SB_limp_reraise";
 const limpReraiseFourBetToBb = () => fourBetToSize("BB", "SB");
 import { hasConfiguredRake } from "./rake.ts";
 
-function requireSpot(data, id) {
+function requireSpot<I extends LimpSpot["id"]>(data: LimpDataset, id: I): Extract<LimpSpot, { id: I }>;
+function requireSpot(data: LimpDataset, id: string): LimpSpot;
+function requireSpot(data: LimpDataset, id: string): LimpSpot {
   const spot = data.spots.find(item => item.id === id);
   if (!spot) throw new Error(`リンプ応答局面がありません: ${id}`);
   return spot;
 }
 
-export function validateLimpResponses(data, opening) {
-  const fail = detail => { throw new Error(`リンプ応答データが不正です: ${detail}`); };
+export function validateLimpResponses(data: LimpDataset, opening: OpeningDataset) {
+  const fail: (detail: string) => never = detail => { throw new Error(`リンプ応答データが不正です: ${detail}`); };
   const expectedRake = hasConfiguredRake(data?.metadata);
   if (data?.metadata?.schema_version !== "1.0" ||
       data.metadata.strategy_type !== "ai_estimate_not_gto" ||
@@ -78,14 +82,14 @@ export function validateLimpResponses(data, opening) {
   return data;
 }
 
-export function findLimpResponseSpot(data, id) {
+export function findLimpResponseSpot<I extends LimpSpot["id"]>(data: LimpDataset, id: I): Extract<LimpSpot, { id: I }> {
   return requireSpot(data, id);
 }
 
 // `limpData` (the whole dataset) is needed only for the limp-reraise response,
 // whose reachability comes from BB's saved iso-raise frequency.
-export function limpResponsesMatrixModel(spot, opening, limpData = null) {
-  const sbOpen = opening.spots.find(item => item.id === "SB_open");
+export function limpResponsesMatrixModel(spot: LimpSpot, opening: OpeningDataset, limpData: LimpDataset | null = null): MatrixModel {
+  const sbOpen = opening.spots.find(item => item.id === "SB_open")!;
   if (spot.id === "BB_vs_SB_limp") {
     return {
       actions: [`raise_${isoVsLimpToBb}`, "check"],
@@ -116,7 +120,7 @@ export function limpResponsesMatrixModel(spot, opening, limpData = null) {
     };
   }
   if (spot.id === LIMP_RERAISE_RESPONSE_ID) {
-    const iso = limpData ? requireSpot(limpData, spot.source_limp_response_id) : null;
+    const iso = limpData ? (requireSpot(limpData, spot.source_limp_response_id) as LimpCheckSpot) : null;
     if (!iso) throw new Error("リンプ・リレイズ応答にはBBのアイソ頻度が必要です。");
     const isoRaise = new Map(iso.hands.map(row => [row.hand, row.raise]));
     const fourBet = `four_bet_${spot.four_bet_size_bb}`;
@@ -133,5 +137,5 @@ export function limpResponsesMatrixModel(spot, opening, limpData = null) {
       })),
     };
   }
-  throw new Error(`未対応のリンプ応答局面です: ${spot.id}`);
+  throw new Error(`未対応のリンプ応答局面です: ${(spot as { id: string }).id}`);
 }

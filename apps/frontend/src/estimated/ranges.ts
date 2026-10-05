@@ -1,3 +1,5 @@
+import type { ResponseDataset, ResponseSpot } from "./preflop-types.ts";
+import type { MatrixModel } from "../data.ts";
 import { hands } from "../data.ts";
 import { positions, openSizeBb, openSizeFor, threeBetToSize } from "./sizing.ts";
 import { hasConfiguredRake } from "./rake.ts";
@@ -12,7 +14,7 @@ export const rangeTypes = [
   { value: "four_bet", label: "4bet後の応答", available: true },
 ];
 
-export function validateDataset(data) {
+export function validateDataset(data: ResponseDataset) {
   const expectedIds = positions.flatMap((opener, i) => positions.slice(i + 1).map(hero => `${hero}_vs_${opener}`));
   if (data?.metadata?.ante_bb !== 0 || data?.metadata?.strategy_type !== "ai_estimate_not_gto" ||
       !hasConfiguredRake(data.metadata) ||
@@ -43,26 +45,26 @@ export function validateDataset(data) {
   return data;
 }
 
-export function availableHeroes(opener) {
+export function availableHeroes(opener: string) {
   const index = positions.indexOf(opener);
   return index < 0 ? [] : positions.slice(index + 1);
 }
 
-export function hasSpot(data, opener, hero) {
+export function hasSpot(data: ResponseDataset | null | undefined, opener: string, hero: string) {
   return Boolean(data?.spots?.some(spot => spot.opener === opener && spot.hero === hero));
 }
 
-export function availableOpeners(data) {
+export function availableOpeners(data: ResponseDataset | null | undefined) {
   return positions.filter(opener => data?.spots?.some(spot => spot.opener === opener));
 }
 
-export function findSpot(data, opener, hero) {
+export function findSpot(data: ResponseDataset, opener: string, hero: string) {
   const spot = data.spots.find(item => item.opener === opener && item.hero === hero);
   if (!spot) throw new Error("この組み合わせの対オープンレンジはありません。");
   return spot;
 }
 
-export function matrixModel(spot) {
+export function matrixModel(spot: ResponseSpot): MatrixModel {
   const actions = ["raise_ai", "call", "fold"];
   const aggregates = new Map(spot.hands.map(row => [row.hand, {
     hand: row.hand,

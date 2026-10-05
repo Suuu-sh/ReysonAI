@@ -4,12 +4,12 @@ import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { seededRandom } from "../scripts/lib/equity.mjs";
+import { seededRandom } from "../scripts/lib/equity.ts";
 import { boards, loadInputs } from "../scripts/postflop-ai/inputs.mjs";
-import { parseCards } from "../scripts/postflop-ai/model.mjs";
-import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.mjs";
+import { parseCards } from "../scripts/postflop-ai/model.ts";
+import { referencePolicy, referencePolicyFor } from "../scripts/postflop-ai/policy.ts";
 import { HISTORIES, handEvArtifactBoardId, handEvForBoard, historiesFor, playFromNode } from "../scripts/postflop-ai/hand-ev.mjs";
-import { spotById } from "../scripts/postflop-ai/spots.mjs";
+import { spotById } from "../scripts/postflop-ai/spots.ts";
 
 const flop = parseCards("As7d2c", 3);
 const hands = { BTN: parseCards("AhKd", 2), BB: parseCards("7h7c", 2) };

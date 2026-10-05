@@ -1,5 +1,25 @@
-import { makeRange, indexOf, weightOf, equityVersus, equitiesVersus, releaseRangeTables } from "./range-equity.mjs";
-import { packEquities, packWeights, unpackWeights } from "./cached-values.mjs";
+import type { ActionMix, FlopPolicy, Inputs, LaterPolicy, PilotConfig, Street } from "./types.ts";
+import type { LaterStreet } from "./later-tree.ts";
+import type { PlayerRole } from "./tree.ts";
+import type { ActionPaths, DecisionLog, Table } from "./engine.ts";
+import type { CachedEquity, PackedWeights } from "./cached-values.ts";
+export type RankTable = { score: Int32Array; sortedIds: Int16Array; sortedScores: Int32Array };
+type EquityRange = ReturnType<typeof makeRange>;
+export type BetCap = { action: string; alpha: number; ratio: number; factor: number; valueBefore: number; bluffBefore: number; valueAfter: number; bluffAfter: number };
+export type BettingCap = { node: string; bettor: string; caps: BetCap[]; kind: Uint8Array; passive: string;
+  apply: (base: ActionMix, type: number, tier?: number) => ActionMix; applyCombo: (base: ActionMix, combo: readonly number[]) => ActionMix };
+type DefenceLimit = { threshold: number; fraction: number };
+type DefenceSummary = { defenders: { id: number; weight: number; equity: number; realized: number }[]; cumulative: number[];
+  defenderTotal: number; kind: Uint8Array; valueWeight: number; bluffWeight: number; defenceFrequency: number | null };
+export type DefenceContext = { key: string; node: string; street: Street; board: readonly number[]; role: PlayerRole; bettor: string; defender: string;
+  target: DecisionLog; finalPot: number; rake: number; required: number; mdf: number; potBefore: number; wager: number; call: number;
+  bettorRange: EquityRange; defenderEntries: DecisionLog[]; table: Table; cap: BettingCap | null; tables: RankTable[] | null;
+  ceiling: DefenceLimit | null | undefined; floor: DefenceLimit | null | undefined; capped: boolean; facedCap: BetCap | null;
+  equities: ReturnType<typeof packEquities>; summary: DefenceSummary | null; completeEquities?: boolean; tiers?: Uint8Array; realizationFactors?: number[] };
+type BettingFactRange = { range: EquityRange; tables: RankTable[]; equities: Map<number, number | null> };
+
+import { makeRange, indexOf, weightOf, equityVersus, equitiesVersus, releaseRangeTables } from "./range-equity.ts";
+import { packEquities, packWeights, unpackWeights } from "./cached-values.ts";
 // Computed defence (call / fold) at facing nodes of the heads-up postflop pilot.
 //
 // The AI policies give every facing decision a fixed mix per hand tier, so their calls ignore the
@@ -22,15 +42,15 @@ import { packEquities, packWeights, unpackWeights } from "./cached-values.mjs";
 //      call share = logistic((realized - required) / 0.02).
 //
 // Pure and dependency-free (no node:*), so it runs in the browser worker, the edge worker and Node.
-import { evaluate, seedFor, seededRandom } from "../lib/equity.mjs";
-import { comboRange } from "./browser-inputs.mjs";
-import { flopTextureKeys, handTier, runoutTexture, TIERS } from "./model.mjs";
-import { NODES, effectiveMix, referenceMix, withRaise } from "./policy.mjs";
+import { evaluate, seedFor, seededRandom } from "../lib/equity.ts";
+import { comboRange } from "./browser-inputs.ts";
+import { flopTextureKeys, handTier, runoutTexture, TIERS } from "./model.ts";
+import { NODES, effectiveMix, referenceMix, withRaise } from "./policy.ts";
 import { LATER_NODES } from "./later-tree.ts";
-import { referenceLaterTierMix } from "./later-policy.mjs";
+import { referenceLaterTierMix } from "./later-policy.ts";
 import { betFraction } from "./later-tree.ts";
 import { flopBetFraction, raiseDepth } from "./tree.ts";
-import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.mjs";
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.ts";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 // Best-five showdown ranking: older derived defence/base artifacts are stale.
@@ -47,9 +67,9 @@ export const VALUE_EQUITY = 0.5;
 const NUM_IDS = 52 * 52;
 const NONE = 255;
 const TIER_INDEX = Object.fromEntries(TIERS.map((tier, index) => [tier, index]));
-export const comboId = (a, b) => a < b ? a * 52 + b : b * 52 + a;
+export const comboId = (a: number, b: number): number => a < b ? a * 52 + b : b * 52 + a;
 // Order independent numeric key of a set of up to 5 cards (52^5 < 2^53), distinct per size.
-function sortedKey(cards) {
+function sortedKey(cards: readonly number[]): number {
   const n = cards.length;
   let a = cards[0], b = n > 1 ? cards[1] : 0, c = n > 2 ? cards[2] : 0, d = n > 3 ? cards[3] : 0, e = n > 4 ? cards[4] : 0, t;
   if (n > 1) { if (a > b) { t = a; a = b; b = t; } }
@@ -58,11 +78,11 @@ function sortedKey(cards) {
   if (n > 4) { if (d > e) { t = d; d = e; e = t; } if (c > d) { t = c; c = d; d = t; } if (b > c) { t = b; b = c; c = t; } if (a > b) { t = a; a = b; b = t; } }
   return n * 52 ** 5 + (((a * 52 + b) * 52 + c) * 52 + d) * 52 + e;
 }
-const round6 = value => Math.round(value * 1e6) / 1e6;
-const round4 = value => Math.round(value * 1e4) / 1e4;
+const round6 = (value: number): number => Math.round(value * 1e6) / 1e6;
+const round4 = (value: number): number => Math.round(value * 1e4) / 1e4;
 
-const textures = new Map();
-const textureOf = (street, board) => {
+const textures = new Map<string, string>();
+const textureOf = (street: Street, board: readonly number[]): string => {
   // Flop: the most specific key ("dry_low"); policyRule falls back through flopTextureKeys.
   if (street === "flop") return flopTextureKeys(board)[0];
   const key = board.join(",");
@@ -73,26 +93,26 @@ const textureOf = (street, board) => {
   }
   return value;
 };
-const isAggressive = action => action.startsWith("bet") || action === "allin" || action === "raise";
-const r2 = value => Math.round(value * 100) / 100;
+const isAggressive = (action: string): boolean => action.startsWith("bet") || action === "allin" || action === "raise";
+const r2 = (value: number): number => Math.round(value * 100) / 100;
 // A betting decision: a first / lead node, or a facing node where the actor may raise.
-export const isBettingNode = node => node.endsWith("_first") || Boolean(NODES[node]?.includes("raise") || LATER_NODES[node]?.includes("raise"));
-export const isFacingNode = node => Boolean(NODES[node]?.includes("call") || LATER_NODES[node]?.includes("call"));
-const streetOf = node => LATER_NODES[node] ? node.split("_")[0] : "flop";
+export const isBettingNode = (node: string): boolean => node.endsWith("_first") || Boolean(NODES[node]?.includes("raise") || LATER_NODES[node]?.includes("raise"));
+export const isFacingNode = (node: string): boolean => Boolean(NODES[node]?.includes("call") || LATER_NODES[node]?.includes("call"));
+const streetOf = (node: string): Street => LATER_NODES[node] ? node.split("_")[0] as Street : "flop";
 
 // Break-even bookkeeping of a facing decision. `call` is the chips the defender still has to put in
 // (already capped by its stack). Pure so the formula can be tested on its own.
-export function requiredEquity({ potBefore, wager, call }) {
+export function requiredEquity({ potBefore, wager, call }: { potBefore: number; wager: number; call: number }) {
   const finalPot = potBefore + wager + call, fee = rake(finalPot);
   return { finalPot, rake: fee, required: call > 0 ? call / (finalPot - fee) : 0,
     mdf: potBefore / (potBefore + wager) };
 }
 
-export const logistic = value => 1 / (1 + Math.exp(-value));
+export const logistic = (value: number): number => 1 / (1 + Math.exp(-value));
 
 // Splits the non-raise part of a policy mix into call / fold. `base` is the AI policy mix
 // ({ fold, call } or { fold, call, raise }); the raise share is kept. Whole percentages, sum 100.
-export function splitMix(base, callShare) {
+export function splitMix(base: ActionMix, callShare: number): ActionMix {
   const raise = base.raise ?? 0, rest = round6(100 - raise);
   // Whole percentages, unless the bluff cap left a fractional raise share (then two decimals).
   const call = Math.min(rest, Math.max(0, Number.isInteger(raise) ? Math.round(rest * callShare) : Math.round(rest * callShare * 100) / 100));
@@ -102,12 +122,12 @@ export function splitMix(base, callShare) {
 // ---------------------------------------------------------------------------------------------
 // Board level caches (independent of ranges and policies, shared by every Defence instance).
 // ---------------------------------------------------------------------------------------------
-const tableCache = new Map();
+const tableCache = new Map<number, RankTable>();
 const TABLE_LIMIT = 3000;
 
 // Ranks of all combos on a 5 card board: score[id] (-1 when the combo touches the board) and the
 // unblocked ids sorted by score.
-export function rankTable(board) {
+export function rankTable(board: readonly number[]): RankTable {
   const key = sortedKey(board);
   const cached = tableCache.get(key);
   if (cached) return cached;
@@ -138,11 +158,11 @@ export function rankTable(board) {
 }
 
 // Turn/flop tiers (with draws, costly) and river tiers (read off the rank table) are cached apart.
-const tierCache = new Map(), riverTierCache = new Map();
+const tierCache = new Map<number, Uint8Array>(), riverTierCache = new Map<number, Uint8Array>();
 const TIER_LIMIT = 3000;
 
 // handTier index of every combo on a 3-5 card board (NONE when the combo touches the board).
-export function tierArray(board) {
+export function tierArray(board: readonly number[]): Uint8Array {
   const key = sortedKey(board), cache = board.length === 5 ? riverTierCache : tierCache;
   const cached = cache.get(key);
   if (cached) return cached;
@@ -172,13 +192,14 @@ export function tierArray(board) {
   return out;
 }
 
-const runoutCache = new Map();
+type FlopRunouts = { runouts: number[][]; tables: RankTable[] | null };
+const runoutCache = new Map<string, FlopRunouts>();
 // The seeded sample of turn+river runouts of a flop (and their rank tables).
-export function flopRunouts(flop) {
+export function flopRunouts(flop: readonly number[]): FlopRunouts {
   const key = flop.join(",");
   const cached = runoutCache.get(key);
   if (cached) return cached;
-  if (runoutCache.size >= 16) runoutCache.delete(runoutCache.keys().next().value);
+  if (runoutCache.size >= 16) runoutCache.delete(runoutCache.keys().next().value!);
   const random = seededRandom(seedFor(`${pilotConfig.seed}|defence|flop|${[...flop].sort((x, y) => x - y).join(",")}`));
   const live = Array.from({ length: 52 }, (_, card) => card).filter(card => !flop.includes(card));
   const runouts = Array.from({ length: FLOP_RUNOUTS }, () => {
@@ -187,13 +208,13 @@ export function flopRunouts(flop) {
     do river = live[Math.floor(random() * live.length)]; while (river === turn);
     return [turn, river];
   });
-  const entry = { runouts, tables: null };
+  const entry: FlopRunouts = { runouts, tables: null };
   runoutCache.set(key, entry);
   return entry;
 }
 
 // The final boards a decision on `board` is evaluated over (each as a rank table).
-function finalTables(board) {
+function finalTables(board: readonly number[]): RankTable[] {
   if (board.length === 5) return [rankTable(board)];
   if (board.length === 4) {
     const tables = [];
@@ -212,15 +233,15 @@ const STOP = Symbol("stop at the pending decision");
 // The actions do not reach the requested pending decision (an illegal path, or one the engine
 // resolves differently, e.g. a wager merged into an all-in). Callers may fall back to policy mixes.
 export class DefencePathError extends Error {}
-const pathError = message => new DefencePathError(message);
+const pathError = (message: string) => new DefencePathError(message);
 
 // `board` has 3-5 cards (flop, turn, river) and `path` = { flop, turn, river } holds the actions
 // taken before the pending decision (the pending street's array is its history so far). Returns the
 // engine table whose last log entry is the pending decision.
-export function replayDecision(inputs, board, path, config = pilotConfig) {
+export function replayDecision(inputs: Inputs, board: readonly number[], path: Partial<ActionPaths>, config: PilotConfig = pilotConfig): Table {
   const spot = inputs.spot, table = createTable(spot), flop = board.slice(0, 3);
   const street = board.length === 3 ? "flop" : board.length === 4 ? "turn" : "river";
-  const actionsOf = name => path[name] ?? [];
+  const actionsOf = (name: Street): string[] => path[name] ?? [];
   try {
     playFlop(table, spot.tree, (seat, node, step) => {
       const taken = actionsOf("flop");
@@ -230,7 +251,7 @@ export function replayDecision(inputs, board, path, config = pilotConfig) {
     }, config);
     if (street === "flop") throw pathError("Flop actions do not reach a pending decision");
     playLaterStreetsWithPolicy(table, flop, board.slice(3), (seat, node) => {
-      const name = node.split("_")[0], taken = actionsOf(name), index = table.path[name].length;
+      const name = node.split("_")[0] as Street, taken = actionsOf(name), index = table.path[name].length;
       if (index < taken.length) return taken[index];
       if (name === street) throw STOP;
       throw pathError(`${name} actions do not reach the requested street`);
@@ -243,7 +264,7 @@ export function replayDecision(inputs, board, path, config = pilotConfig) {
 }
 
 // replayDecision, or null when the actions do not reach a pending decision.
-export function replayOrNull(inputs, board, path, config = pilotConfig) {
+export function replayOrNull(inputs: Inputs, board: readonly number[], path: Partial<ActionPaths>, config: PilotConfig = pilotConfig): Table | null {
   try { return replayDecision(inputs, board, path, config); } catch (error) {
     if (error instanceof DefencePathError) return null;
     throw error;
@@ -253,12 +274,13 @@ export function replayOrNull(inputs, board, path, config = pilotConfig) {
 // ---------------------------------------------------------------------------------------------
 // The defence model of one (inputs, flop policy, later policy).
 // ---------------------------------------------------------------------------------------------
-const instances = new WeakMap(), uncappedInstances = new WeakMap();
+type Instances = WeakMap<Inputs, WeakMap<FlopPolicy, WeakMap<object, Defence>>>;
+const instances: Instances = new WeakMap(), uncappedInstances: Instances = new WeakMap();
 const NO_LATER = {};
 
 // One shared instance per (inputs, flopPolicy, laterPolicy) so every consumer reuses its caches.
 // `bluffCap: false` (tests, comparisons) leaves every betting decision as the policy mix.
-export function defenceFor(inputs, flopPolicy, laterPolicy = null, { bluffCap = true } = {}) {
+export function defenceFor(inputs: Inputs, flopPolicy: FlopPolicy, laterPolicy: LaterPolicy | null = null, { bluffCap = true }: { bluffCap?: boolean } = {}): Defence {
   const roots = bluffCap ? instances : uncappedInstances;
   let byFlop = roots.get(inputs);
   if (!byFlop) roots.set(inputs, byFlop = new WeakMap());
@@ -278,7 +300,21 @@ const FACT_RANGE_LIMITS = { flop: 24, turn: 64, river: 96 };
 const COMPACT_CACHE_AFTER = 4096;
 
 class Defence {
-  constructor(inputs, flopPolicy, laterPolicy, bluffCap = true) {
+  declare bluffCap: boolean;
+  declare inputs: Inputs;
+  declare flopPolicy: FlopPolicy;
+  declare laterPolicy: LaterPolicy | null;
+  declare config: PilotConfig;
+  declare realization: PilotConfig["defence_realization"];
+  declare base: Map<string, Float64Array>;
+  declare rules: Map<string, ActionMix>;
+  declare largeRun: boolean;
+  declare stages: Map<string, Float64Array | PackedWeights>;
+  declare contexts: Record<Street, Map<string, DefenceContext | null>>;
+  declare bets: Record<Street, Map<string, BettingCap | null>>;
+  declare bettingFactRanges: Record<Street, Map<string, BettingFactRange>>;
+
+  constructor(inputs: Inputs, flopPolicy: FlopPolicy, laterPolicy: LaterPolicy | null, bluffCap = true) {
     this.bluffCap = bluffCap;
     this.inputs = inputs; this.flopPolicy = flopPolicy; this.laterPolicy = laterPolicy;
     this.config = inputs.config ?? pilotConfig;
@@ -304,13 +340,13 @@ class Defence {
 
   // Exact hand-EV visits thousands of river boards; drop the river contexts (the only large ones) once
   // more than `limit` are held. Everything else (policy, base weights, flop / turn stages) is kept.
-  trimRiverCaches(limit) {
+  trimRiverCaches(limit: number) {
     if (this.contexts.river.size <= limit) return;
     this.contexts.river.clear(); this.bets.river.clear(); this.bettingFactRanges.river.clear();
   }
 
   // Saved preflop weights of a seat by combo id (no board removed).
-  baseWeights(seat) {
+  baseWeights(seat: string): Float64Array {
     let weights = this.base.get(seat);
     if (!weights) {
       const rows = this.inputs.seatRows[seat];
@@ -323,7 +359,7 @@ class Defence {
   }
 
   // The AI policy mix of a tier at a decision (the same lookup as policyMix / laterPolicyMix).
-  policyRule(entry, texture, tierIndex) {
+  policyRule(entry: DecisionLog, texture: string, tierIndex: number): ActionMix {
     const flop = entry.street === "flop";
     const key = `${entry.node}|${entry.line}|${texture}|${tierIndex}|${entry.canRaise === false ? 0 : 1}`;
     let mix = this.rules.get(key);
@@ -338,7 +374,7 @@ class Defence {
       }
     } else {
       if (entry.street === "river" && tier === "draw") tier = "medium";
-      const rules = this.laterPolicy.streets[entry.street].rules;
+      const rules = this.laterPolicy!.streets[entry.street as LaterStreet].rules;
       for (const [line, tex] of [[entry.line, texture], [entry.line, "any"], ["any", texture], ["any", "any"]]) {
         const rule = rules.find(item => item.node === entry.node && item.tier === tier && item.line === line && item.texture === tex);
         if (rule) { mix = rule.mix; break; }
@@ -354,7 +390,7 @@ class Defence {
 
   // The same policy lookup as policyMix/laterPolicyMix, reusing board-wide tiers and rules.
   // Engine callers already have the pending entry (including its previous-street line).
-  baseMix(table, board, node, combo) {
+  baseMix(table: Table, board: readonly number[], node: string, combo: readonly number[]): ActionMix {
     const entry = table.log.at(-1);
     if (entry?.node !== node) throw new Error("Policy mix needs the pending decision");
     const tier = tierArray(board)[comboId(combo[0], combo[1])];
@@ -364,7 +400,7 @@ class Defence {
 
   // Reach weights of a seat after `entries` (its earlier decisions, in order) by combo id: the saved
   // range times the policy probability of every action it took. Flop and turn stages are cached.
-  reach(seat, entries, board, table = null) {
+  reach(seat: string, entries: readonly DecisionLog[], board: readonly number[], table: Table | null = null): Float64Array {
     let weights = this.baseWeights(seat), key = seat;
     for (const entry of entries) {
       const stageBoard = board.slice(0, entry.boardLen);
@@ -379,7 +415,7 @@ class Defence {
         const factors = new Float64Array(TIERS.length * 3);
         for (let tier = 0; tier < TIERS.length; tier++) {
           const base = this.policyRule(entry, texture, tier);
-          for (let kind = 0; kind < 3; kind++) factors[tier * 3 + kind] = (cap ? cap.apply(base, kind, tier) : base)[entry.action] / 100;
+          for (let kind = 0; kind < 3; kind++) factors[tier * 3 + kind] = (cap ? cap.apply(base, kind, tier) : base)[entry.action!] / 100;
         }
         const kinds = cap ? cap.kind : null;
         next = new Float64Array(NUM_IDS);
@@ -405,19 +441,19 @@ class Defence {
 
   // The defence context of the pending decision of `table` at `node` (null when it is not a facing
   // decision or the bettor range is empty). Cached per (node, board, actions taken).
-  context(table, board, node) {
+  context(table: Table, board: readonly number[], node: string): DefenceContext | null {
     if (!isFacingNode(node)) return null;
     const street = streetOf(node), cache = this.contexts[street];
     const key = `${node}#${board.join(",")}#${table.path.flop}#${table.path.turn}#${table.path.river}`;
-    if (cache.has(key)) { const hit = cache.get(key); cache.delete(key); cache.set(key, hit); return hit; }
+    if (cache.has(key)) { const hit = cache.get(key)!; cache.delete(key); cache.set(key, hit); return hit; }
     const context = this.build(table, board, node, street, key);
-    if (cache.size >= LIMITS[street]) cache.delete(cache.keys().next().value);
+    if (cache.size >= LIMITS[street]) cache.delete(cache.keys().next().value!);
     cache.set(key, context);
     if (street === "river" && cache.size >= COMPACT_CACHE_AFTER) this.largeRun = true;
     return context;
   }
 
-  build(table, board, node, street, key) {
+  build(table: Table, board: readonly number[], node: string, street: Street, key: string): DefenceContext | null {
     const { log } = table, target = log.at(-1), prior = log.at(-2);
     if (!target || target.node !== node || target.action !== null) throw new Error("Defence needs the pending decision of the node");
     if (!prior || prior.seat === target.seat || prior.street !== target.street) return null;
@@ -441,34 +477,34 @@ class Defence {
   }
 
   // The bluff cap of the pending betting decision (null when nothing is capped). See docs/postflop-defence.md.
-  betting(table, board, node) {
+  betting(table: Table, board: readonly number[], node: string): BettingCap | null {
     if (!this.bluffCap || !isBettingNode(node)) return null;
     const street = streetOf(node), cache = this.bets[street];
     const key = `${node}#${board.join(",")}#${table.path.flop}#${table.path.turn}#${table.path.river}`;
-    if (cache.has(key)) { const hit = cache.get(key); cache.delete(key); cache.set(key, hit); return hit; }
+    if (cache.has(key)) { const hit = cache.get(key)!; cache.delete(key); cache.set(key, hit); return hit; }
     const info = this.buildBetting(table, board, node, street);
-    if (cache.size >= LIMITS[street]) cache.delete(cache.keys().next().value);
+    if (cache.size >= LIMITS[street]) cache.delete(cache.keys().next().value!);
     cache.set(key, info);
     return info;
   }
 
   // The betting decision of `entry` (an earlier decision of the table's hand), rebuilt from the actions before it.
-  entryBetting(table, board, entry) {
+  entryBetting(table: Table, board: readonly number[], entry: DecisionLog): BettingCap | null {
     if (!this.bluffCap || !isBettingNode(entry.node)) return null;
     if (entry === table.log.at(-1)) return this.betting(table, board, entry.node);
-    const order = ["flop", "turn", "river"], at = order.indexOf(entry.street), prefix = {};
+    const order: Street[] = ["flop", "turn", "river"], at = order.indexOf(entry.street), prefix: Partial<ActionPaths> = {};
     order.forEach((name, i) => { prefix[name] = i < at ? table.path[name] : i === at ? table.path[name].slice(0, entry.index) : []; });
     const stageBoard = board.slice(0, entry.boardLen);
     const cache = this.bets[entry.street];
     const key = `${entry.node}#${stageBoard.join(",")}#${prefix.flop}#${prefix.turn}#${prefix.river}`;
     if (cache.has(key)) {
-      const hit = cache.get(key); cache.delete(key); cache.set(key, hit); return hit;
+      const hit = cache.get(key)!; cache.delete(key); cache.set(key, hit); return hit;
     }
     const before = replayOrNull(this.inputs, stageBoard, prefix);
     return before ? this.betting(before, stageBoard, entry.node) : null;
   }
 
-  buildBetting(table, board, node, street) {
+  buildBetting(table: Table, board: readonly number[], node: string, street: Street): BettingCap | null {
     const { log } = table, target = log.at(-1);
     if (!target || target.node !== node || target.action !== null) throw new Error("Bluff cap needs the pending decision of the node");
     const bettor = target.seat, defender = table.other(bettor);
@@ -483,7 +519,7 @@ class Defence {
       if (limit > 0 && amounts.every(amount => amount < limit * pilotConfig.later_all_in_merge_ratio &&
           r2(own - r2(Math.min(own, amount))) > 1e-9)) return null;
     }
-    const caps = [];
+    const caps: BetCap[] = [];
     for (const action of (NODES[node] ?? LATER_NODES[node]).filter(isAggressive)) {
       const after = replayOrNull(this.inputs, board, { flop: table.path.flop, turn: table.path.turn, river: table.path.river,
         [street]: [...table.path[street], action] });
@@ -492,7 +528,7 @@ class Defence {
       if (street !== "river" && after.stacks[bettor] > 1e-9) continue;
       const wager = r2(after.pot - target.pot);
       const call = Math.min(after.stacks[defender], r2(after.invested[bettor] - after.invested[defender]));
-      caps.push({ action, alpha: requiredEquity({ potBefore: target.pot, wager, call }).required, ratio: wager / target.pot });
+      caps.push({ action, alpha: requiredEquity({ potBefore: target.pot, wager, call }).required, ratio: wager / target.pot } as BetCap);
     }
     if (!caps.length) return null;
     const bettorWeights = this.reach(bettor, log.filter(entry => entry.seat === bettor && entry !== target), board, table);
@@ -513,10 +549,10 @@ class Defence {
     const maxRatio = this.config.river_allin_max_pot_ratio;
     // A null limit switches the rule off (tests of the plain bluff cap and defence).
     const shoveCap = bigBet && maxRatio != null ? caps.find(item => item.action === "allin") : null;
-    const reroute = (base, tier) => {
+    const reroute = (base: ActionMix, tier: number): ActionMix => {
       if (!shoveCap || !(base.allin > 0)) return base;
       if (!(shoveCap.ratio > maxRatio) && !["medium", "draw"].includes(TIERS[tier])) return base;
-      return { ...base, allin: 0, [bigBet]: round6((base[bigBet] ?? 0) + base.allin) };
+      return { ...base, allin: 0, [bigBet!]: round6((base[bigBet!] ?? 0) + base.allin) };
     };
     const baseMixes = TIERS.map((_, tier) => reroute(this.policyRule(target, texture, tier), tier));
     for (const cap of caps) {
@@ -532,10 +568,10 @@ class Defence {
       Object.assign(cap, { valueBefore: value, bluffBefore: bluff, valueAfter: value, bluffAfter: bluff * cap.factor });
     }
     const passive = (NODES[node] ?? LATER_NODES[node]).includes("check") ? "check" : "call";
-    const apply = (base, type, tier = -1) => {
+    const apply = (base: ActionMix, type: number, tier = -1): ActionMix => {
       base = reroute(base, tier);
       if (type !== 2) return base;
-      let out = null;
+      let out: ActionMix | null = null;
       for (const cap of caps) {
         if (cap.factor >= 1) continue;
         const current = (out ?? base)[cap.action], next = round6(current * cap.factor);
@@ -546,11 +582,11 @@ class Defence {
       return out ?? base;
     };
     return { node, bettor, caps, kind, passive, apply,
-      applyCombo: (base, combo) => apply(base, kind[comboId(combo[0], combo[1])], tiers[comboId(combo[0], combo[1])]) };
+      applyCombo: (base: ActionMix, combo: readonly number[]) => apply(base, kind[comboId(combo[0], combo[1])], tiers[comboId(combo[0], combo[1])]) };
   }
 
   // Break-even requirement and supported bluffs for every aggressive option at a betting node.
-  bettingFacts(table, board, node, combo) {
+  bettingFacts(table: Table, board: readonly number[], node: string, combo: readonly number[]) {
     if (!isBettingNode(node)) return null;
     const info = this.betting(table, board, node);
     const type = info?.kind[comboId(combo[0], combo[1])] ?? 0;
@@ -558,10 +594,10 @@ class Defence {
     const key = `${node}#${board.join(",")}#${table.path.flop}#${table.path.turn}#${table.path.river}`;
     let rangeContext = factCache.get(key);
     if (!rangeContext) {
-      const target = table.log.at(-1), defender = table.other(target.seat);
+      const target = table.log.at(-1)!, defender = table.other(target.seat);
       const weights = this.reach(defender, table.log.filter(entry => entry.seat === defender), board, table);
       rangeContext = { range: makeRange(weights), tables: finalTables(board), equities: new Map() };
-      if (factCache.size >= FACT_RANGE_LIMITS[street]) factCache.delete(factCache.keys().next().value);
+      if (factCache.size >= FACT_RANGE_LIMITS[street]) factCache.delete(factCache.keys().next().value!);
       factCache.set(key, rangeContext);
     }
     const id = comboId(combo[0], combo[1]);
@@ -570,8 +606,8 @@ class Defence {
       equityVsDefender = equityVersus(rangeContext.range, id, rangeContext.tables);
       rangeContext.equities.set(id, equityVsDefender);
     }
-    const share = (value, bluff) => value + bluff > 0 ? round4(bluff / (value + bluff)) : null;
-    const target = table.log.at(-1), bettor = target.seat, defender = table.other(bettor);
+    const share = (value: number, bluff: number): number | null => value + bluff > 0 ? round4(bluff / (value + bluff)) : null;
+    const target = table.log.at(-1)!, bettor = target.seat, defender = table.other(bettor);
     const actions = (NODES[node] ?? LATER_NODES[node]).filter(isAggressive).flatMap(action => {
       const after = replayOrNull(this.inputs, board, { flop: table.path.flop, turn: table.path.turn, river: table.path.river,
         [target.street]: [...table.path[target.street], action] });
@@ -584,33 +620,33 @@ class Defence {
         capped: Boolean(cap && cap.factor < 1), factor: round4(cap?.factor ?? 1),
         value_before: cap ? round4(cap.valueBefore) : null, bluff_before: cap ? round4(cap.bluffBefore) : null,
         bluff_share_before: cap ? share(cap.valueBefore, cap.bluffBefore) : null,
-        bluff_share_before_pct: cap && share(cap.valueBefore, cap.bluffBefore) !== null ? round4(share(cap.valueBefore, cap.bluffBefore) * 100) : null,
+        bluff_share_before_pct: cap && share(cap.valueBefore, cap.bluffBefore) !== null ? round4(share(cap.valueBefore, cap.bluffBefore)! * 100) : null,
         value_after: cap ? round4(cap.valueAfter) : null, bluff_after: cap ? round4(cap.bluffAfter) : null,
         bluff_share_after: cap ? share(cap.valueAfter, cap.bluffAfter) : null,
-        bluff_share_after_pct: cap && share(cap.valueAfter, cap.bluffAfter) !== null ? round4(share(cap.valueAfter, cap.bluffAfter) * 100) : null }];
+        bluff_share_after_pct: cap && share(cap.valueAfter, cap.bluffAfter) !== null ? round4(share(cap.valueAfter, cap.bluffAfter)! * 100) : null }];
     });
     return { node, combo_class: type === 1 ? "value" : type === 2 ? "bluff" : "unranked",
-      equity_vs_defender: Number.isFinite(equityVsDefender) ? round4(equityVsDefender) : null,
+      equity_vs_defender: Number.isFinite(equityVsDefender) ? round4(equityVsDefender!) : null,
       passive: info?.passive ?? ((NODES[node] ?? LATER_NODES[node]).includes("check") ? "check" : "call"), actions };
   }
 
   // Reach weights (dense by combo id) of `seat` at the pending decision of `table`, with the bluff cap applied.
-  rangeOf(table, board, seat) {
+  rangeOf(table: Table, board: readonly number[], seat: string): Float64Array {
     const pending = table.log.at(-1);
     return this.reach(seat, table.log.filter(entry => entry.seat === seat && entry !== pending), board, table);
   }
 
   // [{ combo, weight }] of `seat` at the pending decision (reach weights, saved-range order).
-  rangeItems(table, board, seat) {
+  rangeItems(table: Table, board: readonly number[], seat: string) {
     const dense = this.rangeOf(table, board, seat);
     return comboRange(this.inputs.seatRows[seat], "freq", board)
       .map(item => ({ combo: item.combo, weight: dense[comboId(item.combo[0], item.combo[1])] })).filter(item => item.weight > 0);
   }
 
-  tablesOf(context) { return context.tables ??= finalTables(context.board); }
+  tablesOf(context: DefenceContext): RankTable[] { return context.tables ??= finalTables(context.board); }
 
   // Equity of a defender combo against the bettor range (null when no bettor combo is compatible).
-  equity(context, combo) {
+  equity(context: DefenceContext, combo: readonly number[]): number | null {
     const id = comboId(combo[0], combo[1]);
     let value = context.equities.get(id);
     if (value === undefined) {
@@ -622,7 +658,7 @@ class Defence {
     return value;
   }
 
-  completeEquityCache(context) {
+  completeEquityCache(context: DefenceContext) {
     // Computed calls can reach a combo that the saved policy assigned zero reach.
     // Such a later query used to rebuild and retain dozens of prefix tables.
     // Complete saved preflop support only after the original three scan queries.
@@ -632,7 +668,7 @@ class Defence {
     }
   }
 
-  prime(context, weights) {
+  prime(context: DefenceContext, weights: Float64Array | null) {
     const ids = [];
     if (weights) for (let id = 0; id < NUM_IDS; id++) if (weights[id] > 0 && !context.equities.has(id)) ids.push(id);
     if (!context.completeEquities && this.largeRun &&
@@ -641,7 +677,7 @@ class Defence {
       // Append extras after the original reach queries: their first-three scan
       // identities/order remain exactly the reference's, and extras are indexed.
       for (let id = 0; id < NUM_IDS; id++) if (base[id] > 0 && tiers[id] !== NONE &&
-          !(weights?.[id] > 0) && !context.equities.has(id)) ids.push(id);
+          !(weights?.[id]! > 0) && !context.equities.has(id)) ids.push(id);
       context.completeEquities = true;
     }
     if (!ids.length) { releaseRangeTables(context.bettorRange); return; }
@@ -651,17 +687,17 @@ class Defence {
     releaseRangeTables(context.bettorRange);
   }
 
-  realizationFor(context, combo) {
+  realizationFor(context: DefenceContext, combo: readonly number[]): number {
     if (context.street === "river") return 1;
     const tiers = context.tiers ??= tierArray(context.board);
     const factors = context.realizationFactors ??= TIERS.map(tier => {
-      const value = this.realization?.[context.street]?.[context.role]?.[tier];
+      const value = this.realization?.[context.street as "flop" | "turn"]?.[context.role]?.[tier];
       return Number.isFinite(value) ? value : 1;
     });
     return factors[tiers[comboId(combo[0], combo[1])]] ?? 1;
   }
 
-  applyEquity(context, base, equity, combo, raw = false) {
+  applyEquity(context: DefenceContext, base: ActionMix, equity: number, combo: readonly number[], raw = false): ActionMix {
     const realized = equity * this.realizationFor(context, combo), margin = realized - context.required;
     const mix = splitMix(base, logistic(margin / LOGISTIC_SCALE));
     const floor = raw ? null : this.floorOf(context);
@@ -683,7 +719,7 @@ class Defence {
   // that beats all the bluffs sits near zero margin and the logistic would call most of them, far above
   // the minimum defence the bettor's bluffs need to break even. Against a capped range the total
   // continue frequency (calls + raises) is therefore limited to MDF, keeping the strongest hands.
-  ceilingOf(context) {
+  ceilingOf(context: DefenceContext): DefenceLimit | null {
     if (context.ceiling !== undefined) return context.ceiling;
     context.ceiling = null;
     if (!context.capped) return null;
@@ -729,7 +765,7 @@ class Defence {
   // read on this AI policy, not a strategy to teach: any extra bluffs would exploit it. So when the
   // computed defence is more than DEFENCE_FLOOR_MARGIN under MDF, the strongest folding hands (by
   // realized equity) call until defence reaches MDF minus that margin.
-  floorOf(context) {
+  floorOf(context: DefenceContext): DefenceLimit | null {
     if (context.floor !== undefined) return context.floor;
     context.floor = null;
     // A capped range sits at the caller's break-even, so its bluff-catchers are indifferent and the
@@ -774,7 +810,7 @@ class Defence {
 
   // The defended mix of `combo` at the pending decision of `table`; `base` is the AI policy mix,
   // returned unchanged when the node is not a facing decision or no context can be built.
-  mix(table, board, node, combo, base) {
+  mix(table: Table, board: readonly number[], node: string, combo: readonly number[], base: ActionMix): ActionMix {
     if (!isFacingNode(node)) {
       const cap = isBettingNode(node) ? this.betting(table, board, node) : null;
       return cap ? cap.applyCombo(base, combo) : base;
@@ -788,7 +824,7 @@ class Defence {
   }
 
   // Chips and break-even of the facing decision (null when it is not a facing decision).
-  requirement(table, board, node) {
+  requirement(table: Table, board: readonly number[], node: string) {
     const context = this.context(table, board, node);
     return context && { potBefore: context.potBefore, wager: context.wager, call: context.call, finalPot: context.finalPot,
       rake: context.rake, required: context.required, mdf: context.mdf };
@@ -796,7 +832,7 @@ class Defence {
 
   // Range level facts of a context, computed once: defender and bettor ranges, their equities, the
   // value / bluff split, the percentile order and the overall defence frequency.
-  summarize(context) {
+  summarize(context: DefenceContext): DefenceSummary {
     if (context.summary) return context.summary;
     const { board } = context, tables = this.tablesOf(context);
     const defenderWeights = this.reach(context.defender, context.defenderEntries, board, context.table);
@@ -836,20 +872,20 @@ class Defence {
 
   // Facts for explanations / UI about one defender combo at the pending decision (null when the
   // node is not a facing decision or no context exists).
-  facts(table, board, node, combo, base = null) {
+  facts(table: Table, board: readonly number[], node: string, combo: readonly number[], base: ActionMix | null = null) {
     const context = this.context(table, board, node);
     if (!context) return null;
     const equity = this.equity(context, combo);
     const summary = this.summarize(context);
     const c1 = combo[0], c2 = combo[1];
-    const removed = { 1: 0, 2: 0 };
+    const removed: Record<number, number> = { 1: 0, 2: 0 };
     const range = indexOf(context.bettorRange);
     const seen = new Set();
-    for (const card of [c1, c2]) for (const bettorId of range.byCard[card]) {
+    for (const card of [c1, c2]) for (const bettorId of range.byCard![card]) {
       if (seen.has(bettorId)) continue;
       seen.add(bettorId);
       const type = summary.kind[bettorId];
-      if (type) removed[type] += range.dense[bettorId];
+      if (type) removed[type] += range.dense![bettorId];
     }
     let percentile = null;
     if (equity !== null && summary.defenderTotal > 0) {
@@ -864,7 +900,7 @@ class Defence {
     const realized = equity === null ? null : equity * realization;
     const margin = realized === null ? null : realized - context.required;
     const mix = base && equity !== null ? this.applyEquity(context, context.cap ? context.cap.applyCombo(base, combo) : base, equity, combo) : null;
-    const share = (value, bluff) => value + bluff > 0 ? round4(bluff / (value + bluff) * 100) : null;
+    const share = (value: number, bluff: number): number | null => value + bluff > 0 ? round4(bluff / (value + bluff) * 100) : null;
     return {
       node, street: context.street, role: context.role, fallback: equity === null,
       pot_before_bb: round4(context.potBefore), bet_bb: round4(context.wager), call_bb: round4(context.call),

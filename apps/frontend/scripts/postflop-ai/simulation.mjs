@@ -1,13 +1,13 @@
 import { createHash } from "node:crypto";
-import { seedFor, seededRandom } from "../lib/equity.mjs";
-import { handTier } from "./model.mjs";
-import { NODES, choose, opponentMix, policyMix, referencePolicyFor } from "./policy.mjs";
-import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.mjs";
-import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterPolicy } from "./later-policy.mjs";
+import { seedFor, seededRandom } from "../lib/equity.ts";
+import { handTier } from "./model.ts";
+import { NODES, choose, opponentMix, policyMix, referencePolicyFor } from "./policy.ts";
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.ts";
+import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterPolicy } from "./later-policy.ts";
 import { LATER_NODES } from "./later-tree.ts";
 import { boards, config, laterSizingHash, makeSampler, samplePair, seatRange } from "./inputs.mjs";
-import { spotById } from "./spots.mjs";
-import { DEFENCE_VERSION, defenceFor } from "./defence.mjs";
+import { spotById } from "./spots.ts";
+import { DEFENCE_VERSION, defenceFor } from "./defence.ts";
 
 const sha = value => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const round = value => Math.round(value * 100) / 100;
@@ -46,7 +46,7 @@ export function dealRunout(hands, flop, random) {
   return [takeRandom(deck, used, random), takeRandom(deck, used, random)];
 }
 
-// One flop-to-river hand of a heads-up pot on the spot's tree (tree.ts). `defence` (defence.mjs,
+// One flop-to-river hand of a heads-up pot on the spot's tree (tree.ts). `defence` (defence.ts,
 // built for the hero's policies) replaces the hero's call / fold part at facing nodes with the
 // computed defence; without it the hero plays its policy mixes as saved. The opponent is the fixed
 // reference and never uses it.

@@ -1,7 +1,7 @@
 // Scores reviewer outputs against the persisted ranges and answer keys (see README.md).
 // Usage: node scripts/review/score-reviews.mjs   → .local/review/report.md
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { comboCount } from "../lib/equity.mjs";
+import { comboCount } from "../lib/equity.ts";
 
 const root = new URL("../../", import.meta.url);
 const resultsDir = new URL(".local/review/results/", root);

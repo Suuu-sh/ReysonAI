@@ -1,20 +1,22 @@
-import { handTier, LINES, RUNOUT_TEXTURES, runoutTexture, TIERS } from "./model.mjs";
+import type { ActionMix, HandTier, LaterPolicy, OpponentProfile, PreviousLine } from "./types.ts";
+import type { LaterStreet } from "./later-tree.ts";
+import { handTier, LINES, RUNOUT_TEXTURES, runoutTexture, TIERS } from "./model.ts";
 import { LATER_NODES, STREETS, streetNodes } from "./later-tree.ts";
 import { raiseDepth } from "./tree.ts";
-import { raiseReferenceRow, withRaise } from "./policy.mjs";
+import { raiseReferenceRow, withRaise } from "./policy.ts";
 
-const tiersFor = street => TIERS.filter(tier => street !== "river" || tier !== "draw");
+const tiersFor = (street: string): HandTier[] => TIERS.filter(tier => street !== "river" || tier !== "draw");
 // Policies saved before repeated raises have no raise key on *_vs_raise rules and no *_vs_raise2..N nodes.
-const legacyActions = (node, mix) => raiseDepth(node) === 1 && mix && typeof mix === "object" && !("raise" in mix)
+const legacyActions = (node: string, mix: ActionMix | null | undefined): readonly string[] => raiseDepth(node) === 1 && mix && typeof mix === "object" && !("raise" in mix)
   ? LATER_NODES[node].filter(action => action !== "raise") : LATER_NODES[node];
-const hasKeys = (value, keys) => value && typeof value === "object" && !Array.isArray(value) &&
+const hasKeys = (value: unknown, keys: readonly string[]) => value && typeof value === "object" && !Array.isArray(value) &&
   Object.keys(value).sort().join(",") === [...keys].sort().join(",");
 
-export function validateLaterPolicy(policy) {
-  if (!hasKeys(policy, ["version", "kind", "streets"]) || policy.version !== 1 || policy.kind !== "ai_estimate_not_gto" ||
-      !hasKeys(policy.streets, STREETS)) throw new Error("Invalid later policy envelope");
+export function validateLaterPolicy(policy: unknown): LaterPolicy {
+  if (!hasKeys((policy as LaterPolicy), ["version", "kind", "streets"]) || (policy as LaterPolicy).version !== 1 || (policy as LaterPolicy).kind !== "ai_estimate_not_gto" ||
+      !hasKeys((policy as LaterPolicy).streets, STREETS)) throw new Error("Invalid later policy envelope");
   for (const street of STREETS) {
-    const section = policy.streets[street], nodes = streetNodes(street), tiers = tiersFor(street);
+    const section = (policy as LaterPolicy).streets[street], nodes = streetNodes(street), tiers = tiersFor(street);
     if (!hasKeys(section, ["rules"]) || !Array.isArray(section.rules)) throw new Error("Invalid later policy rules");
     const seen = new Set(), overrides = Object.fromEntries(nodes.map(node => [node, 0]));
     for (const rule of section.rules) {
@@ -34,11 +36,11 @@ export function validateLaterPolicy(policy) {
       if (!seen.has(`${node}|any|any|${tier}`)) throw new Error(`Missing later fallback rule: ${node}/${tier}`);
     }
   }
-  return policy;
+  return (policy as LaterPolicy);
 }
 
-export function laterPolicyMix(policy, node, hole, board, line) {
-  const street = node.split("_")[0];
+export function laterPolicyMix(policy: LaterPolicy, node: string, hole: readonly number[], board: readonly number[], line: PreviousLine): ActionMix {
+  const street = node.split("_")[0] as LaterStreet;
   if (!LATER_NODES[node] || board.length !== (street === "turn" ? 4 : 5) || !LINES.includes(line)) throw new Error("Invalid later policy decision");
   let tier = handTier(hole, board);
   if (street === "river" && tier === "draw") tier = "medium";
@@ -55,15 +57,15 @@ export function laterPolicyMix(policy, node, hole, board, line) {
 // Independent, deliberately simple AI-estimate comparator, not a solver target. Preserve
 // the old continuation's bet totals (80/35/20/10/5) and facing continue totals (100/70/50/30/0),
 // spread over the configured sizes: value hands lean big, medium hands small, air polarized.
-const SIZE_WEIGHTS = {
+const SIZE_WEIGHTS: Record<HandTier, Record<string, number>> = {
   monster: { 33: 2, 75: 4, 125: 3, allin: 1 }, strong: { 33: 5, 75: 4, 125: 1, allin: 0 },
   draw: { 33: 4, 75: 4, 125: 2, allin: 0 }, medium: { 33: 8, 75: 2, 125: 0, allin: 0 },
   air: { 33: 4, 75: 3, 125: 3, allin: 0 },
 };
-const sizeKey = action => action === "allin" ? "allin" : action.slice(3);
+const sizeKey = (action: string): string => action === "allin" ? "allin" : action.slice(3);
 
 // Integer mix summing to 100 from non-negative raw values (largest remainder).
-function roundMix(raw, actions) {
+function roundMix(raw: ActionMix, actions: readonly string[]): ActionMix {
   const mix = Object.fromEntries(actions.map(action => [action, Math.floor(raw[action] ?? 0)]));
   const left = 100 - Object.values(mix).reduce((sum, value) => sum + value, 0);
   const order = [...actions].sort((a, b) => (raw[b] ?? 0) % 1 - (raw[a] ?? 0) % 1);
@@ -72,19 +74,19 @@ function roundMix(raw, actions) {
 }
 
 // Splits `total`% of betting over a node's bet actions by the tier's size weights.
-function spreadBets(total, bets, tier) {
+function spreadBets(total: number, bets: readonly string[], tier: HandTier): ActionMix {
   const weights = bets.map(action => SIZE_WEIGHTS[tier][sizeKey(action)] ?? 1);
   const sum = weights.reduce((a, b) => a + b, 0);
   return Object.fromEntries(bets.map((action, i) => [action, total * weights[i] / sum]));
 }
 
 // The reference mix of a node and tier (any line / texture).
-export function referenceLaterTierMix(node, tier) {
+export function referenceLaterTierMix(node: string, tier: HandTier): ActionMix {
   const actions = LATER_NODES[node];
   return roundMix(Object.fromEntries(raiseReferenceRow(node, tier, actions).map((value, i) => [actions[i], value])), actions);
 }
 
-export function referenceLaterPolicy() {
+export function referenceLaterPolicy(): LaterPolicy {
   return validateLaterPolicy({ version: 1, kind: "ai_estimate_not_gto", streets: Object.fromEntries(STREETS.map(street => [street, {
     rules: streetNodes(street).flatMap(node => tiersFor(street).map(tier => {
       const actions = LATER_NODES[node];
@@ -102,7 +104,7 @@ export function referenceLaterPolicy() {
 }
 
 const reference = referenceLaterPolicy();
-export function referenceLaterMix(node, hole, board, line, profile = "standard") {
+export function referenceLaterMix(node: string, hole: readonly number[], board: readonly number[], line: PreviousLine, profile: OpponentProfile = "standard"): ActionMix {
   if (!["standard", "passive", "aggressive"].includes(profile)) throw new Error("Unknown opponent profile");
   const base = laterPolicyMix(reference, node, hole, board, line);
   if (profile === "standard") return { ...base };

@@ -3,15 +3,15 @@
 // replaying with one more human action reproduces everything before it. When the human must act
 // and no action is left, the replay stops and returns the pending decision.
 //
-// Postflop reuses the AI-estimate engine (scripts/postflop-ai/engine.mjs) on the heads-up spot the
+// Postflop reuses the AI-estimate engine (scripts/postflop-ai/engine.ts) on the heads-up spot the
 // preflop reached, with the same mixes the candidate plays in the simulation (policy + computed
 // defence). A pot without a saved postflop policy is checked down, never filled from another spot.
-import { evaluate as evaluateHand, seededRandom, seedFor } from "../../scripts/lib/equity.mjs";
-import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "../../scripts/postflop-ai/engine.mjs";
-import { NODES, choose } from "../../scripts/postflop-ai/policy.mjs";
+import { evaluate as evaluateHand, seededRandom, seedFor } from "../../scripts/lib/equity.ts";
+import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "../../scripts/postflop-ai/engine.ts";
+import { NODES, choose } from "../../scripts/postflop-ai/policy.ts";
 import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.ts";
 import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
-import { fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.mjs";
+import { fourBetSpotFor, limpSpotFor, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.ts";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
 import { type Decider, type PostflopKit } from "./policy.ts";
 

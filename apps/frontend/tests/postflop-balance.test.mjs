@@ -2,9 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";
 import { checkFlopBalance, checkLaterBalance } from "../scripts/postflop-ai/balance.mjs";
-import { referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.mjs";
+import { referenceLaterPolicy, validateLaterPolicy } from "../scripts/postflop-ai/later-policy.ts";
 import { LATER_NODES } from "../scripts/postflop-ai/later-tree.ts";
-import { referencePolicy, referencePolicyFor, NODES } from "../scripts/postflop-ai/policy.mjs";
+import { referencePolicy, referencePolicyFor, NODES } from "../scripts/postflop-ai/policy.ts";
 import { adoptionDecision, worstProfileScore } from "../scripts/postflop-ai/regenerate-later.mjs";
 
 const clone = value => structuredClone(value);
@@ -38,7 +38,7 @@ test("flop balance flags monster-only betting and value-only raises", () => {
 });
 
 test("the defence floor keeps flop defence near MDF even against a value-only bettor", () => {
-  // Facing nodes are judged on the computed defence (defence.mjs). A bettor whose range is only
+  // Facing nodes are judged on the computed defence (defence.ts). A bettor whose range is only
   // monsters would make the best response fold far below MDF; the defence floor adds the
   // strongest folding hands back until defence is within 10 points of MDF, so no overfold remains.
   const reference = referencePolicyFor(inputs.spot.tree);

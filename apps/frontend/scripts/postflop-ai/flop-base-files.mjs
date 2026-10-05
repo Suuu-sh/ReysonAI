@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { gzipSync, gunzipSync, brotliCompressSync, brotliDecompressSync, constants } from "node:zlib";
 import { createHash } from "node:crypto";
 import { root } from "./inputs.mjs";
-import { isFreshFlopBase } from "./flop-base-core.mjs";
+import { isFreshFlopBase } from "./flop-base-core.ts";
 export const flopBaseDir = spot => join(root, ".local/postflop-ai/flop-base", spot.slug);
 export const textHash = text => createHash("sha256").update(text).digest("hex");
 export function atomicJson(path, data) {
