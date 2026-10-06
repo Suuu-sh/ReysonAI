@@ -1,6 +1,7 @@
 import type { Profile, ProfileDraft } from "../profile.ts";
 import type { AccountState } from "../account/session.ts";
 import { BrandIcon } from "./BrandIcon.tsx";
+import { Spinner } from "./Loading.tsx";
 import { useEffect, useState } from "react";
 import { levels } from "../profile.ts";
 import { localized, productLocale, selectProductLocale, LOCALES } from "../i18n.ts";
@@ -78,7 +79,7 @@ export function Onboarding({ initial, onComplete, onCancel, account = null, onSi
       {offerGoogle ? <div className="onboarding-start">
         <div className="onboarding-start-buttons">
           <button type="submit" className="onboarding-guest" disabled={!level || signingIn}>{localized("Start as guest", "ゲストではじめる")}</button>
-          <button type="button" className="google-signin" disabled={signingIn} onClick={signIn}><GoogleMark />{signingIn ? localized("Opening Google…", "Googleを開いています…") : localized("Continue with Google", "Googleで続ける")}</button>
+          <button type="button" className="google-signin" disabled={signingIn} aria-busy={signingIn || undefined} onClick={signIn}>{signingIn ? <Spinner size={16} /> : <GoogleMark />}{signingIn ? localized("Opening Google…", "Googleを開いています…") : localized("Continue with Google", "Googleで続ける")}</button>
         </div>
         {signInFailed && <p role="alert" className="onboarding-error">{localized("Couldn't reach Google sign-in. Check your connection, or start as a guest.", "Googleログインに接続できませんでした。接続を確認するか、ゲストではじめてください。")}</p>}
         <small className="onboarding-note">{localized("Signing in saves your settings and practice records to your account and unlocks Trainer, Sessions and Weak Spots. Range analysis works as a guest too.", "ログインすると設定と練習記録がアカウントに保存され、トレーナー・セッション・弱点分析も使えます。レンジ分析はゲストでも使えます。")}</small>
