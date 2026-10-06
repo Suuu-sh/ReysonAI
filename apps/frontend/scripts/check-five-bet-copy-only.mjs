@@ -39,10 +39,30 @@ assert.equal(marginChanges, 81);
 assert.equal(equityCopyChanges, 2);
 assert.equal(spots.size, 11);
 const files = git("ls-tree", "-r", "--name-only", base).toString().trim().split("\n");
-let unchanged = 0;
+const approval = JSON.parse(readFileSync(new URL("../docs/pr86-independent-copy-approval.json", import.meta.url)));
+const profileAmendments = new Map(approval.approved_profile_reference_amendments.map(item => [item.path, item]));
+let unchanged = 0, profileReferences = 0;
 for (const file of files.filter(file => file.startsWith("apps/frontend/src/estimated/") && file !== target)) {
-  assert.ok(git("show", `${base}:${file}`).equals(readFileSync(new URL(`../../../${file}`, import.meta.url))), `${file} changed`);
-  unchanged++;
+  const oldBytes = git("show", `${base}:${file}`);
+  const newBytes = readFileSync(new URL(`../../../${file}`, import.meta.url));
+  const amendment = profileAmendments.get(file);
+  if (amendment) {
+    assert.equal(createHash("sha256").update(oldBytes).digest("hex"), amendment.before_sha256);
+    assert.equal(createHash("sha256").update(newBytes).digest("hex"), amendment.after_sha256);
+    assert.equal(oldBytes.length, amendment.bytes);
+    assert.equal(newBytes.length, amendment.bytes);
+    const oldMeta = JSON.parse(oldBytes), newMeta = JSON.parse(newBytes);
+    assert.equal(oldMeta.balanced_source_sha256["five-bet-responses"], amendment.before_value);
+    assert.equal(newMeta.balanced_source_sha256["five-bet-responses"], amendment.after_value);
+    newMeta.balanced_source_sha256["five-bet-responses"] = amendment.before_value;
+    assert.deepEqual(newMeta, oldMeta, `${file}: only approved reference hash may change`);
+    profileReferences++;
+  } else {
+    assert.ok(oldBytes.equals(newBytes), `${file} changed`);
+    unchanged++;
+  }
 }
+assert.equal(profileReferences, 4);
+assert.equal(unchanged, 327);
 console.log(JSON.stringify({ base, rows: after.entry_count, changedReasons: changed, changedSpots: spots.size, marginChanges, equityCopyChanges,
-  unchangedEstimatedFiles: unchanged, nonReasonSha256: createHash("sha256").update(JSON.stringify(stripped(after))).digest("hex") }, null, 2));
+  unchangedEstimatedFiles: unchanged, approvedProfileReferenceChanges: profileReferences, nonReasonSha256: createHash("sha256").update(JSON.stringify(stripped(after))).digest("hex") }, null, 2));

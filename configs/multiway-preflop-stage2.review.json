@@ -198,6 +198,100 @@
         },
         "limitations": "Narrow source-only approval does not certify reviewer-authored kernel, final frontend, final-head CI, production six-person play, production CPU, or strategy/GTO/EV quality. Original Astra and full-suite limitations remain. Experimental human rating; AI penalty0; Free quotas remain."
       }
+    ],
+    "copy_amendments": [
+      {
+        "date": "2026-10-06",
+        "reviewer": {
+          "identity": "Independent PR86 copy/provenance reviewer",
+          "task": "review_pr86_copy_provenance",
+          "provider": "OpenAI",
+          "model": "Runtime model identifier not exposed to reviewer; no different-vendor claim",
+          "independence": "Separate review task from implementation author; did not modify repository, generate strategies, or author the candidate."
+        },
+        "scope": "Explanation-only five-bet arithmetic plus precisely enumerated profile-source and receipt metadata amendment. No renewed strategy-quality, equilibrium, sample quality, policy, whole-suite or production approval.",
+        "report": "apps/frontend/docs/pr86-independent-copy-approval.json",
+        "approval_library_file_id": "libfile_d940bce527e0819195ce2b7ca3a5cf56",
+        "approval_report_sha256": "ad5c2ada8e117bbe59a58c8d59588367e2a70016ccc069b0f3a46397a40a4e53",
+        "reviewed_base_commit": "de27442325d271f4d550eac57f29c68ffa7a767c",
+        "reviewed_candidate_commit": "e024e78065c50ee1396758580576d173fd614546",
+        "artifact_change": {
+          "path": "apps/frontend/src/estimated/five-bet-responses.json",
+          "before": {
+            "bytes": 871890,
+            "sha256": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c"
+          },
+          "after": {
+            "bytes": 871890,
+            "sha256": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+          },
+          "rows": 2535,
+          "changed_inline_rows": 83,
+          "changed_spots": 11
+        },
+        "profile_reference_amendments": [
+          {
+            "path": "apps/frontend/src/estimated/profiles/nit/villain/meta.json",
+            "bytes": 4679,
+            "before_sha256": "a5fe39ff5aaf11ad558544ec14a6ecc7da90c17a2f71261ca220fb9d72b4997f",
+            "after_sha256": "e7f937fc1c1b7ebb9381886a71ca4a7782499652c75321f06367bcb005853249",
+            "field": "balanced_source_sha256.five-bet-responses",
+            "before_value": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+            "after_value": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+          },
+          {
+            "path": "apps/frontend/src/estimated/profiles/station/villain/meta.json",
+            "bytes": 4767,
+            "before_sha256": "139041bd129507aefa5d6703ba2b2662982b3ae90d0f1787acf08ebb5181c3c9",
+            "after_sha256": "05443e075c6ec95e9d19441a9ffe655ed9f6e8a9bae040e69184c0134dd8ce77",
+            "field": "balanced_source_sha256.five-bet-responses",
+            "before_value": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+            "after_value": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+          },
+          {
+            "path": "apps/frontend/src/estimated/profiles/lag/villain/meta.json",
+            "bytes": 4504,
+            "before_sha256": "9b2c390fb9f14aa5f9f457993ab56e27c3cd298c0dd23c990a97f83c0b5a1b26",
+            "after_sha256": "12cbf7299d4b63c56e51e676327ae3a272b155d407139b0792be93bc480192f7",
+            "field": "balanced_source_sha256.five-bet-responses",
+            "before_value": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+            "after_value": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+          },
+          {
+            "path": "apps/frontend/src/estimated/profiles/maniac/villain/meta.json",
+            "bytes": 4755,
+            "before_sha256": "f6bf5ba0b64922c4bc96f12eb5b7f917c5f668db6677b51f68abb899f48c16a0",
+            "after_sha256": "35991dc4f545e893c060aef5196bbf4e840f4f68c6e73884f9a1d716015731d9",
+            "field": "balanced_source_sha256.five-bet-responses",
+            "before_value": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+            "after_value": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+          }
+        ],
+        "content_sha256_before": "a00b6da1995d096951742cfa51d5adeedaca591f3ce87d0052f956d2f3e67410",
+        "content_sha256_after": "ef05f76b24009d8b4270860f68335e3006c6b82329cedb97be6c04973b34f5ce",
+        "legacy_detailed_provenance": {
+          "decision": "PRESERVE_HISTORICAL_FINGERPRINTS_NO_MIGRATION",
+          "historical_fingerprint": "d489d1f554edc8d9c5b859c4f3a939956f78b1eccafdc7549862fdcda47ce653",
+          "reported_current_legacy_fingerprint": "8e67399d93bfb18d6068f21e7988b07eb591e6d8f027a972337e1ff8d76b3076",
+          "reason": "reasonSourceFingerprint hashes full legacy datasets including inline copy. Stored detailed outputs were authored against historical bytes. They remain accurate for current saved facts, as independently tested. compose-reasons refuses stale local authoring facts; it is not needed for serving or delivering these existing saved outputs. The reviewed delivery gate validates exact saved artifacts and a distinct continuation fingerprint. Therefore no authoring-provenance rewrite is necessary for this copy-only delivery.",
+          "required_documentation": "Record the historical/current fingerprint distinction and this exact copy-only compatibility proof in the separately attributed amendment. State that existing facts were not regenerated and cannot be reused by compose-reasons against the changed full legacy source fingerprint.",
+          "not_approved": "No editing source_fingerprint in existing detail/fact files, no fingerprint exclusion, no stale-fact bypass, no automatic migration or regeneration. Any future migration is a separate concrete proposal requiring review; absence of such migration is not itself a blocker to this delivery."
+        },
+        "verification": {
+          "non_reason_fields": "2535 rows unchanged",
+          "other_estimated_files": "327 tracked files byte-identical; four profile metadata reference hashes amended only",
+          "bound_sources": "103 exact source records unchanged",
+          "remaining_artifacts": "1883 records unchanged",
+          "archive": "unchanged reviewed archive",
+          "continuation_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53"
+        },
+        "limitations": [
+          "This independent task did not restore/re-hash the 43MB continuation archive, rerun full suite/typechecks/build/browser tests, inspect exact-head CI, or recompute full continuation fingerprint. Existing packet reports are reused and explicitly remain author evidence.",
+          "Reported five-test suite and typechecks passed in author environment; reviewer independently ran only two arithmetic tests plus read-only comparisons described above.",
+          "No blanket quality review of existing strategy, profiles or all explanation text. This report does not certify GTO/EV optimality, external reviewer cryptographic identity, or a different-vendor model."
+        ],
+        "blocking_findings": 0
+      }
     ]
   },
   "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
@@ -246,7 +340,7 @@
     {
       "path": "apps/frontend/src/estimated/five-bet-responses.json",
       "bytes": 871890,
-      "sha256": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c"
+      "sha256": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
     },
     {
       "path": "apps/frontend/src/estimated/four-bet-responses.json",
@@ -316,7 +410,7 @@
     {
       "path": "apps/frontend/src/estimated/profiles/lag/villain/meta.json",
       "bytes": 4504,
-      "sha256": "9b2c390fb9f14aa5f9f457993ab56e27c3cd298c0dd23c990a97f83c0b5a1b26"
+      "sha256": "12cbf7299d4b63c56e51e676327ae3a272b155d407139b0792be93bc480192f7"
     },
     {
       "path": "apps/frontend/src/estimated/profiles/lag/villain/opening-ranges.json",
@@ -356,7 +450,7 @@
     {
       "path": "apps/frontend/src/estimated/profiles/maniac/villain/meta.json",
       "bytes": 4755,
-      "sha256": "f6bf5ba0b64922c4bc96f12eb5b7f917c5f668db6677b51f68abb899f48c16a0"
+      "sha256": "35991dc4f545e893c060aef5196bbf4e840f4f68c6e73884f9a1d716015731d9"
     },
     {
       "path": "apps/frontend/src/estimated/profiles/maniac/villain/opening-ranges.json",
@@ -396,7 +490,7 @@
     {
       "path": "apps/frontend/src/estimated/profiles/nit/villain/meta.json",
       "bytes": 4679,
-      "sha256": "a5fe39ff5aaf11ad558544ec14a6ecc7da90c17a2f71261ca220fb9d72b4997f"
+      "sha256": "e7f937fc1c1b7ebb9381886a71ca4a7782499652c75321f06367bcb005853249"
     },
     {
       "path": "apps/frontend/src/estimated/profiles/nit/villain/opening-ranges.json",
@@ -436,7 +530,7 @@
     {
       "path": "apps/frontend/src/estimated/profiles/station/villain/meta.json",
       "bytes": 4767,
-      "sha256": "139041bd129507aefa5d6703ba2b2662982b3ae90d0f1787acf08ebb5181c3c9"
+      "sha256": "05443e075c6ec95e9d19441a9ffe655ed9f6e8a9bae040e69184c0134dd8ce77"
     },
     {
       "path": "apps/frontend/src/estimated/profiles/station/villain/opening-ranges.json",
@@ -10166,7 +10260,7 @@
       "sha256": "d828004fd7c382e565e66094e43c8b2917ed5ff3444b0c12c2e691499211ace7"
     }
   ],
-  "content_sha256": "a00b6da1995d096951742cfa51d5adeedaca591f3ce87d0052f956d2f3e67410",
+  "content_sha256": "ef05f76b24009d8b4270860f68335e3006c6b82329cedb97be6c04973b34f5ce",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
