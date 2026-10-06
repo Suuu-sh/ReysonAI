@@ -14,8 +14,8 @@
   "build": "PASS",
   "historical_f89_supported_tests": 318,
   "a10_incremental_unique_tests": 47,
-  "strict_committed_restore_verify": "PENDING",
-  "final_base_stats_map_browser": "PENDING",
+  "strict_committed_restore_verify": "16/16 PASS at saved commit 0e118db8c475dd3764dec2fc922f3e92889c1d8d",
+  "final_base_stats_map_browser": "BLOCKED - no formal browser tool currently exposed; NOT RUN on final base",
   "original_701_browser_cases": {
     "PASS": 15,
     "FAIL": 1,
@@ -23,7 +23,7 @@
   },
   "case17": "BLOCKED - original unfocused HU two-table requirement remains unmet in both compared versions",
   "unrun_platform_cases": 31,
-  "sql": "Original immutable SQL retained; fresh receipt-comment binding and current-source genuine D1 checks remain separate",
+  "sql": "16 newly prepared canonical SQL files passed official CLI packaging with current independent receipts; not executed. No old MW3 SQL existed in original701 or checkpoint0e; earlier retained-old-SQL claim corrected.",
   "proof_review_sha256": "85402b90d34758f24efc85ee504fe77986dd57060179961062bc009ba253a8de",
   "historical_source_browser": "f89cec1e393e63c46cb2914f542a776879e1abb0",
   "browser_tables_hu_comparison": "507 public matrix buttons and 1188 percentage styles identical for 3 tested states",
@@ -189,5 +189,6 @@
       "current_receipt_sha256": "ab0d81da14f7260ccb03a89365bee4550533676d9e5a7decfaca01c75807d979",
       "archive_sha256": "ed25dd6a611d329ec8f78614320d66c5f84284ee4f3e2cf14129cbd75d5b7afa"
     }
-  ]
+  ],
+  "current_sql_and_remaining_qa_report": "apps/frontend/docs/specs/pr44-current-source-sql-qa-checkpoint.json"
 }
