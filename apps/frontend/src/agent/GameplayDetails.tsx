@@ -21,7 +21,7 @@ export function GameplayDetails({ profile, children, requestedPanel, onClose, cu
   const close = () => { onClose?.(); setActive(null); };
   const historyPanels = panels.filter(panel => ["hand", "recent"].includes(panel.props.id));
   const otherPanels = panels.filter(panel => !["hand", "recent"].includes(panel.props.id));
-  const chosen = history.find(hand => hand.id === selected);
+  const chosen = active === "history" ? history.find(hand => hand.id === selected) : undefined;
   return <div className="game-details">
     <div className="game-history-rail" aria-label={t("Hand history", "ハンド履歴", "手牌历史", "Historial de manos")}>
       <div className="game-history-items">

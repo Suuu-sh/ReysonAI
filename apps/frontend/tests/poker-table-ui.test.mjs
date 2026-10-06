@@ -43,6 +43,8 @@ test('local Agent retains reveal progression, actions and player-style drawer wi
     assert.ok(dom.window.document.querySelector('.agent-felt'));
     const style=[...dom.window.document.querySelectorAll('button')].find(button=>button.textContent==='Play style');
     assert.ok(style);await act(async()=>style.click());assert.ok(dom.window.document.querySelector('.game-details-modal[role=dialog]'));assert.ok(dom.window.document.querySelector('.style-dash'));
+    await act(async()=>dom.window.document.querySelector('.style-dash-close').click());assert.equal(dom.window.document.querySelector('.style-dash'),null,'inner close hides the play-style dashboard');assert.ok(dom.window.document.querySelector('.game-details-modal'),'Session controls remain available');
+    await act(async()=>[...dom.window.document.querySelectorAll('button')].find(button=>button.textContent==='Play style').click());assert.ok(dom.window.document.querySelector('.style-dash'),'dashboard can reopen');
   } finally {await act(async()=>root.unmount());dom.window.close();Object.assign(globalThis,before);delete globalThis.IS_REACT_ACT_ENVIRONMENT;}
 });
 
@@ -104,4 +106,21 @@ test("history rail keeps current and newest three hands left of independent righ
  const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost'});const old={window:globalThis.window,document:globalThis.document,HTMLElement:globalThis.HTMLElement};Object.assign(globalThis,{window:dom.window,document:dom.window.document,HTMLElement:dom.window.HTMLElement,IS_REACT_ACT_ENVIRONMENT:true});const root=createRoot(dom.window.document.getElementById('root'));
  try{await act(async()=>root.render(React.createElement(GameplayDetails,{currentCards:['As','Kd'],history:[7,6,5,4].map(id=>({id,cards:['Qh','Jc'],resultBb:id}))})));const rail=dom.window.document.querySelector('.game-history-rail'),items=rail.querySelector('.game-history-items');assert.equal(items.querySelectorAll('.game-current-hand').length,1);const recent=[...items.querySelectorAll('.game-history-hand')];assert.equal(recent.length,3);assert.deepEqual(recent.map(button=>button.getAttribute('aria-label').match(/#(\d+)/)?.[1]),['7','6','5']);assert.equal(rail.querySelector('.game-controls-trigger').parentElement,rail);const css=await readFile(new URL('../src/agent/gameplay-mobile.css',import.meta.url),'utf8');assert.match(css,/\.game-history-items\s*\{[^}]*max-width:\s*calc\(100%\s*-\s*49px\)/s);assert.match(css,/\.game-history-rail \.game-controls-trigger\s*\{[^}]*right:\s*0/);assert.match(css,/min-height: 451px\).*\.agent-seat\.slot-3\s*\{[^}]*flex-direction: row/s);}
  finally{await act(async()=>root.unmount());dom.window.close();Object.assign(globalThis,old);delete globalThis.IS_REACT_ACT_ENVIRONMENT;}
+});
+
+// A completed hand keeps its seat-name resolver when the button rotates.
+test('completed Agent history retains the original players after the next deal',async()=>{
+ await agentFixture(async({dom,until})=>{
+  const doc=dom.window.document;
+  const initialNames=Object.fromEntries([...doc.querySelectorAll('.agent-seat')].map(seat=>[seat.querySelector('.agent-pos').textContent,seat.querySelector('.agent-meta > b').textContent]));
+  await act(async()=>doc.querySelector('.agent-act.tone-fold').click());
+  await until(()=>doc.querySelector('.game-history-hand') && /#2/.test(doc.querySelector('.agent-title small').textContent));
+  await act(async()=>doc.querySelector('.game-history-hand').click());
+  const rows=[...doc.querySelectorAll('.game-details-modal .agent-log-body li > span')];
+  assert.ok(rows.length);
+  for(const row of rows){const position=row.querySelector('small').textContent;assert.equal(row.firstChild.textContent,initialNames[position],`hand1 ${position} keeps its player`);}
+  await act(async()=>doc.querySelector('.game-modal-header button').click());
+  await act(async()=>doc.querySelector('.game-controls-trigger').click());
+  assert.equal(doc.querySelector('.game-selected-history'),null,'Session controls do not replay the selected historical hand');
+ });
 });
