@@ -1,3 +1,15 @@
+# Sixth-case actual MC: 600000/720000 trials preserved
+
+At **2026-10-06 13:28:49 UTC**, the active sixth-case run had **60/72 completed conditions / 600000 paired trials** with native validation, exact first64 equality and normal child termination. The main-owned session **97525** continues on unchanged formal4b source; fixed assignment leaves two lanes / twelve conditions. Active partial work is not a completed result. The genuine whole-producer terminal, actual scoped audit, new balance-contract evidence and sixth-case acceptance remain pending. Five prior cases keep their original scoped acceptance; no runtime or policy source is adopted by this save.
+
+[The exact cumulative snapshot manifest](updates/20261006-1333/sixth-mc720k-progress-manifest-20261006-1329.json) and [Library confirmation](updates/20261006-1333/sixth-mc720k-progress-library-v2.json) pin Library `libfile_79ac411e0de4819181be8e15170e5fb6` **v2**, `hu-model11-sixth-mc720k-progress-20261006-1329.tar.gz`, **10482936 bytes / 11637 files**, SHA-256 `5325c313bc13dfcba9b1240b8c69e35c6e9d37e37cb53e1fd5410387d50e0a43`. This is cumulative closed-cell raw evidence through 60 conditions, not full-run completion. Raw chunks/proofs remain in Library. The read-only preservation helper is included as exact source after its completed 35-cell and 60-cell archive uses; it is not executed by this checkpoint and does not change the active computation.
+
+This small commit changes STATUS and adds only the snapshot, Library confirmation and preservation helper. `samplesPerBoardProfileSeat=10000` remains distinct from `cacheBatchSize=64`. The prepared scoped audit remains 15 conditions x 144 = 2160 selected strategy trials plus 12 controls, full stored integrity and complete original RNG advancement, but has not run on the completed 720k dataset. No full 1755/fixed 100 balance pass or final acceptance is claimed.
+
+## Earlier checkpoint context (historical)
+
+Earlier 50k figures below retain their original dated snapshot and are superseded only by the current 600k preservation count. Source, plans, completed stage1 negative findings and all prior receipts are unchanged.
+
 # Five prior cases accepted; sixth-case actual 720k generation running
 
 Current checkpoint: the separately authorized actual 72 x 10000 paired-trial run began at **12:48 UTC**, owner session **97525**, five workers, unchanged formal source `4b6b39a613afe72a2362f85aa93a305cd61b3586`. Binding is `2171cb322dfb12519d5b635ebffada69109c37bd5bbf2a85c4bf3ac1b7b434a2`. At the preserved **12:53:43.665029 UTC** snapshot, **five conditions / 50000 trials** were completed with native validation and first-64 parity; active partial work beyond that is not a completed result. Whole-run completion and sixth-case acceptance remain pending. `samplesPerBoardProfileSeat=10000` and `cacheBatchSize=64` are distinct parameters.
