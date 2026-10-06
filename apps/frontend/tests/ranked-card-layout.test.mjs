@@ -30,7 +30,7 @@ for (const locale of ['en', 'ja', 'zh-CN', 'es']) {
     assert.match(card.textContent, /1,100/);
     assert.equal(card.querySelectorAll('button').length, 2);
     assert.ok([...card.querySelectorAll('button')].every(button => !button.disabled && button.textContent.trim()));
-    assert.ok(card.querySelector('.mode-quota').textContent.trim());
+    assert.equal(card.querySelector('.mode-quota'), null);
     assert.ok(card.querySelector('.mode-body > p').textContent.trim());
     const closed = renderToStaticMarkup(createElement(TrainerHome, { ...props, rankedReady: false }));
     assert.match(closed, /is-coming-soon/);

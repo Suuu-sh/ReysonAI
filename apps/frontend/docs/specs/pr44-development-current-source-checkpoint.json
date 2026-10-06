@@ -1,0 +1,193 @@
+{
+  "kind": "pr44-development-current-source-checkpoint",
+  "development_base": "5bd354392cbc288b2b9565f827ffcafe8ea5641b",
+  "source_freeze_commit": "a10ec338e1bbae0333eb98daf166c2f1c8b27365",
+  "source_tree": "505e847fe38911016a4662d18c26ced2bdd89edd",
+  "independent_reviewer_task": "/root/mw3_context_review",
+  "independent_reviewer_model": "gpt-6-astra",
+  "independent_snapshot_verification": "16/16 PASS",
+  "preserved_raw_files": 112,
+  "preserved_raw_bytes": 235515283,
+  "preserved_archives": 16,
+  "preserved_delivery_pins": 32,
+  "typecheck": "PASS",
+  "build": "PASS",
+  "historical_f89_supported_tests": 318,
+  "a10_incremental_unique_tests": 47,
+  "strict_committed_restore_verify": "PENDING",
+  "final_base_stats_map_browser": "PENDING",
+  "original_701_browser_cases": {
+    "PASS": 15,
+    "FAIL": 1,
+    "BLOCKED": 1
+  },
+  "case17": "BLOCKED - original unfocused HU two-table requirement remains unmet in both compared versions",
+  "unrun_platform_cases": 31,
+  "sql": "Original immutable SQL retained; fresh receipt-comment binding and current-source genuine D1 checks remain separate",
+  "proof_review_sha256": "85402b90d34758f24efc85ee504fe77986dd57060179961062bc009ba253a8de",
+  "historical_source_browser": "f89cec1e393e63c46cb2914f542a776879e1abb0",
+  "browser_tables_hu_comparison": "507 public matrix buttons and 1188 percentage styles identical for 3 tested states",
+  "production_changed": false,
+  "rows": [
+    {
+      "spot": "CO_open_BTN_call_BB_call",
+      "manifest": "artifacts/postflop/mw3-co-btn-bb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "4c8404afdbfc8e4ae5f3d15a8e5f41713e427c0f647b7c81a880bc98eb284f45",
+      "current_manifest_sha256": "5cac0ab75990b5ad65bbb8b10542f4513c266c0b08cbb18872a9d5712f138ee5",
+      "receipt": "configs/mw3-co-btn-bb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "2ba41fc9fa826311ded1a52485630f6ed112f04e1ea9fd6bbe760308ce38497f",
+      "current_receipt_sha256": "8c58da3f8fc38d297d00ce79219ef71f41a8ce01e84dfa463439f82a30c42f98",
+      "archive_sha256": "b8adf765d22a128a88ce346ffda9f67615b98ada1e6579d56461da8910db8d9b"
+    },
+    {
+      "spot": "CO_open_BTN_call_SB_call",
+      "manifest": "artifacts/postflop/mw3-co-btn-sb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "62981091c1514582f7e9a3df1deb4bdaaddd50beb232e151e3907a9bb4446467",
+      "current_manifest_sha256": "95c29b08f69076e1fa03ff3d19731dfd1e6f8b921f6bb9fd52973b29fa0939d2",
+      "receipt": "configs/mw3-co-btn-sb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "77ed1b7f457c056f6d95c87632ce95b68b491e3a2b00fef4f4ab51e3699047b1",
+      "current_receipt_sha256": "4fedce28c3dd92ee57651d854a9e16a88b2c60cdd76991351842ea3ca185d164",
+      "archive_sha256": "71b7423b1450638f8f2a6077c0d6c87b6715ebc81c9462a0f35cd5d83ddf1e7f"
+    },
+    {
+      "spot": "HJ_open_BTN_call_BB_call",
+      "manifest": "artifacts/postflop/mw3-hj-btn-bb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "168081eb69075dace40f552c1e9f278ad6a8af1227d6602a60a8cc942e9d0a4d",
+      "current_manifest_sha256": "f283cc6401786da7bffc330e98d93567e3c38700451edac8493b519d1a21900e",
+      "receipt": "configs/mw3-hj-btn-bb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "72543b98d206d07cc69bff59e10608b70b1f9dd949dcda477f238098e7638ef9",
+      "current_receipt_sha256": "7621804164e0df26518f9562cd5173f174353dfbf870bee499caf4b1f0fade58",
+      "archive_sha256": "a1d6d54a8d169260c7bf38cfb062915c2ab9e64f116dfb8101c7b63dad6fbb0a"
+    },
+    {
+      "spot": "HJ_open_BTN_call_SB_call",
+      "manifest": "artifacts/postflop/mw3-hj-btn-sb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "2c12c53d59a1d9929b1927b362ae667c7a397013808278b9c8a0781ebccd9ec2",
+      "current_manifest_sha256": "13d60744136fa5019504458cd52e3ed41cdf886adf7832fd91ce87adf27fa8cf",
+      "receipt": "configs/mw3-hj-btn-sb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "41b5cb93e10d6d726612d19f8b00c71069c6d93bd8854b119d68a954dba22cfc",
+      "current_receipt_sha256": "dc5645a1db58dabdef4efb01dfc88f7f2a642f1fb521c0d362a7953fa6283543",
+      "archive_sha256": "f3ec418992730e69f548e354508c95e0a42e4963cb7dd6b8d15cacc3d500d45e"
+    },
+    {
+      "spot": "HJ_open_CO_call_BB_call",
+      "manifest": "artifacts/postflop/mw3-hj-co-bb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "a34837af8dd3ba7213f67502a67fa57651897f710b8ddd76e62496335f685b03",
+      "current_manifest_sha256": "3852f27a8181f194e83a00f462e543aff13349187bfc240e03e9bf4c3515cbca",
+      "receipt": "configs/mw3-hj-co-bb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "c3c23a59006acb2cc2b201feec79bbb8c8ddb220f28399b4fd3ae72160e09a36",
+      "current_receipt_sha256": "60e8917c118848bbdfc969ded36ba47695a195af1a82ebc1572f2794ab482cd7",
+      "archive_sha256": "9e12080a2e5fbd5d642339a17508e7bd7cdff2aacf7739e3e416df816282ec0c"
+    },
+    {
+      "spot": "HJ_open_CO_call_BTN_call",
+      "manifest": "artifacts/postflop/mw3-hj-co-btn-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "771a7c6f9f2e603f1fb165a0224dbe923187bf3fa972e7508bd657d2be925f8c",
+      "current_manifest_sha256": "dc9153d5343863b256d9ccad836bfba2efbf98c54abcbe31787bbdb0384a9d87",
+      "receipt": "configs/mw3-hj-co-btn-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "2925fdb2203e444d35a996a69812acbec397506276cd4dbfe6f664ee1ce39da8",
+      "current_receipt_sha256": "5d1b15e1dc744ceb8e9c9fa4457ff9a476ffc3590487174a09b56f8107774483",
+      "archive_sha256": "b0ad2b74cdc937f228aa4cb862502390ba03606dc548218d713da5875e1a4d00"
+    },
+    {
+      "spot": "HJ_open_CO_call_SB_call",
+      "manifest": "artifacts/postflop/mw3-hj-co-sb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "b333db7991e9ca4756454817e488ce4b573585733cf588e941a042a50b1ddb74",
+      "current_manifest_sha256": "eb418a976a1de2c89656c2cf2910c04a03fb1c04c352b5ccecbe95ff43db566c",
+      "receipt": "configs/mw3-hj-co-sb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "bac939083d1207c6a0998fc1ceb608fd38355710b5f42d6dbfa979d948d2a730",
+      "current_receipt_sha256": "d75bf911e75f1c99b1f973eeb6f2c5711aea150d002693dbfc84afdea28dc701",
+      "archive_sha256": "2c41876d803519c8f05f347ecbf55404d29e17baf6f588089782d727f3ab13d7"
+    },
+    {
+      "spot": "UTG_open_BTN_call_BB_call",
+      "manifest": "artifacts/postflop/mw3-utg-btn-bb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "a460928715343d0eda4642bf1653c91d14525475f22a37d09b5231e21ed0a907",
+      "current_manifest_sha256": "50de2e884232ccb66f009df3ef4ab2510ce4d45d1facd67d595312eb395a3761",
+      "receipt": "configs/mw3-utg-btn-bb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "d61700a763153756b2c9ee45dbd8fe17691fe0b6f39493047fe561faafc45ff0",
+      "current_receipt_sha256": "dd5466f80e902a363ee769663091abc4c7ae8c4a4735610b6cbfe59452a84ee6",
+      "archive_sha256": "1a8ca191895c386944c903e6de9b9c7e1d25e77ce1f471a21036ee9321a4b69e"
+    },
+    {
+      "spot": "UTG_open_BTN_call_SB_call",
+      "manifest": "artifacts/postflop/mw3-utg-btn-sb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "7b92c13df0f5bfe51e55e15bc2ee68f906e9802357598f589dc914fa513630c3",
+      "current_manifest_sha256": "291f8ad372c5c98d8ecca1b63a932db1a9f23d663a2534f9cb9e59607c45b077",
+      "receipt": "configs/mw3-utg-btn-sb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "438fd4726ea21ab2d8107d2ca61f59beb3d4fb719598e035d0eee12d0ea9d207",
+      "current_receipt_sha256": "9426bcf2b1c262a827c4b7a40f61262066e68e0e5b17f61f741738f1e76ecb03",
+      "archive_sha256": "fb452978edb7aaf29593c6af6c3cf8dbb5352009580606938b485aba5886095d"
+    },
+    {
+      "spot": "UTG_open_CO_call_BB_call",
+      "manifest": "artifacts/postflop/mw3-utg-co-bb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "f229985d74a998d4b0a5617a5aa2ff61fc90a73439f6af0700f3d03bb28f0f10",
+      "current_manifest_sha256": "e97e68f5de15bebc30f6e087441d079ca79c80dc4ec74ae51aa858ae526c3534",
+      "receipt": "configs/mw3-utg-co-bb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "ff36e9921a23f0ed1023b25598b36f84f88d815a059f6efb9e8dd29cdb8d6d88",
+      "current_receipt_sha256": "869a4a6da558519a3108dfdcc4f1dfa4cbfa6b2481124e048f3d2262a27de53d",
+      "archive_sha256": "fab985466902709975e0e02e39d4eb9f5e41b0eb05f80d4d9f4824fe4d5913df"
+    },
+    {
+      "spot": "UTG_open_CO_call_BTN_call",
+      "manifest": "artifacts/postflop/mw3-utg-co-btn-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "6f1f6c48bfa5d08bc28a0329d3dc1e89c8649b0e6209734099730c29dfc81bde",
+      "current_manifest_sha256": "29f2745a4f77696a57dd04ab9f7a0b7fd06a246548b2303de81d6fd038767eee",
+      "receipt": "configs/mw3-utg-co-btn-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "09f8fe622e931fa5fca7637e6bb571008208644d6c44582acedb3c182d2304d7",
+      "current_receipt_sha256": "ebb01b7c9e3e47b94f2b8ba48eafcb8573622021bea062e4189ac353ac779792",
+      "archive_sha256": "3a3d6f4d1cabcfcff881b5b90470ad153748264734fce92f0bd6a816fbe58604"
+    },
+    {
+      "spot": "UTG_open_CO_call_SB_call",
+      "manifest": "artifacts/postflop/mw3-utg-co-sb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "fb56c2f592dbc55662288fdd0feb2b81429afa4b1b750fe645c5f504cbe37856",
+      "current_manifest_sha256": "2f17554981558a61d562fbd37b79eeaae08a747e99badd19250a1665173b825c",
+      "receipt": "configs/mw3-utg-co-sb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "66b57f1aa85a6246537805bc8b71a5e0f1aed29d3c27b1a202d9ef5a6477c373",
+      "current_receipt_sha256": "0eaa0f503b8995b8392e602d91d4fb89bc7660af01a1827e028ad4f9d15b5ff2",
+      "archive_sha256": "c859afc13e369cd1cf3ab8ea545d8115a5eaba4d55725de772f222a560f4b7a0"
+    },
+    {
+      "spot": "UTG_open_HJ_call_BB_call",
+      "manifest": "artifacts/postflop/mw3-utg-hj-bb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "9cda810bce271b55cff28cb5868a768197c8dba848ef9ace1e0dd50feb398911",
+      "current_manifest_sha256": "fdecc4ff66267bf3c8e4c54e7d47ee03c00286402eab6c5283d610c08593221f",
+      "receipt": "configs/mw3-utg-hj-bb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "53bac3e8ab65d4f5391d1659b3245771442c67a74b6eddfd6e349c5ee49a4cba",
+      "current_receipt_sha256": "ce6208415121f617c920d9832f3812e3582a1ba71bee519aefa2cc89837e5e4a",
+      "archive_sha256": "d84390b598755b265f5e5ae5e5601d05fc69e7346971b955c2ab0d4732ab577a"
+    },
+    {
+      "spot": "UTG_open_HJ_call_BTN_call",
+      "manifest": "artifacts/postflop/mw3-utg-hj-btn-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "2d8a6c4743c021c8dfd4768df2be13cf0e2d1c50eb1de0a91ed11683c9969bbc",
+      "current_manifest_sha256": "4802c85777a6a2de9fad9a52041d9bb11301be211bf0df70a32f229dd7e26c42",
+      "receipt": "configs/mw3-utg-hj-btn-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "78b90991bf0ba58f93a715f1dd1dd5df6b42e5fb57ae7e16dccc9fb98536773b",
+      "current_receipt_sha256": "508c85e3a7af379c8f37d2c10a6426941f4a2db8ed3cf1be98f7c4f418c8cccd",
+      "archive_sha256": "fae0fe5f2ce9fc718f68b9160e4f6e99ed14138b5319008cacb4684b1aca9f3e"
+    },
+    {
+      "spot": "UTG_open_HJ_call_CO_call",
+      "manifest": "artifacts/postflop/mw3-utg-hj-co-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "ebe4d9491c38147cf4f4ef8d98ba9f7ddf044c7838c3d2a630b629dfeb20f661",
+      "current_manifest_sha256": "21d92d75485d7a3b7aa7661c4571d2dfeba71ad8d47161772e1816c4ced73b4d",
+      "receipt": "configs/mw3-utg-hj-co-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "7dd5fb17130a480993df20a6f2e1aeb5dce51826acba2ede83ce4e11f1560843",
+      "current_receipt_sha256": "08591189202c8af78a79f19672953e9383fe8729bcd49e5a4e8ef070559c0bbd",
+      "archive_sha256": "a0531cb661d36f6beee9076196a40e7a8fef414cbe2c60ffb9283ac1037ac19b"
+    },
+    {
+      "spot": "UTG_open_HJ_call_SB_call",
+      "manifest": "artifacts/postflop/mw3-utg-hj-sb-mw3-srp-v1.manifest.json",
+      "previous_manifest_sha256": "53d8fcd6a5974aedd3d822cbe277711c1d2a9fac81be8ce3db9db635341093fe",
+      "current_manifest_sha256": "da58492e76a4cdbfccf218d487486bc826ea4472169c9a054f4bc5c7931e846d",
+      "receipt": "configs/mw3-utg-hj-sb-mw3-srp-v1.review.json",
+      "previous_receipt_sha256": "418bebb9ec5986f9e4d643cbe1bb2ee8f99c42dec1eb8a1dd3ec634c13e2b760",
+      "current_receipt_sha256": "ab0d81da14f7260ccb03a89365bee4550533676d9e5a7decfaca01c75807d979",
+      "archive_sha256": "ed25dd6a611d329ec8f78614320d66c5f84284ee4f3e2cf14129cbd75d5b7afa"
+    }
+  ]
+}

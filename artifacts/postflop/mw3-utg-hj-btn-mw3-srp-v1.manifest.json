@@ -2,7 +2,7 @@
   "schema_version": 1,
   "kind": "mw3-artifact-snapshot",
   "approval": "unapproved",
-  "source_tree": "d5b1f46a64a414c21ccbc7d20833a9183e7c51b2",
+  "source_tree": "505e847fe38911016a4662d18c26ced2bdd89edd",
   "spot": {
     "id": "UTG_open_HJ_call_BTN_call",
     "slug": "utg-hj-btn-mw3-srp-v1",
@@ -33,9 +33,14 @@
       "sha256": "4407807e9dc8204c298bc5c2a7c5f29f2a68d6e120d132510d3e46af083093da"
     },
     {
+      "path": "apps/backend/src/fastfold-dispatch.ts",
+      "bytes": 2287,
+      "sha256": "c7f66c114baf0137c83b91e445bc6a07ecc3537b8c8948277205dda22eeec608"
+    },
+    {
       "path": "apps/backend/src/index.ts",
-      "bytes": 23871,
-      "sha256": "a0fa226c3a45c5206e0ec6c69b583dd696c06827774ee06e501150d68715e4ab"
+      "bytes": 24235,
+      "sha256": "0dc9f07412b27c6c5b33f53ef8dd5b97f8440a166a2b0f222dbbb3137cd0e234"
     },
     {
       "path": "apps/backend/src/mw3-transport.ts",
@@ -104,8 +109,8 @@
     },
     {
       "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
-      "bytes": 48627,
-      "sha256": "73d59c0b11e76d8abfb30f7592de46fd9eff3d502600fb250495d55676fd3b61"
+      "bytes": 48874,
+      "sha256": "5a8e2d6515536c49211cef0d04dd3573c8e30b7291771e6e29021c219c7c4013"
     },
     {
       "path": "apps/frontend/scripts/ci/mw3-registry-mode.mjs",
@@ -164,8 +169,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/browser-inputs.ts",
-      "bytes": 13141,
-      "sha256": "a00116bf560b8d6aaddc778018a1f22fa7e12b4e5c7b098ffe48ef9c784dfccd"
+      "bytes": 13187,
+      "sha256": "5818d403ac9584f3713253f4875589e8bbf77695a2b66cd6bcc0bb2de9f55222"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/cached-values.ts",
@@ -503,9 +508,14 @@
       "sha256": "a18c1f26d4347e4d390b9acb9c76297222d1f6a2f6a9cefbfcdbf5f21f0b39e0"
     },
     {
+      "path": "apps/frontend/scripts/postflop-ai/spots-core.ts",
+      "bytes": 13653,
+      "sha256": "1ffb6e68f09454fbca281565bc51f92ca4955778e5aca1d0685dee8acd58e599"
+    },
+    {
       "path": "apps/frontend/scripts/postflop-ai/spots.ts",
-      "bytes": 13146,
-      "sha256": "e81571d8f04e19fc2383c58e93c86ad25f473b4092dbe773892e25710d9da887"
+      "bytes": 769,
+      "sha256": "287da692988f818a45c836fcae75f6ecfcea29d64a8077a41438a066dd55e5db"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/street-state.d.mts",
@@ -539,8 +549,8 @@
     },
     {
       "path": "apps/frontend/scripts/verify-preflop-local-d1.mjs",
-      "bytes": 21454,
-      "sha256": "f3f812617e6f288341efdcaeffd24a7ee6ade6ffad36b00b5a707a6c841c4527"
+      "bytes": 22777,
+      "sha256": "61e65d7ef9e66abab958b9b05fd1b8e1e6328d7b0af33ce639383d0901af23f4"
     },
     {
       "path": "apps/frontend/src/account/AccountMenu.tsx",
@@ -584,13 +594,28 @@
     },
     {
       "path": "apps/frontend/src/agent/AgentTable.tsx",
-      "bytes": 29921,
-      "sha256": "c396b56ac08ffe0497c1873eb6ab919919548a5cfa1c5b76585bce10ed5e499e"
+      "bytes": 35387,
+      "sha256": "2727891235b1e84bb465b2dcaf9f11041dadcae9de8afda43dc779a7a14aff83"
+    },
+    {
+      "path": "apps/frontend/src/agent/GameplayDetails.tsx",
+      "bytes": 5218,
+      "sha256": "ab23e8ca60815bfbff447d4064ec6055e62044d22db49f275b89f559595d6efb"
+    },
+    {
+      "path": "apps/frontend/src/agent/OpponentProfile.tsx",
+      "bytes": 3075,
+      "sha256": "a23d90bc127f50305a8b3dff5a99ce88999c23b90a14a72d95c906f049d27e6e"
     },
     {
       "path": "apps/frontend/src/agent/PlayStyleDashboard.tsx",
-      "bytes": 11736,
-      "sha256": "1af49c63314d4de8d46692a674dbbaf8f1a31fac8cb71e417efa5d5907b63b4d"
+      "bytes": 12457,
+      "sha256": "641cd4dbcf868f7b0cfa003695c7d28eb182b52dc53b689ed85017d2b12c9b55"
+    },
+    {
+      "path": "apps/frontend/src/agent/PokerTable.tsx",
+      "bytes": 2975,
+      "sha256": "d8c4a5abbb281ef4acf9f1a9801f02afa41e554c8747f72243a542a63139b530"
     },
     {
       "path": "apps/frontend/src/agent/StyleAvatar.tsx",
@@ -609,8 +634,8 @@
     },
     {
       "path": "apps/frontend/src/agent/agent.css",
-      "bytes": 34863,
-      "sha256": "46a7a4d66584f7c4a762b942ced9e03fbce1a850c1e07366fedd639798453eeb"
+      "bytes": 38761,
+      "sha256": "4acfde5731307be2a4308ba176b1a27c35697dc749f7dd13aef2078672ee88b4"
     },
     {
       "path": "apps/frontend/src/agent/characters.ts",
@@ -618,9 +643,14 @@
       "sha256": "cb795b0c1e3830225ff241f030385a40bb2de2a0b40fb5d79939cd3c9bbab490"
     },
     {
+      "path": "apps/frontend/src/agent/gameplay-mobile.css",
+      "bytes": 12527,
+      "sha256": "0a6eca0c76f7701cd6ef8cb5fa8eff1ef131b2f1ee707a91bc8dcad0994d6db8"
+    },
+    {
       "path": "apps/frontend/src/agent/hand.ts",
-      "bytes": 18612,
-      "sha256": "dc6e61632818295e6fcfcbb05d7dfbf5c76cf55c3319332894323bbf4711a4ee"
+      "bytes": 19974,
+      "sha256": "29571369f09559069662546d21e6d8b46f92bcfbf7bd3d8a2ddf3219d627debd"
     },
     {
       "path": "apps/frontend/src/agent/mw3-hand.ts",
@@ -644,8 +674,8 @@
     },
     {
       "path": "apps/frontend/src/agent/preflop.ts",
-      "bytes": 13315,
-      "sha256": "f1347b6e4e576192f666734676a32a433597659ab2681df19c4ce6dda6bf2999"
+      "bytes": 13638,
+      "sha256": "b67cd49ebf38bfb8a4ab3d5fdd0c6bb8543dbab7b6a2da8dfc6ec956b95c7cc8"
     },
     {
       "path": "apps/frontend/src/agent/session.ts",
@@ -1150,7 +1180,7 @@
       "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55"
     }
   ],
-  "sources_sha256": "88d8633cb79d775beb56247e869433323ae83695ff3cb3ee927bd2296e94d0ae",
+  "sources_sha256": "70db41f95a4f40e071ab25478738140cf7c17ed980eb6226615e5ee81fe841fb",
   "inputs_sha256": "cc12d24aac0ace9e825419837f3e6027f0fdaa92331a873c59d2ffdcbf1d91c7",
   "artifacts": [
     {
@@ -1216,5 +1246,5 @@
     "bytes": 342470,
     "sha256": "fae0fe5f2ce9fc718f68b9160e4f6e99ed14138b5319008cacb4684b1aca9f3e"
   },
-  "content_sha256": "859306565ded8c5757b5ab4896865d6f40b07154e2db0bd7203a6e17c7f38642"
+  "content_sha256": "97b22511620f82d0275998ec45a72cf10fc660a0369b346b9d404c821b1cc5e1"
 }

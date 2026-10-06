@@ -82,15 +82,15 @@ test("drill styles reuse animals only after the existing diverse-sample threshol
   assert.match(html, /サメ/);
 });
 
-test("ranked stats use server match summaries, never drill history or a fabricated animal", async () => {
+test("legacy quiz records cannot activate server-authoritative human Ranked Stats or leak into drill analysis", async () => {
   const { RankedStats } = await server.ssrLoadModule("/src/trainer/RankedStats.tsx");
   const rank = { rating: 1120, peak: 1200, matches: [{ id: "confirmed", at: Date.now(), before: 1100, after: 1120, accuracy: .75, answered: 20 }] };
   const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [{ spotId: "UTG_open", hand: "AA", action: "open", result: "best", score: 1 }], rank, rankedReady: true, initialView: "ranked", onStart() {} }));
-  assert.match(html, /確定済みランク戦/);
-  assert.match(html, /75%/);
-  assert.match(html, /確定済み 20 回答/);
-  assert.match(html, /GTO・EV・勝率ではありません/);
-  assert.match(html, /個別アクションがない/);
+  // The current human season requires its verified account and live profile.
+  // Legacy quiz records and a readiness flag alone cannot supply that authority.
+  assert.match(html, /ランク戦Statsは利用できません/);
+  assert.match(html, /ローカル・ドリル・通常Agent戦の記録は代用しません/);
+  assert.doesNotMatch(html, /75%|1,120|確定済み 20 回答/);
   assert.doesNotMatch(html, /プレイスタイルマップ|style-roster|まずは練習から/);
   const closed = renderToStaticMarkup(createElement(RankedStats, { rank, ready: false }));
   assert.match(closed, /利用できません/);
