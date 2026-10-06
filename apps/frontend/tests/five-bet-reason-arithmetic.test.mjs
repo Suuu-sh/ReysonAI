@@ -18,6 +18,8 @@ test("5bet copy subtracts rounded facts, including both signs and zero", () => {
   for (const [equity, need, shownEquity, shownNeed] of [
     [28.94, 37.36, 28.9, 37.4], // raw shortage 8.4; displayed shortage 8.5
     [45.04, 37.36, 45.0, 37.4], // raw excess 7.7; displayed excess 7.6
+    [29.65, 37.5, 29.7, 37.5], // raw toFixed gives 29.6; saved round1 gives 29.7
+    [32.05, 37.4, 32.1, 37.4], // same rounding discrepancy for A4s
     [37.36, 37.44, 37.4, 37.4],
     [37.44, 37.36, 37.4, 37.4],
   ]) check(fiveBetEquityLead({ equity, need, fiveBettor: "SB" }), shownEquity, shownNeed, `${equity}/${need}`);
