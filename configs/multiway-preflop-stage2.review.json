@@ -270,6 +270,61 @@
           "mw3_compatibility": "All22 current compatibility source pairs and six support records unchanged"
         },
         "limitations": "Source-only renewal. No strategy generation, frequency/EV/reason changes, new HU display, production/API/D1/auth approval, or renewal of original Astra data and full-suite limitations. Linux process gates and strict frozen MW3 archive/current-source identity remain separately required."
+      },
+      {
+        "date": "2026-10-06",
+        "reviewer": "Independent actual gpt-6-astra /root/review_mw3_source_context",
+        "reviewer_model": "gpt-6-astra",
+        "reviewed_source_commit": "85de9c9bcd0d6d396952eb76ff93238d36fb0108",
+        "reviewed_source_tree": "0781a85aad732cb658240eab4c6db70d3e825acc",
+        "scope": "UI/source-context-only renewal for frozen PR44 integration with development daf73e5. Only two loading-label locale keys/values drop ellipses for LoadingDots. No new strategy-quality approval; all original review attribution,history,advisories and full-suite limitations retained.",
+        "report": "apps/frontend/docs/qa/pr44-independent-source-context-85de9c9/stage2-preservation.json",
+        "report_sha256": "5a722745241ea80145b4536132cb7f8f730eb04cbd9ed70296ea6b214574d87e",
+        "blocking_findings": 0,
+        "before_content_sha256": "d3b8469cb40270067303a1c69fb27c67d7e1686f94f9edf14c552ab1f526102d",
+        "after_content_sha256": "31d7e7e528e7b22d5c09a36051c4e837fd64d13fdd955d0613669cf54d15d14a",
+        "prior_receipt": {
+          "path": "configs/multiway-preflop-stage2.review.json",
+          "bytes": 493669,
+          "sha256": "f49e378ae5f09909bfe745f0e43796cd00b4713f279400316bb72717b61e01d6",
+          "preserved_copy": "apps/frontend/docs/qa/pr44-independent-source-context-85de9c9/historical/configs/multiway-preflop-stage2.review.json"
+        },
+        "source_identity": {
+          "previous": 114,
+          "current": 114,
+          "modified": [
+            {
+              "path": "apps/frontend/src/locales/product-direct.json",
+              "bytes": 44794,
+              "sha256": "1108ed95ac1a899850c910e9aaa9332d2b2ed99a61be837b4666a2a97b99d27f"
+            }
+          ],
+          "added": [],
+          "removed": [],
+          "unchanged": 113
+        },
+        "verification": {
+          "artifact_count": 1888,
+          "artifact_bytes": 79002248,
+          "all_artifacts_unchanged": true,
+          "decoded_original_archive_files": 1614,
+          "decoded_original_archive_bytes": 43276102,
+          "original_archive": {
+            "path": "artifacts/preflop/stage2-reviewed.tar.gz",
+            "bytes": 1747857,
+            "sha256": "b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a",
+            "format": "ustar+gzip"
+          },
+          "source_fingerprint": "b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53",
+          "counts": {
+            "catalog": 3115,
+            "saved": 1611,
+            "unreachable": 1504,
+            "hands": 272259
+          },
+          "source_graph": "Official reviewedSourcePaths and fileRecord,114 retained paths;113 byte-identical and locale1 modified."
+        },
+        "limitations": "Read-only saved-byte/source review; no generation or rerun of original quantitative quality. Parent must install and run unmodified restore/verify and applicable CI. Frozen-candidate390px Stats/Close/reopen and loading hold/release remain incomplete. No strict final-head D1,live-auth E2E,merge/main/production or deployment approval."
       }
     ]
   },
@@ -10255,8 +10310,8 @@
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
-      "bytes": 44812,
-      "sha256": "062e6a2f513803db6432cc261923ef38147027091bfab3b906367f26e49d4413"
+      "bytes": 44794,
+      "sha256": "1108ed95ac1a899850c910e9aaa9332d2b2ed99a61be837b4666a2a97b99d27f"
     },
     {
       "path": "apps/frontend/src/locales/reason-copy.ts",
@@ -10294,7 +10349,7 @@
       "sha256": "d828004fd7c382e565e66094e43c8b2917ed5ff3444b0c12c2e691499211ace7"
     }
   ],
-  "content_sha256": "d3b8469cb40270067303a1c69fb27c67d7e1686f94f9edf14c552ab1f526102d",
+  "content_sha256": "31d7e7e528e7b22d5c09a36051c4e837fd64d13fdd955d0613669cf54d15d14a",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
