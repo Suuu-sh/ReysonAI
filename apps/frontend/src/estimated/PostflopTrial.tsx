@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { X } from "@phosphor-icons/react";
 import { ActionBars, barColor, Panel, SectionHeading, StatusState } from "../components/primitives.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
+import { RangeMatrixSkeleton, Skeleton, SkeletonText } from "../components/Loading.tsx";
 import { tierLabels } from "./postflop-reasons.ts";
 import { buildAdvancedExplanation } from "./postflop-advanced.ts";
 import { glossaryPieces } from "./poker-glossary.ts";
@@ -123,8 +124,19 @@ function HandReasons({ node, hand, texture, explain, loading, error, positions, 
       <GlossaryText text={block.text} locale={productLocale()} />
     </details>)}
     {plain.texture && <GlossaryText className="postflop-reason-texture" text={plain.texture} locale={productLocale()} />}
-    {loading && <small className="postflop-reason-general">{english ? "Loading explanation…" : "説明を計算中…"}</small>}
+    {loading && <SkeletonText lines={2} label={english ? "Loading explanation…" : "説明を計算中…"} />}
     {error && <small className="postflop-reason-general">{english ? "Part of the explanation is unavailable." : "説明の一部を読み込めませんでした。"}</small>}
+  </div>;
+}
+
+// Same grid as the loaded view, so the range and side panels do not jump when the estimate arrives.
+function PostflopLoading({ title }: { title: string }) {
+  return <div className="postflop-range-layout" aria-busy="true">
+    <RangeMatrixSkeleton title={title} label={title} />
+    <div className="postflop-side postflop-loading-side" aria-hidden="true">
+      <Panel><Skeleton width="46%" height={13} /><SkeletonText lines={4} /></Panel>
+      <Panel><Skeleton width="34%" height={13} /><SkeletonText lines={3} /></Panel>
+    </div>
   </div>;
 }
 
@@ -506,13 +518,13 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
       : !cards.every(Boolean) ? <Panel className="postflop-unavailable"><StatusState title={english ? "Select a flop" : "フロップを選択してください"}>{english ? "Open the flop cards in the action path and choose any three cards." : "上のアクション列にあるフロップカードを押して、任意の3枚を選んでください。"}</StatusState></Panel>
       : !board ? <Panel className="postflop-unavailable"><StatusState title={english ? "Invalid flop cards" : "フロップのカードが正しくありません"}>{english ? "Choose three distinct cards from the deck." : "重複しないカードを3枚選んでください。"}</StatusState></Panel>
       : <>
-        {decision.node && status === "loading" && <Panel><StatusState title="ローカル候補を読み込み中" /></Panel>}
+        {decision.node && status === "loading" && <PostflopLoading title="ローカル候補を読み込み中" />}
         {decision.node && status === "error" && <Panel><StatusState title="ローカル候補を表示できません" tone="error">{error}</StatusState></Panel>}
         {!decision.node && !start && <Panel><StatusState title={english ? "Flop action complete" : "フロップの判断終了"}>{decision.result}</StatusState></Panel>}
         {!decision.node && start && !turnCard && <Panel><StatusState title={english ? "Select a turn card" : "ターンを選択してください"}>{english ? "Choose a turn card in the action path above." : "上のアクション列にあるターンカードを押して、1枚選んでください。"}</StatusState></Panel>}
         {!decision.node && start && turnReplay && !later?.node && !riverCard && turnReplay.state.end && !["fold", "raise-fold"].includes(turnReplay.state.end.type) && turnReplay.stacks.ip > 0 && turnReplay.stacks.oop > 0 && <Panel><StatusState title={english ? "Select a river card" : "リバーを選択してください"}>{english ? "The turn action is complete. Choose one river card in the action path above." : "ターンの判断が終わりました。上のアクション列にあるリバーカードを押して、1枚選んでください。"}</StatusState></Panel>}
         {!decision.node && start && turnReplay && !later?.node && (turnReplay.end?.type === "fold" || turnReplay.end?.type === "raise-fold" || turnReplay.stacks.ip <= 0 || turnReplay.stacks.oop <= 0 || Boolean(riverReplay?.state.end)) && <Panel><StatusState title={english ? "Later-street action complete" : "後続ストリートの判断終了"}>{english ? "The action has ended; no later decision is available." : "フォールドまたはオールインでアクションが終了しました。後続の判断はありません。"}</StatusState></Panel>}
-        {!decision.node && start && later?.node && laterStatus === "loading" && <Panel><StatusState title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} /></Panel>}
+        {!decision.node && start && later?.node && laterStatus === "loading" && <PostflopLoading title={english ? "Loading local later-street estimate" : "後続ストリートの候補を読み込み中"} />}
         {!decision.node && start && later?.node && laterStatus === "error" && <Panel><StatusState title={english ? "Cannot show the local later-street estimate" : "後続ストリートの候補を表示できません"} tone="error">{laterError}</StatusState></Panel>}
         {current && aggregates && <div className="postflop-range-layout">
           <StrategyMatrix node={matrixNode} title={`${nodeTitle(decision.node, context)} · ${english ? "range" : "レンジ"}`} ariaLabel={english ? `${current.seat} flop range` : `${current.seat}のフロップレンジ`}

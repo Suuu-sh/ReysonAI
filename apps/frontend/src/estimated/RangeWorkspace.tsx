@@ -11,7 +11,7 @@ import type { PreflopCallEvFacts } from "./PreflopCallEvBars.tsx";
 
 type DisplayHand = FrequencyRow & Partial<{ reason: string; adjusted: "add" | "drop"; shift_bb: number; saved_open: number; open_size_bb: number | null; three_bet_size_bb: number | null; four_bet_size_bb: number | null; all_in_size_bb: number | null; squeeze_size_bb: number | null; equity_vs_shove_pct: number | null }>;
 type DisplaySpot = { id: string; hands: DisplayHand[]; table_profile?: TableProfile; open_size_bb?: number; three_bet_size_bb?: number; four_bet_size_bb?: number; squeeze_size_bb?: number; limp_reraise_size_bb?: number; prior_action?: string | null; call_break_even_equity_pct?: number };
-type RangeEntry = { position: string; kind: string; title: string; spot?: DisplaySpot | null; model?: MatrixModel | null; hand?: DisplayHand; statusTitle?: string; statusDescription?: string; unreachableReason?: string | null; rangeBlockKey?: string; raiseToBb?: number; allInSizeBb?: number; fourBetSizeBb?: number; threeBetSizeBb?: number };
+type RangeEntry = { loading?: boolean; position: string; kind: string; title: string; spot?: DisplaySpot | null; model?: MatrixModel | null; hand?: DisplayHand; statusTitle?: string; statusDescription?: string; unreachableReason?: string | null; rangeBlockKey?: string; raiseToBb?: number; allInSizeBb?: number; fourBetSizeBb?: number; threeBetSizeBb?: number };
 type LocalRange = { position: string; available_actions?: string[]; raise_to_bb?: number; rows: [string, number, number, number][] };
 type LocalEstimate = { scenario?: string; ranges: LocalRange[] };
 type LocalEstimateResponse = { error?: string; data?: LocalEstimate; pending?: boolean; cached?: boolean };
@@ -27,6 +27,7 @@ import { hands } from "../data.ts";
 import { RANGE_SECTION, Sidebar } from "../components/layout.tsx";
 import { StrategyMatrix } from "../components/StrategyMatrix.tsx";
 import { ActionBars, Panel, SectionHeading, StatList, StatusState } from "../components/primitives.tsx";
+import { RangeMatrixSkeleton, SkeletonText, Spinner } from "../components/Loading.tsx";
 import { findFourBetSpot, fourBetMatrixModel, loadFourBetDataset } from "./four-bet-responses.ts";
 import { findThreeBetSpot, threeBetMatrixModel, validateThreeBetDataset } from "./three-bet-responses.ts";
 import { findOpeningSpot, openingMatrixModel, validateOpeningDataset } from "./opening-ranges.ts";
@@ -161,7 +162,8 @@ function AiReason({ hand, reasonState, inlineFacts, hideCallEv = false }: { hand
   const shown = facts.filter(fact => fact.value !== null && fact.value !== undefined && !(hideCallEv && fact.key === "call_ev_bb"));
   return <div className="ai-reason">
     <span>AIの考え方</span>
-    <p>{english ? (detailed ? localizedPreflopReason(hand, detailed, data) : loading ? "Loading…" : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (loading ? "読み込み中…" : error ? "理由を読み込めませんでした。" : hand.reason)}</p>
+    {loading && !detailed ? <SkeletonText lines={3} label={english ? "Loading explanation…" : "説明を読み込み中…"} />
+      : <p>{english ? (detailed ? localizedPreflopReason(hand, detailed, data) : error ? "Could not load the explanation." : "No hand-specific explanation is recorded for this spot.") : detailed?.reason ?? (error ? "理由を読み込めませんでした。" : hand.reason)}</p>}
     {shown.length > 0 && <dl className="reason-facts">
       {shown.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd className={fact.unit === "bb" ? (fact.value! >= 0 ? "fact-positive" : "fact-negative") : undefined}>{formatFact(fact)}</dd></div>)}
     </dl>}
@@ -250,7 +252,7 @@ function InlineGenerationControl({ description, status, error, onGenerate }: { d
   return <>
     <div className="inline-generation-control">
       <small>{description}</small>
-      <button type="button" disabled={status === "loading" || status === "checking" || status === "cached"} onClick={onGenerate}>{label}</button>
+      <button type="button" disabled={status === "loading" || status === "checking" || status === "cached"} aria-busy={status === "loading" || status === "checking" || undefined} onClick={onGenerate}>{(status === "loading" || status === "checking") && <Spinner size={13} />}{label}</button>
     </div>
     {error && <p className="inline-generation-error" role="alert">{error}</p>}
   </>;
@@ -694,7 +696,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
   const extendedEntry = (ref: RangeRef, title: string): RangeEntry => {
     const missing = (statusTitle: string, statusDescription: string): RangeEntry => ({ position: ref.position, kind: "pending", title, statusTitle, statusDescription });
     if (extended.error) return missing("レンジを読み込めません", extended.error.message);
-    if (!extended.data) return missing("読み込み中", "保存済みレンジを読み込んでいます。");
+    if (!extended.data) return { ...missing("読み込み中", "保存済みレンジを読み込んでいます。"), loading: true };
     const savedSpot = findExtendedSpot(extended.data, ref, opener);
     if (!savedSpot) return missing("レンジ未収録", "この履歴のレンジはまだ保存されていません。");
     return { position: ref.position, kind: ref.kind, spot: savedSpot, model: extendedModel(ref.kind, savedSpot, dataset!, openingDataset!), title,
@@ -770,7 +772,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     if (pendingRaise === "all_in") {
       const allInRange = currentLocalEstimate?.scenario === "five_bet_all_in_response" && currentLocalEstimate.ranges?.find(range => range.position === opener);
       if (fiveBet.spot) addSaved(opener, "five_bet", fiveBet.spot, fiveBetModel, `${opener} · 5betオールインへの応答`);
-      else if (fiveBet.loading) rangeEntries.push({ position: opener, kind: "pending", title: `${opener} · 5betオールインへの応答`, statusTitle: "読み込み中", statusDescription: "保存済みレンジを読み込んでいます。" });
+      else if (fiveBet.loading) rangeEntries.push({ position: opener, kind: "pending", loading: true, title: `${opener} · 5betオールインへの応答`, statusTitle: "読み込み中", statusDescription: "保存済みレンジを読み込んでいます。" });
       else rangeEntries.push(allInRange
         ? { position: opener, kind: "local", model: localMatrix(allInRange), title: `${opener} · 5betオールインへの応答`, allInSizeBb: 100, fourBetSizeBb: spot!.four_bet_size_bb, threeBetSizeBb: spot!.three_bet_size_bb }
         : { position: opener, kind: "pending", title: `${opener} · 5betオールインへの応答`, statusTitle: "レンジ未収録", statusDescription: "5betオールイン後の応答データはまだ保存されていません。" });
@@ -831,7 +833,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
     }
     if (ref.kind === "five_bet") {
       if (fiveBet.spot) return withContext({ position: ref.position, kind: "five_bet", spot: fiveBet.spot, model: fiveBetMatrixModel(fiveBet.spot), title: `${ref.position} · 5betオールインへの応答` });
-      if (fiveBet.loading) return missing("5betオールインへの応答", "保存済みレンジを読み込んでいます。", "読み込み中");
+      if (fiveBet.loading) return { ...missing("5betオールインへの応答", "保存済みレンジを読み込んでいます。", "読み込み中"), loading: true };
       const allInRange = currentLocalEstimate?.scenario === "five_bet_all_in_response" && currentLocalEstimate.ranges?.find(range => range.position === ref.position);
       return allInRange
         ? withContext({ position: ref.position, kind: "local", model: localMatrix(allInRange), title: `${ref.position} · 5betオールインへの応答`, allInSizeBb: 100, fourBetSizeBb: spot?.four_bet_size_bb, threeBetSizeBb: spot?.three_bet_size_bb })
@@ -911,7 +913,7 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
         </Panel>
         {flopActive ? <PostflopTrial context={flopContext!} cards={flopCards} actions={flopActions} turnCard={turnCard} turnActions={turnActions} riverCard={riverCard} riverActions={riverActions} displayMode={displayMode} /> : currentError ? <StatusState tone="error">{currentError}</StatusState> : <>
         <div className={`results estimate-results participant-results${focusedEntry ? " comparison-focused" : ""}`} aria-label="参加中のレンジ" style={{ "--participant-count": displayedEntries.length } as CSSProperties}>
-          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model!.actions} actionLabels={entry.model!.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
+          {displayedEntries.map(entry => entry.model ? <StrategyMatrix key={entry.position} node={{ actingPosition: entry.position }} title={entry.title} ariaLabel={`${entry.position}のレンジ`} aggregates={entry.model.aggregates} actions={entry.model!.actions} actionLabels={entry.model!.actionLabels} simplified={displayMode === "simple"} selected={selected} onSelect={value => { setSelected(value); setFocusedRange(entry.position); }} {...(entry.unreachableReason ? { unreachableReason: entry.unreachableReason } : {})} /> : entry.loading ? <RangeMatrixSkeleton key={entry.position} className="multiway-range-panel missing-range-panel" ariaLabel={`${entry.position}のレンジ`} title={entry.title} label={entry.statusDescription ?? ""} /> : <Panel key={entry.position} className="multiway-range-panel missing-range-panel" aria-label={`${entry.position}のレンジ`}><SectionHeading title={entry.title} /><StatusState title={entry.statusTitle || "レンジ未収録"}>{entry.statusDescription || "この履歴のレンジはまだ保存されていません。"}</StatusState>
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
             {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のレンジを生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}

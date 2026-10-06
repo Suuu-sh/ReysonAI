@@ -1,0 +1,98 @@
+/* ---- Loading UI ---- */
+:root { --skeleton-base: #1e1e24; --skeleton-shine: #2d2d35; }
+
+.loading-sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@keyframes loading-spin { to { transform: rotate(360deg); } }
+@keyframes loading-appear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes loading-sweep { 0% { background-position: 150% 0; } 100% { background-position: -50% 0; } }
+@keyframes loading-wave { 0%, 100% { background-color: var(--skeleton-base); } 50% { background-color: var(--skeleton-shine); } }
+@keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
+@keyframes loading-dot { 0%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
+@keyframes loading-breathe { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.06); opacity: 1; } }
+
+.spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--spinner-size, 16px);
+  height: var(--spinner-size, 16px);
+  border: max(1.5px, calc(var(--spinner-size, 16px) / 9)) solid rgb(255 255 255 / 12%);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: loading-spin .75s linear infinite;
+}
+/* On light buttons (Google sign-in) the track has to be dark to stay visible. */
+.google-signin .spinner, .learning-gate-google .spinner { border-color: rgb(0 0 0 / 14%); border-top-color: currentColor; }
+
+/* Short waits appear only after a beat, so instant responses do not flash a spinner. */
+.loading-inline, .state-loading, .app-loading > * { animation: loading-appear .2s ease .12s both; }
+
+.app-loading { display: grid; place-content: center; justify-items: center; gap: 18px; min-height: 100dvh; padding: 24px; background: var(--bg, #09090b); color: var(--text-muted, #8b8b95); font: 500 13px Inter, "Noto Sans JP", sans-serif; text-align: center; }
+.app-loading p { margin: 0; line-height: 1.5; }
+.app-loading-mark { display: grid; place-items: center; width: 72px; height: 72px; border: 1px solid var(--line-strong, #2c2c33); border-radius: 20px; background: var(--surface-raised, #151519); box-shadow: 0 0 0 6px rgb(240 96 158 / 5%), 0 18px 40px rgb(0 0 0 / 40%); }
+.app-loading-mark img { animation: loading-breathe 1.8s ease-in-out infinite; }
+.app-loading-bar { position: relative; display: block; width: 132px; height: 3px; overflow: hidden; border-radius: 3px; background: var(--line-strong, #2c2c33); }
+.app-loading-bar i { position: absolute; inset: 0; width: 40%; height: 100%; border-radius: inherit; background: var(--accent, #f0609e); box-shadow: none; animation: loading-bar 1.1s cubic-bezier(.45, 0, .55, 1) infinite; }
+
+.loading-dots { display: inline-flex; gap: 3px; margin-left: 4px; vertical-align: middle; }
+.loading-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; box-shadow: none; animation: loading-dot 1.1s ease-in-out infinite; }
+.loading-dots i:nth-child(2) { animation-delay: .15s; }
+.loading-dots i:nth-child(3) { animation-delay: .3s; }
+
+.loading-inline { display: flex; align-items: center; gap: 9px; margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.loading-inline > span:last-child { min-width: 0; }
+
+.state-loading { display: flex; align-items: flex-start; gap: 12px; }
+.state-loading .spinner { margin-top: 1px; }
+.state-loading h2 { margin-bottom: 4px; }
+.state-loading .state-content { color: var(--text-muted); font-size: 12px; }
+
+.skeleton {
+  display: block;
+  flex-shrink: 0;
+  max-width: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--skeleton-base) 30%, var(--skeleton-shine) 50%, var(--skeleton-base) 70%) var(--skeleton-base);
+  background-size: 300% 100%;
+  animation: loading-sweep 1.6s ease-in-out infinite;
+}
+
+.skeleton-text { display: grid; gap: 9px; padding: 3px 0; }
+
+.skeleton-table { display: grid; margin-top: 14px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.skeleton-table-row { display: grid; grid-template-columns: 52px minmax(0, 2fr) repeat(calc(var(--columns) - 2), minmax(0, 1fr)); align-items: center; gap: 16px; min-height: 44px; padding: 0 14px; border-top: 1px solid var(--line); }
+.skeleton-table-row:first-of-type { border-top: 0; }
+.skeleton-table-row .skeleton { animation-delay: calc(var(--row) * 90ms); }
+
+.matrix-skeleton { position: relative; }
+.matrix-skeleton .panel-heading { min-height: 18px; }
+.matrix-skeleton .matrix { min-height: 300px; }
+.matrix-skeleton .matrix > span { border-radius: 3px; background: var(--skeleton-base); animation: loading-wave 1.6s ease-in-out infinite; animation-delay: calc(var(--wave, 0) * 50ms); }
+.matrix-skeleton-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; }
+.matrix-skeleton-legend span { display: flex; align-items: center; gap: 8px; }
+.matrix-skeleton-legend i { background: var(--skeleton-shine); box-shadow: none; }
+.missing-range-panel.matrix-skeleton { min-height: 390px; }
+
+@media (max-width: 480px) {
+  .matrix-skeleton .matrix { min-width: 0; min-height: 0; aspect-ratio: 1; gap: 1px; }
+  .skeleton-table-row { gap: 10px; padding: 0 10px; }
+}
+
+/* The global reduced-motion rule shortens every animation; loops would then flicker, so stop them instead. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner, .skeleton, .loading-dots i, .matrix-skeleton .matrix > span, .app-loading-mark img, .app-loading-bar i { animation: none !important; }
+  .spinner { border-right-color: var(--accent); }
+  .app-loading-bar i { left: 30%; }
+}
+
+/* Placement inside existing screens */
+.ff-loading { margin-bottom: 14px; }
+.ff-scorebar-skeleton > div { gap: 10px; }
+.ff-skeleton-card { margin-top: 16px; }
+.agent-thinking.loading-inline { justify-content: center; margin-top: 6px; font-size: 11px; }
+.ai-reason .skeleton-text, .postflop-reasons .skeleton-text { margin: 4px 0 10px; }
+.inline-generation-control button { display: inline-flex; align-items: center; gap: 8px; }
+.inline-generation-control button .spinner { border-color: rgb(0 0 0 / 18%); border-top-color: currentColor; }
+.postflop-loading-side .panel { display: grid; gap: 12px; }
+.matrix-skeleton .panel-heading .spinner { margin-left: auto; }
+.ranked-busy { margin-bottom: 12px; }

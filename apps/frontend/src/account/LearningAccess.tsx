@@ -4,6 +4,8 @@ import type { AccountState } from "./session.ts";
 import { useState } from "react";
 import { ArrowLeft, ChartBar, ClockCounterClockwise, GraduationCap, LockSimple, Target } from "@phosphor-icons/react";
 import { localized } from "../locale.ts";
+import { AppLoading } from "../components/AppLoading.tsx";
+import { Spinner } from "../components/Loading.tsx";
 import { startGoogleSignIn } from "./session.ts";
 import "./account.css";
 
@@ -24,7 +26,7 @@ export function rememberLearningIntent(section: string | null) {
   } catch {}
 }
 export function LearningAccess({ account, onBack, onChanged, children, navigation = null }: { account: AccountState; onBack: () => void; onChanged?: () => void; children: ReactNode; navigation?: ReactNode }) {
-  if (!account.ready) return <div className="site-loading">{localized("Checking Google sign-in…", "Googleログインを確認中…")}</div>;
+  if (!account.ready) return <AppLoading label={localized("Checking Google sign-in…", "Googleログインを確認中…")} />;
   if (learningAllowed(account)) return children;
   return <div className="shell">{navigation}<main className="account-page learning-gate">
     <LearningGate account={account} onBack={onBack} />
@@ -53,8 +55,8 @@ export function LearningGate({ account, onBack, title, lead, features: customFea
     <ul className="learning-gate-features">
       {features.map(([Icon, name, detail]) => <li key={name}><Icon size={18} aria-hidden="true" /><span><strong>{name}</strong><small>{detail}</small></span></li>)}
     </ul>
-    <button type="button" className="learning-gate-google" disabled={busy || !account.available} onClick={signIn}>
-      {GOOGLE_MARK}{busy ? localized("Opening Google…", "Googleを開いています…") : localized("Continue with Google", "Googleで続ける")}
+    <button type="button" className="learning-gate-google" disabled={busy || !account.available} aria-busy={busy || undefined} onClick={signIn}>
+      {busy ? <Spinner size={16} /> : GOOGLE_MARK}{busy ? localized("Opening Google…", "Googleを開いています…") : localized("Continue with Google", "Googleで続ける")}
     </button>
     {!account.available && <p className="learning-gate-note" role="status">{account.error
       ? localized("Cannot reach the sign-in service. Check your connection and reload.", "ログインサービスに接続できません。接続を確認して再読み込みしてください。")
