@@ -1,3 +1,26 @@
+# Latest HU research checkpoint: whole12 complete, 1755 generation running
+
+Prepared 2026-10-06 05:27 UTC from the fixed progress observation at **05:24:11 UTC**. Existing draft PR #41 remains a research preservation checkpoint; ordinary runtime, prior model10 acceptance and the three individually accepted model11 cases are unchanged. This fourth case is not finally accepted.
+
+- The repaired two-stage whole12 completed. Producer: 244.4359 seconds / 845588 KiB peak group RSS; fresh validator: 5.1572 seconds / 452668 KiB. The native full aggregate hash and all retained 49 parts / 6228 rows / 558 proof bytes were verified. Reference sanity is 864 paired trials with zero drift; 15649 legal combos and 9 warnings are retained.
+- Independent review admitted this exact source/policy pair to its own 1755-canonical-flop coverage run. At 05:24:11 UTC, 169/1755 boards were observed, with zero errors/unresolved and 5 workers active. The maximum completed-batch peak RSS was 554712 KiB; this is not instantaneous memory usage. Later progress is outside this immutable snapshot.
+- Confirmed Library progress version 14 contains **160 immutable boards / 20 successful batches**, not all 169 observed boards. The archive and live observation have different snapshot times.
+- The exact-case producer-reuse finalizer and bounded launcher are prepared and conditionally reviewed. They require a genuine complete successful producer terminal before use. Finalization and final acceptance are pending.
+- The three repeated SB/aggressive deficits remain an explicit limitation of balanced-belief play against aggressive behavior. No mandatory authored-rule correction or deterministic numerical defect was established. Coverage does not prove superiority, GTO or general opponent robustness.
+
+Source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`; raw policy bytes remain unchanged. Small operational sources/configurations and original independent receipts are mirrored under [updates/20261006-0526](updates/20261006-0526/). Their original workspace paths are preserved as provenance; these archival copies are not installed into the runtime. Original HOLD/initial reviews and the prior 110-file source snapshot are unchanged. No numerical work was run for this Git checkpoint.
+
+Confirmed archive pointers:
+
+- Library `libfile_6fc13f8f72288191a328c485cc8d1fa9`, version **14**, `hu-model11-co-coldcall-progress-20261006-0524.tar.gz`, 32210693 bytes, SHA-256 `e4f2867ee7cff3e36b0e953557c10700019d6fcba69851ff03e31921b84bbc53`. Accepted-three-case/raw-history evidence remains in version 13; version 14 is the bounded current progress archive.
+- Whole12 proof: Library `libfile_828857f5aae88191b3f9ad53ad99a9b0`, version **8**, 12960723 bytes, SHA-256 `cfd441e3b4de50f648caada4f7fa18595cc3d637037f414700b8148664399f43`.
+
+Remaining work: complete the producer, satisfy finalizer prerequisites, preserve and independently assess final evidence, and reach a separate acceptance decision. PR merge conflicts/current full CI remain unresolved or unverified; runtime adoption and production remain separate. This checkpoint does not merge, deploy, change main/development or claim current-head CI success.
+
+## Historical checkpoint from 04:51 UTC
+
+The following original snapshot is retained for chronology. Its earlier whole12/board-admission status is superseded only by the update above; its immutable original receipts are not rewritten.
+
 # HU model11 research checkpoint, 2026-10-06 04:51 UTC
 
 Saved research work for existing draft [PR #41](https://github.com/Suuu-sh/ReysonAI/pull/41). This checkpoint does not complete PR #41 or adopt model11 in the current runtime. The existing model10 acceptance remains unchanged. No merge, deployment, D1 change or production approval is included.

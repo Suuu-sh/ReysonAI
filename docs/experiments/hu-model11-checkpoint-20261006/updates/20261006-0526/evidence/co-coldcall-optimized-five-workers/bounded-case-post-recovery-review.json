@@ -1,0 +1,456 @@
+{
+  "kind": "independent-co-coldcall-post-recovery-bounded-case-quality-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T05:04:28.344768+00:00",
+  "verdict": "APPROVE_FOR_1755",
+  "spot": "CO_open_BTN_3bet_SB_call_CO_fold",
+  "bindingHash": "b0be64804e5f63655899d1de0ee3c92b40a50da193d13ceea4570395fdd5d27f",
+  "regressionBindingHash": "28a7fdf370d5b8c447554362789f9cd65f99d3f0e455ab4fc982168ffc141ba8",
+  "executionCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "executionTree": "cf4c70d5fe5cfb5fb612be325d3262fc23e23c68",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/plan.json",
+    "bytes": 42920,
+    "sha256": "46122311e04b458502091ebb358e616b64f0820fc933fc745862469a0b88af5e"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run/prepared.json",
+    "bytes": 41269,
+    "sha256": "ac2199310e187f19e80f0b99b2ff6fb7bf7514b930abd5ddcab314dcdd462274"
+  },
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/SOURCE_REVIEW.json",
+    "bytes": 4990,
+    "sha256": "1f085310d0b56b1aa62087059cc527f81f8f27726705e30dba50d47947abe780"
+  },
+  "priorHoldReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/bounded-case-review.json",
+    "bytes": 40759,
+    "sha256": "0c1491b3b596f7a504e9992ddfe02957a36a7d671dbcd323803c8a3506ae1616"
+  },
+  "policyDisposition": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-saved-trial-traces-v1/independent-result-disposition.json",
+    "bytes": 18049,
+    "sha256": "0fc53d89d7d65acb0dfb4099f5935894367edb3a1d04a87f07e208929ad3a009"
+  },
+  "optimizationActualResult": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/independent-actual-result-review.json",
+    "bytes": 11208,
+    "sha256": "167f1435d061abb977c6210c4cdacecbc37de6e04b38318c9525d03bb63f6bd3"
+  },
+  "sourceTransition": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/source-transition.json",
+    "bytes": 1872,
+    "sha256": "0522c787e8efd8b68ecf3fee812ae2e6c1349a528747e8116c00b8cfa047c7ff"
+  },
+  "policyPair": {
+    "flop": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-policy.json",
+      "bytes": 26311,
+      "sha256": "b450a9f1faf8fbc4886b31ed91208d7cc2eb58ef757c769d1b844418ef843e0c"
+    },
+    "later": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-later-policy.json",
+      "bytes": 82305,
+      "sha256": "d95755053a61429f8b70eae2e1ef7581ae7dab838c38c710cfd20153e858860a"
+    }
+  },
+  "declaredPolicyHashes": {
+    "flop": "2af8cd1edd39a0c85ebddb83d646f24ac21a8d9695a722550ccf78dccfd9cb51",
+    "later": "4cb0c562befccdb98f791e6b65f0c3937c973c3a2aa3d7946181b42f508982c1"
+  },
+  "evidence": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/bounded-case-review.json",
+      "bytes": 40759,
+      "sha256": "0c1491b3b596f7a504e9992ddfe02957a36a7d671dbcd323803c8a3506ae1616"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-saved-trial-traces-v1/independent-result-disposition.json",
+      "bytes": 18049,
+      "sha256": "0fc53d89d7d65acb0dfb4099f5935894367edb3a1d04a87f07e208929ad3a009"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-saved-trial-traces-v1/result.json",
+      "bytes": 666815,
+      "sha256": "fb18c12625e3af08eca5b515c47443a01b1de5974eb66421b48abd4d5aea60a7"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-saved-trial-traces-v1/supervision.resources.json",
+      "bytes": 775,
+      "sha256": "565acd34d29ce971e9811625a5691a30b26d8a09d7461a4b686e8a5fb402698e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/source-review.json",
+      "bytes": 4692,
+      "sha256": "a75cd429a481e2dfc44a782bc434f767b50e5d9885097b3a6a93519a3a8117da"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/repair-plan.json",
+      "bytes": 6116,
+      "sha256": "fa250d5f323c8588af1c19efd5d8489c6175f56544ac7a1a7fc43877a5ef59b7"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/run/produce/receipt.json",
+      "bytes": 1544,
+      "sha256": "b4ff7fc01620ec6c4c3ac471d9d64d6cb68d250f7e01365d8f7fd9be113f1cb4"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/run/produce/completed.json",
+      "bytes": 4973,
+      "sha256": "5a8f4d1ba32a94b05ba5d211fdb1620849afee25c31f7e6a30cbb7c731140e31"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/run/produce/output/balance-descriptor.json",
+      "bytes": 137704,
+      "sha256": "8813845e3fa76372a3fb7003f271402262eddee5aade753ab336b5e481c86d6e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/run/validate/receipt.json",
+      "bytes": 1546,
+      "sha256": "45a965e1aaabbc7908cf3fa6709a0bd2b7974f234f0ac5d1c8b3459c2552523e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/run/validate/completed.json",
+      "bytes": 2413,
+      "sha256": "f9a0ce1cf98be790b251b6c7d3cbee1fb6264afc923d7a19fd5dd5c51ab6cc7a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/run/validate/output/whole12.json",
+      "bytes": 148354,
+      "sha256": "1c45dcd8df8b7a591ff2dd5e9bb87c9e7ceafc92746d92b6b1b0b89578c5e9d0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/run/validate/output/preserved-byte-comparison.json",
+      "bytes": 211,
+      "sha256": "85c8b4358096c3abe801a77090e93cacc14cf2922e0e32becc5ed9acb8940c26"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/run/validate/output/reference-sanity.json",
+      "bytes": 33944,
+      "sha256": "b59cc2f0410a03b26d1d2abc514b382d6ec47e6b9fde784870c0689682716292"
+    }
+  ],
+  "regression": {
+    "cells": 72,
+    "trialsPerCell": 64,
+    "completedTrials": 4608,
+    "provedBaseUnreachableTrials": 0,
+    "unresolvedTrials": 0,
+    "allRawReturnsMeansSampleStandardDeviationsIntervalsRecalculated": true,
+    "rawChunkPinsVerified": 72,
+    "perCellProofFilesVerified": 50,
+    "completionEvents": 50,
+    "negativePairedDeltaCells": 33,
+    "negativePairedDeltaBySeat": {
+      "BTN": 6,
+      "SB": 27
+    },
+    "candidatePointMeansNegativeCells": [
+      23,
+      71
+    ],
+    "descriptiveDeltaIntervals": {
+      "whollyBelowZero": 5,
+      "overlapZero": 62,
+      "whollyAboveZero": 5
+    },
+    "precision": "Low or unknown. 64 is an engineering budget; 72 exploratory comparisons are not multiplicity-adjusted."
+  },
+  "adverseDiagnostics": {
+    "fixedIndices": [
+      7,
+      17,
+      33,
+      47,
+      53
+    ],
+    "newTrials": 640,
+    "original64ReplayedOnlyForExactObjectEquality": true,
+    "allFiveExitZeroAndRawStatisticsProofsVerified": true,
+    "repeatedAdditional128WhollyNegativeIndices": [
+      17,
+      47,
+      53
+    ],
+    "retainedRepeatedSignals": [
+      {
+        "index": 17,
+        "condition": {
+          "board": "Js8s5d",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "original64": {
+          "mean": -9.3808,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -17.8166,
+            -0.945
+          ]
+        },
+        "additional128": {
+          "mean": -5.6632,
+          "sampleCount": 128,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -9.9929,
+            -1.3335
+          ]
+        },
+        "combined192": {
+          "mean": -6.9024,
+          "sampleCount": 192,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -10.9268,
+            -2.878
+          ]
+        }
+      },
+      {
+        "index": 47,
+        "condition": {
+          "board": "KcKd4h",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "original64": {
+          "mean": -14.8158,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -28.8414,
+            -0.7901
+          ]
+        },
+        "additional128": {
+          "mean": -12.433,
+          "sampleCount": 128,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -23.3327,
+            -1.5332
+          ]
+        },
+        "combined192": {
+          "mean": -13.2272,
+          "sampleCount": 192,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -21.848,
+            -4.6065
+          ]
+        }
+      },
+      {
+        "index": 53,
+        "condition": {
+          "board": "Ks8d3c",
+          "split": "holdout",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "original64": {
+          "mean": -10.0116,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -17.7281,
+            -2.295
+          ]
+        },
+        "additional128": {
+          "mean": -8.2591,
+          "sampleCount": 128,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -13.749,
+            -2.7693
+          ]
+        },
+        "combined192": {
+          "mean": -8.8433,
+          "sampleCount": 192,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -13.3065,
+            -4.3801
+          ]
+        }
+      }
+    ],
+    "savedTraceReplay": {
+      "existingTrials": 576,
+      "newTrials": 0,
+      "selectedTailTraces": 9,
+      "allSavedTrialObjectsEqual": true,
+      "eightEffectiveResponseFolds": true,
+      "oneOrdinaryShowdownLoss": true,
+      "riverExactNegativeSignWitnesses": 1,
+      "riverExactSignNotRequestedWitnesses": 5
+    },
+    "disposition": "Retain repeated SB/aggressive performance deficits. Selected traces show computed balanced-belief responses often call much less than authored raw rows against actual aggressive reference behavior. No mandatory authored-rule correction or deterministic numerical defect was established. This permits coverage expansion, not a claim that the strategic weakness is resolved.",
+    "additionalSamplingRequired": false
+  },
+  "whole12": {
+    "complete": true,
+    "checkedCombos": 15649,
+    "prefixCounts": {
+      "requested": 6228,
+      "evaluated": 5670,
+      "provedModelUnreachable": 558,
+      "unresolved": 0
+    },
+    "offModelStages": 0,
+    "errors": 0,
+    "warnings": [
+      {
+        "check": "bluff-ratio",
+        "direction": "under",
+        "severity": "warn",
+        "node": "river_oop_first",
+        "detail": "33% pot bets average 1.6% air versus a size target of 20.9% at 11.5% range frequency (more than 15 points under).",
+        "street": "later"
+      },
+      {
+        "check": "bluff-ratio",
+        "direction": "under",
+        "severity": "warn",
+        "node": "river_oop_first",
+        "detail": "75% pot bets average 2.2% air versus a size target of 31.3% at 9.4% range frequency (more than 15 points under).",
+        "street": "later"
+      },
+      {
+        "check": "bluff-ratio",
+        "direction": "under",
+        "severity": "warn",
+        "node": "river_ip_first",
+        "detail": "33% pot bets average 2.8% air versus a size target of 20.8% at 9.6% range frequency (more than 15 points under).",
+        "street": "later"
+      },
+      {
+        "check": "bluff-ratio",
+        "direction": "under",
+        "severity": "warn",
+        "node": "river_ip_first",
+        "detail": "75% pot bets average 3.9% air versus a size target of 31.1% at 8.8% range frequency (more than 15 points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_ip_vs_33",
+        "detail": "defends 38.7% versus a minimum defence of 75.2% (more than 15 percentage points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_ip_vs_75",
+        "detail": "defends 29.6% versus a minimum defence of 57.1% (more than 15 percentage points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_ip_vs_125",
+        "detail": "defends 24.6% versus a minimum defence of 44.4% (more than 15 percentage points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_oop_vs_33",
+        "detail": "defends 48.0% versus a minimum defence of 75.2% (more than 15 percentage points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_oop_vs_75",
+        "detail": "defends 40.7% versus a minimum defence of 57.1% (more than 15 percentage points under).",
+        "street": "later"
+      }
+    ],
+    "referenceSanity": {
+      "samplesPerCell": 12,
+      "cells": 72,
+      "pairedTrials": 864,
+      "zeroDrift": true,
+      "numericalHash": "0f4630e8f2b8c75a1d8b427f84c545ee81ad31447b49211a3def623bf333d599"
+    },
+    "originalBalanceHash": "987d3229c0c8ce5c41b1ad37f4626e3d8c88f464d4160d5a6bf4f802d503bc27",
+    "nativeFullAggregateHashVerified": true,
+    "nativeOriginalAndRestoredValidationEqual": true,
+    "savedHeaderPartitionProofPinsVerified": 608,
+    "allOldRetainedFilesByteEqualIncludingIdentity": 608,
+    "retainedPrefixParts": 49,
+    "retainedUniquePrefixes": 6228,
+    "retainedProofFiles": 558,
+    "oldStoppedAttemptPreserved": true,
+    "oldHeaderFabricated": false,
+    "oldAggregateHashUnavailableAndNotClaimedEqual": true,
+    "freshProducerAndValidator": true,
+    "producerSeconds": 244.4359407289885,
+    "producerPeakGroupRssKiB": 845588,
+    "validatorSeconds": 5.157218869993812,
+    "validatorPeakGroupRssKiB": 452668,
+    "bothActualExitZeroReapedSourceUnchanged": true
+  },
+  "policyFoundation": {
+    "review": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-independent-review-20261006/review-receipt.json",
+      "bytes": 4875,
+      "sha256": "c180a5c73b033f935433e10f28f5f755affdd09bff989ac7764c6fb9014dcb93"
+    },
+    "nativeModel11AuthorshipRetained": true,
+    "authorshipCaution": "Native model11-prompt authoring provenance stays distinct from the inherited model10-authored-policy-bytes evaluator label. Old 5db acceptance is common evidence only.",
+    "rawBet125CapDependence": "Raw BTN bet125 tier-air shares include 46.181172% on 8h5c2d, 40.467553% on Qh8s3d, 39.121756% on 6s3h2c and 37.419906% on Ks8d3c. These coarse raw shares are diagnostics, not equity-defined bluff mass. A per-prefix pre/post-cap disposition is not established by saved ordinary trials or the missing whole12 header.",
+    "pairedBoardCaution": "KcKd4h broad monster tiers are not equity-defined value; zero air tier is not zero bluff mass.",
+    "physicalActionCaution": "After flop bet125/call, turn bet75 and bet125 can merge into one 67.62 BB all-in. Preserve physical pooling, canRaise and unreachable diagnostics."
+  },
+  "warningDisposition": "Four low-air and five river under-defence advisory warnings remain under the unchanged thresholds. Coarse air and MDF targets do not by themselves identify illegal actions or justify replacing exact equity, physical-action pooling, cap provenance or river-sign safeguards. Raw bet125/cap dependence and paired-board tier limitations remain disclosed.",
+  "decision": "Approve this exact pair and optimized source for its own 1755-canonical-flop coverage run. The missing whole12 component is now complete, and the adverse-performance hold has a recorded mechanism/limitation disposition. Do not erase the repeated adverse signals or convert a future clean coverage gate into a performance, equilibrium or general-quality claim.",
+  "concreteImplementationBlockers": [],
+  "additionalNumericalDiagnosticsRequiredBeforeBoards": [],
+  "scope": {
+    "canonicalFlops": 1755,
+    "existingSampledTurnsPerFlop": 4,
+    "existingSampledRiverRunoutsPerFlop": 12,
+    "allPokerRunouts": false,
+    "fiveWorkers": true,
+    "originalResourceLimits": {
+      "heapMiB": 512,
+      "groupRssMiB": 900,
+      "aggregateRssMiB": 3072,
+      "minimumAvailableMiB": 2048,
+      "childSeconds": 900,
+      "wholeSeconds": 43200,
+      "pollMilliseconds": 50
+    },
+    "numericalThresholdsChanged": false,
+    "publicValidationChanged": false,
+    "default45Changed": false,
+    "serialFinalizeApproved": false,
+    "laterFinalization": "Requires the separately reviewed exact-case producer-semantic-reuse adapter and genuine complete producer receipts; initial serial finalize remains excluded."
+  },
+  "policyAccepted": false,
+  "oldFullReplayPassed": false,
+  "all1755AlreadyPassed": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

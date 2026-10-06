@@ -1,0 +1,116 @@
+{
+  "kind": "independent-co-coldcall-producer-reuse-finalizer-delta-review",
+  "version": 1,
+  "status": "CONDITIONALLY_CLEARED_AFTER_GENUINE_COMPLETE_PRODUCER_TERMINAL",
+  "reviewedAt": "2026-10-06T05:17:44.611995+00:00",
+  "scope": "One mechanical case/source/attempt binding review against accepted co-squeeze finalization. No common-code re-audit, Node, numerical generation or fresh semantic replay.",
+  "case": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/case.json",
+    "bytes": 44593,
+    "sha256": "080f5c92891b403f0742a00a33e3d38ebb102adc43bccbd5f4798a789e870fb9"
+  },
+  "adapter": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/finalize.mjs",
+    "bytes": 19679,
+    "sha256": "83da0b6feae3a009a97c9da02248c1706eb79a8e1f4d7061e6e6e9e8052a8de9"
+  },
+  "supervisor": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/run-finalizer-bounded.py",
+    "bytes": 12534,
+    "sha256": "eeb05b8980d10d7dbbfbf90814052ffdde4a3ec67ff67e991dcaebbbe413f72f"
+  },
+  "exactSourceDelta": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/source-binding.diff",
+    "bytes": 12818,
+    "sha256": "460e807dd8870038f3decacb335e354a3752603873e9cfdba78d08ab8bbbba97"
+  },
+  "caseBindingChanges": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/case-binding-changes.json",
+    "bytes": 4877,
+    "sha256": "b8ff278c484defb5c29f05c2e640bf6024b939ac8aa5b5ef2992ae51f505281d"
+  },
+  "priorAcceptedFinalizerReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-squeeze-producer-verified-finalization/independent-delta-review.json",
+    "bytes": 3393,
+    "sha256": "5b1780fe844bd12b5ead6e2a0b66f8731060f1e86b63793c5491fd87c90dcac8"
+  },
+  "priorSuccessfulActualOutputReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-squeeze-producer-verified-finalization/independent-actual-output-review.json",
+    "bytes": 2770,
+    "sha256": "651587a7564137bca8bc2e87fb7a154cb308a7af3b2edaa459a7684c6aeccdce"
+  },
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/plan.json",
+    "bytes": 42920,
+    "sha256": "46122311e04b458502091ebb358e616b64f0820fc933fc745862469a0b88af5e"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run/prepared.json",
+    "bytes": 41269,
+    "sha256": "ac2199310e187f19e80f0b99b2ff6fb7bf7514b930abd5ddcab314dcdd462274"
+  },
+  "boardReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/boards-launch-review.json",
+    "bytes": 14802,
+    "sha256": "e3c9a7a531f2667043e5aa8822a9d793f134e6199ddf16c639c828b61242039f"
+  },
+  "boundedCaseReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/bounded-case-post-recovery-review.json",
+    "bytes": 18199,
+    "sha256": "969b617a1ba1429d8ab2d956ad4a5228af10824847e404e179de4974746af010"
+  },
+  "currentExecutionSource": {
+    "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "tree": "cf4c70d5fe5cfb5fb612be325d3262fc23e23c68",
+    "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+    "bindingHash": "b0be64804e5f63655899d1de0ee3c92b40a50da193d13ceea4570395fdd5d27f",
+    "checkpointIdentityHash": "a621dd0b4dac0d62f229decfd52858c91adefc7122e454022f26ad2c79740202",
+    "historical5dbAcceptanceTransferred": false
+  },
+  "checks": {
+    "bothSourceFilesEqualPredecessorAfterOnlyDeclaredLiteralSubstitutions": true,
+    "aggregateAndCanonicalByteShaHelpersUnchanged": true,
+    "sourceCaptureCodecThresholdOwnershipAndTerminalSemanticsUnchanged": true,
+    "exactCaseJsonDeltaMatchesDeclaredFields": true,
+    "adapterPinsEqualCurrentPreparedRecipe": true,
+    "numericalPinsEqualCurrentPlanRecipe": true,
+    "numericalPinCount": 156,
+    "adapterPinCount": 5,
+    "allFileAndRuntimePinsVerified": true,
+    "allLocalImportsResolveToPinnedCurrentSourceOrAdapter": true,
+    "frozenSourceTrackedClean": true,
+    "pythonAstParsedWithoutExecution": true,
+    "requiredGenuineTerminalBatches": 220,
+    "requiredUniqueRows": 1755,
+    "allReferencedProofBytesRequired": true,
+    "missingGenerationProhibited": true,
+    "freshWholeSetSemanticPasses": 0,
+    "originalConsumerFreshSemanticReplay": false,
+    "correctedNodeArgvProjectionUnchanged": true,
+    "wholeCanonicalUtf8ReceiptBytesAndShaMustRoundtripExactly": true
+  },
+  "retainedCaseLimitation": "The pinned post-recovery bounded-case review retains repeated SB/aggressive adverse conditions at cells17 (Js8s5d),47 (KcKd4h),53 (Ks8d3c), from five fixed probes (7,17,33,47,53;640 additional trials) and576 existing saved-trial trace replays with0 new trials. The current-source whole12 repair passed15649 legal combos,6228 prefixes,558 unreachable proofs,9 advisory warnings,0 errors and0 unresolved prefixes; its detailed immutable bindings remain in that review. Native model11-authored policy provenance remains distinct from the inherited model10-authored-policy-bytes evaluator label. Prior5db common evidence stays bound to its original source. All-board coverage/status does not resolve these adverse conditions or establish superiority, GTO/equilibrium, opponent-profile adaptation, or final policy acceptance.",
+  "conditionsBeforeExecution": [
+    "The fixed producer attempt must publish genuine successful terminal and postflight receipts: COMPLETE_NOT_ACCEPTED, no errors/stopped jobs, all owned children reaped, all groups gone, source unchanged and exactly 1755 persisted rows.",
+    "Finalizer must verify all 220 completed batches, exact PID/start/job/source/review lineage, five-lane union and every row/proof pin. The current producer receipt hash must be supplied at invocation.",
+    "Producer owner lock must be absent; preserve existing output paths and retain the unchanged bounded supervisor.",
+    "Keep current optimized-source identity distinct from prior 5db common evidence. Adverse conditions and warnings remain carried forward."
+  ],
+  "requiredProducerReceiptPath": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run/attempts/attempt-d3616663-01b1-46e5-bd95-f0841b2c635b/receipt.json",
+  "producerTerminalPresentAtReview": false,
+  "operationalBoundary": {
+    "heapMiB": 512,
+    "ownedGroupRssMiB": 900,
+    "minimumHostAvailableMiB": 2048,
+    "sampleMilliseconds": 50,
+    "inheritedStopCeilingSeconds": 43200,
+    "freshOutputRequired": true,
+    "parentOwnsExecution": true
+  },
+  "remainingReview": "After actual execution, independently inspect finalizer terminal/postflight, full lossless output and current-case warnings before any scoped acceptance.",
+  "policyAcceptancePredicateAdded": false,
+  "policyAccepted": false,
+  "oldFullReplayPassed": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}
