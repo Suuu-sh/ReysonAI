@@ -43,7 +43,7 @@ const old = await imported(oracleRoot, 'apps/frontend/src/estimated/postflop-tri
 const ui = await imported(candidateRoot, 'apps/frontend/src/estimated/postflop-trial.ts');
 const core = await imported(candidateRoot, 'apps/frontend/scripts/postflop-ai/street-state.mjs');
 const oldSpots = await imported(oracleRoot, 'apps/frontend/scripts/postflop-ai/spots.mjs');
-const nextSpots = await imported(candidateRoot, 'apps/frontend/scripts/postflop-ai/spots.mjs');
+const nextSpots = await imported(candidateRoot, 'apps/frontend/scripts/postflop-ai/spots.ts');
 const oldInputs = await imported(oracleRoot, 'apps/frontend/scripts/postflop-ai/inputs.mjs');
 const nextInputs = await imported(candidateRoot, 'apps/frontend/scripts/postflop-ai/inputs.mjs');
 assert.deepEqual(nextSpots.POSTFLOP_SPOTS, oldSpots.POSTFLOP_SPOTS);

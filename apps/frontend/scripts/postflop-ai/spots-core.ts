@@ -1,6 +1,5 @@
 import type { Position, RangeFactor, SourceAction, SourceDataset, SourceSpot, PostflopDatasets } from "./types.ts";
 import type { FlopTree } from "./tree.ts";
-import multiwayCatalog from "../data/hu-after-multiway-spots.json" with { type: "json" };
 // Heads-up flop spots of the local AI pilot. Pure data so the browser and the Node scripts
 // share the same geometry.
 //
@@ -14,19 +13,6 @@ import multiwayCatalog from "../data/hu-after-multiway-spots.json" with { type: 
 import { gameConfig, isInPosition, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb } from "../../src/estimated/sizing.ts";
 
 export const DEFAULT_SPOT_ID = "BTN_open_BB_call";
-export type PreflopHistoryStep = { seat: Position; action: SourceAction; to_size_bb: number | null };
-export type MultiwaySpot = {
-  id: string; kind: "sqp" | "ccp" | "c4bp"; opener: Position; caller: Position; aggressor: Position;
-  ip: Position; oop: Position; tree: FlopTree; openingId: string; responseId: string; openBb: number;
-  potBb: number; stackBb: number; slug: string; reachable: boolean; stage: string; terminalId: string;
-  history: PreflopHistoryStep[]; contributionsBb: Record<Position, number>; ranges: Record<string, RangeFactor[]>;
-  reach: { probability: number; samples: number; compatible_samples: number; method: string };
-};
-type SpotMetadata = { history?: PreflopHistoryStep[];
-  contributionsBb?: Record<Position, number>; ranges?: Record<string, RangeFactor[]>; threeBettor?: Position; threeBetId?: string; threeBetBb?: number;
-  fourBetId?: string; fourBetBb?: number; stage?: string; terminalId?: string };
-export type SelectionEvent = { seat?: string; pos?: string; action?: string; key?: string; to_size_bb?: number | null; to?: number | null };
-export const MULTIWAY_POSTFLOP_CATALOG = multiwayCatalog;
 // No eager registry reads: every server replay owns an immutable dataset scope.
 export function createPostflopSpots(datasets: PostflopDatasets) {
   const aliases: Record<string, string[]> = { "opening-ranges": ["opening", "openingRanges"], "preflop-ranges": ["responses", "preflopRanges"], "three-bet-responses": ["threeBets", "threeBetResponses"], "limp-responses": ["limp", "limpResponses"] };
@@ -136,14 +122,12 @@ function describeLimpSpot(definition: LimpDefinition) {
     extra: { ranges } });
 }
 
-const initialSpots = Object.freeze([
+const POSTFLOP_SPOTS = Object.freeze([
   ...responses.spots.map(spot => describeSpot(spot.opener, spot.hero, spot)),
   ...threeBetResponses.spots.map(spot => describeThreeBetSpot(spot.opener, spot.three_bettor, spot)),
   ...threeBetResponses.spots.map(spot => describeFourBetSpot(spot.opener, spot.three_bettor, spot)),
   ...LIMPS.map(describeLimpSpot),
-  ...(multiwayCatalog.spots as unknown as MultiwaySpot[]).map(spot => Object.freeze(spot)),
 ]);
-const POSTFLOP_SPOTS: readonly ((typeof initialSpots)[number] & SpotMetadata)[] = initialSpots;
 
 function spotById(id: string = DEFAULT_SPOT_ID) {
   const spot = POSTFLOP_SPOTS.find(item => item.id === id);
@@ -166,18 +150,6 @@ function threeBetSpotFor(opener: string, threeBettor: string) {
 }
 
 
-// Match every voluntary action AND observed participant fold. Outside forced
-// folds may be omitted by UI selectors, but never an involved player's fold.
-function multiwaySpotFor(events: readonly SelectionEvent[]) {
-  const involved = new Set(events.filter(e => !["fold", "check"].includes((e.action ?? e.key)!)).map(e => e.seat ?? e.pos));
-  const normalized = events.filter(e => involved.has(e.seat ?? e.pos)).map(e => ({
-    seat: e.seat ?? e.pos, action: e.action ?? e.key, size: e.to_size_bb ?? e.to,
-  }));
-  return POSTFLOP_SPOTS.find(spot => spot.history && spot.history.length === normalized.length && spot.history.every((step, i) =>
-    step.seat === normalized[i].seat && step.action === normalized[i].action &&
-    (normalized[i].size === undefined || step.action === "fold" || step.to_size_bb === normalized[i].size))) ?? null;
-}
-
-return { POSTFLOP_SPOTS, describeSpot, describeThreeBetSpot, describeFourBetSpot, describeLimpSpot, spotById, spotFor, threeBetSpotFor, fourBetSpotFor, limpSpotFor, multiwaySpotFor };
+return { POSTFLOP_SPOTS, describeSpot, describeThreeBetSpot, describeFourBetSpot, describeLimpSpot, spotById, spotFor, threeBetSpotFor, fourBetSpotFor, limpSpotFor };
 }
 export type Spot = ReturnType<typeof createPostflopSpots>["POSTFLOP_SPOTS"][number];

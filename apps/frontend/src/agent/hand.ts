@@ -11,9 +11,11 @@ import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from 
 import { NODES, choose } from "../../scripts/postflop-ai/policy.ts";
 import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.ts";
 import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
-import { createPostflopSpots, type Spot } from "../../scripts/postflop-ai/spots-core.ts";
+import { createPostflopSpots } from "../../scripts/postflop-ai/spots-core.ts";
 import { dataset } from "../estimated/datasets.ts";
 import type { SourceDataset } from "../../scripts/postflop-ai/types.ts";
+import type { Spot } from "../../scripts/postflop-ai/spots.ts";
+import { multiwaySpotFor } from "../../scripts/postflop-ai/multiway-spots.ts";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
 import { mw3OriginForEvents } from "../estimated/mw3-context.ts";
 import { isVerifiedMw3Kit, type Mw3Kit } from "../estimated/mw3-browser.ts";
@@ -89,15 +91,17 @@ export function deal(seed: string) {
   return { hole, board: deck.slice(12, 17) };
 }
 
-// Route the actual origin. Dedicated three-player SRPs are separate from the
-// older multiway catalog entries whose terminal flop is heads-up.
-export function postflopSpotFor(events: { pos: Position; type: string; key: string }[], lookup: (name: string) => SourceDataset | undefined = dataset) {
-  const dedicated = mw3OriginForEvents(events);
+// Preserve dedicated MW3 origins before reviewed HU histories; injected snapshots remain scoped.
+export function postflopSpotFor(events: { pos: Position; type: string; key: string }[], lookup?: (name: string) => SourceDataset | undefined): Spot | NonNullable<ReturnType<typeof mw3OriginForEvents>> | null {
+  // An omitted lookup is ordinary Agent practice and retains its reviewed HU histories.
+  // Injected server snapshots keep FastFold's scoped legacy-only coverage.
+  const dedicated = lookup === undefined ? mw3OriginForEvents(events) : null;
   if (dedicated) return dedicated;
-  const { spotFor, threeBetSpotFor, fourBetSpotFor, limpSpotFor, multiwaySpotFor } = createPostflopSpots(Object.fromEntries(
-    ["preflop-ranges", "three-bet-responses", "opening-ranges", "limp-responses"].map(name => [name, lookup(name)])));
-  const extended = multiwaySpotFor(events);
+  const extended = lookup === undefined ? multiwaySpotFor(events) : null;
   if (extended) return extended;
+  const read = lookup ?? dataset;
+  const { spotFor, threeBetSpotFor, fourBetSpotFor, limpSpotFor } = createPostflopSpots(Object.fromEntries(
+    ["preflop-ranges", "three-bet-responses", "opening-ranges", "limp-responses"].map(name => [name, read(name)])));
   const voluntary = events.filter(e => e.type !== "fold" && e.type !== "check");
   if (new Set(voluntary.map(event => event.pos)).size > 2) return null;
   const keys = voluntary.map(e => e.key);
@@ -109,7 +113,7 @@ export function postflopSpotFor(events: { pos: Position; type: string; key: stri
   if (sig === "open,call") return spotFor(raisers[0].pos, voluntary[1].pos);
   if (sig === "open,three_bet,call") return threeBetSpotFor(raisers[0].pos, raisers[1].pos);
   if (sig === "open,three_bet,four_bet,call") return fourBetSpotFor(raisers[0].pos, raisers[1].pos);
-  return multiwaySpotFor(events);
+  return lookup === undefined ? multiwaySpotFor(events) : null;
 }
 
 export function playHand(setup: HandSetup): HandResult {

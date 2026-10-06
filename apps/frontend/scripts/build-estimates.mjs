@@ -12,6 +12,12 @@ import { auditOpponentProfiles } from "../src/estimated/opponent-profiles.ts";
 import { OPPONENT_PROFILE_DATASETS } from "../src/estimated/opponent-profiles.ts";
 import { loadOpponentProfileBundles, profileSourceFindings } from "./lib/opponent-profile-build.mjs";
 
+if (process.argv.includes("--stage3-only")) {
+  if (process.argv.includes("--profiles-only")) throw new Error("Choose either --stage3-only or --profiles-only");
+  // Keep the large offline Stage 3 catalog out of existing legacy/profile builds.
+  const { buildStage3 } = await import("./build-stage3.mjs");
+  buildStage3({ install: true, dryRun: process.env.ESTIMATES_DRY_RUN === "1" });
+} else {
 const root = fileURLToPath(new URL("..", import.meta.url));
 const published = join(root, "src/estimated");
 const files = ["opening-ranges", "preflop-ranges", "three-bet-responses", "four-bet-responses", "five-bet-responses", "multiway-responses", "squeeze-responses", "limp-responses", "limp-deep-responses", "cold-three-bet-responses", "multiway2-responses", "cold-four-bet-responses", "continuation-responses"];
@@ -88,4 +94,5 @@ try {
   if (dryRun) console.log(`staging: ${staging}`);
   else if (!process.exitCode) rmSync(staging, { recursive: true, force: true });
   else console.error(`診断用ステージ: ${staging}`);
+}
 }

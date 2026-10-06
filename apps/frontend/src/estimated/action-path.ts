@@ -65,7 +65,7 @@ export function limpActionTransition({ rangeType, opener, hero, limpAction = nul
 
 // Clicking a seat in the action path returns the selector to that decision,
 // removing choices made at that seat and later in the hand.
-export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], squeezeResponse = [], block }: Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & Partial<Pick<RangeUrlSelection, "callers" | "squeezeResponse">> & { block?: ActionBlock | null }): (Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero" | "callers" | "foldedHero" | "pendingRaise" | "continuationAction" | "shoveResponse">) | null {
+export function rewindActionBlockTransition({ rangeType, opener, hero, callers = [], squeezeResponse = [], block }: Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & Partial<RangeUrlSelection> & { block?: ActionBlock | null }): (Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero" | "callers" | "foldedHero" | "pendingRaise" | "continuationAction" | "shoveResponse">) | null {
   if (!block) return null;
 
   if (block.stage === "limp-opening") {

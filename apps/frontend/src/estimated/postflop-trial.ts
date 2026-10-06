@@ -19,7 +19,7 @@ export type TrialDecisionBlock = { key: string; kind: "flop" | "flop-forced"; po
 export type TrialEndBlock = { key: string; kind: "end"; result?: string; pot?: string; options: [] };
 export type TrialBoardBlock = { key: string; kind: "board"; cards: string[]; street: LaterStreet; pending: boolean; potBb: number };
 export type TrialActionBlock = TrialDecisionBlock | TrialEndBlock | TrialBoardBlock;
-export type CompletionActionBlock = { kind: string; result?: string; pot?: string; postflopEvents?: HistoryAction[]; continuationAvailable?: boolean; continuationTerminal?: { live_participants: string[] } };
+export type CompletionActionBlock = { kind: string; result?: string; pot?: string; postflopEvents?: HistoryAction[]; continuationAvailable?: boolean; continuationTerminal?: { live_participants: string[] }; stage3Terminal?: { live_participants: string[] } };
 export type CompletedFlopContext = { players: string[]; potBb: number; pilotAvailable: boolean; kind?: string; spotId: string | null; ip?: string | null; oop?: string | null; stackBb?: number | null; tree?: FlopTree | null; mw3Spot?: ReturnType<typeof mw3OriginForSelection>; mw3Available?: boolean };
 type CompletionOptions = { actionBlocks?: readonly CompletionActionBlock[]; pendingRaise?: string | null; squeezeResponse?: string[]; rangeType: string; opener: string; hero: string; callers?: string[]; foldedHero?: boolean;
   limpAction?: string | null; limpResponseAction?: string | null; limpReraiseAction?: string | null; limpFourBetAction?: string | null };
@@ -78,12 +78,12 @@ export function completedFlopContext({ actionBlocks, rangeType, opener, hero, ca
   if (!end || end.continuationAvailable === false || !/^\d+人でフロップへ$/.test(end.result!)) return null;
   const potBb = Number(/^ポット ([\d.]+)bb$/.exec(end.pot!)?.[1]);
   if (!Number.isFinite(potBb)) return null;
-  let players = end.continuationTerminal?.live_participants ?? (rangeType === "limp" ? ["SB", "BB"]
+  let players = end.stage3Terminal?.live_participants ?? end.continuationTerminal?.live_participants ?? (rangeType === "limp" ? ["SB", "BB"]
     : rangeType === "response" ? [opener, ...callers] : [opener, hero]);
   // Three live players have a dedicated origin. Existing multiwaySpotFor
   // entries describe HU-origin cold/squeeze paths and must not dispatch here.
   if (players.length >= 3) {
-    const mw3 = mw3OriginForSelection({ rangeType, opener, callers, pendingRaise });
+    const mw3 = end.stage3Terminal ? null : mw3OriginForSelection({ rangeType, opener, callers, pendingRaise });
     const geometryMatches = Boolean(mw3 && potBb === mw3.potBb);
     return { players, potBb, pilotAvailable: false, kind: geometryMatches ? "mw3_srp" : "multiway_unavailable",
       spotId: geometryMatches ? mw3!.id : null, mw3Spot: geometryMatches ? mw3 : null,

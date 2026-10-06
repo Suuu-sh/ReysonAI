@@ -52,7 +52,7 @@ test('every current backend migration, including ranked_finalize, prepares as in
         if (statement.trim()) db.exec(statement);
       }
     }
-    assert.equal(db.prepare("SELECT COUNT(*) AS count FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").get().count, 18);
+    assert.equal(db.prepare("SELECT COUNT(*) AS count FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").get().count, 27);
     assert.equal(db.prepare("SELECT COUNT(*) AS count FROM sqlite_schema WHERE type = 'trigger' AND name = 'ranked_finalize'").get().count, 1);
     db.exec(UNRELATED_SEED);
     assert.deepEqual(db.prepare('PRAGMA foreign_key_check').all(), []);

@@ -1,12 +1,14 @@
+import type { Stage3Decision, Stage3Terminal } from "./stage3-types.ts";
 import type { ContinuationDecision, ContinuationTerminal, ContinuationFamily, HistoryAction } from "./continuation-tree.ts";
 import type { FormatKey, GameFormat } from "./game-formats.ts";
 import type { TableProfile } from "./table-profile.ts";
 import type { ResponseDataset, ThreeBetDataset, FourBetDataset } from "./preflop-types.ts";
-export type RangeRef = { dataset?: string; id?: string; kind: string; position: string; caller?: string; squeezer?: string; priorAction?: string | null; threeBettor?: string; opponent?: string; reason?: string };
+export type RangeRef = { dataset?: string; id?: string; rootId?: string; extraSeat?: boolean; kind: string; position: string; caller?: string; squeezer?: string; priorAction?: string | null; threeBettor?: string; opponent?: string; reason?: string };
 export type ActionOption = { action: string; label: string; disabled?: boolean };
-export type ActionBlock = { key: string; position: string; stack: string; kind: string; options: ActionOption[]; active: boolean; chosen: string | null | undefined; rangeRef?: RangeRef; stage?: string; role?: string; result?: string; pot?: string; historical?: boolean; continuationFamily?: ContinuationFamily; continuationNode?: ContinuationDecision; priorContinuationActions?: string[]; postflopEvents?: HistoryAction[]; continuationTerminal?: ContinuationTerminal; continuationAvailable?: boolean; continuationStatus?: string };
+export type ActionBlock = { key: string; position: string; stack: string; kind: string; options: ActionOption[]; active: boolean; chosen: string | null | undefined; rangeRef?: RangeRef; stage?: string; role?: string; result?: string; pot?: string; historical?: boolean; continuationFamily?: ContinuationFamily; continuationNode?: ContinuationDecision; priorContinuationActions?: string[]; postflopEvents?: HistoryAction[]; continuationTerminal?: ContinuationTerminal; continuationAvailable?: boolean; continuationStatus?: string; stage3Node?: Stage3Decision; stage3Terminal?: Stage3Terminal; stage3RootId?: string; priorStage3Actions?: string[]; stage3Entrance?: { rootId: string; action: string }; stage3Status?: string };
 export type RangeBuildState = Partial<RangeUrlSelection> & Pick<RangeUrlSelection, "rangeType" | "opener" | "hero"> & { spot?: { three_bet_size_bb?: number; four_bet_size_bb?: number | null } | null; raiseToBb?: number | null; raiseSizeFor?: (position: string) => number | null };
 export type RangeEncodingState = RangeBuildState & Partial<Omit<RangeUrlState, "tableProfile">> & { tableProfile?: Partial<TableProfile>; hand?: string };
+import { appendStage3Blocks, withStage3Entrances, stage3RootForSelection, normalizeStage3Selection } from "./stage3-flow.ts";
 import { canonicalMw3RangeSelection } from "./mw3-range-state.ts";
 import { hands } from "../data.ts";
 import { positions, fourBetToSize, isoVsLimpToBb, limpReraiseToBb, openSizeFor, sbCompleteToBb, threeBetToSize } from "./sizing.ts";
@@ -93,10 +95,11 @@ function buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseActi
 }
 
 // Builds the seat blocks in acting order; each later block's options depend on the choices before it.
-export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], raiseSizeFor = () => null }: RangeBuildState): ActionBlock[] {
+export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [], foldedHero, raiseToBb, pendingRaise, continuationAction, shoveResponse = null, coldAction = null, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null, squeezeResponse = [], continuationActions = [], stage3RootId = null, stage3Actions = [], raiseSizeFor = () => null }: RangeBuildState): ActionBlock[] {
   if (rangeType === "limp") return buildLimpActionBlocks({ limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
-  const boundedState = { rangeType, opener, hero, callers, pendingRaise, coldAction, squeezeResponse, continuationActions };
+  const boundedState = { rangeType, opener, hero, callers, foldedHero, pendingRaise, coldAction, squeezeResponse, continuationActions, stage3RootId, stage3Actions };
   const boundedRoot = continuationRootForSelection(boundedState);
+  const stage3Root = stage3RootForSelection(boundedState);
   const opening = rangeType === "open";
   const openerIndex = positions.indexOf(opener);
   const heroIndex = opening ? openerIndex : positions.indexOf(hero);
@@ -161,7 +164,8 @@ export function buildActionBlocks({ rangeType, opener, hero, spot, callers = [],
         : { kind: "response", position };
     blocks.push({ key: position, position, stack, active: index === heroIndex && chosen === null, chosen, options, kind: "seat", rangeRef });
   }
-  if (boundedRoot) return appendContinuationBlocks(blocks, boundedRoot, boundedState);
+  if (stage3Root) return appendStage3Blocks(blocks, stage3Root, boundedState);
+  if (boundedRoot) return withStage3Entrances(appendContinuationBlocks(blocks, boundedRoot, boundedState), boundedState);
   if (coldAction) {
     blocks.push({ key: "end", position: "終了", stack: "", kind: "end", active: false, chosen: null, options: [], result: "データなし", pot: `${coldAction.position}の${coldAction.action === "call" ? "コールドコール" : "コールド4bet"}以降の推定レンジはまだありません。` });
     return blocks;
@@ -231,7 +235,7 @@ export type RangeUrlSelection = {
   foldedHero: boolean; pendingRaise: string | null; continuationAction: string | null;
   shoveResponse: string | null; coldAction: { position: string; action: string } | null;
   limpAction: string | null; limpResponseAction: string | null; limpReraiseAction: string | null;
-  limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; selected: string;
+  limpFourBetAction: string | null; squeezeResponse: string[]; continuationActions: string[]; stage3RootId?: string | null; stage3Actions?: string[]; selected: string;
 };
 export type RangeUrlState = RangeUrlSelection & {
   format: typeof defaultFormat; tableProfile: TableProfile;
@@ -244,7 +248,7 @@ export const defaultRangeSelection: RangeUrlSelection = {
   rangeType: "open", opener: "UTG", hero: "HJ", callers: [], foldedHero: false,
   pendingRaise: null, continuationAction: null, shoveResponse: null, coldAction: null,
   limpAction: null, limpResponseAction: null, limpReraiseAction: null,
-  limpFourBetAction: null, squeezeResponse: [], continuationActions: [], selected: "AKo",
+  limpFourBetAction: null, squeezeResponse: [], continuationActions: [], stage3RootId: null, stage3Actions: [], selected: "AKo",
 };
 const emptyPostflop = () => ({ showFlop: false, flopCards: ["", "", ""], flopActions: [], turnCard: "", turnActions: [], riverCard: "", riverActions: [] });
 const validHand = (hand: string | null | undefined) => hands.includes(hand!) ? hand! : "AKo";
@@ -414,6 +418,12 @@ export function encodeRangeUrl(state: RangeEncodingState, actionBlocks = buildRa
     const level = profileLevel(state.tableProfile?.[key]);
     if (level !== "normal") params.set(key, level);
   }
+  const stage3 = stage3RootForSelection(state);
+  if (stage3) {
+    const normalized = normalizeStage3Selection(stage3.id, state.stage3Actions)!;
+    params.set("stage3_root", normalized.stage3RootId);
+    if (normalized.stage3Actions.length) params.set("stage3_actions", normalized.stage3Actions.join(","));
+  }
   const actions = chosenPreflopTokens(actionBlocks);
   if (actions.length) params.set("preflop_actions", actions.join("-"));
   const context = completedFlopContext({ ...state, actionBlocks,
@@ -454,7 +464,7 @@ export function encodeRangeUrl(state: RangeEncodingState, actionBlocks = buildRa
 export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState | null {
   const raw = typeof query === "string" ? query.replace(/^[^?]*\?/, "").split("#")[0] : query;
   const params = new URLSearchParams(raw);
-  const keys = ["gametype", "depth", "open", "ante", "rake", "call", "three_bet", "preflop_actions", "board", "flop_actions", "turn", "turn_actions", "river", "river_actions", "hand"];
+  const keys = ["stage3_root", "stage3_actions", "gametype", "depth", "open", "ante", "rake", "call", "three_bet", "preflop_actions", "board", "flop_actions", "turn", "turn_actions", "river", "river_actions", "hand"];
   if (!keys.some(key => params.has(key))) return null;
   const gametype = params.get("gametype") ?? `${defaultFormat.game}-${defaultFormat.table}`;
   const [game, table] = gametype.split("-");
@@ -464,7 +474,8 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
     rake: params.get("rake") ?? defaultFormat.rake };
   const knownFormat = gametype === `${game}-${table}` && (!params.has("ante") || ["0", "1"].includes(params.get("ante")!))
     && (Object.keys(defaultFormat) as FormatKey[]).every(key => formatOptions[key].some(option => option.value === format[key]));
-  const state: RangeUrlState = { ...replayPreflop(params.get("preflop_actions")),
+  const stage3 = params.has("stage3_root") ? normalizeStage3Selection(params.get("stage3_root")!, (params.get("stage3_actions") ?? "").split(",").filter(Boolean)) : null;
+  const state: RangeUrlState = { ...replayPreflop(params.get("preflop_actions")), ...(stage3 ?? {}),
     selected: validHand(params.get("hand")), format: knownFormat ? format : { ...defaultFormat },
     tableProfile: { call: profileLevel(params.get("call")), three_bet: profileLevel(params.get("three_bet")) }, ...emptyPostflop() };
   const flop = boardCards(params.get("board"), 3);
@@ -494,7 +505,7 @@ export function decodeRangeUrl(query: string | URLSearchParams): RangeUrlState |
     state.riverCard = river[0]; state.riverActions = parsePostflopActions(params.get("river_actions"));
     return state;
   }
-  const canonicalize = (street: string, start: ReturnType<typeof laterStart> | undefined) => hasObservablePostflopActions(context)
+  const canonicalize = (street: string, start: import("./postflop-trial.ts").LaterStartState | null | undefined) => hasObservablePostflopActions(context)
     ? (actions: string[]) => canonicalStreetActions(street, actions, start, context) : null;
   state.flopActions = reachablePostflopPrefix(parsePostflopActions(params.get("flop_actions")),
     actions => flopDecision(actions, context), canonicalize("flop", undefined));

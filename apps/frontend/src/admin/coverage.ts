@@ -1,3 +1,7 @@
+import type { Stage3Dataset, Stage3SourceDatasets } from "../estimated/stage3-types.ts";
+import { stage3Families, stage3Spots } from "../estimated/stage3-tree.ts";
+import { createStage3Model } from "../estimated/stage3-model.ts";
+import { stage3Availability } from "../estimated/stage3-responses.ts";
 // Range coverage catalog for the admin dashboard: which spots are persisted,
 // and which spots of the preflop tree still need an authored range.
 // Pure data (no React) so tests and scripts can reuse it.
@@ -14,7 +18,7 @@ type SavedSpot = { id: string; hero: string; hands?: readonly unknown[] };
 type SavedDataset = { spots: SavedSpot[] };
 type ExpectedSpot = { id: string; hero: string; path: string };
 type CoverageRow = ExpectedSpot & { category: string; priority: number; status: string; street?: string; hands?: number };
-type CoverageCategory = { key: string; label: string; file: string | null; street?: string; modelled: boolean; rows: CoverageRow[]; done: number; total: number; todo: number };
+type CoverageCategory = { key: string; label: string; file: string | null; street?: string; modelled: boolean; unreachable?: number; rare?: number; rows: CoverageRow[]; done: number; total: number; todo: number };
 type PostflopSpot = { history?: readonly unknown[]; id: string; opener: string; ip: string; oop: string; kind: string; slug: string; reachable: boolean };
 type Stage = { street: string; label: string; suffix: string; freshness?: boolean; priority?: number };
 
@@ -31,6 +35,7 @@ const multiway2 = dataset("multiway2-responses");
 const coldFourBets = dataset("cold-four-bet-responses");
 const squeezes = dataset("squeeze-responses");
 const limpDeep = dataset("limp-deep-responses");
+const stage3Saved = hasDataset("stage3-responses") ? dataset<Stage3Dataset>("stage3-responses") : null;
 const continuations = hasDataset("continuation-responses") ? dataset<ContinuationDataset>("continuation-responses") : null;
 
 const RFI = positions.slice(0, 5); // UTG..SB
@@ -114,11 +119,37 @@ function spotsOf(data: SavedDataset | null | undefined) {
   return data?.spots ?? [];
 }
 
-export function coverageCatalog({ continuationData = continuations }: { continuationData?: ContinuationDataset | null } = {}) {
+const absentStage3 = {};
+const stage3CategoryCache = new WeakMap<object, CoverageCategory[]>();
+function stage3Categories(data: Stage3Dataset | null, sources: Stage3SourceDatasets): CoverageCategory[] {
+  const key = data ?? absentStage3;
+  if (stage3CategoryCache.has(key)) return stage3CategoryCache.get(key)!;
+  const model = createStage3Model({ ...sources, "stage3-responses": data });
+  const saved = new Map((data?.spots ?? []).map(spot => [spot.id, spot]));
+  const categories = stage3Families.map(family => {
+    const key = `stage3_${family}`;
+    const rows = stage3Spots.filter(node => node.family === family).map(node => {
+      const available = stage3Availability(data, sources, node.id, model);
+      const status = available.status === "saved" ? "done" : available.status === "rare" ? "rare" : available.status === "unreachable" ? "unreachable" : "todo";
+      return { id: node.id, hero: node.hero, category: key, priority: 4, status,
+        path: node.history.map(event => `${event.seat} ${event.action}${event.to_size_bb == null ? "" : ` ${event.to_size_bb}`}`).join(" → ") + ` → ${node.hero}`,
+        hands: status === "done" ? saved.get(node.id)!.hands.length : 0,
+        reason: status === "rare" ? "全ディール基準の到達率上限が0.01%未満のためデータなし" : available.source ?? null,
+        joint_reach_upper_bound: available.reach?.joint_reach_upper_bound ?? null };
+    });
+    const count = (status: string) => rows.filter(row => row.status === status).length;
+    return { key, label: `段階3: ${family}`, file: "stage3-responses.json", modelled: true, rows,
+      done: count("done"), unreachable: count("unreachable"), rare: count("rare"), total: rows.length, todo: count("todo") };
+  });
+  stage3CategoryCache.set(key, categories);
+  return categories;
+}
+
+export function coverageCatalog({ continuationData = continuations, stage3Data = stage3Saved } = {}) {
   const sources = { "opening-ranges": opening, "preflop-ranges": responses, "multiway-responses": multiway,
     "multiway2-responses": multiway2, "squeeze-responses": squeezes, "cold-three-bet-responses": coldThreeBets, "cold-four-bet-responses": coldFourBets };
   const model = createContinuationModel({ ...sources, "continuation-responses": continuationData });
-  const categories = CATEGORIES.map(category => {
+  const categories: CoverageCategory[] = CATEGORIES.map(category => {
     const isContinuation = category.key.startsWith("continuation_");
     const saved = isContinuation ? (continuationData?.spots ?? []).filter(spot => `continuation_${spot.family}` === category.key) : spotsOf(category.data);
     const expectedIds = new Set(category.expected.map(spot => spot.id));
@@ -136,10 +167,12 @@ export function coverageCatalog({ continuationData = continuations }: { continua
     const unreachable = rows.filter(row => row.status === "unreachable").length;
     return { key: category.key, label: category.label, file: category.file, modelled: Boolean(category.file), rows, done, unreachable, total: rows.length, todo: rows.length - done - unreachable };
   });
+  categories.push(...stage3Categories(stage3Data, sources));
+  const rare = categories.reduce((sum, category) => sum + (category.rare ?? 0), 0);
   const done = categories.reduce((sum, c) => sum + c.done, 0);
   const total = categories.reduce((sum, c) => sum + c.total, 0);
-  const unreachable = categories.reduce((sum, category) => sum + category.unreachable, 0);
-  return { categories, done, unreachable, total, todo: total - done - unreachable };
+  const unreachable = categories.reduce((sum, category) => sum + category.unreachable!, 0);
+  return { categories, done, unreachable, rare, total, todo: total - done - unreachable - rare };
 }
 
 // Every combination of format options; only BUILT ones have ranges. Each unbuilt format
@@ -202,7 +235,7 @@ export function postflopCatalog(spots: PostflopSpot[], artifactHashes: Record<st
     priority: 3, status: task.done ? "done" : "todo", street: "release" }));
   categories.push({ key: "release_tasks", label: "リリース作業", file: null, street: "release", modelled: true,
     rows: releaseRows, done: releaseRows.filter(row => row.status === "done").length, total: releaseRows.length,
-    todo: releaseRows.filter(row => row.status !== "done" && row.status !== "unreachable").length });
+    todo: releaseRows.filter(row => row.status !== "done" && row.status !== "unreachable" && row.status !== "rare").length });
   categories.push({ key: "postflop_multiway", label: "マルチウェイ・ポストフロップ", file: null, street: "flop", modelled: false,
     rows: multiwayRows, done: 0, total: multiwayRows.length, todo: multiwayRows.length });
   const done = categories.reduce((sum, c) => sum + c.done, 0);
@@ -214,6 +247,6 @@ export function priorityBacklog(preflopCatalog: { categories: { rows: CoverageRo
   const rows = [...preflopCatalog.categories, ...postflopCatalog.categories].flatMap(category => category.rows);
   return PRIORITIES.map(priority => {
     const assigned = rows.filter(row => row.priority === priority.value);
-    return { ...priority, total: assigned.length, todo: assigned.filter(row => row.status !== "done" && row.status !== "unreachable").length };
+    return { ...priority, total: assigned.length, todo: assigned.filter(row => row.status !== "done" && row.status !== "unreachable" && row.status !== "rare").length };
   });
 }

@@ -9,7 +9,8 @@ test("all brand surfaces use the approved abstract symbol, not a suit icon", () 
     assert.match(source, /BrandIcon/);
     assert.doesNotMatch(source, /\bSpade\b/);
   }
-  assert.match(read("../src/site/ServiceSite.tsx"), /s: "♠"/);
+  assert.match(read("../src/site/ServiceSite.tsx"), /PlayingCard/);
+  assert.match(read("../src/components/PlayingCard.tsx"), /s: "♠"/);
 });
 test("the shared icon uses the saved PNG and is decorative beside brand text", () => {
   const source = read("../src/components/BrandIcon.tsx");

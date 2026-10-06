@@ -77,7 +77,9 @@ jobs:
         run: npm ci
 
       - name: Restore exact reviewed Git LFS payload
-        run: node scripts/restore-reviewed-preflop.mjs
+        run: |
+          node scripts/restore-reviewed-preflop.mjs
+          node scripts/restore-reviewed-stage3.mjs
 
       # Authoring and independent AI review happen locally, before commit.
       # CI must never generate strategies or update the review receipt.
@@ -85,7 +87,7 @@ jobs:
         run: node scripts/verify-reviewed-preflop.mjs --out .local/reviewed-preflop
 
       - name: Check continuation invariants and unchanged HU inputs
-        run: node --test --test-force-exit --test-concurrency=1 tests/continuation-*.test.mjs tests/reviewed-preflop.test.mjs tests/preflop-delivery.test.mjs tests/preflop-workflow.test.mjs tests/ranked-workflow.test.mjs tests/preflop-local-d1.test.mjs tests/reviewed-preflop-archive.test.mjs tests/detailed-reasons.test.mjs
+        run: node --test --test-force-exit --test-concurrency=1 tests/continuation-*.test.mjs tests/stage3-*.test.mjs tests/reviewed-preflop.test.mjs tests/preflop-delivery.test.mjs tests/preflop-workflow.test.mjs tests/ranked-workflow.test.mjs tests/preflop-local-d1.test.mjs tests/reviewed-preflop-archive.test.mjs tests/detailed-reasons.test.mjs
 
       - name: Verify authoritative ranked service without live credentials
         working-directory: apps/backend
@@ -160,7 +162,9 @@ jobs:
         run: npm ci
 
       - name: Restore exact reviewed Git LFS payload
-        run: node scripts/restore-reviewed-preflop.mjs
+        run: |
+          node scripts/restore-reviewed-preflop.mjs
+          node scripts/restore-reviewed-stage3.mjs
 
       - name: Fetch this run's validated delivery SQL
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4

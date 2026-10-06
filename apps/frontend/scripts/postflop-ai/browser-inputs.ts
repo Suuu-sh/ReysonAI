@@ -1,11 +1,12 @@
 import type { FrequencyRow, Inputs, PostflopDatasets, SourceAction, SourceDataset, SourceHand, SourceSpot } from "./types.ts";
 import type { WeightedCombo } from "../lib/equity.ts";
-import type { MultiwaySpot } from "./spots.ts";
+import type { MultiwaySpot, Spot } from "./spots.ts";
 import { multiwayInputData } from "./multiway-inputs.mjs";
 import { combosOf } from "../lib/equity.ts";
 import { gameConfig } from "../../src/estimated/sizing.ts";
 import { parseCards } from "./model.ts";
 import { DEFAULT_SPOT_ID, createPostflopSpots } from "./spots-core.ts";
+import { multiwaySpotById } from "./multiway-spots.ts";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
 const SHA256_K = [
@@ -84,7 +85,7 @@ function productRows(factors: readonly (readonly [SourceHand[], SourceAction])[]
 }
 
 export function buildInputs(spotId: string = DEFAULT_SPOT_ID, datasets: PostflopDatasets = {}): Inputs {
-  const spot = createPostflopSpots(datasets).spotById(spotId);
+  const spot: Spot = multiwaySpotById(spotId) ?? createPostflopSpots(datasets).spotById(spotId);
   if (!spot.reachable) throw new Error(`${spot.id} is unreachable: the saved ${spot.responseId} range never calls`);
 
   if (spot.history) {

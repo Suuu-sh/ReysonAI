@@ -28,7 +28,7 @@ test("every persisted spot maps onto the enumerated preflop tree", () => {
   assert.equal(byKey.open.todo, 0);
   assert.equal(byKey.response.total, 15);
   assert.equal(byKey.squeeze.total, 60);
-  assert.equal(catalog.done + catalog.todo + catalog.unreachable, catalog.total);
+  assert.equal(catalog.done + catalog.todo + catalog.unreachable + catalog.rare, catalog.total);
 });
 
 test("format backlog marks only built formats as done", () => {
@@ -113,7 +113,7 @@ test("stage 2 coverage enumerates all 3,115 continuation decisions separately fr
     assert.equal(category.done + category.todo + category.unreachable, count);
     assert.ok(category.rows.every(row => row.priority === 4 && (row.status === "done" ? row.hands === 169 : row.hands === 0)));
   }
-  assert.equal(catalog.total, 3340);
+  assert.equal(catalog.categories.filter(category => !category.key.startsWith("stage3_")).reduce((sum, category) => sum + category.total, 0), 3340);
 });
 
 
@@ -142,4 +142,16 @@ test("a stored continuation with a missing reachable ancestor remains pending", 
   const rows = coverageCatalog({ continuationData: partial }).categories.flatMap(category => category.rows);
   assert.equal(rows.find(row => row.id === ancestor).status, "todo");
   assert.equal(rows.find(row => row.id === child.id).status, "todo");
+});
+
+
+test("Stage3 lists every decision while keeping intentionally rare histories out of TODO", () => {
+  const catalog = coverageCatalog();
+  const categories = catalog.categories.filter(category => category.key.startsWith("stage3_"));
+  assert.equal(categories.length, 6);
+  assert.equal(categories.reduce((sum, category) => sum + category.total, 0), 16132);
+  assert.equal(catalog.rare, 8710);
+  const rare = categories.flatMap(category => category.rows).filter(row => row.status === "rare");
+  assert.ok(rare.every(row => row.hands === 0 && row.joint_reach_upper_bound < 0.0001 && row.reason.includes("0.01%")));
+  assert.equal(catalog.done + catalog.todo + catalog.unreachable + catalog.rare, catalog.total);
 });

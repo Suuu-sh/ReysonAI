@@ -31,7 +31,11 @@ export function reviewedSourcePaths(root = REPOSITORY) {
     if (!safeRelativePath(path) || path.includes('/.local/')) throw new Error('Review source escapes the allowed repository sources');
     if (found.has(path)) return;
     found.add(path);
-    if (!/\.(?:mjs|ts|tsx|js)$/.test(path)) return;
+    if (path.endsWith('.mjs')) {
+      const declaration = path.slice(0, -4) + '.d.mts';
+      if (existsSync(join(root, declaration))) visit(declaration);
+    }
+    if (!/\.(?:mjs|mts|ts|tsx|js)$/.test(path)) return;
     const text = readSafeFile(root, path).toString('utf8');
     const imports = /(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']|\bimport\s*\(\s*["']([^"']+)["']\s*\)/g;
     for (const match of text.matchAll(imports)) {

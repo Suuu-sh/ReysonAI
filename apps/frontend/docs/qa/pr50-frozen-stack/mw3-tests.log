@@ -1,0 +1,88 @@
+skipped: no local postflop policies
+✔ same seed and human actions replay the same hand (266.374584ms)
+✔ chips are conserved: returns plus rake sum to zero (204.918958ms)
+✔ no flop is ever contested by three or more players (709.528458ms)
+✔ an agent plays the saved preflop frequencies (6.718959ms)
+✔ a call that would make the pot three-way moves to fold (table rule) (0.360125ms)
+✔ a heads-up line maps to its postflop spot (2.6135ms)
+✔ without a postflop policy the pot is checked down (9.314167ms)
+✔ a human in a pot without a postflop policy checks each street instead of skipping (16.400625ms)
+✔ a human out of position is asked on the flop even when the saved tree checks for them (789.46675ms)
+✔ the human is asked and the replay continues with the answer (1.116583ms)
+✔ session: button moves each hand and points use 1BB = 100 (12.220917ms)
+✔ hand classes (0.145125ms)
+✔ agent-game stats: flags per hand and summary (23.472458ms)
+✔ player read: latest 1000 hands, collecting threshold, style and targeted tendencies (46.01ms)
+✔ only approved dedicated SRPs unlock third calls; fourth and 3bet/squeeze callers remain blocked (35.263ms)
+✔ real deal retains all six legal hole pairs while the dedicated runtime sees exactly its three original keys (40.092292ms)
+✔ human actions pause and replay through all streets; a preflop-folded human outside the original three never reaches a postflop prompt (25.132667ms)
+✔ a human folding from the original three leaves a dedicated two-live-player path with unchanged roles (524.995125ms)
+✔ uncalled wagers refund exactly before six-seat pot/rake settlement (440.698ms)
+✔ all-in aliases run out the board without invented river decisions and conserve all six seats (392.951333ms)
+✔ nonblind three-player origins retain both folded blinds and all six settlement keys (713.846333ms)
+✔ missing, unapproved, malformed or unsupported multiway hands stop before settlement and history writes (29.443416ms)
+✔ Agent consumer retains at most two recent kits and never invalidates an active hand reference (8.391125ms)
+✔ three-origin dispatch is explicit and distinct from HU-origin multiway catalog (2.58075ms)
+✔ completed three-player context cannot enter HU pilot even when a candidate is absent (8.296209ms)
+✔ three tables preserve original roles, own reach and exact saved combo mixes (94.373292ms)
+✔ common chronological action blocks use actual chip amounts and retain MW3 after 3→2 (14.810625ms)
+✔ merged all-ins have one physical option, aliases and truthful labels in four languages (1.695209ms)
+✔ street transitions, board duplicates, illegal suffixes and partial paths fail closed (13.796583ms)
+✔ three-player URL roundtrips full streets without invoking HU geometry or authorizing a delivery (23.916833ms)
+✔ Range board IDs use the shared cdhs convention for every physical card (98.399709ms)
+✔ visible flop/turn/river cards block those exact suit combinations in all participant tables (367.975125ms)
+▲ [WARNING] Duplicate key "A 6-max table where every Agent plays the Reyson solver estimate." in object literal [duplicate-object-key]
+
+    src/locales/product-direct.json:1206:2:
+      1206 │   "A 6-max table where every Agent plays the Reyson solver estim...
+           ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The original key "A 6-max table where every Agent plays the Reyson solver estimate." is here:
+
+    src/locales/product-direct.json:906:2:
+      906 │   "A 6-max table where every Agent plays the Reyson solver estima...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+▲ [WARNING] Duplicate key "A 6-max table where every Agent plays the Reyson solver estimate." in object literal [duplicate-object-key]
+
+    src/locales/product-direct.json:1206:2:
+      1206 │   "A 6-max table where every Agent plays the Reyson solver estim...
+           ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The original key "A 6-max table where every Agent plays the Reyson solver estimate." is here:
+
+    src/locales/product-direct.json:906:2:
+      906 │   "A 6-max table where every Agent plays the Reyson solver estima...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+✔ dedicated renderer shows three initial matrices, localized roles and exact combo controls without EV (943.913542ms)
+✔ empty registry renders each participant unavailable; no query can activate the delivery client (10.042584ms)
+✔ late source success/failure cannot replace a newer spot or a reset even if an injected reader ignores cancellation (1501.111958ms)
+✔ rewind and board replacement render only the newest numerical view and keep all original roles (464.39025ms)
+✔ waiting Agent completes a verified MW3 hand once after real human actions without reading or writing saved history (7019.610292ms)
+✔ superseded Agent loading cannot settle a remounted new hand or write points/history (172.887625ms)
+✔ an injected interface cannot render an unverified copied policy kit (20.149333ms)
+✔ shared chronological strip clicks all three seats, rewinds and reaches turn/river without a separate MW3 action row (129.847667ms)
+✔ actual Agent A/B/A/C hand reuse touches Table and delivery LRU without replay loops (843.600083ms)
+✔ mandatory action histories use chronological folds, stored raise-to sizes and no current action (22.967125ms)
+✔ all persisted opening seats and every reachable response caller/fold selection round-trip (1158.806292ms)
+✔ every stored 3bet, 4bet and 100BB all-in response retains all selection fields (64.618125ms)
+✔ stored cold-call and cold-4bet decisions retain their actor rather than becoming an open response (63.750792ms)
+✔ UI-supported one-caller squeezes and opener/caller continuations round-trip (272.334667ms)
+✔ all SB limp, check, iso, limp-reraise, 4bet and all-in branches round-trip (31.91625ms)
+✔ encoder consumes the same chosen action blocks that RangeWorkspace renders (2.476833ms)
+✔ flop, turn and river preserve exact native bet sizes, raises and action strings (977.367708ms)
+✔ URLSearchParams round-trips every recognized format and both profile levels in stable parameter order (15.035583ms)
+✔ invalid preflop token retains the valid prefix; numeric raise sizes do not replace stored sizing (1.133625ms)
+✔ unknown parameters do not override storage; recognized malformed values fail safely (1.198083ms)
+✔ invalid or duplicate board cards discard the affected and later streets without losing preflop (5.720625ms)
+✔ browser URL helpers read and replace only /analyze/ranges, retain hash/history state and skip identical writes (4.451166ms)
+✔ workspace initializes from URL ahead of storage and preserves postflop state across first-render effects (4.956667ms)
+ℹ tests 55
+ℹ suites 0
+ℹ pass 55
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 24062.514375

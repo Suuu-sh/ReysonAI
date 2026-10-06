@@ -95,7 +95,11 @@ test('outside folds remain explicit, two-caller 4bets stay 30BB and profiles rem
   const blocks = buildRangeUrlActionBlocks(state);
   assert.ok(blocks.at(-1).options.some(option => option.label === 'Raise 30'));
   assert.deepEqual(blocks.slice(0, 6).map(block => block.position), ['UTG', 'HJ', 'CO', 'BTN', 'SB', 'BB']);
-  assert.equal(blocks.find(block => block.position === 'SB').kind, 'forced');
+  const outsider = blocks.find(block => block.position === 'SB');
+  assert.equal(outsider.kind, 'stage3-entry');
+  assert.equal(outsider.chosen, 'fold');
+  assert.ok(outsider.options.some(option => option.action === 'call'));
+  assert.equal(outsider.stage3Node.hero, 'SB');
   const terminal = continuationTerminals.find(node => node.family === 'cold_four_bet' && node.terminal === 'flop' && node.live_participants.length === 2);
   const complete = decodeRangeUrl(query(terminal.history));
   assert.equal(completedFlopContext({ ...complete, actionBlocks: buildRangeUrlActionBlocks(complete), isDefaultTable: false }).pilotAvailable, false);

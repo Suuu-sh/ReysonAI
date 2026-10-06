@@ -28,7 +28,17 @@ test("CLI reports balance counts and spot lists but does not fail for their warn
     assert.equal(report.balanceSummary[check].count, matches.length);
     assert.deepEqual(report.balanceSummary[check].spots, [...new Set(matches.map(f => f.spot))].sort());
   }
-  assert.equal(report.rangeBalance.length, Object.values(datasets()).reduce((sum, data) => sum + data.spots.length, 0) + (existsSync(new URL("../src/estimated/continuation-responses.json", import.meta.url)) ? load("continuation-responses").spots.length : 0));
+  const stage3 = existsSync(new URL("../src/estimated/stage3-responses.json", import.meta.url)) ? load("stage3-responses") : null;
+  assert.equal(report.rangeBalance.length, Object.values(datasets()).reduce((sum, data) => sum + data.spots.length, 0) + (existsSync(new URL("../src/estimated/continuation-responses.json", import.meta.url)) ? load("continuation-responses").spots.length : 0) + (stage3?.spots.length ?? 0));
+  if (stage3) {
+    const metrics = report.rangeBalance.filter(item => item.spot.startsWith("s3_"));
+    assert.deepEqual(metrics.map(item => item.spot).sort(), stage3.spots.map(spot => spot.id).sort());
+    const expected = report.stage3.findings.filter(finding => finding.check === "ev-capacity-conflict").map(finding => finding.spot).sort();
+    assert.deepEqual(report.capacityConflicts.filter(item => item.context_type === "stage3").map(item => item.spot).sort(), expected);
+    const inversions = report.findings.filter(finding => finding.check === "cross-strength-inversion");
+    assert.equal(report.crossStrengthSummary.warnings, inversions.length);
+    assert.equal(report.crossStrengthSummary.count, inversions.reduce((sum, finding) => sum + finding.count, 0));
+  }
   assert.equal(report.continuationDefense.length, (existsSync(new URL("../src/estimated/continuation-call-equities.json", import.meta.url)) ? Object.keys(load("continuation-call-equities").joint_defense).length : 0));
 });
 
