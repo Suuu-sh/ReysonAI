@@ -1,3 +1,17 @@
+# Latest HU research progress: 469/1755 boards observed
+
+Fixed observation: **2026-10-06 05:51:59 UTC**. The five-worker producer remained running: **469/1755 boards observed**, zero errors/unresolved, 55 successful batches and zero failed batches. The highest completed-batch peak group RSS was 571188 KiB; this is not current total RSS. Host available memory was 6251732 KiB at that observation. These values do not promise a completion time.
+
+Confirmed Library version **15** at `libfile_6fc13f8f72288191a328c485cc8d1fa9` preserves **440 immutable boards / 55 successful batches**, with source, completed whole12, probes and the prepared conditional finalizer. It does not contain all 469 boards from the later live observation. Archive: `hu-model11-co-coldcall-progress-20261006-0550.tar.gz`, 65361961 bytes, SHA-256 `c37e747de3dc5a43428e34a5c2201fe856c553e3e793f1c641b4e6873f1b889c`. Upload and version metadata are confirmed; a fresh Library re-download is not claimed.
+
+[The dated progress record](updates/20261006-0552/progress.json) preserves this snapshot. Numerical source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`, with unchanged raw policy bytes. Prior source snapshots, checks, historical HOLD records and independent receipts remain untouched. This commit updates this STATUS and adds the small progress/Library-pointer record only; it runs no numerical work.
+
+The fourth case remains **unaccepted**. The three repeated SB/aggressive deficits remain an explicit balanced-belief limitation. The next steps are producer completion, its genuine successful terminal, the separately reviewed conditional finalizer, and independent final disposition. Ordinary runtime and the old model10/three individually accepted model11 cases are unchanged. PR merge conflicts/current full CI remain unresolved or unverified. No merge, main/development update, runtime adoption or production action is included.
+
+## Previous checkpoint, retained for chronology
+
+The earlier live counts below are historical snapshots, superseded by the observation above. Their dated evidence remains immutable.
+
 # Latest HU research checkpoint: whole12 complete, 1755 generation running
 
 Prepared 2026-10-06 05:27 UTC from the fixed progress observation at **05:24:11 UTC**. Existing draft PR #41 remains a research preservation checkpoint; ordinary runtime, prior model10 acceptance and the three individually accepted model11 cases are unchanged. This fourth case is not finally accepted.

@@ -1,0 +1,59 @@
+{
+  "kind": "co-coldcall-live-generation-progress-checkpoint",
+  "observedAt": "2026-10-06T05:51:59Z",
+  "preparedAt": "2026-10-06T05:53:00Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "parentCommit": "db66dda7249a39ea54762bdafdff8a143887a779",
+  "numericalSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceAndRawPoliciesUnchanged": true,
+  "generation": {
+    "status": "RUNNING_AT_OBSERVATION",
+    "observedCompletedBoards": 469,
+    "targetCanonicalBoards": 1755,
+    "errors": 0,
+    "unresolved": 0,
+    "successfulBatches": 55,
+    "failedBatches": 0,
+    "activeWorkers": 5,
+    "highestCompletedBatchPeakGroupRssKiB": 571188,
+    "peakIsNotCurrentAggregateRss": true,
+    "hostAvailableKiB": 6251732,
+    "resourceValuesAreObservationOnly": true
+  },
+  "confirmedLibrarySnapshot": {
+    "libraryFileId": "libfile_6fc13f8f72288191a328c485cc8d1fa9",
+    "version": 15,
+    "name": "hu-model11-co-coldcall-progress-20261006-0550.tar.gz",
+    "bytes": 65361961,
+    "sha256": "c37e747de3dc5a43428e34a5c2201fe856c553e3e793f1c641b4e6873f1b889c",
+    "immutableBoards": 440,
+    "successfulBatches": 55,
+    "scope": "Immutable current board progress, source, completed whole12, probes and prepared conditional finalizer.",
+    "confirmedWrite": true,
+    "localMetadataApplied": true,
+    "freshLibraryRedownloadClaimed": false,
+    "containsAll469ObservedBoards": false
+  },
+  "scope": {
+    "priorSourceSnapshotsAndChecksPreserved": true,
+    "historicalHoldAndDatedReceiptsUnchanged": true,
+    "ordinaryRuntimeUnchanged": true,
+    "oldModel10AndThreeScopedModel11AcceptancesUnchanged": true,
+    "fourthCaseAccepted": false,
+    "productionAuthorized": false,
+    "newNumericalExecutionsForCheckpoint": 0
+  },
+  "limitations": [
+    "Three repeated SB/aggressive adverse conditions remain an explicit balanced-belief limitation.",
+    "The live observation and the Library archive have different cutoffs; 440 archived boards must not be described as all 469 observed boards.",
+    "Highest completed-batch RSS is neither instantaneous total RSS nor a guarantee for later batches.",
+    "No completion-time promise, superiority, GTO or general robustness claim."
+  ],
+  "remaining": [
+    "Finish the active five-worker 1755-board producer and obtain a genuine successful complete terminal.",
+    "Apply the separately reviewed finalizer only after its exact prerequisites.",
+    "Preserve final evidence and obtain independent final disposition/acceptance.",
+    "PR conflicts and current full CI remain unresolved or unverified; no merge or runtime adoption."
+  ]
+}
