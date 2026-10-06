@@ -1,0 +1,243 @@
+{
+  "kind": "independent-prefix-key-actual-result-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T04:27:05.405510+00:00",
+  "status": "CLEARED_FOR_SEPARATELY_BOUND_NEXT_CASE_CHECKS",
+  "baseline": {
+    "commit": "5dbd208d2ba70ceec2934efab9de134a5dc19e1c",
+    "effectiveReachSha256": "b24146403ddd487a645d3b9408a7abc3f2d93a0d9ef0f84723fdc785196db7b2"
+  },
+  "candidate": {
+    "commit": "3e955abeb6af528b5469b9cfff7012ad5bc53a3c",
+    "tree": "448feef556f45a978e4b5e086c3c496a0467c1e1",
+    "effectiveReachSha256": "3aacad94471833d6dcf720eedc372e6812171bf38af8a601dd0b75da7edfb38b",
+    "commitPreservesTestedBytes": true
+  },
+  "patch": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/candidate.patch",
+    "bytes": 2187,
+    "sha256": "7672e7b94b9b4681b6e6f5567bdac9c2888b18c8f4ba0137721872f9c791882a"
+  },
+  "staticReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/independent-static-review.json",
+    "bytes": 1765,
+    "sha256": "dbc7bca65fef5ad65a65e7b1d965af13363cfae5a833132918ebb2fcff6f1233"
+  },
+  "currentIdentityChecks": {
+    "baselineAndCandidateTrackedClean": true,
+    "eachCurrentPinCount": 31,
+    "rawInputs": 12,
+    "pinnedFixtures": 18,
+    "sourceFile": 1,
+    "storedPatchEqualsCommittedDiff": true,
+    "fifthPairRecordedBeforeAfterSourceMatchesCurrentBytes": true
+  },
+  "actualChecks": {
+    "existingNodeTestsPassed": 40,
+    "existingPythonTestsPassed": 3,
+    "nodeTestEvidence": [
+      {
+        "passed": 15,
+        "log": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-focused-a-20261006.log",
+          "bytes": 3647,
+          "sha256": "84203bfaeb933a4923a9e4255f61a8514283f5ec57d88767288e0c9ae7e6b437"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-focused-a-20261006.resources.json",
+          "bytes": 823,
+          "sha256": "3e547fe8bef7ee0b42ca5087d19aa31e83459f89090d7721cb89311838b52747"
+        }
+      },
+      {
+        "passed": 17,
+        "log": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-focused-b-20261006.log",
+          "bytes": 6552,
+          "sha256": "a549a2b61c8e5480b1aaf3eb983ff438a3d046c8eba3431748cdb21382a62e98"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-focused-b-20261006.resources.json",
+          "bytes": 769,
+          "sha256": "b0a1b05d16eb77941bccaf61d0f295c971bca55e7848c83776095965b8b09353"
+        }
+      },
+      {
+        "passed": 1,
+        "log": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-lifecycle-20261006.log",
+          "bytes": 20423,
+          "sha256": "e321e834db981b513070552b32a92a86df56e71a28385a0975049e81d73453de"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-lifecycle-20261006.resources.json",
+          "bytes": 890,
+          "sha256": "b2106abdd64a5bdc1bd653b35cb6e749c9b48ddc5ecc8fe475197c745d35960f"
+        }
+      },
+      {
+        "passed": 7,
+        "log": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-boundaries-20261006.log",
+          "bytes": 2262,
+          "sha256": "2bb04e1a1a75264a4efc4de51e78c0b6c9e7921f573e4317dfe383d1bca62ab2"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-boundaries-20261006.resources.json",
+          "bytes": 931,
+          "sha256": "3ecbc23fd50ce28f5b64d6767164d7f6c812c7a3118e9803857ea5bfb5e83eb8"
+        }
+      }
+    ],
+    "pythonEvidence": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/python-correspondence-result.json",
+      "bytes": 355,
+      "sha256": "80bf9e12dffd06a7576827abf88e1b53848757ffc11b57a7ac4e7de634403ec4"
+    },
+    "benchmarkTerminalEvidence": [
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-baseline-pilot-20261006.resources.json",
+        "bytes": 823,
+        "sha256": "39c1ebfed6751ed21e46cc60651e1d19b3047d28250a68981c1cb0a199bf0ee9"
+      },
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-candidate-pilot-20261006.resources.json",
+        "bytes": 826,
+        "sha256": "e3db0c31a0e2f08560fd37b34b16628953041d0006240beb5a36cb7d589967f3"
+      },
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-baseline-family-1-20261006.resources.json",
+        "bytes": 832,
+        "sha256": "cd6e7418097ecfada20c68dc2c845a8130bb1ba0812fd2b0a1a1566258236b95"
+      },
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-candidate-family-1-20261006.resources.json",
+        "bytes": 835,
+        "sha256": "aff506a606bd060dd1d9d597fd0dc19f15a927b5049ee6580a2ef391c3786131"
+      },
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-baseline-family-2-20261006.resources.json",
+        "bytes": 832,
+        "sha256": "2361e53804082528b64e2ec6ef67b3c3cdf9638d5a036ab18ecdf1f032026632"
+      },
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-candidate-family-2-20261006.resources.json",
+        "bytes": 835,
+        "sha256": "51de2e2200da10c117704dcaadc79b7728eaa8f7551d8aa2072df0de0f0c88a3"
+      },
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-baseline-family-3-20261006.resources.json",
+        "bytes": 831,
+        "sha256": "adc2ebe43d2510607af9f37fde8aa5e404d5cebf3e965b44069cba5cf1097917"
+      },
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-candidate-family-3-20261006.resources.json",
+        "bytes": 833,
+        "sha256": "c704f38acfadb9fc0e5af044becda547dab37c819298d6e0eb927d52f1d93a6c"
+      },
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-baseline-family-4-20261006.resources.json",
+        "bytes": 832,
+        "sha256": "12b3f2e2d611d813f2c963618a2d0d2963bc1fa5f5085aa4d7c7d5dd8b8167d8"
+      },
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/hu-prefix-key-candidate-family-4-20261006.resources.json",
+        "bytes": 834,
+        "sha256": "b0097b75a0b8d62704f8b5b73d651e654e076ecf8765cf9092abafafc003e383"
+      }
+    ],
+    "allTenBenchmarksExitZeroWithoutStop": true,
+    "resourceLimitsRespected": true
+  },
+  "selectedParity": {
+    "literalFlop": "As7d2c",
+    "streets": "all",
+    "families": 5,
+    "prefixes": 2061,
+    "omittedOnly": [
+      "diagnostics.elapsedMs"
+    ],
+    "completeOrderedPayloadsIncludingProofsAndCache": true,
+    "records": [
+      {
+        "tag": "pilot",
+        "spot": "BTN_open_SB_3bet_BB_call_BTN_fold",
+        "prefixes": 444,
+        "parityReport": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/results/baseline-pilot--candidate-pilot-parity.json",
+          "bytes": 1048,
+          "sha256": "440f2d41c97b2acf1d79ebd2b1761f624afef88bd6f96b6ae17424e15e5468d0"
+        },
+        "baselineGateWallMs": 21508.720836999997,
+        "candidateGateWallMs": 18352.12105
+      },
+      {
+        "tag": "family-1",
+        "spot": "UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call",
+        "prefixes": 444,
+        "parityReport": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/results/baseline-family-1--candidate-family-1-parity.json",
+          "bytes": 1072,
+          "sha256": "d9844011ae08e560b664a08073674c179c98a9b2400ba7e4e3e6bc1fc17b3eae"
+        },
+        "baselineGateWallMs": 17788.536092000002,
+        "candidateGateWallMs": 16160.68908
+      },
+      {
+        "tag": "family-2",
+        "spot": "CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold",
+        "prefixes": 444,
+        "parityReport": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/results/baseline-family-2--candidate-family-2-parity.json",
+          "bytes": 1072,
+          "sha256": "bd366aa52a62155bf6d1986dec68c16f1e0923d92db8ecc126ada5b950d30cc7"
+        },
+        "baselineGateWallMs": 16545.889947,
+        "candidateGateWallMs": 14555.524484000001
+      },
+      {
+        "tag": "family-3",
+        "spot": "BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call",
+        "prefixes": 293,
+        "parityReport": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/results/baseline-family-3--candidate-family-3-parity.json",
+          "bytes": 1061,
+          "sha256": "567f9816fbc6a8e2869d2267d64bd0ee9dda06593c7f8a0bb9582d90bf89a962"
+        },
+        "baselineGateWallMs": 7736.5445979999995,
+        "candidateGateWallMs": 6462.434602
+      },
+      {
+        "tag": "family-4",
+        "spot": "HJ_open_CO_call_BTN_call_BB_squeeze_HJ_fold_CO_fold_BTN_call",
+        "prefixes": 436,
+        "parityReport": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/results/baseline-family-4--candidate-family-4-parity.json",
+          "bytes": 1081,
+          "sha256": "d04d601e1996d298fe9985c5fd32c966050de1222ab933f9ee4fdcea17ec627b"
+        },
+        "baselineGateWallMs": 11110.791241,
+        "candidateGateWallMs": 9953.470991999999
+      }
+    ],
+    "reviewScope": "Continues the prior independent first-four-pair review reported by the coordinator. This reviewer independently rechecked final family-4 full ordered payload equality and its result hashes, current source bindings, all five report/result byte hashes, ten terminal receipts, and 43 existing test outcomes. No numerical generation was repeated.",
+    "fifthComparedPayloadSha256": "6c85a9f224dc5842171f54618f8ec8fe8bd7eba1e161e738d78a66a143b7417c"
+  },
+  "observedTiming": {
+    "baselineGateWallMsSum": 74690.482715,
+    "candidateGateWallMsSum": 65484.240208,
+    "singlePassMeasurementOnly": true,
+    "statisticalSpeedGuarantee": false
+  },
+  "boundaries": {
+    "old5dbAcceptanceRetagged": false,
+    "all1755AcceptedOnNewSource": false,
+    "nextPolicyAccepted": false,
+    "thresholdsChanged": false,
+    "publicValidationChanged": false,
+    "default45Changed": false,
+    "historicalFixturesOverwritten": false,
+    "productionAuthorized": false
+  },
+  "reviewerNodeLaunches": 0
+}
