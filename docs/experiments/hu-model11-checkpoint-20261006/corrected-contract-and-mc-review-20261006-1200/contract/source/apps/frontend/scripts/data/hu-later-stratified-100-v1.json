@@ -1,0 +1,1170 @@
+{
+  "kind": "hu-stratified-later-board-selection",
+  "version": 1,
+  "validationContract": "hu-validation-stratified-later-v1",
+  "status": "selection-only-not-numerical-validation",
+  "sourceSnapshot": {
+    "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "files": [
+      {
+        "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.mjs",
+        "bytes": 3762,
+        "sha256": "81c15f8ed865d56b78078136e389e6ea04851dbac506d2df2102f87acc737076"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model.mjs",
+        "bytes": 6991,
+        "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+      },
+      {
+        "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
+        "bytes": 1554,
+        "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+      }
+    ]
+  },
+  "universe": {
+    "kind": "canonical-suit-isomorphic-flops",
+    "count": 1755,
+    "sha256": "b887b3719fdfcc966714f3e73a05ad01460fddb7c26cb94fc78b805807a336e2",
+    "hashEncoding": "ASCII-sorted IDs, LF after each ID"
+  },
+  "selection": {
+    "seed": "hu-model11-later-stratified-v1-20261006",
+    "target": 100,
+    "count": 100,
+    "algorithm": "sha256-domain-separated-ranked-without-replacement-v1",
+    "allocation": "seeded-even-rounds-skip-exhausted-strata-v1",
+    "allocationOrder": [
+      "dry_mid",
+      "dry_low",
+      "dry_high",
+      "monotone_low",
+      "wet_low",
+      "monotone_mid",
+      "monotone_high",
+      "wet_mid",
+      "paired_high",
+      "wet_high",
+      "paired_low",
+      "paired_mid"
+    ],
+    "ordering": "ASCII for serialized IDs; SHA-256 rank for selection",
+    "allCanonicalFlopsSelected": false,
+    "omittedCanonicalFlops": 1655,
+    "selectedIdsSha256": "225ce6605582456ff6f4366f9f7dc955fcdb6bbca563ff995c522b1400e89783"
+  },
+  "classification": {
+    "shape": "paired first (includes trips); otherwise monotone; otherwise wet if two-tone or rank span <=4; otherwise dry",
+    "height": "highest rank: Q/K/A=high, 9/T/J=mid, 2..8=low",
+    "aceLowInFlopShape": false,
+    "sourceFunctions": [
+      "model.mjs:boardTexture",
+      "model.mjs:boardHeight"
+    ]
+  },
+  "strata": [
+    {
+      "stratum": "dry_high",
+      "population": 148,
+      "selected": 9,
+      "boardIds": [
+        "Ac9d4h",
+        "AcJd7h",
+        "AcTd3h",
+        "AcTd5h",
+        "Kc8d5h",
+        "Kc9d8h",
+        "KcTd2h",
+        "KcTd5h",
+        "QcTd5h"
+      ]
+    },
+    {
+      "stratum": "dry_mid",
+      "population": 67,
+      "selected": 9,
+      "boardIds": [
+        "9c7d3h",
+        "9c8d2h",
+        "9c8d3h",
+        "Jc4d3h",
+        "Jc9d4h",
+        "Jc9d5h",
+        "JcTd2h",
+        "JcTd6h",
+        "Tc3d2h"
+      ]
+    },
+    {
+      "stratum": "dry_low",
+      "population": 13,
+      "selected": 9,
+      "boardIds": [
+        "7c6d2h",
+        "8c3d2h",
+        "8c4d2h",
+        "8c4d3h",
+        "8c5d2h",
+        "8c5d3h",
+        "8c6d2h",
+        "8c6d3h",
+        "8c7d3h"
+      ]
+    },
+    {
+      "stratum": "wet_high",
+      "population": 516,
+      "selected": 8,
+      "boardIds": [
+        "Ac8c6d",
+        "AcKdQh",
+        "Kc5c4d",
+        "Kc8c7d",
+        "KcQd6d",
+        "Qc7d5d",
+        "Qc7d6c",
+        "Qc8d6c"
+      ]
+    },
+    {
+      "stratum": "wet_mid",
+      "population": 273,
+      "selected": 8,
+      "boardIds": [
+        "9c8d4d",
+        "9c8d6d",
+        "Jc4d2c",
+        "Jc5c2d",
+        "Jc6d3d",
+        "Jc7c6d",
+        "Tc9c3d",
+        "Tc9d4d"
+      ]
+    },
+    {
+      "stratum": "wet_low",
+      "population": 127,
+      "selected": 8,
+      "boardIds": [
+        "6c3d2c",
+        "7c3d2d",
+        "7c5d4c",
+        "7c6c4d",
+        "8c4d3c",
+        "8c6c3d",
+        "8c6d4c",
+        "8c7d6h"
+      ]
+    },
+    {
+      "stratum": "monotone_high",
+      "population": 166,
+      "selected": 8,
+      "boardIds": [
+        "Ac6c3c",
+        "Ac9c6c",
+        "AcJc2c",
+        "Kc4c3c",
+        "Kc7c6c",
+        "KcTc2c",
+        "QcJc5c",
+        "QcJc6c"
+      ]
+    },
+    {
+      "stratum": "monotone_mid",
+      "population": 85,
+      "selected": 8,
+      "boardIds": [
+        "9c4c2c",
+        "9c6c3c",
+        "Jc7c6c",
+        "Jc9c5c",
+        "Jc9c6c",
+        "Tc6c5c",
+        "Tc7c3c",
+        "Tc8c7c"
+      ]
+    },
+    {
+      "stratum": "monotone_low",
+      "population": 35,
+      "selected": 9,
+      "boardIds": [
+        "6c5c3c",
+        "7c5c2c",
+        "7c5c3c",
+        "8c3c2c",
+        "8c4c2c",
+        "8c5c2c",
+        "8c6c3c",
+        "8c7c2c",
+        "8c7c3c"
+      ]
+    },
+    {
+      "stratum": "paired_high",
+      "population": 135,
+      "selected": 8,
+      "boardIds": [
+        "Ac7c7d",
+        "AcAd2c",
+        "AcAdQh",
+        "AcQcQd",
+        "KcTdTh",
+        "Qc4c4d",
+        "QcQd6c",
+        "QcTcTd"
+      ]
+    },
+    {
+      "stratum": "paired_mid",
+      "population": 99,
+      "selected": 8,
+      "boardIds": [
+        "9c5d5h",
+        "9c7d7h",
+        "Jc9d9h",
+        "JcJd4c",
+        "JcJdJh",
+        "JcJdTc",
+        "Tc4d4h",
+        "TcTd8c"
+      ]
+    },
+    {
+      "stratum": "paired_low",
+      "population": 91,
+      "selected": 8,
+      "boardIds": [
+        "4c2d2h",
+        "4c4d2h",
+        "6c3c3d",
+        "6c5d5h",
+        "6c6d3h",
+        "7c7d5c",
+        "8c2d2h",
+        "8c3c3d"
+      ]
+    }
+  ],
+  "boards": [
+    {
+      "id": "4c2d2h",
+      "cards": [
+        8,
+        1,
+        2
+      ],
+      "stratum": "paired_low"
+    },
+    {
+      "id": "4c4d2h",
+      "cards": [
+        8,
+        9,
+        2
+      ],
+      "stratum": "paired_low"
+    },
+    {
+      "id": "6c3c3d",
+      "cards": [
+        16,
+        4,
+        5
+      ],
+      "stratum": "paired_low"
+    },
+    {
+      "id": "6c3d2c",
+      "cards": [
+        16,
+        5,
+        0
+      ],
+      "stratum": "wet_low"
+    },
+    {
+      "id": "6c5c3c",
+      "cards": [
+        16,
+        12,
+        4
+      ],
+      "stratum": "monotone_low"
+    },
+    {
+      "id": "6c5d5h",
+      "cards": [
+        16,
+        13,
+        14
+      ],
+      "stratum": "paired_low"
+    },
+    {
+      "id": "6c6d3h",
+      "cards": [
+        16,
+        17,
+        6
+      ],
+      "stratum": "paired_low"
+    },
+    {
+      "id": "7c3d2d",
+      "cards": [
+        20,
+        5,
+        1
+      ],
+      "stratum": "wet_low"
+    },
+    {
+      "id": "7c5c2c",
+      "cards": [
+        20,
+        12,
+        0
+      ],
+      "stratum": "monotone_low"
+    },
+    {
+      "id": "7c5c3c",
+      "cards": [
+        20,
+        12,
+        4
+      ],
+      "stratum": "monotone_low"
+    },
+    {
+      "id": "7c5d4c",
+      "cards": [
+        20,
+        13,
+        8
+      ],
+      "stratum": "wet_low"
+    },
+    {
+      "id": "7c6c4d",
+      "cards": [
+        20,
+        16,
+        9
+      ],
+      "stratum": "wet_low"
+    },
+    {
+      "id": "7c6d2h",
+      "cards": [
+        20,
+        17,
+        2
+      ],
+      "stratum": "dry_low"
+    },
+    {
+      "id": "7c7d5c",
+      "cards": [
+        20,
+        21,
+        12
+      ],
+      "stratum": "paired_low"
+    },
+    {
+      "id": "8c2d2h",
+      "cards": [
+        24,
+        1,
+        2
+      ],
+      "stratum": "paired_low"
+    },
+    {
+      "id": "8c3c2c",
+      "cards": [
+        24,
+        4,
+        0
+      ],
+      "stratum": "monotone_low"
+    },
+    {
+      "id": "8c3c3d",
+      "cards": [
+        24,
+        4,
+        5
+      ],
+      "stratum": "paired_low"
+    },
+    {
+      "id": "8c3d2h",
+      "cards": [
+        24,
+        5,
+        2
+      ],
+      "stratum": "dry_low"
+    },
+    {
+      "id": "8c4c2c",
+      "cards": [
+        24,
+        8,
+        0
+      ],
+      "stratum": "monotone_low"
+    },
+    {
+      "id": "8c4d2h",
+      "cards": [
+        24,
+        9,
+        2
+      ],
+      "stratum": "dry_low"
+    },
+    {
+      "id": "8c4d3c",
+      "cards": [
+        24,
+        9,
+        4
+      ],
+      "stratum": "wet_low"
+    },
+    {
+      "id": "8c4d3h",
+      "cards": [
+        24,
+        9,
+        6
+      ],
+      "stratum": "dry_low"
+    },
+    {
+      "id": "8c5c2c",
+      "cards": [
+        24,
+        12,
+        0
+      ],
+      "stratum": "monotone_low"
+    },
+    {
+      "id": "8c5d2h",
+      "cards": [
+        24,
+        13,
+        2
+      ],
+      "stratum": "dry_low"
+    },
+    {
+      "id": "8c5d3h",
+      "cards": [
+        24,
+        13,
+        6
+      ],
+      "stratum": "dry_low"
+    },
+    {
+      "id": "8c6c3c",
+      "cards": [
+        24,
+        16,
+        4
+      ],
+      "stratum": "monotone_low"
+    },
+    {
+      "id": "8c6c3d",
+      "cards": [
+        24,
+        16,
+        5
+      ],
+      "stratum": "wet_low"
+    },
+    {
+      "id": "8c6d2h",
+      "cards": [
+        24,
+        17,
+        2
+      ],
+      "stratum": "dry_low"
+    },
+    {
+      "id": "8c6d3h",
+      "cards": [
+        24,
+        17,
+        6
+      ],
+      "stratum": "dry_low"
+    },
+    {
+      "id": "8c6d4c",
+      "cards": [
+        24,
+        17,
+        8
+      ],
+      "stratum": "wet_low"
+    },
+    {
+      "id": "8c7c2c",
+      "cards": [
+        24,
+        20,
+        0
+      ],
+      "stratum": "monotone_low"
+    },
+    {
+      "id": "8c7c3c",
+      "cards": [
+        24,
+        20,
+        4
+      ],
+      "stratum": "monotone_low"
+    },
+    {
+      "id": "8c7d3h",
+      "cards": [
+        24,
+        21,
+        6
+      ],
+      "stratum": "dry_low"
+    },
+    {
+      "id": "8c7d6h",
+      "cards": [
+        24,
+        21,
+        18
+      ],
+      "stratum": "wet_low"
+    },
+    {
+      "id": "9c4c2c",
+      "cards": [
+        28,
+        8,
+        0
+      ],
+      "stratum": "monotone_mid"
+    },
+    {
+      "id": "9c5d5h",
+      "cards": [
+        28,
+        13,
+        14
+      ],
+      "stratum": "paired_mid"
+    },
+    {
+      "id": "9c6c3c",
+      "cards": [
+        28,
+        16,
+        4
+      ],
+      "stratum": "monotone_mid"
+    },
+    {
+      "id": "9c7d3h",
+      "cards": [
+        28,
+        21,
+        6
+      ],
+      "stratum": "dry_mid"
+    },
+    {
+      "id": "9c7d7h",
+      "cards": [
+        28,
+        21,
+        22
+      ],
+      "stratum": "paired_mid"
+    },
+    {
+      "id": "9c8d2h",
+      "cards": [
+        28,
+        25,
+        2
+      ],
+      "stratum": "dry_mid"
+    },
+    {
+      "id": "9c8d3h",
+      "cards": [
+        28,
+        25,
+        6
+      ],
+      "stratum": "dry_mid"
+    },
+    {
+      "id": "9c8d4d",
+      "cards": [
+        28,
+        25,
+        9
+      ],
+      "stratum": "wet_mid"
+    },
+    {
+      "id": "9c8d6d",
+      "cards": [
+        28,
+        25,
+        17
+      ],
+      "stratum": "wet_mid"
+    },
+    {
+      "id": "Ac6c3c",
+      "cards": [
+        48,
+        16,
+        4
+      ],
+      "stratum": "monotone_high"
+    },
+    {
+      "id": "Ac7c7d",
+      "cards": [
+        48,
+        20,
+        21
+      ],
+      "stratum": "paired_high"
+    },
+    {
+      "id": "Ac8c6d",
+      "cards": [
+        48,
+        24,
+        17
+      ],
+      "stratum": "wet_high"
+    },
+    {
+      "id": "Ac9c6c",
+      "cards": [
+        48,
+        28,
+        16
+      ],
+      "stratum": "monotone_high"
+    },
+    {
+      "id": "Ac9d4h",
+      "cards": [
+        48,
+        29,
+        10
+      ],
+      "stratum": "dry_high"
+    },
+    {
+      "id": "AcAd2c",
+      "cards": [
+        48,
+        49,
+        0
+      ],
+      "stratum": "paired_high"
+    },
+    {
+      "id": "AcAdQh",
+      "cards": [
+        48,
+        49,
+        42
+      ],
+      "stratum": "paired_high"
+    },
+    {
+      "id": "AcJc2c",
+      "cards": [
+        48,
+        36,
+        0
+      ],
+      "stratum": "monotone_high"
+    },
+    {
+      "id": "AcJd7h",
+      "cards": [
+        48,
+        37,
+        22
+      ],
+      "stratum": "dry_high"
+    },
+    {
+      "id": "AcKdQh",
+      "cards": [
+        48,
+        45,
+        42
+      ],
+      "stratum": "wet_high"
+    },
+    {
+      "id": "AcQcQd",
+      "cards": [
+        48,
+        40,
+        41
+      ],
+      "stratum": "paired_high"
+    },
+    {
+      "id": "AcTd3h",
+      "cards": [
+        48,
+        33,
+        6
+      ],
+      "stratum": "dry_high"
+    },
+    {
+      "id": "AcTd5h",
+      "cards": [
+        48,
+        33,
+        14
+      ],
+      "stratum": "dry_high"
+    },
+    {
+      "id": "Jc4d2c",
+      "cards": [
+        36,
+        9,
+        0
+      ],
+      "stratum": "wet_mid"
+    },
+    {
+      "id": "Jc4d3h",
+      "cards": [
+        36,
+        9,
+        6
+      ],
+      "stratum": "dry_mid"
+    },
+    {
+      "id": "Jc5c2d",
+      "cards": [
+        36,
+        12,
+        1
+      ],
+      "stratum": "wet_mid"
+    },
+    {
+      "id": "Jc6d3d",
+      "cards": [
+        36,
+        17,
+        5
+      ],
+      "stratum": "wet_mid"
+    },
+    {
+      "id": "Jc7c6c",
+      "cards": [
+        36,
+        20,
+        16
+      ],
+      "stratum": "monotone_mid"
+    },
+    {
+      "id": "Jc7c6d",
+      "cards": [
+        36,
+        20,
+        17
+      ],
+      "stratum": "wet_mid"
+    },
+    {
+      "id": "Jc9c5c",
+      "cards": [
+        36,
+        28,
+        12
+      ],
+      "stratum": "monotone_mid"
+    },
+    {
+      "id": "Jc9c6c",
+      "cards": [
+        36,
+        28,
+        16
+      ],
+      "stratum": "monotone_mid"
+    },
+    {
+      "id": "Jc9d4h",
+      "cards": [
+        36,
+        29,
+        10
+      ],
+      "stratum": "dry_mid"
+    },
+    {
+      "id": "Jc9d5h",
+      "cards": [
+        36,
+        29,
+        14
+      ],
+      "stratum": "dry_mid"
+    },
+    {
+      "id": "Jc9d9h",
+      "cards": [
+        36,
+        29,
+        30
+      ],
+      "stratum": "paired_mid"
+    },
+    {
+      "id": "JcJd4c",
+      "cards": [
+        36,
+        37,
+        8
+      ],
+      "stratum": "paired_mid"
+    },
+    {
+      "id": "JcJdJh",
+      "cards": [
+        36,
+        37,
+        38
+      ],
+      "stratum": "paired_mid"
+    },
+    {
+      "id": "JcJdTc",
+      "cards": [
+        36,
+        37,
+        32
+      ],
+      "stratum": "paired_mid"
+    },
+    {
+      "id": "JcTd2h",
+      "cards": [
+        36,
+        33,
+        2
+      ],
+      "stratum": "dry_mid"
+    },
+    {
+      "id": "JcTd6h",
+      "cards": [
+        36,
+        33,
+        18
+      ],
+      "stratum": "dry_mid"
+    },
+    {
+      "id": "Kc4c3c",
+      "cards": [
+        44,
+        8,
+        4
+      ],
+      "stratum": "monotone_high"
+    },
+    {
+      "id": "Kc5c4d",
+      "cards": [
+        44,
+        12,
+        9
+      ],
+      "stratum": "wet_high"
+    },
+    {
+      "id": "Kc7c6c",
+      "cards": [
+        44,
+        20,
+        16
+      ],
+      "stratum": "monotone_high"
+    },
+    {
+      "id": "Kc8c7d",
+      "cards": [
+        44,
+        24,
+        21
+      ],
+      "stratum": "wet_high"
+    },
+    {
+      "id": "Kc8d5h",
+      "cards": [
+        44,
+        25,
+        14
+      ],
+      "stratum": "dry_high"
+    },
+    {
+      "id": "Kc9d8h",
+      "cards": [
+        44,
+        29,
+        26
+      ],
+      "stratum": "dry_high"
+    },
+    {
+      "id": "KcQd6d",
+      "cards": [
+        44,
+        41,
+        17
+      ],
+      "stratum": "wet_high"
+    },
+    {
+      "id": "KcTc2c",
+      "cards": [
+        44,
+        32,
+        0
+      ],
+      "stratum": "monotone_high"
+    },
+    {
+      "id": "KcTd2h",
+      "cards": [
+        44,
+        33,
+        2
+      ],
+      "stratum": "dry_high"
+    },
+    {
+      "id": "KcTd5h",
+      "cards": [
+        44,
+        33,
+        14
+      ],
+      "stratum": "dry_high"
+    },
+    {
+      "id": "KcTdTh",
+      "cards": [
+        44,
+        33,
+        34
+      ],
+      "stratum": "paired_high"
+    },
+    {
+      "id": "Qc4c4d",
+      "cards": [
+        40,
+        8,
+        9
+      ],
+      "stratum": "paired_high"
+    },
+    {
+      "id": "Qc7d5d",
+      "cards": [
+        40,
+        21,
+        13
+      ],
+      "stratum": "wet_high"
+    },
+    {
+      "id": "Qc7d6c",
+      "cards": [
+        40,
+        21,
+        16
+      ],
+      "stratum": "wet_high"
+    },
+    {
+      "id": "Qc8d6c",
+      "cards": [
+        40,
+        25,
+        16
+      ],
+      "stratum": "wet_high"
+    },
+    {
+      "id": "QcJc5c",
+      "cards": [
+        40,
+        36,
+        12
+      ],
+      "stratum": "monotone_high"
+    },
+    {
+      "id": "QcJc6c",
+      "cards": [
+        40,
+        36,
+        16
+      ],
+      "stratum": "monotone_high"
+    },
+    {
+      "id": "QcQd6c",
+      "cards": [
+        40,
+        41,
+        16
+      ],
+      "stratum": "paired_high"
+    },
+    {
+      "id": "QcTcTd",
+      "cards": [
+        40,
+        32,
+        33
+      ],
+      "stratum": "paired_high"
+    },
+    {
+      "id": "QcTd5h",
+      "cards": [
+        40,
+        33,
+        14
+      ],
+      "stratum": "dry_high"
+    },
+    {
+      "id": "Tc3d2h",
+      "cards": [
+        32,
+        5,
+        2
+      ],
+      "stratum": "dry_mid"
+    },
+    {
+      "id": "Tc4d4h",
+      "cards": [
+        32,
+        9,
+        10
+      ],
+      "stratum": "paired_mid"
+    },
+    {
+      "id": "Tc6c5c",
+      "cards": [
+        32,
+        16,
+        12
+      ],
+      "stratum": "monotone_mid"
+    },
+    {
+      "id": "Tc7c3c",
+      "cards": [
+        32,
+        20,
+        4
+      ],
+      "stratum": "monotone_mid"
+    },
+    {
+      "id": "Tc8c7c",
+      "cards": [
+        32,
+        24,
+        20
+      ],
+      "stratum": "monotone_mid"
+    },
+    {
+      "id": "Tc9c3d",
+      "cards": [
+        32,
+        28,
+        5
+      ],
+      "stratum": "wet_mid"
+    },
+    {
+      "id": "Tc9d4d",
+      "cards": [
+        32,
+        29,
+        9
+      ],
+      "stratum": "wet_mid"
+    },
+    {
+      "id": "TcTd8c",
+      "cards": [
+        32,
+        33,
+        24
+      ],
+      "stratum": "paired_mid"
+    }
+  ],
+  "laterWithinSelectedFlop": {
+    "turns": 4,
+    "riversPerTurn": 3,
+    "nominalTurnBoards": 400,
+    "nominalRiverRunouts": 1200,
+    "seed": "solveaai-postflop-ai-v1",
+    "seedTemplate": "${config.seed}|balance|${board.id}",
+    "sampler": "unchanged balance.mjs:representativeRunouts; all four sampled turns removed before each river pool",
+    "reachableOnlyCounts": "determined later from each spot's exact saved live ranges; never substitute or silently replace boards"
+  },
+  "notEvidenceFor": [
+    "policy acceptance",
+    "all-later-board coverage",
+    "720000 trial completion",
+    "GTO or strength guarantee"
+  ]
+}

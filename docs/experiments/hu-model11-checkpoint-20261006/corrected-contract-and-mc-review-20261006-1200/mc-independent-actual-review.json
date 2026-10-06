@@ -1,0 +1,441 @@
+{
+  "kind": "independent-three-cell-runtime-actual-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T11:54:31.079122+00:00",
+  "status": "ACTUAL_BOUNDED_TIMING_VERIFIED_NOT_ACCEPTANCE",
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/independent-source-review-v2.json",
+    "bytes": 10321,
+    "sha256": "ba1492aa438fbd979e7e364342122304455fa325189e74d54497b30a346ca48a"
+  },
+  "authorSummary": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/summary.json",
+    "bytes": 41943,
+    "sha256": "cf0ee08001edada7a84a5fc98896188c75e960f65c890f5934068d85448d943d"
+  },
+  "sourceComparison": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/source-comparison.json",
+    "bytes": 1488,
+    "sha256": "42047a4bc14f1684b96124235cd4eab80ec3ea71c8115872eb4495f98531c1b5"
+  },
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "completedJobs": 8,
+  "allNormalExitAndBirthBoundCleanupVerified": true,
+  "maximumObservedRssKiB": 331816,
+  "minimumHostAvailableKiB": 8408376,
+  "primaryPairedTrialsPerModel": 192,
+  "primaryRows": [
+    {
+      "cellIndex": 1,
+      "condition": {
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "samples": 64,
+        "seed": "solveaai-postflop-ai-v1",
+        "cacheBatchSize": 64
+      },
+      "legacyWallMsPerPairedTrial": 8.165589046874999,
+      "currentWallMsPerPairedTrial": 20.62360396875,
+      "wallRatio": 2.5256725326683847,
+      "drawHash": "650baf2b7c532abb3e8d1c6ca67b7367555f8d4b9295147e6ebbffc8a494fbd3",
+      "baselineReturnsEqual": true,
+      "currentFull64ObjectsEqual": true,
+      "currentProofsEqual": true,
+      "legacyCurrentCandidateReturnsDifferent": 0
+    },
+    {
+      "cellIndex": 2,
+      "condition": {
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BTN",
+        "samples": 64,
+        "seed": "solveaai-postflop-ai-v1",
+        "cacheBatchSize": 64
+      },
+      "legacyWallMsPerPairedTrial": 9.716524703125001,
+      "currentWallMsPerPairedTrial": 30.29286803125,
+      "wallRatio": 3.1176649014752456,
+      "drawHash": "691be807f999cf1e39870537ee9a03b3aabb2b18a3a1b83b47c839168f1aad7d",
+      "baselineReturnsEqual": true,
+      "currentFull64ObjectsEqual": true,
+      "currentProofsEqual": true,
+      "legacyCurrentCandidateReturnsDifferent": 0
+    },
+    {
+      "cellIndex": 59,
+      "condition": {
+        "board": "9s7s3s",
+        "split": "holdout",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "samples": 64,
+        "seed": "solveaai-postflop-ai-v1",
+        "cacheBatchSize": 64
+      },
+      "legacyWallMsPerPairedTrial": 10.189342640625,
+      "currentWallMsPerPairedTrial": 29.21112509375,
+      "wallRatio": 2.8668311709614103,
+      "drawHash": "719462864174f2145bc42b0309cd91e573031722b1a5d3c3d1f7d7e4758c4485",
+      "baselineReturnsEqual": true,
+      "currentFull64ObjectsEqual": true,
+      "currentProofsEqual": true,
+      "legacyCurrentCandidateReturnsDifferent": 4
+    }
+  ],
+  "selectedAggregateCurrentToLegacyWallRatio": 2.8544153883127397,
+  "producer002": {
+    "producerWallMs": 1874.572625,
+    "wrappedStorageApiWallMs": 5.9427780000007715,
+    "nativeValidationWallMs": 197.88588100000015,
+    "full64TrialObjectsAndProofsMatchOriginal": true
+  },
+  "profile": {
+    "raw": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059/cpu.cpuprofile",
+      "bytes": 517181,
+      "sha256": "e9149e19ec4aef9924ba93d7d814d9866c9bc6e8337a58b6ee7f5ba630a99cdb"
+    },
+    "summary": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059/profile-summary.json",
+      "bytes": 23250,
+      "sha256": "84f74df8ad820d4e1b1453ac745d3137c65b882e8547d5d5bb46517cac482b29"
+    },
+    "sampleCount": 1932,
+    "sampledWallMs": 2024.362,
+    "independentlyRecalculatedInclusiveGroups": [
+      {
+        "name": "identityInclusive",
+        "ms": 434.7090000000004,
+        "percent": 21.473876707822036
+      },
+      {
+        "name": "createDecisionPrefixInclusive",
+        "ms": 527.3009999999999,
+        "percent": 26.047762208537797
+      },
+      {
+        "name": "evaluateInclusive",
+        "ms": 146.98999999999995,
+        "percent": 7.261053112042211
+      },
+      {
+        "name": "compileLawInclusive",
+        "ms": 128.94299999999996,
+        "percent": 6.369562360882092
+      },
+      {
+        "name": "zeroProofVerificationInclusive",
+        "ms": 102.63499999999998,
+        "percent": 5.069992422303915
+      }
+    ],
+    "selfAndInclusivePublishedRowsRecalculated": true,
+    "inclusiveGroupsOverlap": true,
+    "excludedFromPrimaryTimingRatios": true
+  },
+  "evidencePins": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001/trials.json",
+      "bytes": 8901,
+      "sha256": "ee0363a6308d92bbcd1918008fa98c1d37e86a0a24d54e7c0022c98615482301"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001/proofs.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001/result.json",
+      "bytes": 5585,
+      "sha256": "bf4838ba9b136cd6b74ee0200e8fdff156e556f4813bad976a07baf292f8d209"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001-supervision/request.json",
+      "bytes": 1212,
+      "sha256": "1877e7454b017ed13d61d7a30491b5d0ae6b15ef0ffe1f05102e0ae29422cc85"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001-supervision/parent-result.json",
+      "bytes": 2095,
+      "sha256": "bd6e8e30296a33a8a59ae2f7232234f86e66b5cac737aee4985790ad39942fd3"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001-supervision/resource.json",
+      "bytes": 1547,
+      "sha256": "b3fdc4778f9792abf652ffd2ebac68372a167549df078ffd869d8212a540cf15"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001-supervision/lease.json",
+      "bytes": 774,
+      "sha256": "f978d8adda90ba173edf1f1d1ec9c1dc525be29637f38d14d28041c24d56864c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002/trials.json",
+      "bytes": 8826,
+      "sha256": "681ac7776a6a78aea520f6c80d01567911d49ac221dc4c43c7ed8a4ce343ea83"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002/proofs.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002/result.json",
+      "bytes": 5562,
+      "sha256": "be4ea231767598defee63ed752dc93b27e50d8a69b7620887e82c3f0bd5737ea"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002-supervision/request.json",
+      "bytes": 1212,
+      "sha256": "27cc139dc16e89a0124621cefc2dc57d1394ff20642e831c08e85f64938f02e6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002-supervision/parent-result.json",
+      "bytes": 2095,
+      "sha256": "b88ca1415356459a4a795cbf2a16a4accef721e21b39ab6b989386a8548ed8e5"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002-supervision/resource.json",
+      "bytes": 1547,
+      "sha256": "fefc197e4f28fd2b36a28b1006e62a1203d2820a0d0de5fc7c04e326e692081d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002-supervision/lease.json",
+      "bytes": 736,
+      "sha256": "72f7f22309c1d52320c18c85e03831a6dcb6d3425af8f3decb6892166e6a5503"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059/trials.json",
+      "bytes": 8815,
+      "sha256": "17382c9e95059a5e24a169ff6ae01e854e7f27e23af8b68f93f6dfe5728143c0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059/proofs.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059/result.json",
+      "bytes": 5559,
+      "sha256": "c2abdffbba553cd16b8e8906f37c856af1934d9bef2c0ae484784dcad5750f1e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059-supervision/request.json",
+      "bytes": 1214,
+      "sha256": "cfee9fc94428f258ba8eb53b5022feb7402c7c94a53905e9847274e1e0720542"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059-supervision/parent-result.json",
+      "bytes": 2099,
+      "sha256": "73d9fa6335028b52ac50930aa2f71f17a5fa8c8bda4536dae5acba71311c41dd"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059-supervision/resource.json",
+      "bytes": 1551,
+      "sha256": "76736ac25ff3c8658951e75d2a9621181395e5a68f71be30ab385ec02b9e2066"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059-supervision/lease.json",
+      "bytes": 738,
+      "sha256": "3d3e47441df2fe0bb8a47e3eb9dda9ed6db75e7e4b3d2e0153be7d7eeef23601"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/trials.json",
+      "bytes": 8901,
+      "sha256": "ee0363a6308d92bbcd1918008fa98c1d37e86a0a24d54e7c0022c98615482301"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/proofs.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/result.json",
+      "bytes": 6616,
+      "sha256": "bf2e8e9b1aae78c79c5b343693d3f1bac28363c041df06e096f59e54fedd029b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001-supervision/request.json",
+      "bytes": 1215,
+      "sha256": "46c8d6b4480dafa6e8d95690a9cf83015ca85ead34e5ccd676b2ebca06187a69"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001-supervision/parent-result.json",
+      "bytes": 2098,
+      "sha256": "cad152928f2611edfcf20234f6dbb0ee0a40b71951ffa07be60efe7796394da6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001-supervision/resource.json",
+      "bytes": 1550,
+      "sha256": "3fb2b940700d72cbbc00c12cfd267a4c386acdcbc0ee0917c20ecd766f46c9f5"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001-supervision/lease.json",
+      "bytes": 776,
+      "sha256": "c95226e02c7c9e4b51e77d627760ea5df85f984ae5ac3efa74dc6a399750150c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/trials.json",
+      "bytes": 18881,
+      "sha256": "31ae87cb7b7bde88bdb1f962d270d1c88e53871fde8082cac318589621e68a82"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/proofs.json",
+      "bytes": 50987,
+      "sha256": "cc85f96a86ce786c0ba5b1aa0885b2973bbec25e39cb59c37444b43ac7e461fc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/result.json",
+      "bytes": 6684,
+      "sha256": "603396d24cdb7778c15802bd0c1f0a8f6c704ed235374a84ea369673c6aa32bc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002-supervision/request.json",
+      "bytes": 1215,
+      "sha256": "80deedc661ec6f84389c963db18d6ad8b6b47451522a2cce138a7bf926dd05e6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002-supervision/parent-result.json",
+      "bytes": 2097,
+      "sha256": "994e74a57f6c18fdaf1ffc5fc2dd84cc57fe4835a0ce64f92d248e7f76fd9d44"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002-supervision/resource.json",
+      "bytes": 1549,
+      "sha256": "e94bee57d6731ea08339f90382d7a10e281673d101f76177b03f94069307ba16"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002-supervision/lease.json",
+      "bytes": 738,
+      "sha256": "d10f70870c981dcfa7c1a7eb5021fed2e6864e46304c5614c9bc7d753b5f3b88"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/trials.json",
+      "bytes": 18933,
+      "sha256": "5f83b426e3a16d44021a30ab2c1a9f9e70b28e2f274222b92fc26461d401ad83"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/proofs.json",
+      "bytes": 45556,
+      "sha256": "ab282ab2dc099bc5805a1f661f6dcaca3c944d1a7afda61fba67ef7195976b0c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/result.json",
+      "bytes": 6697,
+      "sha256": "24abf66e34b30b55073c1e1a6e8185a480ebc35d87ebb67cd6a076ab2b6f0705"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059-supervision/request.json",
+      "bytes": 1217,
+      "sha256": "1631654b0736991ab28edbcd71964253937e5651965fc2c62eb0c1d8f526cb11"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059-supervision/parent-result.json",
+      "bytes": 2102,
+      "sha256": "25dcd5da42024660057c4555d186bfbe67a7715dcdb7380a9f91651d673deb4a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059-supervision/resource.json",
+      "bytes": 1554,
+      "sha256": "d96df8ac9a1d3a3648f2e91635d4d65351a13d6fc9ebdcfb7d38002e6f0e7214"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059-supervision/lease.json",
+      "bytes": 740,
+      "sha256": "ca089ddc1a29aa92a2615541d619f356a2fef3c050c109ae9857d7650011ec85"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002/evidence/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/002.000.trials.json",
+      "bytes": 11743,
+      "sha256": "df9d8c61cc2f5a24c284c10202e7c92a0b10fe165ba88534eb384103ff11d098"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002/evidence/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/fe95197744179c9ee0373dd31c0b638b715dd45a691356b8fb6487c8fd08c485.proof.json",
+      "bytes": 31651,
+      "sha256": "44b7d33699e624b275947db1bfe95a85c581e1ccd5aa364a9208e42a97dcb78f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002/evidence/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/002.cell.json",
+      "bytes": 1475,
+      "sha256": "24f8c55e572c082c58dfcdd04c31e9350ca5e307fdcd8477bf317c4ed747b61f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002/result.json",
+      "bytes": 3755,
+      "sha256": "632605bb407c4c1667b9adf9daacd2394a55dc91708474d4c6d4f364341a9f21"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002-supervision/request.json",
+      "bytes": 1218,
+      "sha256": "90d7d3a8bb847b7f9c28195bd370e10233cda43e8212e11752dcd6d2a6a53e37"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002-supervision/parent-result.json",
+      "bytes": 2102,
+      "sha256": "275ee0bac539887d2f12a83ba6aeac8825870798f8430e0a68ad3366fab0de21"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002-supervision/resource.json",
+      "bytes": 1554,
+      "sha256": "de3a26f29f0d7902d532add1d28b55e1fede419e7765066e9547ef2e34d99f5b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002-supervision/lease.json",
+      "bytes": 778,
+      "sha256": "6cbc68a3e7e9bfe44caa98fec6e925ad163e9c2b6ae60ec0227f527c73e1e17f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059/trials.json",
+      "bytes": 18933,
+      "sha256": "5f83b426e3a16d44021a30ab2c1a9f9e70b28e2f274222b92fc26461d401ad83"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059/proofs.json",
+      "bytes": 45556,
+      "sha256": "ab282ab2dc099bc5805a1f661f6dcaca3c944d1a7afda61fba67ef7195976b0c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059/result.json",
+      "bytes": 6713,
+      "sha256": "760b5d14bc8e00f3d1e50fb8ed3d9e3e6566e840396be402d8f70db4e7770a14"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059-supervision/request.json",
+      "bytes": 1217,
+      "sha256": "152965000270ed84f63a58a139f61e4c0b8feb26ad78893bd3930fefd2d4fc60"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059-supervision/parent-result.json",
+      "bytes": 2100,
+      "sha256": "2823ff0d339c00858b72b962cb81327048250dff549edf8cc6807f76e667c10a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059-supervision/resource.json",
+      "bytes": 1552,
+      "sha256": "6f420d8dec903d26b492c3a54526fd90c47793ae4450c943820437e379544b77"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059-supervision/lease.json",
+      "bytes": 740,
+      "sha256": "9a295ed0e31454099c3b3874992babf9d4d63bb68500d0c78846db48bd2a4252"
+    }
+  ],
+  "limitations": [
+    "Primary paired loop includes sampling, reference baseline, candidate and diagnostic bookkeeping. Current candidateMs includes evidence-callback compaction/hash/counter timing; evidenceCallbackMs attributes it, but subtraction is not an exact uninstrumented engine measurement.",
+    "Producer storage counters include serialization/hash and persistence at wrapped API boundaries, not disk-only cost. Native validation is separately timed; final cell-marker write, subsequent result serialization, context/source checks and startup remain in outer wall.",
+    "Primary legacy/current runs are separate fresh processes on the same fixed4b source. This compares legacy model10 and current model11 semantics there, not historical471 runtime unless separately evidenced. Different decisions/returns are expected; identical draw hashes and baseline returns are required controls.",
+    "The profile has sampling overhead and is attribution evidence only; exclude it from primary ratios. decisionCallbacks is the total observed candidate-hand decisions; heroDecisions and referenceDecisions distinguish the two seats.",
+    "Selected cells are diagnostic and include adverse/completion-bearing cases. Three64-trial windows do not establish a72-cell average,10k scaling, statistical speed confidence or policy superiority.",
+    "All three current64 sequences, the producer002 rerun and profiled059 sequence reproduce their retained original complete objects. Cross-model return differences in cell59 demonstrate semantic differences, not an optimization parity failure.",
+    "These eight diagnostics do not satisfy new10000-per-cell evidence or authorize a mass run. No formal source change or optimization gain is established by comparing different model semantics."
+  ],
+  "newNumericalExecutionByReviewer": false,
+  "policyAccepted": false,
+  "massLaunchAuthorized": false,
+  "productionAuthorized": false
+}

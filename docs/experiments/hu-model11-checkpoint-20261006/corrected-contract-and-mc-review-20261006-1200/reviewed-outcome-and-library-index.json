@@ -1,0 +1,189 @@
+{
+  "kind": "corrected-static-contract-and-actual-mc-review-preservation",
+  "preparedAt": "2026-10-06T12:00:00Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "expectedParentCommit": "0feee681452a7c1ccbc7f63b79663567a7f98093",
+  "publishedAs": "DOCS_ONLY_RESEARCH_SNAPSHOT_EXACT_SOURCE_PATCH_UNAPPLIED",
+  "formalSourceCommitUnchanged": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "representative": {
+    "samplesPerBoardProfileSeat": 10000,
+    "cacheBatchSize": 64,
+    "requestedCells": 72,
+    "generatedPairedTrials": 720000,
+    "automaticFresh720kReplayRequired": false,
+    "independentVerificationMustStateExactScopeAndBinding": true,
+    "oldMandatoryFreshFullCliPassClaimed": false,
+    "cacheBatchSize512Adopted": false
+  },
+  "coverage": {
+    "fullFlopBoards": 1755,
+    "laterSelectedFlops": 100,
+    "nonemptyStrata": 12,
+    "perStratumQuotas": "8 or 9",
+    "selectionManifestSha256": "162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534",
+    "laterOmittedOrigins": 1655,
+    "turnsPerSelectedFlop": 4,
+    "riversPerTurn": 3,
+    "unselectedDoesNotCountAsCleanOrUnreachable": true
+  },
+  "reviewPrecedence": {
+    "originalStaticReview": "contract/independent-static-review.json",
+    "retainedOriginalScope": "Independent canonical enumeration, stratification and 100-ID selection; exact historical bytes retained.",
+    "supersedingClarification": "contract/independent-replay-cache-clarification-review.json",
+    "supersedes": "Only the earlier mandatory fresh-full-replay and cache512 language and the corresponding doc/JSON bytes.",
+    "currentSourcePatchSha256": "333030159230e22d621a7f8dd367170d97b0d00d6f65a26bf3dcd2af0ac389bf",
+    "runtimeIntegrated": false,
+    "newNumericalGatePassed": false,
+    "massExecutionApprovedByReview": false
+  },
+  "evidenceReuse": "Eligible old full proofs require exact source/policy/input/board/runout checks. Optimized-source reuse needs scoped exact parity and identity-rebinding proof. Old 64 trials do not become 10000; old five accepted cases are not automatically promoted.",
+  "mcActualReview": {
+    "path": "mc-independent-actual-review.json",
+    "sha256": "6bc4c0e6b065d9e7d996ba6be2d03ba3d53fd1b2c6f23283eec22747a4798e75",
+    "status": "ACTUAL_BOUNDED_TIMING_VERIFIED_NOT_ACCEPTANCE",
+    "primaryCells": 3,
+    "trialsPerPrimaryCell": 64,
+    "currentOriginalFullTrialObjectsEqual": 192,
+    "comparator": "Retained model10 semantics within current4b; not full historical471-engine runtime parity.",
+    "reportedMeanMillisecondsPerPairedTrial": {
+      "current": 26.71,
+      "retainedModel10": 9.36,
+      "ratio": 2.85
+    },
+    "limitations": [
+      "Three selected 64-trial windows are not a 72-cell or 10000-trial average.",
+      "Primary loop includes sampling/reference/candidate/bookkeeping; callback attribution subtraction is not exact uninstrumented engine cost.",
+      "Producer wrapped storage timing is not disk-only cost; sampling profiler has overhead and is excluded from primary ratios.",
+      "Cross-model decisions and returns may differ; same draw hashes and baseline returns are controls, not optimization parity.",
+      "No optimization gain, formal gate or policy acceptance is established."
+    ]
+  },
+  "libraries": {
+    "correctedContract": {
+      "libraryFileId": "libfile_47e6ea12d4c88191a8bae63b1e8c39ee",
+      "version": 0,
+      "name": "hu-model11-stratified-later-contract-corrected-20261006.tar.gz",
+      "bytes": 76829,
+      "sha256": "aed024362ebf0a4addff50e882821c4d7264c47e590a6611873cb42004730b60",
+      "files": 19,
+      "supersededDraftBytesRetainedInArchive": true,
+      "confirmedSaved": true
+    },
+    "mcSourceAndResults": {
+      "libraryFileId": "libfile_a1e115907afc8191b82e32b09eba310c",
+      "version": 0,
+      "name": "hu-model11-matched-trial-cost-20261006.tar.gz",
+      "bytes": 114053,
+      "sha256": "95fbab60317b4ad507c2f4ddd9af8961694861214b2f95bc7cc56319d09c4f53",
+      "files": 86,
+      "includesIndependentActualReview": true,
+      "confirmedSaved": true
+    }
+  },
+  "preservedFiles": [
+    {
+      "path": "contract/source/apps/frontend/docs/postflop-policy-knowledge.md",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/apps/frontend/docs/postflop-policy-knowledge.md",
+      "bytes": 18915,
+      "sha256": "409d94287d45a26567cbf1d1691884f6825e531d53fd7fa5e29f21bb1cd8aa0d",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/source/apps/frontend/docs/specs/hu-validation-stratified-later-v1.md",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/apps/frontend/docs/specs/hu-validation-stratified-later-v1.md",
+      "bytes": 12654,
+      "sha256": "116b899bfd1629014430e74b940b49d1baa86857aa8dcca9ac98c1a606b85a1f",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/source/apps/frontend/scripts/data/hu-later-stratified-100-v1.json",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/apps/frontend/scripts/data/hu-later-stratified-100-v1.json",
+      "bytes": 18501,
+      "sha256": "162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/source/apps/frontend/scripts/data/hu-validation-stratified-later-v1.json",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/apps/frontend/scripts/data/hu-validation-stratified-later-v1.json",
+      "bytes": 4676,
+      "sha256": "33a5f2ad15271ba715baf3524a870bb4f3b3987016eefc39f8818704370c4d6f",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/source/apps/frontend/scripts/postflop-ai/verify-stratified-later-selection.py",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/apps/frontend/scripts/postflop-ai/verify-stratified-later-selection.py",
+      "bytes": 8857,
+      "sha256": "0b6230000c0b66538768461ec1bf030869a88c7b8ed6d1a55d0427396b732004",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/source.patch",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/source.patch",
+      "bytes": 59721,
+      "sha256": "333030159230e22d621a7f8dd367170d97b0d00d6f65a26bf3dcd2af0ac389bf",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/knowledge.patch",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/knowledge.patch",
+      "bytes": 12416,
+      "sha256": "83978e36d4b1054e3ae896c5d047dd0f0bc09b497fb3a6cf409b2191be022a13",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/static-verification.json",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/static-verification.json",
+      "bytes": 3317,
+      "sha256": "960d630e4e8ea7963e74b29f044ceded6fcff9d82afaad1b5b312848d04b97a3",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/SHA256SUMS",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/SHA256SUMS",
+      "bytes": 888,
+      "sha256": "30454d07d75efec9bfb4a1ae5d975a5cd0f87d854e7f5f4f77c7ec8eebba6be0",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/independent-static-review.json",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/independent-static-review.json",
+      "bytes": 6110,
+      "sha256": "01d3f2186d00c059d9d297950a3565ff308aa5a27ba7ee7079d163552039451b",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "contract/independent-replay-cache-clarification-review.json",
+      "sourcePath": "hu-validation-stratified-later-v1-proposal/independent-replay-cache-clarification-review.json",
+      "bytes": 3556,
+      "sha256": "ede3843f21e201ac8d3396f1021b1ca2e0481a9a0d2a53a75760404e4680acdb",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "mc-independent-actual-review.json",
+      "sourcePath": "hu-final-recovery/trial-cost-diagnostic-20261006/independent-actual-review.json",
+      "bytes": 21293,
+      "sha256": "6bc4c0e6b065d9e7d996ba6be2d03ba3d53fd1b2c6f23283eec22747a4798e75",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "confirmations/stratified-later-corrected-library-result.json",
+      "sourcePath": "hu-final-recovery/stratified-later-corrected-library-result.json",
+      "bytes": 709,
+      "sha256": "2cb848045bd656c28e0fa2c6b2e5196f636f08e1399ae7dfbc77f33778e1f0ce",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "confirmations/matched-trial-cost-library-result.json",
+      "sourcePath": "hu-final-recovery/matched-trial-cost-library-result.json",
+      "bytes": 676,
+      "sha256": "e6a516747f81191bb4eef8be292c16e6955f84ecc6c4dab3a7304f23bf3c974a",
+      "immutableByteCopy": true
+    }
+  ],
+  "historicalReceiptAndRuntimeBytesUnchanged": true,
+  "newNodeOrNumericalWorkForThisSave": 0,
+  "acceptedModel11CasesStillOldScope": 5,
+  "knowledgeCorrectionAppliedToNormalAppPath": false,
+  "note": "Original SHA256SUMS paths are package-relative. For isolated verification, map contract/source/ to the original package root; no active repo path is changed by this docs copy."
+}

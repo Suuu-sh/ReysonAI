@@ -1,0 +1,157 @@
+{
+  "kind": "independent-stratified-later-selection-and-spec-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T11:51:21.994499+00:00",
+  "status": "STATIC_SELECTION_AND_SPEC_CLEAR_RUNTIME_INTEGRATION_PENDING",
+  "packagePins": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/docs/postflop-policy-knowledge.md",
+      "bytes": 18627,
+      "sha256": "f17740bd451725161af1f6a8cf4a1968e6b21b53fa384f854938041e127b53df"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/docs/specs/hu-validation-stratified-later-v1.md",
+      "bytes": 12293,
+      "sha256": "9306590bb502891102f83426d740b76cf637359fa8635c8d6065b7177abf1154"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/scripts/data/hu-later-stratified-100-v1.json",
+      "bytes": 18501,
+      "sha256": "162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/scripts/data/hu-validation-stratified-later-v1.json",
+      "bytes": 4354,
+      "sha256": "13a38e45879bcb787a4c58de7e763deb2180de05e993895ed360597b4df86936"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/scripts/postflop-ai/verify-stratified-later-selection.py",
+      "bytes": 8857,
+      "sha256": "0b6230000c0b66538768461ec1bf030869a88c7b8ed6d1a55d0427396b732004"
+    }
+  ],
+  "sourcePatch": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/source.patch",
+    "bytes": 57099,
+    "sha256": "83bdb888a70b7cedeed0439dddd627e1ec425b299a2bf8c17ef40ff8773c299a"
+  },
+  "knowledgePatch": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/knowledge.patch",
+    "bytes": 11139,
+    "sha256": "76c90a5efa0024939ae2ef933cf66f674bfad896c7cc91dbf4b128f45f7a531c"
+  },
+  "authorStaticVerification": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/static-verification.json",
+    "bytes": 3080,
+    "sha256": "5b242d2969a455686d0b738601fab6b8a7fb8924a797d59c5e4af1fe87c249b6"
+  },
+  "checks": {
+    "independentRawFlopEnumeration": 22100,
+    "suitPermutationsPerRawFlop": 24,
+    "canonicalUniverseCount": 1755,
+    "canonicalSetExactlyMatchesActualPrepared1755Catalog": true,
+    "numericS4MinimumAndRankSuitOrderingMatchFrozenSource": true,
+    "existingTextureHeightPriorityAndWheelTreatmentPreserved": true,
+    "nonemptyStrata": 12,
+    "minimumStratumPopulation": 13,
+    "seededAllocationAndBoardRankingIndependentlyReproduced": true,
+    "selectedUniqueCanonicalFlops": 100,
+    "stratumQuotas": [
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      9,
+      9,
+      9,
+      9
+    ],
+    "fullUniverseAndSelectedIdHashesMatch": true,
+    "allManifestCardIdsAndClassificationMatch": true,
+    "manifestBytePinMatchesContract": true,
+    "formal4bTrackedTreeUnchanged": true
+  },
+  "strata": [
+    {
+      "stratum": "dry_high",
+      "population": 148,
+      "selected": 9
+    },
+    {
+      "stratum": "dry_mid",
+      "population": 67,
+      "selected": 9
+    },
+    {
+      "stratum": "dry_low",
+      "population": 13,
+      "selected": 9
+    },
+    {
+      "stratum": "wet_high",
+      "population": 516,
+      "selected": 8
+    },
+    {
+      "stratum": "wet_mid",
+      "population": 273,
+      "selected": 8
+    },
+    {
+      "stratum": "wet_low",
+      "population": 127,
+      "selected": 8
+    },
+    {
+      "stratum": "monotone_high",
+      "population": 166,
+      "selected": 8
+    },
+    {
+      "stratum": "monotone_mid",
+      "population": 85,
+      "selected": 8
+    },
+    {
+      "stratum": "monotone_low",
+      "population": 35,
+      "selected": 9
+    },
+    {
+      "stratum": "paired_high",
+      "population": 135,
+      "selected": 8
+    },
+    {
+      "stratum": "paired_mid",
+      "population": 99,
+      "selected": 8
+    },
+    {
+      "stratum": "paired_low",
+      "population": 91,
+      "selected": 8
+    }
+  ],
+  "scopeReview": [
+    "Full1755 flop balance is retained. Later balance is explicitly limited to100 fixed flop origins with unchanged4 sampled turns and3 rivers per turn;1655 later origins remain not-evaluated-by-design.",
+    "Sampling balances the12 existing coarse shape/height strata. The100 boards are not population-proportional or reach-weighted, so raw warning rates are not overall prevalence estimates. No resampling to replace unreachable or unfavorable boards is allowed.",
+    "Source/manifest/policy/input/stage binding and separate evaluated/proved-unreachable/unresolved/not-selected counts are required before runtime integration. Static enumeration is not poker numerical validation.",
+    "The720000-pair representative requirement and fresh replay remain after the per-trial performance report. Prior64-trial evidence is not upgraded to10000. Old five accepted cases and old45 artifacts retain original source/scope/bytes.",
+    "Conditional reuse of matching old full evidence requires explicit same-source/policy/input/board/runout checks, or separately proven exact cross-source parity and identity rebinding. Reused work is not newly executed; no automatic new-contract acceptance.",
+    "Knowledge changes correctly remove old flop-only/all-street timing conflation, blanket parallel-run assumptions and historical runtime estimates for the current model."
+  ],
+  "implementationNote": "The cited original balance.mjs:representativeRunouts has the same retained4x3 algorithm as current balance-model11-kernel.mjs; actual integration must continue through explicit model11 adapters and not the legacy default CLI.",
+  "concreteStaticBlockers": [],
+  "runtimeIntegrated": false,
+  "numericalGatePassed": false,
+  "massExecutionApproved": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0,
+  "pokerOrEquityCalculationsRun": false
+}

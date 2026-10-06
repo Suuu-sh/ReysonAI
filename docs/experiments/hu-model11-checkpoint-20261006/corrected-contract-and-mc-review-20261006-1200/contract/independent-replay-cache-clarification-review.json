@@ -1,0 +1,58 @@
+{
+  "kind": "independent-stratified-contract-replay-cache-clarification-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T11:55:39.586004+00:00",
+  "status": "CLARIFICATION_DELTA_CLEAR_RUNTIME_INTEGRATION_PENDING",
+  "supersededStaticReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/superseded-before-replay-clarification/independent-static-review.json",
+    "bytes": 6110,
+    "sha256": "01d3f2186d00c059d9d297950a3565ff308aa5a27ba7ee7079d163552039451b"
+  },
+  "currentFiles": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/docs/postflop-policy-knowledge.md",
+      "bytes": 18915,
+      "sha256": "409d94287d45a26567cbf1d1691884f6825e531d53fd7fa5e29f21bb1cd8aa0d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/docs/specs/hu-validation-stratified-later-v1.md",
+      "bytes": 12654,
+      "sha256": "116b899bfd1629014430e74b940b49d1baa86857aa8dcca9ac98c1a606b85a1f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/scripts/data/hu-validation-stratified-later-v1.json",
+      "bytes": 4676,
+      "sha256": "33a5f2ad15271ba715baf3524a870bb4f3b3987016eefc39f8818704370c4d6f"
+    }
+  ],
+  "currentSourcePatch": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/source.patch",
+    "bytes": 59721,
+    "sha256": "333030159230e22d621a7f8dd367170d97b0d00d6f65a26bf3dcd2af0ac389bf"
+  },
+  "unchangedSelectionManifest": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/scripts/data/hu-later-stratified-100-v1.json",
+    "bytes": 18501,
+    "sha256": "162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534"
+  },
+  "unchangedSelectionVerifier": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-validation-stratified-later-v1-proposal/apps/frontend/scripts/postflop-ai/verify-stratified-later-selection.py",
+    "bytes": 8857,
+    "sha256": "0b6230000c0b66538768461ec1bf030869a88c7b8ed6d1a55d0427396b732004"
+  },
+  "reviewedDelta": [
+    "Representative generation remains72 cells x10000 paired trials. It no longer automatically adds a fresh720000-trial rerun. Independent verification must state its exact scope and source/input/policy/seed binding; no old audit --all full-fresh PASS claim is permitted.",
+    "Cache64 remains the baseline. Cache512 is explicitly pending separate numerical reproduction and boundary validation rather than automatically restored.",
+    "Knowledge and human spec now agree with contract JSON and distinguish historical full-replay requirements from the current clarification.",
+    "Full1755 flop and selected later100x4x3,100 exact fixed IDs, strata, selectionseed, model/proof/off-model/error semantics and conditional old-evidence reuse remain unchanged. Old five cases and64-trial results are not automatically promoted."
+  ],
+  "priorReviewScopeRetained": "The earlier independent1755 enumeration/classification/100-selection findings remain valid because manifest/verifier bytes are unchanged. Its fresh-full-replay and512 requirements are superseded by this receipt and the pinned current docs/JSON.",
+  "selectionEnumerationRepeated": false,
+  "concreteDeltaBlockers": [],
+  "runtimeIntegrated": false,
+  "numericalGatePassed": false,
+  "massExecutionApproved": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

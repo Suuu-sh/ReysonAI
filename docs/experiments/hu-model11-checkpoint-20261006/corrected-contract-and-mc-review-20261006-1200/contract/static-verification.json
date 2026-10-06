@@ -1,0 +1,115 @@
+{
+  "kind": "static-hu-validation-proposal-check",
+  "version": 1,
+  "baseCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "checks": {
+    "pythonSyntax": "PASS",
+    "deterministicCompleteManifestReproduction": "PASS",
+    "tamperedManifestRejected": "PASS",
+    "contractSelectionHash": "PASS",
+    "patchApplyCheck": "PASS",
+    "formalSourceWorktreeClean": "PASS"
+  },
+  "selectionResult": {
+    "status": "PASS-selection-only",
+    "canonicalFlops": 1755,
+    "laterSelectedFlops": 100,
+    "nonemptyStrata": 12,
+    "manifestSha256": "162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534",
+    "strata": [
+      {
+        "stratum": "dry_high",
+        "population": 148,
+        "selected": 9
+      },
+      {
+        "stratum": "dry_mid",
+        "population": 67,
+        "selected": 9
+      },
+      {
+        "stratum": "dry_low",
+        "population": 13,
+        "selected": 9
+      },
+      {
+        "stratum": "wet_high",
+        "population": 516,
+        "selected": 8
+      },
+      {
+        "stratum": "wet_mid",
+        "population": 273,
+        "selected": 8
+      },
+      {
+        "stratum": "wet_low",
+        "population": 127,
+        "selected": 8
+      },
+      {
+        "stratum": "monotone_high",
+        "population": 166,
+        "selected": 8
+      },
+      {
+        "stratum": "monotone_mid",
+        "population": 85,
+        "selected": 8
+      },
+      {
+        "stratum": "monotone_low",
+        "population": 35,
+        "selected": 9
+      },
+      {
+        "stratum": "paired_high",
+        "population": 135,
+        "selected": 8
+      },
+      {
+        "stratum": "paired_mid",
+        "population": 99,
+        "selected": 8
+      },
+      {
+        "stratum": "paired_low",
+        "population": 91,
+        "selected": 8
+      }
+    ]
+  },
+  "nodeExecuted": false,
+  "policyOrEquityCalculationExecuted": false,
+  "numericalValidationExecuted": false,
+  "runtimeIntegration": "not implemented by this static proposal",
+  "files": [
+    {
+      "path": "apps/frontend/docs/postflop-policy-knowledge.md",
+      "bytes": 18915,
+      "sha256": "409d94287d45a26567cbf1d1691884f6825e531d53fd7fa5e29f21bb1cd8aa0d"
+    },
+    {
+      "path": "apps/frontend/docs/specs/hu-validation-stratified-later-v1.md",
+      "bytes": 12654,
+      "sha256": "116b899bfd1629014430e74b940b49d1baa86857aa8dcca9ac98c1a606b85a1f"
+    },
+    {
+      "path": "apps/frontend/scripts/data/hu-later-stratified-100-v1.json",
+      "bytes": 18501,
+      "sha256": "162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534"
+    },
+    {
+      "path": "apps/frontend/scripts/data/hu-validation-stratified-later-v1.json",
+      "bytes": 4676,
+      "sha256": "33a5f2ad15271ba715baf3524a870bb4f3b3987016eefc39f8818704370c4d6f"
+    },
+    {
+      "path": "apps/frontend/scripts/postflop-ai/verify-stratified-later-selection.py",
+      "bytes": 8857,
+      "sha256": "0b6230000c0b66538768461ec1bf030869a88c7b8ed6d1a55d0427396b732004"
+    }
+  ],
+  "sourcePatchSha256": "333030159230e22d621a7f8dd367170d97b0d00d6f65a26bf3dcd2af0ac389bf",
+  "clarification": "2026-10-06T11:53 parent confirms no automatic fresh720k replay; cache64 retained pending separate512 validation. Selection unchanged; prior independent review applies only to unchanged selection until delta review."
+}

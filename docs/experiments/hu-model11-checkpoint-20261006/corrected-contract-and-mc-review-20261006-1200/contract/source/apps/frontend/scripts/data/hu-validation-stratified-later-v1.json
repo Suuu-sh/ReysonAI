@@ -1,0 +1,94 @@
+{
+  "kind": "hu-validation-contract-proposal",
+  "version": 1,
+  "id": "hu-validation-stratified-later-v1",
+  "status": "static-specification-runtime-integration-pending",
+  "approvedScopeChange": "retain all1755 flop audits; later audit on a fixed shape-by-height stratified100-flop subset",
+  "executionPrerequisite": "first optimize one trial and report measured old-model comparison, before-after cost, heavy operations and numerical-parity limits",
+  "numericalExecutionAuthorizedByThisFile": false,
+  "referenceSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "selectionManifest": {
+    "path": "apps/frontend/scripts/data/hu-later-stratified-100-v1.json",
+    "sha256": "162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534",
+    "bytes": 18501
+  },
+  "representative": {
+    "boards": 12,
+    "boardCatalog": "apps/frontend/scripts/data/postflop-ai-pilot.json:boards",
+    "profiles": [
+      "standard",
+      "passive",
+      "aggressive"
+    ],
+    "seats": "both actual surviving seats",
+    "samplesPerBoardProfileSeat": 10000,
+    "requestedCells": 72,
+    "requestedPairedTrials": 720000,
+    "seed": "solveaai-postflop-ai-v1",
+    "cacheBatchSize": 64,
+    "freshIndependentFixedSeedReplayRequired": false,
+    "proofAndOffModelSemantics": "unchanged strict/composite identities, full completion-proof verification and unresolved accounting",
+    "old64Scope": "sanity-regression-only-not-equivalent-to720000",
+    "cacheBatch512Decision": "pending numerical-reproduction and boundary validation; not automatically restored",
+    "independentVerification": "source/input/policy/seed-bound integrity plus explicitly scoped independent comparison; existing full-fresh audit --all is not claimed passed"
+  },
+  "flopBalance": {
+    "catalog": "all1755-canonical-flops",
+    "requestedBoards": 1755,
+    "omittedBoards": 0
+  },
+  "laterBalance": {
+    "catalog": "selected100-canonical-flops",
+    "selectedBoards": 100,
+    "omittedBoards": 1655,
+    "allBoards": false,
+    "shapeHeightNonemptyStrata": 12,
+    "selectionSeed": "hu-model11-later-stratified-v1-20261006",
+    "turnsPerSelectedFlop": 4,
+    "riversPerTurn": 3,
+    "nominalTurnBoards": 400,
+    "nominalRiverRunouts": 1200,
+    "withinFlopSampler": "unchanged balance.mjs:representativeRunouts, original seed and consumption order",
+    "unreachableHandling": "separate exact support proof, no substitution and no clean/PASS credit",
+    "unsampledHandling": "not-evaluated-by-design, never clean/PASS or proved-unreachable"
+  },
+  "requiredNewBinding": [
+    "contract ID/version",
+    "selection manifest byte hash",
+    "selection seed and all100 ordered IDs",
+    "source execution identity",
+    "both policy identities",
+    "saved-range/input identity",
+    "each stage actual coverage and checkpoint identity"
+  ],
+  "unchanged": [
+    "numerical error/advisory thresholds and interpretation",
+    "policy and live-range computation",
+    "12 representative board identities",
+    "3 evaluation profiles and2 seats",
+    "within-flop4-turn-by3-river sampler",
+    "independent scoped verification; no automatic full fresh replay",
+    "independent scoped policy review",
+    "legacy45 preservation"
+  ],
+  "oldEvidence": {
+    "acceptedNewHu5": "oldcontract only at its original accepted scope; no automatic promotion",
+    "checkpoints": "no reuse under new identity by relabeling",
+    "oldAllBoardsContract": "preserve1755 all-street validators and receipts unchanged",
+    "verifiedReuse": "old full1755 all-street proofs may supply flop1755 and selected later100 only after exact source/policy/input/board/runout checks; preserve old evidence and add separate transfer verification, never count as newly computed",
+    "crossSourceReuse": "optimization requires reviewed exact numerical parity and identity-rebinding proof at the reused scope;64-trial regression alone is insufficient",
+    "missingMonteCarlo": "old64 does not meet10000 per cell; meet720000 generated-trial evidence and explicitly scoped independent verification; no automatic fresh720000 rerun"
+  },
+  "interpretation": [
+    "100-board later sample is not all boards",
+    "balanced stratum sample is not population-proportional",
+    "no new EV strength/pass criterion from10000",
+    "no GTO or strength guarantee"
+  ],
+  "implementationRequired": [
+    "separate versioned stage binding for full flop and selected later",
+    "reject missing/extra/duplicate/replaced selected IDs or stale manifest",
+    "partition evaluated/proved-unreachable/unresolved/not-selected counts",
+    "preserve actual exit/status/source-bound proofs; never infer numerical PASS from static selection"
+  ]
+}

@@ -1,0 +1,1639 @@
+diff --git a/apps/frontend/docs/postflop-policy-knowledge.md b/apps/frontend/docs/postflop-policy-knowledge.md
+--- a/apps/frontend/docs/postflop-policy-knowledge.md
++++ b/apps/frontend/docs/postflop-policy-knowledge.md
+@@ -2,6 +2,8 @@
+ 
+ 方針（`.local/postflop-ai/{slug}-policy.json` / `-later-policy.json`）を新しく作る・作り直す・直すときに最初に読む。
+ これまでの改善で分かったことを1か所にまとめたもの。詳細の正本は各リンク先。新しい発見は末尾に日付つきで追記する。
++
++**2026-10-06・今回の新HU検証:** 先に1試行の高速化と旧モデルとの比較を報告し、その後に代表12フロップ × 評価ボット3種 × 両席 × 各10,000試行へ戻す。バランス監査は全1,755正規化フロップを維持し、ターン／リバーは既存の形 × 高さの区分から固定シードで選ぶ100フロップに限る。後半は**全ボードではない**。これは旧仕様の「全1,755フロップで後半も監査」からの明示的な仕様変更。定義・固定一覧・証跡要件は [HU検証契約v1](specs/hu-validation-stratified-later-v1.md) を正本とする。ここでいう後半100ボードはターン／リバーの起点となる100フロップで、各4ターン × 各3リバーの従来サンプリングは維持する。
+ 
+ 関連: [postflop-ai-pilot.md](postflop-ai-pilot.md)（対応経路・実行順）、[postflop-defence.md](postflop-defence.md)（防御計算の正本）、
+ [postflop-explanation-lessons.md](postflop-explanation-lessons.md)（説明文・レンジ表の教訓）。
+@@ -9,9 +11,9 @@
+ ## 1. 前提（決定済み）
+ 
+ - AI推定であり GTO・ソルバー出力ではない。表示も「AI生成ソリューション」の枠組み。
+-- **ポストフロップEVはプロダクトに出さない（2026-10-01）。** ハンドEV（`hand-ev` / `later-hand-ev`）は研究用で、方針の作り直しでは実行不要。1局面1時間以上かかるので回さない。
++- **ポストフロップEVはプロダクトに出さない（2026-10-01）。** 個別ハンドEV（`hand-ev` / `later-hand-ev`）は研究用で、今回の方針検証では実行不要。別工程のオフラインMonte Carlo比較と範囲を明示したfixed-seed照合は必要であり、これを省略する意味ではない。
+ - フロップ基礎データ（flop-base）は新規生成しない。その場計算で足りる。
+-- 対象はヘッズアップ44局面（SRP 11、3betポット 15、4betポット 15、SBリンプ 3）。マルチウェイは別作業。
++- 従来の対象はヘッズアップ44局面（SRP 11、3betポット15、4betポット15、SBリンプ3）。今回の新HUはマルチウェイのプリフロップ経路から2人になる別カタログ407局面で、旧結果と検証契約を混同しない。フロップ以降も3人以上が残るマルチウェイは別作業。
+ - 外部ベンチマークはプリフロップのオープン5つだけ（GTO Wizard 合計頻度 ±3pt）。ポストフロップは自前の監査で判断する。
+ 
+ ## 2. 方針が決めるもの・計算が決めるもの
+@@ -26,18 +28,27 @@
+ 
+ ## 3. 作り直しの手順
+ 
++今回の新HUでは、次の順序を優先する。旧45件の保存物と、旧契約で受け入れた新HU5件の既存証跡は元のスコープ・バイト列で保ち、新契約へ自動昇格しない。
++
++1. 1試行の高速化を先に行い、同条件の旧モデルとの差、変更前後の時間・メモリ、重い処理、数値一致の確認範囲を一度報告する。64試行などの短い確認はsanity／回帰確認であり、720,000試行の代わりではない。報告前に大量計算を開始しない。
++2. ソース・方針・到達レンジ・シードを固定し、代表12フロップ × 3ボット（standard/passive/aggressive）× 2席 × 各10,000試行、計720,000組の比較の正式証跡を揃える。独立した整合性照合・明示した範囲の照合を行う。fresh720,000件の全量再計算は自動追加しない。旧audit --allの全量fresh replay合格とは区別する。モデル11のstrict/compositeの区別、completion証明とunresolvedの扱いは従来の契約を保持する。
++3. フロップのバランス監査は全1,755クラス。後半は固定した100フロップのみで、各4ターン × 各3リバー。各局面の実到達レンジで到達不能を別計上し、到達不能や不都合な結果を理由にサンプルを差し替えない。
++4. 新契約・選択manifest・ソースと方針の識別子で結果とチェックポイントを結び付け、警告・未解決・未評価を報告する。既存のエラー判定、警告しきい値と解釈、独立レビューは変えない。既存の全量証跡はソース・方針・入力・ボードの完全一致を検証できた範囲で参照できるが、新規実行と数えない。最適化ソースへの再利用には厳密な数値一致とidentity再結合の証明が必要。旧64試行は10,000試行条件を満たさない。全量実行前には新契約の実装・検証が必要で、この文書と100ボード一覧だけでは実行済み・受入済みにならない。
++
++以下は従来HUの作り直し手順。今回の新HUへ旧全ストリート実行器や旧証跡をそのまま適用しない。
++
+ 1. プリフロップのレンジを変えたら、**到達レンジが変わった局面の方針は全部古くなる**（入力の fingerprint が一致しなくなる）。`postflop-ai:audit --all` で "AI policy source is stale" を確認する。
+    - BB がコールする SRP のように方針の入力が変わらない局面は "Candidate or simulation report is stale" になり、`simulate` だけやり直せばよい。
+ 2. 古い方針は消さず `.stale-YYYYMMDD.json` などに改名して退避する（既存候補は自動上書きされない）。
+ 3. `generate` → `generate-later` → `simulate` → `audit` の順に局面ごとに実行。
+-4. 全局面を並行実行したあと、最後に `audit --all` をもう一度単独で回す。並行実行中は保存レポートの書き込みが競合して「Saved simulation report differs from fixed-seed replay」が出ることがある。その局面だけ `simulate` をやり直せば通る。
++4. 実行はリソース上限と保存先の排他を守り、最後の監査は独立した保存先で行う。並行実行中の「Saved simulation report differs from fixed-seed replay」は書込み競合と決めつけず、入力・方針・実行ソース・保存物を確認する。再実行の成功だけで以前の不一致を受入根拠にしない。
+ 5. 最後に `node --test tests/*.test.mjs`（`postflop-browser-compute` は古い方針ファイルがあると落ちる）。
+ 
+ ### 生成モデル
+ 
+ - 既定は Codex（`--model gpt-6-luna` など、ChatGPT サブスクリプション）。
+ - **Codex が上限のときは `--model claude-sonnet-5-5`**。`claude-` で始まるモデルは `runClaude`（`claude -p`、ツールなし）で生成する（2026-10-02 追加、44局面をこれで生成済み）。
+-- 1局面の生成は数分。シミュレーションは数分、監査は数分。4並列で44局面がおよそ1〜2時間。
++- 過去の従来HUでは数分／局面、4並列の44局面で約1〜2時間だったが、今回の新HUモデルの所要時間へ流用しない。高速化の実測と実際の検証範囲を基に見積もる。
+ 
+ ## 4. 指示文（プロンプト）で効いたルール
+ 
+@@ -77,7 +88,7 @@
+ 
+ ## 7. 作ったあとに確認すること
+ 
+-1. `audit --all` で全局面 PASS。続けて `node scripts/postflop-ai/audit-all-boards.mjs` で全1,755フロップのバランスチェックを回し、`.local/postflop-ai/all-boards-audit/summary.md` を確認する（画面はどのフロップでも選べるので、品質は代表12ボードではなく全ボードで判断する。2026-10-03 決定。フロップのみ約30秒/局面）。
++1. 今回の新HUは第3節と[HU検証契約v1](specs/hu-validation-stratified-later-v1.md)に従い、代表Monte Carlo／範囲を明示した独立照合、全1,755フロップ監査、固定100フロップ起点の後半監査を別々に確認する。後半の結果に「全ボードではない」と明記し、固定シード・100件一覧・区分ごとの母数と抽出数・到達不能・警告・未解決件数を添える。未抽出1,655フロップの後半をclean／PASSに数えない。旧`audit-all-boards.mjs`は既定`--street all`であり、フロップのみの点検時間と全ストリート点検を同一視しない。「フロップのみ約30秒／局面」は旧測定で、今回の所要時間の根拠にしない。
+ 2. 警告の種類と件数を前回と比べる（2026-10-02: 44局面で計616件 → 再レイズ基準配分にブラフを足して508件。残りの大半はリバーの under bluff-ratio と、計算防御によるフロップの overcall）。
+ 3. 代表ボードで画面を開き、ベット頻度・サイズの分け方が極端でないか（同じ tier が全部同じサイズ、OOP が IP と同じ、など）を目で見る。
+ 4. 説明文の確認は [postflop-explanation-lessons.md](postflop-explanation-lessons.md) のチェックリストに従う。
+@@ -95,4 +106,6 @@
+ - 2026-10-04 HU after multiway preflop: monster/strongをheightだけで上書きするとmonotoneでもドライボードと同じ頻度になる。最初のノードの両ポジションにmonotone_high/mid/lowの明示ルールも置く。代表UTG/HJ/BBスクイーズ局面では、独立レビュー後にmonotoneでのチェックを増やし大きいベットを減らした。特定のGTO頻度を主張するものではない。
+ - 2026-10-04 HU after multiway preflop: サイズ指定ベットがall-inへ統合されたとき、保存ルールのraiseを防御計算の後にcallへ移すと誤る。raise不可を共通防御入口で先に反映してからcall/foldを計算し、画面・説明・監査・simulationを一致させる。修正前の保存flop-baseが正しいライブ計算を迂回しないようbaseの生成版も更新する（方針や入力fingerprintは変更しない）。
+ - 2026-10-04 HU after multiway preflop: AA-only同士などではプリフロップが到達可能でもAを含むボードは不可能。2人の合法コンボが共存するかをフロップ・ターン・リバーで確かめる。全1,755フロップの点検では不可能なボードを「問題なし」に混ぜず、到達不能件数と実際に評価した件数を別に報告する。方針・別レンジの代用はしない。
+-- 2026-10-04 クラウド監査のメモリ: 10,000サンプルを減らす代わりに、simulationのボード単位workerを終了し、一定ハンドごとに再利用キャッシュを解放する。乱数・方針・計算順の結果を変えない回帰比較が必要。途中完了したボードは入力・方針・計算コードの照合値付きで保存し、最後には別の全量fixed-seed replayで検証する。
++- 2026-10-04 クラウド監査のメモリ: 10,000サンプルを減らす代わりに、simulationのボード単位workerを終了し、一定ハンドごとに再利用キャッシュを解放する。乱数・方針・計算順の結果を変えない回帰比較が必要。途中完了したボードは入力・方針・計算コードの照合値付きで保存し、当時は最後に別の全量fixed-seed replayを要求した。2026-10-06の今回契約では全量再計算を自動復帰させず、照合範囲を明示する。
++
++- 2026-10-06 新HU検証を明示改訂: 全1,755フロップは維持し、後半の起点のみ既存shape×heightの12区分から計100フロップを固定抽出する。各区分8〜9件、seed `hu-model11-later-stratified-v1-20261006`。各4ターン×3リバーと代表12×3ボット×2席×10,000試行は維持。後半の縮小は仕様変更であり、全ボード監査や強さ／GTOの保証と呼ばない。区分を均等にした100件の単純集計を1,755件全体の発生率へ外挿しない。
+diff --git a/apps/frontend/docs/specs/hu-validation-stratified-later-v1.md b/apps/frontend/docs/specs/hu-validation-stratified-later-v1.md
+new file mode 100644
+--- /dev/null
++++ b/apps/frontend/docs/specs/hu-validation-stratified-later-v1.md
+@@ -0,0 +1,98 @@
++# 新HU検証契約 v1: 全1,755フロップ＋層別100フロップ起点の後半監査
++
++契約ID: `hu-validation-stratified-later-v1`。2026-10-06のユーザー承認に基づく範囲変更を固定する。状態は**静的仕様・選択一覧の準備済み、実行器への組込みと数値検証は未実施**。この文書・JSON・Pythonの成功は方針の受入、検証完了、大量計算開始を意味しない。参照実装は `4b6b39a613afe72a2362f85aa93a305cd61b3586`。
++
++## 変更範囲と実行順
++
++1. 先に1試行を高速化し、同条件での旧モデルとの差、変更前後の時間・メモリ、重い処理、数値一致を確認できた範囲を報告する。その報告前に大量計算を始めない。モデルを変えた差と結果不変の実装高速化を区別し、短い測定から未測定の全量速度を断定しない。
++2. 代表Monte Carloは既存12フロップ × `standard/passive/aggressive` × 両席 × 各10,000試行、72セル／720,000組の比較へ戻す。seed `solveaai-postflop-ai-v1`、cache batchは現行64を基準とし、512への変更は数値再現・境界の検証後に別途決める。代表ボード一覧、両席、評価ボットを維持する。720,000件を生成し、整合性・独立照合を明示した範囲で行う。fresh720,000件の全量再計算は自動追加しない。旧audit --allが要求する全量fresh replay合格とは称さない。64試行の過去確認はsanity／回帰であり、720,000試行と同等ではない。モデル11のstrict/composite識別・completion proof全体の検証・unresolved計上を変えない。二つのソースを比較する場合も各ソースに証跡を帰属させ、既存レポートを書き換えて新ソースの結果にしない。
++3. フロップのバランス監査は全1,755正規化クラスを維持する。**後半だけ、下記の固定100フロップを起点に監査する。全ボードではない。** 各起点で従来どおり4ターン × 各3リバーを選ぶ。後半起点を1,755→100へ減らすことは旧仕様からの変更として結果報告に必ず書く。他のカバレッジを削らない。
++4. 数値のエラー判定・警告しきい値と解釈を維持する。10,000試行から新しい「強さ」「EVが正だから受入」などの条件を導入しない。警告・相手モデルとの不一致・未解決・標本誤差を残し、既存の独立した局面別方針レビューを継続する。
++
++旧45件の保存物と、旧契約で受け入れた新HU5件の成果物・受入証跡は元のバイト列・スコープのまま保存する。5件は `oldcontract` として区別し、本契約や別ソースへ自動昇格しない。旧`all-boards/full/street=all`、1,755行全ての後半coverageを要求するcompanion、既存lane wrapperを100件用と読み替えない。本仕様は新しい識別子の監査として追加し、旧validatorを弱めない。
++
++全工程の一律再実行を要求するものではない。旧5件の全1,755フロップ／全ストリート証跡も、実行ソース・両方針・入力レンジ・各ボード／runoutの完全一致を検証できれば、フロップ1,755件と選択後半100件の根拠として参照しうる。その場合は元の証跡と旧contractを保持し、抽出・再利用を検証した新しい照合証跡を追加して、既存計算を新規実行と数えない。最適化によってソースが変わった場合は、別途レビューされた厳密な数値一致・identity再結合の証明が必要で、短い64試行の回帰一致だけを全量一致の証明にしない。再利用可能性と新契約での最終受入は別である。旧MCが64試行なら各10,000試行条件は満たさず、不足分の正式証跡と範囲を明示した独立照合を揃える。fresh全量再計算は必須としない。既に適格な10,000試行証跡がある場合も、元ソースへの帰属と照合範囲を保持する。
++
++## 既存分類の意味
++
++新しい分類は作らない。`scripts/postflop-ai/model.mjs` の `boardTexture` と `boardHeight` をそのまま使う。
++
++- `paired`: 3枚のランクが重複。ペアとトリップスを含み、スート・連結性より優先する。
++- `monotone`: 上記以外で3枚とも同じスート。
++- `wet`: 上記以外でツートーン、または最大ランク−最小ランクが4以下。後者はレインボーでも該当する。
++- `dry`: 残りのレインボー。
++- 高さは最高ランクで区切り、Q/K/A=`high`、9/T/J=`mid`、2〜8=`low`。
++
++形はpairedness/suitedness/connectednessの全組合せではなく、この優先順で作る既存の粗い4区分。フロップの連結性ではAを低いカードに置き換えないので、例えばA32レインボーは`dry_high`になる。別の手札特徴やrunout分類にあるwheel判定はここへ混ぜない。
++
++## 固定抽出
++
++- 母集団: `flop-isomorphism.mjs:canonicalFlops` と同じ全1,755スート同型フロップ。全22,100通りの生フロップに全24スート置換を適用し、高ランク優先・同ランクは低スート優先に並べた数値tupleの最小を採る。文字列最小ではない。
++- 後半起点の抽出seed: `hu-model11-later-stratified-v1-20261006`。Monte Carlo／runoutのseedは変えない。
++- 非空区分を `SHA256(UTF8(seed + NUL + "allocation" + NUL + stratum))` の昇順に並べる。digest同値なら入力文字列の昇順。同じ順序で区分を一周するたび1件ずつ配分し、100件で止める。母数に達した区分は飛ばし、残りへ再配分する。空区分には配らない。
++- 各区分内で `SHA256(UTF8(seed + NUL + "board" + NUL + stratum + NUL + boardId))` の昇順（同値時は入力文字列順）から割当数を重複なしで選ぶ。選択後の表示一覧はASCII順。言語固有の乱数器・locale順序に依存しない。
++- 現行母集団では12区分すべて非空、最小13件で不足区分はない。96件を各8件とし、seed順の先頭4区分に1件ずつ追加する。以下の各8〜9件、合計100件となる。
++
++| 形×高さ | 母集団 | 抽出 |
++|---|---:|---:|
++| dry_high | 148 | 9 |
++| dry_mid | 67 | 9 |
++| dry_low | 13 | 9 |
++| wet_high | 516 | 8 |
++| wet_mid | 273 | 8 |
++| wet_low | 127 | 8 |
++| monotone_high | 166 | 8 |
++| monotone_mid | 85 | 8 |
++| monotone_low | 35 | 9 |
++| paired_high | 135 | 8 |
++| paired_mid | 99 | 8 |
++| paired_low | 91 | 8 |
++| 合計 | 1,755 | 100 |
++
++機械可読一覧: [`hu-later-stratified-100-v1.json`](../../scripts/data/hu-later-stratified-100-v1.json)。SHA-256: `162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534`。契約JSON: [`hu-validation-stratified-later-v1.json`](../../scripts/data/hu-validation-stratified-later-v1.json)。
++
++### 固定100件一覧
++
++- **dry_high (9)**: Ac9d4h, AcJd7h, AcTd3h, AcTd5h, Kc8d5h, Kc9d8h, KcTd2h, KcTd5h, QcTd5h
++- **dry_mid (9)**: 9c7d3h, 9c8d2h, 9c8d3h, Jc4d3h, Jc9d4h, Jc9d5h, JcTd2h, JcTd6h, Tc3d2h
++- **dry_low (9)**: 7c6d2h, 8c3d2h, 8c4d2h, 8c4d3h, 8c5d2h, 8c5d3h, 8c6d2h, 8c6d3h, 8c7d3h
++- **wet_high (8)**: Ac8c6d, AcKdQh, Kc5c4d, Kc8c7d, KcQd6d, Qc7d5d, Qc7d6c, Qc8d6c
++- **wet_mid (8)**: 9c8d4d, 9c8d6d, Jc4d2c, Jc5c2d, Jc6d3d, Jc7c6d, Tc9c3d, Tc9d4d
++- **wet_low (8)**: 6c3d2c, 7c3d2d, 7c5d4c, 7c6c4d, 8c4d3c, 8c6c3d, 8c6d4c, 8c7d6h
++- **monotone_high (8)**: Ac6c3c, Ac9c6c, AcJc2c, Kc4c3c, Kc7c6c, KcTc2c, QcJc5c, QcJc6c
++- **monotone_mid (8)**: 9c4c2c, 9c6c3c, Jc7c6c, Jc9c5c, Jc9c6c, Tc6c5c, Tc7c3c, Tc8c7c
++- **monotone_low (9)**: 6c5c3c, 7c5c2c, 7c5c3c, 8c3c2c, 8c4c2c, 8c5c2c, 8c6c3c, 8c7c2c, 8c7c3c
++- **paired_high (8)**: Ac7c7d, AcAd2c, AcAdQh, AcQcQd, KcTdTh, Qc4c4d, QcQd6c, QcTcTd
++- **paired_mid (8)**: 9c5d5h, 9c7d7h, Jc9d9h, JcJd4c, JcJdJh, JcJdTc, Tc4d4h, TcTd8c
++- **paired_low (8)**: 4c2d2h, 4c4d2h, 6c3c3d, 6c5d5h, 6c6d3h, 7c7d5c, 8c2d2h, 8c3c3d
++
++## 後半のサンプリングとカウント
++
++選んだ100フロップの各4ターン×各3リバーは、既存 `balance.mjs:representativeRunouts` のseed `${config.seed}|balance|${board.id}` と乱数消費順をそのまま維持する。フロップを除いたdeckから4ターンを先に取り除き、その残りから各ターンの3リバーを引くという既存仕様も変えない。通常の「各ターンを除いた48枚」へ置き換えることも別変更なので行わない。
++
++公称400ターンボード、1,200リバーrunout。各局面の正確な保存live rangeに照らし、到達不能は証明と件数を別に保存する。selected-but-unreachableは選択済み100件に残し、別ボードへ置換しない。未抽出1,655フロップの後半は`not-evaluated-by-design`とし、clean、PASS、到達不能、完了件数に混ぜない。到達不能のため後半が実行されなかった場合も、可能と証明された数値評価と区別して集計する。
++
++後半は抽出済み／実評価／到達不能／未解決を段階ごとに分け、未抽出を別欄にする。flopの1,755件、later起点の100件、ターン400件、リバー1,200件は異なる分母。警告は発生回数と固有ボード数を分け、区分ごとの母数・抽出数・実評価数も報告する。Monte Carlo中に通ったボードをバランス監査の追加coverageと数えない。
++
++## 証跡と組込みの最小要件
++
++実行器の改修は別途必要。既存のフロップ／後半評価関数を使い、全フロップと選択後半のstageを本契約に束ねる最小の入口を追加する。新たな汎用検証基盤は作らない。
++
++- contract ID/version、manifestの正確なバイトhash、seed、100件一覧、ソース実行identity、両方針identity、保存レンジ／入力identity、street別coverageを全結果・checkpoint・resumeへ結び付ける。初回実行と再開時に一覧の欠落・余分・重複・置換・改変を拒否する。
++- 旧全量checkpointを新契約へ名前だけ変えて使わない。明示的に証明されていない旧成果を新しい計算の完了件数へ足さない。
++- 選択外フロップでは後半のpolicy計算を呼ばない。全1,755フロップの評価と、100件×従来runoutが同時に保たれることを確認する。
++- 実行status、終了コード、ソースの前後一致、各段階の証跡を保持する。static/Python選択auditの成功を数値PASSへ変換しない。新入口について、改変リスト拒否・フロップ全件・後半exact100件・到達不能／未解決の計上を検証してから全量を実行する。
++
++一覧の再生成／完全一致照合はPython標準ライブラリだけで行える（policy/equity計算、Node起動なし）。リポジトリrootから:
++
++```sh
++python apps/frontend/scripts/postflop-ai/verify-stratified-later-selection.py --repository . --manifest apps/frontend/scripts/data/hu-later-stratified-100-v1.json
++```
++
++このコマンドは固定参照commitのGit blobを読み、全生フロップを独立に列挙し、分類・12区分の母数・割当・100件一覧・manifest全バイトを再現する。source commitを保持していないcheckoutでは検証できないため、参照ソースを取得してから実行する。実行中のpolicyの正しさや強さを測るものではない。
++
++## 報告の必須文と制約
++
++「フロップは全1,755正規化クラスを対象にし、ターン／リバーは形×高さで均等に固定抽出した100フロップを起点に監査した。後半は全ボードではない。これは旧仕様から後半の起点を縮小した変更である。」に加え、seed、一覧リンク／hash、区分別の母数・抽出・実評価・到達不能、各stageの実行statusと警告を載せる。未完了なら「監査した」を「計画している／完了した範囲は…」へ変え、実行済みと書かない。
++
++100/1,755は約5.70%の後半起点で、未抽出ボード上の問題を見逃しうる。均等区分抽出は小さい区分を厚く見る設計で、自然なカード出現頻度・各局面の到達頻度・1,755クラスの構成比とは違う。100件の単純な警告率を全体の警告率と扱わない。抽出数比から計算時間の削減率や方針品質を保証しない。10,000試行と明示した範囲の独立照合はこの固定評価ボットに対する推定・再現性の確認であり、未知の相手への強さ、最適性、GTOは保証しない。
+diff --git a/apps/frontend/scripts/data/hu-later-stratified-100-v1.json b/apps/frontend/scripts/data/hu-later-stratified-100-v1.json
+new file mode 100644
+--- /dev/null
++++ b/apps/frontend/scripts/data/hu-later-stratified-100-v1.json
+@@ -0,0 +1,1170 @@
++{
++  "kind": "hu-stratified-later-board-selection",
++  "version": 1,
++  "validationContract": "hu-validation-stratified-later-v1",
++  "status": "selection-only-not-numerical-validation",
++  "sourceSnapshot": {
++    "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
++    "files": [
++      {
++        "path": "apps/frontend/scripts/postflop-ai/flop-isomorphism.mjs",
++        "bytes": 3762,
++        "sha256": "81c15f8ed865d56b78078136e389e6ea04851dbac506d2df2102f87acc737076"
++      },
++      {
++        "path": "apps/frontend/scripts/postflop-ai/model.mjs",
++        "bytes": 6991,
++        "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
++      },
++      {
++        "path": "apps/frontend/scripts/data/postflop-ai-pilot.json",
++        "bytes": 1554,
++        "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
++      }
++    ]
++  },
++  "universe": {
++    "kind": "canonical-suit-isomorphic-flops",
++    "count": 1755,
++    "sha256": "b887b3719fdfcc966714f3e73a05ad01460fddb7c26cb94fc78b805807a336e2",
++    "hashEncoding": "ASCII-sorted IDs, LF after each ID"
++  },
++  "selection": {
++    "seed": "hu-model11-later-stratified-v1-20261006",
++    "target": 100,
++    "count": 100,
++    "algorithm": "sha256-domain-separated-ranked-without-replacement-v1",
++    "allocation": "seeded-even-rounds-skip-exhausted-strata-v1",
++    "allocationOrder": [
++      "dry_mid",
++      "dry_low",
++      "dry_high",
++      "monotone_low",
++      "wet_low",
++      "monotone_mid",
++      "monotone_high",
++      "wet_mid",
++      "paired_high",
++      "wet_high",
++      "paired_low",
++      "paired_mid"
++    ],
++    "ordering": "ASCII for serialized IDs; SHA-256 rank for selection",
++    "allCanonicalFlopsSelected": false,
++    "omittedCanonicalFlops": 1655,
++    "selectedIdsSha256": "225ce6605582456ff6f4366f9f7dc955fcdb6bbca563ff995c522b1400e89783"
++  },
++  "classification": {
++    "shape": "paired first (includes trips); otherwise monotone; otherwise wet if two-tone or rank span <=4; otherwise dry",
++    "height": "highest rank: Q/K/A=high, 9/T/J=mid, 2..8=low",
++    "aceLowInFlopShape": false,
++    "sourceFunctions": [
++      "model.mjs:boardTexture",
++      "model.mjs:boardHeight"
++    ]
++  },
++  "strata": [
++    {
++      "stratum": "dry_high",
++      "population": 148,
++      "selected": 9,
++      "boardIds": [
++        "Ac9d4h",
++        "AcJd7h",
++        "AcTd3h",
++        "AcTd5h",
++        "Kc8d5h",
++        "Kc9d8h",
++        "KcTd2h",
++        "KcTd5h",
++        "QcTd5h"
++      ]
++    },
++    {
++      "stratum": "dry_mid",
++      "population": 67,
++      "selected": 9,
++      "boardIds": [
++        "9c7d3h",
++        "9c8d2h",
++        "9c8d3h",
++        "Jc4d3h",
++        "Jc9d4h",
++        "Jc9d5h",
++        "JcTd2h",
++        "JcTd6h",
++        "Tc3d2h"
++      ]
++    },
++    {
++      "stratum": "dry_low",
++      "population": 13,
++      "selected": 9,
++      "boardIds": [
++        "7c6d2h",
++        "8c3d2h",
++        "8c4d2h",
++        "8c4d3h",
++        "8c5d2h",
++        "8c5d3h",
++        "8c6d2h",
++        "8c6d3h",
++        "8c7d3h"
++      ]
++    },
++    {
++      "stratum": "wet_high",
++      "population": 516,
++      "selected": 8,
++      "boardIds": [
++        "Ac8c6d",
++        "AcKdQh",
++        "Kc5c4d",
++        "Kc8c7d",
++        "KcQd6d",
++        "Qc7d5d",
++        "Qc7d6c",
++        "Qc8d6c"
++      ]
++    },
++    {
++      "stratum": "wet_mid",
++      "population": 273,
++      "selected": 8,
++      "boardIds": [
++        "9c8d4d",
++        "9c8d6d",
++        "Jc4d2c",
++        "Jc5c2d",
++        "Jc6d3d",
++        "Jc7c6d",
++        "Tc9c3d",
++        "Tc9d4d"
++      ]
++    },
++    {
++      "stratum": "wet_low",
++      "population": 127,
++      "selected": 8,
++      "boardIds": [
++        "6c3d2c",
++        "7c3d2d",
++        "7c5d4c",
++        "7c6c4d",
++        "8c4d3c",
++        "8c6c3d",
++        "8c6d4c",
++        "8c7d6h"
++      ]
++    },
++    {
++      "stratum": "monotone_high",
++      "population": 166,
++      "selected": 8,
++      "boardIds": [
++        "Ac6c3c",
++        "Ac9c6c",
++        "AcJc2c",
++        "Kc4c3c",
++        "Kc7c6c",
++        "KcTc2c",
++        "QcJc5c",
++        "QcJc6c"
++      ]
++    },
++    {
++      "stratum": "monotone_mid",
++      "population": 85,
++      "selected": 8,
++      "boardIds": [
++        "9c4c2c",
++        "9c6c3c",
++        "Jc7c6c",
++        "Jc9c5c",
++        "Jc9c6c",
++        "Tc6c5c",
++        "Tc7c3c",
++        "Tc8c7c"
++      ]
++    },
++    {
++      "stratum": "monotone_low",
++      "population": 35,
++      "selected": 9,
++      "boardIds": [
++        "6c5c3c",
++        "7c5c2c",
++        "7c5c3c",
++        "8c3c2c",
++        "8c4c2c",
++        "8c5c2c",
++        "8c6c3c",
++        "8c7c2c",
++        "8c7c3c"
++      ]
++    },
++    {
++      "stratum": "paired_high",
++      "population": 135,
++      "selected": 8,
++      "boardIds": [
++        "Ac7c7d",
++        "AcAd2c",
++        "AcAdQh",
++        "AcQcQd",
++        "KcTdTh",
++        "Qc4c4d",
++        "QcQd6c",
++        "QcTcTd"
++      ]
++    },
++    {
++      "stratum": "paired_mid",
++      "population": 99,
++      "selected": 8,
++      "boardIds": [
++        "9c5d5h",
++        "9c7d7h",
++        "Jc9d9h",
++        "JcJd4c",
++        "JcJdJh",
++        "JcJdTc",
++        "Tc4d4h",
++        "TcTd8c"
++      ]
++    },
++    {
++      "stratum": "paired_low",
++      "population": 91,
++      "selected": 8,
++      "boardIds": [
++        "4c2d2h",
++        "4c4d2h",
++        "6c3c3d",
++        "6c5d5h",
++        "6c6d3h",
++        "7c7d5c",
++        "8c2d2h",
++        "8c3c3d"
++      ]
++    }
++  ],
++  "boards": [
++    {
++      "id": "4c2d2h",
++      "cards": [
++        8,
++        1,
++        2
++      ],
++      "stratum": "paired_low"
++    },
++    {
++      "id": "4c4d2h",
++      "cards": [
++        8,
++        9,
++        2
++      ],
++      "stratum": "paired_low"
++    },
++    {
++      "id": "6c3c3d",
++      "cards": [
++        16,
++        4,
++        5
++      ],
++      "stratum": "paired_low"
++    },
++    {
++      "id": "6c3d2c",
++      "cards": [
++        16,
++        5,
++        0
++      ],
++      "stratum": "wet_low"
++    },
++    {
++      "id": "6c5c3c",
++      "cards": [
++        16,
++        12,
++        4
++      ],
++      "stratum": "monotone_low"
++    },
++    {
++      "id": "6c5d5h",
++      "cards": [
++        16,
++        13,
++        14
++      ],
++      "stratum": "paired_low"
++    },
++    {
++      "id": "6c6d3h",
++      "cards": [
++        16,
++        17,
++        6
++      ],
++      "stratum": "paired_low"
++    },
++    {
++      "id": "7c3d2d",
++      "cards": [
++        20,
++        5,
++        1
++      ],
++      "stratum": "wet_low"
++    },
++    {
++      "id": "7c5c2c",
++      "cards": [
++        20,
++        12,
++        0
++      ],
++      "stratum": "monotone_low"
++    },
++    {
++      "id": "7c5c3c",
++      "cards": [
++        20,
++        12,
++        4
++      ],
++      "stratum": "monotone_low"
++    },
++    {
++      "id": "7c5d4c",
++      "cards": [
++        20,
++        13,
++        8
++      ],
++      "stratum": "wet_low"
++    },
++    {
++      "id": "7c6c4d",
++      "cards": [
++        20,
++        16,
++        9
++      ],
++      "stratum": "wet_low"
++    },
++    {
++      "id": "7c6d2h",
++      "cards": [
++        20,
++        17,
++        2
++      ],
++      "stratum": "dry_low"
++    },
++    {
++      "id": "7c7d5c",
++      "cards": [
++        20,
++        21,
++        12
++      ],
++      "stratum": "paired_low"
++    },
++    {
++      "id": "8c2d2h",
++      "cards": [
++        24,
++        1,
++        2
++      ],
++      "stratum": "paired_low"
++    },
++    {
++      "id": "8c3c2c",
++      "cards": [
++        24,
++        4,
++        0
++      ],
++      "stratum": "monotone_low"
++    },
++    {
++      "id": "8c3c3d",
++      "cards": [
++        24,
++        4,
++        5
++      ],
++      "stratum": "paired_low"
++    },
++    {
++      "id": "8c3d2h",
++      "cards": [
++        24,
++        5,
++        2
++      ],
++      "stratum": "dry_low"
++    },
++    {
++      "id": "8c4c2c",
++      "cards": [
++        24,
++        8,
++        0
++      ],
++      "stratum": "monotone_low"
++    },
++    {
++      "id": "8c4d2h",
++      "cards": [
++        24,
++        9,
++        2
++      ],
++      "stratum": "dry_low"
++    },
++    {
++      "id": "8c4d3c",
++      "cards": [
++        24,
++        9,
++        4
++      ],
++      "stratum": "wet_low"
++    },
++    {
++      "id": "8c4d3h",
++      "cards": [
++        24,
++        9,
++        6
++      ],
++      "stratum": "dry_low"
++    },
++    {
++      "id": "8c5c2c",
++      "cards": [
++        24,
++        12,
++        0
++      ],
++      "stratum": "monotone_low"
++    },
++    {
++      "id": "8c5d2h",
++      "cards": [
++        24,
++        13,
++        2
++      ],
++      "stratum": "dry_low"
++    },
++    {
++      "id": "8c5d3h",
++      "cards": [
++        24,
++        13,
++        6
++      ],
++      "stratum": "dry_low"
++    },
++    {
++      "id": "8c6c3c",
++      "cards": [
++        24,
++        16,
++        4
++      ],
++      "stratum": "monotone_low"
++    },
++    {
++      "id": "8c6c3d",
++      "cards": [
++        24,
++        16,
++        5
++      ],
++      "stratum": "wet_low"
++    },
++    {
++      "id": "8c6d2h",
++      "cards": [
++        24,
++        17,
++        2
++      ],
++      "stratum": "dry_low"
++    },
++    {
++      "id": "8c6d3h",
++      "cards": [
++        24,
++        17,
++        6
++      ],
++      "stratum": "dry_low"
++    },
++    {
++      "id": "8c6d4c",
++      "cards": [
++        24,
++        17,
++        8
++      ],
++      "stratum": "wet_low"
++    },
++    {
++      "id": "8c7c2c",
++      "cards": [
++        24,
++        20,
++        0
++      ],
++      "stratum": "monotone_low"
++    },
++    {
++      "id": "8c7c3c",
++      "cards": [
++        24,
++        20,
++        4
++      ],
++      "stratum": "monotone_low"
++    },
++    {
++      "id": "8c7d3h",
++      "cards": [
++        24,
++        21,
++        6
++      ],
++      "stratum": "dry_low"
++    },
++    {
++      "id": "8c7d6h",
++      "cards": [
++        24,
++        21,
++        18
++      ],
++      "stratum": "wet_low"
++    },
++    {
++      "id": "9c4c2c",
++      "cards": [
++        28,
++        8,
++        0
++      ],
++      "stratum": "monotone_mid"
++    },
++    {
++      "id": "9c5d5h",
++      "cards": [
++        28,
++        13,
++        14
++      ],
++      "stratum": "paired_mid"
++    },
++    {
++      "id": "9c6c3c",
++      "cards": [
++        28,
++        16,
++        4
++      ],
++      "stratum": "monotone_mid"
++    },
++    {
++      "id": "9c7d3h",
++      "cards": [
++        28,
++        21,
++        6
++      ],
++      "stratum": "dry_mid"
++    },
++    {
++      "id": "9c7d7h",
++      "cards": [
++        28,
++        21,
++        22
++      ],
++      "stratum": "paired_mid"
++    },
++    {
++      "id": "9c8d2h",
++      "cards": [
++        28,
++        25,
++        2
++      ],
++      "stratum": "dry_mid"
++    },
++    {
++      "id": "9c8d3h",
++      "cards": [
++        28,
++        25,
++        6
++      ],
++      "stratum": "dry_mid"
++    },
++    {
++      "id": "9c8d4d",
++      "cards": [
++        28,
++        25,
++        9
++      ],
++      "stratum": "wet_mid"
++    },
++    {
++      "id": "9c8d6d",
++      "cards": [
++        28,
++        25,
++        17
++      ],
++      "stratum": "wet_mid"
++    },
++    {
++      "id": "Ac6c3c",
++      "cards": [
++        48,
++        16,
++        4
++      ],
++      "stratum": "monotone_high"
++    },
++    {
++      "id": "Ac7c7d",
++      "cards": [
++        48,
++        20,
++        21
++      ],
++      "stratum": "paired_high"
++    },
++    {
++      "id": "Ac8c6d",
++      "cards": [
++        48,
++        24,
++        17
++      ],
++      "stratum": "wet_high"
++    },
++    {
++      "id": "Ac9c6c",
++      "cards": [
++        48,
++        28,
++        16
++      ],
++      "stratum": "monotone_high"
++    },
++    {
++      "id": "Ac9d4h",
++      "cards": [
++        48,
++        29,
++        10
++      ],
++      "stratum": "dry_high"
++    },
++    {
++      "id": "AcAd2c",
++      "cards": [
++        48,
++        49,
++        0
++      ],
++      "stratum": "paired_high"
++    },
++    {
++      "id": "AcAdQh",
++      "cards": [
++        48,
++        49,
++        42
++      ],
++      "stratum": "paired_high"
++    },
++    {
++      "id": "AcJc2c",
++      "cards": [
++        48,
++        36,
++        0
++      ],
++      "stratum": "monotone_high"
++    },
++    {
++      "id": "AcJd7h",
++      "cards": [
++        48,
++        37,
++        22
++      ],
++      "stratum": "dry_high"
++    },
++    {
++      "id": "AcKdQh",
++      "cards": [
++        48,
++        45,
++        42
++      ],
++      "stratum": "wet_high"
++    },
++    {
++      "id": "AcQcQd",
++      "cards": [
++        48,
++        40,
++        41
++      ],
++      "stratum": "paired_high"
++    },
++    {
++      "id": "AcTd3h",
++      "cards": [
++        48,
++        33,
++        6
++      ],
++      "stratum": "dry_high"
++    },
++    {
++      "id": "AcTd5h",
++      "cards": [
++        48,
++        33,
++        14
++      ],
++      "stratum": "dry_high"
++    },
++    {
++      "id": "Jc4d2c",
++      "cards": [
++        36,
++        9,
++        0
++      ],
++      "stratum": "wet_mid"
++    },
++    {
++      "id": "Jc4d3h",
++      "cards": [
++        36,
++        9,
++        6
++      ],
++      "stratum": "dry_mid"
++    },
++    {
++      "id": "Jc5c2d",
++      "cards": [
++        36,
++        12,
++        1
++      ],
++      "stratum": "wet_mid"
++    },
++    {
++      "id": "Jc6d3d",
++      "cards": [
++        36,
++        17,
++        5
++      ],
++      "stratum": "wet_mid"
++    },
++    {
++      "id": "Jc7c6c",
++      "cards": [
++        36,
++        20,
++        16
++      ],
++      "stratum": "monotone_mid"
++    },
++    {
++      "id": "Jc7c6d",
++      "cards": [
++        36,
++        20,
++        17
++      ],
++      "stratum": "wet_mid"
++    },
++    {
++      "id": "Jc9c5c",
++      "cards": [
++        36,
++        28,
++        12
++      ],
++      "stratum": "monotone_mid"
++    },
++    {
++      "id": "Jc9c6c",
++      "cards": [
++        36,
++        28,
++        16
++      ],
++      "stratum": "monotone_mid"
++    },
++    {
++      "id": "Jc9d4h",
++      "cards": [
++        36,
++        29,
++        10
++      ],
++      "stratum": "dry_mid"
++    },
++    {
++      "id": "Jc9d5h",
++      "cards": [
++        36,
++        29,
++        14
++      ],
++      "stratum": "dry_mid"
++    },
++    {
++      "id": "Jc9d9h",
++      "cards": [
++        36,
++        29,
++        30
++      ],
++      "stratum": "paired_mid"
++    },
++    {
++      "id": "JcJd4c",
++      "cards": [
++        36,
++        37,
++        8
++      ],
++      "stratum": "paired_mid"
++    },
++    {
++      "id": "JcJdJh",
++      "cards": [
++        36,
++        37,
++        38
++      ],
++      "stratum": "paired_mid"
++    },
++    {
++      "id": "JcJdTc",
++      "cards": [
++        36,
++        37,
++        32
++      ],
++      "stratum": "paired_mid"
++    },
++    {
++      "id": "JcTd2h",
++      "cards": [
++        36,
++        33,
++        2
++      ],
++      "stratum": "dry_mid"
++    },
++    {
++      "id": "JcTd6h",
++      "cards": [
++        36,
++        33,
++        18
++      ],
++      "stratum": "dry_mid"
++    },
++    {
++      "id": "Kc4c3c",
++      "cards": [
++        44,
++        8,
++        4
++      ],
++      "stratum": "monotone_high"
++    },
++    {
++      "id": "Kc5c4d",
++      "cards": [
++        44,
++        12,
++        9
++      ],
++      "stratum": "wet_high"
++    },
++    {
++      "id": "Kc7c6c",
++      "cards": [
++        44,
++        20,
++        16
++      ],
++      "stratum": "monotone_high"
++    },
++    {
++      "id": "Kc8c7d",
++      "cards": [
++        44,
++        24,
++        21
++      ],
++      "stratum": "wet_high"
++    },
++    {
++      "id": "Kc8d5h",
++      "cards": [
++        44,
++        25,
++        14
++      ],
++      "stratum": "dry_high"
++    },
++    {
++      "id": "Kc9d8h",
++      "cards": [
++        44,
++        29,
++        26
++      ],
++      "stratum": "dry_high"
++    },
++    {
++      "id": "KcQd6d",
++      "cards": [
++        44,
++        41,
++        17
++      ],
++      "stratum": "wet_high"
++    },
++    {
++      "id": "KcTc2c",
++      "cards": [
++        44,
++        32,
++        0
++      ],
++      "stratum": "monotone_high"
++    },
++    {
++      "id": "KcTd2h",
++      "cards": [
++        44,
++        33,
++        2
++      ],
++      "stratum": "dry_high"
++    },
++    {
++      "id": "KcTd5h",
++      "cards": [
++        44,
++        33,
++        14
++      ],
++      "stratum": "dry_high"
++    },
++    {
++      "id": "KcTdTh",
++      "cards": [
++        44,
++        33,
++        34
++      ],
++      "stratum": "paired_high"
++    },
++    {
++      "id": "Qc4c4d",
++      "cards": [
++        40,
++        8,
++        9
++      ],
++      "stratum": "paired_high"
++    },
++    {
++      "id": "Qc7d5d",
++      "cards": [
++        40,
++        21,
++        13
++      ],
++      "stratum": "wet_high"
++    },
++    {
++      "id": "Qc7d6c",
++      "cards": [
++        40,
++        21,
++        16
++      ],
++      "stratum": "wet_high"
++    },
++    {
++      "id": "Qc8d6c",
++      "cards": [
++        40,
++        25,
++        16
++      ],
++      "stratum": "wet_high"
++    },
++    {
++      "id": "QcJc5c",
++      "cards": [
++        40,
++        36,
++        12
++      ],
++      "stratum": "monotone_high"
++    },
++    {
++      "id": "QcJc6c",
++      "cards": [
++        40,
++        36,
++        16
++      ],
++      "stratum": "monotone_high"
++    },
++    {
++      "id": "QcQd6c",
++      "cards": [
++        40,
++        41,
++        16
++      ],
++      "stratum": "paired_high"
++    },
++    {
++      "id": "QcTcTd",
++      "cards": [
++        40,
++        32,
++        33
++      ],
++      "stratum": "paired_high"
++    },
++    {
++      "id": "QcTd5h",
++      "cards": [
++        40,
++        33,
++        14
++      ],
++      "stratum": "dry_high"
++    },
++    {
++      "id": "Tc3d2h",
++      "cards": [
++        32,
++        5,
++        2
++      ],
++      "stratum": "dry_mid"
++    },
++    {
++      "id": "Tc4d4h",
++      "cards": [
++        32,
++        9,
++        10
++      ],
++      "stratum": "paired_mid"
++    },
++    {
++      "id": "Tc6c5c",
++      "cards": [
++        32,
++        16,
++        12
++      ],
++      "stratum": "monotone_mid"
++    },
++    {
++      "id": "Tc7c3c",
++      "cards": [
++        32,
++        20,
++        4
++      ],
++      "stratum": "monotone_mid"
++    },
++    {
++      "id": "Tc8c7c",
++      "cards": [
++        32,
++        24,
++        20
++      ],
++      "stratum": "monotone_mid"
++    },
++    {
++      "id": "Tc9c3d",
++      "cards": [
++        32,
++        28,
++        5
++      ],
++      "stratum": "wet_mid"
++    },
++    {
++      "id": "Tc9d4d",
++      "cards": [
++        32,
++        29,
++        9
++      ],
++      "stratum": "wet_mid"
++    },
++    {
++      "id": "TcTd8c",
++      "cards": [
++        32,
++        33,
++        24
++      ],
++      "stratum": "paired_mid"
++    }
++  ],
++  "laterWithinSelectedFlop": {
++    "turns": 4,
++    "riversPerTurn": 3,
++    "nominalTurnBoards": 400,
++    "nominalRiverRunouts": 1200,
++    "seed": "solveaai-postflop-ai-v1",
++    "seedTemplate": "${config.seed}|balance|${board.id}",
++    "sampler": "unchanged balance.mjs:representativeRunouts; all four sampled turns removed before each river pool",
++    "reachableOnlyCounts": "determined later from each spot's exact saved live ranges; never substitute or silently replace boards"
++  },
++  "notEvidenceFor": [
++    "policy acceptance",
++    "all-later-board coverage",
++    "720000 trial completion",
++    "GTO or strength guarantee"
++  ]
++}
+diff --git a/apps/frontend/scripts/data/hu-validation-stratified-later-v1.json b/apps/frontend/scripts/data/hu-validation-stratified-later-v1.json
+new file mode 100644
+--- /dev/null
++++ b/apps/frontend/scripts/data/hu-validation-stratified-later-v1.json
+@@ -0,0 +1,94 @@
++{
++  "kind": "hu-validation-contract-proposal",
++  "version": 1,
++  "id": "hu-validation-stratified-later-v1",
++  "status": "static-specification-runtime-integration-pending",
++  "approvedScopeChange": "retain all1755 flop audits; later audit on a fixed shape-by-height stratified100-flop subset",
++  "executionPrerequisite": "first optimize one trial and report measured old-model comparison, before-after cost, heavy operations and numerical-parity limits",
++  "numericalExecutionAuthorizedByThisFile": false,
++  "referenceSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
++  "selectionManifest": {
++    "path": "apps/frontend/scripts/data/hu-later-stratified-100-v1.json",
++    "sha256": "162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534",
++    "bytes": 18501
++  },
++  "representative": {
++    "boards": 12,
++    "boardCatalog": "apps/frontend/scripts/data/postflop-ai-pilot.json:boards",
++    "profiles": [
++      "standard",
++      "passive",
++      "aggressive"
++    ],
++    "seats": "both actual surviving seats",
++    "samplesPerBoardProfileSeat": 10000,
++    "requestedCells": 72,
++    "requestedPairedTrials": 720000,
++    "seed": "solveaai-postflop-ai-v1",
++    "cacheBatchSize": 64,
++    "freshIndependentFixedSeedReplayRequired": false,
++    "proofAndOffModelSemantics": "unchanged strict/composite identities, full completion-proof verification and unresolved accounting",
++    "old64Scope": "sanity-regression-only-not-equivalent-to720000",
++    "cacheBatch512Decision": "pending numerical-reproduction and boundary validation; not automatically restored",
++    "independentVerification": "source/input/policy/seed-bound integrity plus explicitly scoped independent comparison; existing full-fresh audit --all is not claimed passed"
++  },
++  "flopBalance": {
++    "catalog": "all1755-canonical-flops",
++    "requestedBoards": 1755,
++    "omittedBoards": 0
++  },
++  "laterBalance": {
++    "catalog": "selected100-canonical-flops",
++    "selectedBoards": 100,
++    "omittedBoards": 1655,
++    "allBoards": false,
++    "shapeHeightNonemptyStrata": 12,
++    "selectionSeed": "hu-model11-later-stratified-v1-20261006",
++    "turnsPerSelectedFlop": 4,
++    "riversPerTurn": 3,
++    "nominalTurnBoards": 400,
++    "nominalRiverRunouts": 1200,
++    "withinFlopSampler": "unchanged balance.mjs:representativeRunouts, original seed and consumption order",
++    "unreachableHandling": "separate exact support proof, no substitution and no clean/PASS credit",
++    "unsampledHandling": "not-evaluated-by-design, never clean/PASS or proved-unreachable"
++  },
++  "requiredNewBinding": [
++    "contract ID/version",
++    "selection manifest byte hash",
++    "selection seed and all100 ordered IDs",
++    "source execution identity",
++    "both policy identities",
++    "saved-range/input identity",
++    "each stage actual coverage and checkpoint identity"
++  ],
++  "unchanged": [
++    "numerical error/advisory thresholds and interpretation",
++    "policy and live-range computation",
++    "12 representative board identities",
++    "3 evaluation profiles and2 seats",
++    "within-flop4-turn-by3-river sampler",
++    "independent scoped verification; no automatic full fresh replay",
++    "independent scoped policy review",
++    "legacy45 preservation"
++  ],
++  "oldEvidence": {
++    "acceptedNewHu5": "oldcontract only at its original accepted scope; no automatic promotion",
++    "checkpoints": "no reuse under new identity by relabeling",
++    "oldAllBoardsContract": "preserve1755 all-street validators and receipts unchanged",
++    "verifiedReuse": "old full1755 all-street proofs may supply flop1755 and selected later100 only after exact source/policy/input/board/runout checks; preserve old evidence and add separate transfer verification, never count as newly computed",
++    "crossSourceReuse": "optimization requires reviewed exact numerical parity and identity-rebinding proof at the reused scope;64-trial regression alone is insufficient",
++    "missingMonteCarlo": "old64 does not meet10000 per cell; meet720000 generated-trial evidence and explicitly scoped independent verification; no automatic fresh720000 rerun"
++  },
++  "interpretation": [
++    "100-board later sample is not all boards",
++    "balanced stratum sample is not population-proportional",
++    "no new EV strength/pass criterion from10000",
++    "no GTO or strength guarantee"
++  ],
++  "implementationRequired": [
++    "separate versioned stage binding for full flop and selected later",
++    "reject missing/extra/duplicate/replaced selected IDs or stale manifest",
++    "partition evaluated/proved-unreachable/unresolved/not-selected counts",
++    "preserve actual exit/status/source-bound proofs; never infer numerical PASS from static selection"
++  ]
++}
+diff --git a/apps/frontend/scripts/postflop-ai/verify-stratified-later-selection.py b/apps/frontend/scripts/postflop-ai/verify-stratified-later-selection.py
+new file mode 100644
+--- /dev/null
++++ b/apps/frontend/scripts/postflop-ai/verify-stratified-later-selection.py
+@@ -0,0 +1,186 @@
++#!/usr/bin/env python3
++"""Reproduce only canonical-flop enumeration/classification/selection. No poker evaluation.
++
++Read the exact historical Git blobs, not mutable working files. --write creates a
++new manifest exclusively; the default verifies its complete bytes. Only stdlib.
++"""
++import argparse
++import hashlib
++import itertools
++import json
++from pathlib import Path
++import subprocess
++
++BASE = "4b6b39a613afe72a2362f85aa93a305cd61b3586"
++CONTRACT = "hu-validation-stratified-later-v1"
++SEED = "hu-model11-later-stratified-v1-20261006"
++TARGET = 100
++RANKS, SUITS = "23456789TJQKA", "cdhs"
++SHAPES, HEIGHTS = ["dry", "wet", "monotone", "paired"], ["high", "mid", "low"]
++PREFIX = "apps/frontend/scripts/postflop-ai/"
++SOURCE_PATHS = [PREFIX + "flop-isomorphism.mjs", PREFIX + "model.mjs",
++                "apps/frontend/scripts/data/postflop-ai-pilot.json"]
++EXPECTED_COUNTS = {
++    "dry_high": 148, "dry_mid": 67, "dry_low": 13,
++    "wet_high": 516, "wet_mid": 273, "wet_low": 127,
++    "monotone_high": 166, "monotone_mid": 85, "monotone_low": 35,
++    "paired_high": 135, "paired_mid": 99, "paired_low": 91,
++}
++
++
++def digest(value):
++    return hashlib.sha256(value).hexdigest()
++
++
++def blob(root, path):
++    return subprocess.run(["git", "-C", str(root), "show", BASE + ":" + path],
++                          check=True, capture_output=True).stdout
++
++
++def source_records(root):
++    data = {path: blob(root, path) for path in SOURCE_PATHS}
++    model = data[PREFIX + "model.mjs"].decode()
++    for literal in [
++        'export const SHAPES = ["dry", "wet", "monotone", "paired"];',
++        'export const HEIGHTS = ["high", "mid", "low"];',
++        'if (new Set(rs).size < 3) return "paired";',
++        'if (new Set(ss).size === 1) return "monotone";',
++        'if (new Set(ss).size === 2 || sorted[2] - sorted[0] <= 4) return "wet";',
++        'return top >= 10 ? "high" : top >= 7 ? "mid" : "low";',
++    ]:
++        assert literal in model, "Frozen classification differs"
++    config = json.loads(data[SOURCE_PATHS[-1]])
++    assert config["samples_per_board_profile_seat"] == 10000
++    assert config["seed"] == "solveaai-postflop-ai-v1"
++    assert len(config["boards"]) == 12
++    return [{"path": path, "bytes": len(data[path]), "sha256": digest(data[path])}
++            for path in SOURCE_PATHS]
++
++
++def card_text(card):
++    return RANKS[card >> 2] + SUITS[card & 3]
++
++
++def canonical(cards):
++    """Port of canonicalFlop's S4 minimum numeric tuple (not string minimum)."""
++    return min(tuple(sorted(((card & ~3) + permutation[card & 3] for card in cards),
++                            key=lambda card: (-(card >> 2), card & 3)))
++               for permutation in itertools.permutations(range(4)))
++
++
++def classify(cards):
++    rs, ss = [card >> 2 for card in cards], {card & 3 for card in cards}
++    shape = ("paired" if len(set(rs)) < 3 else "monotone" if len(ss) == 1
++             else "wet" if len(ss) == 2 or max(rs) - min(rs) <= 4 else "dry")
++    height = "high" if max(rs) >= 10 else "mid" if max(rs) >= 7 else "low"
++    return shape + "_" + height
++
++
++def rank_key(domain, *parts):
++    # UTF-8, NUL separators, lowercase SHA-256; full input breaks a hash tie.
++    text = "\0".join([SEED, domain, *parts])
++    return digest(text.encode()), text
++
++
++def allocate(capacities, target):
++    """Even rounds over seeded strata; skip exhausted strata and redistribute."""
++    assert target <= sum(capacities.values()) and target >= 0
++    order = sorted((key for key, size in capacities.items() if size),
++                   key=lambda key: rank_key("allocation", key))
++    counts = {key: 0 for key in order}
++    while sum(counts.values()) < target:
++        for key in order:
++            if counts[key] < capacities[key]:
++                counts[key] += 1
++                if sum(counts.values()) == target:
++                    break
++    return order, counts
++
++
++def make_manifest(root):
++    sources = source_records(root)
++    # All C(52,3)=22,100 raw flops, with exactly the existing canonical definition.
++    catalog = {}
++    for raw in itertools.combinations(range(52), 3):
++        cards = canonical(raw)
++        catalog["".join(map(card_text, cards))] = cards
++    assert len(catalog) == 1755
++    pools = {shape + "_" + height: [] for shape in SHAPES for height in HEIGHTS}
++    for board_id, cards in catalog.items():
++        pools[classify(cards)].append(board_id)
++    capacities = {key: len(pool) for key, pool in pools.items()}
++    assert capacities == EXPECTED_COUNTS, capacities
++    allocation_order, quotas = allocate(capacities, TARGET)
++    # Verify redistribution without creating any poker/policy calculation.
++    _, tiny = allocate({"small": 1, "large": 7, "empty": 0}, 6)
++    assert tiny == {"small": 1, "large": 5} or tiny == {"large": 5, "small": 1}
++    assert sorted(quotas.values()) == [8] * 8 + [9] * 4
++    strata, selected = [], []
++    for key, pool in pools.items():
++        chosen = sorted(pool, key=lambda board: rank_key("board", key, board))[:quotas[key]]
++        ids = sorted(chosen)  # ASCII list order only; not the sampling criterion.
++        strata.append({"stratum": key, "population": len(pool), "selected": len(ids),
++                       "boardIds": ids})
++        selected.extend(ids)
++    selected.sort()
++    assert len(selected) == len(set(selected)) == TARGET
++    assert all(board in catalog for board in selected)
++    universe = ("\n".join(sorted(catalog)) + "\n").encode()
++    selected_lines = ("\n".join(selected) + "\n").encode()
++    return {
++        "kind": "hu-stratified-later-board-selection", "version": 1,
++        "validationContract": CONTRACT,
++        "status": "selection-only-not-numerical-validation",
++        "sourceSnapshot": {"commit": BASE, "files": sources},
++        "universe": {"kind": "canonical-suit-isomorphic-flops", "count": 1755,
++                     "sha256": digest(universe), "hashEncoding": "ASCII-sorted IDs, LF after each ID"},
++        "selection": {"seed": SEED, "target": TARGET, "count": TARGET,
++                      "algorithm": "sha256-domain-separated-ranked-without-replacement-v1",
++                      "allocation": "seeded-even-rounds-skip-exhausted-strata-v1",
++                      "allocationOrder": allocation_order,
++                      "ordering": "ASCII for serialized IDs; SHA-256 rank for selection",
++                      "allCanonicalFlopsSelected": False, "omittedCanonicalFlops": 1655,
++                      "selectedIdsSha256": digest(selected_lines)},
++        "classification": {
++            "shape": "paired first (includes trips); otherwise monotone; otherwise wet if two-tone or rank span <=4; otherwise dry",
++            "height": "highest rank: Q/K/A=high, 9/T/J=mid, 2..8=low",
++            "aceLowInFlopShape": False,
++            "sourceFunctions": ["model.mjs:boardTexture", "model.mjs:boardHeight"]},
++        "strata": strata,
++        "boards": [{"id": board, "cards": list(catalog[board]), "stratum": classify(catalog[board])}
++                   for board in selected],
++        "laterWithinSelectedFlop": {
++            "turns": 4, "riversPerTurn": 3, "nominalTurnBoards": 400,
++            "nominalRiverRunouts": 1200, "seed": "solveaai-postflop-ai-v1",
++            "seedTemplate": "${config.seed}|balance|${board.id}",
++            "sampler": "unchanged balance.mjs:representativeRunouts; all four sampled turns removed before each river pool",
++            "reachableOnlyCounts": "determined later from each spot's exact saved live ranges; never substitute or silently replace boards"},
++        "notEvidenceFor": ["policy acceptance", "all-later-board coverage", "720000 trial completion", "GTO or strength guarantee"],
++    }
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--repository", type=Path, required=True)
++    parser.add_argument("--manifest", type=Path, required=True)
++    parser.add_argument("--write", action="store_true")
++    args = parser.parse_args()
++    manifest = make_manifest(args.repository)
++    encoded = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode()
++    if args.write:
++        args.manifest.parent.mkdir(parents=True, exist_ok=True)
++        with args.manifest.open("xb") as target:
++            target.write(encoded)
++    else:
++        assert args.manifest.read_bytes() == encoded, "Selection manifest differs from frozen deterministic reproduction"
++    print(json.dumps({"status": "PASS-selection-only", "canonicalFlops": 1755,
++                      "laterSelectedFlops": TARGET, "nonemptyStrata": 12,
++                      "manifestSha256": digest(encoded),
++                      "strata": [{key: row[key] for key in ["stratum", "population", "selected"]}
++                                 for row in manifest["strata"]]}, indent=2))
++
++
++if __name__ == "__main__":
++    if not __debug__:
++        raise SystemExit("Run without -O/PYTHONOPTIMIZE; selection assertions are mandatory")
++    main()
