@@ -1,0 +1,64 @@
+{
+  "pr": 50,
+  "testedHead": "b0f8fc9730c6237a69a89e7596b8a19372bb3c39",
+  "testedTree": "70dfca201fc0fbd69ebe23794577bc2795d454d2",
+  "branch": "feat/multiway-preflop-stage3",
+  "recordedAt": "2026-10-06T14:15:02.630134+00:00",
+  "tool": "mcp__cua_repl.js / Chrome extension browser 1",
+  "iabAvailable": false,
+  "dedicatedLoopbackPort": 18350,
+  "ordinaryApp": true,
+  "authMock": false,
+  "browserAcceptance": "BLOCKED_REAL_AUTH_SERVICE_UNREACHABLE",
+  "requiredGate": "Authenticated Stage3 unsupported postflop with no HU policy reuse",
+  "observed": "Google button disabled; Cannot reach the sign-in service. Check your connection and reload.",
+  "actionsVerified": [
+    "New-origin ordinary onboarding",
+    "Real screen visibly inspected",
+    "Back to Range/preflop and repeat entry returned same auth gate"
+  ],
+  "notVerified": [
+    "Authenticated requested downstream screen",
+    "Downstream close/repeat interactions",
+    "No-HU-request guarantee after authentication"
+  ],
+  "retainedCase17": null,
+  "savedData": "Every locally materialized LFS payload matched the exact committed oid and size; Stage2 restored with official verified-byte command; Stage3 also restored for PR50. No generation.",
+  "boundaries": "No auth bypass, production access, permission changes, merge, main updates or changes to protected servers/other tabs. Original fixture AuthPanel hook was deliberately not used.",
+  "evidence": [
+    {
+      "file": "pr50-auth-gate.jpg",
+      "sha256": "9ebd96dac58cd258b47702a849ad8cd8ab0c3d519b9188502b4823ecdb269f13",
+      "bytes": 39332
+    },
+    {
+      "file": "pr50-auth-gate.dom.txt",
+      "sha256": "4f2444abbd5a9fc05b8d0d35fd93290dc620e724f9fe5aff768f505638439051",
+      "bytes": 1309
+    },
+    {
+      "file": "pr50-terminal.jpg",
+      "sha256": "f4d2f5ded5d9ceea6ab4bc6997a2e0642fb831ad1ecd91b75a4b189224414269",
+      "bytes": 134727
+    },
+    {
+      "file": "pr50-terminal.dom.txt",
+      "sha256": "4b91f8ac0ec243ad4cf40b4cbfb5668b9653782aaf72b1941287ba94b834c034",
+      "bytes": 19393
+    }
+  ],
+  "stage3": {
+    "root": "s3_cold_four_bet_extra_UTGo2p5_HJt8_COr26_to_BTN",
+    "actions": [
+      "call",
+      "fold",
+      "fold"
+    ],
+    "liveParticipants": [
+      "CO",
+      "BTN"
+    ],
+    "potBB": 64,
+    "browserPreflopTerminal": "observed"
+  }
+}
