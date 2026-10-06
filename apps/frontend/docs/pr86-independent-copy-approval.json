@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "decision": "APPROVE_NARROW_COPY_AND_EXACT_METADATA_AMENDMENT",
+  "reviewed_at_utc": "2026-10-06T16:29:00Z",
+  "reviewer": {
+    "identity": "Independent PR86 copy/provenance reviewer",
+    "task": "review_pr86_copy_provenance",
+    "provider": "OpenAI",
+    "model": "Runtime model identifier not exposed to reviewer; no different-vendor claim",
+    "independence": "Separate review task from implementation author; did not modify repository, generate strategies, or author the candidate."
+  },
+  "repository": "Suuu-sh/ReysonAI",
+  "pull_request": "https://github.com/Suuu-sh/ReysonAI/pull/86",
+  "reviewed_base_commit": "de27442325d271f4d550eac57f29c68ffa7a767c",
+  "reviewed_candidate_commit": "e024e78065c50ee1396758580576d173fd614546",
+  "scope": "Explanation-only five-bet arithmetic plus precisely enumerated profile-source and receipt metadata amendment. No renewed strategy-quality, equilibrium, sample quality, policy, whole-suite or production approval.",
+  "input_packet": {
+    "library_file_id": "libfile_a3ee9c43c4608191bba862213ae50ead",
+    "bytes": 306646,
+    "sha256": "dfaa94da442e8bb65a3640978f420ff8e5e4f9946fe15540036c2641a56c4305"
+  },
+  "independently_verified": [
+    "GitHub comparison at the exact base/candidate contains six paths, exactly one under src/estimated: five-bet-responses.json, with 83 added and 83 deleted lines. Thus every other tracked estimated path is unchanged; the reported count 331 was not separately enumerated in this review.",
+    "Fetched complete remote baseline and candidate five-bet files; both are 871890 bytes and match the packet before/after SHA-256 identities.",
+    "Deep equality of complete dataset after deleting only each hand reason: all 2535 rows and every other field unchanged. Independently recomputed JSON.stringify non-reason hash 41203415b625e3dedb0d2444e8b3d78afd70d57bd1dac443cbc4ed74ee59a619.",
+    "Exactly 83 changed rows equal the packet list; 81 margin changes and two prose equity changes; no other inline text edits. Arithmetic checked independently in integer tenths and matches saved equity/threshold.",
+    "Fetched all 15 detailed reason files at the exact candidate. Ran complete five-bet-reason-arithmetic.test.mjs against those remote artifacts: 2 passed, 0 failed, 0 skipped. Covers saved facts, all reachable inline/detailed lead parity, both signs, equality and rounding boundaries.",
+    "Generator patch only imports the explanation helper, changes reasonFor lead and removes the unused explanation margin argument. Raw equity, raw margin passed to callFrequency, sampling, seed and saved numeric fields are unchanged. Helper has no side effects.",
+    "All eight packet source-content SHA-256 values match their included content. Remote receipt SHA-256 matches b3e2ec91ac83a252c90344ec421cccf97182bf6a81322a631e3c9df09062f5b7. Its 103 bound source records do not include the two changed generator/helper paths; GitHub diff has no changed bound source path.",
+    "Fetched all four current remote profile metadata files, verified their packet SHA-256, and computed proposed after hashes by replacing the old source hash once. Parsed metadata is equal after removing only balanced_source_sha256.five-bet-responses.",
+    "Read actual storage specification and range-review README, actual reviewed-preflop/profile-source implementation, and remote compose-reasons authoring guard. Reviewed receipt retains original Astra approval plus narrow historical source renewals."
+  ],
+  "artifact_change": {
+    "path": "apps/frontend/src/estimated/five-bet-responses.json",
+    "before": {
+      "bytes": 871890,
+      "sha256": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c"
+    },
+    "after": {
+      "bytes": 871890,
+      "sha256": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+    },
+    "rows": 2535,
+    "changed_inline_rows": 83,
+    "changed_spots": 11
+  },
+  "approved_profile_reference_amendments": [
+    {
+      "path": "apps/frontend/src/estimated/profiles/nit/villain/meta.json",
+      "bytes": 4679,
+      "before_sha256": "a5fe39ff5aaf11ad558544ec14a6ecc7da90c17a2f71261ca220fb9d72b4997f",
+      "after_sha256": "e7f937fc1c1b7ebb9381886a71ca4a7782499652c75321f06367bcb005853249",
+      "field": "balanced_source_sha256.five-bet-responses",
+      "before_value": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+      "after_value": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/profiles/station/villain/meta.json",
+      "bytes": 4767,
+      "before_sha256": "139041bd129507aefa5d6703ba2b2662982b3ae90d0f1787acf08ebb5181c3c9",
+      "after_sha256": "05443e075c6ec95e9d19441a9ffe655ed9f6e8a9bae040e69184c0134dd8ce77",
+      "field": "balanced_source_sha256.five-bet-responses",
+      "before_value": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+      "after_value": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/profiles/lag/villain/meta.json",
+      "bytes": 4504,
+      "before_sha256": "9b2c390fb9f14aa5f9f457993ab56e27c3cd298c0dd23c990a97f83c0b5a1b26",
+      "after_sha256": "12cbf7299d4b63c56e51e676327ae3a272b155d407139b0792be93bc480192f7",
+      "field": "balanced_source_sha256.five-bet-responses",
+      "before_value": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+      "after_value": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+    },
+    {
+      "path": "apps/frontend/src/estimated/profiles/maniac/villain/meta.json",
+      "bytes": 4755,
+      "before_sha256": "f6bf5ba0b64922c4bc96f12eb5b7f917c5f668db6677b51f68abb899f48c16a0",
+      "after_sha256": "35991dc4f545e893c060aef5196bbf4e840f4f68c6e73884f9a1d716015731d9",
+      "field": "balanced_source_sha256.five-bet-responses",
+      "before_value": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+      "after_value": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b"
+    }
+  ],
+  "approved_receipt_amendment": {
+    "path": "configs/multiway-preflop-stage2.review.json",
+    "existing_receipt_sha256": "b3e2ec91ac83a252c90344ec421cccf97182bf6a81322a631e3c9df09062f5b7",
+    "changes": "Replace exact five-bet artifact record and the four profile meta artifact records only; recompute content_sha256 through unchanged reviewedFiles(); append an attributed copy-only amendment referencing this review, exact candidate, base and before/after identities.",
+    "preserve": "All original review fields, reviewer attribution, baseline, findings, advisories, source renewals and limitations; all 103 source records, archive identity, continuation fingerprint and counts; all remaining 1883 artifact records.",
+    "content_sha256_before": "a00b6da1995d096951742cfa51d5adeedaca591f3ce87d0052f956d2f3e67410",
+    "predicted_content_sha256_after_exact_replacements": "ef05f76b24009d8b4270860f68335e3006c6b82329cedb97be6c04973b34f5ce",
+    "verification": "Prediction is derived from existing remote receipt, not a replacement for running reviewedFiles() on restored final checkout. Final observed records must exactly match the five expected changes. Do not overwrite newly changed unrelated branch state."
+  },
+  "legacy_detailed_provenance": {
+    "decision": "PRESERVE_HISTORICAL_FINGERPRINTS_NO_MIGRATION",
+    "historical_fingerprint": "d489d1f554edc8d9c5b859c4f3a939956f78b1eccafdc7549862fdcda47ce653",
+    "reported_current_legacy_fingerprint": "8e67399d93bfb18d6068f21e7988b07eb591e6d8f027a972337e1ff8d76b3076",
+    "reason": "reasonSourceFingerprint hashes full legacy datasets including inline copy. Stored detailed outputs were authored against historical bytes. They remain accurate for current saved facts, as independently tested. compose-reasons refuses stale local authoring facts; it is not needed for serving or delivering these existing saved outputs. The reviewed delivery gate validates exact saved artifacts and a distinct continuation fingerprint. Therefore no authoring-provenance rewrite is necessary for this copy-only delivery.",
+    "required_documentation": "Record the historical/current fingerprint distinction and this exact copy-only compatibility proof in the separately attributed amendment. State that existing facts were not regenerated and cannot be reused by compose-reasons against the changed full legacy source fingerprint.",
+    "not_approved": "No editing source_fingerprint in existing detail/fact files, no fingerprint exclusion, no stale-fact bypass, no automatic migration or regeneration. Any future migration is a separate concrete proposal requiring review; absence of such migration is not itself a blocker to this delivery."
+  },
+  "review_rules_interpretation": "The storage specification requires local verification and renewed independent review of changed artifacts. It contains no universal vendor/count requirement. The range-review README requires different-vendor models and two agreeing reviewers for generated-range revision proposals with proposed mixes/build:estimates. This review changes no mix or range estimate and does not claim to satisfy that separate strategy-review workflow.",
+  "required_before_readiness": [
+    "Apply only approved exact metadata amendments and append this review attribution. Preserve historical detailed provenance. Change the checkpoint statement from all 331 other files unchanged to 327 unchanged plus four metadata-only amendments after application.",
+    "Recompute reviewedFiles() and continuation fingerprint read-only on restored final checkout; require 1888 artifacts, 103 unchanged source records, exact archive, fingerprint b3538b0c44f04016e57d6eb76802665cf405d65f87e856b9860ed8a479065e53 and counts catalog3115/saved1611/unreachable1504/hands272259 unchanged.",
+    "Run unchanged strict review/profile/restore gates plus relevant tests/typechecks and mandatory exact-final-head CI. The current candidate still fails receipt/profile gates until amendments are applied. Any unexpected changed source, artifact, profile number or fingerprint is a stop-and-review condition.",
+    "No merge, readiness promotion or production release follows automatically from this review."
+  ],
+  "limitations": [
+    "This independent task did not restore/re-hash the 43MB continuation archive, rerun full suite/typechecks/build/browser tests, inspect exact-head CI, or recompute full continuation fingerprint. Existing packet reports are reused and explicitly remain author evidence.",
+    "Reported five-test suite and typechecks passed in author environment; reviewer independently ran only two arithmetic tests plus read-only comparisons described above.",
+    "No blanket quality review of existing strategy, profiles or all explanation text. This report does not certify GTO/EV optimality, external reviewer cryptographic identity, or a different-vendor model."
+  ],
+  "blocking_findings_in_reviewed_copy_scope": 0,
+  "advisories": [
+    "Comparison helper should eventually enumerate candidate as well as baseline estimated paths to detect new files; exact GitHub comparison independently rules out additions here. No change to helper is required for this exact candidate."
+  ],
+  "sources": [
+    "https://github.com/Suuu-sh/ReysonAI/compare/de27442325d271f4d550eac57f29c68ffa7a767c...e024e78065c50ee1396758580576d173fd614546",
+    "https://github.com/Suuu-sh/ReysonAI/blob/e024e78065c50ee1396758580576d173fd614546/configs/multiway-preflop-stage2.review.json",
+    "https://github.com/Suuu-sh/ReysonAI/blob/e024e78065c50ee1396758580576d173fd614546/apps/frontend/scripts/compose-reasons.mjs"
+  ]
+}
