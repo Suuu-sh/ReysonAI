@@ -1,3 +1,4 @@
+import { LoadingInline } from "../components/Loading.tsx";
 import { HumanRankArena } from "./HumanRankArena.tsx";
 import { humanProfile, humanRankState } from "./human-api.ts";
 import { ffCopy as ff } from "./fastfold-api.ts";
@@ -601,7 +602,7 @@ export function TrainerPage({ profile, onEditProfile, onSectionChange, section =
     <Sidebar activeSection={section} onSectionChange={onSectionChange} profile={profile} onEditProfile={onEditProfile} />
     <main className="trainer-page" ref={mainRef}>
       {rankedError && <p role="alert">{rankedError} <button type="button" className="config-edit" onClick={() => setReadinessRetry(value => value + 1)}>{ff("Retry connection", "接続を再試行", "重试连接", "Reintentar conexión")}</button></p>}
-      {rankedBusy && <p role="status">{localized("Confirming with ranked server…", "ランク戦サーバーに確認中…")}</p>}
+      {rankedBusy && <LoadingInline className="ranked-busy">{localized("Confirming with ranked server…", "ランク戦サーバーに確認中…")}</LoadingInline>}
       {section === "弱点"
         ? <Weakness history={history}
             onStart={() => { setPhase("library"); }}

@@ -5,6 +5,7 @@ import { applyAppearance } from "./account/preferences.ts";
 import { localized, productLocale } from "./locale.ts";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Onboarding } from "./components/Onboarding.tsx";
+import { AppLoading } from "./components/AppLoading.tsx";
 import { RangeWorkspace } from "./estimated/RangeWorkspace.tsx";
 import { TrainerPage } from "./trainer/TrainerPage.tsx";
 import { adoptOnboardingDraft, clearProfile, loadProfile, saveProfile, stashOnboardingDraft } from "./profile.ts";
@@ -68,7 +69,7 @@ export default function ProductApp() {
     const target = welcoming ? WELCOME_PATH : path + (window.location.pathname === WELCOME_PATH ? returnTo : window.location.search + window.location.hash);
     if (window.location.pathname !== (welcoming ? WELCOME_PATH : path)) window.history.replaceState(null, "", target);
   }, [welcoming, path]);
-  if (!account.ready) return <div className="site-loading">{localized("Opening account…", "アカウントを確認中…")}</div>;
+  if (!account.ready) return <AppLoading label={localized("Opening account…", "アカウントを確認中…")} />;
   if (authOpen) return <main className="account-page"><AuthPanel onChanged={reloadProfile} onGuest={async () => { if (accountSnapshot().user) { try { await logoutAccount(); } catch { return; } } rememberLearningIntent(null); go(HOME_PATH); setAuthOpen(false); reloadProfile(); }} />{account.user?.verified && <button className="account-primary" onClick={() => { setAuthOpen(false); reloadProfile(); }}>{localized("Continue", "続ける")}</button>}</main>;
   if (!profile || editing) {
     return <Onboarding initial={editing ? profile : null} account={account} onAccount={() => setAuthOpen(true)}
