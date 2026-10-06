@@ -1,0 +1,67 @@
+{
+  "kind": "fifth-case-live-progress-and-immutable-library-snapshot",
+  "preparedAt": "2026-10-06T09:26:00Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "parentCommit": "ff1203f0d0ed16db1bc81377d3ba6d033193c9e9",
+  "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+  "frozenSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "observation": {
+    "at": "2026-10-06T09:25:09.415583+00:00",
+    "boards": 788,
+    "targetBoards": 1755,
+    "errors": 0,
+    "unresolved": 0,
+    "successfulBatches": 95,
+    "failedBatches": 0,
+    "maxCompletedChildPeakRssKiB": 556644,
+    "notCurrentAggregateRss": true,
+    "freeDiskBytes": 4032610304,
+    "owner": 29433,
+    "attempt": "attempt-c9075316-cf53-45dc-811a-ef6287230a77",
+    "wholeRunReceiptPresent": false,
+    "state": "RUNNING_UNCHANGED"
+  },
+  "preservedSnapshot": {
+    "at": "2026-10-06T09:22:09.189194+00:00",
+    "boards": 720,
+    "successfulBatches": 90,
+    "capturedFiles": 17208,
+    "activePartialBatchesExcluded": true,
+    "snapshotFile": {
+      "path": "hu-final-recovery/co-sb-coldcall-successful-batches-snapshot-20261006-0922.json",
+      "bytes": 10723363,
+      "sha256": "f14e3e3aa51032a215f8c83055dd4711915ca84d835eb8f93d0f5aafef9ea4a9"
+    }
+  },
+  "confirmedLibrary": {
+    "libraryFileId": "libfile_6799ccdac21481919ae8552834b72a4f",
+    "version": 7,
+    "name": "hu-model11-co-sb-coldcall-progress-20261006-0922.tar.gz",
+    "bytes": 43833518,
+    "sha256": "bb9e1145a1678821e84bfbe240570b9ab60b353f084cb8b48936f2b4bb26ae94",
+    "confirmedReplacement": true,
+    "versionMetadataApplied": true,
+    "freshLibraryRedownloadClaimed": false,
+    "containsAll788ObservedBoards": false
+  },
+  "boundaries": {
+    "acceptedModel11ResearchCases": 4,
+    "fifthCaseAccepted": false,
+    "finalizer": "NOT_RUN_PENDING_GENUINE_TERMINAL",
+    "sourceOrActiveRunChanged": false,
+    "newSourceFilesAdded": 0,
+    "newNodeOrNumericalExecutionsForSave": 0,
+    "runtimeAdoption": false
+  },
+  "retainedLimits": {
+    "negativeRegressionMeans": 22,
+    "whole12AdvisoryWarnings": 10,
+    "noSuperiorityGtoOrUnknownOpponentRobustnessClaim": true
+  },
+  "remaining": [
+    "Genuine successful producer completion across all 1755 boards and 220 batches.",
+    "Conditional finalizer with actual terminal receipt SHA and its reviewed prerequisites.",
+    "Actual final-output review and separate independent final policy acceptance."
+  ]
+}
