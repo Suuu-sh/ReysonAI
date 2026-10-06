@@ -1,0 +1,58 @@
+{
+  "kind": "co-coldcall-live-generation-progress-checkpoint",
+  "observedAt": "2026-10-06T06:16:07.931496Z",
+  "preparedAt": "2026-10-06T06:18:00Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "parentCommit": "7e4a8ec024ccb3bbe7efece14fe2a39e18751cf7",
+  "numericalSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceAndRawPoliciesUnchanged": true,
+  "generation": {
+    "status": "RUNNING_AT_OBSERVATION",
+    "observedCompletedBoards": 729,
+    "targetCanonicalBoards": 1755,
+    "errors": 0,
+    "unresolved": 0,
+    "successfulBatches": 90,
+    "failedBatches": 0,
+    "activeWorkers": 5,
+    "highestCompletedBatchPeakGroupRssKiB": 571188,
+    "peakIsNotCurrentAggregateRss": true,
+    "finalProducerReceiptPresent": false
+  },
+  "confirmedLibrarySnapshot": {
+    "libraryFileId": "libfile_6fc13f8f72288191a328c485cc8d1fa9",
+    "version": 16,
+    "name": "hu-model11-co-coldcall-progress-20261006-0616.tar.gz",
+    "bytes": 99220941,
+    "sha256": "739300fdcbbd5d3753f51c10ef05f39d380dfa9fe3daa1e0c8d4712afae6ee37",
+    "immutableCompletedBoards": 720,
+    "successfulBatches": 90,
+    "exactFiles": 34107,
+    "confirmedWrite": true,
+    "localMetadataApplied": true,
+    "freshLibraryRedownloadClaimed": false,
+    "containsAll729ObservedBoards": false
+  },
+  "scope": {
+    "sourceSnapshotsAndChecksPreserved": true,
+    "historicalHoldAndDatedReceiptsUnchanged": true,
+    "ordinaryRuntimeUnchanged": true,
+    "oldModel10AndThreeScopedModel11AcceptancesUnchanged": true,
+    "fourthCaseAccepted": false,
+    "productionAuthorized": false,
+    "newNumericalExecutionsForCheckpoint": 0
+  },
+  "limitations": [
+    "Three repeated SB/aggressive adverse conditions remain an explicit balanced-belief limitation.",
+    "The archive preserves 720 completed boards, not all 729 from the separate live observation.",
+    "Highest completed-batch RSS is not current aggregate memory.",
+    "No completion-time, superiority, GTO or general robustness claim."
+  ],
+  "remaining": [
+    "Finish the active 1755-board producer and obtain a genuine successful complete terminal.",
+    "Run the separately reviewed finalizer only after its exact prerequisites.",
+    "Preserve final evidence and obtain independent final disposition/acceptance.",
+    "PR conflict/current full CI remain unresolved or unverified; runtime adoption remains separate."
+  ]
+}
