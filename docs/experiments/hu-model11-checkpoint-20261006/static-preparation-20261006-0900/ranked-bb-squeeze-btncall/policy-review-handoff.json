@@ -1,0 +1,401 @@
+{
+  "kind": "existing-draft-static-provenance-handoff",
+  "version": 1,
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "status": "UNCHANGED_PRIOR_POLICY_REVIEW_REUSABLE_FOR_BOUNDED_ENTRY_ONLY",
+  "independentReviewPerformedHere": false,
+  "historicalModel": 10,
+  "evaluationModelPending": 11,
+  "pair": {
+    "flop": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.candidate.json",
+      "bytes": 40058,
+      "sha256": "22919105d09997b89501ac53631fd10da9852794d5921688a2bfb07196fc5102"
+    },
+    "later": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.laterCandidate.json",
+      "bytes": 52400,
+      "sha256": "bac3b2ba2691fc20d68e425368b4759f88cd053a13b5a053d342edb916f82a39"
+    }
+  },
+  "savedPolicyHashes": {
+    "flop": "405128289b9624a38d6027ec8ae32c2f806d258ed9d1b5827507d7acb2935fcd",
+    "later": "30921204f762fe66287d8ab0c9541c84863faa7683a46fdfc60548c3a7319edd"
+  },
+  "historicalInputFingerprintAssertion": "6c006cf7ac518bb96ff52c52f364f3e96b03acc715bcf75ab7bfb7ebe21e00a8",
+  "currentOfficialInputFingerprint": null,
+  "provenance": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/proposals-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.provenance.json",
+    "bytes": 5658,
+    "sha256": "af19bc10de57b116489101107bf66e64e7d08a2f943bc3ee51c52718ed84c8a8"
+  },
+  "authorship": {
+    "author_model": "gpt-6-astra",
+    "reasoning_effort": "xhigh",
+    "authorship_route": "native model authoring; Python expands only the independently authored literal rows; no CLI model invocation",
+    "authored_at_utc": "2026-10-04T20:00:27.009255+00:00",
+    "defence_version": 10,
+    "observable_action_model_version": 10
+  },
+  "originalContext": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/inputs-model10-purecore/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.context.json",
+    "bytes": 42716,
+    "sha256": "9496a6bcf62179135219ef7e3d978acf3f7818e577293fab2d7fcec0eacc7d9f"
+  },
+  "promptHashesVerified": {
+    "flop": "ec1d0abcf6192f3b8f7da26ed516a7a74bdab36efb63ada197b8df0b1d50c586",
+    "later": "962ec1b98163955ef3dbcf6a2f6eaec56ae8fd65ba45f0bf7f03f7f1c02eec01"
+  },
+  "literalRowsReconciled": 360,
+  "sourceComparisons": [
+    {
+      "dataset": "opening-ranges",
+      "id": "CO_open",
+      "savedFile": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/inputs-model10-purecore/sources/fcdd06377fe10215a2c3f14e7245d7aec8098f972e014d37ac88f1a55f92f046.json",
+        "bytes": 18496,
+        "sha256": "18e83540e5b75ef0986b1c9cbadae36e6b761117a8e05509bfa03f6df02276dc"
+      },
+      "currentDataset": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/opening-ranges.json",
+        "bytes": 113403,
+        "sha256": "236225dbae1c8aa2e2e7af8a449555f27ef80fed878114408c0e7338b89d0f0b"
+      },
+      "selectedSpotExactlyEqual": true,
+      "savedContentHash": "fcdd06377fe10215a2c3f14e7245d7aec8098f972e014d37ac88f1a55f92f046"
+    },
+    {
+      "dataset": "squeeze-responses",
+      "id": "CO_vs_BB_squeeze_BTNcall",
+      "savedFile": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/inputs-model10-purecore/sources/34efd51746f5c0ba5b9708cdaef3db46cc1cfd24adab0d06c4fee56997f6e7fb.json",
+        "bytes": 23315,
+        "sha256": "c0b9be6be4c5ad3f1ea19a8d52ec43eb22a169ef05485a295d6a72d9614d32c2"
+      },
+      "currentDataset": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/squeeze-responses.json",
+        "bytes": 1543744,
+        "sha256": "8f8d604bc80052382205363190db48bec4c9a7df8b6322af512009f47df6c9a2"
+      },
+      "selectedSpotExactlyEqual": true,
+      "savedContentHash": "34efd51746f5c0ba5b9708cdaef3db46cc1cfd24adab0d06c4fee56997f6e7fb"
+    },
+    {
+      "dataset": "preflop-ranges",
+      "id": "BTN_vs_CO",
+      "savedFile": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/inputs-model10-purecore/sources/27da1335474c0e9a3f63377ebc52cf89d8179b643ed3bed37502036deb6486b0.json",
+        "bytes": 23437,
+        "sha256": "42d4493742e6419e35763a2e6e2715fa15b60422e41a562caa6b71142052ce80"
+      },
+      "currentDataset": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/preflop-ranges.json",
+        "bytes": 391641,
+        "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55"
+      },
+      "selectedSpotExactlyEqual": true,
+      "savedContentHash": "27da1335474c0e9a3f63377ebc52cf89d8179b643ed3bed37502036deb6486b0"
+    },
+    {
+      "dataset": "squeeze-responses",
+      "id": "BTN_vs_BB_squeeze_COfold",
+      "savedFile": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/inputs-model10-purecore/sources/dfb8993ca155f81930b39d93b460c5a2b57c91ffb3f1876e271c3fceed9b6463.json",
+        "bytes": 23301,
+        "sha256": "e9545372daa1d0ce7be2bedb93b45b89d0d62531e97de47c12056d6adfc4909f"
+      },
+      "currentDataset": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/squeeze-responses.json",
+        "bytes": 1543744,
+        "sha256": "8f8d604bc80052382205363190db48bec4c9a7df8b6322af512009f47df6c9a2"
+      },
+      "selectedSpotExactlyEqual": true,
+      "savedContentHash": "dfb8993ca155f81930b39d93b460c5a2b57c91ffb3f1876e271c3fceed9b6463"
+    },
+    {
+      "dataset": "multiway-responses",
+      "id": "BB_vs_CO_BTNcall",
+      "savedFile": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/inputs-model10-purecore/sources/a9c7a23bac53e54f1ec41b093ef2d2e35355f8c0369f5474295a92c55d9600e8.json",
+        "bytes": 22811,
+        "sha256": "160695414af7b41283b7faea939ae1803d1a727cde13504932ca741348f2f245"
+      },
+      "currentDataset": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/multiway-responses.json",
+        "bytes": 506995,
+        "sha256": "db5e05912bff4d58f845dfd3caec3e2d5292b5a914579ee96c47112836e3c912"
+      },
+      "selectedSpotExactlyEqual": true,
+      "savedContentHash": "a9c7a23bac53e54f1ec41b093ef2d2e35355f8c0369f5474295a92c55d9600e8"
+    }
+  ],
+  "priorIndependentStaticReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/static-review.md",
+    "bytes": 15702,
+    "sha256": "4211a12fec50c476dfd6f24731ce2841ca23cc690015037aff24402810a17b96"
+  },
+  "priorIndependentStaticEvidence": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/static-evidence.json",
+    "bytes": 639831,
+    "sha256": "e9feabb10d14de46e0ccbaf3d69f198b5842cc2796a603bd866c479e540b57d3"
+  },
+  "priorSourceProductChecksReused": 338,
+  "priorFixedConclusion": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/fixed-preflight-conclusion.md",
+    "bytes": 10999,
+    "sha256": "a432436d6b90ec07030b9148a724643b4f15995c0ee619c3ab7669d03eb0b82f"
+  },
+  "priorFixedCompletion": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/fixed-preflight-complete.json",
+    "bytes": 109381,
+    "sha256": "2903c96a57262593a2e1543e45528b086da6dc72776ba025c9f99efb6b2d0486"
+  },
+  "historicalPerCaseConclusion": {
+    "id": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+    "source_fingerprint": "6c006cf7ac518bb96ff52c52f364f3e96b03acc715bcf75ab7bfb7ebe21e00a8",
+    "policy_hashes": {
+      "flop": "405128289b9624a38d6027ec8ae32c2f806d258ed9d1b5827507d7acb2935fcd",
+      "later": "30921204f762fe66287d8ab0c9541c84863faa7683a46fdfc60548c3a7319edd"
+    },
+    "policy_file_hashes": {
+      "flop": "22919105d09997b89501ac53631fd10da9852794d5921688a2bfb07196fc5102",
+      "later": "bac3b2ba2691fc20d68e425368b4759f88cd053a13b5a053d342edb916f82a39"
+    },
+    "phases": {
+      "river-initial": {
+        "requested_rows": 80,
+        "row_states": {
+          "diagnostic": 80
+        },
+        "branch_states": {
+          "diagnostic": 200,
+          "zero-policy-reach": 19,
+          "no-compatible-defenders": 1
+        },
+        "observations_including_extra_exact": 33300,
+        "negative_mdf_promotions": 0,
+        "evaluated_defender_unknown_signs": 0,
+        "evaluated_zero_equity_call_branches": 0,
+        "maximum_negative5pt_call_mass": 0.024904145701527818,
+        "after_call_terminal_cases": 0,
+        "max_terminal_call_mismatch_mass": 0,
+        "source_and_policies_unchanged": true,
+        "result_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-initial.pilot1.json",
+        "result_sha256": "8179e09b93010ac669cf07b19571d6808bb0d5062f431a0fbb41de026b4472d6",
+        "receipt_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-initial.pilot1.launch.json",
+        "receipt_sha256": "0f0eac43d39dfa8c19eee670c612e77926ecea89bf053718bb8bcb04e40de22a",
+        "elapsed_seconds": 1.3259598090080544,
+        "max_rss_kib": 212968
+      },
+      "flop": {
+        "requested_rows": 24,
+        "row_states": {
+          "diagnostic": 24
+        },
+        "branch_states": {},
+        "observations_including_extra_exact": 0,
+        "negative_mdf_promotions": 0,
+        "evaluated_defender_unknown_signs": 0,
+        "evaluated_zero_equity_call_branches": 0,
+        "maximum_negative5pt_call_mass": null,
+        "after_call_terminal_cases": 0,
+        "max_terminal_call_mismatch_mass": 0,
+        "source_and_policies_unchanged": true,
+        "result_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.flop.flop-v3.json",
+        "result_sha256": "c0d872000d77e660bb89a5b34955ce30ea30a7789502ff2101132a0f98eed386",
+        "receipt_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.flop.flop-v3.launch.json",
+        "receipt_sha256": "f151ce90ab97d7990f9c868f24462fe29b1dc0f9d45b171bfd17233304eb9662",
+        "elapsed_seconds": 0.2743453930015676,
+        "max_rss_kib": 102692
+      },
+      "saved-loss": {
+        "requested_rows": 16,
+        "row_states": {
+          "diagnostic": 16
+        },
+        "branch_states": {},
+        "observations_including_extra_exact": 2780,
+        "negative_mdf_promotions": 0,
+        "evaluated_defender_unknown_signs": 0,
+        "evaluated_zero_equity_call_branches": 0,
+        "maximum_negative5pt_call_mass": null,
+        "after_call_terminal_cases": 0,
+        "max_terminal_call_mismatch_mass": 0,
+        "source_and_policies_unchanged": true,
+        "result_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.saved-loss.saved-v3.json",
+        "result_sha256": "4726ebe857852cfaf931950dd1668018c2aecbf6db6f28d9fbba528819ca634e",
+        "receipt_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.saved-loss.saved-v3.launch.json",
+        "receipt_sha256": "8270858a824fdfdebb96054b7f213c0078f43f2a7ec50181eef8c1c17814117b",
+        "elapsed_seconds": 0.3809770160005428,
+        "max_rss_kib": 101796
+      },
+      "river-extended-a": {
+        "requested_rows": 80,
+        "row_states": {
+          "diagnostic": 80
+        },
+        "branch_states": {
+          "diagnostic": 160
+        },
+        "observations_including_extra_exact": 25282,
+        "negative_mdf_promotions": 0,
+        "evaluated_defender_unknown_signs": 0,
+        "evaluated_zero_equity_call_branches": 0,
+        "maximum_negative5pt_call_mass": 0.024264513129236734,
+        "after_call_terminal_cases": 0,
+        "max_terminal_call_mismatch_mass": 0,
+        "source_and_policies_unchanged": true,
+        "result_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-extended-a.adjacent-a1.json",
+        "result_sha256": "63121c914b782ceaf1d8e4d3df5f05c8a0479472707ca03ae55117ea78845e73",
+        "receipt_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-extended-a.adjacent-a1.launch.json",
+        "receipt_sha256": "0e8c9d31435526a6f037aca1003ca4f51ed20d952df26164c69861b678391539",
+        "elapsed_seconds": 2.0780486629955703,
+        "max_rss_kib": 264656
+      },
+      "river-extended-b": {
+        "requested_rows": 60,
+        "row_states": {
+          "diagnostic": 60
+        },
+        "branch_states": {
+          "diagnostic": 140
+        },
+        "observations_including_extra_exact": 21628,
+        "negative_mdf_promotions": 0,
+        "evaluated_defender_unknown_signs": 0,
+        "evaluated_zero_equity_call_branches": 0,
+        "maximum_negative5pt_call_mass": 0.02619323252615091,
+        "after_call_terminal_cases": 0,
+        "max_terminal_call_mismatch_mass": 0,
+        "source_and_policies_unchanged": true,
+        "result_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-extended-b.adjacent-b1.json",
+        "result_sha256": "4aae5758639562dab0086f55c82ce22f77a8fd1a5278f28d5a7fed9d0b819b18",
+        "receipt_path": ".local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-extended-b.adjacent-b1.launch.json",
+        "receipt_sha256": "e37cd7da2ee229f122729628a15fcde269f7cda6c2e802293dd91a1d0a66df8b",
+        "elapsed_seconds": 1.0456566359935096,
+        "max_rss_kib": 194936
+      }
+    },
+    "zero_factor_future_losses": [],
+    "disposition": "unaccepted: no exact-zero loss found in executed applicable cells; positive-factor fidelity and common reach consistency unresolved"
+  },
+  "historicalPhaseResultAndReceiptPinsVerified": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-initial.pilot1.json",
+      "bytes": 1456973,
+      "sha256": "8179e09b93010ac669cf07b19571d6808bb0d5062f431a0fbb41de026b4472d6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-initial.pilot1.launch.json",
+      "bytes": 34906,
+      "sha256": "0f0eac43d39dfa8c19eee670c612e77926ecea89bf053718bb8bcb04e40de22a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.flop.flop-v3.json",
+      "bytes": 58495,
+      "sha256": "c0d872000d77e660bb89a5b34955ce30ea30a7789502ff2101132a0f98eed386"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.flop.flop-v3.launch.json",
+      "bytes": 34877,
+      "sha256": "f151ce90ab97d7990f9c868f24462fe29b1dc0f9d45b171bfd17233304eb9662"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.saved-loss.saved-v3.json",
+      "bytes": 18886,
+      "sha256": "4726ebe857852cfaf931950dd1668018c2aecbf6db6f28d9fbba528819ca634e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.saved-loss.saved-v3.launch.json",
+      "bytes": 34905,
+      "sha256": "8270858a824fdfdebb96054b7f213c0078f43f2a7ec50181eef8c1c17814117b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-extended-a.adjacent-a1.json",
+      "bytes": 1194940,
+      "sha256": "63121c914b782ceaf1d8e4d3df5f05c8a0479472707ca03ae55117ea78845e73"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-extended-a.adjacent-a1.launch.json",
+      "bytes": 34941,
+      "sha256": "0e8c9d31435526a6f037aca1003ca4f51ed20d952df26164c69861b678391539"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-extended-b.adjacent-b1.json",
+      "bytes": 1020595,
+      "sha256": "4aae5758639562dab0086f55c82ce22f77a8fd1a5278f28d5a7fed9d0b819b18"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.river-extended-b.adjacent-b1.launch.json",
+      "bytes": 34941,
+      "sha256": "e37cd7da2ee229f122729628a15fcde269f7cda6c2e802293dd91a1d0a66df8b"
+    }
+  ],
+  "geometry": {
+    "potBb": 29,
+    "stackBb": 87,
+    "ip": "BTN",
+    "oop": "BB",
+    "aggressor": "BB",
+    "tree": "oop_leads",
+    "reach": {
+      "probability": 0.0005760559857263642,
+      "samples": 32768,
+      "compatible_samples": 23626,
+      "method": "seeded-participant-range-products-collision-corrected-v1; forced outside folds unweighted"
+    },
+    "contributionsBb": {
+      "UTG": 0,
+      "HJ": 0,
+      "CO": 2.5,
+      "BTN": 13,
+      "SB": 0.5,
+      "BB": 13
+    }
+  },
+  "rangeSummary": {
+    "BB": {
+      "count": 40,
+      "weighted_combos": 69.4,
+      "pocket_pair_weight_fraction": 0.3285302593659942,
+      "source_factors": [
+        [
+          "multiway-responses",
+          "BB_vs_CO_BTNcall",
+          "squeeze"
+        ]
+      ]
+    },
+    "BTN": {
+      "count": 31,
+      "weighted_combos": 74.96000000000001,
+      "pocket_pair_weight_fraction": 0.4794557097118463,
+      "source_factors": [
+        [
+          "preflop-ranges",
+          "BTN_vs_CO",
+          "call"
+        ],
+        [
+          "squeeze-responses",
+          "BTN_vs_BB_squeeze_COfold",
+          "call"
+        ]
+      ]
+    }
+  },
+  "retainedPolicyRisks": [
+    "BTN live range is flat times final squeeze-call, not the CO opener-call range of an already accepted case.",
+    "Paired/trips boards followed by a blank/over card use ordinary monster rows; newest-card pair override does not resolve persistent pairing.",
+    "Coarse monster tier does not establish equity-defined value.",
+    "Tiny strictly positive branches retain compatible support despite ordinary-equity unavailability; do not collapse to zero.",
+    "Keep raw label choices, caps, pooled physical action, effective continuation and off-model completion distinct.",
+    "Historical model10 fixed hold is preserved; it passes no model11 numerical gate."
+  ],
+  "loadInputs": "NOT_RUN",
+  "validateEffectiveArtifacts": "NOT_RUN",
+  "sourceCapture": "NOT_RUN",
+  "controllerPrepare": "NOT_RUN",
+  "policyAccepted": false,
+  "productionAuthorized": false
+}

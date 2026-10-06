@@ -1,0 +1,38 @@
+diff --git a/apps/frontend/scripts/postflop-ai/effective-reach.mjs b/apps/frontend/scripts/postflop-ai/effective-reach.mjs
+index c125ff7..600b52a 100644
+--- a/apps/frontend/scripts/postflop-ai/effective-reach.mjs
++++ b/apps/frontend/scripts/postflop-ai/effective-reach.mjs
+@@ -61,6 +61,7 @@ function numericLawMemoKey(mix, actions) {
+ }
+ 
+ class EffectiveDefence extends Defence {
++  #lastPrefixKey = null;
+   constructor(inputs, flopPolicy, laterPolicy, options) {
+     super(inputs, flopPolicy, laterPolicy, options.bluffCap);
+     this.belief = options.belief;
+@@ -144,7 +145,15 @@ class EffectiveDefence extends Defence {
+     return out;
+   }
+   prepare(prefix) {
+-    const key = canonicalJson({ board: prefix.board, path: prefix.path, pending: prefix.pending, geometry: prefix.geometry });
++    // Every caller supplies an owned, deeply frozen createDecisionPrefix snapshot.
++    // Reuse only that exact object; newly created historical prefixes still miss.
++    const memo = this.#lastPrefixKey;
++    const key = memo?.prefix === prefix ? memo.key
++      : canonicalJson({ board: prefix.board, path: prefix.path, pending: prefix.pending, geometry: prefix.geometry });
++    if (memo?.prefix !== prefix && this.lawCache.limits.entries > 0 &&
++        this.lawCache.limits.numericBytes > 0 && this.lawCache.limits.metadataBytes > 0) {
++      this.#lastPrefixKey = { prefix, key };
++    }
+     const complete = this.lawCache.get(key) ?? this.active.get(key);
+     if (complete?.state === 'complete') return complete;
+     if (complete?.state === 'building') error('cyclic-prefix-dependency', 'Attempted recursive lookup of a building law');
+@@ -258,7 +267,7 @@ class EffectiveDefence extends Defence {
+         support: { status: own.status, ownTotal: own.total, opponentTotal: other.total } });
+     });
+   }
+-  releaseBoardCaches() { super.releaseBoardCaches(); this.lawCache.clear(); this.active.clear(); }
++  releaseBoardCaches() { super.releaseBoardCaches(); this.lawCache.clear(); this.active.clear(); this.#lastPrefixKey = null; }
+   stats() { return { ...this.lawCache.stats(), builds: this.builds, maximumActiveAncestors: this.maxActive, active: this.active.size }; }
+ }
+ 

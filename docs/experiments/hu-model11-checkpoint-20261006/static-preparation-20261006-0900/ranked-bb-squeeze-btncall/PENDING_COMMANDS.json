@@ -1,0 +1,82 @@
+{
+  "kind": "pending-existing-five-worker-commands",
+  "version": 1,
+  "status": "NOT_RUN",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "planSha256": "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988",
+  "admission": [
+    "Wait for parent lane release after genuine terminal ownership, finalization and independently accepted exact-source predecessor evidence.",
+    "Recheck source commit/tree, tracked-clean state, all static pins, host limits and absence of destination run/prepare lock. Preserve any unexpected existing output.",
+    "No copied prepared, launch-review, bounded-review, producer or acceptance receipt can authorize this case."
+  ],
+  "officialLoaderCaptureAndPrepare": {
+    "command": [
+      "env",
+      "-u",
+      "NODE_OPTIONS",
+      "-u",
+      "NODE_PATH",
+      "python",
+      "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/controller.py",
+      "prepare",
+      "--reviewed-sha256",
+      "dba17e44c3cd61d36ad763f09522bda59fdbf63cec01ae15edbf1936dec2f735"
+    ],
+    "cwd": "/workspace/scratch/08c72b2d7549",
+    "status": "NOT_RUN",
+    "owner": "Unchanged controller.py prepare branch",
+    "internallyOwnedChildCommand": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "--max-old-space-size=512",
+      "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/context.mjs",
+      "describe",
+      "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988"
+    ],
+    "officialCalls": [
+      "capturePilot1755Source()",
+      "loadInputs(plan.spot)",
+      "model11GateBinding -> createModel11Execution -> createEffectiveDefence -> validateEffectiveArtifacts",
+      "model11CompletionRepresentativeBinding and completionRepresentativeCells"
+    ],
+    "resourceLimits": {
+      "heapMiB": 512,
+      "groupRssMiB": 900,
+      "aggregateRssMiB": 3072,
+      "minimumAvailableMiB": 2048,
+      "childSeconds": 900,
+      "wholeSeconds": 43200,
+      "pollMilliseconds": 50
+    },
+    "prepareWindowSeconds": 60,
+    "expectedInputFingerprint": "6c006cf7ac518bb96ff52c52f364f3e96b03acc715bcf75ab7bfb7ebe21e00a8",
+    "expectedSourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+    "expectedValuesMeaning": "Saved assertions only; official mismatch blocks admission, never author or modify policy to force matching.",
+    "output": "Only successful owned controller prepare may create genuine run/prepared.json and new identities."
+  },
+  "futureBindingReferences": {
+    "whole12": {
+      "directory": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair",
+      "status": "REFERENCE_ONLY_NOT_BOUND",
+      "instruction": "Bind existing reviewed split-storage continuation after genuine prepare and exact-case review; inherit no predecessor partial-output or completion pins. The copied monolithic serial whole12 is not claimed storage-safe."
+    },
+    "finalization": {
+      "directory": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization",
+      "status": "REFERENCE_ONLY_NOT_BOUND",
+      "instruction": "Mechanically bind existing version3 producer-semantic-reuse/full-lossless finalizer to genuine current-case terminal/row/proof lineage. Copied legacy serial/controller finalize mode remains excluded."
+    }
+  },
+  "subsequentModes": {
+    "regression": "Existing 72x64 per-policy regression only after exact-case independent launch review. Descriptive budget; no confidence, reroll or old-full-replay claim.",
+    "all1755": "Own bounded-case quality review plus approved boards launch review required. Five lanes, at most eight boards per child.",
+    "finalization": "Genuine 1755 completed boards and 220-batch terminal plus independent final scoped policy review required."
+  },
+  "prepared": null,
+  "bindingHash": null,
+  "checkpointIdentityHash": null,
+  "regressionBindingHash": null,
+  "numericalLaunchReview": null,
+  "boundedCaseReview": null,
+  "producerReceipt": null,
+  "policyAccepted": false,
+  "productionAuthorized": false
+}

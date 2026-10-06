@@ -1,0 +1,100 @@
+{
+  "kind": "existing-hu-ranked-draft-selection",
+  "version": 1,
+  "status": "SELECTED_FOR_STATIC_STAGING_ONLY",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "stage": "A",
+  "catalogIndexZeroBased": 2,
+  "savedReach": {
+    "probability": 0.0005760559857263642,
+    "samples": 32768,
+    "compatible_samples": 23626,
+    "method": "seeded-participant-range-products-collision-corrected-v1; forced outside folds unweighted"
+  },
+  "rankingMeaning": "Preserved sampled participant-product ranking estimate; not a solver reach probability. Outside forced folds unweighted. No reach recalculation.",
+  "orderingEvidence": {
+    "catalog": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/data/hu-after-multiway-spots.json",
+      "bytes": 1146128,
+      "sha256": "096b926d3d7f84c88475e99f3ebdfa80f046539ee7b41983ac9b8c1eec229851"
+    },
+    "catalogMatchesFrozenAuthorManifest": true,
+    "builder": {
+      "file": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/build-multiway-spots.mjs",
+        "bytes": 5730,
+        "sha256": "109eb19ca3e9188b3a111e23d4b4c7eed2bc571e762df65ecf91981597fb8b86"
+      },
+      "lines": [
+        60,
+        64
+      ],
+      "rule": "Stage A followed by saved descending-reach Stage B"
+    },
+    "serialSelection": {
+      "file": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/serial-validation.py",
+        "bytes": 33690,
+        "sha256": "d4280819ab8bc4cadbc6dd180d9b4ea5491d076479e85d3b5b3d8ccb06c621e2"
+      },
+      "lines": [
+        161,
+        164
+      ],
+      "rule": "Selected Stage A keeps catalog order; Stage B is saved descending reach"
+    },
+    "priorSelection": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-next-one-authoring-20261006/selection.json",
+      "bytes": 3421,
+      "sha256": "523235984dce1712b4b7fefb6fc6f258d87be17e2f7fa0a9a2ef1a8eabdec9f7"
+    }
+  },
+  "alreadyScopedAcceptedAsReportedByParent": [
+    "BTN_open_SB_3bet_BB_call_BTN_fold",
+    "BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call",
+    "CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold",
+    "CO_open_BTN_3bet_SB_call_CO_fold"
+  ],
+  "reservedPredecessor": {
+    "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+    "accepted": false,
+    "ownerAtAssignment": 29433,
+    "attemptAtAssignment": "attempt-c9075316-cf53-45dc-811a-ef6287230a77",
+    "note": "Reserve active fifth case; this packet neither monitors nor accepts it."
+  },
+  "remainingExistingRankedDrafts": [
+    {
+      "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+      "catalogIndexZeroBased": 2,
+      "stage": "A",
+      "savedReach": {
+        "probability": 0.0005760559857263642,
+        "samples": 32768,
+        "compatible_samples": 23626,
+        "method": "seeded-participant-range-products-collision-corrected-v1; forced outside folds unweighted"
+      }
+    },
+    {
+      "spot": "CO_open_BTN_call_SB_squeeze_CO_fold_BTN_call",
+      "catalogIndexZeroBased": 3,
+      "stage": "A",
+      "savedReach": {
+        "probability": 0.000529187129080152,
+        "samples": 32768,
+        "compatible_samples": 23611,
+        "method": "seeded-participant-range-products-collision-corrected-v1; forced outside folds unweighted"
+      }
+    },
+    {
+      "spot": "CO_open_BTN_3bet_BB_call_CO_fold",
+      "catalogIndexZeroBased": 4,
+      "stage": "A",
+      "savedReach": {
+        "probability": 0.0004740747024438861,
+        "samples": 32768,
+        "compatible_samples": 21976,
+        "method": "seeded-participant-range-products-collision-corrected-v1; forced outside folds unweighted"
+      }
+    }
+  ]
+}

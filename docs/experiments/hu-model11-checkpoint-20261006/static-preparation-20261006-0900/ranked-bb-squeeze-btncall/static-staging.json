@@ -1,0 +1,165 @@
+{
+  "kind": "next-hu-static-mechanical-staging",
+  "version": 1,
+  "status": "STATIC_READY_NOT_PREPARED_NOT_LAUNCHED",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "source": {
+    "repository": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution",
+    "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "tree": "cf4c70d5fe5cfb5fb612be325d3262fc23e23c68",
+    "trackedStatus": "",
+    "sourcePinsVerified": 153,
+    "expectedSourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+    "identityMeaning": "Inherited assertion verified only by file pins here; current official capture remains NOT_RUN."
+  },
+  "recipePlan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/plan.json",
+    "bytes": 43632,
+    "sha256": "74ba21f156f08e24a158f028a2c4f1c4505e59232bbe3598f817a62ab23cd7e0"
+  },
+  "pair": {
+    "flop": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.candidate.json",
+      "bytes": 40058,
+      "sha256": "22919105d09997b89501ac53631fd10da9852794d5921688a2bfb07196fc5102"
+    },
+    "later": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.laterCandidate.json",
+      "bytes": 52400,
+      "sha256": "bac3b2ba2691fc20d68e425368b4759f88cd053a13b5a053d342edb916f82a39"
+    }
+  },
+  "expectedInputFingerprint": "6c006cf7ac518bb96ff52c52f364f3e96b03acc715bcf75ab7bfb7ebe21e00a8",
+  "inputFingerprintMeaning": "Saved author/context/wrapper/review assertion only; not a current-source official loader result.",
+  "savedPolicyHashes": {
+    "flop": "405128289b9624a38d6027ec8ae32c2f806d258ed9d1b5827507d7acb2935fcd",
+    "later": "30921204f762fe66287d8ab0c9541c84863faa7683a46fdfc60548c3a7319edd"
+  },
+  "staticChecks": {
+    "allArchiveEvidencePinsMatch": true,
+    "archiveEvidenceFiles": 33,
+    "catalogMatchesFrozenAuthorManifest": true,
+    "selectedSavedSourceSpotsExactlyEqualCurrentSource": 5,
+    "historicalPolicyPayloadHashesMatch": true,
+    "rawPolicyEqualsWrapperPayload": true,
+    "authoredLiteralRowsMatch": 360,
+    "sourcePinsMatch": true,
+    "fullPlanPinMatches": true,
+    "nodeBinaryPinMatches": true,
+    "noDestinationRunOrLock": true
+  },
+  "limits": {
+    "heapMiB": 512,
+    "groupRssMiB": 900,
+    "aggregateRssMiB": 3072,
+    "minimumAvailableMiB": 2048,
+    "childSeconds": 900,
+    "wholeSeconds": 43200,
+    "pollMilliseconds": 50
+  },
+  "lanes": 5,
+  "boardsPerProcess": 8,
+  "pendingOfficialStages": {
+    "loadInputs": "NOT_RUN",
+    "validateEffectiveArtifacts": "NOT_RUN",
+    "capturePilot1755Source": "NOT_RUN",
+    "prepare": "NOT_RUN"
+  },
+  "preparedBindingHash": null,
+  "checkpointIdentityHash": null,
+  "regressionBindingHash": null,
+  "sourceRecipeFiles": {
+    "controller.py": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/controller.py",
+      "bytes": 24325,
+      "sha256": "dba17e44c3cd61d36ad763f09522bda59fdbf63cec01ae15edbf1936dec2f735"
+    },
+    "context.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/context.mjs",
+      "bytes": 9054,
+      "sha256": "b754f94fb41959d7eaa778599356ed66f44c2e0939c840de3fa2a69c26ab5e03"
+    },
+    "worker.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/worker.mjs",
+      "bytes": 4654,
+      "sha256": "aeb5d2cc1bbef59462b5462855f6a274e59d3d1cdffb5dc8db164e53d51ba00c"
+    },
+    "regression.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/regression.mjs",
+      "bytes": 5268,
+      "sha256": "91cce4c0b96f52ef17ab58bd573fd6946926b14064be8de6353522c88ddc0b01"
+    },
+    "serial.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/serial.mjs",
+      "bytes": 12515,
+      "sha256": "76b3130e7f5fd6d32e96183d8a3517038d000c466b8cdd7fa5b16f416a05dfc2"
+    },
+    "capture-source.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/capture-source.mjs",
+      "bytes": 430,
+      "sha256": "34e6e4c875618318dbd78926555ab5e1b3858d498170fe9570909d3eb3ba95e4"
+    }
+  },
+  "stagedRecipeFiles": {
+    "controller.py": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/controller.py",
+      "bytes": 24325,
+      "sha256": "dba17e44c3cd61d36ad763f09522bda59fdbf63cec01ae15edbf1936dec2f735"
+    },
+    "context.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/context.mjs",
+      "bytes": 9067,
+      "sha256": "00eb118edaac9b37425eac303eddb175d8bd9d68dce475fc8130b59b0592332c"
+    },
+    "worker.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/worker.mjs",
+      "bytes": 4654,
+      "sha256": "aeb5d2cc1bbef59462b5462855f6a274e59d3d1cdffb5dc8db164e53d51ba00c"
+    },
+    "regression.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/regression.mjs",
+      "bytes": 5268,
+      "sha256": "91cce4c0b96f52ef17ab58bd573fd6946926b14064be8de6353522c88ddc0b01"
+    },
+    "serial.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/serial.mjs",
+      "bytes": 12515,
+      "sha256": "76b3130e7f5fd6d32e96183d8a3517038d000c466b8cdd7fa5b16f416a05dfc2"
+    },
+    "capture-source.mjs": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/capture-source.mjs",
+      "bytes": 430,
+      "sha256": "34e6e4c875618318dbd78926555ab5e1b3858d498170fe9570909d3eb3ba95e4"
+    }
+  },
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/plan.json",
+    "bytes": 43677,
+    "sha256": "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988"
+  },
+  "planChanges": [
+    "spot",
+    "runRoot",
+    "pair",
+    "inputFingerprint",
+    "policyHashes",
+    "launchPrerequisites"
+  ],
+  "operationalDelta": "Only one case literal in context.mjs; five other copied files byte-identical to current fifth-case recipe.",
+  "nonexecution": {
+    "nodeInvoked": false,
+    "testsRun": false,
+    "numericalGeneration": false,
+    "policyAuthored": false,
+    "gitPublication": false,
+    "activeSourceEdited": false,
+    "activeOutputEdited": false
+  },
+  "retainedBoundaries": {
+    "freshWholeSetSemanticPasses": 0,
+    "originalConsumerFreshSemanticReplay": false,
+    "oldFullReplayPassed": false,
+    "policyAccepted": false,
+    "productionAuthorized": false
+  }
+}

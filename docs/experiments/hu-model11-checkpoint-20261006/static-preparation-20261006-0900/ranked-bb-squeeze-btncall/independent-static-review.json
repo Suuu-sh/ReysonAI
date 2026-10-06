@@ -1,0 +1,125 @@
+{
+  "kind": "independent-co-bb-squeeze-btncall-static-staging-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T08:50:13.759847+00:00",
+  "status": "STATIC_MECHANICAL_AND_HISTORICAL_REUSE_CLEAR_NO_NUMERICAL_ADMISSION",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/plan.json",
+    "bytes": 43677,
+    "sha256": "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988"
+  },
+  "context": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/context.mjs",
+    "bytes": 9067,
+    "sha256": "00eb118edaac9b37425eac303eddb175d8bd9d68dce475fc8130b59b0592332c"
+  },
+  "selection": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/selection.json",
+    "bytes": 3742,
+    "sha256": "6b0b0f2643a9a49e9f3dfa54bab52a4ab9c92892a305ae28b4c3cc1f1068f1ce"
+  },
+  "policyHandoff": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/policy-review-handoff.json",
+    "bytes": 21478,
+    "sha256": "775e6adcbc366f6ba90daf734b31e2b3f3fa2e2dad00f3ae4a4ca27ade7841fa"
+  },
+  "archiveEvidenceInventory": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/verified-file-inventory.json",
+    "bytes": 13168,
+    "sha256": "302f4091d50c2cc41bc8db6636dfe4bab0f4b426264421730d54a9edac6607a5"
+  },
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "expectedSourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "mechanicalChecks": {
+    "exactOneContextSpotLiteralChange": true,
+    "exactSixPlanChanges": [
+      "spot",
+      "runRoot",
+      "pair",
+      "inputFingerprint",
+      "policyHashes",
+      "launchPrerequisites"
+    ],
+    "otherRecipeFilesByteIdentical": [
+      "controller.py",
+      "worker.mjs",
+      "regression.mjs",
+      "serial.mjs",
+      "capture-source.mjs"
+    ],
+    "sourcePinsVerified": 153,
+    "archiveEvidencePinsVerified": 33,
+    "pairRuntimeAndFullPlanPinsVerified": true,
+    "resourceAndNumericalContractsUnchanged": true,
+    "currentPredecessorAcceptanceRequirementRetained": true
+  },
+  "ordering": {
+    "catalogIndexZeroBased": 2,
+    "stage": "A",
+    "immediatelyFollowsActiveCase": "CO_open_SB_3bet_BB_call_CO_fold",
+    "savedReach": {
+      "probability": 0.0005760559857263642,
+      "samples": 32768,
+      "compatible_samples": 23626,
+      "method": "seeded-participant-range-products-collision-corrected-v1; forced outside folds unweighted"
+    },
+    "verifiedFromCatalogAndOriginalSelectionCode": true,
+    "meaning": "The catalog builder orders Stage A by saved reach, and the serial selector preserves that Stage A catalog order. This existing catalog entry follows the reserved active fifth case. No ranking or reach was recomputed."
+  },
+  "historicalEvidence": {
+    "priorStaticReview": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/static-review.md",
+      "bytes": 15702,
+      "sha256": "4211a12fec50c476dfd6f24731ce2841ca23cc690015037aff24402810a17b96"
+    },
+    "priorStaticEvidence": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/static-evidence.json",
+      "bytes": 639831,
+      "sha256": "e9feabb10d14de46e0ccbaf3d69f198b5842cc2796a603bd866c479e540b57d3"
+    },
+    "priorFixedConclusion": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/fixed-preflight-conclusion.md",
+      "bytes": 10999,
+      "sha256": "a432436d6b90ec07030b9148a724643b4f15995c0ee619c3ab7669d03eb0b82f"
+    },
+    "priorFixedCompletion": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/fixed-preflight-complete.json",
+      "bytes": 109381,
+      "sha256": "2903c96a57262593a2e1543e45528b086da6dc72776ba025c9f99efb6b2d0486"
+    },
+    "exactHistoricalPerCaseConclusionVerified": "unaccepted: no exact-zero loss found in executed applicable cells; positive-factor fidelity and common reach consistency unresolved",
+    "authorship": "Native model10-authored unchanged staged policies, pending distinct current model11 evaluation.",
+    "literalPolicyRows": "The packet preserves the original reviewed literals and reports 360 reconciled rows. This narrow review verified archived byte pins and historical conclusion reuse; it did not repeat policy authoring, numerical diagnostics or the old source-product audit.",
+    "retainedIndividualRisks": [
+      "BTN live range is flat times final squeeze-call, not the CO opener-call range of an already accepted case.",
+      "Paired/trips boards followed by a blank/over card use ordinary monster rows; newest-card pair override does not resolve persistent pairing.",
+      "Coarse monster tier does not establish equity-defined value.",
+      "Tiny strictly positive branches retain compatible support despite ordinary-equity unavailability; do not collapse to zero.",
+      "Keep raw label choices, caps, pooled physical action, effective continuation and off-model completion distinct.",
+      "Historical model10 fixed hold is preserved; it passes no model11 numerical gate."
+    ],
+    "currentAcceptanceTransferred": false
+  },
+  "futurePreparation": {
+    "expectedInputFingerprint": "6c006cf7ac518bb96ff52c52f364f3e96b03acc715bcf75ab7bfb7ebe21e00a8",
+    "currentOfficialInputFingerprint": null,
+    "sourceCapture": "NOT_RUN",
+    "loadInputs": "NOT_RUN",
+    "validateEffectiveArtifacts": "NOT_RUN",
+    "controllerPrepare": "NOT_RUN",
+    "bindingHash": null,
+    "checkpointIdentityHash": null,
+    "regressionBindingHash": null,
+    "failClosed": "The unchanged context invokes official source capture/input loading and current artifact validation, and compares actual results to the pinned expectations. A mismatch blocks preparation; historical assertions do not count as current proof.",
+    "predecessorRequirement": "Active CO/SB case must obtain genuine terminal, finalization and scoped independent acceptance before this case numerical admission.",
+    "laterRequirements": "Genuine own-case prepared output, exact initial launch review, own bounded results and quality admission before 1755. Use separately bound split whole12 and producer-reuse finalization; no predecessor output or acceptance transfers."
+  },
+  "concreteStaticBlockers": [],
+  "node": "NOT_RUN",
+  "newPolicyAuthoring": false,
+  "numericalAdmissionAuthorized": false,
+  "policyAccepted": false,
+  "publication": false,
+  "reviewerNodeLaunches": 0
+}
