@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "decision": "APPROVE_SCOPED_HISTORICAL_BASELINE_AMENDMENT_DESIGN; FINAL_IMPLEMENTATION_REVIEW_REQUIRED",
+  "reviewer": "Independent PR86 copy/provenance reviewer, OpenAI; runtime model identifier not exposed; separate from implementation author",
+  "reviewed_head": "26ad4c670bf24192cca215ca238d014c22d5a705",
+  "original_copy_review_commit": "e024e78065c50ee1396758580576d173fd614546",
+  "prior_review_library_file_id": "libfile_d940bce527e0819195ce2b7ca3a5cf56",
+  "finding": "The preservation test unconditionally compares all 242 legacy files to pre-Stage2 bytes. The independently approved 83-token copy correction necessarily changes one file byte hash. This stale expectation legitimately needs an explicit copy amendment; there is no evidence of numerical drift. A silent replacement under the unchanged historical baseline claim is not approved.",
+  "evidence": {
+    "fixture_path": "apps/frontend/tests/fixtures/stage2-legacy-baseline.json",
+    "fixture_sha256": "741be7473706a366275b8ee32d794ea92ab0be6a1378a6ef8edf53bc8b0206c8",
+    "test_path": "apps/frontend/tests/continuation-legacy-preservation.test.mjs",
+    "test_sha256": "7c3a94b9c37ea944f080f280f71159ea3758d14d4a8d2c22ea566652a1f8879b",
+    "historical_baseline_commit": "9a787954ecd49546d119e80c226afce8347c141a",
+    "legacy_records": 242,
+    "hu_records": 45,
+    "remote_compare": "Between e024e780 and 26ad4c67, five-bet data remains unchanged; four profile references, receipt, checkpoint, comparison script and approval artifact changed. The historical fixture/test did not change.",
+    "ci_failure_source": "Parent reported run 37497103388: 88 passed, 1 failed, 2 skipped. Review directly inspected exact-head fixture and test; did not independently retrieve full CI log."
+  },
+  "approved_scope": [
+    "Keep baseline_commit, shared_config_sha256, the entire original legacy_json_sha256 map with all 242 entries and the entire 45-entry hu_source_hashes map unchanged.",
+    "Append exactly one explicit copy_only_amendments entry for five-bet-responses.json with the record below. Do not generate a new general baseline or update any other hash.",
+    "Update only the byte-preservation test to validate that the amendment allowlist is exactly [five-bet-responses.json], check its historical original hash matches the original map, require exact approved current raw bytes, and require the immutable non-reason hash. All other 241 files must continue matching their original raw hashes.",
+    "Rename the test/comment accurately: 241 historical files retain bytes and one independently reviewed copy-only amendment retains every non-reason field. Preserve the 242 total inventory assertion and every shared-config, HU fingerprint, stale-source and policy-loader test unchanged.",
+    "Document this narrowly attributed amendment with reference to this review. Existing storage receipt, source hashes, archive, continuation fingerprint, strategy approval and limitations must not be refreshed solely because test expectations changed; these two test files are absent from the existing receipt source inventory."
+  ],
+  "approved_amendment_record": {
+    "file": "five-bet-responses.json",
+    "original_sha256": "4f1b78b45e364c14f93cbe19cb7bef6e4ecfbc9076fd79d0834d2dd3b4b91d7c",
+    "approved_sha256": "86a34ea4c482b9987c77112f6e64ba0940234ae262c6c460b0ad086c6a40476b",
+    "non_reason_json_sha256": "41203415b625e3dedb0d2444e8b3d78afd70d57bd1dac443cbc4ed74ee59a619",
+    "reviewed_commit": "e024e78065c50ee1396758580576d173fd614546",
+    "review_report": "apps/frontend/docs/pr86-independent-copy-approval.json",
+    "scope": "83 explanation-only changes: 81 displayed-margin tokens, 2 displayed-equity tokens; all 2535 non-reason rows unchanged."
+  },
+  "numeric_gate_definition": "Parse the five-bet JSON, clone it, delete only spot.hands[*].reason, preserve all other fields, order and nulls, then SHA-256 of Node JSON.stringify must equal the pinned non_reason_json_sha256 above. Existing approved raw hash remains mandatory in addition to this hash; do not substitute a semantic-only gate.",
+  "forbidden": [
+    "Removing the five-bet entry from the 242-file inventory",
+    "Accepting either old or new bytes with an OR fallback",
+    "Computing expected hashes from whatever files are currently present",
+    "A generic unbounded exception/override map",
+    "Changing shared configuration or any HU source fingerprint",
+    "Deleting/rewriting the original baseline history",
+    "Weakening assertions or converting failures to skips",
+    "Changing strategy numbers, generating ranges, migrating legacy detailed fingerprints, merge or deployment"
+  ],
+  "required_regression": [
+    "Add focused assertions proving exactly one amendment, exact original and approved hashes and the fixed non-reason hash; reject unexpected amendment paths.",
+    "Negative mutation checks: altered five-bet equity or call/fold must fail the non-reason gate; a further inline reason edit must fail approved raw SHA; any other legacy file change must still fail its original SHA.",
+    "Run complete continuation-legacy-preservation.test.mjs and five-bet-reason-arithmetic.test.mjs without introducing skips. Existing private-artifact skip remains explicitly documented.",
+    "Run unchanged strict restored review/profile gates and the full CI verification command that failed. Check final exact-head CI through completion; do not infer success from the reported 88 earlier passes.",
+    "Provide final diff for independent review. Approval here is a bounded amendment design, not a claim that unseen implementation or final CI has passed."
+  ],
+  "limits": "No repository modification performed. Prior independently verified complete baseline/candidate numeric parity and all-15-spot arithmetic evidence reused. This review does not renew original Astra approval or certify full-suite/production readiness.",
+  "sources": [
+    "https://github.com/Suuu-sh/ReysonAI/blob/26ad4c670bf24192cca215ca238d014c22d5a705/apps/frontend/tests/fixtures/stage2-legacy-baseline.json",
+    "https://github.com/Suuu-sh/ReysonAI/blob/26ad4c670bf24192cca215ca238d014c22d5a705/apps/frontend/tests/continuation-legacy-preservation.test.mjs"
+  ]
+}
