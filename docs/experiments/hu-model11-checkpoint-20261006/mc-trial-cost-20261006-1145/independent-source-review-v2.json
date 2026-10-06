@@ -1,0 +1,218 @@
+{
+  "kind": "independent-three-cell-trial-cost-source-review",
+  "version": 2,
+  "reviewedAt": "2026-10-06T11:47:33.861696+00:00",
+  "verdict": "APPROVE_FIXED_BOUNDED_RUNTIME_DIAGNOSTICS_ONLY",
+  "runner": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/measure.mjs",
+    "bytes": 12039,
+    "sha256": "77e9366335116fd29ba8e57ed0253fc9e25e4c50405c88bc86732603499b671f"
+  },
+  "controller": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/run-one.py",
+    "bytes": 3453,
+    "sha256": "18c7b61c9cbbf2e35bbed1164466c0f21307fd6257bc5271e228e73044894cad"
+  },
+  "ownedSupervisor": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/ci/postflop-command-supervisor.py",
+    "bytes": 19014,
+    "sha256": "61d0fe490ff4e1e82667a8ec188c1206efd1c26067ff8d6061b4bc8a1a67164d"
+  },
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/plan.json",
+    "bytes": 43677,
+    "sha256": "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/prepared.json",
+    "bytes": 41331,
+    "sha256": "cde2edcf942608236633f722f36e8360c523a60e585ffda0f4b0591b157649db"
+  },
+  "regressionReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/regression-independent-review.json",
+    "bytes": 15591,
+    "sha256": "dc29b0ece9b64e4f75e4975f1c88ab9538ddfb8694a3a32dd8c1223a0e0ba121"
+  },
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "inputFingerprint": "6c006cf7ac518bb96ff52c52f364f3e96b03acc715bcf75ab7bfb7ebe21e00a8",
+  "policyHashes": {
+    "flop": "405128289b9624a38d6027ec8ae32c2f806d258ed9d1b5827507d7acb2935fcd",
+    "later": "30921204f762fe66287d8ab0c9541c84863faa7683a46fdfc60548c3a7319edd"
+  },
+  "fixedCells": [
+    {
+      "index": 1,
+      "condition": {
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "samples": 64,
+        "seed": "solveaai-postflop-ai-v1",
+        "cacheBatchSize": 64
+      },
+      "evidence": [
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/001/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/001.cell.json",
+          "bytes": 1304,
+          "sha256": "a76ee87e088e2aa063cfc2a53cbb94f145c217efbdaccb1cdccc120b1493c316"
+        },
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/001/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/001.000.trials.json",
+          "bytes": 6852,
+          "sha256": "07c9edc0f23143b7c4506a606d125e574ef3dc5568d21fb63f253f08d87f7cd9"
+        }
+      ],
+      "completionDecisions": 0
+    },
+    {
+      "index": 2,
+      "condition": {
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BTN",
+        "samples": 64,
+        "seed": "solveaai-postflop-ai-v1",
+        "cacheBatchSize": 64
+      },
+      "evidence": [
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/002/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/002.cell.json",
+          "bytes": 1475,
+          "sha256": "24f8c55e572c082c58dfcdd04c31e9350ca5e307fdcd8477bf317c4ed747b61f"
+        },
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/002/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/002.000.trials.json",
+          "bytes": 11743,
+          "sha256": "df9d8c61cc2f5a24c284c10202e7c92a0b10fe165ba88534eb384103ff11d098"
+        },
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/002/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/fe95197744179c9ee0373dd31c0b638b715dd45a691356b8fb6487c8fd08c485.proof.json",
+          "bytes": 31651,
+          "sha256": "44b7d33699e624b275947db1bfe95a85c581e1ccd5aa364a9208e42a97dcb78f"
+        }
+      ],
+      "completionDecisions": 1
+    },
+    {
+      "index": 59,
+      "condition": {
+        "board": "9s7s3s",
+        "split": "holdout",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "samples": 64,
+        "seed": "solveaai-postflop-ai-v1",
+        "cacheBatchSize": 64
+      },
+      "evidence": [
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/059/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/059.cell.json",
+          "bytes": 1487,
+          "sha256": "29d9fd80826514af83437e2e8b54f273f51e5326f3a7a38f4eddb1586da43bcf"
+        },
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/059/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/059.000.trials.json",
+          "bytes": 11761,
+          "sha256": "a3e220624361ea3daa53c3d1eb2892a6ee340a1ef9fb16c526926b074258c96f"
+        },
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/059/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/c8287433892cc59605605d13bcf5662b76fb7a5ca355c59ccace56123b2e19ef.proof.json",
+          "bytes": 28112,
+          "sha256": "50709a99af03deecf6265802e0747b16cce016751d3e6d8dddf41af8d168a389"
+        }
+      ],
+      "completionDecisions": 1
+    }
+  ],
+  "jobs": [
+    {
+      "mode": "legacy",
+      "cell": 1
+    },
+    {
+      "mode": "legacy",
+      "cell": 2
+    },
+    {
+      "mode": "legacy",
+      "cell": 59
+    },
+    {
+      "mode": "current",
+      "cell": 1
+    },
+    {
+      "mode": "current",
+      "cell": 2
+    },
+    {
+      "mode": "current",
+      "cell": 59
+    },
+    {
+      "mode": "producer",
+      "cell": 2
+    },
+    {
+      "mode": "profile",
+      "cell": 59
+    }
+  ],
+  "commandShape": [
+    "python3",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/run-one.py",
+    "{approved mode}",
+    "{approved cell}",
+    "77e9366335116fd29ba8e57ed0253fc9e25e4c50405c88bc86732603499b671f",
+    "18c7b61c9cbbf2e35bbed1164466c0f21307fd6257bc5271e228e73044894cad"
+  ],
+  "checks": {
+    "sameSavedPoliciesInputsAndSeed": true,
+    "sameCell64AndCacheEpoch64": true,
+    "sameSamplePairDealRunoutAnd24RandomSchedule": true,
+    "legacyComputedDefenceEnabled": true,
+    "currentBehaviorCompletionMatchesOfficialProducer": true,
+    "currentFull64TrialObjectsMustEqualOriginal": true,
+    "bothEnginesBaselineReturnsMustEqualOriginal": true,
+    "crossEngineDrawHashSavedForActualReview": true,
+    "sourceAndOriginalMarkerChunkPostflightChecks": true,
+    "producerAndNativeValidationTimedSeparately": true,
+    "profileSeparateFixedCell59Only": true,
+    "freshDestinationsRequired": true,
+    "controllerAstParsed": true,
+    "existingBirthBoundSupervisorAndCleanup": true
+  },
+  "timingInterpretation": [
+    "Primary paired loop includes sampling, reference baseline, candidate and diagnostic bookkeeping. Current candidateMs includes evidence-callback compaction/hash/counter timing; evidenceCallbackMs attributes it, but subtraction is not an exact uninstrumented engine measurement.",
+    "Producer storage counters include serialization/hash and persistence at wrapped API boundaries, not disk-only cost. Native validation is separately timed; final cell-marker write, subsequent result serialization, context/source checks and startup remain in outer wall.",
+    "Primary legacy/current runs are separate fresh processes on the same fixed4b source. This compares legacy model10 and current model11 semantics there, not historical471 runtime unless separately evidenced. Different decisions/returns are expected; identical draw hashes and baseline returns are required controls.",
+    "The profile has sampling overhead and is attribution evidence only; exclude it from primary ratios. decisionCallbacks is the total observed candidate-hand decisions; heroDecisions and referenceDecisions distinguish the two seats.",
+    "Selected cells are diagnostic and include adverse/completion-bearing cases. Three64-trial windows do not establish a72-cell average,10k scaling, statistical speed confidence or policy superiority."
+  ],
+  "limits": {
+    "heapMiB": 512,
+    "ownedRssMiB": 900,
+    "hostAvailableFloorMiB": 2048,
+    "timeoutSecondsPerJob": 120,
+    "stdoutStderrCapBytesEach": 4194304,
+    "sequentialParentLaneOnly": true
+  },
+  "executionBoundary": "Parent owns scheduling, beginning legacy001/current001. Each fixed job once, with source hashes supplied exactly. Retain failures/timeouts and full birth-bound cleanup records; no automatic retry or extension. Local no-Node check supplements parent coordination; it is not a global cross-namespace guarantee.",
+  "massLaunchPausePreserved": true,
+  "formalSourceChanged": false,
+  "geometryCandidateUsed": false,
+  "newPolicyOrProfile": false,
+  "revisedScopeAdopted": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0,
+  "supersedesSourceApproval": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/independent-source-review.json",
+    "bytes": 9696,
+    "sha256": "9c2c9ce74f4b04d087c904d09e678bba72de4cfad8c000588603f9e4fbe0870d"
+  },
+  "amendment": "Exactly three counter-only edits: total decision callback count renamed, hero/reference counts separated by the observed seat, and legacy uninstrumented label renamed. Reversing these edits reproduces the previously reviewed runner SHA exactly. Numerical calls, trial objects, RNG, source/budget and controller are unchanged."
+}

@@ -1,0 +1,27 @@
+{
+  "kind": "selected-board-prefix-key-memo-parity-not-acceptance",
+  "baselineTag": "baseline-pilot-v1",
+  "candidateTag": "candidate-pilot-v1",
+  "sourceChanges": [
+    "apps/frontend/scripts/postflop-ai/gate-model11.mjs"
+  ],
+  "distinctSourceIdentitiesRetained": true,
+  "exactRawInputsAndPinnedPolicies": true,
+  "results": [
+    {
+      "spot": "BTN_open_SB_3bet_BB_call_BTN_fold",
+      "fullOrderedPayloadEqualExceptElapsedMs": true,
+      "omittedOnly": [
+        "diagnostics.elapsedMs"
+      ],
+      "cacheExactlyEqual": true,
+      "baselineGateMs": 18802.622645,
+      "candidateGateMs": 20040.649539,
+      "baselineResultSHA256": "9d928fe5cae8876b1f035cf9eeb09381dfa5ba8506e0bacc9ede525dec89798a",
+      "candidateResultSHA256": "dbc9410a6eae32f93cde16f64cc99f5825a4cf3b80b44f43c482976187358512",
+      "orderedComparedPayloadSHA256": "71ea9de7115fb71cd67a9eb695c11dd6fa92fb1c07d76e3da7b834dde451c288",
+      "prefixes": 444
+    }
+  ],
+  "acceptance": "Selected diagnostic cases only. All required per-policy gates remain unchanged."
+}

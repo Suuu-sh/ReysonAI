@@ -1,0 +1,103 @@
+{
+  "kind": "independent-geometry-memo-one-pair-actual-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T11:48:26.544955+00:00",
+  "status": "PARITY_PASS_CANDIDATE_NOT_ADOPTED_NO_SPEED_GAIN_DEMONSTRATED",
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/independent-source-review.json",
+    "bytes": 5815,
+    "sha256": "b7858d8b78105a85a4b7c00ae38ba51006cd75335776c12b6f1019cf3b26589a"
+  },
+  "authorSummary": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/one-pair-result.json",
+    "bytes": 2892,
+    "sha256": "f7b7552459e7e1b778c761c7335d48172d1e5febc9e6860206989498c515947d"
+  },
+  "parity": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/results/baseline-pilot-v1--candidate-pilot-v1-parity.json",
+    "bytes": 1052,
+    "sha256": "e52df6a0c591d8fcc2589ff7d50d3a2d9006ef15a93dd13900eba172ca498930"
+  },
+  "evidence": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/results/baseline-pilot-v1-BTN_open_SB_3bet_BB_call_BTN_fold.result.json",
+      "bytes": 4443657,
+      "sha256": "9d928fe5cae8876b1f035cf9eeb09381dfa5ba8506e0bacc9ede525dec89798a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/results/baseline-pilot-v1-identity-before.json",
+      "bytes": 10293,
+      "sha256": "cd581f6b1b6d9883914d7b933c06c9e2f14508e3b09d85ef8f3d44fc197e860b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/results/baseline-pilot-v1.json",
+      "bytes": 11975,
+      "sha256": "181ab7b507fb3fc73d1af095c972f10998fc1e0df2c938a393842e9fd4b102de"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-baseline-pilot-v1.resources.json",
+      "bytes": 761,
+      "sha256": "60ad0b140786aef5a86b0f11370830675357a2fb532847f1d6252f9d1c6fedd8"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-baseline-pilot-v1.log",
+      "bytes": 1314,
+      "sha256": "2d7f38e398bbcec51bf7da44b054003ee7dc0392452d47a099922bdfa5ff5e95"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/results/candidate-pilot-v1-BTN_open_SB_3bet_BB_call_BTN_fold.result.json",
+      "bytes": 4443657,
+      "sha256": "dbc9410a6eae32f93cde16f64cc99f5825a4cf3b80b44f43c482976187358512"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/results/candidate-pilot-v1-identity-before.json",
+      "bytes": 10292,
+      "sha256": "971d027b8d1c66ddbc8289bd82be159a6b2ad42756b7e1f6d94cb9c3cb9782e7"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/results/candidate-pilot-v1.json",
+      "bytes": 11990,
+      "sha256": "b3d719798059875d4091eb8883e1db34513008242fdbffd70ec21ef12416c4aa"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-candidate-pilot-v1.resources.json",
+      "bytes": 764,
+      "sha256": "ba336e74e24453cceb8e4373d0426df360400044d5c4f737d454bfb7fa89e05f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-candidate-pilot-v1.log",
+      "bytes": 1338,
+      "sha256": "ae0770c725d0e671b97bb3123635a23fb5f2c44de04c981605c86816225a67db"
+    }
+  ],
+  "focusedTestResources": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-focused-v1.resources.json",
+    "bytes": 952,
+    "sha256": "a8ad60c5c60ff8ae95552c3595dfaa6ff82d73faadbbb8e9654c9131951df252"
+  },
+  "focusedTestLog": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-focused-v1.log",
+    "bytes": 3988,
+    "sha256": "1878293d5be869643414252c5fd2233d4e6b89b9f3981c2f61d6bbe634fb3168"
+  },
+  "focusedTestsPassed": 14,
+  "fullOrderedOutputsEqualExcept": [
+    "diagnostics.elapsedMs"
+  ],
+  "prefixes": 444,
+  "cacheAndProofPayloadEqual": true,
+  "onlySourceDifference": [
+    "apps/frontend/scripts/postflop-ai/gate-model11.mjs"
+  ],
+  "sourceAndPolicyPinsDistinctAndStable": true,
+  "gateDiagnosticMs": {
+    "baseline": 18802.622645,
+    "candidate": 20040.649539
+  },
+  "candidateIncreasePercent": 6.5843309062484145,
+  "interpretation": "One same-input As7d2c all-street pilot pair; candidate was slower on this pass. No gain established, no repeat or five-family extension, no adoption into formal4b. This gate-only memo establishes no Monte Carlo per-trial benefit.",
+  "sourceAdopted": false,
+  "additionalRunsAuthorized": false,
+  "massLaunchAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

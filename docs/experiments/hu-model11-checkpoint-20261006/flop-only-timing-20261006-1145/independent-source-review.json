@@ -1,0 +1,64 @@
+{
+  "kind": "independent-flop-only-timing-caller-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T11:18:29.986455+00:00",
+  "verdict": "APPROVE_ONE_BOUNDED_TIMING_RUN_ONLY",
+  "caller": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-flop-only-timing-20261006/caller.mjs",
+    "bytes": 4981,
+    "sha256": "2f8a534251bc5b1c53e1e35e46600064fbb3f4899ef5fd5e48634098d9d815ce"
+  },
+  "supervisor": {
+    "path": "/workspace/scratch/08c72b2d7549/stage3-recovery/fastfold-integration/run-bounded-check.py",
+    "bytes": 2530,
+    "sha256": "a9b80a168feb769158eb8e03906d3f667d1738f8313bd21f45703fe3ffc1af13"
+  },
+  "acceptedCase": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/scoped-acceptance.json",
+    "bytes": 17890,
+    "sha256": "d8d23469051ab75ef5278bff87a2ecf8986b014ebd00973b4602ed1fec25a774"
+  },
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "command": [
+    "env",
+    "-u",
+    "NODE_OPTIONS",
+    "-u",
+    "NODE_PATH",
+    "STAGE3_OWN_RSS_MIB=900",
+    "python3",
+    "/workspace/scratch/08c72b2d7549/stage3-recovery/fastfold-integration/run-bounded-check.py",
+    "hu-flop-only-co-sb-20261006-v1",
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "--max-old-space-size=512",
+    "/workspace/scratch/08c72b2d7549/hu-flop-only-timing-20261006/caller.mjs",
+    "2f8a534251bc5b1c53e1e35e46600064fbb3f4899ef5fd5e48634098d9d815ce"
+  ],
+  "launchConditions": "Require run-once-v1 and both exact supervisor log/resource paths absent immediately before execution. Parent schedules exactly one run; no resume, rerun or extension after an incomplete result.",
+  "limits": {
+    "heapMiB": 512,
+    "groupRssMiB": 900,
+    "hostFloorMiB": 2048,
+    "timeoutSeconds": 120,
+    "termCleanupSeconds": 3
+  },
+  "findings": [
+    "Actual checkModel11Balance invokes createModel11BalanceFacade/createModel11Execution/createEffectiveDefence. This is the current model11 effective reach/defence path, not the original default model10 CLI.",
+    "Per-board balance execution is freshly constructed and its instance caches are released by the same existing gate function used in model11BoardRow. The 300 flop equity future runouts remain; only later-street balance decisions are excluded.",
+    "Existing exclusive atomic writer preserves each completed board before progress is printed. Interrupted temporary files are excluded from completed counts. Caller rejects existing output and does not edit the frozen source, formal plan, policies or acceptance."
+  ],
+  "timingLimits": [
+    "coreWallMs covers the full checkModel11Balance call, including facade construction and release. loopElapsedMs also includes per-board source checks, result hashing and atomic storage; supervisor wall additionally includes process/context startup.",
+    "The caller omits full all-board wrapper work: expected later coverage, model11 row/proof semantic validation and separate proof/checkpoint persistence. It therefore does not time a replacement formal validation pipeline.",
+    "This is one sequential process in canonical order. Module-level caches and JIT live longer than the actual eight-board worker processes; it cannot be compared directly with five-worker all-street wall time. A stopped canonical prefix is not a representative sample or a complete1755 result.",
+    "If result.complete is true but findings contain quality errors, completedBoards records completed computation only, not quality approval. Saved findings must be retained."
+  ],
+  "massLaunchPausePreserved": true,
+  "coverageContractChanged": false,
+  "revisedScopeAdopted": false,
+  "fullReplayClaim": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

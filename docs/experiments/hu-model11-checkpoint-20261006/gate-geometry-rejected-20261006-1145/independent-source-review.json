@@ -1,0 +1,109 @@
+{
+  "kind": "independent-gate-geometry-memo-source-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T11:41:57.371354+00:00",
+  "verdict": "SOURCE_CLEAR_FOR_BOUNDED_EXISTING_TESTS_AND_ONE_OLD_NEW_COMPARISON",
+  "preparationManifest": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/preparation-manifest.json",
+    "bytes": 16356,
+    "sha256": "17a63ddc15d0071024ab97d1afc97d8195c5c04ac0a3cd142aa8d0cc88232450"
+  },
+  "patch": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/candidate.patch",
+    "bytes": 1787,
+    "sha256": "430e701011affd9521decc4583e50bb9641574f8a2695dbb1ae234d88fd70253"
+  },
+  "baseline": {
+    "root": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution",
+    "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "source": {
+      "path": "apps/frontend/scripts/postflop-ai/gate-model11.mjs",
+      "bytes": 9918,
+      "sha256": "8a5d7d2547c97fdb3db050a93c6ac06fef19a87fb88b33c0154f93f8abe1949c"
+    }
+  },
+  "candidate": {
+    "root": "/workspace/scratch/08c72b2d7549/hu-model11-gate-geometry-memo",
+    "baseCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "source": {
+      "path": "apps/frontend/scripts/postflop-ai/gate-model11.mjs",
+      "bytes": 10092,
+      "sha256": "7eeeb8ac75865900811b22b61ca2613d262ea3a2deaeee8e5ac2481e627fbd8b"
+    },
+    "uncommittedPatchOnly": true
+  },
+  "checks": {
+    "onlyGateModel11Changed": true,
+    "formal4bTreeUnchanged": true,
+    "ownedPrefixGeometryDeeplyFrozen": true,
+    "singleSlotBoundedByExistingLastRequest": true,
+    "liveTableGeometrySerializedEveryCall": true,
+    "pendingNodeSeatActionAndBoardLengthChecksRetained": true,
+    "fullBoardPathValueAndUnusualArrayGuardsRetained": true,
+    "releaseClearsLastSlotAndExecutionCaches": true,
+    "cacheCountersAndExportedResultSchemaUnchanged": true,
+    "comparatorByteIdenticalToAcceptedPrefixMemoComparator": true,
+    "harnessDifferencesOnlyRootAndOutputPaths": true,
+    "rawInputPinsVerifiedPerRoot": 12,
+    "materializedRawAndPolicyPinsVerified": 30
+  },
+  "reasoning": "The reused string is computed only from createDecisionPrefix-owned geometry, which freezeSnapshot copies and deeply freezes. It is stored only alongside the existing prepared prefix and its conservative current board/path key. A changed key or unusual array bypasses reuse; the live table pot/stacks/invested comparison and pending validation still execute. releaseBoardCaches clears the single last slot. No actor law, proof, numerical range, threshold or policy changes.",
+  "comparison": {
+    "comparator": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/compare-results.py",
+      "bytes": 3926,
+      "sha256": "1a32462021ea429fee1361cbd392c922669ea07ce7b0c63a7251b1bd7d9e45d4"
+    },
+    "harnesses": {
+      "baseline": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/profile-baseline-balance.mjs",
+        "bytes": 4049,
+        "sha256": "ed98fffb575903bd2a30b6a2a3e0dc1f8f371e6d224a88d84a9841b87a1add6a"
+      },
+      "candidate": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/profile-candidate-balance.mjs",
+        "bytes": 4047,
+        "sha256": "da5907b6e15ecb3b8efd52b977fab68063b7e2faac9a5c3a5d504543ee2328a9"
+      }
+    },
+    "manifest": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/pilot-allstreet-manifest.json",
+      "bytes": 640,
+      "sha256": "276215b7a1fc1af60adf1fe5e6114116a638945934de06be0beef432aad660bd"
+    },
+    "scope": "Exactly the pinned pilot pair on As7d2c, all streets; one fresh baseline and one fresh candidate result. Full ordered payload, proofs and cache diagnostics must match after omitting only diagnostics.elapsedMs. Source identities must differ only at gate-model11.mjs and inputs/policies must remain exact.",
+    "meaning": "Static review does not claim that comparison or tests passed. A single timing pair is not a statistical speed guarantee or all1755 acceptance."
+  },
+  "tests": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-gate-geometry-memo/apps/frontend/tests/postflop-model11-prepared-prefix.test.mjs",
+      "bytes": 11899,
+      "sha256": "f243424a90c63133e1c8a48a2ec493ad15710f6dee9b55ce3869223539ca32ec"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-gate-geometry-memo/apps/frontend/tests/postflop-model11-gate.test.mjs",
+      "bytes": 4896,
+      "sha256": "bd8fc5e4b5776da68818d4ddab8db628c25d8aa4712d467fa29a0a7cb5c8593e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-gate-geometry-memo/apps/frontend/tests/postflop-model11-gate-vector.test.mjs",
+      "bytes": 7184,
+      "sha256": "b925b39049eec3804ef8c4da7cc6e0634644fad6f9b89505d985c7f3bc1a60b4"
+    }
+  ],
+  "limits": {
+    "heapMiB": 512,
+    "ownedRssMiB": 900,
+    "hostAvailableFloorMiB": 2048,
+    "outerSeconds": 120
+  },
+  "executionBoundary": "Author owns the existing three-test invocation and old/new one-board comparison under parent lane coordination,512MiB heap,900MiB owned RSS,2GiB host floor and120s each. No reviewer Node, new framework, broad sampling or mass gate. Preserve stopped evidence; no automatic extension.",
+  "performanceScope": "This patch removes repeated prefix-side geometry serialization in the balance gate facade. It does not change the Monte Carlo per-trial execution path and establishes no per-trial or10k runtime improvement.",
+  "numericalParityEstablished": false,
+  "testsExecutedByReviewer": false,
+  "sourceAdoptedIntoFormal4b": false,
+  "policyAccepted": false,
+  "massLaunchAuthorized": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

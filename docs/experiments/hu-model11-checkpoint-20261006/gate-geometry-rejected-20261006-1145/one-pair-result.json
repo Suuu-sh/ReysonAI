@@ -1,0 +1,65 @@
+{
+  "status": "ONE_PAIR_PARITY_PASS_NO_SPEED_GAIN_DEMONSTRATED",
+  "source": {
+    "formal": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/gate-model11.mjs",
+      "bytes": 9918,
+      "sha256": "8a5d7d2547c97fdb3db050a93c6ac06fef19a87fb88b33c0154f93f8abe1949c"
+    },
+    "candidate": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-gate-geometry-memo/apps/frontend/scripts/postflop-ai/gate-model11.mjs",
+      "bytes": 10092,
+      "sha256": "7eeeb8ac75865900811b22b61ca2613d262ea3a2deaeee8e5ac2481e627fbd8b"
+    },
+    "baseCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "candidateCommitClaim": false
+  },
+  "focusedTestsPassed": 14,
+  "parity": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/results/baseline-pilot-v1--candidate-pilot-v1-parity.json",
+    "bytes": 1052,
+    "sha256": "e52df6a0c591d8fcc2589ff7d50d3a2d9006ef15a93dd13900eba172ca498930"
+  },
+  "terminalsAndLogs": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-baseline-pilot-v1.resources.json",
+      "bytes": 761,
+      "sha256": "60ad0b140786aef5a86b0f11370830675357a2fb532847f1d6252f9d1c6fedd8"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-baseline-pilot-v1.log",
+      "bytes": 1314,
+      "sha256": "2d7f38e398bbcec51bf7da44b054003ee7dc0392452d47a099922bdfa5ff5e95"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-candidate-pilot-v1.resources.json",
+      "bytes": 764,
+      "sha256": "ba336e74e24453cceb8e4373d0426df360400044d5c4f737d454bfb7fa89e05f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-candidate-pilot-v1.log",
+      "bytes": 1338,
+      "sha256": "ae0770c725d0e671b97bb3123635a23fb5f2c44de04c981605c86816225a67db"
+    }
+  ],
+  "timing": {
+    "singlePassOnly": true,
+    "gateDiagnosticMs": {
+      "baseline": 18802.622645,
+      "candidate": 20040.649539,
+      "candidateIncreasePercent": 6.5843309062484145
+    },
+    "enclosingGateMs": {
+      "baseline": 18860.063417999998,
+      "candidate": 20103.827648
+    },
+    "loadAndGateCpuMs": {
+      "baseline": 22758.209,
+      "candidate": 24426.489
+    }
+  },
+  "decision": "Keep isolated candidate/evidence; do not adopt or expand to five families based on this single slower pair. No MC per-trial speed claim.",
+  "limits": "One same-input As7d2c allstreet pilot only; no all1755, no MC, no revised validation contract implemented.",
+  "formalTrackedStatus": "",
+  "candidateTrackedStatus": " M apps/frontend/scripts/postflop-ai/gate-model11.mjs\n"
+}

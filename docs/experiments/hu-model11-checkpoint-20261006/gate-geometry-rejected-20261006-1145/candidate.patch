@@ -1,0 +1,20 @@
+diff --git a/apps/frontend/scripts/postflop-ai/gate-model11.mjs b/apps/frontend/scripts/postflop-ai/gate-model11.mjs
+index ef45a62..46289ff 100644
+--- a/apps/frontend/scripts/postflop-ai/gate-model11.mjs
++++ b/apps/frontend/scripts/postflop-ai/gate-model11.mjs
+@@ -45,11 +45,13 @@ export function createModel11BalanceFacade(inputs, flopArtifact, laterArtifact)
+     const previous = requestKey !== null && last?.requestKey === requestKey ? last : null;
+     const prepared = requestKey === null ? null : previous?.prepared ?? execution.prepareRequest(request);
+     const prefix = prepared?.prefix ?? execution.prefix(request);
++    // Only the owned, deeply frozen prefix side is reusable; live geometry is checked every time.
++    const geometryKey = previous?.geometryKey ?? canonicalJson(prefix.geometry);
+     if (prefix.pending.node !== node || prefix.pending.seat !== pending.seat ||
+-        canonicalJson(prefix.geometry) !== canonicalJson({ pot: table.pot, stacks: table.stacks, invested: table.invested })) fail('Replayed public prefix does not match gate table geometry');
++        geometryKey !== canonicalJson({ pot: table.pot, stacks: table.stacks, invested: table.invested })) fail('Replayed public prefix does not match gate table geometry');
+     const key = previous?.prefixIdentity ?? contentHash(prefix);
+     if (!observed.has(key)) observed.set(key, { prefixIdentity: key, prefix, state: 'visited', methods: new Set(), lawStatuses: new Map() });
+-    last = requestKey === null ? null : { requestKey, prepared, prefixIdentity: key };
++    last = requestKey === null ? null : { requestKey, prepared, prefixIdentity: key, geometryKey };
+     return { request, prefix, prepared, row: observed.get(key) };
+   };
+   const call = (method, table, board, node, body) => {

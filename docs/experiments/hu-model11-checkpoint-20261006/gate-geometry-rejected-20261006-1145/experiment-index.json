@@ -1,0 +1,84 @@
+{
+  "kind": "rejected-gate-geometry-memo-research-checkpoint",
+  "preparedAt": "2026-10-06T11:49:34.033355+00:00",
+  "decision": "NOT_ADOPTED_NO_SPEED_GAIN_DEMONSTRATED_NO_FURTHER_RUNS",
+  "formalSourceCommitUnchanged": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "tests": {
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "singlePair": {
+    "literalBoard": "As7d2c",
+    "streets": "all",
+    "prefixes": 444,
+    "completeOrderedPayloadsCountersAndProofsEqualExcept": [
+      "diagnostics.elapsedMs"
+    ],
+    "baselineInnerMilliseconds": 18802.622645,
+    "candidateInnerMilliseconds": 20040.649539,
+    "baselineEnclosingMilliseconds": 18860.063418,
+    "candidateEnclosingMilliseconds": 20103.827648,
+    "baselineSupervisorSeconds": 19.349,
+    "candidateSupervisorSeconds": 20.617,
+    "interpretation": "One pair demonstrated no improvement; it does not establish a statistically reliable slowdown or performance across other cases."
+  },
+  "independentActualReview": {
+    "status": "PARITY_PASS_CANDIDATE_NOT_ADOPTED_NO_SPEED_GAIN_DEMONSTRATED",
+    "path": "independent-one-pair-review.json",
+    "bytes": 4991,
+    "sha256": "8a6647be1c4544d7ccbfbd1ce9f3a24df28f5b8dc0bf93fab352da78f054693a",
+    "includedInV0Archive": false
+  },
+  "preservedFiles": [
+    {
+      "path": "SUMMARY.md",
+      "bytes": 2871,
+      "sha256": "d96953914fb688cf91a5a58aa812ff8311e5bda8bc446927438d6118b91ac945",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "candidate.patch",
+      "bytes": 1787,
+      "sha256": "430e701011affd9521decc4583e50bb9641574f8a2695dbb1ae234d88fd70253",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "independent-source-review.json",
+      "bytes": 5815,
+      "sha256": "b7858d8b78105a85a4b7c00ae38ba51006cd75335776c12b6f1019cf3b26589a",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "focused-result.json",
+      "bytes": 2373,
+      "sha256": "dca6285f0808d125605207697a1f39e3b93154132624764bf549414d350830b0",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "one-pair-result.json",
+      "bytes": 2892,
+      "sha256": "f7b7552459e7e1b778c761c7335d48172d1e5febc9e6860206989498c515947d",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "results/baseline-pilot-v1--candidate-pilot-v1-parity.json",
+      "bytes": 1052,
+      "sha256": "e52df6a0c591d8fcc2589ff7d50d3a2d9006ef15a93dd13900eba172ca498930",
+      "immutableByteCopy": true
+    }
+  ],
+  "archive": {
+    "localFilename": "hu-gate-geometry-memo-rejected-pilot-v1-20261006.tar.gz",
+    "bytes": 430835,
+    "sha256": "b6b871657fafd5464c1b5d51906bcde016b328e81c308e438274119d196d0685",
+    "regularFilesRereadAndVerified": 30,
+    "libraryStatus": "CONFIRMED_SAVED",
+    "libraryUploadClaimed": true,
+    "libraryFileId": "libfile_07a541c2af0c81919962f5fb55d9d683",
+    "version": 0
+  },
+  "newNodeOrNumericalWorkForThisGitSave": 0,
+  "runtimeAdoption": false
+}

@@ -1,0 +1,1149 @@
+{
+  "kind": "hu-three-condition-per-trial-runtime-diagnostic",
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "historicalReferenceCommit": "471f8920fd4ed258ca163dd1daa707b75daf1250",
+  "completedJobs": 8,
+  "primaryPairedTrialsPerModel": 192,
+  "primaryRows": [
+    {
+      "cellIndex": 1,
+      "condition": {
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "samples": 64,
+        "seed": "solveaai-postflop-ai-v1",
+        "cacheBatchSize": 64
+      },
+      "pairedTrials": 64,
+      "legacyWallMsPerPairedTrial": 8.165589046874999,
+      "currentWallMsPerPairedTrial": 20.62360396875,
+      "wallRatio": 2.5256725326683847,
+      "legacyCpuMsPerPairedTrial": 12.714765625,
+      "currentCpuMsPerPairedTrial": 30.30065625,
+      "legacySetupMs": 0.1159820000000309,
+      "currentSetupMs": 41.61647700000003,
+      "sameDrawHash": "650baf2b7c532abb3e8d1c6ca67b7367555f8d4b9295147e6ebbffc8a494fbd3",
+      "currentCompleteTrialObjectsMatchSaved": true,
+      "candidateReturnsDifferent": 0,
+      "currentSummary": {
+        "board": "As7d2c",
+        "split": "design",
+        "hero": "BB",
+        "opponent": "standard",
+        "status": "complete-composite-behavior",
+        "attempted": 64,
+        "completed": 64,
+        "unresolved": [],
+        "candidate_ev_bb": {
+          "mean": 17.1631,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            7.3613,
+            26.965
+          ]
+        },
+        "baseline_ev_bb": {
+          "mean": 23.6802,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            12.1775,
+            35.1829
+          ]
+        },
+        "delta_bb": {
+          "mean": -6.517,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -12.055,
+            -0.9791
+          ]
+        },
+        "completedByPolicy": 0,
+        "offModelTrials": 0,
+        "offModelOccurrences": 0,
+        "completionDecisions": 0,
+        "validatedProofs": 0,
+        "uniqueProofs": 0,
+        "unresolvedCount": 0
+      },
+      "currentPhases": {
+        "samplingMs": 2.2702390000005153,
+        "baselineMs": 13.554452999999057,
+        "candidateMs": 1303.1325929999998,
+        "evidenceCallbackMs": 0.8207650000011881
+      },
+      "currentDecisionCounts": {
+        "decisionCallbacks": 290,
+        "heroDecisions": 164,
+        "referenceDecisions": 126,
+        "completionDecisions": 0
+      },
+      "currentCache": {
+        "entries": 121,
+        "numericBytes": 31049424,
+        "metadataBytes": 1759312,
+        "evictions": 0,
+        "limits": {
+          "numericBytes": 67108864,
+          "metadataBytes": 8388608,
+          "entries": 128
+        },
+        "builds": 121,
+        "maximumActiveAncestors": 2,
+        "active": 0
+      },
+      "evidence": [
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001/result.json",
+          "bytes": 5585,
+          "sha256": "bf4838ba9b136cd6b74ee0200e8fdff156e556f4813bad976a07baf292f8d209"
+        },
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/result.json",
+          "bytes": 6616,
+          "sha256": "bf2e8e9b1aae78c79c5b343693d3f1bac28363c041df06e096f59e54fedd029b"
+        }
+      ]
+    },
+    {
+      "cellIndex": 2,
+      "condition": {
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BTN",
+        "samples": 64,
+        "seed": "solveaai-postflop-ai-v1",
+        "cacheBatchSize": 64
+      },
+      "pairedTrials": 64,
+      "legacyWallMsPerPairedTrial": 9.716524703125001,
+      "currentWallMsPerPairedTrial": 30.29286803125,
+      "wallRatio": 3.1176649014752456,
+      "legacyCpuMsPerPairedTrial": 14.50346875,
+      "currentCpuMsPerPairedTrial": 41.55646875,
+      "legacySetupMs": 0.11789400000009209,
+      "currentSetupMs": 42.168251000000055,
+      "sameDrawHash": "691be807f999cf1e39870537ee9a03b3aabb2b18a3a1b83b47c839168f1aad7d",
+      "currentCompleteTrialObjectsMatchSaved": true,
+      "candidateReturnsDifferent": 0,
+      "currentSummary": {
+        "board": "As7d2c",
+        "split": "design",
+        "hero": "BTN",
+        "opponent": "passive",
+        "status": "complete-composite-behavior",
+        "attempted": 64,
+        "completed": 64,
+        "unresolved": [],
+        "candidate_ev_bb": {
+          "mean": 12.5466,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            4.1092,
+            20.984
+          ]
+        },
+        "baseline_ev_bb": {
+          "mean": 6.498,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -3.164,
+            16.16
+          ]
+        },
+        "delta_bb": {
+          "mean": 6.0486,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            0.0974,
+            11.9997
+          ]
+        },
+        "completedByPolicy": 1,
+        "offModelTrials": 1,
+        "offModelOccurrences": 1,
+        "completionDecisions": 1,
+        "validatedProofs": 1,
+        "uniqueProofs": 1,
+        "unresolvedCount": 0
+      },
+      "currentPhases": {
+        "samplingMs": 2.501124999999888,
+        "baselineMs": 21.702438000001393,
+        "candidateMs": 1913.437714000001,
+        "evidenceCallbackMs": 3.0259769999997843
+      },
+      "currentDecisionCounts": {
+        "decisionCallbacks": 357,
+        "heroDecisions": 159,
+        "referenceDecisions": 198,
+        "completionDecisions": 1
+      },
+      "currentCache": {
+        "entries": 128,
+        "numericBytes": 34610506,
+        "metadataBytes": 1914864,
+        "evictions": 56,
+        "limits": {
+          "numericBytes": 67108864,
+          "metadataBytes": 8388608,
+          "entries": 128
+        },
+        "builds": 184,
+        "maximumActiveAncestors": 2,
+        "active": 0
+      },
+      "evidence": [
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002/result.json",
+          "bytes": 5562,
+          "sha256": "be4ea231767598defee63ed752dc93b27e50d8a69b7620887e82c3f0bd5737ea"
+        },
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/result.json",
+          "bytes": 6684,
+          "sha256": "603396d24cdb7778c15802bd0c1f0a8f6c704ed235374a84ea369673c6aa32bc"
+        }
+      ]
+    },
+    {
+      "cellIndex": 59,
+      "condition": {
+        "board": "9s7s3s",
+        "split": "holdout",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "samples": 64,
+        "seed": "solveaai-postflop-ai-v1",
+        "cacheBatchSize": 64
+      },
+      "pairedTrials": 64,
+      "legacyWallMsPerPairedTrial": 10.189342640625,
+      "currentWallMsPerPairedTrial": 29.21112509375,
+      "wallRatio": 2.8668311709614103,
+      "legacyCpuMsPerPairedTrial": 15.322390625,
+      "currentCpuMsPerPairedTrial": 40.159578125,
+      "legacySetupMs": 0.11816500000009,
+      "currentSetupMs": 38.234555,
+      "sameDrawHash": "719462864174f2145bc42b0309cd91e573031722b1a5d3c3d1f7d7e4758c4485",
+      "currentCompleteTrialObjectsMatchSaved": true,
+      "candidateReturnsDifferent": 4,
+      "currentSummary": {
+        "board": "9s7s3s",
+        "split": "holdout",
+        "hero": "BB",
+        "opponent": "aggressive",
+        "status": "complete-composite-behavior",
+        "attempted": 64,
+        "completed": 64,
+        "unresolved": [],
+        "candidate_ev_bb": {
+          "mean": 12.1462,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            0.7753,
+            23.5172
+          ]
+        },
+        "baseline_ev_bb": {
+          "mean": 11.815,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -1.6853,
+            25.3153
+          ]
+        },
+        "delta_bb": {
+          "mean": 0.3312,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -9.7117,
+            10.3742
+          ]
+        },
+        "completedByPolicy": 1,
+        "offModelTrials": 1,
+        "offModelOccurrences": 1,
+        "completionDecisions": 1,
+        "validatedProofs": 1,
+        "uniqueProofs": 1,
+        "unresolvedCount": 0
+      },
+      "currentPhases": {
+        "samplingMs": 2.284714000001827,
+        "baselineMs": 13.28211400000157,
+        "candidateMs": 1853.0223959999987,
+        "evidenceCallbackMs": 2.861094999997704
+      },
+      "currentDecisionCounts": {
+        "decisionCallbacks": 356,
+        "heroDecisions": 216,
+        "referenceDecisions": 140,
+        "completionDecisions": 1
+      },
+      "currentCache": {
+        "entries": 128,
+        "numericBytes": 31934292,
+        "metadataBytes": 1824420,
+        "evictions": 47,
+        "limits": {
+          "numericBytes": 67108864,
+          "metadataBytes": 8388608,
+          "entries": 128
+        },
+        "builds": 175,
+        "maximumActiveAncestors": 2,
+        "active": 0
+      },
+      "evidence": [
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059/result.json",
+          "bytes": 5559,
+          "sha256": "c2abdffbba553cd16b8e8906f37c856af1934d9bef2c0ae484784dcad5750f1e"
+        },
+        {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/result.json",
+          "bytes": 6697,
+          "sha256": "24abf66e34b30b55073c1e1a6e8185a480ebc35d87ebb67cd6a076ab2b6f0705"
+        }
+      ]
+    }
+  ],
+  "aggregate": {
+    "legacyWallMsPerPairedTrial": 9.357152130208334,
+    "currentWallMsPerPairedTrial": 26.709199031249998,
+    "wallRatio": 2.8544153883127397,
+    "currentFullTrialEqualityCount": 192,
+    "currentCompletionDecisions": 2,
+    "currentUnresolved": 0
+  },
+  "producer002": {
+    "producer": {
+      "wallMs": 1874.572625,
+      "cpuMs": 2543.529
+    },
+    "storageMethods": {
+      "beginCell": {
+        "calls": 1,
+        "wallMs": 0.11132500000007894
+      },
+      "append": {
+        "calls": 64,
+        "wallMs": 2.7591550000006464
+      },
+      "putProof": {
+        "calls": 1,
+        "wallMs": 2.89655700000003
+      },
+      "finish": {
+        "calls": 1,
+        "wallMs": 0.061732000000120024
+      },
+      "record": {
+        "calls": 1,
+        "wallMs": 0.11400899999989633
+      }
+    },
+    "summedStorageMethodMs": 5.9427780000007715,
+    "nativeValidator": {
+      "wallMs": 197.88588100000015,
+      "cpuMs": 215.232
+    },
+    "fullTrialEquality": true,
+    "evidence": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002/result.json",
+      "bytes": 3755,
+      "sha256": "632605bb407c4c1667b9adf9daacd2394a55dc91708474d4c6d4f364341a9f21"
+    }
+  },
+  "profile059": {
+    "sampleCount": 1932,
+    "sampledWallMs": 2024.362,
+    "profileDurationMs": 2025.168,
+    "categoryInclusive": [
+      {
+        "name": "createDecisionPrefixInclusive",
+        "ms": 527.301,
+        "pct": 26.0477622085378
+      },
+      {
+        "name": "identityInclusive",
+        "ms": 434.709,
+        "pct": 21.47387670782202
+      },
+      {
+        "name": "evaluateInclusive",
+        "ms": 146.99,
+        "pct": 7.261053112042214
+      },
+      {
+        "name": "compileLawInclusive",
+        "ms": 128.943,
+        "pct": 6.369562360882095
+      },
+      {
+        "name": "zeroProofVerificationInclusive",
+        "ms": 102.635,
+        "pct": 5.069992422303916
+      }
+    ],
+    "self": [
+      {
+        "name": "freezeSnapshot",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+        "line": 34,
+        "ms": 216.378,
+        "pct": 10.688700933923874
+      },
+      {
+        "name": "actionProjection",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+        "line": 39,
+        "ms": 162.606,
+        "pct": 8.032456645599947
+      },
+      {
+        "name": "evaluate",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/lib/equity.mjs",
+        "line": 55,
+        "ms": 142.701,
+        "pct": 7.049183891023444
+      },
+      {
+        "name": "createDecisionPrefix",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/decision-prefix.mjs",
+        "line": 13,
+        "ms": 118.001,
+        "pct": 5.829046385972469
+      },
+      {
+        "name": "equitiesVersus",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/range-equity.mjs",
+        "line": 308,
+        "ms": 113.88,
+        "pct": 5.625476075919228
+      },
+      {
+        "name": "prepare",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 147,
+        "ms": 107.409,
+        "pct": 5.305819808907695
+      },
+      {
+        "name": "compileDeclaredPolicyLaw",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-action-law.mjs",
+        "line": 29,
+        "ms": 103.012,
+        "pct": 5.088615573696799
+      },
+      {
+        "name": "rankTable",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 118,
+        "ms": 102.885,
+        "pct": 5.082341992193096
+      },
+      {
+        "name": "canonicalJson",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+        "line": 29,
+        "ms": 97.864,
+        "pct": 4.834313230538807
+      },
+      {
+        "name": "(garbage collector)",
+        "file": "",
+        "line": 0,
+        "ms": 65.436,
+        "pct": 3.2324258210735035
+      },
+      {
+        "name": "assertJsonCompatible",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+        "line": 4,
+        "ms": 63.478,
+        "pct": 3.1357039897014465
+      },
+      {
+        "name": "planFor",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/range-equity.mjs",
+        "line": 169,
+        "ms": 53.357,
+        "pct": 2.6357440023078875
+      },
+      {
+        "name": "betting",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 482,
+        "ms": 36.421,
+        "pct": 1.7991347397352846
+      },
+      {
+        "name": "post",
+        "file": "node:inspector",
+        "line": 115,
+        "ms": 35.162,
+        "pct": 1.7369423057733746
+      },
+      {
+        "name": "(anonymous)",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+        "line": 32,
+        "ms": 30.957,
+        "pct": 1.5292225402373687
+      },
+      {
+        "name": "policyRule",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 354,
+        "ms": 29.195,
+        "pct": 1.4421827716584288
+      },
+      {
+        "name": "reach",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 116,
+        "ms": 29.077,
+        "pct": 1.4363537746707358
+      },
+      {
+        "name": "prefixFor",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/range-equity.mjs",
+        "line": 42,
+        "ms": 27.752,
+        "pct": 1.3709010542580824
+      },
+      {
+        "name": "replayObservableStreet",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+        "line": 109,
+        "ms": 25.079,
+        "pct": 1.2388594530029708
+      },
+      {
+        "name": "sha256",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+        "line": 22,
+        "ms": 21.48,
+        "pct": 1.061075044878337
+      },
+      {
+        "name": "(anonymous)",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 140,
+        "ms": 19.525,
+        "pct": 0.9645014083449501
+      },
+      {
+        "name": "numericLawMemoKey",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 51,
+        "ms": 18.841,
+        "pct": 0.9307129851281539
+      },
+      {
+        "name": "nodeActions",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+        "line": 13,
+        "ms": 17.746,
+        "pct": 0.876621869013546
+      },
+      {
+        "name": "playLaterStreetsWithPolicy",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/engine.mjs",
+        "line": 113,
+        "ms": 17.451,
+        "pct": 0.8620493765443137
+      },
+      {
+        "name": "context",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 441,
+        "ms": 17.106,
+        "pct": 0.8450069700972455
+      },
+      {
+        "name": "buildBetting",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 510,
+        "ms": 16.094,
+        "pct": 0.7950159111858452
+      },
+      {
+        "name": "streetState",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/later-tree.mjs",
+        "line": 60,
+        "ms": 15.184,
+        "pct": 0.7500634767892304
+      },
+      {
+        "name": "textureOf",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 73,
+        "ms": 14.647,
+        "pct": 0.723536600667272
+      },
+      {
+        "name": "mix",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 879,
+        "ms": 11.763,
+        "pct": 0.5810719624256926
+      },
+      {
+        "name": "equityScan",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/range-equity.mjs",
+        "line": 71,
+        "ms": 10.854,
+        "pct": 0.5361689263086346
+      }
+    ],
+    "inclusive": [
+      {
+        "name": "(root)",
+        "file": "",
+        "line": 0,
+        "ms": 2024.362,
+        "pct": 100.0
+      },
+      {
+        "name": "(anonymous)",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/measure.mjs",
+        "line": 0,
+        "ms": 1956.767,
+        "pct": 96.66092329336354
+      },
+      {
+        "name": "(anonymous)",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/measure.mjs",
+        "line": 63,
+        "ms": 1921.605,
+        "pct": 94.92398098759017
+      },
+      {
+        "name": "timed",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/measure.mjs",
+        "line": 40,
+        "ms": 1921.605,
+        "pct": 94.92398098759017
+      },
+      {
+        "name": "playModel11Hand",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/simulation-model11.mjs",
+        "line": 16,
+        "ms": 1904.126,
+        "pct": 94.06054845921827
+      },
+      {
+        "name": "decide",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/simulation-model11.mjs",
+        "line": 27,
+        "ms": 1856.664,
+        "pct": 91.71600731489724
+      },
+      {
+        "name": "sample",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/offpath-behavior-model11.mjs",
+        "line": 96,
+        "ms": 1713.321,
+        "pct": 84.63510972839838
+      },
+      {
+        "name": "behaviorLaw",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/offpath-behavior-model11.mjs",
+        "line": 84,
+        "ms": 1711.119,
+        "pct": 84.52633471681449
+      },
+      {
+        "name": "withRequest",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 81,
+        "ms": 1629.255,
+        "pct": 80.48239395918318
+      },
+      {
+        "name": "law",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 216,
+        "ms": 1626.957,
+        "pct": 80.36887671276185
+      },
+      {
+        "name": "law",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 297,
+        "ms": 1626.957,
+        "pct": 80.36887671276185
+      },
+      {
+        "name": "(anonymous)",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 217,
+        "ms": 1621.44,
+        "pct": 80.09634640444743
+      },
+      {
+        "name": "playLaterStreetsWithPolicy",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/engine.mjs",
+        "line": 113,
+        "ms": 1569.953,
+        "pct": 77.5529771849106
+      },
+      {
+        "name": "(anonymous)",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/simulation-model11.mjs",
+        "line": 47,
+        "ms": 1553.808,
+        "pct": 76.75544196146737
+      },
+      {
+        "name": "lawAtPrefix",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 221,
+        "ms": 1525.82,
+        "pct": 75.3728829132339
+      },
+      {
+        "name": "prepare",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 147,
+        "ms": 1458.076,
+        "pct": 72.02644586294349
+      },
+      {
+        "name": "reach",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 116,
+        "ms": 659.824,
+        "pct": 32.594170410232955
+      },
+      {
+        "name": "mix",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 879,
+        "ms": 573.249,
+        "pct": 28.31751435760995
+      },
+      {
+        "name": "betting",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 482,
+        "ms": 566.644,
+        "pct": 27.99123872113782
+      },
+      {
+        "name": "createDecisionPrefix",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/decision-prefix.mjs",
+        "line": 13,
+        "ms": 527.301,
+        "pct": 26.0477622085378
+      },
+      {
+        "name": "buildBetting",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 510,
+        "ms": 522.567,
+        "pct": 25.81391075311629
+      },
+      {
+        "name": "context",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 93,
+        "ms": 372.288,
+        "pct": 18.390386699612026
+      },
+      {
+        "name": "playFlop",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/engine.mjs",
+        "line": 37,
+        "ms": 343.744,
+        "pct": 16.98036220794502
+      },
+      {
+        "name": "ask",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/engine.mjs",
+        "line": 48,
+        "ms": 338.289,
+        "pct": 16.710894592963115
+      },
+      {
+        "name": "(anonymous)",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/simulation-model11.mjs",
+        "line": 46,
+        "ms": 303.953,
+        "pct": 15.014755266103592
+      },
+      {
+        "name": "finalTables",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 204,
+        "ms": 270.605,
+        "pct": 13.367421439446106
+      },
+      {
+        "name": "rankTable",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 118,
+        "ms": 266.757,
+        "pct": 13.17733685971185
+      },
+      {
+        "name": "freezeSnapshot",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+        "line": 34,
+        "ms": 243.699,
+        "pct": 12.038311329693009
+      },
+      {
+        "name": "replayDecision",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 228,
+        "ms": 220.139,
+        "pct": 10.874487863336697
+      },
+      {
+        "name": "queryEquities",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 91,
+        "ms": 218.798,
+        "pct": 10.808244770451134
+      },
+      {
+        "name": "equitiesVersus",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/range-equity.mjs",
+        "line": 308,
+        "ms": 218.274,
+        "pct": 10.782360071963414
+      },
+      {
+        "name": "betLine",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/engine.mjs",
+        "line": 69,
+        "ms": 218.094,
+        "pct": 10.773468381643204
+      },
+      {
+        "name": "prime",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 98,
+        "ms": 204.067,
+        "pct": 10.080558714301098
+      },
+      {
+        "name": "actionProjection",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+        "line": 39,
+        "ms": 199.61,
+        "pct": 9.8603905823168
+      },
+      {
+        "name": "canonicalPostflopPath",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+        "line": 136,
+        "ms": 196.826,
+        "pct": 9.722865772030891
+      },
+      {
+        "name": "replayObservableStreet",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+        "line": 109,
+        "ms": 189.224,
+        "pct": 9.347340050840709
+      },
+      {
+        "name": "context",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 441,
+        "ms": 168.223,
+        "pct": 8.309926781870042
+      },
+      {
+        "name": "build",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "line": 458,
+        "ms": 150.269,
+        "pct": 7.423030070708697
+      },
+      {
+        "name": "evaluate",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/lib/equity.mjs",
+        "line": 55,
+        "ms": 146.99,
+        "pct": 7.261053112042214
+      },
+      {
+        "name": "sampleReference",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/execution-model11.mjs",
+        "line": 32,
+        "ms": 140.097,
+        "pct": 6.920550771057745
+      },
+      {
+        "name": "compileDeclaredPolicyLaw",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-action-law.mjs",
+        "line": 29,
+        "ms": 128.943,
+        "pct": 6.369562360882095
+      },
+      {
+        "name": "canonicalJson",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+        "line": 29,
+        "ms": 128.821,
+        "pct": 6.363535770776175
+      },
+      {
+        "name": "(anonymous)",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+        "line": 32,
+        "ms": 121.659,
+        "pct": 6.009745292590949
+      },
+      {
+        "name": "prefix",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "line": 289,
+        "ms": 111.212,
+        "pct": 5.4936814660619
+      },
+      {
+        "name": "complete",
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/offpath-behavior-model11.mjs",
+        "line": 68,
+        "ms": 104.801,
+        "pct": 5.176989095823771
+      }
+    ],
+    "filesSelf": [
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+        "ms": 409.932,
+        "pct": 20.24993553524518
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+        "ms": 327.784,
+        "pct": 16.191965666219776
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+        "ms": 235.105,
+        "pct": 11.613782515182562
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/range-equity.mjs",
+        "ms": 228.031,
+        "pct": 11.264339085598326
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "ms": 185.474,
+        "pct": 9.162096502503012
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/lib/equity.mjs",
+        "ms": 146.99,
+        "pct": 7.261053112042214
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/decision-prefix.mjs",
+        "ms": 126.753,
+        "pct": 6.261380128652879
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-action-law.mjs",
+        "ms": 105.18,
+        "pct": 5.195711043775767
+      },
+      {
+        "file": "",
+        "ms": 71.615,
+        "pct": 3.537657790454474
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/later-tree.mjs",
+        "ms": 46.489,
+        "pct": 2.2964766183123375
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/engine.mjs",
+        "ms": 37.134,
+        "pct": 1.8343557130592256
+      },
+      {
+        "file": "node:inspector",
+        "ms": 35.162,
+        "pct": 1.7369423057733746
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+        "ms": 22.583,
+        "pct": 1.1155613472293986
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model.mjs",
+        "ms": 13.285,
+        "pct": 0.6562561439110198
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/tree.mjs",
+        "ms": 6.768,
+        "pct": 0.33432755603987824
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/later-policy.mjs",
+        "ms": 5.592,
+        "pct": 0.27623517928117597
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/exact-river-call-ev.mjs",
+        "ms": 4.398,
+        "pct": 0.2172536334904528
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/simulation-model11.mjs",
+        "ms": 4.329,
+        "pct": 0.21384515220103914
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/policy.mjs",
+        "ms": 3.709,
+        "pct": 0.183218218875873
+      },
+      {
+        "file": "file:///workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/offpath-behavior-model11.mjs",
+        "ms": 3.497,
+        "pct": 0.17274578360984844
+      }
+    ],
+    "interpretation": "Single1ms V8 sample profile of current cell059. Inclusive groups overlap; no exact invocation counts or precision guarantee."
+  },
+  "resources": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001-supervision/parent-result.json",
+      "elapsedSeconds": 2.377689487999305,
+      "peakRssKiB": 241812,
+      "minimumHostAvailableKiB": 8582396,
+      "ownedCleanupComplete": true,
+      "receipt": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001-supervision/parent-result.json",
+        "bytes": 2098,
+        "sha256": "cad152928f2611edfcf20234f6dbb0ee0a40b71951ffa07be60efe7796394da6"
+      }
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002-supervision/parent-result.json",
+      "elapsedSeconds": 3.01511910300178,
+      "peakRssKiB": 330108,
+      "minimumHostAvailableKiB": 8428528,
+      "ownedCleanupComplete": true,
+      "receipt": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002-supervision/parent-result.json",
+        "bytes": 2097,
+        "sha256": "994e74a57f6c18fdaf1ffc5fc2dd84cc57fe4835a0ce64f92d248e7f76fd9d44"
+      }
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059-supervision/parent-result.json",
+      "elapsedSeconds": 2.9362386720022187,
+      "peakRssKiB": 331816,
+      "minimumHostAvailableKiB": 8408376,
+      "ownedCleanupComplete": true,
+      "receipt": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059-supervision/parent-result.json",
+        "bytes": 2102,
+        "sha256": "25dcd5da42024660057c4555d186bfbe67a7715dcdb7380a9f91651d673deb4a"
+      }
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001-supervision/parent-result.json",
+      "elapsedSeconds": 1.554649026991683,
+      "peakRssKiB": 163436,
+      "minimumHostAvailableKiB": 8672440,
+      "ownedCleanupComplete": true,
+      "receipt": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-001-supervision/parent-result.json",
+        "bytes": 2095,
+        "sha256": "bd6e8e30296a33a8a59ae2f7232234f86e66b5cac737aee4985790ad39942fd3"
+      }
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002-supervision/parent-result.json",
+      "elapsedSeconds": 1.628561991994502,
+      "peakRssKiB": 204712,
+      "minimumHostAvailableKiB": 8635112,
+      "ownedCleanupComplete": true,
+      "receipt": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-002-supervision/parent-result.json",
+        "bytes": 2095,
+        "sha256": "b88ca1415356459a4a795cbf2a16a4accef721e21b39ab6b989386a8548ed8e5"
+      }
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059-supervision/parent-result.json",
+      "elapsedSeconds": 1.7149204279994592,
+      "peakRssKiB": 207580,
+      "minimumHostAvailableKiB": 8563480,
+      "ownedCleanupComplete": true,
+      "receipt": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/legacy-059-supervision/parent-result.json",
+        "bytes": 2099,
+        "sha256": "73d9fa6335028b52ac50930aa2f71f17a5fa8c8bda4536dae5acba71311c41dd"
+      }
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002-supervision/parent-result.json",
+      "elapsedSeconds": 3.1479572679963894,
+      "peakRssKiB": 326928,
+      "minimumHostAvailableKiB": 8464088,
+      "ownedCleanupComplete": true,
+      "receipt": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/producer-002-supervision/parent-result.json",
+        "bytes": 2102,
+        "sha256": "275ee0bac539887d2f12a83ba6aeac8825870798f8430e0a68ad3366fab0de21"
+      }
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059-supervision/parent-result.json",
+      "elapsedSeconds": 3.09449087199755,
+      "peakRssKiB": 329996,
+      "minimumHostAvailableKiB": 8446376,
+      "ownedCleanupComplete": true,
+      "receipt": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059-supervision/parent-result.json",
+        "bytes": 2100,
+        "sha256": "2823ff0d339c00858b72b962cb81327048250dff549edf8cc6807f76e667c10a"
+      }
+    }
+  ],
+  "limits": {
+    "heapMiB": 512,
+    "ownedGroupRssMiB": 900,
+    "hostAvailableFloorMiB": 2048,
+    "timeoutSecondsPerJob": 120,
+    "sequentialFreshProcesses": true
+  },
+  "limitations": [
+    "Three selected existing conditions only; single unprofiled64-trial epoch per model/condition, not performance confidence intervals or a whole720000-trial estimate.",
+    "Legacy comparator is model10 semantics in the same current source; the historical simulation module is byte-identical but whole historical kernel parity is not claimed.",
+    "Current candidate timer includes separately attributed completion-evidence callback; full loop includes reference baseline, sample construction, cache release and instrumentation.",
+    "Profile timing is excluded from primary ratios; inclusive profile categories overlap and sample percentages are diagnostic.",
+    "Producer storage counters include serialization and hashing; native proof validator is separate; subtracting timings from independent runs does not isolate overhead.",
+    "No formal source, policy, thresholds, sample coverage or acceptance changed."
+  ],
+  "recommendation": "First test narrowly branded immutable-snapshot validation reuse in an isolated source; preserve public validation and exact per-trial laws/proofs. Profile shows prefix reconstruction and identity/freeze work materially exceed storage. Do not reduce trials or proof coverage."
+}

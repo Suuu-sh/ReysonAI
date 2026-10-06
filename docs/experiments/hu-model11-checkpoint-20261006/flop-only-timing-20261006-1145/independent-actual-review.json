@@ -1,0 +1,115 @@
+{
+  "kind": "independent-flop-only-timing-actual-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T11:25:42.141478+00:00",
+  "status": "TIMEOUT_INCOMPLETE_TIMING_ONLY",
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-flop-only-timing-20261006/independent-source-review.json",
+    "bytes": 3867,
+    "sha256": "96b5ae52c27031b13611e0aa629d3bcb2d1867b2cb450af16b36e020b679f103"
+  },
+  "started": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-flop-only-timing-20261006/run-once-v1/started.json",
+    "bytes": 245326,
+    "sha256": "51038287707f44360af52c23e1b3be640bc4bfd0cda045329af04b95837e2c7f"
+  },
+  "caller": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-flop-only-timing-20261006/caller.mjs",
+    "bytes": 4981,
+    "sha256": "2f8a534251bc5b1c53e1e35e46600064fbb3f4899ef5fd5e48634098d9d815ce"
+  },
+  "supervisor": {
+    "path": "/workspace/scratch/08c72b2d7549/stage3-recovery/fastfold-integration/run-bounded-check.py",
+    "bytes": 2530,
+    "sha256": "a9b80a168feb769158eb8e03906d3f667d1738f8313bd21f45703fe3ffc1af13"
+  },
+  "supervision": [
+    {
+      "original": {
+        "path": "/workspace/scratch/08c72b2d7549/reysonai-stage3-fastfold-integration/apps/frontend/.local/stage3-fastfold-integration/hu-flop-only-co-sb-20261006-v1.resources.json",
+        "bytes": 668,
+        "sha256": "6cc42abdb72ac5e35d7c9becab0a92c870c3557dd609d1732e05533bce5a296c"
+      },
+      "copy": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-flop-only-timing-20261006/supervisor-resources.json",
+        "bytes": 668,
+        "sha256": "6cc42abdb72ac5e35d7c9becab0a92c870c3557dd609d1732e05533bce5a296c"
+      }
+    },
+    {
+      "original": {
+        "path": "/workspace/scratch/08c72b2d7549/reysonai-stage3-fastfold-integration/apps/frontend/.local/stage3-fastfold-integration/hu-flop-only-co-sb-20261006-v1.log",
+        "bytes": 26960,
+        "sha256": "746836149dd93ccd65c45bbc0c0525d19ae224aef25ca7bb40de575ab462619a"
+      },
+      "copy": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-flop-only-timing-20261006/supervisor-stdout.log",
+        "bytes": 26960,
+        "sha256": "746836149dd93ccd65c45bbc0c0525d19ae224aef25ca7bb40de575ab462619a"
+      }
+    }
+  ],
+  "completedBoardFiles": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-flop-only-timing-20261006/completed-board-files.json",
+    "bytes": 57304,
+    "sha256": "1dc714ee64ba422d263acfced2885eb9ee2c998d2f277cfb0ad980cdd892b936"
+  },
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "currentSourceAndPolicyPinsUnchanged": true,
+  "requestedBoards": 1755,
+  "savedCompletedBoards": 145,
+  "completedCanonicalIndices": [
+    0,
+    144
+  ],
+  "lastSavedBoard": "7c6d2h",
+  "completeJsonPresent": false,
+  "resultHashesVerified": 145,
+  "hashMethod": "Sorted canonical JSON keys and original JSON.stringify number tokens from persisted JSON; no JS/Node execution.",
+  "completedResultStatuses": {
+    "completed-selected-scope": 145
+  },
+  "savedResultErrors": 0,
+  "savedWarningCounts": {
+    "value-only-raise": 88,
+    "overcall": 106
+  },
+  "prefixStates": {
+    "not-facing": 290,
+    "effective-facing-context": 1450
+  },
+  "timing": {
+    "supervisorSeconds": 120.032,
+    "recordedKernelSumSeconds": 83.06694505499995,
+    "nativeInternalElapsedSumSeconds": 77.92590118500004,
+    "lastRecordedLoopSeconds": 118.33747195400001,
+    "sourceRecheckHashStorageAndLoopOverheadThroughLastProgressSeconds": 35.27052689900006,
+    "preparationSeconds": 1.004416572,
+    "meanCompletedKernelSeconds": 0.5728754831379307,
+    "inFlightOrUnrecordedTimeIncludedInKernelSum": false
+  },
+  "resources": {
+    "childExitCode": -15,
+    "supervisorMappedExitCode": 143,
+    "stopReason": "timeout",
+    "peakGroupRssKiB": 512160,
+    "minimumHostAvailableKiB": 8327232,
+    "timeoutSeconds": 120
+  },
+  "cleanup": "The unchanged supervisor timeout branch sends SIGTERM to its own new process group and waits/reaps its child; after3 seconds it would SIGKILL and wait. Saved child status is -15 and elapsed120.032 seconds. Parent reported genuine supervisor terminal143. This legacy resource record contains no PID/start identity or post-termination descendant enumeration; no independent cross-namespace cleanup claim is added.",
+  "interpretationLimits": [
+    "coreWallMs covers the full checkModel11Balance call, including facade construction and release. loopElapsedMs also includes per-board source checks, result hashing and atomic storage; supervisor wall additionally includes process/context startup.",
+    "The caller omits full all-board wrapper work: expected later coverage, model11 row/proof semantic validation and separate proof/checkpoint persistence. It therefore does not time a replacement formal validation pipeline.",
+    "This is one sequential process in canonical order. Module-level caches and JIT live longer than the actual eight-board worker processes; it cannot be compared directly with five-worker all-street wall time. A stopped canonical prefix is not a representative sample or a complete1755 result.",
+    "If result.complete is true but findings contain quality errors, completedBoards records completed computation only, not quality approval. Saved findings must be retained.",
+    "145 boards are the first canonical prefix (0..144), with an unfinished run. The83.066945-second kernel sum excludes interrupted work after the last saved board. Do not extrapolate this prefix into a measured1755 time or compute a direct speedup against five-worker all-street runs.",
+    "Flop equity retains300 sampled future runouts. Only later-street balance decisions are excluded. Completed computation and zero saved errors do not authorize formal validation scope changes."
+  ],
+  "massLaunchPausePreserved": true,
+  "rerunOrExtensionAuthorized": false,
+  "revisedScopeAdopted": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

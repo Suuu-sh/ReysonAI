@@ -1,0 +1,54 @@
+{
+  "status": "FOCUSED_TESTS_PASSED_NOT_BENCHMARKED",
+  "testsPassed": 14,
+  "testsFailed": 0,
+  "terminal": {
+    "preflight_host_available_kib": 8830236,
+    "minimum_host_available_kib": 8511784,
+    "effective_cgroup_limit": "not exposed",
+    "label": "hu-geometry-memo-focused-v1",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "--max-old-space-size=512",
+      "--test",
+      "--test-reporter=tap",
+      "--test-concurrency=1",
+      "/workspace/scratch/08c72b2d7549/hu-model11-gate-geometry-memo/apps/frontend/tests/postflop-model11-prepared-prefix.test.mjs",
+      "/workspace/scratch/08c72b2d7549/hu-model11-gate-geometry-memo/apps/frontend/tests/postflop-model11-gate.test.mjs",
+      "/workspace/scratch/08c72b2d7549/hu-model11-gate-geometry-memo/apps/frontend/tests/postflop-model11-gate-vector.test.mjs"
+    ],
+    "exit_code": 0,
+    "seconds": 4.354,
+    "sampled_own_process_group_peak_rss_kib": 272096,
+    "child_rusage_peak_rss_kib": 232612,
+    "rss_stop_limit_kib": 921600,
+    "timeout_seconds": 120,
+    "stopped": null
+  },
+  "evidence": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-focused-v1.resources.json",
+      "bytes": 952,
+      "sha256": "a8ad60c5c60ff8ae95552c3595dfaa6ff82d73faadbbb8e9654c9131951df252"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/actual-validation/hu-geometry-memo-focused-v1.log",
+      "bytes": 3988,
+      "sha256": "1878293d5be869643414252c5fd2233d4e6b89b9f3981c2f61d6bbe634fb3168"
+    }
+  ],
+  "candidateSource": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-model11-gate-geometry-memo/apps/frontend/scripts/postflop-ai/gate-model11.mjs",
+    "bytes": 10092,
+    "sha256": "7eeeb8ac75865900811b22b61ca2613d262ea3a2deaeee8e5ac2481e627fbd8b"
+  },
+  "formalSource": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/gate-model11.mjs",
+    "bytes": 9918,
+    "sha256": "8a5d7d2547c97fdb3db050a93c6ac06fef19a87fb88b33c0154f93f8abe1949c"
+  },
+  "formalHead": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "formalTrackedStatus": "",
+  "candidateTrackedStatus": " M apps/frontend/scripts/postflop-ai/gate-model11.mjs\n",
+  "benchmarksStarted": false
+}
