@@ -1,0 +1,133 @@
+{
+  "kind": "independent-sixth-case-one-condition-adverse-diagnostic-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T11:02:28.916704+00:00",
+  "verdict": "APPROVE_FIXED_DIAGNOSTIC_ONLY",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "executionCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "probeManifest": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/manifest.json",
+    "bytes": 10857,
+    "sha256": "46d591b23ed31cf97cf0b22143d389d726cf15f703b1c7bcf2da0f71d533d458"
+  },
+  "script": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/probe.mjs",
+    "bytes": 6807,
+    "sha256": "4ad43cd8697baa767c6dd6682709ff551c91dd40f608d5ec64a880cabf16bb58"
+  },
+  "priorMechanism": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe007-v1/probe.mjs",
+    "bytes": 6797,
+    "sha256": "0b804604cda9e982bee1897e05a22af791c1b599fd4e1933a523ed54c96db7e2"
+  },
+  "priorMechanismReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-adverse-probes-review-v1.json",
+    "bytes": 8581,
+    "sha256": "64b15f0f62029d48c17b2b250640ad6687780b1ca2991e4469e304edf69b993e"
+  },
+  "mechanicalDelta": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/mechanical-delta.diff",
+    "bytes": 8354,
+    "sha256": "2861545ee0a943e49a020ae22a312a55de371e86417398d2ba71a8d5ec31ec93"
+  },
+  "sourcePins": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/source-pins.json",
+    "bytes": 44071,
+    "sha256": "0cd58be83520610d4aa268583a6660759a1973f91bfdb3c6000ea9ed10e3ae37"
+  },
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/plan.json",
+    "bytes": 43677,
+    "sha256": "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/prepared.json",
+    "bytes": 41331,
+    "sha256": "cde2edcf942608236633f722f36e8360c523a60e585ffda0f4b0591b157649db"
+  },
+  "originalLaunchReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/launch-review.json",
+    "bytes": 17451,
+    "sha256": "c9497d82831f45083e64742e83c242848e2933b182bf26efa2797a6a2026210c"
+  },
+  "rawRegressionReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/regression-independent-review.json",
+    "bytes": 15591,
+    "sha256": "dc29b0ece9b64e4f75e4975f1c88ab9538ddfb8694a3a32dd8c1223a0e0ba121"
+  },
+  "fixedSelectedIndices": [
+    1
+  ],
+  "condition": {
+    "board": "As7d2c",
+    "split": "design",
+    "opponent": "standard",
+    "hero": "BB",
+    "samples": 64,
+    "seed": "solveaai-postflop-ai-v1",
+    "cacheBatchSize": 64
+  },
+  "originalMarker": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/001/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/001.cell.json",
+    "bytes": 1304,
+    "sha256": "a76ee87e088e2aa063cfc2a53cbb94f145c217efbdaccb1cdccc120b1493c316"
+  },
+  "originalChunks": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/001/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/001.000.trials.json",
+      "bytes": 6852,
+      "sha256": "07c9edc0f23143b7c4506a606d125e574ef3dc5568d21fb63f253f08d87f7cd9"
+    }
+  ],
+  "checks": {
+    "exactTenLiteralSubstitutionsOnly": true,
+    "nativeProducerValidatorAndSummaryUnchanged": true,
+    "all170PreservationPinsMatch": true,
+    "actualTriggerAndOriginalConditionMatch": true,
+    "fullOriginal64CompleteObjectEqualityRequired": true,
+    "separateAdditional128AndCombined192Summaries": true,
+    "cache64AndOriginalSeedUnchanged": true,
+    "allNativeProofsValidated": true,
+    "originalCellProofCount": 0,
+    "freshOutputsAndSupervisorLogPathsAbsent": true,
+    "limitsAndOwnedSupervisorUnchanged": true
+  },
+  "command": [
+    "env",
+    "STAGE3_OWN_RSS_MIB=900",
+    "python",
+    "/workspace/scratch/08c72b2d7549/stage3-recovery/fastfold-integration/run-bounded-check.py",
+    "hu-co-bb-squeeze-btncall-cell1-probe-v1-20261006",
+    "env",
+    "-u",
+    "NODE_OPTIONS",
+    "-u",
+    "NODE_PATH",
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "--max-old-space-size=512",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/probe.mjs",
+    "--reviewed-sha256",
+    "4ad43cd8697baa767c6dd6682709ff551c91dd40f608d5ec64a880cabf16bb58"
+  ],
+  "limits": {
+    "heapMiB": 512,
+    "groupRssMiB": 900,
+    "timeoutSeconds": 120,
+    "minimumHostAvailableMiB": 2048
+  },
+  "executionBoundary": "One fixed condition once, yielding exactly128 additional paired trials after exact original64 replay. Parent owns the temporary numerical slot, pre/postflight source pins and resource checks. Use the exact existing supervisor/command. Genuine terminal exit and full group reaping must be confirmed; preserve incomplete/failed evidence and do not reroll. Existing whole12 work and outputs remain separate.",
+  "preservedBoundaries": {
+    "original72x64Changed": false,
+    "policyChanged": false,
+    "thresholdsChanged": false,
+    "newProfiles": false,
+    "maximumExistingBudget": "8 fixed conditions x128; this review uses1 x128 only",
+    "boardsApproved": false,
+    "policyAccepted": false,
+    "model11AuthorshipClaim": false,
+    "productionAuthorized": false
+  },
+  "interpretation": "Post-selection diagnostics remain exploratory; all27 original negative means and broad uncertainty remain. No calibrated superiority, inferiority or noninferiority claim. Own probe and whole12 results require review before1755.",
+  "reviewerNodeLaunches": 0
+}

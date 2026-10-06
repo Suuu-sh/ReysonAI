@@ -1,0 +1,140 @@
+{
+  "kind": "sixth-case-independent-adverse-probe-factual-result-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T11:12:12.744446+00:00",
+  "status": "ACTUAL_COMPONENT_VERIFIED_NO_LAUNCH_OR_ACCEPTANCE_DECISION",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "result": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/result.json",
+    "bytes": 83544,
+    "sha256": "f3134316c6543382cbafe751d1e5ffa64424cdeac8598d8c45c35ff4aa02f27a"
+  },
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/independent-review.json",
+    "bytes": 6167,
+    "sha256": "36a6772efef27ac53b0677e5e4fe07d42b7f888cfb1522bd7fe6a9bb443af275"
+  },
+  "manifest": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/manifest.json",
+    "bytes": 10857,
+    "sha256": "46d591b23ed31cf97cf0b22143d389d726cf15f703b1c7bcf2da0f71d533d458"
+  },
+  "originalRegressionReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/regression-independent-review.json",
+    "bytes": 15591,
+    "sha256": "dc29b0ece9b64e4f75e4975f1c88ab9538ddfb8694a3a32dd8c1223a0e0ba121"
+  },
+  "supervisionEvidence": [
+    {
+      "original": {
+        "path": "/workspace/scratch/08c72b2d7549/reysonai-stage3-fastfold-integration/apps/frontend/.local/stage3-fastfold-integration/hu-co-bb-squeeze-btncall-cell1-probe-v1-20261006.resources.json",
+        "bytes": 795,
+        "sha256": "8d8f847e4c214a4d075f37ffea07858a9d82c610710b7eca8c27a5bb89f94db0"
+      },
+      "copy": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/resources.json",
+        "bytes": 795,
+        "sha256": "8d8f847e4c214a4d075f37ffea07858a9d82c610710b7eca8c27a5bb89f94db0"
+      }
+    },
+    {
+      "original": {
+        "path": "/workspace/scratch/08c72b2d7549/reysonai-stage3-fastfold-integration/apps/frontend/.local/stage3-fastfold-integration/hu-co-bb-squeeze-btncall-cell1-probe-v1-20261006.log",
+        "bytes": 584,
+        "sha256": "f24aa3024996ef8bb7b1ecb1e637fbe18ac6836defeb7a2a2c46e76b351b22dd"
+      },
+      "copy": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/stdout.log",
+        "bytes": 584,
+        "sha256": "f24aa3024996ef8bb7b1ecb1e637fbe18ac6836defeb7a2a2c46e76b351b22dd"
+      }
+    }
+  ],
+  "cell": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/run-v1/560ba8cbe9bc0e92a4549760b5406070d54afae19996611ec8297cb1773534d5/000.cell.json",
+    "bytes": 1940,
+    "sha256": "1f452d620226fd0d6235eb6976b2c7e10e349d834367cab465f655b9b75601ae"
+  },
+  "chunks": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/run-v1/560ba8cbe9bc0e92a4549760b5406070d54afae19996611ec8297cb1773534d5/000.000.trials.json",
+      "bytes": 6852,
+      "sha256": "5e3a4842cea59f5fa9d0a4c7f3f08f1fd5c1bc0e9ecb0df8128119d14807285e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/run-v1/560ba8cbe9bc0e92a4549760b5406070d54afae19996611ec8297cb1773534d5/000.001.trials.json",
+      "bytes": 6901,
+      "sha256": "19e5ee1fc73965c24282efdf72d8ac21c4907988425b9ce743eff1b83cded37c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/run-v1/560ba8cbe9bc0e92a4549760b5406070d54afae19996611ec8297cb1773534d5/000.002.trials.json",
+      "bytes": 11934,
+      "sha256": "c5e75e783074093b21130fae9d4dc1b97ff32b70628b75b5bf7594c12568aced"
+    }
+  ],
+  "proofs": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/run-v1/560ba8cbe9bc0e92a4549760b5406070d54afae19996611ec8297cb1773534d5/b9312078c951da395c0bb86edc18e9bf38b7c95efa71b5b179a25d70d5251b81.proof.json",
+      "bytes": 26661,
+      "sha256": "fc1c1c202b221425e6c55d010ef3e1ce650016d592a333e72e013ff9f8648e8a"
+    }
+  ],
+  "facts": {
+    "pairedExecutions": 192,
+    "originalCompleteTrialObjectsReproduced": 64,
+    "distinctAdditionalPairedTrials": 128,
+    "completionEvents": 1,
+    "proofFilesVerified": 1,
+    "unresolved": 0,
+    "allRawStatisticsRecalculated": true,
+    "allPreservationPinsUnchanged": true,
+    "exitCode": 0,
+    "seconds": 5.587,
+    "peakGroupRssKiB": 361732
+  },
+  "statistics": {
+    "original64": {
+      "pairedDeltaMeanBb": -6.5170312500000005,
+      "savedDescriptiveInterval": [
+        -12.055,
+        -0.9791
+      ],
+      "sampleCount": 64
+    },
+    "replayed64": {
+      "pairedDeltaMeanBb": -6.5170312500000005,
+      "savedDescriptiveInterval": [
+        -12.055,
+        -0.9791
+      ],
+      "sampleCount": 64
+    },
+    "additional128": {
+      "pairedDeltaMeanBb": -1.1285937499999998,
+      "savedDescriptiveInterval": [
+        -7.0982,
+        4.841
+      ],
+      "sampleCount": 128
+    },
+    "combined192": {
+      "pairedDeltaMeanBb": -2.9247395833333334,
+      "savedDescriptiveInterval": [
+        -7.3178,
+        1.4683
+      ],
+      "sampleCount": 192
+    }
+  },
+  "interpretation": "The original64 adverse interval remains wholly negative. Additional128 and combined192 means remain negative, with exploratory intervals crossing zero. This neither resolves the original adverse signal nor establishes superiority, inferiority or noninferiority. All27 original negative means remain preserved in the own-case regression review.",
+  "authorship": "Native model10-authored unchanged policy pair evaluated with distinct current4b model11 source.",
+  "hold": "Root has paused every new1755 or mass launch while the user proposal is considered. This factual verification grants no further execution, acceptance or adoption of a pending revised scope.",
+  "boardsApproved": false,
+  "newProbesApproved": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0,
+  "newSemanticReplayByReviewer": false
+}

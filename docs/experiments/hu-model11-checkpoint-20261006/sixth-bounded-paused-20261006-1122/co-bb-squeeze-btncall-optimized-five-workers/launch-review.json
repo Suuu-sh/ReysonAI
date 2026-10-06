@@ -1,0 +1,303 @@
+{
+  "kind": "next-hu-independent-launch-review",
+  "version": 1,
+  "verdict": "APPROVE",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "planSha256": "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988",
+  "adapterPins": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/context.mjs",
+      "bytes": 9067,
+      "sha256": "00eb118edaac9b37425eac303eddb175d8bd9d68dce475fc8130b59b0592332c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/worker.mjs",
+      "bytes": 4654,
+      "sha256": "aeb5d2cc1bbef59462b5462855f6a274e59d3d1cdffb5dc8db164e53d51ba00c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/regression.mjs",
+      "bytes": 5268,
+      "sha256": "91cce4c0b96f52ef17ab58bd573fd6946926b14064be8de6353522c88ddc0b01"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/serial.mjs",
+      "bytes": 12515,
+      "sha256": "76b3130e7f5fd6d32e96183d8a3517038d000c466b8cdd7fa5b16f416a05dfc2"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/controller.py",
+      "bytes": 24325,
+      "sha256": "dba17e44c3cd61d36ad763f09522bda59fdbf63cec01ae15edbf1936dec2f735"
+    }
+  ],
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/prepared.json",
+    "bytes": 41331,
+    "sha256": "cde2edcf942608236633f722f36e8360c523a60e585ffda0f4b0591b157649db"
+  },
+  "approvedModes": [
+    "regression",
+    "whole12"
+  ],
+  "policyChanged": false,
+  "productionAuthorized": false,
+  "pilotScopedAcceptance": {
+    "status": "independently-accepted-scoped-evidence",
+    "file": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot-scoped-numerical-acceptance/acceptance.json",
+      "bytes": 12056,
+      "sha256": "9f808ff24f369bf3d3d969c937b4cd78ef8bc71743258054ec524b2533293012"
+    },
+    "scope": "Historical shared-engine evidence at its original source only. The separate prefix-key parity and source-transition reviews permit initial bounded checks on the new identity; no transfer of pilot numerical performance, own-case acceptance, or all1755 acceptance."
+  },
+  "boundedCaseReview": {
+    "verdict": "PENDING",
+    "bindingHash": "bdd250b32e94c60b301bdf769be572f3e8055b75aee361d670a35d621c4f21b7",
+    "evidence": [],
+    "reason": "This case own 72x64 regression, fresh split whole12 balance/reference checks and bounded quality disposition remain required before 1755."
+  },
+  "finalizationContract": {
+    "kind": "producer-semantic-reuse-full-lossless",
+    "version": 3,
+    "semanticEvidence": "Every canonical row and proof was validated by unchanged producer APIs before immutable persistence; genuine completed220-batch terminal plus exact row/proof lineage required.",
+    "freshWholeSetSemanticPasses": 0,
+    "originalConsumerFreshSemanticReplay": false,
+    "numericalCoreChanged": false,
+    "thresholdsChanged": false,
+    "strictDefaultCLIChanged": false,
+    "wholeReceiptEquality": "Every byte and SHA256 of full frozen canonicalJson UTF-8 after frozen partition/materialize.",
+    "adapter": "Separate previously reviewed producer-reuse finalizer, adapted only to exact case/source/terminal receipt. Existing serial finalize mode is not authorized for this plan."
+  },
+  "note": "Initial regression and fresh split whole12 only for this exact native model10-authored pair evaluated with current 4b model11. Genuine fifth-case scoped acceptance meets the predecessor prerequisite. Historical strategy and shared-engine evidence retain their original scope. No 1755 or finalizer authorization is granted.",
+  "reviewedAt": "2026-10-06T10:49:10.228643+00:00",
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/independent-static-review.json",
+    "bytes": 7128,
+    "sha256": "007eba10307b2d9726a85d1be9d4edfcec35c9059f81b9ac007bac63681e161e"
+  },
+  "operationalBoundary": {
+    "maxOwnedWorkers": 5,
+    "aggregateRssMiB": 3072,
+    "perGroupRssMiB": 900,
+    "heapMiB": 512,
+    "minimumHostAvailableMiB": 2048,
+    "oldFinalizerReservationMiB": 0
+  },
+  "optimizationActualResult": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/independent-actual-result-review.json",
+    "bytes": 11208,
+    "sha256": "167f1435d061abb977c6210c4cdacecbc37de6e04b38318c9525d03bb63f6bd3"
+  },
+  "sourceTransition": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/source-transition.json",
+    "bytes": 1872,
+    "sha256": "0522c787e8efd8b68ecf3fee812ae2e6c1349a528747e8116c00b8cfa047c7ff"
+  },
+  "executionCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "executionSourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "whole12ExecutionBoundary": "Only the previously statically reviewed fresh-case two-stage producer/validator path, after its final plan is bound to this actual prepared receipt and this launch review and receives exact execution-source review. The inherited monolithic serial whole12 is not approved.",
+  "commonEvidence": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot-scoped-numerical-acceptance/common-evidence-bindings.json",
+      "bytes": 4971,
+      "sha256": "a81cfd5d79378921bf7a69caba983aa3435e2cc646d1df1984a68d1c6f1d7426"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-completion-canonical/apps/frontend/.local/hu-model11-independent-canonical/44-full-representative-continuation/result.json",
+      "bytes": 253779,
+      "sha256": "37e7d2ebbed0777755f2184b8b0fcba2f30f62e412cabe76e2f877f39ccd6f46"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/selected-regression-run-c8d2c8b-20261005/original-validation.json",
+      "bytes": 90588,
+      "sha256": "c7ed6da2a00c5e09ea8447fdd55aec78dee333eb91c744a06ef0693558f3eea8"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/selected-regression-run-c8d2c8b-20261005/selected-regression-result.json",
+      "bytes": 395217,
+      "sha256": "bb8917c79352e0958fb812aef9ea447fb1d0955574efdef1b7f4ddcabe5f158e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/selected-regression-independent-review/selected4999-final-review.json",
+      "bytes": 5739,
+      "sha256": "c735ecb6554023100358be005fab782bdc78bce6c63e59c9b4736e1d5486d9a2"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/remaining-pilot-checks/recovered-run-5dbd208-20261005/result.json",
+      "bytes": 8462,
+      "sha256": "1569c639daf251fb81cf164bccbe153703af75a3ed0c005365efcd89ad8fa8f1"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/remaining-pilot-checks/independent-recovery-result-review.json",
+      "bytes": 3111,
+      "sha256": "d56f3256c6ce7c255c1bc576c132db52dc0b6b785c98a7a8e56a37daa4715425"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot-warning-review/independent-disposition.json",
+      "bytes": 3604,
+      "sha256": "b31c44f8c370fff10a8ac0142450198de23305b542165af16d757c30ef8a670e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot-warning-review/warning-classification.json",
+      "bytes": 462050,
+      "sha256": "d859d4a28a8ba8ab60de8ba5f358a783d43c4ebd32045d32265cfc37d18f43a4"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-interrupted-continuation/run-v2/supervision/run.json",
+      "bytes": 68455,
+      "sha256": "fc1786b936e3078b1f7c97ebdaec438b9bb8e3faf83d87444f06bd5700871784"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-interrupted-continuation/independent-producer-terminal-review.json",
+      "bytes": 624,
+      "sha256": "a7d6d0bf62cf597e2fc08c0f45c5a4b402b722ab7daeb22210d3d3b16ef1a68b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/postflight-reconciliation.json",
+      "bytes": 4358,
+      "sha256": "2afc7b381d824360c4c0437503caec76357f58c7ae713b62867d700f77f9f5ef"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/next-policy-producer-verified-finalization/scoped-acceptance.json",
+      "bytes": 11155,
+      "sha256": "91db6db1e35cffbfcee38eaaf85ce887b0cdf8fa1abb81146eed34ac8b958d48"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-pilot1755-lanes/apps/frontend/docs/specs/hu-postflop-after-multiway-preflop.independent-review.md",
+      "bytes": 153020,
+      "sha256": "50df0570b1e5d4a216b00b32f20880b335926df76b902306ab11b4738b39d2dc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/independent-actual-result-review.json",
+      "bytes": 11208,
+      "sha256": "167f1435d061abb977c6210c4cdacecbc37de6e04b38318c9525d03bb63f6bd3"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/source-transition.json",
+      "bytes": 1872,
+      "sha256": "0522c787e8efd8b68ecf3fee812ae2e6c1349a528747e8116c00b8cfa047c7ff"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/scoped-acceptance.json",
+      "bytes": 17890,
+      "sha256": "d8d23469051ab75ef5278bff87a2ecf8986b014ebd00973b4602ed1fec25a774"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/independent-static-review.json",
+      "bytes": 7128,
+      "sha256": "007eba10307b2d9726a85d1be9d4edfcec35c9059f81b9ac007bac63681e161e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/policy-review-handoff.json",
+      "bytes": 21478,
+      "sha256": "775e6adcbc366f6ba90daf734b31e2b3f3fa2e2dad00f3ae4a4ca27ade7841fa"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/static-review.md",
+      "bytes": 15702,
+      "sha256": "4211a12fec50c476dfd6f24731ce2841ca23cc690015037aff24402810a17b96"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/static-evidence.json",
+      "bytes": 639831,
+      "sha256": "e9feabb10d14de46e0ccbaf3d69f198b5842cc2796a603bd866c479e540b57d3"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/fixed-preflight-conclusion.md",
+      "bytes": 10999,
+      "sha256": "a432436d6b90ec07030b9148a724643b4f15995c0ee619c3ab7669d03eb0b82f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/fixed-preflight-complete.json",
+      "bytes": 109381,
+      "sha256": "2903c96a57262593a2e1543e45528b086da6dc72776ba025c9f99efb6b2d0486"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/prepare-6f5a894e-9141-4c78-b27f-f4289d404af1.terminal.json",
+      "bytes": 725,
+      "sha256": "cd8b914838e6a24931b7ac1993a31e06b0812ff8ad5a4ece4cc723980abf42dc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/prepare-6f5a894e-9141-4c78-b27f-f4289d404af1.log",
+      "bytes": 27439,
+      "sha256": "03cf415c4e72395d0729575ad80e599f8bf7db08e1a0430ed1ff65e46b2936ec"
+    }
+  ],
+  "priorCaseScopedAcceptance": {
+    "file": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/scoped-acceptance.json",
+      "bytes": 17890,
+      "sha256": "d8d23469051ab75ef5278bff87a2ecf8986b014ebd00973b4602ed1fec25a774"
+    },
+    "status": "ACCEPTED_UNDER_REVISED_SCOPED_NUMERICAL_CONTRACT",
+    "scope": "Prior-case terminal/finalization prerequisite only. Fifth-case performance and advisory findings are not evidence for this different pair."
+  },
+  "policyFoundation": {
+    "file": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/policy-review-handoff.json",
+      "bytes": 21478,
+      "sha256": "775e6adcbc366f6ba90daf734b31e2b3f3fa2e2dad00f3ae4a4ca27ade7841fa"
+    },
+    "historicalReviews": {
+      "priorStaticReview": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/static-review.md",
+        "bytes": 15702,
+        "sha256": "4211a12fec50c476dfd6f24731ce2841ca23cc690015037aff24402810a17b96"
+      },
+      "priorStaticEvidence": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/static-evidence.json",
+        "bytes": 639831,
+        "sha256": "e9feabb10d14de46e0ccbaf3d69f198b5842cc2796a603bd866c479e540b57d3"
+      },
+      "priorFixedConclusion": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/fixed-preflight-conclusion.md",
+        "bytes": 10999,
+        "sha256": "a432436d6b90ec07030b9148a724643b4f15995c0ee619c3ab7669d03eb0b82f"
+      },
+      "priorFixedCompletion": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/hu-next-eight-independent-review/fixed-preflight-complete.json",
+        "bytes": 109381,
+        "sha256": "2903c96a57262593a2e1543e45528b086da6dc72776ba025c9f99efb6b2d0486"
+      }
+    },
+    "authorship": "Native model10-authored unchanged staged pair, now evaluated by the distinct current 4b model11 source. No model11 authorship claim.",
+    "retainedIndividualRisks": [
+      "BTN live range is flat times final squeeze-call, not the CO opener-call range of an already accepted case.",
+      "Paired/trips boards followed by a blank/over card use ordinary monster rows; newest-card pair override does not resolve persistent pairing.",
+      "Coarse monster tier does not establish equity-defined value.",
+      "Tiny strictly positive branches retain compatible support despite ordinary-equity unavailability; do not collapse to zero.",
+      "Keep raw label choices, caps, pooled physical action, effective continuation and off-model completion distinct.",
+      "Historical model10 fixed hold is preserved; it passes no model11 numerical gate."
+    ],
+    "historicalConclusionPreserved": "unaccepted: no exact-zero loss found in executed applicable cells; positive-factor fidelity and common reach consistency unresolved",
+    "scope": "Historical evidence remains historical. Genuine current official preparation establishes current source/input/artifact admission; own numerical policy quality remains pending."
+  },
+  "officialPreparation": {
+    "terminal": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/prepare-6f5a894e-9141-4c78-b27f-f4289d404af1.terminal.json",
+      "bytes": 725,
+      "sha256": "cd8b914838e6a24931b7ac1993a31e06b0812ff8ad5a4ece4cc723980abf42dc"
+    },
+    "stdout": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/prepare-6f5a894e-9141-4c78-b27f-f4289d404af1.log",
+      "bytes": 27439,
+      "sha256": "03cf415c4e72395d0729575ad80e599f8bf7db08e1a0430ed1ff65e46b2936ec"
+    },
+    "actualExitCode": 0,
+    "allCreatedChildrenReaped": true,
+    "allOwnedGroupsGone": true,
+    "sourceCaptureAndOfficialInputAndArtifactValidationReached": true,
+    "path": "context describe/loadContext -> capturePilot1755Source and loadInputs -> model11GateBinding/createModel11Execution/createEffectiveDefence/validateEffectiveArtifacts",
+    "currentInputsAndPoliciesMatchExpectedPins": true,
+    "actualInputFingerprint": "6c006cf7ac518bb96ff52c52f364f3e96b03acc715bcf75ab7bfb7ebe21e00a8",
+    "actualBindingHash": "bdd250b32e94c60b301bdf769be572f3e8055b75aee361d670a35d621c4f21b7",
+    "actualCheckpointIdentityHash": "8b4ff0e8974a12d5853a02dd895351ed4c0e28cb2a29a65c783bfc5883d6f881",
+    "actualRegressionBindingHash": "75f43f4ee8feabda854bcf4a30b08c111dac8ddfc2271541ed8f5e6c6dbe4cf6",
+    "actualRegressionStoreKey": "79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d",
+    "cells": 72,
+    "canonicalBoardIds": 1755,
+    "numericalWorkPerformed": false,
+    "historicalPreparedOnlySnapshotsRewritten": false
+  }
+}

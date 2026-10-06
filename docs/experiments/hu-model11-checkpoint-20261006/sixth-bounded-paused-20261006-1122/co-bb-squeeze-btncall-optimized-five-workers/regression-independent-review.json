@@ -1,0 +1,518 @@
+{
+  "kind": "independent-co-bb-squeeze-btncall-actual-regression-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T10:57:54.212210+00:00",
+  "status": "ACTUAL_72X64_REVIEW_COMPLETE_ONE_BOUNDED_PROBE_REQUIRED",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "executionCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "bindingHash": "bdd250b32e94c60b301bdf769be572f3e8055b75aee361d670a35d621c4f21b7",
+  "regressionBindingHash": "75f43f4ee8feabda854bcf4a30b08c111dac8ddfc2271541ed8f5e6c6dbe4cf6",
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/plan.json",
+    "bytes": 43677,
+    "sha256": "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/prepared.json",
+    "bytes": 41331,
+    "sha256": "cde2edcf942608236633f722f36e8360c523a60e585ffda0f4b0591b157649db"
+  },
+  "launchReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/launch-review.json",
+    "bytes": 17451,
+    "sha256": "c9497d82831f45083e64742e83c242848e2933b182bf26efa2797a6a2026210c"
+  },
+  "terminal": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/attempts/attempt-1936c565-75cc-4d10-94ec-50ec20d18b55/receipt.json",
+    "bytes": 69190,
+    "sha256": "e90445de36a55f362fc8bc74d1603c91c1c18383b951ae5e26f0781b997ad7a2"
+  },
+  "summary": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/attempts/attempt-1936c565-75cc-4d10-94ec-50ec20d18b55/regression-summary.json",
+    "bytes": 147135,
+    "sha256": "89e3e7481a64a1b8ab189f6397fb1fcad402f98e7c03629dc25577b668360ead"
+  },
+  "checks": {
+    "all72JobsExitZeroAndProcessBirthBindingsVerified": true,
+    "allCreatedChildrenReaped": true,
+    "allOwnedGroupsGone": true,
+    "sourceUnchanged": true,
+    "resourceLimitsRespected": true,
+    "allRawChunksAndCellPinsVerified": true,
+    "rawChunksVerified": 72,
+    "allRawMeansStandardDeviationsAndIntervalsRecalculated": true,
+    "proofFilesVerified": 11,
+    "completionEvents": 11
+  },
+  "coverage": {
+    "cells": 72,
+    "trialsPerCell": 64,
+    "completedTrials": 4608,
+    "provedBaseUnreachableTrials": 0,
+    "unresolvedTrials": 0
+  },
+  "signals": {
+    "negativePointEstimateCells": 27,
+    "negativeBySeat": {
+      "BTN": 5,
+      "BB": 22
+    },
+    "deltaIntervalClassification": {
+      "overlapZero": 62,
+      "whollyAboveZero": 9,
+      "whollyBelowZero": 1
+    },
+    "negativeCandidatePointMeans": [
+      {
+        "index": 44,
+        "board": "KcKd4h",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BTN",
+        "candidateMeanBb": -0.5026562499999992,
+        "baselineMeanBb": -7.39265625,
+        "pairedDeltaMeanBb": 6.890000000000001,
+        "descriptiveNormalDeltaInterval": [
+          -4.2259,
+          18.0059
+        ],
+        "candidateDescriptiveInterval": [
+          -9.5262,
+          8.5209
+        ]
+      },
+      {
+        "index": 46,
+        "board": "KcKd4h",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BTN",
+        "candidateMeanBb": -7.044843750000001,
+        "baselineMeanBb": -16.700625,
+        "pairedDeltaMeanBb": 9.65578125,
+        "descriptiveNormalDeltaInterval": [
+          -2.859,
+          22.1706
+        ],
+        "candidateDescriptiveInterval": [
+          -17.5584,
+          3.4687
+        ]
+      }
+    ],
+    "negativeCells": [
+      {
+        "index": 43,
+        "board": "KcKd4h",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 47.73718749999999,
+        "baselineMeanBb": 57.7,
+        "pairedDeltaMeanBb": -9.962812500000002,
+        "descriptiveNormalDeltaInterval": [
+          -20.612,
+          0.6864
+        ]
+      },
+      {
+        "index": 45,
+        "board": "KcKd4h",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 32.126718749999995,
+        "baselineMeanBb": 42.00031250000001,
+        "pairedDeltaMeanBb": -9.87359375,
+        "descriptiveNormalDeltaInterval": [
+          -20.9411,
+          1.1939
+        ]
+      },
+      {
+        "index": 41,
+        "board": "AhKh4h",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 27.91265625,
+        "baselineMeanBb": 35.81828125,
+        "pairedDeltaMeanBb": -7.905625,
+        "descriptiveNormalDeltaInterval": [
+          -19.5777,
+          3.7665
+        ]
+      },
+      {
+        "index": 71,
+        "board": "5s5d4c",
+        "split": "holdout",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 9.597343749999991,
+        "baselineMeanBb": 17.40828125000001,
+        "pairedDeltaMeanBb": -7.810937499999999,
+        "descriptiveNormalDeltaInterval": [
+          -19.3598,
+          3.738
+        ]
+      },
+      {
+        "index": 47,
+        "board": "KcKd4h",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 22.256562499999998,
+        "baselineMeanBb": 29.36109375,
+        "pairedDeltaMeanBb": -7.104531249999999,
+        "descriptiveNormalDeltaInterval": [
+          -19.8063,
+          5.5972
+        ]
+      },
+      {
+        "index": 1,
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 17.163124999999994,
+        "baselineMeanBb": 23.68015625,
+        "pairedDeltaMeanBb": -6.517031250000001,
+        "descriptiveNormalDeltaInterval": [
+          -12.055,
+          -0.9791
+        ]
+      },
+      {
+        "index": 22,
+        "board": "Th9h8c",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BTN",
+        "candidateMeanBb": 18.414843750000006,
+        "baselineMeanBb": 24.532031250000003,
+        "pairedDeltaMeanBb": -6.117187499999999,
+        "descriptiveNormalDeltaInterval": [
+          -16.5032,
+          4.2688
+        ]
+      },
+      {
+        "index": 25,
+        "board": "8s7d6c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 12.567031249999989,
+        "baselineMeanBb": 18.195156249999986,
+        "pairedDeltaMeanBb": -5.628125000000001,
+        "descriptiveNormalDeltaInterval": [
+          -14.2455,
+          2.9893
+        ]
+      },
+      {
+        "index": 55,
+        "board": "9s7s3s",
+        "split": "holdout",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 21.96234374999999,
+        "baselineMeanBb": 26.544374999999995,
+        "pairedDeltaMeanBb": -4.582031250000001,
+        "descriptiveNormalDeltaInterval": [
+          -13.9657,
+          4.8016
+        ]
+      },
+      {
+        "index": 7,
+        "board": "QsJd5c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 18.153281249999992,
+        "baselineMeanBb": 22.639999999999993,
+        "pairedDeltaMeanBb": -4.4867187500000005,
+        "descriptiveNormalDeltaInterval": [
+          -12.4267,
+          3.4533
+        ]
+      },
+      {
+        "index": 49,
+        "board": "Ks8d3c",
+        "split": "holdout",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 30.190937499999997,
+        "baselineMeanBb": 34.33671875,
+        "pairedDeltaMeanBb": -4.14578125,
+        "descriptiveNormalDeltaInterval": [
+          -9.9457,
+          1.6541
+        ]
+      },
+      {
+        "index": 30,
+        "board": "6h5h2d",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BTN",
+        "candidateMeanBb": 15.745312499999995,
+        "baselineMeanBb": 19.821406249999995,
+        "pairedDeltaMeanBb": -4.07609375,
+        "descriptiveNormalDeltaInterval": [
+          -8.8583,
+          0.7061
+        ]
+      },
+      {
+        "index": 31,
+        "board": "6h5h2d",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 7.637343749999998,
+        "baselineMeanBb": 10.971093749999998,
+        "pairedDeltaMeanBb": -3.3337499999999998,
+        "descriptiveNormalDeltaInterval": [
+          -11.4581,
+          4.7906
+        ]
+      },
+      {
+        "index": 23,
+        "board": "Th9h8c",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 13.909374999999992,
+        "baselineMeanBb": 17.09953124999999,
+        "pairedDeltaMeanBb": -3.19015625,
+        "descriptiveNormalDeltaInterval": [
+          -10.0586,
+          3.6783
+        ]
+      },
+      {
+        "index": 0,
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BTN",
+        "candidateMeanBb": 9.645312499999992,
+        "baselineMeanBb": 12.301718749999994,
+        "pairedDeltaMeanBb": -2.6564062499999994,
+        "descriptiveNormalDeltaInterval": [
+          -10.704,
+          5.3912
+        ]
+      },
+      {
+        "index": 29,
+        "board": "8s7d6c",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 10.272343750000001,
+        "baselineMeanBb": 12.270468749999997,
+        "pairedDeltaMeanBb": -1.998125,
+        "descriptiveNormalDeltaInterval": [
+          -8.2873,
+          4.2911
+        ]
+      },
+      {
+        "index": 3,
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 14.225468749999992,
+        "baselineMeanBb": 16.15640624999999,
+        "pairedDeltaMeanBb": -1.9309375000000006,
+        "descriptiveNormalDeltaInterval": [
+          -8.4601,
+          4.5982
+        ]
+      },
+      {
+        "index": 33,
+        "board": "6h5h2d",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 12.508749999999994,
+        "baselineMeanBb": 14.266562499999988,
+        "pairedDeltaMeanBb": -1.7578125000000004,
+        "descriptiveNormalDeltaInterval": [
+          -9.3663,
+          5.8507
+        ]
+      },
+      {
+        "index": 27,
+        "board": "8s7d6c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 9.828124999999998,
+        "baselineMeanBb": 11.462343749999995,
+        "pairedDeltaMeanBb": -1.6342187500000003,
+        "descriptiveNormalDeltaInterval": [
+          -4.632,
+          1.3635
+        ]
+      },
+      {
+        "index": 67,
+        "board": "5s5d4c",
+        "split": "holdout",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 20.262812499999995,
+        "baselineMeanBb": 21.388593749999995,
+        "pairedDeltaMeanBb": -1.1257812499999995,
+        "descriptiveNormalDeltaInterval": [
+          -8.8761,
+          6.6245
+        ]
+      },
+      {
+        "index": 9,
+        "board": "QsJd5c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 24.605624999999986,
+        "baselineMeanBb": 25.598281249999992,
+        "pairedDeltaMeanBb": -0.9926562500000005,
+        "descriptiveNormalDeltaInterval": [
+          -5.0571,
+          3.0718
+        ]
+      },
+      {
+        "index": 63,
+        "board": "8c8d2h",
+        "split": "holdout",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 28.106093749999996,
+        "baselineMeanBb": 28.995624999999997,
+        "pairedDeltaMeanBb": -0.8895312500000007,
+        "descriptiveNormalDeltaInterval": [
+          -10.4602,
+          8.6811
+        ]
+      },
+      {
+        "index": 51,
+        "board": "Ks8d3c",
+        "split": "holdout",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 14.247187499999994,
+        "baselineMeanBb": 15.082187499999993,
+        "pairedDeltaMeanBb": -0.835,
+        "descriptiveNormalDeltaInterval": [
+          -6.1583,
+          4.4883
+        ]
+      },
+      {
+        "index": 15,
+        "board": "Js8s5d",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 25.092187499999994,
+        "baselineMeanBb": 25.4946875,
+        "pairedDeltaMeanBb": -0.40249999999999986,
+        "descriptiveNormalDeltaInterval": [
+          -4.0023,
+          3.1973
+        ]
+      },
+      {
+        "index": 26,
+        "board": "8s7d6c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BTN",
+        "candidateMeanBb": 14.489999999999995,
+        "baselineMeanBb": 14.67609374999999,
+        "pairedDeltaMeanBb": -0.18609374999999995,
+        "descriptiveNormalDeltaInterval": [
+          -6.3047,
+          5.9325
+        ]
+      },
+      {
+        "index": 8,
+        "board": "QsJd5c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BTN",
+        "candidateMeanBb": 9.254375,
+        "baselineMeanBb": 9.410937499999996,
+        "pairedDeltaMeanBb": -0.1565625000000001,
+        "descriptiveNormalDeltaInterval": [
+          -7.4125,
+          7.0994
+        ]
+      },
+      {
+        "index": 21,
+        "board": "Th9h8c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 15.412812499999994,
+        "baselineMeanBb": 15.541249999999994,
+        "pairedDeltaMeanBb": -0.12843749999999987,
+        "descriptiveNormalDeltaInterval": [
+          -5.0697,
+          4.8129
+        ]
+      }
+    ]
+  },
+  "probeDisposition": {
+    "trigger": "Descriptive paired-delta interval wholly below zero under the existing bounded adverse-diagnostic rule.",
+    "triggeredConditions": [
+      {
+        "index": 1,
+        "board": "As7d2c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 17.163124999999994,
+        "baselineMeanBb": 23.68015625,
+        "pairedDeltaMeanBb": -6.517031250000001,
+        "descriptiveNormalDeltaInterval": [
+          -12.055,
+          -0.9791
+        ]
+      }
+    ],
+    "recommendedAdditionalConditions": [
+      1
+    ],
+    "recommendedNewTrials": 128,
+    "existingMaximumBudget": "At most 8 fixed conditions times 128 additional trials if triggered; no expansion or new profiles.",
+    "executionRecipe": "Use the existing isolated192-trial producer with cache64; require exact complete-object equality of original first64, then retain distinct additional128 results and all proofs. Initial64 adapter and original receipt remain immutable.",
+    "reason": "Only cell1 meets the predeclared adverse-interval trigger. Retain all27 negative point estimates and broad descriptive uncertainty. The diagnostic must be reviewed before 1755 admission."
+  },
+  "authorship": "Unchanged native model10-authored pair evaluated under current 4b model11; not newly model11-authored.",
+  "pending": "Own cell1 additional128 diagnostic, actual split whole12 results and bounded quality review before 1755.",
+  "precision": "Low or unknown. 64 is an engineering budget; normal intervals are descriptive and not multiplicity-adjusted.",
+  "whole12Passed": false,
+  "boardsApproved": false,
+  "policyAccepted": false,
+  "reviewerNodeLaunches": 0
+}

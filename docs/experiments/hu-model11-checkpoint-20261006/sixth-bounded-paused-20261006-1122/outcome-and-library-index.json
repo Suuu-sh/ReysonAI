@@ -1,0 +1,187 @@
+{
+  "kind": "sixth-case-completed-bounded-facts-with-launch-pause",
+  "preparedAt": "2026-10-06T11:22:00Z",
+  "handoffSnapshotAt": "2026-10-06T11:20:44Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "parentCommit": "3fab3aa2c77c5579516c5078a70de7d02addcf64",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "authorship": "Native model10-authored unchanged pair evaluated with current model11.",
+  "officialPrepare": "PASSED",
+  "regression": {
+    "cells": 72,
+    "trialsPerCell": 64,
+    "completedTrials": 4608,
+    "unresolved": 0,
+    "seconds": 58.311945,
+    "negativeMeansRetained": 27
+  },
+  "fixedCell1Probe": {
+    "condition": "As7d2c / standard / BB",
+    "seconds": 5.587,
+    "original64CompleteObjectsExactlyMatch": true,
+    "original64MeanBb": -6.517,
+    "original64DescriptiveInterval": [
+      -12.055,
+      -0.9791
+    ],
+    "additionalTrials": 128,
+    "additional128MeanBb": -1.1286,
+    "additional128DescriptiveInterval": [
+      -7.0982,
+      4.841
+    ],
+    "combinedTrials": 192,
+    "combined192MeanBb": -2.9247,
+    "combined192DescriptiveInterval": [
+      -7.3178,
+      1.4683
+    ],
+    "interpretation": "All intervals are exploratory. Original adverse signal is preserved; crossing zero does not establish noninferiority, superiority or harmlessness."
+  },
+  "whole12": {
+    "nativeProduceSeconds": 194.90349,
+    "freshNativeRestoreSeconds": 4.20334,
+    "prefixes": 5328,
+    "evaluated": 5064,
+    "provedModelUnreachable": 264,
+    "errors": 0,
+    "unresolved": 0,
+    "referencePairedTrials": 864,
+    "referenceDrift": 0,
+    "advisoryWarnings": 12,
+    "allOwnedProcessesReaped": true,
+    "sourceUnchanged": true,
+    "reviewScope": "ACTUAL_COMPONENT_VERIFIED_NO_LAUNCH_OR_ACCEPTANCE_DECISION"
+  },
+  "launchState": {
+    "new1755AndMassStarts": "PAUSED_SINCE_2026_10_06_11_06_UTC",
+    "boardsLaunchReviewExists": false,
+    "sixthAll1755Started": false,
+    "revisedScopeAdopted": false,
+    "sixthCaseAccepted": false,
+    "acceptedModel11ResearchCases": 5
+  },
+  "separateTimingDiagnostic": {
+    "reportedStartedAt": "2026-10-06T11:19:00Z",
+    "scope": "One-time 120-second flop-only timing diagnostic on the already accepted fifth case / current4b source.",
+    "timingResultIncluded": false,
+    "acceptanceClaim": false,
+    "formalGatePlanOrRevisedScopeAdopted": false
+  },
+  "library": {
+    "libraryFileId": "libfile_2a5c71d93af48191913b3acb1315b448",
+    "version": 3,
+    "name": "hu-sixth-bounded-facts-and-probe-paused-20261006.tar.gz",
+    "bytes": 3179322,
+    "sha256": "de9c5e5c2e6bf59d8be106aef06d8c86478244fe83135e08643937096921b328",
+    "files": 1054,
+    "confirmedReplacement": true,
+    "versionMetadataApplied": true,
+    "rawDatasetsInLibraryOnly": true,
+    "freshRedownloadClaimed": false
+  },
+  "capacityPreservationAddendum": {
+    "thirdCaseStandaloneProducer": {
+      "libraryFileId": "libfile_0ffbc17b7db48191b9fbfc962767914e",
+      "version": 0,
+      "bytes": 113815409,
+      "sha256": "56955450fb1683195c8a601a2f3b96ab394bcc4cdd29e5f58196b220376d9ea1",
+      "freshVerifiedRecords": 43684
+    },
+    "addendum": {
+      "libraryFileId": "libfile_ddfe7f2325248191bdcbb86c1cf5df40",
+      "version": 0,
+      "name": "hu-model11-third-case-fixed-producer-preservation-20261006.tar.gz",
+      "bytes": 5904866,
+      "sha256": "813b0acc4bdc026e00c215958757322c4eae49d89060332ce3a76bb33edae898"
+    },
+    "priorHistoricalMaterializationFailedWithFileIdMismatch": true,
+    "priorFailedAttemptSuccessClaimed": false,
+    "closedProofDuplicatesLinkedAfterExternalVerification": 40822,
+    "allPathsBytesAndExistingLibraryVersionsPreserved": true,
+    "largeMappingInGit": false
+  },
+  "copiedFiles": [
+    {
+      "path": "co-bb-squeeze-btncall-optimized-five-workers/run/prepared.json",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/prepared.json",
+      "bytes": 41331,
+      "sha256": "cde2edcf942608236633f722f36e8360c523a60e585ffda0f4b0591b157649db",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-optimized-five-workers/launch-review.json",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/launch-review.json",
+      "bytes": 17451,
+      "sha256": "c9497d82831f45083e64742e83c242848e2933b182bf26efa2797a6a2026210c",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-optimized-five-workers/regression-independent-review.json",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/regression-independent-review.json",
+      "bytes": 15591,
+      "sha256": "dc29b0ece9b64e4f75e4975f1c88ab9538ddfb8694a3a32dd8c1223a0e0ba121",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-optimized-whole12-storage-repair/repair-plan.json",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-optimized-whole12-storage-repair/repair-plan.json",
+      "bytes": 5701,
+      "sha256": "75c252dfc2f793cba0a14a492f3e0bf6c0a25d3e33e110f120e09c0848a33a76",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-optimized-whole12-storage-repair/source-review.json",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-optimized-whole12-storage-repair/source-review.json",
+      "bytes": 4507,
+      "sha256": "261c3e511cc94dcc608a93564f522014c94f7424ead14aa87eff914c41e4d258",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-optimized-whole12-storage-repair/independent-actual-component-review.json",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-optimized-whole12-storage-repair/independent-actual-component-review.json",
+      "bytes": 11389,
+      "sha256": "cceeb14eab232ab3d5eba986202220a636549b64878ff08b4e1f7bc7470e437b",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-cell1-probe-v1/probe.mjs",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/probe.mjs",
+      "bytes": 6807,
+      "sha256": "4ad43cd8697baa767c6dd6682709ff551c91dd40f608d5ec64a880cabf16bb58",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-cell1-probe-v1/manifest.json",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/manifest.json",
+      "bytes": 10857,
+      "sha256": "46d591b23ed31cf97cf0b22143d389d726cf15f703b1c7bcf2da0f71d533d458",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-cell1-probe-v1/independent-review.json",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/independent-review.json",
+      "bytes": 6167,
+      "sha256": "36a6772efef27ac53b0677e5e4fe07d42b7f888cfb1522bd7fe6a9bb443af275",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-cell1-probe-v1/independent-result-review.json",
+      "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/independent-result-review.json",
+      "bytes": 6282,
+      "sha256": "60961fa9c2a8b291e78d698f60320cf521136d8a034764e5b720808a1e418ec2",
+      "immutableByteCopy": true
+    }
+  ],
+  "newNodeOrNumericalExecutionsForThisGitSave": 0,
+  "runtimeAdoption": false,
+  "prComplete": false,
+  "productionApproved": false,
+  "remaining": [
+    "Resolve the pending user scope comparison without treating any proposal as adopted.",
+    "A new all-board or mass launch requires an explicit subsequent decision and appropriate reviewed admission.",
+    "Sixth-case final acceptance, typed gates and wider integration remain separate pending work."
+  ]
+}

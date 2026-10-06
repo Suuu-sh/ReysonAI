@@ -1,0 +1,242 @@
+{
+  "kind": "sixth-hu-one-condition-adverse-probe-preparation",
+  "version": 1,
+  "status": "PREPARED_NOT_EXECUTED_AWAITING_INDEPENDENT_NARROW_LAUNCH_REVIEW",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "repository": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution",
+  "executionCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "inputFingerprint": "6c006cf7ac518bb96ff52c52f364f3e96b03acc715bcf75ab7bfb7ebe21e00a8",
+  "policyHashes": {
+    "flop": "405128289b9624a38d6027ec8ae32c2f806d258ed9d1b5827507d7acb2935fcd",
+    "later": "30921204f762fe66287d8ab0c9541c84863faa7683a46fdfc60548c3a7319edd"
+  },
+  "pair": {
+    "flop": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.candidate.json",
+      "bytes": 40058,
+      "sha256": "22919105d09997b89501ac53631fd10da9852794d5921688a2bfb07196fc5102"
+    },
+    "later": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.laterCandidate.json",
+      "bytes": 52400,
+      "sha256": "bac3b2ba2691fc20d68e425368b4759f88cd053a13b5a053d342edb916f82a39"
+    }
+  },
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/plan.json",
+    "bytes": 43677,
+    "sha256": "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/prepared.json",
+    "bytes": 41331,
+    "sha256": "cde2edcf942608236633f722f36e8360c523a60e585ffda0f4b0591b157649db"
+  },
+  "originalLaunchReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/launch-review.json",
+    "bytes": 17451,
+    "sha256": "c9497d82831f45083e64742e83c242848e2933b182bf26efa2797a6a2026210c"
+  },
+  "sourcePins": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/source-pins.json",
+    "bytes": 44071,
+    "sha256": "0cd58be83520610d4aa268583a6660759a1973f91bfdb3c6000ea9ed10e3ae37"
+  },
+  "priorMechanism": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe007-v1/probe.mjs",
+    "bytes": 6797,
+    "sha256": "0b804604cda9e982bee1897e05a22af791c1b599fd4e1933a523ed54c96db7e2"
+  },
+  "script": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/probe.mjs",
+    "bytes": 6807,
+    "sha256": "4ad43cd8697baa767c6dd6682709ff551c91dd40f608d5ec64a880cabf16bb58"
+  },
+  "mechanicalDelta": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/mechanical-delta.diff",
+    "bytes": 8354,
+    "sha256": "2861545ee0a943e49a020ae22a312a55de371e86417398d2ba71a8d5ec31ec93"
+  },
+  "literalReplacements": [
+    {
+      "from": "co-coldcall-optimized-five-workers",
+      "to": "co-bb-squeeze-btncall-optimized-five-workers",
+      "occurrences": 1
+    },
+    {
+      "from": "46122311e04b458502091ebb358e616b64f0820fc933fc745862469a0b88af5e",
+      "to": "c1b0e672b29346ab8f0efc2e2dd98f3503d4d19365c24c92d136f00a35d78988",
+      "occurrences": 1
+    },
+    {
+      "from": "originalCellIndex=7",
+      "to": "originalCellIndex=1",
+      "occurrences": 1
+    },
+    {
+      "from": "regression/cells/007/fbfbdeb1c50e8f11828ec9919fe3165dc71cbfbaa233e086103e55ac48d6860e",
+      "to": "regression/cells/001/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d",
+      "occurrences": 1
+    },
+    {
+      "from": "007.cell.json",
+      "to": "001.cell.json",
+      "occurrences": 1
+    },
+    {
+      "from": "53afd81369f8500f1d9f956817f27c14d02c27c2ca1808149e6baef5a1f5511d",
+      "to": "a76ee87e088e2aa063cfc2a53cbb94f145c217efbdaccb1cdccc120b1493c316",
+      "occurrences": 1
+    },
+    {
+      "from": "QsJd5c",
+      "to": "As7d2c",
+      "occurrences": 1
+    },
+    {
+      "from": "original.cell.hero==='SB'",
+      "to": "original.cell.hero==='BB'",
+      "occurrences": 1
+    },
+    {
+      "from": "heroes:['SB']",
+      "to": "heroes:['BB']",
+      "occurrences": 1
+    },
+    {
+      "from": "cell007",
+      "to": "cell001",
+      "occurrences": 4
+    }
+  ],
+  "selection": {
+    "criterion": "The original72x64 descriptive paired-delta interval lies wholly below zero. Selection fixed before additional observations.",
+    "fixedSelectedIndices": [
+      1
+    ],
+    "maximumAuthorizedConditions": 8,
+    "selectedConditions": 1,
+    "rawIndependentReview": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/regression-independent-review.json",
+      "bytes": 15591,
+      "sha256": "dc29b0ece9b64e4f75e4975f1c88ab9538ddfb8694a3a32dd8c1223a0e0ba121"
+    },
+    "condition": {
+      "board": "As7d2c",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 64,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64
+    },
+    "originalCell": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/001/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/001.cell.json",
+      "bytes": 1304,
+      "sha256": "a76ee87e088e2aa063cfc2a53cbb94f145c217efbdaccb1cdccc120b1493c316"
+    },
+    "originalChunks": [
+      {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/001/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/001.000.trials.json",
+        "bytes": 6852,
+        "sha256": "07c9edc0f23143b7c4506a606d125e574ef3dc5568d21fb63f253f08d87f7cd9"
+      }
+    ],
+    "originalProofCount": 0,
+    "genuineRegressionReceipt": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/attempts/attempt-1936c565-75cc-4d10-94ec-50ec20d18b55/receipt.json",
+      "bytes": 69190,
+      "sha256": "e90445de36a55f362fc8bc74d1603c91c1c18383b951ae5e26f0781b997ad7a2"
+    }
+  },
+  "contract": {
+    "replayedPairedTrials": 64,
+    "additionalPairedTrials": 128,
+    "totalPairedExecutions": 192,
+    "replayedIndices": [
+      0,
+      63
+    ],
+    "additionalIndices": [
+      64,
+      191
+    ],
+    "first64CompleteTrialObjectEqualityRequired": true,
+    "originalProofs": "The SHA-pinned original cell has no proofs or completion events. Native validation verifies every proof generated for the full192 stream.",
+    "cacheBatchSize": 64,
+    "cacheReleaseIndices": [
+      0,
+      64,
+      128
+    ],
+    "seed": "Unchanged inputs.config.seed; same complete stream; no reseed or skip-ahead.",
+    "summaryGroups": [
+      "original64",
+      "replayed64",
+      "additional128",
+      "combined192"
+    ],
+    "postSelectionIntervals": "Exploratory, not calibrated confidence, superiority or noninferiority evidence.",
+    "freshImmutableDestination": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/run-v1",
+    "nativeProducerAndValidatorUnchanged": true,
+    "sourcePolicyThresholdsAcceptanceUnchanged": true,
+    "referenceDataEntersCandidateBelief": false,
+    "original72x64Changed": false,
+    "policyAccepted": false,
+    "model11Adoption": false,
+    "productionAuthorized": false
+  },
+  "execution": {
+    "existingSupervisor": {
+      "path": "/workspace/scratch/08c72b2d7549/stage3-recovery/fastfold-integration/run-bounded-check.py",
+      "bytes": 2530,
+      "sha256": "a9b80a168feb769158eb8e03906d3f667d1738f8313bd21f45703fe3ffc1af13"
+    },
+    "command": [
+      "env",
+      "STAGE3_OWN_RSS_MIB=900",
+      "python",
+      "/workspace/scratch/08c72b2d7549/stage3-recovery/fastfold-integration/run-bounded-check.py",
+      "hu-co-bb-squeeze-btncall-cell1-probe-v1-20261006",
+      "env",
+      "-u",
+      "NODE_OPTIONS",
+      "-u",
+      "NODE_PATH",
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "--max-old-space-size=512",
+      "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-cell1-probe-v1/probe.mjs",
+      "--reviewed-sha256",
+      "4ad43cd8697baa767c6dd6682709ff551c91dd40f608d5ec64a880cabf16bb58"
+    ],
+    "maximumTemporaryNumericalProcesses": 1,
+    "persistentAdditionalWorker": false,
+    "limits": {
+      "heapMiB": 512,
+      "groupRssMiB": 900,
+      "timeoutSeconds": 120,
+      "minimumHostAvailableMiB": 2048
+    },
+    "stdout": "/workspace/scratch/08c72b2d7549/reysonai-stage3-fastfold-integration/apps/frontend/.local/stage3-fastfold-integration/hu-co-bb-squeeze-btncall-cell1-probe-v1-20261006.log",
+    "resourceReceipt": "/workspace/scratch/08c72b2d7549/reysonai-stage3-fastfold-integration/apps/frontend/.local/stage3-fastfold-integration/hu-co-bb-squeeze-btncall-cell1-probe-v1-20261006.resources.json",
+    "sourceCapture": "Unchanged loadContext -> capturePilot1755Source; plan and prepared checks; unchanged c.assertUnchanged before and after numerical work plus self/original marker/chunk pins. Parent checks static preservation pins and exact repository/runtime before and after launch.",
+    "cleanup": "Unchanged owned supervisor creates one new session, measures only its own group, terminates only that group on limit and reaps its Popen child. Parent verifies terminal receipt and no surviving owned child before releasing the lane.",
+    "stopRule": "One condition once; stop on any pin drift, incomplete or unresolved evidence, resource limit, nonzero exit or replay inequality. No reroll or extension."
+  },
+  "remainingPrerequisite": [
+    "Independent reviewer must approve this exact manifest, script SHA, literal-only diff, original evidence and launch command.",
+    "Parent owns numerical scheduling and must authorize/allocate the one temporary slot while leaving the existing whole12 producer and outputs untouched.",
+    "Recheck all preservation pins, clean exact source commit, Node binary and fresh output/log paths immediately before launching."
+  ],
+  "preparationChecks": {
+    "literalOnlyTransformationReversedExactly": true,
+    "allPreservationPinsVerified": true,
+    "gitCleanAtExpectedCommit": true,
+    "originalCellHasZeroProofs": true,
+    "nodeLaunches": 0,
+    "testsRun": 0,
+    "numericalRuns": 0,
+    "activeWhole12InspectedOrModified": false
+  }
+}

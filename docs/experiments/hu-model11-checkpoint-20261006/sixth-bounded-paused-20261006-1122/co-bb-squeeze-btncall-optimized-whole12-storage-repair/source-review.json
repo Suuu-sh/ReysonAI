@@ -1,0 +1,89 @@
+{
+  "kind": "coldcall-whole12-storage-independent-source-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T10:50:40.392375+00:00",
+  "verdict": "APPROVE_TWO_STAGE_EXECUTION",
+  "planSha256": "75c252dfc2f793cba0a14a492f3e0bf6c0a25d3e33e110f120e09c0848a33a76",
+  "sourcePins": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-whole12-storage-repair/persist-once.mjs",
+      "bytes": 2341,
+      "sha256": "b9f6238a0481bace4521114cc00a2ef529c87411e3415de20a254d711b5e755c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-whole12-storage-repair/storage-stages.mjs",
+      "bytes": 11394,
+      "sha256": "28a9cc038693a537e9e32d169ecf93f2c5d2c84a1d3d655d8f55e8c5a4e12959"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-whole12-storage-repair/bounded.py",
+      "bytes": 12052,
+      "sha256": "940697b407e208a6295d37c144072dd440f80e25ec7e5655ad6deae35369146a"
+    }
+  ],
+  "approvedStages": [
+    "produce",
+    "validate"
+  ],
+  "policyChanged": false,
+  "productionAuthorized": false,
+  "priorStaticDeltaReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-whole12-storage-repair/independent-template-delta-review.json",
+    "bytes": 5036,
+    "sha256": "fb5708ee9fad01fc4dcfcc27b59492658bf9a6bfb4eaebefeae486478339fbcf"
+  },
+  "scope": "Exact sixth-case binding completion only against the accepted static template. No source re-review, numerical tests or predecessor output transplantation.",
+  "bindingChecks": {
+    "onlyFiveDeclaredTemplateFieldsFilled": [
+      "launchReview",
+      "prepared",
+      "regressionBindingHash",
+      "regressionStoreKey",
+      "status"
+    ],
+    "prepared": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/prepared.json",
+      "bytes": 41331,
+      "sha256": "cde2edcf942608236633f722f36e8360c523a60e585ffda0f4b0591b157649db"
+    },
+    "launchReview": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/launch-review.json",
+      "bytes": 17451,
+      "sha256": "c9497d82831f45083e64742e83c242848e2933b182bf26efa2797a6a2026210c"
+    },
+    "regressionBindingHash": "75f43f4ee8feabda854bcf4a30b08c111dac8ddfc2271541ed8f5e6c6dbe4cf6",
+    "regressionStoreKey": "79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d",
+    "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+    "allBoundSourceAndAdapterPinsUnchanged": true,
+    "freshRunDirectoryAbsent": true
+  },
+  "retainedChecks": "Unchanged native producer/legality/balance validation, one original full hash, complete immutable header/descriptor, fresh native full-hash reader and compact-validation equality, dynamic current descriptor/proof/prefix/12-board inventory, and original reference864. Exact successful reaped producer/postflight is required before validate. No historical STOPPED prerequisite or previous-case counts apply.",
+  "limits": {
+    "heapMiB": 512,
+    "groupRssMiB": 900,
+    "aggregateRssMiB": 3072,
+    "minimumAvailableMiB": 2048,
+    "childSeconds": 900,
+    "wholeSeconds": 43200,
+    "pollMilliseconds": 50
+  },
+  "operationalAdmission": {
+    "parentOwnsScheduling": true,
+    "environment": "Unset NODE_OPTIONS and NODE_PATH when invoking the bounded Python supervisor.",
+    "produce": "One fresh bounded produce stage at the exact reviewed plan/source hashes, once the authorized numerical lane is available.",
+    "validate": "Only after genuine successful producer exit, reaping, unchanged postflight pins and a complete header/descriptor, in a fresh process.",
+    "freshOutputsRequired": true,
+    "doNotOverwriteStoppedOrCompletedAttempts": true
+  },
+  "authorship": "Unchanged native model10-authored staged pair, evaluated under distinct current 4b model11 source. Initial launch retains the prior BTN-range, paired-tier, positive-support and effective-action risks; historical evidence remains bound to its original source.",
+  "boundaries": {
+    "numericalExecutionAlreadyPerformed": false,
+    "whole12PassEstablished": false,
+    "boardsApproved": false,
+    "policyAccepted": false,
+    "oldFullReplayPassed": false,
+    "productionAuthorized": false
+  },
+  "reviewerNodeLaunches": 0
+}
