@@ -1,0 +1,640 @@
+{
+  "kind": "independent-co-sb-coldcall-bounded-case-quality-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T08:31:43.960944+00:00",
+  "verdict": "APPROVE_FOR_1755",
+  "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+  "bindingHash": "949cd747dc61276dcbac4a33ccc7ac020127c1b194c2759c138bd13d71e450f3",
+  "regressionBindingHash": "2a378b02b51d023f37f39fec7228ba717b9eab186eccf0cbde117b452cbf3c50",
+  "executionCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "executionTree": "cf4c70d5fe5cfb5fb612be325d3262fc23e23c68",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/plan.json",
+    "bytes": 43632,
+    "sha256": "74ba21f156f08e24a158f028a2c4f1c4505e59232bbe3598f817a62ab23cd7e0"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/prepared.json",
+    "bytes": 41247,
+    "sha256": "b62a1d5a7a0a23bd64426da10ef3b022f4119ef25e71e6314a40be351e6d862c"
+  },
+  "initialLaunchReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/launch-review.json",
+    "bytes": 13668,
+    "sha256": "3382fddaf28625bde46889e3200e2853f06cc83d5a3263f0ff0eae61f5601ef2"
+  },
+  "staticSourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/independent-static-review.json",
+    "bytes": 5609,
+    "sha256": "57d1b6c4a12096cd8fd5754c1fbc4ce62a2fea860bd756ed53dfb6b0672305e8"
+  },
+  "policyPair": {
+    "flop": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.candidate.json",
+      "bytes": 40033,
+      "sha256": "be468f4fefab0dadba2a83b0296d88900f8dfab16f747e48b848c32a0d0e3d8b"
+    },
+    "later": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.laterCandidate.json",
+      "bytes": 52371,
+      "sha256": "776033a7d2914c1db167a6ed0279363d0340354e74c805a528ea334e4c3bac46"
+    }
+  },
+  "declaredPolicyHashes": {
+    "flop": "771782ecee1bf0162f347ecb0ae59e2c380f9f0557a5864c8a91bf22e6ff148a",
+    "later": "5f043d71350a33e5d939a6454046689ee1f704a58b0e4b8cddfefb9f4cc35a1e"
+  },
+  "optimizationActualResult": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/independent-actual-result-review.json",
+    "bytes": 11208,
+    "sha256": "167f1435d061abb977c6210c4cdacecbc37de6e04b38318c9525d03bb63f6bd3"
+  },
+  "sourceTransition": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/source-transition.json",
+    "bytes": 1872,
+    "sha256": "0522c787e8efd8b68ecf3fee812ae2e6c1349a528747e8116c00b8cfa047c7ff"
+  },
+  "evidence": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/regression-independent-review.json",
+      "bytes": 12443,
+      "sha256": "fcc1a22130c54ad319d5e6b26f96154bbaa22586fb28f2558df497abac751873"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/attempts/attempt-40772a9f-7815-49c0-b55a-b954a43d4324/receipt.json",
+      "bytes": 68621,
+      "sha256": "27ddcbe30d5aa7c535a6b7f5356096a107c1157187ae20b3e333fd0c552f5d2b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/attempts/attempt-40772a9f-7815-49c0-b55a-b954a43d4324/regression-summary.json",
+      "bytes": 146519,
+      "sha256": "7e4ba093103903ed0b893ef5384789edf45ce436395572132f5d6f1a3c0f507c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/repair-plan.json",
+      "bytes": 5591,
+      "sha256": "6d44200cdfe6d899585df24e2feb62865162d38b96c27ac88ad6fb6a0f16cd93"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/source-review.json",
+      "bytes": 4340,
+      "sha256": "92597b29788ed227f1c0d4e318d87cee0bdfbd2752d59e6550bfaf93a53f9a00"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/produce/receipt.json",
+      "bytes": 1558,
+      "sha256": "a7e2a304f4e03025752f01f66e7c25e11522a435e6d6f4c5d691a8ed35368122"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/produce/completed.json",
+      "bytes": 5291,
+      "sha256": "f16ca96ed732f7f2b27c92d4bf3447b2259db00ec2b3580f139b6621527bf316"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/produce/output/balance-descriptor.json",
+      "bytes": 73992,
+      "sha256": "002bf646fce895d57b9d9de0af2484f8871e80b4bdc0ff23c0a644757699871f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/validate/receipt.json",
+      "bytes": 1559,
+      "sha256": "624e24c835a79b3fce7ebf885d649a922cfff9897a88a227cf297dc09e1079b8"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/validate/completed.json",
+      "bytes": 2138,
+      "sha256": "bedbf13c0758ddb21c57bfd8ec9e5d445d9e7a89c56118975eec6f289bd04a70"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/validate/output/whole12.json",
+      "bytes": 82734,
+      "sha256": "071912f1d1e3f98433136b2b53e31bff467a9d0a272e72214c609481200b1503"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/validate/output/produced-storage-inventory.json",
+      "bytes": 955,
+      "sha256": "0931c394d18eab3108a0471a41331f765ffcb03a200a5f20425fb89b7719decd"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/validate/output/reference-sanity.json",
+      "bytes": 33943,
+      "sha256": "5deb5c7c5601325523daec5fe9fefb63b5fe69d5c1ca1f70381792fe59cf95c3"
+    }
+  ],
+  "regression": {
+    "cells": 72,
+    "trialsPerCell": 64,
+    "completedTrials": 4608,
+    "provedBaseUnreachableTrials": 0,
+    "unresolvedTrials": 0,
+    "rawChunksVerified": 72,
+    "proofFilesVerified": 11,
+    "completionEvents": 11,
+    "rawMeansStandardDeviationsAndIntervalsRecalculated": true,
+    "negativePairedDeltaCells": 22,
+    "negativeBySeat": {
+      "BB": 16,
+      "SB": 6
+    },
+    "descriptiveDeltaIntervals": {
+      "whollyBelowZero": 0,
+      "overlapZero": 66,
+      "whollyAboveZero": 6
+    },
+    "negativeCells": [
+      {
+        "index": 70,
+        "board": "5s5d4c",
+        "split": "holdout",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 17.147656249999994,
+        "baselineMeanBb": 23.55546875,
+        "pairedDeltaMeanBb": -6.4078124999999995,
+        "descriptiveNormalDeltaInterval": [
+          -16.8407,
+          4.0251
+        ]
+      },
+      {
+        "index": 50,
+        "board": "Ks8d3c",
+        "split": "holdout",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 17.987343749999987,
+        "baselineMeanBb": 24.221718750000004,
+        "pairedDeltaMeanBb": -6.234374999999998,
+        "descriptiveNormalDeltaInterval": [
+          -13.5167,
+          1.0479
+        ]
+      },
+      {
+        "index": 14,
+        "board": "Js8s5d",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 9.599999999999998,
+        "baselineMeanBb": 14.318124999999991,
+        "pairedDeltaMeanBb": -4.718125,
+        "descriptiveNormalDeltaInterval": [
+          -11.7405,
+          2.3043
+        ]
+      },
+      {
+        "index": 60,
+        "board": "8c8d2h",
+        "split": "holdout",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 12.306562499999995,
+        "baselineMeanBb": 16.90140625,
+        "pairedDeltaMeanBb": -4.594843750000001,
+        "descriptiveNormalDeltaInterval": [
+          -12.607,
+          3.4173
+        ]
+      },
+      {
+        "index": 6,
+        "board": "QsJd5c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 8.937656249999998,
+        "baselineMeanBb": 13.362031249999987,
+        "pairedDeltaMeanBb": -4.424374999999999,
+        "descriptiveNormalDeltaInterval": [
+          -14.8473,
+          5.9986
+        ]
+      },
+      {
+        "index": 46,
+        "board": "KcKd4h",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 22.722031249999997,
+        "baselineMeanBb": 26.37421875,
+        "pairedDeltaMeanBb": -3.6521874999999993,
+        "descriptiveNormalDeltaInterval": [
+          -14.9459,
+          7.6415
+        ]
+      },
+      {
+        "index": 27,
+        "board": "8s7d6c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "SB",
+        "candidateMeanBb": 16.834218749999994,
+        "baselineMeanBb": 19.812656250000003,
+        "pairedDeltaMeanBb": -2.9784375,
+        "descriptiveNormalDeltaInterval": [
+          -7.4725,
+          1.5156
+        ]
+      },
+      {
+        "index": 66,
+        "board": "5s5d4c",
+        "split": "holdout",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 17.067500000000003,
+        "baselineMeanBb": 19.72,
+        "pairedDeltaMeanBb": -2.6525,
+        "descriptiveNormalDeltaInterval": [
+          -15.0282,
+          9.7232
+        ]
+      },
+      {
+        "index": 64,
+        "board": "8c8d2h",
+        "split": "holdout",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 8.504062500000002,
+        "baselineMeanBb": 10.669218749999992,
+        "pairedDeltaMeanBb": -2.165156249999999,
+        "descriptiveNormalDeltaInterval": [
+          -13.6368,
+          9.3065
+        ]
+      },
+      {
+        "index": 17,
+        "board": "Js8s5d",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "SB",
+        "candidateMeanBb": 11.768281249999992,
+        "baselineMeanBb": 13.759062499999994,
+        "pairedDeltaMeanBb": -1.9907812499999995,
+        "descriptiveNormalDeltaInterval": [
+          -8.9925,
+          5.0109
+        ]
+      },
+      {
+        "index": 10,
+        "board": "QsJd5c",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 13.551718749999994,
+        "baselineMeanBb": 15.354218749999994,
+        "pairedDeltaMeanBb": -1.8024999999999995,
+        "descriptiveNormalDeltaInterval": [
+          -11.8647,
+          8.2597
+        ]
+      },
+      {
+        "index": 49,
+        "board": "Ks8d3c",
+        "split": "holdout",
+        "opponent": "standard",
+        "hero": "SB",
+        "candidateMeanBb": 16.783281249999998,
+        "baselineMeanBb": 18.461406249999992,
+        "pairedDeltaMeanBb": -1.6781249999999996,
+        "descriptiveNormalDeltaInterval": [
+          -7.7831,
+          4.4269
+        ]
+      },
+      {
+        "index": 41,
+        "board": "AhKh4h",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "SB",
+        "candidateMeanBb": 14.333281249999997,
+        "baselineMeanBb": 15.975000000000005,
+        "pairedDeltaMeanBb": -1.6417187500000008,
+        "descriptiveNormalDeltaInterval": [
+          -12.4116,
+          9.1281
+        ]
+      },
+      {
+        "index": 34,
+        "board": "6h5h2d",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 20.113749999999992,
+        "baselineMeanBb": 21.714531249999993,
+        "pairedDeltaMeanBb": -1.6007812499999996,
+        "descriptiveNormalDeltaInterval": [
+          -9.0927,
+          5.8912
+        ]
+      },
+      {
+        "index": 26,
+        "board": "8s7d6c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 16.739687499999995,
+        "baselineMeanBb": 18.199375,
+        "pairedDeltaMeanBb": -1.4596874999999998,
+        "descriptiveNormalDeltaInterval": [
+          -5.9738,
+          3.0544
+        ]
+      },
+      {
+        "index": 32,
+        "board": "6h5h2d",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 15.805781249999987,
+        "baselineMeanBb": 17.226406249999997,
+        "pairedDeltaMeanBb": -1.4206249999999998,
+        "descriptiveNormalDeltaInterval": [
+          -6.7096,
+          3.8683
+        ]
+      },
+      {
+        "index": 48,
+        "board": "Ks8d3c",
+        "split": "holdout",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 9.188124999999998,
+        "baselineMeanBb": 10.481249999999998,
+        "pairedDeltaMeanBb": -1.2931249999999999,
+        "descriptiveNormalDeltaInterval": [
+          -8.2976,
+          5.7113
+        ]
+      },
+      {
+        "index": 16,
+        "board": "Js8s5d",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "BB",
+        "candidateMeanBb": 12.170937499999999,
+        "baselineMeanBb": 13.264062499999996,
+        "pairedDeltaMeanBb": -1.0931250000000001,
+        "descriptiveNormalDeltaInterval": [
+          -8.1766,
+          5.9903
+        ]
+      },
+      {
+        "index": 24,
+        "board": "8s7d6c",
+        "split": "design",
+        "opponent": "standard",
+        "hero": "BB",
+        "candidateMeanBb": 11.690312499999994,
+        "baselineMeanBb": 12.491874999999993,
+        "pairedDeltaMeanBb": -0.8015624999999993,
+        "descriptiveNormalDeltaInterval": [
+          -7.2146,
+          5.6114
+        ]
+      },
+      {
+        "index": 29,
+        "board": "8s7d6c",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "SB",
+        "candidateMeanBb": 15.24984374999999,
+        "baselineMeanBb": 15.879218749999993,
+        "pairedDeltaMeanBb": -0.6293749999999998,
+        "descriptiveNormalDeltaInterval": [
+          -7.7977,
+          6.539
+        ]
+      },
+      {
+        "index": 51,
+        "board": "Ks8d3c",
+        "split": "holdout",
+        "opponent": "passive",
+        "hero": "SB",
+        "candidateMeanBb": 9.753593749999999,
+        "baselineMeanBb": 10.119687499999998,
+        "pairedDeltaMeanBb": -0.3660937500000003,
+        "descriptiveNormalDeltaInterval": [
+          -7.0043,
+          6.2721
+        ]
+      },
+      {
+        "index": 20,
+        "board": "Th9h8c",
+        "split": "design",
+        "opponent": "passive",
+        "hero": "BB",
+        "candidateMeanBb": 13.739687499999995,
+        "baselineMeanBb": 14.034531249999993,
+        "pairedDeltaMeanBb": -0.29484375000000024,
+        "descriptiveNormalDeltaInterval": [
+          -6.9618,
+          6.3721
+        ]
+      }
+    ],
+    "negativeCandidatePointMeans": [
+      {
+        "index": 23,
+        "board": "Th9h8c",
+        "split": "design",
+        "opponent": "aggressive",
+        "hero": "SB",
+        "candidateMeanBb": -4.720468749999998,
+        "baselineMeanBb": -8.70625,
+        "pairedDeltaMeanBb": 3.9857812500000005,
+        "descriptiveNormalDeltaInterval": [
+          -5.2785,
+          13.2501
+        ]
+      }
+    ],
+    "candidateNegativePointMeanContext": {
+      "index": 23,
+      "condition": "Th9h8c / aggressive / SB / design",
+      "candidateMeanBb": -4.720468749999998,
+      "candidateDescriptiveInterval": [
+        -13.9883,
+        4.5473
+      ],
+      "pairedDeltaMeanBb": 3.9857812500000005,
+      "pairedDeltaDescriptiveInterval": [
+        -5.2785,
+        13.2501
+      ]
+    },
+    "precision": "Low or unknown. 64 is an engineering budget; exploratory normal intervals are not multiplicity-adjusted. Overlap with zero is not noninferiority."
+  },
+  "probeDisposition": {
+    "adverseIntervalTriggerConditions": [],
+    "newTrialsRecommended": 0,
+    "reason": "No original paired-delta interval is wholly below zero. Negative point estimates and broad uncertainty remain retained; no new profiles or budget expansion."
+  },
+  "whole12": {
+    "checkedCombos": 31592,
+    "prefixCounts": {
+      "requested": 5328,
+      "evaluated": 5065,
+      "provedModelUnreachable": 263,
+      "unresolved": 0
+    },
+    "offModelStages": 0,
+    "errors": 0,
+    "warnings": [
+      {
+        "check": "bluff-ratio",
+        "direction": "under",
+        "severity": "warn",
+        "node": "river_oop_first",
+        "detail": "33% pot bets average 2.4% air versus a size target of 20.9% at 11.9% range frequency (more than 15 points under).",
+        "street": "later"
+      },
+      {
+        "check": "bluff-ratio",
+        "direction": "under",
+        "severity": "warn",
+        "node": "river_oop_first",
+        "detail": "all-in bets average 3.4% air versus a size target of 29.4% at 5.1% range frequency (more than 15 points under).",
+        "street": "later"
+      },
+      {
+        "check": "bluff-ratio",
+        "direction": "under",
+        "severity": "warn",
+        "node": "river_ip_first",
+        "detail": "33% pot bets average 1.3% air versus a size target of 20.7% at 14.9% range frequency (more than 15 points under).",
+        "street": "later"
+      },
+      {
+        "check": "bluff-ratio",
+        "direction": "under",
+        "severity": "warn",
+        "node": "river_ip_first",
+        "detail": "75% pot bets average 3.3% air versus a size target of 31.1% at 5.0% range frequency (more than 15 points under).",
+        "street": "later"
+      },
+      {
+        "check": "bluff-ratio",
+        "direction": "under",
+        "severity": "warn",
+        "node": "river_ip_first",
+        "detail": "all-in bets average 1.0% air versus a size target of 27.0% at 17.0% range frequency (more than 15 points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_ip_vs_33",
+        "detail": "defends 49.7% versus a minimum defence of 75.2% (more than 15 percentage points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_ip_vs_75",
+        "detail": "defends 38.4% versus a minimum defence of 57.1% (more than 15 percentage points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_oop_vs_33",
+        "detail": "defends 45.5% versus a minimum defence of 75.2% (more than 15 percentage points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_oop_vs_75",
+        "detail": "defends 32.9% versus a minimum defence of 57.1% (more than 15 percentage points under).",
+        "street": "later"
+      },
+      {
+        "check": "overfold",
+        "severity": "warn",
+        "node": "river_oop_vs_125",
+        "detail": "defends 24.5% versus a minimum defence of 44.4% (more than 15 percentage points under).",
+        "street": "later"
+      }
+    ],
+    "originalBalanceHash": "5a2c146f1bcf2b107d831ba34b0d29040f52bb2e956f3020cec2a9e47fe9650e",
+    "nativeFullAggregateHashVerified": true,
+    "originalAndRestoredValidationEqual": true,
+    "headerChunkProofPinsVerified": 306,
+    "uniquePrefixRowsVerified": 5328,
+    "prefixParts": 42,
+    "proofFiles": 263,
+    "currentTwelveFlopSetAnd444RowsEachVerified": true,
+    "priorAttemptComparison": "Not applicable: first fresh-case production. No historical partial data or counts were transplanted.",
+    "referenceSanity": {
+      "samplesPerCell": 12,
+      "cells": 72,
+      "pairedTrials": 864,
+      "zeroDrift": true,
+      "numericalHash": "cae91505cd4d4f90b0996d5869799e3170496a4eed4866518922bde03802a9e6"
+    },
+    "producerSeconds": 183.61699394900643,
+    "producerPeakGroupRssKiB": 768336,
+    "validatorSeconds": 4.307326762995217,
+    "validatorPeakGroupRssKiB": 426876,
+    "bothActualExitZeroReapedSourceUnchanged": true,
+    "sourcePolicyAndAdaptersUnchanged": true
+  },
+  "policyFoundation": {
+    "file": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-ranked-co-sb-draft-review-20261006/review-receipt.json",
+      "bytes": 23351,
+      "sha256": "07b07cc63ce835b2d4fae85b5bdf2a2b83c85ba4e03777d6511ffbe399baa957"
+    },
+    "authorship": "Native model10-authored staged pair, unchanged, now evaluated by distinct current 4b model11 source. Do not call this pair model11-authored.",
+    "scope": "Historical static authoring/schema evidence retained; current official preparation is separately evidenced below."
+  },
+  "warningDisposition": "Five low-air river betting and five river under-defence warnings remain under unchanged advisory thresholds. Coarse air-tier and MDF comparisons are not proofs of illegal actions or negative individual call EV; do not blindly fill quotas. No mandatory policy edit, missing reach, invalid proof or unresolved trial was established. This scoped coverage admission does not establish that the advisory shortfalls are harmless.",
+  "decision": "Approve this exact pair/current optimized source for its own 1755-canonical-flop numerical coverage run. Initial regression, fresh split whole12 and native reference sanity are complete. Preserve all 22 negative paired means and ten warnings; none supports a superiority, noninferiority or equilibrium claim.",
+  "concreteImplementationBlockers": [],
+  "additionalNumericalDiagnosticsRequiredBeforeBoards": [],
+  "scope": {
+    "canonicalFlops": 1755,
+    "sampledTurnsPerFlop": 4,
+    "sampledRiverRunoutsPerFlop": 12,
+    "allPokerRunouts": false,
+    "fiveWorkers": true,
+    "resourceLimits": {
+      "heapMiB": 512,
+      "groupRssMiB": 900,
+      "aggregateRssMiB": 3072,
+      "minimumAvailableMiB": 2048,
+      "childSeconds": 900,
+      "wholeSeconds": 43200,
+      "pollMilliseconds": 50
+    },
+    "thresholdsChanged": false,
+    "publicValidationChanged": false,
+    "default45Changed": false,
+    "finalization": "Only separately bound and independently reviewed producer-semantic-reuse/full-lossless finalization after genuine complete producer terminal; original serial finalize remains excluded."
+  },
+  "policyAccepted": false,
+  "oldFullReplayPassed": false,
+  "all1755AlreadyPassed": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

@@ -1,4 +1,4 @@
-# Four individual model11 research cases accepted
+# Four model11 research cases accepted; fifth bounded checks complete
 
 The fourth case, `CO_open_BTN_3bet_SB_call_CO_fold`, was independently accepted at **2026-10-06 08:04:13 UTC** under the revised scoped numerical contract. Its 220-batch / 1755-board producer completed, finalization and postflight passed, and the independent actual-output and policy reviews are preserved in [the dated fourth-case acceptance](fourth-acceptance-20261006-0817/ACCEPTANCE.md).
 
@@ -27,8 +27,18 @@ All **18899 advisory occurrences** remain: 1570 raise-tier, 6464 low-air, 8901 r
 
 The 633137314-byte combined upload failed; no success is claimed for it. Versions 21/22/13 form the documented restoration set. Large proof maps and raw data stay in Library. Only immutable proof copies were deduplicated after verified external restoration; all paths/bytes remain intact. Historical paths in receipts are provenance, not executable PR-relative locations.
 
-## Remaining work
+## Fifth case: bounded checks complete, 1755 coverage running
 
-The next `CO_open_SB_3bet_BB_call_CO_fold` pair remains a distinct native model10-authored static candidate for later model11 evaluation. Its actual official preparation and Node stages are **NOT_RUN** at this snapshot; new admission and its own numerical review remain necessary. The static template is preserved in Library `libfile_6799ccdac21481919ae8552834b72a4f` v2, referenced without uploading new templates in this checkpoint.
+Fixed live observation: **2026-10-06 08:35:04.354663 UTC**. `CO_open_SB_3bet_BB_call_CO_fold` had **23/1755 completed boards**, zero errors/unresolved and zero completed batches yet. Its run began at 08:33:19 UTC under owner 29433, attempt `attempt-c9075316-cf53-45dc-811a-ef6287230a77`, on frozen source `4b6b39a613afe72a2362f85aa93a305cd61b3586`. This is the distinct native model10-authored pair now evaluated with model11. **Final fifth-case acceptance is pending; the accepted model11 count remains four.**
 
-All prior source snapshots, historical HOLD/initial reviews and [dated progress records](updates/) stay unchanged. No additional Node/test/numerical work was run for this checkpoint. Normal runtime, old model10 acceptance and unrelated PR files are preserved. Runtime/typed integration, delivery/ES1, actual strict D1, browser QA and remaining policies are separate unfinished work. PR merge conflict/current full CI remains unresolved or unverified. No PR comment/body edit, merge, main/development update or production action is included.
+Official preparation passed. The 72 x 64 regression produced 4608 trials with zero unresolved; independent raw review retains 22 negative paired means, no wholly-negative descriptive interval and no predefined probe trigger. This does not establish superiority or noninferiority. Fresh whole12 production took 183.617 seconds, followed by a separate native validator taking 4.307 seconds: 31592 combos, 5328 prefixes = 5065 evaluated + 263 proved model-unreachable, zero errors/unresolved, ten advisory warnings and 864 reference pairs with zero drift. Independent bounded and boards-only launch reviews admit this exact pair/source to its own coverage run.
+
+[The bounded outcome and Library index](next-case-bounded-20261006-0837/outcome-and-library-index.json) links thirteen exact immutable preparation/review/operational-source/closed-terminal files. They are saved under docs as research evidence. Historical static and prelaunch receipts keep their original NOT_RUN/pending labels; the later actual receipts establish completion of the respective stages. The earlier fifth-case preparation-not-run status is now superseded by these new receipts.
+
+Confirmed Library `libfile_6799ccdac21481919ae8552834b72a4f` **v4**, `hu-ranked-co-sb-bounded-complete-and-board-ready-20261006.tar.gz`, 2459082 bytes / 1029 files, SHA-256 `203337f4cc3369637c4a8e374724b729a2c8cb06497ee9748fca171f13be3c0a`, contains the bounded-complete evidence. Full 1755 generation was **NOT_RUN at archive capture**; the 23 observed boards are from a later live observation and are not claimed to be in that archive. Upload/version metadata is confirmed; no fresh re-download is claimed.
+
+Remaining for this fifth case: genuine successful producer completion, separately bound/reviewed finalizer, actual final evidence and independent acceptance. Sibling finalizer templates currently being bound are not included. No active-run outputs beyond immutable preparation and closed receipts were copied.
+
+## Remaining integration work
+
+All four prior model11 research acceptances, old model10 acceptance, existing source snapshots, historical HOLD records and dated progress receipts remain unchanged. This Git save runs no Node, tests or numerical work and changes no runtime paths. Runtime/typed integration, delivery/ES1, actual strict D1, browser QA, remaining policies and PR merge conflict/current full CI remain separate unfinished work. No PR comment/body edit, merge, main/development update or production action is included.

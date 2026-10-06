@@ -1,0 +1,86 @@
+{
+  "kind": "independent-co-sb-fresh-whole12-static-delta-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T07:52:00.531309+00:00",
+  "status": "STATIC_DELTA_CLEAR_ACTUAL_BINDINGS_AND_EXECUTION_REVIEW_PENDING",
+  "scope": "Only the fresh-case extension from the reviewed fourth-case two-stage storage repair; no original policy/source review or numerical checks repeated.",
+  "sourcePins": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/persist-once.mjs",
+      "bytes": 2341,
+      "sha256": "b9f6238a0481bace4521114cc00a2ef529c87411e3415de20a254d711b5e755c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/storage-stages.mjs",
+      "bytes": 11387,
+      "sha256": "ba18acc4a869b3bb65dcad9c22b6642b25187a845f4817783f0c02e7a3c26b75"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/bounded.py",
+      "bytes": 12052,
+      "sha256": "940697b407e208a6295d37c144072dd440f80e25ec7e5655ad6deae35369146a"
+    }
+  ],
+  "planTemplate": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/repair-plan.template.json",
+    "bytes": 5167,
+    "sha256": "c95d8a71207d3d3506b22c60c489f9057aed5b0bb8139f00e8e7e8720f92f413"
+  },
+  "delta": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/fresh-case-delta.diff",
+    "bytes": 27613,
+    "sha256": "85910d0c91970346005a5bf73670949a9c44d15dfbc81c3c34cf2ac6f697230e"
+  },
+  "predecessorSourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-whole12-storage-repair/source-review.json",
+    "bytes": 4692,
+    "sha256": "a75cd429a481e2dfc44a782bc434f767b50e5d9885097b3a6a93519a3a8117da"
+  },
+  "checks": {
+    "serializerByteIdentical": true,
+    "nativeProducerLegalityBalanceAndValidationUnchanged": true,
+    "actualOriginalWholeBalanceHashStillComputedOnce": true,
+    "nativeReaderStillValidatesAllPartitionProofAndWholeAggregateHashes": true,
+    "producerAndRestoredCompactValidationMustMatch": true,
+    "fullyReapedSuccessfulSourceUnchangedProducerStillRequired": true,
+    "referenceSanityStill72CellsTimes12WithExactZeroDrift": true,
+    "qualityErrorsStillPreventValidatorCompletion": true,
+    "twelveOwnershipReadCleanupHelpersByteIdentical": true,
+    "resourceLimitsAndOwnerLockUnchanged": true,
+    "pythonAstParsePassedWithoutExecution": true,
+    "currentFlopSetNormalizationMatchesDecisionPrefixDescendingFlopConvention": true,
+    "oldStoppedAttemptHistoryRemovedOnlyForFreshCase": true,
+    "noInherited49Part6228Row558Proof519PerFlopCounts": true,
+    "actualDescriptorClosureAndNativeValidationCountsRequired": true,
+    "prefixUniquenessContinuityAndExactCurrent12FlopSetRequired": true,
+    "noConcreteStaticDefectFound": true
+  },
+  "freshCaseMeaning": "No prior stopped output exists for this next case, so old-output equality is inapplicable. Complete original-to-restored native aggregate hashing, actual descriptor closure, proof validation, current board-set coverage and reference sanity remain required. Counts come from this case actual result; historical fourth-case counts are not transplanted.",
+  "limits": {
+    "heapMiB": 512,
+    "groupRssMiB": 900,
+    "aggregateRssMiB": 3072,
+    "minimumAvailableMiB": 2048,
+    "childSeconds": 900,
+    "wholeSeconds": 43200,
+    "pollMilliseconds": 50
+  },
+  "pending": [
+    "Current fourth-case terminal, finalization and scoped acceptance.",
+    "Next-case official current-source capture/input/artifact validation and genuine prepared receipt.",
+    "Exact next-case launch review and real prepared/regression binding hashes.",
+    "Materialize an exact repair-plan.json from actual pins and obtain an execution source review; this static receipt is not APPROVE_TWO_STAGE_EXECUTION."
+  ],
+  "actualArtifactsAtReview": {
+    "repairPlanJson": "ABSENT",
+    "executionSourceReview": "ABSENT",
+    "runDirectory": "ABSENT",
+    "preparedHashesInTemplate": "NULL",
+    "launchReviewInTemplate": "NULL"
+  },
+  "node": "NOT_RUN",
+  "numericalWork": "NOT_RUN",
+  "launchAuthorized": false,
+  "policyAccepted": false,
+  "productionAuthorized": false
+}

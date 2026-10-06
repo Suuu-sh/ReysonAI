@@ -1,0 +1,183 @@
+{
+  "kind": "fifth-co-sb-case-bounded-complete-boards-running-checkpoint",
+  "preparedAt": "2026-10-06T08:37:00Z",
+  "observedAt": "2026-10-06T08:35:04.354663Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "parentCommit": "82e162ed2247a8cf0dc88b9c4f3afa8f3a2d6fa0",
+  "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+  "frozenSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "authorship": "Native model10-authored policy, evaluated under the current frozen model11 source; distinct from the fourth native model11-authored pair.",
+  "officialPrepare": {
+    "status": "PASSED",
+    "bytes": 41247,
+    "sha256": "b62a1d5a7a0a23bd64426da10ef3b022f4119ef25e71e6314a40be351e6d862c"
+  },
+  "regression": {
+    "cells": 72,
+    "trialsPerCell": 64,
+    "completedTrials": 4608,
+    "unresolved": 0,
+    "negativePairedMeansRetained": 22,
+    "whollyNegativeDescriptiveIntervals": 0,
+    "predefinedProbeTriggerPresent": false,
+    "superiorityOrNoninferiorityEstablished": false
+  },
+  "whole12": {
+    "nativeProduceSeconds": 183.61699394900643,
+    "freshNativeValidateSeconds": 4.307326762995217,
+    "checkedCombos": 31592,
+    "prefixes": 5328,
+    "evaluatedPrefixes": 5065,
+    "provedModelUnreachable": 263,
+    "errors": 0,
+    "unresolved": 0,
+    "advisoryWarnings": 10,
+    "referencePairedTrials": 864,
+    "referenceDrift": 0,
+    "nativeFullAggregateHashVerified": true,
+    "originalAndRestoredValidationEqual": true,
+    "bothExitZeroAndReaped": true
+  },
+  "coverageRun": {
+    "status": "RUNNING_AT_OBSERVATION",
+    "launchedAt": "2026-10-06T08:33:19Z",
+    "ownerPid": 29433,
+    "attempt": "attempt-c9075316-cf53-45dc-811a-ef6287230a77",
+    "observedCompletedBoards": 23,
+    "targetCanonicalBoards": 1755,
+    "errors": 0,
+    "unresolved": 0,
+    "successfulBatches": 0,
+    "wholeRunTerminalPresent": false,
+    "boardsOnlyAdmission": true
+  },
+  "confirmedLibrarySnapshot": {
+    "libraryFileId": "libfile_6799ccdac21481919ae8552834b72a4f",
+    "version": 4,
+    "name": "hu-ranked-co-sb-bounded-complete-and-board-ready-20261006.tar.gz",
+    "bytes": 2459082,
+    "sha256": "203337f4cc3369637c4a8e374724b729a2c8cb06497ee9748fca171f13be3c0a",
+    "files": 1029,
+    "full1755AtArchiveCapture": "NOT_RUN",
+    "containsLaterObserved23Boards": false,
+    "confirmedReplacement": true,
+    "versionMetadataApplied": true,
+    "freshLibraryRedownloadClaimed": false
+  },
+  "preservedFiles": [
+    {
+      "path": "co-sb-coldcall-optimized-five-workers/run/prepared.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/prepared.json",
+      "bytes": 41247,
+      "sha256": "b62a1d5a7a0a23bd64426da10ef3b022f4119ef25e71e6314a40be351e6d862c",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-five-workers/regression-independent-review.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-five-workers/regression-independent-review.json",
+      "bytes": 12443,
+      "sha256": "fcc1a22130c54ad319d5e6b26f96154bbaa22586fb28f2558df497abac751873",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-five-workers/bounded-case-review.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-five-workers/bounded-case-review.json",
+      "bytes": 23043,
+      "sha256": "45bc80a4c6d2f77547095be4a96363c7752388425145d8dec26787448fc011dc",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-five-workers/launch-review.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-five-workers/launch-review.json",
+      "bytes": 13668,
+      "sha256": "3382fddaf28625bde46889e3200e2853f06cc83d5a3263f0ff0eae61f5601ef2",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-five-workers/boards-launch-review.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-five-workers/boards-launch-review.json",
+      "bytes": 18239,
+      "sha256": "ad0459e700534673929d4689648cf473e4c98906836a70c702843e17aabfb475",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-whole12-storage-repair/persist-once.mjs",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/persist-once.mjs",
+      "bytes": 2341,
+      "sha256": "b9f6238a0481bace4521114cc00a2ef529c87411e3415de20a254d711b5e755c",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-whole12-storage-repair/storage-stages.mjs",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/storage-stages.mjs",
+      "bytes": 11387,
+      "sha256": "ba18acc4a869b3bb65dcad9c22b6642b25187a845f4817783f0c02e7a3c26b75",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-whole12-storage-repair/bounded.py",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/bounded.py",
+      "bytes": 12052,
+      "sha256": "940697b407e208a6295d37c144072dd440f80e25ec7e5655ad6deae35369146a",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-whole12-storage-repair/repair-plan.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/repair-plan.json",
+      "bytes": 5591,
+      "sha256": "6d44200cdfe6d899585df24e2feb62865162d38b96c27ac88ad6fb6a0f16cd93",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-whole12-storage-repair/source-review.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/source-review.json",
+      "bytes": 4340,
+      "sha256": "92597b29788ed227f1c0d4e318d87cee0bdfbd2752d59e6550bfaf93a53f9a00",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-whole12-storage-repair/independent-static-delta-review.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/independent-static-delta-review.json",
+      "bytes": 4364,
+      "sha256": "abd10239914979f6ebd64ecf283a4d84c9e875e15859101496afb3ad808f7b4a",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-whole12-storage-repair/run/produce/receipt.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/produce/receipt.json",
+      "bytes": 1558,
+      "sha256": "a7e2a304f4e03025752f01f66e7c25e11522a435e6d6f4c5d691a8ed35368122",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-optimized-whole12-storage-repair/run/validate/receipt.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-optimized-whole12-storage-repair/run/validate/receipt.json",
+      "bytes": 1559,
+      "sha256": "624e24c835a79b3fce7ebf885d649a922cfff9897a88a227cf297dc09e1079b8",
+      "immutableByteCopy": true
+    }
+  ],
+  "boundaries": {
+    "acceptedModel11ResearchCases": 4,
+    "thisFifthCaseAccepted": false,
+    "legacyAcceptedModel10SnapshotSeparate": true,
+    "newNumericalWorkForGitCheckpoint": 0,
+    "newNodeLaunchesForGitCheckpoint": 0,
+    "runtimeAdopted": false,
+    "otherExistingEvidenceUnchanged": true,
+    "siblingFinalizerTemplatesIncluded": false,
+    "activeOutputsCopiedBeyondImmutablePreparedAndClosedReceipts": false
+  },
+  "remaining": [
+    "Complete this exact producer and obtain its genuine successful terminal.",
+    "Separately bind and independently review the exact-case producer-reuse finalizer before execution; sibling templates under review are not included here.",
+    "Preserve and independently assess final evidence for a separate acceptance decision.",
+    "Runtime/typed integration, delivery/ES1, actual strict D1, browser QA, PR conflict/current full CI and remaining policies remain separate."
+  ],
+  "interpretation": [
+    "Negative means and ten warnings remain limitations; absence of a predefined probe trigger is not superiority, noninferiority or GTO evidence.",
+    "Existing static/prelaunch receipts are chronological records; their NOT_RUN labels are not rewritten.",
+    "Historical absolute source/output paths are provenance; copies under docs are not installed runtime paths."
+  ]
+}
