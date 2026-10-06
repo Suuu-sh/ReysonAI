@@ -15,7 +15,9 @@ on:
       - 'apps/frontend/src/route.ts'
       - 'apps/frontend/scripts/postflop-ai/**'
       - 'apps/frontend/scripts/lib/**'
+      - 'apps/frontend/scripts/restore-reviewed-preflop.mjs'
       - 'apps/frontend/scripts/data/postflop-ai-pilot.json'
+      - 'artifacts/preflop/stage2-reviewed.tar.gz'
       - 'apps/frontend/tests/human-ranked-ui.test.mjs'
       - 'apps/frontend/tests/poker-table-ui.test.mjs'
       - 'apps/frontend/tests/fastfold-ui.test.mjs'
@@ -38,12 +40,16 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
+          lfs: true
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '22.20.0'
       - name: Install locked frontend test dependencies
         working-directory: apps/frontend
         run: npm ci
+      - name: Restore exact reviewed preflop fixtures for Agent bootstrap
+        working-directory: apps/frontend
+        run: node scripts/restore-reviewed-preflop.mjs
       - name: Verify FastFold UI, readiness and ranked workflow
         working-directory: apps/frontend
         run: node --experimental-strip-types --test tests/human-ranked-ui.test.mjs tests/poker-table-ui.test.mjs tests/fastfold-ui.test.mjs tests/fastfold-app-integration.test.mjs tests/ranked-ui.test.mjs tests/trainer-release-status.test.mjs tests/ranked-workflow.test.mjs
