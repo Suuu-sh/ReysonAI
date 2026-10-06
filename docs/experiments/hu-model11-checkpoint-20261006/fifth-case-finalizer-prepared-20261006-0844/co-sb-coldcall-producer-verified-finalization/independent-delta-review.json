@@ -1,0 +1,116 @@
+{
+  "kind": "independent-co-sb-coldcall-finalizer-and-preservation-delta-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T08:39:29.259365+00:00",
+  "status": "CONDITIONAL_FINALIZER_CLEAR_AND_LITERAL_PRESERVATION_ADAPTATION_CLEAR",
+  "case": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/case.json",
+    "bytes": 45062,
+    "sha256": "c07966568898f69b5c389205d98b14dcb17ddc885a01d4103e121eeecc73ad67"
+  },
+  "finalizer": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/finalize.mjs",
+    "bytes": 19681,
+    "sha256": "996029ce5b723a873a6e002aba3db09f6118d515948c86833bc7b9856c53f91a"
+  },
+  "supervisor": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/run-finalizer-bounded.py",
+    "bytes": 12536,
+    "sha256": "c8ba7d54a89d597bb8dbf223ffbd3f60d497bed51790e039a98d8301c84b5225"
+  },
+  "sourceDelta": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/bound-source-delta.diff",
+    "bytes": 14630,
+    "sha256": "76a3a0bf4ff605c28b73a49702475aee441f10a386cf7b58223a571973feccf2"
+  },
+  "caseBinding": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/bound-case-binding.json",
+    "bytes": 4569,
+    "sha256": "aba92b178d8f13655a9829718660b36a01396804b0c204ffda0069fa45c264bd"
+  },
+  "predecessorActualReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/independent-actual-output-review.json",
+    "bytes": 2789,
+    "sha256": "0b7217964f389574643da6b4928ca82ba618c0437633875684dc676b5ee93657"
+  },
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/plan.json",
+    "bytes": 43632,
+    "sha256": "74ba21f156f08e24a158f028a2c4f1c4505e59232bbe3598f817a62ab23cd7e0"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/prepared.json",
+    "bytes": 41247,
+    "sha256": "b62a1d5a7a0a23bd64426da10ef3b022f4119ef25e71e6314a40be351e6d862c"
+  },
+  "boardsReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/boards-launch-review.json",
+    "bytes": 18239,
+    "sha256": "ad0459e700534673929d4689648cf473e4c98906836a70c702843e17aabfb475"
+  },
+  "boundedCaseReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/bounded-case-review.json",
+    "bytes": 23043,
+    "sha256": "45bc80a4c6d2f77547095be4a96363c7752388425145d8dec26787448fc011dc"
+  },
+  "checks": {
+    "finalizerAndSupervisorOnlyExactDeclaredBindingSubstitutions": true,
+    "aggregateCodecThresholdCanonicalByteHashAndOwnershipLogicUnchanged": true,
+    "sameVersion3ProducerSemanticReuseContract": true,
+    "all156NumericalAnd5AdapterPinsVerified": true,
+    "genuineCurrentPlanPreparedReviewBindingsMatch": true,
+    "retainedLimitationsAreCurrent22NegativeMeansAnd10Warnings": true,
+    "noStaleFourthCaseAdverse17_47_53Annotation": true,
+    "nativeModel10AuthorshipAndCurrent4bEvaluationDistinct": true,
+    "pythonSupervisorAstParsedWithoutExecution": true
+  },
+  "finalizerPrerequisites": {
+    "producerReceiptPath": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/attempts/attempt-c9075316-cf53-45dc-811a-ef6287230a77/receipt.json",
+    "producerTerminalPresentAtReview": false,
+    "requiredSuccessfulBatches": 220,
+    "requiredUniqueRows": 1755,
+    "exactTerminalHash": "Only the genuine eventual receipt SHA supplied at execution.",
+    "requires": "Successful fully reaped producer terminal and postflight, unchanged source/review pins, zero controller errors/stops, exact row/proof lineage and no live producer owner lock.",
+    "freshOutputRequired": true,
+    "freshWholeSetSemanticPasses": 0,
+    "originalConsumerFreshSemanticReplay": false,
+    "parentOwnsExecution": true
+  },
+  "preservation": {
+    "helper": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/preserve-co-sb-coldcall-batches.py",
+      "bytes": 4298,
+      "sha256": "4adb2e031f9a19efb9c769b143fa74f20da115ae4a91dcc8895a30f4d29de1e5"
+    },
+    "predecessor": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/preserve-co-coldcall-batches.py",
+      "bytes": 4281,
+      "sha256": "d89406ca07211ed50016e97b7069220e884018e616087398c8c3e845a1f7c196"
+    },
+    "binding": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/preservation-binding.json",
+      "bytes": 2169,
+      "sha256": "a39f77bcd20a4133b662766cde5a9b65958e647ba2565252da9259cf70bc590e"
+    },
+    "literalDelta": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/preservation-literal-delta.diff",
+      "bytes": 2898,
+      "sha256": "9072a86d892e35e614fc116bb4280759c71ba4c402490ce28e1b08a7cbf19efd"
+    },
+    "exactLiteralSubstitutions": 7,
+    "logicUnchanged": true,
+    "successfulImmutableBatchesOnly": true,
+    "sourceAndArchiveBytesHashChecked": true,
+    "activePartialBatchesExcluded": true,
+    "activeSourceOrRunMutated": false,
+    "newBaseArchiveRequired": "/workspace/scratch/08c72b2d7549/hu-final-recovery/hu-model11-co-sb-coldcall-progress-base-v1.tar.gz",
+    "newBaseArchivePresentAtReview": false,
+    "prerequisite": "Parent creates and preserves the new immutable base archive including this final source review before invoking the helper; do not reuse the old-case base.",
+    "backupExecuted": false,
+    "wholeRunAcceptanceClaim": false
+  },
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0,
+  "numericalTestsRepeated": false
+}

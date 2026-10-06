@@ -1,0 +1,105 @@
+{
+  "kind": "fifth-case-finalizer-prepared-and-first-successful-batches-preserved",
+  "preparedAt": "2026-10-06T08:44:00Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "parentCommit": "5ee438b4e1f9401c61b2425fcd99c2d03c40740c",
+  "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+  "frozenSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "preservedProgress": {
+    "at": "2026-10-06T08:41:04.636217+00:00",
+    "completeUniqueBoards": 80,
+    "successfulBatches": 10,
+    "capturedFiles": 2061,
+    "activePartialBatchesExcluded": true,
+    "wholeRunTerminalAvailable": false,
+    "owner": 29433,
+    "attempt": "attempt-c9075316-cf53-45dc-811a-ef6287230a77",
+    "snapshot": {
+      "path": "hu-final-recovery/co-sb-coldcall-successful-batches-snapshot-20261006-0841.json",
+      "bytes": 1285054,
+      "sha256": "e3375e1ed5b3346590e43ea30ed2796a8a3102f10bc162bacb1bf931d0e97ac0",
+      "fullSnapshotInLibraryOnly": true
+    },
+    "meaning": "Actual immutable successful batch evidence externally preserved; no full-run completion or current live-count extrapolation."
+  },
+  "confirmedLibrarySnapshot": {
+    "libraryFileId": "libfile_6799ccdac21481919ae8552834b72a4f",
+    "version": 5,
+    "name": "hu-model11-co-sb-coldcall-progress-20261006-0841.tar.gz",
+    "bytes": 7577299,
+    "sha256": "9874a06d505308391bd03746ad3274c718bf85b7ec61938588b6b05223977758",
+    "includesNewImmutableBaseArchive": true,
+    "capturedFiles": 2061,
+    "successfulBatches": 10,
+    "uniqueBoards": 80,
+    "confirmedReplacement": true,
+    "versionMetadataApplied": true,
+    "freshLibraryRedownloadClaimed": false
+  },
+  "finalizer": {
+    "state": "NOT_RUN",
+    "independentReview": "CONDITIONAL_FINALIZER_CLEAR_AND_LITERAL_PRESERVATION_ADAPTATION_CLEAR",
+    "reviewSha256": "f60cbf7c3ec6d80ee11742aa351846cf3af130f2a23a61137995ad4faca5599c",
+    "requiresGenuineSuccessfulBatches": 220,
+    "requiresUniqueBoards": 1755,
+    "requiresActualProducerReceiptSha": true,
+    "requiresProducerReapedAndNoOwnerLock": true,
+    "requiresUnchangedSourceReviewPinsAndExactRowProofLineage": true,
+    "requiresFreshOutputs": true,
+    "finalPolicyAcceptanceIsSeparate": true,
+    "freshWholeSetSemanticPasses": 0
+  },
+  "copiedFiles": [
+    {
+      "path": "co-sb-coldcall-producer-verified-finalization/case.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-producer-verified-finalization/case.json",
+      "bytes": 45062,
+      "sha256": "c07966568898f69b5c389205d98b14dcb17ddc885a01d4103e121eeecc73ad67",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-producer-verified-finalization/finalize.mjs",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-producer-verified-finalization/finalize.mjs",
+      "bytes": 19681,
+      "sha256": "996029ce5b723a873a6e002aba3db09f6118d515948c86833bc7b9856c53f91a",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-producer-verified-finalization/run-finalizer-bounded.py",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-producer-verified-finalization/run-finalizer-bounded.py",
+      "bytes": 12536,
+      "sha256": "c8ba7d54a89d597bb8dbf223ffbd3f60d497bed51790e039a98d8301c84b5225",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "co-sb-coldcall-producer-verified-finalization/independent-delta-review.json",
+      "sourcePath": "hu-final-recovery/co-sb-coldcall-producer-verified-finalization/independent-delta-review.json",
+      "bytes": 5943,
+      "sha256": "f60cbf7c3ec6d80ee11742aa351846cf3af130f2a23a61137995ad4faca5599c",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "preserve-co-sb-coldcall-batches.py",
+      "sourcePath": "hu-final-recovery/preserve-co-sb-coldcall-batches.py",
+      "bytes": 4298,
+      "sha256": "4adb2e031f9a19efb9c769b143fa74f20da115ae4a91dcc8895a30f4d29de1e5",
+      "immutableByteCopy": true
+    }
+  ],
+  "limits": {
+    "negativeRegressionMeansRetained": 22,
+    "whole12AdvisoryWarningsRetained": 10,
+    "nativeModel10AuthorshipAndCurrentModel11EvaluationDistinct": true,
+    "acceptedModel11ResearchCases": 4,
+    "fifthCaseAccepted": false,
+    "ordinaryRuntimeAdopted": false,
+    "newNodeOrNumericalWorkForThisSave": 0,
+    "activeRunOrSourceMutated": false
+  },
+  "remaining": [
+    "Genuine successful 220-batch/1755 producer completion.",
+    "Execute the conditional finalizer only with the actual terminal SHA and all reviewed prerequisites.",
+    "Actual output verification, advisory disposition and separate independent final policy acceptance."
+  ]
+}
