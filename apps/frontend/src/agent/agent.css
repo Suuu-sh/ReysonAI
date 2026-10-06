@@ -310,7 +310,7 @@
 .play-style-map { display: grid; flex: 1; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 6px 8px; min-width: 0; margin: 0; }
 .play-style-map-y { display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 6px 0; color: var(--text-subtle); font-size: 10px; font-weight: 700; line-height: 1.4; text-align: center; white-space: nowrap; }
 .play-style-map-y span:first-child { color: var(--accent-bright); }
-.play-style-map-grid { position: relative; min-height: clamp(210px, 26vw, 300px); aspect-ratio: 1.7; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 10px;
+.play-style-map-grid { position: relative; align-self: start; width: 100%; min-width: 0; aspect-ratio: 1.7; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 10px;
   background-image: radial-gradient(circle, rgb(255 255 255 / 7%) 1px, transparent 1.2px); background-size: 12.5% 12.5%; background-position: center; }
 .play-style-map-grid::before, .play-style-map-grid::after { position: absolute; z-index: 1; background: #4b434b; content: ""; pointer-events: none; }
 .play-style-map-grid::before { top: 0; bottom: 0; left: 50%; width: 1px; }
