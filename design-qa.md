@@ -517,3 +517,9 @@ Verification:
 - Follow-up to the full-width modal layout: current hero hand stays first on the left, followed by only the newest three completed hands; the ellipsis remains an independent 44px control at the far right. Shared behavior remains in `GameplayDetails`; existing modal, hidden-card and result handling are unchanged.
 - CUA verified normal Agent after three genuine local folds: current hand plus exactly three recent chips fit at 320px without colliding with the right control. Short portrait human flop table separates the top-center plate/cards below the rail and above the board. At 650×360, history begins after Exit/title, Leaderboard and ellipsis occupy the right without overlap; 390×844 and desktop 1280×720 remained clear. Human preview state was explicitly synthetic; no live ranked behavior is claimed.
 - Verification: `node --test --test-name-pattern='history rail keeps' tests/poker-table-ui.test.mjs` passed; all 8 `poker-table-ui.test.mjs` cases also passed before final CSS-only tuning. `npm run typecheck` and final `npm run build` passed; existing duplicate-copy and large-chunk warnings remain. `git diff --check` passed. No commit/push; parent owns release.
+
+## Mobile gameplay bottom tabs — 2026-10-06
+- CUA on the explicitly TEST ONLY local preview at 320×568: gameplay hides the bottom tabs, reclaims their reserved padding, and keeps all three actions at least 44px high.
+- At 650×360, tabs remain hidden and actions stay visible/full-width near the bottom; Back to Trainer restores the tab bar and its normal clearance after gameplay ends.
+- Scope is gameplay routes with `.game-details`; library and break views retain normal navigation. This preview is not live or production evidence.
+- Focused table UI tests, frontend typecheck, and direct Vite production bundling passed; no commit or push by implementer.
