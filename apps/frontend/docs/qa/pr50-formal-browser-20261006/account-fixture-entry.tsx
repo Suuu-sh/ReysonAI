@@ -1,0 +1,10 @@
+import React from '../pr50-qa/apps/frontend/node_modules/react/index.js';
+import {createRoot} from '../pr50-qa/apps/frontend/node_modules/react-dom/client.js';
+import {APP_DATASETS,preloadDatasets,datasetNames} from '../pr50-qa/apps/frontend/src/estimated/datasets.ts';
+import '../pr50-qa/apps/frontend/src/styles.css';
+import '../pr50-qa/apps/frontend/src/site/site.css';
+import '../pr50-qa/apps/frontend/src/trainer/trainer.css';
+import '../pr50-qa/apps/frontend/src/trainer/analysis.css';
+await Promise.all([preloadDatasets(APP_DATASETS),datasetNames()]);
+const {RangeWorkspace:Range}=await import('../pr50-qa/apps/frontend/src/estimated/RangeWorkspace.tsx');
+createRoot(document.getElementById('root')!).render(<Range onSectionChange={()=>{}}/>);

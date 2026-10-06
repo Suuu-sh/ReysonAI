@@ -1,0 +1,87 @@
+- complementary "ReysonAI サイドバー":
+  - generic: ReysonAI
+  - button "サイドバーを折りたたむ" [expanded]:
+  - navigation "メインナビゲーション":
+    - generic: 解析
+    - button "Range":
+      - generic: Range
+    - generic: 学習
+    - button "トレーナー":
+      - generic: トレーナー
+    - button "セッション":
+      - generic: セッション
+    - generic: スタッツ
+    - button "Stats":
+      - generic: Stats
+  - strong: Range Explorer
+  - generic: READ-ONLY / v0.1
+- main:
+  - generic "アクション履歴":
+    - group "Board / Settings":
+      - button "Board" [pressed]:
+        - text: Board
+      - button "Settings":
+        - text: Settings
+    - group "Board":
+      - button "Change flop cards":
+        - generic: A♠
+        - generic: 7♦
+        - generic: 2♣
+    - button "Reset actions":
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "UTGのアクションに戻り、レンジ表を表示": UTG
+      - generic: "100"
+      - button "Fold"
+      - button "Raise 2.5" [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "HJのアクションに戻り、レンジ表を表示": HJ
+      - generic: "100"
+      - button "Fold"
+      - button "Call 2.5"
+      - button "Raise 8" [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "COのアクションに戻り、レンジ表を表示": CO
+      - generic: "100"
+      - button "Fold"
+      - button "Call 8"
+      - button "Raise 26" [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "BTNのアクションに戻り、レンジ表を表示": BTN
+      - generic: "100"
+      - button "Fold"
+      - button "Call 26" [pressed]
+      - button "Allin 100"
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "SBのアクションに戻り、レンジ表を表示": SB
+      - generic: "99.5"
+      - button "Fold" [disabled] [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "BBのアクションに戻り、レンジ表を表示": BB
+      - generic: "99"
+      - button "Fold" [disabled] [pressed]
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "UTGのアクションに戻り、レンジ表を表示": UTG
+      - generic: "97.5"
+      - button "Fold" [pressed]
+      - button "Call 26"
+      - button "Allin 100"
+    - generic "ブロック全体をクリックしてこのアクションに戻る":
+      - button "HJのアクションに戻り、レンジ表を表示": HJ
+      - generic: "92"
+      - button "Fold" [pressed]
+      - button "Call 26"
+      - button "Allin 100"
+    - button "Flop card change":
+      - strong: Flop
+      - generic: Edit
+      - text: A
+      - generic: ♠
+      - text: "7"
+      - generic: ♦
+      - text: "2"
+      - generic: ♣
+      - generic "Pot at the start of the street 64BB": Pot 64BB
+  - generic "Postflop estimate":
+    - status:
+      - heading "この局面のポストフロップ方針は未収録" [level=2]
+      - generic: This exact history has no saved postflop policy for the selected settings. Return through the preflop action blocks or choose another history.
