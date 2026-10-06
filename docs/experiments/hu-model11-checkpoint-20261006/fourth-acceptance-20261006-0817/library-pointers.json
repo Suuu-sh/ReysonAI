@@ -1,0 +1,130 @@
+{
+  "kind": "fourth-case-accepted-research-preservation-pointers",
+  "preparedAt": "2026-10-06T08:17:00Z",
+  "acceptedModel11ResearchCases": 4,
+  "legacyAcceptedModel10SnapshotCountedSeparately": true,
+  "runtimeAdoption": false,
+  "completeProducer": {
+    "libraryFileId": "libfile_6fc13f8f72288191a328c485cc8d1fa9",
+    "version": 21,
+    "fileId": "file_00000000518481f5a5a3aa0b22b8939a",
+    "name": "hu-model11-co-coldcall-progress-20261006-0802.tar.gz",
+    "bytes": 224592161,
+    "sha256": "ebc512d08eb40673fbf9c90de9c1dc384f4e27559d65d7a9d0dfa068069af6c2",
+    "boards": 1755,
+    "batches": 220,
+    "freshLibraryMaterializationVerifiedRecords": 82098,
+    "containsImmutableProofBytes": true
+  },
+  "acceptedMetadataAndRestoreIndex": {
+    "libraryFileId": "libfile_6fc13f8f72288191a328c485cc8d1fa9",
+    "version": 22,
+    "name": "hu-model11-four-cases-acceptance-and-restore-index-20261006.tar.gz",
+    "bytes": 24109132,
+    "sha256": "3d01ffc905504e1df8e6510c7c49c24f8d3b41808e7ec906eb1b5f4b5ec4bd38",
+    "files": 1787,
+    "confirmedReplacement": true,
+    "versionMetadataApplied": true,
+    "scope": "Acceptance and finalization receipts, all finalized rows, descriptor and proof restoration mapping. Proof bytes are retained in v21; prior accepted cases/diagnostics are retained in v13.",
+    "freshRedownloadClaimed": false
+  },
+  "priorAcceptedCasesAndDiagnostics": {
+    "libraryFileId": "libfile_6fc13f8f72288191a328c485cc8d1fa9",
+    "version": 13,
+    "name": "hu-model11-fourth-case-diagnosed-20261006-0449.tar.gz",
+    "bytes": 212206407,
+    "sha256": "efdf8ab56ba97f9816aa278b12115f77fa8e675801518b5bf84d5790e74276e7"
+  },
+  "nextStaticTemplate": {
+    "libraryFileId": "libfile_6799ccdac21481919ae8552834b72a4f",
+    "version": 2,
+    "bytes": 119124,
+    "sha256": "d1c81ca4678b100110a588d367bbb5bfb0582bd141e5a252246c70b3a77e29c2",
+    "actualNextPrepare": "NOT_RUN",
+    "actualNextNode": "NOT_RUN",
+    "note": "Pointer only; this checkpoint does not upload additional next-case templates or grant numerical admission."
+  },
+  "failedCombinedPackaging": {
+    "bytes": 633137314,
+    "prepareUploadsFailed": true,
+    "libraryVersionAfterFailure": 20,
+    "successClaimed": false,
+    "replacementStrategy": "Verified complete producer v21 plus metadata/restore index v22 plus historical v13."
+  },
+  "immutableProofDeduplication": {
+    "performedOnlyAfterExternalRestoreVerification": true,
+    "allPathsAndBytesPreserved": true,
+    "sourceAndActiveDataExcluded": true,
+    "mappingStoredInLibraryOnly": true,
+    "approximateDiskSpaceFreedGiB": 2.4
+  },
+  "producerReceiptPointer": {
+    "bytes": 229697,
+    "sha256": "afb621b62609e0bb54fbef8a00e6e9e8993ea8c9597a6066467997b886c44b96",
+    "completedAt": "2026-10-06T07:56:40Z",
+    "producerSeconds": 10086.1424,
+    "producerAggregatePeakRssKiB": 2879124,
+    "exitCode": 0,
+    "allOwnedGroupsReaped": true,
+    "sourceUnchanged": true,
+    "fullReceiptInLibrary": true
+  },
+  "copiedFiles": [
+    {
+      "path": "scoped-acceptance.json",
+      "sourcePath": "hu-final-recovery/co-coldcall-producer-verified-finalization/scoped-acceptance.json",
+      "bytes": 17305,
+      "sha256": "9e51885bd3d197fa0d06deb512baa821a4312f0a40c026da1eebdf789c8d47a2",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "independent-actual-output-review.json",
+      "sourcePath": "hu-final-recovery/co-coldcall-producer-verified-finalization/independent-actual-output-review.json",
+      "bytes": 2789,
+      "sha256": "0b7217964f389574643da6b4928ca82ba618c0437633875684dc676b5ee93657",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "warning-classification.json",
+      "sourcePath": "hu-final-recovery/co-coldcall-producer-verified-finalization/warning-classification.json",
+      "bytes": 20879,
+      "sha256": "e31c492f7270625392896cad7e9924a33e0e6d87e2c37c8519e87c98f5833b69",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "warning-disposition.json",
+      "sourcePath": "hu-final-recovery/co-coldcall-producer-verified-finalization/warning-disposition.json",
+      "bytes": 8055,
+      "sha256": "7d468cb1e08c46e80f695eff2eed745ba22aabc3fe2fa8de8e4026f3ec0013f3",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "finalized-v1/producer-verified-component.json",
+      "sourcePath": "hu-final-recovery/co-coldcall-producer-verified-finalization/finalized-v1/producer-verified-component.json",
+      "bytes": 3014,
+      "sha256": "6f68ba9c5d0a2f11ba37169bd712aaf8a5a61909ddb9b6ec292cedb0109b9156",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "supervision-v1/terminal.json",
+      "sourcePath": "hu-final-recovery/co-coldcall-producer-verified-finalization/supervision-v1/terminal.json",
+      "bytes": 1320,
+      "sha256": "c5d10aff3aee4af0615a25d7ed6da6620c6540146c353403353cbe83e1e0f32d",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "supervision-v1/postflight.json",
+      "sourcePath": "hu-final-recovery/co-coldcall-producer-verified-finalization/supervision-v1/postflight.json",
+      "bytes": 833,
+      "sha256": "fd9a0e69e9683a48a16dc432ac211a3c2e3a142597ea2183352bbc7848f1bf43",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "four-case-preservation-index.json",
+      "sourcePath": "hu-final-recovery/four-case-preservation-index.json",
+      "bytes": 2662,
+      "sha256": "cbc2f949ef63db899c6c86a9ebd062b0da2629b495b7b928d0f88d327bc3cb93",
+      "immutableByteCopy": true
+    }
+  ]
+}

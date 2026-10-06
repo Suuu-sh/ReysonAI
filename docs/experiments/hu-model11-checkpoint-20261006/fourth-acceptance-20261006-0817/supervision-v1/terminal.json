@@ -1,0 +1,27 @@
+{
+  "kind": "co-coldcall-producer-verified-aggregate-owned-group-terminal",
+  "producerExitCode": 0,
+  "stopped": null,
+  "supervisorError": null,
+  "seconds": 153.131,
+  "sampledPeakOwnGroupRssKiB": 917920,
+  "peakOwnedMembers": [
+    {
+      "pid": 7,
+      "startTicks": "10147078",
+      "rssKiB": 917920,
+      "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --max-old-space-size=512 /workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/finalize.mjs --producer-sha256 afb621b62609e0bb54fbef8a00e6e9e8993ea8c9597a6066467997b886c44b96 --reviewed-sha256 83da0b6feae3a009a97c9da02248c1706eb79a8e1f4d7061e6e6e9e8052a8de9 --require-existing all-boards CO_open_BTN_3bet_SB_call_CO_fold"
+    }
+  ],
+  "minimumHostAvailableKiB": 7781016,
+  "ownedPid": 7,
+  "ownedProcessGroup": 7,
+  "ownedStartTicks": "10147078",
+  "ownedChildReaped": true,
+  "ownedGroupGone": true,
+  "remainingOwnedMembers": [],
+  "supervisorSha256": "eeb05b8980d10d7dbbfbf90814052ffdde4a3ec67ff67e991dcaebbbe413f72f",
+  "specSha256": "080f5c92891b403f0742a00a33e3d38ebb102adc43bccbd5f4798a789e870fb9",
+  "runnerSha256": "83da0b6feae3a009a97c9da02248c1706eb79a8e1f4d7061e6e6e9e8052a8de9",
+  "producerRunSha256": "afb621b62609e0bb54fbef8a00e6e9e8993ea8c9597a6066467997b886c44b96"
+}

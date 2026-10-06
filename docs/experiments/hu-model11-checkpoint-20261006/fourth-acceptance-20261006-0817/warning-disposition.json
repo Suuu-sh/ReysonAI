@@ -1,0 +1,203 @@
+{
+  "kind": "independent-co-coldcall-advisory-warning-disposition",
+  "version": 1,
+  "reviewedAt": "2026-10-06T08:04:13.816382+00:00",
+  "classification": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/warning-classification.json",
+    "bytes": 20879,
+    "sha256": "e31c492f7270625392896cad7e9924a33e0e6d87e2c37c8519e87c98f5833b69"
+  },
+  "criteriaSource": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/balance-model11-kernel.mjs",
+    "bytes": 31222,
+    "sha256": "6192350ae7209cd4a4b9c7316d5c75c2811f8dd96cb12b9a304be2af6d736431"
+  },
+  "warningOccurrences": 18899,
+  "counts": {
+    "value-only-raise": 1570,
+    "bluff-ratio(under)": 6464,
+    "overfold": 8901,
+    "overcall": 1958,
+    "bluff-ratio(over)": 6
+  },
+  "dispositions": [
+    {
+      "type": "value-only-raise",
+      "count": 1570,
+      "criterion": "Raise frequency at least 3%, with less than 3% non-monster weight in the raising range.",
+      "interpretation": "1469 occurrences are on paired/trips flops, where coarse monster tiers are broad; 101 unpaired occurrences remain explicit unquantified exceptions. No missing node or illegal action was found. These are retained strategy diagnostics, not established mandatory edits."
+    },
+    {
+      "type": "bluff-ratio(under)",
+      "count": 6464,
+      "criterion": "Coarse air share more than 15 percentage points below size target, with action range frequency at least 5%.",
+      "interpretation": "Air-tier share differs from equity-defined bluff mass. Do not add bluffs blindly to meet the advisory target. The shortfalls remain material model-policy limitations."
+    },
+    {
+      "type": "overfold",
+      "count": 8901,
+      "criterion": "Aggregate call-plus-raise defence more than 15 percentage points below its price-derived minimum defence.",
+      "interpretation": "All occur on river. Balanced conditioned support, cap/ceiling behavior and exact-sign guards can produce below-target defence; the traced aggressive-opponent deficits show this is not universally harmless. Only one of the six selected river-facing tail witnesses consulted a negative exact sign."
+    },
+    {
+      "type": "overcall",
+      "count": 1958,
+      "criterion": "Non-monster defence exceeds its remaining MDF need by more than min(15 percentage points, need plus 5 percentage points).",
+      "interpretation": "Aggregate tier-relative diagnostics do not prove negative individual call EV. 1956 occur on flop/turn, and two occur on river OOP facing 125/all-in. Their magnitudes and individual trajectories are absent from compact rows."
+    },
+    {
+      "type": "bluff-ratio(over)",
+      "count": 6,
+      "criterion": "Coarse air share exceeds the size target by more than 15 percentage points; this over-side warning has no minimum action-frequency filter.",
+      "interpretation": "All six occur at river_oop_first on unpaired flops. Exact boards and row pins are retained below. Stored compact rows omit action size, excess magnitude and action frequency; neither an exact equity-cap violation nor harmlessness is established. No mandatory legal/numerical correction is identified by these advisory findings."
+    }
+  ],
+  "overAirCases": [
+    {
+      "board": "6c3d2h",
+      "row": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/finalized-v1/checkpoints/a621dd0b4dac0d62f229decfd52858c91adefc7122e454022f26ad2c79740202/6c3d2h.json",
+        "bytes": 22943,
+        "sha256": "5b7535475326299c2ce65c5df4f895e75e6580815925b4f58a8d7f04c181ef2b"
+      },
+      "findings": [
+        {
+          "check": "bluff-ratio",
+          "severity": "warn",
+          "node": "river_oop_first",
+          "street": "later",
+          "direction": "over"
+        }
+      ],
+      "prefixCounts": {
+        "requested": 519,
+        "evaluated": 471,
+        "provedModelUnreachable": 48,
+        "unresolved": 0
+      }
+    },
+    {
+      "board": "8c4d2c",
+      "row": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/finalized-v1/checkpoints/a621dd0b4dac0d62f229decfd52858c91adefc7122e454022f26ad2c79740202/8c4d2c.json",
+        "bytes": 21583,
+        "sha256": "cf22cc60ef4f1c48a525040e78e3181b54492607ad86387dbd23518a0687ef80"
+      },
+      "findings": [
+        {
+          "check": "bluff-ratio",
+          "severity": "warn",
+          "node": "river_oop_first",
+          "street": "later",
+          "direction": "over"
+        }
+      ],
+      "prefixCounts": {
+        "requested": 519,
+        "evaluated": 474,
+        "provedModelUnreachable": 45,
+        "unresolved": 0
+      }
+    },
+    {
+      "board": "8c6d4c",
+      "row": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/finalized-v1/checkpoints/a621dd0b4dac0d62f229decfd52858c91adefc7122e454022f26ad2c79740202/8c6d4c.json",
+        "bytes": 29288,
+        "sha256": "40828c754c418fa46b538f390606daf0765b4caf7881a28f0883df6cf28e844b"
+      },
+      "findings": [
+        {
+          "check": "bluff-ratio",
+          "severity": "warn",
+          "node": "river_oop_first",
+          "street": "later",
+          "direction": "over"
+        }
+      ],
+      "prefixCounts": {
+        "requested": 519,
+        "evaluated": 457,
+        "provedModelUnreachable": 62,
+        "unresolved": 0
+      }
+    },
+    {
+      "board": "8c7c6d",
+      "row": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/finalized-v1/checkpoints/a621dd0b4dac0d62f229decfd52858c91adefc7122e454022f26ad2c79740202/8c7c6d.json",
+        "bytes": 22156,
+        "sha256": "1186607fd614741abcec15a295bfa3321d197b2e34476f7422d5c1da65013274"
+      },
+      "findings": [
+        {
+          "check": "bluff-ratio",
+          "severity": "warn",
+          "node": "river_oop_first",
+          "street": "later",
+          "direction": "over"
+        }
+      ],
+      "prefixCounts": {
+        "requested": 519,
+        "evaluated": 473,
+        "provedModelUnreachable": 46,
+        "unresolved": 0
+      }
+    },
+    {
+      "board": "9c7d2d",
+      "row": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/finalized-v1/checkpoints/a621dd0b4dac0d62f229decfd52858c91adefc7122e454022f26ad2c79740202/9c7d2d.json",
+        "bytes": 23845,
+        "sha256": "65f73e1a3011175ce550bdee346467df7357c0ec72f574d025b728cbed85da0a"
+      },
+      "findings": [
+        {
+          "check": "bluff-ratio",
+          "severity": "warn",
+          "node": "river_oop_first",
+          "street": "later",
+          "direction": "over"
+        }
+      ],
+      "prefixCounts": {
+        "requested": 519,
+        "evaluated": 469,
+        "provedModelUnreachable": 50,
+        "unresolved": 0
+      }
+    },
+    {
+      "board": "9c7d3h",
+      "row": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-producer-verified-finalization/finalized-v1/checkpoints/a621dd0b4dac0d62f229decfd52858c91adefc7122e454022f26ad2c79740202/9c7d3h.json",
+        "bytes": 22950,
+        "sha256": "9b85b20bafc7f315f8b1f1006d9a659b4e14d1d3a68a7cf0a134093a0d07ef56"
+      },
+      "findings": [
+        {
+          "check": "bluff-ratio",
+          "severity": "warn",
+          "node": "river_oop_first",
+          "street": "later",
+          "direction": "over"
+        }
+      ],
+      "prefixCounts": {
+        "requested": 519,
+        "evaluated": 471,
+        "provedModelUnreachable": 48,
+        "unresolved": 0
+      }
+    }
+  ],
+  "cappedCheckOccurrences": 0,
+  "mandatoryPolicyEditsEstablished": [],
+  "furtherNumericalProbeRequiredByThisScopedReview": false,
+  "warningCountsAreIndependentBoardCounts": false,
+  "warningsResolved": false,
+  "currentSourceAcceptanceOnly": true,
+  "noThresholdChanges": true,
+  "newNodeProcesses": 0
+}

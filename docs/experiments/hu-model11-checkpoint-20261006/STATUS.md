@@ -1,110 +1,34 @@
-# Latest HU checkpoint: 1685/1755 observed, next case statically prepared
+# Four individual model11 research cases accepted
 
-Fixed numerical observation: **2026-10-06 07:49:48.595072 UTC**. Current fourth case `CO_open_BTN_3bet_SB_call_CO_fold` had **1685/1755 boards observed**, zero errors/unresolved, 210 successful batches and zero failed batches. Its producer owner remained active and the whole-run receipt was absent. Maximum completed-child peak group RSS was 579644 KiB, not current aggregate memory. The case remains unaccepted.
+The fourth case, `CO_open_BTN_3bet_SB_call_CO_fold`, was independently accepted at **2026-10-06 08:04:13 UTC** under the revised scoped numerical contract. Its 220-batch / 1755-board producer completed, finalization and postflight passed, and the independent actual-output and policy reviews are preserved in [the dated fourth-case acceptance](fourth-acceptance-20261006-0817/ACCEPTANCE.md).
 
-Confirmed Library version **20** at `libfile_6fc13f8f72288191a328c485cc8d1fa9` preserves **1680 completed boards / 210 successful batches / 78626 exact files**. Those archive counts are distinct from the separate live observation. Archive: `hu-model11-co-coldcall-progress-20261006-0750.tar.gz`, 215557995 bytes, SHA-256 `9861d190f65d16381e40a66c860c3f50f572625944ddbc07cb00a1045cad8887`. [The dated progress record](updates/20261006-0753/progress.json) pins this checkpoint.
-
-This dated observation remains fixed even if the live run later completes. The conditional finalizer is ready only after a genuine successful producer terminal; final acceptance is still pending at this snapshot.
-
-## Previously saved next-case static unit (unchanged)
-
-The existing `CO_open_SB_3bet_BB_call_CO_fold` pair now has a preserved mechanical preparation and independent static review. [next-case-static/](next-case-static/) contains all 13 original small files, byte-for-byte, plus their [Library pointer and hash inventory](next-case-static/library-pointer.json). Official capture, loadInputs, artifact validation, controller preparation and Node execution are all **NOT_RUN**. There is no prepared binding or numerical admission. Fourth-case completion, finalization and independent acceptance remain prerequisites before next-case official preparation and a new exact launch review.
-
-This next pair was natively authored for **model10**, with later evaluation intended under exact model11 source `4b6b39a613afe72a2362f85aa93a305cd61b3586`. It is distinct from the current fourth case's native model11-authored pair. Historical source/policy metadata is not relabeled as current numerical evidence. The archival scripts are saved under docs, not installed into live runtime paths.
-
-Next-case Library `libfile_6799ccdac21481919ae8552834b72a4f`, version **1**, preserves the old handoff plus the new 13-file static unit: `hu-ranked-co-sb-existing-draft-static-ready.tar.gz`, 68198 bytes, SHA-256 `3fc75a7ae73379e80718ef73bf4ca1c9f06028edae7b1954ccea138967b7533a`. Both archive writes and version metadata are confirmed; fresh Library re-downloads are not claimed.
-
-## Boundaries and remaining work
-
-Current numerical source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`; raw policies, prior source snapshots and independent receipts remain unchanged. Three repeated SB/aggressive deficits remain an explicit balanced-belief limitation. Current producer completion, a genuine successful terminal, the separately reviewed conditional finalizer and actual independent final review are pending. There is no GTO, superiority, completion-time or final acceptance claim.
-
-This checkpoint updates STATUS and adds one dated progress/Library record only. The previously saved static unit stays byte-identical. New next-case helpers still under review are not included. It runs no Node, tests or numerical work. Ordinary runtime and the old model10/three individually accepted model11 cases retain their scope and limitations. Historical HOLD/dates remain immutable. PR merge conflicts/current full CI remain unresolved or unverified. No PR-body/comment edit, merge, main/development update, runtime adoption or production action is included.
-
-## Previous checkpoints, retained for chronology
-
-Earlier live counts below are historical snapshots. Their dated evidence remains immutable.
-
-# Latest HU research progress: 469/1755 boards observed
-
-Fixed observation: **2026-10-06 05:51:59 UTC**. The five-worker producer remained running: **469/1755 boards observed**, zero errors/unresolved, 55 successful batches and zero failed batches. The highest completed-batch peak group RSS was 571188 KiB; this is not current total RSS. Host available memory was 6251732 KiB at that observation. These values do not promise a completion time.
-
-Confirmed Library version **15** at `libfile_6fc13f8f72288191a328c485cc8d1fa9` preserves **440 immutable boards / 55 successful batches**, with source, completed whole12, probes and the prepared conditional finalizer. It does not contain all 469 boards from the later live observation. Archive: `hu-model11-co-coldcall-progress-20261006-0550.tar.gz`, 65361961 bytes, SHA-256 `c37e747de3dc5a43428e34a5c2201fe856c553e3e793f1c641b4e6873f1b889c`. Upload and version metadata are confirmed; a fresh Library re-download is not claimed.
-
-[The dated progress record](updates/20261006-0552/progress.json) preserves this snapshot. Numerical source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`, with unchanged raw policy bytes. Prior source snapshots, checks, historical HOLD records and independent receipts remain untouched. This commit updates this STATUS and adds the small progress/Library-pointer record only; it runs no numerical work.
-
-The fourth case remains **unaccepted**. The three repeated SB/aggressive deficits remain an explicit balanced-belief limitation. The next steps are producer completion, its genuine successful terminal, the separately reviewed conditional finalizer, and independent final disposition. Ordinary runtime and the old model10/three individually accepted model11 cases are unchanged. PR merge conflicts/current full CI remain unresolved or unverified. No merge, main/development update, runtime adoption or production action is included.
-
-## Previous checkpoint, retained for chronology
-
-The earlier live counts below are historical snapshots, superseded by the observation above. Their dated evidence remains immutable.
-
-# Latest HU research checkpoint: whole12 complete, 1755 generation running
-
-Prepared 2026-10-06 05:27 UTC from the fixed progress observation at **05:24:11 UTC**. Existing draft PR #41 remains a research preservation checkpoint; ordinary runtime, prior model10 acceptance and the three individually accepted model11 cases are unchanged. This fourth case is not finally accepted.
-
-- The repaired two-stage whole12 completed. Producer: 244.4359 seconds / 845588 KiB peak group RSS; fresh validator: 5.1572 seconds / 452668 KiB. The native full aggregate hash and all retained 49 parts / 6228 rows / 558 proof bytes were verified. Reference sanity is 864 paired trials with zero drift; 15649 legal combos and 9 warnings are retained.
-- Independent review admitted this exact source/policy pair to its own 1755-canonical-flop coverage run. At 05:24:11 UTC, 169/1755 boards were observed, with zero errors/unresolved and 5 workers active. The maximum completed-batch peak RSS was 554712 KiB; this is not instantaneous memory usage. Later progress is outside this immutable snapshot.
-- Confirmed Library progress version 14 contains **160 immutable boards / 20 successful batches**, not all 169 observed boards. The archive and live observation have different snapshot times.
-- The exact-case producer-reuse finalizer and bounded launcher are prepared and conditionally reviewed. They require a genuine complete successful producer terminal before use. Finalization and final acceptance are pending.
-- The three repeated SB/aggressive deficits remain an explicit limitation of balanced-belief play against aggressive behavior. No mandatory authored-rule correction or deterministic numerical defect was established. Coverage does not prove superiority, GTO or general opponent robustness.
-
-Source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`; raw policy bytes remain unchanged. Small operational sources/configurations and original independent receipts are mirrored under [updates/20261006-0526](updates/20261006-0526/). Their original workspace paths are preserved as provenance; these archival copies are not installed into the runtime. Original HOLD/initial reviews and the prior 110-file source snapshot are unchanged. No numerical work was run for this Git checkpoint.
-
-Confirmed archive pointers:
-
-- Library `libfile_6fc13f8f72288191a328c485cc8d1fa9`, version **14**, `hu-model11-co-coldcall-progress-20261006-0524.tar.gz`, 32210693 bytes, SHA-256 `e4f2867ee7cff3e36b0e953557c10700019d6fcba69851ff03e31921b84bbc53`. Accepted-three-case/raw-history evidence remains in version 13; version 14 is the bounded current progress archive.
-- Whole12 proof: Library `libfile_828857f5aae88191b3f9ad53ad99a9b0`, version **8**, 12960723 bytes, SHA-256 `cfd441e3b4de50f648caada4f7fa18595cc3d637037f414700b8148664399f43`.
-
-Remaining work: complete the producer, satisfy finalizer prerequisites, preserve and independently assess final evidence, and reach a separate acceptance decision. PR merge conflicts/current full CI remain unresolved or unverified; runtime adoption and production remain separate. This checkpoint does not merge, deploy, change main/development or claim current-head CI success.
-
-## Historical checkpoint from 04:51 UTC
-
-The following original snapshot is retained for chronology. Its earlier whole12/board-admission status is superseded only by the update above; its immutable original receipts are not rewritten.
-
-# HU model11 research checkpoint, 2026-10-06 04:51 UTC
-
-Saved research work for existing draft [PR #41](https://github.com/Suuu-sh/ReysonAI/pull/41). This checkpoint does not complete PR #41 or adopt model11 in the current runtime. The existing model10 acceptance remains unchanged. No merge, deployment, D1 change or production approval is included.
-
-## What is saved here
-
-- `experimental-source-pointer.json`: exact source recovery pointers for all 110 changed paths, including baseline, target tree and machine-verified patch hash. The complete implementation, tests, fixtures and research documentation are already preserved in the fixed GitHub research commit and confirmed Library source bundle. The large patch is not embedded in this metadata checkpoint. It excludes unrelated working changes, credentials, environment files and expanded policy datasets.
-- `source/`: all 110 exact experimental source files, stored under their original path names within this research-only snapshot. Existing Git blobs are reused, with no large re-upload.
-- `checkpoint-manifest.json`: exact source identities, per-file byte/hash inventory and immutable receipt hashes.
-- Six original independent numerical/source review receipts, copied byte-for-byte. Their historical file paths describe where the evidence was produced; full evidence is in the Library snapshots below.
-- `library-pointers.json`: confirmed versioned archive identities and SHA-256 hashes.
-
-The exact source is saved under the docs source snapshot and linked through immutable recovery pointers, without applying it to the PR runtime. This preserves existing runtime and ordinary CI behavior while keeping every experimental source byte recoverable. The same 110 experimental file blobs were independently matched against the readable [fixed research commit 3e473250](https://github.com/Suuu-sh/ReysonAI/tree/3e473250c90960370757591c52eb905a824f7926). No application/default paths or CI workflows are changed by this checkpoint.
-
-To reconstruct the exact experimental tree, follow `experimental-source-pointer.json`: start a separate clean checkout at `471f8920fd4ed258ca163dd1daa707b75daf1250`, restore exactly the 110 inventory paths from this checkpoint’s `source/` snapshot or the fixed research commit, and verify their hashes. The locally generated exact patch was independently applied in an isolated Git index and produced tree `cf4c70d5fe5cfb5fb612be325d3262fc23e23c68`, exactly matching numerical execution source commit `4b6b39a613afe72a2362f85aa93a305cd61b3586`. Do not restore experimental source into an active checkout as part of routine PR validation.
-
-## Accepted research scope
-
-Three individual model11 cases are accepted under the revised scoped numerical contract, as reproducible model-conditioned AI estimates:
+The four model11 cases are:
 
 1. `BTN_open_SB_3bet_BB_call_BTN_fold`
 2. `BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call`
 3. `CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold`
+4. `CO_open_BTN_3bet_SB_call_CO_fold`
 
-Each has its own source-bound receipt. These acceptances remain bound to evidence source `5dbd208d2ba70ceec2934efab9de134a5dc19e1c`, tree `f56e0e98fbc31bf2dd633ad1e73dc3470fc23835`. Remote preservation commit `1ed7fae33eed362df84672265a05c0b44b8ce1ce` has that same tree but is a different commit. The evidence has not been retagged to the optimized source. Accepted all-board scope is 1755 canonical flops with the existing sampled later runouts; this is not every poker runout, a GTO/optimality claim, unknown-opponent robustness, or approval of other policies.
+The legacy accepted model10 snapshot remains separate. The fourth case is bound to exact source `4b6b39a613afe72a2362f85aa93a305cd61b3586`; earlier three-case evidence keeps its original source identities. **This is accepted research evidence, not PR runtime adoption, PR completion or production approval.**
 
-The prefix-key optimization has 43 existing tests passed and exact selected parity over 5 families / 2061 prefixes, omitting only diagnostics.elapsedMs. The matched single timing pass was 74.690 to 65.484 seconds, not a general speed guarantee. Benchmark source is `3e955abeb6af528b5469b9cfff7012ad5bc53a3c`; next-case execution bindings are at `4b6b39a6`. No new numerical computations were run to create this checkpoint.
+## Fourth-case evidence and limits
 
-## Fourth case remains open
+The complete result covers **910845 prefixes = 831609 evaluated + 79236 proved model-unreachable**, zero errors/unresolved, and 1755 canonical flops with four sampled turns and twelve sampled river runouts each. The finalizer finished in 153.131 seconds, exited zero, reaped all owned processes and passed postflight. Native storage comparison verified all 39058408 canonical bytes and their SHA. Producer semantic evidence was reused; there was no fresh whole-set semantic/consumer replay or own 720k replay.
 
-`CO_open_BTN_3bet_SB_call_CO_fold` is not accepted and its 1755-board expansion is not approved. The 72 x 64 regression and 640 additional diagnostic trials completed. Three SB/aggressive conditions retain adverse exploratory differences; the adaptive intervals are descriptive, not calibrated inferiority tests.
+All **18899 advisory occurrences** remain: 1570 raise-tier, 6464 low-air, 8901 river under-defence, 1958 overcall and 6 over-air. The six over-air boards, missing per-warning magnitudes/trajectories, and repeated SB/aggressive weaknesses at 17/47/53 remain explicit in the exact receipts. Acceptance does not establish superiority, noninferiority, equilibrium/GTO, exploitability bounds or unknown-opponent robustness. Component/postflight pre-acceptance labels are historical and are not rewritten; the later scoped receipt records the acceptance decision.
 
-The whole12 attempt stopped at its 900 MiB resource bound after durably saving 6228 prefixes / 558 proofs. It lacks the complete header, aggregate hash and reference-sanity result, so these partial outputs are not a completed gate.
+## Confirmed preservation
 
-An observer replay reproduced 576 existing trial objects, with 9 selected traces independently inspected and no new samples. The final diagnosis records adverse effective folds under a balanced-belief model against actual aggressive play. It found no established mandatory authored-rule correction or deterministic numerical bug. It also does not exonerate the entire policy, resolve the raw bet125 cap concern, or justify removing the exact river guard. The reviewed next step is to finish the missing bounded whole12 component after reviewing the separate serialization repair. That repair and a new whole12 execution are not part of this saved source checkpoint. Both the earlier bounded review and later disposition are retained; the later disposition resolves the immediate policy-diagnosis hold while keeping the adverse behavior limitation.
+[Library pointers and restoration scope](fourth-acceptance-20261006-0817/library-pointers.json) pin:
 
-## Full evidence snapshots
+- Complete producer: `libfile_6fc13f8f72288191a328c485cc8d1fa9` **v21**, 224592161 bytes, SHA-256 `ebc512d08eb40673fbf9c90de9c1dc384f4e27559d65d7a9d0dfa068069af6c2`. Fresh external materialization verified all 82098 records, including proof bytes.
+- Acceptance/finalized rows/descriptor/restore index: the same Library item **v22**, 24109132 bytes / 1787 files, SHA-256 `3d01ffc905504e1df8e6510c7c49c24f8d3b41808e7ec906eb1b5f4b5ec4bd38`.
+- Earlier accepted-three-case and fourth-case diagnostic history: the same Library item **v13** remains retained.
 
-- Latest combined archive: Library `libfile_6fc13f8f72288191a328c485cc8d1fa9`, version 13, `hu-model11-fourth-case-diagnosed-20261006-0449.tar.gz`, 212206407 bytes, SHA-256 `efdf8ab56ba97f9816aa278b12115f77fa8e675801518b5bf84d5790e74276e7`. Includes the nested complete accepted-three-case v12 archive, original and additional fourth-case trials, partial stopped whole12, observer replay/selected traces and final independent disposition.
-- Original accepted-three-case snapshot: same Library item, version 12, 205802021 bytes, SHA-256 `71c57db170c48c1368e152ccd8e49b30527af5d3d6b6bfda1fa2afae8c7bb2a2`.
-- Optimization source/tests/next bindings: Library `libfile_828857f5aae88191b3f9ad53ad99a9b0`, version 6, 6439805 bytes, SHA-256 `c94bd9bf752ccb09de5f0000beedadcac2833f1c0e19e3b165ed73df8fb7d08c`.
+The 633137314-byte combined upload failed; no success is claimed for it. Versions 21/22/13 form the documented restoration set. Large proof maps and raw data stay in Library. Only immutable proof copies were deduplicated after verified external restoration; all paths/bytes remain intact. Historical paths in receipts are provenance, not executable PR-relative locations.
 
-These are confirmed upload/version identities. No fresh Library re-download verification is claimed. The Git checkpoint contains all 110 exact source files, recovery pointers and review receipts, not the large source patch or evidence archive.
+## Remaining work
 
-## Remaining work and verification boundaries
+The next `CO_open_SB_3bet_BB_call_CO_fold` pair remains a distinct native model10-authored static candidate for later model11 evaluation. Its actual official preparation and Node stages are **NOT_RUN** at this snapshot; new admission and its own numerical review remain necessary. The static template is preserved in Library `libfile_6799ccdac21481919ae8552834b72a4f` v2, referenced without uploading new templates in this checkpoint.
 
-Fourth-case bounded whole12 completion and final disposition remain open; later 1755 coverage needs its own decision. Product/runtime integration, ES1/delivery gates, actual strict D1, browser QA, remaining individual-policy work and production adoption remain separate unfinished work. Existing historical model10 and old-data evidence is preserved. PR validation for the new checkpoint commit must be assessed separately; earlier green checks are not claimed as current-head results.
+All prior source snapshots, historical HOLD/initial reviews and [dated progress records](updates/) stay unchanged. No additional Node/test/numerical work was run for this checkpoint. Normal runtime, old model10 acceptance and unrelated PR files are preserved. Runtime/typed integration, delivery/ES1, actual strict D1, browser QA and remaining policies are separate unfinished work. PR merge conflict/current full CI remains unresolved or unverified. No PR comment/body edit, merge, main/development update or production action is included.

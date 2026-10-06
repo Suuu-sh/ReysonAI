@@ -1,0 +1,41 @@
+{
+  "kind": "hu-model11-four-case-preservation-index",
+  "version": 1,
+  "acceptedModel11Cases": 4,
+  "currentCase": "CO_open_BTN_3bet_SB_call_CO_fold",
+  "currentSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "runtimeAdopted": false,
+  "currentProducer": {
+    "library_file_id": "libfile_6fc13f8f72288191a328c485cc8d1fa9",
+    "version": 21,
+    "file_id": "file_00000000518481f5a5a3aa0b22b8939a",
+    "filename": "hu-model11-co-coldcall-progress-20261006-0802.tar.gz",
+    "bytes": 224592161,
+    "sha256": "ebc512d08eb40673fbf9c90de9c1dc384f4e27559d65d7a9d0dfa068069af6c2",
+    "completeBoards": 1755,
+    "successfulBatches": 220,
+    "freshLibraryRestoreVerifiedRecords": 82098
+  },
+  "priorAcceptedCasesAndFourthDiagnostics": {
+    "library_file_id": "libfile_6fc13f8f72288191a328c485cc8d1fa9",
+    "version": 13,
+    "filename": "hu-model11-fourth-case-diagnosed-20261006-0449.tar.gz",
+    "bytes": 212206407,
+    "sha256": "efdf8ab56ba97f9816aa278b12115f77fa8e675801518b5bf84d5790e74276e7"
+  },
+  "currentExactSourceAndWhole12": {
+    "library_file_id": "libfile_828857f5aae88191b3f9ad53ad99a9b0",
+    "version": 8,
+    "filename": "hu-model11-coldcall-whole12-complete-and-board-ready.tar.gz",
+    "bytes": 12960723,
+    "sha256": "cfd441e3b4de50f648caada4f7fa18595cc3d637037f414700b8148664399f43"
+  },
+  "restore": "Retain and verify the exact Library versions and archive hashes above. Extract producer archive records to an isolated root. This metadata archive contains all finalized rows, identity, descriptors, supervision and reviews. For every proof destination listed in co-coldcall-proof-hardlink-preflight.json, copy its archivePath from the verified producer archive to the listed destination under the isolated root, verify bytes/SHA/mode, and retain it as an independent regular file or immutable hardlink. No numerical generation is required. Absolute historical paths are provenance and must be mapped consistently to the isolated root.",
+  "hardlinkSafety": "Only completed immutable proof copies were deduplicated after fresh external restoration verification. All paths/bytes retained. Never mutate a shared proof inode; restore a separate regular file first. Source and active data were excluded.",
+  "failedCombinedUpload": {
+    "localFilename": "hu-model11-four-cases-scoped-accepted-20261006.tar.gz",
+    "bytes": 633137314,
+    "sha256": "68738cc3f33117ea08807caa1653172a36503bfc8074b04eabeb30a32e9ace2d",
+    "outcome": "prepare_uploads failed; Library remainedv20. No combined upload success claimed. Complete producer v21 and this metadata index replace that packaging attempt without numerical changes."
+  }
+}

@@ -1,0 +1,967 @@
+{
+  "kind": "co-coldcall-saved-warning-classification",
+  "version": 1,
+  "rowsVerified": 1755,
+  "warningOccurrences": 18899,
+  "byType": {
+    "value-only-raise": 1570,
+    "bluff-ratio(under)": 6464,
+    "overfold": 8901,
+    "overcall": 1958,
+    "bluff-ratio(over)": 6
+  },
+  "byFlopRankMultiplicity": {
+    "value-only-raise": {
+      "trips": 178,
+      "paired": 1291,
+      "unpaired": 101
+    },
+    "bluff-ratio(under)": {
+      "trips": 70,
+      "paired": 1393,
+      "unpaired": 5001
+    },
+    "overfold": {
+      "trips": 24,
+      "paired": 1353,
+      "unpaired": 7524
+    },
+    "overcall": {
+      "paired": 445,
+      "unpaired": 1513
+    },
+    "bluff-ratio(over)": {
+      "unpaired": 6
+    }
+  },
+  "affectedFlopsByType": {
+    "value-only-raise": 390,
+    "bluff-ratio(under)": 1725,
+    "overfold": 1755,
+    "overcall": 983,
+    "bluff-ratio(over)": 6
+  },
+  "byNode": [
+    {
+      "check": "bluff-ratio(over)",
+      "street": "later",
+      "node": "river_oop_first",
+      "count": 6
+    },
+    {
+      "check": "bluff-ratio(under)",
+      "street": "later",
+      "node": "river_ip_first",
+      "count": 3256
+    },
+    {
+      "check": "bluff-ratio(under)",
+      "street": "later",
+      "node": "river_oop_first",
+      "count": 3208
+    },
+    {
+      "check": "overcall",
+      "street": "flop",
+      "node": "bb_vs_125",
+      "count": 448
+    },
+    {
+      "check": "overcall",
+      "street": "flop",
+      "node": "bb_vs_33",
+      "count": 286
+    },
+    {
+      "check": "overcall",
+      "street": "flop",
+      "node": "bb_vs_75",
+      "count": 216
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "river_oop_vs_125",
+      "count": 1
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "river_oop_vs_allin",
+      "count": 1
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "turn_ip_vs_125",
+      "count": 2
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "turn_oop_vs_125",
+      "count": 246
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "turn_oop_vs_33",
+      "count": 596
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "turn_oop_vs_75",
+      "count": 162
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_ip_vs_125",
+      "count": 1481
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_ip_vs_33",
+      "count": 1740
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_ip_vs_75",
+      "count": 1682
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_ip_vs_allin",
+      "count": 757
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_oop_vs_125",
+      "count": 33
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_oop_vs_33",
+      "count": 1752
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_oop_vs_75",
+      "count": 1286
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_oop_vs_allin",
+      "count": 170
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "bb_vs_125",
+      "count": 5
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "bb_vs_33",
+      "count": 81
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "bb_vs_75",
+      "count": 81
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "bb_vs_raise2",
+      "count": 114
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "btn_vs_raise",
+      "count": 163
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_ip_vs_125",
+      "count": 15
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_ip_vs_33",
+      "count": 14
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_ip_vs_75",
+      "count": 13
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_ip_vs_raise",
+      "count": 37
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_ip_vs_raise2",
+      "count": 266
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_oop_vs_125",
+      "count": 199
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_oop_vs_33",
+      "count": 102
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_oop_vs_75",
+      "count": 91
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_oop_vs_raise",
+      "count": 298
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_oop_vs_raise2",
+      "count": 91
+    }
+  ],
+  "unpairedRaiseTierWarnings": [
+    {
+      "board": "Ac5d4c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise",
+      "street": "later"
+    },
+    {
+      "board": "AcJc5c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKc2d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKc3d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKc4d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKc4d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKc5d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKc6d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKc7d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKc8d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKc8d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise",
+      "street": "later"
+    },
+    {
+      "board": "AcKc8d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKc8d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKc9d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKcTc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKcTd",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKd2c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd2d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd2d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKd2d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKd2h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd3c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd3d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd3h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd4c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd4d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd4h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd4h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKd5c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd5c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKd5d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd5h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd5h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKd6c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd6d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd6d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKd6h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd7c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd7d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd7h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd8c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd8d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd8d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcKd8h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd9c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd9d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd9h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcKd9h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcQc2d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQc3d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQc4d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQc5d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQc5d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcQc6d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQc7d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQc8d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQc9d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQcTc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcQd2c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd2d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd2h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd3c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd3d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd3h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd4c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd4d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd4h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd5c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd5d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd5h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd6c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd6d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd6h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd7c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd7c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "AcQd7d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd7h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd8c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd8d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd8h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd9c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd9d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcQd9h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "AcTd9c",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "JcTd7d",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "KcQcJc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_33",
+      "street": "later"
+    },
+    {
+      "board": "KcQcJc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_75",
+      "street": "later"
+    },
+    {
+      "board": "KcQcJc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_125",
+      "street": "later"
+    },
+    {
+      "board": "KcQcJc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise",
+      "street": "later"
+    },
+    {
+      "board": "QcJcTc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "QcJcTc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_125",
+      "street": "later"
+    },
+    {
+      "board": "QcJcTc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise",
+      "street": "later"
+    },
+    {
+      "board": "QcJcTc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "QcJcTd",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "QcJcTd",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "QcJdTc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "QcJdTc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "QcJdTd",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "QcJdTd",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    },
+    {
+      "board": "QcJdTh",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "bb_vs_raise2",
+      "street": "flop"
+    },
+    {
+      "board": "QcJdTh",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise2",
+      "street": "later"
+    }
+  ],
+  "cappedCheckWarnings": [],
+  "limits": "Stored compact rows retain warning types/node/order but not per-warning magnitudes or full action trajectories. Occurrence counts are not independent board counts."
+}
