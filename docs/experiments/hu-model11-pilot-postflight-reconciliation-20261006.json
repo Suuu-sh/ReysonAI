@@ -1,0 +1,102 @@
+{
+  "kind": "additive-node-argv-postflight-reconciliation",
+  "version": 1,
+  "status": "PASS",
+  "checkedAt": "2026-10-06T00:02:55.975655+00:00",
+  "correction": "Node process.argv omits the separately authenticated single --max-old-space-size=512 executable option. Only this command representation predicate is corrected.",
+  "originalPostflight": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/supervision-v1/postflight.json",
+    "bytes": 125,
+    "sha256": "c357e4134a0ade669050948b7c585d1e0aee3ee7dc9584e344fc21104ca22f6a"
+  },
+  "originalPostflightRewritten": false,
+  "historicalSupervisorExitCode": 1,
+  "producerTerminal": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/supervision-v1/terminal.json",
+    "bytes": 1384,
+    "sha256": "5772d118e7bac32f301b9c248a71987c844333ba117ad2a992360f39ca7dca81"
+  },
+  "launchRecord": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/supervision-v1/before.json",
+    "bytes": 1454,
+    "sha256": "353b743c191e626720a1ac17d6f9cbf5df41da4b725f5103f3262fa14d482ec4"
+  },
+  "exactLaunchCommand": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "--max-old-space-size=512",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/finalize.mjs",
+    "--supervision-sha256",
+    "fc1786b936e3078b1f7c97ebdaec438b9bb8e3faf83d87444f06bd5700871784",
+    "--reviewed-sha256",
+    "425844543fb1e859df307aa64b74ec012be1361d6ba79571bb24f67fe21efeb9",
+    "--final-name",
+    "finalized-v1",
+    "--require-existing",
+    "all-boards",
+    "BTN_open_SB_3bet_BB_call_BTN_fold"
+  ],
+  "exactNodeProcessArgv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/finalize.mjs",
+    "--supervision-sha256",
+    "fc1786b936e3078b1f7c97ebdaec438b9bb8e3faf83d87444f06bd5700871784",
+    "--reviewed-sha256",
+    "425844543fb1e859df307aa64b74ec012be1361d6ba79571bb24f67fe21efeb9",
+    "--final-name",
+    "finalized-v1",
+    "--require-existing",
+    "all-boards",
+    "BTN_open_SB_3bet_BB_call_BTN_fold"
+  ],
+  "otherAttributionChecks": {
+    "kind": true,
+    "boards": true,
+    "rowReferences": true,
+    "finalizerSource": true,
+    "binding": true,
+    "checkpointIdentity": true,
+    "exitCode": true,
+    "producerRun": true,
+    "sourceStartEnd": true,
+    "filesStartEnd": true,
+    "componentKind": true,
+    "componentBoards": true,
+    "semanticEvidenceReused": true,
+    "freshSemanticPasses": true,
+    "consumerNotClaimed": true,
+    "priorOwnerUnknown": true,
+    "partitionedReceipt": true,
+    "componentComplete": true,
+    "actualOwnedCleanup": true,
+    "noStop": true
+  },
+  "sourceInputPolicyAndEvidencePinsVerified": 167,
+  "sourceCommit": "5dbd208d2ba70ceec2934efab9de134a5dc19e1c",
+  "sourceTrackedClean": true,
+  "oldActivityWatchUnchanged": true,
+  "component": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/finalized-v1/producer-verified-component.json",
+    "bytes": 1228,
+    "sha256": "1117018eb8c0a05f17f2b50bf4bbc836e77a642630e13514001c58654c7dc27f"
+  },
+  "partitionedReceipt": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/finalized-v1/allboard-partitioned.json",
+    "bytes": 1316018,
+    "sha256": "900b6bbbf7d62594795abe054048eba72f77977e21c20ed0981db8a514cfaa48"
+  },
+  "independentActualOutputReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/independent-actual-output-review.json",
+    "bytes": 2380,
+    "sha256": "b79d27d73dfc20d62379cfeb4d1a24b2b7eb341d3c5443a9ecbfc54f839fdad3"
+  },
+  "numericalRegeneration": 0,
+  "aggregateRerun": false,
+  "freshWholeSetSemanticPasses": 0,
+  "priorOwnerTerminationProved": false,
+  "activePriorFinalizerOutcome": "not-claimed-by-this-contract",
+  "script": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/pilot1755-producer-verified-finalization/reconcile_postflight.py",
+    "bytes": 6671,
+    "sha256": "98940f75a8b3b7fdf0e6a3db13b64d21493e310252f173952a0c9669dc604179"
+  }
+}
