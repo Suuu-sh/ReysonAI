@@ -20,6 +20,7 @@
   --text-muted: #8b8b95;
   --text-subtle: #5f5f69;
   --accent: #f0609e;
+  --font-logo: "Space Grotesk", Inter, sans-serif;
   --accent-bright: #ff86b8;
   --accent-soft: #e79bbd;
   --danger: #ffb4c9;
@@ -70,7 +71,7 @@ small, .muted { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
   transition: width .18s ease, flex-basis .18s ease, padding .18s ease;
 }
 .sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 34px; }
-.brand { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 22px; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: 8px; min-width: 0; font-family: var(--font-logo); font-size: 23px; font-weight: 700; letter-spacing: -.035em; white-space: nowrap; }
 .brand-copy { line-height: 1.2; }
 .brand > svg, .brand span { color: var(--accent); }
 .brand > svg { width: 28px; flex-shrink: 0; }
@@ -318,7 +319,7 @@ th small { display: block; }
 .profile-chip small { color: var(--text-muted); }
 .onboarding { display: grid; place-items: center; min-height: 100dvh; padding: 24px 16px; background: var(--bg); }
 .onboarding-card { display: grid; gap: 16px; width: min(100%, 560px); padding: 28px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
-.onboarding-brand { display: flex; align-items: center; gap: 8px; color: var(--text); font-size: 17px; font-weight: 700; letter-spacing: -.02em; }
+.onboarding-brand { display: flex; align-items: center; gap: 8px; color: var(--text); font-family: var(--font-logo); font-size: 18px; font-weight: 700; letter-spacing: -.035em; }
 .onboarding-brand svg, .onboarding-brand b { color: var(--accent); }
 .onboarding h1 { margin: 4px 0 0; font-size: 22px; font-weight: 650; letter-spacing: -.02em; line-height: 1.4; }
 .onboarding-lead { margin: 0; color: var(--text-muted); font-size: 13px; }

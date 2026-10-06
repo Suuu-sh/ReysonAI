@@ -55,3 +55,23 @@
 .ff-human-rank .rank-ladder li span { overflow-wrap:anywhere; }
 .ff-human-rank .rank-ladder .rank-ladder-legend { grid-column:1/-1; }
 .ff-result-summary { display:grid; grid-template-columns:1fr auto; gap:6px; margin:0; font-size:12px; }.ff-result-summary dt { color:var(--text-muted); }.ff-result-summary dd { margin:0; }
+.rk-hero { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 18px 32px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 16px; background: radial-gradient(120% 140% at 0% 0%, var(--surface-accent) 0%, var(--surface) 55%); }
+.rk-tier { display: flex; align-items: center; gap: 16px; }
+.rk-tier > div { display: grid; gap: 2px; }
+.rk-label { color: var(--text-muted); font-size: 12px; font-weight: 600; }
+.rk-rating { font-family: var(--font-logo); font-size: 48px; font-weight: 700; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.rk-tier-name { display: flex; align-items: center; gap: 8px; color: var(--text); font-size: 13px; font-weight: 700; }
+.rk-tier-name em { padding: 2px 8px; border-radius: 999px; background: var(--surface-accent-strong); color: var(--accent); font-size: 11px; font-style: normal; font-weight: 700; }
+.rk-progress { grid-column: 2; grid-row: 1; align-self: center; display: grid; gap: 6px; max-width: 360px; justify-self: end; width: 100%; }
+.rk-progress > div { height: 6px; overflow: hidden; border-radius: 999px; background: var(--surface-hover); }
+.rk-progress > div > span { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.rk-progress small { color: var(--text-muted); font-size: 12px; text-align: right; }
+.rk-tiles { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.rk-tiles > div { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgb(255 255 255 / 2%); }
+.rk-tiles dt { color: var(--text-muted); font-size: 12px; font-weight: 600; }
+.rk-tiles dd { margin: 4px 0 0; font-family: var(--font-logo); font-size: 22px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.rk-tiles dd small { margin-left: 3px; color: var(--text-muted); font-size: 13px; }
+.rk-tiles dd.is-up { color: #4fd08b; } .rk-tiles dd.is-down { color: #ef6b6b; }
+.rk-note { margin: -4px 0 0; color: var(--text-muted); font-size: 12px; }
+.rk-foot { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--line); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
+@media (max-width: 720px) { .rk-hero { grid-template-columns: 1fr; padding: 18px 16px; } .rk-progress { grid-column: 1; grid-row: auto; justify-self: stretch; max-width: none; } .rk-progress small { text-align: left; } .rk-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rk-rating { font-size: 40px; } }
