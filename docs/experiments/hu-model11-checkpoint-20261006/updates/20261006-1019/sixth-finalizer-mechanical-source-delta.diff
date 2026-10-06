@@ -1,0 +1,52 @@
+--- /workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/finalize.mjs
++++ /workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-producer-verified-finalization/finalize.template.mjs
+@@ -4,5 +4,5 @@
+ import { fileURLToPath, pathToFileURL } from 'node:url';
+ import { createHash } from 'node:crypto';
+-import { loadContext, checkLaunchReview, requirePrepared, fiveIndices, file } from '../co-sb-coldcall-optimized-five-workers/context.mjs';
++import { loadContext, checkLaunchReview, requirePrepared, fiveIndices, file } from '../co-bb-squeeze-btncall-optimized-five-workers/context.mjs';
+ import { pilotJSON } from '../../hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-allboard-lanes.mjs';
+ import { openBoardCheckpoints, writeImmutableAllBoardOutput } from '../../hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/all-board-checkpoints.mjs';
+@@ -13,5 +13,5 @@
+ import { same, exactKeys, gateFail } from '../../hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-gate-contract.mjs';
+ const base = dirname(fileURLToPath(import.meta.url));
+-const CASE_SHA = 'c07966568898f69b5c389205d98b14dcb17ddc885a01d4103e121eeecc73ad67';
++const CASE_SHA = '__UNRESOLVED_FINAL_CASE_SHA256__';
+ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+ const requireThat = (condition, message) => { if (!condition) gateFail(message); };
+@@ -115,5 +115,5 @@
+ }
+ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+-  requireThat(process.argv.length === 9 && same([process.argv[2], process.argv[4], process.argv[6], process.argv[7], process.argv[8]], ['--producer-sha256', '--reviewed-sha256', '--require-existing', 'all-boards', 'CO_open_SB_3bet_BB_call_CO_fold']), 'Explicit current co-coldcall existing-only command required');
++  requireThat(process.argv.length === 9 && same([process.argv[2], process.argv[4], process.argv[6], process.argv[7], process.argv[8]], ['--producer-sha256', '--reviewed-sha256', '--require-existing', 'all-boards', 'CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call']), 'Explicit current co-coldcall existing-only command required');
+   const result = finalizeRecovery(process.argv[3], process.argv[5]); process.stdout.write(result.log); console.log(JSON.stringify({ output: result.path, exitCode: result.exitCode })); process.exitCode = result.exitCode;
+ }
+--- /workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/run-finalizer-bounded.py
++++ /workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-producer-verified-finalization/run-finalizer-bounded.template.py
+@@ -6,9 +6,9 @@
+ from pathlib import Path
+ BASE = Path(__file__).resolve().parent
+-RECOVERY = BASE.parent / 'co-sb-coldcall-optimized-five-workers'
++RECOVERY = BASE.parent / 'co-bb-squeeze-btncall-optimized-five-workers'
+ SPEC = BASE / 'case.json'
+-SPEC_SHA = 'c07966568898f69b5c389205d98b14dcb17ddc885a01d4103e121eeecc73ad67'
++SPEC_SHA = '__UNRESOLVED_FINAL_CASE_SHA256__'
+ RUNNER = BASE / 'finalize.mjs'
+-RUNNER_SHA = '996029ce5b723a873a6e002aba3db09f6118d515948c86833bc7b9856c53f91a'
++RUNNER_SHA = '__UNRESOLVED_BOUND_FINALIZER_SHA256__'
+ REPO = Path('/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution')
+ NODE = Path('/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node')
+@@ -18,5 +18,5 @@
+ SAMPLE_SECONDS = 0.05
+ FINAL = BASE / 'finalized-v1'
+-SUPERVISION = RECOVERY / 'run/attempts/attempt-c9075316-cf53-45dc-811a-ef6287230a77/receipt.json'
++SUPERVISION = RECOVERY / 'run/attempts/__UNRESOLVED_BOARDS_ATTEMPT__/receipt.json'
+ def sha(data): return hashlib.sha256(data).hexdigest()
+ def dump(path, value):
+@@ -69,5 +69,5 @@
+ if len(sys.argv) != 5 or sys.argv[1] != '--reviewed-sha256' or sys.argv[2] != source_hash or sys.argv[3] != '--producer-sha256' or len(sys.argv[4]) != 64 or any(c not in '0123456789abcdef' for c in sys.argv[4]): raise RuntimeError('Exact reviewed supervisor and terminal run SHA required')
+ SUPERVISION_SHA = sys.argv[4]
+-COMMAND = [str(NODE), '--max-old-space-size=512', str(RUNNER), '--producer-sha256', SUPERVISION_SHA, '--reviewed-sha256', RUNNER_SHA, '--require-existing', 'all-boards', 'CO_open_SB_3bet_BB_call_CO_fold']
++COMMAND = [str(NODE), '--max-old-space-size=512', str(RUNNER), '--producer-sha256', SUPERVISION_SHA, '--reviewed-sha256', RUNNER_SHA, '--require-existing', 'all-boards', 'CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call']
+ checked = pins()
+ if FINAL.exists() or FINAL.is_symlink(): raise RuntimeError('Final attempt destination already exists; preserve it')

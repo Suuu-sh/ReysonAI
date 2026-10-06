@@ -1,0 +1,107 @@
+{
+  "kind": "fifth-case-live-progress-and-immutable-library-snapshot",
+  "preparedAt": "2026-10-06T10:19:00Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "parentCommit": "54495e3d21cef9ed163e47fafe843ebc175ee03e",
+  "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+  "frozenSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "observation": {
+    "at": "2026-10-06T10:17:43.567334+00:00",
+    "boards": 1600,
+    "targetBoards": 1755,
+    "errors": 0,
+    "unresolved": 0,
+    "successfulBatches": 200,
+    "failedBatches": 0,
+    "maxCompletedChildPeakRssKiB": 569132,
+    "notCurrentAggregateRss": true,
+    "freeDiskBytes": 3305553920,
+    "owner": 29433,
+    "attempt": "attempt-c9075316-cf53-45dc-811a-ef6287230a77",
+    "wholeRunReceiptPresent": false,
+    "state": "RUNNING_UNCHANGED"
+  },
+  "preservedSnapshot": {
+    "at": "2026-10-06T10:15:08.202785+00:00",
+    "boards": 1560,
+    "successfulBatches": 195,
+    "capturedFiles": 36743,
+    "activePartialBatchesExcluded": true,
+    "snapshotFile": {
+      "path": "hu-final-recovery/co-sb-coldcall-successful-batches-snapshot-20261006-1015.json",
+      "bytes": 22893159,
+      "sha256": "284e089b13f94dbb344093956cb7ab51fa23a5cddfb22a28a356fb2aaf93b32a"
+    }
+  },
+  "confirmedLibrary": {
+    "libraryFileId": "libfile_6799ccdac21481919ae8552834b72a4f",
+    "version": 9,
+    "name": "hu-model11-co-sb-coldcall-progress-20261006-1015.tar.gz",
+    "bytes": 90678781,
+    "sha256": "dab10a29f93fae3ca87e130790fd7202c21f81e494fdc1fe117b008c29dbfd20",
+    "confirmedReplacement": true,
+    "versionMetadataApplied": true,
+    "freshLibraryRedownloadClaimed": false,
+    "containsAll1600ObservedBoards": false
+  },
+  "boundaries": {
+    "acceptedModel11ResearchCases": 4,
+    "fifthCaseAccepted": false,
+    "finalizer": "NOT_RUN_PENDING_GENUINE_TERMINAL",
+    "sourceOrActiveRunChanged": false,
+    "newSourceFilesAdded": 0,
+    "newNodeOrNumericalExecutionsForSave": 0,
+    "runtimeAdoption": false,
+    "newStaticDeltaReviewFilesAdded": 3
+  },
+  "retainedLimits": {
+    "negativeRegressionMeans": 22,
+    "whole12AdvisoryWarnings": 10,
+    "noSuperiorityGtoOrUnknownOpponentRobustnessClaim": true
+  },
+  "remaining": [
+    "Genuine successful producer completion across all 1755 boards and 220 batches.",
+    "Conditional finalizer with actual terminal receipt SHA and its reviewed prerequisites.",
+    "Actual final-output review and separate independent final policy acceptance."
+  ],
+  "nextStaticStorageFinalizerUnit": {
+    "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+    "status": "STATIC_TEMPLATES_CLEAR_GENUINE_BINDINGS_PENDING",
+    "actualBindingsAndGates": "NOT_RUN",
+    "numericalAdmission": false,
+    "ownFindingsTransferredFromPredecessor": false,
+    "files": [
+      {
+        "path": "sixth-whole12-mechanical-source-delta.diff",
+        "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-optimized-whole12-storage-repair/mechanical-source-delta.diff",
+        "bytes": 962,
+        "sha256": "85b239fdb2fcba56c7cc3d3f3aa748aa17b6be73d40438dc1c125ae527337cf7",
+        "immutableByteCopy": true
+      },
+      {
+        "path": "sixth-finalizer-mechanical-source-delta.diff",
+        "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-producer-verified-finalization/mechanical-source-delta.diff",
+        "bytes": 4642,
+        "sha256": "9cc19e42c8c22087dbb78bff2bb6d8ed745d9437b9cea387bf4b8059a86c458b",
+        "immutableByteCopy": true
+      },
+      {
+        "path": "sixth-independent-template-delta-review.json",
+        "sourcePath": "hu-final-recovery/co-bb-squeeze-btncall-optimized-whole12-storage-repair/independent-template-delta-review.json",
+        "bytes": 5036,
+        "sha256": "fb5708ee9fad01fc4dcfcc27b59492658bf9a6bfb4eaebefeae486478339fbcf",
+        "immutableByteCopy": true
+      }
+    ],
+    "library": {
+      "libraryFileId": "libfile_2a5c71d93af48191913b3acb1315b448",
+      "version": 1,
+      "name": "hu-ranked-bb-squeeze-btncall-storage-ready-20261006.tar.gz",
+      "bytes": 746168,
+      "sha256": "e5c0393ac5a5cac77751d4f63058b1a2e260a14171fd8326cd5a0d30fcfda964",
+      "scope": "Prior sixth-case packet plus mechanical fresh-storage/finalizer templates. Full templates remain in Library; only small exact deltas/review are added here.",
+      "confirmedSaved": true
+    }
+  }
+}
