@@ -30,10 +30,16 @@ export function currentMw3ArchiveIdentity(spotId) {
   return { ...recipe, inputs, implementationHash, verificationHash, gateDirectory,
     sourceFiles: recipe.sourceFiles ?? recipe.author.sourceFiles, verificationFiles };
 }
-function sourcePathsFor(identity) {
+export function sourcePathsFor(identity) {
   const found = new Set(), visit = path => {
     path = path.replaceAll('\\', '/');
     if (!safeRelativePath(path) || path.includes('/.local/') || path.includes('/node_modules/')) throw new Error('Mw3 source dependency escaped repository source');
+    // Display components/styles are not numerical approval dependencies. Apply
+    // this before recording AND recursion, including transitive UI imports.
+    if (/^apps\/frontend\/src\/.+\.(?:tsx|css)$/.test(path)) return;
+    // Keep reachable JSON: recipes/configuration/compatibility evidence must
+    // remain bound. Type/declaration closures are still conservative, including
+    // shared locale imports; a blanket JSON filter would unbind dependencies.
     if (found.has(path) || inputPaths.includes(path)) return;
     assertSafeFile(MW3_REPOSITORY, path); found.add(path);
     // Declaration files are provenance only, but their type dependencies are bound.
@@ -54,11 +60,11 @@ function sourcePathsFor(identity) {
     'mw3-reviewed-archive.mjs', 'mw3-reviewed-snapshot.mjs', 'mw3-reviewed-delivery.mjs', 'mw3-reviewed-restore.mjs', 'mw3-snapshot-cli.mjs', 'mw3-draft-pins.mjs', 'mw3-acceptance-evidence.mjs', 'mw3-browser-inputs.mjs', 'mw3-transport.mjs', 'mw3-delivery.mjs'];
   roots.forEach(name => visit(relative(MW3_REPOSITORY, resolve(MW3_REPOSITORY, FRONTEND, 'scripts/postflop-ai', name))));
   identity.sourceFiles.forEach(path => visit(FRONTEND + path));
-  // Binding the consumer/backend source independently keeps presentation out of
-  // the numerical hash while preventing unreviewed transport dispatch changes.
-  ['apps/backend/src/index.ts', 'apps/backend/src/mw3-transport.ts', 'apps/backend/scripts/sql/mw3-schema.sql', 'apps/shared/mw3-approved.ts',
-    `${FRONTEND}src/estimated/mw3-browser.ts`, `${FRONTEND}src/estimated/Mw3RangeView.tsx`, `${FRONTEND}src/estimated/RangeWorkspace.tsx`,
-    `${FRONTEND}src/agent/mw3-hand.ts`, `${FRONTEND}src/agent/hand.ts`, `${FRONTEND}src/agent/AgentTable.tsx`,
+  // Protect dedicated delivery/runtime boundaries. General application dispatch
+  // is covered by mw3-index.test.mjs, rather than binding unrelated backend UI
+  // and product changes into every saved numerical approval.
+  ['apps/backend/src/mw3-transport.ts', 'apps/backend/scripts/sql/mw3-schema.sql', 'apps/shared/mw3-approved.ts',
+    `${FRONTEND}src/estimated/mw3-browser.ts`, `${FRONTEND}src/agent/mw3-hand.ts`,
     `${FRONTEND}scripts/ci/postflop-command-supervisor.py`, `${FRONTEND}scripts/ci/mw3-local-command.mjs`,
     `${FRONTEND}scripts/ci/mw3-api-oracle.mjs`, `${FRONTEND}scripts/ci/mw3-registry-mode.mjs`, `${FRONTEND}scripts/ci/mw3-local-d1-oracle.mjs`, `${FRONTEND}scripts/verify-mw3-local-d1.mjs`,
     `${FRONTEND}package.json`, `${FRONTEND}package-lock.json`, 'configs/cash-6max-100bb.json', '.gitattributes'].forEach(visit);
