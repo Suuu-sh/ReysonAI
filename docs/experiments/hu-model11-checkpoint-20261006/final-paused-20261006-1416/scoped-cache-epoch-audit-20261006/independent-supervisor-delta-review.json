@@ -1,0 +1,89 @@
+{
+  "kind": "hu-scoped-audit-independent-supervisor-delta-review",
+  "version": 1,
+  "verdict": "APPROVE_CONDITIONAL_AUDIT_EXECUTION",
+  "reviewedAt": "2026-10-06T13:41:12.950488+00:00",
+  "supervisor": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/run-audit-bounded.py",
+    "bytes": 2542,
+    "sha256": "cd8580e804aa018617a4177d934766d8c9e5eb02611d53012adaf69ef1aa821e"
+  },
+  "baselineSupervisor": {
+    "path": "/workspace/scratch/08c72b2d7549/stage3-recovery/fastfold-integration/run-bounded-check.py",
+    "bytes": 2530,
+    "sha256": "a9b80a168feb769158eb8e03906d3f667d1738f8313bd21f45703fe3ffc1af13"
+  },
+  "patch": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/run-audit-bounded.patch",
+    "bytes": 1182,
+    "sha256": "df56b80a4b45607ec3c7b946564caca26a2a0417c1e75f4fa0fd7d2ad32c1964"
+  },
+  "auditSourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/independent-source-review.json",
+    "bytes": 9384,
+    "sha256": "7c438ec1144efef95d00510a554da02e4a0fceab5fab0790022872622f26f996"
+  },
+  "caller": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/audit-current.mjs",
+    "bytes": 11961,
+    "sha256": "3d7bf03bc7289bab7968b7c22283cb824577c73c8d86ba45ddd462f66b9e6dc3"
+  },
+  "helper": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/scoped-audit.mjs",
+    "bytes": 22390,
+    "sha256": "9a1ae13e8f369f109d70f3ee5451f1326de225f4a6cc05e6270ddc291514d041"
+  },
+  "manifest": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/prepared-manifest.json",
+    "bytes": 216445,
+    "sha256": "588b6f01c91251a570f6ef9faeeaa253c724b1bc8b3df83027b33b07f650bdd3"
+  },
+  "node": {
+    "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "bytes": 125989464,
+    "sha256": "bc17c508ffeed0ec622934f9b7fa72f8e78da65350e63c3eceb56fa688aa5e12"
+  },
+  "findings": [
+    "Exactly three assignment lines differ: frozen4b frontend working directory, isolated audit supervision directory, and fixed900MiB/900second limits. All other supervisor bytes are equal.",
+    "Python AST parses. Existing2GiB host availability floor, owned process-group RSS sampling, TERM then3second wait/KILL and direct child wait/report paths are unchanged.",
+    "Caller, helper and prepared manifest retain their prior reviewed bytes. No numerical source, selection, policy, cache64 or audit logic change.",
+    "Actual audit output and both fixed-label supervisor log/resource paths are absent at review; they must remain absent at launch to preserve prior evidence."
+  ],
+  "argvTemplate": [
+    "python3",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/run-audit-bounded.py",
+    "hu-sixth-scoped-audit-v1",
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "--max-old-space-size=512",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/audit-current.mjs",
+    "audit",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/prepared-manifest.json",
+    "588b6f01c91251a570f6ef9faeeaa253c724b1bc8b3df83027b33b07f650bdd3",
+    "GENUINE_COMPLETED_REGRESSION_SUMMARY_PATH",
+    "EXACT_SUMMARY_SHA256",
+    "GENUINE_COMPLETE_PRODUCER_RECEIPT_PATH",
+    "EXACT_RECEIPT_SHA256",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/actual-audit"
+  ],
+  "launchBoundary": {
+    "owner": "parent",
+    "prerequisites": [
+      "Actual720k producer genuinely terminal with success, all72 complete, source unchanged and all owned processes reaped.",
+      "Use genuine saved summary and receipt paths/hashes; caller enforces exact complete-source/job/native-validation bindings.",
+      "Recheck frozen wrapper/caller/manifest/Node pins and absent output/log/resource paths; clear NODE_OPTIONS and NODE_PATH as in existing numerical launches."
+    ],
+    "heapMiB": 512,
+    "ownedGroupRssMiB": 900,
+    "minimumHostAvailableMiB": 2048,
+    "timeoutSeconds": 900,
+    "cleanupGraceSeconds": 3,
+    "auditLaunchedByReviewer": false
+  },
+  "limitations": [
+    "This legacy supervisor receipt records direct child terminal and process-group RSS/stop signals; it does not independently enumerate birth-bound descendant cleanup or prove cross-namespace global process absence. Retain that exact evidence limit.",
+    "Numerical replay remains2160 selected paired trials plus12 cache-control hands, with all720k RNG draws advanced and full stored integrity/accounting checks. This is not fresh720k semantic replay or final policy acceptance."
+  ],
+  "policyChanged": false,
+  "policyAccepted": false,
+  "productionAuthorized": false
+}

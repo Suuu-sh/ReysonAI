@@ -1,0 +1,86 @@
+{
+  "kind": "hu-mc720k-independent-actual-component-review",
+  "version": 1,
+  "status": "ACTUAL_PRODUCTION_VERIFIED_SCOPED_AUDIT_PENDING",
+  "reviewedAt": "2026-10-06T14:02:16.024463+00:00",
+  "producerReceipt": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run/attempts/attempt-c7ac14e7-b296-4965-afcf-63edb8cd905a/receipt.json",
+    "bytes": 149759,
+    "sha256": "288c8262c33b4560101adc15b2a21ee0e747e641f4a93de04f6c2c076791e165"
+  },
+  "summary": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run/attempts/attempt-c7ac14e7-b296-4965-afcf-63edb8cd905a/regression-summary.json",
+    "bytes": 187874,
+    "sha256": "051a69f93c0b50a089c1663ee7ed40c66a56d6a45aac6b88a8d5af4cdd878b6e"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run/prepared.json",
+    "bytes": 41534,
+    "sha256": "af1081bccc660345eb5b514f8c1a76decf7d13c6be853a8852e9f15e32c2a6e9"
+  },
+  "launchReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/launch-review.json",
+    "bytes": 12272,
+    "sha256": "f5e67592d6458548c1a83144be9c589a9855317aa46819b7f70f1282396ca07e"
+  },
+  "signalClassification": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/independent-mc720k-signal-classification.json",
+    "bytes": 38936,
+    "sha256": "da260f748315984314d5df1516c9d63c3b2dfbdb104db91e77e8d3ae31be96f8"
+  },
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "regressionBindingHash": "2171cb322dfb12519d5b635ebffada69109c37bd5bbf2a85c4bf3ac1b7b434a2",
+  "checks": {
+    "exact72LaunchedJobsAndSuccessfulTerminals": true,
+    "exactCellsAndLaneAssignments": true,
+    "allNativeFullCellValidationReceiptsBoundToExecutedSource": true,
+    "all72CellMarkerHashesVerified": true,
+    "all720000CompletedNoUnresolved": true,
+    "nativeCache64ChunkDescriptors": 11304,
+    "directRetainedFirst64ObjectsCompared": 4608,
+    "directRetainedProofBodiesCompared": 11,
+    "allSourceReviewAndAdapterPinsUnchanged": true,
+    "sourceTrackedClean": true,
+    "ownerLockAbsent": true,
+    "reportedAllChildrenReapedAndGroupsGone": true,
+    "timingSumsRecomputed": true,
+    "roundedMeansIntervalsMatchNativeCellRows": true
+  },
+  "productionCounts": {
+    "pairedTrials": 720000,
+    "cells": 72,
+    "cacheEpochChunks": 11304,
+    "proofFileReferencesAcrossCells": 2367,
+    "uniqueProofHashesAcrossCells": 2303,
+    "completedByPolicy": 2424,
+    "offModelTrials": 2424,
+    "offModelOccurrences": 2424,
+    "completionDecisions": 2424,
+    "validatedProofs": 2424,
+    "uniqueProofs": 2367
+  },
+  "timing": {
+    "simulationWorkerWallSecondsSum": 13761.525900552,
+    "nativeValidationWorkerWallSecondsSum": 328.044997744,
+    "simulationCpuSeconds": 15319.779548999999,
+    "nativeValidationCpuSeconds": 357.682118,
+    "scope": "current attempt; reused cells are inspections and prior attempt timings remain retained",
+    "controllerWallSeconds": 3584.9368660420005,
+    "aggregatePeakRssKiB": 2043732,
+    "largestWorkerSeconds": 238.0237902749941,
+    "largestWorkerPeakRssKiB": 429584,
+    "generatedPairedTrials": 720000,
+    "inspectedPairedTrials": 0
+  },
+  "method": "Read-only Python review of launched-job lineage,72 immutable cell markers, native semantic-validation receipts, direct retained first64/proof comparison, summary/rounded-statistic accounting and timing sums. Full720k raw stream/proof integrity is delegated to the already running scoped audit; no duplicate numerical or semantic execution.",
+  "limitations": [
+    "Producer native full-cell validation executes once per generated cell. This review reuses exact execution receipts, not a fresh720k semantic replay.",
+    "Production timing includes stream serialization and proof writes. Controller wall reflects five concurrent lanes and unequal lane lengths; summed worker wall is not elapsed end-to-end time.",
+    "Thirty BB negative paired means and23 wholly negative descriptive intervals are retained; numerical completion does not establish strategic quality.",
+    "Scoped audit terminal and result review are still pending; no balance, policy or production acceptance is granted."
+  ],
+  "freshFull720kReplayPerformed": false,
+  "policyAccepted": false,
+  "productionAuthorized": false
+}

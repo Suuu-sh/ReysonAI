@@ -1,0 +1,1451 @@
+{
+  "kind": "hu-mc720k-independent-descriptive-signal-classification",
+  "version": 1,
+  "summary": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run/attempts/attempt-c7ac14e7-b296-4965-afcf-63edb8cd905a/regression-summary.json",
+    "bytes": 187874,
+    "sha256": "051a69f93c0b50a089c1663ee7ed40c66a56d6a45aac6b88a8d5af4cdd878b6e"
+  },
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "bindingHash": "2171cb322dfb12519d5b635ebffada69109c37bd5bbf2a85c4bf3ac1b7b434a2",
+  "counts": {
+    "cells": 72,
+    "negativePairedMean": 30,
+    "whollyNegativePairedInterval": 23,
+    "whollyPositivePairedInterval": 41,
+    "intervalOverlapsZero": 8,
+    "candidateMeanBelowZero": 0
+  },
+  "bySeatProfile": [
+    {
+      "seat": "BTN",
+      "profile": "standard",
+      "cells": 12,
+      "negativeMean": 0,
+      "whollyNegativeInterval": 0,
+      "whollyPositiveInterval": 12,
+      "overlapsZero": 0
+    },
+    {
+      "seat": "BB",
+      "profile": "standard",
+      "cells": 12,
+      "negativeMean": 9,
+      "whollyNegativeInterval": 8,
+      "whollyPositiveInterval": 2,
+      "overlapsZero": 2
+    },
+    {
+      "seat": "BTN",
+      "profile": "passive",
+      "cells": 12,
+      "negativeMean": 0,
+      "whollyNegativeInterval": 0,
+      "whollyPositiveInterval": 12,
+      "overlapsZero": 0
+    },
+    {
+      "seat": "BB",
+      "profile": "passive",
+      "cells": 12,
+      "negativeMean": 12,
+      "whollyNegativeInterval": 8,
+      "whollyPositiveInterval": 0,
+      "overlapsZero": 4
+    },
+    {
+      "seat": "BTN",
+      "profile": "aggressive",
+      "cells": 12,
+      "negativeMean": 0,
+      "whollyNegativeInterval": 0,
+      "whollyPositiveInterval": 12,
+      "overlapsZero": 0
+    },
+    {
+      "seat": "BB",
+      "profile": "aggressive",
+      "cells": 12,
+      "negativeMean": 9,
+      "whollyNegativeInterval": 7,
+      "whollyPositiveInterval": 3,
+      "overlapsZero": 2
+    }
+  ],
+  "cells": [
+    {
+      "cellIndex": 0,
+      "board": "As7d2c",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 5.314215000000031,
+      "pairedNormalInterval": [
+        4.6876,
+        5.9409
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 12.03530700000024,
+      "baselineMeanBb": 6.721092000000387
+    },
+    {
+      "cellIndex": 1,
+      "board": "As7d2c",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -1.7527559999999993,
+      "pairedNormalInterval": [
+        -2.3669,
+        -1.1386
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 18.771519999999345,
+      "baselineMeanBb": 20.524275999999027
+    },
+    {
+      "cellIndex": 2,
+      "board": "As7d2c",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 5.011335000000016,
+      "pairedNormalInterval": [
+        4.4614,
+        5.5613
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 12.577598000000414,
+      "baselineMeanBb": 7.566263000000421
+    },
+    {
+      "cellIndex": 3,
+      "board": "As7d2c",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -1.4700449999999996,
+      "pairedNormalInterval": [
+        -1.9891,
+        -0.951
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 19.306091999999246,
+      "baselineMeanBb": 20.776136999999004
+    },
+    {
+      "cellIndex": 4,
+      "board": "As7d2c",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 5.2435180000000186,
+      "pairedNormalInterval": [
+        4.5868,
+        5.9002
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 12.441753000000165,
+      "baselineMeanBb": 7.198235000000338
+    },
+    {
+      "cellIndex": 5,
+      "board": "As7d2c",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -1.1085400000000014,
+      "pairedNormalInterval": [
+        -1.7906,
+        -0.4264
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 18.968620999999416,
+      "baselineMeanBb": 20.07716099999918
+    },
+    {
+      "cellIndex": 6,
+      "board": "QsJd5c",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 3.96911100000001,
+      "pairedNormalInterval": [
+        3.3451,
+        4.5931
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 9.688624000000223,
+      "baselineMeanBb": 5.719513000000339
+    },
+    {
+      "cellIndex": 7,
+      "board": "QsJd5c",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.8369720000000037,
+      "pairedNormalInterval": [
+        -1.4103,
+        -0.2637
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 20.655337999999006,
+      "baselineMeanBb": 21.492309999998742
+    },
+    {
+      "cellIndex": 8,
+      "board": "QsJd5c",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 4.443176000000007,
+      "pairedNormalInterval": [
+        3.883,
+        5.0033
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 10.534760000000256,
+      "baselineMeanBb": 6.091584000000359
+    },
+    {
+      "cellIndex": 9,
+      "board": "QsJd5c",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -1.597207000000005,
+      "pairedNormalInterval": [
+        -2.0884,
+        -1.106
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 21.29651699999884,
+      "baselineMeanBb": 22.893723999998507
+    },
+    {
+      "cellIndex": 10,
+      "board": "QsJd5c",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 4.332621000000022,
+      "pairedNormalInterval": [
+        3.6552,
+        5.0101
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 9.609629000000064,
+      "baselineMeanBb": 5.2770080000002055
+    },
+    {
+      "cellIndex": 11,
+      "board": "QsJd5c",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.22976700000000033,
+      "pairedNormalInterval": [
+        -0.8467,
+        0.3872
+      ],
+      "negativeMean": true,
+      "intervalClass": "overlaps-zero",
+      "candidateMeanBb": 20.995168999999006,
+      "baselineMeanBb": 21.22493599999894
+    },
+    {
+      "cellIndex": 12,
+      "board": "Js8s5d",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 2.7354470000000086,
+      "pairedNormalInterval": [
+        2.1753,
+        3.2956
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 13.797293000000252,
+      "baselineMeanBb": 11.061846000000552
+    },
+    {
+      "cellIndex": 13,
+      "board": "Js8s5d",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.6722070000000041,
+      "pairedNormalInterval": [
+        -1.2167,
+        -0.1277
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 15.330714999999913,
+      "baselineMeanBb": 16.002921999999682
+    },
+    {
+      "cellIndex": 14,
+      "board": "Js8s5d",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 2.046359000000002,
+      "pairedNormalInterval": [
+        1.5508,
+        2.5419
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 14.184590000000275,
+      "baselineMeanBb": 12.138231000000633
+    },
+    {
+      "cellIndex": 15,
+      "board": "Js8s5d",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -1.1050920000000022,
+      "pairedNormalInterval": [
+        -1.5597,
+        -0.6505
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 16.648058999999673,
+      "baselineMeanBb": 17.753150999999455
+    },
+    {
+      "cellIndex": 16,
+      "board": "Js8s5d",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 3.081141000000014,
+      "pairedNormalInterval": [
+        2.4661,
+        3.6962
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 12.725449000000324,
+      "baselineMeanBb": 9.644308000000406
+    },
+    {
+      "cellIndex": 17,
+      "board": "Js8s5d",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.8065340000000032,
+      "pairedNormalInterval": [
+        -1.4166,
+        -0.1965
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 15.402295999999918,
+      "baselineMeanBb": 16.20882999999974
+    },
+    {
+      "cellIndex": 18,
+      "board": "Th9h8c",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 3.2637180000000026,
+      "pairedNormalInterval": [
+        2.6281,
+        3.8993
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 15.69877299999976,
+      "baselineMeanBb": 12.435055000000435
+    },
+    {
+      "cellIndex": 19,
+      "board": "Th9h8c",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 0.6434429999999995,
+      "pairedNormalInterval": [
+        0.0388,
+        1.2481
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 14.989925000000094,
+      "baselineMeanBb": 14.346482000000135
+    },
+    {
+      "cellIndex": 20,
+      "board": "Th9h8c",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 3.059733999999992,
+      "pairedNormalInterval": [
+        2.5081,
+        3.6114
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 16.41016499999966,
+      "baselineMeanBb": 13.350431000000503
+    },
+    {
+      "cellIndex": 21,
+      "board": "Th9h8c",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.17780299999999932,
+      "pairedNormalInterval": [
+        -0.6846,
+        0.329
+      ],
+      "negativeMean": true,
+      "intervalClass": "overlaps-zero",
+      "candidateMeanBb": 16.311193999999837,
+      "baselineMeanBb": 16.48899699999977
+    },
+    {
+      "cellIndex": 22,
+      "board": "Th9h8c",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 3.6537060000000143,
+      "pairedNormalInterval": [
+        2.9575,
+        4.35
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 14.432008999999999,
+      "baselineMeanBb": 10.778303000000337
+    },
+    {
+      "cellIndex": 23,
+      "board": "Th9h8c",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 1.1688680000000031,
+      "pairedNormalInterval": [
+        0.5054,
+        1.8323
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 15.245036999999956,
+      "baselineMeanBb": 14.076169000000124
+    },
+    {
+      "cellIndex": 24,
+      "board": "8s7d6c",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 1.9652609999999975,
+      "pairedNormalInterval": [
+        1.4299,
+        2.5006
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 16.39836199999969,
+      "baselineMeanBb": 14.433101000000187
+    },
+    {
+      "cellIndex": 25,
+      "board": "8s7d6c",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.037430999999999645,
+      "pairedNormalInterval": [
+        -0.581,
+        0.5061
+      ],
+      "negativeMean": true,
+      "intervalClass": "overlaps-zero",
+      "candidateMeanBb": 11.942882000000436,
+      "baselineMeanBb": 11.980313000000468
+    },
+    {
+      "cellIndex": 26,
+      "board": "8s7d6c",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 1.8286749999999985,
+      "pairedNormalInterval": [
+        1.3773,
+        2.28
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 18.15212699999917,
+      "baselineMeanBb": 16.32345199999967
+    },
+    {
+      "cellIndex": 27,
+      "board": "8s7d6c",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.12934899999999877,
+      "pairedNormalInterval": [
+        -0.5769,
+        0.3182
+      ],
+      "negativeMean": true,
+      "intervalClass": "overlaps-zero",
+      "candidateMeanBb": 13.611562000000445,
+      "baselineMeanBb": 13.740911000000374
+    },
+    {
+      "cellIndex": 28,
+      "board": "8s7d6c",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 2.113929000000002,
+      "pairedNormalInterval": [
+        1.5544,
+        2.6735
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 16.232493999999644,
+      "baselineMeanBb": 14.118565000000235
+    },
+    {
+      "cellIndex": 29,
+      "board": "8s7d6c",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.11291399999999967,
+      "pairedNormalInterval": [
+        -0.7081,
+        0.4823
+      ],
+      "negativeMean": true,
+      "intervalClass": "overlaps-zero",
+      "candidateMeanBb": 11.423746000000337,
+      "baselineMeanBb": 11.536660000000373
+    },
+    {
+      "cellIndex": 30,
+      "board": "6h5h2d",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 2.2536610000000032,
+      "pairedNormalInterval": [
+        1.7139,
+        2.7934
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 15.113178999999997,
+      "baselineMeanBb": 12.859518000000582
+    },
+    {
+      "cellIndex": 31,
+      "board": "6h5h2d",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 0.3795179999999984,
+      "pairedNormalInterval": [
+        -0.171,
+        0.93
+      ],
+      "negativeMean": false,
+      "intervalClass": "overlaps-zero",
+      "candidateMeanBb": 14.438180000000077,
+      "baselineMeanBb": 14.05866200000023
+    },
+    {
+      "cellIndex": 32,
+      "board": "6h5h2d",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 1.8712989999999983,
+      "pairedNormalInterval": [
+        1.4115,
+        2.3311
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 16.365395999999677,
+      "baselineMeanBb": 14.494097000000247
+    },
+    {
+      "cellIndex": 33,
+      "board": "6h5h2d",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.35153600000000307,
+      "pairedNormalInterval": [
+        -0.8052,
+        0.1021
+      ],
+      "negativeMean": true,
+      "intervalClass": "overlaps-zero",
+      "candidateMeanBb": 14.776912000000054,
+      "baselineMeanBb": 15.128447999999867
+    },
+    {
+      "cellIndex": 34,
+      "board": "6h5h2d",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 2.5642650000000056,
+      "pairedNormalInterval": [
+        1.9849,
+        3.1436
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 14.946021999999957,
+      "baselineMeanBb": 12.381757000000439
+    },
+    {
+      "cellIndex": 35,
+      "board": "6h5h2d",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 0.6953659999999946,
+      "pairedNormalInterval": [
+        0.0841,
+        1.3066
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 13.486388000000314,
+      "baselineMeanBb": 12.791022000000456
+    },
+    {
+      "cellIndex": 36,
+      "board": "AhKh4h",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 7.065897999999994,
+      "pairedNormalInterval": [
+        6.2011,
+        7.9307
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 7.453267000000213,
+      "baselineMeanBb": 0.3873689999999998
+    },
+    {
+      "cellIndex": 37,
+      "board": "AhKh4h",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -2.5682599999999782,
+      "pairedNormalInterval": [
+        -3.3347,
+        -1.8018
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 25.068552999998953,
+      "baselineMeanBb": 27.63681299999854
+    },
+    {
+      "cellIndex": 38,
+      "board": "AhKh4h",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 7.177226999999987,
+      "pairedNormalInterval": [
+        6.4261,
+        7.9283
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 8.694212000000215,
+      "baselineMeanBb": 1.5169850000000107
+    },
+    {
+      "cellIndex": 39,
+      "board": "AhKh4h",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -3.5070519999999843,
+      "pairedNormalInterval": [
+        -4.1954,
+        -2.8187
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 24.700742999998745,
+      "baselineMeanBb": 28.207794999998224
+    },
+    {
+      "cellIndex": 40,
+      "board": "AhKh4h",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 7.335667999999995,
+      "pairedNormalInterval": [
+        6.4104,
+        8.2609
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 6.793645000000214,
+      "baselineMeanBb": -0.5420229999999988
+    },
+    {
+      "cellIndex": 41,
+      "board": "AhKh4h",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -2.2327619999999797,
+      "pairedNormalInterval": [
+        -3.0947,
+        -1.3709
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 24.58226699999927,
+      "baselineMeanBb": 26.8150289999987
+    },
+    {
+      "cellIndex": 42,
+      "board": "KcKd4h",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 16.07449299999988,
+      "pairedNormalInterval": [
+        15.1539,
+        16.995
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 6.094963000000285,
+      "baselineMeanBb": -9.979529999999649
+    },
+    {
+      "cellIndex": 43,
+      "board": "KcKd4h",
+      "split": "design",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -6.85717499999997,
+      "pairedNormalInterval": [
+        -7.7341,
+        -5.9802
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 31.178060999998742,
+      "baselineMeanBb": 38.035235999998335
+    },
+    {
+      "cellIndex": 44,
+      "board": "KcKd4h",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 15.572986999999877,
+      "pairedNormalInterval": [
+        14.7283,
+        16.4176
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 5.694033000000209,
+      "baselineMeanBb": -9.878953999999613
+    },
+    {
+      "cellIndex": 45,
+      "board": "KcKd4h",
+      "split": "design",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -6.110484999999942,
+      "pairedNormalInterval": [
+        -6.8636,
+        -5.3573
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 31.57250399999838,
+      "baselineMeanBb": 37.68298899999825
+    },
+    {
+      "cellIndex": 46,
+      "board": "KcKd4h",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 14.483530999999918,
+      "pairedNormalInterval": [
+        13.5144,
+        15.4527
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 5.470036000000223,
+      "baselineMeanBb": -9.013494999999722
+    },
+    {
+      "cellIndex": 47,
+      "board": "KcKd4h",
+      "split": "design",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -6.73985799999997,
+      "pairedNormalInterval": [
+        -7.6712,
+        -5.8085
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 29.519320999998914,
+      "baselineMeanBb": 36.25917899999829
+    },
+    {
+      "cellIndex": 48,
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 3.426526000000017,
+      "pairedNormalInterval": [
+        2.906,
+        3.9471
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 8.064113000000303,
+      "baselineMeanBb": 4.637587000000171
+    },
+    {
+      "cellIndex": 49,
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -1.488564000000001,
+      "pairedNormalInterval": [
+        -1.9891,
+        -0.9881
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 21.158116999998708,
+      "baselineMeanBb": 22.646680999998452
+    },
+    {
+      "cellIndex": 50,
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 3.469712000000015,
+      "pairedNormalInterval": [
+        2.9876,
+        3.9518
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 9.74797600000034,
+      "baselineMeanBb": 6.278264000000406
+    },
+    {
+      "cellIndex": 51,
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -1.3224020000000034,
+      "pairedNormalInterval": [
+        -1.7398,
+        -0.905
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 21.176408999998646,
+      "baselineMeanBb": 22.49881099999833
+    },
+    {
+      "cellIndex": 52,
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 2.997597000000022,
+      "pairedNormalInterval": [
+        2.4408,
+        3.5544
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 7.56239800000029,
+      "baselineMeanBb": 4.5648010000001795
+    },
+    {
+      "cellIndex": 53,
+      "board": "Ks8d3c",
+      "split": "holdout",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.9191110000000013,
+      "pairedNormalInterval": [
+        -1.4692,
+        -0.369
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 21.47271499999882,
+      "baselineMeanBb": 22.391825999998535
+    },
+    {
+      "cellIndex": 54,
+      "board": "9s7s3s",
+      "split": "holdout",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 3.4865410000000114,
+      "pairedNormalInterval": [
+        2.8773,
+        4.0958
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 14.56621,
+      "baselineMeanBb": 11.079669000000482
+    },
+    {
+      "cellIndex": 55,
+      "board": "9s7s3s",
+      "split": "holdout",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 0.7366099999999935,
+      "pairedNormalInterval": [
+        0.125,
+        1.3482
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 16.40387699999982,
+      "baselineMeanBb": 15.667266999999882
+    },
+    {
+      "cellIndex": 56,
+      "board": "9s7s3s",
+      "split": "holdout",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 2.682507999999997,
+      "pairedNormalInterval": [
+        2.1422,
+        3.2229
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 14.721854000000077,
+      "baselineMeanBb": 12.03934600000055
+    },
+    {
+      "cellIndex": 57,
+      "board": "9s7s3s",
+      "split": "holdout",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -0.5046750000000044,
+      "pairedNormalInterval": [
+        -1.0223,
+        0.0129
+      ],
+      "negativeMean": true,
+      "intervalClass": "overlaps-zero",
+      "candidateMeanBb": 16.50932699999971,
+      "baselineMeanBb": 17.014001999999508
+    },
+    {
+      "cellIndex": 58,
+      "board": "9s7s3s",
+      "split": "holdout",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 2.7844760000000215,
+      "pairedNormalInterval": [
+        2.1586,
+        3.4103
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 13.877420000000095,
+      "baselineMeanBb": 11.092944000000433
+    },
+    {
+      "cellIndex": 59,
+      "board": "9s7s3s",
+      "split": "holdout",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 0.9696069999999961,
+      "pairedNormalInterval": [
+        0.3051,
+        1.6341
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 16.696307999999767,
+      "baselineMeanBb": 15.726700999999812
+    },
+    {
+      "cellIndex": 60,
+      "board": "8c8d2h",
+      "split": "holdout",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 6.889247999999967,
+      "pairedNormalInterval": [
+        6.0584,
+        7.7201
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 11.538079000000316,
+      "baselineMeanBb": 4.648831000000256
+    },
+    {
+      "cellIndex": 61,
+      "board": "8c8d2h",
+      "split": "holdout",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -1.1075590000000002,
+      "pairedNormalInterval": [
+        -1.8704,
+        -0.3447
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 20.909457999999372,
+      "baselineMeanBb": 22.017016999999136
+    },
+    {
+      "cellIndex": 62,
+      "board": "8c8d2h",
+      "split": "holdout",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 6.713922000000009,
+      "pairedNormalInterval": [
+        5.9763,
+        7.4515
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 10.69481200000039,
+      "baselineMeanBb": 3.980890000000113
+    },
+    {
+      "cellIndex": 63,
+      "board": "8c8d2h",
+      "split": "holdout",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -2.2461010000000017,
+      "pairedNormalInterval": [
+        -2.9582,
+        -1.534
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 21.893036999999186,
+      "baselineMeanBb": 24.139137999998947
+    },
+    {
+      "cellIndex": 64,
+      "board": "8c8d2h",
+      "split": "holdout",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 6.0676609999999975,
+      "pairedNormalInterval": [
+        5.2002,
+        6.9351
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 10.533060000000308,
+      "baselineMeanBb": 4.4653990000001675
+    },
+    {
+      "cellIndex": 65,
+      "board": "8c8d2h",
+      "split": "holdout",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -1.8252929999999812,
+      "pairedNormalInterval": [
+        -2.6412,
+        -1.0094
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 20.628438999999467,
+      "baselineMeanBb": 22.453731999999118
+    },
+    {
+      "cellIndex": 66,
+      "board": "5s5d4c",
+      "split": "holdout",
+      "opponent": "standard",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 6.664200999999982,
+      "pairedNormalInterval": [
+        5.8488,
+        7.4796
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 10.191160000000297,
+      "baselineMeanBb": 3.526958999999946
+    },
+    {
+      "cellIndex": 67,
+      "board": "5s5d4c",
+      "split": "holdout",
+      "opponent": "standard",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -2.8453969999999837,
+      "pairedNormalInterval": [
+        -3.6495,
+        -2.0413
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 20.978022999999418,
+      "baselineMeanBb": 23.82341999999901
+    },
+    {
+      "cellIndex": 68,
+      "board": "5s5d4c",
+      "split": "holdout",
+      "opponent": "passive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 6.791967999999992,
+      "pairedNormalInterval": [
+        6.046,
+        7.5379
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 11.014415000000403,
+      "baselineMeanBb": 4.222447000000033
+    },
+    {
+      "cellIndex": 69,
+      "board": "5s5d4c",
+      "split": "holdout",
+      "opponent": "passive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -3.0647579999999977,
+      "pairedNormalInterval": [
+        -3.7772,
+        -2.3523
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 21.172107999999167,
+      "baselineMeanBb": 24.236865999998958
+    },
+    {
+      "cellIndex": 70,
+      "board": "5s5d4c",
+      "split": "holdout",
+      "opponent": "aggressive",
+      "hero": "BTN",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": 6.0587829999999965,
+      "pairedNormalInterval": [
+        5.2089,
+        6.9087
+      ],
+      "negativeMean": false,
+      "intervalClass": "wholly-positive",
+      "candidateMeanBb": 10.407702000000272,
+      "baselineMeanBb": 4.348919000000149
+    },
+    {
+      "cellIndex": 71,
+      "board": "5s5d4c",
+      "split": "holdout",
+      "opponent": "aggressive",
+      "hero": "BB",
+      "samples": 10000,
+      "seed": "solveaai-postflop-ai-v1",
+      "cacheBatchSize": 64,
+      "pairedMeanBb": -2.1515579999999854,
+      "pairedNormalInterval": [
+        -2.9853,
+        -1.3178
+      ],
+      "negativeMean": true,
+      "intervalClass": "wholly-negative",
+      "candidateMeanBb": 20.21078799999958,
+      "baselineMeanBb": 22.36234599999919
+    }
+  ],
+  "disposition": "All30 negative paired means and23 wholly negative descriptive intervals occur in BB. This visible strategic limitation is independent of zero numerical errors. All36 BTN paired intervals are positive; that does not remove BB deficits. No new pass/fail threshold, extra probes, policy edit, GTO or strength conclusion is inferred.",
+  "limitations": [
+    "Fixed-seed paired normal intervals are descriptive. Selection is12 representative flops rather than a reach/prevalence-weighted poker population.",
+    "The original cell1 adverse64 and27 negative means remain historical evidence; new10000 results provide their own estimates without retagging old results.",
+    "Full scoped audit and separate balance contract/result review remain pending."
+  ]
+}

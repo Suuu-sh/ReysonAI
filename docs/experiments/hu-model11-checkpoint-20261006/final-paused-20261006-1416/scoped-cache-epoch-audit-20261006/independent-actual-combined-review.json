@@ -1,0 +1,170 @@
+{
+  "kind": "hu-mc720k-and-scoped-audit-independent-actual-review",
+  "version": 1,
+  "status": "NUMERICAL_COMPONENTS_VERIFIED_WITH_RETAINED_STRATEGIC_LIMITATIONS",
+  "reviewedAt": "2026-10-06T14:10:23.393084+00:00",
+  "evidence": {
+    "productionReview": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/independent-mc720k-actual-review.json",
+      "bytes": 4561,
+      "sha256": "47d958a4c882fd6b1222a627a0db55f41ab6d0d48e01765c5de1cb793b9e54aa"
+    },
+    "signalClassification": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/independent-mc720k-signal-classification.json",
+      "bytes": 38936,
+      "sha256": "da260f748315984314d5df1516c9d63c3b2dfbdb104db91e77e8d3ae31be96f8"
+    },
+    "producerReceipt": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run/attempts/attempt-c7ac14e7-b296-4965-afcf-63edb8cd905a/receipt.json",
+      "bytes": 149759,
+      "sha256": "288c8262c33b4560101adc15b2a21ee0e747e641f4a93de04f6c2c076791e165"
+    },
+    "producerSummary": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run/attempts/attempt-c7ac14e7-b296-4965-afcf-63edb8cd905a/regression-summary.json",
+      "bytes": 187874,
+      "sha256": "051a69f93c0b50a089c1663ee7ed40c66a56d6a45aac6b88a8d5af4cdd878b6e"
+    },
+    "auditSourceReview": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/independent-source-review.json",
+      "bytes": 9384,
+      "sha256": "7c438ec1144efef95d00510a554da02e4a0fceab5fab0790022872622f26f996"
+    },
+    "supervisorReview": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/independent-supervisor-delta-review.json",
+      "bytes": 4920,
+      "sha256": "e3340572d9c7366ec1c3d9e64936c9239664268c54b7a151bde8710ec1367aad"
+    },
+    "auditResult": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/actual-audit/audit-result.json",
+      "bytes": 354878,
+      "sha256": "343c0683c43ee9eca2be736bd40459d5158c3d31825be5458a67390e08ee546b"
+    },
+    "auditResources": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/supervision/hu-sixth-scoped-audit-v1.resources.json",
+      "bytes": 1410,
+      "sha256": "8dbc92c94ae658b87c520366cf616f1ac3f548c98f30a14ea70d7c9b4494aa28"
+    },
+    "auditLog": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/supervision/hu-sixth-scoped-audit-v1.log",
+      "bytes": 6219,
+      "sha256": "39e91ed1d30586c1e1cdda8454269504a28c853e0820e64d9e4be1017b53da4a"
+    },
+    "manifest": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/prepared-manifest.json",
+      "bytes": 216445,
+      "sha256": "588b6f01c91251a570f6ef9faeeaa253c724b1bc8b3df83027b33b07f650bdd3"
+    }
+  },
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "productionBindingHash": "2171cb322dfb12519d5b635ebffada69109c37bd5bbf2a85c4bf3ac1b7b434a2",
+  "auditBindingHash": "10f6efd0fa1630597e9e95fc0aa61de437cab0409bdf74aac0653237cfa09b82",
+  "actualCounts": {
+    "storedCells": 72,
+    "storedTrials": 720000,
+    "completedTrials": 720000,
+    "unreachableTrials": 0,
+    "unresolvedTrials": 0,
+    "selectedCells": 15,
+    "selectedStrategyTrials": 2160,
+    "advancedRngTrials": 720000,
+    "extraCacheControlHandExecutions": 12,
+    "productionCompletionEvents": 2424,
+    "perCellProofReferences": 2367,
+    "productionUniqueProofHashes": 2303,
+    "reviewerDirectSelectedFullTrialComparisons": 2160,
+    "reviewerDirectSelectedUniqueProofBodyComparisons": 10,
+    "all72ProgressReceiptsAndFullStoredEvidenceHashReconciled": true
+  },
+  "validationScope": {
+    "fullStored720k": "Actual reviewed audit scanned every stored trial, proof byte/body hash, cell EV/status and aggregate accounting; full native semantic-validation execution is reused from exact producer receipts.",
+    "freshNumerical": "Exactly15 selected cells times144 original-index paired trials, with full trial/law/proof equality; all720k RNG draws advanced and three four-mode cache controls executed.",
+    "independentReview": "Python verified actual source/argv/manifest/result pins,72 progress and producer receipts, reconstructed fullStoredEvidenceHash, directly compared all2160 selected full trial objects and full selected proof bodies, and recomputed selected payload hashes. No new simulation or repeated whole semantic pass."
+  },
+  "timing": {
+    "controllerWallSeconds": 3584.9368660420005,
+    "auditSupervisorWallSeconds": 90.541,
+    "combinedPhaseWallSeconds": 3675.4778660420006,
+    "combinedMinutesSeconds": "61m 15.48s",
+    "auditInternal": {
+      "totalWallSeconds": 89.37937253,
+      "fullStoredScanSeconds": 20.550055957000016,
+      "selectedReplayAndAllRngSeconds": 54.267478062999935,
+      "cacheControlSeconds": 5.126308208000002,
+      "cpuUserSeconds": 95.83271,
+      "cpuSystemSeconds": 3.1261,
+      "processLifetimePeakRssKiB": 529112
+    },
+    "auditGroupPeakRssKiB": 529596,
+    "auditExitCode": 0,
+    "auditStopped": null,
+    "interpretation": "Sum of actual producer controller and audit supervisor phase walls; excludes inter-phase gap, preparation and publication. Parallel worker wall sums remain separate."
+  },
+  "adverseDisposition": {
+    "negativePairedMeanCells": 30,
+    "whollyNegativeDescriptiveIntervals": 23,
+    "affectedSeat": "BB",
+    "bbNegativeMeansOf36": 30,
+    "byBbProfile": {
+      "standard": {
+        "negativeMeans": 9,
+        "whollyNegativeIntervals": 8
+      },
+      "passive": {
+        "negativeMeans": 12,
+        "whollyNegativeIntervals": 8
+      },
+      "aggressive": {
+        "negativeMeans": 9,
+        "whollyNegativeIntervals": 7
+      }
+    },
+    "btnWhollyPositiveIntervalsOf36": 36,
+    "largestDeficitBoard": "KcKd4h",
+    "KcKd4hPairedMeansBb": {
+      "standard": -6.85717499999997,
+      "passive": -6.110484999999942,
+      "aggressive": -6.73985799999997
+    },
+    "warnings": [
+      "As7d2c|standard|BB: candidate below reference (-1.7528bb)",
+      "As7d2c|passive|BB: candidate below reference (-1.47bb)",
+      "As7d2c|aggressive|BB: candidate below reference (-1.1085bb)",
+      "QsJd5c|standard|BB: candidate below reference (-0.837bb)",
+      "QsJd5c|passive|BB: candidate below reference (-1.5972bb)",
+      "Js8s5d|standard|BB: candidate below reference (-0.6722bb)",
+      "Js8s5d|passive|BB: candidate below reference (-1.1051bb)",
+      "Js8s5d|aggressive|BB: candidate below reference (-0.8065bb)",
+      "AhKh4h|standard|BB: candidate below reference (-2.5683bb)",
+      "AhKh4h|passive|BB: candidate below reference (-3.5071bb)",
+      "AhKh4h|aggressive|BB: candidate below reference (-2.2328bb)",
+      "KcKd4h|standard|BB: candidate below reference (-6.8572bb)",
+      "KcKd4h|passive|BB: candidate below reference (-6.1105bb)",
+      "KcKd4h|aggressive|BB: candidate below reference (-6.7399bb)",
+      "Ks8d3c|standard|BB: candidate below reference (-1.4886bb)",
+      "Ks8d3c|passive|BB: candidate below reference (-1.3224bb)",
+      "Ks8d3c|aggressive|BB: candidate below reference (-0.9191bb)",
+      "8c8d2h|standard|BB: candidate below reference (-1.1076bb)",
+      "8c8d2h|passive|BB: candidate below reference (-2.2461bb)",
+      "8c8d2h|aggressive|BB: candidate below reference (-1.8253bb)",
+      "5s5d4c|standard|BB: candidate below reference (-2.8454bb)",
+      "5s5d4c|passive|BB: candidate below reference (-3.0648bb)",
+      "5s5d4c|aggressive|BB: candidate below reference (-2.1516bb)"
+    ],
+    "disposition": "BB deficits are visible unresolved strategic limitations despite zero numerical errors. No new acceptance threshold, additional probe, policy edit, noninferiority, GTO or overall strength claim is introduced."
+  },
+  "limitations": [
+    "Numerical replay covers only the explicitly selected conditions and complete cache epochs; this is not a fresh720000-trial replay.",
+    "Full stored-row, byte, hash, proof-body and EV-accounting checks establish unchanged evidence and accounting, not numerical correctness of unreplayed trials.",
+    "All original RNG indices advance through samplePair, dealRunout and24 action draws. Whole selected epochs reproduce model-law cache history after each cache64 release.",
+    "Process-global card/rank cache warmth and cumulative timing/diagnostic counters differ; fresh strict instances do not clear process-global caches.",
+    "The original native semantic validator executes once during production for every full cell; its source-bound receipt is reused by the integrity audit.",
+    "Selected results are not a new EV estimator, statistical equivalence result, full-policy acceptance, or production authorization.",
+    "Legacy audit supervisor confirms direct child exit0 and no resource stop; its receipt does not independently enumerate all descendant birth identities. Parent owns terminal/reaping evidence.",
+    "The scoped MC/audit components are verified. Full1755 flop and fixed100 later-origin balance remains outstanding under the revised contract; old five cases are not upgraded."
+  ],
+  "freshFull720kReplayPerformed": false,
+  "balanceAccepted": false,
+  "policyAccepted": false,
+  "productionAuthorized": false
+}

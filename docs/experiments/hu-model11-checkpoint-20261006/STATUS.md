@@ -1,3 +1,21 @@
+# HU paused by user; completed 720k and scoped audit preserved
+
+As of **2026-10-06 14:15:15 UTC**, HU work is **PAUSED_BY_USER** with **zero active owned numerical processes**. This final checkpoint preserves completed results only. Further validation, production, diagnosis and implementation await explicit user resumption.
+
+The sixth case, `CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call`, completed **72 x 10000 = 720000 paired trials**, zero errors/unresolved outcomes, native validation for every full cell and exact retained first-64 objects in all 72 cells. Formal source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`. `samplesPerBoardProfileSeat=10000` and `cacheBatchSize=64` remain distinct. The subsequent actual scoped audit checked all stored 720000 trial/hash/proof/accounting records, advanced all 720000 RNG indices and reproduced **2160 selected full trial objects across 15 conditions**, plus 12 cache controls. The independent combined review verifies this declared scope. It is not a fresh full 720000 strategy replay, and stored integrity does not independently prove numerical correctness of unreplayed trials.
+
+Producer controller wall was **3584.936866 seconds**; audit supervisor wall was **90.541 seconds**. Their measured compute phases total **61m15.48s**, excluding preparation, inter-phase gaps, preservation, publication and balance. The ten-minute goal was not met. Producer termination/reaping is recorded; the legacy audit supervisor records direct-child exit and lacks a separate descendant birth-identity census.
+
+**The sixth policy remains unaccepted and runtime adoption remains false.** BB retains **30/36 negative paired means and 23 wholly negative descriptive intervals**. Existing saved-data diagnosis is preserved without running additional analysis. Ordinary action sequences were not stored, so causal node attribution is unresolved. Numerical verification is not a strategic-strength, noninferiority, equilibrium or harmlessness claim. The revised full-1755-flop / fixed-100-later balance composition is **not implemented or run**. Five prior individual model11 research acceptances retain their original scopes; legacy model10 acceptance stays separate.
+
+[The exact final evidence and Library index](final-paused-20261006-1416/checkpoint-index.json) contains immutable reviews, audit result, saved-loss note/JSON, reviewed supervisor source and the updated preservation helper. Producer receipt/summary and raw trial/proof bodies remain pinned in Library. Complete raw producer evidence is `libfile_79ac411e0de4819181be8e15170e5fb6` **v3**, **12917274 bytes**, SHA-256 `46544ddb80031fb08a101d59f898162c7ac0d83b89f2590a04a4e22859e67cfe`. Final audit/review/paused-state packet is `libfile_36ad183dd67881918ff2db7f4bc363c8` **v0**, **491491 bytes / 203 files**, SHA-256 `aec032544069808c638e02a319c55d1b251a30824098d6f21dbb3b7d893befe2`.
+
+All application/runtime files and prior dated receipts are preserved. This docs-only preservation does not resolve PR41's known merge conflict or establish required Actions success. At the pre-save head, GitGuardian succeeded; checks on the new commit are reported separately after publication. No PR body/comment edit, merge or main/development update is included.
+
+## Earlier checkpoint context (historical; superseded current state)
+
+All prior running/pending/optimization directions below describe their original dates. The current state above supersedes them: producer and scoped audit completed, quality remains on hold, and all HU work is paused. Historical receipts and source snapshots remain exact.
+
 # Sixth-case actual MC: 600000/720000 trials preserved
 
 At **2026-10-06 13:28:49 UTC**, the active sixth-case run had **60/72 completed conditions / 600000 paired trials** with native validation, exact first64 equality and normal child termination. The main-owned session **97525** continues on unchanged formal4b source; fixed assignment leaves two lanes / twelve conditions. Active partial work is not a completed result. The genuine whole-producer terminal, actual scoped audit, new balance-contract evidence and sixth-case acceptance remain pending. Five prior cases keep their original scoped acceptance; no runtime or policy source is adopted by this save.

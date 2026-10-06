@@ -1,0 +1,26 @@
+{
+  "preflight_host_available_kib": 8851868,
+  "minimum_host_available_kib": 8344372,
+  "effective_cgroup_limit": "not exposed",
+  "label": "hu-sixth-scoped-audit-v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "--max-old-space-size=512",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/audit-current.mjs",
+    "audit",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/prepared-manifest.json",
+    "588b6f01c91251a570f6ef9faeeaa253c724b1bc8b3df83027b33b07f650bdd3",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run/attempts/attempt-c7ac14e7-b296-4965-afcf-63edb8cd905a/regression-summary.json",
+    "051a69f93c0b50a089c1663ee7ed40c66a56d6a45aac6b88a8d5af4cdd878b6e",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run/attempts/attempt-c7ac14e7-b296-4965-afcf-63edb8cd905a/receipt.json",
+    "288c8262c33b4560101adc15b2a21ee0e747e641f4a93de04f6c2c076791e165",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/actual-audit"
+  ],
+  "exit_code": 0,
+  "seconds": 90.541,
+  "sampled_own_process_group_peak_rss_kib": 529596,
+  "child_rusage_peak_rss_kib": 529112,
+  "rss_stop_limit_kib": 921600,
+  "timeout_seconds": 900,
+  "stopped": null
+}

@@ -1,0 +1,15 @@
+--- /workspace/scratch/08c72b2d7549/stage3-recovery/fastfold-integration/run-bounded-check.py
++++ /workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/run-audit-bounded.py
+@@ -2,9 +2,9 @@
+ from pathlib import Path
+ # Own child only: do not infer other sessions from this call's PID namespace.
+ label=sys.argv[1]; cmd=sys.argv[2:]
+-root=Path('/workspace/scratch/08c72b2d7549/reysonai-stage3-fastfold-integration/apps/frontend')
+-logs=root/'.local/stage3-fastfold-integration'; logs.mkdir(parents=True,exist_ok=True)
+-limit_kib=int(os.environ.get("STAGE3_OWN_RSS_MIB", "448"))*1024; max_seconds=120; max_rss=0; stopped=None
++root=Path('/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend')
++logs=Path('/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/supervision'); logs.mkdir(parents=True,exist_ok=True)
++limit_kib=900*1024; max_seconds=900; max_rss=0; stopped=None
+ def available_kib():
+  return int(next(row.split()[1] for row in Path('/proc/meminfo').read_text().splitlines() if row.startswith('MemAvailable:')))
+ preflight_available=available_kib();minimum_available=preflight_available
