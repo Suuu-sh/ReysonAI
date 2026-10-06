@@ -1,0 +1,28 @@
+{
+  "kind": "immutable-experimental-source-pointer",
+  "baselineCommit": "471f8920fd4ed258ca163dd1daa707b75daf1250",
+  "baselineTree": "68a43e7356d3b462cbf3559082fb3561a9af151e",
+  "targetCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "targetTree": "cf4c70d5fe5cfb5fb612be325d3262fc23e23c68",
+  "patchBytes": 1617170,
+  "patchSha256": "7916d2eec16feee080de836ac4aa3a0aedd9c3f01fbdcdb6dae608a859f181a6",
+  "patchGitBlobSha": "9295b77141a2df5a7448a5d5cd1d5b39152f995f",
+  "patchEmbeddedInThisCheckpoint": false,
+  "isolatedIndexPatchApplyProducedExactTargetTree": true,
+  "sourceFileCount": 110,
+  "sourceFileByteHashInventory": "checkpoint-manifest.json#/experimentalSource/files",
+  "immutableReadableSourceCommit": "3e473250c90960370757591c52eb905a824f7926",
+  "immutableReadableSourceUrl": "https://github.com/Suuu-sh/ReysonAI/tree/3e473250c90960370757591c52eb905a824f7926",
+  "all110SourceBlobIdsVerifiedAgainstRemoteTree": true,
+  "reconstruction": "In a separate checkout of baselineCommit, replace or add exactly the 110 paths from experimentalSource.files with the corresponding blobs from immutableReadableSourceCommit. Verify their recorded bytes/SHA256/Git blob IDs and write the index tree; it must equal targetTree. Other baseline paths stay unchanged. This is artifact restoration, not runtime adoption.",
+  "confirmedLibrarySourceBundle": {
+    "libraryFileId": "libfile_828857f5aae88191b3f9ad53ad99a9b0",
+    "version": 6,
+    "name": "hu-model11-prefix-key-verified-and-next-case-ready.tar.gz",
+    "bytes": 6439805,
+    "sha256": "c94bd9bf752ccb09de5f0000beedadcac2833f1c0e19e3b165ed73df8fb7d08c"
+  },
+  "reason": "Full source is already durable on GitHub and in Library. This existing-PR checkpoint uses bounded metadata and receipts instead of re-uploading the large patch.",
+  "sourceSnapshotRoot": "source/",
+  "sourceSnapshotRestoration": "This checkpoint also stores the same 110 source blobs under source/<original repository path>. In an isolated baseline checkout, restore each inventory path from that snapshot and verify the recorded hashes and target tree."
+}

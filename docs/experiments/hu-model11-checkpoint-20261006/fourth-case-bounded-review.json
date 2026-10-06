@@ -1,0 +1,1249 @@
+{
+  "kind": "independent-co-coldcall-bounded-case-quality-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T04:41:05.389208+00:00",
+  "verdict": "HOLD_PENDING_WHOLE12_AND_POLICY_DISPOSITION",
+  "spot": "CO_open_BTN_3bet_SB_call_CO_fold",
+  "bindingHash": "b0be64804e5f63655899d1de0ee3c92b40a50da193d13ceea4570395fdd5d27f",
+  "regressionBindingHash": "28a7fdf370d5b8c447554362789f9cd65f99d3f0e455ab4fc982168ffc141ba8",
+  "executionCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "executionTree": "cf4c70d5fe5cfb5fb612be325d3262fc23e23c68",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/plan.json",
+    "bytes": 42920,
+    "sha256": "46122311e04b458502091ebb358e616b64f0820fc933fc745862469a0b88af5e"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run/prepared.json",
+    "bytes": 41269,
+    "sha256": "ac2199310e187f19e80f0b99b2ff6fb7bf7514b930abd5ddcab314dcdd462274"
+  },
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/SOURCE_REVIEW.json",
+    "bytes": 4990,
+    "sha256": "1f085310d0b56b1aa62087059cc527f81f8f27726705e30dba50d47947abe780"
+  },
+  "optimizationActualResult": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-prefix-key-memo-preparation-20261006/actual-validation/independent-actual-result-review.json",
+    "bytes": 11208,
+    "sha256": "167f1435d061abb977c6210c4cdacecbc37de6e04b38318c9525d03bb63f6bd3"
+  },
+  "sourceTransition": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/source-transition.json",
+    "bytes": 1872,
+    "sha256": "0522c787e8efd8b68ecf3fee812ae2e6c1349a528747e8116c00b8cfa047c7ff"
+  },
+  "policyPair": {
+    "flop": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-policy.json",
+      "bytes": 26311,
+      "sha256": "b450a9f1faf8fbc4886b31ed91208d7cc2eb58ef757c769d1b844418ef843e0c"
+    },
+    "later": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-later-policy.json",
+      "bytes": 82305,
+      "sha256": "d95755053a61429f8b70eae2e1ef7581ae7dab838c38c710cfd20153e858860a"
+    }
+  },
+  "declaredPolicyHashes": {
+    "flop": "2af8cd1edd39a0c85ebddb83d646f24ac21a8d9695a722550ccf78dccfd9cb51",
+    "later": "4cb0c562befccdb98f791e6b65f0c3937c973c3a2aa3d7946181b42f508982c1"
+  },
+  "evidence": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run/attempts/attempt-0f7f982e-7004-4035-8ed5-8e4e1b60e00f/receipt.json",
+      "bytes": 68311,
+      "sha256": "6742e4b653fee31ef9ffc8a8292fc448cfb1901ad56d477d9452cf757d00ba12"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run/attempts/attempt-0f7f982e-7004-4035-8ed5-8e4e1b60e00f/regression-summary.json",
+      "bytes": 146378,
+      "sha256": "8ce05fc32c4ccc71e9d8957c75a2d959c394efd997b8ec1e4f0b37776ff00562"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run/attempts/attempt-9a6b307d-c66e-4ef6-acfc-85bc111817dd/receipt.json",
+      "bytes": 2972,
+      "sha256": "9e4c42e06445a4d464c42416f9e39e3e43efd807b9fb12e11ebe51663bc4f228"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-adverse-probes-v1.json",
+      "bytes": 5051,
+      "sha256": "f893b75bc9705742274d3625209c27c509d806f0801c2be6524d0b06d601d372"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-adverse-probes-review-v1.json",
+      "bytes": 8581,
+      "sha256": "64b15f0f62029d48c17b2b250640ad6687780b1ca2991e4469e304edf69b993e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe007-v1/result.json",
+      "bytes": 83193,
+      "sha256": "907c86d6c7c15efbd4a1eece9060b694a2ce34161c1c2b4beb82931fdde2b508"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe007-v1/supervision.resources.json",
+      "bytes": 766,
+      "sha256": "e2f96c6dd8c2589aaa6367592ed0d7e76a9f3de66d6735348ae8824a42df86da"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe017-v1/result.json",
+      "bytes": 83199,
+      "sha256": "7d57a05ee8f264c8147557b68853e94e5a1b1e70d16b1111232cf4228bc141c4"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe017-v1/supervision.resources.json",
+      "bytes": 766,
+      "sha256": "015ec477f0084d74b5923a4af40ffa2c8f528fcfb6a72a6f7dc206929733014b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe033-v1/result.json",
+      "bytes": 83191,
+      "sha256": "1cd797417f3f53786287ea6dddae548360d9e7acfe3f8b89fb7bfd2d220edb68"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe033-v1/supervision.resources.json",
+      "bytes": 766,
+      "sha256": "ef4661f8e97390006ca3f4ecd7749afb07ad091738d753b3d068f843864e997f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe047-v1/result.json",
+      "bytes": 83202,
+      "sha256": "7b3878c68b518c39ce764f0520733637a0d84ed91639a24e56c4d73a92714cd3"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe047-v1/supervision.resources.json",
+      "bytes": 765,
+      "sha256": "3b27e724a30fbe9cfe632282bb7ba68bf02c220cd7dfacab8477ba52efa5e35e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe053-v1/result.json",
+      "bytes": 83201,
+      "sha256": "5a012a8964933d7ec1732649b964e6b7a39eaa1bd54de9e575af92c582097654"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe053-v1/supervision.resources.json",
+      "bytes": 766,
+      "sha256": "ec7e5c9ab84919c0fdd58ee5a2260934f1103bb03f89e7a5b5ed717dc60f708d"
+    }
+  ],
+  "regression": {
+    "cells": 72,
+    "trialsPerCell": 64,
+    "completedTrials": 4608,
+    "provedBaseUnreachableTrials": 0,
+    "unresolvedTrials": 0,
+    "allRawReturnsMeansSampleStandardDeviationsIntervalsRecalculated": true,
+    "rawChunkPinsVerified": 72,
+    "perCellProofFilesVerified": 50,
+    "completionEvents": 50,
+    "negativePairedDeltaCells": 33,
+    "negativePairedDeltaBySeat": {
+      "BTN": 6,
+      "SB": 27
+    },
+    "candidatePointMeansNegativeCells": [
+      23,
+      71
+    ],
+    "descriptiveDeltaIntervals": {
+      "whollyBelowZero": 5,
+      "overlapZero": 62,
+      "whollyAboveZero": 5
+    },
+    "negativeCells": [
+      {
+        "index": 47,
+        "condition": {
+          "board": "KcKd4h",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 12.99875,
+        "baselineMeanBb": 27.814531249999998,
+        "pairedDeltaMeanBb": -14.815781250000004,
+        "descriptiveNormalDeltaInterval": [
+          -28.8414,
+          -0.7901
+        ]
+      },
+      {
+        "index": 53,
+        "condition": {
+          "board": "Ks8d3c",
+          "split": "holdout",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 9.426249999999998,
+        "baselineMeanBb": 19.437812499999996,
+        "pairedDeltaMeanBb": -10.011562500000002,
+        "descriptiveNormalDeltaInterval": [
+          -17.7281,
+          -2.295
+        ]
+      },
+      {
+        "index": 17,
+        "condition": {
+          "board": "Js8s5d",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 12.925312499999993,
+        "baselineMeanBb": 22.306093749999995,
+        "pairedDeltaMeanBb": -9.38078125,
+        "descriptiveNormalDeltaInterval": [
+          -17.8166,
+          -0.945
+        ]
+      },
+      {
+        "index": 71,
+        "condition": {
+          "board": "5s5d4c",
+          "split": "holdout",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": -2.2559375000000004,
+        "baselineMeanBb": 6.199062499999998,
+        "pairedDeltaMeanBb": -8.454999999999998,
+        "descriptiveNormalDeltaInterval": [
+          -21.6407,
+          4.7307
+        ]
+      },
+      {
+        "index": 7,
+        "condition": {
+          "board": "QsJd5c",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 12.134218749999997,
+        "baselineMeanBb": 20.419375000000002,
+        "pairedDeltaMeanBb": -8.28515625,
+        "descriptiveNormalDeltaInterval": [
+          -15.7939,
+          -0.7764
+        ]
+      },
+      {
+        "index": 65,
+        "condition": {
+          "board": "8c8d2h",
+          "split": "holdout",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 11.438281250000001,
+        "baselineMeanBb": 19.306406250000002,
+        "pairedDeltaMeanBb": -7.868125000000001,
+        "descriptiveNormalDeltaInterval": [
+          -18.9628,
+          3.2266
+        ]
+      },
+      {
+        "index": 61,
+        "condition": {
+          "board": "8c8d2h",
+          "split": "holdout",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 12.717499999999996,
+        "baselineMeanBb": 20.514374999999998,
+        "pairedDeltaMeanBb": -7.796875,
+        "descriptiveNormalDeltaInterval": [
+          -17.8233,
+          2.2296
+        ]
+      },
+      {
+        "index": 43,
+        "condition": {
+          "board": "KcKd4h",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 5.145624999999999,
+        "baselineMeanBb": 12.276093749999998,
+        "pairedDeltaMeanBb": -7.130468750000002,
+        "descriptiveNormalDeltaInterval": [
+          -21.4026,
+          7.1417
+        ]
+      },
+      {
+        "index": 23,
+        "condition": {
+          "board": "Th9h8c",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": -0.07890624999999951,
+        "baselineMeanBb": 5.88296875,
+        "pairedDeltaMeanBb": -5.961875,
+        "descriptiveNormalDeltaInterval": [
+          -14.8612,
+          2.9374
+        ]
+      },
+      {
+        "index": 39,
+        "condition": {
+          "board": "AhKh4h",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 3.39546875,
+        "baselineMeanBb": 8.888437499999998,
+        "pairedDeltaMeanBb": -5.492968750000001,
+        "descriptiveNormalDeltaInterval": [
+          -12.5842,
+          1.5983
+        ]
+      },
+      {
+        "index": 33,
+        "condition": {
+          "board": "6h5h2d",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 14.316562499999996,
+        "baselineMeanBb": 19.518125,
+        "pairedDeltaMeanBb": -5.201562499999999,
+        "descriptiveNormalDeltaInterval": [
+          -10.1351,
+          -0.2681
+        ]
+      },
+      {
+        "index": 54,
+        "condition": {
+          "board": "9s7s3s",
+          "split": "holdout",
+          "opponent": "standard",
+          "hero": "BTN",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 9.4103125,
+        "baselineMeanBb": 14.238906249999996,
+        "pairedDeltaMeanBb": -4.82859375,
+        "descriptiveNormalDeltaInterval": [
+          -13.8194,
+          4.1623
+        ]
+      },
+      {
+        "index": 19,
+        "condition": {
+          "board": "Th9h8c",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 9.063749999999999,
+        "baselineMeanBb": 13.443281249999998,
+        "pairedDeltaMeanBb": -4.379531250000002,
+        "descriptiveNormalDeltaInterval": [
+          -11.7799,
+          3.0208
+        ]
+      },
+      {
+        "index": 25,
+        "condition": {
+          "board": "8s7d6c",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 4.586874999999999,
+        "baselineMeanBb": 8.70828125,
+        "pairedDeltaMeanBb": -4.121406250000001,
+        "descriptiveNormalDeltaInterval": [
+          -11.774,
+          3.5312
+        ]
+      },
+      {
+        "index": 67,
+        "condition": {
+          "board": "5s5d4c",
+          "split": "holdout",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 16.640937499999996,
+        "baselineMeanBb": 20.58265625,
+        "pairedDeltaMeanBb": -3.94171875,
+        "descriptiveNormalDeltaInterval": [
+          -15.9374,
+          8.054
+        ]
+      },
+      {
+        "index": 45,
+        "condition": {
+          "board": "KcKd4h",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 9.66609375,
+        "baselineMeanBb": 13.421406249999997,
+        "pairedDeltaMeanBb": -3.7553124999999996,
+        "descriptiveNormalDeltaInterval": [
+          -13.3231,
+          5.8125
+        ]
+      },
+      {
+        "index": 35,
+        "condition": {
+          "board": "6h5h2d",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 8.578281249999998,
+        "baselineMeanBb": 12.259531249999993,
+        "pairedDeltaMeanBb": -3.6812499999999995,
+        "descriptiveNormalDeltaInterval": [
+          -11.9459,
+          4.5834
+        ]
+      },
+      {
+        "index": 24,
+        "condition": {
+          "board": "8s7d6c",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "BTN",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 4.104687499999999,
+        "baselineMeanBb": 7.0209375000000005,
+        "pairedDeltaMeanBb": -2.9162500000000002,
+        "descriptiveNormalDeltaInterval": [
+          -8.7201,
+          2.8876
+        ]
+      },
+      {
+        "index": 69,
+        "condition": {
+          "board": "5s5d4c",
+          "split": "holdout",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 14.493437499999997,
+        "baselineMeanBb": 16.936874999999997,
+        "pairedDeltaMeanBb": -2.4434375,
+        "descriptiveNormalDeltaInterval": [
+          -10.6882,
+          5.8013
+        ]
+      },
+      {
+        "index": 57,
+        "condition": {
+          "board": "9s7s3s",
+          "split": "holdout",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 10.895937499999995,
+        "baselineMeanBb": 13.235781249999997,
+        "pairedDeltaMeanBb": -2.3398437500000013,
+        "descriptiveNormalDeltaInterval": [
+          -7.1557,
+          2.476
+        ]
+      },
+      {
+        "index": 49,
+        "condition": {
+          "board": "Ks8d3c",
+          "split": "holdout",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 14.737968749999997,
+        "baselineMeanBb": 17.008437499999996,
+        "pairedDeltaMeanBb": -2.2704687500000005,
+        "descriptiveNormalDeltaInterval": [
+          -8.1407,
+          3.5998
+        ]
+      },
+      {
+        "index": 13,
+        "condition": {
+          "board": "Js8s5d",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 13.330156249999996,
+        "baselineMeanBb": 15.163593749999995,
+        "pairedDeltaMeanBb": -1.8334375000000003,
+        "descriptiveNormalDeltaInterval": [
+          -7.7063,
+          4.0394
+        ]
+      },
+      {
+        "index": 9,
+        "condition": {
+          "board": "QsJd5c",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 11.781874999999992,
+        "baselineMeanBb": 13.36187499999999,
+        "pairedDeltaMeanBb": -1.5799999999999996,
+        "descriptiveNormalDeltaInterval": [
+          -7.0086,
+          3.8486
+        ]
+      },
+      {
+        "index": 27,
+        "condition": {
+          "board": "8s7d6c",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 12.501562499999997,
+        "baselineMeanBb": 13.792812499999998,
+        "pairedDeltaMeanBb": -1.2912500000000002,
+        "descriptiveNormalDeltaInterval": [
+          -4.7248,
+          2.1423
+        ]
+      },
+      {
+        "index": 3,
+        "condition": {
+          "board": "As7d2c",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 11.8878125,
+        "baselineMeanBb": 13.088125000000002,
+        "pairedDeltaMeanBb": -1.2003124999999997,
+        "descriptiveNormalDeltaInterval": [
+          -7.3629,
+          4.9623
+        ]
+      },
+      {
+        "index": 18,
+        "condition": {
+          "board": "Th9h8c",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "BTN",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 14.314062499999995,
+        "baselineMeanBb": 15.172499999999996,
+        "pairedDeltaMeanBb": -0.8584374999999995,
+        "descriptiveNormalDeltaInterval": [
+          -7.7858,
+          6.069
+        ]
+      },
+      {
+        "index": 32,
+        "condition": {
+          "board": "6h5h2d",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "BTN",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 3.133437500000001,
+        "baselineMeanBb": 3.8904687499999993,
+        "pairedDeltaMeanBb": -0.75703125,
+        "descriptiveNormalDeltaInterval": [
+          -7.6418,
+          6.1277
+        ]
+      },
+      {
+        "index": 31,
+        "condition": {
+          "board": "6h5h2d",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 17.59109375,
+        "baselineMeanBb": 18.323281249999994,
+        "pairedDeltaMeanBb": -0.7321875000000007,
+        "descriptiveNormalDeltaInterval": [
+          -8.7576,
+          7.2933
+        ]
+      },
+      {
+        "index": 0,
+        "condition": {
+          "board": "As7d2c",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "BTN",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 6.587031249999998,
+        "baselineMeanBb": 7.08,
+        "pairedDeltaMeanBb": -0.49296874999999973,
+        "descriptiveNormalDeltaInterval": [
+          -5.0204,
+          4.0344
+        ]
+      },
+      {
+        "index": 63,
+        "condition": {
+          "board": "8c8d2h",
+          "split": "holdout",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 17.5278125,
+        "baselineMeanBb": 17.952031249999997,
+        "pairedDeltaMeanBb": -0.4242187500000003,
+        "descriptiveNormalDeltaInterval": [
+          -11.2558,
+          10.4074
+        ]
+      },
+      {
+        "index": 15,
+        "condition": {
+          "board": "Js8s5d",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 6.920468749999999,
+        "baselineMeanBb": 7.293124999999998,
+        "pairedDeltaMeanBb": -0.3726562499999998,
+        "descriptiveNormalDeltaInterval": [
+          -5.5552,
+          4.8099
+        ]
+      },
+      {
+        "index": 48,
+        "condition": {
+          "board": "Ks8d3c",
+          "split": "holdout",
+          "opponent": "standard",
+          "hero": "BTN",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 11.729218749999992,
+        "baselineMeanBb": 12.020156249999998,
+        "pairedDeltaMeanBb": -0.29093749999999985,
+        "descriptiveNormalDeltaInterval": [
+          -6.7971,
+          6.2152
+        ]
+      },
+      {
+        "index": 5,
+        "condition": {
+          "board": "As7d2c",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 7.864218749999999,
+        "baselineMeanBb": 8.016406250000001,
+        "pairedDeltaMeanBb": -0.15218749999999975,
+        "descriptiveNormalDeltaInterval": [
+          -7.414,
+          7.1096
+        ]
+      }
+    ],
+    "whollyAdverseCells": [
+      {
+        "index": 7,
+        "condition": {
+          "board": "QsJd5c",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 12.134218749999997,
+        "baselineMeanBb": 20.419375000000002,
+        "pairedDeltaMeanBb": -8.28515625,
+        "descriptiveNormalDeltaInterval": [
+          -15.7939,
+          -0.7764
+        ]
+      },
+      {
+        "index": 17,
+        "condition": {
+          "board": "Js8s5d",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 12.925312499999993,
+        "baselineMeanBb": 22.306093749999995,
+        "pairedDeltaMeanBb": -9.38078125,
+        "descriptiveNormalDeltaInterval": [
+          -17.8166,
+          -0.945
+        ]
+      },
+      {
+        "index": 33,
+        "condition": {
+          "board": "6h5h2d",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 14.316562499999996,
+        "baselineMeanBb": 19.518125,
+        "pairedDeltaMeanBb": -5.201562499999999,
+        "descriptiveNormalDeltaInterval": [
+          -10.1351,
+          -0.2681
+        ]
+      },
+      {
+        "index": 47,
+        "condition": {
+          "board": "KcKd4h",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 12.99875,
+        "baselineMeanBb": 27.814531249999998,
+        "pairedDeltaMeanBb": -14.815781250000004,
+        "descriptiveNormalDeltaInterval": [
+          -28.8414,
+          -0.7901
+        ]
+      },
+      {
+        "index": 53,
+        "condition": {
+          "board": "Ks8d3c",
+          "split": "holdout",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "candidateMeanBb": 9.426249999999998,
+        "baselineMeanBb": 19.437812499999996,
+        "pairedDeltaMeanBb": -10.011562500000002,
+        "descriptiveNormalDeltaInterval": [
+          -17.7281,
+          -2.295
+        ]
+      }
+    ],
+    "precision": "Low or unknown. 64 is an engineering budget; 72 exploratory comparisons are not multiplicity-adjusted."
+  },
+  "additionalDiagnostics": {
+    "selection": "Exactly the five wholly adverse original descriptive delta intervals, fixed before further observations.",
+    "selectedIndices": [
+      7,
+      17,
+      33,
+      47,
+      53
+    ],
+    "newPairedTrialsPerCondition": 128,
+    "totalNewPairedTrials": 640,
+    "original64ReplayedOnlyForFullObjectParity": true,
+    "original72x64Changed": false,
+    "allFiveExitZeroWithoutStop": true,
+    "allResourceLimitsRespected": true,
+    "records": [
+      {
+        "index": 7,
+        "condition": {
+          "board": "QsJd5c",
+          "split": "design",
+          "opponent": "standard",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "result": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe007-v1/result.json",
+          "bytes": 83193,
+          "sha256": "907c86d6c7c15efbd4a1eece9060b694a2ce34161c1c2b4beb82931fdde2b508"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe007-v1/supervision.resources.json",
+          "bytes": 766,
+          "sha256": "e2f96c6dd8c2589aaa6367592ed0d7e76a9f3de66d6735348ae8824a42df86da"
+        },
+        "original64": {
+          "mean": -8.2852,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -15.7939,
+            -0.7764
+          ]
+        },
+        "additional128": {
+          "mean": -1.2255,
+          "sampleCount": 128,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -7.0587,
+            4.6077
+          ]
+        },
+        "combined192": {
+          "mean": -3.5787,
+          "sampleCount": 192,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -8.2161,
+            1.0587
+          ]
+        },
+        "fullOriginal64TrialObjectsIndependentlyVerifiedEqual": true,
+        "allRawStatisticsAndProofPinsVerified": true,
+        "additionalCompletionEvents": 2,
+        "additionalEventTrialDeltaSumBb": 0.0,
+        "additionalOrdinaryTrialDeltaSumBb": -156.85999999999996
+      },
+      {
+        "index": 17,
+        "condition": {
+          "board": "Js8s5d",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "result": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe017-v1/result.json",
+          "bytes": 83199,
+          "sha256": "7d57a05ee8f264c8147557b68853e94e5a1b1e70d16b1111232cf4228bc141c4"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe017-v1/supervision.resources.json",
+          "bytes": 766,
+          "sha256": "015ec477f0084d74b5923a4af40ffa2c8f528fcfb6a72a6f7dc206929733014b"
+        },
+        "original64": {
+          "mean": -9.3808,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -17.8166,
+            -0.945
+          ]
+        },
+        "additional128": {
+          "mean": -5.6632,
+          "sampleCount": 128,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -9.9929,
+            -1.3335
+          ]
+        },
+        "combined192": {
+          "mean": -6.9024,
+          "sampleCount": 192,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -10.9268,
+            -2.878
+          ]
+        },
+        "fullOriginal64TrialObjectsIndependentlyVerifiedEqual": true,
+        "allRawStatisticsAndProofPinsVerified": true,
+        "additionalCompletionEvents": 0,
+        "additionalEventTrialDeltaSumBb": 0,
+        "additionalOrdinaryTrialDeltaSumBb": -724.89
+      },
+      {
+        "index": 33,
+        "condition": {
+          "board": "6h5h2d",
+          "split": "design",
+          "opponent": "passive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "result": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe033-v1/result.json",
+          "bytes": 83191,
+          "sha256": "1cd797417f3f53786287ea6dddae548360d9e7acfe3f8b89fb7bfd2d220edb68"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe033-v1/supervision.resources.json",
+          "bytes": 766,
+          "sha256": "ef4661f8e97390006ca3f4ecd7749afb07ad091738d753b3d068f843864e997f"
+        },
+        "original64": {
+          "mean": -5.2016,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -10.1351,
+            -0.2681
+          ]
+        },
+        "additional128": {
+          "mean": -0.4455,
+          "sampleCount": 128,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -4.2838,
+            3.3927
+          ]
+        },
+        "combined192": {
+          "mean": -2.0309,
+          "sampleCount": 192,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -5.0817,
+            1.02
+          ]
+        },
+        "fullOriginal64TrialObjectsIndependentlyVerifiedEqual": true,
+        "allRawStatisticsAndProofPinsVerified": true,
+        "additionalCompletionEvents": 0,
+        "additionalEventTrialDeltaSumBb": 0,
+        "additionalOrdinaryTrialDeltaSumBb": -57.03000000000001
+      },
+      {
+        "index": 47,
+        "condition": {
+          "board": "KcKd4h",
+          "split": "design",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "result": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe047-v1/result.json",
+          "bytes": 83202,
+          "sha256": "7b3878c68b518c39ce764f0520733637a0d84ed91639a24e56c4d73a92714cd3"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe047-v1/supervision.resources.json",
+          "bytes": 765,
+          "sha256": "3b27e724a30fbe9cfe632282bb7ba68bf02c220cd7dfacab8477ba52efa5e35e"
+        },
+        "original64": {
+          "mean": -14.8158,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -28.8414,
+            -0.7901
+          ]
+        },
+        "additional128": {
+          "mean": -12.433,
+          "sampleCount": 128,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -23.3327,
+            -1.5332
+          ]
+        },
+        "combined192": {
+          "mean": -13.2272,
+          "sampleCount": 192,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -21.848,
+            -4.6065
+          ]
+        },
+        "fullOriginal64TrialObjectsIndependentlyVerifiedEqual": true,
+        "allRawStatisticsAndProofPinsVerified": true,
+        "additionalCompletionEvents": 0,
+        "additionalEventTrialDeltaSumBb": 0,
+        "additionalOrdinaryTrialDeltaSumBb": -1591.4199999999998
+      },
+      {
+        "index": 53,
+        "condition": {
+          "board": "Ks8d3c",
+          "split": "holdout",
+          "opponent": "aggressive",
+          "hero": "SB",
+          "samples": 64,
+          "seed": "solveaai-postflop-ai-v1",
+          "cacheBatchSize": 64
+        },
+        "result": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe053-v1/result.json",
+          "bytes": 83201,
+          "sha256": "5a012a8964933d7ec1732649b964e6b7a39eaa1bd54de9e575af92c582097654"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-probe053-v1/supervision.resources.json",
+          "bytes": 766,
+          "sha256": "ec7e5c9ab84919c0fdd58ee5a2260934f1103bb03f89e7a5b5ed717dc60f708d"
+        },
+        "original64": {
+          "mean": -10.0116,
+          "sampleCount": 64,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -17.7281,
+            -2.295
+          ]
+        },
+        "additional128": {
+          "mean": -8.2591,
+          "sampleCount": 128,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -13.749,
+            -2.7693
+          ]
+        },
+        "combined192": {
+          "mean": -8.8433,
+          "sampleCount": 192,
+          "status": "normal-approximation-not-acceptance",
+          "ci95": [
+            -13.3065,
+            -4.3801
+          ]
+        },
+        "fullOriginal64TrialObjectsIndependentlyVerifiedEqual": true,
+        "allRawStatisticsAndProofPinsVerified": true,
+        "additionalCompletionEvents": 1,
+        "additionalEventTrialDeltaSumBb": 0,
+        "additionalOrdinaryTrialDeltaSumBb": -1057.17
+      }
+    ],
+    "repeatedWhollyAdverseAdditional128Indices": [
+      17,
+      47,
+      53
+    ],
+    "additional128IntervalsOverlapZeroIndices": [
+      7,
+      33
+    ],
+    "noFurtherSamplingRequested": true,
+    "interpretation": "The repeated SB/aggressive deficits are strategic adverse evidence. Adaptive intervals are descriptive, not calibrated inferiority tests; original 64, additional 128, and combined 192 stay separate."
+  },
+  "whole12": {
+    "status": "STOPPED_INCOMPLETE",
+    "terminal": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run/attempts/attempt-9a6b307d-c66e-4ef6-acfc-85bc111817dd/receipt.json",
+      "bytes": 2972,
+      "sha256": "9e4c42e06445a4d464c42416f9e39e3e43efd807b9fb12e11ebe51663bc4f228"
+    },
+    "seconds": 246.28112860099645,
+    "stopReason": "Owned process group exceeded 900 MiB. Child exit -15; all owned children and groups reaped.",
+    "sourceUnchanged": true,
+    "savedPrefixParts": 49,
+    "contiguousUniquePrefixes": 6228,
+    "prefixesPerEachOf12Boards": 519,
+    "observedSavedPrefixStates": {
+      "notFacing": 1356,
+      "effectiveFacingContext": 4314,
+      "provedModelUnreachable": 558,
+      "unresolved": 0
+    },
+    "proofFilesReferencedAndPresent": 558,
+    "missingProofs": 0,
+    "missingArtifacts": [
+      "balance.header.json",
+      "complete balance descriptor and original aggregate hash",
+      "whole12.json and reference-sanity result"
+    ],
+    "completeAggregateRecovered": false,
+    "qualityFindings": "Unavailable because the aggregate header was not persisted. Reaching native validation does not prove zero quality errors; it returns errorCount.",
+    "referenceSanity": "NOT_ESTABLISHED"
+  },
+  "policyFoundation": {
+    "review": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-independent-review-20261006/review-receipt.json",
+      "bytes": 4875,
+      "sha256": "c180a5c73b033f935433e10f28f5f755affdd09bff989ac7764c6fb9014dcb93"
+    },
+    "nativeModel11AuthorshipRetained": true,
+    "authorshipCaution": "Native model11-prompt authoring provenance stays distinct from the inherited model10-authored-policy-bytes evaluator label. Old 5db acceptance is common evidence only.",
+    "rawBet125CapDependence": "Raw BTN bet125 tier-air shares include 46.181172% on 8h5c2d, 40.467553% on Qh8s3d, 39.121756% on 6s3h2c and 37.419906% on Ks8d3c. These coarse raw shares are diagnostics, not equity-defined bluff mass. A per-prefix pre/post-cap disposition is not established by saved ordinary trials or the missing whole12 header.",
+    "pairedBoardCaution": "KcKd4h broad monster tiers are not equity-defined value; zero air tier is not zero bluff mass.",
+    "physicalActionCaution": "After flop bet125/call, turn bet75 and bet125 can merge into one 67.62 BB all-in. Preserve physical pooling, canRaise and unreachable diagnostics."
+  },
+  "adverseSignal": {
+    "present": true,
+    "repeatedConditions": [
+      "SB/aggressive Js8s5d",
+      "SB/aggressive KcKd4h",
+      "SB/aggressive Ks8d3c holdout"
+    ],
+    "ordinaryPolicyEvidence": true,
+    "completionExplanation": "Additional 128 at indices 17/47 have no completion events. Index 53 completion events contribute zero delta. The negative trial-delta sums come from ordinary trials.",
+    "causalPolicyRowIdentified": false,
+    "disposition": "Hold board expansion for focused policy diagnosis and explicit disposition of these repeated deficits. Saved trials lack ordinary action trajectories, so no particular rule edit or numerical implementation defect is established. A clean allboard coverage gate would not resolve this strategic evidence."
+  },
+  "concreteImplementationBlockers": [
+    "Whole12 storage stopped before a complete aggregate/header/hash and reference sanity were durably available."
+  ],
+  "additionalNumericalDiagnosticsRequiredBeforeBoards": [],
+  "outstandingBeforeBoards": [
+    "Obtain a bounded whole12 result with original aggregate findings/hash and reference sanity under unchanged numerical thresholds.",
+    "Resolve or explicitly justify the repeated SB/aggressive policy weakness at indices 17/47/53 before costly coverage expansion. Do not tune to the holdout probe or erase adverse evidence."
+  ],
+  "decision": "Do not authorize 1755 yet. Preserve all original and additional trials and the stopped whole12 evidence. Finish policy disposition before whole12 regeneration if it may lead to an authored policy change.",
+  "all1755ScopeIfLaterApproved": "1755 canonical flops with the existing 4 sampled turns and 12 sampled rivers, not every poker runout.",
+  "policyAccepted": false,
+  "oldFullReplayPassed": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

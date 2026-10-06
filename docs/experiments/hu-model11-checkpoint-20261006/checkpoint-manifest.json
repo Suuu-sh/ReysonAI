@@ -1,0 +1,756 @@
+{
+  "kind": "saved-experimental-source-and-evidence-checkpoint",
+  "version": 1,
+  "preparedAt": "2026-10-06T04:51:00Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pullRequest": 41,
+  "branch": "feat/hu-postflop-after-multiway",
+  "parentCommit": "471f8920fd4ed258ca163dd1daa707b75daf1250",
+  "parentTree": "68a43e7356d3b462cbf3559082fb3561a9af151e",
+  "status": "SAVED_RESEARCH_WORK_NOT_RUNTIME_ADOPTION_OR_PR_COMPLETION",
+  "experimentalSource": {
+    "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "tree": "cf4c70d5fe5cfb5fb612be325d3262fc23e23c68",
+    "patch": "experimental-source-471f8920-to-4b6b39a6.patch",
+    "bytes": 1617170,
+    "sha256": "7916d2eec16feee080de836ac4aa3a0aedd9c3f01fbdcdb6dae608a859f181a6",
+    "appliedInIsolatedIndexProducesExactSourceTree": true,
+    "codeAppliedToPrRuntime": false,
+    "files": [
+      {
+        "path": "apps/frontend/docs/experiments/hu-model11-balance-gate-bridge.md",
+        "bytes": 6640,
+        "sha256": "49f6a7da6a2f25ad663a79099ec9b97e08eeb0f2ec573e57662581c56bbc8927",
+        "gitBlobSha": "a35be17c36b5c701ea6231f62cb1d1a6beea8fa6"
+      },
+      {
+        "path": "apps/frontend/docs/experiments/hu-model11-completion-representative.md",
+        "bytes": 6585,
+        "sha256": "a5e8b94c6950b85cd3c52e209b33b123c8c4a5a03890b72f5bab6765b316c7d3",
+        "gitBlobSha": "560b3f912521153397251ccae7d9a329225779aa"
+      },
+      {
+        "path": "apps/frontend/docs/experiments/hu-model11-execution-adapter.md",
+        "bytes": 11967,
+        "sha256": "eeae7464ad9b4512e407f2dc66d83041526065a1bb8c27514704795867673071",
+        "gitBlobSha": "cd5a236bf2363159be9b06ff869e83883a7b1370"
+      },
+      {
+        "path": "apps/frontend/docs/experiments/hu-model11-gate-drivers.md",
+        "bytes": 11981,
+        "sha256": "87b24b531fd53078184a2b69e1ca0126dee94e9f66be47813ce916d338f84644",
+        "gitBlobSha": "7dff3a3d21cf5dd8b4ef5db61564ccdee47b22ae"
+      },
+      {
+        "path": "apps/frontend/docs/experiments/hu-model11-next-preservation-plan.md",
+        "bytes": 11725,
+        "sha256": "066c11a721e3df0ef4f0b24ffc1bfea8bafd9fd64c6863b71faaba4c2e5889c5",
+        "gitBlobSha": "a956fb0b66b1a3233b3303e6ea84d6f111c8a7ff"
+      },
+      {
+        "path": "apps/frontend/docs/experiments/hu-model11-offpath-completion.md",
+        "bytes": 6483,
+        "sha256": "1606abb7dadf43b05a6fc8f6ad9bf2c695b5bcedc9602d4bccc1177ee1c6c45f",
+        "gitBlobSha": "4dcf6dfaba779f731683d33f3419ad21df5b6bb1"
+      },
+      {
+        "path": "apps/frontend/docs/experiments/hu-model11-preservation-harness.md",
+        "bytes": 13609,
+        "sha256": "b0baccf66c0d2e40c15331cc52f776a15772f6dd31d7050d02f3f7c7ef85d929",
+        "gitBlobSha": "37d1a65b6de805b4281457c3c85e8a272aaf5399"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/balance-model11-kernel.mjs",
+        "bytes": 31222,
+        "sha256": "6192350ae7209cd4a4b9c7316d5c75c2811f8dd96cb12b9a304be2af6d736431",
+        "gitBlobSha": "8e6b892a2ebe13cfb95c502ffdfcca27fe6ea496"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/balance-model11.mjs",
+        "bytes": 7608,
+        "sha256": "62972747a19b0a736a7ada4f5ad7a23d62c877bda50b46ee8bd4689c12bed9d0",
+        "gitBlobSha": "9de86004879e769b909b6a0aa4476958bf1aa20d"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/decision-prefix.mjs",
+        "bytes": 2961,
+        "sha256": "eff7da5d838350ea6ef35c19fcb47a0f4cbebfe6d7440797913cb8916d11258d",
+        "gitBlobSha": "74d4d0a528979ac9f16d4d5159fb658769fc4458"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/defence.mjs",
+        "bytes": 58585,
+        "sha256": "e08345ce116a42e7db6b5506cb06956c4f36dfc9cd78eeeda383177ec2bede33",
+        "gitBlobSha": "d4dee66c355d39b5e2d3b72ec8d68c3acda967b9"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/effective-action-law.mjs",
+        "bytes": 4637,
+        "sha256": "7c229ea339eae16bd390dde5e758f626ad3fd2a262c8615c76fb52632c2f851c",
+        "gitBlobSha": "d8261f3a4ee297ad0729564a12fdbb38324168d8"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/effective-artifact-contract.mjs",
+        "bytes": 5322,
+        "sha256": "9690c3510a4b8336a18cefdf22860dfca824e9ed4e19f69280bfb01d841e6601",
+        "gitBlobSha": "9456601acf97de1d442542b77d6a47b358760c71"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+        "bytes": 2695,
+        "sha256": "66dc6667d3c8085b772cee46a0e3c4f3d0abbeff269e0febc75cc344ac212476",
+        "gitBlobSha": "f1a7e1d98a5a0b54189457c9196d988f3ef106a7"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "bytes": 23109,
+        "sha256": "3aacad94471833d6dcf720eedc372e6812171bf38af8a601dd0b75da7edfb38b",
+        "gitBlobSha": "b3de15d2c7ba340c8f2f785ba2dd5e71758df7e6"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-allboard-lanes.mjs",
+        "bytes": 2721,
+        "sha256": "549bbfa9e7cd6d5072e74db26eb910c7023225d501152179fb909d1fb62b78bc",
+        "gitBlobSha": "2c0e2423bef48ff8c22927491cff8f59ccad3e9c"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-allboard-partitioned.mjs",
+        "bytes": 5703,
+        "sha256": "39c1473934d3206f4a1509f827c5efcb9f9086d9d45629934e67befd44ecf9d6",
+        "gitBlobSha": "561a39f39e06dacfaf2d4226788ac5f03eb6bb00"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-audit.mjs",
+        "bytes": 7249,
+        "sha256": "fe0f807b31b9ceadd29d49c377100cdcd2c4160ccda342bb22fdd290895c1400",
+        "gitBlobSha": "c409b4e52d72a92389844bdcf15c35cbb2323221"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-completion-representative.mjs",
+        "bytes": 7498,
+        "sha256": "2be0afa5715584ec71187a5762ee1abc58ce19fbeb21d216f87d0b8d8571e828",
+        "gitBlobSha": "22e288f31689e1ec569d41f716ee0b3f744bb9d0"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-completion.mjs",
+        "bytes": 2674,
+        "sha256": "e65a40ff307418da9912f432ffe39cb9b26da29f6856c8e2622b37f1d1c3e006",
+        "gitBlobSha": "582d806773ce65174190bba5fed50e5c6a657b8b"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-dual-source-audit.mjs",
+        "bytes": 28925,
+        "sha256": "800c087d3ce350042205758795c83549eb3aad961e5299ec9ad7f8dd58e5f90e",
+        "gitBlobSha": "c7f536bbbb06c2132466933982a108019d766b6c"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-gate.mjs",
+        "bytes": 2555,
+        "sha256": "6e184d81a3384e956a0853ae0a6311da6355e63140505ead2fd3e819a2de56af",
+        "gitBlobSha": "bcd905d6860d2b8258115af606a7df306301f17d"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/evaluate-model11-selected-regression.mjs",
+        "bytes": 19230,
+        "sha256": "bef10b654eeedf0ec48b0e0ec1e064b53b8ff5ddc3be4bcf04c1a1fde7fdb947",
+        "gitBlobSha": "5780e8939d5a1514653ce783c738c727c2828364"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/evaluate-model11.mjs",
+        "bytes": 4944,
+        "sha256": "d8b0b13f7eb110aaf1b364cd1c8adfa2606a2aaa49332a9a7a8816277ffc7c12",
+        "gitBlobSha": "4f27226e559d97f0842d517771367144d097f0b6"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/execution-model11.mjs",
+        "bytes": 2871,
+        "sha256": "9c63d825e8c66aa9fe76b733905a543c540b84613d1fd7f03bce7000aaa84f4d",
+        "gitBlobSha": "2451cfee697d9ffdcc33b2a53bb6eb4a397187a2"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/gate-model11.mjs",
+        "bytes": 9918,
+        "sha256": "8a5d7d2547c97fdb3db050a93c6ac06fef19a87fb88b33c0154f93f8abe1949c",
+        "gitBlobSha": "ef45a6298640caee2bd176cb6f3e444e484badb4"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-allboard-lane-proof.mjs",
+        "bytes": 3227,
+        "sha256": "212f90cb4c628ee409c9bd6a34c634dc620afadb820c1a5b5c085b19cfa8a223",
+        "gitBlobSha": "225177259a71a1831d9c7992837cf560e9d53cf5"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-allboard-lanes.mjs",
+        "bytes": 27612,
+        "sha256": "0202275c78e5948abbde2d2c9ba575cd409a202f32a2683663490d637214b18f",
+        "gitBlobSha": "3d516c7cba59fbb76aade669aa785790adbb142c"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-allboard-partitioned-output.mjs",
+        "bytes": 8095,
+        "sha256": "1c73356ba26788017466fb4286c73178de71877d68534364db7e9af326521752",
+        "gitBlobSha": "322c9890bbd2e0f58c06705abb4d2db5641cb0da"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-completion-representative-contract.mjs",
+        "bytes": 8041,
+        "sha256": "a8d97ee254c063e4ca31a1117eca2bfed9a51e87ce15a9b078fe1ea8c176a1c9",
+        "gitBlobSha": "1eec9fd8cd0e88a61987c51efd3ab8849e3a083d"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-completion-representative-source.mjs",
+        "bytes": 1563,
+        "sha256": "e42db3566c957d9bb3a12ee9831bbc394a00c5eab50f4f003679b3aa6c02daba",
+        "gitBlobSha": "a5ee639f7444613b2a9388928c33169c5885c4d4"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-completion-representative-store.mjs",
+        "bytes": 9759,
+        "sha256": "d2ac2750263b408cd0d3a30b25133d5ef09dce4f8be161c2f5b8fcfee921299b",
+        "gitBlobSha": "9541c439669df87f5b3927b91a25db6f4d6d99a0"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-completion-representative.mjs",
+        "bytes": 15753,
+        "sha256": "ff99867ccb9999ea209b4d8e54d56ab5cfd7457a74dda58bc79c0dd19dbce026",
+        "gitBlobSha": "8e9d565b3dcb583880e434dc34d1bc36879b4c8c"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-dual-source-contract.mjs",
+        "bytes": 9590,
+        "sha256": "1e1b6ab1ad56652fd42c9b7635cbc66189fac5fda72263a029e0fda9a61c291b",
+        "gitBlobSha": "3b8d00fd3f81a68ae3c3f52776a7d5d8a5b0caf0"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-dual-source-quality.mjs",
+        "bytes": 3930,
+        "sha256": "012bb765359610b1b5451b9c464e280450a30bcf33b19ce32133490398571c17",
+        "gitBlobSha": "d5f0c8ebc243b6a7e3531f8f1800f3170ffa1ef6"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-dual-source-runtime.mjs",
+        "bytes": 11254,
+        "sha256": "6b502211b36cab19f3983441334eb99a318cbe7286e94b4836bb000397eed453",
+        "gitBlobSha": "e7cff004ff614720e7d7a7efc748f8fb7369ec9e"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-gate-contract.mjs",
+        "bytes": 13833,
+        "sha256": "e0267982806b694135b0eee046a8c83a09f165dd53090186a28bc4dbe882bf15",
+        "gitBlobSha": "9c423181caa299350c5fea84d38408a9e28008cf"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-gate-drivers.mjs",
+        "bytes": 21673,
+        "sha256": "c287f3e028d948a5e3bbe24352990c5e0ae8de6f6f624b34e3b0824b0ba48664",
+        "gitBlobSha": "897e8a8b55ecf90f82d63d945f1b9702d818753d"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-gate-source.mjs",
+        "bytes": 2443,
+        "sha256": "30e8e5ed027b37f7467109413c73dad87830fa39b16b00f5dbe9ae69539cf9e0",
+        "gitBlobSha": "760def5493cdb2c97cdae3ac224c51c70f58fa48"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-selected-regression-runtime.mjs",
+        "bytes": 10692,
+        "sha256": "c4950f1706476baffec857e9c8b35e1c93e984adcb272db88e882744a6224422",
+        "gitBlobSha": "7ed181982266f405640463f0af1a4db20eb2147a"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-selected-regression.mjs",
+        "bytes": 17860,
+        "sha256": "6f15a7745428e68e6e205c627d4bff97880490aa70b813aa8e7178047f4a4dac",
+        "gitBlobSha": "7fb6f893606ae9cebefc66ab3691a06155e7991d"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/model11-zero-proof.mjs",
+        "bytes": 6154,
+        "sha256": "3a6a36e343cc313e9ff1efdcd625fcbeb855e0613e9c0f1fec612d7c284e10ab",
+        "gitBlobSha": "c923e2912e337050e640906de731c8f439017f55"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/offpath-behavior-model11.mjs",
+        "bytes": 7907,
+        "sha256": "dc2ae307e5f8cd696cee6b2048d2b71d65bb162ddf9db040688673100d5919a4",
+        "gitBlobSha": "fb39fd58d885751a7278713ceca53af613262629"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/audit-model11-preservation.py",
+        "bytes": 9157,
+        "sha256": "63bbc16a24f9e5006efdd5f2b5cfac82cc2a72f7600437a33cc73c137adbbac7",
+        "gitBlobSha": "ad0503dc0335c45f205d642e87651bef26f0b618"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/emit-model11-preservation.mjs",
+        "bytes": 16390,
+        "sha256": "4c401c044363d6381814479717e8c2baa0f46daade965a7f65f4355c46ccb636",
+        "gitBlobSha": "cd27b6aa3833804375b2dbbb7a75de367ec8a49e"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/model11_preservation_receipt.py",
+        "bytes": 32733,
+        "sha256": "a68c1432369e22362c117140c082562b29e0399bffd85b2eecf9c5ed45524e53",
+        "gitBlobSha": "02545039557e44f0dc7e9545b2cbbd00e5ed36ac"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/model11_preservation_schema.py",
+        "bytes": 30003,
+        "sha256": "1ffec5d26f8a945d98d5c544dbf21c312dc72c0eda459a647d1cdfa33dd63621",
+        "gitBlobSha": "2210026f9491ea33eec3fbffbcaf7ca5b24a1dc7"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/run-model11-bounded.py",
+        "bytes": 12236,
+        "sha256": "d78a7d684279637bd72385a923246386b7afefe599df72403d4de0b85637de23",
+        "gitBlobSha": "cb28e046207adf1565c32d0566476b72f2977c49"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/run-model11-pilot1755-lanes.py",
+        "bytes": 38689,
+        "sha256": "ca6bd2a97a216b8c150f5514fde4738755466cdf7a522afa13cb033d683b30aa",
+        "gitBlobSha": "1cfe040c906cb7d61ec0cd4f72c8a46ee3a0f2c8"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/run-model11-preservation-bounded.py",
+        "bytes": 10914,
+        "sha256": "b50218da65fcd9655c3fd5b0e1f6baa125b8d2535d3498b77a77ab6e7dc00253",
+        "gitBlobSha": "beba06dad58f723fcca9dc3b66650515ff9447a0"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/verify-model11-allboard-partitioned-source.py",
+        "bytes": 1829,
+        "sha256": "795de885ab049b159afbdde33ba3f7d8fb4f7dd223fc5ef3596a8d6035a47026",
+        "gitBlobSha": "0911a43a3e66b413baf691f54f3774c763091de3"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/verify-model11-balance-kernel.py",
+        "bytes": 1937,
+        "sha256": "46a2b7b8df71fc3cfcb770bb7f71e0c010a01c8f5e7588e5ce4b0a877bf21b45",
+        "gitBlobSha": "b6b704dfda84e51216bfa11d7e705898a7a0deef"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/verify-model11-completion-representative-source.py",
+        "bytes": 1866,
+        "sha256": "2cb35ccc7a8baa6878fbcc0492daa75b9ba0f55ac8a0cfd28e0eaa1c72000d79",
+        "gitBlobSha": "8410b2951ef3848dc5f476840a4a2412db6a66d6"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/verify-model11-dual-source-audit.py",
+        "bytes": 3155,
+        "sha256": "517990e9117553fc51f894b88db4918972e7b771ac284a0f132bb842073a76b7",
+        "gitBlobSha": "4270b9e7b1347c61ae5d291281456b9eb7979397"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/verify-model11-gate-driver-source.py",
+        "bytes": 3706,
+        "sha256": "346843e7fd3b103d38d9acff0f2833ea6961bbd0aa217c7cfe4d747c2f50d858",
+        "gitBlobSha": "c1cb62644b72318e67d2292d10554203e9414eaf"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/verify-model11-pilot1755-lanes.py",
+        "bytes": 13344,
+        "sha256": "6abfb147df599157d787b2f65a45aa578fc3dc7267286c77295968e8415ca8cf",
+        "gitBlobSha": "8dfa47cd2d982022a98f5654fed6d5b7018997c2"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/perf/verify-model11-selected-regression.py",
+        "bytes": 2246,
+        "sha256": "2a213a1e8b96947a168cbcf11bb05b3fef46a045ffbd6b377ed3b6db40e0245c",
+        "gitBlobSha": "39fe8c75ae913c510f7a6767c30fc4703d66a399"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/simulation-model11-completion.mjs",
+        "bytes": 9478,
+        "sha256": "e0654f69cea9ac3ed4a70df5445a27c4b67e7e3b3f911229ac95aba5f2e2ba4e",
+        "gitBlobSha": "918311614d4ee267a83aeed5ccd2b9e625b19633"
+      },
+      {
+        "path": "apps/frontend/scripts/postflop-ai/simulation-model11.mjs",
+        "bytes": 10078,
+        "sha256": "fd874397785d7c7a98a11bbc9ef35523991fae7a2942af61718460b2f952a084",
+        "gitBlobSha": "405e9d6011bf98493fee23076775c7cf6e9ae517"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-all-board-diagnostic-plan.json",
+        "bytes": 98,
+        "sha256": "32c8124f4ae22bbc6c5a8a656c694f09a1f28c7dc699a5ec6855403d7de1229d",
+        "gitBlobSha": "4d5bba02a86878b29af08a0d293a89a838d04a41"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-all-board-full-plan.json",
+        "bytes": 46,
+        "sha256": "d2866115605c1311a5d68fbcb2c226b1f569dae58dc4a3019b13b75c499f2a09",
+        "gitBlobSha": "7cceaba7e9c246672a0e4a0a5f30bc42c0f7f5f7"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-allboard-lanes-integration.json",
+        "bytes": 26471,
+        "sha256": "e6354bad2c39f7dbadcaefa066586ed3dca93705f5b3486217fb409bd665394f",
+        "gitBlobSha": "c9968d0006df1c329096585cb2b4233bdd4342d2"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-allboard-lanes-source-graph.json",
+        "bytes": 9770,
+        "sha256": "b1597899a21d7a159dee7c5e6423ad1e75a746ee024202d945f73dd77e79020a",
+        "gitBlobSha": "5ac702123d8e43a5ec88178325e8bfa280f321f0"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-allboard-partitioned-source-graph.json",
+        "bytes": 9186,
+        "sha256": "4a27a5981bd2337f997f38e67ddf8bb285d247f9fbfc64b55bbb77f7794868ec",
+        "gitBlobSha": "8602b688cca59226b3afe0559276c12179160e2b"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-balance-kernel-correspondence.json",
+        "bytes": 1871,
+        "sha256": "7f7bc1819b8ba1591165ac46a0896270dc42aa5066ca0beb7b8376513bbac79b",
+        "gitBlobSha": "1001f34328845066f04064b48e1a3728d10020d4"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-completion-historical-evidence.json",
+        "bytes": 347,
+        "sha256": "fc58f56c8628ff38273f6b275f6a0fc24701904331e2010298fcdf2481bf3d05",
+        "gitBlobSha": "e50219bb62c40bc6783556f5ff300766acaaf704"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-completion-representative-source-graph.json",
+        "bytes": 9842,
+        "sha256": "ee666682abf238b3947c91021487025843b957cc30ce5c30ed90349c952b059e",
+        "gitBlobSha": "beeb383e66b49198781ff9d3b1446d6d30a70679"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-completion96-plan.json",
+        "bytes": 330,
+        "sha256": "e9e3fb2b18052d06a2b75f4562f89c08759b60a1dcee099f49fa43d8ab804894",
+        "gitBlobSha": "740658dac463ff78880a9f9391ea1c8c98ac4ba5"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-dual-source-audit-source-graph.json",
+        "bytes": 10724,
+        "sha256": "fbf7cabdf0fbf91b468ac9dd9db7052c2c167c0974c0389d1f07f35568de2f5d",
+        "gitBlobSha": "80ec8e356e3f864ec20548be77034fa40c26717d"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-dual-source-full-proof96.json",
+        "bytes": 368288,
+        "sha256": "99f77d18f55006aa2f721e1dff6754eb341871f6810ef71887fb70f5eb061c02",
+        "gitBlobSha": "d26b56b13de4f0f280d62d1fb81c05f57dcccb96"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-execution-artifacts.json",
+        "bytes": 10376,
+        "sha256": "104271a9439800cc93a599428f7f64cfee788d3c94a2ae90a642177608bd2cc8",
+        "gitBlobSha": "45df40d922744e1d27ee10571836e7bb914aa7b5"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-gate-raw-inputs.json",
+        "bytes": 2429,
+        "sha256": "143f13ca99925a7b8b6aca3bdc3f168943ca86e2e3684846cef1fb668b1416d0",
+        "gitBlobSha": "706f164f7086ed95c6c03b84fe7246d501823781"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-gate-source-graph.json",
+        "bytes": 8737,
+        "sha256": "8a61100a36515f4c57132ea67d041a2a94e46a4172dfac2c00ee4e07bb6a8caa",
+        "gitBlobSha": "ed355f59e84516c5e3c93fb0b5848513fa2c548d"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-one-board-plan.json",
+        "bytes": 179,
+        "sha256": "2d9e6c6443b783f3945862a120dd9262673723fe77a2e60cf9b35aa25d32fd8d",
+        "gitBlobSha": "1eee184c5902840800a4ae0d780a5d2111f63f22"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-one-flop-gate-plan.json",
+        "bytes": 126,
+        "sha256": "a9be18447a03a5e4e5e9a871794009e2d8059c9fbfdaadbf35de5155307c22c2",
+        "gitBlobSha": "45d7bae87a58922e03ba3e55ea78bf29945db2f9"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-one-prefix-plan.json",
+        "bytes": 114,
+        "sha256": "d360458552f0d5d54e22245ecd27004a975741bc0402c011985c8f1fd493d4ee",
+        "gitBlobSha": "b611dd56e8594ae97a44e1e0b7bc8b7e4a04c4a8"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-one-trial-plan.json",
+        "bytes": 197,
+        "sha256": "4dac79911d045e93b2b5cd242d4f69d4c33d96594f0392c8e24db8eec37cfd97",
+        "gitBlobSha": "a4bfff8b86fb847f272a65b22006cebcc79c3371"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-representative-diagnostic-plan.json",
+        "bytes": 189,
+        "sha256": "3c6f5bf540da481be721bfd3d431fb61d01f01178b4c67fa594c1b0170bef96c",
+        "gitBlobSha": "d876aef6d43fe2d3685e21dc0144da4e6d32006f"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-representative-full-plan.json",
+        "bytes": 75,
+        "sha256": "d84f74577abb6984960e7af4cccaf1eef01455e42b06e6bfe0b95f40d9a1f974",
+        "gitBlobSha": "510943915f247e8877640c5a7e1c0e6e127b60e4"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-selected-regression-selection-v2.json",
+        "bytes": 100316,
+        "sha256": "062706986a35fb5dc106468fab155373b3db40ebdf874f8f22df18488e31d58f",
+        "gitBlobSha": "691c20050b27b44e045dfa480d36e37027fdac6a"
+      },
+      {
+        "path": "apps/frontend/tests/fixtures/model11-selected-regression-source-graph.json",
+        "bytes": 11348,
+        "sha256": "c41ad02a9aae7452e27944e6c51e48ea414bcf009f42b8263814634875db6c26",
+        "gitBlobSha": "c1d7f696f104d2f1302b2c5b62e0e3d26d97a33a"
+      },
+      {
+        "path": "apps/frontend/tests/helpers/model11-completion-paired-boards.mjs",
+        "bytes": 4240,
+        "sha256": "edee27524fac8d6be6bb1a8ea2a355a2a5109d805b7f0110ab6184051bd6fa54",
+        "gitBlobSha": "b4dffc8ec9acd5170dca7f464e53d34e40b97728"
+      },
+      {
+        "path": "apps/frontend/tests/helpers/model11-completion96-parity.mjs",
+        "bytes": 7546,
+        "sha256": "03fe48083ce4c00eb2de33c1afe0e6822013f5a9ce4183dd4b6e75fc4fab81ec",
+        "gitBlobSha": "cfd69e7f89345a20847ffbb5c7ac722e4ba9c645"
+      },
+      {
+        "path": "apps/frontend/tests/helpers/model11-completion96-stream-parity.mjs",
+        "bytes": 9550,
+        "sha256": "cb8ebb02327c5d23651585b5438ec13c2f63ad01e8332f0d1f8b922bf275781a",
+        "gitBlobSha": "cb3259ba6a73207954151730b01bc525cf05a488"
+      },
+      {
+        "path": "apps/frontend/tests/helpers/model11-execution-fixtures.mjs",
+        "bytes": 2283,
+        "sha256": "26e659d2218ce75f94d34b449be4e6c7072cd89197da2890c497f332d807ead4",
+        "gitBlobSha": "0d2a16b5932aacef83e31322fb6a3a1db8a55464"
+      },
+      {
+        "path": "apps/frontend/tests/helpers/model11-six-real-controls.mjs",
+        "bytes": 24046,
+        "sha256": "1a8199063d53f973cfdd3b190e2dbd73d3937ae151045402a03724e3df3b8d9a",
+        "gitBlobSha": "f9c93325b3acf13926e00d09fb4a0df8638a1115"
+      },
+      {
+        "path": "apps/frontend/tests/helpers/model11-slow-reference.mjs",
+        "bytes": 4550,
+        "sha256": "004d2797c6b83b7f5c063fdb5c283d520039d937c7b219c70a00f3c8ff0579b8",
+        "gitBlobSha": "49709be459b54b8eb2013798114125f0b1c5f62d"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-effective-law-model11.test.mjs",
+        "bytes": 83357,
+        "sha256": "b86068262db487dc0b7a7d76f88ec0b80345e88f2d64a7f29ecf4b25dcc0e11f",
+        "gitBlobSha": "2710ebe947eeb7bd6bfe4aa89b5a9ddd013f220e"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-completion-representative.test.mjs",
+        "bytes": 5580,
+        "sha256": "ba842de340612e0c4c8abadcf7c74032b941947f9d6f5d570bfef24329629e1a",
+        "gitBlobSha": "003ac010236ff2914c6eb6390309eb67a9df74fc"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-completion.test.mjs",
+        "bytes": 16031,
+        "sha256": "39aec32c62aa1c2b0bcd8d61c3dcf4a6f3b279e3462e66a854d4492520003172",
+        "gitBlobSha": "e1e65f5822b2068b30f188c4cbb0d885e6d86520"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-dual-source-audit.test.mjs",
+        "bytes": 24940,
+        "sha256": "632ba147e637fe1084262909248db8a43f34378f750696d5a0b957ed7d2ca6d9",
+        "gitBlobSha": "39b05c737303fc5f0dac6cfad93c23de40763b24"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-execution.test.mjs",
+        "bytes": 17064,
+        "sha256": "0fee6d901c5a4feb60418ef2d98924ee5104cb5614a3c4ab1ac12be2ac3fa159",
+        "gitBlobSha": "d185d91647602d5134b4faa90879be512c748638"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-gate-drivers.test.mjs",
+        "bytes": 11266,
+        "sha256": "0552dfd0b5e5b0541229cf19c45cc93ee8fba5d70c91728adf9fabb51f767ef5",
+        "gitBlobSha": "8ff9a65dd139a1425004b7f924f0b3eff8f8e582"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-gate-vector.test.mjs",
+        "bytes": 7184,
+        "sha256": "b925b39049eec3804ef8c4da7cc6e0634644fad6f9b89505d985c7f3bc1a60b4",
+        "gitBlobSha": "5bb55f2e92df899e8d6a21b7150a1740001b7dee"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-gate.test.mjs",
+        "bytes": 4896,
+        "sha256": "bd8fc5e4b5776da68818d4ddab8db628c25d8aa4712d467fa29a0a7cb5c8593e",
+        "gitBlobSha": "be3b66e491c81a5c5450c1310903b5d065d84325"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-law-memo.test.mjs",
+        "bytes": 5386,
+        "sha256": "0cd4532106eb0cba4bf29558b3f23ed1a4b7d44753b7d85b1f5a0f41a138135e",
+        "gitBlobSha": "18c8480fa0da76f1f1f216ffa9d3feb3616ef04b"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-pilot1755-lanes.test.mjs",
+        "bytes": 17161,
+        "sha256": "7c7ec75961b04e955b017b83ddaa6c5e90e267fe450c11cadd7dd1c9c69d78e8",
+        "gitBlobSha": "d623dbdb14ecac4a76c5a96bb265ca997ca955f1"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-prepared-prefix.test.mjs",
+        "bytes": 11899,
+        "sha256": "f243424a90c63133e1c8a48a2ec493ad15710f6dee9b55ce3869223539ca32ec",
+        "gitBlobSha": "19666ce8c300a8cf7056765a3811fec0a86e9116"
+      },
+      {
+        "path": "apps/frontend/tests/postflop-model11-selected-regression.test.mjs",
+        "bytes": 8693,
+        "sha256": "a1e9d248b60bb84cb3cc8556e595964c147fc99495aa89ca5094ddcb798253b2",
+        "gitBlobSha": "3c09b9318fc9c82848848138a770c4a4d7edf810"
+      },
+      {
+        "path": "apps/frontend/tests/test_model11_completion_representative_source.py",
+        "bytes": 3724,
+        "sha256": "354f04520687f19984031a42cdb0396cb00ff475fb79e086f5269583b71733ad",
+        "gitBlobSha": "fa37e64dfc39f04620a5f85c67dcb67383f62486"
+      },
+      {
+        "path": "apps/frontend/tests/test_model11_completion_source.py",
+        "bytes": 3653,
+        "sha256": "70d300e881a625727937af2225a155262b515634b3f2928119d9b8aa54c64c46",
+        "gitBlobSha": "863d157e7348cd95aa664dbdf3ceb3755ca0b4c3"
+      },
+      {
+        "path": "apps/frontend/tests/test_model11_dual_source_audit.py",
+        "bytes": 6879,
+        "sha256": "50887c70f8499691f92fbb89446414fb0aaedd82b9fddcd1f6b6b0bbb37b385e",
+        "gitBlobSha": "e2ca8121e2d94ef4e1c55454d271868e8529213e"
+      },
+      {
+        "path": "apps/frontend/tests/test_model11_gate_correspondence.py",
+        "bytes": 2103,
+        "sha256": "a572853618361ce73a3ebd02d616031b09c537d9f811e9cf44c2c99fa235eaea",
+        "gitBlobSha": "8e2839a0adb20f14e860eec36f0e2138b68c4508"
+      },
+      {
+        "path": "apps/frontend/tests/test_model11_gate_driver_source.py",
+        "bytes": 3652,
+        "sha256": "8b8cebff86e986aecd4cde6a6f8e4b11d2fea6d6c30d5f30f2aa0cf7fe81ff54",
+        "gitBlobSha": "165219162bf35dc2fcdcb6a9d8a633c7eedaf7cf"
+      },
+      {
+        "path": "apps/frontend/tests/test_model11_preservation.py",
+        "bytes": 37062,
+        "sha256": "e8fe07a8cc25639f8dfbb1d83d3f89bfce76e7df9bc99c417787dfd6d8ef143c",
+        "gitBlobSha": "fb1b3fffd9b29352690ca25540cf49c2a6e27cbc"
+      },
+      {
+        "path": "apps/frontend/tests/test_model11_receipt.py",
+        "bytes": 7393,
+        "sha256": "a3f0a66202a0913f96ea75fcbbaa25b2d6d3dd11e40bfd7cbc8dda07b22bee66",
+        "gitBlobSha": "bafa8c0c2c94ab181b0d8f7a63c05ff7874233ee"
+      },
+      {
+        "path": "apps/frontend/tests/test_model11_selected_regression.py",
+        "bytes": 4366,
+        "sha256": "2295fd1b86e2b4269c4825bd812e46e9a012ff992f5f39929e482fc27fced33d",
+        "gitBlobSha": "cc60e87b0be48d8b2f6c5662d701c80aa1651505"
+      },
+      {
+        "path": "docs/model11-dual-source-audit.md",
+        "bytes": 9647,
+        "sha256": "cd9990a2bf1eb6bd5b88e409083b0acadf42d94df5e693f443ed52b4f5b9bf04",
+        "gitBlobSha": "9926a80d16d3ba626f2fe01fbc8f1f7f0e24fc8a"
+      },
+      {
+        "path": "docs/model11-pilot1755-fixed-lanes.md",
+        "bytes": 4804,
+        "sha256": "7f21c152fadedf58192d1d62d9435b3ff5b0b177426f1d565f54545725877444",
+        "gitBlobSha": "8b574986cda266906c7472f562c9b335e1844f64"
+      },
+      {
+        "path": "docs/model11-selected-regression.md",
+        "bytes": 3804,
+        "sha256": "f04c976dda2d8f5dc7abc5d030aba8785bbb085b29dbf92658a5161718767039",
+        "gitBlobSha": "68b17e69e40816483dfdee061d7cfd30a6c2f5b3"
+      }
+    ],
+    "patchDelivery": "Exact patch validated locally; reconstruct from the immutable GitHub source blobs or confirmed Library source bundle. Patch bytes are not embedded in this metadata-only Git checkpoint.",
+    "sourcePointer": "experimental-source-pointer.json",
+    "sourceSnapshotRoot": "source/",
+    "snapshotHasAll110ExactGitBlobs": true
+  },
+  "remoteReadableSource": {
+    "commit": "3e473250c90960370757591c52eb905a824f7926",
+    "tree": "4dc85116bac2e2d4f5d7b95f3b21379cf8213a7a",
+    "url": "https://github.com/Suuu-sh/ReysonAI/tree/3e473250c90960370757591c52eb905a824f7926",
+    "all110ExperimentalPathBlobIdsIndependentlyMatched": true,
+    "additionalResearchDocumentsExplainTreeDifference": true
+  },
+  "evidenceSourceDistinction": {
+    "threeAcceptedCasesCommit": "5dbd208d2ba70ceec2934efab9de134a5dc19e1c",
+    "threeAcceptedCasesTree": "f56e0e98fbc31bf2dd633ad1e73dc3470fc23835",
+    "remoteSameTreePreservationCommit": "1ed7fae33eed362df84672265a05c0b44b8ce1ce",
+    "benchmarkCommit": "3e955abeb6af528b5469b9cfff7012ad5bc53a3c",
+    "benchmarkTree": "448feef556f45a978e4b5e086c3c496a0467c1e1",
+    "oldEvidenceRetagged": false
+  },
+  "independentReceiptCopies": [
+    {
+      "path": "pilot-scoped-acceptance.json",
+      "bytes": 12056,
+      "sha256": "9f808ff24f369bf3d3d969c937b4cd78ef8bc71743258054ec524b2533293012",
+      "sourcePath": "hu-final-recovery/pilot-scoped-numerical-acceptance/acceptance.json",
+      "immutableCopy": true
+    },
+    {
+      "path": "cold-four-bet-scoped-acceptance.json",
+      "bytes": 11155,
+      "sha256": "91db6db1e35cffbfcee38eaaf85ce887b0cdf8fa1abb81146eed34ac8b958d48",
+      "sourcePath": "hu-final-recovery/next-policy-producer-verified-finalization/scoped-acceptance.json",
+      "immutableCopy": true
+    },
+    {
+      "path": "co-squeeze-scoped-acceptance.json",
+      "bytes": 10266,
+      "sha256": "7d787403d3df089eda38c3fea7628660efc76ae9fa185000bb278f98cfa6fb0b",
+      "sourcePath": "hu-final-recovery/co-squeeze-producer-verified-finalization/scoped-acceptance.json",
+      "immutableCopy": true
+    },
+    {
+      "path": "prefix-key-independent-actual-result-review.json",
+      "bytes": 11208,
+      "sha256": "167f1435d061abb977c6210c4cdacecbc37de6e04b38318c9525d03bb63f6bd3",
+      "sourcePath": "hu-prefix-key-memo-preparation-20261006/actual-validation/independent-actual-result-review.json",
+      "immutableCopy": true
+    },
+    {
+      "path": "fourth-case-bounded-review.json",
+      "bytes": 40759,
+      "sha256": "0c1491b3b596f7a504e9992ddfe02957a36a7d671dbcd323803c8a3506ae1616",
+      "sourcePath": "hu-final-recovery/co-coldcall-optimized-five-workers/bounded-case-review.json",
+      "immutableCopy": true
+    },
+    {
+      "path": "fourth-case-independent-diagnosis.json",
+      "bytes": 18049,
+      "sha256": "0fc53d89d7d65acb0dfb4099f5935894367edb3a1d04a87f07e208929ad3a009",
+      "sourcePath": "hu-final-recovery/co-coldcall-saved-trial-traces-v1/independent-result-disposition.json",
+      "immutableCopy": true
+    }
+  ],
+  "newNumericalExecutionsForThisCheckpoint": 0,
+  "preservedScope": {
+    "allExistingPrFilesUnchanged": true,
+    "oldModel10AcceptanceUnchanged": true,
+    "threeIndividualModel11CasesAcceptedUnderRevisedScopedContract": true,
+    "fourthCaseAccepted": false,
+    "fourthCase1755Approved": false,
+    "currentRuntimeModel11Adoption": false,
+    "pr41Complete": false,
+    "productionApproved": false
+  }
+}

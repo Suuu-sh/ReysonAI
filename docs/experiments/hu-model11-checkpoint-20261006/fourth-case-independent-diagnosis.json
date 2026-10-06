@@ -1,0 +1,705 @@
+{
+  "kind": "independent-saved-trial-policy-cause-disposition",
+  "version": 1,
+  "reviewedAt": "2026-10-06T04:48:02.248815+00:00",
+  "verdict": "FINISH_BOUNDED_WHOLE12_WITH_RETAINED_ADVERSE_BEHAVIOR_LIMITATION",
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "policyPair": {
+    "flop": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-policy.json",
+      "bytes": 26311,
+      "sha256": "b450a9f1faf8fbc4886b31ed91208d7cc2eb58ef757c769d1b844418ef843e0c"
+    },
+    "later": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-later-policy.json",
+      "bytes": 82305,
+      "sha256": "d95755053a61429f8b70eae2e1ef7581ae7dab838c38c710cfd20153e858860a"
+    },
+    "plan": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-pilot1755-lanes/apps/frontend/tests/fixtures/model11-all-board-full-plan.json",
+      "bytes": 46,
+      "sha256": "d2866115605c1311a5d68fbcb2c226b1f569dae58dc4a3019b13b75c499f2a09"
+    }
+  },
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-saved-trial-traces-v1/source-review.json",
+    "bytes": 2511,
+    "sha256": "003bf65e67d9dd63ad669db272b97ad1e50d481f9bfa839ca19743ee8fefa6b2"
+  },
+  "traceResult": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-saved-trial-traces-v1/result.json",
+    "bytes": 666815,
+    "sha256": "fb18c12625e3af08eca5b515c47443a01b1de5974eb66421b48abd4d5aea60a7"
+  },
+  "traceTerminal": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-saved-trial-traces-v1/supervision.resources.json",
+    "bytes": 775,
+    "sha256": "565acd34d29ce971e9811625a5691a30b26d8a09d7461a4b686e8a5fb402698e"
+  },
+  "manifest": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-saved-trial-traces-v1/manifest.json",
+    "bytes": 9667,
+    "sha256": "8112ba464c88108fc21464983446d13ac8570f8c858b912e427f1276c6c04a89"
+  },
+  "priorBoundedReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/bounded-case-review.json",
+    "bytes": 40759,
+    "sha256": "0c1491b3b596f7a504e9992ddfe02957a36a7d671dbcd323803c8a3506ae1616"
+  },
+  "checks": {
+    "actualExitZeroNoStop": true,
+    "runtimeSeconds": 11.451,
+    "sampledOwnedGroupPeakRssKiB": 487408,
+    "all576ExistingTrialObjectsEqualUnderReviewedScript": true,
+    "selectedNineTrialObjectsOutcomesAndRandomIndicesIndependentlyVerified": true,
+    "sourceAndEvidencePinsVerified": true,
+    "newTrials": 0,
+    "policyChanged": false,
+    "selectedTraceCount": 9
+  },
+  "observedMechanisms": {
+    "selectedCandidateFolds": 8,
+    "foldsOnTurn": 2,
+    "foldsOnRiver": 6,
+    "ordinaryShowdownLosses": 1,
+    "knownEquityPositiveModelReachNoFallbackAtAllSelectedHeroFacingDecisions": true,
+    "authoredRawCallsOftenMuchHigherThanEffectiveCalls": true,
+    "riverFacingExactSignCounts": {
+      "negative": 1,
+      "notRequested": 5
+    },
+    "negativeSignWitness": {
+      "cellIndex": 47,
+      "trialIndex": 148,
+      "rawSavedCallPercent": 76,
+      "effectiveCallPercent": 19,
+      "interpretation": "The existing exact-negative river guard was consulted. It suppresses an added floor promotion against the assumed effective range; it does not mandate zero calls or establish optimal play against the actual opponent."
+    }
+  },
+  "examples": [
+    {
+      "cellIndex": 17,
+      "trialIndex": 145,
+      "hands": {
+        "BTN": [
+          "As",
+          "5s"
+        ],
+        "SB": [
+          "Qd",
+          "Qs"
+        ]
+      },
+      "flop": [
+        "Js",
+        "8s",
+        "5d"
+      ],
+      "runout": [
+        "7d",
+        "Jc"
+      ],
+      "lastHeroNode": "turn_oop_vs_75",
+      "lastHeroAction": "fold",
+      "rawSavedPolicyMix": {
+        "fold": 27,
+        "call": 70,
+        "raise": 3
+      },
+      "effectivePhysicalMass": {
+        "fold": 89.665144,
+        "call": 9.469999999999999,
+        "raise": 0.8648560000000032
+      },
+      "equityStatus": "known",
+      "ownRealization": "positive",
+      "fallback": null,
+      "exactRiverSign": "not-requested",
+      "candidateReturnBb": -14.63,
+      "baselineReturnBb": 108.5,
+      "candidateOutcome": {
+        "winner": "BTN",
+        "pot": 48.76,
+        "fee": 2.438,
+        "invested": {
+          "BTN": 14.63,
+          "SB": 14.63
+        },
+        "returns": {
+          "BTN": 31.69,
+          "SB": -14.63
+        }
+      },
+      "baselineOutcome": {
+        "winner": "SB",
+        "pot": 203.5,
+        "fee": 3,
+        "invested": {
+          "BTN": 92,
+          "SB": 92
+        },
+        "returns": {
+          "BTN": -92,
+          "SB": 108.5
+        }
+      }
+    },
+    {
+      "cellIndex": 17,
+      "trialIndex": 151,
+      "hands": {
+        "BTN": [
+          "4c",
+          "4d"
+        ],
+        "SB": [
+          "Td",
+          "Th"
+        ]
+      },
+      "flop": [
+        "Js",
+        "8s",
+        "5d"
+      ],
+      "runout": [
+        "5h",
+        "9s"
+      ],
+      "lastHeroNode": "river_oop_vs_33",
+      "lastHeroAction": "fold",
+      "rawSavedPolicyMix": {
+        "fold": 4,
+        "call": 76,
+        "raise": 20
+      },
+      "effectivePhysicalMass": {
+        "fold": 97.724373,
+        "call": 0.18000000000000682,
+        "raise": 2.0956269999999932
+      },
+      "equityStatus": "known",
+      "ownRealization": "positive",
+      "fallback": null,
+      "exactRiverSign": "not-requested",
+      "candidateReturnBb": -14.63,
+      "baselineReturnBb": 67.7,
+      "candidateOutcome": {
+        "winner": "BTN",
+        "pot": 48.76,
+        "fee": 2.438,
+        "invested": {
+          "BTN": 14.63,
+          "SB": 14.63
+        },
+        "returns": {
+          "BTN": 31.69,
+          "SB": -14.63
+        }
+      },
+      "baselineOutcome": {
+        "winner": "SB",
+        "pot": 121.9,
+        "fee": 3,
+        "invested": {
+          "BTN": 51.2,
+          "SB": 51.2
+        },
+        "returns": {
+          "BTN": -51.2,
+          "SB": 67.7
+        }
+      }
+    },
+    {
+      "cellIndex": 17,
+      "trialIndex": 166,
+      "hands": {
+        "BTN": [
+          "9h",
+          "8h"
+        ],
+        "SB": [
+          "Qd",
+          "Qh"
+        ]
+      },
+      "flop": [
+        "Js",
+        "8s",
+        "5d"
+      ],
+      "runout": [
+        "8c",
+        "6h"
+      ],
+      "lastHeroNode": "river_oop_first",
+      "lastHeroAction": "bet33",
+      "rawSavedPolicyMix": {
+        "check": 39,
+        "bet33": 12,
+        "bet75": 29,
+        "bet125": 13,
+        "allin": 7
+      },
+      "effectivePhysicalMass": {
+        "check": 39,
+        "bet33": 12,
+        "bet75": 29,
+        "allin": 20
+      },
+      "equityStatus": "not-facing",
+      "ownRealization": "positive",
+      "fallback": null,
+      "exactRiverSign": "not-requested",
+      "candidateReturnBb": -34.87,
+      "baselineReturnBb": 63.42,
+      "candidateOutcome": {
+        "winner": "BTN",
+        "pot": 89.24,
+        "fee": 3,
+        "invested": {
+          "BTN": 34.87,
+          "SB": 34.87
+        },
+        "returns": {
+          "BTN": 51.37,
+          "SB": -34.87
+        }
+      },
+      "baselineOutcome": {
+        "winner": "SB",
+        "pot": 113.34,
+        "fee": 3,
+        "invested": {
+          "BTN": 46.92,
+          "SB": 46.92
+        },
+        "returns": {
+          "BTN": -46.92,
+          "SB": 63.42
+        }
+      }
+    },
+    {
+      "cellIndex": 47,
+      "trialIndex": 148,
+      "hands": {
+        "BTN": [
+          "Jd",
+          "Jh"
+        ],
+        "SB": [
+          "Qd",
+          "Qs"
+        ]
+      },
+      "flop": [
+        "Kc",
+        "Kd",
+        "4h"
+      ],
+      "runout": [
+        "6d",
+        "5h"
+      ],
+      "lastHeroNode": "river_oop_vs_allin",
+      "lastHeroAction": "fold",
+      "rawSavedPolicyMix": {
+        "fold": 24,
+        "call": 76
+      },
+      "effectivePhysicalMass": {
+        "fold": 81,
+        "call": 19
+      },
+      "equityStatus": "known",
+      "ownRealization": "positive",
+      "fallback": null,
+      "exactRiverSign": -1,
+      "candidateReturnBb": -46.91,
+      "baselineReturnBb": 108.5,
+      "candidateOutcome": {
+        "winner": "BTN",
+        "pot": 113.32,
+        "fee": 3,
+        "invested": {
+          "BTN": 46.91,
+          "SB": 46.91
+        },
+        "returns": {
+          "BTN": 63.41,
+          "SB": -46.91
+        }
+      },
+      "baselineOutcome": {
+        "winner": "SB",
+        "pot": 203.5,
+        "fee": 3,
+        "invested": {
+          "BTN": 92,
+          "SB": 92
+        },
+        "returns": {
+          "BTN": -92,
+          "SB": 108.5
+        }
+      }
+    },
+    {
+      "cellIndex": 47,
+      "trialIndex": 158,
+      "hands": {
+        "BTN": [
+          "6d",
+          "5d"
+        ],
+        "SB": [
+          "Qc",
+          "Qh"
+        ]
+      },
+      "flop": [
+        "Kc",
+        "Kd",
+        "4h"
+      ],
+      "runout": [
+        "4d",
+        "8s"
+      ],
+      "lastHeroNode": "river_oop_vs_allin",
+      "lastHeroAction": "fold",
+      "rawSavedPolicyMix": {
+        "fold": 24,
+        "call": 76
+      },
+      "effectivePhysicalMass": {
+        "fold": 83,
+        "call": 17
+      },
+      "equityStatus": "known",
+      "ownRealization": "positive",
+      "fallback": null,
+      "exactRiverSign": "not-requested",
+      "candidateReturnBb": -46.92,
+      "baselineReturnBb": 108.5,
+      "candidateOutcome": {
+        "winner": "BTN",
+        "pot": 113.34,
+        "fee": 3,
+        "invested": {
+          "BTN": 46.92,
+          "SB": 46.92
+        },
+        "returns": {
+          "BTN": 63.42,
+          "SB": -46.92
+        }
+      },
+      "baselineOutcome": {
+        "winner": "SB",
+        "pot": 203.5,
+        "fee": 3,
+        "invested": {
+          "BTN": 92,
+          "SB": 92
+        },
+        "returns": {
+          "BTN": -92,
+          "SB": 108.5
+        }
+      }
+    },
+    {
+      "cellIndex": 47,
+      "trialIndex": 187,
+      "hands": {
+        "BTN": [
+          "Qh",
+          "Td"
+        ],
+        "SB": [
+          "Jd",
+          "Jh"
+        ]
+      },
+      "flop": [
+        "Kc",
+        "Kd",
+        "4h"
+      ],
+      "runout": [
+        "4s",
+        "3c"
+      ],
+      "lastHeroNode": "river_oop_vs_allin",
+      "lastHeroAction": "fold",
+      "rawSavedPolicyMix": {
+        "fold": 24,
+        "call": 76
+      },
+      "effectivePhysicalMass": {
+        "fold": 97,
+        "call": 3
+      },
+      "equityStatus": "known",
+      "ownRealization": "positive",
+      "fallback": null,
+      "exactRiverSign": "not-requested",
+      "candidateReturnBb": -46.92,
+      "baselineReturnBb": 108.5,
+      "candidateOutcome": {
+        "winner": "BTN",
+        "pot": 113.34,
+        "fee": 3,
+        "invested": {
+          "BTN": 46.92,
+          "SB": 46.92
+        },
+        "returns": {
+          "BTN": 63.42,
+          "SB": -46.92
+        }
+      },
+      "baselineOutcome": {
+        "winner": "SB",
+        "pot": 203.5,
+        "fee": 3,
+        "invested": {
+          "BTN": 92,
+          "SB": 92
+        },
+        "returns": {
+          "BTN": -92,
+          "SB": 108.5
+        }
+      }
+    },
+    {
+      "cellIndex": 53,
+      "trialIndex": 75,
+      "hands": {
+        "BTN": [
+          "As",
+          "8h"
+        ],
+        "SB": [
+          "Ah",
+          "Kh"
+        ]
+      },
+      "flop": [
+        "Ks",
+        "8d",
+        "3c"
+      ],
+      "runout": [
+        "Ad",
+        "5d"
+      ],
+      "lastHeroNode": "river_oop_vs_allin",
+      "lastHeroAction": "fold",
+      "rawSavedPolicyMix": {
+        "fold": 24,
+        "call": 76
+      },
+      "effectivePhysicalMass": {
+        "fold": 100,
+        "call": 0
+      },
+      "equityStatus": "known",
+      "ownRealization": "positive",
+      "fallback": null,
+      "exactRiverSign": "not-requested",
+      "candidateReturnBb": -46.92,
+      "baselineReturnBb": 108.5,
+      "candidateOutcome": {
+        "winner": "BTN",
+        "pot": 113.34,
+        "fee": 3,
+        "invested": {
+          "BTN": 46.92,
+          "SB": 46.92
+        },
+        "returns": {
+          "BTN": 63.42,
+          "SB": -46.92
+        }
+      },
+      "baselineOutcome": {
+        "winner": "SB",
+        "pot": 203.5,
+        "fee": 3,
+        "invested": {
+          "BTN": 92,
+          "SB": 92
+        },
+        "returns": {
+          "BTN": -92,
+          "SB": 108.5
+        }
+      }
+    },
+    {
+      "cellIndex": 53,
+      "trialIndex": 101,
+      "hands": {
+        "BTN": [
+          "Kd",
+          "Td"
+        ],
+        "SB": [
+          "Jc",
+          "Jd"
+        ]
+      },
+      "flop": [
+        "Ks",
+        "8d",
+        "3c"
+      ],
+      "runout": [
+        "3s",
+        "Jh"
+      ],
+      "lastHeroNode": "turn_oop_vs_75",
+      "lastHeroAction": "fold",
+      "rawSavedPolicyMix": {
+        "fold": 27,
+        "call": 67,
+        "raise": 6
+      },
+      "effectivePhysicalMass": {
+        "fold": 97.350097,
+        "call": 0,
+        "raise": 2.649902999999995
+      },
+      "equityStatus": "known",
+      "ownRealization": "positive",
+      "fallback": null,
+      "exactRiverSign": "not-requested",
+      "candidateReturnBb": -6.44,
+      "baselineReturnBb": 108.5,
+      "candidateOutcome": {
+        "winner": "BTN",
+        "pot": 32.38,
+        "fee": 1.6190000000000002,
+        "invested": {
+          "BTN": 6.44,
+          "SB": 6.44
+        },
+        "returns": {
+          "BTN": 24.32,
+          "SB": -6.44
+        }
+      },
+      "baselineOutcome": {
+        "winner": "SB",
+        "pot": 203.5,
+        "fee": 3,
+        "invested": {
+          "BTN": 92,
+          "SB": 92
+        },
+        "returns": {
+          "BTN": -92,
+          "SB": 108.5
+        }
+      }
+    },
+    {
+      "cellIndex": 53,
+      "trialIndex": 129,
+      "hands": {
+        "BTN": [
+          "Kd",
+          "Qc"
+        ],
+        "SB": [
+          "Ac",
+          "Ad"
+        ]
+      },
+      "flop": [
+        "Ks",
+        "8d",
+        "3c"
+      ],
+      "runout": [
+        "9h",
+        "2s"
+      ],
+      "lastHeroNode": "river_oop_vs_allin",
+      "lastHeroAction": "fold",
+      "rawSavedPolicyMix": {
+        "fold": 62,
+        "call": 38
+      },
+      "effectivePhysicalMass": {
+        "fold": 100,
+        "call": 0
+      },
+      "equityStatus": "known",
+      "ownRealization": "positive",
+      "fallback": null,
+      "exactRiverSign": "not-requested",
+      "candidateReturnBb": -51.2,
+      "baselineReturnBb": 108.5,
+      "candidateOutcome": {
+        "winner": "BTN",
+        "pot": 121.9,
+        "fee": 3,
+        "invested": {
+          "BTN": 51.2,
+          "SB": 51.2
+        },
+        "returns": {
+          "BTN": 67.7,
+          "SB": -51.2
+        }
+      },
+      "baselineOutcome": {
+        "winner": "SB",
+        "pot": 203.5,
+        "fee": 3,
+        "invested": {
+          "BTN": 92,
+          "SB": 92
+        },
+        "returns": {
+          "BTN": -92,
+          "SB": 108.5
+        }
+      }
+    }
+  ],
+  "interpretation": [
+    "Eight selected losses show an effective-response fold against actual aggressive play despite substantially higher saved raw call weights. This is concrete adverse behavior under the balanced-vs-balanced belief assumption.",
+    "The exact-negative river guard contributes to one selected witness. Five other river-facing decisions did not request its sign; two severe folds are on the turn. The guard alone does not explain the repeated condition-level deficits.",
+    "The candidate intentionally excludes the actual reference profile and opponent private cards from its belief. Comparing its conditioned/capped balanced range with a different actual aggressive strategy can expose a model limitation without a stale-source or sampling defect.",
+    "Current facing call/fold is computed when equity is known; directly increasing the saved call percentage would not necessarily repair these decisions. Authored bets and raises still shape inferred effective support and cap/ceiling behavior, so the traces do not exonerate the entire authored policy.",
+    "Js8s5d trial 166 is an ordinary showdown loss: SB QQ bets into BTN 98 on a board where BTN made trips. The baseline result is a win along a different line; its exact action path was not traced. This case is not a candidate bluff-catching fold.",
+    "The nine examples were deliberately selected from the worst existing tails. They explain these decisions, not their prevalence or the full-cell causal contribution. The independent additional-128 deficits remain the performance evidence."
+  ],
+  "policyDisposition": {
+    "mandatoryAuthoredRuleEditEstablished": false,
+    "deterministicNumericalDefectEstablished": false,
+    "rawBet125CapConcernResolved": false,
+    "blanketExactRiverGuardRemovalJustified": false,
+    "tuneToReferenceOrHoldout": false,
+    "recommendation": "Preserve this exact native model11-authored pair and finish the missing bounded whole12 component once its separate storage repair implementation is reviewed. Retain the repeated SB/aggressive deficits as an explicit strategic limitation for later acceptance; do not call them resolved by a clean coverage gate."
+  },
+  "scopeTransition": {
+    "priorPolicyDiagnosisHoldDisposition": "A specific observed mechanism and limitations are now recorded; no evidence-based mandatory policy correction was identified before the missing whole12 stage.",
+    "whole12StillIncomplete": true,
+    "whole12RepairExecutionNeedsExactWrapperReview": true,
+    "boardsApproved": false,
+    "finalPolicyAccepted": false,
+    "productionAuthorized": false,
+    "old5dbAcceptanceTransferred": false,
+    "noNewStatisticalOrEvClaim": true
+  },
+  "reviewerNodeLaunches": 0
+}
