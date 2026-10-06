@@ -1,0 +1,21 @@
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	﻿2026-10-06T14:45:21.8344258Z ##[group]Run node apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs restore
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:21.8344966Z [36;1mnode apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs restore[0m
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:21.8410229Z shell: /usr/bin/bash -e {0}
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:21.8410703Z env:
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:21.8411103Z   NODE_OPTIONS: --max-old-space-size=256
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:21.8411532Z ##[endgroup]
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5158095Z file:///home/runner/work/ReysonAI/ReysonAI/apps/frontend/scripts/postflop-ai/mw3-reviewed-snapshot.mjs:112
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5160354Z     for (const row of records) { const current = fileRecord(MW3_REPOSITORY, row.path); if (current.bytes !== row.bytes || current.sha256 !== row.sha256) throw new Error(`Mw3 source/input bytes changed: ${row.path}`); }
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5162389Z                                                                                                                                                                ^
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5162977Z 
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5163972Z Error: Mw3 source/input bytes changed: apps/frontend/src/agent/AgentTable.tsx
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5165729Z     at verifyMw3Snapshot (file:///home/runner/work/ReysonAI/ReysonAI/apps/frontend/scripts/postflop-ai/mw3-reviewed-snapshot.mjs:112:160)
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5167759Z     at inspectMw3SavedSpot (file:///home/runner/work/ReysonAI/ReysonAI/apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs:190:22)
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5169906Z     at verifyMw3SavedInventory (file:///home/runner/work/ReysonAI/ReysonAI/apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs:220:30)
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5172288Z     at file:///home/runner/work/ReysonAI/ReysonAI/apps/frontend/scripts/postflop-ai/mw3-reviewed-restore.mjs:251:36
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5175956Z     at ModuleJob.run (node:internal/modules/esm/module_job:345:25)
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5177111Z     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5178364Z     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5179052Z 
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5179223Z Node.js v22.20.0
+verify	Verify inventory and restore only committed independently accepted MW3 bytes	2026-10-06T14:45:22.5269132Z ##[error]Process completed with exit code 1.

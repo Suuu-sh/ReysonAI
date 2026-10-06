@@ -1,0 +1,56 @@
+{
+  "status": "component-fixture-browser-PASS-live-auth-E2E-INCOMPLETE",
+  "source_commit": "92b0da4c7ff4ae420b53d89cf164000c78b9990f",
+  "source_tree": "5146a5295fc6f9e10b622ab2446d4c06cb6d4e26",
+  "browser": "formal CUA Chrome extension browser1",
+  "origin": "http://127.0.0.1:18446",
+  "fixtures": "original verified-test-account compile hook and deterministic seed; actual registry32/default HTTP readers; no positive override",
+  "widths": {
+    "390x844": {
+      "dialog_client_and_scroll_width": [
+        364,
+        364
+      ],
+      "figure_client_and_scroll_width": [
+        300,
+        300
+      ]
+    },
+    "1224x722": {
+      "dialog_client_and_scroll_width": [
+        558,
+        558
+      ],
+      "figure_client_and_scroll_width": [
+        482,
+        482
+      ]
+    }
+  },
+  "checks": [
+    "inner Close removes Your play style and retains Session",
+    "Play style reopens",
+    "outer Close closes dialog",
+    "completed hand1 retains You BTN Call2.5 and LYRA CO Raise2.5 after hand2 YouCO",
+    "Session after history shows1hand VPIP100% PFR0% with no selected historical log",
+    "Back returns Range",
+    "temporary viewport reset"
+  ],
+  "validation": {
+    "unique_related_tests": 46,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "final_css_layout_tests": 5
+  },
+  "old_failure_preserved": {
+    "CI": 37481554233,
+    "step": "official MW3 restore",
+    "reason": "Mw3 source/input bytes changed: apps/frontend/src/agent/AgentTable.tsx"
+  },
+  "pending": [
+    "fresh independent cloud Astra source-context review and receipts",
+    "strict delivery context restore/verify/CI after renewal",
+    "PR50 authenticated unsupported Stage3 E2E"
+  ],
+  "unchanged_scope": "No case17 HU2-table feature, numerical generation, gate change, merge or production deployment"
+}
