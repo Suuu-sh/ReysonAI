@@ -5,6 +5,8 @@ import { RankBadge } from './RankBadge.tsx';
 import { tierFor } from './rank-store.ts';
 import { ffCopy as t, ffNumber } from './fastfold-api.ts';
 import type { FastFoldProfile } from './fastfold-api.ts';
+import { LoadingInline, Skeleton, SkeletonText } from '../components/Loading.tsx';
+import { ScorebarSkeleton } from './ScorebarSkeleton.tsx';
 import './fastfold.css';
 
 export function RankedStats({ ready }: { rank?: unknown; ready: boolean }) {
@@ -19,7 +21,11 @@ export function RankedStats({ ready }: { rank?: unknown; ready: boolean }) {
     return () => { canceled = true; };
   }, [allowed, account.user?.id]);
   if (!allowed || error) return <section className="analysis-card analysis-welcome" role="status"><h2>{t('Ranked stats unavailable', 'ランク戦Statsは利用できません', '排位统计不可用', 'Estadísticas no disponibles')}</h2><p>{t('Sign in and connect to the live ranked server. No local, drill or unranked Agent data is substituted.', 'ログインとランク戦サーバーの接続が必要です。ローカル・ドリル・通常Agent戦の記録は代用しません。', '需要登录并连接排位服务器。不替用本地、训练或普通Agent数据。', 'Inicia sesión y conecta al servidor. No se sustituyen datos locales, de ejercicios ni Agent sin clasificación.')}</p></section>;
-  if (!profile) return <p role="status">{t('Loading confirmed FastFold results…', 'FastFold確定結果を読み込み中…', '正在加载FastFold确认结果…', 'Cargando resultados confirmados…')}</p>;
+  if (!profile) return <div className="analysis-ranked-stats" aria-busy="true">
+    <LoadingInline className="ff-loading">{t('Loading confirmed FastFold results…', 'FastFold確定結果を読み込み中…', '正在加载FastFold确认结果…', 'Cargando resultados confirmados…')}</LoadingInline>
+    <ScorebarSkeleton />
+    <div className="ff-stats-grid" aria-hidden="true">{[5, 4, 4, 4].map((lines, index) => <section className="analysis-card" key={index}><Skeleton width="38%" height={12} /><SkeletonText lines={lines} className="ff-skeleton-card" /></section>)}</div>
+  </div>;
   const state = profile.state, recent = [...state.recent].reverse();
   const points = recent.flatMap((item, index) => [[index, item.afterRating]]);
   const values = [recent[0]?.beforeRating ?? state.rating, ...points.map(point => point[1])];

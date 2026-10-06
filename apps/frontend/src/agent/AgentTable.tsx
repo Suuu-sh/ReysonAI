@@ -16,6 +16,7 @@ import { localized, translateProductCopy } from "../i18n.ts";
 import { AGENT_TABLE, GUEST_AGENT, agentTableById } from "./characters.ts";
 import { categoryName, playHand, type HandResult, type LogEntry } from "./hand.ts";
 import { productLocale } from "../locale.ts";
+import { LoadingDots, LoadingInline } from "../components/Loading.tsx";
 import { AgentAvatar } from "./AgentAvatar.tsx";
 import { createAgent, makePostflopKit, type PostflopKit } from "./policy.ts";
 import { createSession, finishHand, handSeed, seatPositions, toPoints, type Session } from "./session.ts";
@@ -293,7 +294,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
                 : totalPot - frontTotal > 0.001
                   ? <div className="agent-pot"><span>{localized("Pot", "ポット")}</span><b>{pts(totalPot - frontTotal)}</b>{frontTotal > 0 && <small>{localized("total", "合計")} {pts(totalPot)}</small>}</div>
                   : <div className="agent-pot is-total"><span>{localized("Total", "合計")}</span><b>{pts(totalPot)}</b></div>}
-              {waiting && <div className="agent-thinking">{result?.postflopKind === "mw3_srp" ? mw3Text.loading : localized("Reading the AI estimate…", "AI推定を読み込み中…")}</div>}
+              {waiting && <LoadingInline className="agent-thinking">{result?.postflopKind === "mw3_srp" ? mw3Text.loading : localized("Reading the AI estimate…", "AI推定を読み込み中…")}</LoadingInline>}
               {unavailable && <div className="agent-note" role="status">{mw3Text.unavailable}</div>}
               {done && result?.policyMissing && <div className="agent-note">{localized("No saved postflop policy for this line, so it was checked down.", "この経路のAI方針がないため、チェックダウンしました")}</div>}
             </>}>
@@ -351,7 +352,7 @@ export function AgentTablePage({ tableId, watch = false, onExit, waitingMode = f
             </>
             : <>
               <p className="agent-summary">{humanFolded ? localized("You folded — watch the rest or skip.", "降りました。続きを観戦するか、スキップできます。")
-                : waiting ? localized("Preparing the flop…", "フロップを準備中…") : localized("Agents are thinking…", "Agentが考えています…")}</p>
+                : <>{waiting ? localized("Preparing the flop", "フロップを準備中") : localized("Agents are thinking", "Agentが考えています")}<LoadingDots /></>}</p>
               {(humanFolded || watch) && <button key="skip" type="button" className="agent-skip" onClick={skip}><FastForward size={14} weight="bold" />{localized("Skip", "スキップ")}<kbd>S</kbd></button>}
               {humanFolded && <span className="agent-watching"><Eye size={14} />{localized("Watching", "観戦中")}</span>}
             </>}

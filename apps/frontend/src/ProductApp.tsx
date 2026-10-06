@@ -5,6 +5,7 @@ import { applyAppearance } from "./account/preferences.ts";
 import { localized, productLocale } from "./locale.ts";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Onboarding } from "./components/Onboarding.tsx";
+import { AppLoading } from "./components/AppLoading.tsx";
 import { RangeWorkspace } from "./estimated/RangeWorkspace.tsx";
 import { TrainerPage } from "./trainer/TrainerPage.tsx";
 import { adoptOnboardingDraft, clearProfile, loadProfile, saveProfile, stashOnboardingDraft } from "./profile.ts";
@@ -91,7 +92,7 @@ export default function ProductApp() {
   }, [profileReady, welcoming, path, visiblePath, returnTo]);
   // Child state reads the URL on mount. Commit the route before mounting it,
   // including the return from genuine onboarding at /welcome.
-  if (!account.ready || !profileReady || !routeReady) return <div className="site-loading">{localized("Opening account…", "アカウントを確認中…")}</div>;
+  if (!account.ready || !profileReady || !routeReady) return <AppLoading label={localized("Opening account…", "アカウントを確認中…")} />;
   if (authOpen) return <main className="account-page"><AuthPanel onChanged={reloadProfile} onGuest={async () => { if (accountSnapshot().user) { try { await logoutAccount(); } catch { return; } } rememberLearningIntent(null); go(HOME_PATH); setAuthOpen(false); reloadProfile(); }} />{account.user?.verified && <button className="account-primary" onClick={() => { setAuthOpen(false); reloadProfile(); }}>{localized("Continue", "続ける")}</button>}</main>;
   if (!profile || editing) {
     return <Onboarding initial={editing ? profile : null} account={account} onAccount={() => setAuthOpen(true)}

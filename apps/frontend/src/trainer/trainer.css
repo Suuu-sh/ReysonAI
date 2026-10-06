@@ -765,7 +765,6 @@
 .mode-block.is-ranked .rank-ladder li { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; row-gap: 0; padding: 4px 8px; }
 .mode-block.is-ranked .rank-ladder li .rank-badge { grid-row: span 2; }
 .mode-block.is-ranked .rank-ladder li :is(span, small) { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; line-height: 1.25; }
-.mode-block.is-ranked .rank-ladder li.rank-ladder-legend .rank-ladder-legend-copy { overflow: visible; white-space: normal; text-overflow: clip; }
 @keyframes ranked-grow-x { from { transform: scaleX(0); } }
 @media (prefers-reduced-motion: reduce) {
   .ranked-ring .arc, .mode-block.is-ranked .rank-ladder::after, .mode-block.is-ranked .ranked-bar b { animation: none; }

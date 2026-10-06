@@ -412,7 +412,7 @@ test("local generation controls are embedded in the missing range slot", () => {
   };
   try {
     const allIn = renderPath({ rangeType: "four_bet", opener: "UTG", hero: "HJ", pendingRaise: "all_in" });
-    const openerPanel = allIn.match(/<section class="panel multiway-range-panel missing-range-panel" aria-label="UTGのレンジ">[\s\S]*?<\/section>/)?.[0];
+    const openerPanel = allIn.match(/<section class="panel matrix-panel matrix-skeleton multiway-range-panel missing-range-panel" aria-label="UTGのレンジ" aria-busy="true">[\s\S]*?<\/section>/)?.[0];
     assert.ok(openerPanel, "5bet response has an opener range slot");
     assert.match(openerPanel, /保存済みレンジを読み込んでいます。/);
     assert.doesNotMatch(openerPanel, /Codexでレンジを生成/); // persisted data replaces local generation
@@ -420,7 +420,7 @@ test("local generation controls are embedded in the missing range slot", () => {
     assert.doesNotMatch(allIn, /5betオールイン後の応答レンジは未収録/);
 
     const multiway = renderPath({ rangeType: "response", opener: "BTN", hero: "BB", callers: ["SB"] });
-    const heroPanel = multiway.match(/<section class="panel multiway-range-panel missing-range-panel" aria-label="BBのレンジ">[\s\S]*?<\/section>/)?.[0];
+    const heroPanel = multiway.match(/<section class="panel matrix-panel matrix-skeleton multiway-range-panel missing-range-panel" aria-label="BBのレンジ" aria-busy="true">[\s\S]*?<\/section>/)?.[0];
     assert.ok(heroPanel, "multiway Hero has a pending range slot");
     assert.match(heroPanel, /保存済みレンジを読み込んでいます。/);
     assert.doesNotMatch(heroPanel, /Codexでレンジを生成/); // saved zero-support source never generates a HU substitute
