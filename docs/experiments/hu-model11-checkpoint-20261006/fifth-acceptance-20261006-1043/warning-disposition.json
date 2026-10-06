@@ -1,0 +1,79 @@
+{
+  "kind": "independent-co-sb-coldcall-advisory-warning-disposition",
+  "version": 1,
+  "reviewedAt": "2026-10-06T10:33:58.695708+00:00",
+  "classification": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/warning-classification.json",
+    "bytes": 7061,
+    "sha256": "702f3f9c69bc97138b412311f52f850c7cce695bde620909f2996b511590e750"
+  },
+  "criteriaSource": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/balance-model11-kernel.mjs",
+    "bytes": 31222,
+    "sha256": "6192350ae7209cd4a4b9c7316d5c75c2811f8dd96cb12b9a304be2af6d736431"
+  },
+  "warningOccurrences": 20801,
+  "counts": {
+    "value-only-raise": 1336,
+    "bluff-ratio(under)": 6690,
+    "overfold": 10004,
+    "overcall": 2606,
+    "bluff-ratio(over)": 165
+  },
+  "dispositions": [
+    {
+      "type": "value-only-raise",
+      "count": 1336,
+      "criterion": "Raise frequency at least 3%, with less than 3% non-monster weight in the raising range.",
+      "interpretation": "1327 occurrences are on paired/trips flops, where coarse monster tiers can be broad. Nine occurrences on unpaired flops remain explicit unquantified exceptions: four at Ac9d3h and five at KcQcJc, all on turn. These are retained strategy diagnostics; no mandatory edit is established by the advisory classification."
+    },
+    {
+      "type": "bluff-ratio(under)",
+      "count": 6690,
+      "criterion": "Coarse air share more than 15 percentage points below the size target, with action range frequency at least 5%.",
+      "interpretation": "All 6690 occurrences are river betting diagnostics on 1752 flops. Coarse air-tier share is not equity-defined bluff mass; meeting a quota by adding bluffs would not be justified. The shortfalls remain model-policy limitations."
+    },
+    {
+      "type": "overfold",
+      "count": 10004,
+      "criterion": "Aggregate call-plus-raise defence more than 15 percentage points below its price-derived minimum defence.",
+      "interpretation": "All 10004 occurrences are on river, and river_oop_vs_33 is flagged on all 1755 flops. This is a widespread retained under-defence signal. Aggregate diagnostics alone do not establish individual negative call EV or harmlessness, and no case-specific trace attributes these findings to exact-sign guards."
+    },
+    {
+      "type": "overcall",
+      "count": 2606,
+      "criterion": "Non-monster defence exceeds its remaining MDF need by more than min(15 percentage points, need plus 5 percentage points).",
+      "interpretation": "2605 occurrences are on flop/turn; one is at river_ip_vs_125 on 5c4d3h. Aggregate tier-relative diagnostics do not prove negative individual call EV. The exact river exception and row pin are retained; its magnitude and trajectory are absent from compact rows."
+    },
+    {
+      "type": "bluff-ratio(over)",
+      "count": 165,
+      "criterion": "Coarse air share exceeds the size target by more than 15 percentage points; the over-side criterion has no minimum action-frequency filter.",
+      "interpretation": "165 occurrences affect 128 unpaired flops: 127 at river_ip_first and 38 at river_oop_first. Every exact board/node occurrence and row pin is retained in warning-witnesses.json. These are substantive advisory limitations. Missing action size, excess magnitude and action frequency prevent concluding harmlessness or an exact equity-cap violation. The source criterion is advisory and does not itself establish a mandatory policy repair."
+    }
+  ],
+  "exactWitnesses": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/warning-witnesses.json",
+    "bytes": 105588,
+    "sha256": "78c6645f5bbb78d3e7dce6605b5b5e1c1a467d742b135ff303ae7366828ac2fb"
+  },
+  "unpairedRaiseTierOccurrences": 9,
+  "overAirOccurrences": 165,
+  "overAirAffectedFlops": 128,
+  "riverOvercallOccurrences": 1,
+  "cappedCheckOccurrences": 0,
+  "mandatoryPolicyEditsEstablished": [],
+  "furtherNumericalProbeRequiredByThisScopedReview": false,
+  "warningCountsAreIndependentBoardCounts": false,
+  "warningsResolved": false,
+  "currentSourceAcceptanceOnly": true,
+  "noThresholdChanges": true,
+  "newNodeProcesses": 0,
+  "overAirAffectedFraction": {
+    "affectedCanonicalFlops": 128,
+    "totalCanonicalFlops": 1755,
+    "fraction": 0.07293447293447293,
+    "percent": 7.293447293447293
+  },
+  "strategicUncertainty": "Over-air findings occur on 128 of 1755 canonical flops (7.2934%), a visibly broader affected set than the prior case. This is retained alongside the 22 negative regression means. Occurrence/board counts alone do not quantify excess magnitude, actual action frequency, EV impact or prevalence across all poker runouts. Zero mandatory numerical errors does not make these advisory strategy findings harmless or resolved."
+}

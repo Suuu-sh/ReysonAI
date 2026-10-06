@@ -1,15 +1,16 @@
-# Four cases accepted; fifth progress and two static preparations preserved
+# Five individual model11 research cases accepted
 
-The fourth case, `CO_open_BTN_3bet_SB_call_CO_fold`, was independently accepted at **2026-10-06 08:04:13 UTC** under the revised scoped numerical contract. Its 220-batch / 1755-board producer completed, finalization and postflight passed, and the independent actual-output and policy reviews are preserved in [the dated fourth-case acceptance](fourth-acceptance-20261006-0817/ACCEPTANCE.md).
+Five individual research cases are accepted. The fourth case, `CO_open_BTN_3bet_SB_call_CO_fold`, was independently accepted at **2026-10-06 08:04:13 UTC** under the revised scoped numerical contract. Its 220-batch / 1755-board producer completed, finalization and postflight passed, and the independent actual-output and policy reviews are preserved in [the dated fourth-case acceptance](fourth-acceptance-20261006-0817/ACCEPTANCE.md).
 
-The four model11 cases are:
+The five model11 cases are:
 
 1. `BTN_open_SB_3bet_BB_call_BTN_fold`
 2. `BTN_open_SB_3bet_BB_4bet_BTN_fold_SB_call`
 3. `CO_open_BTN_call_BB_squeeze_CO_call_BTN_fold`
 4. `CO_open_BTN_3bet_SB_call_CO_fold`
+5. `CO_open_SB_3bet_BB_call_CO_fold`
 
-The legacy accepted model10 snapshot remains separate. The fourth case is bound to exact source `4b6b39a613afe72a2362f85aa93a305cd61b3586`; earlier three-case evidence keeps its original source identities. **This is accepted research evidence, not PR runtime adoption, PR completion or production approval.**
+The legacy accepted model10 snapshot remains separate. The fourth and fifth cases are bound to exact source `4b6b39a613afe72a2362f85aa93a305cd61b3586`; earlier three-case evidence keeps its original source identities. **This is accepted research evidence, not PR runtime adoption, PR completion or production approval.**
 
 ## Fourth-case evidence and limits
 
@@ -27,13 +28,17 @@ All **18899 advisory occurrences** remain: 1570 raise-tier, 6464 low-air, 8901 r
 
 The 633137314-byte combined upload failed; no success is claimed for it. Versions 21/22/13 form the documented restoration set. Large proof maps and raw data stay in Library. Only immutable proof copies were deduplicated after verified external restoration; all paths/bytes remain intact. Historical paths in receipts are provenance, not executable PR-relative locations.
 
-## Fifth case: 1600/1755 observed; 1560 boards externally preserved
+## Fifth case: scoped acceptance complete
 
-Fixed live observation: **2026-10-06 10:17:43.567334 UTC**. `CO_open_SB_3bet_BB_call_CO_fold` had **1600/1755 completed boards**, zero errors/unresolved, 200 successful batches and zero failed batches. Owner 29433 / attempt `attempt-c9075316-cf53-45dc-811a-ef6287230a77` continued unchanged on frozen source `4b6b39a613afe72a2362f85aa93a305cd61b3586`; the whole-run receipt was absent. Maximum completed-child peak RSS was 569132 KiB, not current aggregate memory. Free disk was 3305553920 bytes at that observation.
+`CO_open_SB_3bet_BB_call_CO_fold` was independently accepted at **2026-10-06 10:33:58 UTC** under the revised scoped numerical contract. Its genuine 220-batch / 1755-board producer completed at 10:28:32 UTC, exited zero and reaped all owned groups with source unchanged. The finalizer exited zero and reaped successfully in 64.64 seconds, peak 660024 KiB, with postflight PASS. The exact receipts, including warning witnesses, are saved in [the dated fifth-case acceptance](fifth-acceptance-20261006-1043/ACCEPTANCE.md).
 
-The separate immutable backup was captured at **2026-10-06T10:15:08.202785+00:00**, preserving **1560 completed boards / 195 successful batches / 36743 files**. Confirmed Library `libfile_6799ccdac21481919ae8552834b72a4f` **v9**, `hu-model11-co-sb-coldcall-progress-20261006-1015.tar.gz`, is 90678781 bytes, SHA-256 `dab10a29f93fae3ca87e130790fd7202c21f81e494fdc1fe117b008c29dbfd20`. It does not claim to contain all 1600 boards from the newer observation. Active partial batches were excluded. Upload/version metadata is confirmed; no fresh re-download is claimed. [The dated progress/Library index](updates/20261006-1019/progress-and-library-index.json) retains both cutoff times.
+Counts are **779220 prefixes = 740732 evaluated + 38488 proved model-unreachable**, zero errors/unresolved. Full lossless canonical storage equality verified all 21140407 bytes, SHA-256 `bd09def9a6cbf26b59741a928bbcc452bb60ad525e791063b5aca2ae8bf38421`. No fresh whole-set semantic/consumer replay or own 720k replay is claimed. This is the native model10-authored staged pair evaluated under exact model11 source `4b6b39a613afe72a2362f85aa93a305cd61b3586`.
 
-The fifth case remains unaccepted; its finalizer and actual final acceptance are pending. The finalizer is conditional on a genuine successful, fully reaped 220-batch / 1755-board terminal and its actual receipt SHA. The 22 negative regression means and ten whole12 warnings remain limitations. Accepted model11 research cases remain four. This checkpoint updates STATUS, adds the dated progress record and preserves three small sixth-case static delta/review files. All prior files and current runtime/source remain unchanged. No numerical or Node work was run for the save.
+All **20801 advisory occurrences** remain: 1336 value-only raises, 6690 under-air, 10004 river under-defence, 2606 overcall and 165 over-air. Those 165 affect 128 canonical flops (7.2934%). Missing magnitudes, action size/frequency and EV impact prevent harmlessness or equity-cap-violation conclusions. The 22 negative regression means and broad descriptive uncertainty remain; there was no predefined extra-probe trigger. No superiority, noninferiority, equilibrium/GTO or general robustness claim follows from acceptance.
+
+[The outcome/Library index](fifth-acceptance-20261006-1043/outcome-and-library-index.json) pins confirmed Library `libfile_6799ccdac21481919ae8552834b72a4f` **v10** complete producer (102076527 bytes, SHA `eaafe08443758c1072b743609437ccd6e78826618fd662d104df5a6f62337c68`, freshly restored / 41350 records verified) and **v11** acceptance/restore index (12187928 bytes / 1796 files, SHA `320f7473ce32d45d11a5e7e9ba3897961194cad38808d55e0804c88faf0d4ccd`). The prior four-case index remains linked. Only completed immutable proof duplicates were hardlinked after external restoration/hash/mode checks, preserving all paths and bytes and freeing about 1.04 GiB; source/active data and additional archives were not changed or deleted.
+
+The stage-specific terminal/component receipts retain their original pre-acceptance status; the later scoped receipt records the acceptance decision. All earlier HOLD and dated progress evidence remains unchanged. This save performs no new Node, tests or numerical work and does not adopt model11 into runtime.
 
 ## Next ranked case: static preparation only
 
@@ -53,4 +58,4 @@ Confirmed Library `libfile_a360a0c084848191aa18d5fd7443c066` **v4**, `hu-model11
 
 ## Remaining integration work
 
-All four prior model11 research acceptances, old model10 acceptance, existing source snapshots, historical HOLD records and dated progress receipts remain unchanged. This Git save runs no Node, tests or numerical work and changes no runtime paths. Runtime/typed integration, delivery/ES1, actual strict D1, browser QA, remaining policies and PR merge conflict/current full CI remain separate unfinished work. No PR comment/body edit, merge, main/development update or production action is included.
+All five scoped model11 research acceptances, old model10 acceptance, existing source snapshots, historical HOLD records and dated progress receipts remain unchanged. This Git save runs no Node, tests or numerical work and changes no runtime paths. Runtime/typed integration, delivery/ES1, actual strict D1, browser QA, remaining policies and PR merge conflict/current full CI remain separate unfinished work. No PR comment/body edit, merge, main/development update or production action is included.

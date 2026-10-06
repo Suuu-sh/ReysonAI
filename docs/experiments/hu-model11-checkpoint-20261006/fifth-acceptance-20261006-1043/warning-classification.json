@@ -1,0 +1,341 @@
+{
+  "kind": "co-sb-coldcall-saved-warning-classification",
+  "version": 1,
+  "rowsVerified": 1755,
+  "warningOccurrences": 20801,
+  "byType": {
+    "value-only-raise": 1336,
+    "bluff-ratio(under)": 6690,
+    "overfold": 10004,
+    "overcall": 2606,
+    "bluff-ratio(over)": 165
+  },
+  "byFlopRankMultiplicity": {
+    "value-only-raise": {
+      "trips": 207,
+      "paired": 1120,
+      "unpaired": 9
+    },
+    "bluff-ratio(under)": {
+      "trips": 73,
+      "paired": 1731,
+      "unpaired": 4886
+    },
+    "overfold": {
+      "trips": 42,
+      "paired": 1624,
+      "unpaired": 8338
+    },
+    "overcall": {
+      "paired": 516,
+      "unpaired": 2090
+    },
+    "bluff-ratio(over)": {
+      "unpaired": 165
+    }
+  },
+  "affectedFlopsByType": {
+    "value-only-raise": 265,
+    "bluff-ratio(under)": 1752,
+    "overfold": 1755,
+    "overcall": 1072,
+    "bluff-ratio(over)": 128
+  },
+  "byNode": [
+    {
+      "check": "bluff-ratio(over)",
+      "street": "later",
+      "node": "river_ip_first",
+      "count": 127
+    },
+    {
+      "check": "bluff-ratio(over)",
+      "street": "later",
+      "node": "river_oop_first",
+      "count": 38
+    },
+    {
+      "check": "bluff-ratio(under)",
+      "street": "later",
+      "node": "river_ip_first",
+      "count": 4013
+    },
+    {
+      "check": "bluff-ratio(under)",
+      "street": "later",
+      "node": "river_oop_first",
+      "count": 2677
+    },
+    {
+      "check": "overcall",
+      "street": "flop",
+      "node": "bb_vs_125",
+      "count": 4
+    },
+    {
+      "check": "overcall",
+      "street": "flop",
+      "node": "bb_vs_33",
+      "count": 1
+    },
+    {
+      "check": "overcall",
+      "street": "flop",
+      "node": "ip_vs_125",
+      "count": 314
+    },
+    {
+      "check": "overcall",
+      "street": "flop",
+      "node": "ip_vs_33",
+      "count": 590
+    },
+    {
+      "check": "overcall",
+      "street": "flop",
+      "node": "ip_vs_75",
+      "count": 216
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "river_ip_vs_125",
+      "count": 1
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "turn_ip_vs_125",
+      "count": 489
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "turn_ip_vs_33",
+      "count": 555
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "turn_ip_vs_75",
+      "count": 411
+    },
+    {
+      "check": "overcall",
+      "street": "later",
+      "node": "turn_oop_vs_125",
+      "count": 25
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_ip_vs_125",
+      "count": 502
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_ip_vs_33",
+      "count": 1705
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_ip_vs_75",
+      "count": 1199
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_ip_vs_allin",
+      "count": 822
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_oop_vs_125",
+      "count": 1482
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_oop_vs_33",
+      "count": 1755
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_oop_vs_75",
+      "count": 1679
+    },
+    {
+      "check": "overfold",
+      "street": "later",
+      "node": "river_oop_vs_allin",
+      "count": 860
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "bb_vs_125",
+      "count": 29
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "bb_vs_33",
+      "count": 13
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "bb_vs_75",
+      "count": 13
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "btn_vs_raise",
+      "count": 201
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "ip_vs_125",
+      "count": 123
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "ip_vs_33",
+      "count": 70
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "ip_vs_75",
+      "count": 112
+    },
+    {
+      "check": "value-only-raise",
+      "street": "flop",
+      "node": "oop_vs_raise",
+      "count": 222
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_ip_vs_125",
+      "count": 72
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_ip_vs_33",
+      "count": 66
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_ip_vs_75",
+      "count": 102
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_ip_vs_raise",
+      "count": 152
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_oop_vs_125",
+      "count": 14
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_oop_vs_33",
+      "count": 14
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_oop_vs_75",
+      "count": 14
+    },
+    {
+      "check": "value-only-raise",
+      "street": "later",
+      "node": "turn_oop_vs_raise",
+      "count": 119
+    }
+  ],
+  "unpairedRaiseTierWarnings": [
+    {
+      "board": "Ac9d3h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_33",
+      "street": "later"
+    },
+    {
+      "board": "Ac9d3h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_75",
+      "street": "later"
+    },
+    {
+      "board": "Ac9d3h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise",
+      "street": "later"
+    },
+    {
+      "board": "Ac9d3h",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise",
+      "street": "later"
+    },
+    {
+      "board": "KcQcJc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_33",
+      "street": "later"
+    },
+    {
+      "board": "KcQcJc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_75",
+      "street": "later"
+    },
+    {
+      "board": "KcQcJc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_125",
+      "street": "later"
+    },
+    {
+      "board": "KcQcJc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_oop_vs_raise",
+      "street": "later"
+    },
+    {
+      "board": "KcQcJc",
+      "check": "value-only-raise",
+      "severity": "warn",
+      "node": "turn_ip_vs_raise",
+      "street": "later"
+    }
+  ],
+  "cappedCheckWarnings": [],
+  "limits": "Stored compact rows retain warning types/node/order but not per-warning magnitudes or full action trajectories. Occurrence counts are not independent board counts."
+}

@@ -1,0 +1,62 @@
+{
+  "kind": "independent-co-sb-coldcall-actual-finalization-review",
+  "version": 1,
+  "status": "PASS",
+  "reviewedAt": "2026-10-06T10:31:34.690627+00:00",
+  "producer": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/attempts/attempt-c9075316-cf53-45dc-811a-ef6287230a77/receipt.json",
+    "bytes": 230590,
+    "sha256": "7854f4ea9eeff495f1f3626cf2f7e4ada026f613ab8c501afaddf18da545fed9"
+  },
+  "terminal": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/supervision-v1/terminal.json",
+    "bytes": 1320,
+    "sha256": "19ebd3b8eab7a3d93117be8c0b00b14aba294f9a28c9032d3e2b6645da15a2b5"
+  },
+  "postflight": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/supervision-v1/postflight.json",
+    "bytes": 839,
+    "sha256": "bca8a7b77682e8cbf5941b83024c4cf02addd6f8744248df651b0f1bf2ccfcca"
+  },
+  "component": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/finalized-v1/producer-verified-component.json",
+    "bytes": 3179,
+    "sha256": "0ed5fde1d7df407de1bcf8904c67f36762be84218ef0c26d52fd6375c5061c7e"
+  },
+  "partitionedReceipt": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/finalized-v1/allboard-partitioned.json",
+    "bytes": 1446193,
+    "sha256": "d50978e9237e81be2c00af1bd49836dcb8c5951e0c79336af20a494784e32d64"
+  },
+  "resultHash": "cce88019e40394f375e335bbb2145fb5aa13db914bb601f1805501f550c606e9",
+  "producerBatchesVerified": 220,
+  "originalAndMergedRowFilesVerified": 1755,
+  "referencedOriginalAndMergedProofFilesVerified": 38488,
+  "allRowsComplete": true,
+  "errors": 0,
+  "prefixCounts": {
+    "requested": 779220,
+    "evaluated": 740732,
+    "provedModelUnreachable": 38488,
+    "unresolved": 0
+  },
+  "nativeFullLosslessStorageCheck": {
+    "encoding": "UTF-8 of frozen canonicalJson; complete receipt, all1755 rows",
+    "bytes": 21140407,
+    "sha256": "bd09def9a6cbf26b59741a928bbcc452bb60ad525e791063b5aca2ae8bf38421",
+    "fullBytesEqual": true,
+    "fullHashEqual": true
+  },
+  "warningClassification": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/warning-classification.json",
+    "bytes": 7061,
+    "sha256": "702f3f9c69bc97138b412311f52f850c7cce695bde620909f2996b511590e750"
+  },
+  "freshWholeSetSemanticPasses": 0,
+  "reviewerNodeLaunches": 0,
+  "script": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-producer-verified-finalization/review_saved_output.py",
+    "bytes": 10220,
+    "sha256": "d2f53b7003903f07bfccb43f0dadaf428903021d99f69a044a7f2ef6c1aa0459"
+  }
+}

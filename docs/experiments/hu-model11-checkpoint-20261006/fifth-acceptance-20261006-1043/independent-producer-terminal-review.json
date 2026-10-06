@@ -1,0 +1,65 @@
+{
+  "kind": "co-sb-coldcall-independent-producer-terminal-lineage-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T10:31:08.246650+00:00",
+  "status": "PASS_PRODUCER_ONLY_FINAL_ACCEPTANCE_PENDING",
+  "producer": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/attempts/attempt-c9075316-cf53-45dc-811a-ef6287230a77/receipt.json",
+    "bytes": 230590,
+    "sha256": "7854f4ea9eeff495f1f3626cf2f7e4ada026f613ab8c501afaddf18da545fed9"
+  },
+  "ownershipTerminal": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/attempts/attempt-c9075316-cf53-45dc-811a-ef6287230a77/terminal.json",
+    "bytes": 230555,
+    "sha256": "fb3fa246cbd43ece5ebfae4b246b799eb9e3dc87a79b7b1316f4a8b6db2f08e2"
+  },
+  "postflightSequence": "Controller persists terminal ownership before postflight, then receipt.json adds sourceUnchanged=true and persistedCompleteObjects; all other terminal fields match.",
+  "plan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/plan.json",
+    "bytes": 43632,
+    "sha256": "74ba21f156f08e24a158f028a2c4f1c4505e59232bbe3598f817a62ab23cd7e0"
+  },
+  "prepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run/prepared.json",
+    "bytes": 41247,
+    "sha256": "b62a1d5a7a0a23bd64426da10ef3b022f4119ef25e71e6314a40be351e6d862c"
+  },
+  "boardsReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/boards-launch-review.json",
+    "bytes": 18239,
+    "sha256": "ad0459e700534673929d4689648cf473e4c98906836a70c702843e17aabfb475"
+  },
+  "completedJobs": 220,
+  "uniqueCanonicalBoardIndices": 1755,
+  "jobsByLane": {
+    "0": 44,
+    "4": 44,
+    "1": 44,
+    "3": 44,
+    "2": 44
+  },
+  "boardsByLane": {
+    "0": 351,
+    "4": 351,
+    "1": 351,
+    "3": 351,
+    "2": 351
+  },
+  "allCompletionJobAndWorkerPinsVerified": true,
+  "allLaunchCompletionTerminalPidStartIdentitiesMatch": true,
+  "allJobLimitsPassed": true,
+  "maximumJobRssKiB": 569132,
+  "maximumJobSeconds": 181.28903427900514,
+  "aggregatePeakRssKiB": 2804308,
+  "minimumAvailableKiB": 5560072,
+  "seconds": 6911.714924147993,
+  "allCreatedChildrenReaped": true,
+  "allOwnedGroupsGone": true,
+  "sourceUnchanged": true,
+  "ownerLockAbsent": true,
+  "finalizerReview": "Pending genuine finalizer terminal, complete merged row/proof verification, lossless codec evidence and advisory disposition.",
+  "reviewerNodeLaunches": 0,
+  "freshSemanticReplay": false,
+  "policyAccepted": false,
+  "productionAuthorized": false
+}
