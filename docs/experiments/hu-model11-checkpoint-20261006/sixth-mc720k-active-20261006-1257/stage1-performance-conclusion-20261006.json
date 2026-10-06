@@ -1,0 +1,74 @@
+{
+  "status": "STAGE1_CLOSED_NO_NEW_OPTIMIZATION_ADOPTED",
+  "formalSource": {
+    "root": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution",
+    "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "closedIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+    "trackedStatus": ""
+  },
+  "outcomes": [
+    {
+      "candidate": "gate-geometry memo",
+      "adopted": false,
+      "focusedTests": 14,
+      "parity": "Complete444-prefix ordered result equality, only elapsed omitted",
+      "wallIncreasePercent": 6.5843309062484145,
+      "evidence": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-gate-geometry-memo-preparation-20261006/one-pair-result.json",
+        "bytes": 2892,
+        "sha256": "f7b7552459e7e1b778c761c7335d48172d1e5febc9e6860206989498c515947d"
+      }
+    },
+    {
+      "candidate": "request-lifetime historical-prefix Map",
+      "adopted": false,
+      "focusedTests": 42,
+      "parity": "Complete192 trials/proofs and all engine counters/draws/cache states equal",
+      "wallIncreasePercent": 7.565665343311356,
+      "cpuIncreasePercent": 11.330983144394335,
+      "evidence": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/three-cell-parity.json",
+        "bytes": 10541,
+        "sha256": "87b3d80f99e85671af80f00c73ffd856c0f0eb5d785971b46571887254b1ca89"
+      },
+      "auxiliaryProfile": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-conclusion.json",
+        "bytes": 1604,
+        "sha256": "80240526bcfd25ffa2b18ca065c5573fd5d623153b763978e09366af1df1a6bc"
+      }
+    },
+    {
+      "candidate": "owned-history single canonicalization",
+      "adopted": false,
+      "focusedTests": 55,
+      "parity": "Complete192 trials/proofs and all engine counters/draws/cache states equal",
+      "wallIncreasePercent": 4.611794901544908,
+      "cpuIncreasePercent": 5.089210328426175,
+      "evidence": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/three-cell-parity.json",
+        "bytes": 10562,
+        "sha256": "5424e0c041df0915e5948dd6c6679aba31c55a1e0f8fcd825b6684aee05e9006"
+      },
+      "summary": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/SUMMARY.md",
+        "bytes": 2830,
+        "sha256": "dcf7810934e739ea6916e5ed9e7a4bd0b845b60e256d7c190483ca3b67636e81"
+      }
+    },
+    {
+      "candidate": "WeakSet owned-snapshot validation",
+      "adopted": false,
+      "measured": false,
+      "NodeRuns": 0,
+      "status": "Paused before any tests/numerics under latest user ordering",
+      "evidence": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-snapshot-validation-20261006/paused-checkpoint.json",
+        "bytes": 884,
+        "sha256": "87756d0350060d63e27e80305e2bf99623c9cf7f5012e6ee8213886c0a7e093b"
+      }
+    }
+  ],
+  "interpretation": "Single-pass selected conditions do not establish reliable slowdowns; none demonstrated an adoption-worthy gain. All attempts and negative outcomes preserved. No confidence/720k timing projection.",
+  "nextSourceDecision": "Use existing formal4b for the separately authorized actual72x10000 run; no candidate inventory update required.",
+  "additionalCandidateRunsAuthorizedByThisReport": false
+}

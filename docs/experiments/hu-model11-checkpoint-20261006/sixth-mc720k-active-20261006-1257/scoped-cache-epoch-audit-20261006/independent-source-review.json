@@ -1,0 +1,193 @@
+{
+  "kind": "hu-current-scoped-cache64-audit-independent-source-review",
+  "version": 1,
+  "verdict": "APPROVE_SCOPED_AUDIT_SOURCE",
+  "reviewedAt": "2026-10-06T12:46:44.392726+00:00",
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "sourceBindingHash": "2171cb322dfb12519d5b635ebffada69109c37bd5bbf2a85c4bf3ac1b7b434a2",
+  "adapterPins": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/scoped-audit.mjs",
+      "bytes": 22390,
+      "sha256": "9a1ae13e8f369f109d70f3ee5451f1326de225f4a6cc05e6270ddc291514d041"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/audit-current.mjs",
+      "bytes": 11961,
+      "sha256": "3d7bf03bc7289bab7968b7c22283cb824577c73c8d86ba45ddd462f66b9e6dc3"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-selected-regression.mjs",
+      "bytes": 17860,
+      "sha256": "6f15a7745428e68e6e205c627d4bff97880490aa70b813aa8e7178047f4a4dac"
+    }
+  ],
+  "manifest": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/prepared-manifest.json",
+    "bytes": 216445,
+    "sha256": "588b6f01c91251a570f6ef9faeeaa253c724b1bc8b3df83027b33b07f650bdd3"
+  },
+  "manifestHash": "6d171e15f1c68da34ffc8d588b8035b57de2304268b0ca4d21205a6ecaa0a309",
+  "generationPrepared": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run/prepared.json",
+    "bytes": 41534,
+    "sha256": "af1081bccc660345eb5b514f8c1a76decf7d13c6be853a8852e9f15e32c2a6e9"
+  },
+  "generationLaunchReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/launch-review.json",
+    "bytes": 12272,
+    "sha256": "f5e67592d6458548c1a83144be9c589a9855317aa46819b7f70f1282396ca07e"
+  },
+  "method": "Independent static source review and Python checks of exact saved source/test/preparation bytes, deterministic selection and terminal receipts. No reviewer Node or numerical retest.",
+  "selection": {
+    "seed": "reysonai-hu-selected-cache-epochs-20261006-v1",
+    "baseCellIndices": [
+      5,
+      7,
+      17,
+      21,
+      28,
+      32,
+      40,
+      42,
+      50,
+      54,
+      61,
+      69
+    ],
+    "selectedCellIndices": [
+      1,
+      2,
+      5,
+      7,
+      17,
+      21,
+      28,
+      32,
+      40,
+      42,
+      50,
+      54,
+      59,
+      61,
+      69
+    ],
+    "baseCoverage": "One condition for every representative flop; each of six profile/seat combinations appears twice in the12 base conditions.",
+    "addedKnownWitnesses": [
+      1,
+      2,
+      59
+    ],
+    "epochs": [
+      0,
+      78,
+      156
+    ],
+    "originalIndexIntervalsInclusive": [
+      [
+        0,
+        63
+      ],
+      [
+        4992,
+        5055
+      ],
+      [
+        9984,
+        9999
+      ]
+    ],
+    "perSelectedCell": 144,
+    "selectedCells": 15,
+    "selectedPairedTrials": 2160,
+    "advancedOriginalRngTrials": 720000,
+    "additionalCacheControlHands": 12,
+    "selectionTiming": "Fixed before the new720k producer results; known adverse/completion witnesses retained, no result-driven reroll."
+  },
+  "findings": [
+    "Existing originalDealStream, produceSelectedCell and validateSelectedCell remain byte-identical formal4b primitives. RNG advances samplePair rejection sampling, runout and24 action draws at every original index; cache release occurs before draws at all157 epoch starts.",
+    "Each selected interval is a complete cache64 epoch including the last16-trial final epoch. All within-epoch prior candidate decisions are executed, preserving model-law cache history for selected epochs.",
+    "Selected comparator checks entire stored trial objects, returns, completion laws and full referenced proof bodies. Its relaxed condition coverage is explicit and does not inherit the historical4999 comparator requirement that every completion trial be selected.",
+    "Every stored full cell is scanned for exact source/cell/chunk/proof bytes and identities, contiguous counts, full proof body hashes, full EV/status/aggregate accounting and absence of extra files. This reuses the current producer full-cell native semantic-validation receipt and does not rerun its semantics over all720k.",
+    "CLI requires genuine complete source-bound720k controller receipt with all72 successful launched job/process bindings, successful cleanup, unchanged source, all72 first64 parity and exact nativeValidation/timing records. It derives the new2171 binding from current context and rejects stale manifest bindings.",
+    "Final CLI delta adds precise producer/job provenance, required parity and fresh isolated output directory checks. Output artifacts are immutable; result is explicitly scoped and not policy acceptance."
+  ],
+  "focusedEvidence": {
+    "executedSourcePins": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/test-supervision/pins.json",
+      "bytes": 458,
+      "sha256": "d3d0ba090ddbbf981be78078dd353680ed17715cb8620a79929d2bdf3d7467bc"
+    },
+    "result": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/test-result/result.json",
+      "bytes": 218665,
+      "sha256": "7a7dede8d128179df1024d3e3aef9eb5448db6ad6a028c2917b4d7fdc77b3885"
+    },
+    "fullStoredAndFreshTrialsEqual": 64,
+    "fullProofBodiesEqual": 1,
+    "negativeControls": [
+      "wrong source binding",
+      "missing native-validation receipt",
+      "wrong original cell record",
+      "truncated row stream",
+      "changed full proof body",
+      "changed selected full proof",
+      "changed stored last trial",
+      "partial selected epoch",
+      "foreign selection seed"
+    ],
+    "directIndependentRngScheduleCompared": 10000,
+    "assertedCacheResetCount": 157,
+    "cacheControlHands": 12,
+    "resources": {
+      "test": {
+        "resource": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/test-supervision/resource.json",
+          "bytes": 1571,
+          "sha256": "a74a86335e39e21f3341cc2770a78358dc2e23269cb088110b25bcd447afa81c"
+        },
+        "parentResult": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/test-supervision/parent-result.json",
+          "bytes": 2111,
+          "sha256": "9418d7eeebbf0b1474d31083fa85036b083e76c47c86ba09791bf5745a145223"
+        },
+        "seconds": 9.185630980005953,
+        "peakGroupRssKiB": 374600
+      },
+      "prepare": {
+        "resource": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/prepare-supervision/resource.json",
+          "bytes": 1575,
+          "sha256": "016fd9152d9b0e65b8d42edfc8fac5825e083d3f8f418307393718f3c34ad4fc"
+        },
+        "parentResult": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/prepare-supervision/parent-result.json",
+          "bytes": 2115,
+          "sha256": "69cab97f69d0b22f90de924ec30ab51da72421e355bfb353a83bad9c72cb1b6f"
+        },
+        "seconds": 0.9740521190105937,
+        "peakGroupRssKiB": 138936
+      }
+    },
+    "boundary": "Focused numerical evidence covers one retained64-trial epoch, one full proof and three real cache controls. Final CLI binding/provenance is statically reviewed; full2160 replay and720k integrity scan are pending genuine production completion."
+  },
+  "limitations": [
+    "Numerical replay covers only the explicitly selected conditions and complete cache epochs; this is not a fresh720000-trial replay.",
+    "Full stored-row, byte, hash, proof-body and EV-accounting checks establish unchanged evidence and accounting, not numerical correctness of unreplayed trials.",
+    "All original RNG indices advance through samplePair, dealRunout and24 action draws. Whole selected epochs reproduce model-law cache history after each cache64 release.",
+    "Process-global card/rank cache warmth and cumulative timing/diagnostic counters differ; fresh strict instances do not clear process-global caches.",
+    "The original native semantic validator executes once during production for every full cell; its source-bound receipt is reused by the integrity audit.",
+    "Selected results are not a new EV estimator, statistical equivalence result, full-policy acceptance, or production authorization."
+  ],
+  "executionPrerequisites": [
+    "Genuine successful complete720k producer terminal and saved exact summary/receipt arguments.",
+    "Parent schedules the existing owned supervisor with512MiB heap,900MiB owned RSS and2GiB host floor; no unbounded direct Node launch.",
+    "Use the frozen current CLI/helper/manifest and a fresh isolated output directory; preserve failed or partial evidence."
+  ],
+  "freshFull720kReplayPerformed": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "numericalSourceChanged": false,
+  "balanceStatus": "Full1755 flop and fixed100 later-origin balance remain separate outstanding evidence; this review supplies no balance or final acceptance claim."
+}

@@ -1,0 +1,56 @@
+diff --git a/apps/frontend/scripts/postflop-ai/decision-prefix.mjs b/apps/frontend/scripts/postflop-ai/decision-prefix.mjs
+index 74d4d0a..9703ec4 100644
+--- a/apps/frontend/scripts/postflop-ai/decision-prefix.mjs
++++ b/apps/frontend/scripts/postflop-ai/decision-prefix.mjs
+@@ -11,6 +11,13 @@ export class EffectiveReachError extends Error {
+ const fail = message => { throw new EffectiveReachError('invalid-public-prefix', message); };
+ const streets = ['flop', 'turn', 'river'];
+ export function createDecisionPrefix(inputs, request, config = inputs.config) {
++  return decisionPrefix(inputs, request, config, false);
++}
++// Internal replay-derived requests only. The public entry keeps its original read order.
++export function createOwnedDecisionPrefix(inputs, request, config) {
++  return decisionPrefix(inputs, request, config, true);
++}
++function decisionPrefix(inputs, request, config, owned) {
+   if (!inputs.spot.history) fail('Model11 is available only for new HU spots');
+   if (!request || Object.keys(request).some(key => !['board', 'path'].includes(key))) fail('Only revealed board and earlier public path are accepted');
+   const { board, path } = request;
+@@ -23,8 +30,13 @@ export function createDecisionPrefix(inputs, request, config = inputs.config) {
+   const revealed = [...board.slice(0, 3).sort((a,b) => b-a), ...board.slice(3)];
+   let canonical, table;
+   try {
+-    canonical = canonicalPostflopPath(inputs.spot, path, config);
+-    table = replayDecision(inputs, revealed, canonical, config);
++    if (owned) {
++      table = replayDecision(inputs, revealed, path, config);
++      canonical = table.path;
++    } else {
++      canonical = canonicalPostflopPath(inputs.spot, path, config);
++      table = replayDecision(inputs, revealed, canonical, config);
++    }
+   } catch (failure) {
+     if (failure instanceof EffectiveReachError) throw failure;
+     fail(failure.message);
+diff --git a/apps/frontend/scripts/postflop-ai/effective-reach.mjs b/apps/frontend/scripts/postflop-ai/effective-reach.mjs
+index b3de15d..2b93309 100644
+--- a/apps/frontend/scripts/postflop-ai/effective-reach.mjs
++++ b/apps/frontend/scripts/postflop-ai/effective-reach.mjs
+@@ -2,7 +2,7 @@
+ import { Defence, comboId, tierArray, replayDecision, isFacingNode } from './defence.mjs';
+ import { makeRange, equitiesVersus, equityVersus, releaseRangeTables } from './range-equity.mjs';
+ import pilotConfig from '../data/postflop-ai-pilot.json' with { type: 'json' };
+-import { createDecisionPrefix, requestBeforeEntry, EffectiveReachError, MAX_PREFIX_DECISIONS } from './decision-prefix.mjs';
++import { createDecisionPrefix, createOwnedDecisionPrefix, requestBeforeEntry, EffectiveReachError, MAX_PREFIX_DECISIONS } from './decision-prefix.mjs';
+ import { contentHash, freezeSnapshot, canonicalJson, assertJsonCompatible } from './effective-law-identity.mjs';
+ import { balancedBeliefContract, compileDeclaredPolicyLaw, NEW_HU_EFFECTIVE_MODEL_VERSION,
+   NUMERIC_SCHEDULE_VERSION, DECLARED_POLICY_LAW_VERSION, SAMPLER_CONTRACT_VERSION } from './effective-action-law.mjs';
+@@ -119,7 +119,7 @@ class EffectiveDefence extends Defence {
+     for (const entry of entries) {
+       if (entry.action === null) error('invalid-public-prefix', 'Pending actions cannot condition reach');
+       const stageBoard = board.slice(0, entry.boardLen), tiers = tierArray(stageBoard);
+-      const prefix = createDecisionPrefix(this.inputs, requestBeforeEntry(table, board, entry), this.config);
++      const prefix = createOwnedDecisionPrefix(this.inputs, requestBeforeEntry(table, board, entry), this.config);
+       const vector = this.prepare(prefix), action = vector.physicalActions.indexOf(entry.action);
+       if (action < 0) error('invalid-public-prefix', 'Observed action is not a physical class of its own prefix');
+       const next = new Float64Array(NUM_IDS);

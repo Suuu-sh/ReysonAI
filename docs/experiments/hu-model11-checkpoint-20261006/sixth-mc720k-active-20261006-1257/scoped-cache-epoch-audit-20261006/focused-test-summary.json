@@ -1,0 +1,64 @@
+{
+  "kind": "compact-summary-of-closed-focused-test-evidence",
+  "evidence": {
+    "executedSourcePins": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/test-supervision/pins.json",
+      "bytes": 458,
+      "sha256": "d3d0ba090ddbbf981be78078dd353680ed17715cb8620a79929d2bdf3d7467bc"
+    },
+    "result": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/test-result/result.json",
+      "bytes": 218665,
+      "sha256": "7a7dede8d128179df1024d3e3aef9eb5448db6ad6a028c2917b4d7fdc77b3885"
+    },
+    "fullStoredAndFreshTrialsEqual": 64,
+    "fullProofBodiesEqual": 1,
+    "negativeControls": [
+      "wrong source binding",
+      "missing native-validation receipt",
+      "wrong original cell record",
+      "truncated row stream",
+      "changed full proof body",
+      "changed selected full proof",
+      "changed stored last trial",
+      "partial selected epoch",
+      "foreign selection seed"
+    ],
+    "directIndependentRngScheduleCompared": 10000,
+    "assertedCacheResetCount": 157,
+    "cacheControlHands": 12,
+    "resources": {
+      "test": {
+        "resource": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/test-supervision/resource.json",
+          "bytes": 1571,
+          "sha256": "a74a86335e39e21f3341cc2770a78358dc2e23269cb088110b25bcd447afa81c"
+        },
+        "parentResult": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/test-supervision/parent-result.json",
+          "bytes": 2111,
+          "sha256": "9418d7eeebbf0b1474d31083fa85036b083e76c47c86ba09791bf5745a145223"
+        },
+        "seconds": 9.185630980005953,
+        "peakGroupRssKiB": 374600
+      },
+      "prepare": {
+        "resource": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/prepare-supervision/resource.json",
+          "bytes": 1575,
+          "sha256": "016fd9152d9b0e65b8d42edfc8fac5825e083d3f8f418307393718f3c34ad4fc"
+        },
+        "parentResult": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/scoped-cache-epoch-audit-20261006/prepare-supervision/parent-result.json",
+          "bytes": 2115,
+          "sha256": "69cab97f69d0b22f90de924ec30ab51da72421e355bfb353a83bad9c72cb1b6f"
+        },
+        "seconds": 0.9740521190105937,
+        "peakGroupRssKiB": 138936
+      }
+    },
+    "boundary": "Focused numerical evidence covers one retained64-trial epoch, one full proof and three real cache controls. Final CLI binding/provenance is statically reviewed; full2160 replay and720k integrity scan are pending genuine production completion."
+  },
+  "fullRawTestResultInLibrary": true,
+  "actualScopedAuditExecuted": false
+}

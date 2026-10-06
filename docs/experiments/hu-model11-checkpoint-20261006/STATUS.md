@@ -1,3 +1,19 @@
+# Five prior cases accepted; sixth-case actual 720k generation running
+
+Current checkpoint: the separately authorized actual 72 x 10000 paired-trial run began at **12:48 UTC**, owner session **97525**, five workers, unchanged formal source `4b6b39a613afe72a2362f85aa93a305cd61b3586`. Binding is `2171cb322dfb12519d5b635ebffada69109c37bd5bbf2a85c4bf3ac1b7b434a2`. At the preserved **12:53:43.665029 UTC** snapshot, **five conditions / 50000 trials** were completed with native validation and first-64 parity; active partial work beyond that is not a completed result. Whole-run completion and sixth-case acceptance remain pending. `samplesPerBoardProfileSeat=10000` and `cacheBatchSize=64` are distinct parameters.
+
+[The dated source/evidence/Library index](sixth-mc720k-active-20261006-1257/outcome-and-library-index.json) preserves frozen adapters, plan, genuine preparation/launch records, closed-cell manifest and scoped-audit source/test/review. The audit plan is now concrete: **15 conditions x 144 = 2160 selected strategy trials plus 12 controls**, advancing all 720000 original RNG indices and checking full stored evidence. Producer native semantic validation runs once per full cell; scoped integrity/replay is not a fresh full 720k replay. **The actual scoped audit has NOT_RUN** and requires the genuine complete producer terminal. Its focused tests and source approval are not the actual audit.
+
+Confirmed source/input/plan/audit packet: Library `libfile_b93836beb3988191bbf329a17a8de766` v0, 1344838 bytes / 351 files, SHA `491c29ad1a3af6cba581322697974a869318db1883e2d7f1622a3ad4ea558728`. Closed five-cell data: `libfile_79ac411e0de4819181be8e15170e5fb6` v0, 1070752 bytes / 980 files, SHA `f82e8367efa7fbc13723623c8d57551709cdc974620268e8275f589c16372ddd`. Raw trial/proof chunks and bytecode caches are not added to Git.
+
+Stage 1 is closed with no new optimization adopted. The owned-history direct-canonicalization candidate passed 55 tests and full 192-trial/proof/counter parity but primary wall was +4.61% and CPU +5.09%, so no gain was established. Its compact exact patch/reviews and the aggregate conclusion are saved here. Library `libfile_b8a84362bce4819188e50a076370c0ea` v0 preserves 48 files, 64838 bytes, SHA `48124cf787a1fbb52aca5aa08b1d85933a7e8c0520e2cd2766b0e2c2e4d28779`. Prior Map/geometry negative results and paused WeakSet remain unchanged; no candidate replaces formal4b.
+
+Five prior cases retain their old scoped acceptance. Sixth-case current MC generation, later actual scoped audit, full 1755 flop/fixed 100 later balance, final review and runtime integration remain distinct. No new balance 1755/100 completion, policy acceptance or PR runtime adoption is claimed. The computation is untouched by this docs-only save; no publisher Node/test/numerical execution, PR comment/body edit, force push, merge or main update was performed.
+
+## Prior checkpoint context (historical)
+
+The material below retains the earlier stage/preparation chronology. Its former pause/budget-undecided/in-progress descriptions are superseded only by the current authorized MC/audit readiness and closed stage-1 facts above. Existing dated receipts are not rewritten.
+
 # Five scoped cases accepted; unadopted history memo evidence preserved
 
 This checkpoint preserves research source/evidence under docs only. Formal numerical source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`; no application/runtime paths are changed, no existing proof is reassigned, and no new gate or policy acceptance follows from these artifacts. Five individual model11 research cases remain accepted under their original scoped contracts; legacy model10 acceptance is separate. Sixth-case bounded facts and all original warnings/HOLD records remain preserved. New 1755-board and mass starts remain paused pending the scope/performance decisions.

@@ -1,0 +1,2068 @@
+{
+  "kind": "next-hu-mc720k-five-workers-plan",
+  "version": 1,
+  "status": "PREPARE_PENDING_NOT_LAUNCHED",
+  "spot": "CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call",
+  "repository": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution",
+  "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "runRoot": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-mc720k-five-workers/run",
+  "lanes": 5,
+  "boardsPerProcess": 8,
+  "assignment": "72 representative cells, lane=floor(cellIndex/6)%5; one complete 10000-trial cell per owned process",
+  "limits": {
+    "heapMiB": 512,
+    "groupRssMiB": 900,
+    "aggregateRssMiB": 3072,
+    "minimumAvailableMiB": 2048,
+    "childSeconds": 900,
+    "wholeSeconds": 43200,
+    "pollMilliseconds": 50
+  },
+  "node": {
+    "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "version": "v24.19.0",
+    "binary": {
+      "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "bytes": 125989464,
+      "sha256": "bc17c508ffeed0ec622934f9b7fa72f8e78da65350e63c3eceb56fa688aa5e12"
+    }
+  },
+  "sourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+  "sourcePins": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/tests/fixtures/model11-gate-source-graph.json",
+      "bytes": 8737,
+      "sha256": "8a61100a36515f4c57132ea67d041a2a94e46a4172dfac2c00ee4e07bb6a8caa"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/data/hu-after-multiway-spots.json",
+      "bytes": 1146128,
+      "sha256": "096b926d3d7f84c88475e99f3ebdfa80f046539ee7b41983ac9b8c1eec229851"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/data/postflop-ai-pilot.json",
+      "bytes": 1554,
+      "sha256": "1db32997ae5bca50a8c55215013d0092b5ef051cd0827c53594645517e2c5491"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/lib/equity.mjs",
+      "bytes": 8026,
+      "sha256": "8e33cd02bb80913a68f51e6e63728cc94bda5a002c28c2998123d4ffd134ba67"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/all-board-checkpoints.mjs",
+      "bytes": 8114,
+      "sha256": "b26ad2839b300900221919cbbcb81e98981a900a88be21aef52fe28f4258d1fa"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/all-board-companion.mjs",
+      "bytes": 9702,
+      "sha256": "3986bd11c13fc971e50c231d354afb5976d947a18957e09a3a8a4ace23cb13c1"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/audit-identity.mjs",
+      "bytes": 3843,
+      "sha256": "6c8e3477b156e2523e7a7c1f77ce02bec80909f5ef781b5b43afce79a9bc6f1e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/balance-model11-kernel.mjs",
+      "bytes": 31222,
+      "sha256": "6192350ae7209cd4a4b9c7316d5c75c2811f8dd96cb12b9a304be2af6d736431"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/browser-inputs.mjs",
+      "bytes": 12322,
+      "sha256": "9675c4ddb40552d10264c5e759e1d92d9f262a9b87c3404a6187e35befd06a8a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/cached-values.mjs",
+      "bytes": 2594,
+      "sha256": "f0054e03c0079cc327204a1f58b3738d5fd33dc8fcd3a4ef86a5297a4d337d7c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/decision-prefix.mjs",
+      "bytes": 2961,
+      "sha256": "eff7da5d838350ea6ef35c19fcb47a0f4cbebfe6d7440797913cb8916d11258d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/defence.mjs",
+      "bytes": 58585,
+      "sha256": "e08345ce116a42e7db6b5506cb06956c4f36dfc9cd78eeeda383177ec2bede33"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-action-law.mjs",
+      "bytes": 4637,
+      "sha256": "7c229ea339eae16bd390dde5e758f626ad3fd2a262c8615c76fb52632c2f851c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-artifact-contract.mjs",
+      "bytes": 5322,
+      "sha256": "9690c3510a4b8336a18cefdf22860dfca824e9ed4e19f69280bfb01d841e6601"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-law-identity.mjs",
+      "bytes": 2695,
+      "sha256": "66dc6667d3c8085b772cee46a0e3c4f3d0abbeff269e0febc75cc344ac212476"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+      "bytes": 23109,
+      "sha256": "3aacad94471833d6dcf720eedc372e6812171bf38af8a601dd0b75da7edfb38b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/engine.mjs",
+      "bytes": 10708,
+      "sha256": "7fb969fbd6f9266debe164126ed1a74c63d35ae8c02c0f35693b7bedd0e7e930"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/equity-kernel.mjs",
+      "bytes": 9601,
+      "sha256": "32e57968cf265bb33382023a33419422913a94582276bf58fe05fe94b415bf64"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/evaluate-model11-audit.mjs",
+      "bytes": 7249,
+      "sha256": "fe0f807b31b9ceadd29d49c377100cdcd2c4160ccda342bb22fdd290895c1400"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/exact-river-call-ev.mjs",
+      "bytes": 4699,
+      "sha256": "b624216c5019d6a5ddbb5e9e53d1a9f618d8c534e772b76258634d310490e3bb"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/execution-model11.mjs",
+      "bytes": 2871,
+      "sha256": "9c63d825e8c66aa9fe76b733905a543c540b84613d1fd7f03bce7000aaa84f4d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/flop-isomorphism.mjs",
+      "bytes": 3762,
+      "sha256": "81c15f8ed865d56b78078136e389e6ea04851dbac506d2df2102f87acc737076"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/gate-model11.mjs",
+      "bytes": 9918,
+      "sha256": "8a5d7d2547c97fdb3db050a93c6ac06fef19a87fb88b33c0154f93f8abe1949c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/inputs.mjs",
+      "bytes": 13323,
+      "sha256": "bcef936f80e2f2ce4e41c4842f122a748a792910919f75648c66daf00f92fe2f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/later-policy.mjs",
+      "bytes": 7489,
+      "sha256": "336bd71fd06e0d608918d081b9d917d39818e5cbbe163e41a3b105c48a0aab4e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/later-tree.mjs",
+      "bytes": 5417,
+      "sha256": "79d0cf197d9a8c0da10270511f063c239809a9d3a8b7ecbfc3f8c8f4dd01e29a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model.mjs",
+      "bytes": 6991,
+      "sha256": "5aa53bd183862ed41e712d18aedc7680da652a496cfc59f11ee7685ea2cde8fa"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-gate-contract.mjs",
+      "bytes": 13833,
+      "sha256": "e0267982806b694135b0eee046a8c83a09f165dd53090186a28bc4dbe882bf15"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-gate-drivers.mjs",
+      "bytes": 21673,
+      "sha256": "c287f3e028d948a5e3bbe24352990c5e0ae8de6f6f624b34e3b0824b0ba48664"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-gate-source.mjs",
+      "bytes": 2443,
+      "sha256": "30e8e5ed027b37f7467109413c73dad87830fa39b16b00f5dbe9ae69539cf9e0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-zero-proof.mjs",
+      "bytes": 6154,
+      "sha256": "3a6a36e343cc313e9ff1efdcd625fcbeb855e0613e9c0f1fec612d7c284e10ab"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/multiway-inputs.mjs",
+      "bytes": 4246,
+      "sha256": "5cd8c946a63a16d8fbe8ed971991f421a5709a4edace6d9885ff086f3c43c87d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/observable-actions.mjs",
+      "bytes": 11070,
+      "sha256": "982ea012ed5d799ffbcff76420377c062e8ce2593bdb3fbe972d91dd27d1e429"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/policy.mjs",
+      "bytes": 9434,
+      "sha256": "1c863d390d01763b9f913412b2f8847b50209e14134175f294ca3628a45cda9c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/range-equity.mjs",
+      "bytes": 17176,
+      "sha256": "e9838a5c229915db8df6d3cb3c55297b40e5921fdd9916886e9f9a657e9da8ac"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/range-support.mjs",
+      "bytes": 969,
+      "sha256": "dc3797c8bc9ba021213e9ff88b49b5fa1f383c84509cb039275a13526ca4f303"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/reviewed-postflop-archive.mjs",
+      "bytes": 13097,
+      "sha256": "a18c1f26d4347e4d390b9acb9c76297222d1f6a2f6a9cefbfcdbf5f21f0b39e0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/simulation-model11.mjs",
+      "bytes": 10078,
+      "sha256": "fd874397785d7c7a98a11bbc9ef35523991fae7a2942af61718460b2f952a084"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/simulation.mjs",
+      "bytes": 9275,
+      "sha256": "659c44e038043d777879b5057b4042032c5a60fb2542c738cb1469e5386e4024"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/spots.mjs",
+      "bytes": 10746,
+      "sha256": "803adfa6396041c128e92349a636ad15f565c60ae64d330337d4fb55d0e46d5e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/tree.mjs",
+      "bytes": 6876,
+      "sha256": "eab4862638997017df4c25df571c85ee2a6c0aa9b26fb4ad03d4b69e99f56a76"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/datasets.ts",
+      "bytes": 3726,
+      "sha256": "09f8ba4296ee553e661703a6e26529b66aefeec1932c69826e010d3ecf88b6ec"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/opponent-profiles.ts",
+      "bytes": 9482,
+      "sha256": "75321c5363c1709969aa54da0de795582c814cc9b5b4533006499fd625f14e66"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/sizing.ts",
+      "bytes": 3392,
+      "sha256": "c7a84d4ac0b17a19aa3576e245033f3e9f92a347538de42e50efdeb39a15f6b0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/tests/fixtures/model11-gate-raw-inputs.json",
+      "bytes": 2429,
+      "sha256": "143f13ca99925a7b8b6aca3bdc3f168943ca86e2e3684846cef1fb668b1416d0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/configs/cash-6max-100bb.json",
+      "bytes": 918,
+      "sha256": "0910a97e1c477c1055a95db3334f8764e37647ed2497e3eb6b666f1cfa9628f2"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/configs/multiway-preflop-stage2.json",
+      "bytes": 95,
+      "sha256": "f14f493874e18dd4a9a7b88f845cae3de2124ec4e5550bd4131edf9c3496ebfa"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/cold-four-bet-responses.json",
+      "bytes": 1008148,
+      "sha256": "013783c4feaa42cdab083b73a534de3b9c555bc2ad14afd4984b7564f3191dc9"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/cold-three-bet-responses.json",
+      "bytes": 514752,
+      "sha256": "be3599cfc64cdf78cfd7f096f6ca7ae51f1f47ad659b173226dd1d926d1c4531"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/continuation-responses.json",
+      "bytes": 27736908,
+      "sha256": "3f8a96af8f30a69a8733061f8f81e6216629338197e94ed3a2a85884eb87408e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/four-bet-responses.json",
+      "bytes": 379467,
+      "sha256": "70c6302ea11c6f725702030f8980883ef1ec66fb630c3d90f6c1395c4e76add5"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/limp-deep-responses.json",
+      "bytes": 50652,
+      "sha256": "e815907ad05b1a24f733acf9fe06cb06c2f89c41039a7226cefb420d7956e53e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/limp-responses.json",
+      "bytes": 74768,
+      "sha256": "370d4b30a08394c2f6919cbbd5dec6f5531af41cfeddde3ece22f90922b34f77"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/multiway-responses.json",
+      "bytes": 506995,
+      "sha256": "db5e05912bff4d58f845dfd3caec3e2d5292b5a914579ee96c47112836e3c912"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/multiway2-responses.json",
+      "bytes": 383303,
+      "sha256": "3d25573df0c2a7696d95a11f14eb6890f8918b46d6d3681f9c05c76b6c5d28de"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/opening-ranges.json",
+      "bytes": 113403,
+      "sha256": "236225dbae1c8aa2e2e7af8a449555f27ef80fed878114408c0e7338b89d0f0b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/preflop-ranges.json",
+      "bytes": 391641,
+      "sha256": "fdc83f2ed78e0690e148b39fa23b8edc0bf204fe1a3f1ca4c4e6ea9377da2b55"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/squeeze-responses.json",
+      "bytes": 1543744,
+      "sha256": "8f8d604bc80052382205363190db48bec4c9a7df8b6322af512009f47df6c9a2"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/src/estimated/three-bet-responses.json",
+      "bytes": 387728,
+      "sha256": "e46bbb59dc55df01240a73602b0cb214a652e5c2346f84a791178b938df40973"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/tests/fixtures/model11-allboard-partitioned-source-graph.json",
+      "bytes": 9186,
+      "sha256": "4a27a5981bd2337f997f38e67ddf8bb285d247f9fbfc64b55bbb77f7794868ec"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/evaluate-model11-allboard-partitioned.mjs",
+      "bytes": 5703,
+      "sha256": "39c1473934d3206f4a1509f827c5efcb9f9086d9d45629934e67befd44ecf9d6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-allboard-partitioned-output.mjs",
+      "bytes": 8095,
+      "sha256": "1c73356ba26788017466fb4286c73178de71877d68534364db7e9af326521752"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/tests/fixtures/model11-allboard-lanes-source-graph.json",
+      "bytes": 9770,
+      "sha256": "b1597899a21d7a159dee7c5e6423ad1e75a746ee024202d945f73dd77e79020a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/evaluate-model11-allboard-lanes.mjs",
+      "bytes": 2721,
+      "sha256": "549bbfa9e7cd6d5072e74db26eb910c7023225d501152179fb909d1fb62b78bc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-allboard-lane-proof.mjs",
+      "bytes": 3227,
+      "sha256": "212f90cb4c628ee409c9bd6a34c634dc620afadb820c1a5b5c085b19cfa8a223"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-allboard-lanes.mjs",
+      "bytes": 27612,
+      "sha256": "0202275c78e5948abbde2d2c9ba575cd409a202f32a2683663490d637214b18f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/tests/fixtures/model11-allboard-lanes-integration.json",
+      "bytes": 26471,
+      "sha256": "e6354bad2c39f7dbadcaefa066586ed3dca93705f5b3486217fb409bd665394f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/archive-v1.mjs",
+      "bytes": 849,
+      "sha256": "6260fcbce67cafef21043de90660b9a4ee89f0e9b46a8982d1b630c0310ffe94"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/audit-all-boards.mjs",
+      "bytes": 9220,
+      "sha256": "e432a9ee613a454885f99b6084ff4b5988111e365276374139e6bf71ae236dbc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/audit.mjs",
+      "bytes": 5112,
+      "sha256": "27239ab8ddf1b66f09797e03e1506b1bc8fce1af5f7a610d3dc9ed70007832bc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/authored/btn-bb-srp.mjs",
+      "bytes": 6556,
+      "sha256": "3b4507f7240cc22304a09866766751eb9d180e8d6ea09e926de8bd8f8ea79bb6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/authored/generic.mjs",
+      "bytes": 4394,
+      "sha256": "bca5728b0734e533c65e2979e11dcea701e17b3291e3a31a2b86902a50c2038d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/authored/save-all.mjs",
+      "bytes": 886,
+      "sha256": "4556f38b1a55f0d1f6d3fd52b18d89967fd66eb2d1c4ca3152f735c52f339aac"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/authored/save.mjs",
+      "bytes": 802,
+      "sha256": "7755ac49e029bf1bff4f98dca514a894c0cc1b602a429d7f456832649d047ea1"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/authored/tune-flop.mjs",
+      "bytes": 5174,
+      "sha256": "b625abaffa3a82afc07ec3f86caf176d2014ed0265e625315d688f9b5988ef50"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/authored/tune-later.mjs",
+      "bytes": 5047,
+      "sha256": "59261a8882f3b3528f9dc07c98985725f12f4eade30b4759fa59d6348665250d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/balance-model11.mjs",
+      "bytes": 7608,
+      "sha256": "62972747a19b0a736a7ada4f5ad7a23d62c877bda50b46ee8bd4689c12bed9d0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/balance.mjs",
+      "bytes": 31011,
+      "sha256": "27976f9a3de6e5092bfd0f02fa7732fa33861c28621162cda0f275201e03a637"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/board-batch.mjs",
+      "bytes": 5572,
+      "sha256": "272c40d058e20e3386e7d62e28e197712978869c5ad065bb3136e864da1b6f17"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/board-worker.mjs",
+      "bytes": 1812,
+      "sha256": "69304105c2bfc10c20f0c1d498b243067b08f0d2024f1fd06ab93ebb264f9ba9"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/build-multiway-spots.mjs",
+      "bytes": 5730,
+      "sha256": "109eb19ca3e9188b3a111e23d4b4c7eed2bc571e762df65ecf91981597fb8b86"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/check-street-state-parity.mjs",
+      "bytes": 21244,
+      "sha256": "c1765156efaca85867aab0561c2c30579e9f992fdcdc7c9e81f6a9da10d97e60"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/cli.mjs",
+      "bytes": 10227,
+      "sha256": "b89bf7ebcc399d6d629167a1e8c5ddc5f51e93b18f3752d657e1febb739d3894"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/evaluate-model11-completion-representative.mjs",
+      "bytes": 7498,
+      "sha256": "2be0afa5715584ec71187a5762ee1abc58ce19fbeb21d216f87d0b8d8571e828"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/evaluate-model11-completion.mjs",
+      "bytes": 2674,
+      "sha256": "e65a40ff307418da9912f432ffe39cb9b26da29f6856c8e2622b37f1d1c3e006"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/evaluate-model11-dual-source-audit.mjs",
+      "bytes": 28925,
+      "sha256": "800c087d3ce350042205758795c83549eb3aad961e5299ec9ad7f8dd58e5f90e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/evaluate-model11-gate.mjs",
+      "bytes": 2555,
+      "sha256": "6e184d81a3384e956a0853ae0a6311da6355e63140505ead2fd3e819a2de56af"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/evaluate-model11-selected-regression.mjs",
+      "bytes": 19230,
+      "sha256": "bef10b654eeedf0ec48b0e0ec1e064b53b8ff5ddc3be4bcf04c1a1fde7fdb947"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/evaluate-model11.mjs",
+      "bytes": 4944,
+      "sha256": "d8b0b13f7eb110aaf1b364cd1c8adfa2606a2aaa49332a9a7a8816277ffc7c12"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/exact-ev.mjs",
+      "bytes": 19764,
+      "sha256": "0cd867751ce8f1750b338955d49b4ded7a32e461a482ca28af1b3b9202694de0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/explain-aggregate.mjs",
+      "bytes": 1922,
+      "sha256": "53ad8c269fee74bc945d395900245e0ffbf3fbc8d515565e82a250efb3cb6c40"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/explain-later.mjs",
+      "bytes": 15920,
+      "sha256": "ff4999472957ef5c3078c817d0b9f85f8ddb155ba2c8ee61642c907238171559"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/explain.mjs",
+      "bytes": 9429,
+      "sha256": "635432224083eabf864a41b72a4dd8a46e246a0e0b885b321d1a93be6b80bdd6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/fix-donk.mjs",
+      "bytes": 4550,
+      "sha256": "914ae64a9891a130903a5b7aec0f2da51bb02abce9f6e7aa72782f8716935407"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/fix-later-candidate.mjs",
+      "bytes": 3799,
+      "sha256": "475fda0df670b0c02e61edb0776aa24212ee98431d66bd36232314db7073e5cd"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/fix-overcall.mjs",
+      "bytes": 11442,
+      "sha256": "bf2ecce7d462a88d543a0ebcfae15d5e3c97b126cb77f57dda5f2d2d073db5f7"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/fix-overfold.mjs",
+      "bytes": 11066,
+      "sha256": "c6cd40a0bd6cf1069bcabae67c25fcac47a48477aa3f8007832ccab1829551a0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/flop-base-codec.mjs",
+      "bytes": 15538,
+      "sha256": "52aebfb3a3519992c2a235bb0814a6de6641e4c0ac72455c3f3c5d3a87419315"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/flop-base-core.mjs",
+      "bytes": 7526,
+      "sha256": "f93d7f99db1083bc29c618bc85ebeaa1e5ce085bf04c553d445f90dea9725524"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/flop-base-d1.mjs",
+      "bytes": 6042,
+      "sha256": "6348c51f75ba26d95c83f349bcd97d5b59b28b62f6feaa4241c4b87dfca8ff42"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/flop-base-files.mjs",
+      "bytes": 2946,
+      "sha256": "4bad43e955fd5cd5dad404e25bedb0ab45bf6eb81efa20af9e2a5cfe3882daf0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/flop-base.mjs",
+      "bytes": 5234,
+      "sha256": "4f9f09c6aafbcaab1debf7dd19e24a287f39766a012f583824b882f356942db6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/flop-hand-ev-core.mjs",
+      "bytes": 17942,
+      "sha256": "f70891faae8219d4b5f478ad0a81cf097dbb6da867e97dc2e5e0ddbd39309e0d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/flop-ui-facts.mjs",
+      "bytes": 10825,
+      "sha256": "09c8038d256d83b179ed74dcded79e5f9df9f01430ce026341816b086b7285fc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/generate.mjs",
+      "bytes": 26756,
+      "sha256": "5c0139eb674a4cbfd7885abb220c9fb6c49664fbded148e3f11533ed98eeedc6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/hand-ev.mjs",
+      "bytes": 6915,
+      "sha256": "6b687fee35df17c68f8a712dcc2225ed92242d6447e7068137d81959cdcaaa26"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/hand-features.mjs",
+      "bytes": 14893,
+      "sha256": "6803116c0f3da3cab323f009cc13ac6699f229df16df3acfd062f759f225e3fc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/hand-role.mjs",
+      "bytes": 2721,
+      "sha256": "86f9a6c7ad98644b79e095b12fc72bbe4022f31384141e7d5ef38cd6335b3581"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/later-hand-ev-core.mjs",
+      "bytes": 23462,
+      "sha256": "0bd07d66c49082adea9db4087214bdbacf1e7170de3b6dfe71dc9a78fbe424b6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/later-hand-ev-worker.mjs",
+      "bytes": 1227,
+      "sha256": "f35c3c6f013ad8374b0a2cb341a52fbe37ca50bae59aac3a74f777d1b1c1c2fe"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/later-hand-ev.mjs",
+      "bytes": 9520,
+      "sha256": "d2e4a5f07c91933481af5aa9a61d649e2b74b384e65d3e2a9d09c2196d9bd4b1"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/local-view.mjs",
+      "bytes": 13056,
+      "sha256": "0534d3c53e625125af2e5d9e56d3c69def834ee324079b7f093827ba9cdd4b26"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-completion-representative-contract.mjs",
+      "bytes": 8041,
+      "sha256": "a8d97ee254c063e4ca31a1117eca2bfed9a51e87ce15a9b078fe1ea8c176a1c9"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-completion-representative-source.mjs",
+      "bytes": 1563,
+      "sha256": "e42db3566c957d9bb3a12ee9831bbc394a00c5eab50f4f003679b3aa6c02daba"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-completion-representative-store.mjs",
+      "bytes": 9759,
+      "sha256": "d2ac2750263b408cd0d3a30b25133d5ef09dce4f8be161c2f5b8fcfee921299b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-completion-representative.mjs",
+      "bytes": 15753,
+      "sha256": "ff99867ccb9999ea209b4d8e54d56ab5cfd7457a74dda58bc79c0dd19dbce026"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-dual-source-contract.mjs",
+      "bytes": 9590,
+      "sha256": "1e1b6ab1ad56652fd42c9b7635cbc66189fac5fda72263a029e0fda9a61c291b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-dual-source-quality.mjs",
+      "bytes": 3930,
+      "sha256": "012bb765359610b1b5451b9c464e280450a30bcf33b19ce32133490398571c17"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-dual-source-runtime.mjs",
+      "bytes": 11254,
+      "sha256": "6b502211b36cab19f3983441334eb99a318cbe7286e94b4836bb000397eed453"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-selected-regression-runtime.mjs",
+      "bytes": 10692,
+      "sha256": "c4950f1706476baffec857e9c8b35e1c93e984adcb272db88e882744a6224422"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/model11-selected-regression.mjs",
+      "bytes": 17860,
+      "sha256": "6f15a7745428e68e6e205c627d4bff97880490aa70b813aa8e7178047f4a4dac"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/observable-view-paths.mjs",
+      "bytes": 993,
+      "sha256": "343f13c1910a080b21fef0baa92abb8e99e198988fd8bd37ad57fcb3eed8f6ca"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/offpath-behavior-model11.mjs",
+      "bytes": 7907,
+      "sha256": "dc2ae307e5f8cd696cee6b2048d2b71d65bb162ddf9db040688673100d5919a4"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/package-all-board-companion.mjs",
+      "bytes": 2534,
+      "sha256": "d8126d78ff68f2bb9b7f74ca1641dab9676b69f8b6113fce50c3849c72cf8868"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/package-reviewed-postflop-index.mjs",
+      "bytes": 4971,
+      "sha256": "fa11b7f1a01fc6e527ca8d5e54ea076a96d55039cc9bf721e5c8e1786998b189"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/package-reviewed-postflop.mjs",
+      "bytes": 2876,
+      "sha256": "18ad47aedd715e4b1fa059977035341a639b7f3eaadc9ec0e73c51cc26f78c77"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/perf/emit-model11-preservation.mjs",
+      "bytes": 16390,
+      "sha256": "4c401c044363d6381814479717e8c2baa0f46daade965a7f65f4355c46ccb636"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/perf/equality.mjs",
+      "bytes": 4183,
+      "sha256": "dc6ebac895c7eec56ef79656d61ea9d2d0111a9d47f47f205c721d1f620cd6e0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/perf/exact-validate.mjs",
+      "bytes": 4180,
+      "sha256": "f555749024a9ce83d53331b4cf28c452fff521ce716cbd4839499d6ac4ef0faf"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/perf/measure.mjs",
+      "bytes": 3028,
+      "sha256": "6cc9f0d21f5f6d621adcaf00d00f9e08c5178482f74ed8a40b6c032da66cfb07"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/perf/ondemand.mjs",
+      "bytes": 1548,
+      "sha256": "ef3fdaf7660c05b119b7fd0f361ed280a20f8213decfe15971e33c550920fade"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/publish-d1.mjs",
+      "bytes": 6959,
+      "sha256": "4673e2d4ae711621822a6851768a68da426282c9a907d3fc22a7228714895e3f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/range-facts.mjs",
+      "bytes": 5352,
+      "sha256": "5e816387cccdc815c02a5a23b634bac9fe19b62f664af498c7619c22992a900d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/regenerate-flop.mjs",
+      "bytes": 9191,
+      "sha256": "81433ff6dafb4f6d20d944b1e1b421b6318c142f73ad045cad18f3f4a80bfe63"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/regenerate-later.mjs",
+      "bytes": 5141,
+      "sha256": "56eac840c63da4244b6e1cd6a849cade83d18b30156e247f462ef9aac7722118"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/restore-reviewed-postflop-index.mjs",
+      "bytes": 2359,
+      "sha256": "b5b9a7f67b7f08a9038063ab8050b253a85368a4475ef56203732b81345035f6"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/restore-reviewed-postflop.mjs",
+      "bytes": 1372,
+      "sha256": "6d5edce95a1e175685a89322f4bbb60acfe7ced5e7277128cbaeca8afb4f0871"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/reviewed-postflop-delivery.mjs",
+      "bytes": 18361,
+      "sha256": "da396c6d01be92dfc1aef318fbc31ce14150b1a4bf4793cceb884308f529a231"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/reviewed-postflop-index.mjs",
+      "bytes": 18089,
+      "sha256": "b7f681e1168fadb50c3001d3ff68a1dc8a16ac11f815aa83153d6da219d900f9"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/reviewed-postflop.mjs",
+      "bytes": 21690,
+      "sha256": "dde04640579180835867c721251e6786a8cf42c3642ab53b8fec4952ef35a160"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/serial-validation-proof.mjs",
+      "bytes": 13422,
+      "sha256": "b5fed646af43b302dde04bb207266f48e71b031956015d7ebbbcf2133e7b94b9"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/simulation-model11-completion.mjs",
+      "bytes": 9478,
+      "sha256": "e0654f69cea9ac3ed4a70df5445a27c4b67e7e3b3f911229ac95aba5f2e2ba4e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/simulation-parallel.mjs",
+      "bytes": 715,
+      "sha256": "a252549b15a29bb73e2406d626ff4a127d88f1fad44130adf85787917143300a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/street-state.mjs",
+      "bytes": 12124,
+      "sha256": "0b557437e5b559720b89688be798221da50fbdc9e808e4af8982b5e3dd6a2642"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/verify-local-d1.mjs",
+      "bytes": 9334,
+      "sha256": "fedd42e106811279234b3eb01160b3da660176b38636cca03d1a7d65af331354"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/verify-reviewed-postflop-delivery.mjs",
+      "bytes": 1354,
+      "sha256": "8c0eaa02e5aee42f3f63ae71c7703403bc86175edeb3d9f53d92926613b5c923"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/verify-reviewed-postflop.mjs",
+      "bytes": 1386,
+      "sha256": "0e829b122472f19a4d4ca0fed21ebb225098075fcb08bf4c24d23191eb568a01"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/views.mjs",
+      "bytes": 8756,
+      "sha256": "19343ebbb3bcaed1533c2d636e589fce05042c9827883734157cd230d6a08a31"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/perf/verify-model11-allboard-partitioned-source.py",
+      "bytes": 1829,
+      "sha256": "795de885ab049b159afbdde33ba3f7d8fb4f7dd223fc5ef3596a8d6035a47026"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/perf/run-model11-pilot1755-lanes.py",
+      "bytes": 38689,
+      "sha256": "ca6bd2a97a216b8c150f5514fde4738755466cdf7a522afa13cb033d683b30aa"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/.local/postflop-ai/btn-open-sb-3bet-bb-call-btn-fold-hu-v1-policy.json",
+      "bytes": 40558,
+      "sha256": "dc69f19f4591699ed7336e277a268f163a46319295165976e4b5e8ced94bd208"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/.local/postflop-ai/btn-open-sb-3bet-bb-call-btn-fold-hu-v1-later-policy.json",
+      "bytes": 52878,
+      "sha256": "df7ddfeae0716da56cba17ffea73b93d2c11660974bfdecf96759028d0ba0a2f"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/tests/fixtures/model11-all-board-full-plan.json",
+      "bytes": 46,
+      "sha256": "d2866115605c1311a5d68fbcb2c226b1f569dae58dc4a3019b13b75c499f2a09"
+    }
+  ],
+  "pair": {
+    "flop": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.candidate.json",
+      "bytes": 40058,
+      "sha256": "22919105d09997b89501ac53631fd10da9852794d5921688a2bfb07196fc5102"
+    },
+    "later": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_BTN_call_BB_squeeze_CO_fold_BTN_call.laterCandidate.json",
+      "bytes": 52400,
+      "sha256": "bac3b2ba2691fc20d68e425368b4759f88cd053a13b5a053d342edb916f82a39"
+    }
+  },
+  "inputFingerprint": "6c006cf7ac518bb96ff52c52f364f3e96b03acc715bcf75ab7bfb7ebe21e00a8",
+  "policyHashes": {
+    "flop": "405128289b9624a38d6027ec8ae32c2f806d258ed9d1b5827507d7acb2935fcd",
+    "later": "30921204f762fe66287d8ab0c9541c84863faa7683a46fdfc60548c3a7319edd"
+  },
+  "fullPlan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-model11-pilot1755-lanes/apps/frontend/tests/fixtures/model11-all-board-full-plan.json",
+    "bytes": 46,
+    "sha256": "d2866115605c1311a5d68fbcb2c226b1f569dae58dc4a3019b13b75c499f2a09"
+  },
+  "regression": {
+    "kind": "model11-per-policy-monte-carlo-72x10000",
+    "strata": 72,
+    "samplesPerCell": 10000,
+    "totalTrials": 720000,
+    "cacheBatchSize": 64,
+    "extensionImplemented": false,
+    "statisticalClaim": "descriptive fixed-seed paired Monte Carlo; no optimality or full replay acceptance claim"
+  },
+  "launchPrerequisites": [
+    "Exact unchanged formal4b closed source, input and policy pins verify",
+    "Nonnumerical preparation and independent exact adapter/source review",
+    "Parent releases numerical lane; five workers with existing owned-process limits"
+  ],
+  "whole12Balance": "Not executed by this MC-only controller. New balance contract is a separate stage: flop1755 and later100; not claimed complete.",
+  "nativeValidation": {
+    "function": "validateCompletionRepresentativeCell",
+    "callsPerGeneratedCell": 1,
+    "scope": "all chunks, EV accounting, and all stored completion proof semantic validation before immutable cell completion marker"
+  },
+  "prior64": {
+    "purpose": "saved case6 exact first64 trial/proof comparison, no regeneration",
+    "prepared": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/prepared.json",
+      "bytes": 41331,
+      "sha256": "cde2edcf942608236633f722f36e8360c523a60e585ffda0f4b0591b157649db"
+    },
+    "cells": [
+      {
+        "index": 0,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/000/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/000.cell.json",
+          "bytes": 1305,
+          "sha256": "888316a28511adb6d7053b2bb6a6aff50fc97ebcecbd0b38325fe92b48ae43f0"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/000/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/000.000.trials.json",
+            "bytes": 6757,
+            "sha256": "8403ba2224225c4391a6d9a1d1a47eaf740b6d57bca68eb29567b3cbb1285d6e"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 1,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/001/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/001.cell.json",
+          "bytes": 1304,
+          "sha256": "a76ee87e088e2aa063cfc2a53cbb94f145c217efbdaccb1cdccc120b1493c316"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/001/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/001.000.trials.json",
+            "bytes": 6852,
+            "sha256": "07c9edc0f23143b7c4506a606d125e574ef3dc5568d21fb63f253f08d87f7cd9"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 2,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/002/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/002.cell.json",
+          "bytes": 1475,
+          "sha256": "24f8c55e572c082c58dfcdd04c31e9350ca5e307fdcd8477bf317c4ed747b61f"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/002/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/002.000.trials.json",
+            "bytes": 11743,
+            "sha256": "df9d8c61cc2f5a24c284c10202e7c92a0b10fe165ba88534eb384103ff11d098"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/002/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/fe95197744179c9ee0373dd31c0b638b715dd45a691356b8fb6487c8fd08c485.proof.json",
+            "bytes": 31651,
+            "sha256": "44b7d33699e624b275947db1bfe95a85c581e1ccd5aa364a9208e42a97dcb78f"
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/003/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/003.cell.json",
+          "bytes": 1302,
+          "sha256": "793a4c20f33bd1f2cc22467ca691bddcd60c900fbadd82a6a563f08da8652dcd"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/003/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/003.000.trials.json",
+            "bytes": 6853,
+            "sha256": "d4d942385d2f225e3566bb23c3afa750b5b4fdbb89532a2d7967a66e0d295d3e"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 4,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/004/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/004.cell.json",
+          "bytes": 1308,
+          "sha256": "fa945798a6631318a06dc5ea4e0bbe89ca297ee48f7500a6979a8747e545b7f2"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/004/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/004.000.trials.json",
+            "bytes": 6749,
+            "sha256": "f51e965320812d4add9cc03fd89d635e807aa9b28a91039c0785457342742544"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 5,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/005/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/005.cell.json",
+          "bytes": 1307,
+          "sha256": "0fc940a952f9eb62c93586703e56226f3976c2829a9b1d3929fa74592d53b35f"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/005/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/005.000.trials.json",
+            "bytes": 6812,
+            "sha256": "2d1e061c546bb37d3d86285b1f5ac519e2181d2881f6709c6045f71927d6af15"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 6,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/006/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/006.cell.json",
+          "bytes": 1304,
+          "sha256": "125f240d41905ed90617ee4d230be1b6270286583098fa77b3a727ad7279b1a8"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/006/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/006.000.trials.json",
+            "bytes": 6797,
+            "sha256": "2e4afd08b60d595a91227486f12c7c9b495695c5ba1668c908ea2d3727c46703"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 7,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/007/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/007.cell.json",
+          "bytes": 1480,
+          "sha256": "1096537eda70e2d0a696f7832a0d7e9355cf0fa273e9ad43921c1db0f63b1bef"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/007/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/007.000.trials.json",
+            "bytes": 11898,
+            "sha256": "b4f4ac2e09511fec4a0f64233dbf06822a3f6730d5c126f8c3ce50aac27629eb"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/007/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/f98baf7447e8e553465bd8833bf2a66645091613946be40f26b9f24079a406ce.proof.json",
+            "bytes": 26152,
+            "sha256": "a13f276cca478a665dbaec1ef2dff7219f8269e6d4da60919d47b67a24864f0f"
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/008/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/008.cell.json",
+          "bytes": 1303,
+          "sha256": "fe5d278aef80da5c664a0b35b42f1c603c54ae1d3cb21375ccc6d16400a7da3b"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/008/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/008.000.trials.json",
+            "bytes": 6834,
+            "sha256": "96b2e8e72e834b10fed6028c78caef420f97341433a6712cab55065aa695738a"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 9,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/009/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/009.cell.json",
+          "bytes": 1304,
+          "sha256": "e2ab61b35bb6163774b04bd111bfb4f153bbfd5c38c64d0dff7c3e239e446bd2"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/009/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/009.000.trials.json",
+            "bytes": 6855,
+            "sha256": "3a947a0c1d3c0102755dc4e8fd01e9b50e2ec27b7b9d52d511f6200727a01a6a"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 10,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/010/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/010.cell.json",
+          "bytes": 1308,
+          "sha256": "48a397c7c61da21a357bdcb70bee995523bb2ba013663a91a63259a08746ea29"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/010/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/010.000.trials.json",
+            "bytes": 6749,
+            "sha256": "bae989c00dbd784218a7a7590d1dde693e77af4ed0a7dc2012465aff9a88f772"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 11,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/011/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/011.cell.json",
+          "bytes": 1308,
+          "sha256": "d54fc3dd969ef8dcf78f71133986f5e5c0aae251d464059d8dfb9e2adb7a7dd9"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/011/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/011.000.trials.json",
+            "bytes": 6861,
+            "sha256": "0695ef0cb1a628a758464894fa7ffd70a1153dcc4dc818065ad845da1a673ff2"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 12,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/012/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/012.cell.json",
+          "bytes": 1302,
+          "sha256": "6aa6345d0118cbded855036acdfac4c3f5626e5fe592b0cf562718857c3f4264"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/012/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/012.000.trials.json",
+            "bytes": 6774,
+            "sha256": "44ac12541f846effdd753b74995b24928910e6405d8ff9373cdc25c284e4e0ca"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 13,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/013/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/013.cell.json",
+          "bytes": 1303,
+          "sha256": "3f8c72cf69e0bbb415b09352286e3f0446b4f471a97012e6ac2a0d448e601d3e"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/013/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/013.000.trials.json",
+            "bytes": 6752,
+            "sha256": "08f106d050feeea04e956c0d725db6cdd93f60d47f0718764096bff088db0f88"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 14,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/014/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/014.cell.json",
+          "bytes": 1305,
+          "sha256": "805e72a38659421ac641e17951a63859c202109d72f62c883856f17c606b96f5"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/014/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/014.000.trials.json",
+            "bytes": 6812,
+            "sha256": "4d382816faf46f534f03eb155cb124b5f47b5806239d43f9587dab8f7288019e"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 15,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/015/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/015.cell.json",
+          "bytes": 1481,
+          "sha256": "ab6d9d52d2700f754eed071c5bafbd1b255008c2ad7d44fed6861365afdaa27a"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/015/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/015.000.trials.json",
+            "bytes": 11802,
+            "sha256": "7db0c8dc75481b03bb52f629e907fb6c55ef202f40f22080c73eb21711bc972e"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/015/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/d4b4b549dceb89053786e5bb7c4054ff4ea87081194b05757812ff58d47ba2e5.proof.json",
+            "bytes": 27317,
+            "sha256": "9f8a937a94a851d5d73283fb416be461e18d23464a1950c43e710f3d2de8a439"
+          }
+        ]
+      },
+      {
+        "index": 16,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/016/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/016.cell.json",
+          "bytes": 1309,
+          "sha256": "6fdc0c31634cd0ee3f4ae40ea13608800e6072baf7959e130a091398f32fe408"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/016/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/016.000.trials.json",
+            "bytes": 6791,
+            "sha256": "17436843da093afcf54fb66b15d0ba30d2530a5ba00a6fcebfe5b7a9fba4da2f"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 17,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/017/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/017.cell.json",
+          "bytes": 1308,
+          "sha256": "53633e044f50bf413b7419e690938cbc52d1377fe7f88b48adac776fa5c07fbf"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/017/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/017.000.trials.json",
+            "bytes": 6824,
+            "sha256": "3335e3b787dd1ae2ccfad0bbb54411d0bbe2a99f849a3f524670e765c700c30c"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 18,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/018/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/018.cell.json",
+          "bytes": 1305,
+          "sha256": "ba5b2550042a67005d2721edca11ba84880365d91f4c261b6e7cf002211eeb9c"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/018/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/018.000.trials.json",
+            "bytes": 6819,
+            "sha256": "95c7615d33592f67d5e935b9631a8526c8f1f2e0aa6a3dff120284b86997f31b"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 19,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/019/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/019.cell.json",
+          "bytes": 1301,
+          "sha256": "9f9bdadef521225237b39bc7ffd6535e0b4ff2ddc38b45ad181f9ea27d3b6bc5"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/019/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/019.000.trials.json",
+            "bytes": 6828,
+            "sha256": "2913bcb08493d5c4071905a219c5c45085312e3638497cce37aa39d8ca07d9ac"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 20,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/020/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/020.cell.json",
+          "bytes": 1302,
+          "sha256": "d4b7bf084d52db806801040df99915945fbc3fb462bc7d69563aae962328080f"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/020/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/020.000.trials.json",
+            "bytes": 6876,
+            "sha256": "cdcd58ed17b20ce197457d766731803a1536c1fb46c0dfa5b399eebe44dec417"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 21,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/021/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/021.cell.json",
+          "bytes": 1302,
+          "sha256": "ffde4b92b276723e70c866d652ffedec76457211de50e51b3a7e6c8e9bd7c776"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/021/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/021.000.trials.json",
+            "bytes": 6854,
+            "sha256": "a30184bcb61a2fd6a7c4a58e9b79a03ee3f79e554aa872292502894f8a40d20e"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 22,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/022/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/022.cell.json",
+          "bytes": 1311,
+          "sha256": "cec76b7acd056042f44263c84821a084cd6d6a2c6dcb5187150bd4d75cb3c742"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/022/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/022.000.trials.json",
+            "bytes": 6840,
+            "sha256": "7eb68a8579f1d290c08bb674d4cbf70a87bb51716c233ee292276339961bf653"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 23,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/023/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/023.cell.json",
+          "bytes": 1308,
+          "sha256": "cff2f6792b80604e685b336aad6a1f3a742bb9a47cb37b8fd52ffcfb7260b953"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/023/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/023.000.trials.json",
+            "bytes": 6776,
+            "sha256": "90ff4f80a07b3ec323ba0710df532d103e8e03db89a79e3c56eaf4aa494626c2"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 24,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/024/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/024.cell.json",
+          "bytes": 1306,
+          "sha256": "ab46fa7261a67e245022f6f0d88c03cb35f80990e0892fafa15b1e1a7ac3abd9"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/024/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/024.000.trials.json",
+            "bytes": 6802,
+            "sha256": "0c2dc100ed2006bd98cc93165c78bafda247b5c456857c43b5d11b3c5761cab9"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 25,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/025/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/025.cell.json",
+          "bytes": 1304,
+          "sha256": "6c4a11a3f728849a663be10d6644f6e4393cf7bde5f04a41bf3d5b01b5afebcb"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/025/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/025.000.trials.json",
+            "bytes": 6810,
+            "sha256": "efb797effc62b13d096ccc49975705b3c7e01b5b4ad5b92a95799e95743743d7"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 26,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/026/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/026.cell.json",
+          "bytes": 1302,
+          "sha256": "446b90cfa08d67b0a12c4f96664caa09da866fa7421bde2d6cf55af066e405f6"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/026/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/026.000.trials.json",
+            "bytes": 6834,
+            "sha256": "ec3125d9906176708b8c869adfa37d96d20aefcbeff2f555ec535097533cf359"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 27,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/027/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/027.cell.json",
+          "bytes": 1477,
+          "sha256": "a87cfdfed1596acceb731a39595119fff92e3229992e1e554fa42a1e4ba64361"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/027/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/027.000.trials.json",
+            "bytes": 11840,
+            "sha256": "8a94b4be9875b0a5877af76552f94d0ed19a81af4c0c48d5ceca86b0d23c3db0"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/027/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/21f187cd471174bdba1434da2e315dc221225ab9ee4302a88c992f9884634fbf.proof.json",
+            "bytes": 27410,
+            "sha256": "b8fa0abe60220ca155ecb4d69e497925bc1f54e7a100917f80e1f7382a26b228"
+          }
+        ]
+      },
+      {
+        "index": 28,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/028/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/028.cell.json",
+          "bytes": 1310,
+          "sha256": "9157653f49dfb0ea63523b9167788678dcd0df08dabaf1cf87a3c9d40933bfda"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/028/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/028.000.trials.json",
+            "bytes": 6838,
+            "sha256": "d0a8caf8f78a8a07108d85b178dee8806432ee912fc023680ecd249c10c205c2"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 29,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/029/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/029.cell.json",
+          "bytes": 1307,
+          "sha256": "c5e0913a01bc974304a90763a86664742031cb8ec7d5323c604ca76f82a60dba"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/029/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/029.000.trials.json",
+            "bytes": 6770,
+            "sha256": "28109470ad935d93963240a2ebc032cc471588c462d39baad475fb11a7c66b85"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 30,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/030/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/030.cell.json",
+          "bytes": 1307,
+          "sha256": "e34ae16af9456ba0bac2ac8a41a1f857d934584ede85f0861633f01fc59b0684"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/030/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/030.000.trials.json",
+            "bytes": 6817,
+            "sha256": "e27caa164d3b35c487a4b0af840e1eeae12167be3d714182f6ca9ce0dc5c4f8d"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 31,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/031/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/031.cell.json",
+          "bytes": 1302,
+          "sha256": "65ba206ac7bfdcf165311cc0715947fb6469e7a703c03c17a72e506b9becf83f"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/031/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/031.000.trials.json",
+            "bytes": 6754,
+            "sha256": "d4b5fdbf86aaa33e3d5a1eae012cfb2f5ac7dbadcc497da53934bfef116bc516"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 32,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/032/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/032.cell.json",
+          "bytes": 1480,
+          "sha256": "c579fc74c145b9a1e8101d1b0e5e1c1a1a8559f51348a1c54a7b94b149d0f803"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/032/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/032.000.trials.json",
+            "bytes": 11801,
+            "sha256": "356c9fdcb98f9d1f83d942844f634b776a247e7eedbc64890114b0140875bc90"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/032/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/8e46cd86ed26cb44b918d20ec5adc72ab3fa88a7d163fed8c14a6ed8b9aece13.proof.json",
+            "bytes": 37640,
+            "sha256": "6ed5cee042e8c884ffb76052e6ca50e156a5ed8f5158ae284ccfff5927e6586c"
+          }
+        ]
+      },
+      {
+        "index": 33,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/033/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/033.cell.json",
+          "bytes": 1302,
+          "sha256": "e9ed3d7a886fc2f5a2f4f11dfdd369ad5311e7d59d0013855768934d3515162d"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/033/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/033.000.trials.json",
+            "bytes": 6867,
+            "sha256": "2d2ba98acde2a28905a108aaa0fc3997d6f37f29cf4175040067603c96f16e6f"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 34,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/034/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/034.cell.json",
+          "bytes": 1306,
+          "sha256": "7d1ad3d679912230f43343cd31d9abb94fdb1c3a713008723d3c00ec1b3d1893"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/034/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/034.000.trials.json",
+            "bytes": 6771,
+            "sha256": "204a9012d1e2dede0c1531cd156c4c04707b6e294317093e447504d762738277"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 35,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/035/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/035.cell.json",
+          "bytes": 1306,
+          "sha256": "07f2a2aa27954df4bdfe14c256587aa826e44cebc841ef861840b0608c303708"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/035/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/035.000.trials.json",
+            "bytes": 6786,
+            "sha256": "d56ae8b3822f193421e0c5048ce6771d5d9da3638f5aff51ae70407b282d94de"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 36,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/036/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/036.cell.json",
+          "bytes": 1306,
+          "sha256": "60df514178896c5ae4870c81bc0455d64dd302d208ce0cbc4b57cde6b21749e1"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/036/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/036.000.trials.json",
+            "bytes": 6800,
+            "sha256": "85c6ea0d3e0cd9d63ab9024556cd2f30313e51dc88ce39282da013826b0b199b"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 37,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/037/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/037.cell.json",
+          "bytes": 1302,
+          "sha256": "2bacb23341b1656cc5c3e9ca6783ed41ea4bde49da4eae1670323e4bd452eb72"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/037/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/037.000.trials.json",
+            "bytes": 6858,
+            "sha256": "1ecefb1b44418f2eb5efd62c6f18bb7a8330fb43b8a68cdf7979943e0ee6e25c"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 38,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/038/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/038.cell.json",
+          "bytes": 1305,
+          "sha256": "868ec902a1618bdc9332ff13373c71812e635c16d29d4b3cfb3a98f31cc99e55"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/038/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/038.000.trials.json",
+            "bytes": 6828,
+            "sha256": "4ea29d6e0883b273d916863adc2ea9f4fca363ca10e13b105f58c5d1fcfdacf1"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 39,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/039/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/039.cell.json",
+          "bytes": 1302,
+          "sha256": "4950be1e310b34ed1ee1359697613b17f56f1cffd360f532acebdf28fc0eb914"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/039/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/039.000.trials.json",
+            "bytes": 6865,
+            "sha256": "67b942a13893faaa8f14d9fdc29f2e31eafa9005a1cc0e8a77d52916e4844c02"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 40,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/040/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/040.cell.json",
+          "bytes": 1310,
+          "sha256": "21d25d3067120eb465136e042db2e1d0f3f9a99f146c6e04d040abdabed62b33"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/040/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/040.000.trials.json",
+            "bytes": 6753,
+            "sha256": "4d85ddafa3b303926223efdcf093d804816305c4e024f5fc719f83efacecf463"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 41,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/041/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/041.cell.json",
+          "bytes": 1311,
+          "sha256": "a61ebca7b3721b065ac65f1842f92421feffdd86a522cef88999046d1e5c86ae"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/041/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/041.000.trials.json",
+            "bytes": 6853,
+            "sha256": "1eeb12a7cdbc6b66d2c657456f5f8cefcb208a3cfbc8b23099b78dc7eb260bcf"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 42,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/042/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/042.cell.json",
+          "bytes": 1307,
+          "sha256": "a945ff2a795c874d9aa7a987eefd7baa8a0281a0c7224ade986c851b3892872f"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/042/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/042.000.trials.json",
+            "bytes": 6784,
+            "sha256": "04a5be0e57c8cdba5f4ea4e96593be97f3a782afbecfea1e5cda810a2622068d"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 43,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/043/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/043.cell.json",
+          "bytes": 1303,
+          "sha256": "a364771a1224c6c7e4f9a5793aad220bf1173bfe26d6f60b9e77774e313ee015"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/043/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/043.000.trials.json",
+            "bytes": 6784,
+            "sha256": "e3ac8aa99b7c2c52c1090c065fc5b482b1f0f87e78accfa4b1eee109ba71b654"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 44,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/044/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/044.cell.json",
+          "bytes": 1302,
+          "sha256": "11a67514d560d9267a9dce7a2b3c2813e43491f2c6725f18b8aa577a6d2c9a16"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/044/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/044.000.trials.json",
+            "bytes": 6807,
+            "sha256": "dbe3bf162643154b9eb46b0a2181fff08335d2abe076c0d2273d86159656ef7c"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 45,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/045/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/045.cell.json",
+          "bytes": 1304,
+          "sha256": "cc61fe048eee429780f4ff94c0a8a579597e956d823973f9e42fbd3b1775dc0a"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/045/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/045.000.trials.json",
+            "bytes": 6826,
+            "sha256": "14a8f0b7a7df96d0d4d7e72606ec265341b43eda38bb980bc6325e49248c7c49"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 46,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/046/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/046.cell.json",
+          "bytes": 1313,
+          "sha256": "3a47d667cfcf4a6e3aee226d57b0797329c0b5591d3972835c9483b26552400d"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/046/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/046.000.trials.json",
+            "bytes": 6763,
+            "sha256": "4afe79d7d274c436591afbabb4eab5a8534e2cdc4e64e75e801280de2c6ce6d6"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 47,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/047/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/047.cell.json",
+          "bytes": 1310,
+          "sha256": "935bc5d646be6fa41a6458def9a24fb07aa66db736469c9651b86423886c4941"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/047/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/047.000.trials.json",
+            "bytes": 6785,
+            "sha256": "9ab0836bd11001a3c24c957a2edfad5f79488fe1419083c02b131ce06bb8737a"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 48,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/048/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/048.cell.json",
+          "bytes": 1308,
+          "sha256": "748fdf67b0e3887fac921044f35493b0f4dfb3765a9f168f76073d9a6a291efc"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/048/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/048.000.trials.json",
+            "bytes": 6716,
+            "sha256": "276eca90511a74c2eaac18cda4018b0052a6bebf481d35e912c2f78e09f2d19b"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 49,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/049/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/049.cell.json",
+          "bytes": 1308,
+          "sha256": "a0db7d3fc1d4a5727f240eb094081356851de2337fdc2b20e3c1568af22e0128"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/049/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/049.000.trials.json",
+            "bytes": 6803,
+            "sha256": "23a6baa53311c41fda4881e9b3d2069fa35a57abe2348e973288dcd5376dbf4c"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 50,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/050/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/050.cell.json",
+          "bytes": 1303,
+          "sha256": "3ae2a7874acec0d9247ef88e24bcb34dbedd7d3961f4dfcbfb665baf64dd5412"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/050/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/050.000.trials.json",
+            "bytes": 6771,
+            "sha256": "5e98e40d36a8b758558d79d886531531fa88d727ebc29d093437a6227c377231"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 51,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/051/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/051.cell.json",
+          "bytes": 1302,
+          "sha256": "712ba642dbcf3d88df8f2f6a412df9ec974c88a54257de100feb11223408be6a"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/051/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/051.000.trials.json",
+            "bytes": 6809,
+            "sha256": "da4ac311ee766f9949807aaa380a6764a18f49932d02d8cdcee6065d371ab45f"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 52,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/052/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/052.cell.json",
+          "bytes": 1308,
+          "sha256": "2373edb093cd6e0765bb10aba6dc76bc8f66d4f5ee0def02209cf20f3131577f"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/052/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/052.000.trials.json",
+            "bytes": 6756,
+            "sha256": "5fbb861996e35d450602c0b023e4d45078a7d1e14d5d0924b287447563204d4b"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 53,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/053/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/053.cell.json",
+          "bytes": 1311,
+          "sha256": "28afc9e1876a0d5880ae34fe0c41aea678f1176035e7d2f34de9db22b20633e5"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/053/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/053.000.trials.json",
+            "bytes": 6819,
+            "sha256": "f0a1638c3878e51b335ccb8db00abe15e511b5f20146dc8b2ff3297d7d6a6d8e"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 54,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/054/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/054.cell.json",
+          "bytes": 1308,
+          "sha256": "17c10883cd198e30a1f790b9007cc462ab79620f6ad85f9d132ccce647c5541e"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/054/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/054.000.trials.json",
+            "bytes": 6807,
+            "sha256": "c9421d7a93104ab1975807bc2276393fc43aa12804f6033a95d0f4549de909f2"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 55,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/055/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/055.cell.json",
+          "bytes": 1308,
+          "sha256": "f37e35d4de5eee7cabac21bab6a60c4dfd2cc304273b329f3d7b81cc142a5d55"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/055/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/055.000.trials.json",
+            "bytes": 6842,
+            "sha256": "13a5f94a78af3c08ded32dbc5548a5d300a7cb8e47591b25f169a62af880a3bf"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 56,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/056/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/056.cell.json",
+          "bytes": 1306,
+          "sha256": "32fc7bf3f9531b5a7e8c5f21d4a2daad3dfe874db757b209f398a58aa053451b"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/056/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/056.000.trials.json",
+            "bytes": 6783,
+            "sha256": "3924fe258fef53b255908b3a50debe46a6f21124c594623cd4fdab51fbde1b78"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 57,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/057/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/057.cell.json",
+          "bytes": 1302,
+          "sha256": "ae129e915620a716b4882eb9ccb62265d5441a51afb8ebdccb971e9301b23a3c"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/057/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/057.000.trials.json",
+            "bytes": 6832,
+            "sha256": "98bb359cdb91b6cd93c0f053f58dce8146c11c3399441bdcd1bb7d81d2cf0a79"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 58,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/058/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/058.cell.json",
+          "bytes": 1310,
+          "sha256": "b54cbcfffffd8798fdb1f3f10969c43e4edf76d9643d4cb4aaa0e59269be7c6d"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/058/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/058.000.trials.json",
+            "bytes": 6731,
+            "sha256": "98fcb5386bb1042eb0bff56a6e4052480f896104daad09c4e25e2e911d518d62"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 59,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/059/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/059.cell.json",
+          "bytes": 1487,
+          "sha256": "29d9fd80826514af83437e2e8b54f273f51e5326f3a7a38f4eddb1586da43bcf"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/059/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/059.000.trials.json",
+            "bytes": 11761,
+            "sha256": "a3e220624361ea3daa53c3d1eb2892a6ee340a1ef9fb16c526926b074258c96f"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/059/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/c8287433892cc59605605d13bcf5662b76fb7a5ca355c59ccace56123b2e19ef.proof.json",
+            "bytes": 28112,
+            "sha256": "50709a99af03deecf6265802e0747b16cce016751d3e6d8dddf41af8d168a389"
+          }
+        ]
+      },
+      {
+        "index": 60,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/060/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/060.cell.json",
+          "bytes": 1310,
+          "sha256": "8d9c0fd88da6a87e6b8a0ed2a222af3a94c0bfbb4f6cc6aff412a756ffe9f4f9"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/060/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/060.000.trials.json",
+            "bytes": 6803,
+            "sha256": "2943136d18850979567401f54789e85a19b9cc5bf7fe84330eb61421cfedbd42"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 61,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/061/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/061.cell.json",
+          "bytes": 1483,
+          "sha256": "4b029679935726ead800214795d15897c8e6be2c974e3c8060bc6212db29d415"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/061/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/061.000.trials.json",
+            "bytes": 11726,
+            "sha256": "02f159ee9028dd12b036b68b767d074a6d019e62a3550ec91d5ff7317bdae83f"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/061/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/28527b3b8d7740f3d2cc3ab5cbc0b9d94d657708f98e6021e0ccec99d3c52ea3.proof.json",
+            "bytes": 28515,
+            "sha256": "8c413c98ab397b44adf9c3f99362a1af0d3bd63cb4086bd5ce57c3ca8410bb35"
+          }
+        ]
+      },
+      {
+        "index": 62,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/062/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/062.cell.json",
+          "bytes": 1484,
+          "sha256": "edb9faae23c9b950d39bfb3a69a414afb5826f8a691d456dea288980c0d5ce2f"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/062/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/062.000.trials.json",
+            "bytes": 11795,
+            "sha256": "03aaaf4adf4d442754c35b0efe504f42769963021fa0000521d0437a869acc43"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/062/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/468f5017f2608c91436684abdee1518c8f3d60cccb6bc1c8031a29ad15352643.proof.json",
+            "bytes": 35623,
+            "sha256": "5ff4a6a2a2d3e3726eeab2133fc4e4303ca41aca37f6c4886b34d02e9b8c41b9"
+          }
+        ]
+      },
+      {
+        "index": 63,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/063/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/063.cell.json",
+          "bytes": 1483,
+          "sha256": "84ae374acb2a510acfe6e06668e9005ae1769650aec1a16ddcf90e5e62a96124"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/063/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/063.000.trials.json",
+            "bytes": 11778,
+            "sha256": "61f5f87f8e8474188c8889be4c50407d33f9d19edebdd5bccface79184df7536"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/063/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/b25e35af35a4c15187dafa67d9a16608390ce5ffccbf2c6eda2cfb2148d82501.proof.json",
+            "bytes": 26368,
+            "sha256": "f7ba1b58b087373a7f30b89999815b0af9fad39d10c284e8e99351a42b83a2f8"
+          }
+        ]
+      },
+      {
+        "index": 64,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/064/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/064.cell.json",
+          "bytes": 1487,
+          "sha256": "276238c7649af7fcaee3fcc259c7404a1d2f15055948c52a77354c7c88c2cce0"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/064/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/064.000.trials.json",
+            "bytes": 11749,
+            "sha256": "653a6ce6f9b46cf1449c53433fde835288804c02799cff87c4b2a153cc36073f"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/064/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/1d39a0d797b6f74574d95a00b0149a3cc707e04224d9d6b9a664462c18a6afac.proof.json",
+            "bytes": 35211,
+            "sha256": "7a087edea8bb6ff4fea9ffdcdeb69afc800888d33413564e81ab7260cf8fd222"
+          }
+        ]
+      },
+      {
+        "index": 65,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/065/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/065.cell.json",
+          "bytes": 1309,
+          "sha256": "3d7e154a71a8e0acf36d7605c99971101a90cd484bb3423d9ed974cf674c62e4"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/065/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/065.000.trials.json",
+            "bytes": 6769,
+            "sha256": "81fb6c728ef29b1090422d7dff6f9fae770948a935af0fcf3460092eb61018e6"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 66,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/066/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/066.cell.json",
+          "bytes": 1309,
+          "sha256": "7d04f97867e48fe05c234aaa15274988f80bb20915d989dc72889fc3678fc0a2"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/066/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/066.000.trials.json",
+            "bytes": 6774,
+            "sha256": "e94f1932ab077311914f86bcf39412700d4a2894a86a4e37121006bfacbab6f7"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 67,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/067/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/067.cell.json",
+          "bytes": 1305,
+          "sha256": "77aee40c67b585ea7835645d939a761ee5b7012c9ea6f605fac773262b3865ea"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/067/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/067.000.trials.json",
+            "bytes": 6809,
+            "sha256": "b2aabdc7096562aa5f4fca89a705fece3329278a17c2a1c4e6bcf3f3f7481f72"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 68,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/068/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/068.cell.json",
+          "bytes": 1307,
+          "sha256": "79329bce0d8ac03bea5e4c0a066c03d6be07f8fa75718de0f9b6d69afe57f95e"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/068/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/068.000.trials.json",
+            "bytes": 6824,
+            "sha256": "2e808eb24fafaf0dd2881bcac18f01473246159fd9ed4d833c244e4c07c3f852"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 69,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/069/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/069.cell.json",
+          "bytes": 1481,
+          "sha256": "394f37cbfedea5dc06e3c3110dd3be88d8a696702d27de8044f3ef6ca43b95b1"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/069/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/069.000.trials.json",
+            "bytes": 11766,
+            "sha256": "49682adf260f3f0f9a53f67ef29dfdf641d257022a5f8bbd06cf14d81ac2dba4"
+          }
+        ],
+        "proofs": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/069/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/b86495273ef1726a33ac399ccdcac40168e01cc5b5266127f320b9aa2d2d8a96.proof.json",
+            "bytes": 28887,
+            "sha256": "3a2acdbf15389b067c46003e9a08f8aceec706056a3fcfc8d89f69c35c2bff70"
+          }
+        ]
+      },
+      {
+        "index": 70,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/070/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/070.cell.json",
+          "bytes": 1314,
+          "sha256": "21ed59fe8062ad021756fedf82218dbb223102509428e95f59dfb998903f28e3"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/070/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/070.000.trials.json",
+            "bytes": 6786,
+            "sha256": "5a1f846382df2dc49410d1c41cc41092716c97e37c2e92a7ff5cdcc6ec3b7ff5"
+          }
+        ],
+        "proofs": []
+      },
+      {
+        "index": 71,
+        "marker": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/071/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/071.cell.json",
+          "bytes": 1309,
+          "sha256": "dd604da5c46e30de3ed2a7c4bd868b39eea27877d91e515cc5c59436aa4d6bf4"
+        },
+        "chunks": [
+          {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-bb-squeeze-btncall-optimized-five-workers/run/regression/cells/071/79cc56b9873cb3e9c7e234789fceda0891557de599097b371c1b18f03d698f2d/071.000.trials.json",
+            "bytes": 6801,
+            "sha256": "11303e0d23cd39a5023fa0b90e6ee1fd036df4f818a79243194142e4dcce3169"
+          }
+        ],
+        "proofs": []
+      }
+    ]
+  }
+}

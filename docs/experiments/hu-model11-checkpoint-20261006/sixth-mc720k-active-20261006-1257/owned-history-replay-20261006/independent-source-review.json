@@ -1,0 +1,124 @@
+{
+  "kind": "independent-owned-history-single-canonicalization-source-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T12:29:14.759922+00:00",
+  "verdict": "SOURCE_CLEAR_FOR_FOCUSED_TESTS_ONLY",
+  "sourceChanges": [
+    {
+      "baseline": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/decision-prefix.mjs",
+        "bytes": 2961,
+        "sha256": "eff7da5d838350ea6ef35c19fcb47a0f4cbebfe6d7440797913cb8916d11258d"
+      },
+      "candidate": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/scripts/postflop-ai/decision-prefix.mjs",
+        "bytes": 3427,
+        "sha256": "50cce8c0aee6c5ced03c7bc4f3f10044b6e9723ca8b76eb760b5480158e077e6"
+      }
+    },
+    {
+      "baseline": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "bytes": 23109,
+        "sha256": "3aacad94471833d6dcf720eedc372e6812171bf38af8a601dd0b75da7edfb38b"
+      },
+      "candidate": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/scripts/postflop-ai/effective-reach.mjs",
+        "bytes": 23141,
+        "sha256": "ba90298c3aa6f438f4170388676e78aa6c67eb316a7ad2f0d4f71fbe6505e6b9"
+      }
+    }
+  ],
+  "patch": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/candidate.patch",
+    "bytes": 3854,
+    "sha256": "a49665cd8e084a1d8931a3e1941094fbd410443259023d51ea7a92d8619c1607"
+  },
+  "preparationManifest": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/preparation-manifest.json",
+    "bytes": 15002,
+    "sha256": "7785a97fd41fff0d3b1e979e79d180c9f3a9271348ce01c4af107e66f0e1a4c0"
+  },
+  "tests": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/tests/postflop-model11-owned-history-replay.test.mjs",
+      "bytes": 6734,
+      "sha256": "41be509ea84ab266af1ad7f65a10736044fde32b4ec6ffd6ee1affd595b48a54"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/tests/postflop-model11-law-memo.test.mjs",
+      "bytes": 5386,
+      "sha256": "0cd4532106eb0cba4bf29558b3f23ed1a4b7d44753b7d85b1f5a0f41a138135e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/tests/postflop-model11-prepared-prefix.test.mjs",
+      "bytes": 11899,
+      "sha256": "f243424a90c63133e1c8a48a2ec493ad15710f6dee9b55ce3869223539ca32ec"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/tests/postflop-model11-gate.test.mjs",
+      "bytes": 4896,
+      "sha256": "bd8fc5e4b5776da68818d4ddab8db628c25d8aa4712d467fa29a0a7cb5c8593e"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/tests/postflop-model11-gate-vector.test.mjs",
+      "bytes": 7184,
+      "sha256": "b925b39049eec3804ef8c4da7cc6e0634644fad6f9b89505d985c7f3bc1a60b4"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/tests/postflop-model11-execution.test.mjs",
+      "bytes": 17064,
+      "sha256": "0fee6d901c5a4feb60418ef2d98924ee5104cb5614a3c4ab1ac12be2ac3fa159"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/tests/postflop-model11-completion.test.mjs",
+      "bytes": 16031,
+      "sha256": "39aec32c62aa1c2b0bcd8d61c3dcf4a6f3b279e3462e66a854d4492520003172"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/tests/postflop-observable-actions.test.mjs",
+      "bytes": 11412,
+      "sha256": "56b1d2d146c7b5729b169e069325d6670abcc38efa6bac3c023c329aad88c235"
+    }
+  ],
+  "referenceFixture": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-model11-owned-history-replay/apps/frontend/tests/fixtures/model11-public-prefix-before-owned-replay.mjs",
+    "bytes": 3144,
+    "sha256": "b52767dc4f74a8eb626cb3bbdf51c76dd687f4fced86b5fa4a7bca59b5aa6a78"
+  },
+  "commands": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/commands.json",
+    "bytes": 2694,
+    "sha256": "2381b9787964e395e393a66630c7f92af7428fd4fddf7e6a67e0e466726dd716"
+  },
+  "checks": {
+    "onlyDecisionPrefixAndEffectiveReachChanged": true,
+    "publicPrefixBranchRetainsOriginalCanonicalThenReplaySequence": true,
+    "commonBoardPathFuturePendingMaxValidationAndFreshFreezeRetained": true,
+    "ownedHelperCalledOnlyByPrivateReachHistoryReconstruction": true,
+    "replayDecisionAlreadyCanonicalizesOwnedRawPath": true,
+    "ownedReplayTablePathContainsAllThreeCanonicalPhysicalActionArrays": true,
+    "originalPublicReferenceFixtureExactApartFromHeaderAndImportPaths": true,
+    "prepareNumericCacheProofAndLawOrderUnchanged": true,
+    "noMapWeakSetGeometryOrCardCacheChange": true,
+    "formal4bUnchanged": true
+  },
+  "reasoning": "The owned historical request comes from requestBeforeEntry on private replay tables. replayDecision itself canonicalizes that path, then its newly constructed table records the canonical physical labels in table.path. The new helper uses that owned path snapshot instead of canonicalizing first and asking replayDecision to canonicalize again. Public createDecisionPrefix retains the prior two-stage path, including getter/default-config/array reads and error translation. Both branches share original validation, pending/MAX checks and deep JSON snapshot creation.",
+  "testCoverage": [
+    "full ordered prefix/hash equality against preserved4b implementation on both trees and all streets",
+    "merged all-in labels and low-SPR aliases",
+    "raise-to-call terminal and illegal suffix rejection",
+    "future street rejection, board/runout order and snapshot isolation",
+    "public getter/input-source/Array-subclass read order",
+    "malformed request errors plus original execution/law/proof/release/observable suites"
+  ],
+  "executionBoundary": "Only exact eight-file focused argv in commands.json after parent lane grant,512MiB heap/900MiB group/2GiB host floor/120s. No repeated failed run or budget extension. Separate three-cell wrapper review and genuine tests/192-trial results remain required before any performance or adoption finding.",
+  "testsPassedClaim": false,
+  "numericalParityEstablished": false,
+  "performanceGainEstablished": false,
+  "candidateAdopted": false,
+  "massLaunchAuthorized": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

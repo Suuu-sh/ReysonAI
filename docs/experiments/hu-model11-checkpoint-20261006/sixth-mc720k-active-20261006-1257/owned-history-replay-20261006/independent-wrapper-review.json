@@ -1,0 +1,136 @@
+{
+  "kind": "independent-owned-history-three-cell-wrapper-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T12:30:15.909275+00:00",
+  "verdict": "APPROVE_FIXED_THREE_CURRENT64_COMPARISON_AFTER_FOCUSED_TESTS",
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/independent-source-review.json",
+    "bytes": 6694,
+    "sha256": "b9182413d065875bafea3e3e82aad0bff39aeed612e200a7f278ff9e1f854f22"
+  },
+  "runner": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/measure.mjs",
+    "bytes": 12980,
+    "sha256": "b081db9815e9c9f16973c20dd3cf9f05b185f91ec4c49b1e368cbdc371bd4f99"
+  },
+  "controller": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/run-one.py",
+    "bytes": 3417,
+    "sha256": "bcf23de22003d6791077f702269ee0c41e64a97357360a39642f207c57d87f8e"
+  },
+  "candidateSourcePins": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/candidate-source-pins.json",
+    "bytes": 10397,
+    "sha256": "d0aae3a5930069cd14e9d9942fbf86ecd62eaa30ff4b8c53eca1367e7962d387"
+  },
+  "candidatePatch": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/candidate.patch",
+    "bytes": 3854,
+    "sha256": "a49665cd8e084a1d8931a3e1941094fbd410443259023d51ea7a92d8619c1607"
+  },
+  "priorWrapperReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/independent-wrapper-review.json",
+    "bytes": 5285,
+    "sha256": "1e97103a5f5d5f6a125d5af0e7a47f0c09f4710f89c776d4ec4c5f63bb78ddbe"
+  },
+  "priorActualBaselineReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/independent-actual-review.json",
+    "bytes": 21293,
+    "sha256": "6bc4c0e6b065d9e7d996ba6be2d03ba3d53fd1b2c6f23283eec22747a4798e75"
+  },
+  "baselineResults": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/result.json",
+      "bytes": 6616,
+      "sha256": "bf2e8e9b1aae78c79c5b343693d3f1bac28363c041df06e096f59e54fedd029b"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/result.json",
+      "bytes": 6684,
+      "sha256": "603396d24cdb7778c15802bd0c1f0a8f6c704ed235374a84ea369673c6aa32bc"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/result.json",
+      "bytes": 6697,
+      "sha256": "24abf66e34b30b55073c1e1a6e8185a480ebc35d87ebb67cd6a076ab2b6f0705"
+    }
+  ],
+  "commands": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/commands.json",
+    "bytes": 2694,
+    "sha256": "2381b9787964e395e393a66630c7f92af7428fd4fddf7e6a67e0e466726dd716"
+  },
+  "checks": {
+    "wrapperOnlyCandidateRootAndExactGraphHashSubstitutions": true,
+    "controllerByteIdenticalToReviewedCurrentOnlyController": true,
+    "complete47FileGraphVerified": true,
+    "onlyDecisionPrefixAndEffectiveReachGraphDifferences": true,
+    "sameNumericalLoopRngCache64AndFullTrialEqualityCheck": true,
+    "sourceGraphPinnedBeforeAndAfter": true,
+    "distinctCandidateProvenancePreserved": true,
+    "noOtherOptimizationIncluded": true
+  },
+  "allowedJobs": [
+    {
+      "mode": "current",
+      "cell": 1,
+      "pairedTrials": 64
+    },
+    {
+      "mode": "current",
+      "cell": 2,
+      "pairedTrials": 64
+    },
+    {
+      "mode": "current",
+      "cell": 59,
+      "pairedTrials": 64
+    }
+  ],
+  "exactArgv": [
+    [
+      "python3",
+      "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/run-one.py",
+      "current",
+      "1",
+      "b081db9815e9c9f16973c20dd3cf9f05b185f91ec4c49b1e368cbdc371bd4f99",
+      "bcf23de22003d6791077f702269ee0c41e64a97357360a39642f207c57d87f8e"
+    ],
+    [
+      "python3",
+      "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/run-one.py",
+      "current",
+      "2",
+      "b081db9815e9c9f16973c20dd3cf9f05b185f91ec4c49b1e368cbdc371bd4f99",
+      "bcf23de22003d6791077f702269ee0c41e64a97357360a39642f207c57d87f8e"
+    ],
+    [
+      "python3",
+      "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/run-one.py",
+      "current",
+      "59",
+      "b081db9815e9c9f16973c20dd3cf9f05b185f91ec4c49b1e368cbdc371bd4f99",
+      "bcf23de22003d6791077f702269ee0c41e64a97357360a39642f207c57d87f8e"
+    ]
+  ],
+  "limits": {
+    "heapMiB": 512,
+    "ownedRssMiB": 900,
+    "hostAvailableFloorMiB": 2048,
+    "timeoutSecondsPerJob": 120,
+    "sequential": true
+  },
+  "executionBoundary": "After exact focused suite passes and parent lane grant, run each fixed current64 cell once. Retain all192 complete trial objects, proofs, draw hashes and before/after cache statistics for independent comparison against the saved formal4b baseline. No model10/producer/profile job or repeat/extension is approved here.",
+  "timingInterpretation": [
+    "The numerical loop and instrumentation are unchanged. Additional candidate graph checks happen outside timed engine loop.",
+    "Baseline input context imports formal4b modules, while actual candidate engines import a separate module tree. Context/module startup and setup costs therefore must remain separate from primary loop timing; warm-up/JIT/GC variation remains.",
+    "Identical trial returns, completion laws/proofs, baseline/draw hashes and cache counters are required. A three-cell single-pass timing change cannot establish10k scaling or a statistical speed guarantee."
+  ],
+  "numericalParityEstablished": false,
+  "performanceGainEstablished": false,
+  "candidateAdopted": false,
+  "massLaunchAuthorized": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

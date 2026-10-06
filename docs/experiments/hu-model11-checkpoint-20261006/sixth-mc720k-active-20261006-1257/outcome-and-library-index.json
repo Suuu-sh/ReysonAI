@@ -1,0 +1,256 @@
+{
+  "kind": "active-sixth-720k-with-scoped-audit-ready",
+  "expectedParent": "fbe68ff072b7d7ce4ca557c2e906501e1a241e54",
+  "sourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "bindingHash": "2171cb322dfb12519d5b635ebffada69109c37bd5bbf2a85c4bf3ac1b7b434a2",
+  "ownerSession": 97525,
+  "launchedAt": "2026-10-06T12:48:00Z",
+  "workers": 5,
+  "snapshotAt": "2026-10-06T12:53:43.665029+00:00",
+  "completedConditions": 5,
+  "completedTrials": 50000,
+  "targetConditions": 72,
+  "samplesPerBoardProfileSeat": 10000,
+  "targetTrials": 720000,
+  "cacheBatchSize": 64,
+  "eachClosedCellNativeValidatedAndFirst64ParityPassed": true,
+  "partialActiveDataIsNotFinal": true,
+  "wholeRunCompleted": false,
+  "scopedAudit": {
+    "selectedConditions": 15,
+    "trialsPerSelectedCondition": 144,
+    "selectedStrategyTrials": 2160,
+    "cacheControls": 12,
+    "originalRngIndicesAdvanced": 720000,
+    "fullStoredEvidenceIntegrity": true,
+    "nativeSemanticValidationOnceDuringProduction": true,
+    "actualAuditExecuted": false,
+    "freshFull720kReplayClaimed": false
+  },
+  "stage1Closed": true,
+  "newOptimizationAdopted": false,
+  "thirdCandidate": {
+    "testsPassed": 55,
+    "matchedTrialObjects": 192,
+    "wallIncreasePercent": 4.611794901544908,
+    "cpuIncreasePercent": 5.089210328426175,
+    "adopted": false
+  },
+  "libraries": [
+    {
+      "id": "libfile_b93836beb3988191bbf329a17a8de766",
+      "version": 0,
+      "name": "hu-model11-sixth-720k-and-scoped-audit-ready-20261006.tar.gz",
+      "bytes": 1344838,
+      "sha256": "491c29ad1a3af6cba581322697974a869318db1883e2d7f1622a3ad4ea558728",
+      "files": 351
+    },
+    {
+      "id": "libfile_79ac411e0de4819181be8e15170e5fb6",
+      "version": 0,
+      "name": "hu-model11-sixth-mc720k-progress-20261006-1254.tar.gz",
+      "bytes": 1070752,
+      "sha256": "f82e8367efa7fbc13723623c8d57551709cdc974620268e8275f589c16372ddd",
+      "files": 980,
+      "completedConditions": 5,
+      "completedTrials": 50000
+    },
+    {
+      "id": "libfile_b8a84362bce4819188e50a076370c0ea",
+      "version": 0,
+      "name": "hu-model11-stage1-final-unadopted-20261006.tar.gz",
+      "bytes": 64838,
+      "sha256": "48124cf787a1fbb52aca5aa08b1d85933a7e8c0520e2cd2766b0e2c2e4d28779",
+      "files": 48
+    }
+  ],
+  "confirmedSaved": true,
+  "files": [
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/context.mjs",
+      "bytes": 9211,
+      "sha256": "4ffc296339528d5888d7f542a8aae144c40ad36305603d2bbbb4a6f537b26eca",
+      "exactCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/controller.py",
+      "bytes": 25285,
+      "sha256": "4e57bb0b3bf01fb5d2f4ab6e63a198c490cce6b79ede4327bc86f18a2ece1452",
+      "exactCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/regression.mjs",
+      "bytes": 6932,
+      "sha256": "bd5d4ae96c87c3c125836c5b2fef3d8cff384ea6ef2ab1fbdfdf8843c9c86931",
+      "exactCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/worker.mjs",
+      "bytes": 4654,
+      "sha256": "aeb5d2cc1bbef59462b5462855f6a274e59d3d1cdffb5dc8db164e53d51ba00c",
+      "exactCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/serial.mjs",
+      "bytes": 12515,
+      "sha256": "76b3130e7f5fd6d32e96183d8a3517038d000c466b8cdd7fa5b16f416a05dfc2",
+      "exactCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/plan.json",
+      "bytes": 107005,
+      "sha256": "cae03aa4fd85ad61955b68c88d2a262cef59d7038ea79ae39a773c3e8cf8d318",
+      "exactCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/run/prepared.json",
+      "bytes": 41534,
+      "sha256": "af1081bccc660345eb5b514f8c1a76decf7d13c6be853a8852e9f15e32c2a6e9",
+      "exactCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/launch-review.json",
+      "bytes": 12272,
+      "sha256": "f5e67592d6458548c1a83144be9c589a9855317aa46819b7f70f1282396ca07e",
+      "exactCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/launch-command.json",
+      "bytes": 1840,
+      "sha256": "8fd1ed47f707a5cd33aba65b1be55f543e3de2c2e715197e174a3be230f68186",
+      "exactCopy": true
+    },
+    {
+      "path": "co-bb-squeeze-btncall-mc720k-five-workers/preparation-summary.json",
+      "bytes": 1911,
+      "sha256": "9f7af3176231b30a630517a415582f70fb397ed06c92f5d9491ab00fa1dc5eda",
+      "exactCopy": true
+    },
+    {
+      "path": "scoped-cache-epoch-audit-20261006/scoped-audit.mjs",
+      "bytes": 22390,
+      "sha256": "9a1ae13e8f369f109d70f3ee5451f1326de225f4a6cc05e6270ddc291514d041",
+      "exactCopy": true
+    },
+    {
+      "path": "scoped-cache-epoch-audit-20261006/test-scoped-audit.mjs",
+      "bytes": 8474,
+      "sha256": "4f081d5ebecf7f5f0db5890f9739ddfbc0eea5de7aa0e8f73602bff4324476ef",
+      "exactCopy": true
+    },
+    {
+      "path": "scoped-cache-epoch-audit-20261006/audit-current.mjs",
+      "bytes": 11961,
+      "sha256": "3d7bf03bc7289bab7968b7c22283cb824577c73c8d86ba45ddd462f66b9e6dc3",
+      "exactCopy": true
+    },
+    {
+      "path": "scoped-cache-epoch-audit-20261006/prepared-manifest.json",
+      "bytes": 216445,
+      "sha256": "588b6f01c91251a570f6ef9faeeaa253c724b1bc8b3df83027b33b07f650bdd3",
+      "exactCopy": true
+    },
+    {
+      "path": "scoped-cache-epoch-audit-20261006/independent-source-review.json",
+      "bytes": 9384,
+      "sha256": "7c438ec1144efef95d00510a554da02e4a0fceab5fab0790022872622f26f996",
+      "exactCopy": true
+    },
+    {
+      "path": "scoped-cache-epoch-audit-20261006/HANDOFF.md",
+      "bytes": 2549,
+      "sha256": "886072b5abd88acafc859468a502eb44ddf25c51718ef2317d968d6bc1c6cc4b",
+      "exactCopy": true
+    },
+    {
+      "path": "scoped-cache-epoch-audit-20261006/test-supervision/resource.json",
+      "bytes": 1571,
+      "sha256": "a74a86335e39e21f3341cc2770a78358dc2e23269cb088110b25bcd447afa81c",
+      "exactCopy": true
+    },
+    {
+      "path": "scoped-cache-epoch-audit-20261006/test-supervision/parent-result.json",
+      "bytes": 2111,
+      "sha256": "9418d7eeebbf0b1474d31083fa85036b083e76c47c86ba09791bf5745a145223",
+      "exactCopy": true
+    },
+    {
+      "path": "owned-history-replay-20261006/SUMMARY.md",
+      "bytes": 2830,
+      "sha256": "dcf7810934e739ea6916e5ed9e7a4bd0b845b60e256d7c190483ca3b67636e81",
+      "exactCopy": true
+    },
+    {
+      "path": "owned-history-replay-20261006/candidate.patch",
+      "bytes": 3854,
+      "sha256": "a49665cd8e084a1d8931a3e1941094fbd410443259023d51ea7a92d8619c1607",
+      "exactCopy": true
+    },
+    {
+      "path": "owned-history-replay-20261006/independent-source-review.json",
+      "bytes": 6694,
+      "sha256": "b9182413d065875bafea3e3e82aad0bff39aeed612e200a7f278ff9e1f854f22",
+      "exactCopy": true
+    },
+    {
+      "path": "owned-history-replay-20261006/independent-wrapper-review.json",
+      "bytes": 5920,
+      "sha256": "c6a2b8428a2476d97b1b5505a16c1d6ec1392376fcb4320c88e3e6eeb8e2dd89",
+      "exactCopy": true
+    },
+    {
+      "path": "owned-history-replay-20261006/independent-actual-review.json",
+      "bytes": 12707,
+      "sha256": "03243c6fc32f51f47fbe4e5d849eea25085b017a70114b1c7e96329705cc5cb1",
+      "exactCopy": true
+    },
+    {
+      "path": "owned-history-replay-20261006/focused-result.json",
+      "bytes": 648,
+      "sha256": "84cb5dc69a013cd9fd83e7554125ae77d52e6ccd5548dcb614a714f7e2c4fcc2",
+      "exactCopy": true
+    },
+    {
+      "path": "owned-history-replay-20261006/three-cell-parity.json",
+      "bytes": 10562,
+      "sha256": "5424e0c041df0915e5948dd6c6679aba31c55a1e0f8fcd825b6684aee05e9006",
+      "exactCopy": true
+    },
+    {
+      "path": "stage1-performance-conclusion-20261006.json",
+      "bytes": 3400,
+      "sha256": "8875054e60b74686e7bca266c7a0e3b3d0fb6e25f78d6a3634956d85cf0d956e",
+      "exactCopy": true
+    },
+    {
+      "path": "sixth-mc720k-progress-manifest-20261006-1254.json",
+      "bytes": 2980,
+      "sha256": "941845c3deb2906d294d0e8216ed724bdd3d4eb8e42ddbfe10a1c1c1b5a3707a",
+      "exactCopy": true
+    },
+    {
+      "path": "sixth-720k-audit-ready-library-result.json",
+      "bytes": 707,
+      "sha256": "3c4e57a7f0014d05ee14c7981ede1ad42f54763837f9dbd06b4487cd11b23358",
+      "exactCopy": true
+    },
+    {
+      "path": "sixth-mc720k-progress-library-result.json",
+      "bytes": 693,
+      "sha256": "9bf1e604de680ca0bbd31a05b44c705f9f8dd8132ff66a0f00a4a9eee03ef37b",
+      "exactCopy": true
+    },
+    {
+      "path": "stage1-final-library-result.json",
+      "bytes": 683,
+      "sha256": "536f043ad04ddf6c701ef7855beea0925d2732492cd9bd52ae89e8a2125ea0fd",
+      "exactCopy": true
+    }
+  ],
+  "priorAcceptedCasesOldScope": 5,
+  "sixthCaseAccepted": false,
+  "newFlop1755OrLater100BalanceComplete": false,
+  "runtimePRAdoption": false,
+  "nodeOrNumericalWorkByPublisher": 0,
+  "activeRunMutated": false
+}

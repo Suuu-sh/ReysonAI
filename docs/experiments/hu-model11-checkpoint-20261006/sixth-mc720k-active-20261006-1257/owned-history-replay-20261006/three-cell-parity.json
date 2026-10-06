@@ -1,0 +1,282 @@
+{
+  "kind": "owned-history-replay-three-cell-parity",
+  "version": 1,
+  "status": "PASS",
+  "rows": [
+    {
+      "cell": 1,
+      "passed": true,
+      "fullPayloads": {
+        "trials.json": {
+          "fullOrderedEqual": true,
+          "records": 64,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/trials.json",
+            "bytes": 8901,
+            "sha256": "ee0363a6308d92bbcd1918008fa98c1d37e86a0a24d54e7c0022c98615482301"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-001/trials.json",
+            "bytes": 8901,
+            "sha256": "ee0363a6308d92bbcd1918008fa98c1d37e86a0a24d54e7c0022c98615482301"
+          }
+        },
+        "proofs.json": {
+          "fullOrderedEqual": true,
+          "records": 0,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/proofs.json",
+            "bytes": 3,
+            "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-001/proofs.json",
+            "bytes": 3,
+            "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+          }
+        }
+      },
+      "allRemainingResultFieldsEqual": true,
+      "mismatchedFields": [],
+      "comparedResultFields": [
+        "baselineSavedReturnsEqual",
+        "byNode",
+        "cacheAfterRelease",
+        "cacheBeforeRelease",
+        "cell",
+        "completeSavedTrialObjectsEqual",
+        "counts",
+        "drawHash",
+        "inputFingerprint",
+        "interpretation",
+        "kind",
+        "mode",
+        "originalCellIndex",
+        "originalEvidence",
+        "policyHashes",
+        "profileOverheadIncluded",
+        "runtime",
+        "summary",
+        "trialHash",
+        "version"
+      ],
+      "sourceProvenanceSeparateAndVerified": true,
+      "baselineResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/result.json",
+        "bytes": 6616,
+        "sha256": "bf2e8e9b1aae78c79c5b343693d3f1bac28363c041df06e096f59e54fedd029b"
+      },
+      "candidateResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-001/result.json",
+        "bytes": 7315,
+        "sha256": "87451cc8c9f1e3cee237cf2dada5c8178feccb96faf5272279bee1582c3ad41d"
+      },
+      "candidateTerminal": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-001-supervision/parent-result.json",
+        "bytes": 2096,
+        "sha256": "9a72bc36617d82f95caba0f73363cdf102b0e7938f70eb473c8e624305eb66a7"
+      },
+      "timing": {
+        "baselineLoopMs": 1319.910654,
+        "candidateLoopMs": 1544.411468,
+        "baselineMsPerTrial": 20.62360396875,
+        "candidateMsPerTrial": 24.1314291875,
+        "loopWallReductionPercent": -17.008788687298516,
+        "baselineCpuMs": 1939.242,
+        "candidateCpuMs": 2213.822
+      }
+    },
+    {
+      "cell": 2,
+      "passed": true,
+      "fullPayloads": {
+        "trials.json": {
+          "fullOrderedEqual": true,
+          "records": 64,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/trials.json",
+            "bytes": 18881,
+            "sha256": "31ae87cb7b7bde88bdb1f962d270d1c88e53871fde8082cac318589621e68a82"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-002/trials.json",
+            "bytes": 18881,
+            "sha256": "31ae87cb7b7bde88bdb1f962d270d1c88e53871fde8082cac318589621e68a82"
+          }
+        },
+        "proofs.json": {
+          "fullOrderedEqual": true,
+          "records": 1,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/proofs.json",
+            "bytes": 50987,
+            "sha256": "cc85f96a86ce786c0ba5b1aa0885b2973bbec25e39cb59c37444b43ac7e461fc"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-002/proofs.json",
+            "bytes": 50987,
+            "sha256": "cc85f96a86ce786c0ba5b1aa0885b2973bbec25e39cb59c37444b43ac7e461fc"
+          }
+        }
+      },
+      "allRemainingResultFieldsEqual": true,
+      "mismatchedFields": [],
+      "comparedResultFields": [
+        "baselineSavedReturnsEqual",
+        "byNode",
+        "cacheAfterRelease",
+        "cacheBeforeRelease",
+        "cell",
+        "completeSavedTrialObjectsEqual",
+        "counts",
+        "drawHash",
+        "inputFingerprint",
+        "interpretation",
+        "kind",
+        "mode",
+        "originalCellIndex",
+        "originalEvidence",
+        "policyHashes",
+        "profileOverheadIncluded",
+        "runtime",
+        "summary",
+        "trialHash",
+        "version"
+      ],
+      "sourceProvenanceSeparateAndVerified": true,
+      "baselineResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/result.json",
+        "bytes": 6684,
+        "sha256": "603396d24cdb7778c15802bd0c1f0a8f6c704ed235374a84ea369673c6aa32bc"
+      },
+      "candidateResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-002/result.json",
+        "bytes": 7393,
+        "sha256": "4822a1465cf62511d6fad8b478f7551f4f6f443df37833eed09d025348910cc8"
+      },
+      "candidateTerminal": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-002-supervision/parent-result.json",
+        "bytes": 2099,
+        "sha256": "dc7f07eb4cda59d1c1d97368535392345acea452fef00faa46b78eb2f2e55ea3"
+      },
+      "timing": {
+        "baselineLoopMs": 1938.743554,
+        "candidateLoopMs": 1981.3775620000001,
+        "baselineMsPerTrial": 30.29286803125,
+        "candidateMsPerTrial": 30.959024406250002,
+        "loopWallReductionPercent": -2.1990535010181222,
+        "baselineCpuMs": 2659.614,
+        "candidateCpuMs": 2792.04
+      }
+    },
+    {
+      "cell": 59,
+      "passed": true,
+      "fullPayloads": {
+        "trials.json": {
+          "fullOrderedEqual": true,
+          "records": 64,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/trials.json",
+            "bytes": 18933,
+            "sha256": "5f83b426e3a16d44021a30ab2c1a9f9e70b28e2f274222b92fc26461d401ad83"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-059/trials.json",
+            "bytes": 18933,
+            "sha256": "5f83b426e3a16d44021a30ab2c1a9f9e70b28e2f274222b92fc26461d401ad83"
+          }
+        },
+        "proofs.json": {
+          "fullOrderedEqual": true,
+          "records": 1,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/proofs.json",
+            "bytes": 45556,
+            "sha256": "ab282ab2dc099bc5805a1f661f6dcaca3c944d1a7afda61fba67ef7195976b0c"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-059/proofs.json",
+            "bytes": 45556,
+            "sha256": "ab282ab2dc099bc5805a1f661f6dcaca3c944d1a7afda61fba67ef7195976b0c"
+          }
+        }
+      },
+      "allRemainingResultFieldsEqual": true,
+      "mismatchedFields": [],
+      "comparedResultFields": [
+        "baselineSavedReturnsEqual",
+        "byNode",
+        "cacheAfterRelease",
+        "cacheBeforeRelease",
+        "cell",
+        "completeSavedTrialObjectsEqual",
+        "counts",
+        "drawHash",
+        "inputFingerprint",
+        "interpretation",
+        "kind",
+        "mode",
+        "originalCellIndex",
+        "originalEvidence",
+        "policyHashes",
+        "profileOverheadIncluded",
+        "runtime",
+        "summary",
+        "trialHash",
+        "version"
+      ],
+      "sourceProvenanceSeparateAndVerified": true,
+      "baselineResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/result.json",
+        "bytes": 6697,
+        "sha256": "24abf66e34b30b55073c1e1a6e8185a480ebc35d87ebb67cd6a076ab2b6f0705"
+      },
+      "candidateResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-059/result.json",
+        "bytes": 7404,
+        "sha256": "e445f15dc9686c9cfa0dad374aebd2d4aed674af339cc97193f0da07665434de"
+      },
+      "candidateTerminal": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/owned-history-replay-20261006/current-059-supervision/parent-result.json",
+        "bytes": 2101,
+        "sha256": "5fbeb11d0e9fd6767bb1c278b1feb6d051a3460448db3a9e3b5edd211b2925ad"
+      },
+      "timing": {
+        "baselineLoopMs": 1869.512006,
+        "candidateLoopMs": 1838.877692,
+        "baselineMsPerTrial": 29.21112509375,
+        "candidateMsPerTrial": 28.7324639375,
+        "loopWallReductionPercent": 1.6386262244736827,
+        "baselineCpuMs": 2570.213,
+        "candidateCpuMs": 2528.056
+      }
+    }
+  ],
+  "totalTrials": 192,
+  "excludedTimingFields": [
+    "loop",
+    "perTrialMs",
+    "phases",
+    "samplers",
+    "setup"
+  ],
+  "excludedResourceFields": [
+    "memory",
+    "processLifetimeMaxRssKiB"
+  ],
+  "sourceProvenance": "Original formal4b source fields mapped and checked against baseline fields; candidate two-file source graph/pins retained separately. No execution identity inside trial/proof/output laws omitted.",
+  "timing": {
+    "baselineLoopMs": 5128.166214,
+    "candidateLoopMs": 5364.666722,
+    "loopWallReductionPercent": -4.611794901544908,
+    "baselineCpuMs": 7169.069,
+    "candidateCpuMs": 7533.918,
+    "loopCpuReductionPercent": -5.089210328426175,
+    "singlePairPerCondition": true,
+    "confidenceClaim": false,
+    "tenThousandTrialProjection": false
+  },
+  "formalTrackedStatus": "",
+  "adopted": false
+}
