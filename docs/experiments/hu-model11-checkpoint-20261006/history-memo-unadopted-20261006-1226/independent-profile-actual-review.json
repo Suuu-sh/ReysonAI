@@ -1,0 +1,122 @@
+{
+  "kind": "independent-history-prefix-candidate-profile-actual-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T12:23:56.764728+00:00",
+  "status": "AUXILIARY_PROFILE_VERIFIED_PRIMARY_NEGATIVE_RESULT_RETAINED",
+  "sourceReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/independent-profile-source-review.json",
+    "bytes": 2869,
+    "sha256": "5d74a05b34898b282a4efca5e33b368db8973fefae41f192e1ea59a7aac10003"
+  },
+  "primaryActualReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/independent-actual-review.json",
+    "bytes": 12624,
+    "sha256": "6d7bd4a5a3f62b24d1b5a3a2e212a125a096c500c2d4d458d7be48ef7d43f960"
+  },
+  "candidateResult": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-059/result.json",
+    "bytes": 7388,
+    "sha256": "ed94a53c93c8f3f4d01e4b89d493a815ae765ec939edd7f1635a4fce64addb57"
+  },
+  "baselineResult": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059/result.json",
+    "bytes": 6713,
+    "sha256": "760b5d14bc8e00f3d1e50fb8ed3d9e3e6566e840396be402d8f70db4e7770a14"
+  },
+  "candidateResource": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-059-supervision/resource.json",
+    "bytes": 1553,
+    "sha256": "fc534d6459f657a9ef9d51d29763f28030f01388dc6d79b30f86b2145f65fe0c"
+  },
+  "candidateParentTerminal": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-059-supervision/parent-result.json",
+    "bytes": 2101,
+    "sha256": "2277adf3222c08e333d28709a770fde82aba4808859204d5d2590e52ca287e38"
+  },
+  "candidateLease": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-059-supervision/lease.json",
+    "bytes": 740,
+    "sha256": "84d8357cdb2e2800dec781f3a4cbf539ef45553890305f98889a5d533e0887b1"
+  },
+  "profileComparison": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-comparison.json",
+    "bytes": 12175,
+    "sha256": "ef3c02752d6e795f0ea8d8876a8d8e5e1753d8d2bf3ef5525168896ec988630f"
+  },
+  "authorConclusion": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-conclusion.json",
+    "bytes": 1604,
+    "sha256": "80240526bcfd25ffa2b18ca065c5573fd5d623153b763978e09366af1df1a6bc"
+  },
+  "profiles": {
+    "baseline": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059/cpu.cpuprofile",
+      "bytes": 517181,
+      "sha256": "e9149e19ec4aef9924ba93d7d814d9866c9bc6e8337a58b6ee7f5ba630a99cdb"
+    },
+    "candidate": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-059/cpu.cpuprofile",
+      "bytes": 564509,
+      "sha256": "3b354b6a735ad49f74811980d844d241214611aef1ea05ddfdab6730422e26bc"
+    }
+  },
+  "facts": {
+    "normalExitAndBirthBoundCleanupVerified": true,
+    "seconds": 3.138388469000347,
+    "peakRssKiB": 329248,
+    "full64TrialObjectsAndProofBytesEqual": true,
+    "drawTrialHashesDecisionCountsCacheAndSummaryEqual": true,
+    "profileAttributionRecalculatedFromRawNodesSamplesTimeDeltas": true
+  },
+  "sampledAttribution": {
+    "baseline": {
+      "samples": 1932,
+      "sampledWallMs": 2024.362,
+      "categoriesMs": {
+        "identityInclusive": 434.7090000000004,
+        "sha256Self": 21.48,
+        "prefixInclusive": 527.3009999999999,
+        "nonReachPrefixInclusive": 206.34599999999998,
+        "evaluateInclusive": 146.98999999999995,
+        "freezeSnapshotInclusive": 243.6990000000001,
+        "historicalPrefixInclusive": 320.955,
+        "reachSelf": 29.076999999999998,
+        "GCself": 65.43600000000004,
+        "canonicalJsonInclusive": 128.82099999999997
+      }
+    },
+    "candidate": {
+      "samples": 1810,
+      "sampledWallMs": 1880.555,
+      "categoriesMs": {
+        "freezeSnapshotInclusive": 197.94600000000003,
+        "identityInclusive": 481.5570000000002,
+        "prefixInclusive": 308.3250000000002,
+        "nonReachPrefixInclusive": 199.4160000000001,
+        "evaluateInclusive": 160.97500000000002,
+        "identityVisitSelf": 236.61100000000002,
+        "historicalPrefixInclusive": 108.90900000000002,
+        "reachSelf": 55.30000000000002,
+        "sha256Self": 20.272,
+        "canonicalJsonInclusive": 150.65199999999996,
+        "GCself": 65.615
+      }
+    }
+  },
+  "profiledLoopWallMs": {
+    "baseline": 1989.4673020000002,
+    "candidate": 1836.670296
+  },
+  "interpretation": [
+    "Sampled historical-prefix reconstruction time drops320.955\u2192108.909ms; reach self time rises29.077\u219255.300ms. This supports less prefix construction but does not count memo hits or isolate Map/string-key cost.",
+    "Sampled GC self time is65.436\u219265.615ms here. This auxiliary pair does not support blaming GC for the primary three-cell slowdown.",
+    "Profiled loop1989.467\u21921836.670ms favors the candidate, while all three primary unprofiled comparisons were slower (aggregate wall+7.5657%,CPU+11.331%). Both observations are retained; the profile cannot replace primary timing or establish a stable gain.",
+    "Inclusive categories overlap and V8/JIT attribution and sampling vary. No precise causal decomposition or10000-trial throughput forecast is established."
+  ],
+  "candidateAdopted": false,
+  "additionalRunsAuthorized": false,
+  "massLaunchAuthorized": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}

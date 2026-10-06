@@ -1,0 +1,41 @@
+{
+  "status": "NOT_ADOPTED; primary single-pass timings did not demonstrate gain",
+  "primary": "three-cell-parity.json",
+  "profile": "profile-comparison.json",
+  "observations": {
+    "historicalPrefixSampledMs": [
+      320.955,
+      108.909
+    ],
+    "allPrefixSampledMs": [
+      527.301,
+      308.325
+    ],
+    "reachSelfSampledMs": [
+      29.077,
+      55.3
+    ],
+    "canonicalJsonInclusiveSampledMs": [
+      128.821,
+      150.652
+    ],
+    "gcSelfSampledMs": [
+      65.436,
+      65.615
+    ],
+    "profiledLoopWallMs": [
+      1989.467302,
+      1836.670296
+    ]
+  },
+  "interpretation": [
+    "Auxiliary sampling supports reduced historical prefix reconstruction work, without measuring hit count directly.",
+    "The added key/Map bookkeeping falls within reach; V8 did not expose a separate JSON.stringify function time, so its exact cost cannot be isolated.",
+    "GC self time is essentially unchanged in this pair; a GC explanation for the three primary slowdowns is unsupported.",
+    "Inclusive categories overlap. Function attribution also changes with V8/JIT, so the visit-only self row is not a reliable cross-run decomposition.",
+    "Profiled loop timing favors candidate, unlike all three primary unprofiled cells. Keep original primary wall+7.5657% and CPU+11.331% as recorded, without confidence or throughput extrapolation.",
+    "No additional Map-candidate runs or adoption are authorized by this report."
+  ],
+  "profileParity": "All64 ordered trials, proofs, draw/trial hashes, counts, node counts and cache-before/after/summary match.",
+  "nodeActive": false
+}

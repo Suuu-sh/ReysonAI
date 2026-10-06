@@ -1,0 +1,581 @@
+{
+  "kind": "request-prefix-memo-profile059-auxiliary-comparison",
+  "status": "PROFILE_NUMERIC_PARITY_PASS",
+  "baseline": {
+    "profile": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/profile-059/cpu.cpuprofile",
+      "bytes": 517181,
+      "sha256": "e9149e19ec4aef9924ba93d7d814d9866c9bc6e8337a58b6ee7f5ba630a99cdb"
+    },
+    "samples": 1932,
+    "sampledWallMs": 2024.362,
+    "profileDurationMs": 2025.168,
+    "categories": {
+      "identityInclusive": {
+        "ms": 434.709,
+        "percent": 21.47387670782202
+      },
+      "sha256Self": {
+        "ms": 21.48,
+        "percent": 1.061075044878337
+      },
+      "prefixInclusive": {
+        "ms": 527.301,
+        "percent": 26.0477622085378
+      },
+      "nonReachPrefixInclusive": {
+        "ms": 206.346,
+        "percent": 10.193137393410863
+      },
+      "evaluateInclusive": {
+        "ms": 146.99,
+        "percent": 7.261053112042214
+      },
+      "freezeSnapshotInclusive": {
+        "ms": 243.699,
+        "percent": 12.038311329693009
+      },
+      "historicalPrefixInclusive": {
+        "ms": 320.955,
+        "percent": 15.85462481512694
+      },
+      "reachSelf": {
+        "ms": 29.077,
+        "percent": 1.4363537746707358
+      },
+      "GCself": {
+        "ms": 65.436,
+        "percent": 3.2324258210735035
+      },
+      "canonicalJsonInclusive": {
+        "ms": 128.821,
+        "percent": 6.363535770776175
+      }
+    },
+    "reachPositionTicks": [
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 127,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 127,
+            "ticks": 2
+          },
+          {
+            "line": 125,
+            "ticks": 2
+          },
+          {
+            "line": 143,
+            "ticks": 2
+          },
+          {
+            "line": 134,
+            "ticks": 1
+          },
+          {
+            "line": 121,
+            "ticks": 1
+          },
+          {
+            "line": 123,
+            "ticks": 2
+          },
+          {
+            "line": 122,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 121,
+            "ticks": 1
+          },
+          {
+            "line": 125,
+            "ticks": 2
+          },
+          {
+            "line": 127,
+            "ticks": 2
+          }
+        ]
+      },
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 122,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 143,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 120,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 127,
+            "ticks": 1
+          },
+          {
+            "line": 121,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 125,
+            "ticks": 1
+          },
+          {
+            "line": 128,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 122,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 116,
+        "positionTicks": [
+          {
+            "line": 116,
+            "ticks": 1
+          }
+        ]
+      }
+    ]
+  },
+  "candidate": {
+    "profile": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-059/cpu.cpuprofile",
+      "bytes": 564509,
+      "sha256": "3b354b6a735ad49f74811980d844d241214611aef1ea05ddfdab6730422e26bc"
+    },
+    "samples": 1810,
+    "sampledWallMs": 1880.555,
+    "profileDurationMs": 1880.727,
+    "categories": {
+      "identityInclusive": {
+        "ms": 481.557,
+        "percent": 25.60717447774726
+      },
+      "freezeSnapshotInclusive": {
+        "ms": 197.946,
+        "percent": 10.525935162757802
+      },
+      "prefixInclusive": {
+        "ms": 308.325,
+        "percent": 16.395425818441897
+      },
+      "nonReachPrefixInclusive": {
+        "ms": 199.416,
+        "percent": 10.604103575806079
+      },
+      "evaluateInclusive": {
+        "ms": 160.975,
+        "percent": 8.559972986698076
+      },
+      "identityVisitSelf": {
+        "ms": 236.611,
+        "percent": 12.581977129092209
+      },
+      "historicalPrefixInclusive": {
+        "ms": 108.909,
+        "percent": 5.791322242635817
+      },
+      "reachSelf": {
+        "ms": 55.3,
+        "percent": 2.9406212527684645
+      },
+      "sha256Self": {
+        "ms": 20.272,
+        "percent": 1.0779796389895535
+      },
+      "canonicalJsonInclusive": {
+        "ms": 150.652,
+        "percent": 8.0110392942509
+      },
+      "GCself": {
+        "ms": 65.615,
+        "percent": 3.4891295388861265
+      }
+    },
+    "reachPositionTicks": [
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 136,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 17,
+            "ticks": 1
+          },
+          {
+            "line": 117,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 154,
+            "ticks": 1
+          },
+          {
+            "line": 141,
+            "ticks": 1
+          },
+          {
+            "line": 136,
+            "ticks": 1
+          },
+          {
+            "line": 134,
+            "ticks": 2
+          },
+          {
+            "line": 138,
+            "ticks": 3
+          },
+          {
+            "line": 117,
+            "ticks": 2
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 139,
+            "ticks": 1
+          },
+          {
+            "line": 117,
+            "ticks": 1
+          },
+          {
+            "line": 136,
+            "ticks": 1
+          },
+          {
+            "line": 155,
+            "ticks": 1
+          },
+          {
+            "line": 141,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 136,
+            "ticks": 1
+          },
+          {
+            "line": 138,
+            "ticks": 1
+          },
+          {
+            "line": 142,
+            "ticks": 1
+          },
+          {
+            "line": 155,
+            "ticks": 1
+          },
+          {
+            "line": 154,
+            "ticks": 1
+          },
+          {
+            "line": 139,
+            "ticks": 1
+          },
+          {
+            "line": 117,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 117,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 17,
+            "ticks": 1
+          },
+          {
+            "line": 129,
+            "ticks": 1
+          },
+          {
+            "line": 117,
+            "ticks": 1
+          },
+          {
+            "line": 136,
+            "ticks": 1
+          },
+          {
+            "line": 154,
+            "ticks": 1
+          },
+          {
+            "line": 138,
+            "ticks": 2
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 141,
+            "ticks": 1
+          },
+          {
+            "line": 19,
+            "ticks": 1
+          },
+          {
+            "line": 117,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 136,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 141,
+            "ticks": 1
+          },
+          {
+            "line": 122,
+            "ticks": 1
+          }
+        ]
+      },
+      {
+        "functionStartLine": 117,
+        "positionTicks": [
+          {
+            "line": 128,
+            "ticks": 1
+          }
+        ]
+      }
+    ]
+  },
+  "categoryComparison": [
+    {
+      "category": "GCself",
+      "baseline": {
+        "ms": 65.436,
+        "percent": 3.2324258210735035
+      },
+      "candidate": {
+        "ms": 65.615,
+        "percent": 3.4891295388861265
+      }
+    },
+    {
+      "category": "canonicalJsonInclusive",
+      "baseline": {
+        "ms": 128.821,
+        "percent": 6.363535770776175
+      },
+      "candidate": {
+        "ms": 150.652,
+        "percent": 8.0110392942509
+      }
+    },
+    {
+      "category": "evaluateInclusive",
+      "baseline": {
+        "ms": 146.99,
+        "percent": 7.261053112042214
+      },
+      "candidate": {
+        "ms": 160.975,
+        "percent": 8.559972986698076
+      }
+    },
+    {
+      "category": "freezeSnapshotInclusive",
+      "baseline": {
+        "ms": 243.699,
+        "percent": 12.038311329693009
+      },
+      "candidate": {
+        "ms": 197.946,
+        "percent": 10.525935162757802
+      }
+    },
+    {
+      "category": "historicalPrefixInclusive",
+      "baseline": {
+        "ms": 320.955,
+        "percent": 15.85462481512694
+      },
+      "candidate": {
+        "ms": 108.909,
+        "percent": 5.791322242635817
+      }
+    },
+    {
+      "category": "identityInclusive",
+      "baseline": {
+        "ms": 434.709,
+        "percent": 21.47387670782202
+      },
+      "candidate": {
+        "ms": 481.557,
+        "percent": 25.60717447774726
+      }
+    },
+    {
+      "category": "identityVisitSelf",
+      "baseline": {
+        "ms": 0,
+        "percent": 0
+      },
+      "candidate": {
+        "ms": 236.611,
+        "percent": 12.581977129092209
+      }
+    },
+    {
+      "category": "nonReachPrefixInclusive",
+      "baseline": {
+        "ms": 206.346,
+        "percent": 10.193137393410863
+      },
+      "candidate": {
+        "ms": 199.416,
+        "percent": 10.604103575806079
+      }
+    },
+    {
+      "category": "prefixInclusive",
+      "baseline": {
+        "ms": 527.301,
+        "percent": 26.0477622085378
+      },
+      "candidate": {
+        "ms": 308.325,
+        "percent": 16.395425818441897
+      }
+    },
+    {
+      "category": "reachSelf",
+      "baseline": {
+        "ms": 29.077,
+        "percent": 1.4363537746707358
+      },
+      "candidate": {
+        "ms": 55.3,
+        "percent": 2.9406212527684645
+      }
+    },
+    {
+      "category": "sha256Self",
+      "baseline": {
+        "ms": 21.48,
+        "percent": 1.061075044878337
+      },
+      "candidate": {
+        "ms": 20.272,
+        "percent": 1.0779796389895535
+      }
+    }
+  ],
+  "parity": {
+    "trials.json": true,
+    "proofs.json": true,
+    "drawHash": true,
+    "trialHash": true,
+    "counts": true,
+    "byNode": true,
+    "cacheBeforeRelease": true,
+    "cacheAfterRelease": true,
+    "summary": true
+  },
+  "profiledLoopWallMs": {
+    "baseline": 1989.4673020000002,
+    "candidate": 1836.670296
+  },
+  "primaryUnprofiledFinding": "Three-cell unprofiled candidate wall+7.5657%,CPU+11.331%; no speed gain established. Do not replace primary timing with profiled timing.",
+  "interpretation": "Sampled attribution is approximate. Inclusive categories overlap and must not be summed. Profile does not count memo hits; JSON.stringify may be attributed to the JS caller, so no exact key-cost/call-count claim is possible. No repeated profile or numerical source change."
+}

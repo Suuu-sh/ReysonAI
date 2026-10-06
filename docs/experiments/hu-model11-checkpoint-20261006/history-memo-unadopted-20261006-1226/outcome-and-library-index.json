@@ -1,0 +1,199 @@
+{
+  "kind": "unadopted-history-prefix-memo-result-and-readonly-next-options",
+  "preparedAt": "2026-10-06T12:26:00Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "expectedParentCommit": "11825270f6cb0d6965fcc0d61fcb49fd4345060a",
+  "formalSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "formalSourceTrackedCleanVerified": true,
+  "candidateAdopted": false,
+  "runtimeAdoption": false,
+  "primaryEvidence": {
+    "testsPassed": 42,
+    "testsFailedSkippedCancelled": 0,
+    "selectedCells": [
+      1,
+      2,
+      59
+    ],
+    "trialsPerCell": 64,
+    "fullOrderedTrialObjectsEqual": 192,
+    "fullProofDrawAndCacheCounterEquality": true,
+    "loopWallMilliseconds": {
+      "baseline": 5128.166214,
+      "candidate": 5516.146108,
+      "increasePercent": 7.5657
+    },
+    "loopCpuMilliseconds": {
+      "baseline": 7169.069,
+      "candidate": 7981.395,
+      "increasePercent": 11.331
+    },
+    "interpretation": "No primary speed gain demonstrated. One pair per condition does not establish a statistically reliable slowdown, a 10000-trial throughput forecast, or a basis for adoption."
+  },
+  "auxiliaryProfile": {
+    "profiledLoopWallMilliseconds": {
+      "baseline": 1989.467302,
+      "candidate": 1836.670296
+    },
+    "directionOpposesPrimaryUnprofiledResult": true,
+    "primaryReplacedByProfile": false,
+    "all64TrialObjectsAndFullProofsMatch": true,
+    "independentReviewPath": "independent-profile-actual-review.json",
+    "latestIndependentReviewIncludedInLibraryArchive": false,
+    "interpretation": "Profile attribution supports less historical-prefix construction but overlapping categories, instrumentation and JIT do not isolate Map/key cost or establish a stable gain; GC attribution does not explain the primary slowdowns."
+  },
+  "library": {
+    "libraryFileId": "libfile_dcfebf16e6308191932291b2f51d9c68",
+    "version": 0,
+    "name": "hu-model11-history-prefix-memo-measured-unadopted-20261006.tar.gz",
+    "bytes": 116456,
+    "sha256": "9b91d0e66c0ae48079431eac7b8765e672725e81360735c2d8f97caab04ab746",
+    "files": 63,
+    "confirmedSaved": true,
+    "fullRawResultsAndProfilesInLibraryOnly": true,
+    "latestAuxiliaryActualReviewAddedSeparatelyInGit": true,
+    "freshRedownloadClaimed": false
+  },
+  "pausedWeakSet": {
+    "status": "PAUSED_STATIC_ONLY_UNMEASURED_BY_HISTORY_FIRST_ORDER",
+    "nodeInvocations": 0,
+    "testsRun": 0,
+    "adopted": false,
+    "libraryFileId": "libfile_bdcd305d9cc88191b8f5570ae896ac58",
+    "version": 0,
+    "name": "hu-model11-owned-snapshot-paused-unmeasured-20261006.tar.gz",
+    "bytes": 18224,
+    "sha256": "535388aaf863124b694e7c188c297e80ffe60c2599a5f2fa372b35c6a5cce9cd",
+    "confirmedSaved": true,
+    "sourceFilesCopiedHere": false
+  },
+  "stages2and3": {
+    "memo": "STAGES-2-3-READONLY.md",
+    "status": "READ_ONLY_OPTIONS_NOT_IMPLEMENTED",
+    "partialIndependentReplayBudget": "UNDECIDED",
+    "example1728BaseTrials": "UNSELECTED_OPTION_NOT_APPROVAL",
+    "fullStoredEvidenceIntegrityDistinctFromFreshReplay": true,
+    "extraCardEvaluationCacheRecommendedNow": false,
+    "reason": "One fixed flop has 1176 possible final public boards, already within existing 3000 rank-table capacity; range-weighted caches cannot be pooled by board alone.",
+    "newRuntimeImplementationOrNumericalRun": false
+  },
+  "newDirectCanonicalizationCandidate": "IN_PROGRESS_EXCLUDED_FROM_THIS_CHECKPOINT",
+  "exactFiles": [
+    {
+      "path": "SUMMARY.md",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/SUMMARY.md",
+      "bytes": 3403,
+      "sha256": "951d18334a14196845c81eb52686061e5eef5a0f2a583713aee4a96ec4757406",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "candidate.patch",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/candidate.patch",
+      "bytes": 3220,
+      "sha256": "ff28eb4a43211dc6fc39b7825934800c9c02dfa9826cac5ce35846687a7b42a0",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "source/candidate/effective-reach.mjs",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/source/candidate/effective-reach.mjs",
+      "bytes": 23982,
+      "sha256": "8d99aa680487359c1f8f4e39154d408d8f7f05ed0902d544092dd5da687d5676",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "source/tests/postflop-model11-request-prefix-memo.test.mjs",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/source/tests/postflop-model11-request-prefix-memo.test.mjs",
+      "bytes": 4704,
+      "sha256": "85da854e5b184fb950684765a29c14f5a325c94ffb5a412c2f142342700d05be",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "focused-result.json",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/focused-result.json",
+      "bytes": 1216,
+      "sha256": "3cf9efb7071aa27e820197d6a7a7bf4cdc961a6c973957d94ecbab016715307c",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "three-cell-parity.json",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/three-cell-parity.json",
+      "bytes": 10541,
+      "sha256": "87b3d80f99e85671af80f00c73ffd856c0f0eb5d785971b46571887254b1ca89",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "independent-source-review.json",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/independent-source-review.json",
+      "bytes": 6444,
+      "sha256": "44a591606113908bfb9a94a4451c250ab071bc54f77ecc6e58aeeef8ee9fe38a",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "independent-wrapper-review.json",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/independent-wrapper-review.json",
+      "bytes": 5285,
+      "sha256": "1e97103a5f5d5f6a125d5af0e7a47f0c09f4710f89c776d4ec4c5f63bb78ddbe",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "independent-actual-review.json",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/independent-actual-review.json",
+      "bytes": 12624,
+      "sha256": "6d7bd4a5a3f62b24d1b5a3a2e212a125a096c500c2d4d458d7be48ef7d43f960",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "profile-conclusion.json",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/profile-conclusion.json",
+      "bytes": 1604,
+      "sha256": "80240526bcfd25ffa2b18ca065c5573fd5d623153b763978e09366af1df1a6bc",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "profile-comparison.json",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/profile-comparison.json",
+      "bytes": 12175,
+      "sha256": "ef3c02752d6e795f0ea8d8876a8d8e5e1753d8d2bf3ef5525168896ec988630f",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "independent-profile-source-review.json",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/independent-profile-source-review.json",
+      "bytes": 2869,
+      "sha256": "5d74a05b34898b282a4efca5e33b368db8973fefae41f192e1ea59a7aac10003",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "independent-profile-actual-review.json",
+      "sourcePath": "hu-final-recovery/request-prefix-memo-20261006/independent-profile-actual-review.json",
+      "bytes": 5684,
+      "sha256": "783a7152c357e0d56fa9bc3fcab768d94eace164eb57a17904321c6626629671",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "STAGES-2-3-READONLY.md",
+      "sourcePath": "hu-final-recovery/trial-cost-diagnostic-20261006/STAGES-2-3-READONLY.md",
+      "bytes": 9454,
+      "sha256": "7e430ede6178cbba878c88e3b5fab104bd6a658a4e3ec38b6aa2bf95c2f4bc91",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "confirmations/history-prefix-memo-library-result.json",
+      "sourcePath": "hu-final-recovery/history-prefix-memo-library-result.json",
+      "bytes": 716,
+      "sha256": "dae2a0598901001181f34d7b06516ff0719c56ab3e17a07fa2a7516f1f6c88f9",
+      "immutableByteCopy": true
+    },
+    {
+      "path": "confirmations/owned-snapshot-paused-library-result.json",
+      "sourcePath": "hu-final-recovery/owned-snapshot-paused-library-result.json",
+      "bytes": 703,
+      "sha256": "b41ad55d3118e18ab2db5497789702a3ccfd3ab76fa01f3ad49035add142e05d",
+      "immutableByteCopy": true
+    }
+  ],
+  "newNodeOrNumericalWorkForThisGitSave": 0,
+  "acceptedModel11ResearchCasesRemainOldScope": 5,
+  "newMassExecutionOrPolicyAcceptanceApproved": false
+}

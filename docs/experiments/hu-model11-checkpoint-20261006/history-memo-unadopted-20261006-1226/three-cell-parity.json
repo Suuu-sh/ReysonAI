@@ -1,0 +1,282 @@
+{
+  "kind": "history-prefix-request-memo-three-cell-parity",
+  "version": 1,
+  "status": "PASS",
+  "rows": [
+    {
+      "cell": 1,
+      "passed": true,
+      "fullPayloads": {
+        "trials.json": {
+          "fullOrderedEqual": true,
+          "records": 64,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/trials.json",
+            "bytes": 8901,
+            "sha256": "ee0363a6308d92bbcd1918008fa98c1d37e86a0a24d54e7c0022c98615482301"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-001/trials.json",
+            "bytes": 8901,
+            "sha256": "ee0363a6308d92bbcd1918008fa98c1d37e86a0a24d54e7c0022c98615482301"
+          }
+        },
+        "proofs.json": {
+          "fullOrderedEqual": true,
+          "records": 0,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/proofs.json",
+            "bytes": 3,
+            "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-001/proofs.json",
+            "bytes": 3,
+            "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+          }
+        }
+      },
+      "allRemainingResultFieldsEqual": true,
+      "mismatchedFields": [],
+      "comparedResultFields": [
+        "baselineSavedReturnsEqual",
+        "byNode",
+        "cacheAfterRelease",
+        "cacheBeforeRelease",
+        "cell",
+        "completeSavedTrialObjectsEqual",
+        "counts",
+        "drawHash",
+        "inputFingerprint",
+        "interpretation",
+        "kind",
+        "mode",
+        "originalCellIndex",
+        "originalEvidence",
+        "policyHashes",
+        "profileOverheadIncluded",
+        "runtime",
+        "summary",
+        "trialHash",
+        "version"
+      ],
+      "sourceProvenanceSeparateAndVerified": true,
+      "baselineResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-001/result.json",
+        "bytes": 6616,
+        "sha256": "bf2e8e9b1aae78c79c5b343693d3f1bac28363c041df06e096f59e54fedd029b"
+      },
+      "candidateResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-001/result.json",
+        "bytes": 7323,
+        "sha256": "630ce1db687b41114054809bf0694cce38d980dad8d74875d1c87ddf8018bcdf"
+      },
+      "candidateTerminal": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-001-supervision/parent-result.json",
+        "bytes": 2098,
+        "sha256": "01638c20a1be6c14e54139e45adbf7a86cb657068117a771f160350ee797bf28"
+      },
+      "timing": {
+        "baselineLoopMs": 1319.910654,
+        "candidateLoopMs": 1400.422778,
+        "baselineMsPerTrial": 20.62360396875,
+        "candidateMsPerTrial": 21.88160590625,
+        "loopWallReductionPercent": -6.099816207711295,
+        "baselineCpuMs": 1939.242,
+        "candidateCpuMs": 2109.123
+      }
+    },
+    {
+      "cell": 2,
+      "passed": true,
+      "fullPayloads": {
+        "trials.json": {
+          "fullOrderedEqual": true,
+          "records": 64,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/trials.json",
+            "bytes": 18881,
+            "sha256": "31ae87cb7b7bde88bdb1f962d270d1c88e53871fde8082cac318589621e68a82"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-002/trials.json",
+            "bytes": 18881,
+            "sha256": "31ae87cb7b7bde88bdb1f962d270d1c88e53871fde8082cac318589621e68a82"
+          }
+        },
+        "proofs.json": {
+          "fullOrderedEqual": true,
+          "records": 1,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/proofs.json",
+            "bytes": 50987,
+            "sha256": "cc85f96a86ce786c0ba5b1aa0885b2973bbec25e39cb59c37444b43ac7e461fc"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-002/proofs.json",
+            "bytes": 50987,
+            "sha256": "cc85f96a86ce786c0ba5b1aa0885b2973bbec25e39cb59c37444b43ac7e461fc"
+          }
+        }
+      },
+      "allRemainingResultFieldsEqual": true,
+      "mismatchedFields": [],
+      "comparedResultFields": [
+        "baselineSavedReturnsEqual",
+        "byNode",
+        "cacheAfterRelease",
+        "cacheBeforeRelease",
+        "cell",
+        "completeSavedTrialObjectsEqual",
+        "counts",
+        "drawHash",
+        "inputFingerprint",
+        "interpretation",
+        "kind",
+        "mode",
+        "originalCellIndex",
+        "originalEvidence",
+        "policyHashes",
+        "profileOverheadIncluded",
+        "runtime",
+        "summary",
+        "trialHash",
+        "version"
+      ],
+      "sourceProvenanceSeparateAndVerified": true,
+      "baselineResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-002/result.json",
+        "bytes": 6684,
+        "sha256": "603396d24cdb7778c15802bd0c1f0a8f6c704ed235374a84ea369673c6aa32bc"
+      },
+      "candidateResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-002/result.json",
+        "bytes": 7372,
+        "sha256": "de8a998a8cf8bb167297234141dfe4b91cdf48a379bbf68d087045970353a051"
+      },
+      "candidateTerminal": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-002-supervision/parent-result.json",
+        "bytes": 2098,
+        "sha256": "611c9c5d967fd8784168a42fd694470cfb267506fddf45470fd75a5c810b4e69"
+      },
+      "timing": {
+        "baselineLoopMs": 1938.743554,
+        "candidateLoopMs": 2069.498991,
+        "baselineMsPerTrial": 30.29286803125,
+        "candidateMsPerTrial": 32.335921734375,
+        "loopWallReductionPercent": -6.744338967896324,
+        "baselineCpuMs": 2659.614,
+        "candidateCpuMs": 2963.225
+      }
+    },
+    {
+      "cell": 59,
+      "passed": true,
+      "fullPayloads": {
+        "trials.json": {
+          "fullOrderedEqual": true,
+          "records": 64,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/trials.json",
+            "bytes": 18933,
+            "sha256": "5f83b426e3a16d44021a30ab2c1a9f9e70b28e2f274222b92fc26461d401ad83"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-059/trials.json",
+            "bytes": 18933,
+            "sha256": "5f83b426e3a16d44021a30ab2c1a9f9e70b28e2f274222b92fc26461d401ad83"
+          }
+        },
+        "proofs.json": {
+          "fullOrderedEqual": true,
+          "records": 1,
+          "baseline": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/proofs.json",
+            "bytes": 45556,
+            "sha256": "ab282ab2dc099bc5805a1f661f6dcaca3c944d1a7afda61fba67ef7195976b0c"
+          },
+          "candidate": {
+            "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-059/proofs.json",
+            "bytes": 45556,
+            "sha256": "ab282ab2dc099bc5805a1f661f6dcaca3c944d1a7afda61fba67ef7195976b0c"
+          }
+        }
+      },
+      "allRemainingResultFieldsEqual": true,
+      "mismatchedFields": [],
+      "comparedResultFields": [
+        "baselineSavedReturnsEqual",
+        "byNode",
+        "cacheAfterRelease",
+        "cacheBeforeRelease",
+        "cell",
+        "completeSavedTrialObjectsEqual",
+        "counts",
+        "drawHash",
+        "inputFingerprint",
+        "interpretation",
+        "kind",
+        "mode",
+        "originalCellIndex",
+        "originalEvidence",
+        "policyHashes",
+        "profileOverheadIncluded",
+        "runtime",
+        "summary",
+        "trialHash",
+        "version"
+      ],
+      "sourceProvenanceSeparateAndVerified": true,
+      "baselineResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/trial-cost-diagnostic-20261006/current-059/result.json",
+        "bytes": 6697,
+        "sha256": "24abf66e34b30b55073c1e1a6e8185a480ebc35d87ebb67cd6a076ab2b6f0705"
+      },
+      "candidateResult": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-059/result.json",
+        "bytes": 7386,
+        "sha256": "00ca06ec0ca6cc75c20cfb7ad7fc9117fb757cbaa8f25af28bf4d8d073ba6bea"
+      },
+      "candidateTerminal": {
+        "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/current-059-supervision/parent-result.json",
+        "bytes": 2102,
+        "sha256": "d56cf4c414324d9e20f33135b71113bb9d9ec5bc3c129a8aaf65a270f6be650c"
+      },
+      "timing": {
+        "baselineLoopMs": 1869.512006,
+        "candidateLoopMs": 2046.224339,
+        "baselineMsPerTrial": 29.21112509375,
+        "candidateMsPerTrial": 31.972255296875,
+        "loopWallReductionPercent": -9.452324052098128,
+        "baselineCpuMs": 2570.213,
+        "candidateCpuMs": 2909.047
+      }
+    }
+  ],
+  "totalTrials": 192,
+  "excludedTimingFields": [
+    "loop",
+    "perTrialMs",
+    "phases",
+    "samplers",
+    "setup"
+  ],
+  "excludedResourceFields": [
+    "memory",
+    "processLifetimeMaxRssKiB"
+  ],
+  "sourceProvenance": "Original formal4b source fields mapped and checked against baseline fields; candidate source graph/pins retained separately. No execution identity inside trial/proof/output laws omitted.",
+  "timing": {
+    "baselineLoopMs": 5128.166214,
+    "candidateLoopMs": 5516.146108,
+    "loopWallReductionPercent": -7.565665343311356,
+    "baselineCpuMs": 7169.069,
+    "candidateCpuMs": 7981.395,
+    "loopCpuReductionPercent": -11.330983144394335,
+    "singlePairPerCondition": true,
+    "confidenceClaim": false,
+    "tenThousandTrialProjection": false
+  },
+  "formalTrackedStatus": "",
+  "adopted": false
+}

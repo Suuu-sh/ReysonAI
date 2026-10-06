@@ -1,0 +1,49 @@
+diff --git a/apps/frontend/scripts/postflop-ai/effective-reach.mjs b/apps/frontend/scripts/postflop-ai/effective-reach.mjs
+index b3de15d..574ab86 100644
+--- a/apps/frontend/scripts/postflop-ai/effective-reach.mjs
++++ b/apps/frontend/scripts/postflop-ai/effective-reach.mjs
+@@ -62,6 +62,7 @@ function numericLawMemoKey(mix, actions) {
+ 
+ class EffectiveDefence extends Defence {
+   #lastPrefixKey = null;
++  #historicalPrefixes = new Map();
+   constructor(inputs, flopPolicy, laterPolicy, options) {
+     super(inputs, flopPolicy, laterPolicy, options.bluffCap);
+     this.belief = options.belief;
+@@ -83,7 +84,7 @@ class EffectiveDefence extends Defence {
+     try { return callback(); } finally {
+       if (--this.requestDepth === 0) {
+         // Completed numeric cache has no contexts, table closures, exact-sign graphs or rank tables.
+-        super.releaseBoardCaches(); this.active.clear(); this.stack.length = 0;
++        super.releaseBoardCaches(); this.active.clear(); this.stack.length = 0; this.#historicalPrefixes.clear();
+       }
+     }
+   }
+@@ -119,7 +120,17 @@ class EffectiveDefence extends Defence {
+     for (const entry of entries) {
+       if (entry.action === null) error('invalid-public-prefix', 'Pending actions cannot condition reach');
+       const stageBoard = board.slice(0, entry.boardLen), tiers = tierArray(stageBoard);
+-      const prefix = createDecisionPrefix(this.inputs, requestBeforeEntry(table, board, entry), this.config);
++      // These requests come only from our private replay tables and revealed boards.
++      // Retain frozen prefixes within this one request; numeric prepare still runs every time.
++      const request = requestBeforeEntry(table, board, entry);
++      const retain = this.requestDepth > 0 && this.lawCache.limits.entries > 0 &&
++        this.lawCache.limits.numericBytes > 0 && this.lawCache.limits.metadataBytes > 0;
++      const prefixKey = retain ? JSON.stringify([request.board, request.path.flop, request.path.turn, request.path.river]) : null;
++      let prefix = prefixKey === null ? undefined : this.#historicalPrefixes.get(prefixKey);
++      if (!prefix) {
++        prefix = createDecisionPrefix(this.inputs, request, this.config);
++        if (prefixKey !== null && this.#historicalPrefixes.size < MAX_PREFIX_DECISIONS) this.#historicalPrefixes.set(prefixKey, prefix);
++      }
+       const vector = this.prepare(prefix), action = vector.physicalActions.indexOf(entry.action);
+       if (action < 0) error('invalid-public-prefix', 'Observed action is not a physical class of its own prefix');
+       const next = new Float64Array(NUM_IDS);
+@@ -267,7 +278,7 @@ class EffectiveDefence extends Defence {
+         support: { status: own.status, ownTotal: own.total, opponentTotal: other.total } });
+     });
+   }
+-  releaseBoardCaches() { super.releaseBoardCaches(); this.lawCache.clear(); this.active.clear(); this.#lastPrefixKey = null; }
++  releaseBoardCaches() { super.releaseBoardCaches(); this.lawCache.clear(); this.active.clear(); this.#lastPrefixKey = null; this.#historicalPrefixes.clear(); }
+   stats() { return { ...this.lawCache.stats(), builds: this.builds, maximumActiveAncestors: this.maxActive, active: this.active.size }; }
+ }
+ 

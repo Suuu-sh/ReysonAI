@@ -1,4 +1,4 @@
-# Five scoped cases accepted; corrected contract and MC actual review preserved
+# Five scoped cases accepted; unadopted history memo evidence preserved
 
 This checkpoint preserves research source/evidence under docs only. Formal numerical source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`; no application/runtime paths are changed, no existing proof is reassigned, and no new gate or policy acceptance follows from these artifacts. Five individual model11 research cases remain accepted under their original scoped contracts; legacy model10 acceptance is separate. Sixth-case bounded facts and all original warnings/HOLD records remain preserved. New 1755-board and mass starts remain paused pending the scope/performance decisions.
 
@@ -31,6 +31,22 @@ Two independent parameters must remain distinct: **samplesPerBoardProfileSeat = 
 Full **1755-flop** balance remains. Later balance selects exactly **100 canonical flop origins** across twelve existing shape-by-height strata, eight or nine each, with unchanged four turns and three rivers per turn. The list SHA is `162dea6bcc503fd317e13ffe5c4588f1841876ba4502ac1af66a99f64bf79534`. The omitted 1655 later origins are not evaluated by design, not clean/PASS or proved unreachable. Old full proofs may be reused only with explicit exact checks; optimized-source reuse needs scoped numerical parity and identity rebinding. Old 64-trial evidence is not 10000-trial evidence and the five old scoped acceptances do not automatically upgrade.
 
 The original independent static review retains its valid canonical enumeration/stratification/selection findings. Its earlier fresh-full-replay and cache batch size 512 language is **superseded by the additive replay/cache clarification review** and current pinned files. Both receipts are preserved unchanged, with this precedence explicit. Corrected source patch SHA: `333030159230e22d621a7f8dd367170d97b0d00d6f65a26bf3dcd2af0ac389bf`. Confirmed Library `libfile_47e6ea12d4c88191a8bae63b1e8c39ee` v0, `hu-model11-stratified-later-contract-corrected-20261006.tar.gz`, preserves 19 files including superseded draft history: 76829 bytes, SHA `aed024362ebf0a4addff50e882821c4d7264c47e590a6611873cb42004730b60`.
+
+## Stage 1 history-prefix memo: measured and not adopted
+
+[The compact result/source/test/review snapshot](history-memo-unadopted-20261006-1226/outcome-and-library-index.json) preserves the isolated request-lifetime historical-prefix memo. It passed **42 tests** and exact equality of **192 full ordered trial objects**, full proofs, draw hashes and cache counters. Primary three-cell unprofiled loop wall was **5128.166214 to 5516.146108 ms (+7.5657%)** and loop CPU **7169.069 to 7981.395 ms (+11.331%)**. This demonstrates no gain in these single pairs; it does not establish a statistically reliable slowdown or justify adoption/throughput extrapolation. Formal4b remains clean and unchanged.
+
+The later auxiliary profile has the opposite timing direction (1989.467302 to 1836.670296 ms). It supports reduced historical-prefix reconstruction but does not replace the primary timings or prove a stable speed gain; overlapping sampled categories do not isolate Map/key costs or support blaming GC for the primary slowdowns. Its independent actual review is included as a separate exact file. The earlier SUMMARY records the primary stage; later profile/source/actual receipts supply the subsequent auxiliary facts without rewriting that summary. No further Map-candidate run or adoption is claimed.
+
+Confirmed Library `libfile_dcfebf16e6308191932291b2f51d9c68` v0, `hu-model11-history-prefix-memo-measured-unadopted-20261006.tar.gz`, contains 63 files, 116456 bytes, SHA `9b91d0e66c0ae48079431eac7b8765e672725e81360735c2d8f97caab04ab746`. The archive predates the latest auxiliary independent actual review; that review is saved directly here and is not claimed inside the archive. Full raw results/profiles remain in Library.
+
+The separate WeakSet identity candidate remains paused under the history-first order: static review only, zero Node/test invocations, no adoption. Its confirmed Library pointer is `libfile_bdcd305d9cc88191b8f5570ae896ac58` v0, `hu-model11-owned-snapshot-paused-unmeasured-20261006.tar.gz`, 18224 bytes, SHA `535388aaf863124b694e7c188c297e80ffe60c2599a5f2fa372b35c6a5cce9cd`. No WeakSet source is newly applied or executed here.
+
+## Stages 2 and 3: read-only options, budget undecided
+
+[The exact read-only memo](history-memo-unadopted-20261006-1226/STAGES-2-3-READONLY.md) retains independent-replay design options and complete stored-evidence integrity as separate scopes. Its example 1728 base trials across twelve conditions is **UNDECIDED**, not an adopted budget or executed audit. It does not import the old cache512/4999 contract into the current cache64 direction.
+
+The memo recommends no extra card-evaluation cache now: one fixed flop has 1176 possible final public boards, which already fit the existing 3000-entry rank-table cache. Weighted range/equity state must not be pooled by public board alone. A possible bounded turn-list memo is only a future source-level option if later measurement demonstrates a gap. No stage 2/3 implementation or numerical run was performed. The separate direct-canonicalization candidate is still in progress and is intentionally excluded from this fixed checkpoint.
 
 ## Remaining work
 

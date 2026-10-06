@@ -1,0 +1,65 @@
+{
+  "kind": "independent-request-prefix-candidate-profile-argument-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T12:16:45.418457+00:00",
+  "verdict": "APPROVE_ONE_AUXILIARY_PROFILE059_ONLY",
+  "preparation": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-preparation.json",
+    "bytes": 1466,
+    "sha256": "57f394ab224f3713aae7263c02b528ab5e44d04db9a228d92b44ea28519ea20f"
+  },
+  "files": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/measure-profile.mjs",
+      "bytes": 12966,
+      "sha256": "8c61c7658baf71d2dc381f0cc423cb7591888bca987b968cc14077b8c087c19d"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/run-profile.py",
+      "bytes": 3419,
+      "sha256": "f6f3ba4508562a70ac862cb80c6f04143980bf02320a5293f445f7c8e5e484bf"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/profile-wrapper.diff",
+      "bytes": 2944,
+      "sha256": "9e771e9758c4856ed47880d4e53f80b1af9727eac1b3bf3d88c92ecf4fef6936"
+    }
+  ],
+  "priorWrapperReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/independent-wrapper-review.json",
+    "bytes": 5285,
+    "sha256": "1e97103a5f5d5f6a125d5af0e7a47f0c09f4710f89c776d4ec4c5f63bb78ddbe"
+  },
+  "exactArgv": [
+    "python3",
+    "/workspace/scratch/08c72b2d7549/hu-final-recovery/request-prefix-memo-20261006/run-profile.py",
+    "profile",
+    "59",
+    "8c61c7658baf71d2dc381f0cc423cb7591888bca987b968cc14077b8c087c19d",
+    "f6f3ba4508562a70ac862cb80c6f04143980bf02320a5293f445f7c8e5e484bf"
+  ],
+  "bounds": {
+    "heapMiB": 512,
+    "rssMiB": 900,
+    "seconds": 120,
+    "hostFloorMiB": 2048
+  },
+  "checks": {
+    "measureOnlySwitchesCurrentToExistingProfileSelector": true,
+    "controllerOnlyRestrictsProfile59AndTargetsNewCallerFilename": true,
+    "existingSessionProfilerAndTrialLoopUnchanged": true,
+    "candidate47FilePinsUnchanged": true,
+    "fullOriginal64TrialEqualityStillRequired": true,
+    "freshProfileAndSupervisionPathsAbsent": true,
+    "existingOwnedSupervisorAndCleanupUnchanged": true
+  },
+  "interpretation": "One separately stored1ms CPU sampling profile for candidate cell59. Its timing includes profiler overhead and must not replace or be pooled with the three unprofiled primary results. Compare attribution with retained baseline059 profile, allowing overlapping inclusive groups and sampling variation; this does not establish an exact causal cost or speed gain.",
+  "permittedRuns": 1,
+  "rerunOrExtensionAuthorized": false,
+  "primaryResultsRewritten": false,
+  "candidateAdopted": false,
+  "massLaunchAuthorized": false,
+  "policyAccepted": false,
+  "productionAuthorized": false,
+  "reviewerNodeLaunches": 0
+}
