@@ -228,6 +228,9 @@ function Header() {
       <Brand />
       <nav className="site-nav" aria-label={c.common.menuLabel}>
         {c.nav.map(item => <a key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</a>)}
+        <select className="site-lang site-nav-lang" value={locale} onChange={event => onLocaleChange(event.target.value as SiteLocale)} aria-label={c.common.languageLabel}>
+          {LOCALES.map(option => <option key={option.value} value={option.value} lang={option.value}>{option.label}</option>)}
+        </select>
       </nav>
       <div className="site-header-actions">
         <select className="site-lang" value={locale} onChange={event => onLocaleChange(event.target.value as SiteLocale)} aria-label={c.common.languageLabel}>
@@ -539,12 +542,21 @@ function Audience() {
     document.getElementById(`site-persona-${personaIds[next]}`)?.focus();
   }
 
+  // Phones show the personas as a swipeable row; keep the active one in view as it rotates.
+  const listRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const list = listRef.current;
+    const item = list?.children[active] as HTMLElement | undefined;
+    if (!list || !item || list.scrollWidth <= list.clientWidth) return;
+    list.scrollTo({ left: item.offsetLeft - list.offsetLeft - 16, behavior: motion ? "smooth" : "auto" });
+  }, [active, motion]);
+
   const view = (index: number) => `site-persona-view${active === index ? " is-active" : ""}`;
   return <section className={`site-section site-audience${scrolly ? " is-scrolly" : ""}`} ref={ref} aria-labelledby="site-audience-title">
     <div className="site-wrap">
       <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
       <div className="site-audience-grid" data-reveal>
-        <div className="site-persona-list" role="tablist" aria-orientation="vertical" aria-labelledby="site-audience-title" onKeyDown={onListKey}>
+        <div className="site-persona-list" ref={listRef} role="tablist" aria-orientation="vertical" aria-labelledby="site-audience-title" onKeyDown={onListKey}>
           {c.audience.items.map((item, index) => <button type="button" role="tab" key={personaIds[index]} id={`site-persona-${personaIds[index]}`} aria-selected={active === index} aria-controls="site-persona-panel" tabIndex={active === index ? 0 : -1} className={`site-persona${active === index ? " is-active" : ""}`} onClick={() => choose(index)}>
             <span className="site-persona-level"><i>{index + 1}</i>{item.level}</span>
             <span className="site-persona-quote">{item.quote}</span>
@@ -874,6 +886,34 @@ function Footer() {
   </footer>;
 }
 
+// Phones lose the header CTA, so a bottom bar takes over between the hero and the closing CTA.
+function MobileCta() {
+  const { copy: c, appHref } = useSite();
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const final = document.querySelector(".site-final");
+      const finalTop = final ? final.getBoundingClientRect().top : Number.POSITIVE_INFINITY;
+      setShown(window.scrollY > window.innerHeight * 0.9 && finalTop > window.innerHeight);
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+  return <div className={`site-mobile-cta${shown ? " is-shown" : ""}`} aria-hidden={!shown}>
+    <small>{c.hero.note}</small>
+    <a className="site-button" href={appHref} tabIndex={shown ? 0 : -1}>{c.common.open}<ArrowRight size={16} weight="bold" aria-hidden="true" /></a>
+  </div>;
+}
+
 function Reveal({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   const { motion, locale } = useSite();
@@ -910,6 +950,7 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
         <main id="site-main"><Hero /><Audience /><HowItWorks /><TrainingTrack /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></main>
         <Footer />
       </Reveal>
+      <MobileCta />
     </div>
   </SiteContext.Provider>;
 }
