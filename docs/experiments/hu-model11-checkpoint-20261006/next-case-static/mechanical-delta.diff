@@ -1,0 +1,70 @@
+--- /workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/context.mjs
++++ /workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/context.mjs
+@@ -24,7 +24,7 @@
+ export function loadContext(planSha){
+  const planPin=file(join(BASE,'plan.json'));if(planPin.sha256!==planSha)gateFail('Exact reviewed external plan SHA required');
+  const p=read(planPin);
+- if(p.kind!=='next-hu-fixed-five-workers-plan'||p.version!==1||p.spot!=='CO_open_BTN_3bet_SB_call_CO_fold'||p.lanes!==5||p.boardsPerProcess!==8||p.repository!==resolve(BASE,'../../hu-model11-prefix-key-execution')||p.runRoot!==join(BASE,'run'))gateFail('Fixed next-case contract changed');
++ if(p.kind!=='next-hu-fixed-five-workers-plan'||p.version!==1||p.spot!=='CO_open_SB_3bet_BB_call_CO_fold'||p.lanes!==5||p.boardsPerProcess!==8||p.repository!==resolve(BASE,'../../hu-model11-prefix-key-execution')||p.runRoot!==join(BASE,'run'))gateFail('Fixed next-case contract changed');
+  if(!same(p.limits,{heapMiB:512,groupRssMiB:900,aggregateRssMiB:3072,minimumAvailableMiB:2048,childSeconds:900,wholeSeconds:43200,pollMilliseconds:50}))gateFail('Resource contract changed');
+  if(process.execPath!==p.node.path||process.version!==p.node.version||!same(process.execArgv,['--max-old-space-size=512']))gateFail('Pinned Node and512MiB heap required');
+  const adapterNames=['context.mjs','worker.mjs','regression.mjs','serial.mjs','controller.py'];
+--- /workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/plan.json
++++ /workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/plan.json
+@@ -1,11 +1,11 @@
+ {
+   "kind": "next-hu-fixed-five-workers-plan",
+   "version": 1,
+-  "status": "PREPARED_NOT_LAUNCHED",
+-  "spot": "CO_open_BTN_3bet_SB_call_CO_fold",
++  "status": "STATIC_READY_OFFICIAL_INPUT_ENVELOPE_CAPTURE_AND_PREPARE_NOT_RUN",
++  "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+   "repository": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution",
+   "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+-  "runRoot": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run",
++  "runRoot": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run",
+   "lanes": 5,
+   "boardsPerProcess": 8,
+   "assignment": "canonical zero-based index modulo5;351 unique boards per lane",
+@@ -797,20 +797,20 @@
+   ],
+   "pair": {
+     "flop": {
+-      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-policy.json",
+-      "bytes": 26311,
+-      "sha256": "b450a9f1faf8fbc4886b31ed91208d7cc2eb58ef757c769d1b844418ef843e0c"
++      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.candidate.json",
++      "bytes": 40033,
++      "sha256": "be468f4fefab0dadba2a83b0296d88900f8dfab16f747e48b848c32a0d0e3d8b"
+     },
+     "later": {
+-      "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-later-policy.json",
+-      "bytes": 82305,
+-      "sha256": "d95755053a61429f8b70eae2e1ef7581ae7dab838c38c710cfd20153e858860a"
++      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.laterCandidate.json",
++      "bytes": 52371,
++      "sha256": "776033a7d2914c1db167a6ed0279363d0340354e74c805a528ea334e4c3bac46"
+     }
+   },
+-  "inputFingerprint": "6dc8a6fc4e684973f1060c694a29ae9c67ee48a0db9f2c9ae76230a5b0ee4f47",
++  "inputFingerprint": "65d445b2a32c223914f9d3ca7d42a274bce784c871ac122ee110bfe16d25251b",
+   "policyHashes": {
+-    "flop": "2af8cd1edd39a0c85ebddb83d646f24ac21a8d9695a722550ccf78dccfd9cb51",
+-    "later": "4cb0c562befccdb98f791e6b65f0c3937c973c3a2aa3d7946181b42f508982c1"
++    "flop": "771782ecee1bf0162f347ecb0ae59e2c380f9f0557a5864c8a91bf22e6ff148a",
++    "later": "5f043d71350a33e5d939a6454046689ee1f704a58b0e4b8cddfefb9f4cc35a1e"
+   },
+   "fullPlan": {
+     "path": "/workspace/scratch/08c72b2d7549/hu-model11-pilot1755-lanes/apps/frontend/tests/fixtures/model11-all-board-full-plan.json",
+@@ -827,8 +827,9 @@
+     "statisticalClaim": "none; descriptive regression budget, no confidence/optimality/oldfullreplay claim"
+   },
+   "launchPrerequisites": [
+-    "Current pilot finalizer complete and scoped independent acceptance, pinned",
+-    "Independent exact adapter/source review",
++    "Current CO_open_BTN_3bet_SB_call_CO_fold owner is terminal, finalization is complete, and exact current-source scoped independent acceptance is pinned before this case enters the numerical lane",
++    "Current-source official capturePilot1755Source, loadInputs and validateEffectiveArtifacts succeed for these exact unchanged staged wrappers; expected hashes are assertions, not prior results",
++    "Genuine controller prepare output and independent exact adapter/source launch review with retained common evidence",
+     "For1755: own bounded case checks plus individual quality review"
+   ],
+   "whole12Balance": "Required unchanged whole12 aggregate in a separate serial process, as parent scheduled under existing user authorization. Canonical generation batches remain at most8 boards.",

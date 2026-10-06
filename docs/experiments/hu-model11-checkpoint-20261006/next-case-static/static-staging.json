@@ -1,0 +1,271 @@
+{
+  "kind": "hu-existing-draft-static-five-worker-staging",
+  "version": 1,
+  "status": "STATIC_READY_NOT_PREPARED_NOT_LAUNCHED",
+  "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+  "source": {
+    "repository": "/workspace/scratch/08c72b2d7549/hu-model11-prefix-key-execution",
+    "head": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "tree": "cf4c70d5fe5cfb5fb612be325d3262fc23e23c68",
+    "trackedClean": true,
+    "expectedSourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+    "identityMeaning": "Existing captured same-source expectation only; this packet has not executed a source capture. The unchanged context checks the official result before prepare succeeds.",
+    "existingCapture": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/source-identity.json",
+      "bytes": 73668,
+      "sha256": "89e19abddc9f520327a24779e04c4c0849dc5c897ba904977de6c9bd2c94fdc0"
+    }
+  },
+  "priorPolicyReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-ranked-co-sb-draft-review-20261006/review-receipt.json",
+    "bytes": 23351,
+    "sha256": "07b07cc63ce835b2d4fae85b5bdf2a2b83c85ba4e03777d6511ffbe399baa957"
+  },
+  "recipePlan": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/plan.json",
+    "bytes": 42920,
+    "sha256": "46122311e04b458502091ebb358e616b64f0820fc933fc745862469a0b88af5e"
+  },
+  "pair": {
+    "flop": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.candidate.json",
+      "bytes": 40033,
+      "sha256": "be468f4fefab0dadba2a83b0296d88900f8dfab16f747e48b848c32a0d0e3d8b"
+    },
+    "later": {
+      "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.laterCandidate.json",
+      "bytes": 52371,
+      "sha256": "776033a7d2914c1db167a6ed0279363d0340354e74c805a528ea334e4c3bac46"
+    }
+  },
+  "expectedInputFingerprint": "65d445b2a32c223914f9d3ca7d42a274bce784c871ac122ee110bfe16d25251b",
+  "inputFingerprintMeaning": "Historical metadata expectation asserted by the current official loader during pending prepare; not recomputed or validated here.",
+  "savedPolicyHashes": {
+    "flop": "771782ecee1bf0162f347ecb0ae59e2c380f9f0557a5864c8a91bf22e6ff148a",
+    "later": "5f043d71350a33e5d939a6454046689ee1f704a58b0e4b8cddfefb9f4cc35a1e"
+  },
+  "staticChecks": {
+    "recipeSourcePinsMatched": 153,
+    "runtimeBinaryPinMatched": true,
+    "fullPlanPinMatched": true,
+    "exactPairByteHashesMatched": true,
+    "existingReviewPinMatched": true,
+    "contextChange": "One literal substitution: CO_open_BTN_3bet_SB_call_CO_fold -> CO_open_SB_3bet_BB_call_CO_fold",
+    "otherRecipeFilesByteIdentical": [
+      "worker.mjs",
+      "regression.mjs",
+      "serial.mjs",
+      "controller.py",
+      "capture-source.mjs"
+    ],
+    "planChangedTopLevelKeys": [
+      "status",
+      "spot",
+      "runRoot",
+      "pair",
+      "inputFingerprint",
+      "policyHashes",
+      "launchPrerequisites"
+    ],
+    "numericalSourceEdited": false,
+    "policyBytesEdited": false,
+    "activeRunEdited": false
+  },
+  "limits": {
+    "heapMiB": 512,
+    "groupRssMiB": 900,
+    "aggregateRssMiB": 3072,
+    "minimumAvailableMiB": 2048,
+    "childSeconds": 900,
+    "wholeSeconds": 43200,
+    "pollMilliseconds": 50
+  },
+  "lanes": 5,
+  "boardsPerProcess": 8,
+  "pendingOfficialStages": {
+    "loadInputs": "NOT_RUN",
+    "validateEffectiveArtifacts": "NOT_RUN",
+    "capturePilot1755Source": "NOT_RUN",
+    "controllerPrepare": "NOT_RUN",
+    "independentLaunchReview": "NOT_CREATED",
+    "regression": "NOT_RUN",
+    "whole12": "NOT_RUN",
+    "all1755": "NOT_RUN",
+    "finalization": "NOT_RUN",
+    "independentPolicyAcceptance": "NOT_ESTABLISHED"
+  },
+  "preparedBindingHash": null,
+  "checkpointIdentityHash": null,
+  "regressionBindingHash": null,
+  "sourceRecipeFiles": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/context.mjs",
+      "bytes": 9055,
+      "sha256": "ef6bc560a8e3a9bbbb6b6ba8278bf7043c8c90feb52717a6cd42a0c4005dfc8a"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/worker.mjs",
+      "bytes": 4654,
+      "sha256": "aeb5d2cc1bbef59462b5462855f6a274e59d3d1cdffb5dc8db164e53d51ba00c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/regression.mjs",
+      "bytes": 5268,
+      "sha256": "91cce4c0b96f52ef17ab58bd573fd6946926b14064be8de6353522c88ddc0b01"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/serial.mjs",
+      "bytes": 12515,
+      "sha256": "76b3130e7f5fd6d32e96183d8a3517038d000c466b8cdd7fa5b16f416a05dfc2"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/controller.py",
+      "bytes": 24325,
+      "sha256": "dba17e44c3cd61d36ad763f09522bda59fdbf63cec01ae15edbf1936dec2f735"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/capture-source.mjs",
+      "bytes": 430,
+      "sha256": "34e6e4c875618318dbd78926555ab5e1b3858d498170fe9570909d3eb3ba95e4"
+    }
+  ],
+  "stagedRecipeFiles": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/context.mjs",
+      "bytes": 9054,
+      "sha256": "b754f94fb41959d7eaa778599356ed66f44c2e0939c840de3fa2a69c26ab5e03"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/worker.mjs",
+      "bytes": 4654,
+      "sha256": "aeb5d2cc1bbef59462b5462855f6a274e59d3d1cdffb5dc8db164e53d51ba00c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/regression.mjs",
+      "bytes": 5268,
+      "sha256": "91cce4c0b96f52ef17ab58bd573fd6946926b14064be8de6353522c88ddc0b01"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/serial.mjs",
+      "bytes": 12515,
+      "sha256": "76b3130e7f5fd6d32e96183d8a3517038d000c466b8cdd7fa5b16f416a05dfc2"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/controller.py",
+      "bytes": 24325,
+      "sha256": "dba17e44c3cd61d36ad763f09522bda59fdbf63cec01ae15edbf1936dec2f735"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/capture-source.mjs",
+      "bytes": 430,
+      "sha256": "34e6e4c875618318dbd78926555ab5e1b3858d498170fe9570909d3eb3ba95e4"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/plan.json",
+      "bytes": 43632,
+      "sha256": "74ba21f156f08e24a158f028a2c4f1c4505e59232bbe3598f817a62ab23cd7e0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/mechanical-delta.diff",
+      "bytes": 5635,
+      "sha256": "3caff159eb32d6762033facfdb9a6a19b7d977f186ddff1b40ff322ddcbb1935"
+    }
+  ],
+  "planChanges": {
+    "status": {
+      "before": "PREPARED_NOT_LAUNCHED",
+      "after": "STATIC_READY_OFFICIAL_INPUT_ENVELOPE_CAPTURE_AND_PREPARE_NOT_RUN"
+    },
+    "spot": {
+      "before": "CO_open_BTN_3bet_SB_call_CO_fold",
+      "after": "CO_open_SB_3bet_BB_call_CO_fold"
+    },
+    "runRoot": {
+      "before": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-coldcall-optimized-five-workers/run",
+      "after": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/run"
+    },
+    "pair": {
+      "before": {
+        "flop": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-policy.json",
+          "bytes": 26311,
+          "sha256": "b450a9f1faf8fbc4886b31ed91208d7cc2eb58ef757c769d1b844418ef843e0c"
+        },
+        "later": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-stagea-co-sb-author-output-20261006-native-astra/co-open-btn-3bet-sb-call-co-fold-hu-v1-later-policy.json",
+          "bytes": 82305,
+          "sha256": "d95755053a61429f8b70eae2e1ef7581ae7dab838c38c710cfd20153e858860a"
+        }
+      },
+      "after": {
+        "flop": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.candidate.json",
+          "bytes": 40033,
+          "sha256": "be468f4fefab0dadba2a83b0296d88900f8dfab16f747e48b848c32a0d0e3d8b"
+        },
+        "later": {
+          "path": "/workspace/scratch/08c72b2d7549/hu-auxiliary-restored-archive/hu-model10-reach-diagnostics-design-v1-20261004/logical_files/apps/frontend/.local/postflop-ai/native-next-ranked-four/metadata-staged-model10-purecore/v1-20261004/CO_open_SB_3bet_BB_call_CO_fold.laterCandidate.json",
+          "bytes": 52371,
+          "sha256": "776033a7d2914c1db167a6ed0279363d0340354e74c805a528ea334e4c3bac46"
+        }
+      }
+    },
+    "inputFingerprint": {
+      "before": "6dc8a6fc4e684973f1060c694a29ae9c67ee48a0db9f2c9ae76230a5b0ee4f47",
+      "after": "65d445b2a32c223914f9d3ca7d42a274bce784c871ac122ee110bfe16d25251b"
+    },
+    "policyHashes": {
+      "before": {
+        "flop": "2af8cd1edd39a0c85ebddb83d646f24ac21a8d9695a722550ccf78dccfd9cb51",
+        "later": "4cb0c562befccdb98f791e6b65f0c3937c973c3a2aa3d7946181b42f508982c1"
+      },
+      "after": {
+        "flop": "771782ecee1bf0162f347ecb0ae59e2c380f9f0557a5864c8a91bf22e6ff148a",
+        "later": "5f043d71350a33e5d939a6454046689ee1f704a58b0e4b8cddfefb9f4cc35a1e"
+      }
+    },
+    "launchPrerequisites": {
+      "before": [
+        "Current pilot finalizer complete and scoped independent acceptance, pinned",
+        "Independent exact adapter/source review",
+        "For1755: own bounded case checks plus individual quality review"
+      ],
+      "after": [
+        "Current CO_open_BTN_3bet_SB_call_CO_fold owner is terminal, finalization is complete, and exact current-source scoped independent acceptance is pinned before this case enters the numerical lane",
+        "Current-source official capturePilot1755Source, loadInputs and validateEffectiveArtifacts succeed for these exact unchanged staged wrappers; expected hashes are assertions, not prior results",
+        "Genuine controller prepare output and independent exact adapter/source launch review with retained common evidence",
+        "For1755: own bounded case checks plus individual quality review"
+      ]
+    }
+  },
+  "nonexecution": {
+    "nodeProcessesLaunched": 0,
+    "testsRun": 0,
+    "numericalGeneration": false,
+    "gitPublication": false,
+    "runDirectoryCreated": false,
+    "sourceIdentityFileCreated": false,
+    "preparedIdentityCreated": false,
+    "launchReviewCreated": false
+  },
+  "retainedBoundaries": {
+    "model10Authorship": true,
+    "model11EvaluationPending": true,
+    "oldFullReplayPassed": false,
+    "policyAccepted": false,
+    "productionAuthorized": false,
+    "whole12StorageContinuation": "Existing co-coldcall-optimized-whole12-storage-repair requires exact-case adaptation and review after actual prepare. Do not copy its old partial-output or completed-run pins.",
+    "finalization": {
+      "kind": "producer-semantic-reuse-full-lossless",
+      "version": 3,
+      "semanticEvidence": "Every canonical row and proof was validated by unchanged producer APIs before immutable persistence; genuine completed220-batch terminal plus exact row/proof lineage required.",
+      "freshWholeSetSemanticPasses": 0,
+      "originalConsumerFreshSemanticReplay": false,
+      "numericalCoreChanged": false,
+      "thresholdsChanged": false,
+      "strictDefaultCLIChanged": false,
+      "wholeReceiptEquality": "Every byte and SHA256 of full frozen canonicalJson UTF-8 after frozen partition/materialize.",
+      "adapter": "Separate previously reviewed producer-reuse finalizer, adapted only to exact case/source/terminal receipt. Existing serial finalize mode is not authorized for this plan."
+    }
+  }
+}

@@ -1,12 +1,22 @@
-# Latest HU research progress: 1274/1755 boards observed
+# Latest HU checkpoint: 1478/1755 observed, next case statically prepared
 
-Fixed observation: **2026-10-06 07:08:08.739778 UTC**. `CO_open_BTN_3bet_SB_call_CO_fold` had **1274/1755 boards observed**, zero errors/unresolved, 155 successful batches and zero failed batches. Its producer owner remained active. The maximum completed-child peak group RSS was 574600 KiB; this is not current aggregate memory. The whole-run producer receipt was absent. No final acceptance or completion-time promise is implied.
+Fixed numerical observation: **2026-10-06 07:28:57.943140 UTC**. Current fourth case `CO_open_BTN_3bet_SB_call_CO_fold` had **1478/1755 boards observed**, zero errors/unresolved, 183 successful batches and zero failed batches. Its producer owner remained active and the whole-run receipt was absent. Maximum completed-child peak group RSS was 579644 KiB, not current aggregate memory. The case remains unaccepted.
 
-Confirmed Library version **18** at `libfile_6fc13f8f72288191a328c485cc8d1fa9` preserves **1240 completed boards / 155 successful batches / 58182 exact files**. It does not contain all 1274 boards from the separate live observation. Archive: `hu-model11-co-coldcall-progress-20261006-0707.tar.gz`, 161650343 bytes, SHA-256 `acc633b3df278a99c3803d9e8915c6fe37f0171cbf80655510db73a42beac9c3`. Upload and version metadata are confirmed; no fresh Library re-download is claimed.
+Confirmed Library version **19** at `libfile_6fc13f8f72288191a328c485cc8d1fa9` preserves **1440 completed boards / 180 successful batches / 67467 exact files**. Those archive counts are distinct from the later live observation. Archive: `hu-model11-co-coldcall-progress-20261006-0728.tar.gz`, 186428511 bytes, SHA-256 `bff5ae9cee97e79fff9f96c1a284dffbdeff37c6aad888074a934292a4318aca`. [The dated progress record](updates/20261006-0730/progress.json) pins this checkpoint.
 
-[The dated progress record](updates/20261006-0709/progress.json) preserves this snapshot. Frozen numerical source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`; raw policies and previous source snapshots/checks are unchanged. This checkpoint updates STATUS and adds one small progress/Library-pointer record only. Historical HOLD records and dated receipts remain immutable. No additional numerical work, source upload or unpublished next-case draft is included.
+## Next case: static preparation only
 
-The fourth case remains **unaccepted**. Three repeated SB/aggressive deficits remain an explicit balanced-belief limitation. Producer completion, a genuine successful terminal, the separately reviewed conditional finalizer and actual independent final review remain pending. Ordinary runtime and the old model10/three individually accepted model11 cases retain their prior scope and limitations. PR merge conflicts/current full CI remain unresolved or unverified. No PR-body/comment edit, merge, main/development update, runtime adoption or production action is included.
+The existing `CO_open_SB_3bet_BB_call_CO_fold` pair now has a preserved mechanical preparation and independent static review. [next-case-static/](next-case-static/) contains all 13 original small files, byte-for-byte, plus their [Library pointer and hash inventory](next-case-static/library-pointer.json). Official capture, loadInputs, artifact validation, controller preparation and Node execution are all **NOT_RUN**. There is no prepared binding or numerical admission. Fourth-case completion, finalization and independent acceptance remain prerequisites before next-case official preparation and a new exact launch review.
+
+This next pair was natively authored for **model10**, with later evaluation intended under exact model11 source `4b6b39a613afe72a2362f85aa93a305cd61b3586`. It is distinct from the current fourth case's native model11-authored pair. Historical source/policy metadata is not relabeled as current numerical evidence. The archival scripts are saved under docs, not installed into live runtime paths.
+
+Next-case Library `libfile_6799ccdac21481919ae8552834b72a4f`, version **1**, preserves the old handoff plus the new 13-file static unit: `hu-ranked-co-sb-existing-draft-static-ready.tar.gz`, 68198 bytes, SHA-256 `3fc75a7ae73379e80718ef73bf4ca1c9f06028edae7b1954ccea138967b7533a`. Both archive writes and version metadata are confirmed; fresh Library re-downloads are not claimed.
+
+## Boundaries and remaining work
+
+Current numerical source remains `4b6b39a613afe72a2362f85aa93a305cd61b3586`; raw policies, prior source snapshots and independent receipts remain unchanged. Three repeated SB/aggressive deficits remain an explicit balanced-belief limitation. Current producer completion, a genuine successful terminal, the separately reviewed conditional finalizer and actual independent final review are pending. There is no GTO, superiority, completion-time or final acceptance claim.
+
+This checkpoint adds the static preservation unit and dated progress record and updates STATUS. It runs no Node, tests or numerical work. Ordinary runtime and the old model10/three individually accepted model11 cases retain their scope and limitations. Historical HOLD/dates remain immutable. PR merge conflicts/current full CI remain unresolved or unverified. No PR-body/comment edit, merge, main/development update, runtime adoption or production action is included.
 
 ## Previous checkpoints, retained for chronology
 

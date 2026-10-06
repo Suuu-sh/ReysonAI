@@ -1,0 +1,70 @@
+{
+  "kind": "co-coldcall-live-generation-progress-checkpoint",
+  "observedAt": "2026-10-06T07:28:57.943140Z",
+  "preparedAt": "2026-10-06T07:30:00Z",
+  "repository": "Suuu-sh/ReysonAI",
+  "pr": 41,
+  "parentCommit": "b4d0394b68fdacd59a762bedcb6355f18534d400",
+  "numericalSourceCommit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+  "sourceAndRawPoliciesUnchanged": true,
+  "generation": {
+    "status": "RUNNING_AT_OBSERVATION",
+    "observedCompletedBoards": 1478,
+    "targetCanonicalBoards": 1755,
+    "errors": 0,
+    "unresolved": 0,
+    "successfulBatches": 183,
+    "failedBatches": 0,
+    "peakIsNotCurrentAggregateRss": true,
+    "finalProducerReceiptPresent": false,
+    "highestCompletedChildPeakGroupRssKiB": 579644,
+    "observedOwnerPid": 11443,
+    "ownerActive": true
+  },
+  "confirmedLibrarySnapshot": {
+    "libraryFileId": "libfile_6fc13f8f72288191a328c485cc8d1fa9",
+    "version": 19,
+    "name": "hu-model11-co-coldcall-progress-20261006-0728.tar.gz",
+    "bytes": 186428511,
+    "sha256": "bff5ae9cee97e79fff9f96c1a284dffbdeff37c6aad888074a934292a4318aca",
+    "immutableCompletedBoards": 1440,
+    "successfulBatches": 180,
+    "exactFiles": 67467,
+    "confirmedWrite": true,
+    "localMetadataApplied": true,
+    "freshLibraryRedownloadClaimed": false,
+    "containsAll1478ObservedBoards": false
+  },
+  "scope": {
+    "sourceSnapshotsAndChecksPreserved": true,
+    "historicalHoldAndDatedReceiptsUnchanged": true,
+    "ordinaryRuntimeUnchanged": true,
+    "oldModel10AndThreeScopedModel11AcceptancesUnchanged": true,
+    "fourthCaseAccepted": false,
+    "productionAuthorized": false,
+    "newNumericalExecutionsForCheckpoint": 0
+  },
+  "limitations": [
+    "Three repeated SB/aggressive adverse conditions remain an explicit balanced-belief limitation.",
+    "The archive preserves 1440 completed boards and 180 batches, not all 1478 boards and 183 batches from the separate live observation.",
+    "The highest completed-child RSS is not current aggregate memory.",
+    "No completion-time, superiority, GTO or general robustness claim."
+  ],
+  "remaining": [
+    "Finish the active 1755-board producer and obtain a genuine successful complete terminal.",
+    "Run the separately reviewed finalizer only after its exact prerequisites.",
+    "Preserve final evidence and obtain independent final disposition/acceptance.",
+    "PR conflict/current full CI remain unresolved or unverified; runtime adoption remains separate."
+  ],
+  "spot": "CO_open_BTN_3bet_SB_call_CO_fold",
+  "nextCaseStaticUnit": {
+    "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+    "path": "../../next-case-static/",
+    "status": "STATIC_REVIEW_CLEAR_OFFICIAL_PREPARATION_NOT_RUN",
+    "copiedFiles": 13,
+    "officialCaptureLoaderPrepareAndNode": "NOT_RUN",
+    "nextNumericalAdmission": false,
+    "fourthCaseAcceptanceStillRequired": true,
+    "authorship": "Native model10-authored pair intended for later current-model11 evaluation; distinct from the fourth native model11-authored case."
+  }
+}

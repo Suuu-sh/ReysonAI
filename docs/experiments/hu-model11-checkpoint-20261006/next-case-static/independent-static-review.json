@@ -1,0 +1,123 @@
+{
+  "kind": "independent-co-sb-coldcall-static-staging-review",
+  "version": 1,
+  "reviewedAt": "2026-10-06T07:10:22Z",
+  "preservedAt": "2026-10-06T07:26:29.980058+00:00",
+  "status": "STATIC_REVIEW_CLEAR_OFFICIAL_PREPARATION_NOT_RUN",
+  "spot": "CO_open_SB_3bet_BB_call_CO_fold",
+  "scope": "Preserves the completed narrow mechanical review only. No repeated source review, tests, Node, numerical work or publication was performed when saving this receipt.",
+  "reviewedFiles": [
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/plan.json",
+      "bytes": 43632,
+      "sha256": "74ba21f156f08e24a158f028a2c4f1c4505e59232bbe3598f817a62ab23cd7e0"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/context.mjs",
+      "bytes": 9054,
+      "sha256": "b754f94fb41959d7eaa778599356ed66f44c2e0939c840de3fa2a69c26ab5e03"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/controller.py",
+      "bytes": 24325,
+      "sha256": "dba17e44c3cd61d36ad763f09522bda59fdbf63cec01ae15edbf1936dec2f735"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/worker.mjs",
+      "bytes": 4654,
+      "sha256": "aeb5d2cc1bbef59462b5462855f6a274e59d3d1cdffb5dc8db164e53d51ba00c"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/regression.mjs",
+      "bytes": 5268,
+      "sha256": "91cce4c0b96f52ef17ab58bd573fd6946926b14064be8de6353522c88ddc0b01"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/serial.mjs",
+      "bytes": 12515,
+      "sha256": "76b3130e7f5fd6d32e96183d8a3517038d000c466b8cdd7fa5b16f416a05dfc2"
+    },
+    {
+      "path": "/workspace/scratch/08c72b2d7549/hu-final-recovery/co-sb-coldcall-optimized-five-workers/capture-source.mjs",
+      "bytes": 430,
+      "sha256": "34e6e4c875618318dbd78926555ab5e1b3858d498170fe9570909d3eb3ba95e4"
+    }
+  ],
+  "executionSource": {
+    "commit": "4b6b39a613afe72a2362f85aa93a305cd61b3586",
+    "tree": "cf4c70d5fe5cfb5fb612be325d3262fc23e23c68",
+    "trackedCleanAtReview": true,
+    "expectedSourceIdentityHash": "c892e71764f280fe19c2c171f238bc9d75889e3e8db262a57a7d5b3d7eb50ba4",
+    "meaning": "Same-source expectation retained from the fourth case; no next-case official capture has been run."
+  },
+  "mechanicalChecks": {
+    "contextDelta": "Exactly one spot literal: CO_open_BTN_3bet_SB_call_CO_fold to CO_open_SB_3bet_BB_call_CO_fold.",
+    "byteIdenticalRecipeFiles": [
+      "controller.py",
+      "worker.mjs",
+      "regression.mjs",
+      "serial.mjs",
+      "capture-source.mjs"
+    ],
+    "planChangedFields": [
+      "status",
+      "spot",
+      "runRoot",
+      "pair",
+      "inputFingerprint",
+      "policyHashes",
+      "launchPrerequisites"
+    ],
+    "currentSourcePinsVerified": 153,
+    "pairFullPlanAndRuntimeBytesVerified": true,
+    "expectedPairAndPayloadHashesMatchPriorStaticReview": true,
+    "noConcreteStaticBlockerFound": true
+  },
+  "officialPreparationPath": {
+    "entry": "Existing controller prepare invokes context describe/loadContext.",
+    "calls": [
+      "capturePilot1755Source",
+      "loadInputs",
+      "model11GateBinding",
+      "createModel11Execution",
+      "createEffectiveDefence",
+      "validateEffectiveArtifacts"
+    ],
+    "meaning": "The unchanged path executes current official source/input/artifact validation before producing a preparation binding. Historical fingerprints and policy hashes are expectations to be checked, not successful current results."
+  },
+  "expectedInputFingerprint": "65d445b2a32c223914f9d3ca7d42a274bce784c871ac122ee110bfe16d25251b",
+  "expectedPolicyHashes": {
+    "flop": "771782ecee1bf0162f347ecb0ae59e2c380f9f0557a5864c8a91bf22e6ff148a",
+    "later": "5f043d71350a33e5d939a6454046689ee1f704a58b0e4b8cddfefb9f4cc35a1e"
+  },
+  "priorPolicyReview": {
+    "path": "/workspace/scratch/08c72b2d7549/hu-ranked-co-sb-draft-review-20261006/review-receipt.json",
+    "bytes": 23351,
+    "sha256": "07b07cc63ce835b2d4fae85b5bdf2a2b83c85ba4e03777d6511ffbe399baa957"
+  },
+  "authorship": "Preserve this pair as native model10-authored policy evaluated under current model11. It is not the fourth case native model11-authored pair. Historical metadata and source 5db evidence are not relabeled as current results.",
+  "officialStages": {
+    "capturePilot1755Source": "NOT_RUN",
+    "loadInputs": "NOT_RUN",
+    "validateEffectiveArtifacts": "NOT_RUN",
+    "controllerPrepare": "NOT_RUN",
+    "Node": "NOT_RUN"
+  },
+  "preparedBindingHash": null,
+  "checkpointIdentityHash": null,
+  "regressionBindingHash": null,
+  "prerequisitesBeforeNumericalAdmission": [
+    "Current fourth-case producer reaches a genuine terminal, then finalization and exact current-source scoped independent acceptance complete.",
+    "Actual current-source official loader/capture/artifact validation and bounded preparation succeed for this exact unchanged pair.",
+    "A new exact-case independent launch review binds the genuine prepared output and retained common evidence.",
+    "Any later 1755 run requires this next pair own bounded numerical checks and quality review."
+  ],
+  "boundaries": {
+    "nextNumericalRunAuthorized": false,
+    "currentFourthCaseAccepted": false,
+    "policyAccepted": false,
+    "productionAuthorized": false,
+    "sourcePolicyOrActiveRunEdited": false,
+    "reviewerNodeLaunches": 0
+  }
+}
