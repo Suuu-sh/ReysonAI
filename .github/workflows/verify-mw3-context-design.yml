@@ -1,0 +1,30 @@
+name: Verify experimental MW3 source context design
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/scripts/postflop-ai/mw3-source-context*'
+      - 'apps/frontend/tests/postflop-mw3-source-context.test.mjs'
+      - '.github/workflows/verify-mw3-context-design.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  design-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22.20.0'
+      - run: npm ci
+        working-directory: apps/frontend
+      - name: Check dependency classification and approval invalidation
+        run: node --test apps/frontend/tests/postflop-mw3-source-context.test.mjs
+      - name: Emit unapproved closure proposal from exact committed tree
+        run: node apps/frontend/scripts/postflop-ai/mw3-source-context-cli.mjs > /tmp/mw3-context-proposal.json
+      # Additive design validation only. Existing restore/receipt gates remain.
+      # No trusted approval, restore bypass, generation, D1 import or deployment.
