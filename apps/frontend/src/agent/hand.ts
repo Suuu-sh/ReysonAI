@@ -13,7 +13,8 @@ import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.ts";
 import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 import { createPostflopSpots } from "../../scripts/postflop-ai/spots-core.ts";
 import { dataset } from "../estimated/datasets.ts";
-import type { SourceDataset } from "../../scripts/postflop-ai/types.ts";
+import multiwayCatalog from "../../scripts/data/hu-after-multiway-spots.json" with { type: "json" };
+import type { SourceDataset, MultiwayCatalog } from "../../scripts/postflop-ai/types.ts";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
 import { type Decider, type PostflopKit } from "./policy.ts";
 
@@ -24,7 +25,7 @@ export type HumanAction = string; // preflop: dataset key (fold/call/check/open/
 export type HandSetup = {
   seed: string;
   // Server-only dependency injection; defaults preserve ordinary Agent replay.
-  datasets?: (name: string) => SourceDataset | undefined;
+  datasets?: (name: string) => SourceDataset | MultiwayCatalog | undefined;
   dealt?: { hole: Record<string, number[]>; board: number[] };
   draw?: (index: number) => number;
   fastFold?: boolean;
@@ -84,10 +85,13 @@ export function deal(seed: string) {
 }
 
 // The postflop spot a heads-up preflop line reached, or null when no spot describes it.
-export function postflopSpotFor(events: { pos: Position; type: string; key: string }[], lookup: (name: string) => SourceDataset | undefined = dataset) {
-  const { spotFor, threeBetSpotFor, fourBetSpotFor, limpSpotFor } = createPostflopSpots(Object.fromEntries(
-    ["preflop-ranges", "three-bet-responses", "opening-ranges", "limp-responses"].map(name => [name, lookup(name)])));
+export function postflopSpotFor(events: { pos: Position; type: string; key: string; to?: number }[], lookup: (name: string) => SourceDataset | MultiwayCatalog | undefined = dataset) {
+  const { spotFor, threeBetSpotFor, fourBetSpotFor, limpSpotFor, multiwaySpotFor } = createPostflopSpots(Object.fromEntries(
+    ["preflop-ranges", "three-bet-responses", "opening-ranges", "limp-responses", "hu-after-multiway-spots"].map(name => [name, name === "hu-after-multiway-spots" && lookup === dataset ? multiwayCatalog as unknown as MultiwayCatalog : lookup(name)])));
+  const extended = multiwaySpotFor(events);
+  if (extended) return extended;
   const voluntary = events.filter(e => e.type !== "fold" && e.type !== "check");
+  if (new Set(voluntary.map(event => event.pos)).size > 2) return null;
   const keys = voluntary.map(e => e.key);
   const raisers = voluntary.filter(e => e.type === "raise");
   const sig = keys.join(",");

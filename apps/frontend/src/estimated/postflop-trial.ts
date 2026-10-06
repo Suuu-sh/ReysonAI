@@ -12,11 +12,14 @@ export type TrialDecisionBlock = { key: string; kind: "flop" | "flop-forced"; po
 export type TrialEndBlock = { key: string; kind: "end"; result?: string; pot?: string; options: [] };
 export type TrialBoardBlock = { key: string; kind: "board"; cards: string[]; street: LaterStreet; pending: boolean; potBb: number };
 export type TrialActionBlock = TrialDecisionBlock | TrialEndBlock | TrialBoardBlock;
-type CompletionOptions = { rangeType: string; opener: string; hero: string; callers?: string[]; foldedHero?: boolean;
+type CatalogEvent = { seat?: string; pos?: string; action?: string; key?: string; to_size_bb?: number | null; to?: number };
+type CompletionBlock = { kind: string; result?: string; pot?: string; postflopEvents?: CatalogEvent[]; continuationAvailable?: boolean };
+type CompletionOptions = { rangeType: string; opener: string; hero: string; callers?: string[]; foldedHero?: boolean; actionBlocks?: readonly CompletionBlock[]; pendingRaise?: string | null; squeezeResponse?: string[];
   limpAction?: string | null; limpResponseAction?: string | null; limpReraiseAction?: string | null; limpFourBetAction?: string | null };
 
+import { openSizeFor, threeBetToSize } from "./sizing.ts";
 import pilot from "../../scripts/data/postflop-ai-pilot.json" with { type: "json" };
-import { DEFAULT_SPOT_ID, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.ts";
+import { DEFAULT_SPOT_ID, multiwaySpotFor, fourBetSpotFor, limpSpotFor, spotById, spotFor, threeBetSpotFor } from "../../scripts/postflop-ai/spots.ts";
 import { NODES, flopBetFraction, flopState, isFlopBet, raiseDepth } from "../../scripts/postflop-ai/tree.ts";
 import { LATER_NODES, betFraction, streetState } from "../../scripts/postflop-ai/later-tree.ts";
 import { parseFlopBoard } from "../../scripts/postflop-ai/model.ts";
@@ -37,7 +40,18 @@ const round = (value: number): number => Math.round(value * 100) / 100;
 // The saved heads-up flop spot a completed preflop path reaches, or null (scripts/postflop-ai/spots.ts):
 // single-raised pots (O opens, exactly one later seat C calls), 3bet pots (O opens, X 3bets, O calls),
 // 4bet pots (… O 4bets, X calls) and SB's limped pots; everyone else folds.
-function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }: CompletionOptions & { callers: string[] }) {
+export function flopSpotFor({ actionBlocks = [], pendingRaise = null, squeezeResponse = [], rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction }: CompletionOptions & { callers: string[] }) {
+  const savedEvents = actionBlocks.find(block => block.kind === "end")?.postflopEvents;
+  if (savedEvents) return multiwaySpotFor(savedEvents);
+  if (pendingRaise === "squeeze" && callers.length === 1 && squeezeResponse.length === 2) {
+    const [caller] = callers, size = threeBetToSize(opener, hero, 1);
+    return multiwaySpotFor([
+      { seat: opener, action: "open", to_size_bb: openSizeFor(opener) },
+      { seat: caller, action: "call", to_size_bb: openSizeFor(opener) },
+      { seat: hero, action: "squeeze", to_size_bb: size },
+      ...[opener, caller].map((seat, i) => ({ seat, action: squeezeResponse[i], to_size_bb: squeezeResponse[i] === "call" ? size : null })),
+    ]);
+  }
   if (rangeType === "response") return foldedHero && callers.length === 1 ? spotFor(opener, callers[0]) : null;
   if (rangeType === "three_bet") return callers.length === 0 ? threeBetSpotFor(opener, hero) : null;
   if (rangeType === "four_bet") return callers.length === 0 ? fourBetSpotFor(opener, hero) : null;
@@ -50,14 +64,15 @@ function flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction,
   return null;
 }
 
-export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null }: CompletionOptions & { actionBlocks: readonly { kind: string; result?: string; pot?: string }[]; isDefaultTable: boolean }) {
+export function completedFlopContext({ actionBlocks, rangeType, opener, hero, callers = [], foldedHero, isDefaultTable, pendingRaise = null, squeezeResponse = [], limpAction = null, limpResponseAction = null, limpReraiseAction = null, limpFourBetAction = null }: CompletionOptions & { actionBlocks: readonly CompletionBlock[]; isDefaultTable: boolean }) {
   const end = actionBlocks.find(block => block.kind === "end");
-  if (!end || !/^\d+人でフロップへ$/.test(end.result!)) return null;
+  if (!end || end.continuationAvailable === false || !/^\d+人でフロップへ$/.test(end.result!)) return null;
   const potBb = Number(/^ポット ([\d.]+)bb$/.exec(end.pot!)?.[1]);
   if (!Number.isFinite(potBb)) return null;
-  const players = rangeType === "limp" ? ["SB", "BB"]
+  let players = rangeType === "limp" ? ["SB", "BB"]
     : rangeType === "response" ? [opener, ...callers] : [opener, hero];
-  const spot = flopSpotFor({ rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
+  const spot = flopSpotFor({ actionBlocks, pendingRaise, squeezeResponse, rangeType, opener, hero, callers, foldedHero, limpAction, limpResponseAction, limpReraiseAction, limpFourBetAction });
+  if (spot && "history" in spot) players = [spot.oop, spot.ip];
   const pilotAvailable = Boolean(spot?.reachable) && potBb === spot!.potBb && Boolean(isDefaultTable);
   return {
     players, potBb, pilotAvailable,

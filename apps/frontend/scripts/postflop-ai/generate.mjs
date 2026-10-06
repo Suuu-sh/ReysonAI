@@ -66,7 +66,9 @@ function spotContext(inputs) {
   const raiser = seat => !spot.aggressor ? (seat === "SB" ? "limper" : "checked the limp")
     : seat === spot.aggressor ? ({ "3bp": "preflop 3bettor", "4bp": "preflop 4bettor", limp: "preflop last raiser" }[spot.kind] ?? "preflop raiser")
       : "preflop caller";
-  const preflop = {
+  const preflop = spot.history
+    ? `${spot.history.map(step => `${step.seat} ${step.action}${step.to_size_bb === null ? "" : ` to ${step.to_size_bb}BB`}`).join(", ")}; the other seats fold. Folded participants' contributions remain in the pot as dead chips, but their unknown cards are not removed from either player's range. Heads-up ${spot.kind} pot with a low stack-to-pot ratio: stacks constrain bet sizing and commitment.`
+    : {
     "3bp": `${spot.opener} opens ${spot.openBb}BB, ${spot.threeBettor} 3bets to ${spot.threeBetBb}BB, ${spot.opener} calls, every other seat folds; heads-up 3bet pot,`,
     "4bp": `${spot.opener} opens ${spot.openBb}BB, ${spot.threeBettor} 3bets to ${spot.threeBetBb}BB, ${spot.opener} 4bets to ${spot.fourBetBb}BB, ${spot.threeBettor} calls, every other seat folds; heads-up 4bet pot (low stack-to-pot ratio),`,
     limp: {
@@ -96,6 +98,7 @@ export function promptFor(inputs) {
     `Cash 6-max 100BB no ante, ${preflop} flop pot ${spot.potBb}BB, stacks ${spot.stackBb}BB, rake 5% capped at 3BB.`,
     `${spot.ip} (${raiser(spot.ip)}) is in position; ${spot.oop} (${raiser(spot.oop)}) is out of position. ${nodeNames}`,
     "Input summaries below are weighted real two-card combo distributions after excluding flop blockers. Tier values are rounded percentages, in monster/strong/draw/medium/air order. Never infer the opponent's hidden cards during a decision.",
+    ...(spot.history ? ["These squeeze/cold-4bet and other multiway-origin histories reach heads-up flops at low SPR. Treat the folded players' dead contributions as part of the pot, but do not remove unknown folded cards from either live range; account for the shallow effective stacks when choosing sizes and commitment."] : []),
     `Example design flops: ${design.join(", ")}. Boards by height: ${heights.join(", ")}. Users can pick any of the 1,755 flop classes, so rules must generalize to every board.`,
     tree,
     "Use tier order monster(two pair+), strong(top pair/overpair), draw(flush/straight draw), medium(other pair), air. A rule's texture is a shape (dry/wet/monotone/paired), a height by the top card (high = A/K/Q, mid = J/T/9, low = 8 or lower), a shape_height pair such as dry_low or wet_high, or any. The most specific matching rule wins (shape_height, then shape, then height, then any). Every node and tier MUST have one texture=any fallback.",
