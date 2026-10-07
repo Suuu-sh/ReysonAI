@@ -618,3 +618,7 @@ Verification:
 - Preserve existing square matrix/overlay exactly. At ≤560px the hero section is a flex cover with min-height calc(100svh - header height); a localized ending/title/subline/scroll hint fills remaining space after the non-shrinking square Explorer. Footer minimum height allows natural overflow on unusually short screens; no text clipping/cropped or stretched matrix. Safe-area bottom inset is respected. Desktop ending display:none and layout unchanged.
 - Parent visual QA: 390×844 English and375×667 Japanese preserve square/overlay; closing copy/hint fills the remaining cover and Audience begins beyond first screen. Existing audience sticky behavior unaffected. Extremely short viewports may scroll before the hint, intentionally rather than clipping content.
 - Focused hero tests3 passed, new four-locale cover guard1 passed; production build/diff check passed. No merge/deploy.
+
+## 2026-10-07 — Question-style phone cover copy
+- Replace only cover-ending title in all four locales: Japanese exact「そのアクション、説明できますか？」and localized question equivalents. Keep original hero headline, subtitle/hint and square/layout unchanged.
+- Targeted cover/four-locale render test1 passed; diff check passed. Literal copy-only: no repeated build/browser verification. No merge/deploy.
