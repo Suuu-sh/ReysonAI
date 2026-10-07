@@ -5,6 +5,9 @@ import { ArrowRight, ArrowUpRight, Check, List, Pause, Play, X } from "@phosphor
 import { TierEmblem, tierColor } from "../trainer/RankEmblem.tsx";
 import agentTableImage from "./assets/agent-table.webp";
 import previewRanges from "./range-preview.json";
+import postflopRanges from "./postflop-preview.json";
+import { pickNextRangeIndex } from "./range-tour.ts";
+import { color as actionColor } from "../components/action-format.ts";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { SITE_COPY } from "./locales";
 import { LOCALES } from "../locale-metadata.ts";
@@ -101,28 +104,109 @@ function ActionRows({ mode, values }: { mode: RangeMode; values: Record<Action, 
   </ul>;
 }
 
-function RangeMatrix({ mode, selected, onSelect }: { mode: RangeMode; selected: string; onSelect: (hand: string) => void }) {
+const heroActions = ["all_in", "raise", "call", "limp", "fold"] as const;
+type HeroRange = { id: string; stage: string; hands: Record<string, Record<string, number>>; unreachable: string[]; actions: readonly string[]; board?: string; seat?: string; history?: string[] };
+const heroRanges: HeroRange[] = [...previewRanges.tour.map(range => ({ ...range, actions: heroActions })), ...postflopRanges.ranges];
+const stripAggression = ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"];
+
+const initialRangeIndex = heroRanges.findIndex(range => range.id === "BTN_open");
+
+function heroActionLabels(copy: SiteCopy, range: HeroRange): Record<string, string> {
+  const raise = range.stage === "response" ? copy.common.threeBet : range.stage === "threeBet" ? "4bet" : copy.common.raise;
+  return { check: copy.preview.check, bet33: `${copy.preview.bet} 33%`, bet75: `${copy.preview.bet} 75%`, bet125: `${copy.preview.bet} 125%`, raise, all_in: "5bet 100BB", call: copy.common.call, limp: `${copy.common.call} 1BB`, fold: copy.common.fold };
+}
+
+function rangeAccessibleContext(copy: SiteCopy, range: HeroRange) {
+  if (!range.board) return range.id;
+  const labels = heroActionLabels(copy, range);
+  const history = [copy.preview.check, ...(range.history ?? []).map(action => labels[action] ?? action)].join(" → ");
+  return `${copy.preview.flop} ${range.board}; BTN / BB; ${range.seat}; ${history}`;
+}
+
+export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; selected: string; onSelect: (hand: string) => void }) {
   const { copy } = useSite();
-  return <section className="site-matrix-scroll" aria-label={`${mode === "opening" ? copy.preview.spotOpening : copy.preview.spotResponse} ${copy.preview.scrollLabel}`}>
+  const postflop = range.stage === "postflop";
+  const actionLabels = heroActionLabels(copy, range);
+  return <section className="site-matrix-scroll" aria-label={`${rangeAccessibleContext(copy, range)} ${copy.preview.scrollLabel}`}>
     <fieldset className="site-matrix"><legend className="site-visually-hidden">{copy.preview.matrixLabel}</legend>
       {cells.map(({ hand, wave }) => {
-        const values = frequencies(mode, hand);
-        const action = dominantAction(values);
-        const mixed = actions.filter(option => values[option] > 0);
-        const breakdown = mixed.map(option => `${actionLabel(copy, mode, option)} ${values[option]}%`).join(" / ");
-        return <button
-          type="button"
-          key={hand}
-          className={`site-cell is-${action}${selected === hand ? " is-selected" : ""}`}
-          style={{ "--wave": wave } as CSSProperties}
-          aria-label={`${hand}: ${breakdown}`}
-          aria-pressed={selected === hand}
-          title={`${hand} · ${breakdown}`}
-          onClick={() => onSelect(hand)}
-        >{hand}{mixed.length > 1 && <span className="site-cell-mix" aria-hidden="true">{mixed.map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%` }} />)}</span>}</button>;
+        const saved = range.hands[hand];
+        const values = Object.fromEntries(Object.entries(saved).map(([action, frequency]) => [action, frequency * (postflop ? 100 : 1)]));
+        const unreachable = range.unreachable.includes(hand);
+        const action = range.actions.reduce((best, candidate) => values[candidate] > values[best] ? candidate : best, postflop ? range.actions[0] : "fold");
+        const mixed = range.actions.filter(option => values[option] > 0).sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
+        const breakdown = unreachable ? copy.preview.unreachable : mixed.map(option => `${actionLabels[option]} ${values[option]}%`).join(" / ");
+        return <button type="button" key={hand} className={`site-cell ${unreachable ? "is-unreachable" : `is-${action}${postflop ? " is-postflop" : ""}`}${selected === hand ? " is-selected" : ""}`}
+          style={{ "--wave": wave, "--hero-action-color": actionColor(action) } as CSSProperties}
+          aria-label={`${hand}: ${breakdown}`} aria-pressed={selected === hand} title={`${range.id} · ${hand} · ${breakdown}`} onClick={() => onSelect(hand)}>
+          {hand}{!unreachable && mixed.length > 1 && <span className="site-cell-mix" aria-hidden="true">{mixed.map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%`, ...(postflop || option === "all_in" ? { background: actionColor(option) } : {}) }} />)}</span>}
+        </button>;
       })}
     </fieldset>
   </section>;
+}
+
+export function HeroActionLegend({ range }: { range: HeroRange }) {
+  const { copy } = useSite();
+  const labels = heroActionLabels(copy, range);
+  const used = range.actions.filter(action => Object.entries(range.hands).some(([hand, mix]) => !range.unreachable.includes(hand) && mix[action] > 0))
+    .sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
+  return <div className="site-range-legend">{used.map(action => <span key={action}><i aria-hidden="true" style={{ background: range.stage !== "postflop" && action === "fold" ? "var(--fold)" : actionColor(action) }} />{labels[action] ?? action}</span>)}</div>;
+}
+
+function Explorer() {
+  const [mobile, setMobile] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 560px)").matches);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 560px)");
+    const sync = () => setMobile(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+  // Render one interactive tree, not a second offscreen set of focus targets.
+  return mobile ? <MobileExplorer /> : <DesktopExplorer />;
+}
+
+function DesktopExplorer() {
+  const { motion } = useSite();
+  const [rangeIndex, setRangeIndex] = useState(initialRangeIndex);
+  const range = heroRanges[rangeIndex];
+  const [selected, setSelected] = useState("A5o");
+  const [touring, setTouring] = useState(true);
+  const [ref, visible] = useInView<HTMLDivElement>("0px", false);
+  const isTouring = touring && motion;
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const stop = () => {
+      // Manual interaction takes over the automatic demo.
+      setTouring(false);
+    };
+    node.addEventListener("pointerdown", stop);
+    node.addEventListener("keydown", stop);
+    return () => { node.removeEventListener("pointerdown", stop); node.removeEventListener("keydown", stop); };
+  }, [ref]);
+
+  useEffect(() => {
+    if (!isTouring || !visible) return;
+    const timer = window.setInterval(() => {
+      setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length));
+    }, 4000);
+    return () => window.clearInterval(timer);
+  }, [isTouring, visible]);
+
+  return <div className={`site-explorer is-${range.stage}`} ref={ref} data-tour-running={isTouring && visible}>
+    <div className="site-wrap site-hero-main">
+      <HeroCopy />
+      <div className="site-hero-range">
+        <div className="site-hero-chart-frame">
+          <HeroActionLegend range={range} />
+          <RangeMatrix range={range} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
+        </div>
+      </div>
+    </div>
+  </div>;
 }
 
 const tourHands: Record<RangeMode, string[]> = {
@@ -130,16 +214,9 @@ const tourHands: Record<RangeMode, string[]> = {
   response: ["A5s", "K7s", "98o", "74s", "QJo", "A2o", "55"],
 };
 
-function Explorer() {
+function MobileExplorer() {
   const { copy: c, motion, appHref } = useSite();
-  const [decorative, setDecorative] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 560px)").matches);
-  useEffect(() => {
-    const query = window.matchMedia("(max-width: 560px)");
-    const sync = () => setDecorative(query.matches);
-    sync();
-    query.addEventListener("change", sync);
-    return () => query.removeEventListener("change", sync);
-  }, []);
+  const decorative = true;
   const [mode, setMode] = useState<RangeMode>("opening");
   const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
@@ -183,10 +260,10 @@ function Explorer() {
 
   return <div className={`site-explorer is-${mode}`} ref={ref} data-tour-running={isTouring && visible}>
     <div className="site-wrap site-hero-main">
-      <HeroCopy />
+      <HeroCopy showEstimate={false} />
       <div className="site-hero-range" inert={decorative} aria-hidden={decorative || undefined}>
         <div className="site-hero-chart-frame" style={{ "--selected-row": selectedRow } as CSSProperties}>
-          <RangeMatrix mode={mode} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
+          <RangeMatrix range={heroRanges.find(range => range.id === (mode === "opening" ? "BTN_open" : "BB_vs_BTN"))!} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
         </div>
         <div className="site-legend">{actions.filter(option => mode === "response" || option !== "call").map(option => <span key={option}><i className={`is-${option}`} />{actionLabel(c, mode, option)}</span>)}</div>
       </div>
@@ -249,7 +326,7 @@ function Header() {
   </header>;
 }
 
-function HeroCopy({ children }: { children?: ReactNode }) {
+function HeroCopy({ children, showEstimate = true }: { children?: ReactNode; showEstimate?: boolean }) {
   const { copy: c, appHref } = useSite();
   return <div className="site-hero-copy">
     <h1 id="site-hero-title" lang="en"><span className="site-line site-hero-opening"><span>{c.hero.title1}</span></span><span className="site-line"><span className="site-hero-mark">{c.hero.title2}</span></span></h1>
@@ -258,7 +335,7 @@ function HeroCopy({ children }: { children?: ReactNode }) {
       <a className="site-button" href={appHref}>{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
       <a className="site-hero-secondary" href="#how">{c.hero.secondary}<ArrowRight size={17} aria-hidden="true" /></a>
     </div>
-    <p className="site-hero-note">{c.hero.note}</p>
+    <p className="site-hero-note">{c.hero.note}{showEstimate && <span className="site-hero-estimate">{c.preview.saved} · {c.preview.notGto}</span>}</p>
     {children}
   </div>;
 }

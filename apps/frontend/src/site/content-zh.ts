@@ -12,7 +12,7 @@ export const zh: SiteCopy = {
     { label: "价格", href: "#pricing" },
   ],
   hero: { title1: "Don't just play.", title2: "Understand the reason.", lead: "ReysonAI告诉你每手牌该怎么打，并用易懂的语言解释原因。理解了原因，坐到牌桌前也能记起该如何决策。", primary: "打开应用", secondary: "了解使用方法", note: "免费预览 · 无需账户 · 6人桌现金局，100BB" },
-  preview: { simpleMode: "简洁", matrixLabel: "13×13起手牌图表", scrollLabel: "图表，小屏幕上可横向滚动", selectedHand: "当前手牌", suited: "同花", offsuit: "非同花", pair: "口袋对子", frequencyLabel: "行动频率", why: "原因", k7s: "K7s是同花牌，翻牌后也有可玩性。在这份BTN开池估算中，它始终加注。", other: (spot: string, hand: string, action: string, value: number) => `在已保存的${spot}范围中，${hand}以${value}%的频率${action}。打开应用可查看这手牌的完整解释。`, explore: "在应用中查看此范围", saved: "已保存的AI估算", notGto: "并非GTO解", spotOpening: "BTN开池", spotResponse: "BB应对", actionPast: { raise: "加注", threeBet: "3bet", call: "跟注", fold: "弃牌" }, pauseTour: "暂停手牌自动演示", resumeTour: "继续手牌自动演示", touring: "正在自动演示手牌。点击任意格子即可自行操作。", manual: "点击任意手牌查看详情。" },
+  preview: { bet: "下注", check: "过牌", flop: "翻牌", unreachable: "此行动路径无法到达；无推荐", simpleMode: "简洁", matrixLabel: "13×13起手牌图表", scrollLabel: "图表，小屏幕上可横向滚动", selectedHand: "当前手牌", suited: "同花", offsuit: "非同花", pair: "口袋对子", frequencyLabel: "行动频率", why: "原因", k7s: "K7s是同花牌，翻牌后也有可玩性。在这份BTN开池估算中，它始终加注。", other: (spot: string, hand: string, action: string, value: number) => `在已保存的${spot}范围中，${hand}以${value}%的频率${action}。打开应用可查看这手牌的完整解释。`, explore: "在应用中查看此范围", saved: "已保存的AI估算", notGto: "并非GTO解", spotOpening: "BTN开池", spotResponse: "BB应对", actionPast: { raise: "加注", threeBet: "3bet", call: "跟注", fold: "弃牌" }, pauseTour: "暂停手牌自动演示", resumeTour: "继续手牌自动演示", touring: "正在自动演示手牌。点击任意格子即可自行操作。", manual: "点击任意手牌查看详情。" },
   how: {
     title1: "从局面到原因，", title2: "只需三步。",
     steps: [

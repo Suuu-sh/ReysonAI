@@ -585,3 +585,10 @@ Verification:
 - Add general rank-based rewards planned text in all four locales, with contents/distribution conditions to be announced. Current main/development contains no reward allocation/granting implementation. A separate unpublished historical preview is not treated as an authoritative offering; publish no exact allocation, Plus entitlement, cash/physical prize or issued-benefit claim.
 - Parent 390px English visual review: planned reward text visible and mock contains only requested card/ladder, no result/queue, fits without horizontal overflow.
 - Locale/surface tests: 38 passed. Production build and diff check passed; no merge/deploy.
+
+## 2026-10-07 — Reconcile desktop PR107 with mobile PR106
+- User-authorized integration of exact PR107 head ae698e61c277c22e2288ec845b21efb6407e2ebc into PR106; PR107 branch is untouched. Resolve ServiceSite.tsx, site.css and four locale conflicts individually: preserve desktop viewport-height saved-range/random-tour/legend work and latest reason wording, phone square inert backdrop/compact detail/playback, SVG suits, hidden phone analysis sample and truthful trimmed ranked/rewards-planned copy.
+- Responsive Explorer mounts one desktop or phone tree based on the same ≤560px media query; phone does not mount the desktop legend or additional estimate line, desktop does not mount the phone detail/focus targets. New shared saved preflop/postflop datasets and frequency/reach tests remain intact.
+- Locale/surface/shared-card tests: 48 passed; additional targeted responsive single-tree DOM guard: 1 passed. Production build passed (existing chunk-size warning). Diff check passed.
+- Attempted focused browser QA through CUA: IAB unavailable; fresh Chrome preview creation timed out and reset the kernel. No new 390/1280 rendered verification or actual iPhone claim. Responsive appearance remains unverified for this integration; prior standalone mobile screenshots do not prove the merged version.
+- No merge to development/main or deployment. PR106 now includes PR107 ancestry: review/merge ordering must account for this overlap rather than merging conflicting versions independently.
