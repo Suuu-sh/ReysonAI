@@ -3,11 +3,13 @@ import { createRoot } from "react-dom/client";
 import { LegalPage } from "./site/LegalPage.tsx";
 import { LEGAL_COPY } from "./site/legal-content.ts";
 import { ServiceSite } from "./site/ServiceSite.tsx";
+import { AppLoading } from "./components/AppLoading.tsx";
 import { SITE_COPY } from "./site/locales.ts";
 import type { SiteLocale } from "./site/content.ts";
 import "./styles.css";
 import "./site/site.css";
 import "./site/site-mobile.css";
+import "./components/loading.css";
 import { productLocale, rememberLocale } from "./locale.ts";
 import { isProductAppRoute, legalDocumentOf } from "./route.ts";
 import { APP_DATASETS, datasetNames, preloadDatasets } from "./estimated/datasets.ts";
@@ -46,7 +48,7 @@ function MarketingSite() {
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     {isProductRoute
-      ? <Suspense fallback={<div className="site-loading">{({ en: "Opening ReysonAI…", ja: "ReysonAIを開いています…", "zh-CN": "正在打开ReysonAI…", es: "Abriendo ReysonAI…" }[productLocale()])}</div>}><ProductApp /></Suspense>
+      ? <Suspense fallback={<AppLoading label={({ en: "Opening ReysonAI…", ja: "ReysonAIを開いています…", "zh-CN": "正在打开ReysonAI…", es: "Abriendo ReysonAI…" }[productLocale()])} />}><ProductApp /></Suspense>
       : <MarketingSite />}
   </React.StrictMode>,
 );

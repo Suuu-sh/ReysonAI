@@ -49,7 +49,7 @@
   background-image: linear-gradient(rgb(255 255 255 / 2.5%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 2.5%) 1px, transparent 1px);
   background-size: 28px 28px; -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%); mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%); }
 .agent-felt::after { position: absolute; inset: 7%; border: 1px solid color-mix(in srgb, var(--table-theme) 22%, transparent); border-radius: 999px; content: ""; }
-.agent-felt-logo { position: absolute; top: 24%; left: 50%; color: rgb(255 255 255 / 6%); font-size: 12px; font-weight: 800; letter-spacing: .4em; transform: translateX(-50%); }
+.agent-felt-logo { position: absolute; top: 24%; left: 50%; color: rgb(255 255 255 / 6%); font-family: var(--font-logo); font-size: 12px; font-weight: 700; letter-spacing: .4em; transform: translateX(-50%); }
 .agent-center { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 10px; }
 .agent-board { display: flex; gap: 6px; }
 .agent-card.is-board { width: 46px; height: 64px; }
