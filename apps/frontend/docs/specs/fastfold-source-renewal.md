@@ -15,7 +15,7 @@ The mandatory restore gate correctly rejected changed bound source bytes. No sou
 - Previous content identity: `3e667462988e02435186f07b5c662e28423931db6e0fba30e0ebac0094d46fe0`.
 - Current source-bound content identity: `629744558b22f89494785b0c6fa8980f7e1cbc7d9dbfd7fd1201613de66c764e`.
 
-The workflow adds the exact additive `0010_fastfold.sql` migration before the API, mandatory pinned-Wrangler local authentication/DO checks, and live FastFold readiness before the compatible client. Backend configuration adds a SQLite-backed DO binding/migration and approved experimental-beta flag, without a paid upgrade. The scoped typed spot/input factory replaces eager shared registry reads; the legacy wrapper remains compatible. No authored frequencies, ranges, equity samples or candidate policies were edited.
+The workflow adds the exact additive `0010_fastfold.sql` migration before the API, mandatory pinned-Wrangler local authentication/DO checks, and a predeployment FastFold API/CORS/auth, dataset-integrity, and non-reason decision-identity check before the compatible client, followed by exact source-identity readiness after the reviewed import. Backend configuration adds a SQLite-backed DO binding/migration and approved experimental-beta flag, without a paid upgrade. The scoped typed spot/input factory replaces eager shared registry reads; the legacy wrapper remains compatible. No authored frequencies, ranges, equity samples or candidate policies were edited.
 
 ## Read-only equivalence evidence
 

@@ -260,6 +260,10 @@ jobs:
           }
           NODE
 
+      - name: Require live FastFold API and compatible published data before client
+        working-directory: apps/backend
+        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured --predeploy-compatible
+
       - name: Build
         run: npm run build
 
@@ -286,10 +290,9 @@ jobs:
           WRANGLER_SEND_METRICS: 'false'
         run: node scripts/import-reviewed-preflop.mjs --remote
 
-      # The exact release gate must run after importing the reviewed snapshot:
-      # it compares all published datasets with this checkout. The compatible
-      # client is deployed first and supports both the previous and compact
-      # reason formats, so a failed import leaves the old data readable.
+      # The exact source-identity gate runs after importing the reviewed snapshot.
+      # The new client has already passed compatible-data integrity checks and
+      # supports both previous and compact reason formats.
       - name: Require live FastFold release gate after reviewed import
         working-directory: apps/backend
         run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
