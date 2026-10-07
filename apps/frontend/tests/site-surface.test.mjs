@@ -82,6 +82,13 @@ test("phone persona selectors precede one adjacent description and matching prev
   } finally { globalThis.window = previousWindow; }
 });
 
+test("phone learner retains the full saved factual reason used on desktop", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
+  assert.match(source, /<p className="site-persona-why"><span>\{c.preview.why\}<\/span>\{c.how.whyNote\}<\/p>/);
+  assert.doesNotMatch(source, /learnerWhyShort/);
+  for (const locale of ["en", "ja", "es", "zh-CN"]) assert.ok(render(locale).includes(escapeText(copies[locale].how.whyNote)));
+});
+
 test("hero and shared English taglines use Understand the reason", () => {
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");

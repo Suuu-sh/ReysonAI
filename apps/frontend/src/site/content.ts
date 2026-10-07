@@ -36,7 +36,6 @@ export const en = {
     views: ["Simple display", "Hand detail", "Free preview"],
     freeList: ["Range charts for saved spots", "Hand-by-hand reasons", "Drills and session review", "Play analysis"],
     learnerShort: "Read exact frequencies and the reasons for each hand.",
-    learnerWhyShort: "An ace blocker and wheel potential. Mix calling and 3-betting.",
     budgetShort: "Try range charts, hand explanations, drills and analysis for free.",
     freeNote: "No account needed",
     note: "Studying exact solver output for custom game trees? A solver-based app is the better tool for that.",

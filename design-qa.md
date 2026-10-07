@@ -666,3 +666,7 @@ Verification:
 ## 2026-10-07 — Learner phone panel matches compact budget size
 - Mobile learner only: localized concise exact-frequency/body and A-blocker/wheel/mixed-call3bet summary derived from existing full Why facts; desktop full percentages/explanation retained. Remove redundant gets/sample label; cards28px, hand28px, three13px frequency columns and14px Why, padding14/gaps8–10. No ellipsis/clipping/new strategic claim.
 - Locale tests9/build/diffcheck passed. Parent375 Japanese learner panel≈357.17px, matching budget≈357.09px; quote/body/cards/frequencies readable/no overflow (0% naturally wraps within its column). No merge/deploy.
+
+## 2026-10-07 — Restore full factual learner reason on phones
+- User requests the full reason, not a shortened summary. Mobile now uses the exact same existing c.how.whyNote as desktop in all four locales (52.3%/43.3%/54.9% and12BB explanation retained); remove unused abbreviated Why fields. Compact body/cards/frequencies unchanged. Panel naturally grows; no height cap/ellipsis/clipping.
+- Targeted shared-full-reason/all-locale test1/build/diffcheck passed. No new strategic data or freshly verified strategy claim; restore the existing saved explanation verbatim. No new browser check claimed, no merge/deploy.

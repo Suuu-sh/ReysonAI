@@ -632,7 +632,7 @@ function Audience() {
             <div className={`${view(1)} is-detail`} aria-hidden={active !== 1}>
               <div className="site-persona-detail-head"><HandCards hand="A5s" seed={1} /><div><strong>A5s</strong><small>{c.how.whyHand}</small></div></div>
               <ActionRows mode="response" values={a5s} />
-              <p className="site-persona-why"><span>{c.preview.why}</span>{phone ? c.audience.learnerWhyShort : c.how.whyNote}</p>
+              <p className="site-persona-why"><span>{c.preview.why}</span>{c.how.whyNote}</p>
             </div>
             <div className={`${view(2)} is-free`} aria-hidden={active !== 2}>
               <p className="site-persona-price"><strong>{free.price}</strong><small>{phone ? c.audience.freeNote : free.cadence}</small></p>

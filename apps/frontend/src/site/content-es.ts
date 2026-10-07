@@ -34,7 +34,6 @@ export const es: SiteCopy = {
     views: ["Vista Simple", "Detalle de mano", "Vista previa gratuita"],
     freeList: ["Tablas de rangos para situaciones guardadas", "Explicaciones de cada mano", "Ejercicios y revisión de sesiones", "Análisis de juego"],
     learnerShort: "Consulta frecuencias exactas y las razones de cada mano.",
-    learnerWhyShort: "Bloquea ases y puede formar una escalera A–5. Mezcla call y 3bet.",
     budgetShort: "Prueba gratis rangos, explicaciones de manos, ejercicios y análisis.",
     freeNote: "Sin cuenta",
     note: "¿Quieres estudiar soluciones exactas de árboles de juego personalizados? Para eso, una app basada en un solver es más adecuada.",
