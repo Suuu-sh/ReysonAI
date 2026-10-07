@@ -192,7 +192,7 @@ function DesktopExplorer() {
   useEffect(() => {
     if (!isTouring || !visible) return;
     const timer = window.setInterval(() => {
-      setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length));
+      setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length, previewRanges.tour.length));
     }, 1000);
     return () => window.clearInterval(timer);
   }, [isTouring, visible]);
@@ -236,7 +236,7 @@ function MobileExplorer() {
   useEffect(() => {
     if (!isTouring || !visible) return;
     const timer = window.setInterval(() => {
-      setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length));
+      setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length, previewRanges.tour.length));
     }, 1000);
     return () => window.clearInterval(timer);
   }, [isTouring, visible]);

@@ -732,3 +732,7 @@ Verification:
 - Remove competitor example subline/themNote in all four locales. Comparison intro/note now generic solver-based explanation without named-product examples; unrelated FAQ remains unchanged. Every comparison row retained.
 - Symmetric centered/middle-aligned header labels with shared36px linebox/gap6; mobile logo16px and balanced label wrapping reduce orphaned-character lines. Continuous black Reyson column/light surrounding palette/layout retained.
 - Targeted all-locale generic-example guard1/build/diffcheck passed. No new rendered wrapping measurement claimed. No merge/deploy.
+
+## 2026-10-07 — Equal preflop/postflop tour exposure
+- Shared desktop/mobile selector now draws preflop/postflop category50:50, then uniformly among that category's saved tables excluding the current table. Data remains50preflop/12postflop, initialBTN and1000ms/visuals unchanged.50:50 is per-draw probability, not forced alternation/exact short-run counts.
+- Targeted category-boundary/repeat-exclusion/tour/dataset tests3/build/diffcheck passed. No merge/deploy.

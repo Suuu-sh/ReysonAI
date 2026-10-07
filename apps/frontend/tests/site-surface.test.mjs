@@ -241,12 +241,12 @@ test("the range tour randomly selects saved spots, pauses offscreen, yields to i
   assert.match(explorer, /const isTouring = touring && motion/);
   assert.match(explorer, /if \(!isTouring \|\| !visible\) return/);
   assert.match(explorer, /window\.clearInterval\(timer\)/);
-  assert.match(explorer, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length\)\)/);
+  assert.match(explorer, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length, previewRanges.tour.length\)\)/);
   assert.match(explorer, /\}, 1000\)/);
   const mobile = source.split("function MobileExplorer() {")[1].split("function Header()")[0];
   assert.match(mobile, /\}, 1000\)/);
   assert.match(mobile, /if \(!isTouring \|\| !visible\) return/);
-  assert.match(mobile, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length\)\)/);
+  assert.match(mobile, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length, previewRanges.tour.length\)\)/);
   assert.match(mobile, /<RangeMatrix range=\{range\}/);
   assert.doesNotMatch(mobile, /nextMode|tourHands|BTN_open.*BB_vs_BTN/);
   for (const event of ["pointerdown", "keydown"]) {
@@ -259,11 +259,26 @@ test("the range tour randomly selects saved spots, pauses offscreen, yields to i
   assert.doesNotMatch(explorer, /site-tour-progress|key=\{`\$\{mode\}-\$\{selected\}-\$\{isTouring\}`\}/);
 });
 
+test("range categories get equal draw space and exclude the current saved table", async () => {
+  const { pickNextRangeIndex } = await server.ssrLoadModule("/src/site/range-tour.ts");
+  const pick = (current, category, within) => { const draws = [category, within]; return pickNextRangeIndex(current, 62, 50, () => draws.shift()); };
+  assert.equal(pick(0, 0, 0), 1);
+  assert.equal(pick(0, .499999, .999999), 49);
+  assert.equal(pick(0, .5, 0), 50);
+  assert.equal(pick(0, .999999, .999999), 61);
+  assert.equal(pick(50, .5, 0), 51);
+  for (let current = 0; current < 62; current++) for (const category of [0, .499999, .5, .999999]) for (const within of [0, .5, .999999]) {
+    const next = pick(current, category, within);
+    assert.notEqual(next, current);
+    assert.equal(next < 50, category < .5);
+  }
+});
+
 test("random tour picks never repeat immediately, and its fifty ranges preserve saved frequencies/reach", async () => {
   const { pickNextRangeIndex } = await server.ssrLoadModule("/src/site/range-tour.ts");
   assert.equal(pickNextRangeIndex(0, 1), 0);
   for (let current = 0; current < 50; current++) for (const random of [0, .2, .5, .999999]) {
-    const next = pickNextRangeIndex(current, 50, () => random);
+    const next = pickNextRangeIndex(current, 50, 50, () => random);
     assert.ok(next >= 0 && next < 50 && next !== current);
   }
   const sources = [
