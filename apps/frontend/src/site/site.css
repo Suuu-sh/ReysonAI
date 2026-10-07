@@ -603,6 +603,11 @@
   .site-cover-title { color: var(--ink); font-size: clamp(19px, 5.2vw, 24px); font-weight: 600; letter-spacing: -.025em; line-height: 1.45; text-wrap: balance; }
   .site-cover-subtitle { color: var(--muted); font-size: 12px; }
   .site-cover-scroll { margin-top: 15px; color: var(--subtle); font-size: 11px; }
+  /* Native cover takeover: the square pins only inside this hero, while the
+     opaque ending advances over it. Extra background supplies its exit runway. */
+  .has-motion .site-hero > .site-explorer { position: sticky; top: var(--header-height); z-index: 0; }
+  .has-motion .site-cover-ending { position: relative; z-index: 1; flex: none; min-height: calc(max(156px, 100svh - var(--header-height) - 100vw) + 100vw); padding-bottom: calc(100vw + max(18px, env(safe-area-inset-bottom))); background: var(--bg); }
+
   .site-hero-main { padding-top: 28px; gap: 12px; }
   .site-hero h1 { font-size: clamp(56px, 14vw, 76px); }
   .site-line + .site-line { font-size: .6em; }

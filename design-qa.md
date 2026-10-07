@@ -622,3 +622,8 @@ Verification:
 ## 2026-10-07 — Question-style phone cover copy
 - Replace only cover-ending title in all four locales: Japanese exact「そのアクション、説明できますか？」and localized question equivalents. Keep original hero headline, subtitle/hint and square/layout unchanged.
 - Targeted cover/four-locale render test1 passed; diff check passed. Literal copy-only: no repeated build/browser verification. No merge/deploy.
+
+## 2026-10-07 — Phone footer takes over the pinned square
+- Motion-enabled≤560px: pin only Explorer natively at the header edge inside the hero; the opaque ending scrolls above it. Footer adds one square-width background runway compensated by bottom padding, preserving initial text positions while allowing full matrix coverage and bounded sticky exit. No wheel/touch interception or fixed whole page; square/overlay untouched.
+- Without .has-motion (including reduced-motion) retain previous ordinary cover flow. Desktop selectors unaffected. Targeted existing/new cover guards2 passed; diff check passed. CSS-only: no repeated build. Scroll visual evidence recorded below; no merge/deploy.
+- Parent390px actual scroll: ending advances over pinned matrix (mid-scroll only its top rows remain visible); subsequent scroll enters Audience without leaked fixed matrix. Opaque runway remains intentionally limited to one square width. Initial cover layout unchanged by compensated footer sizing.
