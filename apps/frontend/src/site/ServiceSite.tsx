@@ -131,6 +131,14 @@ const tourHands: Record<RangeMode, string[]> = {
 
 function Explorer() {
   const { copy: c, motion, appHref } = useSite();
+  const [decorative, setDecorative] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 560px)").matches);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 560px)");
+    const sync = () => setDecorative(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
   const [mode, setMode] = useState<RangeMode>("opening");
   const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
@@ -175,7 +183,7 @@ function Explorer() {
   return <div className={`site-explorer is-${mode}`} ref={ref} data-tour-running={isTouring && visible}>
     <div className="site-wrap site-hero-main">
       <HeroCopy />
-      <div className="site-hero-range">
+      <div className="site-hero-range" inert={decorative} aria-hidden={decorative || undefined}>
         <div className="site-hero-chart-frame" style={{ "--selected-row": selectedRow } as CSSProperties}>
           <RangeMatrix mode={mode} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
         </div>

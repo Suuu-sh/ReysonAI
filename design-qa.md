@@ -540,3 +540,10 @@ Verification:
 - At widths ≤560px, layer the existing single heading over the live chart using grid placement and a legibility scrim. The overlay has `pointer-events: none`; all saved range cells remain keyboard/tap targets. Paragraph, actions, and note follow below the chart without a duplicate heading. Desktop CSS remains outside this override.
 - Targeted overlay regression test: 1 passed. Production build passed; diff check passed.
 - Parent browser review: 390×844 English overlay readable over the top matrix; 375×667 Japanese retains the existing English heading with Japanese body/CTAs usable below; 1280×720 English desktop preserves separate left copy/right matrix with no overlay. Physical Safari remains unverified.
+
+## 2026-10-07 — Revised phone hero: decorative square backdrop
+- Supersedes the earlier heading-only overlay: all existing heading/body/actions/free note are centered together over a subdued decorative chart. Understand why is larger/pink; Don't just play is smaller/muted. The matrix keeps aspect-ratio 1 independently of the hero content height.
+- Phone chart wrapper uses media-synchronized `inert` plus `aria-hidden`; hidden matrix buttons are not focusable. Desktop media restores the original interactive chart. Selected-hand detail content remains unchanged.
+- Disable chart/cell entrance animations on the mobile backdrop so animation fill modes cannot override its .18 opacity or cause a diagonal reveal. Restore copy align-self:center instead of desktop end-alignment.
+- Parent visual QA: 390×844 English centered composition/square backdrop; 375×667 Japanese text/CTAs/free note fit with square backdrop; 1280×720 desktop preserves separate copy/chart. Desktop clicking and physical Safari were not interactively verified. Media restoration inspected in code.
+- New decorative/square guard test and hostname SSR regression passed; production build and diff check passed.

@@ -36,13 +36,19 @@ test("oversized translated phone How cards fall back to ordinary scrolling", () 
   assert.match(css, /\.has-motion \.site-how-steps li\[data-oversized="true"\] \{ position: static; \}/);
 });
 
-test("phone hero layers its single heading over the interactive range without capturing taps", () => {
+test("phone hero uses an inert decorative chart behind centered copy and CTAs", () => {
+  const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
-  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"), css.indexOf("/* Compare", css.indexOf("@media screen and (max-width: 560px)")));
-  assert.match(mobile, /\.site-hero-copy \{ display: contents; \}/);
-  assert.match(mobile, /\.site-hero-range \{ grid-column: 1; grid-row: 1; \}/);
-  assert.match(mobile, /\.site-hero h1 \{[^}]*grid-row: 1;[^}]*pointer-events: none;/);
-  assert.match(mobile, /\.site-hero-actions \{ grid-column: 1; grid-row: 3; margin-top: 0; \}/);
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"));
+  assert.match(source, /className="site-hero-range" inert=\{decorative\} aria-hidden=\{decorative \|\| undefined\}/);
+  assert.match(source, /matchMedia\("\(max-width: 560px\)"\)/);
+  assert.match(source, /query\.removeEventListener\("change", sync\)/);
+  assert.match(mobile, /\.site-hero-copy \{[^}]*text-align: center;/);
+  assert.match(mobile, /\.site-hero-range \{ position: absolute;[^}]*pointer-events: none;/);
+  assert.match(mobile, /\.site-hero h1 \.site-hero-mark \{ color: var\(--pink-bright\);/);
+  assert.match(mobile, /\.site-hero-actions \{ justify-content: center;/);
+  assert.match(mobile, /\.site-hero-range \.site-matrix \{ height: auto; aspect-ratio: 1;/);
+  assert.match(mobile, /\.has-motion \.site-hero-range \{ animation: none; \}/);
 });
 
 let server, ServiceSite, copies;
