@@ -40,8 +40,8 @@ export const ja: SiteCopy = {
     status: "ログイン・サーバー準備が必要", title1: "対人ランク戦で、", title2: "実際のハンドをプレイ。",
     description: "認証済みの人間6人で対戦する対人FastFold β。実際のハンドをプレイし、サーバーに記録されたレートと収支を確認できます。待つ間はランク非加算のAgent戦で練習します。",
     points: ["6人全員の参加確定後に配札", "ハンドごとに続けて対戦", "レート・対象ハンド数・収支・bb/100を表示", "人間同士の結果のみ・AI補正は未適用"],
-    sample: "表示例・ライブ値ではありません", rank: "ランク", mode: "対人FastFold β", rating: "現在のレート", hands: "ランク対象ハンド", netResult: "収支", toNext: (points: number, tier: string) => `${tier}まであと${points}`,
-    queue: "待機人数の表示例", queueNote: "自分を含む人数。6人全員の参加確定が必要です。", note: "数値は表示例です。認証済みログインとサーバー準備が必要です。待機中のAgent戦はランク非加算。AI比較はshadowのみで減点は適用しません。", legend: "レジェンド", legendRule: (count: number) => `マスター上位${count}人`,
+    sample: "表示例・ライブ値ではありません", rank: "ランク", mode: "対人FastFold β", rating: "現在のレート", hands: "ランク対象ハンド", toNext: (points: number, tier: string) => `${tier}まであと${points}`,
+    rewards: "ランクに応じた報酬を予定しています。内容・配布条件は後日案内します。", note: "数値は表示例です。認証済みログインとサーバー準備が必要です。AI比較はshadowのみで減点は適用しません。", legend: "レジェンド", legendRule: (count: number) => `マスター上位${count}人`,
     tiers: ["ブロンズ", "シルバー", "ゴールド", "プラチナ", "ダイヤモンド", "マスター"],
   },
   agent: {

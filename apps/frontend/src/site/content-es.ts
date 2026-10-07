@@ -40,8 +40,8 @@ export const es: SiteCopy = {
     status: "Requiere sesión y servidor disponible", title1: "Clasificación humana.", title2: "Manos reales, no cuestionarios.",
     description: "Juega Human FastFold β con seis personas verificadas. Sigue tu puntuación y resultados registrados por el servidor. Mientras esperas, practica contra Agents sin puntuación.",
     points: ["Las seis personas aceptan antes de repartir", "Juego continuo, mano a mano", "Puntuación, manos puntuadas, resultado y bb/100", "Solo resultados humanos · sin corrección IA aplicada"],
-    sample: "Ejemplo · no son datos en vivo", rank: "Rango", mode: "FastFold humano β", rating: "Puntuación actual", hands: "Manos puntuadas", netResult: "Resultado", toNext: (points: number, tier: string) => `${points} puntos para ${tier}`,
-    queue: "Ejemplo de cola de espera", queueNote: "Te incluye. Las seis personas deben aceptar.", note: "Cifras ilustrativas. Requiere sesión verificada y servidor disponible. La práctica Agent no puntúa; la comparación IA es solo análisis paralelo, sin penalización aplicada.", legend: "Leyenda", legendRule: (count: number) => `Top ${count} Maestros`,
+    sample: "Ejemplo · no son datos en vivo", rank: "Rango", mode: "FastFold humano β", rating: "Puntuación actual", hands: "Manos puntuadas", toNext: (points: number, tier: string) => `${points} puntos para ${tier}`,
+    rewards: "Se prevén recompensas según el rango. El contenido y las condiciones se anunciarán más adelante.", note: "Cifras ilustrativas. Requiere sesión verificada y servidor disponible; la comparación IA es solo análisis paralelo, sin penalización aplicada.", legend: "Leyenda", legendRule: (count: number) => `Top ${count} Maestros`,
     tiers: ["Bronce", "Plata", "Oro", "Platino", "Diamante", "Maestro"],
   },
   agent: {

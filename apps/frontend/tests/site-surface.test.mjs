@@ -88,7 +88,8 @@ test("ranked preview mirrors human hand metrics, not legacy quiz scoring", () =>
   const source = readFileSync(new URL("../src/site/ServiceSite.tsx", import.meta.url), "utf8");
   const ranked = source.slice(source.indexOf("function Ranked()"), source.indexOf("function AgentFeature()"));
   assert.doesNotMatch(ranked, /matchLine|lastMatch|\.today|\.peak|site-rank-pips/);
-  for (const field of ["sample", "mode", "hands", "netResult", "queueNote", "note", "legendRule"]) assert.ok(ranked.includes(`c.ranked.${field}`));
+  for (const field of ["sample", "mode", "hands", "rewards", "note", "legendRule"]) assert.ok(ranked.includes(`c.ranked.${field}`));
+  assert.doesNotMatch(ranked, /site-rank-results|site-rank-queue|bb\/100|2 \/ 6/);
   assert.match(source, /const tierMins = TIERS\.map/);
   for (const file of ["content.ts", "content-ja.ts", "content-es.ts", "content-zh.ts"]) {
     const content = readFileSync(new URL(`../src/site/${file}`, import.meta.url), "utf8");

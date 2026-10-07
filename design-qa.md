@@ -579,3 +579,9 @@ Verification:
 - Replace site-only quiz scoring/quota/Peak/pips with a visibly non-live sample: rating/tier, 120 hands, +18bb and +15bb/100, example 2/6 human queue, shared tier thresholds and Legend top-10-Masters rule. Sample values are coherent illustrations, not fetched server data; availability still requires verified sign-in/server readiness and no AI penalty is applied. Update all four locale ranked copies; actual app/backend untouched.
 - Parent 390px English screenshot and scrolling: sample metrics/Legend/queue/shadow caveats fit with no horizontal overflow. Desktop existing layout retained; no new desktop visual check claimed.
 - Locale/surface tests: 38 passed. Update three stale hero-title expectations from the previously authorized reason-copy revision. Build/diff check passed; no merge/deploy.
+
+## 2026-10-07 — Trim ranked sample and label rewards as planned
+- User narrowed the sample to Human FastFold title, rating/rated-hands card and rank ladder. Remove result/bb100/queue panels and their unused copy/CSS. Keep Sample/not-live label; move availability/illustration/shadow caveats into the section explanation.
+- Add general rank-based rewards planned text in all four locales, with contents/distribution conditions to be announced. Current main/development contains no reward allocation/granting implementation. A separate unpublished historical preview is not treated as an authoritative offering; publish no exact allocation, Plus entitlement, cash/physical prize or issued-benefit claim.
+- Parent 390px English visual review: planned reward text visible and mock contains only requested card/ladder, no result/queue, fits without horizontal overflow.
+- Locale/surface tests: 38 passed. Production build and diff check passed; no merge/deploy.

@@ -686,6 +686,8 @@ function Ranked() {
         <h2 id="site-ranked-title">{c.ranked.title1}<span>{c.ranked.title2}</span></h2>
         <p>{c.ranked.description}</p>
         <ul className="site-points">{c.ranked.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
+        <p className="site-feature-note">{c.ranked.rewards}</p>
+        <p className="site-feature-note">{c.ranked.note}</p>
       </div>
       <div className="site-mock site-rank" ref={ref} data-reveal aria-hidden="true" style={{ "--tier": tierColor(TIER_KEYS[tier]) } as CSSProperties}>
         <span className="site-sample">{c.ranked.sample}</span>
@@ -714,9 +716,6 @@ function Ranked() {
           <TierEmblem level={index} name={TIER_KEYS[index]} size={30} /><span>{name}</span><small>{tierMins[index].toLocaleString()}+</small></li>)}
           <li style={{ "--tier": tierColor("レジェンド") } as CSSProperties}><TierEmblem level={TIERS.length} name="レジェンド" size={30} /><span>{c.ranked.legend}</span><small>{c.ranked.legendRule(LEGEND_TOP_N)}</small></li>
         </ol>
-        <dl className="site-rank-results"><div><dt>{c.ranked.netResult}</dt><dd>+18 bb</dd></div><div><dt>bb/100</dt><dd>+15</dd></div></dl>
-        <div className="site-rank-queue"><span>{c.ranked.queue}</span><strong>2 / 6</strong><small>{c.ranked.queueNote}</small></div>
-        <p className="site-rank-note">{c.ranked.note}</p>
       </div>
     </div>
   </section>;

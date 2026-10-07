@@ -40,8 +40,8 @@ export const zh: SiteCopy = {
     status: "需认证登录及服务器就绪", title1: "真人排位，", title2: "实战手牌，不是答题。",
     description: "与六名认证玩家进行真人FastFold β对战。实战后查看服务器记录的评分和结果。等待时可练习不计分的Agent对局。",
     points: ["六人全部确认后才发牌", "逐手连续对战", "查看评分、计分手数、净收益和bb/100", "仅真人对局结果 · 不应用AI修正"],
-    sample: "示例 · 非实时数据", rank: "段位", mode: "真人FastFold β", rating: "当前评分", hands: "计分手数", netResult: "净收益", toNext: (points: number, tier: string) => `距离${tier}还差${points}分`,
-    queue: "等待人数示例", queueNote: "人数包含自己，六人全部确认后开始。", note: "数字仅为示例。需认证登录及服务器就绪。等待时的Agent练习不计分；AI比较仅作影子分析，不应用扣分。", legend: "传奇", legendRule: (count: number) => `大师前${count}名`,
+    sample: "示例 · 非实时数据", rank: "段位", mode: "真人FastFold β", rating: "当前评分", hands: "计分手数", toNext: (points: number, tier: string) => `距离${tier}还差${points}分`,
+    rewards: "计划提供段位奖励，内容及发放条件将另行公布。", note: "数字仅为示例。需认证登录及服务器就绪；AI比较仅作影子分析，不应用扣分。", legend: "传奇", legendRule: (count: number) => `大师前${count}名`,
     tiers: ["青铜", "白银", "黄金", "铂金", "钻石", "大师"],
   },
   agent: {

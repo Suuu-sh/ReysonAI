@@ -99,8 +99,7 @@ for (const [locale, file, exportName] of [["zh-CN", "content-zh.ts", "zh"], ["es
     assert.ok(copy.drill.score(3, 20).includes("20"));
     assert.ok(copy.drill.tableLabel("KTo").includes("KTo"));
     assert.ok(copy.ranked.hands);
-    assert.ok(copy.ranked.netResult);
-    assert.ok(copy.ranked.queueNote);
+    assert.ok(copy.ranked.rewards);
     assert.ok(copy.ranked.note);
     assert.ok(copy.ranked.legendRule(10).includes("10"));
     assert.ok(copy.ranked.toNext(64, copy.ranked.tiers[3]).includes("64"));
