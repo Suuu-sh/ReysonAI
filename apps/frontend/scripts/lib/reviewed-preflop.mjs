@@ -60,11 +60,12 @@ function jsonFiles(root, path) {
 // evaluator, JSON configuration and common validators. Do not reuse a cache or
 // treat a generator version string alone as provenance.
 export function reviewedSourcePaths(root = REPOSITORY) {
-  const found = new Set(["apps/frontend/package.json", "apps/frontend/package-lock.json", "apps/backend/migrations/0003_preflop.sql",
+  const seeds = ["apps/frontend/package.json", "apps/frontend/package-lock.json", "apps/backend/migrations/0003_preflop.sql",
     ".gitattributes", ".github/workflows/deploy-worker.yml", "apps/backend/wrangler.jsonc", "apps/backend/src/fastfold.ts",
     "apps/backend/scripts/verify-fastfold-readiness.mjs", "apps/backend/scripts/lib/fastfold-readiness-sources.mjs", "apps/backend/tests/fastfold-release.test.mjs",
     "apps/frontend/wrangler.jsonc", "apps/frontend/scripts/ci/preflop.wrangler.jsonc",
-    "apps/frontend/scripts/package-reviewed-preflop.py", "apps/frontend/scripts/package-reviewed-stage3.py", "apps/frontend/scripts/generate-opponent-profiles.py"]);
+    "apps/frontend/scripts/package-reviewed-preflop.py", "apps/frontend/scripts/package-reviewed-stage3.py", "apps/frontend/scripts/generate-opponent-profiles.py"];
+  const found = new Set();
   function visit(path) {
     if (found.has(path)) return;
     if (path.startsWith("../") || path.startsWith("/")) throw new Error("Review source escapes repository");
@@ -83,7 +84,7 @@ export function reviewedSourcePaths(root = REPOSITORY) {
       visit(relative(root, resolve(root, dirname(path), match[1])).replaceAll("\\", "/"));
     }
   }
-  sourceRoots.forEach(visit);
+  [...seeds, ...sourceRoots].forEach(visit);
   return [...found].sort(compare);
 }
 
