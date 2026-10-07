@@ -53,6 +53,10 @@ export function StrategyMatrix({ node, aggregates, selected, actions, onSelect, 
                 onClick={() => onSelect(hand)}
                 disabled={!aggregate.comboCount}
               >
+                {!aggregate.unreachable && <span className="cell-fill" aria-hidden="true">
+                  {simplified ? primaryAction && <span style={{ width: "100%", background: color(primaryAction) } as CSSProperties} />
+                    : stripOrder(mixedActions).map(action => <span key={action} style={{ width: pct(aggregate.actions[action]), background: color(action) } as CSSProperties} />)}
+                </span>}
                 <strong>{hand}</strong>
                 {!aggregate.unreachable && !simplified && mixedActions.length > 1 && <span className="cell-mix" aria-hidden="true">
                   {stripOrder(mixedActions).map(action => <span key={action} style={{ width: pct(aggregate.actions[action]), background: color(action) } as CSSProperties} />)}
