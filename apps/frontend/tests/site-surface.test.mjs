@@ -89,14 +89,17 @@ test("phone learner retains the full saved factual reason used on desktop", () =
   for (const locale of ["en", "ja", "es", "zh-CN"]) assert.ok(render(locale).includes(escapeText(copies[locale].how.whyNote)));
 });
 
-test("phone square stays pinned until opaque question fully covers it, with no spacer", async () => {
-  const { shouldPinCover } = await server.ssrLoadModule("/src/site/cover-pin.ts");
+test("phone square stays pinned through the question range with background-only transparency", async () => {
+  const { shouldPinCover, questionBackgroundAlpha } = await server.ssrLoadModule("/src/site/cover-pin.ts");
   for (const footerTop of [454, 300, 65]) assert.equal(shouldPinCover(0, footerTop, 64), true);
   assert.equal(shouldPinCover(-390, 64, 64), false);
   assert.equal(shouldPinCover(-391, 63, 64), false);
+  assert.equal(questionBackgroundAlpha(454, 64, 390), 1);
+  assert.ok(questionBackgroundAlpha(259, 64, 390) > .55);
+  assert.equal(questionBackgroundAlpha(64, 64, 390), .55);
   const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
   const cover = css.slice(css.indexOf("/* Only the square pins"));
-  assert.match(cover, /site-cover-ending[^}]*z-index: 1; background: var\(--bg\)/);
+  assert.match(cover, /site-cover-ending[^}]*z-index: 1; background: rgb\(9 9 11 \/ var\(--question-alpha, 1\)\)/);
   assert.match(cover, /site-after-cover[^}]*z-index: 1; background: var\(--bg\)/);
   assert.doesNotMatch(cover, /height:|padding-bottom:|question-shift/);
 });

@@ -1006,9 +1006,9 @@
   .has-motion .site-persona-stage.is-learner .site-persona-view, .has-motion .site-persona-stage.is-learner .site-persona-view * { animation: none; }
 }
 
-/* Only the square pins; opaque question and later content cover it naturally. */
+/* Only the square pins; question scrim changes, later content stays opaque. */
 @media (max-width: 560px) {
   .has-motion .site-hero[data-cover-pinned] .site-hero-stage > .site-explorer { position: fixed; top: var(--header-height); left: 0; width: 100%; z-index: 0; }
-  .has-motion .site-cover-ending { position: relative; z-index: 1; background: var(--bg); }
+  .has-motion .site-cover-ending { position: relative; z-index: 1; background: rgb(9 9 11 / var(--question-alpha, 1)); }
   .has-motion .site-after-cover { display: flow-root; position: relative; z-index: 1; background: var(--bg); }
 }

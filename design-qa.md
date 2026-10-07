@@ -698,3 +698,7 @@ Verification:
 - User clarified: square matrix stays fixed below header while opaque question block scrolls up over it. Restore only that measured pin; remove complete-cover96px hold and question12px translation. Original square slot retains original height, no new spacer/runway. Release when question.top≤header.bottom (fully covered), not earlier.
 - Question and downstream Audience→FinalCTA have solid background/z1 above fixed matrixz0, including short phones where question alone is shorter than matrix. Other mobile sections remain natural.62ranges/1000ms/dim/centered copy unchanged; reduced-motion opt-out retained.
 - Targeted geometry/scope tests2/build/diffcheck passed: footerTop65 keeps pin,64/63 releases, no new height/padding. Current browser check not claimed at commit time; this restores the previously browser-verified measured-pin structure. No merge/deploy.
+
+## 2026-10-07 — Gradual question-background transparency
+- Only mobile-motion question background changes from opaque to55% scrim as scroll advances across the square. Text remains fully opaque; never apply block opacity. Keep matrix fixed until question.bottom clears the header so it remains visible through scrim for the whole question range. Downstream content stays solid var(--bg)/z1; no added height/runway, other sections natural.
+- Reduced-motion uses static opaque question/natural flow; square/dim/62ranges/1000ms unchanged. Targeted pin/range/alpha math and opaque-downstream guard1/build/diffcheck passed. No new browser verification claimed; no merge/deploy.

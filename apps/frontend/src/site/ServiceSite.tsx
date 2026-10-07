@@ -1,4 +1,4 @@
-import { shouldPinCover } from "./cover-pin.ts";
+import { shouldPinCover, questionBackgroundAlpha } from "./cover-pin.ts";
 import { PlayingCard, type CardSuit as Suit } from "../components/PlayingCard.tsx";
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
@@ -307,14 +307,20 @@ function Hero() {
   const stage = useRef<HTMLDivElement>(null);
   const ending = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState(false);
+  const [questionAlpha, setQuestionAlpha] = useState(1);
   useEffect(() => {
-    if (!motion) { setPinned(false); return; }
+    if (!motion) { setPinned(false); setQuestionAlpha(1); return; }
     const phone = window.matchMedia("(max-width: 560px)");
     let frame = 0;
     const update = () => {
       frame = 0;
       const header = document.querySelector(".site-header");
-      setPinned(Boolean(phone.matches && stage.current && ending.current && header && shouldPinCover(stage.current.getBoundingClientRect().top, ending.current.getBoundingClientRect().top, header.getBoundingClientRect().bottom)));
+      if (!phone.matches || !stage.current || !ending.current || !header) { setPinned(false); setQuestionAlpha(1); return; }
+      const square = stage.current.getBoundingClientRect();
+      const question = ending.current.getBoundingClientRect();
+      const edge = header.getBoundingClientRect().bottom;
+      setPinned(shouldPinCover(square.top, question.bottom, edge));
+      setQuestionAlpha(questionBackgroundAlpha(question.top, edge, square.height));
     };
     const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
@@ -328,7 +334,7 @@ function Hero() {
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [motion, locale]);
-  return <section className="site-hero" aria-labelledby="site-hero-title" data-cover-pinned={pinned || undefined}><div className="site-hero-stage" ref={stage}><Explorer /></div><div className="site-cover-ending" ref={ending}><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
+  return <section className="site-hero" aria-labelledby="site-hero-title" data-cover-pinned={pinned || undefined}><div className="site-hero-stage" ref={stage}><Explorer /></div><div className="site-cover-ending" ref={ending} style={{ "--question-alpha": questionAlpha } as CSSProperties}><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
 }
 
 /** Eases from `from` to `to` once `run` turns true; jumps straight to `to` without motion. */
