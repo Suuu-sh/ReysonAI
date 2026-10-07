@@ -23,13 +23,14 @@ export function handTier(hole, board, score = null) {
     throw new Error("Invalid private hand or board");
   }
   const category = Math.floor((score ?? evaluate([...hole, ...board])) / 16 ** 5);
-  if (category >= 2) return "monster";
+  if (category > 3) return "monster";
   const boardRanks = board.map(card => card >> 2);
   const holeRanks = hole.map(card => card >> 2);
-  if (category === 1) {
-    const top = Math.max(...boardRanks);
-    if (holeRanks[0] === holeRanks[1] && holeRanks[0] > top || holeRanks.includes(top)) return "strong";
-  }
+  const top = Math.max(...boardRanks);
+  const count = rank => [...holeRanks, ...boardRanks].filter(r => r === rank).length;
+  const made = category === 0 ? [] : [...new Set(holeRanks)].filter(rank => count(rank) >= 2);
+  if (made.some(rank => count(rank) >= 3) || made.length >= 2) return "monster";
+  if (made.length === 1 && (holeRanks[0] === holeRanks[1] && holeRanks[0] > top || made[0] === top)) return "strong";
   if (hasDraw(hole, board)) return "draw";
-  return category === 1 ? "medium" : "air";
+  return made.length === 1 ? "medium" : "air";
 }
