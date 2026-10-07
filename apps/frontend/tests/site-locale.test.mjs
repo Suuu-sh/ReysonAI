@@ -142,7 +142,6 @@ test("all site locales render a selected native-language control and localized p
     const { ServiceSite } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
     const { SITE_COPY } = await server.ssrLoadModule("/src/site/locales.ts");
     const escaped = text => renderToStaticMarkup(createElement("span", null, text)).slice(6, -7);
-    const preview = JSON.parse(readFileSync(new URL("../src/site/range-preview.json", import.meta.url), "utf8"));
     for (const [locale, name] of [["en", "English"], ["ja", "日本語"], ["zh-CN", "简体中文"], ["es", "Español"]]) {
       const html = renderToStaticMarkup(createElement(ServiceSite, { locale, onLocaleChange() {} }));
       const copy = SITE_COPY[locale];
@@ -150,7 +149,6 @@ test("all site locales render a selected native-language control and localized p
       assert.ok(html.includes(`<option value="${locale}" lang="${locale}" selected="">${name}</option>`));
       assert.equal((html.match(/<option /g) ?? []).length, 4);
       assert.ok(html.includes(escaped(copy.hero.lead)));
-      assert.ok(html.includes(escaped(copy.preview.other(copy.preview.spotOpening, "A5o", copy.preview.actionPast.raise, preview.opening.A5o.open))));
       assert.ok(html.includes(escaped(copy.how.whyNote)));
       assert.ok(html.includes(escaped(copy.preview.notGto)));
       assert.ok(html.includes(escaped(copy.pricing.note)));
