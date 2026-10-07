@@ -199,7 +199,10 @@ test("the range tour randomly selects saved spots, pauses offscreen, yields to i
   assert.match(explorer, /if \(!isTouring \|\| !visible\) return/);
   assert.match(explorer, /window\.clearInterval\(timer\)/);
   assert.match(explorer, /setRangeIndex\(current => pickNextRangeIndex\(current, heroRanges.length\)\)/);
-  assert.match(explorer, /\}, 4000\)/);
+  assert.match(explorer, /\}, 1000\)/);
+  const mobile = source.split("function MobileExplorer() {")[1].split("function Header()")[0];
+  assert.match(mobile, /\}, 1000\)/);
+  assert.match(mobile, /if \(!isTouring \|\| !visible\) return/);
   for (const event of ["pointerdown", "keydown"]) {
     assert.ok(explorer.includes(`addEventListener("${event}", stop)`));
     assert.ok(explorer.includes(`removeEventListener("${event}", stop)`));

@@ -192,7 +192,7 @@ function DesktopExplorer() {
     if (!isTouring || !visible) return;
     const timer = window.setInterval(() => {
       setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length));
-    }, 4000);
+    }, 1000);
     return () => window.clearInterval(timer);
   }, [isTouring, visible]);
 
@@ -245,7 +245,7 @@ function MobileExplorer() {
       const hands = tourHands[nextMode];
       setMode(nextMode);
       setSelected(hands[Math.floor(step / 2) % hands.length]);
-    }, 2800);
+    }, 1000);
     return () => window.clearInterval(timer);
   }, [isTouring, visible]);
 

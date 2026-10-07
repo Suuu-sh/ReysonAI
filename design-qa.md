@@ -675,3 +675,7 @@ Verification:
 - Site-only four-locale agreed division: Free preflop ranges/reasons, preflop practice, basic reports; Plus all Free plus postflop ranges/reasons/practice and detailed analysis reports. Pricing descriptions/features, budget body/shortcopy/gets/list and Plus blurb, postflop/cost FAQ aligned. Remove blanket “everything in current preview” and vague Plus-feature claims.
 - Prices/cadence remain¥580/$3.70; retain30-day daily equivalents and approximate-USD boundary. Explicitly label planned division, Plus billing/access not live, current experimental postflop preview not a paid entitlement. No actual billing/app gates/backend/native changes. Full learner reason and compact layout unchanged.
 - Locale tests10 passed (including explicit all-locale feature division/free-list consistency and no Plus purchase href), production build/diffcheck passed. No new browser verification claimed; no merge/deploy.
+
+## 2026-10-07 — One-second saved range tour interval
+- User corrected requested interval to1second. Desktop random saved-range tour and mobile opening/response background tour now1000ms (previous4000/2800). Preserve offscreen/reduced-motion/manual-interaction boundaries and all other animation timings.
+- Targeted tour interval/lifecycle test1 passed; diffcheck passed. Timer literal-only: no repeated build/browser verification. No merge/deploy.
