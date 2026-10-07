@@ -1,0 +1,136 @@
+{
+  "status": "PASS",
+  "reviewer_task": "/root/verify_mw3_guard_revision",
+  "source_tree": "f39c0b8db644fbf55f4e84283cd3286d125f3f76",
+  "results": [
+    {
+      "probe": "simultaneous CSS and RankedStats TSX comments on temporary branch",
+      "paths": [
+        "apps/frontend/src/agent/gameplay-mobile.css",
+        "apps/frontend/src/trainer/RankedStats.tsx"
+      ],
+      "expected": "PASS",
+      "actual": "PASS",
+      "subjects": 16
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/backend/src/mw3-transport.ts",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/backend/src/mw3-transport.ts"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/shared/mw3-approved.ts",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/shared/mw3-approved.ts"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/src/estimated/mw3-browser.ts",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/frontend/src/estimated/mw3-browser.ts"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/src/agent/mw3-hand.ts",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/frontend/src/agent/mw3-hand.ts"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/scripts/postflop-ai/mw3-engine.mjs",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Unapproved or changed MW3 source identity: pair raw bytes"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/frontend/scripts/ci/mw3-local-d1-oracle.mjs"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/src/estimated/opening-ranges.json",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/frontend/src/estimated/opening-ranges.json"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/scripts/postflop-ai/mw3-source-identity-pairs.json",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Unapproved or changed MW3 source identity: independent review binding"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/src/locales/product-direct.json",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/frontend/src/locales/product-direct.json"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/scripts/data/mw3-co-btn-bb-authored.mjs",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Stale Mw3 snapshot identity"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/scripts/postflop-ai/mw3-source-dependencies.mjs",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/frontend/scripts/postflop-ai/mw3-source-dependencies.mjs"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.mjs",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.mjs"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.provenance.json",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.provenance.json"
+    },
+    {
+      "probe": "protected file mutation",
+      "path": "apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.license.json",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 source/input bytes changed: apps/frontend/scripts/postflop-ai/vendor/babel-parser-7.29.7.license.json"
+    },
+    {
+      "probe": "canonical archive mutation",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Mw3 archive bytes/hash mismatch"
+    },
+    {
+      "probe": "manifest source-hash mutation",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "error": "Invalid Mw3 source/input inventory"
+    },
+    {
+      "probe": "historical receipt reused with new source manifest",
+      "expected": "FAIL",
+      "actual": "FAIL"
+    }
+  ],
+  "temporary_modifications_discarded": true,
+  "read_only_numerical_verification": true,
+  "original_inputs_verified_after_probes": true,
+  "completed_at": "2026-10-07T04:29:07.187Z"
+}

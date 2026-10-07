@@ -9,6 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { stripTypeScriptTypes } from 'node:module';
+import { mw3SourceDependencies } from '../scripts/postflop-ai/mw3-source-dependencies.mjs';
 import { captureBoundaryRecords, installCapturedParentHooks, parseArguments, writeBoundaryGitPointer } from '../scripts/verify-mw3-local-d1.mjs';
 const sha = body => createHash('sha256').update(body).digest('hex');
 const row = (path, bytes) => ({ path, bytes: bytes.length, sha256: sha(bytes) });
@@ -143,8 +144,9 @@ test('the complete actual parent graph links under exact-buffer hooks, including
       assert.ok(path && !path.startsWith('../') && !path.startsWith('/'));
       const body = readFileSync(join(origin, path)); files.set(path, body);
       if (!/\.(?:mjs|js|ts)$/.test(path)) return;
-      for (const match of body.toString().matchAll(/(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']/g)) {
-        if (match[1].startsWith('.')) visit(relative(origin, resolve(origin, dirname(path), match[1])).replaceAll('\\', '/'));
+      for (const dependency of mw3SourceDependencies(path, body.toString('utf8'))) {
+        if (dependency.path) visit(dependency.path);
+        else if (dependency.specifier.startsWith('.')) visit(relative(origin, resolve(origin, dirname(path), dependency.specifier)).replaceAll('\\', '/'));
       }
     }
     visit(entry);
@@ -163,8 +165,9 @@ test('the complete actual parent graph links under exact-buffer hooks, including
       if (!/\.(?:mjs|js|ts)$/.test(path)) return;
       const raw = files.get(path).toString('utf8');
       const text = path.endsWith('.ts') ? stripTypeScriptTypes(raw, { mode: 'strip' }) : raw;
-      for (const match of text.matchAll(/(?:\bimport\s+(?:[^;]*?\s+from\s+)?|\bexport\s+[^;]*?\s+from\s+)["']([^"']+)["']/g)) {
-        if (match[1].startsWith('.')) executableVisit(relative(origin, resolve(origin, dirname(path), match[1])).replaceAll('\\', '/'));
+      for (const dependency of mw3SourceDependencies(path, text)) {
+        if (dependency.path) executableVisit(dependency.path);
+        else if (dependency.specifier.startsWith('.')) executableVisit(relative(origin, resolve(origin, dirname(path), dependency.specifier)).replaceAll('\\', '/'));
       }
     }
     executableVisit(entry);

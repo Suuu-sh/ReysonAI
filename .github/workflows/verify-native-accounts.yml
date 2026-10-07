@@ -1,7 +1,7 @@
 name: Verify account authentication
 on:
   pull_request:
-    branches: [development, main]
+    branches: [development, main, codex/fix/pr44_frozen_loading/01a11189]
     paths:
       - 'apps/backend/**'
       - '.github/workflows/verify-native-accounts.yml'
