@@ -238,6 +238,29 @@
           "artifact_and_archive_identity": "Artifact records and archive unchanged"
         },
         "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
+      },
+      {
+        "date": "2026-10-07",
+        "reviewer": "Claude main session",
+        "reviewed_base_commit": "a31cd4c",
+        "report": "apps/frontend/docs/specs/hu-after-multiway-source-renewal.md",
+        "scope": "Source-only review of HU-after-multiway follow-ups (DEFENCE_VERSION 7 for private-card tiers, dev:guest script, Saved response translation). No preflop data generated or edited; no renewal of original Astra strategy/data-quality approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "083e54993028c4bd76303236ec720bcfa4795342137426e7ed490e0386bf2fa5",
+        "after_content_sha256": "9c8673060e5c926f68ea8a8031bb5727fde11660594b2474dc0a2d0e81bba031",
+        "source_identity": {
+          "previous": 109,
+          "current": 109,
+          "modified": 3,
+          "added": 0,
+          "removed": 0,
+          "unchanged": 106
+        },
+        "verification": {
+          "artifact_and_archive_identity": "All 1888 artifact records and the archive unchanged",
+          "existing_spots": "Existing 45 HU spot fingerprints and seat rows unchanged (fixture test)"
+        },
+        "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
       }
     ],
     "copy_amendments": [
@@ -9832,8 +9855,8 @@
     },
     {
       "path": "apps/frontend/package.json",
-      "bytes": 2433,
-      "sha256": "a37d38086aa3b687f2a6ebdc32c7dc7c54ab6a8ef86e70f01a7e43b6b6c39547"
+      "bytes": 2514,
+      "sha256": "7aa07c287011bd5c2f303680bc6f3fa07203ddb7692ed53b38b8de0907222696"
     },
     {
       "path": "apps/frontend/scripts/build-continuations.mjs",
@@ -9957,8 +9980,8 @@
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/defence.ts",
-      "bytes": 55540,
-      "sha256": "ead2270499ebc4cbb1d6f03c5cc03552b82beffdc209bf0a146572e84b2017da"
+      "bytes": 55596,
+      "sha256": "96c51fecb6c37f88d0c5348ed538168cb72cbe47d2b46c461c5a6b37234eb450"
     },
     {
       "path": "apps/frontend/scripts/postflop-ai/engine.ts",
@@ -10287,8 +10310,8 @@
     },
     {
       "path": "apps/frontend/src/locales/product-dictionary.json",
-      "bytes": 43279,
-      "sha256": "caf1cb5a84d2f20782cb4f02a011838369c30112e75bb819e0d7823121ccaeaf"
+      "bytes": 43357,
+      "sha256": "e670898fc830f5531b9ac93a096509461043ab7f3c67c6ce95987f0c4fbe41ab"
     },
     {
       "path": "apps/frontend/src/locales/product-direct.json",
@@ -10331,7 +10354,7 @@
       "sha256": "d828004fd7c382e565e66094e43c8b2917ed5ff3444b0c12c2e691499211ace7"
     }
   ],
-  "content_sha256": "083e54993028c4bd76303236ec720bcfa4795342137426e7ed490e0386bf2fa5",
+  "content_sha256": "9c8673060e5c926f68ea8a8031bb5727fde11660594b2474dc0a2d0e81bba031",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
