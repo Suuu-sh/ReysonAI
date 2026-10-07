@@ -580,3 +580,12 @@ for (const locale of ["en", "ja"]) {
     assert.match(html, locale === "en" ? /Not a GTO solution/ : /GTOソリューションではありません/);
   });
 }
+
+
+test("mobile audience shows all three level choices without a swipe row", () => {
+  const css = readFileSync(new URL("../src/site/site-mobile.css", import.meta.url), "utf8");
+  assert.match(css, /\.site-persona-list \{[^}]*width: 100%;[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.site \.site-persona-list \.site-persona \{[^}]*min-width: 0;[^}]*min-height: 44px;/);
+  assert.match(css, /\.site-persona-list \.site-persona-level \{[^}]*white-space: normal;[^}]*overflow-wrap: anywhere;/);
+  assert.doesNotMatch(css, /\.site-persona-list,\s*\.site-how-steps/);
+});
