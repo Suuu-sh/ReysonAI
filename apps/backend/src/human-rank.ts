@@ -2,6 +2,7 @@ import { accountTransport, digest, type AccountEnv } from './account.ts';
 import type { D1Database } from './postflop.ts';
 import { createHand, applyAction, forfeit, legalActions, publicProjection, POSITIONS, type MultiplayerHand } from './multiplayer-engine.ts';
 import { cardText } from '../../frontend/scripts/postflop-ai/flop-isomorphism.ts';
+import { rankedHistory } from './ranked-history.ts';
 
 type Env=AccountEnv&{FASTFOLD_ENABLED?:string};
 type Player={user_id:string;public_id:string;public_name:string;phase:'out'|'queued'|'reserved'|'hand'|'break';version:number;lease_until:number;break_until:number|null;table_id:string|null;seat:number|null;accepted:number;rating:number;peak:number;hands:number;net_bb:number;rating_net_bb:number};
@@ -61,6 +62,7 @@ export async function routeHumanRank(request:Request,env:Env):Promise<Response>{
   const cookie=request.headers.get('cookie')?.split(';').map(x=>x.trim()).find(x=>x.startsWith(transport.session+'='))?.slice(transport.session.length+1);
   const [user]=cookie&&/^[a-f\d]{64}$/.test(cookie)?await q<{id:string}>(db,'SELECT u.id FROM account_users u JOIN account_sessions s ON s.user_id=u.id WHERE s.token_hash=? AND s.expires_at>?',await digest(cookie),Math.floor(now/1000)):[];
   if(!user)return respond({error:'sign_in_required'},401);
+  if(path==='history'&&request.method==='GET')return await rankedHistory(db,user.id,url.searchParams);
   if(request.method==='GET')await sweepHumanRank(env,now);
   const player=async()=> (await q<Player>(db,'SELECT * FROM human_rank_players WHERE user_id=?',user.id))[0];
   const table=async(id:string)=> (await q<Table>(db,'SELECT * FROM human_rank_tables WHERE id=?',id))[0];
