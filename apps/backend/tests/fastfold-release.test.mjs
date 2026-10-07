@@ -6,12 +6,13 @@ import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
 import { FASTFOLD_DATASETS } from '../src/fastfold.ts';
 const workflow=readFileSync(new URL('../../../.github/workflows/deploy-worker.yml',import.meta.url),'utf8');
-test('exact additive FastFold schema precedes API and readiness precedes compatible client',()=>{
+test('exact additive FastFold schema precedes API and readiness follows reviewed-data import',()=>{
  assert.match(workflow, /'apps\/backend\/migrations\/0010_fastfold.sql'/);
  const deploy=workflow.slice(workflow.indexOf('  deploy:'));
  assert.match(deploy,/--file migrations\/0010_fastfold.sql --yes/);
  assert.ok(deploy.indexOf('--file migrations/0010_fastfold.sql')<deploy.indexOf('ranked-api-deployment.log'));
- assert.ok(deploy.indexOf('verify-fastfold-readiness.mjs --configured')<deploy.indexOf('- name: Deploy Worker'));
+ assert.ok(deploy.indexOf('- name: Deploy Worker')<deploy.indexOf('import-reviewed-preflop.mjs --remote'));
+ assert.ok(deploy.indexOf('import-reviewed-preflop.mjs --remote')<deploy.indexOf('verify-fastfold-readiness.mjs --configured'));
  assert.doesNotMatch(deploy.split('\n').filter(line=>!line.trimStart().startsWith('#')).join('\n'),/migrations apply|d1 (?:restore|delete)/);
  const fastfold=readFileSync(new URL('../../../.github/workflows/verify-fastfold.yml',import.meta.url),'utf8');assert.match(fastfold,/tests\/fastfold-app-integration.test.mjs/);assert.match(fastfold,/wrangler@4\.147\.0 --call.*verify-fastfold-local-runtime.mjs --wrangler/);
  for(const filename of ['wrangler.jsonc','wrangler.local.jsonc']){const config=readFileSync(new URL('../'+filename,import.meta.url),'utf8');assert.match(config,/"main": "src\/worker.ts"/);assert.match(config,/"name": "FASTFOLD_RUNTIME"/);assert.match(config,/"new_sqlite_classes": \["FastFoldRuntime"\]/);assert.doesNotMatch(config,/"new_classes"/)}

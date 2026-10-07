@@ -260,10 +260,6 @@ jobs:
           }
           NODE
 
-      - name: Require live FastFold release gate before compatible client
-        working-directory: apps/backend
-        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
-
       - name: Build
         run: npm run build
 
@@ -289,6 +285,14 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=2048
           WRANGLER_SEND_METRICS: 'false'
         run: node scripts/import-reviewed-preflop.mjs --remote
+
+      # The exact release gate must run after importing the reviewed snapshot:
+      # it compares all published datasets with this checkout. The compatible
+      # client is deployed first and supports both the previous and compact
+      # reason formats, so a failed import leaves the old data readable.
+      - name: Require live FastFold release gate after reviewed import
+        working-directory: apps/backend
+        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
 
       - name: Retain preflop recovery reference and import outcome
         if: always()
