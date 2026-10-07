@@ -1092,3 +1092,11 @@
   .site-hero-secondary { min-height: 44px; font-size: 12px; }
   .site-hero-note { margin-top: 10px; font-size: 10px; }
 }
+
+/* Every responsive persona choice must remain visible without sideways scrolling. */
+@media (max-width: 960px) {
+  .site-audience-grid > *, .site-persona-list { min-width: 0; }
+  .site-persona-list { width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .site .site-persona-list .site-persona { min-width: 0; min-height: 44px; width: 100%; padding: 8px 6px; overflow: visible; }
+  .site-persona-list .site-persona-level { display: block; min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; text-wrap: balance; text-align: center; }
+}

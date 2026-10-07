@@ -745,3 +745,7 @@ Verification:
 ## 2026-10-07 — Restore moderate tablet right-column hero
 - User found≤960 full-width square too large. Hero/Explorer/cover query now≤720;721–960 uses compact two-column layout with a50vw right square (384px at768), left typography/padding/margins scaled and no viewport min-height. All copy stays normal flow without clipping;>960 original layout unchanged. Other-section≤560 compact rules untouched;62ranges/1000ms/50:50 retained.
 - Targeted hero/boundarySSR tests5/build/diffcheck passed, covering560/720/721/768/960/961. No new rendered geometry measurement at commit time; exceptionally long locale text can grow naturally rather than clip. No merge/deploy.
+
+## 2026-10-07 — Keep all responsive persona choices visible
+- New service_site_next branch/worktree from origin/development724411f7. Fix only≤960px persona selectors: three equal minmax(0,1fr) tracks, shrinkable grid children/buttons/labels, block label wrapping including long unbreakable labels, and no button overflow clipping. Preserve≥44px targets/manual selection, all existing panel copy and full learner reason. No sideways selector scroll.
+- Targeted selector sizing/wrapping guard1/build/diffcheck passed. New previewhttp://127.0.0.1:5218 returns200; old5187 worktree/server untouched.5197 was occupied and was not modified. No new rendered label-bound measurements at commit time; no merge/deploy.
