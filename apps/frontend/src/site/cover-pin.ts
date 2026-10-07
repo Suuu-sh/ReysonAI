@@ -3,8 +3,8 @@ export function shouldPinCover(stageTop: number, questionBottom: number, headerB
   return stageTop <= headerBottom && questionBottom > headerBottom;
 }
 
-/** Background only: move from opaque to a restrained55% scrim as it covers the square. */
-export function questionBackgroundAlpha(questionTop: number, headerBottom: number, squareHeight: number): number {
+/** Fade the complete question block out as it covers the square. */
+export function questionOpacity(questionTop: number, headerBottom: number, squareHeight: number): number {
   const progress = Math.min(1, Math.max(0, (headerBottom + squareHeight - questionTop) / Math.max(1, squareHeight)));
-  return 1 - progress * .45;
+  return 1 - progress;
 }

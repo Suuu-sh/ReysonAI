@@ -702,3 +702,7 @@ Verification:
 ## 2026-10-07 — Gradual question-background transparency
 - Only mobile-motion question background changes from opaque to55% scrim as scroll advances across the square. Text remains fully opaque; never apply block opacity. Keep matrix fixed until question.bottom clears the header so it remains visible through scrim for the whole question range. Downstream content stays solid var(--bg)/z1; no added height/runway, other sections natural.
 - Reduced-motion uses static opaque question/natural flow; square/dim/62ranges/1000ms unchanged. Targeted pin/range/alpha math and opaque-downstream guard1/build/diffcheck passed. No new browser verification claimed; no merge/deploy.
+
+## 2026-10-07 — Fade the entire question block completely
+- Latest user supersedes background-only scrim: question block background/title/subtitle/scroll hint share opacity1→0 as it covers the square. Matrix pin lasts through question range; next content remains independently opaque/z1. Reduced-motion remains static/natural.
+- Question contains no interactive/focusable elements; pointer-events:none prevents its invisible box intercepting matrix region. No extra height or other-section opacity. Targeted fade/pin/opaque-next math+CSS test1/diffcheck passed; no repeated build/browser claim. No merge/deploy.

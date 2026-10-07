@@ -1,4 +1,4 @@
-import { shouldPinCover, questionBackgroundAlpha } from "./cover-pin.ts";
+import { shouldPinCover, questionOpacity } from "./cover-pin.ts";
 import { PlayingCard, type CardSuit as Suit } from "../components/PlayingCard.tsx";
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
@@ -320,7 +320,7 @@ function Hero() {
       const question = ending.current.getBoundingClientRect();
       const edge = header.getBoundingClientRect().bottom;
       setPinned(shouldPinCover(square.top, question.bottom, edge));
-      setQuestionAlpha(questionBackgroundAlpha(question.top, edge, square.height));
+      setQuestionAlpha(questionOpacity(question.top, edge, square.height));
     };
     const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
     update();
@@ -334,7 +334,7 @@ function Hero() {
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [motion, locale]);
-  return <section className="site-hero" aria-labelledby="site-hero-title" data-cover-pinned={pinned || undefined}><div className="site-hero-stage" ref={stage}><Explorer /></div><div className="site-cover-ending" ref={ending} style={{ "--question-alpha": questionAlpha } as CSSProperties}><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
+  return <section className="site-hero" aria-labelledby="site-hero-title" data-cover-pinned={pinned || undefined}><div className="site-hero-stage" ref={stage}><Explorer /></div><div className="site-cover-ending" ref={ending} style={{ "--question-opacity": questionAlpha } as CSSProperties}><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
 }
 
 /** Eases from `from` to `to` once `run` turns true; jumps straight to `to` without motion. */
