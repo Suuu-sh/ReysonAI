@@ -284,6 +284,29 @@
           "existing_spots": "Existing 45 HU spot fingerprints and seat rows unchanged (fixture test)"
         },
         "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
+      },
+      {
+        "date": "2026-10-07",
+        "reviewer": "Claude main session",
+        "reviewed_base_commit": "74fb5683",
+        "report": "apps/frontend/docs/specs/hu-after-multiway-source-renewal.md",
+        "scope": "Source-only review of postflop explanation copy: new and corrected zh/es reason strings in reasons-secondary.json. No preflop data generated or edited; no renewal of original Astra strategy/data-quality approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "0c9d2961525d590c55c05818a7cfe2b707aca176eefd7f534e1a515962180871",
+        "after_content_sha256": "ad7e6f9b75903c0056c6b451eb7a649858dad7f57fb51f54e0c30c7651c758b9",
+        "source_identity": {
+          "previous": 109,
+          "current": 109,
+          "modified": 1,
+          "added": 0,
+          "removed": 0,
+          "unchanged": 108
+        },
+        "verification": {
+          "artifact_and_archive_identity": "All 1888 artifact records and the archive unchanged",
+          "existing_spots": "Existing 45 HU spot fingerprints and seat rows unchanged (fixture test)"
+        },
+        "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
       }
     ],
     "copy_amendments": [
@@ -10353,8 +10376,8 @@
     },
     {
       "path": "apps/frontend/src/locales/reasons-secondary.json",
-      "bytes": 48998,
-      "sha256": "47098dfb6c16346d9f4ebcf191ba9308d43bdff8b6950c83847c425f3d8c805a"
+      "bytes": 50177,
+      "sha256": "5f02fcff631aac0571f5a78ae1b3e66aca59c892f79f20288dbb04ee52279570"
     },
     {
       "path": "apps/frontend/wrangler.jsonc",
@@ -10377,7 +10400,7 @@
       "sha256": "d828004fd7c382e565e66094e43c8b2917ed5ff3444b0c12c2e691499211ace7"
     }
   ],
-  "content_sha256": "0c9d2961525d590c55c05818a7cfe2b707aca176eefd7f534e1a515962180871",
+  "content_sha256": "ad7e6f9b75903c0056c6b451eb7a649858dad7f57fb51f54e0c30c7651c758b9",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,

@@ -271,9 +271,10 @@ function textureNotes(c: Ctx): string[] {
       "ランアウトはブランクで、レンジはほとんど変わらず、前のストリートの方針がそのまま続きます。"],
   };
   const parts: string[] = [];
-  if (base[t]) parts.push(base[t][en ? 0 : 1]);
+  const diff = finite(shift?.hero) && finite(shift?.opp) ? shift.hero - shift.opp : 0;
+  // A "blank" that still moves equity by 4pt+ is not a blank for these ranges; keep only the shift sentence.
+  if (base[t] && !(t === "blank" && Math.abs(diff) >= 0.04)) parts.push(base[t][en ? 0 : 1]);
   if (finite(shift?.hero) && finite(shift?.opp)) {
-    const diff = shift.hero - shift.opp;
     if (diff >= 0.04) parts.push(en ? narrative("This card helps your range more than the opponent's, so more of your range can keep betting.", [], en) : "このカードはあなたのレンジに有利に働き、より多くの手がベットを続けられます。");
     else if (diff <= -0.04) parts.push(en ? narrative("This card helps the opponent's range more than yours, so expect fewer barrels and more checking.", [], en) : "このカードは相手のレンジに有利に働き、バレルは減ってチェックが増えます。");
   }
@@ -351,6 +352,10 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
     const s: string[] = b._s!;
     delete b._s;
     b.text = finish(b === topBlock && pick && !pick.texture ? [...s.slice(0, 5), pick.text] : s);
+    // Sizes of the same action share their reasons, which the de-duplication keeps only once.
+    if (!b.text) b.text = en
+      ? narrative("This size is mixed in less often for the same reasons as the main action.", [], en)
+      : "このサイズは、主なアクションと同じ理由で、低い頻度で混ぜます。";
   }
   const d = input.explain?.defence;
   if (facing && d && (input.actionMix.call ?? 0) === 0 && (input.actionMix.fold ?? 0) >= 0.95 && finite(d.realized_equity) && finite(d.required_equity) && d.realized_equity >= d.required_equity) {

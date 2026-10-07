@@ -157,7 +157,7 @@ export function handFeatures(hole: readonly number[], board: readonly number[]) 
   const rem = [];
   for (let c = 0; c < 52; c++) if (!dead.has(c)) rem.push(c);
   const tally = Array.from({ length: 9 }, () => [0, 0]); // per category: [we beat them, they beat or tie us]
-  const sub = { overpair: [0, 0], topPair: [0, 0], underpair: [0, 0], lower: [0, 0] }; // one-pair holdings by kind: [lose to us, beat or tie us]
+  const sub = { overpair: [0, 0], topPair: [0, 0], underpair: [0, 0], lower: [0, 0], set: [0, 0] }; // one-pair holdings by kind: [lose to us, beat or tie us]
   let beat = 0, tie = 0, win = 0, bestStraight = -1, bestStraightRanks: Set<number> | null = null;
   for (let i = 0; i < rem.length; i++) for (let j = i + 1; j < rem.length; j++) {
     const v = evaluate([rem[i], rem[j], ...board]);
@@ -168,7 +168,12 @@ export function handFeatures(hole: readonly number[], board: readonly number[]) 
       const r1 = rankOf(rem[i]), r2 = rankOf(rem[j]), side = v < score ? 0 : 1;
       if (r1 === r2) { if (bc[r1] === 0) sub[r1 > topB ? "overpair" : "underpair"][side]++; }
       else if (r1 === topB || r2 === topB) sub.topPair[side]++;
-      if (vc === 1 && made.pairRank !== undefined && made.category === "pair" && Math.floor(v / 16 ** 4) % 16 < made.pairRank) sub.lower[side]++;
+      // "Lower pairs" and "sets" name holdings by shape too: one that improved past us still counts as beating us.
+      if (r1 === r2 && bc[r1] === 1) sub.set[side]++;
+      if (made.pairRank !== undefined && made.category === "pair") {
+        const own = r1 === r2 ? [r1] : [r1, r2].filter(r => bc[r] > 0);
+        if (own.length && Math.max(...own) < made.pairRank) sub.lower[side]++;
+      }
     }
     if (v >= 4 * 16 ** 5 && v < 5 * 16 ** 5) {
       if (v > bestStraight) { bestStraight = v; bestStraightRanks = new Set(); }
