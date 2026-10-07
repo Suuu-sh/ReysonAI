@@ -36,7 +36,7 @@ test("Drill and Agent Stats share the dark map structure but keep source-specifi
   }
   assert.match(drill, /↑<br\/>3bet 多/);
   assert.match(drill, /今回出た問題の平均方針/);
-  assert.match(agent, /↑<br\/>アグレッシブ/);
+  assert.match(agent, /↑<br\/>レイズ多/);
   assert.match(agent, /Agent基準/);
   assert.doesNotMatch(agent, /↑<br\/>3bet 多/);
 });
@@ -86,12 +86,10 @@ test("ranked stats use server match summaries, never drill history or a fabricat
   const { RankedStats } = await server.ssrLoadModule("/src/trainer/RankedStats.tsx");
   const rank = { rating: 1120, peak: 1200, matches: [{ id: "confirmed", at: Date.now(), before: 1100, after: 1120, accuracy: .75, answered: 20 }] };
   const html = renderToStaticMarkup(createElement(PlayerAnalysis, { history: [{ spotId: "UTG_open", hand: "AA", action: "open", result: "best", score: 1 }], rank, rankedReady: true, initialView: "ranked", onStart() {} }));
-  assert.match(html, /確定済みランク戦/);
-  assert.match(html, /75%/);
-  assert.match(html, /確定済み 20 回答/);
-  assert.match(html, /GTO・EV・勝率ではありません/);
-  assert.match(html, /個別アクションがない/);
-  assert.doesNotMatch(html, /プレイスタイルマップ|style-roster|まずは練習から/);
+  // Current RankedStats requires live human readiness and an authenticated account;
+  // caller-supplied legacy summaries are never a ranked-data fallback.
+  assert.match(html, /ランク戦Statsは利用できません/);
+  assert.doesNotMatch(html, /75%|1,120|プレイスタイルマップ|style-roster|まずは練習から/);
   const closed = renderToStaticMarkup(createElement(RankedStats, { rank, ready: false }));
   assert.match(closed, /利用できません/);
   assert.doesNotMatch(closed, /75%|1,120/);

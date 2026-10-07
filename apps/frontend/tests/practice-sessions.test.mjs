@@ -66,7 +66,7 @@ test("sessions tab renders a drill attempt with a hand-history entry point", () 
   }));
   assert.match(html, /<h1 class="trainer-home-eyebrow">SESSIONS<\/h1>/);
   assert.doesNotMatch(html, /<h1>練習セッション<\/h1>/);
-  assert.match(html, /途中の練習も完了した練習も/);
+  assert.match(html, /Review ranked results, saved Agent hands/);
   assert.match(html, /UTG練習/);
   assert.match(html, /1<\/td>/);
   assert.match(html, /aria-label="View hand history for UTG練習" translate="no"/);
