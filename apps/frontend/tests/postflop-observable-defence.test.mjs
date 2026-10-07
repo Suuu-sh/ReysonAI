@@ -105,7 +105,7 @@ test('computed and raw new-HU reports both carry model10 action identity; legacy
     assert.equal(report.defence_version, computedDefence ? 10 : undefined);
   }
   const legacy = loadInputs('BTN_open_BB_call');
-  assert.equal(defenceVersionFor(legacy), 6);
+  assert.equal(defenceVersionFor(legacy), 7);
   const report = simulationReport(legacy, referencePolicyFor(legacy.spot.tree), 1, later, [], { computedDefence: false });
   assert.equal('action_model_version' in report, false);
   assert.equal('defence_version' in report, false);

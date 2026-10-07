@@ -33,9 +33,24 @@ test("agent face sizes and empty backs preserve existing classes and conceal ran
 
 test("site cards retain aria-hidden and the dealt-card/fan animation offsets", () => {
   for (const index of [-2, 0, 1, 2]) {
-    assert.equal(render({ variant: "site", card: "Kh", index, "aria-hidden": true }), `<span aria-hidden="true" class="site-card suit-h" style="--i:${index}"><b>K</b><i>♥</i></span>`);
+    const html = render({ variant: "site", card: "Kh", index, "aria-hidden": true });
+    assert.ok(html.startsWith(`<span aria-hidden="true" class="site-card suit-h" style="--i:${index}"><b>K</b><i>`));
+    assert.match(html, /<svg[^>]*aria-hidden="true"[^>]*focusable="false"/);
+    assert.match(html, /<span class="site-visually-hidden">♥<\/span><\/i><\/span>$/);
   }
   assert.match(render({ variant: "site", card: "Ac", className: "custom", style: { opacity: 0.5 }, "aria-label": "Ace of clubs" }), /aria-label="Ace of clubs" class="site-card suit-c custom" style="--i:0;opacity:0.5"/);
+});
+
+test("only site cards use flat SVG suits with accessible text preserved", () => {
+  const shapes = new Set();
+  for (const [suit, glyph] of Object.entries({ s: "♠", h: "♥", d: "♦", c: "♣" })) {
+    const html = render({ variant: "site", card: `Q${suit}` });
+    assert.match(html, /<b>Q<\/b><i><svg/);
+    assert.match(html, /fill="currentColor"/);
+    assert.ok(html.includes(`<span class="site-visually-hidden">${glyph}</span>`));
+    shapes.add(html.match(/<svg[\s\S]*?<\/svg>/)[0]);
+  }
+  assert.equal(shapes.size, 4);
 });
 
 test("session notation stays text-only with the legacy unknown-suit fallback", () => {

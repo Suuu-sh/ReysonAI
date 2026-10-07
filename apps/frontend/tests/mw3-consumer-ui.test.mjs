@@ -91,6 +91,8 @@ test('dedicated renderer shows three initial matrices, localized roles and exact
       assert.ok(document.querySelector('.mw3-hand-detail select').options.length > 1);
       const close = document.querySelector('.mw3-hand-detail .icon-button');
       await act(async () => close.click()); assert.equal(document.querySelector('.mw3-hand-detail'), null);
+      await act(async () => cell.click()); assert.ok(document.querySelector('.mw3-hand-detail select'), 'detail reopens after Close');
+      await act(async () => document.querySelector('.mw3-hand-detail .icon-button').click());
     }
   });
 });
@@ -141,6 +143,62 @@ const agentBundle = await build({ entryPoints: [fileURLToPath(new URL('../src/ag
   } }],
 });
 const { AgentTablePage: ReachedAgentTable } = await importConsumerBundle(agentBundle, 'agent');
+test('ordinary Agent saves one real MW3 result, preserves prior history and reopens Stats after Close', async () => {
+  await domTest(async ({ root }) => {
+    const { handRecord, loadAgentHands, summarizeAgentHands } = await import('../src/agent/agent-stats.ts');
+    const prior = [{ at: 1, tableId: 'prior-session', pos: 'CO', returnBb: 2, vpip: true, pfr: true, sawFlop: true, showdown: false }];
+    const oldHistory = JSON.stringify([{ at: 2, tableId: 'old-key', returnBb: -1 }]);
+    localStorage.setItem('reysonai:agent-hands:v1', JSON.stringify(prior));
+    localStorage.setItem('evionai:agent-hands:v1', oldHistory);
+    localStorage.setItem('reysonai:agent-speed', '"fast"');
+    window.localStorage.setItem(LOCALE_KEY, 'en');
+    const originalNow = Date.now, previous = Object.getOwnPropertyDescriptor(globalThis, '__MW3_AGENT_PLAY');
+    let latest;
+    Date.now = () => 1791222000201;
+    globalThis.__MW3_AGENT_PLAY = setup => latest = actualPlayHand({ ...setup, agents: {
+      preflop({ pos, offered }) {
+        const key = pos === 'CO' ? 'open' : pos === 'BB' ? 'call' : 'fold';
+        const action = offered.choices.find(choice => choice.action.key === key)?.action;
+        assert.ok(action, `${pos}/${key}`); return { action, mix: {}, source: 'balanced' };
+      }, postflop() { throw Error('MW3 must not use HU'); },
+    } });
+    const until = async predicate => {
+      for (let tick = 0; tick < 150 && !predicate(); tick++) await act(async () => new Promise(resolve => setTimeout(resolve, 100)));
+      assert.ok(predicate(), 'ordinary Agent state failed to settle');
+    };
+    try {
+      await act(async () => root.render(React.createElement(ReachedAgentTable, {
+        tableId: AGENT_TABLE.id, onExit() {}, mw3Client: fixture.client, handoffKey: 'test-only-completion-boundary',
+      })));
+      await until(() => Boolean(document.querySelector('.agent-act.tone-call')));
+      assert.equal(latest.pending.pos, 'BTN');
+      await act(async () => document.querySelector('.agent-act.tone-call').click());
+      for (const street of ['flop', 'turn', 'river']) {
+        await until(() => latest?.pending?.street === street && Boolean(document.querySelector('.agent-act.tone-check')));
+        await act(async () => document.querySelector('.agent-act.tone-check').click());
+      }
+      await until(() => Boolean(document.querySelector('.agent-result')) && loadAgentHands().length === 2);
+      assert.equal(latest.status, 'done'); assert.equal(latest.postflopKind, 'mw3_srp');
+      const saved = loadAgentHands();
+      assert.deepEqual(saved[0], prior[0]);
+      assert.deepEqual(saved[1], handRecord(latest, AGENT_TABLE.id, 'BTN', 1791222000201));
+      assert.equal(summarizeAgentHands(saved).hands, 2);
+      const bytes = localStorage.getItem('reysonai:agent-hands:v1');
+      for (let opening = 0; opening < 2; opening++) {
+        await act(async () => document.querySelector('.game-desktop-tools .agent-toggle').click());
+        assert.ok(document.querySelector('.style-dash-close'));
+        assert.match(document.querySelector('.game-details-modal').textContent, /VPIP/);
+        await act(async () => document.querySelector('.game-modal-header > button').click());
+        assert.equal(document.querySelector('.game-details-modal'), null);
+        assert.equal(localStorage.getItem('reysonai:agent-hands:v1'), bytes, 'Stats/Close/reopen does not save again');
+      }
+      assert.equal(localStorage.getItem('evionai:agent-hands:v1'), oldHistory);
+    } finally {
+      Date.now = originalNow;
+      if (previous) Object.defineProperty(globalThis, '__MW3_AGENT_PLAY', previous); else delete globalThis.__MW3_AGENT_PLAY;
+    }
+  });
+});
 test('waiting Agent completes a verified MW3 hand once after real human actions without reading or writing saved history', async () => {
   // This synthetic fixture takes the actual codec/hash verification route. It
   // tests consumer completion, not the authored policies' numerical quality.

@@ -17,24 +17,23 @@ before(async () => {
 after(async () => { globalThis.window = oldWindow; await server?.close(); });
 const noop = () => {};
 for (const locale of ['en', 'ja', 'zh-CN', 'es']) {
-  test(`compact Ranked card retains information and controls in ${locale}`, () => {
+  test(`Ranked card keeps core content without redundant rating details in ${locale}`, () => {
     globalThis.window = { localStorage: { getItem: key => key === 'reysonai:locale:v1' ? locale : null } };
     const props = { drills: [], reviewCount: 0, rank: { ...emptyRankState(), rating: 1000, peak: 1100, remaining: 3 }, rankedReady: true, onOpenDrills: noop, onCreate: noop, onStartReview: noop, onResume: noop, onStartRanked: noop, onOpenRanking: noop, onStartAgent: noop };
     const doc = new JSDOM(renderToStaticMarkup(createElement(TrainerHome, props))).window.document;
     const card = doc.querySelector('.is-ranked');
     assert.equal(card.querySelectorAll('.mode-foot .rank-ladder li').length, 7);
     assert.ok(card.querySelector('.rank-ladder-legend-copy').textContent.trim());
-    assert.equal(card.querySelectorAll('.ranked-stats > div').length, 3);
-    assert.ok(card.querySelector('.ranked-next .ranked-bar'));
-    assert.match(card.textContent, /1,000/);
-    assert.match(card.textContent, /1,100/);
+    assert.equal(card.querySelector('.ranked-stats'), null);
+    assert.equal(card.querySelector('.ranked-bar'), null);
+    assert.doesNotMatch(card.textContent, /1,100/);
     assert.equal(card.querySelectorAll('button').length, 2);
     assert.ok([...card.querySelectorAll('button')].every(button => !button.disabled && button.textContent.trim()));
     assert.equal(card.querySelector('.mode-quota'), null);
     assert.ok(card.querySelector('.mode-body > p').textContent.trim());
     const closed = renderToStaticMarkup(createElement(TrainerHome, { ...props, rankedReady: false }));
     assert.match(closed, /is-coming-soon/);
-    assert.doesNotMatch(closed, /ranked-stats/);
+    assert.doesNotMatch(closed, /ranked-stats|ranked-bar/);
   });
 }
 test('sizing changes stay scoped to live Trainer home cards', async () => {

@@ -156,8 +156,8 @@ test('crypto deal has distinct cards, pure spot extraction preserves geometry, a
  const scoped=createPostflopSpots(bundle).POSTFLOP_SPOTS;
  const legacy=POSTFLOP_SPOTS.filter(spot=>!spot.history);
  assert.equal(scoped.length,49);assert.equal(legacy.length,49);
- assert.equal(POSTFLOP_SPOTS.length,456);
- assert.equal(POSTFLOP_SPOTS.filter(spot=>spot.history).length,407);
+ assert.equal(POSTFLOP_SPOTS.length,89);
+ assert.equal(POSTFLOP_SPOTS.filter(spot=>spot.history).length,40);
  assert.deepEqual(scoped,legacy);
  assert.equal(createPostflopSpots({opening:bundle['opening-ranges'],responses:bundle['preflop-ranges']}).spotById('BTN_open_BB_call').id,'BTN_open_BB_call');
  const name='profiles/nit/villain/opening-ranges',profile=JSON.parse(readFileSync(new URL(`../../frontend/src/estimated/${name}.json`,import.meta.url)));

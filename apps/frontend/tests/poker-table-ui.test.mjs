@@ -99,7 +99,7 @@ test("fixed mobile gameplay sizing is route-scoped, hides bottom navigation and 
  assert.match(css,/height: 100dvh/); assert.match(css,/env\(safe-area-inset-top, 0px\)/);
  assert.match(css,/grid-template-rows: minmax\(0, 1fr\) auto/); assert.match(css,/max-height: calc\(100dvh - 32px\)/);
  assert.match(css,/max-height: 450px/); assert.match(css,/prefers-reduced-motion: reduce/);
- const shell=await readFile(new URL('../src/styles.css',import.meta.url),'utf8');assert.match(shell,/padding-bottom: calc\(68px \+ env\(safe-area-inset-bottom, 0px\)\)/);
+ const shell=await readFile(new URL('../src/styles.css',import.meta.url),'utf8');assert.match(shell,/padding-bottom: calc\(78px \+ env\(safe-area-inset-bottom, 0px\)\)/);
  assert.match(css,/\.shell:has\(\.game-details\) \{[^}]*padding-bottom: env\(safe-area-inset-bottom, 0px\)/s);
  assert.match(css,/\.shell:has\(\.game-details\) \.mobile-tab-bar \{\s*display: none/);
  const profile=await readFile(new URL('../src/agent/OpponentProfile.tsx',import.meta.url),'utf8');assert.doesNotMatch(profile,/scrollIntoView|scrollTo/);assert.doesNotMatch(css,/grid-template-columns: minmax\(0, 1fr\) minmax\(150px/);

@@ -1,7 +1,8 @@
 import type { BalancedFlopBase } from "../../scripts/postflop-ai/flop-base-core.ts";
-import type { Candidate, LaterPolicy, PostflopDatasets, SourceDataset } from "../../scripts/postflop-ai/types.ts";
+import type { Candidate, LaterPolicy, PostflopDatasets, SourceDataset, MultiwayCatalog } from "../../scripts/postflop-ai/types.ts";
 import type { Spot } from "../../scripts/postflop-ai/spots.ts";
 export type PostflopSource = { kind: string; spot: Spot; candidate: Candidate; laterCandidate?: Candidate<LaterPolicy> | null; report: Record<string, unknown> };
+import multiwayCatalog from "../../scripts/data/hu-after-multiway-spots.json" with { type: "json" };
 import { dataset, loadDataset } from "./datasets.ts";
 import { postflopUrl } from "./postflop-api.ts";
 import { canonicalFlop } from "../../scripts/postflop-ai/flop-isomorphism.ts";
@@ -75,7 +76,7 @@ export function loadPostflopSpot(spotId: string, signal?: AbortSignal) {
 }
 
 export function datasetsNeededForSpot(spot: Spot): string[] {
-  if (spot?.history && spot?.ranges) return [...new Set<string>(Object.values(spot.ranges).flat().map(factor => factor[0]))];
+  if (spot?.history && spot?.ranges) return ["hu-after-multiway-spots", ...new Set<string>(Object.values(spot.ranges).flat().map(factor => factor[0]))];
   switch (spot?.kind) {
     case "srp": return ["opening-ranges", "preflop-ranges"];
     case "3bp": return ["opening-ranges", "preflop-ranges", "three-bet-responses"];
@@ -103,11 +104,12 @@ function waitForAbort<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> 
 }
 
 async function readDataset(name: string, signal?: AbortSignal) {
+  if (name === "hu-after-multiway-spots") return multiwayCatalog as unknown as MultiwayCatalog;
   try {
-    return dataset<SourceDataset>(name);
+    return dataset<SourceDataset | MultiwayCatalog>(name);
   } catch (error) {
     if (!(error instanceof Error) || !error.message.includes("is not loaded")) throw error;
-    return waitForAbort(loadDataset<SourceDataset>(name), signal);
+    return waitForAbort(loadDataset<SourceDataset | MultiwayCatalog>(name), signal);
   }
 }
 

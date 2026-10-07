@@ -229,10 +229,10 @@ test('real postflop component policy errors leave restored cards and URL intact'
 test('full ProductApp hydrates an account-only profile before routing the exact Mac river URL', async () => {
   await open(macRiverUrl, { product: true, block: ['account-session', 'account-data', 'squeeze-responses'] });
   assert.equal(window.localStorage.getItem('reysonai:profile:v1'), null, 'no guest-local profile');
-  assert.ok(document.querySelector('.site-loading'));
+  assert.ok(document.querySelector('.app-loading'));
   assert.equal(window.location.pathname, rootPath); assertRiverUrl(macRiverUrl);
   await release('account-session');
-  assert.ok(document.querySelector('.site-loading'));
+  assert.ok(document.querySelector('.app-loading'));
   assert.equal(window.location.pathname, rootPath); assertRiverUrl(macRiverUrl);
   await release('account-data');
   assert.equal(window.location.pathname, rootPath); assertRiverUrl(macRiverUrl);
@@ -305,7 +305,7 @@ test('an asynchronously proved-unreachable terminal clears board intent while ma
 for (const endpoint of ['account-session', 'account-data']) for (const retryMode of ['batched', 'delayed']) {
   test(`failed ${endpoint} hydration recovers the deep URL with ${retryMode} retry`, async () => {
     await open(macRiverUrl, { product: true, block: [endpoint], fail: [endpoint] });
-    assert.ok(document.querySelector('.site-loading'));
+    assert.ok(document.querySelector('.app-loading'));
     assertRiverUrl(macRiverUrl);
     assert.equal(document.querySelector('.account-chip'), null);
     await release(endpoint);
@@ -322,7 +322,7 @@ for (const endpoint of ['account-session', 'account-data']) for (const retryMode
       gates.set(endpoint, pending());
       let refresh;
       await act(async () => { refresh = accountModule.refreshAccount(); await settle(); });
-      assert.ok(document.querySelector('.site-loading'));
+      assert.ok(document.querySelector('.app-loading'));
       await release(endpoint); await refresh; await flush();
     } else {
       await act(async () => accountModule.refreshAccount()); await flush();
@@ -346,10 +346,10 @@ test('authenticated identity A to B hides the previous profile until B data is r
   gates.set('account-session', pending()); gates.set('account-data', pending());
   let refresh;
   await act(async () => { refresh = accountModule.refreshAccount(); await settle(); });
-  assert.ok(document.querySelector('.site-loading'));
+  assert.ok(document.querySelector('.app-loading'));
   assert.equal(document.querySelector('.account-chip'), null); assertRiverUrl(macRiverUrl);
   await release('account-session');
-  assert.ok(document.querySelector('.site-loading'));
+  assert.ok(document.querySelector('.app-loading'));
   assert.equal(document.querySelector('.account-chip'), null);
   assert.equal(accountModule.accountStorage().getItem('reysonai:profile:v1'), null, 'A data was cleared at the identity boundary');
   assertRiverUrl(macRiverUrl);

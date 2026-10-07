@@ -173,6 +173,7 @@ test('delivery, authority, shared executable dependencies and strict verificatio
     `${frontend}src/estimated/mw3-browser.ts`, `${frontend}src/agent/mw3-hand.ts`,
     // hand.ts is no longer an explicit root, but its type import remains bound.
     `${frontend}src/agent/hand.ts`, `${frontend}src/agent/preflop.ts`, `${frontend}src/estimated/datasets.ts`,
+    `${frontend}scripts/postflop-ai/hu-hand-tier.ts`,
     `${frontend}scripts/postflop-ai/mw3-engine.mjs`, `${frontend}scripts/postflop-ai/mw3-runtime.mjs`,
     `${frontend}scripts/postflop-ai/mw3-source-dependencies.mjs`, `${frontend}scripts/postflop-ai/vendor/babel-parser-7.29.7.mjs`, ...MW3_IMPORT_PARSER_RECORDS,
     `${frontend}scripts/postflop-ai/mw3-reviewed-snapshot.mjs`, `${frontend}scripts/postflop-ai/mw3-reviewed-restore.mjs`,

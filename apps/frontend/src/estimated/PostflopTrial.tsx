@@ -216,6 +216,27 @@ function matrixFor(node: StrategyNode) {
   }]));
 }
 
+// A bet that commits the merge ratio of the stack plays as the all-in, so two actions can share
+// one label (e.g. river 125% and All-in at low SPR). Show them as one action with summed frequency.
+type LaterRow = StrategyNode["rows"][number];
+export function mergeSameLabelActions<View extends { rows: LaterRow[] }>(view: View, labels: Record<string, string>): View {
+  const keys = Object.keys(view.rows[0]?.mix ?? {});
+  const canonical = new Map<string, string>(), target: Record<string, string> = {};
+  for (const key of keys) {
+    const label = labels[key] ?? key, first = canonical.get(label);
+    if (!first || key === "allin") canonical.set(label, key);
+  }
+  for (const key of keys) target[key] = canonical.get(labels[key] ?? key)!;
+  if (keys.every(key => target[key] === key)) return view;
+  const merge = (mix: Record<string, number>) => {
+    const out: Record<string, number> = {};
+    for (const [key, value] of Object.entries(mix)) out[target[key] ?? key] = (out[target[key] ?? key] ?? 0) + value;
+    return out;
+  };
+  return { ...view, rows: view.rows.map(row => ({ ...row, mix: merge(row.mix),
+    ...(row.combos ? { combos: row.combos.map(combo => ({ ...combo, mix: merge(combo.mix) })) } : {}) })) };
+}
+
 function laterMatrixFor(view: Pick<StrategyNode, "rows">) {
   return new Map(view.rows.map(row => [row.hand, {
     hand: row.hand, comboCount: row.comboCount, unreachable: !row.reachable,
@@ -423,13 +444,15 @@ export function PostflopTrial({ context, cards, actions = [], turnCard = "", tur
   const totals = useMemo(() => current ? rangeTotals(current) : null, [current]);
   const matrixNode = useMemo(() => current ? { actingPosition: current.seat } : null, [current]);
   const chosen = aggregates?.get(selectedHand);
-  const laterCurrent = later?.node && laterData?.street === later!.street && laterData.node === later!.node &&
-    laterData.actor === later!.actor && laterData.line === later!.line ? laterData : null;
+  const laterLabels = labelsFor(later?.node, decisionLabelsOf(later));
+  const laterLabelKey = JSON.stringify(laterLabels);
+  const laterCurrent = useMemo(() => later?.node && laterData?.street === later!.street && laterData.node === later!.node &&
+    laterData.actor === later!.actor && laterData.line === later!.line ? mergeSameLabelActions(laterData, laterLabels) : null,
+  [laterData, later?.node, later?.street, later?.actor, later?.line, laterLabelKey]);
   const laterAggregates = useMemo(() => laterCurrent ? laterMatrixFor(laterCurrent) : null, [laterCurrent]);
   const laterChosen = laterAggregates?.get(selectedHand);
   const selectedLaterRow = laterCurrent?.rows.find(row => row.hand === selectedHand);
   const laterTotals = useMemo(() => laterCurrent ? rangeTotals({ rows: laterCurrent.rows, actions: Object.keys(laterCurrent.rows[0]?.mix ?? {}) }, "reachWeight") : null, [laterCurrent]);
-  const laterLabels = labelsFor(later?.node, decisionLabelsOf(later));
   const laterActions = laterCurrent ? Object.keys(selectedLaterRow?.mix ?? {}) : [];
   const laterHeading = later ? laterNodeTitle(later!.node, context, later!.street, later) : "";
   const [selectedLaterCombo, setSelectedLaterCombo] = useState("all");

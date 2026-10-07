@@ -16,7 +16,7 @@ const eventsOf = spot => spot.history.map(step => ({ pos: step.seat, key: step.a
 test('ordinary registry preserves exact scoped legacy descriptors followed by reviewed HU descriptors', () => {
   const legacy = createPostflopSpots(sources()).POSTFLOP_SPOTS;
   assert.equal(legacy.length, 49);
-  assert.equal(MULTIWAY_POSTFLOP_SPOTS.length, 407);
+  assert.equal(MULTIWAY_POSTFLOP_SPOTS.length, 40);
   assert.equal(JSON.stringify(POSTFLOP_SPOTS), JSON.stringify([...legacy, ...MULTIWAY_POSTFLOP_SPOTS]));
 });
 

@@ -23,7 +23,8 @@ import { assertPostflopDeal } from "./range-support.mjs";
 // This is a range-weighted estimate, not a solver or GTO result.
 import { evaluate } from "../lib/equity.ts";
 import { seatRange } from "./browser-inputs.ts";
-import { handTier, parseCards, parseFlopBoard, runoutTexture } from "./model.ts";
+import { parseCards, parseFlopBoard, runoutTexture } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { scaleByPath, validatePolicy } from "./policy.ts";
 import { LATER_NODES, laterNodeRole } from "./later-tree.ts";
 import { laterPolicyMix, validateLaterPolicy } from "./later-policy.ts";

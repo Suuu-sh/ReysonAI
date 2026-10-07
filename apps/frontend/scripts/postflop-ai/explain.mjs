@@ -2,7 +2,8 @@
 // Read-only: it reuses the audited candidate policy and never changes it.
 import { evaluate, seededRandom, seedFor } from "../lib/equity.ts";
 import { seatRange } from "./browser-inputs.ts";
-import { handTier, parseCards } from "./model.ts";
+import { parseCards } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { NODES, policyMix, scaleByPath, treeNodes } from "./policy.ts";
 import { FLOP_BETS, facingNode, flopBetFraction, flopState, historyFor, nodeRole, otherRole, raiseDepth } from "./tree.ts";
 import { defenceFor, replayOrNull } from "./defence.ts";

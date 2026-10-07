@@ -5,6 +5,7 @@ import { replayObservableStreet } from '../scripts/postflop-ai/observable-action
 import { flopDecision, laterDecision, laterStart, replayLater, buildFlopActionBlocks,
   buildLaterActionBlocks, canonicalStreetActions, hasObservablePostflopActions } from '../src/estimated/postflop-trial.ts';
 import { decodeRangeUrl, encodeRangeUrl } from '../src/estimated/range-url.ts';
+import { historicalHuCatalog, historicalHuContext } from './fixtures/historical-hu-catalog.mjs';
 
 const representative = spotById('UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call');
 const contextFor = spot => ({ spotId: spot.id, ip: spot.ip, oop: spot.oop, potBb: spot.potBb, stackBb: spot.stackBb, tree: spot.tree, pilotAvailable: true });
@@ -42,9 +43,10 @@ test('new-HU Range shows one actual all-in action and every imported river alias
 });
 
 test('flop and turn without explicit allin use a real node but only one physical all-in option', () => {
-  const spot = POSTFLOP_SPOTS.find(spot => spot.history && spot.potBb === 79);
-  assert.ok(spot, 'real high-pot catalog geometry');
-  const ctx = contextFor(spot), decision = flopDecision([], ctx);
+  const spot = historicalHuCatalog.spots.find(spot => spot.potBb === 79);
+  assert.ok(spot, 'exact historical high-pot geometry fixture');
+  assert.throws(() => spotById(spot.id), /Unknown postflop spot/, 'deferred geometry is not product availability');
+  const ctx = historicalHuContext(spot), decision = flopDecision([], ctx);
   const allins = decision.options.filter(option => option.allIn);
   assert.equal(allins.length, 1);
   assert.equal(allins[0].action, 'bet75');
@@ -87,12 +89,13 @@ test('new-HU action strip highlights the canonical river choice and preserves th
   assert.match(blocks.at(-1).result, /ショウダウン|ショーダウン/);
 });
 
-test('all407 new catalog entry geometries share the pure transition projection and class option count', () => {
-  const spots = POSTFLOP_SPOTS.filter(spot => spot.history && spot.reachable);
+test('all407 historical geometries retain pure transition parity; product provides selected40', () => {
+  assert.equal(POSTFLOP_SPOTS.filter(spot => spot.history && spot.reachable).length, 40);
+  const spots = historicalHuCatalog.spots;
   assert.equal(spots.length, 407);
   for (const spot of spots) {
     const replay = replayObservableStreet({ spot, street: 'flop', actions: [] });
-    const shown = flopDecision([], contextFor(spot));
+    const shown = flopDecision([], historicalHuContext(spot));
     assert.equal(shown.node, replay.state.node, spot.id);
     assert.equal(shown.potBb, replay.pot, spot.id);
     assert.deepEqual(shown.options.map(item => item.action), replay.observation.classes.map(item => item.action), spot.id);

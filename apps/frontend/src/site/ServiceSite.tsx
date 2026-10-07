@@ -1,14 +1,19 @@
+import { shouldPinCover, questionMaskEdge } from "./cover-pin.ts";
 import { PlayingCard, type CardSuit as Suit } from "../components/PlayingCard.tsx";
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { BrandIcon } from "../components/BrandIcon.tsx";
-import { ArrowRight, ArrowUpRight, Check, List, Pause, Play, X } from "@phosphor-icons/react";
+import { ArrowRight, Check, List, X } from "@phosphor-icons/react";
 import { TierEmblem, tierColor } from "../trainer/RankEmblem.tsx";
 import agentTableImage from "./assets/agent-table.webp";
 import previewRanges from "./range-preview.json";
+import postflopRanges from "./postflop-preview.json";
+import { pickNextRangeIndex } from "./range-tour.ts";
+import { color as actionColor } from "../components/action-format.ts";
 import { en, type SiteCopy, type SiteLocale } from "./content";
 import { SITE_COPY } from "./locales";
 import { LOCALES } from "../locale-metadata.ts";
 import { appEntryHref } from "../route.ts";
+import { TIERS, LEGEND_TOP_N } from "../../../shared/ranked-rules.ts";
 
 const SiteContext = createContext<{ locale: SiteLocale; copy: SiteCopy; onLocaleChange: (locale: SiteLocale) => void; motion: boolean; appHref: string }>({ locale: "en", copy: en, onLocaleChange: () => {}, motion: false, appHref: "/analyze/ranges" });
 const useSite = () => useContext(SiteContext);
@@ -100,45 +105,119 @@ function ActionRows({ mode, values }: { mode: RangeMode; values: Record<Action, 
   </ul>;
 }
 
-function RangeMatrix({ mode, selected, onSelect }: { mode: RangeMode; selected: string; onSelect: (hand: string) => void }) {
+const heroActions = ["all_in", "raise", "call", "limp", "fold"] as const;
+type HeroRange = { id: string; stage: string; hands: Record<string, Partial<Record<string, number>>>; unreachable: string[]; actions: readonly string[]; board?: string; seat?: string; history?: string[] };
+const heroRanges: HeroRange[] = [...previewRanges.tour.map(range => ({ ...range, actions: heroActions })), ...postflopRanges.ranges];
+const stripAggression = ["all_in", "allin", "raise", "bet125", "bet75", "bet33", "limp", "call", "check", "fold"];
+
+const initialRangeIndex = heroRanges.findIndex(range => range.id === "BTN_open");
+
+function heroActionLabels(copy: SiteCopy, range: HeroRange): Record<string, string> {
+  const raise = range.stage === "response" ? copy.common.threeBet : range.stage === "threeBet" ? "4bet" : copy.common.raise;
+  return { check: copy.preview.check, bet33: `${copy.preview.bet} 33%`, bet75: `${copy.preview.bet} 75%`, bet125: `${copy.preview.bet} 125%`, raise, all_in: "allin", call: copy.common.call, limp: `${copy.common.call} 1BB`, fold: copy.common.fold };
+}
+
+function rangeAccessibleContext(copy: SiteCopy, range: HeroRange) {
+  if (!range.board) return range.id;
+  const labels = heroActionLabels(copy, range);
+  const history = [copy.preview.check, ...(range.history ?? []).map(action => labels[action] ?? action)].join(" → ");
+  return `${copy.preview.flop} ${range.board}; BTN / BB; ${range.seat}; ${history}`;
+}
+
+export function RangeMatrix({ range, selected, onSelect }: { range: HeroRange; selected: string; onSelect: (hand: string) => void }) {
   const { copy } = useSite();
-  return <section className="site-matrix-scroll" aria-label={`${mode === "opening" ? copy.preview.spotOpening : copy.preview.spotResponse} ${copy.preview.scrollLabel}`}>
+  const postflop = range.stage === "postflop";
+  const actionLabels = heroActionLabels(copy, range);
+  return <section className="site-matrix-scroll" aria-label={`${rangeAccessibleContext(copy, range)} ${copy.preview.scrollLabel}`}>
     <fieldset className="site-matrix"><legend className="site-visually-hidden">{copy.preview.matrixLabel}</legend>
       {cells.map(({ hand, wave }) => {
-        const values = frequencies(mode, hand);
-        const action = dominantAction(values);
-        const mixed = actions.filter(option => values[option] > 0);
-        const breakdown = mixed.map(option => `${actionLabel(copy, mode, option)} ${values[option]}%`).join(" / ");
-        return <button
-          type="button"
-          key={hand}
-          className={`site-cell is-${action}${selected === hand ? " is-selected" : ""}`}
-          style={{ "--wave": wave } as CSSProperties}
-          aria-label={`${hand}: ${breakdown}`}
-          aria-pressed={selected === hand}
-          title={`${hand} · ${breakdown}`}
-          onClick={() => onSelect(hand)}
-        >{hand}{mixed.length > 1 && <span className="site-cell-mix" aria-hidden="true">{mixed.map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%` }} />)}</span>}</button>;
+        const saved = range.hands[hand];
+        const values = Object.fromEntries(Object.entries(saved).map(([action, frequency]) => [action, (frequency ?? 0) * (postflop ? 100 : 1)]));
+        const unreachable = range.unreachable.includes(hand);
+        const action = range.actions.reduce((best, candidate) => values[candidate] > values[best] ? candidate : best, postflop ? range.actions[0] : "fold");
+        const mixed = range.actions.filter(option => values[option] > 0).sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
+        const breakdown = unreachable ? copy.preview.unreachable : mixed.map(option => `${actionLabels[option]} ${values[option]}%`).join(" / ");
+        return <button type="button" key={hand} className={`site-cell ${unreachable ? "is-unreachable" : `is-${action}${postflop ? " is-postflop" : ""}`}${selected === hand ? " is-selected" : ""}`}
+          style={{ "--wave": wave, "--hero-action-color": actionColor(action) } as CSSProperties}
+          aria-label={`${hand}: ${breakdown}`} aria-pressed={selected === hand} title={`${range.id} · ${hand} · ${breakdown}`} onClick={() => onSelect(hand)}>
+          {hand}{!unreachable && mixed.length > 1 && <span className="site-cell-mix" aria-hidden="true">{mixed.map(option => <span key={option} className={`is-${option}`} style={{ width: `${values[option]}%`, ...(postflop || option === "all_in" ? { background: actionColor(option) } : {}) }} />)}</span>}
+        </button>;
       })}
     </fieldset>
   </section>;
 }
 
-const tourHands: Record<RangeMode, string[]> = {
-  opening: ["A5o", "K7s", "Q4s", "T9s", "J9o", "22", "K2s", "86s"],
-  response: ["A5s", "K7s", "98o", "74s", "QJo", "A2o", "55"],
-};
+export function HeroActionLegend({ range }: { range: HeroRange }) {
+  const { copy } = useSite();
+  const labels = heroActionLabels(copy, range);
+  const used = range.actions.filter(action => Object.entries(range.hands).some(([hand, mix]) => !range.unreachable.includes(hand) && (mix[action] ?? 0) > 0))
+    .sort((a, b) => stripAggression.indexOf(a) - stripAggression.indexOf(b));
+  return <div className="site-range-legend">{used.map(action => <span key={action}><i aria-hidden="true" style={{ background: range.stage !== "postflop" && action === "fold" ? "var(--fold)" : actionColor(action) }} />{labels[action] ?? action}</span>)}</div>;
+}
 
 function Explorer() {
-  const { copy: c, motion, appHref } = useSite();
-  const [mode, setMode] = useState<RangeMode>("opening");
+  const [mobile, setMobile] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 720px)").matches);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 720px)");
+    const sync = () => setMobile(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+  // Render one interactive tree, not a second offscreen set of focus targets.
+  return mobile ? <MobileExplorer /> : <DesktopExplorer />;
+}
+
+function DesktopExplorer() {
+  const { motion } = useSite();
+  const [rangeIndex, setRangeIndex] = useState(initialRangeIndex);
+  const range = heroRanges[rangeIndex];
   const [selected, setSelected] = useState("A5o");
   const [touring, setTouring] = useState(true);
-  const tourStep = useRef(0);
   const [ref, visible] = useInView<HTMLDivElement>("0px", false);
-  const values = frequencies(mode, selected);
-  const action = dominantAction(values);
-  const spot = mode === "opening" ? c.preview.spotOpening : c.preview.spotResponse;
+  const isTouring = touring && motion;
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const stop = () => {
+      // Manual interaction takes over the automatic demo.
+      setTouring(false);
+    };
+    node.addEventListener("pointerdown", stop);
+    node.addEventListener("keydown", stop);
+    return () => { node.removeEventListener("pointerdown", stop); node.removeEventListener("keydown", stop); };
+  }, [ref]);
+
+  useEffect(() => {
+    if (!isTouring || !visible) return;
+    const timer = window.setInterval(() => {
+      setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length, previewRanges.tour.length));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [isTouring, visible]);
+
+  return <div className={`site-explorer is-${range.stage}`} ref={ref} data-tour-running={isTouring && visible}>
+    <div className="site-wrap site-hero-main">
+      <HeroCopy />
+      <div className="site-hero-range">
+        <div className="site-hero-chart-frame">
+          <HeroActionLegend range={range} />
+          <RangeMatrix range={range} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+function MobileExplorer() {
+  const { motion } = useSite();
+  const decorative = true;
+  const [rangeIndex, setRangeIndex] = useState(initialRangeIndex);
+  const range = heroRanges[rangeIndex];
+  const [selected, setSelected] = useState("A5o");
+  const [touring, setTouring] = useState(true);
+  const [ref, visible] = useInView<HTMLDivElement>("0px", false);
   const isTouring = touring && motion;
 
   useEffect(() => {
@@ -157,52 +236,21 @@ function Explorer() {
   useEffect(() => {
     if (!isTouring || !visible) return;
     const timer = window.setInterval(() => {
-      const step = ++tourStep.current;
-      const nextMode: RangeMode = step % 2 === 0 ? "opening" : "response";
-      const hands = tourHands[nextMode];
-      setMode(nextMode);
-      setSelected(hands[Math.floor(step / 2) % hands.length]);
-    }, 2800);
+      setRangeIndex(current => pickNextRangeIndex(current, heroRanges.length, previewRanges.tour.length));
+    }, 1000);
     return () => window.clearInterval(timer);
   }, [isTouring, visible]);
 
-  const explanation = mode === "opening" && selected === "K7s"
-    ? c.preview.k7s
-    : c.preview.other(spot, selected, action === "raise" && mode === "response" ? c.preview.actionPast.threeBet : c.preview.actionPast[action], values[action]);
-
   const selectedRow = Math.floor(cells.findIndex(cell => cell.hand === selected) / ranks.length);
 
-  return <div className={`site-explorer is-${mode}`} ref={ref} data-tour-running={isTouring && visible}>
+  return <div className="site-explorer" ref={ref} data-tour-running={isTouring && visible}>
     <div className="site-wrap site-hero-main">
       <HeroCopy />
-      <div className="site-hero-range">
+      <div className="site-hero-range" inert={decorative} aria-hidden={decorative || undefined}>
         <div className="site-hero-chart-frame" style={{ "--selected-row": selectedRow } as CSSProperties}>
-          <RangeMatrix mode={mode} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
+          <RangeMatrix range={range} selected={selected} onSelect={hand => { setTouring(false); setSelected(hand); }} />
         </div>
-        <div className="site-legend">{actions.filter(option => mode === "response" || option !== "call").map(option => <span key={option}><i className={`is-${option}`} />{actionLabel(c, mode, option)}</span>)}</div>
-      </div>
-    </div>
-    <div className="site-hero-detail">
-      <div className="site-wrap">
-        <div className="site-hand" aria-live={isTouring ? "off" : "polite"} aria-atomic="true">
-          <div className="site-hero-deal"><HandCards key={`${mode}-${selected}`} hand={selected} className="is-dealing" /></div>
-          <div className="site-hero-summary">
-            <span className="site-hand-label">{c.preview.selectedHand}</span>
-            <div className="site-hand-title"><strong>{selected}</strong><span>{selected.length === 2 ? c.preview.pair : selected.endsWith("s") ? c.preview.suited : c.preview.offsuit}</span></div>
-            <ActionRows mode={mode} values={values} />
-          </div>
-          <div className="site-hero-reason">
-            <p className="site-hand-why"><span>{c.preview.why}</span>{explanation}</p>
-            <a className="site-hand-link" href={appHref}>{c.preview.explore}<ArrowUpRight size={15} weight="bold" aria-hidden="true" /></a>
-          </div>
-        </div>
-        <div className="site-hero-playback">
-          {motion && <button type="button" className="site-tour-toggle" data-tour-toggle aria-label={isTouring ? c.preview.pauseTour : c.preview.resumeTour} onClick={() => setTouring(current => !current)}>{isTouring ? <Pause size={18} weight="fill" aria-hidden="true" /> : <Play size={18} weight="fill" aria-hidden="true" />}</button>}
-          <div className="site-tour" title={isTouring ? c.preview.touring : c.preview.manual}>
-            <span className="site-tour-caption">{isTouring ? c.preview.touring : c.preview.manual}</span>
-          </div>
-          <p className="site-hero-disclaimer">{c.preview.saved} · <b>{c.preview.notGto}</b></p>
-        </div>
+
       </div>
     </div>
   </div>;
@@ -228,6 +276,9 @@ function Header() {
       <Brand />
       <nav className="site-nav" aria-label={c.common.menuLabel}>
         {c.nav.map(item => <a key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</a>)}
+        <select className="site-lang site-nav-lang" value={locale} onChange={event => onLocaleChange(event.target.value as SiteLocale)} aria-label={c.common.languageLabel}>
+          {LOCALES.map(option => <option key={option.value} value={option.value} lang={option.value}>{option.label}</option>)}
+        </select>
       </nav>
       <div className="site-header-actions">
         <select className="site-lang" value={locale} onChange={event => onLocaleChange(event.target.value as SiteLocale)} aria-label={c.common.languageLabel}>
@@ -240,7 +291,7 @@ function Header() {
   </header>;
 }
 
-function HeroCopy({ children }: { children?: ReactNode }) {
+function HeroCopy({ children, showEstimate = true }: { children?: ReactNode; showEstimate?: boolean }) {
   const { copy: c, appHref } = useSite();
   return <div className="site-hero-copy">
     <h1 id="site-hero-title" lang="en"><span className="site-line site-hero-opening"><span>{c.hero.title1}</span></span><span className="site-line"><span className="site-hero-mark">{c.hero.title2}</span></span></h1>
@@ -249,13 +300,44 @@ function HeroCopy({ children }: { children?: ReactNode }) {
       <a className="site-button" href={appHref}>{c.hero.primary}<ArrowRight size={17} weight="bold" aria-hidden="true" /></a>
       <a className="site-hero-secondary" href="#how">{c.hero.secondary}<ArrowRight size={17} aria-hidden="true" /></a>
     </div>
-    <p className="site-hero-note">{c.hero.note}</p>
+    <p className="site-hero-note">{c.hero.note}{showEstimate && <span className="site-hero-estimate">{c.preview.saved} · {c.preview.notGto}</span>}</p>
     {children}
   </div>;
 }
 
 function Hero() {
-  return <section className="site-hero" aria-labelledby="site-hero-title"><Explorer /></section>;
+  const { copy: c, motion, locale } = useSite();
+  const stage = useRef<HTMLDivElement>(null);
+  const ending = useRef<HTMLDivElement>(null);
+  const [pinned, setPinned] = useState(false);
+  const [maskEdge, setMaskEdge] = useState(0);
+  useEffect(() => {
+    if (!motion) { setPinned(false); setMaskEdge(0); return; }
+    const phone = window.matchMedia("(max-width: 720px)");
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const header = document.querySelector(".site-header");
+      if (!phone.matches || !stage.current || !ending.current || !header) { setPinned(false); setMaskEdge(0); return; }
+      const square = stage.current.getBoundingClientRect();
+      const question = ending.current.getBoundingClientRect();
+      const edge = header.getBoundingClientRect().bottom;
+      setPinned(shouldPinCover(square.top, question.bottom, edge));
+      setMaskEdge(questionMaskEdge(question.top, edge + square.height, question.height));
+    };
+    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    phone.addEventListener("change", schedule);
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      phone.removeEventListener("change", schedule);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [motion, locale]);
+  return <section className="site-hero" aria-labelledby="site-hero-title" data-cover-pinned={pinned || undefined}><div className="site-hero-stage" ref={stage}><Explorer /></div><div className="site-cover-ending" ref={ending} style={{ "--question-mask-edge": `${maskEdge}px` } as CSSProperties}><p className="site-cover-title">{c.hero.coverTitle}</p><p className="site-cover-subtitle">{c.hero.coverSubtitle}</p><span className="site-cover-scroll">{c.hero.coverScroll}</span></div></section>;
 }
 
 /** Eases from `from` to `to` once `run` turns true; jumps straight to `to` without motion. */
@@ -476,7 +558,14 @@ function Audience() {
   const [auto, setAuto] = useState(true);
   const [ref, visible] = useInView<HTMLElement>("-25% 0px", false);
   const [scrolly, setScrolly] = useState(false);
-  const running = auto && motion && visible && !scrolly;
+  const [phone, setPhone] = useState(() => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(max-width: 960px)").matches);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 960px)");
+    const sync = () => setPhone(query.matches);
+    query.addEventListener("change", sync); sync();
+    return () => query.removeEventListener("change", sync);
+  }, []);
+  const running = auto && motion && visible && !scrolly && !phone;
   const a5s = frequencies("response", "A5s");
   const [free, plus] = c.pricing.plans;
 
@@ -487,7 +576,7 @@ function Audience() {
     return () => window.clearTimeout(timer);
   }, [running, active]);
 
-  // Wide screens: the section pins while scrolling, and scroll position picks the persona.
+  // Only desktop retains pinned persona storytelling.
   useEffect(() => {
     if (!motion) { setScrolly(false); return; }
     const query = window.matchMedia("(min-width: 961px) and (min-height: 640px)");
@@ -532,27 +621,37 @@ function Audience() {
   }
 
   function onListKey(event: ReactKeyboardEvent<HTMLDivElement>) {
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    if (!["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) return;
     event.preventDefault();
-    const next = (active + (event.key === "ArrowDown" ? 1 : -1) + personaIds.length) % personaIds.length;
+    const next = (active + (["ArrowDown", "ArrowRight"].includes(event.key) ? 1 : -1) + personaIds.length) % personaIds.length;
     choose(next);
     document.getElementById(`site-persona-${personaIds[next]}`)?.focus();
   }
+
+  // Phones show the personas as a swipeable row; keep the active one in view as it rotates.
+  const listRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const list = listRef.current;
+    const item = list?.children[active] as HTMLElement | undefined;
+    if (!list || !item || list.scrollWidth <= list.clientWidth) return;
+    list.scrollTo({ left: item.offsetLeft - list.offsetLeft - 16, behavior: motion ? "smooth" : "auto" });
+  }, [active, motion]);
 
   const view = (index: number) => `site-persona-view${active === index ? " is-active" : ""}`;
   return <section className={`site-section site-audience${scrolly ? " is-scrolly" : ""}`} ref={ref} aria-labelledby="site-audience-title">
     <div className="site-wrap">
       <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
       <div className="site-audience-grid" data-reveal>
-        <div className="site-persona-list" role="tablist" aria-orientation="vertical" aria-labelledby="site-audience-title" onKeyDown={onListKey}>
+        <div className="site-persona-list" ref={listRef} role="tablist" aria-orientation={phone ? "horizontal" : "vertical"} aria-labelledby="site-audience-title" onKeyDown={onListKey}>
           {c.audience.items.map((item, index) => <button type="button" role="tab" key={personaIds[index]} id={`site-persona-${personaIds[index]}`} aria-selected={active === index} aria-controls="site-persona-panel" tabIndex={active === index ? 0 : -1} className={`site-persona${active === index ? " is-active" : ""}`} onClick={() => choose(index)}>
             <span className="site-persona-level"><i>{index + 1}</i>{item.level}</span>
-            <span className="site-persona-quote">{item.quote}</span>
+            {!phone && <><span className="site-persona-quote">{item.quote}</span>
             <span className="site-persona-more"><span><span className="site-persona-body">{item.body}</span><span className="site-persona-gets">{item.gets}</span></span></span>
-            {running && active === index && <span className="site-persona-timer" aria-hidden="true" />}
+            {running && active === index && <span className="site-persona-timer" aria-hidden="true" />}</>}
           </button>)}
         </div>
-        <div className="site-mock site-persona-stage" role="tabpanel" id="site-persona-panel" aria-labelledby={`site-persona-${personaIds[active]}`}>
+        <div className={`site-mock site-persona-stage${phone && active === 2 ? " is-budget" : phone && active === 1 ? " is-learner" : ""}`} role="tabpanel" id="site-persona-panel" aria-labelledby={`site-persona-${personaIds[active]}`}>
+          {phone && <div className="site-persona-selected-copy"><p className="site-persona-quote">{c.audience.items[active].quote}</p><p className="site-persona-body">{active === 2 ? c.audience.budgetShort : active === 1 ? c.audience.learnerShort : c.audience.items[active].body}</p>{active === 0 && <span className="site-persona-gets">{c.audience.items[active].gets}</span>}</div>}
           <span className="site-sample">{c.audience.views[active]}</span>
           <div className="site-persona-views">
             <div className={`${view(0)} is-simple`} aria-hidden={active !== 0}>
@@ -570,13 +669,13 @@ function Audience() {
               <p className="site-persona-why"><span>{c.preview.why}</span>{c.how.whyNote}</p>
             </div>
             <div className={`${view(2)} is-free`} aria-hidden={active !== 2}>
-              <p className="site-persona-price"><strong>{free.price}</strong><small>{free.cadence}</small></p>
+              <p className="site-persona-price"><strong>{free.price}</strong><small>{phone ? c.audience.freeNote : free.cadence}</small></p>
               <span className="site-persona-pill">{c.audience.freeNote}</span>
               <ul>{c.audience.freeList.map((feature, index) => <li key={feature} style={{ "--i": index } as CSSProperties}><Check size={16} weight="bold" aria-hidden="true" />{feature}</li>)}</ul>
               <a className="site-button is-small" href={appHref} tabIndex={active === 2 ? 0 : -1}>{c.common.open}<ArrowRight size={15} weight="bold" aria-hidden="true" /></a>
               <div className="site-persona-plus">
                 <p><strong>{plus.name}</strong><span>{plus.price}</span><small>{plus.cadence}</small></p>
-                <small>{plus.status}</small>
+                <small>{plus.status} · {plus.description}</small>
               </div>
             </div>
           </div>
@@ -587,9 +686,9 @@ function Audience() {
   </section>;
 }
 
-const tierMins = [0, 950, 1100, 1250, 1400, 1550];
+const tierMins = TIERS.map(tier => tier.min);
 // Tier keys (Japanese names) for the shared emblem colours, in tierMins order.
-const TIER_KEYS = ["ブロンズ", "シルバー", "ゴールド", "プラチナ", "ダイヤモンド", "マスター"];
+const TIER_KEYS = TIERS.map(tier => tier.name);
 
 // Wide screens: Training pins for one screen while scrolling slides it over to Ranked, then the Agent table.
 const TRAIN_PAGES = 3;
@@ -652,9 +751,12 @@ function Ranked() {
         <h2 id="site-ranked-title">{c.ranked.title1}<span>{c.ranked.title2}</span></h2>
         <p>{c.ranked.description}</p>
         <ul className="site-points">{c.ranked.points.map(point => <li key={point}><Check size={16} weight="bold" aria-hidden="true" />{point}</li>)}</ul>
+        <p className="site-feature-note">{c.ranked.rewards}</p>
+        <p className="site-feature-note">{c.ranked.note}</p>
       </div>
       <div className="site-mock site-rank" ref={ref} data-reveal aria-hidden="true" style={{ "--tier": tierColor(TIER_KEYS[tier]) } as CSSProperties}>
         <span className="site-sample">{c.ranked.sample}</span>
+        <h3 className="site-rank-mode">{c.ranked.mode}</h3>
         <div className="site-rank-card">
           <div className="site-rank-emblem">
             <svg className="site-rank-ring" viewBox="0 0 128 128">
@@ -668,7 +770,7 @@ function Ranked() {
             <span key={tier} className="site-rank-tier">{c.ranked.tiers[tier]}</span>
             <dl>
               <div><dt>{c.ranked.rating}</dt><dd>{rating.toLocaleString()}</dd></div>
-              <div><dt>{c.ranked.peak}</dt><dd>1,204</dd></div>
+              <div><dt>{c.ranked.hands}</dt><dd>120</dd></div>
             </dl>
             <span className="site-rank-bar"><span style={{ width: `${progress * 100}%` }} /></span>
             <small>{next ? c.ranked.toNext(next - rating, c.ranked.tiers[tier + 1]) : ""}</small>
@@ -676,12 +778,9 @@ function Ranked() {
         </div>
         <ol className="site-tiers">{c.ranked.tiers.map((name, index) => <li key={name} className={index < tier ? "is-passed" : index === tier ? "is-current" : ""}
           style={{ "--tier": tierColor(TIER_KEYS[index]) } as CSSProperties}>
-          <TierEmblem level={index} name={TIER_KEYS[index]} size={30} /><span>{name}</span><small>{tierMins[index].toLocaleString()}+</small></li>)}</ol>
-        <div className="site-rank-row">
-          <div className="site-rank-match"><span>{c.ranked.lastMatch}</span><b>+18</b><small>{c.ranked.matchLine(16, 20)}</small>
-            <ol className="site-rank-pips">{["up", "up", "down", "up", "up"].map((result, i) => <li key={i} className={`is-${result}`} />)}</ol></div>
-          <div className="site-rank-today"><span className="site-rank-dots"><i className="is-used" /><i /><i /></span>{c.ranked.today}</div>
-        </div>
+          <TierEmblem level={index} name={TIER_KEYS[index]} size={30} /><span>{name}</span><small>{tierMins[index].toLocaleString()}+</small></li>)}
+          <li style={{ "--tier": tierColor("レジェンド") } as CSSProperties}><TierEmblem level={TIERS.length} name="レジェンド" size={30} /><span>{c.ranked.legend}</span><small>{c.ranked.legendRule(LEGEND_TOP_N)}</small></li>
+        </ol>
       </div>
     </div>
   </section>;
@@ -800,7 +899,7 @@ function Compare() {
         <SectionHead id="site-compare-title" title1={c.compare.title1} title2={c.compare.title2}><p>{c.compare.description}</p></SectionHead>
         <div className="site-compare-table" data-reveal>
           <table>
-            <thead><tr><td /><th scope="col" className="is-us"><BrandIcon size={18} style={{ display: "inline-block", margin: "0 8px -3px 0" }} />{c.compare.us}</th><th scope="col">{c.compare.them}<small>{c.compare.themNote}</small></th></tr></thead>
+            <thead><tr><td /><th scope="col" className="is-us"><span className="site-compare-heading"><BrandIcon size={18} /><span>{c.compare.us}</span></span></th><th scope="col"><span className="site-compare-heading">{c.compare.them}</span></th></tr></thead>
             <tbody>{c.compare.rows.map((row, index) => <tr key={comparisonRowIds[index]} className={scrolly && index < visibleRows ? "is-revealed" : undefined} style={{ "--i": index } as CSSProperties}>
               <th scope="row">{row.label}</th>
               <td className="is-us">{row.us}</td>
@@ -874,6 +973,34 @@ function Footer() {
   </footer>;
 }
 
+// Phones lose the header CTA, so a bottom bar takes over between the hero and the closing CTA.
+function MobileCta() {
+  const { copy: c, appHref } = useSite();
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const final = document.querySelector(".site-final");
+      const finalTop = final ? final.getBoundingClientRect().top : Number.POSITIVE_INFINITY;
+      setShown(window.scrollY > window.innerHeight * 0.9 && finalTop > window.innerHeight);
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+  return <div className={`site-mobile-cta${shown ? " is-shown" : ""}`} aria-hidden={!shown}>
+    <small>{c.hero.note}</small>
+    <a className="site-button" href={appHref} tabIndex={shown ? 0 : -1}>{c.common.open}<ArrowRight size={16} weight="bold" aria-hidden="true" /></a>
+  </div>;
+}
+
 function Reveal({ children }: { children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   const { motion, locale } = useSite();
@@ -907,9 +1034,10 @@ export function ServiceSite({ locale, onLocaleChange }: { locale: SiteLocale; on
       <a className="site-skip" href="#site-main">{copy.common.skip}</a>
       <Header />
       <Reveal>
-        <main id="site-main"><Hero /><Audience /><HowItWorks /><TrainingTrack /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></main>
+        <main id="site-main"><Hero /><div className="site-after-cover"><Audience /><HowItWorks /><TrainingTrack /><Analysis /><Compare /><Pricing /><Faq /><FinalCta /></div></main>
         <Footer />
       </Reveal>
+      <MobileCta />
     </div>
   </SiteContext.Provider>;
 }

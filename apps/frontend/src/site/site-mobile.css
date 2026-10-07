@@ -1,0 +1,102 @@
+/* Phone layout for the service site. Loaded after site.css; desktop rules stay untouched. */
+
+.site .site-nav-lang { display: none; }
+.site-mobile-cta { display: none; }
+
+@media (max-width: 720px) {
+  .site { --section-space: 56px; --layout-gap: 20px; }
+  .site h2 { font-size: clamp(28px, 8.4vw, 34px); line-height: 1.15; }
+
+  /* Header: brand + menu only. Language moves into the menu sheet. */
+  .site-header-actions > .site-lang { display: none; }
+  .site-nav .site-nav-lang { display: inline-flex; align-self: flex-start; max-width: none; min-height: 44px; margin-top: 16px; font-size: 14px; }
+  .site-nav { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+
+  /* Hero: tighter copy, full-width primary action, chart right under the fold. */
+  .site-hero-actions { display: grid; grid-template-columns: 1fr; justify-items: stretch; }
+  .site-hero-actions .site-button { width: 100%; }
+  .site-hero-secondary { justify-self: center; padding-block: 6px; }
+  .site-hero-note { text-align: center; }
+  .site-hand { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+
+  /* Shared swipe row: cards bleed to the screen edge and snap. */
+  .site-persona-list,
+  .site-how-steps,
+  .site-plans {
+    display: grid; grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 84%;
+    gap: 12px; margin-inline: calc(var(--page-gutter) * -1); padding-inline: var(--page-gutter);
+    overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--page-gutter);
+    scrollbar-width: none;
+  }
+  .site-persona-list::-webkit-scrollbar, .site-how-steps::-webkit-scrollbar, .site-plans::-webkit-scrollbar { display: none; }
+  .site-persona-list > *, .site-how-steps > *, .site-plans > * { scroll-snap-align: start; }
+
+  /* Audience: persona cards swipe sideways, the sample view sits right below. */
+  .site-audience-grid { gap: 14px; }
+  .site .site-persona { align-content: start; padding: 18px; border-color: var(--line); background: var(--surface); }
+  .site .site-persona.is-active { border-color: var(--line-strong); background: var(--raised); }
+  .site-persona-quote { font-size: 19px; }
+  .site-ja .site-persona-quote { font-size: 17px; }
+  .site-persona-more { grid-template-rows: 1fr; }
+  .site-persona-body { font-size: 14px; }
+  .site-persona-view { padding: 20px 16px; gap: 14px; }
+  .site-persona-view .site-mini-matrix { width: min(100%, 260px); }
+  .site-persona-callout { grid-template-columns: auto 1fr; align-items: center; column-gap: 14px; }
+  .site-persona-callout .site-hand-cards { grid-row: span 2; }
+  .site-persona-callout strong { font-size: 32px; }
+  .site-persona-callout small { grid-column: 1 / -1; }
+
+  /* How it works: three swipeable step cards instead of a long scroll. */
+  .site-how h2 { margin-bottom: 24px; }
+  .site-how-steps { align-items: stretch; }
+  .site-how-steps li, .site-how-steps li:first-child { display: flex; flex-direction: column; justify-content: flex-start; padding: 20px 18px; border: 1px solid var(--line); border-radius: var(--panel-radius); background: var(--surface); }
+  .site-how-steps h3 { margin: 8px 0 10px; font-size: 24px; }
+  .site-how-steps p { font-size: 15px; line-height: 1.6; }
+  .site-ja .site-how-steps p { font-size: 14px; line-height: 1.8; }
+  .site-how-inline { min-height: 0; margin-top: auto; padding: 16px 0 0; border: 0; background: transparent; }
+  .site-how-inline .site-scene { min-height: 240px; }
+
+  /* Feature sections */
+  .site-feature { gap: 22px; }
+  .site-feature-copy > p { font-size: 15px; line-height: 1.65; }
+  .site-points { gap: 8px; }
+  .site-points li { font-size: 14px; }
+  .site-drill-inner { gap: 20px; }
+  .site-drill-copy > p:first-of-type { font-size: 15px; line-height: 1.65; }
+
+  /* Pricing: plans side by side as swipe cards. */
+  .site-plans { margin-top: 28px; align-items: stretch; }
+  .site-plan { padding: 22px 20px; gap: 16px; }
+  .site-plan-price strong { font-size: 44px; }
+  .site-plan .site-button { margin-top: auto; }
+
+  /* FAQ */
+  .site-faq-list { padding-inline: 0; }
+  .site-faq-list summary { padding-block: 18px; font-size: 15px; }
+
+  /* Footer: compact two-column link grid. */
+  .site-footer-top { gap: 32px; }
+  .site-footer-links { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 16px; }
+  .site-footer-links > div:last-child { grid-column: 1 / -1; grid-auto-flow: column; justify-content: start; gap: 20px; }
+  .site-footer-links > div:last-child > span:first-child { display: none; }
+  .site-footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+
+  /* Bottom action bar, shown between the hero and the closing CTA. */
+  .site-mobile-cta {
+    position: fixed; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; z-index: 40;
+    display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px;
+    border: 1px solid var(--line-strong); border-radius: calc(var(--panel-radius) + 4px);
+    background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 18px 40px -16px #000;
+    opacity: 0; visibility: hidden; transform: translateY(16px);
+    transition: opacity .3s ease, transform .4s var(--ease), visibility 0s .4s;
+  }
+  .site-mobile-cta.is-shown { opacity: 1; visibility: visible; transform: none; transition: opacity .3s ease, transform .4s var(--ease), visibility 0s; }
+  .site-header.is-open ~ .site-mobile-cta { opacity: 0; visibility: hidden; }
+  .site-mobile-cta small { flex: 1; min-width: 0; color: var(--muted); font-size: 11px; line-height: 1.4; }
+  .site-mobile-cta .site-button { flex: 0 0 auto; min-height: 44px; padding-inline: 16px; font-size: 14px; }
+}
+
+@media (max-width: 720px) and (prefers-reduced-motion: reduce) {
+  .site-mobile-cta, .site-mobile-cta.is-shown { transition: none; transform: none; }
+}

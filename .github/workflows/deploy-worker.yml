@@ -265,9 +265,9 @@ jobs:
           }
           NODE
 
-      - name: Require live FastFold release gate before compatible client
+      - name: Require live FastFold API and compatible published data before client
         working-directory: apps/backend
-        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
+        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured --predeploy-compatible
 
       - name: Build
         run: npm run build
@@ -294,6 +294,13 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=2048
           WRANGLER_SEND_METRICS: 'false'
         run: node scripts/import-reviewed-preflop.mjs --remote
+
+      # The exact source-identity gate runs after importing the reviewed snapshot.
+      # The new client has already passed compatible-data integrity checks and
+      # supports both previous and compact reason formats.
+      - name: Require live FastFold release gate after reviewed import
+        working-directory: apps/backend
+        run: node --experimental-strip-types scripts/verify-fastfold-readiness.mjs --configured
 
       - name: Retain preflop recovery reference and import outcome
         if: always()

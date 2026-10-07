@@ -13,7 +13,7 @@ import { LATER_NODES } from "../../scripts/postflop-ai/later-tree.ts";
 import { cardText } from "../../scripts/postflop-ai/flop-isomorphism.ts";
 import { createPostflopSpots } from "../../scripts/postflop-ai/spots-core.ts";
 import { dataset } from "../estimated/datasets.ts";
-import type { SourceDataset } from "../../scripts/postflop-ai/types.ts";
+import type { SourceDataset, MultiwayCatalog } from "../../scripts/postflop-ai/types.ts";
 import type { Spot } from "../../scripts/postflop-ai/spots.ts";
 import { multiwaySpotFor } from "../../scripts/postflop-ai/multiway-spots.ts";
 import { POSITIONS, type Position, type PreflopAction, STACK_BB, alivePositions, applyPreflop, handClass, nextActor, preflopOptions, preflopPot, startPreflop } from "./preflop.ts";
@@ -29,7 +29,7 @@ export type HumanAction = string; // preflop: dataset key (fold/call/check/open/
 export type HandSetup = {
   seed: string;
   // Server-only dependency injection; defaults preserve ordinary Agent replay.
-  datasets?: (name: string) => SourceDataset | undefined;
+  datasets?: (name: string) => SourceDataset | MultiwayCatalog | undefined;
   dealt?: { hole: Record<string, number[]>; board: number[] };
   draw?: (index: number) => number;
   fastFold?: boolean;
@@ -92,7 +92,7 @@ export function deal(seed: string) {
 }
 
 // Preserve dedicated MW3 origins before reviewed HU histories; injected snapshots remain scoped.
-export function postflopSpotFor(events: { pos: Position; type: string; key: string }[], lookup?: (name: string) => SourceDataset | undefined): Spot | NonNullable<ReturnType<typeof mw3OriginForEvents>> | null {
+export function postflopSpotFor(events: { pos: Position; type: string; key: string }[], lookup?: (name: string) => SourceDataset | MultiwayCatalog | undefined): Spot | NonNullable<ReturnType<typeof mw3OriginForEvents>> | null {
   // An omitted lookup is ordinary Agent practice and retains its reviewed HU histories.
   // Injected server snapshots keep FastFold's scoped legacy-only coverage.
   const dedicated = lookup === undefined ? mw3OriginForEvents(events) : null;

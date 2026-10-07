@@ -4,22 +4,25 @@ import { POSTFLOP_SPOTS, spotById } from '../scripts/postflop-ai/spots.ts';
 import { replayObservableStreet } from '../scripts/postflop-ai/observable-actions.mjs';
 import { replayFlop, replayLater, laterStart, laterDecisionState, decisionOptionFacts, canRaiseNow } from '../scripts/postflop-ai/street-state.mjs';
 import { flopDecision, laterDecision, replayLater as uiReplayLater, buildLaterActionBlocks } from '../src/estimated/postflop-trial.ts';
+import { historicalHuCatalog, historicalHuContext } from './fixtures/historical-hu-catalog.mjs';
 
 const representative = spotById('UTG_open_HJ_call_BB_squeeze_UTG_fold_HJ_call');
 const ctx = spot => ({ spotId: spot.id, ip: spot.ip, oop: spot.oop, potBb: spot.potBb, stackBb: spot.stackBb, tree: spot.tree, pilotAvailable: true });
 const optionShape = options => options.map(({ action, amountBb, allIn, aliases }) => ({ action, amountBb, allIn, ...(aliases === undefined ? {} : { aliases }) }));
 const numericDecision = ({ labels, labelsJa, history, options, ...rest }) => ({ ...rest, ...(options ? { options: optionShape(options) } : {}) });
 
-test('all407 catalog contexts use the same observable replay facts and ordered legal options', () => {
-  const spots = POSTFLOP_SPOTS.filter(spot => spot.history && spot.reachable);
+test('all407 historical contexts retain replay parity; product provides selected40', () => {
+  assert.equal(POSTFLOP_SPOTS.filter(spot => spot.history && spot.reachable).length, 40);
+  const spots = historicalHuCatalog.spots;
   assert.equal(spots.length, 407);
   for (const spot of spots) {
-    const replay = replayFlop([], ctx(spot)), expected = replayObservableStreet({ spot, street: 'flop', actions: [] });
+    const context = historicalHuContext(spot);
+    const replay = replayFlop([], context), expected = replayObservableStreet({ spot, street: 'flop', actions: [] });
     assert.deepEqual(replay.state, expected.state, spot.id);
     assert.equal(replay.pot, expected.pot, spot.id);
     assert.deepEqual(replay.stacks, expected.stacks, spot.id);
     assert.deepEqual(replay.invested, expected.committed, spot.id);
-    assert.deepEqual(optionShape(decisionOptionFacts(replay.chipsNow, replay.state.node)), optionShape(flopDecision([], ctx(spot)).options), spot.id);
+    assert.deepEqual(optionShape(decisionOptionFacts(replay.chipsNow, replay.state.node)), optionShape(flopDecision([], context).options), spot.id);
     assert.equal(replay.history, undefined);
     assert.equal(replay.trace.length, 0);
   }

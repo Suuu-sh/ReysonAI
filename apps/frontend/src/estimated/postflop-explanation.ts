@@ -39,8 +39,8 @@ export type StructuredPostflopExplanation = {
 };
 
 const TIER_LABELS: Record<string, Record<string, string>> = {
-  en: { monster: "two pair or better", strong: "top pair or better", draw: "a draw", medium: "a weak pair", air: "unpaired high cards" },
-  ja: { monster: "ツーペア以上", strong: "トップペア以上", draw: "ドロー", medium: "弱いペア", air: "役なし" },
+  en: { monster: "two pair or better with your own cards", strong: "top pair or better", draw: "a draw", medium: "a weak pair", air: "unpaired high cards" },
+  ja: { monster: "手札を使ったツーペア以上", strong: "トップペア以上", draw: "ドロー", medium: "弱いペア", air: "役なし" },
 };
 const ACTION_LABELS: Record<string, Record<string, string>> = {
   en: { check: "Check", bet33: "Bet 33%", bet75: "Bet 75%", bet125: "Bet 125%", allin: "All-in", fold: "Fold", call: "Call", raise: "Raise" },

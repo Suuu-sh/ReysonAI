@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mw3BoardLocked, mw3HandFacts, mw3HandTier } from '../scripts/postflop-ai/mw3-hand-features.mjs';
-import { parseCards, handTier as legacyTier } from '../scripts/postflop-ai/model.ts';
+import { parseCards } from '../scripts/postflop-ai/model.ts';
+import { handTier as huTier } from '../scripts/postflop-ai/hu-hand-tier.ts';
 const classify = (hole, board) => mw3HandTier(parseCards(hole, 2), parseCards(board, board.length / 2));
 const facts = (hole, board) => mw3HandFacts(parseCards(hole, 2), parseCards(board, board.length / 2));
 
@@ -16,7 +17,7 @@ test('shared trips/two-pair have explicit private-kicker facts and are never bli
   assert.equal(classify('KcJc', 'QsQhQdAc2d'), 'strong');
   assert.equal(classify('QhJc', 'AsAdKcKd2h'), 'strong'); assert.equal(classify('7c6c', 'AsAdKcKd2h'), 'medium');
   assert.equal(facts('2c2d', 'AsAdKcKd3h').madeKind, 'boardTwoPair');
-  assert.equal(legacyTier(parseCards('7c6c', 2), parseCards('QsQhQd', 3)), 'monster', 'Legacy HU meaning remains unchanged');
+  assert.equal(huTier(parseCards('7c6c', 2), parseCards('QsQhQd', 3)), 'air', 'Current HU98 excludes a shared board trip from private strength; MW3 keeps its dedicated classifier');
 });
 test('playsBoard is checked for every category and publicly locked boards are exact', () => {
   assert.equal(classify('7c6c', 'AsAdKcKdJh'), 'board_shared');

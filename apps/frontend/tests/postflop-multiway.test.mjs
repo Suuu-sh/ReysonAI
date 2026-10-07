@@ -20,12 +20,12 @@ const example = planned.find(spot => spot.id === 'UTG_open_HJ_call_BB_squeeze_UT
 const events = history => history.map(item => ({ pos: item.seat, key: item.action, to: item.to_size_bb,
   type: item.action === 'fold' ? 'fold' : item.action === 'call' ? 'call' : 'raise' }));
 
-test('enumerates exact HU endings, excludes impossible/all-in paths, and orders all Stage B by reach', () => {
+test('enumerates exact HU endings, excludes impossible/all-in paths, selects 40 and defers 367 exact histories', () => {
   const catalog = MULTIWAY_POSTFLOP_CATALOG;
   assert.deepEqual([catalog.structural, catalog.reachable, catalog.stageA, catalog.stageB], [525,407,137,270]);
-  assert.equal(catalog.omitted.length,118); assert.equal(catalog.deferred.length,0);
-  assert.equal(planned.length,407); assert.equal(new Set(planned.map(s=>s.id)).size,407);
-  const b=planned.filter(s=>s.stage==='B');
+  assert.equal(catalog.omitted.length,118); assert.equal(catalog.deferred.length,367);
+  assert.equal(planned.length,40); assert.equal(new Set([...planned, ...catalog.deferred].map(s=>s.id)).size,407);
+  const b=catalog.deferred.slice(97);
   assert.equal(b.length,270); assert.ok(b.every((s,i)=>i===0 || b[i-1].reach.probability>=s.reach.probability));
   assert.ok(planned.every(s=>s.stackBb>0 && !s.history.some(h=>h.action==='all_in')));
   assert.equal(example.potBb,29); assert.equal(example.stackBb,87);
@@ -44,7 +44,7 @@ test('every new input is Node/browser identical and each live hand equals all sa
         const expected=spot.ranges[seat].reduce((p,[file,id,action])=>p*datasets[file].spots.find(s=>s.id===id).hands.find(h=>h.hand===row.hand)[action]/100,100);
         assert.equal(row.freq,expected,`${spot.id}/${seat}/${row.hand}`);
       }
-      assert.deepEqual(new Set(datasetsNeededForSpot(spot)),new Set(Object.values(spot.ranges).flat().map(f=>f[0])));
+      assert.deepEqual(new Set(datasetsNeededForSpot(spot)),new Set(["hu-after-multiway-spots", ...Object.values(spot.ranges).flat().map(f=>f[0])]));
     }
   } finally { useArtifactSource(prior); }
 });

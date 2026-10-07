@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "decision": "APPROVE_EXACT_UNCOMMITTED_IMPLEMENTATION",
+  "reviewed_at_utc": "2026-10-06T16:50:45Z",
+  "reviewer": "Independent PR86 copy/provenance reviewer; OpenAI; runtime model identifier not exposed; separate from implementation author",
+  "repository": "Suuu-sh/ReysonAI",
+  "pull_request": "https://github.com/Suuu-sh/ReysonAI/pull/86",
+  "base_full_sha": "26ad4c670bf24192cca215ca238d014c22d5a705",
+  "candidate_commit": null,
+  "binding": "Approval binds exact file contents below and tracked patch SHA, not an unprovided future commit. Recheck final committed diff against these identities.",
+  "packet": {
+    "library_file_id": "libfile_1db2af4a9dc88191a7e4bf67a344c445",
+    "bytes": 108065,
+    "sha256": "169a8766369963d4dea29c99d7e638aaff76ec8fedc047871a512c8b160e4162"
+  },
+  "tracked_patch_sha256": "21c7d2fb9d3605c48f57a167c74c4d585566655b770551661d826b0b8b364c29",
+  "approved_files": [
+    {
+      "path": "apps/frontend/tests/continuation-legacy-preservation.test.mjs",
+      "before_sha256": "7c3a94b9c37ea944f080f280f71159ea3758d14d4a8d2c22ea566652a1f8879b",
+      "after_sha256": "10bbc5ecc74768af5959e74c39b129e66ee1014fd2bf924a64b54e32aa712495",
+      "size_bytes": 9322
+    },
+    {
+      "path": "apps/frontend/tests/fixtures/stage2-legacy-baseline.json",
+      "before_sha256": "741be7473706a366275b8ee32d794ea92ab0be6a1378a6ef8edf53bc8b0206c8",
+      "after_sha256": "4eb02f7d6537d8f24cc49714daf909d6d91ea71de6a446ba3d8873135a42e5b0",
+      "size_bytes": 31474
+    },
+    {
+      "path": "apps/frontend/docs/pr86-independent-baseline-amendment.json",
+      "before_sha256": null,
+      "after_sha256": "f64a9fe4c25ac77218beb6212dab37614e4cabbf8e1a308407f8349f26d9829a",
+      "size_bytes": 6232
+    }
+  ],
+  "blocking_findings": 0,
+  "independently_verified": [
+    "Packet bytes and SHA match; complete tracked patch SHA matches; every before/after file content SHA and byte size validated.",
+    "Before fixture/test bytes equal prior independent exact-head GitHub retrieval. All original fixture fields are structurally equal, preserving baseline commit, shared config hash, all 242 legacy hashes and all 45 HU source hashes.",
+    "One amendment is fixed by complete deep equality to independently approved constants. Extra entries, wrong paths or changed approved hashes fail. Original five-bet hash remains in historical map and is cross-checked.",
+    "Current five-bet must satisfy new exact raw SHA and immutable non-reason SHA, both mandatory, no OR fallback. Other 241 files use original byte checks; 242 inventory assertion remains.",
+    "Non-reason comparison deletes only each hand reason on a cloned full dataset. Equity/call/fold mutation tests separately demonstrate numeric rejection. Additional explanation edit passes non-reason check but fails mandatory raw hash. Other legacy byte edit fails unchanged original hash.",
+    "All tests beginning with every existing HU source fingerprint, including saved policy loaders, stale-source guard and existing private-artifact skip, remain byte-identical.",
+    "Included design report is byte-identical to independently issued approval, SHA f64a9fe4c25ac77218beb6212dab37614e4cabbf8e1a308407f8349f26d9829a.",
+    "Independently executed exact helper block and exact new mutation regression in an isolated harness with previously verified five-bet data and exact-head fetched opening-ranges: 2 passed, zero failed/skipped. This is not a full-suite rerun."
+  ],
+  "reused_author_evidence": {
+    "focused_suite": "8 PASS, 0 FAIL, 1 existing private-artifact SKIP; includes new mutation regression",
+    "local_full_CI_command": "Full included log ends 92 tests,90 pass,0 fail,2 skip. This is local author evidence, not final-head GitHub CI.",
+    "strict_restore_and_review": "PASS:1614 files/43276102 bytes; PASS:1888 datasets; generated_strategies:false; SQL bytes68705643/SHA25604d176915c953d141599ea8d6ff7d75f1b65e145d1f42b99a9d94f9faceb2fec"
+  },
+  "scope": "Two test/fixture edits and unchanged design report only. No numerical generation, receipt refresh, source-policy changes, historical detailed fingerprint migration or renewed Astra/strategy-quality approval.",
+  "required_completion": [
+    "Commit only the reviewed content plus separately attributed review documentation; preserve any unrelated work. Confirm final diff/contents match exact approved file identities.",
+    "Run mandatory exact-final-head CI through terminal result. Earlier local passes do not establish final-head CI success.",
+    "Keep original storage, profile, archive, source, continuation and production gates unchanged. No merge or deployment authorization follows from this review."
+  ],
+  "limitations": [
+    "No full application dependency checkout, strict archive restore or full-suite execution in independent task. Included author logs inspected and reused transparently.",
+    "No final commit exists in packet; future unexpected file/content changes require additional review."
+  ]
+}

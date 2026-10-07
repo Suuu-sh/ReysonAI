@@ -2,7 +2,7 @@ import { actionModelIdentity } from "./observable-actions.mjs";
 import { hasPostflopDeal } from "./range-support.mjs";
 import { createHash } from "node:crypto";
 import { seedFor, seededRandom } from "../lib/equity.ts";
-import { handTier } from "./model.ts";
+import { handTier } from "./hu-hand-tier.ts";
 import { NODES, choose, opponentMix, policyMix, referencePolicyFor } from "./policy.ts";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake, settle } from "./engine.ts";
 import { laterPolicyMix, referenceLaterMix, referenceLaterPolicy, validateLaterPolicy } from "./later-policy.ts";

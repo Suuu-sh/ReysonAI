@@ -11,8 +11,8 @@ export const zh: SiteCopy = {
     { label: "对比", href: "#compare" },
     { label: "价格", href: "#pricing" },
   ],
-  hero: { title1: "Don't just play.", title2: "Understand why.", lead: "ReysonAI告诉你每手牌该怎么打，并用易懂的语言解释原因。理解了原因，坐到牌桌前也能记起该如何决策。", primary: "打开应用", secondary: "了解使用方法", note: "免费预览 · 无需账户 · 6人桌现金局，100BB" },
-  preview: { simpleMode: "简洁", matrixLabel: "13×13起手牌图表", scrollLabel: "图表，小屏幕上可横向滚动", selectedHand: "当前手牌", suited: "同花", offsuit: "非同花", pair: "口袋对子", frequencyLabel: "行动频率", why: "原因", k7s: "K7s是同花牌，翻牌后也有可玩性。在这份BTN开池估算中，它始终加注。", other: (spot: string, hand: string, action: string, value: number) => `在已保存的${spot}范围中，${hand}以${value}%的频率${action}。打开应用可查看这手牌的完整解释。`, explore: "在应用中查看此范围", saved: "已保存的AI估算", notGto: "并非GTO解", spotOpening: "BTN开池", spotResponse: "BB应对", actionPast: { raise: "加注", threeBet: "3bet", call: "跟注", fold: "弃牌" }, pauseTour: "暂停手牌自动演示", resumeTour: "继续手牌自动演示", touring: "正在自动演示手牌。点击任意格子即可自行操作。", manual: "点击任意手牌查看详情。" },
+  hero: { coverTitle: "你能解释这个行动吗？", coverSubtitle: "AI 扑克学习 · ReysonAI", coverScroll: "向下滚动，了解更多 ↓", title1: "Don't just play.", title2: "Understand the reason.", lead: "ReysonAI告诉你每手牌该怎么打，并用易懂的语言解释原因。理解了原因，坐到牌桌前也能记起该如何决策。", primary: "打开应用", secondary: "了解使用方法", note: "免费预览 · 无需账户 · 6人桌现金局，100BB" },
+  preview: { bet: "下注", check: "过牌", flop: "翻牌", unreachable: "此行动路径无法到达；无推荐", simpleMode: "简洁", matrixLabel: "13×13起手牌图表", scrollLabel: "图表，小屏幕上可横向滚动", selectedHand: "当前手牌", suited: "同花", offsuit: "非同花", pair: "口袋对子", frequencyLabel: "行动频率", why: "原因", k7s: "K7s是同花牌，翻牌后也有可玩性。在这份BTN开池估算中，它始终加注。", other: (spot: string, hand: string, action: string, value: number) => `在已保存的${spot}范围中，${hand}以${value}%的频率${action}。打开应用可查看这手牌的完整解释。`, explore: "在应用中查看此范围", saved: "已保存的AI估算", notGto: "并非GTO解", spotOpening: "BTN开池", spotResponse: "BB应对", actionPast: { raise: "加注", threeBet: "3bet", call: "跟注", fold: "弃牌" }, pauseTour: "暂停手牌自动演示", resumeTour: "继续手牌自动演示", touring: "正在自动演示手牌。点击任意格子即可自行操作。", manual: "点击任意手牌查看详情。" },
   how: {
     title1: "从局面到原因，", title2: "只需三步。",
     steps: [
@@ -29,18 +29,21 @@ export const zh: SiteCopy = {
     items: [
       { level: "初学者", quote: "到底哪些牌值得玩？", body: "简洁显示先呈现每手牌的主要行动，从最常见的局面开始学。", gets: "简洁显示 · 先学常见局面" },
       { level: "初级到中级", quote: "记住了范围图，还是不懂为什么要混合打法。", body: "标准显示提供准确频率，每手牌都会解释混合行动的原因。", gets: "标准显示 · 逐手解释原因" },
-      { level: "预算有限", quote: "求解器对我来说太贵了。", body: "当前预览免费。无需购买求解器订阅，也能通过范围图、逐手解释、20题练习、排位赛和分析页面练习。", gets: "练习 · 排位赛 · 分析" },
+      { level: "预算有限", quote: "求解器对我来说太贵了。", body: "免费预览提供翻前范围和原因、翻前练习及基础报告。Plus计划增加翻后学习和详细报告。", gets: "翻前练习 · 基础报告" },
     ],
     views: ["简洁显示", "手牌详情", "免费预览"],
-    freeList: ["已保存局面的范围图", "逐手解释原因", "练习和训练回顾", "打法分析"],
+    freeList: ["翻前范围和原因", "翻前练习", "基础报告"],
+    learnerShort: "查看准确频率和每手牌的行动原因。",
+    budgetShort: "免费体验翻前范围、原因、练习和基础报告。",
     freeNote: "无需账户",
     note: "想研究自定义博弈树的精确求解结果？基于求解器的应用更适合这一用途。",
   },
   ranked: {
-    status: "即将推出", title1: "排位对战，", title2: "靠实力赢得评分。",
-    description: "每个人在相同条件下挑战20题。决策明确的手牌几乎不影响评分，混合策略手牌的影响最大。从青铜一路升至大师。",
-    points: ["涵盖所有局面的20题，标准难度", "每天最多3场排位赛", "Elo式评分：难度越高的手牌权重越大", "每周及总排行榜"],
-    sample: "示例", rank: "段位", rating: "评分", peak: "最高评分", toNext: (points: number, tier: string) => `距离${tier}还差${points}分`, today: "今日剩余2 / 3场", lastMatch: "上一场", matchLine: (correct: number, total: number) => `${total}题答对${correct}题 · 正确率${Math.round(correct / total * 100)}%`,
+    status: "需认证登录及服务器就绪", title1: "真人排位，", title2: "实战手牌，不是答题。",
+    description: "与六名认证玩家进行真人FastFold β对战。实战后查看服务器记录的评分和结果。等待时可练习不计分的Agent对局。",
+    points: ["六人全部确认后才发牌", "逐手连续对战", "查看评分、计分手数、净收益和bb/100", "仅真人对局结果 · 不应用AI修正"],
+    sample: "示例 · 非实时数据", rank: "段位", mode: "真人FastFold β", rating: "当前评分", hands: "计分手数", toNext: (points: number, tier: string) => `距离${tier}还差${points}分`,
+    rewards: "计划提供段位奖励，内容及发放条件将另行公布。", note: "数字仅为示例。需认证登录及服务器就绪；AI比较仅作影子分析，不应用扣分。", legend: "传奇", legendRule: (count: number) => `大师前${count}名`,
     tiers: ["青铜", "白银", "黄金", "铂金", "钻石", "大师"],
   },
   agent: {
@@ -61,8 +64,8 @@ export const zh: SiteCopy = {
   },
   compare: {
     title1: "用途不同于", title2: "求解器应用。",
-    description: "GTO Wizard等基于求解器的GTO应用是精确理论的参考。ReysonAI旨在帮助你理解策略并持续练习。",
-    us: "ReysonAI", them: "基于求解器的GTO应用", themNote: "例如GTO Wizard",
+    description: "基于求解器的GTO应用是精确理论的参考。ReysonAI旨在帮助你理解策略并持续练习。",
+    us: "ReysonAI", them: "基于求解器的GTO应用",
     rows: [
       { label: "展示内容", us: "AI估算范围，明确标注为估算", them: "求解器计算的GTO策略" },
       { label: "解释方式", us: "用易懂的语言解释每手牌", them: "以数字为主：频率与EV" },
@@ -72,9 +75,9 @@ export const zh: SiteCopy = {
       { label: "精确度", us: "实用的近似估算，并非GTO", them: "在已求解的博弈范围内精确" },
       { label: "适合人群", us: "正在建立习惯的初级到中级玩家", them: "研究精确理论的玩家" },
     ],
-    note: "这是对不同方法的一般性比较，各产品功能可能不同且会变化。GTO Wizard是其权利人的商标，与ReysonAI无关联。",
+    note: "这是对不同方法的一般性比较，各产品功能可能不同且会变化。",
   },
-  pricing: { title1: "免费开始。", title2: "Plus每天约19日元。", description: "", note: "Plus尚未推出，付费功能和计费服务均未开放。", plans: [{ name: "Free", price: "¥0", cadence: "永久免费", description: "当前预览的全部内容。", features: ["已保存的翻前范围和手牌详情", "简洁和标准显示", "训练器、训练回顾和打法分析"], action: "打开应用", href: "/analyze/ranges" as string | null, status: "已开放" }, { name: "Plus", price: "¥580", cadence: "/ 月（日元）", description: "准备就绪后，提供更深入的练习空间。", features: ["扩充学习工具", "更多引导式训练", "未来的牌桌适配功能"], action: "未来推出", href: null as string | null, status: "计划中" }] },
+  pricing: { title1: "免费开始。", title2: "Plus每天约19日元。", description: "这是Free／Plus计划中的功能划分；当前预览仍可使用。", note: "这是计划中的功能划分。Plus付费使用和计费尚未开放；当前预览不代表已授予付费权益。", plans: [{ name: "Free", price: "¥0", cadence: "永久免费", description: "翻前学习和基础报告。", features: ["翻前范围和原因", "翻前练习", "基础报告"], action: "打开应用", href: "/analyze/ranges" as string | null, status: "已开放" }, { name: "Plus", price: "¥580", cadence: "/ 月（日元）", description: "Free全部功能，加上翻后学习和详细分析。", features: ["Free全部功能", "翻后范围、原因和练习", "详细分析报告"], action: "未来推出", href: null as string | null, status: "计划中" }] },
   faq: {
     title: "常见问题，直接解答。",
     items: [
@@ -82,10 +85,10 @@ export const zh: SiteCopy = {
       { question: "与GTO Wizard有何区别？", answer: "GTO Wizard等应用展示求解器计算的策略，是精确理论的参考。ReysonAI提供供学习使用的AI估算，并配有解释、练习、排位赛和练习分析。详见上方对比。" },
       { question: "支持哪些游戏？", answer: "6人桌现金局，100BB，无前注。开池为2.5BB，小盲位为3.5BB。没有已保存数据的局面会标注为未收录，绝不凭空补全。" },
       { question: "需要账户吗？", answer: "不需要。你的资料和练习记录保存在此浏览器中。账户功能在计划中。" },
-      { question: "支持翻牌后吗？", answer: "试验功能覆盖受支持的单挑路线，从翻牌到河牌。应用内也会明确标注为试验功能。" },
-      { question: "如何收费？", answer: "当前预览免费。Plus计划每月580日元，按30天计算每天约19日元，目前尚未推出。" },
+      { question: "支持翻牌后吗？", answer: "翻后范围、原因和练习计划在Plus提供。当前应用有从翻牌到河牌的受支持单挑路线试验功能，但付费权益尚未开放。" },
+      { question: "如何收费？", answer: "当前预览免费。Free计划提供翻前范围、原因、练习和基础报告；Plus增加翻后学习及详细分析报告。Plus预计每月580日元（按30天计算每天约19日元），计费尚未开始。" },
     ],
   },
   final: { title1: "下一次练习，", title2: "从一手牌开始。", description: "打开应用，选择局面，点击一手牌。", action: "打开ReysonAI", note: "免费预览 · 无需账户" },
-  footer: { tagline: "Don't just play. Understand why.", product: "产品", open: "打开应用", how: "使用方法", drill: "训练", analysis: "分析", compare: "对比", pricing: "价格", faq: "常见问题", legal: "法律条款", privacy: "隐私政策", terms: "使用条款", disclaimer: "ReysonAI提供扑克策略和学习信息。AI方案属于估算，不保证数学最优，也不保证等同于GTO解。请理性游戏。" },
+  footer: { tagline: "Don't just play. Understand the reason.", product: "产品", open: "打开应用", how: "使用方法", drill: "训练", analysis: "分析", compare: "对比", pricing: "价格", faq: "常见问题", legal: "法律条款", privacy: "隐私政策", terms: "使用条款", disclaimer: "ReysonAI提供扑克策略和学习信息。AI方案属于估算，不保证数学最优，也不保证等同于GTO解。请理性游戏。" },
 };

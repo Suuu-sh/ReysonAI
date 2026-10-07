@@ -61,7 +61,9 @@ function jsonFiles(root, path) {
 // treat a generator version string alone as provenance.
 export function reviewedSourcePaths(root = REPOSITORY) {
   const found = new Set(["apps/frontend/package.json", "apps/frontend/package-lock.json", "apps/backend/migrations/0003_preflop.sql",
-    ".gitattributes", ".github/workflows/deploy-worker.yml", "apps/backend/wrangler.jsonc", "apps/frontend/wrangler.jsonc", "apps/frontend/scripts/ci/preflop.wrangler.jsonc",
+    ".gitattributes", ".github/workflows/deploy-worker.yml", "apps/backend/wrangler.jsonc", "apps/backend/src/fastfold.ts",
+    "apps/backend/scripts/verify-fastfold-readiness.mjs", "apps/backend/scripts/lib/fastfold-readiness-sources.mjs", "apps/backend/tests/fastfold-release.test.mjs",
+    "apps/frontend/wrangler.jsonc", "apps/frontend/scripts/ci/preflop.wrangler.jsonc",
     "apps/frontend/scripts/package-reviewed-preflop.py", "apps/frontend/scripts/package-reviewed-stage3.py", "apps/frontend/scripts/generate-opponent-profiles.py"]);
   function visit(path) {
     if (found.has(path)) return;

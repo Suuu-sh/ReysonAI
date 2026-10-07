@@ -27,7 +27,16 @@ export type SourceSpot = { id: string; hands: SourceHand[]; hero: Position; open
   raise_size_bb: number; iso_size_bb: number; raise_to_bb: number; limp_reraise_size_bb: number;
   source_response_id: string; source_three_bet_response_id: string };
 export type SourceDataset = { spots: SourceSpot[] };
-export type PostflopDatasets = Record<string, SourceDataset | undefined>;
+export type MultiwaySpot = { id: string; kind: "sqp" | "ccp" | "c4bp"; opener: Position; caller: Position; aggressor: Position;
+  ip: Position; oop: Position; tree: FlopTree; openingId: string; responseId: string; openBb: number; potBb: number; stackBb: number;
+  slug: string; reachable: boolean; stage: "A" | "B"; terminalId: string;
+  history: { seat: Position; action: SourceAction; to_size_bb: number | null }[];
+  contributionsBb: Record<Position, number>; ranges: Record<string, RangeFactor[]>;
+  reach: { probability: number; samples: number; compatible_samples: number; method: string } };
+export type MultiwayCatalog = { version: number; structural: number; reachable: number; stageA: number; stageB: number;
+  spots: MultiwaySpot[]; deferred: { id: string; terminalId: string; reach: MultiwaySpot["reach"]; reason: string }[];
+  omitted: { id: string; terminalId: string; reason: string }[] };
+export type PostflopDatasets = Record<string, SourceDataset | MultiwayCatalog | undefined>;
 export type RangeFactor = readonly [file: string, spotId: string, action: SourceAction];
 export type Inputs = { spot: Spot; opening?: SourceSpot; response?: SourceSpot; sources?: { dataset: string; spot: SourceSpot }[]; threeBet?: SourceSpot; threeBetResponse?: SourceSpot;
   config: PilotConfig; fingerprint: string; seatRows: Record<string, FrequencyRow[]> };

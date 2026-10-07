@@ -527,3 +527,252 @@ Verification:
 - At 650×360, tabs remain hidden and actions stay visible/full-width near the bottom; Back to Trainer restores the tab bar and its normal clearance after gameplay ends.
 - Scope is gameplay routes with `.game-details`; library and break views retain normal navigation. This preview is not live or production evidence.
 - Focused table UI tests, frontend typecheck, and direct Vite production bundling passed; no commit or push by implementer.
+
+## 2026-10-07 — Service-site audience scroll gap
+- Reproduced on `https://reysonai.com` and local baseline at 1280×720, continuous scrollY=720: the 300vh audience section inherited desktop flex centering, placing its sticky wrapper at y=872 while the section began at y=152.
+- Scoped `.site-audience.is-scrolly` to block layout, preserving the existing sticky scenes and mobile/reduced-motion flow.
+- Local browser after fix, same continuous scroll position: wrapper y=153, heading y=282, audience grid opacity=1. Forward/backward scrolling also kept the sticky content visible. Screenshots captured internally only.
+- Targeted `tests/site-surface.test.mjs`: 22 passed. Production build and Sites worker test results recorded in the PR.
+
+## 2026-10-07 — Phone scroll storytelling follow-up
+- Phone audience now uses the same scroll-selected sticky personas at viewport heights ≥740px; How-it-works cards stack/pin using native document scrolling. Short screens remain ordinary flow. Training/ranked/agent and the long comparison remain naturally scrollable on phones so their controls and copy are not clipped.
+- Motion polish: shorter 18px reveals and a subtle persona settle; no decorative progress bars, touch/wheel interception, or new scroll containers. Reduced-motion continues to disable scrolly state and animation; mobile scene pinning is gated by `.has-motion`.
+- Chrome responsive QA: 390×844, English and Japanese, beginner/budget scenes, complete Free CTA and note reachable; an observed oversized translated/card layout uses ResizeObserver to let the sticky top move upward rather than trap content. PageDown exited audience normally and pinned the next scene at y=80.
+- 375×667: audience/How-it-works/Training all normal flow. 1280×720: audience uses block layout and existing Training horizontal scrolly remains enabled. Internal screenshots only.
+
+## 2026-10-07 — Phone hero heading over live range
+- At widths ≤560px, layer the existing single heading over the live chart using grid placement and a legibility scrim. The overlay has `pointer-events: none`; all saved range cells remain keyboard/tap targets. Paragraph, actions, and note follow below the chart without a duplicate heading. Desktop CSS remains outside this override.
+- Targeted overlay regression test: 1 passed. Production build passed; diff check passed.
+- Parent browser review: 390×844 English overlay readable over the top matrix; 375×667 Japanese retains the existing English heading with Japanese body/CTAs usable below; 1280×720 English desktop preserves separate left copy/right matrix with no overlay. Physical Safari remains unverified.
+
+## 2026-10-07 — Revised phone hero: decorative square backdrop
+- Supersedes the earlier heading-only overlay: all existing heading/body/actions/free note are centered together over a subdued decorative chart. Understand why is larger/pink; Don't just play is smaller/muted. The matrix keeps aspect-ratio 1 independently of the hero content height.
+- Phone chart wrapper uses media-synchronized `inert` plus `aria-hidden`; hidden matrix buttons are not focusable. Desktop media restores the original interactive chart. Selected-hand detail content remains unchanged.
+- Disable chart/cell entrance animations on the mobile backdrop so animation fill modes cannot override its .18 opacity or cause a diagonal reveal. Restore copy align-self:center instead of desktop end-alignment.
+- Parent visual QA: 390×844 English centered composition/square backdrop; 375×667 Japanese text/CTAs/free note fit with square backdrop; 1280×720 desktop preserves separate copy/chart. Desktop clicking and physical Safari were not interactively verified. Media restoration inspected in code.
+- New decorative/square guard test and hostname SSR regression passed; production build and diff check passed.
+
+## 2026-10-07 — Flush square phone hero
+- Remove viewport-height spacing and the 16px outer inset on phones. The hero main is full-width with aspect-ratio 1, no external padding/margin, and compact centered typography/spacing. All copy still overlays the decorative square; CTA target remains 44px and no text clipping is introduced.
+- Parent visual QA: 390px English and 375px Japanese show all copy inside the full-width square, with Selected hand immediately below. Measured 375px Japanese: hero width=375, height=375, bottom=439; following detail top=439 (zero gap).
+- Targeted square/decorative guard test and build passed; diff check passed. Physical Safari remains unverified.
+
+## 2026-10-07 — Final headline and matrix edge alignment
+- Reset the matrix scroll wrapper's desktop focus-ring padding/margins only in the inert mobile background; keep normal 2px internal cell gaps. This removes the below-header/right-edge strip without changing the square or desktop focus-ring space.
+- Final shared English headline/tagline: Don't just play. Understand the reason. First line is larger white; second line muted gray on mobile. Update English headline/footer literals across locale copies and existing English metadata without rewriting translations.
+- Parent QA: 390px English matrix x=0,y=64,width=390,height=390,right=390,bottom=454, matching the hero exactly; 375px Japanese copy/CTAs fit. 1280px desktop longer headline fits its left column without overflow.
+- Targeted edge/copy tests and production build passed; diff check passed. Physical Safari still unverified.
+
+## 2026-10-07 — Compact phone Selected hand / Why panel
+- Only at ≤560px: reduce decorative card width, hand heading, frequency-row spacing, panel padding and Why spacing; remove the invisible spacer row. Keep all frequencies/explanations, Explore CTA minimum 44px, and playback controls. Desktop and square hero untouched.
+- Parent visual QA: 390px English Selected hand/Why/CTA/playback fit below the 390px square within the 844px viewport. 375px Japanese remains readable without overflow; CTA is reachable through normal scrolling. No exact percentage height reduction claimed.
+- Focused compact-panel regression test, production build and diff check passed. Physical Safari remains unverified.
+
+## 2026-10-07 — Flat SVG suits on service-site cards
+- Site variant only: use existing Phosphor filled Spade/Heart/Diamond/Club SVGs in the existing suit slot. SVG is aria-hidden/non-focusable; original suit text remains visually hidden. Trainer, Agent and text variants preserve their exact previous markup. Rank, gradients, colors and responsive sizes unchanged.
+- Parent browser QA: 390px mobile heart rendered flat; SVG viewBox=256 and aria-hidden confirmed. 1280px desktop layout preserved. Four different filled suit shapes and site-only behavior covered by six focused shared-card tests.
+- Focused tests, production build and diff check passed. Actual iPhone rendering is not verified; no claim of device testing.
+
+## 2026-10-07 — Hide phone analysis sample
+- At ≤560px hide only `.site-analysis .site-dash` with display:none. Keep the analysis heading, explanation, points and truthful practice-data note unchanged. Existing single-column phone grid has no remaining sample slot/gap; desktop sample remains in the DOM and restores normally.
+- Parent DOM QA: 390px sample display:none,height=0; 1280px display:block,height≈458px. No visual analysis-screen claim: viewport resizing shifted the screenshot to another section.
+- Focused hide-scope test, production build and diff check passed. No merge/deploy.
+
+## 2026-10-07 — Ranked preview matches current Human FastFold
+- Current source truth: TrainerPage routes ranked play to HumanRankArena. human-api status gate requires human-fastfold-v1/six_verified_humans/6 players/shadow comparison/no applied penalty; humanRankState adapts server records only. HumanRankArena displays current rating, rated hands, net bb and bb/100, plus queue participation and RankLadder. TrainerHome uses unrated Agent practice while waiting.
+- Replace site-only quiz scoring/quota/Peak/pips with a visibly non-live sample: rating/tier, 120 hands, +18bb and +15bb/100, example 2/6 human queue, shared tier thresholds and Legend top-10-Masters rule. Sample values are coherent illustrations, not fetched server data; availability still requires verified sign-in/server readiness and no AI penalty is applied. Update all four locale ranked copies; actual app/backend untouched.
+- Parent 390px English screenshot and scrolling: sample metrics/Legend/queue/shadow caveats fit with no horizontal overflow. Desktop existing layout retained; no new desktop visual check claimed.
+- Locale/surface tests: 38 passed. Update three stale hero-title expectations from the previously authorized reason-copy revision. Build/diff check passed; no merge/deploy.
+
+## 2026-10-07 — Trim ranked sample and label rewards as planned
+- User narrowed the sample to Human FastFold title, rating/rated-hands card and rank ladder. Remove result/bb100/queue panels and their unused copy/CSS. Keep Sample/not-live label; move availability/illustration/shadow caveats into the section explanation.
+- Add general rank-based rewards planned text in all four locales, with contents/distribution conditions to be announced. Current main/development contains no reward allocation/granting implementation. A separate unpublished historical preview is not treated as an authoritative offering; publish no exact allocation, Plus entitlement, cash/physical prize or issued-benefit claim.
+- Parent 390px English visual review: planned reward text visible and mock contains only requested card/ladder, no result/queue, fits without horizontal overflow.
+- Locale/surface tests: 38 passed. Production build and diff check passed; no merge/deploy.
+
+## 2026-10-07 — Reconcile desktop PR107 with mobile PR106
+- User-authorized integration of exact PR107 head ae698e61c277c22e2288ec845b21efb6407e2ebc into PR106; PR107 branch is untouched. Resolve ServiceSite.tsx, site.css and four locale conflicts individually: preserve desktop viewport-height saved-range/random-tour/legend work and latest reason wording, phone square inert backdrop/compact detail/playback, SVG suits, hidden phone analysis sample and truthful trimmed ranked/rewards-planned copy.
+- Responsive Explorer mounts one desktop or phone tree based on the same ≤560px media query; phone does not mount the desktop legend or additional estimate line, desktop does not mount the phone detail/focus targets. New shared saved preflop/postflop datasets and frequency/reach tests remain intact.
+- Locale/surface/shared-card tests: 48 passed; additional targeted responsive single-tree DOM guard: 1 passed. Production build passed (existing chunk-size warning). Diff check passed.
+- Attempted focused browser QA through CUA: IAB unavailable; fresh Chrome preview creation timed out and reset the kernel. No new 390/1280 rendered verification or actual iPhone claim. Responsive appearance remains unverified for this integration; prior standalone mobile screenshots do not prove the merged version.
+- No merge to development/main or deployment. PR106 now includes PR107 ancestry: review/merge ordering must account for this overlap rather than merging conflicting versions independently.
+
+- Parent merged visual QA: 390px phone preserved; 1280px desktop saved-range/legend layout visible. Longer retained reason tagline initially clipped; desktop mark now scales to copy-container width, with phone inheriting its existing size. Parent targeted 1280px desktop recheck confirms the full heading fits.
+- PR107 advanced externally to 4db2d488932f840b9899744e64d10504f595ef3f (allin label only). Inspected the two-file delta, merged its latest head; PR107 branch remains untouched. Targeted action-legend test passed.
+
+## 2026-10-07 — Hide only the phone hero description
+- At ≤560px hide `.site-hero-lead` in every locale. Keep headline, CTAs and preview note; desktop description and all translated source copy remain unchanged. Preserve square/fullbleed hero, compact rail and PR107 integration.
+- Parent computed-style QA: 390px description display:none; 1280px display:block. Targeted hide-scope/all-four-locale DOM test and diff check passed. CSS-only change: production build not repeated. No merge/deploy.
+
+## 2026-10-07 — Remove phone hero detail and playback
+- Remove the entire phone Selected hand/cards/frequencies/Why/explore/playback footer, matching desktop. Preserve decorative background tour behavior and square hero; saved/not-GTO caveat now uses the existing hero note like desktop. Drop unused rail explanation values/icon imports; other site sections unaffected.
+- Parent 390px visual: rail removed, square hero/caveat and following Audience retained. Existing Audience sticky-centering space is not a removed-rail leftover. Focused phone hero tests passed after scoping the no-desktop-legend assertion to the hero (other sections retain their legends). Production build/diff check passed. No merge/deploy.
+
+## 2026-10-07 — Fix CI sparse range typing
+- CI frontend typecheck on ee96017 failed TS2322: imported postflop JSON infers absent action keys as optional undefined, while HeroRange required all keys to be numeric. Model action mixes as Partial<Record<string,number>>, treating missing frequencies as zero only at numerical conversion/legend checks. No saved data, layout or tour changes.
+- Local exact typecheck initially could not find ignored continuation-responses.json; restored an existing local generated artifact for type-only checking, not committed. CI uses its authoritative reviewed-artifact restoration. Local typecheck and latest-SHA CI conclusions recorded below.
+- Local npm run typecheck passed after restoring the ignored type input; diff check passed. No repeated build or unrelated test suite. No merge/deploy.
+
+## 2026-10-07 — Current brand browser favicon
+- PR106 already merged; new dedicated branch based on current origin/main and development. HTML had no favicon/touch links. BrandIcon uses approved pink abstract Ace PNG, not the older symbol; no existing brand vector asset exists, so derive PNG32/192/apple180 and PNG-backed ICO from that exact PNG rather than redraw or fabricate an SVG.
+- Add browser/favicon and touch links only. No manifest, native app icon, logo redesign or service-site layout changes.
+- Targeted icon/link/dimension test passed. Local preview HTML exposes icon links; favicon.ico returns HTTP200 image/x-icon. Production build passes and copies public icons into client output; diff check passed. Chrome tab cache refresh / actual iPhone touch installation not verified. No merge/deploy.
+
+## 2026-10-07 — Phone cover ending without altering the square hero
+- Preserve existing square matrix/overlay exactly. At ≤560px the hero section is a flex cover with min-height calc(100svh - header height); a localized ending/title/subline/scroll hint fills remaining space after the non-shrinking square Explorer. Footer minimum height allows natural overflow on unusually short screens; no text clipping/cropped or stretched matrix. Safe-area bottom inset is respected. Desktop ending display:none and layout unchanged.
+- Parent visual QA: 390×844 English and375×667 Japanese preserve square/overlay; closing copy/hint fills the remaining cover and Audience begins beyond first screen. Existing audience sticky behavior unaffected. Extremely short viewports may scroll before the hint, intentionally rather than clipping content.
+- Focused hero tests3 passed, new four-locale cover guard1 passed; production build/diff check passed. No merge/deploy.
+
+## 2026-10-07 — Question-style phone cover copy
+- Replace only cover-ending title in all four locales: Japanese exact「そのアクション、説明できますか？」and localized question equivalents. Keep original hero headline, subtitle/hint and square/layout unchanged.
+- Targeted cover/four-locale render test1 passed; diff check passed. Literal copy-only: no repeated build/browser verification. No merge/deploy.
+
+## 2026-10-07 — Phone footer takes over the pinned square
+- Motion-enabled≤560px: pin only Explorer natively at the header edge inside the hero; the opaque ending scrolls above it. Footer adds one square-width background runway compensated by bottom padding, preserving initial text positions while allowing full matrix coverage and bounded sticky exit. No wheel/touch interception or fixed whole page; square/overlay untouched.
+- Without .has-motion (including reduced-motion) retain previous ordinary cover flow. Desktop selectors unaffected. Targeted existing/new cover guards2 passed; diff check passed. CSS-only: no repeated build. Scroll visual evidence recorded below; no merge/deploy.
+- Parent390px actual scroll: ending advances over pinned matrix (mid-scroll only its top rows remain visible); subsequent scroll enters Audience without leaked fixed matrix. Opaque runway remains intentionally limited to one square width. Initial cover layout unchanged by compensated footer sizing.
+
+## 2026-10-07 — Remove artificial cover runway
+- User rejected added black space. Remove the extra100vw footer minimum-height/bottom padding, keeping only original remaining-first-screen flex footer and opaque stacking. No extra spacer; Audience follows natural cover boundary. Preserve square/initial copy/reduced-motion/desktop.
+- Native sticky is bounded to the natural cover and can release before the footer fully covers the matrix; eliminating invented blank space takes priority. Parent390px scroll confirms Audience visible without huge footer blank; no precise mid-sticky claim because reload preserved scroll. Cover guards2 passed, diffcheck passed; CSS-only no repeated build. No merge/deploy.
+
+## 2026-10-07 — Pin until complete cover without a blank runway
+- Replace natural-cover sticky (which released early) with a measured mobile-motion pin. Keep an exactly square, original-height stage slot; passively schedule scroll/resize updates through requestAnimationFrame, fix only its Explorer at header until opaque ending.top≤header.bottom, then release. No added footer height/padding/spacer, wheel/touch interception or permanent fixed background. Desktop stage display:contents; reduced-motion uses natural flow. Cleanup listeners/frame on changes/unmount.
+- Pure pin math/cover guards2 passed; production build/diff check passed. Parent390px actual ArrowDown/DOM: scroll349 footer105/hero64; scroll389 footer65/hero64 (last visible1px still fixed); scroll429 footer25/hero−365 (released only after occlusion). Original footer height390, Audience flows with no added runway. No merge/deploy.
+
+## 2026-10-07 — Opaque downstream content above the fixed cover
+- Short phones can show Audience while footer is still partly covering the square. Wrap Audience through FinalCTA in one after-cover surface; only mobile motion uses a positioned opaque flow-root at z1 above fixed Explorer z0. No added height/padding/spacer. Desktop/reduced-motion wrapper display:contents. Existing section sticky behavior remains inside its own sections.
+- Targeted cover/stacking guards3 passed; production build/diffcheck passed. Parent375px partial-cover screenshot shows intended matrix above opaque footer; subsequent Audience screenshot has solid background/no leaked matrix. Exact partial-Audience scroll offset not claimed (native ArrowDown focus may jump). No merge/deploy.
+
+## 2026-10-07 — All-height mobile storytelling and final-resource holds
+- At≤960px remove phone height gate while retaining reduced-motion opt-out. Audience retains persona sequence, measures its full translated stage for scroll length/negative fit offset and gives last persona an extra .65 step hold (desktop phase mapping unchanged). How keeps native per-card negative fit offsets even when oversized; final card has48svh visible hold.
+- Mobile drill/ranked/agent, analysis, complete comparison table, pricing, FAQ and final CTA each use measured before→pinned→after holds45svh. Oversized content reads naturally first, then its bottom remains visible at viewport−16; after state bottom-aligns the content for continuous exit. No content clipping, fake data, wheel/touch interception or removed controls. ResizeObserver updates expanding FAQ/translations. Desktop horizontal Training retains direct section children/layout.
+- Initial native generic hold did not pin in browser; replaced with scoped passive-rAF measured fixed/absolute phases. Parent320×568 drill actual DOM pinnedtop−240/bottom551.8 and controls reachable. Short-phone How all3 native offsets match measured content; final top−226 stayed fixed through further scroll and explanation bottom reachable. Audience middle top−388 and lastbudget top−336 remained fixed through further scroll. No square-hero changes.
+- Surface tests39 passed; added targeted short-phone phase-math test1 passed; build/diffcheck passed. Further responsive/final QA below. No merge/deploy.
+- Parent375×667 finalCTA actualscroll: pinnedtop64/bottom644.3, then after-phase exits continuously and Footer remains reachable. Final resource has deliberate visible-content hold, not a blank tail.
+- Parent390×844 finalCTA phasepinnedtop64/bottom644 confirmed after actual ArrowDown; FAQ “Is this GTO?” click opens details and body remains visible. Responsive QA covers320/375/390; tablet≤960 is enabled by source rule, not device-verified. Real iPhone/Safari, every locale/card/control combination and exhaustive section-by-section hold durations remain unverified. Phone comparison holds complete readable rows rather than inventing a constrained hidden-row quiz; desktop progressive rows unchanged.
+- Current TypeScript typecheck passed, including the measured hold implementation and pure geometry helper.
+
+## 2026-10-07 — Supersede mobile pinning with focused natural chapters
+- User now prefers no fixed-scroll animation. Delete MobileHold, cover-pin geometry/hero pin listeners and all mobile hold/spacer/oversized pin rules. Audience/Training/Compare scrolly queries remain desktop-only. Original static square cover + question ending retained. No scroll snapping or custom mobile scroll driver.
+- Mobile uses moderate44px section spacing, three static How chapters and distinct drill/ranked/agent sections. Audience remains manual44px-target persona tabs with only selected description/preview; no mobile auto timer. Budget preview is natural compact flex, with immediate visible price/features (no entrance animations that look like blank card space). All copy/rank truth/rewards/brand favicon/SVG suits retained; no forced heights/clipping.
+- Surface tests35 passed; targeted natural-flow guard1 passed after final CSS polish; typecheck/build/diffcheck passed. Parent320 natural drill/nextRank reachable without holdblank (click not verified),375 staticcover/manualbudget tab,390 compactbudget price/features visible. No mobile holds or Audience scrolly class in DOM. RealSafari/tablet and exhaustive interactions not verified. No merge/deploy.
+
+## 2026-10-07 — Adjacent phone persona copy and preview
+- At≤960px use all three existing labels in compact top selectors (≥44px targets); only selected description/quote/gets lives inside its matching preview panel, so inactive blocks no longer separate copy from preview. Desktop original tab copy/layout retained. Tab orientation horizontal on phones; Left/Right and Up/Down keyboard navigation supported.
+- Compact mobile beginner preview into readable two columns with smaller cards; selected copy/preview padding reduced, budget remains natural height. No new copy, fixed scroll, forced viewport height or clipping.
+- Targeted existing natural/responsive tests2 + new phone tab/panel adjacency guard1 passed; production build/diffcheck passed. Parent375 Japanese screenshot: all selectors, beginner copy/matrix/cards visible in one viewport without intervening blocks; learner tab updates adjacent corresponding copy/preview. 390 English/budget exhaustive recheck not claimed. No merge/deploy.
+
+## 2026-10-07 — Compact only the phone budget persona
+- Use localized short budget body on mobile; remove redundant selected gets chip/sample label/free badge, inline price36px with no-account note. Features stay14px in two columns≥360px/one column320px, CTA44px; Plus price/cadence/planned status preserved in compact wrapping divider row. Desktop original detailed copy/pricing unchanged.
+- Locale tests9/build/diffcheck passed. Parent375 Japanese measured budget panel≈357px; quote/body/price/features/CTA readable and Plus retained with natural scrolling. No clipping or forced height. No merge/deploy.
+
+## 2026-10-07 — Learner phone panel matches compact budget size
+- Mobile learner only: localized concise exact-frequency/body and A-blocker/wheel/mixed-call3bet summary derived from existing full Why facts; desktop full percentages/explanation retained. Remove redundant gets/sample label; cards28px, hand28px, three13px frequency columns and14px Why, padding14/gaps8–10. No ellipsis/clipping/new strategic claim.
+- Locale tests9/build/diffcheck passed. Parent375 Japanese learner panel≈357.17px, matching budget≈357.09px; quote/body/cards/frequencies readable/no overflow (0% naturally wraps within its column). No merge/deploy.
+
+## 2026-10-07 — Restore full factual learner reason on phones
+- User requests the full reason, not a shortened summary. Mobile now uses the exact same existing c.how.whyNote as desktop in all four locales (52.3%/43.3%/54.9% and12BB explanation retained); remove unused abbreviated Why fields. Compact body/cards/frequencies unchanged. Panel naturally grows; no height cap/ellipsis/clipping.
+- Targeted shared-full-reason/all-locale test1/build/diffcheck passed. No new strategic data or freshly verified strategy claim; restore the existing saved explanation verbatim. No new browser check claimed, no merge/deploy.
+
+## 2026-10-07 — Planned Free / Plus scope copy
+- Site-only four-locale agreed division: Free preflop ranges/reasons, preflop practice, basic reports; Plus all Free plus postflop ranges/reasons/practice and detailed analysis reports. Pricing descriptions/features, budget body/shortcopy/gets/list and Plus blurb, postflop/cost FAQ aligned. Remove blanket “everything in current preview” and vague Plus-feature claims.
+- Prices/cadence remain¥580/$3.70; retain30-day daily equivalents and approximate-USD boundary. Explicitly label planned division, Plus billing/access not live, current experimental postflop preview not a paid entitlement. No actual billing/app gates/backend/native changes. Full learner reason and compact layout unchanged.
+- Locale tests10 passed (including explicit all-locale feature division/free-list consistency and no Plus purchase href), production build/diffcheck passed. No new browser verification claimed; no merge/deploy.
+
+## 2026-10-07 — One-second saved range tour interval
+- User corrected requested interval to1second. Desktop random saved-range tour and mobile opening/response background tour now1000ms (previous4000/2800). Preserve offscreen/reduced-motion/manual-interaction boundaries and all other animation timings.
+- Targeted tour interval/lifecycle test1 passed; diffcheck passed. Timer literal-only: no repeated build/browser verification. No merge/deploy.
+
+## 2026-10-07 — Phone range tour shares all62 saved ranges
+- User approved matching desktop: replace phone BTN_open/BB_vs_BTN alternating mode with the same heroRanges and non-repeating random selector (50 preflop+12 postflop),1000ms. Remove old hand/mode tour and its already-hidden obsolete action legend. No saved values or strategy generation.
+- Square/fullbleed/dim/centered copy CSS unchanged; inert background/manual interaction/reduced-motion/offscreen pause/interval cleanup retained. Targeted tour/responsive tests2, build/diffcheck passed. No new browser verification claimed; no merge/deploy.
+
+## 2026-10-07 — Brief pause only for the phone cover question
+- Restore only question ending pause≤560px: dedicated bounded track with64–100px extra scroll, actual opaque question content remains sticky at header during that brief distance. Square hero itself and all other mobile chapters remain normal flow;62 saved ranges/1000ms unchanged. Reduced-motion bypasses pause via .has-motion boundary. No long runway or global fixed logic.
+- Targeted question-boundary test1/build/diffcheck passed. No new browser verification claimed (user requested immediate completion); no merge/deploy.
+
+## 2026-10-07 — Keep range visible during the cover question pause
+- Previous question-only sticky interpretation left the matrix scrolling away. Latest request prioritizes matrix visibility: briefly hold the complete cover for96px, while question group moves only12px within its own lower region (never overlays/covers the square). Then cover exits continuously; all following sections remain natural. Remove prior question-only sticky track.
+- Enable only motion/≤560px when the complete cover fits available viewport; unusually short covers and reduced-motion retain natural flow without clipping. No long black runway; original square/dim/copy and62ranges/1000ms untouched.
+- Targeted cover-boundary test1/build/diffcheck passed. New browser evidence below if available; no merge/deploy.
+- No new browser result available at commit time; no actual scroll verification claimed for this latest revision.
+
+## 2026-10-07 — Final clarified matrix-covering direction
+- User clarified: square matrix stays fixed below header while opaque question block scrolls up over it. Restore only that measured pin; remove complete-cover96px hold and question12px translation. Original square slot retains original height, no new spacer/runway. Release when question.top≤header.bottom (fully covered), not earlier.
+- Question and downstream Audience→FinalCTA have solid background/z1 above fixed matrixz0, including short phones where question alone is shorter than matrix. Other mobile sections remain natural.62ranges/1000ms/dim/centered copy unchanged; reduced-motion opt-out retained.
+- Targeted geometry/scope tests2/build/diffcheck passed: footerTop65 keeps pin,64/63 releases, no new height/padding. Current browser check not claimed at commit time; this restores the previously browser-verified measured-pin structure. No merge/deploy.
+
+## 2026-10-07 — Gradual question-background transparency
+- Only mobile-motion question background changes from opaque to55% scrim as scroll advances across the square. Text remains fully opaque; never apply block opacity. Keep matrix fixed until question.bottom clears the header so it remains visible through scrim for the whole question range. Downstream content stays solid var(--bg)/z1; no added height/runway, other sections natural.
+- Reduced-motion uses static opaque question/natural flow; square/dim/62ranges/1000ms unchanged. Targeted pin/range/alpha math and opaque-downstream guard1/build/diffcheck passed. No new browser verification claimed; no merge/deploy.
+
+## 2026-10-07 — Fade the entire question block completely
+- Latest user supersedes background-only scrim: question block background/title/subtitle/scroll hint share opacity1→0 as it covers the square. Matrix pin lasts through question range; next content remains independently opaque/z1. Reduced-motion remains static/natural.
+- Question contains no interactive/focusable elements; pointer-events:none prevents its invisible box intercepting matrix region. No extra height or other-section opacity. Targeted fade/pin/opaque-next math+CSS test1/diffcheck passed; no repeated build/browser claim. No merge/deploy.
+
+## 2026-10-07 — Question disappears immediately when scrolling starts
+- Latest request removes gradual fade: question/background/all text opacity1 only at original cover position; any positive scroll movement sets0 immediately, no transition. Scrolling back to original cover restores visibility. Pure touchstart without scroll is not treated as movement.
+- Existing matrix pin, opaque following content and reduced-motion natural/static flow retained. Targeted first-fractional-pixel/return-state/CSS-no-transition test1 and diffcheck passed; no repeated build/browser claim. No merge/deploy.
+
+## 2026-10-07 — Overlap-driven top-down question mask
+- Latest correction removes immediate whole-block opacity. Measure pinned square bottom−question top, clamp≥0; CSS/WebKit linear mask is transparent above edge−28px, transitions to solid at edge. Only overlapping top region disappears; unoverlapped lower region stays fully visible. Mask applies background/title/subtitle/hint together. Initial edge0 is fully visible; reverse scroll restores it.
+- Matrix pin until question range exits, square/62ranges/1000ms, opaque following content and reduced-motion static/natural behavior retained. Targeted overlap bounds/mask/opaque-next test1/build/diffcheck passed. No new browser claim; no merge/deploy.
+
+## 2026-10-07 — Compact phone Compare, Agent and Ranked chapters
+-≤560px only three long chapters: padding28px/heading26px/body14px, feature gap18px/points13px, mock padding12px. Agent keeps everyβ/heads-up/game fact. Ranked card/emblem64px and denser tier cells preserve all rating/sample/Legend/reward-planned/gate caveats.
+- Comparison keeps every row, using three compact columns (criterion+both products),12px cells/1.45 line-height/6px padding instead of repeating full-width labels. Intro14px and note retained. No fixed height/ellipsis/clipping;320px short screens can overflow naturally. Full learner reason and hero mask/62ranges untouched, desktop unchanged.
+- Targeted three-chapter scope/readability guard1/diffcheck passed. CSS-only: no repeated build. No new height/browser evidence at commit time; do not claim every section fits exactly one viewport. No merge/deploy.
+
+## 2026-10-07 — Remove intermediate two-column hero viewport gap
+- Cause: above960px square range can be width-limited (at1024×768≈614px), but hero reserves viewport−header≈704px, leaving≈90px underneath. At961–1200px (before the left column's480px cap), remove viewport min-height; compact left-copy padding/margins/CTA sizing and remove its28px translation so all content stays in flow without clipping. Square sizing unchanged;≤960 and>1200 layouts untouched.
+- Targeted breakpoint/no-clipping guard1/diffcheck passed. CSS-only no repeated build. Browser bottom/copy measurements not yet available; long localized copy may naturally grow rather than be clipped. No merge/deploy.
+
+## 2026-10-07 — Correct black scope to ReysonAI column only
+- User corrected prior full dark section request. Restore original light section/competitor palette; only ReysonAI header/cells remain black. Remove internal rounded corners/light border gaps and extend cell-background into responsive row spacing without changing column layout/copy.561–720px label contrast preserved where its existing full-width label crosses the black column.
+- Targeted column-continuity/light-surroundings guard1/diffcheck passed. CSS-only no repeated build/browser claim. Other compaction/hero changes retained; no merge/deploy.
+
+## 2026-10-07 — Generic balanced comparison headers
+- Remove competitor example subline/themNote in all four locales. Comparison intro/note now generic solver-based explanation without named-product examples; unrelated FAQ remains unchanged. Every comparison row retained.
+- Symmetric centered/middle-aligned header labels with shared36px linebox/gap6; mobile logo16px and balanced label wrapping reduce orphaned-character lines. Continuous black Reyson column/light surrounding palette/layout retained.
+- Targeted all-locale generic-example guard1/build/diffcheck passed. No new rendered wrapping measurement claimed. No merge/deploy.
+
+## 2026-10-07 — Equal preflop/postflop tour exposure
+- Shared desktop/mobile selector now draws preflop/postflop category50:50, then uniformly among that category's saved tables excluding the current table. Data remains50preflop/12postflop, initialBTN and1000ms/visuals unchanged.50:50 is per-draw probability, not forced alternation/exact short-run counts.
+- Targeted category-boundary/repeat-exclusion/tour/dataset tests3/build/diffcheck passed. No merge/deploy.
+
+## 2026-10-07 — Bounded continuation hand reach display after PR98
+- Isolated checkout based on development `422392f4d610adfe66252b34e13bfd985e68a437`; branch `codex/fix/continuation_reach/01a11644`. Shared checkout and its servers were not changed. No merge, main update, strategy generation or deployment.
+- `continuationSavedRange` uses the existing complete-history continuation context. Zero own-action reach, empty observed participant histories and impossible joint card deals produce patterned selectable cells with empty display actions. Positive reach preserves the saved conditional mix, including genuine fold100 decisions. Missing/invalid ancestors remain unavailable. Both comparison and rewound-block entries carry the history-specific accessible description into HandBreakdown in all four product languages.
+- New regression tests: 10 PASS. They cover UTG72o / HJ72o after UTG open → HJ call → BB squeeze; HJ AA with only10% prior call; reachable UTG AJs with a real fold100 mix; later responses in all four bounded families; observed folded-seat support; joint AA-only card impossibility retaining KK; missing/invalid sources; terminal live-seat comparison; all four locales; and actual RangeWorkspace → HandBreakdown rendering, including rewind.
+- Focused suite:70 PASS,0 FAIL,2 SKIP (`continuation-range-ui`, `continuation-ranges`, `estimated-ui`, `range-url`, `hu-after-multiway-range-flow`, `sites-worker`, `postflop-defence`, `reviewed-preflop-archive`, `reviewed-preflop`). The2 skips require unavailable private `.local` postflop candidates. Typecheck, build and diffcheck PASS; build retains the existing large-chunk warning.
+- Full `npm test`:746 tests,721 PASS,15 FAIL,10 SKIP. All15 failures reproduced at the unchanged development baseline: learning-access1; play-style-layout5; player-analysis-ui1; ranked-card-layout4; site-surface3; plus the intermittent `postflop-flop-base` worker-count determinism test1 (also failed in a baseline-only run). The local HTTP test was rerun with listen permission and passed. No all-green/full-postflop-artifact claim.
+- Verified the exact reviewed LFS archive (`b0fd6d79c56a73b4a3a7663d954f0d50c9fb82fcc1866b6870534a4b51d69e0a`) before restoring1614 saved files locally. Review source/artifact verification passes. Strategy JSON, archive pointer, review receipts and DEFENCE_VERSION7 have no committed changes. Private postflop policies were not copied or generated.
+- Official Chrome at `http://127.0.0.1:5197`: clicked UTG open2.5 → HJ call2.5 → BB squeeze13. UTG72o had the patterned unreachable cell and history-specific detail, with0 action rows. Reachable UTG AA retained call20% /4bet80%. After UTG fold → HJ call13, both BB and HJ matrices remained; HJ72o was unreachable and BB72o remained a valid root fold100 row. Screenshots were inspected internally; none were published.
+- Existing separate observation: the generic bounded selected-hand size row can display `undefined BB` for a reachable squeeze response (AA). This patch is limited to reach masking and its explanation; the sizing display was not changed.
+- Supporting logs remain in the isolated frontend `.local/continuation-validation/`; baseline comparison logs are in the separate `reyson-continuation-baseline` checkout.
+
+## 2026-10-07 — Hero mobile pattern for every non-two-column width
+- Fresh branch after PR109/110 merged, based on latest main/development. Align hero-only responsive switch/CSS/cover mask query with existing two-column boundary960px:560/768/960 use the same full-width square dim decorative range, centered copy, hidden long description and question-cover mask;961+ retains right-hand two-column range.
+- Other-section compact rules remain≤560; no global tablet compaction.62savedranges/1000ms/50:50, reduced-motion/manual/offscreen boundaries retained. Taller squares on short landscape tablets may extend naturally; no clipping to force fit.
+- Targeted hero/boundary SSR tests5/build/diffcheck passed. No new rendered tablet/scroll measurement at commit time. No merge/deploy authorization for this new change.
+
+## 2026-10-07 — Restore moderate tablet right-column hero
+- User found≤960 full-width square too large. Hero/Explorer/cover query now≤720;721–960 uses compact two-column layout with a50vw right square (384px at768), left typography/padding/margins scaled and no viewport min-height. All copy stays normal flow without clipping;>960 original layout unchanged. Other-section≤560 compact rules untouched;62ranges/1000ms/50:50 retained.
+- Targeted hero/boundarySSR tests5/build/diffcheck passed, covering560/720/721/768/960/961. No new rendered geometry measurement at commit time; exceptionally long locale text can grow naturally rather than clip. No merge/deploy.
+
+## 2026-10-07 — PR113 update against current development
+- Incorporated development `724411f7b91626cd489e7753608d729438e09938` into the same isolated branch. Only conflict was adjacent append-only sections in this QA file; both sections were retained. ServiceSite.tsx, site.css and site-surface.test.mjs exactly match development. No reach implementation/test edits, strategy/data regeneration, PR merge, main update or deployment.
+- Revalidated the combined tree: focused suite72 tests,70 PASS,0 FAIL,2 SKIP; the same10 new continuation regressions PASS. Typecheck, build and diffcheck PASS; existing large-chunk warning retained. Archive/source/artifact review checks PASS using the same verified saved bytes. No new full-suite result is claimed.
+- `site-surface.test.mjs`:43 tests,39 PASS,4 FAIL,0 SKIP. The untouched development724411f7 baseline reproduced all4 failures: phone question overlap masking; intermediate two-column hero viewport spacer; continuously black ReysonAI comparison cells; production app CTA host. The latest hero boundary and responsive-mount tests pass; no unrelated site changes were made.
+- New logs are isolated as `.local/continuation-validation/update-724411f7-{focused,site,typecheck,build}.log`; latest site baseline is in `reyson-continuation-baseline-724411f7/apps/frontend/.local/continuation-validation/baseline-724411f7-site.log`. Earlier logs and the422392f4 baseline were preserved for review. Chrome evidence above remains the prior head's observation, not a new browser run.
+
+## 2026-10-07 — PR94 source integration with current development, pending independent review
+- Isolated clone `task-6/reysonai-integration` merges PR94 `ac02a11c6d8f61ed46e8c89e289a75274a104088` with development `ab61e3a6e34937ffa0b336143c287177bf3ce6cf`. The shared checkout, its uncommitted files and ports5173/5191/8787 were not changed. No merge to development/main, deployment, numerical generation, D1 access, credentials or permission changes occurred.
+- Retains current Site/Trainer/global styles/brand components byte-for-byte from development; provides40 selected HU histories and defers367; preserves HU98 private-card classification, DEFENCE_VERSION7 and PR113 continuation reach masking. Stage3 unsupported terminals remain unavailable rather than becoming HU/MW3; injected FastFold never expands into ordinary continuation/HU/MW3 scope.
+- With parent-approved Astra design guidance, the corrected HU `handTier` and its identical draw helpers move to `hu-hand-tier.ts`. All ten production HU classifier consumers use it. The MW3 helper `model.ts` retains exact PR94 bytes (`fcbf13b6f8b1c3f72b8a81dcc626de89abc4c385d840163feb4bd78ca631732f`); MW3 imports, exact-pair inventory, adapter and compatibility receipt are unchanged. The complete AST source collector includes the new HU module in all sixteen138/139-path source closures; no approval scope exclusion was added.
+- Historical407 geometry tests use an exact test-only PR94 catalog fixture with SHA-256 `096b926d3d7f84c88475e99f3ebdfa80f046539ee7b41983ac9b8c1eec229851`. Pure historical parity remains tested, all367 deferred histories are rejected by product routing, and report fixtures cannot activate those histories.
+- Functional suite:114 tests,112 PASS,0 FAIL,2 SKIP for unavailable private HU candidate pairs. Covers HU classification/reference parity, continuation runtime/retry/hydration, real four-language PR113 HandBreakdown, Stage3/FastFold boundaries and MW3 consumers. Additional MW3 DOM suite:10/10 PASS, including a real ordinary Agent three-player hand saved once, prior history preserved, Stats/Close/reopen without duplicate persistence, waiting Agent ephemeral history, cancellation and detail reopen.
+- Typecheck, build, Sites7/7 and diffcheck PASS. Existing chunk-size and duplicate-locale-key warnings remain. The initial pre-boundary full-suite diagnostic was1192 tests,1114 PASS,67 FAIL,11 SKIP; it is not the frozen source's final result. Failures include Darwin-incompatible Linux process supervision, stale source approvals, historical model6 assertions against current HU98/model7 and already documented development UI expectations. The final frozen-source diagnostic is recorded externally after commit.
+- Original112 MW3 raw files and16archives,32 reserved pins, recipes/warnings, Stage2/Stage3 original archives and old review receipts remain intact. Original-byte decoding was performed only in a separate `task-6/qa-fixture-only` tree; it did not run the product server, override production readers or constitute official restoration/approval. Source candidate contains no copied ignored fixture datasets. Official Stage2/Stage3 restore rejects the old source inventory, as required.
+- Independent review must bind the frozen source closure, classify preserved numerical/raw evidence and the HU/MW3 dependency separation, renew necessary source receipts without self-approval, and reconcile the previously approved PR86 five-bet explanation-only amendment with historical Stage3 preservation checks. Formal restored-data/browser acceptance and Linux supervision/local-D1 verification remain required after independent approval. Existing PR44/50 QA records above remain historical evidence; unchanged OAuth/case17 are not new integration gates. No new browser measurement or all-green release claim is made here.

@@ -4,7 +4,8 @@ import { makeRange, equityVersus, equitiesVersus, releaseRangeTables } from "../
 import { makeRange as referenceRange, equityVersus as referenceEquity } from "./reference/range-equity.mjs";
 import { rankTable, comboId, defenceFor, replayOrNull } from "../scripts/postflop-ai/defence.ts";
 import { equityKernel } from "../scripts/postflop-ai/equity-kernel.ts";
-import { handTier, parseCards, parseFlopBoard } from "../scripts/postflop-ai/model.ts";
+import { parseCards, parseFlopBoard } from "../scripts/postflop-ai/model.ts";
+import { handTier } from "../scripts/postflop-ai/hu-hand-tier.ts";
 import { handTier as referenceTier } from "./reference/hand-tier.mjs";
 import { seededRandom } from "../scripts/lib/equity.ts";
 import { loadInputs } from "../scripts/postflop-ai/inputs.mjs";

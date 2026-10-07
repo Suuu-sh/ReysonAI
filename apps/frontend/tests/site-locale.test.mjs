@@ -22,7 +22,7 @@ test("Japanese service-site copy covers every English field", async () => {
   const ja = await loadCopy("content-ja.ts", "ja");
   assert.deepEqual(shapeOf(ja), shapeOf(en));
   assert.equal(en.hero.title1, "Don't just play.");
-  assert.equal(en.hero.title2, "Understand why.");
+  assert.equal(en.hero.title2, "Understand the reason.");
   assert.equal(ja.hero.title1, en.hero.title1);
   assert.equal(ja.hero.title2, en.hero.title2);
   assert.match(ja.preview.notGto, /GTO/);
@@ -34,8 +34,8 @@ test("Plus presents an approximate dollar price and daily value in English", asy
   assert.equal(en.pricing.plans[0].price, "$0");
   assert.equal(en.pricing.plans[1].price, "$3.70");
   assert.match(en.pricing.title2, /\$0\.12 a day/);
-  assert.equal(en.pricing.description, "");
-  assert.match(en.pricing.note, /isn't available yet/);
+  assert.match(en.pricing.description, /Planned Free \/ Plus/);
+  assert.match(en.pricing.note, /billing are not live/);
   assert.equal(en.pricing.plans[1].href, null);
 });
 
@@ -43,8 +43,8 @@ test("Japanese Plus pricing shows the 30-day daily equivalent while billing rema
   const ja = await loadCopy("content-ja.ts", "ja");
   assert.equal(ja.pricing.plans[1].price, "¥580");
   assert.match(ja.pricing.title2, /1日約19円/);
-  assert.equal(ja.pricing.description, "");
-  assert.match(ja.pricing.note, /課金はまだ利用できません/);
+  assert.match(ja.pricing.description, /予定している機能分け/);
+  assert.match(ja.pricing.note, /課金はまだ提供していません/);
   assert.equal(ja.pricing.plans[1].href, null);
 });
 
@@ -98,7 +98,10 @@ for (const [locale, file, exportName] of [["zh-CN", "content-zh.ts", "zh"], ["es
     assert.ok(copy.drill.score(3, 20).includes("3"));
     assert.ok(copy.drill.score(3, 20).includes("20"));
     assert.ok(copy.drill.tableLabel("KTo").includes("KTo"));
-    assert.ok(copy.ranked.matchLine(16, 20).includes("80%"));
+    assert.ok(copy.ranked.hands);
+    assert.ok(copy.ranked.rewards);
+    assert.ok(copy.ranked.note);
+    assert.ok(copy.ranked.legendRule(10).includes("10"));
     assert.ok(copy.ranked.toNext(64, copy.ranked.tiers[3]).includes("64"));
     if (locale === "zh-CN") {
       assert.equal(copy.pricing.plans[1].price, "¥580");
@@ -142,15 +145,15 @@ test("all site locales render a selected native-language control and localized p
     const { ServiceSite } = await server.ssrLoadModule("/src/site/ServiceSite.tsx");
     const { SITE_COPY } = await server.ssrLoadModule("/src/site/locales.ts");
     const escaped = text => renderToStaticMarkup(createElement("span", null, text)).slice(6, -7);
-    const preview = JSON.parse(readFileSync(new URL("../src/site/range-preview.json", import.meta.url), "utf8"));
     for (const [locale, name] of [["en", "English"], ["ja", "日本語"], ["zh-CN", "简体中文"], ["es", "Español"]]) {
       const html = renderToStaticMarkup(createElement(ServiceSite, { locale, onLocaleChange() {} }));
       const copy = SITE_COPY[locale];
       assert.ok(html.includes(`aria-label="${copy.common.languageLabel}"`));
       assert.ok(html.includes(`<option value="${locale}" lang="${locale}" selected="">${name}</option>`));
-      assert.equal((html.match(/<option /g) ?? []).length, 4);
+      // Header control plus the phone menu copy; each lists the four locales.
+      assert.equal((html.match(/<select /g) ?? []).length, 2);
+      assert.equal((html.match(/<option /g) ?? []).length, 8);
       assert.ok(html.includes(escaped(copy.hero.lead)));
-      assert.ok(html.includes(escaped(copy.preview.other(copy.preview.spotOpening, "A5o", copy.preview.actionPast.raise, preview.opening.A5o.open))));
       assert.ok(html.includes(escaped(copy.how.whyNote)));
       assert.ok(html.includes(escaped(copy.preview.notGto)));
       assert.ok(html.includes(escaped(copy.pricing.note)));
@@ -176,4 +179,31 @@ test("the marketing entry chooses metadata from the selected locale and preserve
   assert.match(source, /rememberLocale\(next\)/);
   assert.match(source, /setLocale\(next\)/);
   assert.doesNotMatch(source, /history\.(?:pushState|replaceState)|location\.(?:assign|replace|href\s*=)/);
+});
+
+
+test("all locales keep the agreed planned Free and Plus split without live paid access", async () => {
+  for (const [file, name, pre, post] of [["content.ts", "en", "Preflop", "Postflop"], ["content-ja.ts", "ja", "プリフロップ", "ポストフロップ"], ["content-es.ts", "es", "preflop", "postflop"], ["content-zh.ts", "zh", "翻前", "翻后"]]) {
+    const copy = await loadCopy(file, name);
+    const [free, plus] = copy.pricing.plans;
+    assert.equal(free.features.length, 3);
+    assert.equal(plus.features.length, 3);
+    assert.ok(free.features.join(" ").includes(pre));
+    assert.ok(plus.features.join(" ").includes(post));
+    assert.ok(plus.features[0].includes("Free"));
+    assert.deepEqual(copy.audience.freeList, free.features);
+    assert.equal(plus.href, null);
+    assert.ok(copy.faq.items[4].answer.includes("Plus"));
+    assert.ok(copy.faq.items[5].answer.includes("Free"));
+  }
+});
+
+
+test("comparison stays generic without named examples in any locale", async () => {
+  for (const [file, name] of [["content.ts", "en"], ["content-ja.ts", "ja"], ["content-es.ts", "es"], ["content-zh.ts", "zh"]]) {
+    const copy = await loadCopy(file, name);
+    assert.equal(copy.compare.themNote, undefined);
+    assert.doesNotMatch(JSON.stringify(copy.compare), /GTO Wizard/);
+    assert.equal(copy.compare.rows.length, 7);
+  }
 });

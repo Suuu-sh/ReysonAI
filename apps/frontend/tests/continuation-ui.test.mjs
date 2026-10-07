@@ -6,7 +6,7 @@ import { buildRangeUrlActionBlocks, decodeRangeUrl, encodeRangeUrl } from '../sr
 import { chooseContinuationAction, continuationLiveSeats } from '../src/estimated/continuation-flow.ts';
 import { continuationSourceNames, createContinuationUiLoader, createContinuationUiRuntime, withContinuationAvailability } from '../src/estimated/continuation-ranges.ts';
 import { completedFlopContext } from '../src/estimated/postflop-trial.ts';
-import { POSTFLOP_SPOTS } from '../scripts/postflop-ai/spots.ts';
+import { POSTFLOP_SPOTS, MULTIWAY_POSTFLOP_CATALOG } from '../scripts/postflop-ai/spots.ts';
 import { postflopAvailabilityError } from '../src/estimated/continuation-copy.ts';
 const data = Object.fromEntries(continuationSourceNames.map(name => [name, JSON.parse(readFileSync(new URL(`../src/estimated/${name}.json`, import.meta.url), 'utf8'))]));
 const runtime = createContinuationUiRuntime(data);
@@ -14,9 +14,9 @@ const token = step => step.action === 'fold' ? 'F' : step.action === 'call' ? 'C
 const query = history => `preflop_actions=${history.map(token).join('-')}`;
 const context = (state, blocks = buildRangeUrlActionBlocks(state)) => completedFlopContext({ ...state, actionBlocks: blocks, isDefaultTable: true });
 
-test('all 407 cataloged HU endpoints replay exact folds, sizes, sources and URL history', () => {
+test('all 40 selected HU endpoints replay exact folds, sizes, sources and URL history', () => {
   const spots = POSTFLOP_SPOTS.filter(spot => spot.history);
-  assert.equal(spots.length, 407);
+  assert.equal(spots.length, 40);
   for (const spot of spots) {
     const terminal = continuationTerminals.find(node => node.id === spot.terminalId);
     const state = decodeRangeUrl(query(terminal.history));
@@ -143,4 +143,22 @@ test('a transient source fetch failure retries without refetching successful dat
   assert.deepEqual(recovered.missingSources, []);
   assert.equal(await load(), recovered, 'a complete runtime remains cached');
   for (const name of continuationSourceNames) assert.equal(calls.get(name), name === 'squeeze-responses' ? 2 : 1, name);
+});
+
+// All 407 reachable histories remain recognized by the bounded preflop tree,
+// but the 367 deferred histories must never borrow a selected HU policy.
+test('all 367 deferred HU endpoints retain exact history and remain unavailable', () => {
+  assert.equal(MULTIWAY_POSTFLOP_CATALOG.deferred.length, 367);
+  for (const item of MULTIWAY_POSTFLOP_CATALOG.deferred) {
+    const terminal = continuationTerminals.find(node => node.id === item.terminalId);
+    assert.ok(terminal, item.id);
+    const state = decodeRangeUrl(query(terminal.history));
+    assert.ok(state, item.id);
+    const blocks = buildRangeUrlActionBlocks(state);
+    assert.deepEqual(blocks.at(-1).postflopEvents, terminal.history, item.id);
+    assert.deepEqual(continuationLiveSeats(blocks), terminal.live_participants);
+    const result = context(state, blocks);
+    assert.equal(result?.spotId, null, item.id);
+    assert.equal(result?.pilotAvailable, false, item.id);
+  }
 });

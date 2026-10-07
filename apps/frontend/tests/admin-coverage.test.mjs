@@ -37,7 +37,7 @@ test("format backlog marks only built formats as done", () => {
   assert.ok(formats.filter(format => !format.built).every(format => format.spots === 10));
 });
 
-test("postflop backlog lists flop and turn/river policies for every reachable spot", async () => {
+test("postflop backlog lists flop and turn/river policies for every reachable legacy pot spot", async () => {
   const { POSTFLOP_SPOTS } = await import("../scripts/postflop-ai/spots.ts");
   const catalog = postflopCatalog(POSTFLOP_SPOTS, {
     "btn-bb-srp-v1-policy.json": "a", "co-bb-srp-v1-policy.json": "a", "hj-bb-srp-v1-policy.json": "a", "utg-bb-srp-v1-policy.json": "b",

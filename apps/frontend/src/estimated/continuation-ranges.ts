@@ -185,20 +185,64 @@ export function continuationRangeBreakdown(spot: Partial<ContinuationUiSpot> | n
     unreachableText: continuationCopy('unreachableHandDetail') };
 }
 
-export function withContinuationAvailability(blocks: ActionBlock[], runtime: ContinuationUiRuntime | null, error: Error | null = null): ActionBlock[] {
+export function withContinuationAvailability(blocks: ActionBlock[], runtime: ContinuationUiRuntime | UiDatasets | null, error: Error | null = null): ActionBlock[] {
   if (!blocks.some(block => block.continuationNode)) return blocks;
-  let available = Boolean(runtime) && !error;
+  let selectedRuntime: ContinuationUiRuntime | null = null;
+  try { selectedRuntime = runtime && "select" in runtime && typeof runtime.select === "function" ? runtime as ContinuationUiRuntime : runtime ? createContinuationUiRuntime(runtime as UiDatasets) : null; }
+  catch (failure) { error = failure as Error; }
+  let available = Boolean(selectedRuntime) && !error;
   return blocks.map(block => {
     if (block.kind === 'end') {
-      let status = error ? 'error' : runtime ? 'missing' : 'loading';
-      try { if (runtime) status = runtime.selectTerminal(block.continuationTerminal!).status; } catch { status = 'error'; }
+      let status = error ? 'error' : selectedRuntime ? 'missing' : 'loading';
+      try { if (selectedRuntime) status = selectedRuntime.selectTerminal(block.continuationTerminal!).status; } catch { status = 'error'; }
       return { ...block, continuationAvailable: available && status === 'saved', continuationStatus: status };
     }
     if (!['bounded', 'saved-source'].includes(block.rangeRef?.kind!)) return block;
-    let status = error ? 'error' : runtime ? 'missing' : 'loading';
-    try { if (runtime) status = runtime.select(block.rangeRef!).status; } catch { status = 'error'; }
+    let status = error ? 'error' : selectedRuntime ? 'missing' : 'loading';
+    try { if (selectedRuntime) status = selectedRuntime.select(block.rangeRef!).status; } catch { status = 'error'; }
     if (status !== 'saved') available = false;
     return { ...block, continuationStatus: status, options: block.options.map(option => ({ ...option,
       disabled: option.disabled || (status !== 'saved' && option.action !== block.chosen) })) };
   });
+}
+
+import { productLocale } from "../locale.ts";
+export function continuationUnreachableCopy() {
+  const copy = {
+    ja: { reason: 'この履歴では到達不能、推奨なし', description: '保存された前段の行動頻度とカードの組み合わせでは、このハンドはこの履歴に到達しません。保存上のfold=100は形式上の値です。' },
+    en: { reason: 'Unreachable in this history; no recommendation', description: 'This hand cannot reach this history with the saved prior-action frequencies and card combinations. The saved 100% fold is only a placeholder.' },
+    'zh-CN': { reason: '在此行动历史中无法到达；无建议', description: '根据已保存的先前行动频率和牌张组合，此手牌无法到达这段行动历史。保存的 100% 弃牌仅为占位值。' },
+    es: { reason: 'No alcanzable en este historial; sin recomendación', description: 'Esta mano no puede alcanzar este historial con las frecuencias de acciones previas y las combinaciones de cartas guardadas. El 100% de fold guardado es solo un valor de relleno.' },
+  };
+  return copy[productLocale()];
+}
+
+import type { SourceDataset } from "../../scripts/postflop-ai/types.ts";
+type Sources = Record<string, SourceDataset | undefined>;
+const reachModels = new WeakMap<Sources, ReturnType<typeof createContinuationModel>>();
+export function continuationSavedRange(ref: RangeRef, sources: Record<string, SourceDataset | undefined>) {
+  const node = ref.kind === 'bounded' ? continuationById.get(ref.id!) : null;
+  const name = node?.dataset ?? ref.dataset;
+  const spot = name ? sources[name]?.spots.find(item => item.id === ref.id) : null;
+  if (!spot || !Array.isArray(spot.hands) || spot.hands.length !== 169) return null;
+  const actions = node?.legal_actions ?? ['open','three_bet','four_bet','squeeze','all_in','limp','check','raise','call','fold'].filter(key => Object.hasOwn(spot.hands[0],key));
+  if (spot.hands.some(row => actions.some(key => !Number.isFinite(row[key as keyof typeof row]) || Number(row[key as keyof typeof row]) < 0) || Math.abs(actions.reduce((sum,key) => sum+Number(row[key as keyof typeof row]),0)-100)>0.02)) return null;
+  // Saved mixes are conditional. Hide placeholders using the complete observed
+  // history, including folded participants and joint card support; never scale
+  // a reachable hand's mix by its prior-action frequency.
+  let reach: ((hand: string) => number) | undefined;
+  if (node) {
+    try {
+      if (!reachModels.has(sources)) reachModels.set(sources, createContinuationModel(sources));
+      reach = reachModels.get(sources)!.context(node).reach;
+    } catch {
+      // Missing or invalid ancestors are unavailable, not proof of zero reach.
+      return null;
+    }
+  }
+  const model: MatrixModel = { actions, actionLabels: Object.fromEntries(actions.map(key => [key,key === 'four_bet' ? '4bet' : key === 'all_in' ? 'All-in' : key])), aggregates: new Map(spot.hands.map(row => [row.hand,{hand:row.hand,comboCount:row.hand.length===2 ? 6 : row.hand.endsWith('s') ? 4 : 12,actions:Object.fromEntries(actions.map(key=>[key,Number(row[key as keyof typeof row])/100]))}])) };
+  for (const [hand, aggregate] of model.aggregates) {
+    if (reach && reach(hand) === 0) model.aggregates.set(hand, { ...aggregate, unreachable: true, actions: {} });
+  }
+  return { spot, model, unreachableReason: node ? continuationUnreachableCopy().reason : null };
 }

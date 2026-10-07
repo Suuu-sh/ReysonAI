@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { blockedShare, comboCount, equityVsRange, seedFor, seededRandom, weightedRange } from "./lib/equity.ts";
 import { ALL_IN_CALL_SAMPLES as SAMPLES, MIX_BAND_PCT, allInCallFrequency as callFrequency } from "./lib/all-in-call.mjs";
 import { rakeMetadata, raked } from "../src/estimated/rake.ts";
+import { fiveBetEquityLead } from "./lib/five-bet-reason.mjs";
 import { openSizeFor } from "../src/estimated/sizing.ts";
 
 const staging = process.env.ESTIMATES_DIR;
@@ -21,11 +22,9 @@ const threeBets = load("three-bet-responses");
 const fourBets = load("four-bet-responses");
 const round1 = value => Math.round(value * 10) / 10;
 
-function reasonFor({ hand, equity, need, margin, call, opener, fiveBettor, fourBet, blocked }) {
+function reasonFor({ hand, equity, need, call, opener, fiveBettor, fourBet, blocked }) {
   const verdict = call === 100 ? "コールします" : call === 0 ? "フォールドします" : `境界のため、コール${call}%・フォールド${100 - call}%に分けます`;
-  const lead = margin >= 0
-    ? `${fiveBettor}のオールインレンジに対する勝率は${equity.toFixed(1)}%で、必要勝率${need.toFixed(1)}%を${margin.toFixed(1)}pt上回ります。`
-    : `${fiveBettor}のオールインレンジに対する勝率は${equity.toFixed(1)}%で、必要勝率${need.toFixed(1)}%に${(-margin).toFixed(1)}pt届きません。`;
+  const lead = fiveBetEquityLead({ equity, need, fiveBettor });
   const blocker = blocked >= 15 ? `${hand[0]}を持つことで相手の強いハンドを${blocked.toFixed(1)}%減らせる点も後押しします。` : "";
   return `${opener}が${fourBet}BBに4bet後、100BBのオールインを受けた局面です。残りは全額なので、その後の駆け引きはなく勝率とポットオッズだけで判断できます。${lead}${blocker}${verdict}。`;
 }
@@ -54,7 +53,7 @@ const spots = threeBets.spots.map(before => {
     const call = callFrequency(margin);
     const blocked = blockedShare(row.hand, shoveRange) * 100;
     return { hand: row.hand, fold: 100 - call, call, equity_vs_shove_pct: round1(equity),
-      reason: reasonFor({ hand: row.hand, equity, need, margin, call, opener, fiveBettor, fourBet, blocked }) };
+      reason: reasonFor({ hand: row.hand, equity, need, call, opener, fiveBettor, fourBet, blocked }) };
   });
   return {
     id: `${opener}_vs_${fiveBettor}_five_bet`, opener, hero: opener, five_bettor: fiveBettor,

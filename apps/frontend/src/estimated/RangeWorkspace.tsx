@@ -41,7 +41,7 @@ import { LIMP_RERAISE_RESPONSE_ID, findLimpResponseSpot, limpResponsesMatrixMode
 import { extendedBreakdown, extendedModel, extendedUnreachableReason, findExtendedSpot, useExtendedDatasets } from "./extended-ranges.ts";
 import { continuationCopy } from "./continuation-copy.ts";
 import { chooseContinuationAction, continuationLiveSeats, continuationRootForSelection } from "./continuation-flow.ts";
-import { continuationRangeBreakdown, useContinuationUiRuntime, withContinuationAvailability } from "./continuation-ranges.ts";
+import { continuationRangeBreakdown, continuationUnreachableCopy, useContinuationUiRuntime, withContinuationAvailability } from "./continuation-ranges.ts";
 import { limpActionTransition, responseActionTransition, rewindActionBlockTransition } from "./action-path.ts";
 import { displayModes } from "./display-mode.ts";
 import { displayModeKey } from "../profile.ts";
@@ -200,7 +200,7 @@ function endResultLabel(result: string) {
   return result;
 }
 
-function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, extra = null, spot, position, onReturnToComparison, displayMode }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string }) {
+function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isFourBet, isFiveBet, isContinuation, extra = null, spot, position, onReturnToComparison, displayMode }: { hand: DisplayHand; model: MatrixModel; isOpening?: boolean; isLimpResponse?: boolean; isThreeBet?: boolean; isFourBet?: boolean; isFiveBet?: boolean; isContinuation?: boolean; extra?: ReturnType<typeof extendedBreakdown>; spot: DisplaySpot; position: string; onReturnToComparison?: () => void; displayMode: string }) {
   const reasonState = useDetailedReasons(spot?.id);
   const equityFact = reasonState.data?.fact_labels!.find(fact => fact.key === "equity_pct" || fact.key.startsWith("equity_vs_") && fact.key.endsWith("_pct"));
   const savedFacts = reasonState.data?.hands[hand.hand]?.facts;
@@ -217,7 +217,7 @@ function HandBreakdown({ hand, model, isOpening, isLimpResponse, isThreeBet, isF
   return <div className={`detail-column${onReturnToComparison ? " comparison-focus-details" : ""}`}>
     <Panel>
       <HandHeader position={position} hand={hand.hand} comboCount={aggregate.comboCount} onClose={onReturnToComparison} />
-      {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{extra?.unreachableText ?? (isLimpResponse ? "SBのリンプ頻度が0%のため、この応答経路の推奨頻度はありません。保存上のfold=100は形式上の値です。" : `${isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。`)}</StatusState> : <>
+      {aggregate.unreachable ? <StatusState title="対象外（到達不能）">{isContinuation ? continuationUnreachableCopy().description : extra?.unreachableText ?? (isLimpResponse ? "SBのリンプ頻度が0%のため、この応答経路の推奨頻度はありません。保存上のfold=100は形式上の値です。" : `${isFiveBet ? "既存4bet" : "既存3bet"}頻度が0%のため、この経路の推奨頻度はありません。保存上のfold=100は形式上の値です。`)}</StatusState> : <>
       {tableReason && <p className="adjustment-reason">{tableReason}</p>}
       {displayMode !== "standard" && !tableReason && !isLimpResponse && <AiReason hand={hand} reasonState={reasonState} inlineFacts={inlineFacts} />}
       {displayMode !== "standard" && isLimpResponse && <div className="ai-reason"><span>AIの考え方</span><p>この局面のハンド別説明はありません。</p></div>}
@@ -444,8 +444,8 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   const [coldAction, setColdAction] = useState(initialSelection.coldAction ?? null);
   const [limpReraiseAction, setLimpReraiseAction] = useState(initialSelection.limpReraiseAction);
   const [limpFourBetAction, setLimpFourBetAction] = useState(initialSelection.limpFourBetAction);
+  const [continuationActions, setContinuationActions] = useState<string[]>(initialSelection.continuationActions ?? []);
   const [squeezeResponse, setSqueezeResponse] = useState(initialSelection.squeezeResponse);
-  const [continuationActions, setContinuationActions] = useState(initialSelection.continuationActions ?? []);
   const [stage3RootId, setStage3RootId] = useState(initialSelection.stage3RootId ?? null);
   const [stage3Actions, setStage3Actions] = useState(initialSelection.stage3Actions ?? []);
   const [format, setFormat] = useState<GameFormat>(() => {
@@ -542,6 +542,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
   }
 
   function actAt(position: string, action: string) {
+    setContinuationActions([]);
     setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
     const index = positions.indexOf(position);
     const next = positions[index + 1];
@@ -602,7 +603,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
       setSelectedRangeBlock(block.key);
       return;
     }
-    setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
+    setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]); setTurnActions([]); setRiverActions([]);
     if (block.stage3Node) {
       selectStage3(block, null);
       setSelectedRangeBlock(current => current === block.key ? null : block.key);
@@ -795,11 +796,11 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
       if (saved.status === "unreachable") return missing(continuationCopy("unreachable"), continuationCopy("unreachableDetail"));
       if (saved.status !== "saved") return missing(continuationCopy("missing"), continuationCopy("missingDetail"));
       return { position: ref.position, kind: "bounded", title, spot: saved.spot as DisplaySpot, model: saved.model,
-        hand: saved.spot.hands.find(row => row.hand === selected), unreachableReason: continuationCopy("unreachableHand") };
+        hand: saved.spot.hands.find(row => row.hand === selected), unreachableReason: ref.kind === "stage3" || stage3Selection ? continuationCopy("unreachableHand") : continuationUnreachableCopy().reason };
     } catch (error) { return missing(continuationCopy("error"), (error as Error).message); }
   };
   const rangeEntries: RangeEntry[] = [];
-  const addSaved = (position: string, kind: string, savedSpot: DisplaySpot | null | undefined, savedModel: MatrixModel | null, title: string) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, hand: savedSpot?.hands.find(row => row.hand === selected) });
+  const addSaved = (position: string, kind: string, savedSpot: DisplaySpot | null | undefined, savedModel: MatrixModel | null, title: string, unreachableReason?: string | null) => rangeEntries.push({ position, kind, spot: savedSpot, model: savedModel, title, unreachableReason, hand: savedSpot?.hands.find(row => row.hand === selected) });
   if (isOpening) {
     addSaved(opener, "opening", openerSpot, openerModel, openingTitle(opener));
   } else if (isLimp) {
@@ -1019,7 +1020,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
             setStage3RootId(null); setStage3Actions([]);
             const next = chooseContinuationAction({ squeezeResponse, continuationActions }, block, action);
             setSqueezeResponse(next.squeezeResponse); setContinuationActions(next.continuationActions);
-            setFocusedRange(null); setSelectedRangeBlock(null); setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]);
+            setFocusedRange(null); setSelectedRangeBlock(null); setShowFlop(false); setFlopDialogOpen(false); setStreetCardDialog(null); setFlopActions([]); setTurnActions([]); setRiverActions([]);
           }}
           onSqueezeResponse={(role, action) => { setFocusedRange(null); setSelectedRangeBlock(null); setSqueezeResponse(current => role === "opener" ? [action] : [current[0], action]); }}
           onColdAction={action => { setFocusedRange(null); setSelectedRangeBlock(null); setContinuationAction(null); setContinuationActions([]); setStage3RootId(null); setStage3Actions([]); setSqueezeResponse([]); setColdAction(action); setShowFlop(false); setFlopDialogOpen(false); setFlopActions([]); }}
@@ -1033,7 +1034,7 @@ function EstimatedRangeSession({ initialRangeType = "response", fourBet = fourBe
             {canGenerate && isComparison && entry.kind === "pending" && <InlineGenerationControl description="マルチウェイレンジを生成します。保存済みデータは変更しません。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
             {canGenerateFiveBet && entry.position === opener && <InlineGenerationControl description="この分岐のレンジを生成します。" status={localStatus} error={localError} onGenerate={generateLocalEstimate} />}
           </Panel>)}
-          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} extra={focusedEntry.kind === "bounded" ? continuationRangeBreakdown(focusedEntry.spot!) : extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
+          {focusedEntry && (focusedEntry.kind === "local" ? <LocalHandBreakdown entry={focusedEntry} selected={selected} displayMode={displayMode} onClose={() => setFocusedRange(null)} /> : <HandBreakdown hand={focusedEntry.hand!} model={focusedEntry.model!} isOpening={focusedEntry.kind === "opening"} isLimpResponse={focusedEntry.kind === "limp_response"} isThreeBet={focusedEntry.kind === "three_bet"} isFourBet={focusedEntry.kind === "four_bet"} isFiveBet={focusedEntry.kind === "five_bet"} isContinuation={focusedEntry.kind === "bounded"} extra={focusedEntry.kind === "bounded" ? continuationRangeBreakdown(focusedEntry.spot!) : extendedBreakdown(focusedEntry.kind, focusedEntry.spot!, focusedEntry.hand!)} spot={focusedEntry.spot!} position={focusedEntry.position} displayMode={displayMode} onReturnToComparison={() => setFocusedRange(null)} />)}
         </div>
       </>}
       {formatOpen && <GameFormatDialog format={format} tableProfile={tableProfile} onSave={saveFormat} onClose={() => setFormatOpen(false)} />}

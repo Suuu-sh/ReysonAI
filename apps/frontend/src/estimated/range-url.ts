@@ -314,6 +314,8 @@ function replayPreflop(value: string | null) {
     if (!option || (option.disabled && block.chosen !== action)) break;
     if (block.chosen) {
       if (block.chosen !== action) break;
+    } else if (block.continuationNode) {
+      state = { ...state, ...chooseContinuationAction(state, block, action) };
     } else if (block.kind === "cold") {
       if (action !== "fold") state = { ...state, coldAction: { position: block.position, action }, continuationAction: null };
     } else if (block.kind === "forced") {

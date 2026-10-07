@@ -35,7 +35,7 @@ function reachEstimate(id, ranges, samples = 32768) {
   return { probability: scale * legal / samples, samples, compatible_samples: legal, method: 'seeded-participant-range-products-collision-corrected-v1; forced outside folds unweighted' };
 }
 
-export function buildMultiwayCatalog(datasets, { bLimit = Infinity, reachSamples = 32768 } = {}) {
+export function buildMultiwayCatalog(datasets, { aLimit = 40, bLimit = 0, reachSamples = 32768 } = {}) {
   const model = createContinuationModel(datasets), eligible = [], omitted = [];
   for (const terminal of continuationTerminals.filter(t => t.terminal === 'flop' && t.live_participants.length === 2)) {
     const weighted = terminal.participants.map(seat => [...model.weights(terminal.source_factors[seat])].filter(([, w]) => w > 0));
@@ -60,8 +60,8 @@ export function buildMultiwayCatalog(datasets, { bLimit = Infinity, reachSamples
   const a = eligible.filter(s => s.stage === 'A').sort((x,y) => y.reach.probability - x.reach.probability);
   const b = eligible.filter(s => s.stage === 'B').sort((x,y) => y.reach.probability - x.reach.probability);
   return { version: 1, structural: eligible.length + omitted.length, reachable: eligible.length,
-    stageA: a.length, stageB: b.length, spots: [...a, ...b.slice(0, bLimit)],
-    deferred: b.slice(bLimit).map(({ id, terminalId, reach }) => ({ id, terminalId, reach, reason: 'Stage B reach-ranked; no authored policy yet' })), omitted };
+    stageA: a.length, stageB: b.length, spots: [...a.slice(0, aLimit), ...b.slice(0, bLimit)],
+    deferred: [...a.slice(aLimit).map(({ id, terminalId, reach }) => ({ id, terminalId, reach, reason: 'Stage A reach-ranked beyond selected limit; no authored policy yet' })), ...b.slice(bLimit).map(({ id, terminalId, reach }) => ({ id, terminalId, reach, reason: 'Stage B reach-ranked; no authored policy yet' }))], omitted };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const datasets = Object.fromEntries(sourceNames.map(name => [name, JSON.parse(readFileSync(new URL(`../../src/estimated/${name}.json`, import.meta.url)))]));
