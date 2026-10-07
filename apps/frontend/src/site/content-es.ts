@@ -11,8 +11,8 @@ export const es: SiteCopy = {
     { label: "Comparativa", href: "#compare" },
     { label: "Precios", href: "#pricing" },
   ],
-  hero: { title1: "Don't just play.", title2: "Understand why.", lead: "ReysonAI te muestra qué hacer con cada mano y explica el porqué con palabras sencillas. Cuando entiendes la razón, recuerdas la decisión al sentarte a la mesa.", primary: "Abrir la app", secondary: "Ver cómo funciona", note: "Vista previa gratuita · Sin cuenta · Cash de 6 jugadores, 100BB" },
-  preview: { simpleMode: "Simple", matrixLabel: "Tabla de manos iniciales de 13 por 13", scrollLabel: "con desplazamiento horizontal en pantallas pequeñas", selectedHand: "Mano seleccionada", suited: "Del mismo palo", offsuit: "De distinto palo", pair: "Pareja", frequencyLabel: "Frecuencias de acción", why: "Por qué", k7s: "K7s es del mismo palo y tiene buena jugabilidad después del flop. En esta estimación de apertura desde BTN, se sube siempre.", other: (spot: string, hand: string, action: string, value: number) => `En este rango guardado de ${spot}, con ${hand} se elige ${action} el ${value}% de las veces. Abre la app para ver la explicación completa de la mano.`, explore: "Explorar este rango en la app", saved: "Estimación de IA guardada", notGto: "No es una solución GTO", spotOpening: "apertura de BTN", spotResponse: "respuesta de BB", actionPast: { raise: "subir", threeBet: "hacer 3bet", call: "igualar", fold: "retirarse" }, pauseTour: "Pausar recorrido de manos", resumeTour: "Reanudar recorrido de manos", touring: "Recorrido automático. Pulsa cualquier casilla para explorar.", manual: "Pulsa una mano para verla." },
+  hero: { coverTitle: "¿Puedes explicar esa acción?", coverSubtitle: "Aprendizaje de póker con IA · ReysonAI", coverScroll: "Desliza para explorar ↓", title1: "Don't just play.", title2: "Understand the reason.", lead: "ReysonAI te muestra qué hacer con cada mano y explica el porqué con palabras sencillas. Cuando entiendes la razón, recuerdas la decisión al sentarte a la mesa.", primary: "Abrir la app", secondary: "Ver cómo funciona", note: "Vista previa gratuita · Sin cuenta · Cash de 6 jugadores, 100BB" },
+  preview: { bet: "Apostar", check: "Pasar", flop: "Flop", unreachable: "Inalcanzable en esta secuencia; sin recomendación", simpleMode: "Simple", matrixLabel: "Tabla de manos iniciales de 13 por 13", scrollLabel: "con desplazamiento horizontal en pantallas pequeñas", selectedHand: "Mano seleccionada", suited: "Del mismo palo", offsuit: "De distinto palo", pair: "Pareja", frequencyLabel: "Frecuencias de acción", why: "Por qué", k7s: "K7s es del mismo palo y tiene buena jugabilidad después del flop. En esta estimación de apertura desde BTN, se sube siempre.", other: (spot: string, hand: string, action: string, value: number) => `En este rango guardado de ${spot}, con ${hand} se elige ${action} el ${value}% de las veces. Abre la app para ver la explicación completa de la mano.`, explore: "Explorar este rango en la app", saved: "Estimación de IA guardada", notGto: "No es una solución GTO", spotOpening: "apertura de BTN", spotResponse: "respuesta de BB", actionPast: { raise: "subir", threeBet: "hacer 3bet", call: "igualar", fold: "retirarse" }, pauseTour: "Pausar recorrido de manos", resumeTour: "Reanudar recorrido de manos", touring: "Recorrido automático. Pulsa cualquier casilla para explorar.", manual: "Pulsa una mano para verla." },
   how: {
     title1: "De la situación al porqué,", title2: "en tres pasos.",
     steps: [
@@ -29,18 +29,21 @@ export const es: SiteCopy = {
     items: [
       { level: "Principiante", quote: "¿Qué manos debería jugar?", body: "La vista Simple muestra primero la acción principal de cada mano, empezando por las situaciones más habituales.", gets: "Vista Simple · situaciones habituales primero" },
       { level: "De principiante a intermedio", quote: "Memoricé la tabla. Aún no entiendo las mezclas.", body: "La vista Estándar muestra las frecuencias exactas y cada mano explica por qué combina acciones.", gets: "Vista Estándar · razones mano a mano" },
-      { level: "Presupuesto ajustado", quote: "Los solvers son demasiado caros para mí.", body: "La vista previa es gratuita. Practica con tablas de rangos, explicaciones de cada mano, ejercicios de veinte preguntas, partidas clasificatorias y análisis, sin pagar una suscripción a un solver.", gets: "Ejercicios · clasificatorias · análisis" },
+      { level: "Presupuesto ajustado", quote: "Los solvers son demasiado caros para mí.", body: "La vista previa gratuita ofrece rangos y razones preflop, práctica preflop e informes básicos. Plus está previsto para aprender postflop y obtener informes detallados.", gets: "Práctica preflop · informes básicos" },
     ],
     views: ["Vista Simple", "Detalle de mano", "Vista previa gratuita"],
-    freeList: ["Tablas de rangos para situaciones guardadas", "Explicaciones de cada mano", "Ejercicios y revisión de sesiones", "Análisis de juego"],
+    freeList: ["Rangos y razones preflop", "Práctica preflop", "Informes básicos"],
+    learnerShort: "Consulta frecuencias exactas y las razones de cada mano.",
+    budgetShort: "Prueba gratis rangos y razones preflop, práctica preflop e informes básicos.",
     freeNote: "Sin cuenta",
     note: "¿Quieres estudiar soluciones exactas de árboles de juego personalizados? Para eso, una app basada en un solver es más adecuada.",
   },
   ranked: {
-    status: "Próximamente", title1: "Partidas clasificatorias.", title2: "Gánate tu puntuación.",
-    description: "Veinte preguntas con las mismas condiciones para todos. Las manos claras apenas cambian tu puntuación; las mixtas tienen el mayor impacto. Sube de Bronce a Maestro.",
-    points: ["20 preguntas de todas las situaciones, dificultad estándar", "Tres partidas clasificatorias al día", "Puntuación tipo Elo: las manos difíciles pesan más", "Clasificación semanal e histórica"],
-    sample: "Ejemplo", rank: "Rango", rating: "Puntuación", peak: "Máxima", toNext: (points: number, tier: string) => `${points} puntos para ${tier}`, today: "Quedan 2 / 3 partidas hoy", lastMatch: "Última partida", matchLine: (correct: number, total: number) => `${correct} / ${total} correctas · ${Math.round(correct / total * 100)}% de acierto`,
+    status: "Requiere sesión y servidor disponible", title1: "Clasificación humana.", title2: "Manos reales, no cuestionarios.",
+    description: "Juega Human FastFold β con seis personas verificadas. Sigue tu puntuación y resultados registrados por el servidor. Mientras esperas, practica contra Agents sin puntuación.",
+    points: ["Las seis personas aceptan antes de repartir", "Juego continuo, mano a mano", "Puntuación, manos puntuadas, resultado y bb/100", "Solo resultados humanos · sin corrección IA aplicada"],
+    sample: "Ejemplo · no son datos en vivo", rank: "Rango", mode: "FastFold humano β", rating: "Puntuación actual", hands: "Manos puntuadas", toNext: (points: number, tier: string) => `${points} puntos para ${tier}`,
+    rewards: "Se prevén recompensas según el rango. El contenido y las condiciones se anunciarán más adelante.", note: "Cifras ilustrativas. Requiere sesión verificada y servidor disponible; la comparación IA es solo análisis paralelo, sin penalización aplicada.", legend: "Leyenda", legendRule: (count: number) => `Top ${count} Maestros`,
     tiers: ["Bronce", "Plata", "Oro", "Platino", "Diamante", "Maestro"],
   },
   agent: {
@@ -61,8 +64,8 @@ export const es: SiteCopy = {
   },
   compare: {
     title1: "Una forma distinta", title2: "de aprender.",
-    description: "Las apps GTO basadas en solvers, como GTO Wizard, son la referencia para la teoría exacta. ReysonAI está diseñado para ayudarte a aprender una estrategia y seguir practicándola.",
-    us: "ReysonAI", them: "Apps GTO con solver", themNote: "p. ej., GTO Wizard",
+    description: "Las apps GTO basadas en solvers son la referencia para la teoría exacta. ReysonAI está diseñado para ayudarte a aprender una estrategia y seguir practicándola.",
+    us: "ReysonAI", them: "Apps GTO con solver",
     rows: [
       { label: "Qué ves", us: "Rangos estimados por IA, identificados como estimaciones", them: "Estrategias GTO calculadas por un solver" },
       { label: "Cómo se explica", us: "Razones claras para cada mano", them: "Primero los números: frecuencias y EV" },
@@ -72,9 +75,9 @@ export const es: SiteCopy = {
       { label: "Precisión", us: "Una aproximación práctica, no GTO", them: "Exacta dentro del juego resuelto" },
       { label: "Para quién", us: "Principiantes e intermedios que crean hábitos", them: "Jugadores que estudian teoría exacta" },
     ],
-    note: "Comparación general de enfoques; cada producto es distinto y puede cambiar. GTO Wizard es una marca de su titular y no tiene afiliación con ReysonAI.",
+    note: "Comparación general de enfoques; cada producto es distinto y puede cambiar.",
   },
-  pricing: { title1: "Empieza gratis.", title2: "Plus por unos US$0.12 al día.", description: "", note: "Plus aún no está disponible; las funciones de pago y la facturación no están activas.", plans: [{ name: "Free", price: "$0", cadence: "para siempre", description: "Todo lo incluido en la vista previa actual.", features: ["Rangos preflop guardados y detalles de manos", "Vistas Simple y Estándar", "Entrenador, revisión de sesiones y análisis"], action: "Abrir la app", href: "/analyze/ranges" as string | null, status: "Disponible" }, { name: "Plus", price: "$3.70", cadence: "/ mes · USD aprox.", description: "Un espacio de práctica más completo, cuando esté listo.", features: ["Más herramientas de aprendizaje", "Más entrenamiento guiado", "Futuras funciones adaptadas a la mesa"], action: "Más adelante", href: null as string | null, status: "Previsto" }] },
+  pricing: { title1: "Empieza gratis.", title2: "Plus por unos US$0.12 al día.", description: "Distribución prevista entre Free y Plus; la vista previa actual sigue disponible.", note: "Esta distribución está prevista. El acceso de pago a Plus y la facturación no están activos; la vista previa no constituye un derecho de pago.", plans: [{ name: "Free", price: "$0", cadence: "para siempre", description: "Aprendizaje preflop e informes básicos.", features: ["Rangos y razones preflop", "Práctica preflop", "Informes básicos"], action: "Abrir la app", href: "/analyze/ranges" as string | null, status: "Disponible" }, { name: "Plus", price: "$3.70", cadence: "/ mes · USD aprox.", description: "Todo Free, más aprendizaje postflop y análisis detallado.", features: ["Todo lo incluido en Free", "Rangos, razones y práctica postflop", "Informes de análisis detallados"], action: "Más adelante", href: null as string | null, status: "Previsto" }] },
   faq: {
     title: "Preguntas con respuestas claras.",
     items: [
@@ -82,10 +85,10 @@ export const es: SiteCopy = {
       { question: "¿En qué se diferencia de GTO Wizard?", answer: "GTO Wizard y apps similares muestran estrategias calculadas por un solver y son la referencia para la teoría exacta. ReysonAI ofrece estimaciones de IA para aprender, con explicaciones, ejercicios, clasificatorias y análisis de tu práctica. Consulta la comparativa anterior." },
       { question: "¿Qué juegos incluye?", answer: "Cash de 6 jugadores con 100BB y sin ante. Las aperturas son a 2.5BB, o a 3.5BB desde la ciega pequeña. Las situaciones sin datos guardados se indican como no registradas, nunca se inventan." },
       { question: "¿Necesito una cuenta?", answer: "No. Tu perfil y tu historial de práctica se guardan en este navegador. Las cuentas están previstas." },
-      { question: "¿Incluye juego postflop?", answer: "Una prueba experimental cubre las líneas compatibles de uno contra uno desde el flop hasta el river. La app lo identifica como experimental." },
-      { question: "¿Cuánto cuesta?", answer: "La vista previa actual es gratuita. Plus costará unos US$3.70 al mes, unos US$0.12 al día calculados sobre 30 días, pero aún no está disponible. El importe en USD es una conversión aproximada y puede cambiar con el tipo de cambio." },
+      { question: "¿Incluye juego postflop?", answer: "Los rangos, razones y práctica postflop están previstos para Plus. La app actual ofrece una prueba experimental de líneas compatibles uno contra uno, del flop al river; no es un derecho de pago activo." },
+      { question: "¿Cuánto cuesta?", answer: "La vista previa actual es gratuita. Free incluirá rangos, razones y práctica preflop e informes básicos; Plus añadirá aprendizaje postflop e informes detallados. Plus está previsto por unos US$3.70 al mes (US$0.12 al día sobre 30 días), pero la facturación aún no está activa. El USD es una conversión aproximada y puede variar." },
     ],
   },
   final: { title1: "Tu próxima sesión", title2: "empieza con una mano.", description: "Abre la app, elige una situación y pulsa una mano.", action: "Abrir ReysonAI", note: "Vista previa gratuita · Sin cuenta" },
-  footer: { tagline: "Don't just play. Understand why.", product: "Producto", open: "Abrir la app", how: "Cómo funciona", drill: "Entrenamiento", analysis: "Análisis", compare: "Comparativa", pricing: "Precios", faq: "Preguntas frecuentes", legal: "Legal", privacy: "Política de privacidad", terms: "Condiciones de uso", disclaimer: "ReysonAI ofrece información educativa y de estrategia de póquer. Las soluciones de IA son estimaciones y no se garantiza que sean matemáticamente óptimas ni equivalentes a soluciones GTO. Juega de forma responsable." },
+  footer: { tagline: "Don't just play. Understand the reason.", product: "Producto", open: "Abrir la app", how: "Cómo funciona", drill: "Entrenamiento", analysis: "Análisis", compare: "Comparativa", pricing: "Precios", faq: "Preguntas frecuentes", legal: "Legal", privacy: "Política de privacidad", terms: "Condiciones de uso", disclaimer: "ReysonAI ofrece información educativa y de estrategia de póquer. Las soluciones de IA son estimaciones y no se garantiza que sean matemáticamente óptimas ni equivalentes a soluciones GTO. Juega de forma responsable." },
 };
