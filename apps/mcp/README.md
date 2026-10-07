@@ -1,5 +1,7 @@
 # ReysonAI authenticated MCP (development MVP)
 
+**Draft review status:** Final independent security validation is incomplete because its final recheck was stopped by an execution restriction. The completed local test results below are author-run verification, not final independent security approval. Do not merge, enable the endpoint, create live OAuth grants, or deploy this draft until that validation and the activation gates are complete.
+
 This package is **not deployed**. It implements a read-only remote MCP endpoint that requires a ReysonAI account and explicit per-client consent. Authenticated access is currently free. There is no payment/subscription integration, paid-status bypass, pricing decision, or anonymous mode.
 
 ## Tools and data boundaries
