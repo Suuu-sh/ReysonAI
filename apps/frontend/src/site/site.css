@@ -1068,3 +1068,13 @@
   .site-compare tbody td.is-us::before { top: -48px; }
   .site-compare tbody th { position: relative; z-index: 1; color: var(--paper); text-shadow: 0 1px 2px var(--paper-ink); }
 }
+
+/* Symmetric comparison labels, without competitor examples or orphaned lines. */
+.site-compare thead th { vertical-align: middle; text-align: center; }
+.site-compare-heading { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; line-height: 1.4; text-wrap: balance; }
+.site-compare-heading > img { flex: 0 0 auto; }
+@media (max-width: 720px) {
+  .site-compare thead th { padding: 8px 6px; font-size: 12px; }
+  .site-compare-heading { min-height: 34px; }
+  .site-compare-heading > img { width: 16px; height: 16px; }
+}

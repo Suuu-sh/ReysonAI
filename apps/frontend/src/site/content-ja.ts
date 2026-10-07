@@ -64,8 +64,8 @@ export const ja: SiteCopy = {
   },
   compare: {
     title1: "ソルバーアプリとは、", title2: "役割が違う。",
-    description: "GTO Wizard などのソルバー系GTOアプリは、厳密な理論の基準です。ReysonAIは、その戦略を理解し、練習し続けるために作られています。",
-    us: "ReysonAI", them: "ソルバー系GTOアプリ", themNote: "例：GTO Wizard",
+    description: "ソルバー系GTOアプリは、厳密な理論の基準です。ReysonAIは、その戦略を理解し、練習し続けるために作られています。",
+    us: "ReysonAI", them: "ソルバー系GTOアプリ",
     rows: [
       { label: "表示するもの", us: "AIが推定したレンジ。推定と明記", them: "ソルバーが計算したGTO戦略" },
       { label: "説明の仕方", us: "ハンドごとの理由を、やさしい言葉で", them: "頻度やEVなど、数字が中心" },
@@ -75,7 +75,7 @@ export const ja: SiteCopy = {
       { label: "精度", us: "実用的な近似。GTOではない", them: "解いたゲームの範囲で厳密" },
       { label: "向いている人", us: "習慣を作りたい初心者〜初中級者", them: "厳密な理論を研究したい人" },
     ],
-    note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。GTO Wizard は各権利者の商標であり、ReysonAIとは関係ありません。",
+    note: "アプローチの一般的な比較です。個々の製品の機能は異なり、変わることがあります。",
   },
   pricing: { title1: "まずは無料で。", title2: "Plusも1日約19円。", description: "Free／Plusで予定している機能分けです。現在のプレビューは利用できます。", note: "予定している機能分けです。Plusの有料利用と課金はまだ提供していません。現在のプレビュー利用は有料権利の提供を意味しません。", plans: [{ name: "Free", price: "¥0", cadence: "ずっと無料", description: "プリフロップ学習と簡易レポート。", features: ["プリフロップのレンジと理由", "プリフロップ練習", "簡易レポート"], action: "アプリを開く", href: "/analyze/ranges" as string | null, status: "提供中" }, { name: "Plus", price: "¥580", cadence: "/ 月", description: "Freeの全機能に、ポストフロップ学習と詳細分析を。", features: ["Freeの全機能", "ポストフロップのレンジ・理由・練習", "詳細な分析レポート"], action: "今後提供予定", href: null as string | null, status: "予定" }] },
   faq: {

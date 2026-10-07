@@ -64,8 +64,8 @@ export const es: SiteCopy = {
   },
   compare: {
     title1: "Una forma distinta", title2: "de aprender.",
-    description: "Las apps GTO basadas en solvers, como GTO Wizard, son la referencia para la teoría exacta. ReysonAI está diseñado para ayudarte a aprender una estrategia y seguir practicándola.",
-    us: "ReysonAI", them: "Apps GTO con solver", themNote: "p. ej., GTO Wizard",
+    description: "Las apps GTO basadas en solvers son la referencia para la teoría exacta. ReysonAI está diseñado para ayudarte a aprender una estrategia y seguir practicándola.",
+    us: "ReysonAI", them: "Apps GTO con solver",
     rows: [
       { label: "Qué ves", us: "Rangos estimados por IA, identificados como estimaciones", them: "Estrategias GTO calculadas por un solver" },
       { label: "Cómo se explica", us: "Razones claras para cada mano", them: "Primero los números: frecuencias y EV" },
@@ -75,7 +75,7 @@ export const es: SiteCopy = {
       { label: "Precisión", us: "Una aproximación práctica, no GTO", them: "Exacta dentro del juego resuelto" },
       { label: "Para quién", us: "Principiantes e intermedios que crean hábitos", them: "Jugadores que estudian teoría exacta" },
     ],
-    note: "Comparación general de enfoques; cada producto es distinto y puede cambiar. GTO Wizard es una marca de su titular y no tiene afiliación con ReysonAI.",
+    note: "Comparación general de enfoques; cada producto es distinto y puede cambiar.",
   },
   pricing: { title1: "Empieza gratis.", title2: "Plus por unos US$0.12 al día.", description: "Distribución prevista entre Free y Plus; la vista previa actual sigue disponible.", note: "Esta distribución está prevista. El acceso de pago a Plus y la facturación no están activos; la vista previa no constituye un derecho de pago.", plans: [{ name: "Free", price: "$0", cadence: "para siempre", description: "Aprendizaje preflop e informes básicos.", features: ["Rangos y razones preflop", "Práctica preflop", "Informes básicos"], action: "Abrir la app", href: "/analyze/ranges" as string | null, status: "Disponible" }, { name: "Plus", price: "$3.70", cadence: "/ mes · USD aprox.", description: "Todo Free, más aprendizaje postflop y análisis detallado.", features: ["Todo lo incluido en Free", "Rangos, razones y práctica postflop", "Informes de análisis detallados"], action: "Más adelante", href: null as string | null, status: "Previsto" }] },
   faq: {

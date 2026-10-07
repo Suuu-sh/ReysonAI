@@ -66,8 +66,8 @@ export const en = {
   },
   compare: {
     title1: "Not another", title2: "solver app.",
-    description: "Solver-based GTO apps such as GTO Wizard are the reference for exact theory. ReysonAI is built to help you learn a strategy and keep practicing it.",
-    us: "ReysonAI", them: "Solver-based GTO apps", themNote: "e.g. GTO Wizard",
+    description: "Solver-based GTO apps are the reference for exact theory. ReysonAI is built to help you learn a strategy and keep practicing it.",
+    us: "ReysonAI", them: "Solver-based GTO apps",
     rows: [
       { label: "What you see", us: "AI-estimated ranges, labeled as estimates", them: "Solver-computed GTO strategies" },
       { label: "How it explains", us: "Plain-language reasons for every hand", them: "Numbers first: frequencies and EV" },
@@ -77,7 +77,7 @@ export const en = {
       { label: "Precision", us: "A practical approximation, not GTO", them: "Exact within the solved game" },
       { label: "Best for", us: "Beginners to intermediates building habits", them: "Players studying exact theory" },
     ],
-    note: "A general comparison of approaches; individual products vary and change. GTO Wizard is a trademark of its owner, and ReysonAI is not affiliated with it.",
+    note: "A general comparison of approaches; individual products vary and change.",
   },
   pricing: { title1: "Start free.", title2: "Plus for about $0.12 a day.", description: "Planned Free / Plus feature split; the current preview remains available.", note: "This is the planned feature split. Plus paid access and billing are not live; current preview access does not establish a paid entitlement.", plans: [{ name: "Free", price: "$0", cadence: "forever", description: "Preflop learning and basic reports.", features: ["Preflop ranges and reasons", "Preflop practice", "Basic reports"], action: "Open the app", href: "/analyze/ranges" as string | null, status: "Available" }, { name: "Plus", price: "$3.70", cadence: "/ month · approx.", description: "All Free features, plus postflop learning and deeper analysis.", features: ["Everything in Free", "Postflop ranges, reasons and practice", "Detailed analysis reports"], action: "Coming later", href: null as string | null, status: "Planned" }] },
   faq: {

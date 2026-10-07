@@ -727,3 +727,8 @@ Verification:
 ## 2026-10-07 — Correct black scope to ReysonAI column only
 - User corrected prior full dark section request. Restore original light section/competitor palette; only ReysonAI header/cells remain black. Remove internal rounded corners/light border gaps and extend cell-background into responsive row spacing without changing column layout/copy.561–720px label contrast preserved where its existing full-width label crosses the black column.
 - Targeted column-continuity/light-surroundings guard1/diffcheck passed. CSS-only no repeated build/browser claim. Other compaction/hero changes retained; no merge/deploy.
+
+## 2026-10-07 — Generic balanced comparison headers
+- Remove competitor example subline/themNote in all four locales. Comparison intro/note now generic solver-based explanation without named-product examples; unrelated FAQ remains unchanged. Every comparison row retained.
+- Symmetric centered/middle-aligned header labels with shared36px linebox/gap6; mobile logo16px and balanced label wrapping reduce orphaned-character lines. Continuous black Reyson column/light surrounding palette/layout retained.
+- Targeted all-locale generic-example guard1/build/diffcheck passed. No new rendered wrapping measurement claimed. No merge/deploy.

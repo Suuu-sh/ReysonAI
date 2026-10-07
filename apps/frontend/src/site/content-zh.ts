@@ -64,8 +64,8 @@ export const zh: SiteCopy = {
   },
   compare: {
     title1: "用途不同于", title2: "求解器应用。",
-    description: "GTO Wizard等基于求解器的GTO应用是精确理论的参考。ReysonAI旨在帮助你理解策略并持续练习。",
-    us: "ReysonAI", them: "基于求解器的GTO应用", themNote: "例如GTO Wizard",
+    description: "基于求解器的GTO应用是精确理论的参考。ReysonAI旨在帮助你理解策略并持续练习。",
+    us: "ReysonAI", them: "基于求解器的GTO应用",
     rows: [
       { label: "展示内容", us: "AI估算范围，明确标注为估算", them: "求解器计算的GTO策略" },
       { label: "解释方式", us: "用易懂的语言解释每手牌", them: "以数字为主：频率与EV" },
@@ -75,7 +75,7 @@ export const zh: SiteCopy = {
       { label: "精确度", us: "实用的近似估算，并非GTO", them: "在已求解的博弈范围内精确" },
       { label: "适合人群", us: "正在建立习惯的初级到中级玩家", them: "研究精确理论的玩家" },
     ],
-    note: "这是对不同方法的一般性比较，各产品功能可能不同且会变化。GTO Wizard是其权利人的商标，与ReysonAI无关联。",
+    note: "这是对不同方法的一般性比较，各产品功能可能不同且会变化。",
   },
   pricing: { title1: "免费开始。", title2: "Plus每天约19日元。", description: "这是Free／Plus计划中的功能划分；当前预览仍可使用。", note: "这是计划中的功能划分。Plus付费使用和计费尚未开放；当前预览不代表已授予付费权益。", plans: [{ name: "Free", price: "¥0", cadence: "永久免费", description: "翻前学习和基础报告。", features: ["翻前范围和原因", "翻前练习", "基础报告"], action: "打开应用", href: "/analyze/ranges" as string | null, status: "已开放" }, { name: "Plus", price: "¥580", cadence: "/ 月（日元）", description: "Free全部功能，加上翻后学习和详细分析。", features: ["Free全部功能", "翻后范围、原因和练习", "详细分析报告"], action: "未来推出", href: null as string | null, status: "计划中" }] },
   faq: {

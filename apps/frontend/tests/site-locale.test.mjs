@@ -195,3 +195,13 @@ test("all locales keep the agreed planned Free and Plus split without live paid 
     assert.ok(copy.faq.items[5].answer.includes("Free"));
   }
 });
+
+
+test("comparison stays generic without named examples in any locale", async () => {
+  for (const [file, name] of [["content.ts", "en"], ["content-ja.ts", "ja"], ["content-es.ts", "es"], ["content-zh.ts", "zh"]]) {
+    const copy = await loadCopy(file, name);
+    assert.equal(copy.compare.themNote, undefined);
+    assert.doesNotMatch(JSON.stringify(copy.compare), /GTO Wizard/);
+    assert.equal(copy.compare.rows.length, 7);
+  }
+});
