@@ -747,7 +747,13 @@ export function EstimatedRanges({ initialRangeType = "response", fourBet = fourB
       addSaved("BB", "limp_response", bbLimpSpot, bbLimpModel, "BB · SBリンプへの応答");
     }
   } else if (actionBlocks.some(block => block.continuationNode)) {
-    for (const block of actionBlocks.filter(block => block.rangeRef && (block.active || block.continuationNode && block.chosen !== "fold"))) {
+    // At a terminal show every live participant's latest saved range (the squeezer's
+    // squeeze is a root block, not a continuation node); otherwise the decisions so far.
+    const live = actionBlocks.find(block => block.continuationTerminal)?.continuationTerminal?.live_participants;
+    const shown = live
+      ? live.map(seat => [...actionBlocks].reverse().find(block => block.position === seat && block.rangeRef && ["bounded", "saved-source"].includes(block.rangeRef.kind))).filter((block): block is ActionBlock => Boolean(block))
+      : actionBlocks.filter(block => block.rangeRef && (block.active || block.continuationNode && block.chosen !== "fold"));
+    for (const block of shown) {
       const ref = block.rangeRef!;
       if (!["bounded", "saved-source"].includes(ref.kind)) continue;
       const saved = continuationSources && continuationSavedRange(ref, continuationSources);

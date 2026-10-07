@@ -53,8 +53,9 @@ import { flopBetFraction, raiseDepth } from "./tree.ts";
 import { createTable, playFlop, playLaterStreetsWithPolicy, rake } from "./engine.ts";
 import pilotConfig from "../data/postflop-ai-pilot.json" with { type: "json" };
 
-// Best-five showdown ranking: older derived defence/base artifacts are stale.
-export const DEFENCE_VERSION = 6;
+// Hand tiers count a pair only when a private card makes it (QQ on KK4 is medium): older
+// derived defence/base artifacts are stale.
+export const DEFENCE_VERSION = 7;
 // Sampled turn+river runouts per flop decision (seeded by the flop, shared by every node of it).
 export const FLOP_RUNOUTS = 300;
 // call share = logistic(margin / LOGISTIC_SCALE): +-4pt of margin is about 88 / 12.
