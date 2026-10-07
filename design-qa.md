@@ -593,4 +593,5 @@ Verification:
 - Attempted focused browser QA through CUA: IAB unavailable; fresh Chrome preview creation timed out and reset the kernel. No new 390/1280 rendered verification or actual iPhone claim. Responsive appearance remains unverified for this integration; prior standalone mobile screenshots do not prove the merged version.
 - No merge to development/main or deployment. PR106 now includes PR107 ancestry: review/merge ordering must account for this overlap rather than merging conflicting versions independently.
 
-- Parent merged visual QA: 390px phone preserved; 1280px desktop saved-range/legend layout visible. Longer retained reason tagline initially clipped; desktop mark now scales to copy-container width, with phone inheriting its existing size. Final targeted desktop visual recheck pending.
+- Parent merged visual QA: 390px phone preserved; 1280px desktop saved-range/legend layout visible. Longer retained reason tagline initially clipped; desktop mark now scales to copy-container width, with phone inheriting its existing size. Parent targeted 1280px desktop recheck confirms the full heading fits.
+- PR107 advanced externally to 4db2d488932f840b9899744e64d10504f595ef3f (allin label only). Inspected the two-file delta, merged its latest head; PR107 branch remains untouched. Targeted action-legend test passed.
