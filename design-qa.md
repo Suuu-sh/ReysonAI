@@ -529,3 +529,9 @@ Verification:
 - Scoped `.site-audience.is-scrolly` to block layout, preserving the existing sticky scenes and mobile/reduced-motion flow.
 - Local browser after fix, same continuous scroll position: wrapper y=153, heading y=282, audience grid opacity=1. Forward/backward scrolling also kept the sticky content visible. Screenshots captured internally only.
 - Targeted `tests/site-surface.test.mjs`: 22 passed. Production build and Sites worker test results recorded in the PR.
+
+## 2026-10-07 — Phone scroll storytelling follow-up
+- Phone audience now uses the same scroll-selected sticky personas at viewport heights ≥740px; How-it-works cards stack/pin using native document scrolling. Short screens remain ordinary flow. Training/ranked/agent and the long comparison remain naturally scrollable on phones so their controls and copy are not clipped.
+- Motion polish: shorter 18px reveals and a subtle persona settle; no decorative progress bars, touch/wheel interception, or new scroll containers. Reduced-motion continues to disable scrolly state and animation; mobile scene pinning is gated by `.has-motion`.
+- Chrome responsive QA: 390×844, English and Japanese, beginner/budget scenes, complete Free CTA and note reachable; an observed oversized translated/card layout uses ResizeObserver to let the sticky top move upward rather than trap content. PageDown exited audience normally and pinned the next scene at y=80.
+- 375×667: audience/How-it-works/Training all normal flow. 1280×720: audience uses block layout and existing Training horizontal scrolly remains enabled. Internal screenshots only.

@@ -885,3 +885,52 @@
 .site-train.is-scrolly .site-ranked, .site-train.is-scrolly .site-agent { border-top: 0; }
 /* All three slides share one sticky viewport; IO reveal checks can miss off-canvas slides. */
 .site-train.is-scrolly [data-reveal] { opacity: 1; transform: none; }
+
+/* Touch storytelling uses document scrolling, never a captured wheel/touch gesture.
+   Short phones keep the complete ordinary layout instead of clipping their copy. */
+@media (max-width: 960px) and (min-height: 740px) {
+  .site-audience.is-scrolly { height: 300svh; }
+  .site-audience.is-scrolly > .site-wrap { min-height: 100svh; padding-block: 80px 24px; justify-content: center; }
+  .site-audience.is-scrolly .site-audience-grid { gap: 16px; margin-top: 20px; }
+  .site-audience.is-scrolly h2 { font-size: 26px; }
+  .site-audience.is-scrolly .site-persona { padding: 8px 12px; }
+  .site-audience.is-scrolly .site-persona-list { gap: 4px; }
+  .site-audience.is-scrolly .site-persona { gap: 6px; }
+  .site-audience.is-scrolly .site-persona:not(.is-active) { gap: 0; }
+  .site-audience.is-scrolly .site-persona:not(.is-active) .site-persona-more { display: none; }
+  .site-audience.is-scrolly .site-persona:not(.is-active) .site-persona-quote { display: none; }
+  .site-audience.is-scrolly .site-persona-quote { font-size: 18px; margin-top: 4px; }
+  .site-audience.is-scrolly .site-persona-body { font-size: 13px; line-height: 1.45; }
+  .site-audience.is-scrolly .site-persona-more > span { gap: 6px; }
+  .site-audience.is-scrolly .site-persona-gets { padding: 2px 6px; font-size: 11px; }
+  .site-audience.is-scrolly .site-persona-view { padding: 16px; gap: 12px; }
+  .site-audience.is-scrolly .site-persona-view.is-simple { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 16px; }
+  .site-audience.is-scrolly .site-persona-view .site-mini-matrix { width: 100%; }
+  .site-audience.is-scrolly .site-persona-callout { gap: 8px; }
+  .site-audience.is-scrolly .site-persona-callout strong { font-size: 28px; }
+  .site-audience.is-scrolly .site-persona-view .site-card { --card-w: 38px; }
+  .site-audience.is-scrolly .site-persona-detail-head strong { font-size: 26px; }
+  .site-audience.is-scrolly .site-persona-why { font-size: 12px; line-height: 1.45; }
+  .site-audience.is-scrolly .site-persona-view.is-free { gap: 8px; }
+  .site-audience.is-scrolly .site-persona-view.is-free ul { gap: 4px; }
+  .site-audience.is-scrolly .site-persona-view.is-free .site-persona-pill { font-size: 12px; padding: 3px 8px; }
+  .site-audience.is-scrolly .site-persona-plus { margin-top: 0; padding-top: 8px; gap: 2px; }
+  .site-audience.is-scrolly .site-persona-plus span { font-size: 20px; }
+  .site-audience.is-scrolly .site-persona-plus small { font-size: 11px; }
+  .site-audience.is-scrolly .site-persona-view.is-free li { font-size: 13px; }
+  .site-audience.is-scrolly .site-persona-price strong { font-size: 40px; }
+  .site-audience.is-scrolly .site-audience-note { font-size: 11px; margin-top: 12px; }
+  .has-motion .site-how-steps { gap: 0; }
+  .has-motion .site-how-steps li { position: sticky; top: 80px; min-height: calc(100svh - 96px); padding: 24px 0; background: var(--bg); }
+  .has-motion .site-how-steps li + li { margin-top: 48svh; }
+  .has-motion .site-how-inline { min-height: 300px; margin-top: 20px; }
+}
+/* A restrained settle, not a long opacity-only wait, keeps reveals legible on touch. */
+.has-motion [data-reveal] { transform: translateY(18px); transition-duration: .65s, .8s; }
+.has-motion [data-reveal][data-shown], .has-motion .site-train.is-scrolly [data-reveal] { transform: none; }
+.has-motion .site-audience.is-scrolly [data-reveal] { opacity: 1; transform: none; }
+.has-motion .site-persona-view.is-active { animation: site-persona-settle .55s var(--ease) both; }
+@keyframes site-persona-settle { from { opacity: .4; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .site *, .site *::before, .site *::after { animation: none !important; transition: none !important; }
+}

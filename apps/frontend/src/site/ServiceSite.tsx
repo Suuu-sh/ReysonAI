@@ -476,6 +476,7 @@ function Audience() {
   const [auto, setAuto] = useState(true);
   const [ref, visible] = useInView<HTMLElement>("-25% 0px", false);
   const [scrolly, setScrolly] = useState(false);
+  const [stickyTop, setStickyTop] = useState(0);
   const running = auto && motion && visible && !scrolly;
   const a5s = frequencies("response", "A5s");
   const [free, plus] = c.pricing.plans;
@@ -487,10 +488,10 @@ function Audience() {
     return () => window.clearTimeout(timer);
   }, [running, active]);
 
-  // Wide screens: the section pins while scrolling, and scroll position picks the persona.
+  // Pin on phones with enough vertical room too; short screens retain ordinary flow.
   useEffect(() => {
     if (!motion) { setScrolly(false); return; }
-    const query = window.matchMedia("(min-width: 961px) and (min-height: 640px)");
+    const query = window.matchMedia("(min-width: 961px) and (min-height: 640px), (max-width: 960px) and (min-height: 740px)");
     const sync = () => setScrolly(query.matches);
     sync();
     query.addEventListener("change", sync);
@@ -520,6 +521,18 @@ function Audience() {
     };
   }, [scrolly, ref]);
 
+  // Long translations must remain reachable even in a pinned phone scene.
+  useEffect(() => {
+    const wrapper = ref.current?.firstElementChild as HTMLElement | undefined;
+    if (!scrolly || !wrapper || typeof ResizeObserver === "undefined") { setStickyTop(0); return; }
+    const update = () => setStickyTop(window.innerWidth <= 960 ? Math.min(0, window.innerHeight - wrapper.offsetHeight) : 0);
+    const observer = new ResizeObserver(update);
+    observer.observe(wrapper);
+    window.addEventListener("resize", update);
+    update();
+    return () => { observer.disconnect(); window.removeEventListener("resize", update); };
+  }, [scrolly, ref]);
+
   function choose(index: number) {
     setAuto(false);
     const node = ref.current;
@@ -541,7 +554,7 @@ function Audience() {
 
   const view = (index: number) => `site-persona-view${active === index ? " is-active" : ""}`;
   return <section className={`site-section site-audience${scrolly ? " is-scrolly" : ""}`} ref={ref} aria-labelledby="site-audience-title">
-    <div className="site-wrap">
+    <div className="site-wrap" style={scrolly ? { top: stickyTop } : undefined}>
       <SectionHead id="site-audience-title" title1={c.audience.title1} title2={c.audience.title2} />
       <div className="site-audience-grid" data-reveal>
         <div className="site-persona-list" role="tablist" aria-orientation="vertical" aria-labelledby="site-audience-title" onKeyDown={onListKey}>
