@@ -602,6 +602,17 @@
   .site-hero-actions .site-button { min-height: 48px; padding-inline: 18px; font-size: 14px; }
   .site-hero-secondary { font-size: 13px; gap: 6px; }
   .site-hero-note { font-size: 11px; }
+  /* One heading, shared with desktop; only phones layer it over the live chart. */
+  .site-hero-main { row-gap: 20px; padding-top: 16px; }
+  .site-hero-copy { display: contents; }
+  .site-hero-range { grid-column: 1; grid-row: 1; }
+  .site-hero h1 { position: relative; z-index: 4; grid-column: 1; grid-row: 1; align-self: start; margin: 0; padding: 20px 12px 34px; pointer-events: none; background: linear-gradient(180deg, #09090bed, #09090bb8 66%, #09090b00); text-shadow: 0 2px 12px #09090b; }
+  .site-hero-opening { font-size: clamp(30px, 9.4vw, 52px); }
+  .site-hero h1 .site-line + .site-line { font-size: clamp(26px, 8.4vw, 46px); }
+  .site-hero h1 .site-hero-mark { color: #ededef; }
+  .site-hero-lead, .site-ja .site-hero-lead { grid-column: 1; grid-row: 2; margin-top: 0; }
+  .site-hero-actions { grid-column: 1; grid-row: 3; margin-top: 0; }
+  .site-hero-note { grid-column: 1; grid-row: 4; margin-top: 0; }
   .site-hand { gap: 20px; }
   .site-hero-deal { padding-inline: 4px; }
   .site-hero-deal .site-hand-cards { gap: 9px; }

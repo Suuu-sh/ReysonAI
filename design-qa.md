@@ -535,3 +535,8 @@ Verification:
 - Motion polish: shorter 18px reveals and a subtle persona settle; no decorative progress bars, touch/wheel interception, or new scroll containers. Reduced-motion continues to disable scrolly state and animation; mobile scene pinning is gated by `.has-motion`.
 - Chrome responsive QA: 390×844, English and Japanese, beginner/budget scenes, complete Free CTA and note reachable; an observed oversized translated/card layout uses ResizeObserver to let the sticky top move upward rather than trap content. PageDown exited audience normally and pinned the next scene at y=80.
 - 375×667: audience/How-it-works/Training all normal flow. 1280×720: audience uses block layout and existing Training horizontal scrolly remains enabled. Internal screenshots only.
+
+## 2026-10-07 — Phone hero heading over live range
+- At widths ≤560px, layer the existing single heading over the live chart using grid placement and a legibility scrim. The overlay has `pointer-events: none`; all saved range cells remain keyboard/tap targets. Paragraph, actions, and note follow below the chart without a duplicate heading. Desktop CSS remains outside this override.
+- Targeted overlay regression test: 1 passed. Production build passed; diff check passed.
+- Current computer-use inventory exposes no browser, so 375/390 English/Japanese visual checks and physical Safari are not verified in this follow-up.

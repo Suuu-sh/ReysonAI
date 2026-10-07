@@ -36,6 +36,15 @@ test("oversized translated phone How cards fall back to ordinary scrolling", () 
   assert.match(css, /\.has-motion \.site-how-steps li\[data-oversized="true"\] \{ position: static; \}/);
 });
 
+test("phone hero layers its single heading over the interactive range without capturing taps", () => {
+  const css = readFileSync(new URL("../src/site/site.css", import.meta.url), "utf8");
+  const mobile = css.slice(css.indexOf("@media screen and (max-width: 560px)"), css.indexOf("/* Compare", css.indexOf("@media screen and (max-width: 560px)")));
+  assert.match(mobile, /\.site-hero-copy \{ display: contents; \}/);
+  assert.match(mobile, /\.site-hero-range \{ grid-column: 1; grid-row: 1; \}/);
+  assert.match(mobile, /\.site-hero h1 \{[^}]*grid-row: 1;[^}]*pointer-events: none;/);
+  assert.match(mobile, /\.site-hero-actions \{ grid-column: 1; grid-row: 3; margin-top: 0; \}/);
+});
+
 let server, ServiceSite, copies;
 before(async () => {
   server = await createServer({ root: fileURLToPath(new URL("..", import.meta.url)), server: { middlewareMode: true, watch: null, hmr: false, ws: false }, appType: "custom" });
