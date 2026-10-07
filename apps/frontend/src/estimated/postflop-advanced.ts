@@ -352,6 +352,10 @@ export function buildAdvancedExplanation(input: AdvancedInput): AdvancedExplanat
     const s: string[] = b._s!;
     delete b._s;
     b.text = finish(b === topBlock && pick && !pick.texture ? [...s.slice(0, 5), pick.text] : s);
+    // Sizes of the same action share their reasons, which the de-duplication keeps only once.
+    if (!b.text) b.text = en
+      ? narrative("This size is mixed in less often for the same reasons as the main action.", [], en)
+      : "このサイズは、主なアクションと同じ理由で、低い頻度で混ぜます。";
   }
   const d = input.explain?.defence;
   if (facing && d && (input.actionMix.call ?? 0) === 0 && (input.actionMix.fold ?? 0) >= 0.95 && finite(d.realized_equity) && finite(d.required_equity) && d.realized_equity >= d.required_equity) {
