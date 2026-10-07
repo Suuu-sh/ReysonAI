@@ -26,7 +26,8 @@ for (const locale of ["en", "ja", "zh-CN", "es"]) {
     assert.equal(summary.querySelectorAll(".style-roster-compact li").length, 8);
     assert.equal(summary.querySelectorAll('li[aria-current="true"]').length, 1);
     assert.ok([...summary.querySelectorAll("li")].every(li => li.title && li.textContent.trim()));
-    const map = summary.nextElementSibling;
+    assert.equal(summary.nextElementSibling.className, "shared-style-map");
+    const map = summary.nextElementSibling.querySelector(".play-style-map");
     assert.equal(map.className, "play-style-map");
     assert.equal(map.tagName, "FIGURE");
     assert.ok(map.getAttribute("aria-label")?.trim());
@@ -45,9 +46,8 @@ for (const locale of ["en", "ja", "zh-CN", "es"]) {
 
 test("shared map frame stays shrinkable with a readable plot and the compact roster remains scoped", async () => {
   const css = await readFile(new URL("../src/agent/agent.css", import.meta.url), "utf8");
-  assert.match(css, /\.play-style-map\s*\{[^}]*grid-template-columns: auto minmax\(0, 1fr\);[^}]*grid-template-rows: minmax\(0, 1fr\) auto;[^}]*min-width: 0;/);
-  assert.match(css, /\.play-style-map-grid\s*\{[^}]*position: relative;[^}]*min-height: clamp\(210px, 26vw, 300px\);[^}]*aspect-ratio: 1\.7;[^}]*overflow: hidden;/);
-  assert.match(css, /\.play-style-map-x\s*\{[^}]*grid-column: 2;/);
+  assert.match(css, /\.shared-style-map \.play-style-map \{ grid-template-columns:40px minmax\(0,1fr\)/);
+  assert.match(css, /\.shared-style-map \.play-style-map-y \{ min-width:0; overflow-wrap:anywhere;/);
   assert.match(css, /\.style-roster-compact \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/);
   assert.match(css, /\.style-roster-compact li \{ min-width: 0; overflow-wrap: anywhere;/);
 });

@@ -36,7 +36,7 @@ test("Drill and Agent Stats share the dark map structure but keep source-specifi
   }
   assert.match(drill, /↑<br\/>3bet 多/);
   assert.match(drill, /今回出た問題の平均方針/);
-  assert.match(agent, /↑<br\/>アグレッシブ/);
+  assert.match(agent, /↑<br\/>レイズ多/);
   assert.match(agent, /Agent基準/);
   assert.doesNotMatch(agent, /↑<br\/>3bet 多/);
 });

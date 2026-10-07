@@ -6,7 +6,9 @@ interface BreakdownCounts { total: number; best: number; mixed: number; miss: nu
 interface BreakdownRow extends BreakdownCounts { key: string; label: string }
 import { ArrowRight, Barbell, CalendarBlank, ChartLineUp, Cards, Crosshair, Info, Robot, Trophy, Target, TrendDown, TrendUp } from "@phosphor-icons/react";
 import { AgentAnalysis } from "../agent/AgentAnalysis.tsx";
-import { PlayStyleDashboard, StyleMapFrame, StyleZones, type StyleZone } from "../agent/PlayStyleDashboard.tsx";
+import { PlayStyleDashboard } from "../agent/PlayStyleDashboard.tsx";
+import { StyleMap, type StyleZone } from "../agent/StyleMap.tsx";
+import { ffCopy as t } from "./fastfold-api.ts";
 import { StyleAvatar } from "../agent/StyleAvatar.tsx";
 import { STYLES } from "../agent/player-read.ts";
 import { practiceAnimal, PRACTICE_EXPLANATIONS } from "./practice-style.ts";
@@ -80,30 +82,22 @@ const PRACTICE_ZONES: StyleZone[] = [
   { id: "station", x: [PX.loose, 100], y: [PY.more, 100] },
 ];
 
-function StyleMap({ analysis }: { analysis: PlayerAnalysisModel }) {
+function DrillStyleMap({ analysis }: { analysis: PlayerAnalysisModel }) {
   const { plot, metrics, ready } = analysis;
   const animal = practiceAnimal(analysis);
-  return <section className="analysis-card analysis-map" aria-labelledby="analysis-map-title">
-    <header className="analysis-card-head">
-      <h2 id="analysis-map-title">プレイスタイルマップ</h2>
-      <InfoTip label="マップの見方">
-        <p>中心は「今回出た問題の平均方針」です。横軸はフォールド頻度の差（右ほど参加が多い）、縦軸は対オープンでの3bet頻度の差（上ほど多い）。NITはタイト側に付く追加ラベルです。</p>
-        <p>点は重複を除いた10問以上（オープン3問・対オープン5問以上）で表示し、30問に届くまでは暫定です。実戦の絶対的なプレイスタイルではありません。</p>
-      </InfoTip>
-    </header>
-    <StyleMapFrame ariaLabel="ドリル練習のプレイスタイルマップ" xLeft="タイト" xRight="ルース" yTop="3bet 多" yBottom="3bet 少">
-        <StyleZones zones={PRACTICE_ZONES} current={analysis.ready ? animal.id : null} />
-        <span className="play-style-map-baseline" aria-hidden="true" style={{ "--r": `${BASELINE_RADIUS}%` } as CSSProperties}><small>基準付近</small></span>
-        <span className="play-style-map-center" aria-hidden="true" title="方針" />
-        {plot && <svg className="play-style-map-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <line x1="50" y1="50" x2={plot.x} y2={plot.y} pathLength="1" />
-        </svg>}
-        {plot ? <span className={`play-style-map-point${plot.y > 70 ? " label-above" : ""}`} style={{ left: `${plot.x}%`, top: `${plot.y}%`, "--style": animal.color } as CSSProperties}
-          role="img" aria-label={`あなたの練習位置。参加頻度は推定方針から${points(-metrics.fold.delta!)}、3betは${points(metrics.threeBet.delta)}。${ready ? "" : "暫定表示。"}`}>
-          {ready ? <StyleAvatar id={animal.id} color={animal.color} size={36} /> : <i />}<b>あなた{ready ? "" : " · 暫定"}</b>
-        </span> : <span className="play-style-map-wait">10問以上で表示</span>}
-    </StyleMapFrame>
-  </section>;
+  return <StyleMap source="drills" zones={PRACTICE_ZONES} current={ready ? animal.id : null} baselineRadius={BASELINE_RADIUS}
+    point={plot ? { ...plot, style: animal, provisional: !ready,
+      clipped: Math.abs(metrics.fold.delta!) > .3 || Math.abs(metrics.threeBet.delta!) > .3,
+      description: `${t("Participation difference", "参加頻度の差", "参与频率差", "Diferencia de participación")} ${points(-metrics.fold.delta!)}; 3bet ${points(metrics.threeBet.delta)}` } : null}
+    baseline={t("Same-question estimate", "同じ問題の推定方針", "相同题目估计策略", "Estimación para las mismas preguntas")}
+    horizontal={t("Participation difference", "参加頻度の差", "参与频率差", "Diferencia de participación")}
+    vertical={t("3bet difference", "3betの差", "3bet差值", "Diferencia de 3bet")}
+    yTop={t("More 3bets", "3bet 多", "3bet较多", "Más 3bets")} yBottom={t("Fewer 3bets", "3bet 少", "3bet较少", "Menos 3bets")}
+    waiting={t("Shown after 10 diverse questions", "多様な10問以上で表示", "10道多样题目后显示", "Visible tras 10 preguntas variadas")}
+    explanation={t("The centre is the estimate for these exact questions. Horizontal: negative fold-frequency difference; vertical: 3bet-frequency difference against an open. Keep only the latest answer per spot/hand. A point needs 10 questions, 3 opens and 5 responses; a style needs 30 questions, 10 of each kind and 3 spots. These are provisional drill tendencies, not absolute VPIP/PFR.",
+      "中心は今回出た問題の平均方針です。横軸はフォールド頻度の差の符号を反転し、縦軸は対オープンでの3bet頻度の差を使います。同じ局面・ハンドは最新回答のみ。点は10問・オープン3問・対オープン5問、スタイルは30問・各10問・3局面で表示します。ドリルでの暫定傾向で、絶対的なVPIP/PFRではありません。",
+      "中心是相同题目的平均估计策略。横轴为弃牌频率差的负值，纵轴为面对开池的3bet频率差。每个局面/手牌只取最新答案。点需10题、3道开池和5道应对题；风格需30题、每类10题及3种局面。仅为暂定训练倾向，不是绝对VPIP/PFR。",
+      "El centro es la estimación para estas preguntas exactas. Horizontal: diferencia negativa de frecuencia de fold; vertical: diferencia de 3bet frente a apertura. Solo la última respuesta por situación/mano. Punto: 10 preguntas, 3 aperturas y 5 respuestas; estilo: 30, 10 por tipo y 3 situaciones. Son tendencias provisionales de ejercicios, no VPIP/PFR absolutos.")} />;
 }
 
 // One track per action: your rate as a bar, the estimate as a tick.
@@ -318,7 +312,7 @@ export function PlayerAnalysis({ history: allHistory, onStart, onOpenWeakness, r
     {history.length > 0 && <Breakdown history={history} />}
 
     <div className="analysis-main">
-      <StyleMap analysis={analysis} />
+      <DrillStyleMap analysis={analysis} />
       {analysis.samples ? <ActionComparison analysis={analysis} /> : <section className="analysis-card analysis-welcome">
         <span className="analysis-welcome-icon"><Target size={22} weight="duotone" /></span>
         <h2>まずは練習から</h2>

@@ -408,3 +408,27 @@
 
 /* The shared Session dialog is narrower than the desktop dashboard. */
 .game-details-modal .style-dash-top { grid-template-columns: 1fr; }
+
+/* Both Stats modes use this complete map, including labels, legend and method. */
+.shared-style-map { display:flex; flex-direction:column; gap:8px; min-width:0; }
+.shared-style-map-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.shared-style-map-head h2 { margin:0; font-size:13px; color:var(--text-muted); }
+.shared-style-map .play-style-map { grid-template-columns:40px minmax(0,1fr); }
+.shared-style-map .play-style-map-y { min-width:0; overflow-wrap:anywhere; white-space:normal; }
+.shared-style-map-legend { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:11px; color:var(--text-muted); }
+.shared-style-map-legend > span { display:inline-flex; align-items:center; gap:6px; }
+.shared-style-map-legend i { display:inline-block; width:8px; height:8px; border-radius:50%; }
+.map-you-key { background:var(--accent); border:1px solid white; }
+.map-baseline-key { background:#202027; border:1px solid #bbb2c1; }
+.shared-style-map-metrics { margin:0; color:var(--text-subtle); font-size:11px; overflow-wrap:anywhere; }
+.shared-style-map .analysis-info { position:relative; }
+.shared-style-map .analysis-info summary { cursor:pointer; display:grid; place-items:center; min-width:32px; min-height:32px; }
+.shared-style-map .analysis-info summary { list-style:none; border-radius:50%; }
+.shared-style-map .analysis-info summary::-webkit-details-marker { display:none; }
+.shared-style-map .play-style-map-point.label-left b { left:0; transform:none; }
+.shared-style-map .play-style-map-point.label-right b { left:auto; right:0; transform:none; }
+@keyframes shared-style-edge-pop { 0% { opacity:0; transform:scale(.6); } 100% { opacity:1; transform:scale(1); } }
+.shared-style-map .play-style-map-point.label-left b,.shared-style-map .play-style-map-point.label-right b { animation-name:shared-style-edge-pop; }
+.shared-style-map .analysis-info-body { position:absolute; top:100%; right:0; z-index:10; width:min(320px,75vw); background:var(--surface-raised); border:1px solid var(--line-strong); padding:12px; font-size:12px; line-height:1.6; }
+.analysis-main > .shared-style-map { padding:16px; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
+@media(max-width:650px) { .shared-style-map .analysis-info summary { min-width:44px; min-height:44px; } .shared-style-map .play-style-map-grid { aspect-ratio:1.35; } .shared-style-map .play-style-map-wait { max-width:90%; white-space:normal; text-align:center; } }

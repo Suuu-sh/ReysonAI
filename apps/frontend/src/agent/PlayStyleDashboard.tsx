@@ -1,8 +1,10 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import { Crosshair, Hourglass, X } from "@phosphor-icons/react";
 import { localized } from "../i18n.ts";
 import { AGENT_BASELINE, READ_MIN_HANDS, READ_WINDOW, STYLES, type PlayerRead, type StyleId } from "./player-read.ts";
 import { StyleAvatar } from "./StyleAvatar.tsx";
+import { StyleMap, type StyleZone } from "./StyleMap.tsx";
+import { ffCopy as t } from "../trainer/fastfold-api.ts";
 
 const pct = (value: number | null | undefined) => value == null ? "—" : `${Math.round(value * 100)}%`;
 const text = (value: { ja: string; en: string }) => localized(value.en, value.ja);
@@ -44,33 +46,6 @@ function StyleRoster({ current }: { current: StyleId }) {
 // (tight < -0.06, nit < -0.12, loose > 0.06) and y = aggression / 0.35 (passive < -0.15, aggressive > 0.15),
 // placed at 50 + v * 44 like the player's point.
 const ZX = { nit: 23.6, tight: 36.8, loose: 63.2 }, ZY = { aggressive: 31.1, passive: 68.9 };
-export type StyleZone = { id: StyleId; x: [number, number]; y: [number, number]; label?: boolean };
-
-// Drill and Agent Stats share the chart frame; their zones, data and axis meaning stay source-specific.
-export function StyleMapFrame({ ariaLabel, xLeft, xRight, yTop, yBottom, children }: {
-  ariaLabel: string;
-  xLeft: string;
-  xRight: string;
-  yTop: string;
-  yBottom: string;
-  children: ReactNode;
-}) {
-  return <figure className="play-style-map" aria-label={ariaLabel}>
-    <span className="play-style-map-y" aria-hidden="true"><span>↑<br />{yTop}</span><span>{yBottom}<br />↓</span></span>
-    <div className="play-style-map-grid">{children}</div>
-    <figcaption className="play-style-map-x"><span>← {xLeft}</span><span>{xRight} →</span></figcaption>
-  </figure>;
-}
-
-// Each style's area behind a map, faintly tinted with its character; the current one is lit.
-export function StyleZones({ zones, current }: { zones: StyleZone[]; current: StyleId | null }) {
-  return <>{zones.map((zone, index) => { const style = STYLES[zone.id], on = zone.id === current;
-    return <span key={index} className={`style-zone${on ? " is-current" : ""}`} title={text(style.summary)}
-      style={{ left: `${zone.x[0]}%`, width: `${zone.x[1] - zone.x[0]}%`, top: `${zone.y[0]}%`, height: `${zone.y[1] - zone.y[0]}%`, "--style": style.color } as CSSProperties}>
-      {zone.label !== false && <>{!on && <StyleAvatar id={zone.id} color={style.color} size={22} dim />}<small>{text(style.name)}</small></>}
-    </span>; })}</>;
-}
-
 const MAP_ZONES: StyleZone[] = [
   { id: "nit", x: [0, ZX.nit], y: [0, 100] },
   { id: "tag", x: [ZX.nit, ZX.tight], y: [0, ZY.passive] },
@@ -82,21 +57,25 @@ const MAP_ZONES: StyleZone[] = [
   { id: "station", x: [ZX.loose, 100], y: [ZY.passive, 100] },
 ];
 
-// Style map: the centre is the agents' balanced play.
-function StyleMap({ read }: { read: PlayerRead }) {
+// The existing Agent classifier supplies its own scale and population.
+function AgentStyleMap({ read }: { read: PlayerRead }) {
   const point = read.map;
-  const pointY = point ? 50 - point.y * 44 : 50;
-  return <StyleMapFrame ariaLabel={point ? localized(`Style map: ${text(read.style.name)}`, `スタイルマップ：${text(read.style.name)}`) : localized("Style map (collecting hands)", "スタイルマップ（集計中）")}
-    xLeft={localized("Tight", "タイト")} xRight={localized("Loose", "ルース")}
-    yTop={localized("Aggressive", "アグレッシブ")} yBottom={localized("Passive", "パッシブ")}>
-      <StyleZones zones={MAP_ZONES} current={read.style.id} />
-      <span className="play-style-map-center" title={localized("Agent baseline", "Agent基準")} />
-      {point && <span className={`play-style-map-point${pointY > 70 ? " label-above" : ""}`} role="img" aria-label={localized("Your position", "あなたの位置")}
-        style={{ left: `${50 + point.x * 44}%`, top: `${pointY}%`, "--style": read.style.color } as CSSProperties}>
-        <StyleAvatar id={read.style.id} color={read.style.color} size={36} />
-        <b>{localized("You", "あなた")}</b>
-      </span>}
-  </StyleMapFrame>;
+  const s = read.stats, ratio = s.vpip ? s.pfr! / s.vpip : 0;
+  const dx = s.vpip == null ? null : s.vpip - AGENT_BASELINE.vpip;
+  const dy = ratio - AGENT_BASELINE.pfr / AGENT_BASELINE.vpip;
+  return <StyleMap source="agent" zones={MAP_ZONES} current={read.style.id}
+    point={point ? { x: 50 + point.x * 44, y: 50 - point.y * 44, style: read.style,
+      provisional: read.confidence !== "settled", clipped: Math.abs(dx!) > .2 || Math.abs(dy) > .35,
+      description: `VPIP ${pct(s.vpip)}; PFR/VPIP ${ratio.toFixed(2)}` } : null}
+    baseline={t("Agent baseline", "Agent基準", "Agent基准", "Referencia de Agent")}
+    horizontal={t("VPIP difference", "VPIPの差", "VPIP差值", "Diferencia de VPIP")}
+    vertical={t("PFR/VPIP difference", "PFR/VPIPの差", "PFR/VPIP差值", "Diferencia de PFR/VPIP")}
+    yTop={t("More raises", "レイズ多", "加注较多", "Más subidas")} yBottom={t("Fewer raises", "レイズ少", "加注较少", "Menos subidas")}
+    waiting={t("Shown after 30 hands", "30ハンド以上で表示", "30手后显示", "Visible tras 30 manos")}
+    explanation={t("The centre is the Agent baseline. Horizontal: VPIP minus baseline; vertical: PFR/VPIP minus baseline. Latest 1,000 saved Agent hands; a point appears at 30 hands and stays provisional until 300. These are Agent-table practice tendencies.",
+      "中心はAgent基準。横軸はVPIPの差、縦軸はPFR/VPIPの差です。直近1,000件の保存済みAgentハンドを使い、30ハンドで点を表示し300ハンドまでは暫定です。Agent卓での練習傾向です。",
+      "中心为Agent基准。横轴为VPIP差，纵轴为PFR/VPIP差。使用最近1,000手已保存的Agent牌局；30手显示点，300手前为暂定。这是Agent桌练习倾向。",
+      "El centro es la referencia de Agent. Eje horizontal: diferencia de VPIP; vertical: diferencia de PFR/VPIP. Últimas 1.000 manos guardadas de Agent; punto desde 30, provisional hasta 300. Son tendencias de práctica en mesas Agent.")} />;
 }
 
 export function PlayStyleDashboard({ read, onClose }: { read: PlayerRead; onClose?: () => void }) {
@@ -135,7 +114,7 @@ export function PlayStyleDashboard({ read, onClose }: { read: PlayerRead; onClos
         </div>
         <StyleRoster current={read.style.id} />
       </div>
-      <StyleMap read={read} />
+      <AgentStyleMap read={read} />
     </div>
 
     <ul className="style-rows">{rows.map(row => <StatRow key={row.key} row={row} />)}</ul>
