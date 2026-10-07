@@ -307,6 +307,29 @@
           "existing_spots": "Standard buildInputs fingerprints and seat rows unchanged (postflop-profile-inputs test); postflop-ai audit 85/85 PASS"
         },
         "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
+      },
+      {
+        "date": "2026-10-08",
+        "reviewer": "Claude main session",
+        "reviewed_base_commit": "a81cef1b",
+        "report": "apps/frontend/docs/specs/opponent-profiles-stageBCD-postflop.result.md",
+        "scope": "Source-only review of postflop opponent-profile stage B (opponent tendency/seat selectors, URL/session state, nonstandard table postflop, profile policy loading in the browser). No preflop data generated or edited; no renewal of original Astra strategy/data-quality approval.",
+        "blocking_findings": 0,
+        "before_content_sha256": "a3f50f419172c2eed50ca883f9ed360af3ac4b9992fa67b57f9436bf68881929",
+        "after_content_sha256": "e1814990511ea5cf7352d53a82874dc469c3e73d9bd529a345e1ceb266761455",
+        "source_identity": {
+          "previous": 115,
+          "current": 116,
+          "modified": 1,
+          "added": 1,
+          "removed": 0,
+          "unchanged": 114
+        },
+        "verification": {
+          "artifact_and_archive_identity": "All 1888 artifact records and the archive unchanged",
+          "existing_spots": "Standard postflop view unchanged; browser check of standard / NIT preparing state / return to standard"
+        },
+        "limitations": "Source-only. Postflop policies are AI estimates, not GTO."
       }
     ],
     "copy_amendments": [
@@ -10381,8 +10404,13 @@
     },
     {
       "path": "apps/frontend/src/locales/copy.ts",
-      "bytes": 1811,
-      "sha256": "288a0071b14fe803456f5a6966f5577d799a91fb4e8d81fdee6d5e582e667ecc"
+      "bytes": 1921,
+      "sha256": "6be5a33c6a7e926eeaad9ac86885c5e4efd7ba93ecda51edd2783a545f8d953c"
+    },
+    {
+      "path": "apps/frontend/src/locales/opponent-profile-copy.json",
+      "bytes": 4096,
+      "sha256": "ec27c13206faba83132a2c4f4001d5f9e9cbc522ed5a4a9e0c612e7877bfa531"
     },
     {
       "path": "apps/frontend/src/locales/product-dictionary.json",
@@ -10430,7 +10458,7 @@
       "sha256": "d828004fd7c382e565e66094e43c8b2917ed5ff3444b0c12c2e691499211ace7"
     }
   ],
-  "content_sha256": "a3f50f419172c2eed50ca883f9ed360af3ac4b9992fa67b57f9436bf68881929",
+  "content_sha256": "e1814990511ea5cf7352d53a82874dc469c3e73d9bd529a345e1ceb266761455",
   "archive": {
     "path": "artifacts/preflop/stage2-reviewed.tar.gz",
     "bytes": 1747857,
