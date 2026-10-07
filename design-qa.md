@@ -592,3 +592,5 @@ Verification:
 - Locale/surface/shared-card tests: 48 passed; additional targeted responsive single-tree DOM guard: 1 passed. Production build passed (existing chunk-size warning). Diff check passed.
 - Attempted focused browser QA through CUA: IAB unavailable; fresh Chrome preview creation timed out and reset the kernel. No new 390/1280 rendered verification or actual iPhone claim. Responsive appearance remains unverified for this integration; prior standalone mobile screenshots do not prove the merged version.
 - No merge to development/main or deployment. PR106 now includes PR107 ancestry: review/merge ordering must account for this overlap rather than merging conflicting versions independently.
+
+- Parent merged visual QA: 390px phone preserved; 1280px desktop saved-range/legend layout visible. Longer retained reason tagline initially clipped; desktop mark now scales to copy-container width, with phone inheriting its existing size. Final targeted desktop visual recheck pending.
